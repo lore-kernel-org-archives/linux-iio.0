@@ -2,133 +2,358 @@ Return-Path: <SRS0=jBoM=QI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCABFC282D8
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBD78C282D8
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:55:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9D19E20863
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:29:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 789132086C
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 14:55:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lYruMBcs"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FwaCbqOY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728053AbfBAO3Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Feb 2019 09:29:16 -0500
-Received: from mail-yb1-f193.google.com ([209.85.219.193]:36650 "EHLO
-        mail-yb1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726172AbfBAO3P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 09:29:15 -0500
-Received: by mail-yb1-f193.google.com with SMTP id 64so2724658ybf.3;
-        Fri, 01 Feb 2019 06:29:15 -0800 (PST)
+        id S1729043AbfBAOzI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Feb 2019 09:55:08 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:45650 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726446AbfBAOzI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 09:55:08 -0500
+Received: by mail-qt1-f196.google.com with SMTP id e5so7706985qtr.12;
+        Fri, 01 Feb 2019 06:55:07 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=41Adg7DB31aKVRgt8DbNhNlbpU9yjOns/3+6Ddh3bPY=;
-        b=lYruMBcsM5UnhhfGTGZqPkx+jYeW7F9UhX8vJf6BSLTxnuktw9xM3HpsSN5pKEI3OC
-         rxsDdE1px84mDmEc9jTXvjSvFtDXSXyJCs982INcjDoEqir3P8DFi3Avqh7DBgPe5j5w
-         0ZX1BN/YNq5pi6CIMcFcFKF+nxykMj3eEXB4l9f9oCeP5CRBfTY6hcEKy6ueP0XSV4Fy
-         tpKPqa31m2yM5sAhk80+sA9BTJdsWEL1TvELBhv/6seTmIfuYa1Rd+W8ZBYawF2YoZRc
-         gVK4HqSnLyIQ6XViUUNIr5PYiHZkwEVK6mNB5JJLaMYCLxxh4Y9ZolghgjD8LWDdb2ic
-         vOKA==
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=E8OkaIYYGElosKSNreE4ERGbr/gu+fVYmNoW53K9pUY=;
+        b=FwaCbqOYwdlSQuoWDRlHwlST2DxXwpINrLdO+j51FQIjko5v4PA9r0tiazdQm58GzV
+         1YBezPgxbLOoTnwux7w5gRd1ie189bS8vY9w7HOPEjrLhkY0bNgdDmlk38ZsOr2X2pyp
+         0qSp+bJnsP8ZhETQfpoo6I/etnhUNBnMzksZCYcg5BlaOgIUvl+NB/hJQyuA4mejUf9U
+         7up/Wgw9CDKLKe/bLIDu1+eab7Nhx1j926s29m8/UnYPe49Uj5HMAaJtMPTEK6jAX9gX
+         rwEC0C6AhWyX8S4nvpvPyE99OVQs5z1lmWhdGTdgAVx4AeCuv+845P7/EZ4bcKa3jj+C
+         jGQA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=41Adg7DB31aKVRgt8DbNhNlbpU9yjOns/3+6Ddh3bPY=;
-        b=prJXUKZDs8egHkQASqf+7vus6bgrWn4JtOzOvlm1El1btTnu8PBGb/oJvToFNQjnfq
-         +jx8sCCT5rKe97jqPce3wE0jefiXyUGI7gYNYD1ZUEoW5OTxI6YLjhXEV8YB9Cfhp8PY
-         wVldBop5v87HzTAtyeNiPs8ENniolPM0cbn+RrQAtzxFPQqxE9Z+xOfItVMBelKWgTBB
-         9bLtoUqkncXv+l+TgZztwk+LHbGfT+zWqqwFApqbmj22iRwtp8RtNZmPrIThF8iAHUFD
-         TxBmjNjo7Sn88h3Zj5VbxmCNNjvMS32L5A5hkrroIN7ysRJh5teNsSSlsvb3UJJUZBL4
-         kQ8g==
-X-Gm-Message-State: AHQUAubgnc1xMkUF8BdgS9yYEBcoYuG/Srbj+DrhtZr0mBIEHVUwVgZH
-        9YyKuwuCRaNYfldijof5U3FcD5vs2is=
-X-Google-Smtp-Source: AHgI3IZa2/dj4MKAvHhDmqTGFCyCXjPHCAoSRAd2FgzAWnlT1Mx0a2KiKHPiz7UcqKYRJO/ifSXjnQ==
-X-Received: by 2002:a25:d896:: with SMTP id p144mr25585042ybg.225.1549031354829;
-        Fri, 01 Feb 2019 06:29:14 -0800 (PST)
-Received: from [192.168.100.2] ([187.38.229.162])
-        by smtp.gmail.com with ESMTPSA id z186sm2608936ywd.107.2019.02.01.06.29.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 01 Feb 2019 06:29:14 -0800 (PST)
-Subject: Re: [PATCH] iio:potentiostat:lmp91000: solve codestyle WARNINGs and
- CHECKs
-To:     Joe Perches <joe@perches.com>, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Anderson Reis <andersonreisrosa@gmail.com>
-References: <20190129183656.15656-1-lucasseikioshiro@gmail.com>
- <a8ae5209f676171a97cae7211411e7ced3ebefbc.camel@perches.com>
-From:   LSO <lucasseikioshiro@gmail.com>
-Message-ID: <d2c70e04-f20c-6847-9740-d883c327c55f@gmail.com>
-Date:   Fri, 1 Feb 2019 12:29:11 -0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=E8OkaIYYGElosKSNreE4ERGbr/gu+fVYmNoW53K9pUY=;
+        b=lMhz3d/k0Irv0/FBe08ECf8wFJXMaDT7LiDmccvAIKop5WibCs23xQ0AvY4+rgV4co
+         Rq9B8OGWlcFyi1XhGKQeI42kuIiJedyf6ru3tpBqli0rP09l7OJhIgxdLHRnDrRA0drR
+         Hn+qcOvOMylOD6CzuncCpsZfNFocTV3WY2xQH2pTSdBGAHDG/qZwQOg6YIwuQYC+jRop
+         w0WBvgwzsgT/+rdXw8TjQCtrVrElPhKyZqgeYGz3mrpDGmwaa5dbOHQYwm4qwtMkOta2
+         BrxYQiXucCNh1shrM+3hUuEPUe776wcGCMDQGzBCYGJnFrInt+IdrSyn3N5p8wMjy5qI
+         GjYA==
+X-Gm-Message-State: AJcUukdjrQNfJcd4+UAcwcm3PricRJMCtSbO9mQGFPCpaHGEkeQsY8Vn
+        fwFFSOLiGlbcks7M1Je9ESQ=
+X-Google-Smtp-Source: ALg8bN6b6Uj/8SKnu+805nsKPkkZQw3cZDidDNgTuHhNeus+Cg74XImos8wdiCz3GiiTTSedjzZ77w==
+X-Received: by 2002:ac8:72c1:: with SMTP id o1mr38838817qtp.220.1549032906806;
+        Fri, 01 Feb 2019 06:55:06 -0800 (PST)
+Received: from renatolg ([191.180.138.5])
+        by smtp.gmail.com with ESMTPSA id r56sm8617908qtj.30.2019.02.01.06.55.02
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 01 Feb 2019 06:55:06 -0800 (PST)
+From:   Renato Lui Geh <renatogeh@gmail.com>
+X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
+Date:   Fri, 1 Feb 2019 12:55:00 -0200
+To:     "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+Cc:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>
+Subject: Re: [PATCH v2 1/2] staging: iio: ad7780: add gain & filter gpio
+ support
+Message-ID: <20190201145459.ukfzo6s4rvg4c5ri@renatolg>
+References: <20190127203044.yytctplecwey4an4@renatolg>
+ <1548850985.9460.23.camel@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <a8ae5209f676171a97cae7211411e7ced3ebefbc.camel@perches.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1548850985.9460.23.camel@analog.com>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Thanks for the review!
-
-On 29/01/2019 20:48, Joe Perches wrote:
-> On Tue, 2019-01-29 at 16:36 -0200, Lucas Oshiro wrote:
->> Solve most of the checkpatch.pl WARNINGs and CHECKs on lmp9100.c. They
->> are the following:
+On 01/30, Popa, Stefan Serban wrote:
+>On Du, 2019-01-27 at 18:30 -0200, Renato Lui Geh wrote:
+>> Previously, the AD7780 driver only supported gpio for the 'powerdown'
+>> pin. This commit adds suppport for the 'gain' and 'filter' pin.
 >>
->> lmp91000.c:116: CHECK: Unnecessary parentheses around 'state != channel'
->> lmp91000.c:116: CHECK: Unnecessary parentheses around 'channel == LMP91000_REG_MODECN_TEMP'
->> lmp91000.c:214: CHECK: braces {} should be used on all arms of this statement
->> lmp91000.c:216: CHECK: Unbalanced braces around else statement
->> lmp91000.c:258: WARNING: line over 80 characters
->> lmp91000.c:279: CHECK: Please don't use multiple blank lines
-> 
-> Some will say this is too many things to do at once.
-> I think it's mostly fine, but there are a few nits
-> that also could use fixing.
-> 
->> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> []
->> @@ -211,9 +211,9 @@ static int lmp91000_read_config(struct lmp91000_data *data)
->>   
->>   	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
->>   	if (ret) {
->> -		if (of_property_read_bool(np, "ti,external-tia-resistor"))
->> +		if (of_property_read_bool(np, "ti,external-tia-resistor")) {
->>   			val = 0;
->> -		else {
->> +		} else {
->>   			dev_err(dev, "no ti,tia-gain-ohm defined");
->>   			return ret;
->>   		}
-> 
-> This could use inverting the test
-> 
-> 	if (ret) {
-> 		if (!of_property_read_bool(...)) {
-> 			dev_err(dev, "no ti,ti-gain-ohm defined\n");
-> 			return ret;
-> 		}
-> 		val = 0;
-> 	}
+>> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+>> Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+>> Co-developed-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+>> ---
+>> Changes in v2:
+>>         - Filter reading changed to mHz
+>>         - Storing filter, gain and voltage to chip_info
 >
-Thanks for the suggestion, I'll do that in the next version.
+>Hi,
 
-> Also the dev_err is missing a '\n' termination
+Hi Stefan,
 
-My aim in this patch was only solve style problems, but I
-can put that missing '\n' too. Do you think it could be done
-in the same commit or it's a better idea do it in another
-commit and send both as a patchset?
-> 
-> 
+Thanks for the review. Comments inline.
+
+Renato
+>
+>Comments inline.
+>
+>Regards,
+>Stefan
+>
+>>
+>>  drivers/staging/iio/adc/ad7780.c       | 103 ++++++++++++++++++++++---
+>>  include/linux/iio/adc/ad_sigma_delta.h |   5 ++
+>>  2 files changed, 99 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/ad7780.c
+>> b/drivers/staging/iio/adc/ad7780.c
+>> index c4a85789c2db..82394e31b168 100644
+>> --- a/drivers/staging/iio/adc/ad7780.c
+>> +++ b/drivers/staging/iio/adc/ad7780.c
+>> @@ -39,6 +39,15 @@
+>>  #define AD7170_PATTERN         (AD7780_PAT0 | AD7170_PAT2)
+>>  #define AD7170_PATTERN_MASK    (AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
+>>
+>> +#define AD7780_GAIN_GPIO       0
+>> +#define AD7780_FILTER_GPIO     1
+>> +
+>> +#define AD7780_GAIN_MIDPOINT   64
+>> +#define AD7780_FILTER_MIDPOINT 13350
+>> +
+>> +static const unsigned int ad778x_gain[2]    = { 1, 128 };
+>> +static const unsigned int ad778x_filter[2]  = { 10000, 16700 };
+>I would name this array ad778x_odr_avail or something like that.
+
+Sure
+>We should also consider adding the option to read the available
+>sampling frequencies from user space, but let's leave this for another
+>commit.
+
+Do you mean returning 10 and 16.7 Hz?
+
+Should this be done before sending the driver to the main tree, or is it
+ok to do something like that after it has left staging?
+>
+>> +
+>>  struct ad7780_chip_info {
+>>         struct iio_chan_spec    channel;
+>>         unsigned int            pattern_mask;
+>> @@ -50,7 +59,11 @@ struct ad7780_state {
+>>         const struct ad7780_chip_info   *chip_info;
+>>         struct regulator                *reg;
+>>         struct gpio_desc                *powerdown_gpio;
+>> -       unsigned int    gain;
+>> +       struct gpio_desc                *gain_gpio;
+>> +       struct gpio_desc                *filter_gpio;
+>> +       unsigned int                    gain;
+>> +       unsigned int                    filter;
+>
+>Also, this could be renamed as odr.
+>
+>> +       unsigned int                    int_vref_mv;
+>>
+>>         struct ad_sigma_delta sd;
+>>  };
+>> @@ -104,17 +117,65 @@ static int ad7780_read_raw(struct iio_dev
+>> *indio_dev,
+>>                 voltage_uv = regulator_get_voltage(st->reg);
+>>                 if (voltage_uv < 0)
+>>                         return voltage_uv;
+>> -               *val = (voltage_uv / 1000) * st->gain;
+>> +               voltage_uv /= 1000;
+>> +               *val = voltage_uv * st->gain;
+>>                 *val2 = chan->scan_type.realbits - 1;
+>> +               st->int_vref_mv = voltage_uv;
+>>                 return IIO_VAL_FRACTIONAL_LOG2;
+>>         case IIO_CHAN_INFO_OFFSET:
+>>                 *val = -(1 << (chan->scan_type.realbits - 1));
+>>                 return IIO_VAL_INT;
+>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>> +               *val = st->filter;
+>> +               return IIO_VAL_INT;
+>>         }
+>>
+>>         return -EINVAL;
+>>  }
+>>
+>> +static int ad7780_write_raw(struct iio_dev *indio_dev,
+>> +                           struct iio_chan_spec const *chan,
+>> +                           int val,
+>> +                           int val2,
+>> +                           long m)
+>> +{
+>> +       struct ad7780_state *st = iio_priv(indio_dev);
+>> +       const struct ad7780_chip_info *chip_info = st->chip_info;
+>> +       int vref, gain;
+>> +       unsigned int full_scale;
+>> +
+>> +       if (!chip_info->is_ad778x)
+>> +               return 0;
+>> +
+>> +       switch (m) {
+>> +       case IIO_CHAN_INFO_SCALE:
+>> +               if (val != 0)
+>> +                       return -EINVAL;
+>> +
+>> +               vref = st->int_vref_mv * 1000000LL;
+>
+>From the datasheet, the VREF is ±5 V, therefore your vref variable will
+>overflow. You probably need unsigned long long.
+
+You're right, I'll fix this in v3.
+>
+>> +               full_scale = 1 << (chip_info->channel.scane_type.realbis
+>> - 1);
+>> +               gain = DIV_ROUND_CLOSEST(vref, full_scale);
+>> +               gain = DIV_ROUND_CLOSEST(gain, val2);
+>> +               st->gain = gain;
+>> +               if (gain < AD7780_GAIN_MIDPOINT)
+>> +                       gain = 0;
+>> +               else
+>> +                       gain = 1;
+>> +               gpiod_set_value(st->gain_gpio, gain);
+>> +       break;
+>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>> +               if (1000*val + val2/1000 < AD7780_FILTER_MIDPOINT)
+>> +                       val = 0;
+>> +               else
+>> +                       val = 1;
+>> +               st->filter = ad778x_filter[val];
+>> +               gpiod_set_value(st->filter_gpio, val);
+>> +       break;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>>  static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+>>                                      unsigned int raw_sample)
+>>  {
+>> @@ -126,10 +187,8 @@ static int ad7780_postprocess_sample(struct
+>> ad_sigma_delta *sigma_delta,
+>>                 return -EIO;
+>>
+>>         if (chip_info->is_ad778x) {
+>> -               if (raw_sample & AD7780_GAIN)
+>> -                       st->gain = 1;
+>> -               else
+>> -                       st->gain = 128;
+>> +               st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
+>> +               st->filter = ad778x_filter[raw_sample & AD7780_FILTER];
+>>         }
+>>
+>>         return 0;
+>> @@ -141,18 +200,20 @@ static const struct ad_sigma_delta_info
+>> ad7780_sigma_delta_info = {
+>>         .has_registers = false,
+>>  };
+>>
+>> -#define AD7780_CHANNEL(bits, wordsize) \
+>> +#define AD7170_CHANNEL(bits, wordsize) \
+>>         AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
+>> +#define AD7780_CHANNEL(bits, wordsize) \
+>> +       AD_SD_CHANNEL_GAIN_FILTER(1, 0, 0, bits, 32, wordsize - bits)
+>>
+>>  static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+>>         [ID_AD7170] = {
+>> -               .channel = AD7780_CHANNEL(12, 24),
+>> +               .channel = AD7170_CHANNEL(12, 24),
+>>                 .pattern = AD7170_PATTERN,
+>>                 .pattern_mask = AD7170_PATTERN_MASK,
+>>                 .is_ad778x = false,
+>>         },
+>>         [ID_AD7171] = {
+>> -               .channel = AD7780_CHANNEL(16, 24),
+>> +               .channel = AD7170_CHANNEL(16, 24),
+>>                 .pattern = AD7170_PATTERN,
+>>                 .pattern_mask = AD7170_PATTERN_MASK,
+>>                 .is_ad778x = false,
+>> @@ -173,6 +234,7 @@ static const struct ad7780_chip_info
+>> ad7780_chip_info_tbl[] = {
+>>
+>>  static const struct iio_info ad7780_info = {
+>>         .read_raw = ad7780_read_raw,
+>> +       .write_raw = ad7780_write_raw,
+>>  };
+>>
+>>  static int ad7780_probe(struct spi_device *spi)
+>> @@ -222,6 +284,29 @@ static int ad7780_probe(struct spi_device *spi)
+>>                 goto error_disable_reg;
+>>         }
+>>
+>> +       if (st->chip_info->is_ad778x) {
+>> +               st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
+>> +                                                       "gain",
+>> +                                                       GPIOD_OUT_HIGH);
+>> +               if (IS_ERR(st->gain_gpio)) {
+>> +                       ret = PTR_ERR(st->gain_gpio);
+>> +                       dev_err(&spi->dev, "Failed to request gain GPIO:
+>> %d\n",
+>> +                               ret);
+>> +                       goto error_disable_reg;
+>> +               }
+>> +
+>> +               st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
+>> +                                                         "filter",
+>> +                                                         GPIOD_OUT_HIGH)
+>> ;
+>> +               if (IS_ERR(st->filter_gpio)) {
+>> +                       ret = PTR_ERR(st->filter_gpio);
+>> +                       dev_err(&spi->dev,
+>> +                               "Failed to request filter GPIO: %d\n",
+>> +                               ret);
+>> +                       goto error_disable_reg;
+>> +               }
+>> +       }
+>> +
+>>         ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+>>         if (ret)
+>>                 goto error_disable_reg;
+>> diff --git a/include/linux/iio/adc/ad_sigma_delta.h
+>> b/include/linux/iio/adc/ad_sigma_delta.h
+>> index 7e84351fa2c0..c01da869de83 100644
+>> --- a/include/linux/iio/adc/ad_sigma_delta.h
+>> +++ b/include/linux/iio/adc/ad_sigma_delta.h
+>> @@ -176,6 +176,11 @@ int ad_sd_validate_trigger(struct iio_dev
+>> *indio_dev, struct iio_trigger *trig);
+>>         __AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+>>                 _storagebits, _shift, NULL, IIO_VOLTAGE, 0)
+>>
+>> +#define AD_SD_CHANNEL_GAIN_FILTER(_si, _channel, _address, _bits, \
+>> +       _storagebits, _shift) \
+>> +       __AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
+>> +               _storagebits, _shift, NULL, IIO_VOLTAGE,
+>> BIT(IIO_CHAN_INFO_RAW))
+>> +
+>
+>Do you need to define a new macro?
+
+Oh yeah, that macro is useless. I'll remove this block. That was
+definitely an oversight. We thought we had to create a new macro for
+adding support for gain and filter GPIOs (which this macro definitely
+doesn't, as it is identical to the default one) on the driver's channel,
+but reading other drivers it seems you don't actually need to? Is this
+right?
+>
+>>  #define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
+>>         __AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
+>>                 _storagebits, _shift, NULL, IIO_TEMP, \
+>> --
+>> 2.20.1
+>>
