@@ -1,164 +1,234 @@
-Return-Path: <SRS0=eBr9=QH=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=jBoM=QI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5178DC169C4
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 20:40:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B5ACC282D8
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 05:48:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 219F420881
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Jan 2019 20:40:35 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IEz56Px2"
+	by mail.kernel.org (Postfix) with ESMTP id D750F21726
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Feb 2019 05:48:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728840AbfAaUka (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Jan 2019 15:40:30 -0500
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:35707 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727200AbfAaUk3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Jan 2019 15:40:29 -0500
-Received: by mail-lj1-f193.google.com with SMTP id x85-v6so3893755ljb.2;
-        Thu, 31 Jan 2019 12:40:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eC8JUjjOWAciHy3n+5RBBqZC4Ht27IbaQAgjXb8i0r8=;
-        b=IEz56Px2TElGN/HhHFKKm6Ije+9kD4c8xUaImpCq9StbAAsauuypzdBzSY4XbFI72v
-         Vj+3vmnuNRLDDPFeIU8fGEhzsNZl4AnEZrxPXxSzedYip9l82OlAN779p4upI5h48nYa
-         gSvVyuSde+BaWJLkhuIcHxT9syk2HeY3oV7bBTBGiYgsMQAe7WQkGoPC5D0ldXYO7uv1
-         /EARsybBWjsvUuYQ49tr7yiki5bDhwTQpxQdq+RgFlwIxVN3cuqk5XWd+HMnxwzMjSoz
-         0OOv6HLZZu74jUMXZJwPUUL2g6y4k2YoGbkCON1ODLGYeY1Ygi64dBFOblItNVMi26s1
-         PDQA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eC8JUjjOWAciHy3n+5RBBqZC4Ht27IbaQAgjXb8i0r8=;
-        b=hiaZKsdazlmtk9Hzwgw5FjUcpl9hca6Ti1sRrtSyRpK4AhDNK9qyNLjkb+Aq4V7Ar7
-         G6Uco+J7EaA9qTx8KldNwvHnS75W46XaF+NBvSla7w8D5+j/hsAY9CrXHrGgxqKCYfWr
-         K56NJm8XYdPTG2ok5fmOR6pYR+BFE3Zm0oy0UxEujoHpLFAmux/1QTQo021uNgr9WfxR
-         8RYClL6CwrlAthJi/+y8NnQj757eGfsqFhT7ggp97EYRBNo/MJajzYj5AJ1KHeyReCN/
-         N40o23MUO+7WMAAegrF9EwSlHkwRKyB/zHa1dSRuinvidYYbuoXaFS7bEcjM+H6vonKG
-         PDBQ==
-X-Gm-Message-State: AJcUukfvZoADBEy7JuBQZkuSbHlRvxxI7T+1n/VexHFLymVWvspl36I5
-        jch+11tPFq6HtrJ0LW1BZiSAWrsa
-X-Google-Smtp-Source: ALg8bN7bk4qVj+mM2fa5ut4Sn8uemYBzrVeLSwlRc2SVD22i2WQRrREXTo0L+/4WOrwsBe+F3IY3oA==
-X-Received: by 2002:a2e:63cd:: with SMTP id s74-v6mr28553398lje.117.1548967227334;
-        Thu, 31 Jan 2019 12:40:27 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id h22-v6sm967100ljg.24.2019.01.31.12.40.26
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 31 Jan 2019 12:40:26 -0800 (PST)
-Date:   Thu, 31 Jan 2019 21:40:04 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Johan Hovold <johan@kernel.org>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh@kernel.org, jic23@jic23.retrosnub.co.uk
-Subject: Re: [PATCH v2 3/3] dt-bindings: iio: chemical: pms7003: add device
- tree support
-Message-ID: <20190131204000.GA14750@arch>
-References: <20190127181916.19948-1-tduszyns@gmail.com>
- <20190127181916.19948-4-tduszyns@gmail.com>
- <20190128075819.GK3691@localhost>
- <20190128184332.GA25627@arch>
- <20190130091254.GN3691@localhost>
+        id S1726514AbfBAFsE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Feb 2019 00:48:04 -0500
+Received: from anchovy3.45ru.net.au ([203.30.46.155]:51131 "EHLO
+        anchovy3.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726339AbfBAFsE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Feb 2019 00:48:04 -0500
+Received: (qmail 12633 invoked by uid 5089); 1 Feb 2019 05:48:00 -0000
+Received: by simscan 1.2.0 ppid: 12560, pid: 12561, t: 0.0741s
+         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
+Received: from unknown (HELO ?192.168.0.122?) (preid@electromag.com.au@203.59.235.95)
+  by anchovy2.45ru.net.au with ESMTPA; 1 Feb 2019 05:48:00 -0000
+Subject: Re: [PATCH 1/1] iio: core: Improve precision of __iio_format_value
+ for FRACTIONAL values
+To:     Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+References: <1548743212-83787-1-git-send-email-preid@electromag.com.au>
+ <CA+U=Dso+_dn4mEew5y62nGg8AmEABOCnV9aFgHvQV9WsM0enrA@mail.gmail.com>
+ <20364822-e17d-5386-cd97-f244fa32f665@electromag.com.au>
+ <20190131133517.0000716d@huawei.com>
+From:   Phil Reid <preid@electromag.com.au>
+Message-ID: <b677dff8-11f5-abcd-6277-21490ce95a3b@electromag.com.au>
+Date:   Fri, 1 Feb 2019 13:47:57 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190130091254.GN3691@localhost>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+In-Reply-To: <20190131133517.0000716d@huawei.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-AU
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jan 30, 2019 at 10:12:54AM +0100, Johan Hovold wrote:
-> On Mon, Jan 28, 2019 at 07:43:33PM +0100, Tomasz Duszynski wrote:
-> > On Mon, Jan 28, 2019 at 08:58:19AM +0100, Johan Hovold wrote:
-> > > On Sun, Jan 27, 2019 at 07:19:16PM +0100, Tomasz Duszynski wrote:
-> > > > Add device tree support for Plantower PMS7003 particulate matter sensor.
-> > > >
-> > > > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> > > > ---
-> > > >  .../iio/chemical/plantower,pms7003.txt        | 19 +++++++++++++++++++
-> > > >  1 file changed, 19 insertions(+)
-> > > >  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > >
-> > > > diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > > new file mode 100644
-> > > > index 000000000000..e4c7f2fb1e30
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > > > @@ -0,0 +1,19 @@
-> > > > +* Plantower PMS7003 particulate matter sensor
-> > > > +
-> > > > +Required properties:
-> > > > +- compatible: must be "plantower,pms7003"
-> > > > +
-> > > > +Optional properties:
-> > > > +- vcc-supply: phandle to the regulator that provides power to the sensor
-> > >
-> > > Shouldn't this one be a required property?
-> > >
-> >
-> > Driver does not use regulator framework hence to me this property fits
-> > here better.
->
-> The device tree describes hardware, not any particular driver.
->
-> That said, there is a bit of an on-going debate on whether mandatory
-> supplies (from a hardware perspective) should always be represented in
-> device tree or not.
->
-> 	https://lore.kernel.org/lkml/20181123133126.GF2089@sirena.org.uk/T/#u
->         https://lore.kernel.org/lkml/20180409102244.GB11532@sirena.org.uk/T/#u
-> 	https://lore.kernel.org/lkml/20180425171123.xhyoay3nu463btoq@rob-hp-laptop/T/#u
->
+On 31/01/2019 9:35 pm, Jonathan Cameron wrote:
+> On Tue, 29 Jan 2019 17:11:25 +0800
+> Phil Reid <preid@electromag.com.au> wrote:
+> 
+>> G'day Alex,
+>>
+>> On 29/01/2019 4:32 pm, Alexandru Ardelean wrote:
+>>> On Tue, Jan 29, 2019 at 8:28 AM Phil Reid <preid@electromag.com.au> wrote:
+>>>>
+>>>> Currently FRACTIONAL values are outputed with 9 digits after the decimal
+>>>> place. This is not always sufficient to resolve the raw value with 1 bit.
+>>>> Output FRACTIONAL values to 15 decimal places of precision, regardless
+>>>> of the number of leading zeros.
+>>>>
+>>>> Currently for a 2.5V ref with 24 bits of precision the code outputs only
+>>>> to 9 decimal places.
+>>>>
+>>>> Cur: 0.00014901100000000000 * 16777216 = 2499.989733
+>>>> New: 0.00014901161193847600 * 16777216 = 2500.000000
+>>>> Signed-off-by: Phil Reid <preid@electromag.com.au>
+>>>> ---
+>>>>
+>>>> Notes:
+>>>>       Alternatively I could add additonal FRACTIONAL types that select the new
+>>>>       behaviour to prevent any possible regressions.
+>>>>
+>>>>    drivers/iio/industrialio-core.c | 55 ++++++++++++++++++++++++++++++++++-------
+>>>>    1 file changed, 46 insertions(+), 9 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>>>> index a062cfd..bd9da64 100644
+>>>> --- a/drivers/iio/industrialio-core.c
+>>>> +++ b/drivers/iio/industrialio-core.c
+>>>> @@ -571,11 +571,53 @@ int of_iio_read_mount_matrix(const struct device *dev,
+>>>>    #endif
+>>>>    EXPORT_SYMBOL(of_iio_read_mount_matrix);
+>>>>
+>>>> +static ssize_t __iio_format_div_prec(char *buf, unsigned int len, s64 x, s32 y)
+>>>> +{
+>>>> +       unsigned int prec = 0;
+>>>> +       unsigned int idx = 0;
+>>>> +       s64 d;
+>>>> +
+>>>> +       if (!len)
+>>>> +               return 0;
+>>>> +
+>>>> +       if (!y)
+>>>> +               return snprintf(buf, len, "inf");
+>>>> +
+>>>> +       if (!x)
+>>>> +               return snprintf(buf, len, "0");
+>>>> +
+>>>> +       if (((x > 0) && (y < 0)) || ((x < 0) && (y > 0))) {
+>>>> +               buf[idx++] = '-';
+>>>> +               x = x > 0 ? x : -x;
+>>>> +               y = y > 0 ? y : -y;
+>>>> +       }
+>>>> +
+>>>> +       d = div64_s64(x, y);
+>>>> +       idx += snprintf(buf+idx, len-idx, "%d", (int)d);
+>>>> +       x = x - (y * d);
+>>>> +       if ((x != 0) && (idx < len-1)) {
+>>>> +               buf[idx++] = '.';
+>>>> +               x = x * 10;
+>>>> +               d = div64_s64(x, y);
+>>>> +
+>>>> +               while ((idx < len-1) && (prec < 15)) {
+>>>> +                       if (d || prec)
+>>>> +                               prec++;
+>>>> +                       buf[idx++] = '0' + (char)d;
+>>>> +                       x = x - (y * d);
+>>>> +                       if (!x)
+>>>> +                               break;
+>>>> +                       x = x * 10;
+>>>> +                       d = div64_s64(x, y);
+>>>> +               }
+>>>> +               buf[idx] = 0;
+>>>> +       }
+>>>> +       return idx;
+>>>> +}
+>>>> +
+>>>>    static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>>>>                                     int size, const int *vals)
+>>>>    {
+>>>> -       unsigned long long tmp;
+>>>> -       int tmp0, tmp1;
+>>>>           bool scale_db = false;
+>>>>
+>>>>           switch (type) {
+>>>> @@ -598,14 +640,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>>>>                   else
+>>>>                           return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
+>>>>           case IIO_VAL_FRACTIONAL:
+>>>> -               tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+>>>> -               tmp1 = vals[1];
+>>>> -               tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+>>>> -               return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+>>>> +               return __iio_format_div_prec(buf, len, vals[0], vals[1]);
+>>>
+>>> Maybe I'm a bit naive, but I'm also a bit curious.
+>>> If you just bump the numbers here, would it work the same ?
+>>>
+>>> i.e.   10^9 -> 10^15 and "snprintf(buf, len, "%d.%15u", tmp0, abs(tmp1));"
+>> I did look at that solution.
+>>
+>> But I was running into overflow issues (even with 64 bit numbers).
+>>
+>> eg: with a 2500 reference and 32 bits.
+>>
+>> 2500 * 10^15 = 2e+18 = 61 bits
+>> And the result of
+>> 2500 / 2^32 =  0.000000582076609
+>> Only provides 9 significant digits with 15 decimal places.
+>>
+>> I was looking to provide 15 significant digits to match a standard double
+>> precision floating point value.
+> 
+> I'll ask the awkward engineering question.  Is this precision actually valid?
+> I.e. typical voltage references are +- 0.0x %
+> 
+> The fact we have a 32 bit ADC means you'll detect small changes, but I'm
+> dubious about whether the absolute value will ever be 'that good'.
+> 
+> If we are going to go out of way to support greater precision we need
+> a strong justification of why.
+> To take advantage of these high precision devices you need to take into
+> account non linear effects, temperature etc.  These will swamp (I think)
+> any effect of a lack of precision the scale value.
+> 
 
-Even after going through this threads I am still unconvinced that
-vcc-supply should be a requirement. Making this a mandatory property
-would automatically imply using *_regulator_get() in a driver code
-(on condition one is adding regulator support). In case there
-isn't any physically connected we end up with a dummy one and a warning.
+All valid points.
 
-Is it how this should work?
+9 signification digits is probably fine.
+However the current formatting doesn't always provide 9 significant digits.
+So I believe this can start to add significant error.
 
-> > > > +- set-gpios: phandle to the GPIO connected to the SET line
-> > > > +- reset-gpios: phandle to the GPIO connected to the RESET line
-> > > > +
-> > > > +Refer to serial/slave-device.txt for generic serial attached device bindings.
-> > > > +
-> > > > +Example:
-> > > > +
-> > > > +&uart0 {
-> > > > +	pms7003 {
-> > >
-> > > The node name should be generic and reflect the functionality rather
-> > > than model. Perhaps "pms" will do here.
-> >
-> > Agree, ideally we should have a generic dt name for this kind of sensors
-> > (something like air-pollution-sensor perhaps?). But unfortunately there isn't
-> > anything available now so I guess compatible part name should be okay
-> > (besides this is the type of naming commonly used in other iio bindings).
->
-> What's wrong with particulate matter sensor ("pms")?
->
-> Seems like a better fix than any particular model name to me at least.
->
 
-Personally I would vote for a more descriptive node name, for example:
-particulate-matter-sensor or air-pollution-sensor or other name
-which clearly shows what device we are dealing with.
+Some typical ref voltages using 32 bit scale.
+         scale          iio scale    err               err%
+2500  5.820766091E-07  0.000000582  -7.660913467E-11  -0.0132%
+3000  6.984919310E-07  0.000000698  -4.919309616E-10  -0.0705%
+3300  7.683411241E-07  0.000000768  -3.411240578E-10  -0.0444%
+5000  1.164153218E-06  0.000001164  -1.532182693E-10  -0.0132%
 
-> > > > +		compatible = "plantower,pms7003";
-> > > > +	};
-> > > > +};
->
-> Johan
+Looking at other drivers they seem to adjust the scale figure based on gain
+selection as well. Is this expected?
+
+If so when adding gain eg: x100
+
+       scale            iio scale     err              err%
+2500  5.820766091E-09  0.000000005  -8.207660913E-10  -16%
+3000  6.984919310E-09  0.000000006  -9.849193096E-10  -16%
+3300  7.683411241E-09  0.000000007  -6.834112406E-10  -10%
+5000  1.164153218E-08  0.000000011  -6.415321827E-10  -6%
+
+The limited number of significant digits is swamping everything else.
+
+even at 24bit with gain 1x00
+
+       scale            iio scale     err              err%
+2500  1.490116119E-06  0.000001490  -1.161193848E-10  -0.01%
+3000  1.788139343E-06  0.000001788  -1.393432617E-10  -0.01%
+3300  1.966953278E-06  0.000001966  -9.532775879E-10  -0.05%
+5000  2.980232239E-06  0.000002980  -2.322387695E-10  -0.01%
+
+
+Similarly this while also affect the accuracy of values mapped thru the
+rescale driver.
+
+
+
+-- 
+Regards
+Phil Reid
+
+ElectroMagnetic Imaging Technology Pty Ltd
+Development of Geophysical Instrumentation & Software
+www.electromag.com.au
+
+3 The Avenue, Midland WA 6056, AUSTRALIA
+Ph: +61 8 9250 8100
+Fax: +61 8 9250 7100
+Email: preid@electromag.com.au
