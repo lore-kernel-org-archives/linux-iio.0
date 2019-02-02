@@ -2,33 +2,53 @@ Return-Path: <SRS0=e/h2=QJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EEAC282D7
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:08:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 020DCC282D7
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:12:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C212B20856
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:08:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B55C820869
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:12:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549127573;
+	bh=mKkYrcDRCZK6vi4IUz1PeXhVZ5SIiQanZCGwD+JfiqA=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=M9hNesO1GKbbbvRTaLvr68TAiFOC1Q4mIS+xwu2+LMpYifnGspUnp9Hu/6o6wnjof
+	 6u0hTbvAxMzwdF2HRdN/U7sPuH35hFvvXqO3iSgYtwZ8qBBGxFyng970Vyfsz7D++Z
+	 KYEN6WL3xSn+yS5rrobN3i0xXfURZpLh6NyAgw3k=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbfBBRI6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Feb 2019 12:08:58 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:46584 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbfBBRI6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2019 12:08:58 -0500
+        id S1726256AbfBBRMx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Feb 2019 12:12:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53848 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725828AbfBBRMx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Feb 2019 12:12:53 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 1C6F39E757C;
-        Sat,  2 Feb 2019 17:08:55 +0000 (GMT)
-Date:   Sat, 2 Feb 2019 17:08:52 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 98D242083B;
+        Sat,  2 Feb 2019 17:12:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549127572;
+        bh=mKkYrcDRCZK6vi4IUz1PeXhVZ5SIiQanZCGwD+JfiqA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RYwwlF3JkaJj5DDOI316E1r7zGnQA3dk8EbQIRY2tLv3xx2gfV4EJX1roHRPc96pc
+         rK7CfJh9QI3OUNKBX2zU3pPO5F9b7HVIaANMlYWECLABl88iaUiAr3xhk+JpP8TG3z
+         1zAS6GII8drWC1yLjey1lJPJvcoHThdRfwFEqvjU=
+Date:   Sat, 2 Feb 2019 17:12:47 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
 To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: sps30: remove printk format specifier
-Message-ID: <20190202170844.6b8eca21@archlinux>
-In-Reply-To: <20190202090003.23225-1-tduszyns@gmail.com>
-References: <20190202090003.23225-1-tduszyns@gmail.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org, pmeerw@pmeerw.net,
+        johan@kernel.org
+Subject: Re: [PATCH v3 3/3] dt-bindings: iio: chemical: pms7003: add device
+ tree support
+Message-ID: <20190202171247.0d0fc122@archlinux>
+In-Reply-To: <20190201215759.14569-4-tduszyns@gmail.com>
+References: <20190201215759.14569-1-tduszyns@gmail.com>
+        <20190201215759.14569-4-tduszyns@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -38,38 +58,59 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat,  2 Feb 2019 10:00:03 +0100
+On Fri,  1 Feb 2019 22:57:59 +0100
 Tomasz Duszynski <tduszyns@gmail.com> wrote:
 
-> pr_fmt is used by printk wrappers. There are not any in the driver
-> code so remove the format specifier.
+> Add device tree support for Plantower PMS7003 particulate matter sensor.
 > 
 > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-Applied to the togreg branch of iio.git and pushed out
-as testing for the autobuilders to mostly ignore it.
+Hi Tomasz,
+
+Sorry, I clearly didn't look at this in enough detail on earlier versions.
+I think the set gpio is rather device specific so should have a vendor
+prefix.
+
+I would also like to get an opinion on the generic name from the devicetree
+maintainers before we start to standardise on it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/chemical/sps30.c | 2 --
->  1 file changed, 2 deletions(-)
+>  .../iio/chemical/plantower,pms7003.txt        | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
 > 
-> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> index 376fac41ecb5..e03a28a67146 100644
-> --- a/drivers/iio/chemical/sps30.c
-> +++ b/drivers/iio/chemical/sps30.c
-> @@ -7,8 +7,6 @@
->   * I2C slave address: 0x69
->   */
-> 
-> -#define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> -
->  #include <asm/unaligned.h>
->  #include <linux/crc8.h>
->  #include <linux/delay.h>
-> --
-> 2.20.1
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+> new file mode 100644
+> index 000000000000..cbad95480e04
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+> @@ -0,0 +1,20 @@
+> +* Plantower PMS7003 particulate matter sensor
+> +
+> +Required properties:
+> +- compatible: must be "plantower,pms7003"
+> +- vcc-supply: phandle to the regulator that provides power to the sensor
+> +
+> +Optional properties:
+> +- set-gpios: phandle to the GPIO connected to the SET line
+
+Hmm. This is a somewhat 'unusual' one so should probably have a vendor prefix.
+
+> +- reset-gpios: phandle to the GPIO connected to the RESET line
+
+reset is common and clear in meaning, so vendor prefix probably not appropriate.
+> +
+> +Refer to serial/slave-device.txt for generic serial attached device bindings.
+> +
+> +Example:
+> +
+> +&uart0 {
+> +	air-pollution-sensor {
+> +		vcc-supply = <&reg_vcc5v0>;
+> +		compatible = "plantower,pms7003";
+> +	};
+> +};
 
