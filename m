@@ -2,242 +2,81 @@ Return-Path: <SRS0=e/h2=QJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E9DCC282D7
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 21:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CE88C282D7
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 23:12:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 24D2520856
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 21:56:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 465E92084A
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 23:12:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=martingkelly-com.20150623.gappssmtp.com header.i=@martingkelly-com.20150623.gappssmtp.com header.b="MCwFf3RL"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hYSpptCU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726771AbfBBV43 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Feb 2019 16:56:29 -0500
-Received: from mail-pl1-f194.google.com ([209.85.214.194]:43740 "EHLO
-        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726784AbfBBV43 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2019 16:56:29 -0500
-Received: by mail-pl1-f194.google.com with SMTP id gn14so5004762plb.10
-        for <linux-iio@vger.kernel.org>; Sat, 02 Feb 2019 13:56:29 -0800 (PST)
+        id S1726842AbfBBXMb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Feb 2019 18:12:31 -0500
+Received: from mail-oi1-f194.google.com ([209.85.167.194]:39176 "EHLO
+        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726721AbfBBXMb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Feb 2019 18:12:31 -0500
+Received: by mail-oi1-f194.google.com with SMTP id i6so8803347oia.6;
+        Sat, 02 Feb 2019 15:12:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=martingkelly-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=Tvvv9GlYcmAwl+5pZu2U15t6n8F1a8a+vsfgMpLluds=;
-        b=MCwFf3RL0fODvpFf640WCnJ1qbtDISc6Jpdw/nHlmBs6aPbhq5021rDUjZZGctI/uj
-         Hwgs69O2JbK2Es4XE7mnJvC6gv7CZVywGjL2BPDx+XR2OW856UHFcVnNuwGiHMlgJuu1
-         j2ugVxxG5wVUK5CK4Tw71DJfXv4Ylq+jN+drYFb3lVF0q3iWUGcYA0bBP2qmoVeWNsN+
-         o95gtagOvdg8kW8AvJ++5NNfrwlM4E0qgHWclsn4VuGzwoMdtKg/c9S1xFQfzvSr4KeA
-         U4qmMt9jCI3k8K+i22AkJV2+u67zuPh9ki+aU5EZN/Xgd57F2I51WHhz4uW6V3j9O4An
-         gpQw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TGLmOhUeZMMRoWEXwLL073QQJcxbGqVF7NfXRB5nfdU=;
+        b=hYSpptCUav5OYGuSXSWvIffjm1fE/8O2QPTJIxdELzx6hEyC3XBS6imq+v6BhK8By7
+         NyQwoGpjkR43uGEle5MbPiT2XDBne5r4eNYJCkkb5JIzQAvGljYvDD/CZ0ClKj7sZtFZ
+         oFHWQEoRqy3RL/mboPxC2B+LdEaPW+gx3AsEj1u6BX4RUE+BzbR+jO3lZyZPAMG5dUq2
+         5tln1bA/eoUL1Aml2Yb8qmmE0VJJv7iUHydU4+2i+idw9d1nhBFB3+SftrwGGMKNoJHi
+         1i1/df5eUXksjD2nrAfM/i8Z7KqlMhK+cVkHYYRBeO97LADD4OQr63yyWOpTNRF/qGIg
+         J8Jg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=Tvvv9GlYcmAwl+5pZu2U15t6n8F1a8a+vsfgMpLluds=;
-        b=V9QqHylSrJpcC9qDVaIe6eJI+6CVTb+X2CYR5AJ/kOS96OvhGEBmxMSYndtla8uXbk
-         lVtYS9igDnWbHVcfQ/Jvcmtp/amxNKET5/5SUFYHNmqkd9mN3jLwa3mLsyGUQDSsJS0j
-         AU1YnY1Faw0z+sxSkAluCNRdZPKH+2PZ9XsDbSXo51pfvbUIttN2ZWH1kXG6BULfZsza
-         KoPWhgmey2sUy4yoxlAI4SsoVhd5ijvDWxqFNH2y9iCSuC/jPuA2CfZd609zEKPrwfxA
-         6jeSmAENEJmZYVH9TVEFBUJkQF7sdwtOBvebUfGYURckQySYOGPWM4VtlqE0JzECZQ8f
-         8DOQ==
-X-Gm-Message-State: AJcUukfHdKsajXIA7ATCVkK3+xZYQNIMyjsf8zGxlDFK1JwFa+4OwUbz
-        n40wef0FDQJeqDsXgnQbU/jQ4bnyufw=
-X-Google-Smtp-Source: ALg8bN4Gy3ytSVtk3g05+Dh5MeDkmVqdloWWfSwGrmjAjB9atbVH/d5bNPcChIcDEwkx+C+oOUFQVA==
-X-Received: by 2002:a17:902:8607:: with SMTP id f7mr44157059plo.123.1549144588314;
-        Sat, 02 Feb 2019 13:56:28 -0800 (PST)
-Received: from cascade.Home (174-21-177-9.tukw.qwest.net. [174.21.177.9])
-        by smtp.gmail.com with ESMTPSA id z127sm20082025pfb.80.2019.02.02.13.56.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 02 Feb 2019 13:56:27 -0800 (PST)
-From:   Martin Kelly <martin@martingkelly.com>
-X-Google-Original-From: Martin Kelly <martin@martingkelly.com
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TGLmOhUeZMMRoWEXwLL073QQJcxbGqVF7NfXRB5nfdU=;
+        b=INTrU0zlG1T5tlAsYBLZfX5641sP6nf5u735EoLS+ZI2eUCTfJFU5QQuc61tgJ650o
+         rEtQBl9Kr9eVS21XkjAXTve+qUGvBTAVSzz+KBezcEg/KNU9bBWJueIlr6oiuN6Yl5N2
+         oE9uAkn5DHRJNfMPmQ9OC7PzQKgTE3rTgmsIZXX5DQZEctI+2Jao+kV+awE1ijrC6rEl
+         72Gxa+Dgx+5ZTLVrKF4WgT7lXJ9xr+LgIOvEw0B6SZlGY3FaTzwT5kfL9OQIfXfFGrBw
+         7daM5BOzyzdx2/q8KWhvKPYu7qbqQzD7VwFwFBLsDNvjs+drfZ4Pd+JgPyvqjDTJRgke
+         IIeA==
+X-Gm-Message-State: AHQUAuYLpe/nkhzkgDQTusAbgPmYlUb+XQIPrsQ+IjfQrCAjZC5uZ049
+        GZ/Qx2zUQtWPPgyCTcVS51Zskxq7Yry2jyOYTe0=
+X-Google-Smtp-Source: AHgI3IbGJG08HmeAgSOCBLIPEXhWunxSA5oZuIMkJCgMl/MEWFMuMx0y+AsM2JCB0vMLjW0BPdPyxvumK1ZeVzmi3Qo=
+X-Received: by 2002:a05:6808:296:: with SMTP id z22mr23249758oic.67.1549149150559;
+ Sat, 02 Feb 2019 15:12:30 -0800 (PST)
+MIME-Version: 1.0
+References: <20190202215601.20275-1-martin@martingkelly.com> <20190202215601.20275-7-martin@martingkelly.com>
+In-Reply-To: <20190202215601.20275-7-martin@martingkelly.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Sat, 2 Feb 2019 21:12:22 -0200
+Message-ID: <CAOMZO5DsbEhdW1dhcWxig7b5VB7qnkWtbU-SqY5cGJp2Ld0nuA@mail.gmail.com>
+Subject: Re: [PATCH v4 6/6] iio:bmi160: use if (ret) instead of if (ret < 0)
+To:     Martin Kelly <martin@martingkelly.com>
+Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
         Daniel Baluta <daniel.baluta@gmail.com>,
-        devicetree@vger.kernel.org, Martin Kelly <martin@martingkelly.com>
-Subject: [PATCH v4 6/6] iio:bmi160: use if (ret) instead of if (ret < 0)
-Date:   Sat,  2 Feb 2019 13:56:01 -0800
-Message-Id: <20190202215601.20275-7-martin@martingkelly.com>
-X-Mailer: git-send-email 2.11.0
-In-Reply-To: <20190202215601.20275-1-martin@martingkelly.com>
-References: <20190202215601.20275-1-martin@martingkelly.com>
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Martin Kelly <martin@martingkelly.com>
+On Sat, Feb 2, 2019 at 7:59 PM Martin Kelly <martin@martingkelly.com> wrote:
+>
+> From: Martin Kelly <martin@martingkelly.com>
+>
+> We are using "if (ret < 0)" in many places in which the function returns 0
+> on success. Use "if (ret)" instead for better clarity and correctness.
 
-We are using "if (ret < 0)" in many places in which the function returns 0
-on success. Use "if (ret)" instead for better clarity and correctness.
-
-Signed-off-by: Martin Kelly <martin@martingkelly.com>
----
- drivers/iio/imu/bmi160/bmi160_core.c | 40 ++++++++++++++++--------------------
- 1 file changed, 18 insertions(+), 22 deletions(-)
-
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index f3c5b86a281e..6af65d6f1d28 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -299,7 +299,7 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
- 		cmd = bmi160_regs[t].pmu_cmd_suspend;
- 
- 	ret = regmap_write(data->regmap, BMI160_REG_CMD, cmd);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	usleep_range(bmi160_pmu_time[t], bmi160_pmu_time[t] + 1000);
-@@ -331,7 +331,7 @@ int bmi160_get_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
- 	int i, ret, val;
- 
- 	ret = regmap_read(data->regmap, bmi160_regs[t].range, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	for (i = 0; i < bmi160_scale_table[t].num; i++)
-@@ -354,7 +354,7 @@ static int bmi160_get_data(struct bmi160_data *data, int chan_type,
- 	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(sample);
- 
- 	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(sample));
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	*val = sign_extend32(le16_to_cpu(sample), 15);
-@@ -388,7 +388,7 @@ static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
- 	int i, val, ret;
- 
- 	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	val &= bmi160_regs[t].config_odr_mask;
-@@ -420,7 +420,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
- 			 indio_dev->masklength) {
- 		ret = regmap_bulk_read(data->regmap, base + i * sizeof(sample),
- 				       &sample, sizeof(sample));
--		if (ret < 0)
-+		if (ret)
- 			goto done;
- 		buf[j++] = sample;
- 	}
-@@ -441,18 +441,18 @@ static int bmi160_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		ret = bmi160_get_data(data, chan->type, chan->channel2, val);
--		if (ret < 0)
-+		if (ret)
- 			return ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 0;
- 		ret = bmi160_get_scale(data,
- 				       bmi160_to_sensor(chan->type), val2);
--		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-+		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		ret = bmi160_get_odr(data, bmi160_to_sensor(chan->type),
- 				     val, val2);
--		return ret < 0 ? ret : IIO_VAL_INT_PLUS_MICRO;
-+		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -710,7 +710,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	struct device *dev = regmap_get_device(data->regmap);
- 
- 	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
-@@ -721,12 +721,12 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	 */
- 	if (use_spi) {
- 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
--		if (ret < 0)
-+		if (ret)
- 			return ret;
- 	}
- 
- 	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
--	if (ret < 0) {
-+	if (ret) {
- 		dev_err(dev, "Error reading chip id\n");
- 		return ret;
- 	}
-@@ -737,11 +737,11 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	}
- 
- 	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	ret = bmi160_set_mode(data, BMI160_GYRO, true);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return 0;
-@@ -774,7 +774,7 @@ int bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type)
- 	ret = devm_request_irq(&indio_dev->dev, irq,
- 			       &iio_trigger_generic_data_rdy_poll,
- 			       irq_type, "bmi160", data->trig);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	data->trig->dev.parent = regmap_get_device(data->regmap);
-@@ -816,11 +816,11 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 	data->regmap = regmap;
- 
- 	ret = bmi160_chip_init(data, use_spi);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	ret = devm_add_action_or_reset(dev, bmi160_chip_uninit, data);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	if (!name && ACPI_HANDLE(dev))
-@@ -836,7 +836,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      iio_pollfunc_store_time,
- 					      bmi160_trigger_handler, NULL);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	irq = bmi160_get_irq(dev->of_node, &int_pin);
-@@ -849,11 +849,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 		dev_info(&indio_dev->dev, "Not setting up IRQ trigger\n");
- 	}
- 
--	ret = devm_iio_device_register(dev, indio_dev);
--	if (ret < 0)
--		return ret;
--
--	return 0;
-+	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_GPL(bmi160_core_probe);
- 
--- 
-2.11.0
-
+What's wrong with "if (ret < 0)" ?
