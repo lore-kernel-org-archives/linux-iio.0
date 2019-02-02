@@ -6,48 +6,51 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 35728C282D7
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 16:00:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E634FC282D7
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:05:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E6BCD2085A
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 16:00:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B65AD20869
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 17:05:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549123201;
-	bh=jSbJ7e8o0yzmEsmWv0uq3QXGQHWEPq1B/hIbjgACE30=;
+	s=default; t=1549127155;
+	bh=ltdsQ97rX+B1cAZdXPDtI7ROMUaekFX/HBtjwDFyJUk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=lwLO+BsM4HspwadOwSRHbNXUeQo+e43jRl4EnFzzLtFI9Couh81wmYrrBoRVOPfzF
-	 1FUuMf4gIQItBabYudbciLmotbLxn3wswwi3d/4Zh+M/xhnuY3L1rgPtWmbcxrPRJN
-	 tXNFfeY81Y1/ds5BTPtztBtAIpqe3ti+6SZwBnDA=
+	b=lYCGnOMTQrUjR7v0nzhI3IVlpJ1AEXGKnMuCoLyfbXzBujmisLVv/dAwR6sWoI47N
+	 PWhkiI9mADYfdPwVz0AIAilsQvEAxCUZ25HZXijwJdf3JShmcKXT5iB9phRNm/L6Ej
+	 a0klLw4RsIbJcif0Wsg02ly92l+J/NXrhKZVP8EQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727843AbfBBQAA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Feb 2019 11:00:00 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37316 "EHLO mail.kernel.org"
+        id S1726528AbfBBRFz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Feb 2019 12:05:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51764 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727800AbfBBQAA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 2 Feb 2019 11:00:00 -0500
+        id S1725828AbfBBRFy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Feb 2019 12:05:54 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3023220857;
-        Sat,  2 Feb 2019 15:59:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2923420856;
+        Sat,  2 Feb 2019 17:05:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549123198;
-        bh=jSbJ7e8o0yzmEsmWv0uq3QXGQHWEPq1B/hIbjgACE30=;
+        s=default; t=1549127153;
+        bh=ltdsQ97rX+B1cAZdXPDtI7ROMUaekFX/HBtjwDFyJUk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=RMgz0tG1zz5rxNDMCcl1MSQNP27XJHiIBr4vI6LlJJmNZ/hjtFsRNM3Iw7CTjyFIr
-         fWsiGwwDLT5Pj0ROrUEJBNpfRCSR34iIBMXCsCv7NjYJwbjK6I7a9j8GYZLJarFw2S
-         G/tVsUZSTQtu0foOoqDmU3IkBaMNHyeMpy3pT2vw=
-Date:   Sat, 2 Feb 2019 15:59:53 +0000
+        b=TD66Z1cXjxn+NQI5OEPfsBVDiLbSRxn1Uow9XICQtLuL+i3hFFgnTjs2vD/u1Uobq
+         7g48FMQ80VV3/PsLGoVMOQMKrZFy0uQMaFel0KYPM0lGv0xwQDIaZpMdbbo/8xuDxG
+         WQwtUVL/2FN7+rPM7uA/A+FuC83L0ZkjIzZ4V6po=
+Date:   Sat, 2 Feb 2019 17:05:47 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stefan Popa <stefan.popa@analog.com>
-Cc:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] drivers: iio: Fix wrong license for ADI drivers
-Message-ID: <20190202155953.2b015bd8@archlinux>
-In-Reply-To: <1549037072-12770-1-git-send-email-stefan.popa@analog.com>
-References: <1549037072-12770-1-git-send-email-stefan.popa@analog.com>
+To:     Beniamin Bia <biabeniamin@outlook.com>
+Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
+        Beniamin Bia <biabeniamin@gmail.com>,
+        Beniamin Bia <beniamin.bia@analog.com>
+Subject: Re: [PATCH v2 1/2] staging: iio: frequency: ad9833: Get frequency
+ value statically
+Message-ID: <20190202170547.586078d7@archlinux>
+In-Reply-To: <20190201150138.31481-1-biabeniamin@outlook.com>
+References: <20190201150138.31481-1-biabeniamin@outlook.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,178 +60,133 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 1 Feb 2019 18:04:32 +0200
-Stefan Popa <stefan.popa@analog.com> wrote:
+On Fri, 1 Feb 2019 17:01:37 +0200
+Beniamin Bia <biabeniamin@outlook.com> wrote:
 
-> Analog Devices drivers are typically GPL v2 only. This patch fixes the
-> inconsistencies between the module license and SPDX.
+> From: Beniamin Bia <biabeniamin@gmail.com>
 > 
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Hi Stefan,
+> The values from platform data were replaced by statically values.
+> This was just a intermediate step of taking this driver out of staging and
+> load data from device tree.
+> 
+> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-This is mostly fine where it is making sure things are consistent.
-However, in some cases they were consistent and said gpl v2+.
-We are on dubious legal grounds no stating that wasn't the intent
-and would need to check closely for any potential additional copyright
-holders etc.
-
-So, I'd much rather we just fixed the ones that were clearly
-inconsistent and left the ones that were stated as gpl v2+
-alone.
-
-Sorry to be fussy about this, but it's a legal mine field
-we are definitely best to avoid.
+Thanks,
 
 Jonathan
-
 > ---
->  drivers/iio/accel/adxl372.c     | 4 ++--
->  drivers/iio/accel/adxl372.h     | 2 +-
->  drivers/iio/accel/adxl372_i2c.c | 4 ++--
->  drivers/iio/accel/adxl372_spi.c | 4 ++--
->  drivers/iio/adc/ad7124.c        | 4 ++--
->  drivers/iio/dac/ad5686-spi.c    | 2 +-
->  drivers/iio/dac/ad5686.c        | 2 +-
->  drivers/iio/dac/ad5686.h        | 2 +-
->  drivers/iio/dac/ad5696-i2c.c    | 2 +-
->  drivers/iio/dac/ad5758.c        | 2 +-
->  10 files changed, 14 insertions(+), 14 deletions(-)
+> Changes in v2:
+>         - The platform data structure was removed and the values are
+>           written directly
+>  drivers/staging/iio/frequency/ad9834.c | 21 +++++++------------
+>  drivers/staging/iio/frequency/ad9834.h | 28 --------------------------
+>  2 files changed, 7 insertions(+), 42 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-> index 3b84cb2..c735b4c 100644
-> --- a/drivers/iio/accel/adxl372.c
-> +++ b/drivers/iio/accel/adxl372.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * ADXL372 3-Axis Digital Accelerometer core driver
->   *
-> @@ -972,4 +972,4 @@ EXPORT_SYMBOL_GPL(adxl372_probe);
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+> index 995acdd7c942..f4f5eaa15e30 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -391,16 +391,11 @@ static const struct iio_info ad9833_info = {
 >  
->  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
->  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer driver");
-> -MODULE_LICENSE("GPL");
-> +MODULE_LICENSE("GPL v2");
-
-I would leave this alone.
-
-> diff --git a/drivers/iio/accel/adxl372.h b/drivers/iio/accel/adxl372.h
-> index 80a0aa9..967fddd 100644
-> --- a/drivers/iio/accel/adxl372.h
-> +++ b/drivers/iio/accel/adxl372.h
-> @@ -1,4 +1,4 @@
-> -/* SPDX-License-Identifier: GPL-2.0+ */
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  /*
->   * ADXL372 3-Axis Digital Accelerometer
->   *
-> diff --git a/drivers/iio/accel/adxl372_i2c.c b/drivers/iio/accel/adxl372_i2c.c
-> index e1affe4..f242fb1b 100644
-> --- a/drivers/iio/accel/adxl372_i2c.c
-> +++ b/drivers/iio/accel/adxl372_i2c.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * ADXL372 3-Axis Digital Accelerometer I2C driver
->   *
-> @@ -58,4 +58,4 @@ module_i2c_driver(adxl372_i2c_driver);
+>  static int ad9834_probe(struct spi_device *spi)
+>  {
+> -	struct ad9834_platform_data *pdata = dev_get_platdata(&spi->dev);
+>  	struct ad9834_state *st;
+>  	struct iio_dev *indio_dev;
+>  	struct regulator *reg;
+>  	int ret;
 >  
->  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
->  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer I2C driver");
-> -MODULE_LICENSE("GPL");
-> +MODULE_LICENSE("GPL v2");
-And this one...
-
-> diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
-> index e14e655..d486d0b 100644
-> --- a/drivers/iio/accel/adxl372_spi.c
-> +++ b/drivers/iio/accel/adxl372_spi.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * ADXL372 3-Axis Digital Accelerometer SPI driver
->   *
-> @@ -49,4 +49,4 @@ module_spi_driver(adxl372_spi_driver);
+> -	if (!pdata) {
+> -		dev_dbg(&spi->dev, "no platform data?\n");
+> -		return -ENODEV;
+> -	}
 >  
->  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
->  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer SPI driver");
-> -MODULE_LICENSE("GPL");
-> +MODULE_LICENSE("GPL v2");
-And this one.
-> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-> index 7d5e531..9dcbfbc 100644
-> --- a/drivers/iio/adc/ad7124.c
-> +++ b/drivers/iio/adc/ad7124.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * AD7124 SPI ADC driver
->   *
-> @@ -681,4 +681,4 @@ module_spi_driver(ad71124_driver);
+>  	reg = devm_regulator_get(&spi->dev, "avdd");
+>  	if (IS_ERR(reg))
+> @@ -420,7 +415,7 @@ static int ad9834_probe(struct spi_device *spi)
+>  	spi_set_drvdata(spi, indio_dev);
+>  	st = iio_priv(indio_dev);
+>  	mutex_init(&st->lock);
+> -	st->mclk = pdata->mclk;
+> +	st->mclk = 25000000;
+>  	st->spi = spi;
+>  	st->devid = spi_get_device_id(spi)->driver_data;
+>  	st->reg = reg;
+> @@ -456,11 +451,9 @@ static int ad9834_probe(struct spi_device *spi)
+>  	spi_message_add_tail(&st->freq_xfer[1], &st->freq_msg);
 >  
->  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
->  MODULE_DESCRIPTION("Analog Devices AD7124 SPI driver");
-> -MODULE_LICENSE("GPL");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-> index 4d857c8..0188ded 100644
-> --- a/drivers/iio/dac/ad5686-spi.c
-> +++ b/drivers/iio/dac/ad5686-spi.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
->   * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
-> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-> index 6dd2759..e06b29c 100644
-> --- a/drivers/iio/dac/ad5686.c
-> +++ b/drivers/iio/dac/ad5686.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * AD5686R, AD5685R, AD5684R Digital to analog converters  driver
->   *
-
-This is one of the ones that is ambiguous ones that I suggested
-we clean up.  As it was marked with two disagreeing statements,
-I would think we are probably fine saying it wasn't clear and
-clarifying the license.
-
-
-> diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-> index 4c3e171..70a7799 100644
-> --- a/drivers/iio/dac/ad5686.h
-> +++ b/drivers/iio/dac/ad5686.h
-> @@ -1,4 +1,4 @@
-> -/* SPDX-License-Identifier: GPL-2.0+ */
-> +/* SPDX-License-Identifier: GPL-2.0 */
->  /*
->   * This file is part of AD5686 DAC driver
->   *
-> diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-> index 7350d98..ccf794c 100644
-> --- a/drivers/iio/dac/ad5696-i2c.c
-> +++ b/drivers/iio/dac/ad5696-i2c.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * AD5671R, AD5675R, AD5691R, AD5692R, AD5693, AD5693R,
->   * AD5694, AD5694R, AD5695R, AD5696, AD5696R
-> diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
-> index ef41f12..2bdf1b0 100644
-> --- a/drivers/iio/dac/ad5758.c
-> +++ b/drivers/iio/dac/ad5758.c
-> @@ -1,4 +1,4 @@
-> -// SPDX-License-Identifier: GPL-2.0+
-> +// SPDX-License-Identifier: GPL-2.0
->  /*
->   * AD5758 Digital to analog converters driver
->   *
+>  	st->control = AD9834_B28 | AD9834_RESET;
+> +	st->control |= AD9834_DIV2;
+>  
+> -	if (!pdata->en_div2)
+> -		st->control |= AD9834_DIV2;
+> -
+> -	if (!pdata->en_signbit_msb_out && (st->devid == ID_AD9834))
+> +	if (st->devid == ID_AD9834)
+>  		st->control |= AD9834_SIGN_PIB;
+>  
+>  	st->data = cpu_to_be16(AD9834_REG_CMD | st->control);
+> @@ -470,19 +463,19 @@ static int ad9834_probe(struct spi_device *spi)
+>  		goto error_disable_reg;
+>  	}
+>  
+> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ0, pdata->freq0);
+> +	ret = ad9834_write_frequency(st, AD9834_REG_FREQ0, 1000000);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ1, pdata->freq1);
+> +	ret = ad9834_write_frequency(st, AD9834_REG_FREQ1, 5000000);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	ret = ad9834_write_phase(st, AD9834_REG_PHASE0, pdata->phase0);
+> +	ret = ad9834_write_phase(st, AD9834_REG_PHASE0, 512);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> -	ret = ad9834_write_phase(st, AD9834_REG_PHASE1, pdata->phase1);
+> +	ret = ad9834_write_phase(st, AD9834_REG_PHASE1, 1024);
+>  	if (ret)
+>  		goto error_disable_reg;
+>  
+> diff --git a/drivers/staging/iio/frequency/ad9834.h b/drivers/staging/iio/frequency/ad9834.h
+> index ae620f38eb49..da7e83ceedad 100644
+> --- a/drivers/staging/iio/frequency/ad9834.h
+> +++ b/drivers/staging/iio/frequency/ad9834.h
+> @@ -8,32 +8,4 @@
+>  #ifndef IIO_DDS_AD9834_H_
+>  #define IIO_DDS_AD9834_H_
+>  
+> -/*
+> - * TODO: struct ad7887_platform_data needs to go into include/linux/iio
+> - */
+> -
+> -/**
+> - * struct ad9834_platform_data - platform specific information
+> - * @mclk:		master clock in Hz
+> - * @freq0:		power up freq0 tuning word in Hz
+> - * @freq1:		power up freq1 tuning word in Hz
+> - * @phase0:		power up phase0 value [0..4095] correlates with 0..2PI
+> - * @phase1:		power up phase1 value [0..4095] correlates with 0..2PI
+> - * @en_div2:		digital output/2 is passed to the SIGN BIT OUT pin
+> - * @en_signbit_msb_out:	the MSB (or MSB/2) of the DAC data is connected to the
+> - *			SIGN BIT OUT pin. en_div2 controls whether it is the MSB
+> - *			or MSB/2 that is output. if en_signbit_msb_out=false,
+> - *			the on-board comparator is connected to SIGN BIT OUT
+> - */
+> -
+> -struct ad9834_platform_data {
+> -	unsigned int		mclk;
+> -	unsigned int		freq0;
+> -	unsigned int		freq1;
+> -	unsigned short		phase0;
+> -	unsigned short		phase1;
+> -	bool			en_div2;
+> -	bool			en_signbit_msb_out;
+> -};
+> -
+>  #endif /* IIO_DDS_AD9834_H_ */
 
