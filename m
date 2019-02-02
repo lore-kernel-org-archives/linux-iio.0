@@ -4,53 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9DFC282D7
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 15:54:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35728C282D7
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 16:00:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0072820869
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 15:54:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6BCD2085A
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 16:00:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549122857;
-	bh=M5S+D8tyHjab/TFZJYnTpRhqk8vxh0Dt4uIOYbV0eo8=;
+	s=default; t=1549123201;
+	bh=jSbJ7e8o0yzmEsmWv0uq3QXGQHWEPq1B/hIbjgACE30=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=2Lmuv24RvGlI4DJLERhFkTE268wh0UJgErZEpDnFc89GMAubz7niUXw3km2NggqJr
-	 wpK5dqmdCz9nWUl36qrLgWog0MtT5YytVveyZXcoEFZhXP9/pVZjqgacCDQ28811Xo
-	 H8Ts1b8Zq5OY7DaXnkHCUeVHInHg645h0DBJWrA4=
+	b=lwLO+BsM4HspwadOwSRHbNXUeQo+e43jRl4EnFzzLtFI9Couh81wmYrrBoRVOPfzF
+	 1FUuMf4gIQItBabYudbciLmotbLxn3wswwi3d/4Zh+M/xhnuY3L1rgPtWmbcxrPRJN
+	 tXNFfeY81Y1/ds5BTPtztBtAIpqe3ti+6SZwBnDA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728103AbfBBPyL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Feb 2019 10:54:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35070 "EHLO mail.kernel.org"
+        id S1727843AbfBBQAA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Feb 2019 11:00:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728063AbfBBPyL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 2 Feb 2019 10:54:11 -0500
+        id S1727800AbfBBQAA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Feb 2019 11:00:00 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9CFF205C9;
-        Sat,  2 Feb 2019 15:54:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3023220857;
+        Sat,  2 Feb 2019 15:59:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549122850;
-        bh=M5S+D8tyHjab/TFZJYnTpRhqk8vxh0Dt4uIOYbV0eo8=;
+        s=default; t=1549123198;
+        bh=jSbJ7e8o0yzmEsmWv0uq3QXGQHWEPq1B/hIbjgACE30=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JzUSOGuclL7bieYNzMlEgFDwTqo8pJeACtBdO7bFJF4QQkQkzDlt0XWo6Lm27+S0T
-         oVhygkspMoPOyzWK8r6Hq0fDmFAZDLMJV+Hw0sA+RPElxpc/g6oVcJ2LNx5SZmGgOK
-         8n35nkd+LjF6jLCdDcFOmBpnwsG2/c8t8b+DekfQ=
-Date:   Sat, 2 Feb 2019 15:54:05 +0000
+        b=RMgz0tG1zz5rxNDMCcl1MSQNP27XJHiIBr4vI6LlJJmNZ/hjtFsRNM3Iw7CTjyFIr
+         fWsiGwwDLT5Pj0ROrUEJBNpfRCSR34iIBMXCsCv7NjYJwbjK6I7a9j8GYZLJarFw2S
+         G/tVsUZSTQtu0foOoqDmU3IkBaMNHyeMpy3pT2vw=
+Date:   Sat, 2 Feb 2019 15:59:53 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Robert Eshleman <bobbyeshleman@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 2/2] dt-bindings: iio: light: Add max44009
-Message-ID: <20190202155405.6c9fb5ca@archlinux>
-In-Reply-To: <b36579acc3031a28657b6f2e143e9ea4051d7c46.1548947951.git.bobbyeshleman@gmail.com>
-References: <01f62d9d67110fd2c2f34e7835973fc6874a9fe8.1548947951.git.bobbyeshleman@gmail.com>
-        <b36579acc3031a28657b6f2e143e9ea4051d7c46.1548947951.git.bobbyeshleman@gmail.com>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] drivers: iio: Fix wrong license for ADI drivers
+Message-ID: <20190202155953.2b015bd8@archlinux>
+In-Reply-To: <1549037072-12770-1-git-send-email-stefan.popa@analog.com>
+References: <1549037072-12770-1-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,74 +57,178 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 31 Jan 2019 07:49:16 -0800
-Robert Eshleman <bobbyeshleman@gmail.com> wrote:
+On Fri, 1 Feb 2019 18:04:32 +0200
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-> Adds device tree bindings for the max44009 light sensor.
+> Analog Devices drivers are typically GPL v2 only. This patch fixes the
+> inconsistencies between the module license and SPDX.
 > 
-> Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Hi Stefan,
 
-Still time for Rob to comment if he want's to, but I think
-with few tweaks as below this matches what he asked for.
+This is mostly fine where it is making sure things are consistent.
+However, in some cases they were consistent and said gpl v2+.
+We are on dubious legal grounds no stating that wasn't the intent
+and would need to check closely for any potential additional copyright
+holders etc.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+So, I'd much rather we just fixed the ones that were clearly
+inconsistent and left the ones that were stated as gpl v2+
+alone.
 
-Thanks,
+Sorry to be fussy about this, but it's a legal mine field
+we are definitely best to avoid.
 
 Jonathan
 
 > ---
-> Changes to v4:
-> - Add subsystem to subject line
-> - Change node name to be 'light-sensor' 
-> - Clean up style
+>  drivers/iio/accel/adxl372.c     | 4 ++--
+>  drivers/iio/accel/adxl372.h     | 2 +-
+>  drivers/iio/accel/adxl372_i2c.c | 4 ++--
+>  drivers/iio/accel/adxl372_spi.c | 4 ++--
+>  drivers/iio/adc/ad7124.c        | 4 ++--
+>  drivers/iio/dac/ad5686-spi.c    | 2 +-
+>  drivers/iio/dac/ad5686.c        | 2 +-
+>  drivers/iio/dac/ad5686.h        | 2 +-
+>  drivers/iio/dac/ad5696-i2c.c    | 2 +-
+>  drivers/iio/dac/ad5758.c        | 2 +-
+>  10 files changed, 14 insertions(+), 14 deletions(-)
 > 
-> Changes to v3:
-> - None
-> 
-> Changes to v2:
-> - Clean up style
-> 
->  .../bindings/iio/light/max44009.txt           | 25 +++++++++++++++++++
->  1 file changed, 25 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/max44009.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/max44009.txt b/Documentation/devicetree/bindings/iio/light/max44009.txt
-> new file mode 100644
-> index 000000000000..557297c86fba
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/max44009.txt
-> @@ -0,0 +1,25 @@
-> +* MAX44009 Ambient Light Sensor
-> +
-> +Required properties:
-> +
-> +- compatible: should be "maxim,max44009"
-> +- reg: the I2C address of the device (default is <0x4a>)
-> +
-> +Optional properties:
-> +
-> +- interrupts: interrupt mapping for GPIO IRQ. Should be configured with
-> +  IRQ_TYPE_EDGE_FALLING.
-> +
-> +Refer to interrupt-controller/interrupts.txt for generic interrupt client
-> +node bindings.
-> +
-> +Example:
-> +
-> +max44009: light-sensor@4a {
-The label is only useful if something is going to cross reference it.
-Can't see that happening so dropped it. Above now reads.
+> diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+> index 3b84cb2..c735b4c 100644
+> --- a/drivers/iio/accel/adxl372.c
+> +++ b/drivers/iio/accel/adxl372.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * ADXL372 3-Axis Digital Accelerometer core driver
+>   *
+> @@ -972,4 +972,4 @@ EXPORT_SYMBOL_GPL(adxl372_probe);
+>  
+>  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer driver");
+> -MODULE_LICENSE("GPL");
+> +MODULE_LICENSE("GPL v2");
 
-light-sensor@4a {
+I would leave this alone.
+
+> diff --git a/drivers/iio/accel/adxl372.h b/drivers/iio/accel/adxl372.h
+> index 80a0aa9..967fddd 100644
+> --- a/drivers/iio/accel/adxl372.h
+> +++ b/drivers/iio/accel/adxl372.h
+> @@ -1,4 +1,4 @@
+> -/* SPDX-License-Identifier: GPL-2.0+ */
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * ADXL372 3-Axis Digital Accelerometer
+>   *
+> diff --git a/drivers/iio/accel/adxl372_i2c.c b/drivers/iio/accel/adxl372_i2c.c
+> index e1affe4..f242fb1b 100644
+> --- a/drivers/iio/accel/adxl372_i2c.c
+> +++ b/drivers/iio/accel/adxl372_i2c.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * ADXL372 3-Axis Digital Accelerometer I2C driver
+>   *
+> @@ -58,4 +58,4 @@ module_i2c_driver(adxl372_i2c_driver);
+>  
+>  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer I2C driver");
+> -MODULE_LICENSE("GPL");
+> +MODULE_LICENSE("GPL v2");
+And this one...
+
+> diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
+> index e14e655..d486d0b 100644
+> --- a/drivers/iio/accel/adxl372_spi.c
+> +++ b/drivers/iio/accel/adxl372_spi.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * ADXL372 3-Axis Digital Accelerometer SPI driver
+>   *
+> @@ -49,4 +49,4 @@ module_spi_driver(adxl372_spi_driver);
+>  
+>  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices ADXL372 3-axis accelerometer SPI driver");
+> -MODULE_LICENSE("GPL");
+> +MODULE_LICENSE("GPL v2");
+And this one.
+> diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+> index 7d5e531..9dcbfbc 100644
+> --- a/drivers/iio/adc/ad7124.c
+> +++ b/drivers/iio/adc/ad7124.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD7124 SPI ADC driver
+>   *
+> @@ -681,4 +681,4 @@ module_spi_driver(ad71124_driver);
+>  
+>  MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7124 SPI driver");
+> -MODULE_LICENSE("GPL");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+> index 4d857c8..0188ded 100644
+> --- a/drivers/iio/dac/ad5686-spi.c
+> +++ b/drivers/iio/dac/ad5686-spi.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
+>   * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
+> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+> index 6dd2759..e06b29c 100644
+> --- a/drivers/iio/dac/ad5686.c
+> +++ b/drivers/iio/dac/ad5686.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5686R, AD5685R, AD5684R Digital to analog converters  driver
+>   *
+
+This is one of the ones that is ambiguous ones that I suggested
+we clean up.  As it was marked with two disagreeing statements,
+I would think we are probably fine saying it wasn't clear and
+clarifying the license.
 
 
-> +	compatible = "maxim,max44009";
-> +	reg = <0x4a>;
-> +
-> +	interrupt-parent = <&gpio1>;
-> +	interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
-> +};
-> +
-Cleaned up extra entirely blank line at end of file.
+> diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+> index 4c3e171..70a7799 100644
+> --- a/drivers/iio/dac/ad5686.h
+> +++ b/drivers/iio/dac/ad5686.h
+> @@ -1,4 +1,4 @@
+> -/* SPDX-License-Identifier: GPL-2.0+ */
+> +/* SPDX-License-Identifier: GPL-2.0 */
+>  /*
+>   * This file is part of AD5686 DAC driver
+>   *
+> diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+> index 7350d98..ccf794c 100644
+> --- a/drivers/iio/dac/ad5696-i2c.c
+> +++ b/drivers/iio/dac/ad5696-i2c.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5671R, AD5675R, AD5691R, AD5692R, AD5693, AD5693R,
+>   * AD5694, AD5694R, AD5695R, AD5696, AD5696R
+> diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
+> index ef41f12..2bdf1b0 100644
+> --- a/drivers/iio/dac/ad5758.c
+> +++ b/drivers/iio/dac/ad5758.c
+> @@ -1,4 +1,4 @@
+> -// SPDX-License-Identifier: GPL-2.0+
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5758 Digital to analog converters driver
+>   *
+
