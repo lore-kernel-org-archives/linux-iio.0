@@ -6,48 +6,48 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B8E2C282D7
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 10:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E26AC282D7
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 15:50:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B4F92146E
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 10:29:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 263522085A
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Feb 2019 15:50:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549103372;
-	bh=ALmiRPnI8cNv8VdDIEpLRN1PVLiDfCBLYBVSO3lBnOQ=;
+	s=default; t=1549122628;
+	bh=G0R41voQY6fsLcE35Hs9aFY5unwRdQPNnowjguf0doA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Pi9fRPMNxORx2OU1W+9l3j3vBclw3osWGFvOM59jhIqT0dHHPWsjQGzKju3Tu/1hz
-	 dyQytkr3+kr4Kq22Ny+r75r+Watpy1oiRAZXYr63ZsbSezI/dx69/cJKl7bk2kc+ls
-	 eqW+UAN4ZWULqHGN8cCF78BZhsfA8AuA2XPXpXtU=
+	b=HOv2hHsliTe/KWJTNQAiRJ0VnAa12MNLmyspnqh+E4n1b6bAGIB8aIqWMq/jNxWI9
+	 w7hDrcZJEf8toCTg1/gGpHVxiEwHZ+c7Rn+p8pILCeElmvgJE+BF78S+JuFyAcKT3J
+	 oKvnOywUtpE6u3i77BcUZHf6HyJqcAcljIuWiLOA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726571AbfBBK3b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Feb 2019 05:29:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53166 "EHLO mail.kernel.org"
+        id S1728016AbfBBPu1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Feb 2019 10:50:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726540AbfBBK3b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 2 Feb 2019 05:29:31 -0500
+        id S1727905AbfBBPu1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Feb 2019 10:50:27 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C3FC720870;
-        Sat,  2 Feb 2019 10:29:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 306082084A;
+        Sat,  2 Feb 2019 15:50:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549103369;
-        bh=ALmiRPnI8cNv8VdDIEpLRN1PVLiDfCBLYBVSO3lBnOQ=;
+        s=default; t=1549122625;
+        bh=G0R41voQY6fsLcE35Hs9aFY5unwRdQPNnowjguf0doA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QO23eHElpAOPK4lV69x9IzAqpUXTXeW3IfRvmFr4S4HQmFS814qiBqX/6qEZFlEuX
-         +wiLGihRy5k4ebb8cL0aJi+QdaRo1glZ1uEfa0uiTGSE8rn74FKkQde3bIfxHz2JSV
-         Briiu7CpYGUuubT7yEtLDMMhWO7DUJiIk0kHwKz0=
-Date:   Sat, 2 Feb 2019 10:29:23 +0000
+        b=KzcI/j0fn6VO/GmQyEAInAC2mqJat+NRVIBFASfsAzqPcJSwiQNFhKR1h99zFi71d
+         82SWvECKfCrQBol+7bncUH53lXxSkTbWMOhVbggFw4hqm97bIPNlnx+3G9J2ngGihu
+         BiHWTvpLkFjss7M5uv7JgTReLMAn9zdPmVa8jC54=
+Date:   Sat, 2 Feb 2019 15:50:20 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stefan Popa <stefan.popa@analog.com>
-Cc:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 1/2] iio: adc: Add AD7768-1 ADC basic support
-Message-ID: <20190202102923.181d7cc0@archlinux>
-In-Reply-To: <1548951651-28405-1-git-send-email-stefan.popa@analog.com>
-References: <1548951651-28405-1-git-send-email-stefan.popa@analog.com>
+To:     Robert Eshleman <bobbyeshleman@gmail.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 1/2] iio: light: add driver for MAX44009
+Message-ID: <20190202155020.749a3401@archlinux>
+In-Reply-To: <01f62d9d67110fd2c2f34e7835973fc6874a9fe8.1548947951.git.bobbyeshleman@gmail.com>
+References: <01f62d9d67110fd2c2f34e7835973fc6874a9fe8.1548947951.git.bobbyeshleman@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,571 +57,654 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 31 Jan 2019 18:20:51 +0200
-Stefan Popa <stefan.popa@analog.com> wrote:
+On Thu, 31 Jan 2019 07:29:01 -0800
+Robert Eshleman <bobbyeshleman@gmail.com> wrote:
 
-> The ad7768-1 is a single channel, precision 24-bit analog to digital
-> converter (ADC).
+> The MAX44009 is a low-power ambient light sensor from Maxim
+> Integrated. It differs from the MAX44000 in that it doesn't have
+> proximity sensing and that it requires far less current (1 micro-amp
+> vs 5 micro-amps). The register mapping and feature set between the
+> two are different enough to require a new driver for the MAX44009.
 > 
-> This basic patch configures the device in fast mode, with 32 kSPS and
-> leaves the default sinc5 filter.
+> Developed and tested with a BeagleBone Black and UDOO Neo (i.MX6SX)
 > 
-> Two data conversion modes are made available. When data is retrieved by
-> using the read_raw attribute, one shot single conversion mode is set.
-> The continuous conversion mode is enabled when the triggered buffer
-> mechanism is used. To assure correct data retrieval, the driver waits
-> for the interrupt triggered by the low to high transition of the DRDY
-> pin.
+> Supported features:
 > 
-> Datasheets:
-> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-1.pdf
+> * Reading lux (processed value)
 > 
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+> * Rising and falling illuminance threshold
+>   events
+> 
+> * Configuring integration time
+> 
+> https://datasheets.maximintegrated.com/en/ds/MAX44009.pdf
+> 
+> Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
 > ---
-> Changes in v2:
-> 	- Added values to all the elements of ad7768_pwrmode enum.
-> 	- Removed the ad7768_ids enum, as the driver supports only one device.
-> 	- Added a new data union which is part of the ad7768_state struct. This 
-> 	  union, now includes a d8 field.
-> 	- Used spi_write_then_read() in ad7768_spi_reg_read().
-> 	- Called spi_read() instead of spi_sync_transfer() in ad7768_trigger_handler().
-> 	- Used the devm_request_irq() instead of devm_request_threaded_irq(); called
-> 	  iio_trigger_poll() instead of iio_trigger_poll_chained().
-> Changes in v3:
-> 	- Changed module license from GPL to GPL v2
+> Changes to v4:
+> - Reformat subject line
+> - Clean up whitespace
 > 
->  MAINTAINERS                |   7 +
->  drivers/iio/adc/Kconfig    |  13 ++
->  drivers/iio/adc/Makefile   |   1 +
->  drivers/iio/adc/ad7768-1.c | 459 +++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 480 insertions(+)
->  create mode 100644 drivers/iio/adc/ad7768-1.c
+> Changes to v3:
+> - Remove unnecessary mask when setting integration time
+> - Return IRQ_NONE in IRQ handler when interrupt not from this device
+> - Fix incorrect register usage when reading lux low byte
+> - Clean up style
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index d039f66..3ba3811 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -862,6 +862,13 @@ S:	Supported
->  F:	drivers/iio/adc/ad7606.c
->  F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
+> Changes to v2:
+> - Remove unnecessary mutex locking
+> - Remove unnecessary triggered buffer support
+> - Remove unnecessary wrapper functions for smbus reads and writes
+> - Remove scale avail support
+> - Use constant scale to provide processed values instead of raw
+> - Remove IRQ_NONE return for non-shared IRQ
+> - Clean up style
+> 
+>  drivers/iio/light/Kconfig    |  10 +
+>  drivers/iio/light/Makefile   |   1 +
+>  drivers/iio/light/max44009.c | 555 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 566 insertions(+)
+>  create mode 100644 drivers/iio/light/max44009.c
+> 
+> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> index 36f458433480..5190eacfeb0a 100644
+> --- a/drivers/iio/light/Kconfig
+> +++ b/drivers/iio/light/Kconfig
+> @@ -299,6 +299,16 @@ config MAX44000
+>  	 To compile this driver as a module, choose M here:
+>  	 the module will be called max44000.
 >  
-> +ANALOG DEVICES INC AD7768-1 DRIVER
-> +M:	Stefan Popa <stefan.popa@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +W:	http://ez.analog.com/community/linux-device-drivers
-> +S:	Supported
-> +F:	drivers/iio/adc/ad7768-1.c
-> +
->  ANALOG DEVICES INC AD9389B DRIVER
->  M:	Hans Verkuil <hans.verkuil@cisco.com>
->  L:	linux-media@vger.kernel.org
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index f3cc7a3..6c19dfe 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -108,6 +108,19 @@ config AD7766
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called ad7766.
->  
-> +config AD7768_1
-> +	tristate "Analog Devices AD7768-1 ADC driver"
-> +	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGER
-> +	select IIO_TRIGGERED_BUFFER
+> +config MAX44009
+> +	tristate "MAX44009 Ambient Light Sensor"
+> +	depends on I2C
 > +	help
-> +	  Say yes here to build support for Analog Devices AD7768-1 SPI
-> +	  simultaneously sampling sigma-delta analog to digital converter (ADC).
+> +	 Say Y here if you want to build support for Maxim Integrated's
+> +	 MAX44009 ambient light sensor device.
 > +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ad7768-1.
+> +	 To compile this driver as a module, choose M here:
+> +	 the module will be called max44009.
 > +
->  config AD7791
->  	tristate "Analog Devices AD7791 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index ea50313..9d50f7b 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
->  obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
->  obj-$(CONFIG_AD7606) += ad7606.o
->  obj-$(CONFIG_AD7766) += ad7766.o
-> +obj-$(CONFIG_AD7768_1) += ad7768-1.o
->  obj-$(CONFIG_AD7791) += ad7791.o
->  obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7887) += ad7887.o
-> diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+>  config OPT3001
+>  	tristate "Texas Instruments OPT3001 Light Sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> index 286bf3975372..e40794fbb435 100644
+> --- a/drivers/iio/light/Makefile
+> +++ b/drivers/iio/light/Makefile
+> @@ -28,6 +28,7 @@ obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
+>  obj-$(CONFIG_LTR501)		+= ltr501.o
+>  obj-$(CONFIG_LV0104CS)		+= lv0104cs.o
+>  obj-$(CONFIG_MAX44000)		+= max44000.o
+> +obj-$(CONFIG_MAX44009)		+= max44009.o
+>  obj-$(CONFIG_OPT3001)		+= opt3001.o
+>  obj-$(CONFIG_PA12203001)	+= pa12203001.o
+>  obj-$(CONFIG_RPR0521)		+= rpr0521.o
+> diff --git a/drivers/iio/light/max44009.c b/drivers/iio/light/max44009.c
 > new file mode 100644
-> index 0000000..78449e9
+> index 000000000000..00ba15499638
 > --- /dev/null
-> +++ b/drivers/iio/adc/ad7768-1.c
-> @@ -0,0 +1,459 @@
+> +++ b/drivers/iio/light/max44009.c
+> @@ -0,0 +1,555 @@
 > +// SPDX-License-Identifier: GPL-2.0
 > +/*
-> + * Analog Devices AD7768-1 SPI ADC driver
+> + * max44009.c - Support for MAX44009 Ambient Light Sensor
 > + *
-> + * Copyright 2017 Analog Devices Inc.
+> + * Copyright (c) 2019 Robert Eshleman <bobbyeshleman@gmail.com>
+> + *
+> + * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX44009.pdf
+> + *
+> + * TODO: Support continuous mode and configuring from manual mode to
+> + *	 automatic mode.
+> + *
+> + * Default I2C address: 0x4a
 > + */
-> +#include <linux/bitfield.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/spi/spi.h>
 > +
-> +#include <linux/iio/buffer.h>
+> +#include <linux/init.h>
+> +#include <linux/kernel.h>
+> +#include <linux/bits.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/events.h>
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/util_macros.h>
 > +
-> +/* AD7768 registers definition */
-> +#define AD7768_REG_CHIP_TYPE		0x3
-> +#define AD7768_REG_PROD_ID_L		0x4
-> +#define AD7768_REG_PROD_ID_H		0x5
-> +#define AD7768_REG_CHIP_GRADE		0x6
-> +#define AD7768_REG_SCRATCH_PAD		0x0A
-> +#define AD7768_REG_VENDOR_L		0x0C
-> +#define AD7768_REG_VENDOR_H		0x0D
-> +#define AD7768_REG_INTERFACE_FORMAT	0x14
-> +#define AD7768_REG_POWER_CLOCK		0x15
-> +#define AD7768_REG_ANALOG		0x16
-> +#define AD7768_REG_ANALOG2		0x17
-> +#define AD7768_REG_CONVERSION		0x18
-> +#define AD7768_REG_DIGITAL_FILTER	0x19
-> +#define AD7768_REG_SINC3_DEC_RATE_MSB	0x1A
-> +#define AD7768_REG_SINC3_DEC_RATE_LSB	0x1B
-> +#define AD7768_REG_DUTY_CYCLE_RATIO	0x1C
-> +#define AD7768_REG_SYNC_RESET		0x1D
-> +#define AD7768_REG_GPIO_CONTROL		0x1E
-> +#define AD7768_REG_GPIO_WRITE		0x1F
-> +#define AD7768_REG_GPIO_READ		0x20
-> +#define AD7768_REG_OFFSET_HI		0x21
-> +#define AD7768_REG_OFFSET_MID		0x22
-> +#define AD7768_REG_OFFSET_LO		0x23
-> +#define AD7768_REG_GAIN_HI		0x24
-> +#define AD7768_REG_GAIN_MID		0x25
-> +#define AD7768_REG_GAIN_LO		0x26
-> +#define AD7768_REG_SPI_DIAG_ENABLE	0x28
-> +#define AD7768_REG_ADC_DIAG_ENABLE	0x29
-> +#define AD7768_REG_DIG_DIAG_ENABLE	0x2A
-> +#define AD7768_REG_ADC_DATA		0x2C
-> +#define AD7768_REG_MASTER_STATUS	0x2D
-> +#define AD7768_REG_SPI_DIAG_STATUS	0x2E
-> +#define AD7768_REG_ADC_DIAG_STATUS	0x2F
-> +#define AD7768_REG_DIG_DIAG_STATUS	0x30
-> +#define AD7768_REG_MCLK_COUNTER		0x31
+> +#define MAX44009_DRV_NAME "max44009"
 > +
-> +/* AD7768_REG_CONVERSION */
-> +#define AD7768_CONV_MODE_MSK		GENMASK(2, 0)
-> +#define AD7768_CONV_MODE(x)		FIELD_PREP(AD7768_CONV_MODE_MSK, x)
+> +/* Registers in datasheet order */
+> +#define MAX44009_REG_INT_STATUS 0x0
+> +#define MAX44009_REG_INT_EN 0x1
+> +#define MAX44009_REG_CFG 0x2
+> +#define MAX44009_REG_LUX_HI 0x3
+> +#define MAX44009_REG_LUX_LO 0x4
+> +#define MAX44009_REG_UPPER_THR 0x5
+> +#define MAX44009_REG_LOWER_THR 0x6
+> +#define MAX44009_REG_THR_TIMER 0x7
 > +
-> +#define AD7768_RD_FLAG_MSK(x)		(BIT(6) | ((x) & 0x3F))
-> +#define AD7768_WR_FLAG_MSK(x)		((x) & 0x3F)
+> +#define MAX44009_CFG_TIM_MASK GENMASK(2, 0)
+> +#define MAX44009_CFG_MAN_MODE_MASK BIT(6)
 > +
-> +enum ad7768_conv_mode {
-> +	AD7768_CONTINUOUS,
-> +	AD7768_ONE_SHOT,
-> +	AD7768_SINGLE,
-> +	AD7768_PERIODIC,
-> +	AD7768_STANDBY
+> +/* The maximum rising threshold for the max44009 */
+> +#define MAX44009_MAXIMUM_THRESHOLD 7520256
+> +
+> +#define MAX44009_THRESH_EXP_MASK (0xf << 4)
+> +#define MAX44009_THRESH_EXP_RSHIFT 4
+> +#define MAX44009_THRESH_MANT_LSHIFT 4
+> +#define MAX44009_THRESH_MANT_MASK 0xf
+> +
+> +#define MAX44009_UPPER_THR_MINIMUM 15
+> +
+> +/* The max44009 always scales raw readings by 0.045 and is non-configurable */
+> +#define MAX44009_SCALE_NUMERATOR 45
+> +#define MAX44009_SCALE_DENOMINATOR 1000
+> +
+> +/* The fixed-point fractional multiplier for de-scaling threshold values */
+> +#define MAX44009_FRACT_MULT 1000000
+> +
+> +static const u32 max44009_int_time_ns_array[] = {
+> +	800000000,
+> +	400000000,
+> +	200000000,
+> +	100000000,
+> +	50000000, /* Manual mode only */
+> +	25000000, /* Manual mode only */
+> +	12500000, /* Manual mode only */
+> +	6250000,  /* Manual mode only */
 > +};
 > +
-> +enum ad7768_pwrmode {
-> +	AD7768_ECO_MODE = 0,
-> +	AD7768_MED_MODE = 2,
-> +	AD7768_FAST_MODE = 3
+> +static const char max44009_int_time_str[] =
+> +	"0.8 "
+> +	"0.4 "
+> +	"0.2 "
+> +	"0.1 "
+> +	"0.05 "
+> +	"0.025 "
+> +	"0.0125 "
+> +	"0.00625";
+> +
+> +struct max44009_data {
+> +	struct i2c_client *client;
+> +	struct mutex lock;
 > +};
 > +
-> +static const struct iio_chan_spec ad7768_channels[] = {
+> +static const struct iio_event_spec max44009_event_spec[] = {
 > +	{
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +		.indexed = 1,
-> +		.channel = 0,
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.shift = 8,
-> +			.endianness = IIO_BE,
-> +		},
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_RISING,
+> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> +				 BIT(IIO_EV_INFO_ENABLE),
+> +	},
+> +	{
+> +		.type = IIO_EV_TYPE_THRESH,
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> +				 BIT(IIO_EV_INFO_ENABLE),
 > +	},
 > +};
 > +
-> +struct ad7768_state {
-> +	struct spi_device *spi;
-> +	struct regulator *vref;
-> +	struct mutex lock;
-> +	struct completion completion;
-> +	struct iio_trigger *trig;
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	union {
-> +		__be32 d32;
-> +		u8 d8[2];
-> +	} data ____cacheline_aligned;
+> +static const struct iio_chan_spec max44009_channels[] = {
+> +	{
+> +		.type = IIO_LIGHT,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+> +				      BIT(IIO_CHAN_INFO_INT_TIME),
+> +		.event_spec = max44009_event_spec,
+> +		.num_event_specs = ARRAY_SIZE(max44009_event_spec),
+> +	},
 > +};
 > +
-> +static int ad7768_spi_reg_read(struct ad7768_state *st, unsigned int addr,
-> +			       unsigned int len)
+> +static int max44009_read_int_time(struct max44009_data *data)
 > +{
-> +	unsigned int shift;
-> +	int ret;
 > +
-> +	shift = 32 - (8 * len);
-> +	st->data.d8[0] = AD7768_RD_FLAG_MSK(addr);
+> +	int ret = i2c_smbus_read_byte_data(data->client, MAX44009_REG_CFG);
 > +
-> +	ret = spi_write_then_read(st->spi, st->data.d8, 1,
-> +				  &st->data.d32, len);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	return (be32_to_cpu(st->data.d32) >> shift);
+> +	return max44009_int_time_ns_array[ret & MAX44009_CFG_TIM_MASK];
 > +}
 > +
-> +static int ad7768_spi_reg_write(struct ad7768_state *st,
-> +				unsigned int addr,
-> +				unsigned int val)
+> +static int max44009_write_int_time(struct max44009_data *data,
+> +				   int val, int val2)
 > +{
-> +	st->data.d8[0] = AD7768_WR_FLAG_MSK(addr);
-> +	st->data.d8[1] = val & 0xFF;
+> +	struct i2c_client *client = data->client;
+> +	int ret, int_time, config;
+> +	s64 ns;
 > +
-> +	return spi_write(st->spi, st->data.d8, 2);
-> +}
+> +	ns = val * NSEC_PER_SEC + val2;
+> +	int_time = find_closest_descending(
+> +			ns,
+> +			max44009_int_time_ns_array,
+> +			ARRAY_SIZE(max44009_int_time_ns_array));
 > +
-> +static int ad7768_set_mode(struct ad7768_state *st,
-> +			   enum ad7768_conv_mode mode)
-> +{
-> +	int regval;
-> +
-> +	regval = ad7768_spi_reg_read(st, AD7768_REG_CONVERSION, 1);
-> +	if (regval < 0)
-> +		return regval;
-> +
-> +	regval &= ~AD7768_CONV_MODE_MSK;
-> +	regval |= AD7768_CONV_MODE(mode);
-> +
-> +	return ad7768_spi_reg_write(st, AD7768_REG_CONVERSION, regval);
-> +}
-> +
-> +static int ad7768_scan_direct(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7768_state *st = iio_priv(indio_dev);
-> +	int readval, ret;
-> +
-> +	reinit_completion(&st->completion);
-> +
-> +	ret = ad7768_set_mode(st, AD7768_ONE_SHOT);
+> +	ret = i2c_smbus_read_byte_data(client, MAX44009_REG_CFG);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	ret = wait_for_completion_timeout(&st->completion,
-> +					  msecs_to_jiffies(1000));
-> +	if (!ret)
-> +		return -ETIMEDOUT;
+> +	config = ret;
+> +	config &= int_time;
 > +
-> +	readval = ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
-> +	if (readval < 0)
-> +		return readval;
 > +	/*
-> +	 * Any SPI configuration of the AD7768-1 can only be
-> +	 * performed in continuous conversion mode.
+> +	 * To set the integration time, the device must also be in manual
+> +	 * mode.
 > +	 */
-> +	ret = ad7768_set_mode(st, AD7768_CONTINUOUS);
-> +	if (ret < 0)
-> +		return ret;
+> +	config |= MAX44009_CFG_MAN_MODE_MASK;
 > +
-> +	return readval;
+> +	return i2c_smbus_write_byte_data(client, MAX44009_REG_CFG, config);
 > +}
 > +
-> +static int ad7768_reg_access(struct iio_dev *indio_dev,
-> +			     unsigned int reg,
-> +			     unsigned int writeval,
-> +			     unsigned int *readval)
+> +static int max44009_write_raw(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan, int val,
+> +			      int val2, long mask)
 > +{
-> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +	struct max44009_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	mutex_lock(&st->lock);
-> +	if (readval) {
-> +		ret = ad7768_spi_reg_read(st, reg, 1);
-> +		if (ret < 0)
-> +			goto err_unlock;
-> +		*readval = ret;
-> +		ret = 0;
-> +	} else {
-> +		ret = ad7768_spi_reg_write(st, reg, writeval);
+> +	if (mask == IIO_CHAN_INFO_INT_TIME && chan->type == IIO_LIGHT) {
+> +		mutex_lock(&data->lock);
+> +		ret = max44009_write_int_time(data, val, val2);
+> +		mutex_unlock(&data->lock);
+> +		return ret;
 > +	}
-> +err_unlock:
-> +	mutex_unlock(&st->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad7768_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long info)
-> +{
-> +	struct ad7768_state *st = iio_priv(indio_dev);
-> +	int scale_uv, ret;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = ad7768_scan_direct(indio_dev);
-> +		if (ret >= 0)
-> +			*val = ret;
-> +
-> +		iio_device_release_direct_mode(indio_dev);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		scale_uv = regulator_get_voltage(st->vref);
-> +		if (scale_uv < 0)
-> +			return scale_uv;
-> +
-> +		*val = (scale_uv * 2) / 1000;
-> +		*val2 = chan->scan_type.realbits;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-> +
 > +	return -EINVAL;
 > +}
 > +
-> +static const struct iio_info ad7768_info = {
-> +	.read_raw = &ad7768_read_raw,
-> +	.debugfs_reg_access = &ad7768_reg_access,
-> +};
-> +
-> +static int ad7768_setup(struct ad7768_state *st)
+> +static int max44009_write_raw_get_fmt(struct iio_dev *indio_dev,
+> +				      struct iio_chan_spec const *chan,
+> +				      long mask)
 > +{
-> +	int ret;
-> +
-> +	/*
-> +	 * Two writes to the SPI_RESET[1:0] bits are required to initiate
-> +	 * a software reset. The bits must first be set to 11, and then
-> +	 * to 10. When the sequence is detected, the reset occurs.
-> +	 * See the datasheet, page 70.
-> +	 */
-> +	ret = ad7768_spi_reg_write(st, AD7768_REG_SYNC_RESET, 0x3);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = ad7768_spi_reg_write(st, AD7768_REG_SYNC_RESET, 0x2);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Set power mode to fast */
-> +	return ad7768_spi_reg_write(st, AD7768_REG_POWER_CLOCK,
-> +				    AD7768_FAST_MODE);
+> +	return IIO_VAL_INT_PLUS_NANO;
 > +}
 > +
-> +static irqreturn_t ad7768_trigger_handler(int irq, void *p)
+> +static int max44009_lux_raw(u8 hi, u8 lo)
 > +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +	int mantissa;
+> +	int exponent;
+> +
+> +	/*
+> +	 * The mantissa consists of the low nibble of the Lux High Byte
+> +	 * and the low nibble of the Lux Low Byte.
+> +	 */
+> +	mantissa = ((hi & 0xf) << 4) | (lo & 0xf);
+> +
+> +	/* The exponent byte is just the upper nibble of the Lux High Byte */
+> +	exponent = (hi >> 4) & 0xf;
+> +
+> +	/*
+> +	 * The exponent value is base 2 to the power of the raw exponent byte.
+> +	 */
+> +	exponent = 1 << exponent;
+> +
+> +	return exponent * mantissa;
+> +}
+> +
+> +#define MAX44009_READ_LUX_XFER_LEN (4)
+> +
+> +static int max44009_read_lux_raw(struct max44009_data *data)
+> +{
+> +	int ret;
+> +	u8 hireg = MAX44009_REG_LUX_HI;
+> +	u8 loreg = MAX44009_REG_LUX_LO;
+> +	u8 lo = 0;
+> +	u8 hi = 0;
+> +
+> +	struct i2c_msg msgs[] = {
+> +		{
+> +			.addr = data->client->addr,
+> +			.flags = 0,
+> +			.len = sizeof(hireg),
+> +			.buf = &hireg,
+> +		},
+> +		{
+> +			.addr = data->client->addr,
+> +			.flags = I2C_M_RD,
+> +			.len = sizeof(hi),
+> +			.buf = &hi,
+> +		},
+> +		{
+> +			.addr = data->client->addr,
+> +			.flags = 0,
+> +			.len = sizeof(loreg),
+> +			.buf = &loreg,
+> +		},
+> +		{
+> +			.addr = data->client->addr,
+> +			.flags = I2C_M_RD,
+> +			.len = sizeof(lo),
+> +			.buf = &lo,
+> +		}
+> +	};
+> +
+> +	/*
+> +	 * Use i2c_transfer instead of smbus read because i2c_transfer
+> +	 * does NOT use a stop bit between address write and data read.
+> +	 * Using a stop bit causes disjoint upper/lower byte reads and
+> +	 * reduces accuracy.
+> +	 */
+> +	ret = i2c_transfer(data->client->adapter,
+> +			   msgs, MAX44009_READ_LUX_XFER_LEN);
+> +
+> +	if (ret != MAX44009_READ_LUX_XFER_LEN)
+> +		return -EIO;
+> +
+> +	return max44009_lux_raw(hi, lo);
+> +}
+> +
+> +static int max44009_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan, int *val,
+> +			     int *val2, long mask)
+> +{
+> +	struct max44009_data *data = iio_priv(indio_dev);
+> +	int lux_raw;
 > +	int ret;
 > +
-> +	mutex_lock(&st->lock);
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			ret = max44009_read_lux_raw(data);
+> +			if (ret < 0)
+> +				return ret;
+> +			lux_raw = ret;
 > +
-> +	ret = spi_read(st->spi, &st->data.d32, 3);
+> +			*val = lux_raw * MAX44009_SCALE_NUMERATOR;
+> +			*val2 = MAX44009_SCALE_DENOMINATOR;
+> +			return IIO_VAL_FRACTIONAL;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_INT_TIME:
+> +		switch (chan->type) {
+> +		case IIO_LIGHT:
+> +			ret = max44009_read_int_time(data);
+> +			if (ret < 0)
+> +				return ret;
+> +
+> +			*val2 = ret;
+> +			*val = 0;
+> +			return IIO_VAL_INT_PLUS_NANO;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static IIO_CONST_ATTR(illuminance_integration_time_available,
+> +		      max44009_int_time_str);
+> +
+> +static struct attribute *max44009_attributes[] = {
+> +	&iio_const_attr_illuminance_integration_time_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group max44009_attribute_group = {
+> +	.attrs = max44009_attributes,
+> +};
+> +
+> +static int max44009_threshold_byte_from_fraction(int integral, int fractional)
+> +{
+> +	int mantissa, exp;
+> +
+> +	if ((integral <= 0 && fractional <= 0) ||
+> +	     integral > MAX44009_MAXIMUM_THRESHOLD ||
+> +	     (integral == MAX44009_MAXIMUM_THRESHOLD && fractional != 0))
+> +		return -EINVAL;
+> +
+> +	/* Reverse scaling of fixed-point integral */
+> +	mantissa = integral * MAX44009_SCALE_DENOMINATOR;
+> +	mantissa /= MAX44009_SCALE_NUMERATOR;
+> +
+> +	/* Reverse scaling of fixed-point fractional */
+> +	mantissa += fractional / MAX44009_FRACT_MULT *
+> +		    (MAX44009_SCALE_DENOMINATOR / MAX44009_SCALE_NUMERATOR);
+> +
+> +	for (exp = 0; mantissa > 0xff; exp++)
+> +		mantissa >>= 1;
+> +
+> +	mantissa >>= 4;
+> +	mantissa &= 0xf;
+> +	exp <<= 4;
+> +
+> +	return exp | mantissa;
+> +}
+> +
+> +static int max44009_get_thr_reg(enum iio_event_direction dir)
+> +{
+> +	switch (dir) {
+> +	case IIO_EV_DIR_RISING:
+> +		return MAX44009_REG_UPPER_THR;
+> +	case IIO_EV_DIR_FALLING:
+> +		return MAX44009_REG_LOWER_THR;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int max44009_write_event_value(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir,
+> +				      enum iio_event_info info,
+> +				      int val, int val2)
+> +{
+> +	struct max44009_data *data = iio_priv(indio_dev);
+> +	int reg, threshold;
+> +
+> +	if (info != IIO_EV_INFO_VALUE || chan->type != IIO_LIGHT)
+> +		return -EINVAL;
+> +
+> +	threshold = max44009_threshold_byte_from_fraction(val, val2);
+> +	if (threshold < 0)
+> +		return threshold;
+> +
+> +	reg = max44009_get_thr_reg(dir);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	return i2c_smbus_write_byte_data(data->client, reg, threshold);
+> +}
+> +
+> +static int max44009_read_threshold(struct iio_dev *indio_dev,
+> +				   enum iio_event_direction dir)
+> +{
+> +	struct max44009_data *data = iio_priv(indio_dev);
+> +	int byte, reg;
+> +	int mantissa, exponent;
+> +
+> +	reg = max44009_get_thr_reg(dir);
+> +	if (reg < 0)
+> +		return reg;
+> +
+> +	byte = i2c_smbus_read_byte_data(data->client, reg);
+> +	if (byte < 0)
+> +		return byte;
+> +
+> +	mantissa = byte & MAX44009_THRESH_MANT_MASK;
+> +	mantissa <<= MAX44009_THRESH_MANT_LSHIFT;
+> +
+> +	/*
+> +	 * To get the upper threshold, always adds the minimum upper threshold
+> +	 * value to the shifted byte value (see datasheet).
+> +	 */
+> +	if (dir == IIO_EV_DIR_RISING)
+> +		mantissa += MAX44009_UPPER_THR_MINIMUM;
+> +
+> +	/*
+> +	 * Exponent is base 2 to the power of the threshold exponent byte
+> +	 * value
+> +	 */
+> +	exponent = byte & MAX44009_THRESH_EXP_MASK;
+> +	exponent >>= MAX44009_THRESH_EXP_RSHIFT;
+> +
+> +	return (1 << exponent) * mantissa;
+> +}
+> +
+> +static int max44009_read_event_value(struct iio_dev *indio_dev,
+> +				     const struct iio_chan_spec *chan,
+> +				     enum iio_event_type type,
+> +				     enum iio_event_direction dir,
+> +				     enum iio_event_info info,
+> +				     int *val, int *val2)
+> +{
+> +	int ret;
+> +	int threshold;
+> +
+> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH)
+> +		return -EINVAL;
+> +
+> +	ret = max44009_read_threshold(indio_dev, dir);
 > +	if (ret < 0)
-> +		goto err_unlock;
+> +		return ret;
+> +	threshold = ret;
 > +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &st->data.d32,
-> +					   iio_get_time_ns(indio_dev));
+> +	*val = threshold * MAX44009_SCALE_NUMERATOR;
+> +	*val2 = MAX44009_SCALE_DENOMINATOR;
 > +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +err_unlock:
-> +	mutex_unlock(&st->lock);
-> +
-> +	return IRQ_HANDLED;
+> +	return IIO_VAL_FRACTIONAL;
 > +}
 > +
-> +static irqreturn_t ad7768_interrupt(int irq, void *dev_id)
+> +static int max44009_write_event_config(struct iio_dev *indio_dev,
+> +				       const struct iio_chan_spec *chan,
+> +				       enum iio_event_type type,
+> +				       enum iio_event_direction dir,
+> +				       int state)
 > +{
-> +	struct iio_dev *indio_dev = dev_id;
-> +	struct ad7768_state *st = iio_priv(indio_dev);
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		iio_trigger_poll(st->trig);
-> +	else
-> +		complete(&st->completion);
-> +
-> +	return IRQ_HANDLED;
-> +};
-> +
-> +static int ad7768_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7768_state *st = iio_priv(indio_dev);
-> +
-> +	iio_triggered_buffer_postenable(indio_dev);
-> +	/*
-> +	 * Write a 1 to the LSB of the INTERFACE_FORMAT register to enter
-> +	 * continuous read mode. Subsequent data reads do not require an
-> +	 * initial 8-bit write to query the ADC_DATA register.
-> +	 */
-> +	return ad7768_spi_reg_write(st, AD7768_REG_INTERFACE_FORMAT, 0x01);
-> +}
-> +
-> +static int ad7768_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7768_state *st = iio_priv(indio_dev);
+> +	struct max44009_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
-> +	/*
-> +	 * To exit continuous read mode, perform a single read of the ADC_DATA
-> +	 * reg (0x2C), which allows further configuration of the device.
-> +	 */
-> +	ret = ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
+> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH)
+> +		return -EINVAL;
+> +
+> +	ret = i2c_smbus_write_byte_data(data->client,
+> +					MAX44009_REG_INT_EN, state);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	return iio_triggered_buffer_predisable(indio_dev);
+> +	/*
+> +	 * Set device to trigger interrupt immediately upon exceeding
+> +	 * the threshold limit.
+> +	 */
+> +	return i2c_smbus_write_byte_data(data->client,
+> +					 MAX44009_REG_THR_TIMER, 0);
 > +}
 > +
-> +static const struct iio_buffer_setup_ops ad7768_buffer_ops = {
-> +	.postenable = &ad7768_buffer_postenable,
-> +	.predisable = &ad7768_buffer_predisable,
-> +};
-> +
-> +static const struct iio_trigger_ops ad7768_trigger_ops = {
-> +	.validate_device = iio_trigger_validate_own_device,
-> +};
-> +
-> +static void ad7768_regulator_disable(void *data)
+> +static int max44009_read_event_config(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir)
 > +{
-> +	struct ad7768_state *st = data;
+> +	struct max44009_data *data = iio_priv(indio_dev);
 > +
-> +	regulator_disable(st->vref);
+> +	if (chan->type != IIO_LIGHT || type != IIO_EV_TYPE_THRESH)
+> +		return -EINVAL;
+> +
+> +	return i2c_smbus_read_byte_data(data->client, MAX44009_REG_INT_EN);
 > +}
 > +
-> +static int ad7768_probe(struct spi_device *spi)
+> +static const struct iio_info max44009_info = {
+> +	.read_raw = max44009_read_raw,
+> +	.write_raw = max44009_write_raw,
+> +	.write_raw_get_fmt = max44009_write_raw_get_fmt,
+> +	.read_event_value = max44009_read_event_value,
+> +	.read_event_config = max44009_read_event_config,
+> +	.write_event_value = max44009_write_event_value,
+> +	.write_event_config = max44009_write_event_config,
+> +	.attrs = &max44009_attribute_group,
+> +};
+> +
+> +static irqreturn_t max44009_threaded_irq_handler(int irq, void *p)
 > +{
-> +	struct ad7768_state *st;
+> +	struct iio_dev *indio_dev = p;
+> +	struct max44009_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = i2c_smbus_read_byte_data(data->client, MAX44009_REG_INT_STATUS);
+> +	if (ret) {
+> +		iio_push_event(indio_dev,
+> +			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
+> +						    IIO_EV_TYPE_THRESH,
+> +						    IIO_EV_DIR_EITHER),
+> +			       iio_get_time_ns(indio_dev));
+> +
+> +		return IRQ_HANDLED;
+> +	}
+> +
+> +	return IRQ_NONE;
+> +}
+> +
+> +static int max44009_probe(struct i2c_client *client,
+> +			  const struct i2c_device_id *id)
+> +{
+> +	struct max44009_data *data;
 > +	struct iio_dev *indio_dev;
 > +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	st = iio_priv(indio_dev);
-> +	st->spi = spi;
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &max44009_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->name = MAX44009_DRV_NAME;
+> +	indio_dev->channels = max44009_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(max44009_channels);
+> +	mutex_init(&data->lock);
 > +
-> +	st->vref = devm_regulator_get(&spi->dev, "vref");
-> +	if (IS_ERR(st->vref))
-> +		return PTR_ERR(st->vref);
-> +
-> +	ret = regulator_enable(st->vref);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable specified vref supply\n");
+> +	/* Clear any stale interrupt bit */
+> +	ret = i2c_smbus_read_byte_data(client, MAX44009_REG_CFG);
+> +	if (ret < 0)
 > +		return ret;
+> +
+> +	if (client->irq > 0) {
+> +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> +						NULL,
+> +						max44009_threaded_irq_handler,
+> +						IRQF_TRIGGER_FALLING |
+> +						IRQF_ONESHOT | IRQF_SHARED,
+> +						"max44009_event",
+> +						indio_dev);
+> +		if (ret < 0)
+> +			return ret;
 > +	}
 > +
-> +	ret = devm_add_action_or_reset(&spi->dev, ad7768_regulator_disable, st);
-> +	if (ret)
-> +		return ret;
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	mutex_init(&st->lock);
-> +
-> +	indio_dev->channels = ad7768_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ad7768_channels);
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->info = &ad7768_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
-> +
-> +	ret = ad7768_setup(st);
-> +	if (ret < 0) {
-> +		dev_err(&spi->dev, "AD7768 setup failed\n");
-> +		return ret;
-> +	}
-> +
-> +	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
-> +					  indio_dev->name, indio_dev->id);
-> +	if (!st->trig)
-> +		return -ENOMEM;
-> +
-> +	st->trig->ops = &ad7768_trigger_ops;
-> +	st->trig->dev.parent = &spi->dev;
-> +	iio_trigger_set_drvdata(st->trig, indio_dev);
-> +	ret = devm_iio_trigger_register(&spi->dev, st->trig);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->trig = iio_trigger_get(st->trig);
-> +
-> +	init_completion(&st->completion);
-> +
-> +	ret = devm_request_irq(&spi->dev, spi->irq,
-> +			       &ad7768_interrupt,
-> +			       IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-> +			       indio_dev->name, indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-> +					      &iio_pollfunc_store_time,
-> +					      &ad7768_trigger_handler,
-> +					      &ad7768_buffer_ops);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&spi->dev, indio_dev);
+> +	return devm_iio_device_register(&client->dev, indio_dev);
 > +}
 > +
-> +static const struct spi_device_id ad7768_id_table[] = {
-> +	{ "ad7768-1", 0 },
-> +	{}
+> +static const struct i2c_device_id max44009_id[] = {
+> +	{ "max44009", 0 },
+> +	{ }
 > +};
-> +MODULE_DEVICE_TABLE(spi, ad7768_id_table);
+> +MODULE_DEVICE_TABLE(i2c, max44009_id);
 > +
-> +static const struct of_device_id ad7768_of_match[] = {
-> +	{ .compatible = "adi,ad7768-1" },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, ad7768_of_match);
-> +
-> +static struct spi_driver ad7768_driver = {
+> +static struct i2c_driver max44009_driver = {
 > +	.driver = {
-> +		.name = "ad7768-1",
-> +		.of_match_table = ad7768_of_match,
+> +		.name = MAX44009_DRV_NAME,
 > +	},
-> +	.probe = ad7768_probe,
-> +	.id_table = ad7768_id_table,
+> +	.probe = max44009_probe,
+> +	.id_table = max44009_id,
 > +};
-> +module_spi_driver(ad7768_driver);
+> +module_i2c_driver(max44009_driver);
 > +
-> +MODULE_AUTHOR("Stefan Popa <stefan.popa@analog.com>");
-> +MODULE_DESCRIPTION("Analog Devices AD7768-1 ADC driver");
+> +static const struct of_device_id max44009_of_match[] = {
+> +	{ .compatible = "maxim,max44009" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, max44009_of_match);
+> +
+> +MODULE_AUTHOR("Robert Eshleman <bobbyeshleman@gmail.com>");
 > +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("MAX44009 ambient light sensor driver");
 
