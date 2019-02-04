@@ -2,183 +2,209 @@ Return-Path: <SRS0=dQzZ=QL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74F62C282C4
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 09:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8426DC282C4
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 09:46:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2256E2147A
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 09:19:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="iv9fzE2S"
+	by mail.kernel.org (Postfix) with ESMTP id 548472147A
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 09:46:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726987AbfBDJTy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Feb 2019 04:19:54 -0500
-Received: from mail-eopbgr710074.outbound.protection.outlook.com ([40.107.71.74]:2942
-        "EHLO NAM05-BY2-obe.outbound.protection.outlook.com"
+        id S1728031AbfBDJqB convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Feb 2019 04:46:01 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:58074 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726320AbfBDJTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 4 Feb 2019 04:19:54 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=w0wzVNg7zmv91ZEu1DXug0xP/c+DaSynKJ3HDqmSxxo=;
- b=iv9fzE2Sywzz0QVitapTrv/PWbYndTMNcMwrJWQ+78w1wLIEneHIr9duZGrMXju1JmHV4y9e26nLrqp5NI2GGIfDi/yRiHZBUW4QgluSXmjNQrtokHBgprr0HTe5pT2+N19J9lSE10rqZHnajiVbAZbCy/NVPLgWxiHduCHPuH0=
-Received: from CY4PR03CA0099.namprd03.prod.outlook.com (2603:10b6:910:4d::40)
- by BN7PR03MB3506.namprd03.prod.outlook.com (2603:10b6:406:c2::18) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1580.17; Mon, 4 Feb
- 2019 09:19:48 +0000
-Received: from SN1NAM02FT017.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::204) by CY4PR03CA0099.outlook.office365.com
- (2603:10b6:910:4d::40) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1580.17 via Frontend
- Transport; Mon, 4 Feb 2019 09:19:47 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.57)
- smtp.mailfrom=analog.com; gmx.de; dkim=none (message not signed)
- header.d=none;gmx.de; dmarc=bestguesspass action=none header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- SN1NAM02FT017.mail.protection.outlook.com (10.152.72.115) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1580.10
- via Frontend Transport; Mon, 4 Feb 2019 09:19:47 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x149Jkl2013185
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 4 Feb 2019 01:19:46 -0800
-Received: from linux.analog.com (10.50.1.104) by NWD2HUBCAS7.ad.analog.com
- (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 4 Feb 2019
- 04:19:45 -0500
-From:   Stefan Popa <stefan.popa@analog.com>
-To:     <jic23@kernel.org>
-CC:     <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, Stefan Popa <stefan.popa@analog.com>
-Subject: [PATCH v2] drivers: iio: dac: Fix wrong license for ADI drivers
-Date:   Mon, 4 Feb 2019 11:19:35 +0200
-Message-ID: <1549271975-15634-1-git-send-email-stefan.popa@analog.com>
-X-Mailer: git-send-email 2.7.4
+        id S1725889AbfBDJqB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 4 Feb 2019 04:46:01 -0500
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 1263A392EDC18905213B;
+        Mon,  4 Feb 2019 17:45:58 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.408.0; Mon, 4 Feb 2019
+ 17:45:54 +0800
+Date:   Mon, 4 Feb 2019 09:45:40 +0000
+From:   Jonathan Cameron <jonathan.cameron@huawei.com>
+To:     Georg Ottinger <g.ottinger@abatec.at>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        "eugen.hristev@microchip.com" <eugen.hristev@microchip.com>,
+        Stefan Etzlstorfer <s.etzlstorfer@abatec.at>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        "David S. Miller" <davem@davemloft.net>,
+        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
+        Kees Cook <keescook@chromium.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Maxime Ripard <maxime.ripard@bootlin.com>
+Subject: Re: [PATCH] iio: adc: at91: disable adc channel interrupt in
+ timeout case
+Message-ID: <20190204094540.00003072@huawei.com>
+In-Reply-To: <0974ce54b3da4d82b6bd3026a3de5ff3@abatec.at>
+References: <20190130134202.5831-1-g.ottinger@abatec.at>
+        <20190202102021.12bb0a72@archlinux>
+        <0974ce54b3da4d82b6bd3026a3de5ff3@abatec.at>
+Organization: Huawei
+X-Mailer: Claws Mail 3.16.0 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(136003)(346002)(396003)(39860400002)(2980300002)(3190300001)(189003)(199004)(2906002)(7636002)(47776003)(305945005)(50466002)(48376002)(4326008)(7696005)(51416003)(54906003)(246002)(107886003)(8676002)(316002)(16586007)(50226002)(106002)(8936002)(44832011)(356004)(36756003)(6666004)(486006)(426003)(116002)(186003)(126002)(476003)(2616005)(106466001)(53416004)(2351001)(77096007)(26005)(336012)(6916009)(72206003)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:BN7PR03MB3506;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
-X-Microsoft-Exchange-Diagnostics: 1;SN1NAM02FT017;1:THRvchCSBWcWJIa4hXyaP0sXtjDFG/3F2fh0RMk3Z4k5QbrZ5RlwjEnXfjSVEAgnl+C/Q0wx2OUrQhjdCo6cliPkDVVyd3RXJpy8i615v+2NXRYsda+5PgkIGSVWgsSpQMiRkJ/H5QOd+CDpEaF4sg==
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: fe4760d9-ee87-4a86-afbe-08d68a81e89b
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600110)(711020)(4605077)(4608076)(4709027)(2017052603328)(7153060);SRVR:BN7PR03MB3506;
-X-Microsoft-Exchange-Diagnostics: 1;BN7PR03MB3506;3:IjWlzdMIAWtW56ru97E2FCJj2XZk3bGvaxFQ4oMwpa94YXbCOtKy9q2X5uQ+1H9CCr9IZ8STfC+vwHv3yTPMV9sXAnbNcQWm5URaABgFNc/JEVg4fo0P5kvhInWIg0E3EeU/Yr2QPv0IxtRtHxCvXU3qB4TGe7eB/W5loCpGCJmOtZjNmhPJKb1YeDC77gBsCZTry5pPTdkVd4JgmPoRLhAK4jRlgZtPzE5aCKMM8i+wcMbwxqh09lli2muRJr2hUQf9TvElG9yTv8SPyxQp6qtp/IKHDs98nOWGZU0b22a+kKk37ahnPDsgnKcQtioIi5rQu0wG19g503UiOOa36G3ng51IbUZoH/+25yaOnVi0UnSOKyX+ArWS0aPChlg9;25:QDNbXMPrlC94mji5L44TVx1KIc/joUPZU9dz+wqyMKzQ9JHFVQT4Q9W7fitlpFqJIffxo4g859HkWHojHsmugr4Q7awwWhqEHd+zuWwpg32g5OmweK3ht6wbw+6MZ/9Y55Gt10KHpMXL0fOXwu51WexbVoKPl7WgGOQqoYQ8+FQqU1aDLlvNlbJ9djmUaNDFcRqiCcYXoD10crjLJ3Hl2mAM5vlAr2clsOpFJ1dDJzmlRqBazlttVNrPPdsIXy7NLyPUTF0JbES8SXYHVZLlWIAU0zqPmujAcvuJ5T8EH0K9weqINzy71hByIqVDvPELoe36A8DizbN8u7mW2MLaxw==
-X-MS-TrafficTypeDiagnostic: BN7PR03MB3506:
-X-Microsoft-Exchange-Diagnostics: 1;BN7PR03MB3506;31:hFHq4nHMIaTRdlpgK7ukCQVGB6U6pS7KMo87NaOugwnr3f7ZZRGXegDs/NSORMvGzPXyZmoouSfmwxTp2qBDvB6haQXRatAJS8P4yXfWyDy44m1roSjG1FsJzQB+yU9xzL08jzdhFvV0ZnoZ1VdPckZ/1vAY367OR4ZUHoQSIj41tk5IUCEQRHk2BC+EW89XMOLqhIjgTKIQBnXxvjLQXFjP8n2BgIFfS94ESOBtvXw=;20:l1OnlHykVfGR54Z2q8us7dyLLYTd9RMc3dbaEF1yclEJdHUtRb5bVU9w9n1DO1N0kSMmmgNuwmGlc9bnKNrvg2Ykz5QWivHtPxOaqihAscTKSTvczrXJAlnkiyo6ihk81IzQ+iif0XCe7X/aw5hRYvT2M9P2vbEWv7sw+T6+BEzcNx4VD0nTNbKStDC2VyEE4eG4NfDlHkq/RwQ9cPU1UFLOFxYjAv6+btJjR6pq4lfeN5Moavgds+I4/rl0ljd1Ikh7CxPskDPDuu+zWiMQ8Z5MR55MoiXiQZK18A4whoscWksoGqVjoUCB9J1qOqkwBhSyuvX/l9UWQu0ZEDpTTCkmLUhnk0HFcAWhrQn1RDon1BMg6WN/FowqWxriP9CoEs7icx0S8yq3175R5rBJx+FetAGkSJOlBTYhVT8lGtMSC1v7L6x0VOkr9PKre0d09WalD6qbueeKDJAhOLgpJX0gz7mZ+SVsfy0M6cm0LwABQ//c7dxLDTSrUE5DrlIf
-X-Microsoft-Antispam-PRVS: <BN7PR03MB350631B2ED48F9EF766A0B4E9D6D0@BN7PR03MB3506.namprd03.prod.outlook.com>
-X-Microsoft-Exchange-Diagnostics: 1;BN7PR03MB3506;4:RvxrecgYGpoDLEiGW5E+WGS6oXJYxyTUDps9AYrJODvK+/XFxd7w1tkhxhIJu8WSjKwP48BWlqu+SBDGwX91yXz1y8klJ874dUgSy/E/tjV15DeulWRMFOxP3MvDvoEbsqoE2lx62spQOFNr/KUJPv6ppaZGArnlWGbBeZBgP9Eft/ffWVr52nql4awcW0IjDcOJJE8Uc8EQpgrTsvSKyn1nlx7WQQ2jj5Gzmbz6IBb9BtJke8zXv5dPWZlp2oInmwKp/K6UWgSDrLIgJ3j8/YZzvgmA/7cY+YDD0KBBCp+MKU/vPP+UUyX/0UUSiQH4
-X-Forefront-PRVS: 0938781D02
-X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;BN7PR03MB3506;23:oQvCW922DylFBJ5KlU+wRlHoXQcmhGflcaTYNAZlO?=
- =?us-ascii?Q?pLZBFB44H4OpGRmdBtmTBwolZh2HOhjuh+5b+ZpMfnKGb1qxcYW2aoZZAVKp?=
- =?us-ascii?Q?bBSqnc2MkDOaM0yGBfAkNJ2NoMpUG1bdHH6CJY9RbctqY1e6Vy3TYd2Q3GCH?=
- =?us-ascii?Q?4e/IXBvf6uBsX99yx7FKodtmSfguKCIRsdxSxWDUFi82ddLg/U+qv3Mmc2bn?=
- =?us-ascii?Q?29aooa9H/wga38gqJX2Fl9cVwLnAktcP3ZsRmCBXyGylT3Q/6aW5vtAGlGPM?=
- =?us-ascii?Q?7kpnBhVP7NhUIaWVWQ5vBMUPYBCDoWBCcmMLhVG1WUetzN7Wd6sSYF/EzEav?=
- =?us-ascii?Q?lxF9dFQvvo4NZ4zcBc4LJlR73pHQhQp209iRzVSPykYa35ov5TF0mzUcMTHF?=
- =?us-ascii?Q?Yee+mY058HP2RmBYEwAt7RApTqQACZwCdDQAQ+z3AcMSRh8H1mG47Fl6wexf?=
- =?us-ascii?Q?1rArK+t340sEXsxNyqPMjkiJZe0NdKdYBOWz7KN9/4lBDrZTLyGQqI8ZxU2K?=
- =?us-ascii?Q?AQTJUByKo1/7HTgYwJo2y3DK0yOp2M6uRB/LmNPC82kmyMxF4eiJIAs9Bb2+?=
- =?us-ascii?Q?OdixnMhTRf3jS6qlgajjolUValdTUNKCAuHRBVaUeTrqtRDtjvNPnmiFZlXY?=
- =?us-ascii?Q?9j4/UXHZ4DJQT7yl5QbEmcOlIpO36bSyvnlnZMgQr4qWnvuA/kBrLN9BGy6v?=
- =?us-ascii?Q?AA/pmjgtu9TKn8cLz9+FhzjWzw4f61OjJz4iTAb1hpCju4qjohYjLEnqQ24l?=
- =?us-ascii?Q?mDFyOjuChSyFoJDXn60BWHluOMbN5VEHfi4Cq1hz8GZAVXnpSHnbGvr/xJ8o?=
- =?us-ascii?Q?C+9lZ8kuFH9+vamPvwUP7N+jl/sz/+0W2tO0N3S92qcOWGMLDQN0iTOuYXdM?=
- =?us-ascii?Q?NsA9WO/cKCuUS+t8TPyAk/yzYf9MLL3+eS70uQFcoCrNH89dQrKge9yVlj3f?=
- =?us-ascii?Q?40sYGCd05DQ0PsGwFhNhyyokqNKdwQ6VUvHfS6KQ3BCceOMD9JGGX8oqE7hg?=
- =?us-ascii?Q?VvLIYGpbIpmRuWRzNPm5/315wUOB06TufI5qKPU2vVNeg=3D=3D?=
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: jJ8E9YuZEOQeV3RlzVBbVpAR6MML1U+o3RfHhkqaHztVupV8zJ3V5JdEwCQ12/fsykRiuk1sNJ3nqmcQ3qn/xCriGOdgJrSLnrNK3Zg+sQU4aT81Zq45kyYuVkPApKrbdpKLFGBtX93RG0LavftQ3xM4k7gdW3wq/Zhr0HO/ETwBhx+kQ89l3mCoaue1cfPMbL5teanJ//LMVxQbK5tgJgWVUekOd9Vh9D3+trSUsbaXwfHW52LwsG700e++dmCFK8/Jmb5sfBfzTe4ornmRz28F5AlcQ1O9zR7eoErmsglTMXdObhiwnLXR31A3Hxu7Z+nzSirSFplrxKmVAbQhA1n8qCyPCIJ/ZetoNaG9ZXM63Mri2qv1o8YgsuHB/+LUKaEHrt+J33feRONj4TZ3vj7DGf+LyhrLOHSTxm2TMxw=
-X-Microsoft-Exchange-Diagnostics: 1;BN7PR03MB3506;6:EShso6t+HBfoaTLeLNgd7zR/a7znShdEyt/3YXGxUtVgpqI9fgguSf6Z/CKUF9ZIUNlvK1vg7nV8t712NYLHyKVfIa0RMJ9ytgcySjq4hp9PDPl4AVZczYWYEkAd3YE84t2qY6szjnTD52t0swKc5PEiPUCuVvXLXD/LsNYteydgfLXdliJmBJt7JrY9Cuo2qljckHq6Y+GwUZRCsanV3YiXsmFhiozEFhvYVeQ8ZDFJB84A4wojU1KVTBf43pD332pPV2ImxTyGHxujtyECQsOCuyKQv5N+gsZBST/Nw+ixAG/zULH9BQ4b9z13bjBO7eNLLFIxdxflZBBTlsDN5MTJ+O31ung4JLDG2AnPo0EpgiMTc6NNT9Klt7xnNAf2gQ/Kpu1dtTkZAW5Gxc/wuCAwYM9O0kgPmGz3OAQ7Q8PXJoE4uKiiv6SUYQAzEamXbdLzqDiIHxTVQ4aE3VDQ2Q==;5:Xe4J0k3fXyXhBXWwTJ6nMsRdARxLncMjuVvt1tM1l+NqihIntX9VeByOvvinxmQiXKNeibL0aYfcVTafID+ITx99IQJV2teSH227Cg7H7XX82IDPQuyB2tS2JxINUmmVkaO3uqvUjA4wQISx44UQhQsi8liPZj9SacRpWapF2ioTpCm+U15LkNtKRcbaYzceduU76qpTJCxPhRK2atWUAw==;7:eN4H/jI9a2NXwS0icS8IxEJ9kt3IGZl+i4/TXhjWexSGpTyM1q4Dd59oUISN6Zx/ms7LLIxPRc4IzU6inHSKv6cZL9lIx/Kmbe69DBgK43VvxjPpoaCKteVpi7kanmLXvVTxFVTgJ+9j1fVz+1yu2w==
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Feb 2019 09:19:47.3501
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: fe4760d9-ee87-4a86-afbe-08d68a81e89b
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR03MB3506
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Analog Devices drivers are typically GPL v2 only. This patch fixes the
-inconsistencies between the module license and SPDX.
+On Mon, 4 Feb 2019 07:17:07 +0000
+Georg Ottinger <g.ottinger@abatec.at> wrote:
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
----
-Changes in v2:
-	- Modified only the drivers with inconsistencies.
+> Actually this issue occurred to us with an concrete product, where we experienced a system hang at -20 °C.
+> It was triggered by a race condition between the Touch Trigger and the Channel Trigger of the ADC. Once triggered we got in to the situation where an ongoing Channel Conversion was lost (Timeout case).When we queried a second channel than we got a system hang. Investigating this issue we developed an error demonstrator - reading alternating two channels as fast as possible (when Touch is enabled). This also provokes this issue at room temperature.
+> 
+> For the error demonstrator use following commandline to compile:
+> 
+> $ arm-buildroot-linux-gnueabihf-gcc adc_demo_error.c -D2ND_CHANNEL -o adc_demo_error2
+> 
+> -------------
+> // adc_demo_error.c
+> #include <unistd.h>
+> #include <fcntl.h>
+> 
+> #define VLEN 10
+> 
+> int main()
+> {
+>   int fd_adc,fd_adc2;
+>   int ret;
+>   char dummy[VLEN];
+>   
+>   fd_adc = open ("/sys/devices/platform/ahb/ahb:apb/f8018000.adc/iio:device0/in_voltage4_raw",O_RDONLY);  
+> #ifdef 2ND_CHANNEL
+>   fd_adc2 = open ("/sys/devices/platform/ahb/ahb:apb/f8018000.adc/iio:device0/in_voltage5_raw",O_RDONLY);
+> #endif
+> 
+>   while(1) {
+> 
+>     lseek(fd_adc, 0, SEEK_SET);
+>     ret = read(fd_adc, dummy, VLEN);
+> #ifdef 2ND_CHANNEL
+>     lseek(fd_adc2, 0, SEEK_SET);
+>     ret = read(fd_adc2, dummy, VLEN);
+> #endif
+> 
+>   }
+> }
+> 
+> ------------
+> 
+> 
+> Greeting, Georg
+Hi Georg,
 
- drivers/iio/dac/ad5686-spi.c | 2 +-
- drivers/iio/dac/ad5686.c     | 2 +-
- drivers/iio/dac/ad5686.h     | 2 +-
- drivers/iio/dac/ad5696-i2c.c | 2 +-
- drivers/iio/dac/ad5758.c     | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+Thanks for the detailed error report and reproducer.
 
-diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
-index 4d857c8..0188ded 100644
---- a/drivers/iio/dac/ad5686-spi.c
-+++ b/drivers/iio/dac/ad5686-spi.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0+
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD5672R, AD5674R, AD5676, AD5676R, AD5679R,
-  * AD5681R, AD5682R, AD5683, AD5683R, AD5684,
-diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-index 6dd2759..e06b29c 100644
---- a/drivers/iio/dac/ad5686.c
-+++ b/drivers/iio/dac/ad5686.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0+
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD5686R, AD5685R, AD5684R Digital to analog converters  driver
-  *
-diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
-index 4c3e171..70a7799 100644
---- a/drivers/iio/dac/ad5686.h
-+++ b/drivers/iio/dac/ad5686.h
-@@ -1,4 +1,4 @@
--/* SPDX-License-Identifier: GPL-2.0+ */
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * This file is part of AD5686 DAC driver
-  *
-diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
-index 7350d98..ccf794c 100644
---- a/drivers/iio/dac/ad5696-i2c.c
-+++ b/drivers/iio/dac/ad5696-i2c.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0+
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD5671R, AD5675R, AD5691R, AD5692R, AD5693, AD5693R,
-  * AD5694, AD5694R, AD5695R, AD5696, AD5696R
-diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
-index ef41f12..2bdf1b0 100644
---- a/drivers/iio/dac/ad5758.c
-+++ b/drivers/iio/dac/ad5758.c
-@@ -1,4 +1,4 @@
--// SPDX-License-Identifier: GPL-2.0+
-+// SPDX-License-Identifier: GPL-2.0
- /*
-  * AD5758 Digital to analog converters driver
-  *
--- 
-2.7.4
+What has me wondering now is where the race is that is triggering this?
+Could you talk us through it?  I don't know this driver that well so
+probably much quicker for you to fill in the gaps rather than me try
+to figure out the race path!
+
+I have no problem with defense in depth (with appropriate comments) but
+I'd like to close that down as well.  If it really is unsolvable I'd
+like at least to have some clear comments in the code explaining why.
+
+Thanks,
+
+Jonathan
+
+> 
+> -----Ursprüngliche Nachricht-----
+> Von: Jonathan Cameron [mailto:jic23@kernel.org] 
+> Gesendet: Samstag, 02. Februar 2019 11:21
+> An: Georg Ottinger <g.ottinger@abatec.at>
+> Cc: eugen.hristev@microchip.com; Stefan Etzlstorfer <s.etzlstorfer@abatec.at>; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Nicolas Ferre <nicolas.ferre@microchip.com>; Alexandre Belloni <alexandre.belloni@bootlin.com>; Ludovic Desroches <ludovic.desroches@microchip.com>; David S. Miller <davem@davemloft.net>; Ard Biesheuvel <ard.biesheuvel@linaro.org>; Kees Cook <keescook@chromium.org>; linux-iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Maxime Ripard <maxime.ripard@bootlin.com>
+> Betreff: Re: [PATCH] iio: adc: at91: disable adc channel interrupt in timeout case
+> 
+> On Wed, 30 Jan 2019 14:42:02 +0100
+> <g.ottinger@abatec.at> wrote:
+> 
+> > From: Georg Ottinger <g.ottinger@abatec.at>
+> > 
+> > Having a brief look at at91_adc_read_raw() it is obvious that in the 
+> > case of a timeout the setting of AT91_ADC_CHDR and AT91_ADC_IDR 
+> > registers is omitted. If 2 different channels are queried we can end 
+> > up with a situation where two interrupts are enabled, but only one 
+> > interrupt is cleared in the interrupt handler. Resulting in a 
+> > interrupt loop and a system hang.
+> > 
+> > Signed-off-by: Georg Ottinger <g.ottinger@abatec.at>  
+> 
+> Whilst I agree this looks like a correct change, I would like Maxime to take a look as he is obviously much more familiar with the driver than I am.
+> 
+> I suspect you can only actually get there in the event of a hardware failure as that isn't actually a timeout you should ever see.
+> Could be wrong though!
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/adc/at91_adc.c | 28 +++++++++++++++++-----------
+> >  1 file changed, 17 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c 
+> > index 75d2f7358..596841a3c 100644
+> > --- a/drivers/iio/adc/at91_adc.c
+> > +++ b/drivers/iio/adc/at91_adc.c
+> > @@ -704,23 +704,29 @@ static int at91_adc_read_raw(struct iio_dev *idev,
+> >  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
+> >  						       st->done,
+> >  						       msecs_to_jiffies(1000));
+> > -		if (ret == 0)
+> > -			ret = -ETIMEDOUT;
+> > -		if (ret < 0) {
+> > -			mutex_unlock(&st->lock);
+> > -			return ret;
+> > -		}
+> > -
+> > -		*val = st->last_value;
+> >  
+> > +		/* Disable interrupts, regardless if adc conversion was
+> > +		 * successful or not
+> > +		 */
+> >  		at91_adc_writel(st, AT91_ADC_CHDR,
+> >  				AT91_ADC_CH(chan->channel));
+> >  		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
+> >  
+> > -		st->last_value = 0;
+> > -		st->done = false;
+> > +		if (ret > 0) {
+> > +			/* a valid conversion took place */
+> > +			*val = st->last_value;
+> > +			st->last_value = 0;
+> > +			st->done = false;
+> > +			ret = IIO_VAL_INT;
+> > +		} else if (ret == 0) {
+> > +			/* conversion timeout */
+> > +			dev_err(&idev->dev, "ADC Channel %d timeout.\n",
+> > +				chan->channel);
+> > +			ret = -ETIMEDOUT;
+> > +		}
+> > +
+> >  		mutex_unlock(&st->lock);
+> > -		return IIO_VAL_INT;
+> > +		return ret;
+> >  
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		*val = st->vref_mv;  
+> 
+
 
