@@ -2,139 +2,85 @@ Return-Path: <SRS0=dQzZ=QL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 596DEC282C4
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 12:48:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2881C282C4
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 15:15:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2ACFF20663
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 12:48:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71DFC217F9
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 15:15:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B8sSN6QK"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FxZ23YJS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725992AbfBDMsk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Feb 2019 07:48:40 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:45147 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729423AbfBDMsj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2019 07:48:39 -0500
-Received: by mail-lj1-f194.google.com with SMTP id s5-v6so11363824ljd.12;
-        Mon, 04 Feb 2019 04:48:38 -0800 (PST)
+        id S1730829AbfBDPPk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Feb 2019 10:15:40 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:46063 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727217AbfBDPPk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2019 10:15:40 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 32so235180ota.12;
+        Mon, 04 Feb 2019 07:15:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=odKZR5LuUPQq6nEynHHZu620HK8qG1oypfpwL9UmJOI=;
-        b=B8sSN6QKIcxS+IglLxosSA0jjlNsykMSeA+VA9IbL7jEUqfcec5cdNaQeKryMcFejV
-         rYcZCOW//fzE28Ue5xpeOWKDAejLv7NMlA9OAc4bQEZtN2WD5+hYrRLFG0rcrwks0Qbb
-         UZeOOS2V3/LkRRJqT2oBgSt3pcAJZfk5gJusWCLqzBzFzuQJ747zFwAyw0vwhLRldL1s
-         yBk0yneSkFUefz+CYW9I+HaS4i97UKrCilZ0K6IUcz03NICRyWL5crhCXcW8mg7Uis2x
-         b77+P4QUrbKZbM4cqRvkNI02eJwGvYtirMKJq3DQSYn01IqDmmwJQ1aANcL6ZhJ+TkAC
-         CS+g==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=5NAE/zKZsacoEPE++MAvF2z+UCz3Zvk8CLDXZ87QMyw=;
+        b=FxZ23YJSuzCCwudlApzUYXs6noO02KsNFV2IYaS4lzrO7N4VlVxx7XNiJNSQWXKEgF
+         BNBFd8gudli6IgCJnphPE5I2WvKz9eWVmlV4+5LId710GD07tbpyonwaoapcKj6RO9bh
+         77QdKr/O49aYWnKET7VODExDo7P83Mq/aKOrFyYTUqjESGvnr2F+iCBbPz9U+x2hEnRx
+         uiM4ALIW7ew9iRKqeY0y6dgPLckx/6luojuwl/jNcxpU9K2VQleBVprGwZMWO2n2mzIn
+         Rw5eUCO4l714yiXJX3GKDfXaBK7RSVoQiOyXeYgE36nS0gw4ZWfTC7SljA/UDx6yKhlq
+         D4RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=odKZR5LuUPQq6nEynHHZu620HK8qG1oypfpwL9UmJOI=;
-        b=UJaKLwf0/bBzPZRMebJwRthF4TnyiAFzyM9gQPds1UAkKAjHT09E9QIX14zbQThbzI
-         dot8dftn/J5SAfqyIMgk6rFvyZ/haVf+4TQJZ+ZET0OY2zVhokaKJt447O7j8wDeuFj4
-         0nFTWjl9kPgu9GGZqb9Nlt6iTuBy8dJ0pxae3UevHf4Nc+mCf5O9yDEX19M/UcSSXMul
-         IoWw2OgmjUuOYMFijuZgKEOVn8l3nZWGQCjxgUfRxP1OaqkNSfR4o+4fZ2dD6B5t1Tin
-         FEy2pwQ/CZa+NR1Xvw5HtMcdUsza0E0gOod4ur/DBA+b+rpStqn5l2l1h2y8MqPKRIcs
-         N/tQ==
-X-Gm-Message-State: AHQUAuZeg1Anp0GHD0Lpbv+tPIOxBVi5LWBQWwXrYfsuXxQj5o0z2RH1
-        s3a2paNDW0EGMXJKVvAvPM4=
-X-Google-Smtp-Source: AHgI3IaXISGFwkthbAWLEA6y/aCqzB4L/6VddmrRjpSiN1ooITIEitVOGQNOS/OYDOhRrq0ILJ0cZA==
-X-Received: by 2002:a2e:8e8e:: with SMTP id z14-v6mr4755141ljk.84.1549284517300;
-        Mon, 04 Feb 2019 04:48:37 -0800 (PST)
-Received: from neopili.qtec.com (cpe.xe-3-0-1-778.vbrnqe10.dk.customer.tdc.net. [80.197.57.18])
-        by smtp.gmail.com with ESMTPSA id d23sm3056791lfc.11.2019.02.04.04.48.35
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 Feb 2019 04:48:35 -0800 (PST)
-From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Ricardo Ribalda Delgado <ricardo@ribalda.com>,
-        devicetree@vger.kernel.org
-Subject: [PATCH v4 2/2] iio:dac:dac7612: device tree bindings
-Date:   Mon,  4 Feb 2019 13:48:33 +0100
-Message-Id: <20190204124833.18779-2-ricardo@ribalda.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190204124833.18779-1-ricardo@ribalda.com>
-References: <20190204124833.18779-1-ricardo@ribalda.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=5NAE/zKZsacoEPE++MAvF2z+UCz3Zvk8CLDXZ87QMyw=;
+        b=nXQacqnTqTBnRWmXAiLbxtKc+fSjAVYKZZRr8UuLT8cQ46dUFxTwK2uA4vvGesN80w
+         mAWZqEO7b4pVX3KtCDs3Hgbb1cl1mpJ1l4RIo/6DY5amihgPODfHzTQmeaL3V1v998X2
+         8PdmJzpg/qoYbnQ0r4FTTAbk6W8Z/1NlcvXwQe2j8guqKobLRy/e3OUfqHaeBzsRHFHb
+         Z2wUzkWlPd10BQhCfBkdpNfXMuctiLZadI+hWroYFlz7rYKzo2ih7Z/T96fcwa/X8FDD
+         7iYN5/YPO4J5sh7odnGuUDBNPYWkVCWeKlTpj8ha/jyAQXbRHWfnFrKxblGFV0S2Cyg3
+         BeQQ==
+X-Gm-Message-State: AJcUukc3sCG9seztmmIj42pw8RBq/vcwZs1YUzkt+aegQhcpgzFY5FLA
+        gUyfv9XU0zh04tRPk9/epc+nrtIk0Fefi0vhNQ8=
+X-Google-Smtp-Source: ALg8bN4KOFGo5bLWHvkYFT3W3D6xTtLC6kqoWYNQZnlDuHqu8Eu+qkuLRss8m/O8fgqTNGqRC5cHvyBS/ohenM0fffo=
+X-Received: by 2002:aca:3092:: with SMTP id w140mr27220813oiw.237.1549293339636;
+ Mon, 04 Feb 2019 07:15:39 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190202215601.20275-1-martin@martingkelly.com>
+ <20190202215601.20275-7-martin@martingkelly.com> <CAOMZO5DsbEhdW1dhcWxig7b5VB7qnkWtbU-SqY5cGJp2Ld0nuA@mail.gmail.com>
+ <aff2e86e-a6be-24da-0f4a-add25a2cbee2@martingkelly.com>
+In-Reply-To: <aff2e86e-a6be-24da-0f4a-add25a2cbee2@martingkelly.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 4 Feb 2019 13:15:34 -0200
+Message-ID: <CAOMZO5BNK+v6t3qFYs5b+NpPHkrR4jiuy13DsM=AOQxAR3kY4g@mail.gmail.com>
+Subject: Re: [PATCH v4 6/6] iio:bmi160: use if (ret) instead of if (ret < 0)
+To:     Martin Kelly <martin@martingkelly.com>
+Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Daniel Baluta <daniel.baluta@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Bindings for dac7612.
+On Sat, Feb 2, 2019 at 10:30 PM Martin Kelly <martin@martingkelly.com> wrote:
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
----
-v4 Changelog by Rob Herring <robh@kernel.org>
+> Jonathan Cameron pointed out that the check is for functions that return
+> 0 on success. Thus, the check should be either "if (ret != 0)" or "if
+> (ret)". Jonathan prefers "if (ret)", so I'm using that. By leaving it at
+> "if (ret < 0)", technically a function could return positive numbers and
+> not count as an error, which is a bug.
 
--Add ti, prefix to gpio
--Fix example da@1
--Fix partname
-
- .../bindings/iio/dac/ti,dac7612.txt           | 29 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 30 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
-
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
-new file mode 100644
-index 000000000000..14a66c0dcdaa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
-@@ -0,0 +1,29 @@
-+* Texas Instruments Dual, 12-Bit Serial Input Digital-to-Analog Converter
-+
-+The DAC7612 is a dual, 12-bit digital-to-analog converter (DAC) with guaranteed
-+12-bit monotonicity performance over the industrial temperature range.
-+Is is programmable through an SPI interface.
-+
-+The internal DACs are loaded when the LOADDACS pin is pulled down.
-+
-+http://www.ti.com/lit/ds/sbas106/sbas106.pdf
-+
-+Required Properties:
-+- compatible: Should be one of:
-+		"ti,dac7612"
-+		"ti,dac7612u"
-+		"ti,dac7612ub"
-+- reg: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Optional Properties:
-+- ti,loaddacs-gpios: GPIO descriptor for the LOADDACS pin.
-+- spi-*: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+Example:
-+
-+	dac@1 {
-+		compatible = "ti,dac7612";
-+		reg = <0x1>;
-+		ti,loaddacs-gpios = <&msmgpio 25 GPIO_ACTIVE_LOW>;
-+	};
-+
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 30ba5435906b..e28e5afaae16 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -14882,6 +14882,7 @@ M:	Ricardo Ribalda <ricardo@ribalda.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
- F:	drivers/iio/dac/ti-dac7612.c
-+F:	Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
- 
- THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
- M:	Hans Verkuil <hverkuil@xs4all.nl>
--- 
-2.20.1
-
+I fail to see how regmap_read()/regmap_write() functions could return
+positive numbers on error.
