@@ -2,101 +2,103 @@ Return-Path: <SRS0=dQzZ=QL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7304C282C4
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 17:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A005C282C4
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 17:07:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6F5522087C
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 17:00:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 19B312087C
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 17:07:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=linaro.org header.i=@linaro.org header.b="dBGz09Ep"
+	dkim=pass (2048-bit key) header.d=martingkelly-com.20150623.gappssmtp.com header.i=@martingkelly-com.20150623.gappssmtp.com header.b="BoYr/kBo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729315AbfBDRAg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Feb 2019 12:00:36 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:33928 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728861AbfBDRAf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2019 12:00:35 -0500
-Received: by mail-wr1-f67.google.com with SMTP id f7so651120wrp.1
-        for <linux-iio@vger.kernel.org>; Mon, 04 Feb 2019 09:00:35 -0800 (PST)
+        id S1730362AbfBDRHx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Feb 2019 12:07:53 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:40097 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729900AbfBDRHx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2019 12:07:53 -0500
+Received: by mail-pl1-f193.google.com with SMTP id u18so201837plq.7
+        for <linux-iio@vger.kernel.org>; Mon, 04 Feb 2019 09:07:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=du8lrySGcO2WJA5/+uAnRzTcnQRKVBAHdlz4DPUA1Dc=;
-        b=dBGz09EpaU24J4UaI/0Ml+Zcm6sz/+Azur8bZf5QpYaxdrXvBdjYiLOgBbFYLcI66u
-         hXvD+X4DgCH6azFILLZx66/Y8uvM6DN9Lxl2Va9+jPm2NYHJpvb5Jq7JVaUBvjFO7Xy4
-         IYyh+O3yBF1p6YuDBB+0M07+cxdFpOwyqP7GE=
+        d=martingkelly-com.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=/+W/4N9wmNOAQkB8U5MTTAJPkQPiF5Zm/JYyQxhSzQE=;
+        b=BoYr/kBoGRR0WmXVGv5CyHiEDSMMEtWe59OdB4l7D8NnH42NyN0bBmeFIKPpMcnjeF
+         soAoApB6VJKTB7zzTIqic5D2ReK3JKCxfZKk9wxS2S/PRueQawKGDjLWySg5FXpqM01n
+         TdUoRxCRrf+DlFsYOX22jDADtZqDv81outK52dhN0CfSQzlW7jyjsyjDohJ2ZANdlnPE
+         RH9KmUjCLiOPyb2eZST0RuGfLp3FqWUsN0AVGfhWLWNiiHMCxoSu2Vgf9FI5js0UO/SG
+         zjJJvzV/DvyjFFa+ZsDFjnVtoBkqS9HNNQPJvAYuPalw42NsiOxy9mB6xbbAnoFSLnBa
+         0b6Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=du8lrySGcO2WJA5/+uAnRzTcnQRKVBAHdlz4DPUA1Dc=;
-        b=kMU6AuwoiR/y0nZypLg6Myx/084lQPiLr3HL+xbd8cAcwRRG0gIH4PqOg60slNdPbX
-         MIHINP5wM/D2UvI4al3IHlT1PklGdQrz4agqa5RaNOUjVywS9/Gebx8veT1MB6pmbmrc
-         bHs/c0ony9oMSmOASRVh5PJT3noKQ7SxJVmAtXZ+wAfa9XFNAcWCi4/uLWerYj6bojfB
-         u5lYL78XGxa8q+B8OoSRdlYL20j3lBT5zhE1mCIYOpTgb0CNkbwSzOMq7m++euQAz2Gr
-         U2LI6QFWZbWHqu7JXhH9QZ2iBzf1Xk55GVwOnPYdx1PsEglxr1p91sNMEkzxSh8DT41V
-         drsA==
-X-Gm-Message-State: AHQUAuZDSXA22EKIYZLgYJBJwDflP/vVizWOgo8nX7XzPGteIXm7JPVs
-        VR5YFQGsXO3CcehbPlIC5gjmLA==
-X-Google-Smtp-Source: AHgI3IbFEYdNLlVLKA9YCwYEIBPzYTERtImH8BZlMlR6rF9Z6oeJkYX9hkB7ieX4N+K2zYk70/AQrA==
-X-Received: by 2002:a5d:6b8b:: with SMTP id n11mr274269wrx.216.1549299634451;
-        Mon, 04 Feb 2019 09:00:34 -0800 (PST)
-Received: from arch-late.local (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
-        by smtp.gmail.com with ESMTPSA id i186sm19352297wmd.19.2019.02.04.09.00.33
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=/+W/4N9wmNOAQkB8U5MTTAJPkQPiF5Zm/JYyQxhSzQE=;
+        b=JMaSUkvy+PCcB0zfhot1XPaeYRpqJNRYOVgY13AtUATZ6qQJV0AkSP1BcGWfJe59l7
+         ZJ3e2QAKXRG8wsdFwn/D5Nswf6sYTX+oKgZ0XNngnLanArScyn42VQod5hKG6LWnn9HQ
+         Ii2HhUKb+XU7yRtB71ZIadJXrnW8brbC2vZbklULqzr4PYX/QPIDDlXHp4yj5DHxL9Yx
+         C5ii42wCzfIJx27BHg15ouHRPkOKmsTGi2leB1TzyOjCN+/xmcmVy5K0XaZ9K5jNUF/v
+         GliFv65APdlEKcPaOm3nXou3g+qWYTh/6UmV/gBYuNhfxEVVsQO33N246E29mxk6dZsr
+         CLOQ==
+X-Gm-Message-State: AHQUAuYeoWs5HdalMDG54P1CjkvayravTPSNigdvFqOGMHkYZ9ZGMs0Y
+        fY7qId8TWwjWVnXVZtKlbZ7Ab/m98hQ=
+X-Google-Smtp-Source: AHgI3IbnK4B+GDQg0kUHLrDu4u1/3ERRd+G0H4ATuo9sqmJ3l8hviCm2Tj13puZbTyMTDuloCASmGg==
+X-Received: by 2002:a17:902:d01:: with SMTP id 1mr373976plu.127.1549300072405;
+        Mon, 04 Feb 2019 09:07:52 -0800 (PST)
+Received: from [192.168.0.8] (71-212-3-95.tukw.qwest.net. [71.212.3.95])
+        by smtp.gmail.com with ESMTPSA id f64sm1787834pfh.0.2019.02.04.09.07.51
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 04 Feb 2019 09:00:33 -0800 (PST)
-From:   Rui Miguel Silva <rui.silva@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        Mon, 04 Feb 2019 09:07:51 -0800 (PST)
+Subject: Re: [PATCH v4 6/6] iio:bmi160: use if (ret) instead of if (ret < 0)
+To:     Fabio Estevam <festevam@gmail.com>
+Cc:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Rui Miguel Silva <rui.silva@linaro.org>
-Subject: [PATCH 5/5] ARM: dts: imx7s-warp: add fxas2100x gyroscope
-Date:   Mon,  4 Feb 2019 17:00:12 +0000
-Message-Id: <20190204170012.13617-6-rui.silva@linaro.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190204170012.13617-1-rui.silva@linaro.org>
-References: <20190204170012.13617-1-rui.silva@linaro.org>
+        Daniel Baluta <daniel.baluta@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+References: <20190202215601.20275-1-martin@martingkelly.com>
+ <20190202215601.20275-7-martin@martingkelly.com>
+ <CAOMZO5DsbEhdW1dhcWxig7b5VB7qnkWtbU-SqY5cGJp2Ld0nuA@mail.gmail.com>
+ <aff2e86e-a6be-24da-0f4a-add25a2cbee2@martingkelly.com>
+ <CAOMZO5BNK+v6t3qFYs5b+NpPHkrR4jiuy13DsM=AOQxAR3kY4g@mail.gmail.com>
+From:   Martin Kelly <martin@martingkelly.com>
+Message-ID: <1197951a-61c3-65a7-b7c7-2396116ea13e@martingkelly.com>
+Date:   Mon, 4 Feb 2019 09:07:50 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAOMZO5BNK+v6t3qFYs5b+NpPHkrR4jiuy13DsM=AOQxAR3kY4g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add entry to enable the fxas2100x in the warp7 board
+On 2/4/19 7:15 AM, Fabio Estevam wrote:
+> On Sat, Feb 2, 2019 at 10:30 PM Martin Kelly <martin@martingkelly.com> wrote:
+> 
+>> Jonathan Cameron pointed out that the check is for functions that return
+>> 0 on success. Thus, the check should be either "if (ret != 0)" or "if
+>> (ret)". Jonathan prefers "if (ret)", so I'm using that. By leaving it at
+>> "if (ret < 0)", technically a function could return positive numbers and
+>> not count as an error, which is a bug.
+> 
+> I fail to see how regmap_read()/regmap_write() functions could return
+> positive numbers on error.
+> 
 
-Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
----
- arch/arm/boot/dts/imx7s-warp.dts | 5 +++++
- 1 file changed, 5 insertions(+)
-
-diff --git a/arch/arm/boot/dts/imx7s-warp.dts b/arch/arm/boot/dts/imx7s-warp.dts
-index 58d1a89ee3e3..47ff43cd229e 100644
---- a/arch/arm/boot/dts/imx7s-warp.dts
-+++ b/arch/arm/boot/dts/imx7s-warp.dts
-@@ -238,6 +238,11 @@
- 		compatible = "fsl,mpl3115";
- 		reg = <0x60>;
- 	};
-+
-+	fxas2100x@20 {
-+		compatible = "nxp,fxas2100x";
-+		reg = <0x20>;
-+	};
- };
- 
- &sai1 {
--- 
-2.20.1
-
+It's not that the functions actually do return positive numbers (they 
+don't). It's just that the success criteria is documented as "returns 0 
+on success". Thus logically the correct check for error is "if (ret != 
+0)" or just "if (ret)". This also is a bit self-documenting. That's why 
+this patch is a cleanup instead of a bugfix.
