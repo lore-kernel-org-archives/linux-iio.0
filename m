@@ -2,309 +2,167 @@ Return-Path: <SRS0=dQzZ=QL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFEC0C282C4
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 11:09:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64DC5C282C4
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 12:44:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A891D207E0
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 11:09:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E1852087C
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Feb 2019 12:44:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UZZotEbV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729679AbfBDLJ3 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Feb 2019 06:09:29 -0500
-Received: from mail1.abatec.at ([81.10.186.19]:53346 "EHLO mail1.abatec.at"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729471AbfBDLJ2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 4 Feb 2019 06:09:28 -0500
-Received: from exchange02.regau.abatec.at (192.168.100.22) by
- exchange02.regau.abatec.at (192.168.100.22) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.1415.2; Mon, 4 Feb 2019 12:09:25 +0100
-Received: from exchange02.regau.abatec.at ([::1]) by
- exchange02.regau.abatec.at ([::1]) with mapi id 15.01.1415.002; Mon, 4 Feb
- 2019 12:09:25 +0100
-From:   Georg Ottinger <g.ottinger@abatec.at>
-To:     Jonathan Cameron <jonathan.cameron@huawei.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        "eugen.hristev@microchip.com" <eugen.hristev@microchip.com>,
-        Stefan Etzlstorfer <s.etzlstorfer@abatec.at>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        "David S. Miller" <davem@davemloft.net>,
-        Ard Biesheuvel <ard.biesheuvel@linaro.org>,
-        Kees Cook <keescook@chromium.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org" 
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>
-Subject: AW: [PATCH] iio: adc: at91: disable adc channel interrupt in timeout
- case
-Thread-Topic: [PATCH] iio: adc: at91: disable adc channel interrupt in timeout
- case
-Thread-Index: AQHUuKGafWrpkxg4ckeOny6mkh/hBaXMP+cAgAMB7lCAABjqAIAAJ52w
-Date:   Mon, 4 Feb 2019 11:09:25 +0000
-Message-ID: <28fa70e41bad4a9f814683c078e89a12@abatec.at>
-References: <20190130134202.5831-1-g.ottinger@abatec.at>
- <20190202102021.12bb0a72@archlinux>
-        <0974ce54b3da4d82b6bd3026a3de5ff3@abatec.at>
- <20190204094540.00003072@huawei.com>
-In-Reply-To: <20190204094540.00003072@huawei.com>
-Accept-Language: de-AT, en-US
-Content-Language: de-DE
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [192.168.115.56]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: 8BIT
+        id S1728657AbfBDMoq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Feb 2019 07:44:46 -0500
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:42853 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728622AbfBDMoq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Feb 2019 07:44:46 -0500
+Received: by mail-lj1-f195.google.com with SMTP id l15-v6so11387633lja.9;
+        Mon, 04 Feb 2019 04:44:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=gUMAsh6yP7V2UHWJxHmkcnfBDrErlHA2Kt7jgGm2SIU=;
+        b=UZZotEbVV6VIrtS2vjFCIoLp1/0Gr9i+JiLjZhRvRSRupEQUdIRAoys/EWW55NUEe4
+         HMfpbfEMkiet1VuBKRTz1SdusznE0TFh04FO0/Iww58xLcDPtbdy0MjvEt6Hgrfn6uMS
+         01Yjfg/Y6PFsrstR14PrtO9cW3WJY8zQpScTUhJD0zG8WRcFGybiPkOyH0HXQwI+GbmX
+         LL8T+Fq5SgQ/LRG109Dwo6q2U6xEKb3ABV3/ukamXdx7JuG7to3OgbqZFupoZH8KINam
+         cfTEgx/paoFAcc7A0koMEytG3lSmFCQaBb9Slwb3AkpUB+SafldY3C7d9uM4lw7WRMXF
+         qsuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=gUMAsh6yP7V2UHWJxHmkcnfBDrErlHA2Kt7jgGm2SIU=;
+        b=Jt1psFW+FGDdqQPRE10xt36X7V9U10QDHLdPPxQjD4HKtID13Qp7TaDpIhLbiuih6m
+         l8JPHrgiSZCh+T6iKEziVcGDn/r1NFyWZOTaByUGd29/oHsaetp1H0e7jSUGtWIoGseg
+         W/6d2A4X/qW65emZpjG3YYmyo7usGdjc9RAH1zUSsru20GVow/YTY2L9j/fq5G7YCvzK
+         5RwNodYVk1F+oLnT/68Ask3+C3/cAPE0VchQf6jkcL1ahSqDa8ZYLgdIbDLMJPzUeUIr
+         x9/ivxCrAVBubBTM2g6c1FuL5dfdUtTwwYbwJdqK4NaWwHw0R2sID357e6mdNMbDwHHP
+         IiNA==
+X-Gm-Message-State: AHQUAuYZrDprrUKJdW5Pifs1Cg8kzNEbK69zfOBVezwd8l/vneg78EDe
+        +5tDQHYGyHCyMKDmbKDGyhE=
+X-Google-Smtp-Source: AHgI3IaYbf16COfXzO3x19lLnoDwItnBs6O4JmTdOmPD6iAZxlJVvYScnEMGJH7pIQU9cYmTW6NxLQ==
+X-Received: by 2002:a2e:85c9:: with SMTP id h9-v6mr3288431ljj.101.1549284284164;
+        Mon, 04 Feb 2019 04:44:44 -0800 (PST)
+Received: from neopili.qtec.com (cpe.xe-3-0-1-778.vbrnqe10.dk.customer.tdc.net. [80.197.57.18])
+        by smtp.gmail.com with ESMTPSA id s127sm3107091lfe.8.2019.02.04.04.44.43
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 04 Feb 2019 04:44:43 -0800 (PST)
+From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
+Subject: [PATCH v4] iio: adc: ad7476: Add support for TI ADS786X ADCs
+Date:   Mon,  4 Feb 2019 13:44:41 +0100
+Message-Id: <20190204124441.18079-1-ricardo@ribalda.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The following is the patch that we are using internally to workaround the issues - I first wanted to publish the timeout/systemhang patch, because I don't have the feeling that our workaround is suitable to be mainlined:
+Add support for Texas Instruments ADS7866, ADS7867 and ADS7868
+8/10/12 bit Single channel ADC.
 
-----
-static int at91_adc_read_raw(struct iio_dev *idev,
-			     struct iio_chan_spec const *chan,
-			     int *val, int *val2, long mask)
-{
-	struct at91_adc_state *st = iio_priv(idev);
-	const int retry_timeouts[ADC_READ_RAW_RETRIES] = {200,300,500}; /* split 1 second timeout into retry intervals 200ms, 300ms, 500ms */
-	int retries;
-	int ret;
+Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
 
-	switch (mask) {
-	case IIO_CHAN_INFO_RAW:
-		mutex_lock(&st->lock);
-
-		st->chnb = chan->channel;
-		at91_adc_writel(st, AT91_ADC_CHER,
-				AT91_ADC_CH(chan->channel));
-		at91_adc_writel(st, AT91_ADC_IER, BIT(chan->channel));
-		
-		retries = 0;
-		do {
-			/* In some situations with high NOPEN/PEN Interrupt load, a started ADC conversion
-                           might get smashed by the periodic trigger enable/disable procedure. As a workaround
-                           we are allowing the at91_adc_read_raw() function to restart the ADC conversion. */
-	
-			at91_adc_writel(st, AT91_ADC_CR, AT91_ADC_START);
-			ret = wait_event_interruptible_timeout(st->wq_data_avail,
-							       st->done,
-							       msecs_to_jiffies(retry_timeouts[retries]));
-
-		} while ((++retries < ADC_READ_RAW_RETRIES) && (ret <= 0));
-
-
-		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
-		at91_adc_writel(st, AT91_ADC_CHDR,
-				AT91_ADC_CH(chan->channel));
-		
-		/* if touch is enabled (TSMODE) a delay time between channel disable and channel enable is needed 
-		otherwise the following conversion will fail. This time needs to be around 42 ADC cycles.
-		The needed delay time increases further according to the transfer time setting (TRANSFER) by 0, 2, 4
-		or 8 ADC cycles */
- 
-		usleep_range(st->channel_disable_wait_us, (st->channel_disable_wait_us * 3) / 2);
- 
-
-	
-		if (ret > 0) {
-			/* A valid conversion took place. */
-			*val = st->last_value;
-			st->last_value = 0;
-			st->done = false;
-			ret = IIO_VAL_INT;
-		} else if (ret == 0) {
-			dev_err(&idev->dev, "ADC channel %d timeout.\n", chan->channel);
-			ret = -ETIMEDOUT;
-
-		}
-
-		mutex_unlock(&st->lock);
-		return ret;
-
-	case IIO_CHAN_INFO_SCALE:
-		*val = st->vref_mv;
-		*val2 = chan->scan_type.realbits;
-		return IIO_VAL_FRACTIONAL_LOG2;
-	default:
-		break;
-	}
-	return -EINVAL;
-}
+Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
 ---
+v4: Changes by Alexandru Ardelean <ardeleanalex@gmail.com>
 
-Best wishes, Georg
+Break Kconfig into a table
 
------Ursprüngliche Nachricht-----
-Von: Jonathan Cameron [mailto:jonathan.cameron@huawei.com] 
-Gesendet: Montag, 04. Februar 2019 10:46
-An: Georg Ottinger <g.ottinger@abatec.at>
-Cc: Jonathan Cameron <jic23@kernel.org>; eugen.hristev@microchip.com; Stefan Etzlstorfer <s.etzlstorfer@abatec.at>; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Nicolas Ferre <nicolas.ferre@microchip.com>; Alexandre Belloni <alexandre.belloni@bootlin.com>; Ludovic Desroches <ludovic.desroches@microchip.com>; David S. Miller <davem@davemloft.net>; Ard Biesheuvel <ard.biesheuvel@linaro.org>; Kees Cook <keescook@chromium.org>; linux-iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; Maxime Ripard <maxime.ripard@bootlin.com>
-Betreff: Re: [PATCH] iio: adc: at91: disable adc channel interrupt in timeout case
+ drivers/iio/adc/Kconfig  | 11 +++++++----
+ drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
+ 2 files changed, 27 insertions(+), 4 deletions(-)
 
-On Mon, 4 Feb 2019 07:17:07 +0000
-Georg Ottinger <g.ottinger@abatec.at> wrote:
-
-> Actually this issue occurred to us with an concrete product, where we experienced a system hang at -20 °C.
-> It was triggered by a race condition between the Touch Trigger and the Channel Trigger of the ADC. Once triggered we got in to the situation where an ongoing Channel Conversion was lost (Timeout case).When we queried a second channel than we got a system hang. Investigating this issue we developed an error demonstrator - reading alternating two channels as fast as possible (when Touch is enabled). This also provokes this issue at room temperature.
-> 
-> For the error demonstrator use following commandline to compile:
-> 
-> $ arm-buildroot-linux-gnueabihf-gcc adc_demo_error.c -D2ND_CHANNEL -o 
-> adc_demo_error2
-> 
-> -------------
-> // adc_demo_error.c
-> #include <unistd.h>
-> #include <fcntl.h>
-> 
-> #define VLEN 10
-> 
-> int main()
-> {
->   int fd_adc,fd_adc2;
->   int ret;
->   char dummy[VLEN];
->   
->   fd_adc = open 
-> ("/sys/devices/platform/ahb/ahb:apb/f8018000.adc/iio:device0/in_voltag
-> e4_raw",O_RDONLY);
-> #ifdef 2ND_CHANNEL
->   fd_adc2 = open 
-> ("/sys/devices/platform/ahb/ahb:apb/f8018000.adc/iio:device0/in_voltag
-> e5_raw",O_RDONLY);
-> #endif
-> 
->   while(1) {
-> 
->     lseek(fd_adc, 0, SEEK_SET);
->     ret = read(fd_adc, dummy, VLEN);
-> #ifdef 2ND_CHANNEL
->     lseek(fd_adc2, 0, SEEK_SET);
->     ret = read(fd_adc2, dummy, VLEN);
-> #endif
-> 
->   }
-> }
-> 
-> ------------
-> 
-> 
-> Greeting, Georg
-Hi Georg,
-
-Thanks for the detailed error report and reproducer.
-
-What has me wondering now is where the race is that is triggering this?
-Could you talk us through it?  I don't know this driver that well so probably much quicker for you to fill in the gaps rather than me try to figure out the race path!
-
-I have no problem with defense in depth (with appropriate comments) but I'd like to close that down as well.  If it really is unsolvable I'd like at least to have some clear comments in the code explaining why.
-
-Thanks,
-
-Jonathan
-
-> 
-> -----Ursprüngliche Nachricht-----
-> Von: Jonathan Cameron [mailto:jic23@kernel.org]
-> Gesendet: Samstag, 02. Februar 2019 11:21
-> An: Georg Ottinger <g.ottinger@abatec.at>
-> Cc: eugen.hristev@microchip.com; Stefan Etzlstorfer 
-> <s.etzlstorfer@abatec.at>; Hartmut Knaack <knaack.h@gmx.de>; 
-> Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler 
-> <pmeerw@pmeerw.net>; Nicolas Ferre <nicolas.ferre@microchip.com>; 
-> Alexandre Belloni <alexandre.belloni@bootlin.com>; Ludovic Desroches 
-> <ludovic.desroches@microchip.com>; David S. Miller 
-> <davem@davemloft.net>; Ard Biesheuvel <ard.biesheuvel@linaro.org>; 
-> Kees Cook <keescook@chromium.org>; linux-iio@vger.kernel.org; 
-> linux-arm-kernel@lists.infradead.org; linux-kernel@vger.kernel.org; 
-> Maxime Ripard <maxime.ripard@bootlin.com>
-> Betreff: Re: [PATCH] iio: adc: at91: disable adc channel interrupt in 
-> timeout case
-> 
-> On Wed, 30 Jan 2019 14:42:02 +0100
-> <g.ottinger@abatec.at> wrote:
-> 
-> > From: Georg Ottinger <g.ottinger@abatec.at>
-> > 
-> > Having a brief look at at91_adc_read_raw() it is obvious that in the 
-> > case of a timeout the setting of AT91_ADC_CHDR and AT91_ADC_IDR 
-> > registers is omitted. If 2 different channels are queried we can end 
-> > up with a situation where two interrupts are enabled, but only one 
-> > interrupt is cleared in the interrupt handler. Resulting in a 
-> > interrupt loop and a system hang.
-> > 
-> > Signed-off-by: Georg Ottinger <g.ottinger@abatec.at>
-> 
-> Whilst I agree this looks like a correct change, I would like Maxime to take a look as he is obviously much more familiar with the driver than I am.
-> 
-> I suspect you can only actually get there in the event of a hardware failure as that isn't actually a timeout you should ever see.
-> Could be wrong though!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/adc/at91_adc.c | 28 +++++++++++++++++-----------
-> >  1 file changed, 17 insertions(+), 11 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c 
-> > index 75d2f7358..596841a3c 100644
-> > --- a/drivers/iio/adc/at91_adc.c
-> > +++ b/drivers/iio/adc/at91_adc.c
-> > @@ -704,23 +704,29 @@ static int at91_adc_read_raw(struct iio_dev *idev,
-> >  		ret = wait_event_interruptible_timeout(st->wq_data_avail,
-> >  						       st->done,
-> >  						       msecs_to_jiffies(1000));
-> > -		if (ret == 0)
-> > -			ret = -ETIMEDOUT;
-> > -		if (ret < 0) {
-> > -			mutex_unlock(&st->lock);
-> > -			return ret;
-> > -		}
-> > -
-> > -		*val = st->last_value;
-> >  
-> > +		/* Disable interrupts, regardless if adc conversion was
-> > +		 * successful or not
-> > +		 */
-> >  		at91_adc_writel(st, AT91_ADC_CHDR,
-> >  				AT91_ADC_CH(chan->channel));
-> >  		at91_adc_writel(st, AT91_ADC_IDR, BIT(chan->channel));
-> >  
-> > -		st->last_value = 0;
-> > -		st->done = false;
-> > +		if (ret > 0) {
-> > +			/* a valid conversion took place */
-> > +			*val = st->last_value;
-> > +			st->last_value = 0;
-> > +			st->done = false;
-> > +			ret = IIO_VAL_INT;
-> > +		} else if (ret == 0) {
-> > +			/* conversion timeout */
-> > +			dev_err(&idev->dev, "ADC Channel %d timeout.\n",
-> > +				chan->channel);
-> > +			ret = -ETIMEDOUT;
-> > +		}
-> > +
-> >  		mutex_unlock(&st->lock);
-> > -		return IIO_VAL_INT;
-> > +		return ret;
-> >  
-> >  	case IIO_CHAN_INFO_SCALE:
-> >  		*val = st->vref_mv;
-> 
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index f9354e5ee65c..3d82727fa977 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -57,14 +57,17 @@ config AD7298
+ 	  module will be called ad7298.
+ 
+ config AD7476
+-	tristate "Analog Devices AD7476 and similar 1-channel ADCs driver"
++	tristate "Analog Devices AD7476 1-channel ADCs driver and other similar devices from AD an TI"
+ 	depends on SPI
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+-	  Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
+-	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
+-	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
++	  Say yes here to build support for the following SPI analog to
++	  digital converters (ADCs):
++	  Analog Devices: AD7273, AD7274, AD7276, AD7277, AD7278, AD7475,
++	  AD7476, AD7477, AD7478, AD7466, AD7467, AD7468, AD7495, AD7910,
++	  AD7920.
++	  Texas Instruments: ADS7866, ADS7867, ADS7868.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7476.
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 0549686b9ef8..76747488044b 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
+ 	ID_ADC081S,
+ 	ID_ADC101S,
+ 	ID_ADC121S,
++	ID_ADS7866,
++	ID_ADS7867,
++	ID_ADS7868,
+ };
+ 
+ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+@@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
+ #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
+ 		BIT(IIO_CHAN_INFO_RAW))
+ #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
++#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
++		BIT(IIO_CHAN_INFO_RAW))
+ 
+ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 	[ID_AD7091R] = {
+@@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
+ 		.channel[0] = ADC081S_CHAN(12),
+ 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
+ 	},
++	[ID_ADS7866] = {
++		.channel[0] = ADS786X_CHAN(12),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADS7867] = {
++		.channel[0] = ADS786X_CHAN(10),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
++	[ID_ADS7868] = {
++		.channel[0] = ADS786X_CHAN(8),
++		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
++	},
+ };
+ 
+ static const struct iio_info ad7476_info = {
+@@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
+ 	{"adc081s", ID_ADC081S},
+ 	{"adc101s", ID_ADC101S},
+ 	{"adc121s", ID_ADC121S},
++	{"ads7866", ID_ADS7866},
++	{"ads7867", ID_ADS7867},
++	{"ads7868", ID_ADS7868},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(spi, ad7476_id);
+-- 
+2.20.1
 
