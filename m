@@ -2,177 +2,245 @@ Return-Path: <SRS0=iTXR=QM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B63FC282D7
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 18:30:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2A7C282CB
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 19:58:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CF34220811
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 18:30:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B4056217F9
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 19:58:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KRrDIofH"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="YZAu6YUR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730127AbfBESah (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Feb 2019 13:30:37 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:44621 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728993AbfBESag (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2019 13:30:36 -0500
-Received: by mail-lj1-f196.google.com with SMTP id k19-v6so3719821lji.11;
-        Tue, 05 Feb 2019 10:30:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zsRpKuqcR4XzY4cG+nYq+fp6x32HO8rPZGifUy0n3uE=;
-        b=KRrDIofHM71yRNsLZ7jpn+e6X12IbCkgCBBaa2bvKOb2bvdAgrY1+cUWqtJCAjxDLN
-         9yA8N7lABhKFvfldJUJcusYAmbOIoAVTuq558gp6BJtAMAd0csDujiNivmzI5AZ2JGQD
-         XnhaOXwV6I8eDWTu8fj4aNuG5dcchlyzY47YmbqyyOi4W8Yes2IOHzXCEPRrW0pslXSG
-         VtYZYFso7akSqObNfQJJgoLeaMYX20lpsiGATfhJhkia6of8UPVDj2WRO1iQWIQLpCd4
-         VSrTMmWvbhB5OugzxzfpfYo/77RMLTdnNfPTavZtp4plf+x6jMjuu8hqorQ2bVUCZL98
-         StVA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zsRpKuqcR4XzY4cG+nYq+fp6x32HO8rPZGifUy0n3uE=;
-        b=haQVy24rUpmYym1nEu4Ji8EaijkGADtHJ4b9oS99ykhmP1nEWMcfnnRGXeWIe5Uk+Z
-         Lx20QOeFqz/S9z3PVAhWLf8bWicebn2MIsLdnrC3Kwnam/P8DcaEWrzAc9tT9fyfFy2S
-         /+WzyRds05N0lH+zLOkDrjirxEnoLlGbbbPFTlC/XAdyhcqWVS/RUa5eO/ZiofF4pfor
-         EG3hWzJ9VIf6IAYZdA0ucAi1N8jiivk+hMElSSOzvRMiWaclWmCioU4sTkXHfczU6NgC
-         YUMnPmH6TJnphGigJxvpGs3+h+ruYuKT9KpJfhLSw/H1JcYZnQZKh4bvxYzn1p0e3k1f
-         Tl9Q==
-X-Gm-Message-State: AHQUAubx0WG4JZRDkLLDarHReCGWHCzCYK611zoe10cv0mNvSDYQosNf
-        xUa7zcoUl8rDL1vRkFZB/Wk=
-X-Google-Smtp-Source: AHgI3IZnjfpGALi+7YoLdPdkNEl3xKVY0NcGochiM0myzR4+z+nChy6WjgpHUgR/c98++SCjEsTl1g==
-X-Received: by 2002:a2e:2a06:: with SMTP id q6-v6mr3603183ljq.37.1549391433209;
-        Tue, 05 Feb 2019 10:30:33 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id r29-v6sm3339904ljd.44.2019.02.05.10.30.32
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 05 Feb 2019 10:30:32 -0800 (PST)
-Date:   Tue, 5 Feb 2019 19:30:09 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc:     jic23@kernel.org, thierry.reding@gmail.com, robh+dt@kernel.org,
-        mark.rutland@arm.com, alexandre.torgue@st.com,
-        mcoquelin.stm32@gmail.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        vilhelm.gray@gmail.com, linux-stm32@st-md-mailman.stormreply.com
-Subject: Re: [PATCH 2/4] pwm: stm32-lp: Add power management support
-Message-ID: <20190205183005.GA13960@arch>
-References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
- <1549370429-19116-3-git-send-email-fabrice.gasnier@st.com>
+        id S1727884AbfBET6M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Feb 2019 14:58:12 -0500
+Received: from ns.pmeerw.net ([84.19.176.117]:54364 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727572AbfBET6M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 5 Feb 2019 14:58:12 -0500
+Received: by ns.pmeerw.net (Postfix, from userid 1000)
+        id F3CD3E0193; Tue,  5 Feb 2019 20:58:09 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=pmeerw.net; s=mail;
+        t=1549396689; bh=rbdJB5Xn1hjPVzCi1/CVY1++o7hBicZjSeQqmuA+GTM=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=YZAu6YURC5clWlsQYpT5oi3WVaratIu3MOyKP+Osog2BZGWBoJbxBxp4O6pSaUU8M
+         MFBDMnxxYCS/wCg4QxQ6d/5a7LmUBbnbYCPtIfAjWps97VCzOwLlm3esSrm+NdrpBP
+         ZKy5uOC6Rthr71Q4nZdC04svjLRlZOQCenRqq7jM=
+Received: from localhost (localhost [127.0.0.1])
+        by ns.pmeerw.net (Postfix) with ESMTP id CD4EBE0157;
+        Tue,  5 Feb 2019 20:58:09 +0100 (CET)
+Date:   Tue, 5 Feb 2019 20:58:09 +0100 (CET)
+From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+cc:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        giuliano.belinassi@usp.br, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: Re: [PATCH v3 1/4] staging: iio: ad7780: add gain & filter gpio
+ support
+In-Reply-To: <786543cbd8d60776083bcaca66f83502f23f561b.1549385784.git.renatogeh@gmail.com>
+Message-ID: <alpine.DEB.2.21.1902052054330.1726@vps.pmeerw.net>
+References: <cover.1549385784.git.renatogeh@gmail.com> <786543cbd8d60776083bcaca66f83502f23f561b.1549385784.git.renatogeh@gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <1549370429-19116-3-git-send-email-fabrice.gasnier@st.com>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Feb 05, 2019 at 01:40:27PM +0100, Fabrice Gasnier wrote:
-> Add suspend/resume PM sleep ops. When going to low power, disable
-> active PWM channel. Active PWM channel is resumed, by calling
-> pwm_apply_state(). This is inspired by Thierry's comment in [1].
-> Don't touch inactive channels, as it may be used by other LPTimer MFD
-> child driver.
-> [1]https://lkml.org/lkml/2017/12/5/175
->
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+On Tue, 5 Feb 2019, Renato Lui Geh wrote:
+
+> Previously, the AD7780 driver only supported gpio for the 'powerdown'
+> pin. This commit adds suppport for the 'gain' and 'filter' pin.
+
+comments below
+ 
+> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+> Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+> Co-developed-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
 > ---
->  drivers/pwm/pwm-stm32-lp.c | 38 ++++++++++++++++++++++++++++++++++++++
->  1 file changed, 38 insertions(+)
->
-> diff --git a/drivers/pwm/pwm-stm32-lp.c b/drivers/pwm/pwm-stm32-lp.c
-> index 0059b24c..0c40d48 100644
-> --- a/drivers/pwm/pwm-stm32-lp.c
-> +++ b/drivers/pwm/pwm-stm32-lp.c
-> @@ -13,6 +13,7 @@
->  #include <linux/mfd/stm32-lptimer.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/pinctrl/consumer.h>
->  #include <linux/platform_device.h>
->  #include <linux/pwm.h>
->
-> @@ -20,6 +21,8 @@ struct stm32_pwm_lp {
->  	struct pwm_chip chip;
->  	struct clk *clk;
->  	struct regmap *regmap;
-> +	struct pwm_state suspend;
-> +	bool suspended;
->  };
->
->  static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
-> @@ -223,6 +226,40 @@ static int stm32_pwm_lp_remove(struct platform_device *pdev)
->  	return pwmchip_remove(&priv->chip);
->  }
->
-> +#ifdef CONFIG_PM_SLEEP
+> Changes in v3:
+> 	- Renamed ad7780_chip_info's filter to odr
+> 	- Renamed ad778x_filter to ad778x_odr_avail
+> 	- Changed vref variable from unsigned int to unsigned long long to
+> 	  avoid overflow
+> 	- Removed unnecessary AD_SD_CHANNEL macro
+> 
+> drivers/staging/iio/adc/ad7780.c | 95 ++++++++++++++++++++++++++++++--
+> 1 file changed, 89 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7780.c
+> b/drivers/staging/iio/adc/ad7780.c
+> index c4a85789c2db..6e4357800d31 100644
+> --- a/drivers/staging/iio/adc/ad7780.c
+> +++ b/drivers/staging/iio/adc/ad7780.c
+> @@ -39,6 +39,15 @@
+> #define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
+> #define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
+> 
+> +#define AD7780_GAIN_GPIO	0
+> +#define AD7780_FILTER_GPIO	1
+> +
+> +#define AD7780_GAIN_MIDPOINT	64
+> +#define AD7780_FILTER_MIDPOINT	13350
+> +
+> +static const unsigned int ad778x_gain[2]      = { 1, 128 };
+> +static const unsigned int ad778x_odr_avail[2] = { 10000, 16700 };
+> +
+> struct ad7780_chip_info {
+> 	struct iio_chan_spec	channel;
+> 	unsigned int		pattern_mask;
+> @@ -50,7 +59,11 @@ struct ad7780_state {
+> 	const struct ad7780_chip_info	*chip_info;
+> 	struct regulator		*reg;
+> 	struct gpio_desc		*powerdown_gpio;
+> -	unsigned int	gain;
+> +	struct gpio_desc		*gain_gpio;
+> +	struct gpio_desc		*filter_gpio;
+> +	unsigned int			gain;
+> +	unsigned int			odr;
+> +	unsigned int			int_vref_mv;
+> 
+> 	struct ad_sigma_delta sd;
+> };
+> @@ -104,17 +117,65 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+> 		voltage_uv = regulator_get_voltage(st->reg);
+> 		if (voltage_uv < 0)
+> 			return voltage_uv;
+> -		*val = (voltage_uv / 1000) * st->gain;
+> +		voltage_uv /= 1000;
+> +		*val = voltage_uv * st->gain;
+> 		*val2 = chan->scan_type.realbits - 1;
+> +		st->int_vref_mv = voltage_uv;
+> 		return IIO_VAL_FRACTIONAL_LOG2;
+> 	case IIO_CHAN_INFO_OFFSET:
+> 		*val = -(1 << (chan->scan_type.realbits - 1));
+> 		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
 
-You might consider dropping ifdefs and marking pm functions with
-__maybe_unused instead. In case CONFIG_PM_SLEEP=n then these two guys
-will be removed and pm ops structure will be empty.
+was this missing before?
+this is not covered by the patch description and seems unrelated
+needs to be added to the channel spec?
 
-> +static int stm32_pwm_lp_suspend(struct device *dev)
+> +		*val = st->odr;
+> +		return IIO_VAL_INT;
+> 	}
+> 
+> 	return -EINVAL;
+> }
+> 
+> +static int ad7780_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val,
+> +			    int val2,
+> +			    long m)
 > +{
-> +	struct stm32_pwm_lp *priv = dev_get_drvdata(dev);
+> +	struct ad7780_state *st = iio_priv(indio_dev);
+> +	const struct ad7780_chip_info *chip_info = st->chip_info;
+> +	unsigned long long vref;
+> +	unsigned int full_scale, gain;
 > +
-
-I guess you first need to get platform_device from dev and eventually
-stm32_pwm_lp. Wondering how this works now.
-
-> +	pwm_get_state(&priv->chip.pwms[0], &priv->suspend);
-> +	priv->suspended = priv->suspend.enabled;
-> +
-> +	/* safe to call pwm_disable() for already disabled pwm */
-> +	pwm_disable(&priv->chip.pwms[0]);
-> +
-> +	return pinctrl_pm_select_sleep_state(dev);
-> +}
-> +
-> +static int stm32_pwm_lp_resume(struct device *dev)
-> +{
-> +	struct stm32_pwm_lp *priv = dev_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = pinctrl_pm_select_default_state(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Only restore suspended pwm, not to disrupt other MFD child */
-> +	if (!priv->suspended)
+> +	if (!chip_info->is_ad778x)
 > +		return 0;
-
-Would it make sense to use suspend.enabled directly?
-
 > +
-> +	return pwm_apply_state(&priv->chip.pwms[0], &priv->suspend);
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (val != 0)
+> +			return -EINVAL;
+> +
+> +		vref = st->int_vref_mv * 1000000LL;
+> +		full_scale = 1 << (chip_info->channel.scan_type.realbits - 1);
+> +		gain = DIV_ROUND_CLOSEST(vref, full_scale);
+> +		gain = DIV_ROUND_CLOSEST(gain, val2);
+> +		st->gain = gain;
+> +		if (gain < AD7780_GAIN_MIDPOINT)
+> +			gain = 0;
+> +		else
+> +			gain = 1;
+> +		gpiod_set_value(st->gain_gpio, gain);
+> +	break;
+
+indentation with the other, previous statements
+
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		if (1000*val + val2/1000 < AD7780_FILTER_MIDPOINT)
+
+space around operators missing
+
+> +			val = 0;
+> +		else
+> +			val = 1;
+> +		st->odr = ad778x_odr_avail[val];
+> +		gpiod_set_value(st->filter_gpio, val);
+> +	break;
+> +	}
+> +
+> +	return 0;
 > +}
-> +#endif
 > +
-> +static SIMPLE_DEV_PM_OPS(stm32_pwm_lp_pm_ops, stm32_pwm_lp_suspend,
-> +			 stm32_pwm_lp_resume);
+> static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+> 				     unsigned int raw_sample)
+> {
+> @@ -126,10 +187,8 @@ static int ad7780_postprocess_sample(struct
+> ad_sigma_delta *sigma_delta,
+> 		return -EIO;
+> 
+> 	if (chip_info->is_ad778x) {
+> -		if (raw_sample & AD7780_GAIN)
+> -			st->gain = 1;
+> -		else
+> -			st->gain = 128;
+> +		st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
+> +		st->odr = ad778x_odr_avail[raw_sample & AD7780_FILTER];
+> 	}
+> 
+> 	return 0;
+> @@ -173,6 +232,7 @@ static const struct ad7780_chip_info
+> ad7780_chip_info_tbl[] = {
+> 
+> static const struct iio_info ad7780_info = {
+> 	.read_raw = ad7780_read_raw,
+> +	.write_raw = ad7780_write_raw,
+> };
+> 
+> static int ad7780_probe(struct spi_device *spi)
+> @@ -222,6 +282,29 @@ static int ad7780_probe(struct spi_device *spi)
+> 		goto error_disable_reg;
+> 	}
+> 
+> +	if (st->chip_info->is_ad778x) {
+> +		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
+> +							"gain",
+> +							GPIOD_OUT_HIGH);
+> +		if (IS_ERR(st->gain_gpio)) {
+> +			ret = PTR_ERR(st->gain_gpio);
+> +			dev_err(&spi->dev, "Failed to request gain GPIO:
+> %d\n",
+> +				ret);
+> +			goto error_disable_reg;
+> +		}
 > +
->  static const struct of_device_id stm32_pwm_lp_of_match[] = {
->  	{ .compatible = "st,stm32-pwm-lp", },
->  	{},
-> @@ -235,6 +272,7 @@ static int stm32_pwm_lp_remove(struct platform_device *pdev)
->  	.driver	= {
->  		.name = "stm32-pwm-lp",
->  		.of_match_table = of_match_ptr(stm32_pwm_lp_of_match),
-> +		.pm = &stm32_pwm_lp_pm_ops,
->  	},
->  };
->  module_platform_driver(stm32_pwm_lp_driver);
-> --
-> 1.9.1
->
+> +		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
+> +							  "filter",
+> +							  GPIOD_OUT_HIGH);
+> +		if (IS_ERR(st->filter_gpio)) {
+> +			ret = PTR_ERR(st->filter_gpio);
+> +			dev_err(&spi->dev,
+> +				"Failed to request filter GPIO: %d\n",
+> +				ret);
+> +			goto error_disable_reg;
+> +		}
+> +	}
+> +
+> 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> 	if (ret)
+> 		goto error_disable_reg;
+> 
+
+-- 
+
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
