@@ -6,33 +6,33 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D1EC282CB
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 12:41:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76C06C282CB
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 12:41:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9AFB72083B
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 12:41:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4DDE220844
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Feb 2019 12:41:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728564AbfBEMk6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Feb 2019 07:40:58 -0500
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:23103 "EHLO
+        id S1726742AbfBEMk4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Feb 2019 07:40:56 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:50378 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725947AbfBEMk4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2019 07:40:56 -0500
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x15CaEqt002709;
-        Tue, 5 Feb 2019 13:40:43 +0100
+        by vger.kernel.org with ESMTP id S1726065AbfBEMkz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Feb 2019 07:40:55 -0500
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x15CZoAg027449;
+        Tue, 5 Feb 2019 13:40:42 +0100
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2qd1v06pqs-1
+        by mx07-00178001.pphosted.com with ESMTP id 2qdjdnkkn3-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Tue, 05 Feb 2019 13:40:43 +0100
+        Tue, 05 Feb 2019 13:40:42 +0100
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id F032E3A;
-        Tue,  5 Feb 2019 12:40:42 +0000 (GMT)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6D25434;
+        Tue,  5 Feb 2019 12:40:41 +0000 (GMT)
 Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CFCC729AF;
-        Tue,  5 Feb 2019 12:40:42 +0000 (GMT)
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 420D729AC;
+        Tue,  5 Feb 2019 12:40:41 +0000 (GMT)
 Received: from localhost (10.75.127.47) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 5 Feb 2019 13:40:42
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 5 Feb 2019 13:40:40
  +0100
 From:   Fabrice Gasnier <fabrice.gasnier@st.com>
 To:     <jic23@kernel.org>, <thierry.reding@gmail.com>,
@@ -44,16 +44,16 @@ CC:     <mark.rutland@arm.com>, <alexandre.torgue@st.com>,
         <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
         <vilhelm.gray@gmail.com>,
         <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH 3/4] dt-bindings: iio: stm32-lptimer-counter: document pinctrl sleep state
-Date:   Tue, 5 Feb 2019 13:40:28 +0100
-Message-ID: <1549370429-19116-4-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 1/4] dt-bindings: pwm-stm32-lp: document pinctrl sleep state
+Date:   Tue, 5 Feb 2019 13:40:26 +0100
+Message-ID: <1549370429-19116-2-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
 References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG5NODE3.st.com
+X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG5NODE3.st.com
  (10.75.127.15)
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-02-05_05:,,
  signatures=0
@@ -62,38 +62,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for optional pinctrl sleep state that can be used by
-STM32 LPTimer encoder/counter.
+Add documentation for pinctrl sleep state on STM32 LPTimer PWM.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- .../devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt         | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt b/Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
-index a04aa5c..e90bc47 100644
---- a/Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
-+++ b/Documentation/devicetree/bindings/iio/counter/stm32-lptimer-cnt.txt
-@@ -10,8 +10,9 @@ See ../mfd/stm32-lptimer.txt for details about the parent node.
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+index bd23302..6521bc4 100644
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
++++ b/Documentation/devicetree/bindings/pwm/pwm-stm32-lp.txt
+@@ -11,8 +11,10 @@ Required parameters:
+ 			bindings defined in pwm.txt.
  
- Required properties:
- - compatible:		Must be "st,stm32-lptimer-counter".
+ Optional properties:
 -- pinctrl-names: 	Set to "default".
--- pinctrl-0: 		List of phandles pointing to pin configuration nodes,
+-- pinctrl-0: 		Phandle pointing to pin configuration node for PWM.
 +- pinctrl-names: 	Set to "default". An additional "sleep" state can be
-+			defined to set pins in sleep state.
-+- pinctrl-n: 		List of phandles pointing to pin configuration nodes,
- 			to set IN1/IN2 pins in mode of operation for Low-Power
- 			Timer input on external pin.
++			defined to set pins in sleep state when in low power.
++- pinctrl-n: 		Phandle(s) pointing to pin configuration node for PWM,
++			respectively for "default" and "sleep" states.
  
-@@ -21,7 +22,8 @@ Example:
- 		...
- 		counter {
- 			compatible = "st,stm32-lptimer-counter";
+ Example:
+ 	timer@40002400 {
+@@ -21,7 +23,8 @@ Example:
+ 		pwm {
+ 			compatible = "st,stm32-pwm-lp";
+ 			#pwm-cells = <3>;
 -			pinctrl-names = "default";
 +			pinctrl-names = "default", "sleep";
- 			pinctrl-0 = <&lptim1_in_pins>;
-+			pinctrl-1 = <&lptim1_sleep_in_pins>;
+ 			pinctrl-0 = <&lppwm1_pins>;
++			pinctrl-1 = <&lppwm1_sleep_pins>;
  		};
  	};
 -- 
