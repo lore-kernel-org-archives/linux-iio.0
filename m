@@ -2,120 +2,144 @@ Return-Path: <SRS0=djfl=QN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32022C169C4
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 14:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F82C169C4
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 15:00:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 07E7C2080D
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 14:55:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 75F182175B
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 15:00:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="xtnmB8Mj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730902AbfBFOzP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Feb 2019 09:55:15 -0500
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:46938 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726767AbfBFOzP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Feb 2019 09:55:15 -0500
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x16EpNMb001272;
-        Wed, 6 Feb 2019 15:54:53 +0100
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2qfv9j9k5a-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 06 Feb 2019 15:54:53 +0100
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 786D034;
-        Wed,  6 Feb 2019 14:54:52 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 488F52C3C;
-        Wed,  6 Feb 2019 14:54:52 +0000 (GMT)
-Received: from [10.48.0.167] (10.75.127.45) by SFHDAG5NODE3.st.com
- (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 6 Feb
- 2019 15:54:51 +0100
-Subject: Re: [PATCH 2/4] pwm: stm32-lp: Add power management support
-To:     Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <alexandre.torgue@st.com>, <mcoquelin.stm32@gmail.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pwm@vger.kernel.org>,
-        <vilhelm.gray@gmail.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Tomasz Duszynski <tduszyns@gmail.com>
-References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
- <1549370429-19116-3-git-send-email-fabrice.gasnier@st.com>
- <20190205204732.zrbhgyxnvjbwfyw4@pengutronix.de>
- <20190205222522.GB1372@mithrandir>
- <6584a59b-657d-adc9-fab2-eb1a9baba05d@st.com>
- <20190206085405.pdiwd3c6wjog5hl7@pengutronix.de>
- <20190206125545.GI21676@ulmo>
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <ddb93754-2734-e4c2-a209-517984c6d814@st.com>
-Date:   Wed, 6 Feb 2019 15:54:50 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        id S1727875AbfBFPAJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Feb 2019 10:00:09 -0500
+Received: from aserp2130.oracle.com ([141.146.126.79]:52640 "EHLO
+        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726767AbfBFPAI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Feb 2019 10:00:08 -0500
+Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
+        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x16EwpP0044451;
+        Wed, 6 Feb 2019 14:59:33 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=1sT5PE6KsS9qOEFE1dkFfDpGU9Dm73ua+QSmea/cg1w=;
+ b=xtnmB8Mj7az9FfYg4phKiZdkt24EEgze9QoyuLHe+NZbuKvbydclL2rekLBZ1T8UX21H
+ TDovaM6+mnoreHDYe2n/U463jh12BBLueVVRjJTOdGPYAM1LynDOZ1s8WMEpa6szvT+1
+ 2nyQhDuzbB8syqw1uAMcZEV6e6VoGcbvylP1MB785HuIgx4Go8EG3KmFKI7L4QBk7McH
+ umjmibKUNHBYe++rJqKF8JPmpvDNzUa+r9KJz+rBFJV6fshxxoaaohyhBw9CGynNHBMb
+ +3HCYMohs79JWsyYineULJa/0qBnCt/zmtGqxc4Pzr3PQI5/qkr/yvNkcfNtK8rySOhG RA== 
+Received: from userv0022.oracle.com (userv0022.oracle.com [156.151.31.74])
+        by aserp2130.oracle.com with ESMTP id 2qd97f1fbd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 06 Feb 2019 14:59:33 +0000
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userv0022.oracle.com (8.14.4/8.14.4) with ESMTP id x16ExWB9016319
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 6 Feb 2019 14:59:32 GMT
+Received: from abhmp0019.oracle.com (abhmp0019.oracle.com [141.146.116.25])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x16ExU0c018913;
+        Wed, 6 Feb 2019 14:59:30 GMT
+Received: from kadam (/41.202.241.45)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Wed, 06 Feb 2019 14:59:29 +0000
+Date:   Wed, 6 Feb 2019 17:59:19 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Beniamin Bia <biabeniamin@outlook.com>
+Cc:     jic23@kernel.org, devel@driverdev.osuosl.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        pmeerw@pmeerw.net, knaack.h@gmx.de,
+        Beniamin Bia <beniamin.bia@analog.com>
+Subject: Re: [PATCH 1/2] staging: iio: frequency: ad9834: Move frequency to
+ standard iio types
+Message-ID: <20190206145919.GA1978@kadam>
+References: <20190206120542.16617-1-biabeniamin@outlook.com>
 MIME-Version: 1.0
-In-Reply-To: <20190206125545.GI21676@ulmo>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.45]
-X-ClientProxiedBy: SFHDAG7NODE3.st.com (10.75.127.21) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-02-06_09:,,
- signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190206120542.16617-1-biabeniamin@outlook.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9158 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1902060118
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/6/19 1:55 PM, Thierry Reding wrote:
-> On Wed, Feb 06, 2019 at 09:54:05AM +0100, Uwe Kleine-König wrote:
->> On Wed, Feb 06, 2019 at 09:42:48AM +0100, Fabrice Gasnier wrote:
->>> If you agree with the current approach, I can send a V2 with Tomasz's
->>> suggestion to remove the ifdefs and use __maybe_unused instead.
->>
->> I think the suspend callback should have something like:
->>
->> 	if (is_still_enabled) {
->> 		/*
->> 		 * The consumer didn't stop us, so refuse to suspend.
->> 		 */
->> 		dev_err(dev, "The consumer didn't stop us, so refuse to suspend.\n");
->> 		return -EBUSY;
->> 	}
->>
->> This way there are no bad surprises if the pwm is suspended before its
->> consumer and it's obvious what is missing.
-
-Thierry, Uwe,
-
-When the pwm is suspended before its consumer, the bad surprise is the
-suspend request will fail... I'm not sure a new attempt may be better.
-So, it looks like the only way to have this clean is by implementing the
-device link e.g. via pwm_get() ?
-
+On Wed, Feb 06, 2019 at 02:05:41PM +0200, Beniamin Bia wrote:
+> Frequency attribute is added with a standard type from iio framework
+> instead of custom attribute. This is a small step towards removing any
+> unnecessary custom attribute.
 > 
-> Something that just occurred to me: perhaps as part of pwm_get() we
-> should track where we were being requested from so that we could give
-> hints in situations like this as to where the consumer is that forgot
-> to suspend the PWM.
+> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
 
-The current approach handles the situation where the consumer forgot to
-suspend the PWM... I can add some warning about that in the suspend
-routine, incl the label.
 
-What do you think? What's the best approach ?
+This doesn't match your email.  You should probably add a From: to
+give your @analog.com address authorship credit.
 
-Please advise,
-BR,
-Fabrice
+> ---
+>  drivers/staging/iio/frequency/ad9834.c | 97 +++++++++++++++++++++-----
+>  1 file changed, 80 insertions(+), 17 deletions(-)
 > 
-> I suppose we already have pwm_device.label to help with this, but
-> perhaps we could improve things if we stored __builtin_return_address
-> during pwm_get() to help users pinpoint where they need to look.
-> 
-> Thierry
-> 
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+> index f036f75d1f22..370e8263899e 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -29,8 +29,7 @@
+>  /* Registers */
+>  
+>  #define AD9834_REG_CMD		0
+> -#define AD9834_REG_FREQ0	BIT(14)
+> -#define AD9834_REG_FREQ1	BIT(15)
+> +#define AD9834_REG_FREQ(chann)	(BIT(14) << (chann))
+
+Only one 'n' in "chan", please.  But we actually pass the address not
+the channel here so that was unexpected to me.  I think the channel is
+always the same as the address?  So maybe it doesn't matter.
+
+>  #define AD9834_REG_PHASE0	(BIT(15) | BIT(14))
+>  #define AD9834_REG_PHASE1	(BIT(15) | BIT(14) | BIT(13))
+>  
+> @@ -81,6 +80,9 @@ struct ad9834_state {
+>  	struct spi_message		freq_msg;
+>  	struct mutex                    lock;   /* protect sensor state */
+>  
+> +	unsigned long			frequency0;
+> +	unsigned long			frequency1;
+
+I don't understand why we have two frequencies when we only ever use
+one.
+
+> +
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> @@ -100,6 +102,25 @@ enum ad9834_supported_device_ids {
+>  	ID_AD9838,
+>  };
+>  
+> +#define AD9833_CHANNEL(_chan) {						\
+
+No need for the underscore.  (I think?)
+
+> +		.type = IIO_ALTVOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.output = 1,						\
+> +		.address = (_chan),					\
+> +		.channel = (_chan),					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY)	\
+> +}
+
+regards,
+dan carpenter
+
+
