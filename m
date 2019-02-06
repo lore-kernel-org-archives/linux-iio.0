@@ -2,83 +2,78 @@ Return-Path: <SRS0=djfl=QN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4B8C169C4
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 08:54:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7E35C169C4
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 10:42:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 646262081B
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 08:54:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD68F2175B
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Feb 2019 10:42:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728331AbfBFIyO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Feb 2019 03:54:14 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:32881 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728278AbfBFIyN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Feb 2019 03:54:13 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1grIy7-00046q-CR; Wed, 06 Feb 2019 09:54:07 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1grIy5-0003KU-RK; Wed, 06 Feb 2019 09:54:05 +0100
-Date:   Wed, 6 Feb 2019 09:54:05 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc:     Thierry Reding <thierry.reding@gmail.com>, jic23@kernel.org,
-        robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
-        mcoquelin.stm32@gmail.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
-        vilhelm.gray@gmail.com, linux-stm32@st-md-mailman.stormreply.com,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: Re: [PATCH 2/4] pwm: stm32-lp: Add power management support
-Message-ID: <20190206085405.pdiwd3c6wjog5hl7@pengutronix.de>
-References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
- <1549370429-19116-3-git-send-email-fabrice.gasnier@st.com>
- <20190205204732.zrbhgyxnvjbwfyw4@pengutronix.de>
- <20190205222522.GB1372@mithrandir>
- <6584a59b-657d-adc9-fab2-eb1a9baba05d@st.com>
+        id S1725965AbfBFKm4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Feb 2019 05:42:56 -0500
+Received: from yes.iam.tj ([109.74.197.121]:42030 "EHLO iam.tj"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726750AbfBFKm4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 6 Feb 2019 05:42:56 -0500
+X-Greylist: delayed 474 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Feb 2019 05:42:55 EST
+Received: from [10.254.1.52] (gw.iam.tj [82.71.24.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by iam.tj (Postfix) with ESMTPSA id 789C734181;
+        Wed,  6 Feb 2019 10:34:58 +0000 (GMT)
+To:     linux-input <linux-input@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+From:   Tj <linux@iam.tj>
+Subject: bug: i2c-INVN6500:00: unexpected HID descriptor bcdVersion (0xca9b)
+Message-ID: <27a0a01c-7e4b-136c-7cfe-9ef93d5bfd05@iam.tj>
+Date:   Wed, 6 Feb 2019 10:35:09 +0000
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <6584a59b-657d-adc9-fab2-eb1a9baba05d@st.com>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Feb 06, 2019 at 09:42:48AM +0100, Fabrice Gasnier wrote:
-> If you agree with the current approach, I can send a V2 with Tomasz's
-> suggestion to remove the ifdefs and use __maybe_unused instead.
+Looking back through boot logs this message is seen on all kernels used
+on this Asus T300CHI, from v4.15 onwards:
 
-I think the suspend callback should have something like:
+hidraw: raw HID events driver (C) Jiri Kosina
+i2c_hid i2c-INVN6500:00: i2c-INVN6500:00 supply vdd not found, using
+dummy regulator
+i2c_hid i2c-INVN6500:00: Linked as a consumer to regulator.0
+i2c_hid i2c-INVN6500:00: i2c-INVN6500:00 supply vddl not found, using
+dummy regulator
 
-	if (is_still_enabled) {
-		/*
-		 * The consumer didn't stop us, so refuse to suspend.
-		 */
-		dev_err(dev, "The consumer didn't stop us, so refuse to suspend.\n");
-		return -EBUSY;
-	}
+i2c_hid i2c-INVN6500:00: unexpected HID descriptor bcdVersion (0xca9b)
 
-This way there are no bad surprises if the pwm is suspended before its
-consumer and it's obvious what is missing.
+inv-mpu6050-i2c i2c-INVN6500:00: mounting matrix not found: using
+identity...
+inv-mpu6050-i2c i2c-INVN6500:00: i2c-INVN6500:00 supply vddio not found,
+using dummy regulator
 
-Best regards
-Uwe
+It's not clear if this is a warning that can be disregarded or an
+indication the protocol isn't being completely decoded.
 
--- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | http://www.pengutronix.de/  |
+The accelerometer is working correctly but the ambient light sensor
+isn't. I tested that by shining an LED camera light around the edges of
+the device where the sensors are located and monitoring for changes.
+
+I'm reasonably sure the light-sensor has worked previously but it isn't
+something I would generally notice since the device is used in fairly
+constant low-light conditions.
+
+This may or may not be related to the error message.
+
+
+$ monitor-sensor
+    Waiting for iio-sensor-proxy to appear
++++ iio-sensor-proxy appeared
+=== Has accelerometer (orientation: normal)
+=== Has ambient light sensor (value: 0.000000, unit: lux)
+
