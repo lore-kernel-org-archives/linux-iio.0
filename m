@@ -2,313 +2,100 @@ Return-Path: <SRS0=4HL6=QP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43388C169C4
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Feb 2019 19:25:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAF3C169C4
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Feb 2019 23:39:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F09F520855
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Feb 2019 19:25:03 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="LJcx7MPE"
+	by mail.kernel.org (Postfix) with ESMTP id 29F33218DA
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Feb 2019 23:39:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549669176;
+	bh=9ubX/au2dWVjytwhvCV+q9GXk0eeWyNXhgEMCJ9CNSE=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=TY5S/tfiqmY+nQEGkAmG03Zuft52f1uTCsdyTKuR8hRhEXaW865bJJwSUPGd26D+6
+	 narfMDgyJ/nODxsIjbdEMi3KPmi0w+mLU1S0r3SqIOOoqO4pwLPUpH+FEzEMi6bzlg
+	 96z3jTCpswjBhHdDbPPQpHlKLV/W55lT4E1JAQgA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727380AbfBHTZD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Feb 2019 14:25:03 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:55956 "EHLO
-        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727236AbfBHTZD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Feb 2019 14:25:03 -0500
-Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 7E18A30C186;
-        Fri,  8 Feb 2019 11:25:01 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 7E18A30C186
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1549653901;
-        bh=/KH22ZWaroT3fADfHb/GfuIgkG5ej4rUsuGCOLDeIt0=;
+        id S1726852AbfBHXjf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Feb 2019 18:39:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726788AbfBHXjf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 8 Feb 2019 18:39:35 -0500
+Received: from localhost.localdomain (unknown [194.230.155.153])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A3BDE21841;
+        Fri,  8 Feb 2019 23:39:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549669174;
+        bh=9ubX/au2dWVjytwhvCV+q9GXk0eeWyNXhgEMCJ9CNSE=;
         h=From:To:Cc:Subject:Date:From;
-        b=LJcx7MPEnkHFQkjkj2S52wYo5MZPgdQwDpHwI9HEGawZb2aehBVYdGAdVMLuMdAmB
-         7nOx5xtwv9JeRqb9QGN07n6oOSrVdBm+TwyODbMcX4D2VugvLjmCEJQdcjXLIKOO9Z
-         G4Iux70I+QcGQf/STHArXf4JPKIn32QfPT0B0rYg=
-Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
-        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 9BCC8AC07D1;
-        Fri,  8 Feb 2019 11:25:01 -0800 (PST)
-Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
-        id 8A5BC27ECE7; Fri,  8 Feb 2019 11:25:01 -0800 (PST)
-From:   justinpopo6@gmail.com
-To:     linux-iio@vger.kernel.org
-Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
-        linus.walleij@linaro.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, david@lechnology.com,
-        linux-kernel@vger.kernel.org, Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH] iio: adc: ti-ads7950: add GPIO support
-Date:   Fri,  8 Feb 2019 11:24:16 -0800
-Message-Id: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        b=jt9t/toj2uHZUHNa6wKwZ7Ti1eePDNZUVB4vaYk0+JMfOJYpNto7F5G/pvWKr5Avi
+         Ezi2jIkukYXSNn1TS/ZPiP+ge6PVOwWf76IqUAu6unORnN2WoMlReWD0WSFxOV/8iF
+         gMcvGiEppUv6N5AglpYxVmtE2VHX2M/UWqoc8se0=
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     stable@vger.kernel.org
+Subject: [PATCH]  iio: adc: exynos-adc: Fix NULL pointer exception on unbind
+Date:   Sat,  9 Feb 2019 00:39:27 +0100
+Message-Id: <20190208233927.5392-1-krzk@kernel.org>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Justin Chen <justinpopo6@gmail.com>
+Fix NULL pointer exception on device unbind when device tree does not
+contain "has-touchscreen" property.  In such case the input device is
+not registered so it should not be unregistered.
 
-The ADS79XX has GPIO pins that can be used. Add support for the GPIO
-pins using the GPIO chip framework.
+    $ echo "12d10000.adc" > /sys/bus/platform/drivers/exynos-adc/unbind
 
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+    Unable to handle kernel NULL pointer dereference at virtual address 00000474
+    ...
+    (input_unregister_device) from [<c0772060>] (exynos_adc_remove+0x20/0x80)
+    (exynos_adc_remove) from [<c0587d5c>] (platform_drv_remove+0x20/0x40)
+    (platform_drv_remove) from [<c05860f0>] (device_release_driver_internal+0xdc/0x1ac)
+    (device_release_driver_internal) from [<c0583ecc>] (unbind_store+0x60/0xd4)
+    (unbind_store) from [<c031b89c>] (kernfs_fop_write+0x100/0x1e0)
+    (kernfs_fop_write) from [<c029709c>] (__vfs_write+0x2c/0x17c)
+    (__vfs_write) from [<c0297374>] (vfs_write+0xa4/0x184)
+    (vfs_write) from [<c0297594>] (ksys_write+0x4c/0xac)
+    (ksys_write) from [<c0101000>] (ret_fast_syscall+0x0/0x28)
+
+Fixes: 2bb8ad9b44c5 ("iio: exynos-adc: add experimental touchscreen support")
+Cc: <stable@vger.kernel.org>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- drivers/iio/adc/ti-ads7950.c | 166 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 164 insertions(+), 2 deletions(-)
+ drivers/iio/adc/exynos_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 0ad6359..c54706ad 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -17,6 +17,7 @@
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/gpio/driver.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -36,10 +37,14 @@
-  */
- #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index fa2d2b5767f3..41da522fc673 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -929,7 +929,7 @@ static int exynos_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct exynos_adc *info = iio_priv(indio_dev);
  
-+#define TI_ADS7950_CR_GPIO	BIT(14)
- #define TI_ADS7950_CR_MANUAL	BIT(12)
- #define TI_ADS7950_CR_WRITE	BIT(11)
- #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
- #define TI_ADS7950_CR_RANGE_5V	BIT(6)
-+#define TI_ADS7950_CR_GPIO_DATA	BIT(5)
-+#define TI_ADS7950_NUM_GPIOS	4
-+#define TI_ADS7950_GPIO_MASK	GENMASK(TI_ADS7950_NUM_GPIOS - 1, 0)
- 
- #define TI_ADS7950_MAX_CHAN	16
- 
-@@ -56,11 +61,17 @@ struct ti_ads7950_state {
- 	struct spi_message	ring_msg;
- 	struct spi_message	scan_single_msg;
- 
-+	struct iio_dev		*indio_dev;
-+	struct gpio_chip	*chip;
-+
- 	struct regulator	*reg;
- 	unsigned int		vref_mv;
- 
- 	unsigned int		settings;
- 
-+	unsigned int		gpio_direction_bitmask;
-+	unsigned int		gpio_signal_bitmask;
-+
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-@@ -248,7 +259,8 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
- 
- 	len = 0;
- 	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
--		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
-+		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings
-+		      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
- 		st->tx_buf[len++] = cmd;
+-	if (IS_REACHABLE(CONFIG_INPUT)) {
++	if (IS_REACHABLE(CONFIG_INPUT) && info->input) {
+ 		free_irq(info->tsirq, info);
+ 		input_unregister_device(info->input);
  	}
- 
-@@ -288,7 +300,8 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 
- 	mutex_lock(&indio_dev->mlock);
- 
--	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
-+	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings
-+	      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
- 	st->single_tx = cmd;
- 
- 	ret = spi_sync(st->spi, &st->scan_single_msg);
-@@ -362,10 +375,149 @@ static const struct iio_info ti_ads7950_info = {
- 	.update_scan_mode	= ti_ads7950_update_scan_mode,
- };
- 
-+static void ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
-+			   int value)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+
-+	mutex_lock(&st->indio_dev->mlock);
-+
-+	if (value)
-+		st->gpio_signal_bitmask |= BIT(offset);
-+	else
-+		st->gpio_signal_bitmask &= ~BIT(offset);
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
-+			(st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK));
-+	spi_sync(st->spi, &st->scan_single_msg);
-+
-+	mutex_unlock(&st->indio_dev->mlock);
-+}
-+
-+static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+	int ret;
-+
-+	mutex_lock(&st->indio_dev->mlock);
-+
-+	/* If set as output, return the output */
-+	if (st->gpio_direction_bitmask & BIT(offset)) {
-+		ret = st->gpio_signal_bitmask & BIT(offset);
-+		goto out;
-+	}
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
-+				    TI_ADS7950_CR_GPIO_DATA);
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	if (ret)
-+		goto out;
-+
-+	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
-+
-+out:
-+	mutex_unlock(&st->indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int ti_ads7950_get_direction(struct gpio_chip *chip,
-+				    unsigned int offset)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+
-+	return !(st->gpio_direction_bitmask & BIT(offset));
-+}
-+
-+static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
-+				     int input)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+	int ret = 0;
-+
-+	mutex_lock(&st->indio_dev->mlock);
-+
-+	if (input && (st->gpio_direction_bitmask & BIT(offset)))
-+		st->gpio_direction_bitmask &= ~BIT(offset);
-+	else if (!input && !(st->gpio_direction_bitmask & BIT(offset)))
-+		st->gpio_direction_bitmask |= BIT(offset);
-+	else
-+		goto out;
-+
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
-+				    (st->gpio_direction_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+
-+out:
-+	mutex_unlock(&st->indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int ti_ads7950_direction_input(struct gpio_chip *chip,
-+				      unsigned int offset)
-+{
-+	return _ti_ads7950_set_direction(chip, offset, 1);
-+}
-+
-+static int ti_ads7950_direction_output(struct gpio_chip *chip,
-+				       unsigned int offset, int value)
-+{
-+	ti_ads7950_set(chip, offset, value);
-+
-+	return _ti_ads7950_set_direction(chip, offset, 0);
-+}
-+
-+static int ti_ads7950_init_gpio(struct ti_ads7950_state *st)
-+{
-+	int ret;
-+
-+	/* Initialize GPIO */
-+	mutex_lock(&st->indio_dev->mlock);
-+
-+	/* Default to GPIO input */
-+	st->gpio_direction_bitmask = 0x0;
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
-+				    (st->gpio_direction_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	mutex_unlock(&st->indio_dev->mlock);
-+	if (ret)
-+		return ret;
-+
-+	/* Default to signal low */
-+	st->gpio_signal_bitmask = 0x0;
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL |
-+				    TI_ADS7950_CR_WRITE |
-+				    (st->gpio_signal_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	mutex_unlock(&st->indio_dev->mlock);
-+	if (ret)
-+		return ret;
-+
-+	/* Add GPIO chip */
-+	st->chip->label = dev_name(&st->spi->dev);
-+	st->chip->parent = &st->spi->dev;
-+	st->chip->owner = THIS_MODULE;
-+	st->chip->base = -1;
-+	st->chip->ngpio = TI_ADS7950_NUM_GPIOS;
-+	st->chip->get_direction = ti_ads7950_get_direction;
-+	st->chip->direction_input = ti_ads7950_direction_input;
-+	st->chip->direction_output = ti_ads7950_direction_output;
-+	st->chip->get = ti_ads7950_get;
-+	st->chip->set = ti_ads7950_set;
-+
-+	return gpiochip_add_data(st->chip, st);
-+}
-+
- static int ti_ads7950_probe(struct spi_device *spi)
- {
- 	struct ti_ads7950_state *st;
- 	struct iio_dev *indio_dev;
-+	struct gpio_chip *chip;
- 	const struct ti_ads7950_chip_info *info;
- 	int ret;
- 
-@@ -381,6 +533,10 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
-+	chip = devm_kzalloc(&spi->dev, sizeof(*chip), GFP_KERNEL);
-+	if (!chip)
-+		return -ENOMEM;
-+
- 	st = iio_priv(indio_dev);
- 
- 	spi_set_drvdata(spi, indio_dev);
-@@ -396,6 +552,8 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	indio_dev->channels = info->channels;
- 	indio_dev->num_channels = info->num_channels;
- 	indio_dev->info = &ti_ads7950_info;
-+	st->indio_dev = indio_dev;
-+	st->chip = chip;
- 
- 	/* build spi ring message */
- 	spi_message_init(&st->ring_msg);
-@@ -457,6 +615,10 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 		goto error_cleanup_ring;
- 	}
- 
-+	ret = ti_ads7950_init_gpio(st);
-+	if (ret)
-+		dev_warn(&spi->dev, "Unable to initialize GPIOs\n");
-+
- 	return 0;
- 
- error_cleanup_ring:
 -- 
-2.7.4
+2.17.1
 
