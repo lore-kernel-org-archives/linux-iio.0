@@ -6,52 +6,52 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D38BFC282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45444C282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:05:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9F31121929
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:02:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 150DE2192D
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:05:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549731728;
-	bh=hxEB6OyB6IgopB2P/p1T98w4xf5RsnnEJOzJiht6OeY=;
+	s=default; t=1549731958;
+	bh=WNXxYNEpp45e0JzheuLTWXnISOYxdjszVdvBG49Rfk0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=kUob7475NIVrEuDySgK5qgkw19gWeRLPA4iB4rWRDUBrNdumj0cArx1bZ3eh1v84k
-	 FSEpzPFRAeNoNkbOFSBbuzdUBYqgAmuelh1Q5Iqk6wztyk4HUsdhxIKTGb8WL4zAlr
-	 VHctCvNK5RqCkpJ+ugTLRxfBaxFilWpWtv0oKgz8=
+	b=M+3LSCqduWdC8u1DnXQK8N9fAEBRzgpThPyO7ySQM+AerRZM2/sV+SVEz1Ej4IBtp
+	 L3wJ8XHCuJpb3pcmhnwBDA/mzaIytAoYhDU+MlTxXMpIwGgiBM2rtFNfEa4IhVHVaV
+	 5iK1xst/kJeU7uFopSaAaWz4sMubn9ULoJxpuDOE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726944AbfBIRCI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 12:02:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48918 "EHLO mail.kernel.org"
+        id S1727177AbfBIRF5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 12:05:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50990 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfBIRCI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 12:02:08 -0500
+        id S1726880AbfBIRF5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 12:05:57 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8EF3521919;
-        Sat,  9 Feb 2019 17:02:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DFAF72192C;
+        Sat,  9 Feb 2019 17:05:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549731727;
-        bh=hxEB6OyB6IgopB2P/p1T98w4xf5RsnnEJOzJiht6OeY=;
+        s=default; t=1549731956;
+        bh=WNXxYNEpp45e0JzheuLTWXnISOYxdjszVdvBG49Rfk0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q8jOk6xTMYUHH04nQLcSZYyD1TtO8YeJXINDwq6SUfYilv2/gLj/c65U68F1CfF/M
-         wrS6Sy+o8VSzjcgAetO/dOfyGZbdj0ScZFSVQdorgsZEZ+bkON8oamwMIq7EEkZf1E
-         Z5xoOVipEJGQ9sGz7YMqFgiz+WgJvDIZR0k+Utl0=
-Date:   Sat, 9 Feb 2019 17:02:02 +0000
+        b=nGO/7dhjdoaTSV4mElFoglDF5tMSfuMtaWi3+J0wJ5I37hAOA6J+/XSmsaPYBeiVp
+         GnUOncuAMr7RUh3nRq8n9WeyDhmjUoc+t5qd5pTiwS02/Zfm9soAtVQWD21nhJmWv1
+         gcrMZoL26SAzHZesAorNVjeRWITattl1NGqjwRyE=
+Date:   Sat, 9 Feb 2019 17:05:51 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Murphy <dmurphy@ti.com>
-Cc:     Colin King <colin.king@canonical.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To:     Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <kernel-janitors@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: ads124s08: fix spelling mistake "converions"
- -> "conversions"
-Message-ID: <20190209170202.716ea020@archlinux>
-In-Reply-To: <e083e2af-a00d-fb1f-a860-26c369ac5932@ti.com>
-References: <20190207093902.7081-1-colin.king@canonical.com>
-        <e083e2af-a00d-fb1f-a860-26c369ac5932@ti.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/5] dt-bindings: iio: adc: move lpc32xx-adc out of
+ staging
+Message-ID: <20190209170551.38a8e3de@archlinux>
+In-Reply-To: <20190208160944.13281-2-gregory.clement@bootlin.com>
+References: <20190208160944.13281-1-gregory.clement@bootlin.com>
+        <20190208160944.13281-2-gregory.clement@bootlin.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,66 +61,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 7 Feb 2019 07:14:00 -0600
-Dan Murphy <dmurphy@ti.com> wrote:
+On Fri,  8 Feb 2019 17:09:40 +0100
+Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
 
-> Colin
+> The drivers has been moved out since
+> 0097e20e7771 ("staging:iio:adc:lpc32xx Move out of staging.") in v4.10,
+> so let's align the binding documentation.
 > 
-> Thanks for the patch
-> 
-> On 2/7/19 3:39 AM, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> > 
-> > There is a spelling mistake in several dev_err messages. Fix these.
-> > 
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > ---
-> >  drivers/iio/adc/ti-ads124s08.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-> > index c2cf58908fc8..53f17e4f2f23 100644
-> > --- a/drivers/iio/adc/ti-ads124s08.c
-> > +++ b/drivers/iio/adc/ti-ads124s08.c
-> > @@ -232,7 +232,7 @@ static int ads124s_read_raw(struct iio_dev *indio_dev,
-> >  
-> >  		ret = ads124s_write_cmd(indio_dev, ADS124S08_START_CONV);
-> >  		if (ret) {
-> > -			dev_err(&priv->spi->dev, "Start converions failed\n");
-> > +			dev_err(&priv->spi->dev, "Start conversions failed\n");
-> >  			goto out;
-> >  		}
-> >  
-> > @@ -246,7 +246,7 @@ static int ads124s_read_raw(struct iio_dev *indio_dev,
-> >  
-> >  		ret = ads124s_write_cmd(indio_dev, ADS124S08_STOP_CONV);
-> >  		if (ret) {
-> > -			dev_err(&priv->spi->dev, "Stop converions failed\n");
-> > +			dev_err(&priv->spi->dev, "Stop conversions failed\n");
-> >  			goto out;
-> >  		}
-> >  
-> > @@ -283,12 +283,12 @@ static irqreturn_t ads124s_trigger_handler(int irq, void *p)
-> >  
-> >  		ret = ads124s_write_cmd(indio_dev, ADS124S08_START_CONV);
-> >  		if (ret)
-> > -			dev_err(&priv->spi->dev, "Start ADC converions failed\n");
-> > +			dev_err(&priv->spi->dev, "Start ADC conversions failed\n");
-> >  
-> >  		buffer[j] = ads124s_read(indio_dev, scan_index);
-> >  		ret = ads124s_write_cmd(indio_dev, ADS124S08_STOP_CONV);
-> >  		if (ret)
-> > -			dev_err(&priv->spi->dev, "Stop ADC converions failed\n");
-> > +			dev_err(&priv->spi->dev, "Stop ADC conversions failed\n");
-> >  
-> >  		j++;
-> >  	}
-> >   
-> 
-> Acked-by: Dan Murphy <dmurphy@ti.com>
-> 
-Applied, thanks,
+> Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Oops. My fault.
+
+You forgot the iio list on these so +cc
+
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it.
+
+Thanks,
 
 Jonathan
 
+> ---
+>  .../devicetree/bindings/{staging => }/iio/adc/lpc32xx-adc.txt     | 0
+>  1 file changed, 0 insertions(+), 0 deletions(-)
+>  rename Documentation/devicetree/bindings/{staging => }/iio/adc/lpc32xx-adc.txt (100%)
+> 
+> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+> similarity index 100%
+> rename from Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt
+> rename to Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
 
