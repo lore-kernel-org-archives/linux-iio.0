@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ADDDC282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 15:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED0AC282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:03:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2493021919
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 15:56:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DC46C218D2
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:03:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549727816;
-	bh=buf1gi2Y8ymXRv48z5g3r2fFgvnbxbuMsUUHlqcVba0=;
+	s=default; t=1549728236;
+	bh=FAK3Arn+dWh3DVlgEvmI+956ODQ0Wj03m+5yv59+AI4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=n4bh8cVVJHiw6u/PSk2WJprIEmOWIHAZTmgzQQ073kplqPkfegGfHwXbwDvX43T/f
-	 dz+mJCCjhqJ81TF1NEMvKX9H83zfzBWmz0+MaAHOR6yMglSkAM4bNeY/v3D+H/ZHVE
-	 I+qosC0DKxDYsYsBWFpXG3PVdB/N1cp6XbXPeilc=
+	b=LqXYUIRQWuSAvkK32Bwpv04OiMPa7cL22orhb5HBGvYCqCPJvuGdbcMAZs+mnkceY
+	 PB8OucoCaBhG+6jfH2xh/Q606u/L9TfO+AJL0v7HfLAMzEFzR+Vj9+zWKao3UKAy8X
+	 DoYdi8D+E+Fva+b1YOWQCboXqXKF6RoGg0vmosj0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfBIP4z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 10:56:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51780 "EHLO mail.kernel.org"
+        id S1726898AbfBIQD4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 11:03:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726894AbfBIP4z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 10:56:55 -0500
+        id S1726894AbfBIQD4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 11:03:56 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51EB4217D8;
-        Sat,  9 Feb 2019 15:56:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BE5920863;
+        Sat,  9 Feb 2019 16:03:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549727814;
-        bh=buf1gi2Y8ymXRv48z5g3r2fFgvnbxbuMsUUHlqcVba0=;
+        s=default; t=1549728235;
+        bh=FAK3Arn+dWh3DVlgEvmI+956ODQ0Wj03m+5yv59+AI4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ART72GWsXmhNJrfUlKAlD+fW+ZTl78njHkO07nQNpCO1/CynzyTMldV7O+yIBfM4X
-         +44H6ZTj4sIGoJDrFHe83nxq3nnYvpoKJsfHJqaIaguvsNQfsT4A8ZT0IEfPzZFo/A
-         j7KMH0h0sXBQiyDSPDxGSYPl5MG6Kuby+BS4Omxc=
-Date:   Sat, 9 Feb 2019 15:56:50 +0000
+        b=SbvjDpJL882Nm98wDAxpwngLSe0jWqLy0lrSYfjRqZcacPBsBRAZ+1vnwOPdXXD3i
+         x3m/+fjXj7iH6iEiEq0GHZiP5auzyR2UY7A/crx9kpNhui4KBFaWnaNkpbqlZBIyfP
+         GP58DX8xS7vt0o3jbMDwvdStji591MwBpn1n4z6E=
+Date:   Sat, 9 Feb 2019 16:03:51 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Cc:     linux-iio@vger.kernel.org,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: adc: ad7476: Add support for TI ADS786X ADCs
-Message-ID: <20190209155650.12e99647@archlinux>
-In-Reply-To: <20190204124441.18079-1-ricardo@ribalda.com>
-References: <20190204124441.18079-1-ricardo@ribalda.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio:dac:dac7612: device tree bindings
+Message-ID: <20190209160351.5654f4d1@archlinux>
+In-Reply-To: <20190204124833.18779-2-ricardo@ribalda.com>
+References: <20190204124833.18779-1-ricardo@ribalda.com>
+        <20190204124833.18779-2-ricardo@ribalda.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,107 +56,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  4 Feb 2019 13:44:41 +0100
+On Mon,  4 Feb 2019 13:48:33 +0100
 Ricardo Ribalda Delgado <ricardo@ribalda.com> wrote:
 
-> Add support for Texas Instruments ADS7866, ADS7867 and ADS7868
-> 8/10/12 bit Single channel ADC.
+> Bindings for dac7612.
 > 
-> Datasheet: http://www.ti.com/lit/ds/symlink/ads7868.pdf
-> 
+> Cc: devicetree@vger.kernel.org
 > Signed-off-by: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Simple binding so I'm happy to take with out a DT review unless someone
+feels like giving one.  Seems to have answered Rob's previous comments.
+
+Applied to the togreg branch of iio.git with the tiny tweak of dropping
+the extra blank line at the end of the file.
 
 Thanks,
 
 Jonathan
-
 > ---
-> v4: Changes by Alexandru Ardelean <ardeleanalex@gmail.com>
+> v4 Changelog by Rob Herring <robh@kernel.org>
 > 
-> Break Kconfig into a table
+> -Add ti, prefix to gpio
+> -Fix example da@1
+> -Fix partname
 > 
->  drivers/iio/adc/Kconfig  | 11 +++++++----
->  drivers/iio/adc/ad7476.c | 20 ++++++++++++++++++++
->  2 files changed, 27 insertions(+), 4 deletions(-)
+>  .../bindings/iio/dac/ti,dac7612.txt           | 29 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 30 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index f9354e5ee65c..3d82727fa977 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -57,14 +57,17 @@ config AD7298
->  	  module will be called ad7298.
+> diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> new file mode 100644
+> index 000000000000..14a66c0dcdaa
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
+> @@ -0,0 +1,29 @@
+> +* Texas Instruments Dual, 12-Bit Serial Input Digital-to-Analog Converter
+> +
+> +The DAC7612 is a dual, 12-bit digital-to-analog converter (DAC) with guaranteed
+> +12-bit monotonicity performance over the industrial temperature range.
+> +Is is programmable through an SPI interface.
+> +
+> +The internal DACs are loaded when the LOADDACS pin is pulled down.
+> +
+> +http://www.ti.com/lit/ds/sbas106/sbas106.pdf
+> +
+> +Required Properties:
+> +- compatible: Should be one of:
+> +		"ti,dac7612"
+> +		"ti,dac7612u"
+> +		"ti,dac7612ub"
+> +- reg: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Optional Properties:
+> +- ti,loaddacs-gpios: GPIO descriptor for the LOADDACS pin.
+> +- spi-*: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Example:
+> +
+> +	dac@1 {
+> +		compatible = "ti,dac7612";
+> +		reg = <0x1>;
+> +		ti,loaddacs-gpios = <&msmgpio 25 GPIO_ACTIVE_LOW>;
+> +	};
+> +
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 30ba5435906b..e28e5afaae16 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -14882,6 +14882,7 @@ M:	Ricardo Ribalda <ricardo@ribalda.com>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Supported
+>  F:	drivers/iio/dac/ti-dac7612.c
+> +F:	Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
 >  
->  config AD7476
-> -	tristate "Analog Devices AD7476 and similar 1-channel ADCs driver"
-> +	tristate "Analog Devices AD7476 1-channel ADCs driver and other similar devices from AD an TI"
->  	depends on SPI
->  	select IIO_BUFFER
->  	select IIO_TRIGGERED_BUFFER
->  	help
-> -	  Say yes here to build support for Analog Devices AD7273, AD7274, AD7276,
-> -	  AD7277, AD7278, AD7475, AD7476, AD7477, AD7478, AD7466, AD7467, AD7468,
-> -	  AD7495, AD7910, AD7920, AD7920 SPI analog to digital converters (ADC).
-> +	  Say yes here to build support for the following SPI analog to
-> +	  digital converters (ADCs):
-> +	  Analog Devices: AD7273, AD7274, AD7276, AD7277, AD7278, AD7475,
-> +	  AD7476, AD7477, AD7478, AD7466, AD7467, AD7468, AD7495, AD7910,
-> +	  AD7920.
-> +	  Texas Instruments: ADS7866, ADS7867, ADS7868.
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7476.
-> diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> index 0549686b9ef8..76747488044b 100644
-> --- a/drivers/iio/adc/ad7476.c
-> +++ b/drivers/iio/adc/ad7476.c
-> @@ -59,6 +59,9 @@ enum ad7476_supported_device_ids {
->  	ID_ADC081S,
->  	ID_ADC101S,
->  	ID_ADC121S,
-> +	ID_ADS7866,
-> +	ID_ADS7867,
-> +	ID_ADS7868,
->  };
->  
->  static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
-> @@ -157,6 +160,8 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
->  #define AD7940_CHAN(bits) _AD7476_CHAN((bits), 15 - (bits), \
->  		BIT(IIO_CHAN_INFO_RAW))
->  #define AD7091R_CHAN(bits) _AD7476_CHAN((bits), 16 - (bits), 0)
-> +#define ADS786X_CHAN(bits) _AD7476_CHAN((bits), 12 - (bits), \
-> +		BIT(IIO_CHAN_INFO_RAW))
->  
->  static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
->  	[ID_AD7091R] = {
-> @@ -209,6 +214,18 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
->  		.channel[0] = ADC081S_CHAN(12),
->  		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
->  	},
-> +	[ID_ADS7866] = {
-> +		.channel[0] = ADS786X_CHAN(12),
-> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +	},
-> +	[ID_ADS7867] = {
-> +		.channel[0] = ADS786X_CHAN(10),
-> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +	},
-> +	[ID_ADS7868] = {
-> +		.channel[0] = ADS786X_CHAN(8),
-> +		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-> +	},
->  };
->  
->  static const struct iio_info ad7476_info = {
-> @@ -314,6 +331,9 @@ static const struct spi_device_id ad7476_id[] = {
->  	{"adc081s", ID_ADC081S},
->  	{"adc101s", ID_ADC101S},
->  	{"adc121s", ID_ADC121S},
-> +	{"ads7866", ID_ADS7866},
-> +	{"ads7867", ID_ADS7867},
-> +	{"ads7868", ID_ADS7868},
->  	{}
->  };
->  MODULE_DEVICE_TABLE(spi, ad7476_id);
+>  THANKO'S RAREMONO AM/FM/SW RADIO RECEIVER USB DRIVER
+>  M:	Hans Verkuil <hverkuil@xs4all.nl>
 
