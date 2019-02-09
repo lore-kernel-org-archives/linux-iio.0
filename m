@@ -2,296 +2,110 @@ Return-Path: <SRS0=Oq/L=QQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 689ECC282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:26:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56271C282CB
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:36:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 287FC21939
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:26:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549733196;
-	bh=VFI1RUfM6HaoXnpQsDBCxesX/7b0qA/hWh16LJwjWCA=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=EQ+r/hg8ijXWt3kzFHQtPQc/dm0yPbJ5YQDh4T/an3p3y4hXkdd049YaI6V2nwq9i
-	 UMaD1LYNngJLbyEOkpEBJlkPfGbRDhBTyeSkZ7bz4ZD44NE6hl6kmdtuoZ4x2L1wT5
-	 RdgxLIk2ufPr7MyWC7yCNunzldB+BPFz+kPb1Gu8=
+	by mail.kernel.org (Postfix) with ESMTP id 19C4D206BA
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:36:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AFTYrDun"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727633AbfBIR0f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 12:26:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48062 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727671AbfBIR0f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 12:26:35 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2A33A2192B;
-        Sat,  9 Feb 2019 17:26:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549733194;
-        bh=VFI1RUfM6HaoXnpQsDBCxesX/7b0qA/hWh16LJwjWCA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=zkKy9qS5tAymnhMm8UfXCnCCc4eWcJxHhLMH2s7dSUdmFxiGPMitcEB/vlp3XzOAk
-         JQPfSY/vGuMjqhRy/3wFlk4wl4y3o3e73ZLQZeeQ5OGDyqGnpLrh12kV4+DugU8maN
-         /mzKHjgYzWkmJL48rVzaJMuIOmtv8raSuQ3iI/vw=
-Date:   Sat, 9 Feb 2019 17:26:28 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Beniamin Bia <beniamin.bia@analog.com>
-Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
-        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
-        Beniamin Bia <biabeniamin@outlook.com>
-Subject: Re: [PATCH 1/2] staging: iio: frequency: ad9834: Move frequency to
- standard iio types
-Message-ID: <20190209172628.1b36e85a@archlinux>
-In-Reply-To: <20190206122542.18362-1-beniamin.bia@analog.com>
-References: <20190206122542.18362-1-beniamin.bia@analog.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727302AbfBIRgt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 12:36:49 -0500
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:35610 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728018AbfBIRgp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2019 12:36:45 -0500
+Received: by mail-lj1-f196.google.com with SMTP id j13-v6so5607994ljc.2;
+        Sat, 09 Feb 2019 09:36:43 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=pWUDt6MxnVmk+/hRCdmQbHGfGO1VjvxQfobMdJrFKoE=;
+        b=AFTYrDunE7JhyCP6nUpAaRSmBF1X1V5Oyd/vUAF5sBRob6jGf9XdfHMK1P0kHoaUFn
+         yA6+pWfHmIxEkjfy8rMP/IAW6nf60VYByMzm7mdCk+uXUjC2a3kHt36F5CXybh61Zo3p
+         tQQDczAjSBkt3AUOEMEpChe7bOqHjGwc1rWgKJK8vxO+JxSfX/siqY0i+p+Qf8YwLVUi
+         lNhR5VX1HoHC8dm/ijpdfms50KonqBa6irYRWuT1cipKtkRBCUq4NFaJbD349wz3+t82
+         fcRO89PGmD6WB/8AT/F2auwPHLfMlaUL4btjiAKBc/jbrVJ50pe2LdMbLDKVuaoOkpoG
+         jLjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=pWUDt6MxnVmk+/hRCdmQbHGfGO1VjvxQfobMdJrFKoE=;
+        b=YkrYsnXaowJ8Lpm2PyIYVVfuI8/FIyJIJPmtwIwYRu+9nWFJR0qcCwU7+9/P+U7L5c
+         flSmXXMHa5ZlZW6aALPp7FzJOtKgMeCinR7Z+VSOFoCuSN6fxepmLVbPFnlJ1yOhnmF+
+         74hkUy92BBEdqOMBknz3KZCBZTA2akNOSd48SJMiD9uU+ZdwhGBdLIMEnkIQnWi9qtqK
+         +5EVKj+3GxBXYdJBYet+wVu8U7cZv2YRdmOKvPHDr3zmII+MvTvrNEtGZK5APxFlUwRl
+         i2/yA5snD0vlGKdxvIsMRii1104//PFU9V3TPY059EkdqA/cB29WvQzfWqxuR3z178bg
+         L0xA==
+X-Gm-Message-State: AHQUAuYByOiR3KMIzeoPEzI7QmWI4Foz2nTgbPkuUxQuN9oLHIskzzeU
+        A9eLZJk9r69rNwEjmhQHiEZM+G8RtBk=
+X-Google-Smtp-Source: AHgI3IbzxviCccsBUh+BWmrdV1SBQKop/d+ppjXGVsPSAKgUO45lQTae7xEXrSTH8iV8lsr4OtHgPg==
+X-Received: by 2002:a05:651c:101:: with SMTP id a1mr8362206ljb.59.1549733802283;
+        Sat, 09 Feb 2019 09:36:42 -0800 (PST)
+Received: from arch.domain.name (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id n12-v6sm1080508ljj.32.2019.02.09.09.36.41
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 09 Feb 2019 09:36:41 -0800 (PST)
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, jic23@jic23.retrosnub.co.uk, pmeerw@pmeerw.net,
+        johan@kernel.org, Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH v4 3/3] dt-bindings: iio: chemical: pms7003: add device tree support
+Date:   Sat,  9 Feb 2019 18:36:09 +0100
+Message-Id: <20190209173609.13220-4-tduszyns@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190209173609.13220-1-tduszyns@gmail.com>
+References: <20190209173609.13220-1-tduszyns@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 6 Feb 2019 14:25:41 +0200
-Beniamin Bia <beniamin.bia@analog.com> wrote:
+Add device tree support for Plantower PMS7003 particulate matter sensor.
 
-> From: Beniamin Bia <biabeniamin@outlook.com>
-> 
-> Frequency attribute is added with a standard type from iio framework
-> instead of custom attribute. This is a small step towards removing any
-> unnecessary custom attribute.
-> 
-> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ .../iio/chemical/plantower,pms7003.txt        | 20 +++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
 
-Hi,
-
-How is this related to the one a few hours earlier?
-V2?
-
-If you do accidentally send twice (and realise it obviously) please
-reply to say what you want ignored. For now I'll ignore this version.
-
-I'm guessing it was fighting with your work email system.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/frequency/ad9834.c | 97 +++++++++++++++++++++-----
->  1 file changed, 80 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-> index f036f75d1f22..370e8263899e 100644
-> --- a/drivers/staging/iio/frequency/ad9834.c
-> +++ b/drivers/staging/iio/frequency/ad9834.c
-> @@ -29,8 +29,7 @@
->  /* Registers */
->  
->  #define AD9834_REG_CMD		0
-> -#define AD9834_REG_FREQ0	BIT(14)
-> -#define AD9834_REG_FREQ1	BIT(15)
-> +#define AD9834_REG_FREQ(chann)	(BIT(14) << (chann))
->  #define AD9834_REG_PHASE0	(BIT(15) | BIT(14))
->  #define AD9834_REG_PHASE1	(BIT(15) | BIT(14) | BIT(13))
->  
-> @@ -81,6 +80,9 @@ struct ad9834_state {
->  	struct spi_message		freq_msg;
->  	struct mutex                    lock;   /* protect sensor state */
->  
-> +	unsigned long			frequency0;
-> +	unsigned long			frequency1;
-> +
->  	/*
->  	 * DMA (thus cache coherency maintenance) requires the
->  	 * transfer buffers to live in their own cache lines.
-> @@ -100,6 +102,25 @@ enum ad9834_supported_device_ids {
->  	ID_AD9838,
->  };
->  
-> +#define AD9833_CHANNEL(_chan) {						\
-> +		.type = IIO_ALTVOLTAGE,					\
-> +		.indexed = 1,						\
-> +		.output = 1,						\
-> +		.address = (_chan),					\
-> +		.channel = (_chan),					\
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY)	\
-> +}
-> +
-> +static const struct iio_chan_spec ad9833_channels[] = {
-> +	AD9833_CHANNEL(0),
-> +	AD9833_CHANNEL(1),
-> +};
-> +
-> +static const struct iio_chan_spec ad9834_channels[] = {
-> +	AD9833_CHANNEL(0),
-> +	AD9833_CHANNEL(1),
-> +};
-> +
->  static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
->  {
->  	unsigned long long freqreg = (u64)fout * (u64)BIT(AD9834_FREQ_BITS);
-> @@ -113,6 +134,7 @@ static int ad9834_write_frequency(struct ad9834_state *st,
->  {
->  	unsigned long clk_freq;
->  	unsigned long regval;
-> +	int ret;
->  
->  	clk_freq = clk_get_rate(st->mclk);
->  
-> @@ -121,13 +143,22 @@ static int ad9834_write_frequency(struct ad9834_state *st,
->  
->  	regval = ad9834_calc_freqreg(clk_freq, fout);
->  
-> -	st->freq_data[0] = cpu_to_be16(addr | (regval &
-> +	st->freq_data[0] = cpu_to_be16(AD9834_REG_FREQ(addr) | (regval &
->  				       RES_MASK(AD9834_FREQ_BITS / 2)));
-> -	st->freq_data[1] = cpu_to_be16(addr | ((regval >>
-> +	st->freq_data[1] = cpu_to_be16(AD9834_REG_FREQ(addr) | ((regval >>
->  				       (AD9834_FREQ_BITS / 2)) &
->  				       RES_MASK(AD9834_FREQ_BITS / 2)));
->  
-> -	return spi_sync(st->spi, &st->freq_msg);
-> +	ret = spi_sync(st->spi, &st->freq_msg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (addr == 0)
-> +		st->frequency0 = fout;
-> +	else
-> +		st->frequency1 = fout;
-> +
-> +	return 0;
->  }
->  
->  static int ad9834_write_phase(struct ad9834_state *st,
-> @@ -140,6 +171,40 @@ static int ad9834_write_phase(struct ad9834_state *st,
->  	return spi_sync(st->spi, &st->msg);
->  }
->  
-> +static int ad9834_read_raw(struct iio_dev *indio_dev,
-> +			   struct iio_chan_spec const *chan,
-> +			   int *val, int *val2, long mask)
-> +{
-> +	struct ad9834_state *st = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_FREQUENCY:
-> +		if (chan->address == 0)
-> +			*val = st->frequency0;
-> +		else
-> +			*val = st->frequency1;
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int ad9834_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long mask)
-> +{
-> +	struct ad9834_state *st = iio_priv(indio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_FREQUENCY:
-> +		return ad9834_write_frequency(st, chan->address, val);
-> +	default:
-> +		return  -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static ssize_t ad9834_write(struct device *dev,
->  			    struct device_attribute *attr,
->  			    const char *buf,
-> @@ -157,10 +222,6 @@ static ssize_t ad9834_write(struct device *dev,
->  
->  	mutex_lock(&st->lock);
->  	switch ((u32)this_attr->address) {
-> -	case AD9834_REG_FREQ0:
-> -	case AD9834_REG_FREQ1:
-> -		ret = ad9834_write_frequency(st, this_attr->address, val);
-> -		break;
->  	case AD9834_REG_PHASE0:
->  	case AD9834_REG_PHASE1:
->  		ret = ad9834_write_phase(st, this_attr->address, val);
-> @@ -323,8 +384,6 @@ static IIO_DEVICE_ATTR(out_altvoltage0_out1_wavetype_available, 0444,
->   * see dds.h for further information
->   */
->  
-> -static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9834_write, AD9834_REG_FREQ0);
-> -static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9834_write, AD9834_REG_FREQ1);
->  static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9834_write, AD9834_FSEL);
->  static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
->  
-> @@ -342,8 +401,6 @@ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 0, ad9834_store_wavetype, 0);
->  static IIO_DEV_ATTR_OUT_WAVETYPE(0, 1, ad9834_store_wavetype, 1);
->  
->  static struct attribute *ad9834_attributes[] = {
-> -	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
-> -	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
->  	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
->  	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
->  	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
-> @@ -361,8 +418,6 @@ static struct attribute *ad9834_attributes[] = {
->  };
->  
->  static struct attribute *ad9833_attributes[] = {
-> -	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
-> -	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
->  	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
->  	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
->  	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
-> @@ -384,11 +439,15 @@ static const struct attribute_group ad9833_attribute_group = {
->  };
->  
->  static const struct iio_info ad9834_info = {
-> +	.write_raw = &ad9834_write_raw,
-> +	.read_raw = &ad9834_read_raw,
->  	.attrs = &ad9834_attribute_group,
->  	.driver_module = THIS_MODULE,
->  };
->  
->  static const struct iio_info ad9833_info = {
-> +	.write_raw = &ad9834_write_raw,
-> +	.read_raw = &ad9834_read_raw,
->  	.attrs = &ad9833_attribute_group,
->  	.driver_module = THIS_MODULE,
->  };
-> @@ -435,9 +494,13 @@ static int ad9834_probe(struct spi_device *spi)
->  	switch (st->devid) {
->  	case ID_AD9833:
->  	case ID_AD9837:
-> +		indio_dev->channels = ad9833_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(ad9833_channels);
->  		indio_dev->info = &ad9833_info;
->  		break;
->  	default:
-> +		indio_dev->channels = ad9834_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(ad9834_channels);
->  		indio_dev->info = &ad9834_info;
->  		break;
->  	}
-> @@ -474,11 +537,11 @@ static int ad9834_probe(struct spi_device *spi)
->  		goto error_clock_unprepare;
->  	}
->  
-> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ0, 1000000);
-> +	ret = ad9834_write_frequency(st, 0, 1000000);
->  	if (ret)
->  		goto error_clock_unprepare;
->  
-> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ1, 5000000);
-> +	ret = ad9834_write_frequency(st, 1, 5000000);
->  	if (ret)
->  		goto error_clock_unprepare;
->  
+diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+new file mode 100644
+index 000000000000..7b5f06f324c8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+@@ -0,0 +1,20 @@
++* Plantower PMS7003 particulate matter sensor
++
++Required properties:
++- compatible: must be "plantower,pms7003"
++- vcc-supply: phandle to the regulator that provides power to the sensor
++
++Optional properties:
++- plantower,set-gpios: phandle to the GPIO connected to the SET line
++- reset-gpios: phandle to the GPIO connected to the RESET line
++
++Refer to serial/slave-device.txt for generic serial attached device bindings.
++
++Example:
++
++&uart0 {
++	air-pollution-sensor {
++		compatible = "plantower,pms7003";
++		vcc-supply = <&reg_vcc5v0>;
++	};
++};
+-- 
+2.20.1
 
