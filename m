@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8D12C282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:25:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98B5DC282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:26:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A6A5D21919
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:25:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6752521929
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:26:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549729515;
-	bh=qg/bwWPtxo4f76ob4RqSbIT0MZBreCESvxJKz2oDHps=;
+	s=default; t=1549729586;
+	bh=lfArmp9gKq2w9yF2OtbZGX0njTbCgvS+hs/0pQDIGDM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=k1W2v0IkrIQ9gmuV81DBZxCLvDRvEp4uiuXqaLTuCCdmhSqc7PYe/TQ7FG4/jVobc
-	 sNGPmRIZS0n79hnIGdLz+kSwJmJnkyjgeWQlM4kxOk81qmY3n8v1PE8/GfjOCsZWxJ
-	 KCnnAFrLyFgISW82mp23F3SLtrhNlHwDMSY8jdAc=
+	b=y5vqImJOFFovLvHBJfD5ItwE83dd1SYoHo5sNPkFGxcCNJCAhxofFHshn/1ITLiqs
+	 rJJ+1BfFVCrg/BCPyZwwzECLu0hdIZovF8PZAbNaYGr2UD/PujST6a/kYRkZdp1NMM
+	 rXYgrG/3HRYFbPHrwF2GOk85EW4eMdwF1aVfGi64=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbfBIQZP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 11:25:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40892 "EHLO mail.kernel.org"
+        id S1727013AbfBIQ00 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 11:26:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42102 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfBIQZO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 11:25:14 -0500
+        id S1726907AbfBIQ0Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 11:26:25 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8136A21773;
-        Sat,  9 Feb 2019 16:25:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5DC7521919;
+        Sat,  9 Feb 2019 16:26:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549729513;
-        bh=qg/bwWPtxo4f76ob4RqSbIT0MZBreCESvxJKz2oDHps=;
+        s=default; t=1549729584;
+        bh=lfArmp9gKq2w9yF2OtbZGX0njTbCgvS+hs/0pQDIGDM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BQmaQfAtlQ6o192AnMoLAfHuVPYFTExY9ygfUaGJiCaOSCGsH0wiQ5lb5g4ADn6FH
-         lqdEWSNyXE9EU0IhLRI0VPaXzZ2L52he+TRdWZp0KobZZ6tP5YNRmH3J3L5We41Gq/
-         0xvdhUKGlo9B94M20gZtyyYu5qLCrhNpubrs2iW4=
-Date:   Sat, 9 Feb 2019 16:25:06 +0000
+        b=tD5jMHyW20vQj1tJDToiJKGsElG+EJyHJiUHldykuqw4wmUuAl331HsHQo5cAIPFC
+         N7ugxOn0L1zzKw3WgKmvAfT4zK8qhDHpdlStDjwQkUW6kUaw2XHygVlAbuKAK1ZoW9
+         9IteCkfSdRIm42y1wYqobrZtEPJgg0scZumnXivU=
+Date:   Sat, 9 Feb 2019 16:26:18 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Renato Lui Geh <renatogeh@gmail.com>
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
@@ -46,12 +46,12 @@ Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         giuliano.belinassi@usp.br, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com
-Subject: Re: [PATCH v3 1/4] staging: iio: ad7780: add gain & filter gpio
- support
-Message-ID: <20190209162506.0e790885@archlinux>
-In-Reply-To: <786543cbd8d60776083bcaca66f83502f23f561b.1549385784.git.renatogeh@gmail.com>
+Subject: Re: [PATCH v3 2/4] staging: iio: ad7780: move regulator to after
+ GPIO init
+Message-ID: <20190209162618.64edd25a@archlinux>
+In-Reply-To: <b2380d77d09abdf63d6f6471ed7743f8bec14a29.1549385784.git.renatogeh@gmail.com>
 References: <cover.1549385784.git.renatogeh@gmail.com>
-        <786543cbd8d60776083bcaca66f83502f23f561b.1549385784.git.renatogeh@gmail.com>
+        <b2380d77d09abdf63d6f6471ed7743f8bec14a29.1549385784.git.renatogeh@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,181 +61,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 5 Feb 2019 15:13:00 -0200
+On Tue, 5 Feb 2019 15:13:21 -0200
 Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-> Previously, the AD7780 driver only supported gpio for the 'powerdown'
-> pin. This commit adds suppport for the 'gain' and 'filter' pin.
+> To maintain consistency between ad7780_probe and ad7780_remove orders,
+> regulator initialization has been moved to after GPIO initializations.
 > 
 > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
-> Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
-> Co-developed-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
-Comments inline.
+This looks fine, will pick up with the earlier patches when ready.
+
+Thanks,
+
+Jonathan
 
 > ---
-> Changes in v3:
-> 	- Renamed ad7780_chip_info's filter to odr
-> 	- Renamed ad778x_filter to ad778x_odr_avail
-> 	- Changed vref variable from unsigned int to unsigned long long to
-> 	  avoid overflow
-> 	- Removed unnecessary AD_SD_CHANNEL macro
-> 
->  drivers/staging/iio/adc/ad7780.c | 95 ++++++++++++++++++++++++++++++--
->  1 file changed, 89 insertions(+), 6 deletions(-)
+>  drivers/staging/iio/adc/ad7780.c | 26 +++++++++++++-------------
+>  1 file changed, 13 insertions(+), 13 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index c4a85789c2db..6e4357800d31 100644
+> index 6e4357800d31..7804cd2b273e 100644
 > --- a/drivers/staging/iio/adc/ad7780.c
 > +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -39,6 +39,15 @@
->  #define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
->  #define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
+> @@ -250,16 +250,6 @@ static int ad7780_probe(struct spi_device *spi)
 >  
-> +#define AD7780_GAIN_GPIO	0
-> +#define AD7780_FILTER_GPIO	1
-What are these for?
-
-> +
-> +#define AD7780_GAIN_MIDPOINT	64
-> +#define AD7780_FILTER_MIDPOINT	13350
-> +
-> +static const unsigned int ad778x_gain[2]      = { 1, 128 };
-> +static const unsigned int ad778x_odr_avail[2] = { 10000, 16700 };
-> +
->  struct ad7780_chip_info {
->  	struct iio_chan_spec	channel;
->  	unsigned int		pattern_mask;
-> @@ -50,7 +59,11 @@ struct ad7780_state {
->  	const struct ad7780_chip_info	*chip_info;
->  	struct regulator		*reg;
->  	struct gpio_desc		*powerdown_gpio;
-> -	unsigned int	gain;
-> +	struct gpio_desc		*gain_gpio;
-> +	struct gpio_desc		*filter_gpio;
-> +	unsigned int			gain;
-> +	unsigned int			odr;
-> +	unsigned int			int_vref_mv;
+>  	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
 >  
->  	struct ad_sigma_delta sd;
->  };
-> @@ -104,17 +117,65 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
->  		voltage_uv = regulator_get_voltage(st->reg);
->  		if (voltage_uv < 0)
->  			return voltage_uv;
-> -		*val = (voltage_uv / 1000) * st->gain;
-> +		voltage_uv /= 1000;
-> +		*val = voltage_uv * st->gain;
->  		*val2 = chan->scan_type.realbits - 1;
-> +		st->int_vref_mv = voltage_uv;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	case IIO_CHAN_INFO_OFFSET:
->  		*val = -(1 << (chan->scan_type.realbits - 1));
->  		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = st->odr;
-> +		return IIO_VAL_INT;
+> -	st->reg = devm_regulator_get(&spi->dev, "avdd");
+> -	if (IS_ERR(st->reg))
+> -		return PTR_ERR(st->reg);
+> -
+> -	ret = regulator_enable(st->reg);
+> -	if (ret) {
+> -		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
+> -		return ret;
+> -	}
+> -
+>  	st->chip_info =
+>  		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+>  
+> @@ -279,7 +269,7 @@ static int ad7780_probe(struct spi_device *spi)
+>  		ret = PTR_ERR(st->powerdown_gpio);
+>  		dev_err(&spi->dev, "Failed to request powerdown GPIO: %d\n",
+>  			ret);
+> -		goto error_disable_reg;
+> +		return ret;
 >  	}
 >  
->  	return -EINVAL;
->  }
+>  	if (st->chip_info->is_ad778x) {
+> @@ -290,7 +280,7 @@ static int ad7780_probe(struct spi_device *spi)
+>  			ret = PTR_ERR(st->gain_gpio);
+>  			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
+>  				ret);
+> -			goto error_disable_reg;
+> +			return ret;
+>  		}
 >  
-> +static int ad7780_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val,
-> +			    int val2,
-> +			    long m)
-> +{
-> +	struct ad7780_state *st = iio_priv(indio_dev);
-> +	const struct ad7780_chip_info *chip_info = st->chip_info;
-> +	unsigned long long vref;
-> +	unsigned int full_scale, gain;
-> +
-> +	if (!chip_info->is_ad778x)
-> +		return 0;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (val != 0)
-> +			return -EINVAL;
-> +
-> +		vref = st->int_vref_mv * 1000000LL;
-> +		full_scale = 1 << (chip_info->channel.scan_type.realbits - 1);
-> +		gain = DIV_ROUND_CLOSEST(vref, full_scale);
-> +		gain = DIV_ROUND_CLOSEST(gain, val2);
-> +		st->gain = gain;
-> +		if (gain < AD7780_GAIN_MIDPOINT)
-> +			gain = 0;
-> +		else
-> +			gain = 1;
-> +		gpiod_set_value(st->gain_gpio, gain);
-> +	break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (1000*val + val2/1000 < AD7780_FILTER_MIDPOINT)
-> +			val = 0;
-> +		else
-> +			val = 1;
-> +		st->odr = ad778x_odr_avail[val];
-> +		gpiod_set_value(st->filter_gpio, val);
-> +	break;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
->  				     unsigned int raw_sample)
->  {
-> @@ -126,10 +187,8 @@ static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
->  		return -EIO;
->  
->  	if (chip_info->is_ad778x) {
-> -		if (raw_sample & AD7780_GAIN)
-> -			st->gain = 1;
-> -		else
-> -			st->gain = 128;
-> +		st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
-> +		st->odr = ad778x_odr_avail[raw_sample & AD7780_FILTER];
+>  		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
+> @@ -301,10 +291,20 @@ static int ad7780_probe(struct spi_device *spi)
+>  			dev_err(&spi->dev,
+>  				"Failed to request filter GPIO: %d\n",
+>  				ret);
+> -			goto error_disable_reg;
+> +			return ret;
+>  		}
 >  	}
 >  
->  	return 0;
-> @@ -173,6 +232,7 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
->  
->  static const struct iio_info ad7780_info = {
->  	.read_raw = ad7780_read_raw,
-> +	.write_raw = ad7780_write_raw,
->  };
->  
->  static int ad7780_probe(struct spi_device *spi)
-> @@ -222,6 +282,29 @@ static int ad7780_probe(struct spi_device *spi)
->  		goto error_disable_reg;
->  	}
->  
-> +	if (st->chip_info->is_ad778x) {
-> +		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
-> +							"gain",
-
-These are not particularly standard names (basically not "reset"),
-so they should be vendor prefixed, so that people know to go
-look at the device specific binding.
-
-> +							GPIOD_OUT_HIGH);
-> +		if (IS_ERR(st->gain_gpio)) {
-> +			ret = PTR_ERR(st->gain_gpio);
-> +			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
-> +				ret);
-> +			goto error_disable_reg;
-> +		}
+> +	st->reg = devm_regulator_get(&spi->dev, "avdd");
+> +	if (IS_ERR(st->reg))
+> +		return PTR_ERR(st->reg);
 > +
-> +		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
-> +							  "filter",
-> +							  GPIOD_OUT_HIGH);
-> +		if (IS_ERR(st->filter_gpio)) {
-> +			ret = PTR_ERR(st->filter_gpio);
-> +			dev_err(&spi->dev,
-> +				"Failed to request filter GPIO: %d\n",
-> +				ret);
-> +			goto error_disable_reg;
-> +		}
+> +	ret = regulator_enable(st->reg);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
+> +		return ret;
 > +	}
 > +
 >  	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
