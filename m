@@ -2,138 +2,379 @@ Return-Path: <SRS0=Oq/L=QQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91219C282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 248DEC282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:00:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5540A218D2
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 16:49:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JWP8UNN7"
+	by mail.kernel.org (Postfix) with ESMTP id C9AA221929
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:00:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549731651;
+	bh=j5t/Bjmp+iMytDtpRx3EGJ/OR2p6ayJ4lDT/JcLViTo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=Sp36YHolXnEDGtEnOeSDE+u6XF5es524Nrg09AW5i4FaDz5HfTxAi9mN8rJ4asEbh
+	 mk6MDXGfloB2FRmvbxP8Eg3z2wG4j+8lwKVfEPNFVQtyAHrickAwshVnZyhy+U+06z
+	 i9p6c5EmOmjvL6Q3GUy9BisU6r/qGNdcy/m2pmGs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727081AbfBIQth (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 11:49:37 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38119 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727078AbfBIQth (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2019 11:49:37 -0500
-Received: by mail-lj1-f196.google.com with SMTP id c19-v6so5530403lja.5;
-        Sat, 09 Feb 2019 08:49:36 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=i1gI8Zrbgf67gTz6FH6HJeQDuuHQ1TpXgfCnjb7wzNo=;
-        b=JWP8UNN7Dnk9k46Hyia7Eb30yeuDaZO8ho467Jo1HYkbM6L2C96VT9+FLPAjPYni7g
-         K90yv/VwprRe4A5+Zp0+xr06/g5A7mz+OGGxnmEuQu5H6pxLyCUV4fcCDpK4dNr7VAwM
-         ncjGqUI3K4lkmOxv1TFinyEPg0HTalRAe0LMsZzQzfgVGqJ70E23kBCXlPrupKhjdpys
-         T6hTglwKZcVAFAtm9ZpVUFr4wIrraw5hRzAuk/AwZH9NyeEuN5R4ckfu9mPYEzOiDJ05
-         qVr56KTHljRRmfi5XiqYjO7RmPUCLItTuhOOeOgxaE0R4ru+NTsWnNBjQ2MxQd02AorU
-         fNvg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=i1gI8Zrbgf67gTz6FH6HJeQDuuHQ1TpXgfCnjb7wzNo=;
-        b=d8uCIUKU9aJEVhFit57jnIYk63rcM16kCmO1vVhm6vhLai2nFNVI9Eaqaool+cCbJL
-         0uxC0to8m2wQkGpWdHdgSnfCvtW67IpvDjnh2cFPTEyp+qqw5r80vqzzlGD4JdVbCjTy
-         gg6L8egC2+W4sI/5d122khbh+2siJxt03E0LH/7oahQr+4FT4f5D3l3lhwqgCA51vuAc
-         055OxsqKgli59fd4aSo6Ed1+TJXJB2H3rEvEU8WbSGZE3llQgPXjVs1Fshn+YkKHnNqO
-         6ASJCktD3Q8jg5WLyqiXHtf1/vnBapVRlDqJnNKHdcJwS+hlNAI+R0owVRbKeuxlXp4x
-         Fc3Q==
-X-Gm-Message-State: AHQUAuZKs3NLvMDHGo8cn+g8BA1CYboER2UKrAjOZSqeuT5ph7ZyDbOp
-        fXctoXLaD3RjqRhLRX7O2rc=
-X-Google-Smtp-Source: AHgI3IZUmKvyfkrCdtZPIF+67uFtSKXpnnDIJPhXtarKFzQWVImKSWWRSuUtc3tPL6YIxqlmyZ8vmA==
-X-Received: by 2002:a2e:9249:: with SMTP id v9-v6mr36050ljg.164.1549730975144;
-        Sat, 09 Feb 2019 08:49:35 -0800 (PST)
-Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
-        by smtp.gmail.com with ESMTPSA id a9-v6sm623591ljf.52.2019.02.09.08.49.34
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 09 Feb 2019 08:49:34 -0800 (PST)
-Date:   Sat, 9 Feb 2019 17:49:12 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, pmeerw@pmeerw.net, johan@kernel.org
-Subject: Re: [PATCH v3 3/3] dt-bindings: iio: chemical: pms7003: add device
- tree support
-Message-ID: <20190209164908.GA2888@arch>
-References: <20190201215759.14569-1-tduszyns@gmail.com>
- <20190201215759.14569-4-tduszyns@gmail.com>
- <20190202171247.0d0fc122@archlinux>
+        id S1726977AbfBIRAu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 12:00:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48338 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726880AbfBIRAu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 12:00:50 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15B5521919;
+        Sat,  9 Feb 2019 17:00:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549731648;
+        bh=j5t/Bjmp+iMytDtpRx3EGJ/OR2p6ayJ4lDT/JcLViTo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=aePRf8mbrR12WaqKpNYDwuGJGU/1a3G0PcVtPQBpNGaCDUMQ4YvzvjufbTcDXHPvJ
+         UNlXm6nxovZor6oq3cgPFcVhnEcnUUVgQmzyBguU8XN9KEbRWqDgOMR336oPfDPsqX
+         OakdMueKPggO91ZBUbLLEby83FKLtXEAV5AvZCiA=
+Date:   Sat, 9 Feb 2019 17:00:42 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     justinpopo6@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com,
+        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        david@lechnology.com, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7950: add GPIO support
+Message-ID: <20190209170042.69a78684@archlinux>
+In-Reply-To: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
+References: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190202171247.0d0fc122@archlinux>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Feb 02, 2019 at 05:12:47PM +0000, Jonathan Cameron wrote:
-> On Fri,  1 Feb 2019 22:57:59 +0100
-> Tomasz Duszynski <tduszyns@gmail.com> wrote:
->
-> > Add device tree support for Plantower PMS7003 particulate matter sensor.
-> >
-> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> Hi Tomasz,
->
-> Sorry, I clearly didn't look at this in enough detail on earlier versions.
-> I think the set gpio is rather device specific so should have a vendor
-> prefix.
->
-> I would also like to get an opinion on the generic name from the devicetree
-> maintainers before we start to standardise on it.
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  .../iio/chemical/plantower,pms7003.txt        | 20 +++++++++++++++++++
-> >  1 file changed, 20 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > new file mode 100644
-> > index 000000000000..cbad95480e04
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> > @@ -0,0 +1,20 @@
-> > +* Plantower PMS7003 particulate matter sensor
-> > +
-> > +Required properties:
-> > +- compatible: must be "plantower,pms7003"
-> > +- vcc-supply: phandle to the regulator that provides power to the sensor
-> > +
-> > +Optional properties:
-> > +- set-gpios: phandle to the GPIO connected to the SET line
->
-> Hmm. This is a somewhat 'unusual' one so should probably have a vendor prefix.
->
+On Fri,  8 Feb 2019 11:24:16 -0800
+justinpopo6@gmail.com wrote:
 
-Makes sense. I'll respin the series with this extra change you're
-suggesting.
+> From: Justin Chen <justinpopo6@gmail.com>
+>=20
+> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+> pins using the GPIO chip framework.
+>=20
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
-> > +- reset-gpios: phandle to the GPIO connected to the RESET line
->
-> reset is common and clear in meaning, so vendor prefix probably not appropriate.
-> > +
-> > +Refer to serial/slave-device.txt for generic serial attached device bindings.
-> > +
-> > +Example:
-> > +
-> > +&uart0 {
-> > +	air-pollution-sensor {
-> > +		vcc-supply = <&reg_vcc5v0>;
-> > +		compatible = "plantower,pms7003";
-> > +	};
-> > +};
->
+Hi Justin,
+
+Unfortunately the existing driver is making incorrect use of
+the indio_dev->mlock mutex.  That used to get abused a lot before
+we clamped down on it being for only one purpose, protection of
+the 'mode' of the iio device. It's about stopping anything interfering
+with buffered captures by talking to the device in a way that breaks
+them.
+
+I'm not sure if the original driver was trying to use it for this
+purpose and protecting it's buffers.  Even if so, there should be
+an additional local lock to cover those chip specific elements.
+Any use of mlock should be through the iio_device_claim_direct_mode
+function etc.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/adc/ti-ads7950.c | 166 +++++++++++++++++++++++++++++++++++++=
++++++-
+>  1 file changed, 164 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> index 0ad6359..c54706ad 100644
+> --- a/drivers/iio/adc/ti-ads7950.c
+> +++ b/drivers/iio/adc/ti-ads7950.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+>  #include <linux/err.h>
+> +#include <linux/gpio/driver.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> @@ -36,10 +37,14 @@
+>   */
+>  #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
+> =20
+> +#define TI_ADS7950_CR_GPIO	BIT(14)
+>  #define TI_ADS7950_CR_MANUAL	BIT(12)
+>  #define TI_ADS7950_CR_WRITE	BIT(11)
+>  #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
+>  #define TI_ADS7950_CR_RANGE_5V	BIT(6)
+> +#define TI_ADS7950_CR_GPIO_DATA	BIT(5)
+> +#define TI_ADS7950_NUM_GPIOS	4
+> +#define TI_ADS7950_GPIO_MASK	GENMASK(TI_ADS7950_NUM_GPIOS - 1, 0)
+> =20
+>  #define TI_ADS7950_MAX_CHAN	16
+> =20
+> @@ -56,11 +61,17 @@ struct ti_ads7950_state {
+>  	struct spi_message	ring_msg;
+>  	struct spi_message	scan_single_msg;
+> =20
+> +	struct iio_dev		*indio_dev;
+> +	struct gpio_chip	*chip;
+> +
+>  	struct regulator	*reg;
+>  	unsigned int		vref_mv;
+> =20
+>  	unsigned int		settings;
+> =20
+> +	unsigned int		gpio_direction_bitmask;
+> +	unsigned int		gpio_signal_bitmask;
+> +
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> @@ -248,7 +259,8 @@ static int ti_ads7950_update_scan_mode(struct iio_dev=
+ *indio_dev,
+> =20
+>  	len =3D 0;
+>  	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
+> -		cmd =3D TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
+> +		cmd =3D TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings
+> +		      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
+>  		st->tx_buf[len++] =3D cmd;
+>  	}
+> =20
+> @@ -288,7 +300,8 @@ static int ti_ads7950_scan_direct(struct iio_dev *ind=
+io_dev, unsigned int ch)
+> =20
+>  	mutex_lock(&indio_dev->mlock);
+> =20
+> -	cmd =3D TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
+> +	cmd =3D TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings
+> +	      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
+>  	st->single_tx =3D cmd;
+> =20
+>  	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+> @@ -362,10 +375,149 @@ static const struct iio_info ti_ads7950_info =3D {
+>  	.update_scan_mode	=3D ti_ads7950_update_scan_mode,
+>  };
+> =20
+> +static void ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
+> +			   int value)
+> +{
+> +	struct ti_ads7950_state *st =3D gpiochip_get_data(chip);
+> +
+> +	mutex_lock(&st->indio_dev->mlock);
+> +
+> +	if (value)
+> +		st->gpio_signal_bitmask |=3D BIT(offset);
+> +	else
+> +		st->gpio_signal_bitmask &=3D ~BIT(offset);
+> +
+> +	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRIT=
+E |
+> +			(st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK));
+> +	spi_sync(st->spi, &st->scan_single_msg);
+> +
+> +	mutex_unlock(&st->indio_dev->mlock);
+> +}
+> +
+> +static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+> +{
+> +	struct ti_ads7950_state *st =3D gpiochip_get_data(chip);
+> +	int ret;
+> +
+> +	mutex_lock(&st->indio_dev->mlock);
+> +
+> +	/* If set as output, return the output */
+> +	if (st->gpio_direction_bitmask & BIT(offset)) {
+> +		ret =3D st->gpio_signal_bitmask & BIT(offset);
+> +		goto out;
+> +	}
+> +
+> +	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRIT=
+E |
+> +				    TI_ADS7950_CR_GPIO_DATA);
+> +	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret =3D ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
+> +
+> +out:
+> +	mutex_unlock(&st->indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ti_ads7950_get_direction(struct gpio_chip *chip,
+> +				    unsigned int offset)
+> +{
+> +	struct ti_ads7950_state *st =3D gpiochip_get_data(chip);
+> +
+> +	return !(st->gpio_direction_bitmask & BIT(offset));
+> +}
+> +
+> +static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
+> +				     int input)
+> +{
+> +	struct ti_ads7950_state *st =3D gpiochip_get_data(chip);
+> +	int ret =3D 0;
+> +
+> +	mutex_lock(&st->indio_dev->mlock);
+> +
+> +	if (input && (st->gpio_direction_bitmask & BIT(offset)))
+> +		st->gpio_direction_bitmask &=3D ~BIT(offset);
+> +	else if (!input && !(st->gpio_direction_bitmask & BIT(offset)))
+> +		st->gpio_direction_bitmask |=3D BIT(offset);
+> +	else
+> +		goto out;
+> +
+> +
+> +	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_GPIO |
+> +				    (st->gpio_direction_bitmask &
+> +				    TI_ADS7950_GPIO_MASK));
+> +	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+> +
+> +out:
+> +	mutex_unlock(&st->indio_dev->mlock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ti_ads7950_direction_input(struct gpio_chip *chip,
+> +				      unsigned int offset)
+> +{
+> +	return _ti_ads7950_set_direction(chip, offset, 1);
+> +}
+> +
+> +static int ti_ads7950_direction_output(struct gpio_chip *chip,
+> +				       unsigned int offset, int value)
+> +{
+> +	ti_ads7950_set(chip, offset, value);
+> +
+> +	return _ti_ads7950_set_direction(chip, offset, 0);
+> +}
+> +
+> +static int ti_ads7950_init_gpio(struct ti_ads7950_state *st)
+> +{
+> +	int ret;
+> +
+> +	/* Initialize GPIO */
+> +	mutex_lock(&st->indio_dev->mlock);
+> +
+> +	/* Default to GPIO input */
+> +	st->gpio_direction_bitmask =3D 0x0;
+> +	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_GPIO |
+> +				    (st->gpio_direction_bitmask &
+> +				    TI_ADS7950_GPIO_MASK));
+> +	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+> +	mutex_unlock(&st->indio_dev->mlock);
+
+Nope.  This is a state lock used to protect against transitions between
+different modes of the IIO device (buffered vs polled), it
+isn't suitable for general use.
+
+The driver should be modified to handle that correctly.
+We have iio_claim_direct_mode etc that deal with the case
+where a device can't do certain operations whilst in buffered
+mode.  Note it can fail and should.
+
+Seems there are more drivers still doing this than I thought.
+If anyone is bored and wants to clean them out, that would be
+most appreciated!
+
+If you need locking to protect a local buffer or the device
+state, define a new lock to do it with clearly documented
+scope.
+
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Default to signal low */
+> +	st->gpio_signal_bitmask =3D 0x0;
+> +	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_MANUAL |
+> +				    TI_ADS7950_CR_WRITE |
+> +				    (st->gpio_signal_bitmask &
+> +				    TI_ADS7950_GPIO_MASK));
+> +	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+> +	mutex_unlock(&st->indio_dev->mlock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Add GPIO chip */
+> +	st->chip->label =3D dev_name(&st->spi->dev);
+> +	st->chip->parent =3D &st->spi->dev;
+> +	st->chip->owner =3D THIS_MODULE;
+> +	st->chip->base =3D -1;
+> +	st->chip->ngpio =3D TI_ADS7950_NUM_GPIOS;
+> +	st->chip->get_direction =3D ti_ads7950_get_direction;
+> +	st->chip->direction_input =3D ti_ads7950_direction_input;
+> +	st->chip->direction_output =3D ti_ads7950_direction_output;
+> +	st->chip->get =3D ti_ads7950_get;
+> +	st->chip->set =3D ti_ads7950_set;
+> +
+> +	return gpiochip_add_data(st->chip, st);
+> +}
+> +
+>  static int ti_ads7950_probe(struct spi_device *spi)
+>  {
+>  	struct ti_ads7950_state *st;
+>  	struct iio_dev *indio_dev;
+> +	struct gpio_chip *chip;
+>  	const struct ti_ads7950_chip_info *info;
+>  	int ret;
+> =20
+> @@ -381,6 +533,10 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> =20
+> +	chip =3D devm_kzalloc(&spi->dev, sizeof(*chip), GFP_KERNEL);
+> +	if (!chip)
+> +		return -ENOMEM;
+> +
+
+What stops us putting the chip structure inside the existing
+info structure?  That avoids the need to separately allocate
+memory and to set the pointer.  A cleaner option all round.
+
+>  	st =3D iio_priv(indio_dev);
+> =20
+>  	spi_set_drvdata(spi, indio_dev);
+> @@ -396,6 +552,8 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>  	indio_dev->channels =3D info->channels;
+>  	indio_dev->num_channels =3D info->num_channels;
+>  	indio_dev->info =3D &ti_ads7950_info;
+> +	st->indio_dev =3D indio_dev;
+
+Hmm. As a general rule I'm against things having pointers to the structure
+that contains them as it usual means something is inconsistent in the
+software architecture.
+
+=46rom the above, looks like this is about accessing mlock. The driver
+shouldn't be doing that directly at all, so a precursor to this
+patch cleaning that up would be great.
+
+> +	st->chip =3D chip;
+> =20
+>  	/* build spi ring message */
+>  	spi_message_init(&st->ring_msg);
+> @@ -457,6 +615,10 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>  		goto error_cleanup_ring;
+>  	}
+> =20
+> +	ret =3D ti_ads7950_init_gpio(st);
+> +	if (ret)
+> +		dev_warn(&spi->dev, "Unable to initialize GPIOs\n");
+Why are we not treating this as an error?  I can't see any
+obvious reason to make that choice.
+
+> +
+>  	return 0;
+> =20
+>  error_cleanup_ring:
+
