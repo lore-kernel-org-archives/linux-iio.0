@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45444C282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:05:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0ED1C282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:09:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 150DE2192D
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:05:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EBC12192C
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 17:09:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549731958;
-	bh=WNXxYNEpp45e0JzheuLTWXnISOYxdjszVdvBG49Rfk0=;
+	s=default; t=1549732156;
+	bh=hh9kUpTU/t+T3LtaJNOcpFiksItwOq8rvl1bQx4tdr0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=M+3LSCqduWdC8u1DnXQK8N9fAEBRzgpThPyO7ySQM+AerRZM2/sV+SVEz1Ej4IBtp
-	 L3wJ8XHCuJpb3pcmhnwBDA/mzaIytAoYhDU+MlTxXMpIwGgiBM2rtFNfEa4IhVHVaV
-	 5iK1xst/kJeU7uFopSaAaWz4sMubn9ULoJxpuDOE=
+	b=FYQBf1v/86sX2S5AjSdMK9KB3BKbk9bX4wX8dOvuMz1RtXaidpCuDPbMvReXc/14U
+	 9dHOXEgtOQ+bnsr6GaqJ7owG7Y7ymoqAIuMkXrDklE5P2ufqBSYiYe6+vRbYceKZf6
+	 idPNM1VPpyD48/WJgnWjVFGJmnfesE+Jj1Rsp0N0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727177AbfBIRF5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 12:05:57 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50990 "EHLO mail.kernel.org"
+        id S1727197AbfBIRJQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 12:09:16 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54150 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726880AbfBIRF5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 12:05:57 -0500
+        id S1727189AbfBIRJQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 12:09:16 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DFAF72192C;
-        Sat,  9 Feb 2019 17:05:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2F6902192D;
+        Sat,  9 Feb 2019 17:09:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549731956;
-        bh=WNXxYNEpp45e0JzheuLTWXnISOYxdjszVdvBG49Rfk0=;
+        s=default; t=1549732155;
+        bh=hh9kUpTU/t+T3LtaJNOcpFiksItwOq8rvl1bQx4tdr0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nGO/7dhjdoaTSV4mElFoglDF5tMSfuMtaWi3+J0wJ5I37hAOA6J+/XSmsaPYBeiVp
-         GnUOncuAMr7RUh3nRq8n9WeyDhmjUoc+t5qd5pTiwS02/Zfm9soAtVQWD21nhJmWv1
-         gcrMZoL26SAzHZesAorNVjeRWITattl1NGqjwRyE=
-Date:   Sat, 9 Feb 2019 17:05:51 +0000
+        b=aJkleny/3xUqmV69ThEf88pEUZCKHsr8IOCiag9vsrnbTgK9desSe3m1urZ9j6JHq
+         88T9ppO6vjXusmdBL8eTtpu8ZT+AJE7DqruL9u/mpBcE053cDIXED0OKBuHM36msBm
+         QIekjxi4SibXZEJ6xpVAIt+LO6DvLCTibzDKUJ80=
+Date:   Sat, 9 Feb 2019 17:09:09 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Gregory CLEMENT <gregory.clement@bootlin.com>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -46,12 +46,12 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/5] dt-bindings: iio: adc: move lpc32xx-adc out of
- staging
-Message-ID: <20190209170551.38a8e3de@archlinux>
-In-Reply-To: <20190208160944.13281-2-gregory.clement@bootlin.com>
+Subject: Re: [PATCH 2/5] dt-bindings: iio: adc: lpc32xx-adc: Document
+ vref-supply
+Message-ID: <20190209170909.6f947a69@archlinux>
+In-Reply-To: <20190208160944.13281-3-gregory.clement@bootlin.com>
 References: <20190208160944.13281-1-gregory.clement@bootlin.com>
-        <20190208160944.13281-2-gregory.clement@bootlin.com>
+        <20190208160944.13281-3-gregory.clement@bootlin.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,32 +61,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  8 Feb 2019 17:09:40 +0100
+On Fri,  8 Feb 2019 17:09:41 +0100
 Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
 
-> The drivers has been moved out since
-> 0097e20e7771 ("staging:iio:adc:lpc32xx Move out of staging.") in v4.10,
-> so let's align the binding documentation.
+> As most of the other ADC the lpc32xx one use a vref-supply property:
+> document it.
 > 
 > Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
-Oops. My fault.
+Hmm. This is indeed an oddity as you document. Normally we would
+insist on it, but we can't because of legacy and as it is actually
+queries, we can't even use the fact a stub regulator will be provided
+to get around it.
 
-You forgot the iio list on these so +cc
-
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+I'll have some comments on the patch implementing it anyway, but
+good to let this sit for a while given it's slightly unusual nature.
 
 Thanks,
 
 Jonathan
 
 > ---
->  .../devicetree/bindings/{staging => }/iio/adc/lpc32xx-adc.txt     | 0
->  1 file changed, 0 insertions(+), 0 deletions(-)
->  rename Documentation/devicetree/bindings/{staging => }/iio/adc/lpc32xx-adc.txt (100%)
+>  Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
-> similarity index 100%
-> rename from Documentation/devicetree/bindings/staging/iio/adc/lpc32xx-adc.txt
-> rename to Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+> index b3629d3a9adf..3a1bc669bd51 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+> @@ -6,6 +6,10 @@ Required properties:
+>    region.
+>  - interrupts: The ADC interrupt
+>  
+> +Optional:
+> + - vref-supply: The regulator supply ADC reference voltage, optional
+> +   for legacy reason, but highly encouraging to us in new device tree
+> +
+>  Example:
+>  
+>  	adc@40048000 {
+> @@ -13,4 +17,5 @@ Example:
+>  		reg = <0x40048000 0x1000>;
+>  		interrupt-parent = <&mic>;
+>  		interrupts = <39 0>;
+> +		vref-supply = <&vcc>;
+>  	};
 
