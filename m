@@ -2,98 +2,102 @@ Return-Path: <SRS0=Oq/L=QQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E37D4C282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 09:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E62C282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 12:26:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ACF022075C
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 09:04:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CB6921773
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 12:26:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="iRMU1a0s"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N1vmBKsa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726831AbfBIJEa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 04:04:30 -0500
-Received: from aserp2130.oracle.com ([141.146.126.79]:41074 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726047AbfBIJE3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2019 04:04:29 -0500
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x198wiZL141927;
-        Sat, 9 Feb 2019 09:04:03 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
- bh=+uARhowKqnNoU+kHBw7ON2mrOb3+CtHRtiY55ghYQqw=;
- b=iRMU1a0stwwZpsg3Upu99bPQBLGMmL6wwQxHeYqfKv6TVB/kz7OmmvnunZhuHNYx8mxQ
- g9OJ1kFrlxupyj2TuI9Z06DgpsUpevELUxxqKiOy1PZ48GMUffE9A7fXAf7ceAl9ExtL
- DaYk7jiVOSPmwQkWPwxe54hIROIeo40tzzHEzuCMIsaqf6qKKgKrLclfQaCy0msjrwb6
- IZ+5y3Ete9YzNy6rSC2V9cofQxjlM/2UUDTQ9AtTx7Pgtg31QamcUulVgtpm8c467gTR
- ZEL1TUOfh5tYl+SlTo8vcDkFjK9HitBkLwzKjAat75W7T4TmCZ6k2snsVBystITCos/X Wg== 
-Received: from userv0022.oracle.com (userv0022.oracle.com [156.151.31.74])
-        by aserp2130.oracle.com with ESMTP id 2qhre50808-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 09 Feb 2019 09:04:02 +0000
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userv0022.oracle.com (8.14.4/8.14.4) with ESMTP id x199415E005349
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Sat, 9 Feb 2019 09:04:02 GMT
-Received: from abhmp0008.oracle.com (abhmp0008.oracle.com [141.146.116.14])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x19941p1021672;
-        Sat, 9 Feb 2019 09:04:01 GMT
-Received: from kadam (/197.157.0.32)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Sat, 09 Feb 2019 01:04:00 -0800
-Date:   Sat, 9 Feb 2019 12:03:52 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio: chemical: sps30: fix a loop timeout test
-Message-ID: <20190209090350.GD4865@kadam>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9161 signatures=668683
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1902090067
+        id S1726724AbfBIMZ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 07:25:59 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:35788 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726722AbfBIMZ7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Feb 2019 07:25:59 -0500
+Received: by mail-qt1-f193.google.com with SMTP id p48so5571870qtk.2;
+        Sat, 09 Feb 2019 04:25:58 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=5u2/GAeioG7owoyFoQbxP+8qPTyM3dGvgZ7aD2b1OEo=;
+        b=N1vmBKsav68a9OaBk5itoPsPF1pxc9/O/jDljvkDeIZn955qdQiW+3uq3X76bIlQHU
+         LMvYsUy0CU5JC4sHJH1UO5LdDXmsm9lX6kxz+6jNisDeoU7R5PtF+dcW+zXnD6BMzBdb
+         IRBgId8OfVjCikucn4r3BrcCheuOLomBYcxzWFQpW+cu8sshaq+nN1Xz1X90V0hh1TVy
+         kGncy2QAdZrIorz9uaklZRWnG9AClP3DK0dk+Fj9J3zma0WKLELilYrNBu7IGKwWFafI
+         DE0ZupcOUqtMeMtZ46sfy9tkO2FlfX5bPRGSTtBycrdEQkp/mU3OiolVQCgxx4BTlL9u
+         9DxA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=5u2/GAeioG7owoyFoQbxP+8qPTyM3dGvgZ7aD2b1OEo=;
+        b=BUqsAWs1gwRENxVvEzfHbDSOx/2FJBFuulrYQb0w149HNw/V8M6ojPppW0usB4S7tt
+         GW6aAGiCUCFoAyY3c69UX2w7dedTsEIuunKZgi3UuROWFvMrdwmko5Tq4J/Pm5HRDDQS
+         Qf4l0Vbe6OM8HdvutbJO+oP5peqKe9859MZ5hVKvzfzRyO9bxyPaqTZpDdMcRDuFawNV
+         N+LZs6ahYXgTOoPpyb+ESldbS2QxDMeq1dUcC1lkApTbtjSXAgJ3tcOFxZh7Oh1Q3EnW
+         9PbnCw9qskjl8ECUwHj6IPFFrC/qDvbRmn7dWvQFJGOQVtIlhUezygnBeVTSwiX319Q8
+         8PiA==
+X-Gm-Message-State: AHQUAuYyGZG5Fu9roTCIZ6FYoDGjnL4q0/0JUahnJSWs1NKA2pldy+Km
+        9fTkO8fKuIaoiWVQmRQXdzk=
+X-Google-Smtp-Source: AHgI3IYIgwktQVxnunn090pxbyqxRjL/LRLJ7NmkzFNlY5VMasTgn6IK3YxrhgdWYjSHSOs6/pQm8w==
+X-Received: by 2002:a0c:d6ca:: with SMTP id l10mr206861qvi.247.1549715158472;
+        Sat, 09 Feb 2019 04:25:58 -0800 (PST)
+Received: from localhost.localdomain ([191.255.193.149])
+        by smtp.gmail.com with ESMTPSA id g3sm4313286qkc.54.2019.02.09.04.25.55
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sat, 09 Feb 2019 04:25:57 -0800 (PST)
+From:   Luciana da Costa Marques <lucianadacostamarques@gmail.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com,
+        Luciana da Costa Marques <lucianadacostamarques@gmail.com>
+Subject: [PATCH v2] iio:accel:adxl345: Change alignment to match paranthesis
+Date:   Sat,  9 Feb 2019 10:25:42 -0200
+Message-Id: <20190209122542.4872-1-lucianadacostamarques@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The "while (tries--) {" loop is a postop so it exits with "tries" set
-to -1.
+Align broken line to match upper line parenthesis. Solves the
+checkpatch.pl's message:
 
-Fixes: 232e0f6ddeae ("iio: chemical: add support for Sensirion SPS30 sensor")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+CHECK: Alignment should match open parenthesis
+
+Signed-off-by: Luciana da Costa Marques <lucianadacostamarques@gmail.com>
 ---
- drivers/iio/chemical/sps30.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ changes in v2:
+ - add full name to commit author
 
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index e03a28a67146..375df5060ed5 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -210,7 +210,7 @@ static int sps30_do_meas(struct sps30_state *state, s32 *data, int size)
- 		msleep_interruptible(300);
- 	}
+ drivers/iio/accel/adxl345_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
+index 780f87f72338..f03ed00685ea 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -150,8 +150,8 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
+ }
  
--	if (!tries)
-+	if (tries == -1)
- 		return -ETIMEDOUT;
- 
- 	ret = sps30_do_cmd(state, SPS30_READ_DATA, tmp, sizeof(int) * size);
+ static int adxl345_write_raw(struct iio_dev *indio_dev,
+-			    struct iio_chan_spec const *chan,
+-			    int val, int val2, long mask)
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
+ {
+ 	struct adxl345_data *data = iio_priv(indio_dev);
+ 	s64 n;
 -- 
 2.17.1
 
