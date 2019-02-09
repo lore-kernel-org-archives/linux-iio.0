@@ -2,97 +2,90 @@ Return-Path: <SRS0=Oq/L=QQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33131C282C4
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 19:23:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BE84C282C4
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 19:39:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 00694217D8
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 19:23:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="Ra/i5C11"
+	by mail.kernel.org (Postfix) with ESMTP id DE252218D2
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Feb 2019 19:39:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549741179;
+	bh=D38Fa0XXohE7DPQ+PVv40mosY7LccJe2Pu53DH2mGoY=;
+	h=Date:From:To:Subject:List-ID:From;
+	b=MwhlD8hUmbDO+vDiy7wEEZ2lePsGNaQYg3dfDDevLUumyglI81am9AtiD7vIPU0g2
+	 kt1GC1+zXCSIsGxea/5svO1l6yIrMCUZdsUTtzuFGCxB+x/uSMqyIm+CyDFUzcNzZC
+	 xd6udaZWdaMYjqV+VpJO+eE3qj61fmteCSlE8mfQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727190AbfBITXP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Feb 2019 14:23:15 -0500
-Received: from vern.gendns.com ([98.142.107.122]:46986 "EHLO vern.gendns.com"
+        id S1727225AbfBITjj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Feb 2019 14:39:39 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54246 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727187AbfBITXP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Feb 2019 14:23:15 -0500
-X-Greylist: delayed 1618 seconds by postgrey-1.27 at vger.kernel.org; Sat, 09 Feb 2019 14:23:14 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=g1vQtrMzSJBOpxZiNlEvjWT1VUNRvlBXleY3eINxXHg=; b=Ra/i5C113gY8Oa0rKOxB2hbJir
-        nMvZ4qCGmgG1As47600fQD4pQ88IiJnQ+r6qO3xfgmijmKZFwAqj+KWOVE4hnUiZM5gZjXjo7liDY
-        6aSQy+r8WveCYo6d/LC7TeCKblXy0m5YqDLEJNuWY0h39QX2z3UgZLG6HMzt41mm9P15LI3C/eUe/
-        AQJfFu3/ZibvfeCDqUD6OafJCYeRRBXjy18ODS+aKrIP5oH6tmV1v6IOmYY2LJyBxD93zAjYGvW9e
-        lWpSgS9XBlLpylmBWzHR9y8YX1WrM3byKo7X5VacjG+F0r/1blwzuMf6Oj/0Nl9ot4ACtbZgESZcv
-        x7WQgmTA==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:41636 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <david@lechnology.com>)
-        id 1gsXjm-0006ae-PV; Sat, 09 Feb 2019 13:52:26 -0500
-Subject: Re: [PATCH] iio: adc: ti-ads7950: add GPIO support
-To:     Jonathan Cameron <jic23@kernel.org>, justinpopo6@gmail.com
-Cc:     linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com,
-        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-kernel@vger.kernel.org
-References: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
- <20190209170042.69a78684@archlinux>
-From:   David Lechner <david@lechnology.com>
-Message-ID: <2e692086-4be5-10ea-34b0-4444995c4275@lechnology.com>
-Date:   Sat, 9 Feb 2019 12:56:11 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        id S1727221AbfBITjj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Feb 2019 14:39:39 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D500121919;
+        Sat,  9 Feb 2019 19:39:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549741178;
+        bh=D38Fa0XXohE7DPQ+PVv40mosY7LccJe2Pu53DH2mGoY=;
+        h=Date:From:To:Subject:From;
+        b=FbLQuuJmsHe7gIOqpAOB256KOidwZTVRd5MagcUUhSPGZU9WBdFZ1Yap6aT2yrueo
+         bLKVKmN7DQPZdqYsRMm+QSTHllsmGbSAiIRUvsQ+igdSy/OCaXQCP/TNFf7i+X3gdS
+         hu8NHqLi8M+hNCzt6zrLZj8pGyQa6XH/kzXToQMQ=
+Date:   Sat, 9 Feb 2019 19:39:34 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org,
+        Andreas Brauchli <a.brauchli@elementarea.net>
+Subject: [PATCH] iio:chemical:sps30 Suppress some switch fallthrough
+ warnings.
+Message-ID: <20190209193934.64038cf4@archlinux>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20190209170042.69a78684@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/9/19 11:00 AM, Jonathan Cameron wrote:
-> Nope.  This is a state lock used to protect against transitions between
-> different modes of the IIO device (buffered vs polled), it
-> isn't suitable for general use.
-> 
-> The driver should be modified to handle that correctly.
-> We have iio_claim_direct_mode etc that deal with the case
-> where a device can't do certain operations whilst in buffered
-> mode.  Note it can fail and should.
-> 
-> Seems there are more drivers still doing this than I thought.
-> If anyone is bored and wants to clean them out, that would be
-> most appreciated!
-> 
-> If you need locking to protect a local buffer or the device
-> state, define a new lock to do it with clearly documented
-> scope.
+Fixes warnings reported on linux-next but marking one path
+and adding an explicit return in the other.
 
-Just as a reminder, there is a use case for this particular
-chip that requires buffered mode and direct mode at the same
-time.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Andreas Brauchli <a.brauchli@elementarea.net>
+---
+I'd like to get this one into linux-next fairly quick so it anyone
+has time to do a quick sanity check it would be much appreciated!
 
-https://patchwork.kernel.org/patch/10539021/
-https://patchwork.kernel.org/patch/10527757/
+ drivers/iio/chemical/sps30.c | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+index 375df5060ed5..edbb956e81e8 100644
+--- a/drivers/iio/chemical/sps30.c
++++ b/drivers/iio/chemical/sps30.c
+@@ -118,6 +118,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
+ 	case SPS30_READ_AUTO_CLEANING_PERIOD:
+ 		buf[0] = SPS30_AUTO_CLEANING_PERIOD >> 8;
+ 		buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
++		/* fall through */
+ 	case SPS30_READ_DATA_READY_FLAG:
+ 	case SPS30_READ_DATA:
+ 	case SPS30_READ_SERIAL:
+@@ -295,6 +296,8 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+ 				*val2 = 10000;
+ 
+ 				return IIO_VAL_INT_PLUS_MICRO;
++			default:
++				return -EINVAL;
+ 			}
+ 		default:
+ 			return -EINVAL;
+-- 
+2.20.1
+
