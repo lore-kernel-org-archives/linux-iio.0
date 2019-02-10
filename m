@@ -2,79 +2,80 @@ Return-Path: <SRS0=E+xd=QR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99447C282C2
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Feb 2019 20:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20D2BC282C2
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Feb 2019 21:33:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5D2C02146F
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Feb 2019 20:49:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E97F02146F
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Feb 2019 21:33:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726093AbfBJUtC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 10 Feb 2019 15:49:02 -0500
-Received: from 212.199.177.27.static.012.net.il ([212.199.177.27]:58246 "EHLO
-        herzl.nuvoton.co.il" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1725971AbfBJUtB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Feb 2019 15:49:01 -0500
-Received: from taln60.nuvoton.co.il (ntil-fw [212.199.177.25])
-        by herzl.nuvoton.co.il (8.13.8/8.13.8) with ESMTP id x1AKHsa5009187;
-        Sun, 10 Feb 2019 22:17:54 +0200
-Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id 8C38A62DA4; Sun, 10 Feb 2019 22:47:51 +0200 (IST)
-From:   Tomer Maimon <tmaimon77@gmail.com>
-To:     gregkh@linuxfoundation.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, yuenn@google.com, venture@google.com,
-        brendanhiggins@google.com, avifishman70@gmail.com, joel@jms.id.au
-Cc:     linux-iio@vger.kernel.org, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v1 1/1] dt-binding: iio: remove rst node from NPCM ADC document
-Date:   Sun, 10 Feb 2019 22:47:49 +0200
-Message-Id: <20190210204749.381445-1-tmaimon77@gmail.com>
-X-Mailer: git-send-email 2.14.1
+        id S1726127AbfBJVda (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 10 Feb 2019 16:33:30 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:40233 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725971AbfBJVda (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Feb 2019 16:33:30 -0500
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1gswj4-0006G4-VQ; Sun, 10 Feb 2019 22:33:22 +0100
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1gswj2-0007GC-4B; Sun, 10 Feb 2019 22:33:20 +0100
+Date:   Sun, 10 Feb 2019 22:33:20 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Fabrice Gasnier <fabrice.gasnier@st.com>, thierry.reding@gmail.com,
+        robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
+        mcoquelin.stm32@gmail.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org,
+        vilhelm.gray@gmail.com, linux-stm32@st-md-mailman.stormreply.com
+Subject: Re: [PATCH 4/4] iio: counter: stm32-lptimer: Add power management
+ support
+Message-ID: <20190210213320.fs5kzezyzwd6akpx@pengutronix.de>
+References: <1549370429-19116-1-git-send-email-fabrice.gasnier@st.com>
+ <1549370429-19116-5-git-send-email-fabrice.gasnier@st.com>
+ <20190209162133.65e6fd93@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190209162133.65e6fd93@archlinux>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove NPCM7xx rst node for preparing the NPCM ADC
-document to describe ADC reset binding.
+On Sat, Feb 09, 2019 at 04:21:33PM +0000, Jonathan Cameron wrote:
+> On Tue, 5 Feb 2019 13:40:29 +0100
+> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+> 
+> > Add suspend/resume PM sleep ops. When going to low power, disable
+> > active counter. Only active counter should be resumed: don't touch
+> > disabled counter, as it may be used by other LPTimer MFD child driver.
+> > 
+> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> I think this looks fine.  I'm not totally sure if patches 3,4 are
+> separable from 1,2 though so please let me know whether I should take
+> these now, or let all 4 go in together via some path?
 
-Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
----
- .../devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt          | 11 -----------
- 1 file changed, 11 deletions(-)
+I'd say these are orthogonal, so if you are happy with patches 3 and 4
+you can take them without bothering for patches 1 and 2.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-index 1b8132cd9060..eb939fe77836 100644
---- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
-@@ -14,11 +14,6 @@ Optional properties:
- 			   vref-supply is not added the ADC will use internal voltage
- 			   reference.
- 
--Required Node in the NPCM7xx BMC:
--An additional register is present in the NPCM7xx SOC which is
--assumed to be in the same device tree, with and marked as
--compatible with "nuvoton,npcm750-rst".
--
- Example:
- 
- adc: adc@f000c000 {
-@@ -27,9 +22,3 @@ adc: adc@f000c000 {
- 	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
- 	clocks = <&clk NPCM7XX_CLK_ADC>;
- };
--
--rst: rst@f0801000 {
--	compatible = "nuvoton,npcm750-rst", "syscon",
--	"simple-mfd";
--	reg = <0xf0801000 0x6C>;
--};
+Best regards
+Uwe
+
 -- 
-2.14.1
-
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | http://www.pengutronix.de/  |
