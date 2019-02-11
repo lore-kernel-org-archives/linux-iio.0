@@ -2,37 +2,55 @@ Return-Path: <SRS0=aw/O=QS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6325DC169C4
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:22:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F9CCC169C4
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:25:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 395E321874
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:22:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F1496218AD
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:25:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549916720;
+	bh=ZU8mpCMtSWR3dTI5Qdrc+P5N3tyVKzyPGycxg4RONzs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=AucgGj5X6xlEDorOp06sBgl4z38JqDIWWltimETm+d8wtbW1gCf4NONy7cGklu9Bz
+	 Z3LhyIrUptBnpd15LijmkBcXsow6HpqWiJFA2GzGMzobx42riaV9M4SSf5d+ZUnMmg
+	 /E+6+gMUGsj/13ertKgLLBFKrIb8Lq8l35w33Zwg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726259AbfBKUWT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Feb 2019 15:22:19 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:53318 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727082AbfBKUWT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2019 15:22:19 -0500
+        id S1728132AbfBKUZT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Feb 2019 15:25:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44070 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727199AbfBKUZS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 11 Feb 2019 15:25:18 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id E6BEB9E749A;
-        Mon, 11 Feb 2019 20:22:16 +0000 (GMT)
-Date:   Mon, 11 Feb 2019 20:22:14 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org, pmeerw@pmeerw.net,
-        johan@kernel.org
-Subject: Re: [PATCH v4 3/3] dt-bindings: iio: chemical: pms7003: add device
- tree support
-Message-ID: <20190211202214.0b6146a5@archlinux>
-In-Reply-To: <20190209173609.13220-4-tduszyns@gmail.com>
-References: <20190209173609.13220-1-tduszyns@gmail.com>
-        <20190209173609.13220-4-tduszyns@gmail.com>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 88054218A4;
+        Mon, 11 Feb 2019 20:25:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549916717;
+        bh=ZU8mpCMtSWR3dTI5Qdrc+P5N3tyVKzyPGycxg4RONzs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lYXcDnWJ5U+LH4kgLKvpP0P9eJHwaX88rukhOhso/1gvFMyogHd1HJHcFTnPCju+3
+         a6AAPXrO8C0XzSX2NOFnAvFwGPXm+oU0UiXvfWQwggXYSZ24bBluiEVqhbpu3PXnXe
+         a5H8iFfPIcTl7Nam2J0zKDuOB4AC2KMTTy/EZlxg=
+Date:   Mon, 11 Feb 2019 20:25:11 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tomer Maimon <tmaimon77@gmail.com>
+Cc:     gregkh@linuxfoundation.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        yuenn@google.com, venture@google.com, brendanhiggins@google.com,
+        avifishman70@gmail.com, joel@jms.id.au, linux-iio@vger.kernel.org,
+        openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v1 1/1] dt-binding: iio: remove rst node from NPCM ADC
+ document
+Message-ID: <20190211202511.622d4c48@archlinux>
+In-Reply-To: <20190210204749.381445-1-tmaimon77@gmail.com>
+References: <20190210204749.381445-1-tmaimon77@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -42,51 +60,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat,  9 Feb 2019 18:36:09 +0100
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+On Sun, 10 Feb 2019 22:47:49 +0200
+Tomer Maimon <tmaimon77@gmail.com> wrote:
 
-> Add device tree support for Plantower PMS7003 particulate matter sensor.
+> Remove NPCM7xx rst node for preparing the NPCM ADC
+> document to describe ADC reset binding.
 > 
-> Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-I'll be doing a pull request pretty soon on this given where we are
-in the cycle.  If anyone has last minute reviews, there is still a little
-time.
+> Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it. Hopefully just in time
+for this cycle as I'll do a final pull request in a day or two.
 
 Thanks,
 
 Jonathan
 
 > ---
->  .../iio/chemical/plantower,pms7003.txt        | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
+>  .../devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt          | 11 -----------
+>  1 file changed, 11 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> new file mode 100644
-> index 000000000000..7b5f06f324c8
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-> @@ -0,0 +1,20 @@
-> +* Plantower PMS7003 particulate matter sensor
-> +
-> +Required properties:
-> +- compatible: must be "plantower,pms7003"
-> +- vcc-supply: phandle to the regulator that provides power to the sensor
-> +
-> +Optional properties:
-> +- plantower,set-gpios: phandle to the GPIO connected to the SET line
-> +- reset-gpios: phandle to the GPIO connected to the RESET line
-> +
-> +Refer to serial/slave-device.txt for generic serial attached device bindings.
-> +
-> +Example:
-> +
-> +&uart0 {
-> +	air-pollution-sensor {
-> +		compatible = "plantower,pms7003";
-> +		vcc-supply = <&reg_vcc5v0>;
-> +	};
-> +};
+> diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+> index 1b8132cd9060..eb939fe77836 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+> @@ -14,11 +14,6 @@ Optional properties:
+>  			   vref-supply is not added the ADC will use internal voltage
+>  			   reference.
+>  
+> -Required Node in the NPCM7xx BMC:
+> -An additional register is present in the NPCM7xx SOC which is
+> -assumed to be in the same device tree, with and marked as
+> -compatible with "nuvoton,npcm750-rst".
+> -
+>  Example:
+>  
+>  adc: adc@f000c000 {
+> @@ -27,9 +22,3 @@ adc: adc@f000c000 {
+>  	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
+>  	clocks = <&clk NPCM7XX_CLK_ADC>;
+>  };
+> -
+> -rst: rst@f0801000 {
+> -	compatible = "nuvoton,npcm750-rst", "syscon",
+> -	"simple-mfd";
+> -	reg = <0xf0801000 0x6C>;
+> -};
 
