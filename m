@@ -2,92 +2,93 @@ Return-Path: <SRS0=aw/O=QS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F4D0C169C4
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 19:30:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2760C169C4
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:06:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 476F32186A
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 19:30:10 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="icc2XmBa"
+	by mail.kernel.org (Postfix) with ESMTP id 8045821773
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:06:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1549915566;
+	bh=yUvElnEvyG65dIWr7xpqH8esN//aSZKgiGIPwUv/d8Q=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=0sLlosiulLyWi8PjZDB6z0gnNeHxVbI9Bcb62UnN/rx3k23j5zSX+Ir1mokzeWV+T
+	 VvqezVxvFxUUUvDdPeNGZOrdNk2ZM8K0tpXQuA1BCGnnoSj1vVhskvQsfAQKPody+L
+	 QsDyIfS1RXcY6hOqEMxTSRC6j5rPYRbLtcATBjuQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732364AbfBKTaJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Feb 2019 14:30:09 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:46426 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731518AbfBKTaJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2019 14:30:09 -0500
-Received: by mail-ot1-f68.google.com with SMTP id w25so19476185otm.13;
-        Mon, 11 Feb 2019 11:30:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=EKAzz2XWoprRBdkir+vqxJ/iQwVJe2PSVps01FW5WcE=;
-        b=icc2XmBak//btrTimEluXCbFltzdckF3x/2AASq48Eru+JAooR+aQt1P8YG+cdIMEH
-         AenYZz8Qp7D2j7ltMxeKuUv1OsYQYKryb+CVArAA/wqfacNA0ng0qR9F/V0kqLfNBIFb
-         Gos+AsLMygXgEd4/jFDmWmZ5ISUqjh0DgxQkhACZFaZoU5+TfJyN5QbOd5+YP47Y5N8J
-         UX8YSBBkd2XpZGvTSC0FP6OGP0sJlZNkVyQJfee0qGOuzx8GCmMXTpnhqcSl3wxBE/qx
-         chJLUBO3V9LyzTUR/tMPoHcUuwI8bKqSwYQ6x72fOo6THVhxOd0NhhyBTRoP87MvUF3h
-         yg1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=EKAzz2XWoprRBdkir+vqxJ/iQwVJe2PSVps01FW5WcE=;
-        b=ZNplpTapzHvfyDCdLmyN1Z3Osj16Bhe50imOO8p51wqT5wK6lSjLh7xUlsh6NUWiEW
-         7Ao7frlszpHqS19N3ZYgee/oBfPnOwAoO3kMPVxYcEF4f3rEiB/yeb+ZfSivVAEPF7iv
-         xzxlybpy4QvtIOLd7MSpTK7eV1h2Us1X7caREtTPku9tHoRVwySEE2fBCskkvgMHeKle
-         wMr4Hneq326VEHBmW/ww2wvvxls7q/qvPi89YzSTTgHaevaxA+oUJwZhIPieC5mAAH4g
-         qfhq8BiBncOmNsWrgl776+cvEEvRyZYy3J3Di/UzaDf+D8cw9K4o3AHPx/E6RvwGCYNf
-         zKDg==
-X-Gm-Message-State: AHQUAuaWRYQ7BCmAJADBQK1gQW3wMq2WsLAwWkTnEFcCPq1LSYzsD/BN
-        OZi0nqQWUiI52AoojEPuw4RjGtkFyq8taYwVF40=
-X-Google-Smtp-Source: AHgI3IZT2WGNybPLA0Hk5aCWWYnO5OZEjm4uY+YJLFa1nj0zfOiwbG/8cLcr7KxYh3D79W3igVwkE7BajDmIyebPe5A=
-X-Received: by 2002:a9d:781:: with SMTP id 1mr28018388oto.250.1549913408913;
- Mon, 11 Feb 2019 11:30:08 -0800 (PST)
+        id S1728416AbfBKUGF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Feb 2019 15:06:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58146 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727941AbfBKUGF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 11 Feb 2019 15:06:05 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 18DD32084D;
+        Mon, 11 Feb 2019 20:06:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1549915564;
+        bh=yUvElnEvyG65dIWr7xpqH8esN//aSZKgiGIPwUv/d8Q=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=yYpB+H6YeRhl2VOj4fVvkhOHqj1aC96YEimcfIBrvjZEIP1Wz1FAqIB+NxAko1g81
+         quUcwy5haLIoxkfOL9SIM850LKt2WtQ+uJ++AXrpll8ppnYPq7GMr9nSl8quEaUyKr
+         R+u4XrnMXEMWDTA0J0r7TDf4xnaxqNkLf0e3s2+o=
+Date:   Mon, 11 Feb 2019 20:05:57 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     David Lechner <david@lechnology.com>
+Cc:     justinpopo6@gmail.com, linux-iio@vger.kernel.org,
+        linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
+        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-ads7950: add GPIO support
+Message-ID: <20190211200557.7648d447@archlinux>
+In-Reply-To: <2e692086-4be5-10ea-34b0-4444995c4275@lechnology.com>
+References: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
+        <20190209170042.69a78684@archlinux>
+        <2e692086-4be5-10ea-34b0-4444995c4275@lechnology.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
-In-Reply-To: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 11 Feb 2019 14:29:58 -0500
-Message-ID: <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com>
-Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
-To:     Robert Eshleman <bobbyeshleman@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Feb 10, 2019 at 3:39 PM Robert Eshleman <bobbyeshleman@gmail.com> wrote:
->
-> This patch adds support for the ap3216c ambient light and proximity
-> sensor.
+On Sat, 9 Feb 2019 12:56:11 -0600
+David Lechner <david@lechnology.com> wrote:
 
-PS
+> On 2/9/19 11:00 AM, Jonathan Cameron wrote:
+> > Nope.  This is a state lock used to protect against transitions between
+> > different modes of the IIO device (buffered vs polled), it
+> > isn't suitable for general use.
+> > 
+> > The driver should be modified to handle that correctly.
+> > We have iio_claim_direct_mode etc that deal with the case
+> > where a device can't do certain operations whilst in buffered
+> > mode.  Note it can fail and should.
+> > 
+> > Seems there are more drivers still doing this than I thought.
+> > If anyone is bored and wants to clean them out, that would be
+> > most appreciated!
+> > 
+> > If you need locking to protect a local buffer or the device
+> > state, define a new lock to do it with clearly documented
+> > scope.  
+> 
+> Just as a reminder, there is a use case for this particular
+> chip that requires buffered mode and direct mode at the same
+> time.
+> 
+> https://patchwork.kernel.org/patch/10539021/
+> https://patchwork.kernel.org/patch/10527757/
 
-Why not use the chip in the mode where the interrupt is automatically cleared by
-reading the data? This could work if you read the data in the
-interrupt routine, store
-it in a buffer, then send the event to iio. Then when userspace wants
-to read out the
-value, don't actually touch the hardware, but return the buffered value.
+Thanks, I had indeed forgotten that entirely.
+So it should have a local lock and not take mlock explicitly at all.
 
-I don't think you then need any synchronization primitives to
-accomplish this, such as
-mutexes, spin locks, etc. Because the interrupt routine is single-threaded.
-
-You don't even need a memory barrier for the buffered value,
-because the iio core uses a waitqueue internally, which automatically issues
-an mb(). As far as I know.
+Jonathan
