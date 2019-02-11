@@ -2,110 +2,118 @@ Return-Path: <SRS0=aw/O=QS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 304FCC169C4
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCC3FC282CE
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:17:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E8E00217FA
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:08:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1549915726;
-	bh=+9/DpXA9vFb8cXHHnmqK3ASxqSo1tiG+NCjb/X6xLwE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=eSRY5RifZ8n3/1ZKpxoHAbCIYgStx1+ok2YEUNI4gTyRdbeJl0XgXtfSCb6W9qqFc
-	 EhIqJfsHTXq+K75g+gBklt/yrtx1zYYSOMEc01AsZ3p3v4Nxy9Qf8vBVqoX3i5Cejx
-	 y8ovwTGyl6URzqTMN969d+ec6S8jzhx5wUf7AHK8=
+	by mail.kernel.org (Postfix) with ESMTP id 9BF6E217FA
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 20:17:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XmWwVFmg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728394AbfBKUIp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Feb 2019 15:08:45 -0500
-Received: from mail.kernel.org ([198.145.29.99]:60032 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727073AbfBKUIp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 11 Feb 2019 15:08:45 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9B5CA217FA;
-        Mon, 11 Feb 2019 20:08:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1549915724;
-        bh=+9/DpXA9vFb8cXHHnmqK3ASxqSo1tiG+NCjb/X6xLwE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tYxOuvYuMmpp1NxosW/Dp8gFhrsVEgTyIX2+wDx8en2WwK0VOETx/8A46N0MawS/r
-         pelofyyHPRPNq+uAc9cLpwKvlZFWYP/b+mEZr5PJvk3sJVhnc6oKd8JrOWEgvdqCza
-         BeY6ma9YmFM0fbmQ8X+iZzl9AVR2smMxQLjusivg=
-Date:   Mon, 11 Feb 2019 20:08:39 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     linux-iio@vger.kernel.org,
-        Andreas Brauchli <a.brauchli@elementarea.net>
-Subject: Re: [PATCH] iio:chemical:sps30 Suppress some switch fallthrough
- warnings.
-Message-ID: <20190211200839.0b625f50@archlinux>
-In-Reply-To: <20190209201209.GA19661@arch>
-References: <20190209193934.64038cf4@archlinux>
-        <20190209201209.GA19661@arch>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388659AbfBKURu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Feb 2019 15:17:50 -0500
+Received: from mail-yw1-f65.google.com ([209.85.161.65]:40539 "EHLO
+        mail-yw1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729457AbfBKURt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2019 15:17:49 -0500
+Received: by mail-yw1-f65.google.com with SMTP id c67so79398ywa.7;
+        Mon, 11 Feb 2019 12:17:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YPf184+zrdt4QtTJ4m/wSSLQM/wvd6gNxP/hOiuCrD4=;
+        b=XmWwVFmgbUuKt0NERdkZ1wN/pHx6POzXHHLU2OmharbpiUTBMPWfBfOPG+4uXj7bNE
+         NI4EtUAtINrXHOr54IcZ4G+0IIlUpfly8YnkmZVG1uhpDFIrWbSH/OZz7Hif49n4X6al
+         bRepu0GiGYZJUyErzy+mcSPoVMmot5jbjt9uqkTOqeIpUGPlLJ1He36Fb/cpPSpS6wFP
+         kiyfB15hcdi8LVJmKeuve/QLathLLi5B9J1lSJ3NSn6rwpQH8bhqIoJoXySa8IyL/coQ
+         r2/L4Q0wSPedhpg5RwtqMryFxcIvvTAIrDGxmgZ4IrzHKukDUYcuyw+tOEgIQr3AnYGP
+         KAlQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YPf184+zrdt4QtTJ4m/wSSLQM/wvd6gNxP/hOiuCrD4=;
+        b=f5ZnzqBZjSuCFVsNBmd2iSaoj0cozkS9giQFgVxVSKBMPT6hGSj4l9/MY09opfnKxg
+         85fDNJhnljW4a1pb2Kh1DDaVQZwoJDDmRz7kWUTUBju8ecxryMRQ9/Fzdwn8C0kvRY41
+         sHt8IIUEvg23S6fsPFEFnxGlzOE/SHjVnXlRnpSTt+LUzTstv9dPNjWAMSKawKlQcAju
+         sNY2u9mtHJTI43Ejz5sCzgjk78+lC0UzN45OQEfUa2CMztAWiD/tEzbp0hz2E2lx7IBd
+         T8xaV9UsO/3EvOgtrRHMXIuoR+df+YKwJqs1Q1tpv0EtroaWs7hcUZpPre9ES/Sl+hJE
+         yLxQ==
+X-Gm-Message-State: AHQUAub6z+Y1HeFyTu6xM5yN5B1JxMg03yRj8yD53ic/oud18NJHalWt
+        E3fAmSxXccURIFAsXDQo1vDUZAjEbP2+zklrUPQ=
+X-Google-Smtp-Source: AHgI3Ia7b/QxGc6lItic+npPZsO3Er9mdYQunM5nkPX8WrmcnRRyWch4c/zuPwylfgWxKwsm36gIiD4CKwRiVhjs5+Q=
+X-Received: by 2002:a81:4f14:: with SMTP id d20mr39516ywb.16.1549916268570;
+ Mon, 11 Feb 2019 12:17:48 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
+ <20190209170042.69a78684@archlinux> <2e692086-4be5-10ea-34b0-4444995c4275@lechnology.com>
+ <20190211200557.7648d447@archlinux>
+In-Reply-To: <20190211200557.7648d447@archlinux>
+From:   Justin Chen <justinpopo6@gmail.com>
+Date:   Mon, 11 Feb 2019 12:17:37 -0800
+Message-ID: <CAJx26kXdap3oSBREDfakwaWMz4oKxy=oaagP1jo4grD=kqJ2hA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: ti-ads7950: add GPIO support
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bgolaszewski@baylibre.com,
+        Linus Walleij <linus.walleij@linaro.org>, knaack.h@gmx.de,
+        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 9 Feb 2019 21:12:10 +0100
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
-
-> On Sat, Feb 09, 2019 at 07:39:34PM +0000, Jonathan Cameron wrote:
-> > Fixes warnings reported on linux-next but marking one path
-> > and adding an explicit return in the other.
-> >  
-> 
-> Looks good.
-> 
-> Acked-by: Tomasz Duszynski <tduszyns@gmail.com>
-Thanks,
-
-Applied to the togreg branch of iio.git.
-
-Jonathan
-
-> 
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Andreas Brauchli <a.brauchli@elementarea.net>
-> > ---
-> > I'd like to get this one into linux-next fairly quick so it anyone
-> > has time to do a quick sanity check it would be much appreciated!
+On Mon, Feb 11, 2019 at 12:06 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sat, 9 Feb 2019 12:56:11 -0600
+> David Lechner <david@lechnology.com> wrote:
+>
+> > On 2/9/19 11:00 AM, Jonathan Cameron wrote:
+> > > Nope.  This is a state lock used to protect against transitions between
+> > > different modes of the IIO device (buffered vs polled), it
+> > > isn't suitable for general use.
+> > >
+> > > The driver should be modified to handle that correctly.
+> > > We have iio_claim_direct_mode etc that deal with the case
+> > > where a device can't do certain operations whilst in buffered
+> > > mode.  Note it can fail and should.
+> > >
+> > > Seems there are more drivers still doing this than I thought.
+> > > If anyone is bored and wants to clean them out, that would be
+> > > most appreciated!
+> > >
+> > > If you need locking to protect a local buffer or the device
+> > > state, define a new lock to do it with clearly documented
+> > > scope.
 > >
-> >  drivers/iio/chemical/sps30.c | 3 +++
-> >  1 file changed, 3 insertions(+)
+> > Just as a reminder, there is a use case for this particular
+> > chip that requires buffered mode and direct mode at the same
+> > time.
 > >
-> > diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> > index 375df5060ed5..edbb956e81e8 100644
-> > --- a/drivers/iio/chemical/sps30.c
-> > +++ b/drivers/iio/chemical/sps30.c
-> > @@ -118,6 +118,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
-> >  	case SPS30_READ_AUTO_CLEANING_PERIOD:
-> >  		buf[0] = SPS30_AUTO_CLEANING_PERIOD >> 8;
-> >  		buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
-> > +		/* fall through */
-> >  	case SPS30_READ_DATA_READY_FLAG:
-> >  	case SPS30_READ_DATA:
-> >  	case SPS30_READ_SERIAL:
-> > @@ -295,6 +296,8 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
-> >  				*val2 = 10000;
-> >
-> >  				return IIO_VAL_INT_PLUS_MICRO;
-> > +			default:
-> > +				return -EINVAL;
-> >  			}
-> >  		default:
-> >  			return -EINVAL;
-> > --
-> > 2.20.1
-> >  
+> > https://patchwork.kernel.org/patch/10539021/
+> > https://patchwork.kernel.org/patch/10527757/
+>
+> Thanks, I had indeed forgotten that entirely.
+> So it should have a local lock and not take mlock explicitly at all.
+>
+Thanks for all the feedback.
+So If I am understanding this correctly. I should create a local lock
+to synchronize three different type of transactions (buffered, direct,
+gpio).
+I do not want to use iio_claim_direct_mode because that doesn't allow
+simultaneous use of buffered mode and direct mode, which is necessary
+for this driver because of the above mentioned patch.
 
+Justin
+> Jonathan
