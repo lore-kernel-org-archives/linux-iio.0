@@ -3,59 +3,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8888DC282C4
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:35:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C22B2C282C4
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:47:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4D2A3222C1
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:35:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 946B2222C1
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:47:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550003756;
-	bh=xgjB4tBcTRaeShPv0xeqGqF5KleQWyPU2pH73C5XnY0=;
+	s=default; t=1550004463;
+	bh=RMYvxcpdbkWwkfSb0HhnxMOR1COqv+w3oURw2YQwRpo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=ubbGLclxH89iDHImHLgyQLt+O3aWyBVaWV1VtXJ4Uwe/+h/CIZXcc+nqW99cgDcwB
-	 9/0bbKPJi6fGOqLsdaloX9DpFxRW4Q1XUvzQPI9VZ9zM1RAAUjsUtFVc6Yk5nIEXXi
-	 25jsC2XZl8GQZNMFQ6YOXX+A/iKY3IP91wN8Cwck=
+	b=dqpJaMuMbjWYjF5dpWQ7f3X573Hax3aElrFEOrU7krfQT2GELsxeKFLGxuR8NdpVt
+	 sv95ecrzmeEH04a5doBAA+hF2Wa8jh9qApySYf4KJjFdR/0Hp9fEfaZCCq5ia/qAXN
+	 yqscRmjEExJkJ4LeYPbkGHR1/IS9t2KzrSilO37A=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728447AbfBLUfu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 15:35:50 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45650 "EHLO mail.kernel.org"
+        id S1731786AbfBLUrh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 15:47:37 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54190 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727733AbfBLUfu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 12 Feb 2019 15:35:50 -0500
+        id S1727012AbfBLUrh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 12 Feb 2019 15:47:37 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 916E3222BE;
-        Tue, 12 Feb 2019 20:35:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58DD0222BE;
+        Tue, 12 Feb 2019 20:47:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550003750;
-        bh=xgjB4tBcTRaeShPv0xeqGqF5KleQWyPU2pH73C5XnY0=;
+        s=default; t=1550004455;
+        bh=RMYvxcpdbkWwkfSb0HhnxMOR1COqv+w3oURw2YQwRpo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=skkl4+V5+/jDplhAwrIZqFuKe+YGrQakJWpR51wr/2VB39Xi/2g76+4/N8QEGm8Hk
-         XjQeooV1l2v4HjUAi+8Gc50yQ5SfY+SlKmynCVLhg3x1DhT53eopK8UX2wMuat6BCO
-         YQd33A0fg88psDvO/H7yswZ2G1oOrnx/WT2xZfyM=
-Date:   Tue, 12 Feb 2019 20:35:43 +0000
+        b=JOuTspN87qK7vajIxAtMj0y7enZMH/QuP2GIMb1eXsCNIvZTfjtKbinoX+ZmZJyWJ
+         JgSbhWEiSP24b7Sbs6l4iDxngT4bMSSd930fjscK9PypzE3IULxkKx7O2Jd27/15mS
+         WlQmeTdPngC2VWK5rUe6/JzVY2opShnO39cJ5y3Q=
+Date:   Tue, 12 Feb 2019 20:47:30 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        bgolaszewski@baylibre.com,
-        Linus Walleij <linus.walleij@linaro.org>, knaack.h@gmx.de,
-        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ti-ads7950: add GPIO support
-Message-ID: <20190212203544.181b8c19@archlinux>
-In-Reply-To: <CAJx26kXdap3oSBREDfakwaWMz4oKxy=oaagP1jo4grD=kqJ2hA@mail.gmail.com>
-References: <1549653856-47409-1-git-send-email-justinpopo6@gmail.com>
-        <20190209170042.69a78684@archlinux>
-        <2e692086-4be5-10ea-34b0-4444995c4275@lechnology.com>
-        <20190211200557.7648d447@archlinux>
-        <CAJx26kXdap3oSBREDfakwaWMz4oKxy=oaagP1jo4grD=kqJ2hA@mail.gmail.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Robert Eshleman <bobbyeshleman@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
+Message-ID: <20190212204730.16864802@archlinux>
+In-Reply-To: <CAGngYiV_6MzKOSomAWs1znp8ThPRAL-e2CVZfn+ZHZOq8DiD0A@mail.gmail.com>
+References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
+        <CAGngYiV6zm12XhB6WChSXNndLMSJ3e4NAB=BLq_mrXtWLKEruQ@mail.gmail.com>
+        <20190211212734.01909e62@archlinux>
+        <CAGngYiV_6MzKOSomAWs1znp8ThPRAL-e2CVZfn+ZHZOq8DiD0A@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -65,59 +62,89 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 11 Feb 2019 12:17:37 -0800
-Justin Chen <justinpopo6@gmail.com> wrote:
+On Mon, 11 Feb 2019 17:30:18 -0500
+Sven Van Asbroeck <thesven73@gmail.com> wrote:
 
-> On Mon, Feb 11, 2019 at 12:06 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> On Mon, Feb 11, 2019 at 4:27 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > >
-> > On Sat, 9 Feb 2019 12:56:11 -0600
-> > David Lechner <david@lechnology.com> wrote:
-> >  
-> > > On 2/9/19 11:00 AM, Jonathan Cameron wrote:  
-> > > > Nope.  This is a state lock used to protect against transitions between
-> > > > different modes of the IIO device (buffered vs polled), it
-> > > > isn't suitable for general use.
-> > > >
-> > > > The driver should be modified to handle that correctly.
-> > > > We have iio_claim_direct_mode etc that deal with the case
-> > > > where a device can't do certain operations whilst in buffered
-> > > > mode.  Note it can fail and should.
-> > > >
-> > > > Seems there are more drivers still doing this than I thought.
-> > > > If anyone is bored and wants to clean them out, that would be
-> > > > most appreciated!
-> > > >
-> > > > If you need locking to protect a local buffer or the device
-> > > > state, define a new lock to do it with clearly documented
-> > > > scope.  
-> > >
-> > > Just as a reminder, there is a use case for this particular
-> > > chip that requires buffered mode and direct mode at the same
-> > > time.
-> > >
-> > > https://patchwork.kernel.org/patch/10539021/
-> > > https://patchwork.kernel.org/patch/10527757/  
-> >
-> > Thanks, I had indeed forgotten that entirely.
-> > So it should have a local lock and not take mlock explicitly at all.
-> >  
-> Thanks for all the feedback.
-> So If I am understanding this correctly. I should create a local lock
-> to synchronize three different type of transactions (buffered, direct,
-> gpio).
-> I do not want to use iio_claim_direct_mode because that doesn't allow
-> simultaneous use of buffered mode and direct mode, which is necessary
-> for this driver because of the above mentioned patch.
-No, you should create a local lock to do just one thing. Protect
-the buffers used in those transactions.  There is no need
-to protect anything else explicitly.
+> > Agreed.  Or potentially just use regmap_bulk_read and rely on
+> > the regmap internal locking to do it for you.  
+> 
+> Neat solution. But it may only work correctly iff regmap_bulk_read()
+> reads the low
+> address first. I'm not sure if this function has that guarantee. If
+> somebody changes
+> the read order, the driver will break. But I think I'm being overly
+> paranoid here :)
 
-On some devices there are multiple transaction writes, but I don't recall
-that being the case here.
+Good question on whether it is guaranteed to read in increasing register
+order (I didn't actually check the addresses are in increasing order
+but assume they are or you would have pointed that out ;)
 
-Jonathan
+That strikes me as behaviour that should probably be documented as long
+as it is true currently.
 
 > 
-> Justin
-> > Jonathan  
+> > So yes, it's more than possible that userspace won't get the same number
+> > of events as samples taken over the limit, but I don't know why we care.
+> > We can about missing a threshold being passed entirely, not about knowing
+> > how many samples we were above it for.  
+> 
+> I suspect that we run a small risk of losing an event, like so:
+> 
+> PS (12.5 ms)
+> --> interrupt -> iio event  
+More interesting if this one never happened, so we got a one off proximity
+event missed.
 
+> ALS (100 ms)
+> --> interrupt -> iio event  
+> PS (12.5 ms)
+> --> interrupt ========= no iio event generated  
+> ALS (100 ms)
+> --> interrupt -> iio event  
+> 
+> To see why, imagine that the scheduler decides to move away from the
+> threaded interrupt
+> handler right before ap3216c_clear_int(). Say 20ms, which I know is a
+> loooong time,
+> but bear with me, the point is that it _could_ happen as we're not a RTOS.
+> 
+> static irqreturn_t ap3216c_event_handler(int irq, void *p)
+> {
+>         /* imagine ALS interrupt came in, INT_STATUS is 0b01 */
+>         regmap_read(data->regmap, AP3216C_INT_STATUS, &status);
+>         if (status & mask1) iio_push_event(PROX);
+>         if (status & mask2) iio_push_event(LIGHT);
+> 
+>         /* imagine schedule happens here */
+>         msleep(20);
+>         /* while we were not running, PS interrupt came in
+>            INT_STATUS is now 0b11
+>            yet no new interrupt is generated, as we are ONESHOT
+>         */
+>         ap3216c_clear_int(data);
+>         /* clears both bits, interrupt line goes low.
+>             knowledge that the PS interrupt came in is now lost */
+> }
+> 
+> Not sure if that's acceptable driver behaviour. In real life it
+> probably wouldn't matter much,
+> except for occasional added latency maybe ?
+Good point, I'd missed that a single clear was clearing both bits
+rather than just the one we thought had fired.
+
+If we clear just the right one, (which I think we can do from
+the datasheet
+"1: Software clear after writing 1 into address 0x01 each bit#"
+However the code isn't writing a 3 in that clear, so I'm not
+sure if the datasheet is correct or not...
+
+and it is a level interrupt (which I think it is?) then we would
+be safe against this miss.
+
+If either we can only globally clear or it's not a level interrupt
+there isn't much we can do to avoid a miss, it's just a bad hardware
+design.
+
+Jonathan
