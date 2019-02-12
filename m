@@ -1,112 +1,74 @@
-Return-Path: <SRS0=aw/O=QS=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=KJmS=QT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D94C4C169C4
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 22:46:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7A79C282C4
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 14:33:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AD05C2184E
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Feb 2019 22:46:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFF99214DA
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 14:33:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727662AbfBKWqh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Feb 2019 17:46:37 -0500
-Received: from gateway32.websitewelcome.com ([192.185.145.18]:11050 "EHLO
-        gateway32.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726104AbfBKWqh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Feb 2019 17:46:37 -0500
-X-Greylist: delayed 1395 seconds by postgrey-1.27 at vger.kernel.org; Mon, 11 Feb 2019 17:46:36 EST
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway32.websitewelcome.com (Postfix) with ESMTP id 4C0A67081B
-        for <linux-iio@vger.kernel.org>; Mon, 11 Feb 2019 16:23:20 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id tJyygiNNV4FKptJyyg3Flh; Mon, 11 Feb 2019 16:23:20 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=33010 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gtJyx-004BVE-EL; Mon, 11 Feb 2019 16:23:19 -0600
-Date:   Mon, 11 Feb 2019 16:23:18 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH] iio: mma8452: mark expected switch fall-through
-Message-ID: <20190211222318.GA21656@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gtJyx-004BVE-EL
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.250.119.20]:33010
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 24
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        id S1727952AbfBLOdv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 09:33:51 -0500
+Received: from atl4mhfb03.myregisteredsite.com ([209.17.115.119]:40186 "EHLO
+        atl4mhfb03.myregisteredsite.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728314AbfBLOdv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 09:33:51 -0500
+X-Greylist: delayed 467 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Feb 2019 09:33:50 EST
+Received: from jax4mhob14.registeredsite.com (jax4mhob14.registeredsite.com [64.69.218.102])
+        by atl4mhfb03.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id x1CEQ2H9011869
+        for <linux-iio@vger.kernel.org>; Tue, 12 Feb 2019 09:26:03 -0500
+Received: from mailpod.hostingplatform.com ([10.30.71.205])
+        by jax4mhob14.registeredsite.com (8.14.4/8.14.4) with ESMTP id x1CEQ09A152003
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <linux-iio@vger.kernel.org>; Tue, 12 Feb 2019 09:26:00 -0500
+Received: (qmail 28747 invoked by uid 0); 12 Feb 2019 14:26:00 -0000
+X-TCPREMOTEIP: 81.173.50.109
+X-Authenticated-UID: mike@milosoftware.com
+Received: from unknown (HELO mikebuntu.TOPIC.LOCAL) (mike@milosoftware.com@81.173.50.109)
+  by 0 with ESMTPA; 12 Feb 2019 14:26:00 -0000
+From:   Mike Looijmans <mike.looijmans@topic.nl>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net,
+        Mike Looijmans <mike.looijmans@topic.nl>
+Subject: [PATCH] iio/gyro/bmg160: Use millidegrees for temperature scale
+Date:   Tue, 12 Feb 2019 15:25:49 +0100
+Message-Id: <1549981549-19786-1-git-send-email-mike.looijmans@topic.nl>
+X-Mailer: git-send-email 1.9.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In preparation to enabling -Wimplicit-fallthrough, mark switch
-cases where we are expecting to fall through.
+Standard unit for temperature is millidegrees Celcius, whereas this driver
+was reporting in degrees. Fix the scale factor in the driver.
 
-This patch fixes the following warning:
-
-drivers/iio/accel/mma8452.c: In function ‘mma8452_probe’:
-drivers/iio/accel/mma8452.c:1581:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   if (ret == data->chip_info->chip_id)
-      ^
-drivers/iio/accel/mma8452.c:1584:2: note: here
-  default:
-  ^~~~~~~
-
-Warning level 3 was used: -Wimplicit-fallthrough=3
-
-Notice that, in this particular case, the code comment is modified
-in accordance with what GCC is expecting to find.
-
-This patch is part of the ongoing efforts to enable
--Wimplicit-fallthrough.
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
 ---
- drivers/iio/accel/mma8452.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/gyro/bmg160_core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 302781126bc6..00e100fc845a 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1580,7 +1580,7 @@ static int mma8452_probe(struct i2c_client *client,
- 	case FXLS8471_DEVICE_ID:
- 		if (ret == data->chip_info->chip_id)
- 			break;
--		/* else: fall through */
-+		/* fall through */
- 	default:
- 		ret = -ENODEV;
- 		goto disable_regulators;
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index 63ca316..ad7f8cb 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -585,8 +585,9 @@ static int bmg160_read_raw(struct iio_dev *indio_dev,
+ 		*val = 0;
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-			*val2 = 500000;
+-			return IIO_VAL_INT_PLUS_MICRO;
++			*val = 500;
++			*val2 = 0;
++			return IIO_VAL_INT;
+ 		case IIO_ANGL_VEL:
+ 		{
+ 			int i;
 -- 
-2.20.1
+1.9.1
 
