@@ -2,57 +2,58 @@ Return-Path: <SRS0=KJmS=QT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22B2C282C4
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:47:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48C34C282C4
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:57:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 946B2222C1
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:47:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1881F222C4
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 20:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550004463;
-	bh=RMYvxcpdbkWwkfSb0HhnxMOR1COqv+w3oURw2YQwRpo=;
+	s=default; t=1550005034;
+	bh=98rjWiStFkBn6SS6Uevu+Z3ZheXFAbV83L6MrRwEkEU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=dqpJaMuMbjWYjF5dpWQ7f3X573Hax3aElrFEOrU7krfQT2GELsxeKFLGxuR8NdpVt
-	 sv95ecrzmeEH04a5doBAA+hF2Wa8jh9qApySYf4KJjFdR/0Hp9fEfaZCCq5ia/qAXN
-	 yqscRmjEExJkJ4LeYPbkGHR1/IS9t2KzrSilO37A=
+	b=JNnhe6CTmrp3uN/S4VdvBLR4iCc8cupM7jCYvnM+vl8shGw6ikzFJDshNDqmpgB9i
+	 X6E1PWLiQSsVpGo0o/rQzRlet8T7G/e7sxOENYdvf2/2kwdu2KDOO1SfcR6iD0iOFB
+	 cSn3aQI5AOGZRnRBhPS6Jg/VoSdBOnxd9tRM79FM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731786AbfBLUrh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 15:47:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54190 "EHLO mail.kernel.org"
+        id S1731311AbfBLU5I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 15:57:08 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38220 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727012AbfBLUrh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 12 Feb 2019 15:47:37 -0500
+        id S1727977AbfBLU5I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 12 Feb 2019 15:57:08 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 58DD0222BE;
-        Tue, 12 Feb 2019 20:47:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB1CA222C0;
+        Tue, 12 Feb 2019 20:57:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550004455;
-        bh=RMYvxcpdbkWwkfSb0HhnxMOR1COqv+w3oURw2YQwRpo=;
+        s=default; t=1550005027;
+        bh=98rjWiStFkBn6SS6Uevu+Z3ZheXFAbV83L6MrRwEkEU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JOuTspN87qK7vajIxAtMj0y7enZMH/QuP2GIMb1eXsCNIvZTfjtKbinoX+ZmZJyWJ
-         JgSbhWEiSP24b7Sbs6l4iDxngT4bMSSd930fjscK9PypzE3IULxkKx7O2Jd27/15mS
-         WlQmeTdPngC2VWK5rUe6/JzVY2opShnO39cJ5y3Q=
-Date:   Tue, 12 Feb 2019 20:47:30 +0000
+        b=PdXACQ23/cNTpis18t5R7I0ewz21izMr4S3znikocQp7cLXeklxqkasXtjxOi+nkk
+         +ny/KVyuBcZ6TjGFX10uTgruzBBMNEmWPeUx6GyI23GQNe16t7MIf5LLn+key9mvg5
+         5wZd0SVGYMn5PXBZ3l/qhxdzV5Z6vAxBMdzbxlJ0=
+Date:   Tue, 12 Feb 2019 20:57:01 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Robert Eshleman <bobbyeshleman@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
-Message-ID: <20190212204730.16864802@archlinux>
-In-Reply-To: <CAGngYiV_6MzKOSomAWs1znp8ThPRAL-e2CVZfn+ZHZOq8DiD0A@mail.gmail.com>
-References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
-        <CAGngYiV6zm12XhB6WChSXNndLMSJ3e4NAB=BLq_mrXtWLKEruQ@mail.gmail.com>
-        <20190211212734.01909e62@archlinux>
-        <CAGngYiV_6MzKOSomAWs1znp8ThPRAL-e2CVZfn+ZHZOq8DiD0A@mail.gmail.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kukjin Kim <kgene@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: adc: exynos-adc: Use proper number of channels
+ for Exynos4x12
+Message-ID: <20190212205701.4cf66d68@archlinux>
+In-Reply-To: <20190212174550.4383-2-krzk@kernel.org>
+References: <20190212174550.4383-1-krzk@kernel.org>
+        <20190212174550.4383-2-krzk@kernel.org>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,89 +63,92 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 11 Feb 2019 17:30:18 -0500
-Sven Van Asbroeck <thesven73@gmail.com> wrote:
+On Tue, 12 Feb 2019 18:45:49 +0100
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> On Mon, Feb 11, 2019 at 4:27 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > Agreed.  Or potentially just use regmap_bulk_read and rely on
-> > the regmap internal locking to do it for you.  
+> Exynos4212 and Exynos4412 have only four ADC channels so using
+> "samsung,exynos-adc-v1" compatible (for eight channels ADCv1) on them is
+> wrong.  Add a new compatible for Exynos4x12.
 > 
-> Neat solution. But it may only work correctly iff regmap_bulk_read()
-> reads the low
-> address first. I'm not sure if this function has that guarantee. If
-> somebody changes
-> the read order, the driver will break. But I think I'm being overly
-> paranoid here :)
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+I'll sneak this in as my last patch for this cycle (lucky timing ;).
+It could have done with a fixes tag. I'll mark it for stable as sounds
+and looks safe and simple.
 
-Good question on whether it is guaranteed to read in increasing register
-order (I didn't actually check the addresses are in increasing order
-but assume they are or you would have pointed that out ;)
+Looks like it goes all the way back so I'll leave it without one.
 
-That strikes me as behaviour that should probably be documented as long
-as it is true currently.
+Applied to the togreg branch of iio.git. This will be queued for the
+next merge window given how late we are in the cycle.
 
-> 
-> > So yes, it's more than possible that userspace won't get the same number
-> > of events as samples taken over the limit, but I don't know why we care.
-> > We can about missing a threshold being passed entirely, not about knowing
-> > how many samples we were above it for.  
-> 
-> I suspect that we run a small risk of losing an event, like so:
-> 
-> PS (12.5 ms)
-> --> interrupt -> iio event  
-More interesting if this one never happened, so we got a one off proximity
-event missed.
-
-> ALS (100 ms)
-> --> interrupt -> iio event  
-> PS (12.5 ms)
-> --> interrupt ========= no iio event generated  
-> ALS (100 ms)
-> --> interrupt -> iio event  
-> 
-> To see why, imagine that the scheduler decides to move away from the
-> threaded interrupt
-> handler right before ap3216c_clear_int(). Say 20ms, which I know is a
-> loooong time,
-> but bear with me, the point is that it _could_ happen as we're not a RTOS.
-> 
-> static irqreturn_t ap3216c_event_handler(int irq, void *p)
-> {
->         /* imagine ALS interrupt came in, INT_STATUS is 0b01 */
->         regmap_read(data->regmap, AP3216C_INT_STATUS, &status);
->         if (status & mask1) iio_push_event(PROX);
->         if (status & mask2) iio_push_event(LIGHT);
-> 
->         /* imagine schedule happens here */
->         msleep(20);
->         /* while we were not running, PS interrupt came in
->            INT_STATUS is now 0b11
->            yet no new interrupt is generated, as we are ONESHOT
->         */
->         ap3216c_clear_int(data);
->         /* clears both bits, interrupt line goes low.
->             knowledge that the PS interrupt came in is now lost */
-> }
-> 
-> Not sure if that's acceptable driver behaviour. In real life it
-> probably wouldn't matter much,
-> except for occasional added latency maybe ?
-Good point, I'd missed that a single clear was clearing both bits
-rather than just the one we thought had fired.
-
-If we clear just the right one, (which I think we can do from
-the datasheet
-"1: Software clear after writing 1 into address 0x01 each bit#"
-However the code isn't writing a 3 in that clear, so I'm not
-sure if the datasheet is correct or not...
-
-and it is a level interrupt (which I think it is?) then we would
-be safe against this miss.
-
-If either we can only globally clear or it's not a level interrupt
-there isn't much we can do to avoid a miss, it's just a bad hardware
-design.
+Thanks,
 
 Jonathan
+
+
+> ---
+>  .../bindings/iio/adc/samsung,exynos-adc.txt     |  4 +++-
+>  drivers/iio/adc/exynos_adc.c                    | 17 +++++++++++++++++
+>  2 files changed, 20 insertions(+), 1 deletion(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> index a10c1f89037d..e1fe02f3e3e9 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
+> @@ -11,11 +11,13 @@ New driver handles the following
+>  
+>  Required properties:
+>  - compatible:		Must be "samsung,exynos-adc-v1"
+> -				for exynos4412/5250 controllers.
+> +				for Exynos5250 controllers.
+>  			Must be "samsung,exynos-adc-v2" for
+>  				future controllers.
+>  			Must be "samsung,exynos3250-adc" for
+>  				controllers compatible with ADC of Exynos3250.
+> +			Must be "samsung,exynos4212-adc" for
+> +				controllers compatible with ADC of Exynos4212 and Exynos4412.
+>  			Must be "samsung,exynos7-adc" for
+>  				the ADC in Exynos7 and compatibles
+>  			Must be "samsung,s3c2410-adc" for
+> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+> index fa2d2b5767f3..01f7c2570a1e 100644
+> --- a/drivers/iio/adc/exynos_adc.c
+> +++ b/drivers/iio/adc/exynos_adc.c
+> @@ -115,6 +115,7 @@
+>  #define MAX_ADC_V2_CHANNELS		10
+>  #define MAX_ADC_V1_CHANNELS		8
+>  #define MAX_EXYNOS3250_ADC_CHANNELS	2
+> +#define MAX_EXYNOS4212_ADC_CHANNELS	4
+>  #define MAX_S5PV210_ADC_CHANNELS	10
+>  
+>  /* Bit definitions common for ADC_V1 and ADC_V2 */
+> @@ -271,6 +272,19 @@ static void exynos_adc_v1_start_conv(struct exynos_adc *info,
+>  	writel(con1 | ADC_CON_EN_START, ADC_V1_CON(info->regs));
+>  }
+>  
+> +/* Exynos4212 and 4412 is like ADCv1 but with four channels only */
+> +static const struct exynos_adc_data exynos4212_adc_data = {
+> +	.num_channels	= MAX_EXYNOS4212_ADC_CHANNELS,
+> +	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+> +	.needs_adc_phy	= true,
+> +	.phy_offset	= EXYNOS_ADCV1_PHY_OFFSET,
+> +
+> +	.init_hw	= exynos_adc_v1_init_hw,
+> +	.exit_hw	= exynos_adc_v1_exit_hw,
+> +	.clear_irq	= exynos_adc_v1_clear_irq,
+> +	.start_conv	= exynos_adc_v1_start_conv,
+> +};
+> +
+>  static const struct exynos_adc_data exynos_adc_v1_data = {
+>  	.num_channels	= MAX_ADC_V1_CHANNELS,
+>  	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
+> @@ -492,6 +506,9 @@ static const struct of_device_id exynos_adc_match[] = {
+>  	}, {
+>  		.compatible = "samsung,s5pv210-adc",
+>  		.data = &exynos_adc_s5pv210_data,
+> +	}, {
+> +		.compatible = "samsung,exynos4212-adc",
+> +		.data = &exynos4212_adc_data,
+>  	}, {
+>  		.compatible = "samsung,exynos-adc-v1",
+>  		.data = &exynos_adc_v1_data,
+
