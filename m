@@ -2,129 +2,152 @@ Return-Path: <SRS0=lja0=QU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A3BC282CA
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:17:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1500AC282CA
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:48:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9A4DA222BB
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:17:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CEA012175B
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:48:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffw98skW"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ttUVBGtw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730138AbfBMCRz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 21:17:55 -0500
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37782 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729117AbfBMCRy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 21:17:54 -0500
-Received: by mail-pf1-f193.google.com with SMTP id s22so403475pfh.4;
-        Tue, 12 Feb 2019 18:17:54 -0800 (PST)
+        id S2389750AbfBMCrz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 21:47:55 -0500
+Received: from mail-ot1-f67.google.com ([209.85.210.67]:33962 "EHLO
+        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388986AbfBMCrx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 21:47:53 -0500
+Received: by mail-ot1-f67.google.com with SMTP id 98so1554421oty.1;
+        Tue, 12 Feb 2019 18:47:52 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=vnz5kzABQYt2zuTvXNxw6aywAdp4yjjXOdzhLQ2Y/60=;
-        b=ffw98skWAAwrBvrqacLBFPEYjOaLHW0HqfKUxurjkTKF9efgjf1uwHbTuVL3IFGxn3
-         W9dzJUJ9+5jQOlrNlx4MCA65A7qHsXu2b8J3BBv6XfYu0NBIUBMG3OQbAHcz2Q27PO7Y
-         q6TGdiWpL3mRAoFTQOJ+SundWwrwbh12r91ZYLisEQkKNUg46HIOBCZ1pUhLZObORaWR
-         WLuKSOLsHkgFbklzMvdsO05pMRDqv+viO3YNZSkQrq0+OYR/FZQAp86czn3byO/D8L8u
-         ZG/1NwuKxDdEDYW366KENnR/57jzyU0VpWMWZ7HqA2d+gvev6jitJNLvFuZIEmpQGO8T
-         Ca7g==
+        h=date:in-reply-to:references:mime-version:content-transfer-encoding
+         :autocrypt:subject:to:cc:from:message-id;
+        bh=n+0HFoSYnepK9yEAZMuZMDxMr2ODy5Uu9899vA8XEHs=;
+        b=ttUVBGtwjnF8xDpIQ8QowrX0RQY9zvmb2HyItbsj75P3R2BrZpw2vcjZSyWbitXR+M
+         Y5rWFWfcPxq3ZelRXyhvUz8bBq5lznUcAu+rjuR+mcs73YGoqJh3WxPeJGFaBtdCFe7X
+         3563sTMfA+62DrVzJoV2zGp6Z57dM/x0QFbe8m+n7Qt2BYKxCoG2ivjqMHicAZhDyT/w
+         Vkuxag6w2QJIs7Vlz3LAHcyCkzlxOQ1/mgTMYVJ6oo/v7JaTHHM8Gmkizm+ce50XhQU3
+         SEq5IGpIQJ9WSSc+6tEHCmHwoGUTE7Q7jE8FSGPaueX3dfdFhS3RGusdIDVfsFVS+TV9
+         ES5Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vnz5kzABQYt2zuTvXNxw6aywAdp4yjjXOdzhLQ2Y/60=;
-        b=co9q9YjVDCsKf/E+kHay0DnD//LGOiFmXqeRUI5eNZ8gfy6XJy5qotobYOjaDaRK+K
-         DAu78V4stmA3qhL9WATpeZNWvaSOS3CIDDyQhStVIQBFp+fBIVu6ZZPFXqa5x21ReAF0
-         2L1iM9Pz9SAS0r1JS4dta2yLB2fHphuB2tl5HYiw4B1PT5KmZ0M8W7pyuwyOCMAffKRE
-         oqtVbi5TKblZoacLqKT8pRpiWbRrF8DMlc8aAY2C4p3Ouc6PAu5Ac8D9qggVewFFK67v
-         U1poa17B9JJILhfo2MtZk2cXSieSNGnC9ALdnI2dbLWgg//a7fAg496sdgjlPhDFh+pb
-         eI0Q==
-X-Gm-Message-State: AHQUAuY5m3F6AKy7xZIacEWNeK6xZpDSVb+mj5WrRXZNJ83DgunhsFKC
-        Ld3WNxFe/dKpiCCgcoJ+jIM=
-X-Google-Smtp-Source: AHgI3Ianr/k1MEUCfMlVY+1tBZn21L5jD6ZUM7GHT5N6gLOgmvUXcry7/7WE4Tl6pVq4glLIuwuS6g==
-X-Received: by 2002:a63:ea56:: with SMTP id l22mr6615008pgk.391.1550024273694;
-        Tue, 12 Feb 2019 18:17:53 -0800 (PST)
-Received: from bobby.localdomain ([2601:1c0:5501:37e2::72a1])
-        by smtp.gmail.com with ESMTPSA id h8sm17027993pgv.27.2019.02.12.18.17.52
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Feb 2019 18:17:52 -0800 (PST)
-Date:   Tue, 12 Feb 2019 18:17:53 -0800
-From:   Robert Eshleman <bobbyeshleman@gmail.com>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
-Message-ID: <20190213021753.GA19621@bobby.localdomain>
-References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
- <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com>
+        h=x-gm-message-state:date:in-reply-to:references:mime-version
+         :content-transfer-encoding:autocrypt:subject:to:cc:from:message-id;
+        bh=n+0HFoSYnepK9yEAZMuZMDxMr2ODy5Uu9899vA8XEHs=;
+        b=CNf0N4Wf+4gXiknmY9a4Mtm/09MqjgRPhse/bjN2VJdvCcEikgklx0TeqNAG3g7iTk
+         lwu7O1AAD4NXxivsstwF7QBZAGIFM3YorgubfOsygR8hY5LSbHf1N7t5Fi50weX0LOuE
+         8EX91Dw8L7laoTb75w7fttHr1kz/oq/r/WusDzCktPi8WskGBk1sZJ8rJk8rhFIaL772
+         v66a/yiIXOKrUISLtd6kn5kxcwoS1kIJy7YvQqSZMUSbdOgh32d6NZReTiqy/luobvFG
+         GpvTAspunS4ZoJRIrzGOu7b1bapzmuh5K+Um1K0Um4h2C9FkmuWreVaGd7m+v9MIaDqn
+         uAxw==
+X-Gm-Message-State: AHQUAuZUs24CZdHmv7ITbpza/V+JFqNGz3D/OHqRNsFbZ9yl7S7ExZ4u
+        +g+74g/PK7mSK4BZhw7aK30=
+X-Google-Smtp-Source: AHgI3IY23C6TczCPaGVTtTf3OEDxvveHaDi1r+8ZDNTg6QxYSD8ubUbLMFCYl2qdxpVJJ3wtGZ1P3Q==
+X-Received: by 2002:a9d:7e87:: with SMTP id m7mr7567375otp.225.1550026072524;
+        Tue, 12 Feb 2019 18:47:52 -0800 (PST)
+Received: from localhost (ip68-228-73-187.oc.oc.cox.net. [68.228.73.187])
+        by smtp.gmail.com with ESMTPSA id k25sm3228825oic.27.2019.02.12.18.47.51
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 12 Feb 2019 18:47:51 -0800 (PST)
+Date:   Tue, 12 Feb 2019 18:47:44 -0800
+In-Reply-To: <1550021937-12202-1-git-send-email-justinpopo6@gmail.com>
+References: <1550021937-12202-1-git-send-email-justinpopo6@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+Content-Type: text/plain;
+ charset=utf-8
+Content-Transfer-Encoding: quoted-printable
+Autocrypt: addr=f.fainelli@gmail.com; keydata=
+ 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
+Subject: Re: [PATCH v2] iio: adc: ti-ads7950: add GPIO support
+To:     justinpopo6@gmail.com, linux-iio@vger.kernel.org
+CC:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        david@lechnology.com, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, Justin Chen <justinpopo6@gmail.com>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+Message-ID: <CE4AF546-6CC0-4292-B5F5-6715C3EE7B6A@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 11, 2019 at 02:29:58PM -0500, Sven Van Asbroeck wrote:
-> On Sun, Feb 10, 2019 at 3:39 PM Robert Eshleman <bobbyeshleman@gmail.com> wrote:
-> >
-> > This patch adds support for the ap3216c ambient light and proximity
-> > sensor.
-> 
-> PS
-> 
-> Why not use the chip in the mode where the interrupt is automatically cleared by
-> reading the data? This could work if you read the data in the
-> interrupt routine, store
-> it in a buffer, then send the event to iio. Then when userspace wants
-> to read out the
-> value, don't actually touch the hardware, but return the buffered value.
-> 
-> I don't think you then need any synchronization primitives to
-> accomplish this, such as
-> mutexes, spin locks, etc. Because the interrupt routine is single-threaded.
-> 
-> You don't even need a memory barrier for the buffered value,
-> because the iio core uses a waitqueue internally, which automatically issues
-> an mb(). As far as I know.
+Hi Justin,
 
-Hey Sven,
+This looks good, one comment below:
 
-First, thank you for the feedback.
 
-I had initially went with a similar design, but there is
-the case in which the interrupt fires and then before the status
-register is read by the handler a user process reads the data and
-clears the interrupt.  When the handler continues execution it will
-read a zero status and return IRQ_NONE.  My understanding of how
-Linux handles IRQ_NONE is pretty poor, but I felt that this behavior
-is incorrect even if inconsequential.  This could be avoided by
-doing a status register read with every data read, and buffering
-that as well, but then we lose the benefit altogether by increasing
-I2C reads.
+[snip]
 
-In the approach you describe here, it seems like that would
-work if this driver wasn't supporting shared interrupts.  In the
-case that a user-space read happens to clear the interrupt before
-the handler reads the status register, I think we would end up
-falsely returning IRQ_NONE.
+>+static int ti_ads7950_init_gpio(struct ti_ads7950_state *st)
+>+{
+>+	int ret;
+>+
+>+	/* Initialize GPIO */
+>+	mutex_lock(&st->slock);
 
-Is my understanding of this correct?  It's very possible I'm
-misunderstanding IRQ_NONE and shared interrupts.
+Lock is acquired here=2E
 
-Again, thank you for the feedback.
+>+
+>+	/* Default to GPIO input */
+>+	st->gpio_direction_bitmask =3D 0x0;
+>+	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_GPIO |
+>+				    (st->gpio_direction_bitmask &
+>+				    TI_ADS7950_GPIO_MASK));
+>+	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+>+	mutex_unlock(&st->slock);
 
--Bobby
+then released here=2E
 
+>+	if (ret)
+>+		return ret;
+>+
+>+	/* Default to signal low */
+>+	st->gpio_signal_bitmask =3D 0x0;
+>+	st->single_tx =3D cpu_to_be16(TI_ADS7950_CR_MANUAL |
+>+				    TI_ADS7950_CR_WRITE |
+>+				    (st->gpio_signal_bitmask &
+>+				    TI_ADS7950_GPIO_MASK));
+>+	ret =3D spi_sync(st->spi, &st->scan_single_msg);
+>+	mutex_unlock(&st->slock);
+
+and here as well, presumably there should be a mutex_lock() guarding the s=
+ignal bitmask and transaction, right?
+
+Thanks!
+--=20
+Florian
