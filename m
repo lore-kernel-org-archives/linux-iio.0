@@ -1,173 +1,315 @@
-Return-Path: <SRS0=KJmS=QT=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=lja0=QU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B16AEC4151A
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 22:39:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 033FEC282C4
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 01:39:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 899FE222BB
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Feb 2019 22:39:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B40FD222BB
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 01:39:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="X+H842bw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729291AbfBLWj3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 17:39:29 -0500
-Received: from gateway23.websitewelcome.com ([192.185.47.80]:49059 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728320AbfBLWj3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 17:39:29 -0500
-X-Greylist: delayed 1499 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Feb 2019 17:39:28 EST
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 7541833E8E
-        for <linux-iio@vger.kernel.org>; Tue, 12 Feb 2019 15:51:00 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id tfxEgMGJ590ontfxEgjeCB; Tue, 12 Feb 2019 15:51:00 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=54054 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gtfxD-003uD8-U4; Tue, 12 Feb 2019 15:51:00 -0600
-Subject: Re: [PATCH] iio: cros_ec_accel_legacy: Mark expected switch
- fall-throughs
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Thierry Escande <thierry.escande@collabora.com>
-References: <20181008172332.GA29816@embeddedor.com>
- <20181008213004.033e2b29@archlinux>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <5d501344-6c7b-ba27-c72f-250e6d54fef6@embeddedor.com>
-Date:   Tue, 12 Feb 2019 15:50:57 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <20181008213004.033e2b29@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gtfxD-003uD8-U4
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.119.20]:54054
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 45
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        id S1726530AbfBMBjF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 20:39:05 -0500
+Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:43614 "EHLO
+        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726026AbfBMBjF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 20:39:05 -0500
+Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
+        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 80E9330C24C;
+        Tue, 12 Feb 2019 17:39:03 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 80E9330C24C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
+        s=dkimrelay; t=1550021943;
+        bh=VE0gVzv134jCDUn3824+3CpYz9zUoV9OQmuoQw1n6Kg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=X+H842bwk65ZSL+te5N3gQ6eQ2U/r6ZN5112DeDyHmvJEuWuQi+FXgAdkohXTnqPi
+         wJmIZUmIRg9442+qk3mKfOjNViZ/ej1veOeojTXmD6q5xwb+DVekE6an+Cu9Dy47z+
+         1DoA76+KnWES/h7RoQjyEnhTYo52sdlqHGhClu6c=
+Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
+        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id A7BD7AC0783;
+        Tue, 12 Feb 2019 17:39:03 -0800 (PST)
+Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
+        id 9245A27ECF1; Tue, 12 Feb 2019 17:39:03 -0800 (PST)
+From:   justinpopo6@gmail.com
+To:     linux-iio@vger.kernel.org
+Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
+        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, david@lechnology.com,
+        linux-kernel@vger.kernel.org, jic23@kernel.org,
+        Justin Chen <justinpopo6@gmail.com>
+Subject: [PATCH v2] iio: adc: ti-ads7950: add GPIO support
+Date:   Tue, 12 Feb 2019 17:38:57 -0800
+Message-Id: <1550021937-12202-1-git-send-email-justinpopo6@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi guys,
+From: Justin Chen <justinpopo6@gmail.com>
 
-I was about to submit this patch again, then I realized I had
-sent it before.
+The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+pins using the GPIO chip framework.
 
-So, this is a friendly ping.
+Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+---
+ drivers/iio/adc/ti-ads7950.c | 168 ++++++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 165 insertions(+), 3 deletions(-)
 
-Thanks
---
-Gustavo
+diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+index 0ad6359..b229581 100644
+--- a/drivers/iio/adc/ti-ads7950.c
++++ b/drivers/iio/adc/ti-ads7950.c
+@@ -17,6 +17,7 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
++#include <linux/gpio/driver.h>
+ #include <linux/interrupt.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -36,10 +37,14 @@
+  */
+ #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
+ 
++#define TI_ADS7950_CR_GPIO	BIT(14)
+ #define TI_ADS7950_CR_MANUAL	BIT(12)
+ #define TI_ADS7950_CR_WRITE	BIT(11)
+ #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
+ #define TI_ADS7950_CR_RANGE_5V	BIT(6)
++#define TI_ADS7950_CR_GPIO_DATA	BIT(5)
++#define TI_ADS7950_NUM_GPIOS	4
++#define TI_ADS7950_GPIO_MASK	GENMASK(TI_ADS7950_NUM_GPIOS - 1, 0)
+ 
+ #define TI_ADS7950_MAX_CHAN	16
+ 
+@@ -56,11 +61,17 @@ struct ti_ads7950_state {
+ 	struct spi_message	ring_msg;
+ 	struct spi_message	scan_single_msg;
+ 
++	struct gpio_chip	chip;
++	struct mutex		slock;
++
+ 	struct regulator	*reg;
+ 	unsigned int		vref_mv;
+ 
+ 	unsigned int		settings;
+ 
++	unsigned int		gpio_direction_bitmask;
++	unsigned int		gpio_signal_bitmask;
++
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -248,7 +259,8 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
+ 
+ 	len = 0;
+ 	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
+-		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
++		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings
++		      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
+ 		st->tx_buf[len++] = cmd;
+ 	}
+ 
+@@ -287,8 +299,9 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+ 	int ret, cmd;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+-
+-	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
++	mutex_lock(&st->slock);
++	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings
++	      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
+ 	st->single_tx = cmd;
+ 
+ 	ret = spi_sync(st->spi, &st->scan_single_msg);
+@@ -298,6 +311,7 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+ 	ret = st->single_rx;
+ 
+ out:
++	mutex_unlock(&st->slock);
+ 	mutex_unlock(&indio_dev->mlock);
+ 
+ 	return ret;
+@@ -362,6 +376,144 @@ static const struct iio_info ti_ads7950_info = {
+ 	.update_scan_mode	= ti_ads7950_update_scan_mode,
+ };
+ 
++static void ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
++			   int value)
++{
++	struct ti_ads7950_state *st = gpiochip_get_data(chip);
++
++	mutex_lock(&st->slock);
++
++	if (value)
++		st->gpio_signal_bitmask |= BIT(offset);
++	else
++		st->gpio_signal_bitmask &= ~BIT(offset);
++
++	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
++			(st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK));
++	spi_sync(st->spi, &st->scan_single_msg);
++
++	mutex_unlock(&st->slock);
++}
++
++static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
++{
++	struct ti_ads7950_state *st = gpiochip_get_data(chip);
++	int ret;
++
++	mutex_lock(&st->slock);
++
++	/* If set as output, return the output */
++	if (st->gpio_direction_bitmask & BIT(offset)) {
++		ret = st->gpio_signal_bitmask & BIT(offset);
++		goto out;
++	}
++
++	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
++				    TI_ADS7950_CR_GPIO_DATA);
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++	if (ret)
++		goto out;
++
++	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
++
++out:
++	mutex_unlock(&st->slock);
++
++	return ret;
++}
++
++static int ti_ads7950_get_direction(struct gpio_chip *chip,
++				    unsigned int offset)
++{
++	struct ti_ads7950_state *st = gpiochip_get_data(chip);
++
++	return !(st->gpio_direction_bitmask & BIT(offset));
++}
++
++static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
++				     int input)
++{
++	struct ti_ads7950_state *st = gpiochip_get_data(chip);
++	int ret = 0;
++
++	mutex_lock(&st->slock);
++
++	if (input && (st->gpio_direction_bitmask & BIT(offset)))
++		st->gpio_direction_bitmask &= ~BIT(offset);
++	else if (!input && !(st->gpio_direction_bitmask & BIT(offset)))
++		st->gpio_direction_bitmask |= BIT(offset);
++	else
++		goto out;
++
++
++	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
++				    (st->gpio_direction_bitmask &
++				    TI_ADS7950_GPIO_MASK));
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++
++out:
++	mutex_unlock(&st->slock);
++
++	return ret;
++}
++
++static int ti_ads7950_direction_input(struct gpio_chip *chip,
++				      unsigned int offset)
++{
++	return _ti_ads7950_set_direction(chip, offset, 1);
++}
++
++static int ti_ads7950_direction_output(struct gpio_chip *chip,
++				       unsigned int offset, int value)
++{
++	ti_ads7950_set(chip, offset, value);
++
++	return _ti_ads7950_set_direction(chip, offset, 0);
++}
++
++static int ti_ads7950_init_gpio(struct ti_ads7950_state *st)
++{
++	int ret;
++
++	/* Initialize GPIO */
++	mutex_lock(&st->slock);
++
++	/* Default to GPIO input */
++	st->gpio_direction_bitmask = 0x0;
++	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
++				    (st->gpio_direction_bitmask &
++				    TI_ADS7950_GPIO_MASK));
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++	mutex_unlock(&st->slock);
++	if (ret)
++		return ret;
++
++	/* Default to signal low */
++	st->gpio_signal_bitmask = 0x0;
++	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL |
++				    TI_ADS7950_CR_WRITE |
++				    (st->gpio_signal_bitmask &
++				    TI_ADS7950_GPIO_MASK));
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++	mutex_unlock(&st->slock);
++	if (ret)
++		return ret;
++
++	/* Add GPIO chip */
++	st->chip.label = dev_name(&st->spi->dev);
++	st->chip.parent = &st->spi->dev;
++	st->chip.owner = THIS_MODULE;
++	st->chip.base = -1;
++	st->chip.ngpio = TI_ADS7950_NUM_GPIOS;
++	st->chip.get_direction = ti_ads7950_get_direction;
++	st->chip.direction_input = ti_ads7950_direction_input;
++	st->chip.direction_output = ti_ads7950_direction_output;
++	st->chip.get = ti_ads7950_get;
++	st->chip.set = ti_ads7950_set;
++
++	return gpiochip_add_data(&st->chip, st);
++}
++
+ static int ti_ads7950_probe(struct spi_device *spi)
+ {
+ 	struct ti_ads7950_state *st;
+@@ -457,8 +609,17 @@ static int ti_ads7950_probe(struct spi_device *spi)
+ 		goto error_cleanup_ring;
+ 	}
+ 
++	mutex_init(&st->slock);
++	ret = ti_ads7950_init_gpio(st);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to initialize GPIOs\n");
++		goto error_destroy_mutex;
++	}
++
+ 	return 0;
+ 
++error_destroy_mutex:
++	mutex_destroy(&st->slock);
+ error_cleanup_ring:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ error_disable_reg:
+@@ -475,6 +636,7 @@ static int ti_ads7950_remove(struct spi_device *spi)
+ 	iio_device_unregister(indio_dev);
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 	regulator_disable(st->reg);
++	mutex_destroy(&st->slock);
+ 
+ 	return 0;
+ }
+-- 
+2.7.4
 
-On 10/8/18 3:30 PM, Jonathan Cameron wrote:
-> On Mon, 8 Oct 2018 19:23:32 +0200
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
-> 
->> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
->> where we are expecting to fall through.
->>
->> Addresses-Coverity-ID: 1397962 ("Missing break in switch")
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> Hi,
-> 
-> I'll be honest I'm lost on what the intent of this code actually is...
-> 
-> Gwendal - why do we have a loop with this odd switch statement
-> in it.  Superficially I think we might as well drop the switch
-> and pull those assignments out of the loop.   However, perhaps
-> I'm missing something!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
->> ---
->>  drivers/iio/accel/cros_ec_accel_legacy.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
->> index 063e89e..d609654 100644
->> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
->> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
->> @@ -385,8 +385,10 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
->>  		switch (i) {
->>  		case X:
->>  			ec_accel_channels[X].scan_index = Y;
->> +			/* fall through */
->>  		case Y:
->>  			ec_accel_channels[Y].scan_index = X;
->> +			/* fall through */
->>  		case Z:
->>  			ec_accel_channels[Z].scan_index = Z;
->>  		}
-> 
