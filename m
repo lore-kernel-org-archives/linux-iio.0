@@ -2,129 +2,113 @@ Return-Path: <SRS0=lja0=QU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAA1DC282C4
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 03:12:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28AF4C282C2
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 03:25:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C1AE321934
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 03:12:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EB44B21934
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 03:25:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WBno6xkn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728454AbfBMDM6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 22:12:58 -0500
-Received: from gateway21.websitewelcome.com ([192.185.45.250]:16196 "EHLO
-        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728098AbfBMDM6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 22:12:58 -0500
-X-Greylist: delayed 1452 seconds by postgrey-1.27 at vger.kernel.org; Tue, 12 Feb 2019 22:12:57 EST
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway21.websitewelcome.com (Postfix) with ESMTP id 3946C402C3B76
-        for <linux-iio@vger.kernel.org>; Tue, 12 Feb 2019 20:48:44 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id tkbMgPgdY90ontkbMgn29j; Tue, 12 Feb 2019 20:48:44 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=38828 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gtkbL-001ogo-Bm; Tue, 12 Feb 2019 20:48:43 -0600
-Date:   Tue, 12 Feb 2019 20:48:42 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S1727524AbfBMDZw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 22:25:52 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:44687 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727346AbfBMDZw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 22:25:52 -0500
+Received: by mail-ot1-f68.google.com with SMTP id g1so1559784otj.11;
+        Tue, 12 Feb 2019 19:25:51 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4bkgZFc/8Q3xOXDvpsueCN2/ExuocXIiElyX/Xh257c=;
+        b=WBno6xknNk8YySAGU/UUuhbJuFAt5fCigADkR+WKghxGoKm65tWx1sG7XMIeuXLazR
+         Pk7tCdlvtBSfxFo8sRik3vPi7gSoCQDsoHGmIjmfCwAE3Y/UiExs6WmLVu80cOPRwnfh
+         iGVVAwtz0lYdylwuy7LL6d+XAksOQMkp0UMAmLHaq4Ju6DUUAj/Nmw5mSyK0om0keynB
+         3MtXc5Jh93JAfRYae06qdBqiqIjMUYOVCSy/l3XKSJ3+nbQCNe2/4eFckLZp5vf3bO8M
+         Zq5t/bJBCxs3WirVEf0UhPGMPgP1NTqW+jHlfibHQISG4r8yj6ZzVvFGaBSEEgzufBzp
+         p2pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4bkgZFc/8Q3xOXDvpsueCN2/ExuocXIiElyX/Xh257c=;
+        b=MHMoxd/yJsgmFlItBfFbHkCBELN486T0AaLIk0f+jY3vxgcean1mEh9B8cNIaqv7G3
+         E9LF141WpDmnspRP/6PT5WodEmmeMo209Cg+5VeaIFfQTTpLQqbrbVGsNTTfDoWph+1f
+         USOfQoQU3UvrYWGWFC8mocbRvo9AxZ9kKQECnuMLz6eqnuiHhHM5KXBy6QWGaKXHOVUQ
+         RJpzp4Thu6e5PIzWLxoQkBlS2Bw0hDJpdX15d150DEqMb3Ov5F6kqhMMj6Htwssg2Sx+
+         PChSjUomt7Kf3L2DYqH9dxcmU+KoXobHImtzExys18wRcBP4NucA8QyabJJ4zBueuoJn
+         smSg==
+X-Gm-Message-State: AHQUAua4uZGbj0Dpd0RLyuEzcbrpvf+OrmLvvp9WQgkDbq8YNYaVGpgC
+        wmuadsaYtSbEOdcedRsWyobABIdKaG+VDBAUIx0=
+X-Google-Smtp-Source: AHgI3IZ8F40LlwKG9xjwbQiKgnZEczzVRq9GmRoCfDWdwe61ij31H+yDKHCcFlI1HzmDjLZm9cFRKENWJUqaerme0Bc=
+X-Received: by 2002:a05:6830:1317:: with SMTP id p23mr7323846otq.55.1550028350950;
+ Tue, 12 Feb 2019 19:25:50 -0800 (PST)
+MIME-Version: 1.0
+References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
+ <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com> <20190213021753.GA19621@bobby.localdomain>
+In-Reply-To: <20190213021753.GA19621@bobby.localdomain>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Tue, 12 Feb 2019 22:25:39 -0500
+Message-ID: <CAGngYiUvEpSgESzFGJOtYjLi+_xmZ18GwiSTxaaMjEmjk2pu4Q@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
+To:     Robert Eshleman <bobbyeshleman@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Kees Cook <keescook@chromium.org>
-Subject: [PATCH] iio: chemical: sps30: mark expected switch fall-throughs
-Message-ID: <20190213024842.GA25131@embeddedor>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gtkbL-001ogo-Bm
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.250.119.20]:38828
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In preparation to enabling -Wimplicit-fallthrough, mark switch
-cases where we are expecting to fall through.
+Hi Bobby,
 
-This patch fixes the following warnings:
+On Tue, Feb 12, 2019 at 9:17 PM Robert Eshleman <bobbyeshleman@gmail.com> wrote:
+>
+> First, thank you for the feedback.
 
-drivers/iio/chemical/sps30.c: In function ‘sps30_read_raw’:
-drivers/iio/chemical/sps30.c:289:4: warning: this statement may fall through [-Wimplicit-fallthrough=]
-    switch (chan->channel2) {
-    ^~~~~~
-drivers/iio/chemical/sps30.c:299:3: note: here
-   default:
-   ^~~~~~~
-drivers/iio/chemical/sps30.c: In function ‘sps30_do_cmd’:
-drivers/iio/chemical/sps30.c:120:10: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
-          ^
-drivers/iio/chemical/sps30.c:121:2: note: here
-  case SPS30_READ_DATA_READY_FLAG:
-  ^~~~
-drivers/gpio/gpio-eic-sprd.c: In function ‘sprd_eic_irq_set_type’:
-drivers/gpio/gpio-eic-sprd.c:403:3: warning: this statement may fall through [-Wimplicit-fallthrough=]
-   switch (flow_type) {
-   ^~~~~~
-drivers/gpio/gpio-eic-sprd.c:435:2: note: here
-  default:
-  ^~~~~~~
+First of all, thank _you_ for doing the hard work on this driver !
+I very much respect what you've done here.
 
-Warning level 3 was used: -Wimplicit-fallthrough=3
+>
+> I had initially went with a similar design, but there is
+> the case in which the interrupt fires and then before the status
+> register is read by the handler a user process reads the data and
+> clears the interrupt.  When the handler continues execution it will
+> read a zero status and return IRQ_NONE.  My understanding of how
+> Linux handles IRQ_NONE is pretty poor, but I felt that this behavior
+> is incorrect even if inconsequential.  This could be avoided by
+> doing a status register read with every data read, and buffering
+> that as well, but then we lose the benefit altogether by increasing
+> I2C reads.
+>
+> In the approach you describe here, it seems like that would
+> work if this driver wasn't supporting shared interrupts.  In the
+> case that a user-space read happens to clear the interrupt before
+> the handler reads the status register, I think we would end up
+> falsely returning IRQ_NONE.
+>
+> Is my understanding of this correct?  It's very possible I'm
+> misunderstanding IRQ_NONE and shared interrupts.
+>
 
-This patch is part of the ongoing efforts to enable
--Wimplicit-fallthrough.
+Yes, I can see how one can run into those issues.
 
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/iio/chemical/sps30.c | 2 ++
- 1 file changed, 2 insertions(+)
+I believe that this whole class of problems goes away if PS/ALS
+are _exclusively_ read inside the interrupt, and cached.
 
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index e03a28a67146..f308d8ddceec 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -118,6 +118,7 @@ static int sps30_do_cmd(struct sps30_state *state, u16 cmd, u8 *data, int size)
- 	case SPS30_READ_AUTO_CLEANING_PERIOD:
- 		buf[0] = SPS30_AUTO_CLEANING_PERIOD >> 8;
- 		buf[1] = (u8)SPS30_AUTO_CLEANING_PERIOD;
-+		/* fall through */
- 	case SPS30_READ_DATA_READY_FLAG:
- 	case SPS30_READ_DATA:
- 	case SPS30_READ_SERIAL:
-@@ -296,6 +297,7 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
- 
- 				return IIO_VAL_INT_PLUS_MICRO;
- 			}
-+			/* fall through */
- 		default:
- 			return -EINVAL;
- 		}
--- 
-2.20.1
+Then, whenever a user process wants to read the data, the function
+does not touch the h/w, but simply return the cached value.
 
+But hang on, I will have more to say on this when replying to Jonathan's
+feedback.
