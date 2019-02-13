@@ -5,1004 +5,152 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F31DC282C2
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 16:33:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3BE5C282CA
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 19:12:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F229821902
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 16:33:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9950021904
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 19:12:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hOhNG2WP"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p7RAT97Y"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392666AbfBMQdb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Feb 2019 11:33:31 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:33049 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392610AbfBMQdb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Feb 2019 11:33:31 -0500
-Received: by mail-pl1-f193.google.com with SMTP id y10so1415489plp.0;
-        Wed, 13 Feb 2019 08:33:30 -0800 (PST)
+        id S2392606AbfBMTMI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Feb 2019 14:12:08 -0500
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:35193 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726389AbfBMTMI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Feb 2019 14:12:08 -0500
+Received: by mail-lf1-f67.google.com with SMTP id v7so2677445lfd.2;
+        Wed, 13 Feb 2019 11:12:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=uwLGMKiCmvpWt3mVmprvi3jQz6FS+nQXlMd/t43WfEo=;
-        b=hOhNG2WPwAbpq7MeIMUSRoPFjORJFE+hi46ogqaad+uHyDjCNsKQ6GhUV2wTUOb6ZB
-         mFin02lq4Xl7kGczzXiIY6GTOUvSJmlJI/gFAObZgumtEBg9RPTeDhjuuibb97cOp1tc
-         wcPzIa+k3n+DUSUyGjaVX89LSL+QmYnOruxRRKauZoPJIWUdp1eTRRruOQraeu7C7TWN
-         ySsXJXvnY2omKL2TpXpKMF+kWTxyk09eJypl6nceiMxOS+yd5tLZwJyNd3qlJePp7Cfh
-         CYp7Zehg2c3LUbiB9YTAhoFrrlaAegagqJP8M/BpyLAmLZsjz7XsgCx5OAXUkdtcoKtO
-         dGSg==
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=F/KhtUTVYzeplfUmn3LKbi5rvF5rs8POUhFELFQtZsk=;
+        b=p7RAT97YTlBXw/YIT7/wlPZws3hCIX7QrN1+MS/F3nFGN1hcy83hMKihSmB5mBNTlP
+         yifwAXSiFSp8RkI/f6XE9aswOacA30cGPPeE1X1Q2BLKun2dvc+M+KqmW91vS7TBTW9Q
+         a5MhpbxHG+FbH9VXnWt8dbW1e3NKeb9Xa4PskGUEen1XtmORcvBaQgDsk13+UEGPp/bL
+         zXmM3iEKKanjWonn+DDXBsXhLf4Q95gtBflGLM99nb83WudpJ4U7BWkR/e8ua6A6cKy5
+         07chTEkouqIwbDirNE1giJ2NL/9/AWwT33W+eGg/7OhIWoKZtxfKfjGuitHGvJQsCO+o
+         V61A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=uwLGMKiCmvpWt3mVmprvi3jQz6FS+nQXlMd/t43WfEo=;
-        b=txViqLNF8nnSPAFVYSldJNZX+TCI+7BoFre7I/esd+rEgXHppL6GsJAwCudWHfFx5j
-         DVZ6LMLz6XSuhLBpq7m0odPwliwT28S6aE/FQ1KUgLMiNaYIOmUo9lMTTopPeqxZ7c6b
-         RsQlHnUQpkfZR6TOk/Up3XLyckyOkJHcza8VUxdr6GMFvx9qJ3tyCeh9obzNkKhMBcU0
-         BIHjekqrTfBab1YS1OfuW2WPJYH4cY97fvVJZRDvfpmgi2c1l0yBw5KMD6RvhzSCpiY6
-         u3XRYBr3kUAKgcAkQ05O/zKNb856n3kZzC3LtylGTVYWOYJgliPOywGdz3sgAuANPP+m
-         WOCQ==
-X-Gm-Message-State: AHQUAuYF4ekNFfqd1cIPCnW16KOrm1K5+3MLVXDBhd6Yw/mMTy1Uz3YD
-        VCPIy5ZRnlgUndMtFD9npSw=
-X-Google-Smtp-Source: AHgI3IbIBP5zaavWff2gLD6h1d2mBwF7Rx00h9pJaO8LmepSa8vDkX+xzI4GBbVl4hR9umSClpd8Vg==
-X-Received: by 2002:a17:902:8203:: with SMTP id x3mr1328338pln.285.1550075609908;
-        Wed, 13 Feb 2019 08:33:29 -0800 (PST)
-Received: from bobby.localdomain ([2601:1c0:5501:37e2::72a1])
-        by smtp.gmail.com with ESMTPSA id i24sm9486909pgg.14.2019.02.13.08.33.28
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=F/KhtUTVYzeplfUmn3LKbi5rvF5rs8POUhFELFQtZsk=;
+        b=Ue/qAeupNDOHet/gLc6Ab5pkeSsb+MRLLSTDQnmstVm2i8LYuehjz2fRhLDdjA/5/b
+         dRcEzMwjn1X3DQTH6UGNgK3vA8RyRohZqolVLstzNkUGQIf4+Cm1R2T45BfkVpvM24gj
+         gs+S8Co3crfTF7aYzs6vpEaPJlC8fI7bxUN63OCxCS6LGWih14o3Onw2EU75y9ZW57co
+         aXSRvbGIp+VIrzmBnjnLp9NxoF0Fxi2V7Km4VAESF2rjZz4hABc7+FczsgEe1fNqLedv
+         7YlxN/u0dAsTFYwS7L64xM/zd02xNpyEzxVnUoVtsIV0v0i+uc1gEfkKZaIqZkpCVfYN
+         wT3A==
+X-Gm-Message-State: AHQUAuaW0nrQ1Kj9HgixFZDp4ySRQfJoKg0dejoItQX/LqhInThZAL9x
+        TM0rCKF0v+Gjv2s8Tz4e+tZJs1CtRac=
+X-Google-Smtp-Source: AHgI3IZMA+IQddASlA1nqtEISSj1r17DHG1702Fbhg4WhMYjpWY9J+YhFRLJQZY7zbYVR88I5MIMLQ==
+X-Received: by 2002:ac2:43c6:: with SMTP id u6mr1314803lfl.102.1550085125959;
+        Wed, 13 Feb 2019 11:12:05 -0800 (PST)
+Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id c8-v6sm18347lja.46.2019.02.13.11.12.04
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 Feb 2019 08:33:29 -0800 (PST)
-Date:   Wed, 13 Feb 2019 08:33:39 -0800
-From:   Robert Eshleman <bobbyeshleman@gmail.com>
-To:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+        Wed, 13 Feb 2019 11:12:05 -0800 (PST)
+Date:   Wed, 13 Feb 2019 20:11:43 +0100
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
-Message-ID: <20190213163339.GB21057@bobby.localdomain>
-References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
- <alpine.DEB.2.21.1902111546280.18782@vps.pmeerw.net>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH] iio: chemical: sps30: mark expected switch fall-throughs
+Message-ID: <20190213191142.GA23470@arch>
+References: <20190213024842.GA25131@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <alpine.DEB.2.21.1902111546280.18782@vps.pmeerw.net>
-User-Agent: Mutt/1.11.2 (2019-01-07)
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20190213024842.GA25131@embeddedor>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hey Peter,
+On Tue, Feb 12, 2019 at 08:48:42PM -0600, Gustavo A. R. Silva wrote:
+> In preparation to enabling -Wimplicit-fallthrough, mark switch
+> cases where we are expecting to fall through.
+>
+> This patch fixes the following warnings:
+>
 
-Thanks for the feedback.  I have a question regarding INFO_SCALE and
-the calibration scale/bias below.
+That have been already fixed by this commit available at Greg's staging tre=
+e:
 
-Thanks for the feedback, it's much appreciated.
-
-On Mon, Feb 11, 2019 at 03:58:27PM +0100, Peter Meerwald-Stadler wrote:
-> On Sun, 10 Feb 2019, Robert Eshleman wrote:
-> 
-> > This patch adds support for the ap3216c ambient light and proximity
-> > sensor.
-> 
-> comments below
->  
-> > Supported features include:
-> > 
-> > * Illuminance (lux)
-> > * Proximity (raw)
-> > * IR (raw)
-> > * Rising/falling threshold events for illuminance and proximity
-> > * Calibration scale for illuminance
-> > * Calibration bias for proximity
-> > 
-> > Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
-> > ---
-> >  drivers/iio/light/Kconfig   |  11 +
-> >  drivers/iio/light/Makefile  |   1 +
-> >  drivers/iio/light/ap3216c.c | 793 ++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 805 insertions(+)
-> >  create mode 100644 drivers/iio/light/ap3216c.c
-> > 
-> > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> > index 36f458433480..74688d19beb1 100644
-> > --- a/drivers/iio/light/Kconfig
-> > +++ b/drivers/iio/light/Kconfig
-> > @@ -41,6 +41,17 @@ config AL3320A
-> >  	 To compile this driver as a module, choose M here: the
-> >  	 module will be called al3320a.
-> >  
-> > +config AP3216C
-> > +	tristate "AP3216C Ambient Light and Proximity sensor"
-> > +	select REGMAP_I2C
-> > +	depends on I2C
-> > +	help
-> > +	  Say Y here to build a driver for the AP3216C Ambient Light and
-> > +	  Proximity sensor.
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called ap3216c.
-> > +
-> >  config APDS9300
-> >  	tristate "APDS9300 ambient light sensor"
-> >  	depends on I2C
-> > diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> > index 286bf3975372..7d2f8fa0f30d 100644
-> > --- a/drivers/iio/light/Makefile
-> > +++ b/drivers/iio/light/Makefile
-> > @@ -7,6 +7,7 @@
-> >  obj-$(CONFIG_ACPI_ALS)		+= acpi-als.o
-> >  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
-> >  obj-$(CONFIG_AL3320A)		+= al3320a.o
-> > +obj-$(CONFIG_AP3216C)		+= ap3216c.o
-> >  obj-$(CONFIG_APDS9300)		+= apds9300.o
-> >  obj-$(CONFIG_APDS9960)		+= apds9960.o
-> >  obj-$(CONFIG_BH1750)		+= bh1750.o
-> > diff --git a/drivers/iio/light/ap3216c.c b/drivers/iio/light/ap3216c.c
-> > new file mode 100644
-> > index 000000000000..12802b45c01c
-> > --- /dev/null
-> > +++ b/drivers/iio/light/ap3216c.c
-> > @@ -0,0 +1,793 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * AP3216C Ambient Light and Infrared Proximity Sensor
-> > + *
-> > + * Copyright (c) 2019, Robert Eshleman.
-> > + *
-> > + * Datasheet: https://pdf-datasheet-datasheet.netdna-ssl.com/pdf-down/A/P/3/AP3216C-LITE-ON.pdf
-> > + *
-> > + * 7-bit I2C slave address 0x1E
-> > + */
-> > +
-> > +#include <linux/module.h>
-> > +#include <linux/init.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/bits.h>
-> > +#include <linux/regmap.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/events.h>
-> > +
-> > +#define AP3216C_DRV_NAME "ap3216c"
-> > +
-> > +/* register addresses */
-> > +#define AP3216C_SYS 0x0
-> > +#define AP3216C_INT_STATUS 0x01
-> > +#define AP3216C_INT_CLR 0x02
-> > +#define AP3216C_IR_DATA_LO 0x0A
-> > +#define AP3216C_IR_DATA_HI 0x0B
-> > +#define AP3216C_ALS_DATA_LO 0x0C
-> > +#define AP3216C_ALS_DATA_HI 0x0D
-> > +#define AP3216C_PS_DATA_LO 0x0E
-> > +#define AP3216C_PS_DATA_HI 0x0F
-> > +#define AP3216C_ALS_CFG 0x10
-> > +#define AP3216C_ALS_CALIB 0x19
-> > +#define AP3216C_ALS_LO_THR_LO 0x1A
-> > +#define AP3216C_ALS_LO_THR_HI 0x1B
-> > +#define AP3216C_ALS_HI_THR_LO 0x1C
-> > +#define AP3216C_ALS_HI_THR_HI 0x1D
-> > +#define AP3216C_PS_CFG 0x20
-> > +#define AP3216C_PS_CALIB_LO 0x28
-> > +#define AP3216C_PS_CALIB_HI 0x29
-> > +#define AP3216C_PS_LO_THR_LO 0x2A
-> > +#define AP3216C_PS_LO_THR_HI 0x2B
-> > +#define AP3216C_PS_HI_THR_LO 0x2C
-> > +#define AP3216C_PS_HI_THR_HI 0x2D
-> > +
-> > +/* SYS_MODE mask and config value */
-> > +#define AP3216C_SYS_MODE_ALS_PS GENMASK(1, 0)
-> > +#define AP3216C_SYS_MODE_ALS_ONLY 0x01
-> > +
-> > +/* INT_STATUS masks and config value */
-> > +#define AP3216C_INT_STATUS_ALS_MASK 1
-> > +#define AP3216C_INT_STATUS_PS_MASK (1 << 1)
-> 
-> use BIT()?
-
-Got it.
-
-> 
-> > +#define AP3216C_INT_STATUS_CLR GENMASK(1, 0)
-> > +#define AP3216C_INT_CLR_MANUAL 1
-> > +
-> > +/* IR_DATA mask/shift */
-> > +#define AP3216C_IR_DATA_LO_MASK GENMASK(1, 0)
-> > +#define AP3216C_IR_DATA_HI_SHIFT 2
-> > +
-> > +/* ALS_DATA shift and fractional helper */
-> > +#define AP3216C_ALS_DATA_HI_SHIFT 8
-> > +#define AP3216C_ALS_DATA_DENOM 100000
-> > +
-> > +/* ALS_CALIB masks/shifts */
-> > +#define AP3216C_ALS_CALIB_INT_MASK GENMASK(7, 6)
-> > +#define AP3216C_ALS_CALIB_INT_SHIFT 6
-> > +#define AP3216C_ALS_CALIB_DEC_MASK GENMASK(5, 0)
-> > +
-> > +/* PS_DATA shifts/masks/bits */
-> > +#define AP3216C_PS_DATA_LO_MASK GENMASK(3, 0)
-> > +#define AP3216C_PS_DATA_LO_IR_OF BIT(6)
-> > +#define AP3216C_PS_DATA_HI_MASK GENMASK(5, 0)
-> > +#define AP3216C_PS_DATA_HI_SHIFT 4
-> > +#define AP3216C_PS_DATA_HI_IR_OF BIT(6)
-> > +
-> > +/* ALS_CFG masks */
-> > +#define AP3216C_ALS_CFG_GAIN_MASK GENMASK(5, 4)
-> > +
-> > +/* ALS_CALIB shifts */
-> > +#define AP3216C_ALS_CALIB_INT_SHIFT 6
-> > +
-> > +/* ALS_HI_THR masks and shifts */
-> > +#define AP3216C_ALS_HI_THR_LO_MASK GENMASK(7, 0)
-> > +#define AP3216C_ALS_HI_THR_HI_SHIFT 8
-> > +#define AP3216C_ALS_HI_THR_HI_MASK GENMASK(7, 4)
-> > +#define AP3216C_ALS_HI_THR_HI_SHIFT 8
-> > +
-> > +/* ALS_LO_THR masks and shifts */
-> > +#define AP3216C_ALS_LO_THR_LO_MASK GENMASK(3, 0)
-> > +#define AP3216C_ALS_LO_THR_HI_MASK GENMASK(7, 4)
-> > +#define AP3216C_ALS_LO_THR_HI_SHIFT 8
-> > +
-> > +/* PS_CFG reg mask/shift/bit values */
-> > +#define AP3216C_PS_CFG_GAIN_MASK GENMASK(3, 2)
-> > +#define AP3216C_PS_CFG_GAIN_SHIFT 2
-> > +#define AP3216C_PS_CFG_GAIN(val) \
-> > +	(1 << ((val & AP3216C_PS_CFG_GAIN_MASK) >> AP3216C_PS_CFG_GAIN_SHIFT))
-> > +
-> > +/* PS_LO and PS_HI shift/mask and multiplier values */
-> > +#define AP3216C_PS_LO_THR_HI_MULT 4
-> > +#define AP3216C_PS_HI_THR_HI_SHIFT 2
-> > +#define AP3216C_PS_HI_THR_HI_MULT 4
-> > +
-> > +/* PS_THR_LO and PS_THR_HI masks */
-> > +#define AP3216C_PS_THR_LO_MASK GENMASK(1, 0)
-> > +#define AP3216C_PS_THR_HI_MASK GENMASK(10, 2)
-> > +
-> > +/* PS_CALIB_HI and PS_CALIB_LO shift/mask/bit values */
-> > +#define AP3216C_PS_CALIB_HI_SHIFT 1
-> > +#define AP3216C_PS_CALIB_HI_MASK GENMASK(8, 1)
-> > +#define AP3216C_PS_CALIB_LO_MASK BIT(0)
-> > +
-> > +/* ALS fractional helper values */
-> > +#define AP3216C_ALS_INTEG_MULT 10000
-> > +#define AP3216C_ALS_FRACT_DIV 100
-> > +
-> > +/* ALS_CALIB min/max values (0.0 <= ALS_CALIB <= 3.984375) */
-> > +#define AP3216C_ALS_CALIB_INT_MIN 0
-> > +#define AP3216C_ALS_CALIB_DEC_MIN 0
-> > +#define AP3216C_ALS_CALIB_INT_MAX 3
-> > +#define AP3216C_ALS_CALIB_DEC_MAX 984375
-> > +
-> > +/* ALS_CALIB conversion denominator */
-> > +#define AP3216C_ALS_CALIB_DENOM 64
-> > +
-> > +#define AP3216C_IIO_MULT 1000000
-> > +
-> > +static u16 ap3216c_gain_array[] = {
-> 
-> const
-> 
-> > +	3500,  /* 0.3500 lux resolution */
-> > +	 788,  /* 0.0788 lux resolution */
-> > +	 197,  /* 0.0197 lux resolution */
-> > +	  49,  /* 0.0049 lux resolution */
-> > +};
-> > +
-> > +struct ap3216c_data {
-> > +	struct regmap *regmap;
-> > +	struct i2c_client *client;
-> > +	bool als_thresh_en;
-> > +	bool prox_thresh_en;
-> > +};
-> > +
-> > +static const struct iio_event_spec ap3216c_event_spec[] = {
-> > +	{
-> > +		.type = IIO_EV_TYPE_THRESH,
-> > +		.dir = IIO_EV_DIR_RISING,
-> > +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> > +	},
-> > +	{
-> > +		.type = IIO_EV_TYPE_THRESH,
-> > +		.dir = IIO_EV_DIR_FALLING,
-> > +		.mask_separate = BIT(IIO_EV_INFO_VALUE),
-> > +	},
-> > +	{
-> > +		.type = IIO_EV_TYPE_THRESH,
-> > +		.dir = IIO_EV_DIR_EITHER,
-> > +		.mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE),
-> > +	},
-> > +};
-> > +
-> > +static const struct iio_chan_spec ap3216c_channels[] = {
-> > +	{
-> > +		.type = IIO_LIGHT,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> > +				      BIT(IIO_CHAN_INFO_CALIBSCALE),
-> 
-> should probably be INFO_SCALE, as is used to select sensitivity and is not 
-> meant to calibrate the chip
-> 
-
-The datasheet describes the register used here as being for
-calibration.  Considering this, is INFO_SCALE still a
-better fit than INFO_CALIBSCALE?
-
-> > +		.event_spec = ap3216c_event_spec,
-> > +		.num_event_specs = ARRAY_SIZE(ap3216c_event_spec),
-> > +	},
-> > +	{
-> > +		.type = IIO_PROXIMITY,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> > +				      BIT(IIO_CHAN_INFO_CALIBBIAS),
-> 
-> should probably be INFO_SCALE
-> 
-
-The datasheet claims that this similar to the calibration for light,
-but it really behaves quite differently.  It is intended for
-post-assembly calibration.  The higher the value goes, the more the
-PS reading decreases (not documented in the datasheet).  It reaches
-zero _very_ quickly.  This seemed like a bias calibration to me, but
-I could totally be wrong.  Is INFO_SCALE the best fit for this?
-
-> > +		.event_spec = ap3216c_event_spec,
-> > +		.num_event_specs = ARRAY_SIZE(ap3216c_event_spec),
-> > +	},
-> > +	{
-> > +		.type = IIO_LIGHT,
-> > +		.modified = 1,
-> > +		.channel2 = IIO_MOD_LIGHT_IR,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > +	}
-> > +};
-> > +
-> > +static int ap3216c_write_event_value(struct iio_dev *indio_dev,
-> > +				       const struct iio_chan_spec *chan,
-> > +				       enum iio_event_type type,
-> > +				       enum iio_event_direction dir,
-> > +				       enum iio_event_info info,
-> > +				       int val, int val2)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +	int cfg, gain;
-> > +	int integral, fractional;
-> > +	int lo, hi;
-> > +	u16 thr;
-> > +	int ret;
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_LIGHT:
-> > +		ret = regmap_read(data->regmap, AP3216C_ALS_CFG, &cfg);
-> > +		if (ret < 0)
-> > +			return ret;
-> > +
-> > +		gain = ap3216c_gain_array[cfg & AP3216C_ALS_CFG_GAIN_MASK];
-> > +		integral = val * AP3216C_ALS_INTEG_MULT / gain;
-> > +		fractional = val2 / AP3216C_ALS_FRACT_DIV / gain;
-> > +
-> > +		thr = integral + fractional;
-> > +
-> > +		switch (dir) {
-> > +		case IIO_EV_DIR_RISING:
-> 
-> mutex around the two writes to have atomic update of regs?
-
-Got it.
-
-> 
-> > +			ret = regmap_write(data->regmap, AP3216C_ALS_HI_THR_LO,
-> > +					   thr & AP3216C_ALS_HI_THR_LO_MASK);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_write(data->regmap,
-> > +					   AP3216C_ALS_HI_THR_HI,
-> > +					   (thr & AP3216C_ALS_HI_THR_HI_MASK) >>
-> > +					   AP3216C_ALS_HI_THR_HI_SHIFT);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			return ret;
-> > +
-> > +		case IIO_EV_DIR_FALLING:
-> > +			ret = regmap_write(data->regmap,
-> > +					   AP3216C_ALS_LO_THR_LO,
-> > +					   thr & AP3216C_ALS_LO_THR_LO_MASK);
-> > +
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_write(data->regmap,
-> > +					   AP3216C_ALS_LO_THR_HI,
-> > +					   (thr & AP3216C_ALS_LO_THR_HI_MASK) >>
-> > +					   AP3216C_ALS_LO_THR_HI_SHIFT);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			return ret;
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +		return -EINVAL;
-> > +
-> > +	case IIO_PROXIMITY:
-> > +		lo = val & AP3216C_PS_THR_LO_MASK;
-> > +		hi = (val & AP3216C_PS_THR_HI_MASK) >>
-> > +			AP3216C_PS_HI_THR_HI_SHIFT;
-> > +
-> > +		switch (dir) {
-> > +		case IIO_EV_DIR_RISING:
-> > +			ret = regmap_write(data->regmap,
-> > +					   AP3216C_PS_HI_THR_LO, lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			return regmap_write(data->regmap,
-> > +					    AP3216C_PS_HI_THR_HI, hi);
-> > +
-> > +		case IIO_EV_DIR_FALLING:
-> > +			ret = regmap_write(data->regmap,
-> > +					   AP3216C_PS_LO_THR_LO, lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			return regmap_write(data->regmap,
-> > +					    AP3216C_PS_LO_THR_HI, hi);
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return -EINVAL;
-> 
-> should not be needed
-> 
-> > +}
-> > +
-> > +static int ap3216c_read_event_value(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir,
-> > +				     enum iio_event_info info,
-> > +				     int *val, int *val2)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +	unsigned int lo, hi;
-> > +	int ret;
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_LIGHT:
-> > +		switch (dir) {
-> > +		case IIO_EV_DIR_RISING:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_HI_THR_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_HI_THR_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = (hi << AP3216C_ALS_HI_THR_HI_SHIFT) | lo;
-> > +			return IIO_VAL_INT;
-> > +
-> > +		case IIO_EV_DIR_FALLING:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_LO_THR_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_LO_THR_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = (hi << AP3216C_ALS_LO_THR_HI_SHIFT) | lo;
-> > +			return IIO_VAL_INT;
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	case IIO_PROXIMITY:
-> > +		switch (dir) {
-> > +		case IIO_EV_DIR_RISING:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_HI_THR_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_HI_THR_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = (hi * AP3216C_PS_HI_THR_HI_MULT) +
-> > +				(lo & AP3216C_PS_THR_LO_MASK);
-> > +
-> > +			return IIO_VAL_INT;
-> > +
-> > +		case IIO_EV_DIR_FALLING:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_LO_THR_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_LO_THR_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			*val = (hi * AP3216C_PS_LO_THR_HI_MULT) +
-> > +				(lo & AP3216C_PS_THR_LO_MASK);
-> > +
-> > +			return IIO_VAL_INT;
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> 
-> should not be needed; compilers are smart enough to see that this is 
-> unreachable (here and elsewhere)
-> 
-
-Got it.
-
-> > +}
-> > +
-> > +static int ap3216c_read_event_config(struct iio_dev *indio_dev,
-> > +				    const struct iio_chan_spec *chan,
-> > +				    enum iio_event_type type,
-> > +				    enum iio_event_direction dir)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_LIGHT:
-> > +		return data->als_thresh_en;
-> > +
-> > +	case IIO_PROXIMITY:
-> > +		return data->prox_thresh_en;
-> > +
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int ap3216c_write_event_config(struct iio_dev *indio_dev,
-> > +				     const struct iio_chan_spec *chan,
-> > +				     enum iio_event_type type,
-> > +				     enum iio_event_direction dir, int state)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (chan->type) {
-> > +	case IIO_LIGHT:
-> > +		data->als_thresh_en = state;
-> > +		return 0;
-> > +
-> > +	case IIO_PROXIMITY:
-> > +		data->prox_thresh_en = state;
-> > +		return 0;
-> > +
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static const struct regmap_config ap3216c_regmap_config = {
-> > +	.reg_bits = 8,
-> > +	.val_bits = 8,
-> > +	.max_register = AP3216C_PS_HI_THR_HI,
-> > +};
-> > +
-> > +/**
-> > + * Returns integral part of decimal between 0.0 and 3.984275
-> > + */
-> > +static int ap3216c_als_calibscale_int(int val)
-> > +{
-> > +	if (val > AP3216C_ALS_CALIB_INT_MAX)
-> > +		return AP3216C_ALS_CALIB_INT_MAX;
-> > +
-> > +	if (val <= AP3216C_ALS_CALIB_INT_MIN)
-> > +		return AP3216C_ALS_CALIB_INT_MIN;
-> > +
-> > +	return val;
-> > +}
-> > +
-> > +/**
-> > + * Returns decimal part of decimal number between 0.0 and 3.984275
-> > + */
-> > +static int ap3216c_als_calibscale_dec(int val, int val2)
-> > +{
-> > +	/* Return max decimal if number exceeds calibscale max */
-> > +	if (val > AP3216C_ALS_CALIB_INT_MAX ||
-> > +	    (val == AP3216C_ALS_CALIB_INT_MAX &&
-> > +	     val2 > AP3216C_ALS_CALIB_DEC_MAX))
-> > +		return AP3216C_ALS_CALIB_DEC_MAX;
-> > +
-> > +	/* Floor the decimal if integral below minimum */
-> > +	if (val <= AP3216C_ALS_CALIB_INT_MIN)
-> > +		return AP3216C_ALS_CALIB_DEC_MIN;
-> > +
-> > +	/* Floor the decimal if decimal below minimum */
-> > +	if (val2 < AP3216C_ALS_CALIB_DEC_MIN)
-> > +		return AP3216C_ALS_CALIB_DEC_MIN;
-> > +
-> > +	/* Return max decimal if decimal above maximum */
-> > +	if (val2 > AP3216C_ALS_CALIB_DEC_MAX)
-> > +		return AP3216C_ALS_CALIB_DEC_MAX;
-> > +
-> > +	return val2;
-> > +}
-> > +
-> > +static int ap3216c_write_raw(struct iio_dev *indio_dev,
-> > +			     struct iio_chan_spec const *chan,
-> > +			     int val, int val2, long mask)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +	int integral, decimal;
-> > +	int tmp;
-> > +	int ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_CALIBSCALE:
-> > +		switch (chan->type) {
-> > +		case IIO_LIGHT:
-> > +			integral = ap3216c_als_calibscale_int(val);
-> > +			decimal = ap3216c_als_calibscale_dec(val, val2);
-> > +
-> > +			tmp = integral << AP3216C_ALS_CALIB_INT_SHIFT;
-> > +
-> > +			/*
-> > +			 * Reverse scaling by multiplying by the scaling
-> > +			 * denominator and dividing by IIO multiplier.
-> > +			 */
-> > +			tmp |= (decimal * AP3216C_ALS_CALIB_DENOM) /
-> > +				AP3216C_IIO_MULT;
-> > +
-> > +			return regmap_write(data->regmap,
-> > +					    AP3216C_ALS_CALIB, tmp);
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	case IIO_CHAN_INFO_CALIBBIAS:
-> > +		switch (chan->type) {
-> > +		case IIO_PROXIMITY:
-> > +			ret = regmap_write(data->regmap, AP3216C_PS_CALIB_LO,
-> > +					   val & AP3216C_PS_CALIB_LO_MASK);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			tmp = (val & AP3216C_PS_CALIB_HI_MASK) >>
-> > +				AP3216C_PS_CALIB_HI_SHIFT;
-> > +
-> > +			return regmap_write(data->regmap,
-> > +					    AP3216C_PS_CALIB_HI, tmp);
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int ap3216c_read_raw(struct iio_dev *indio_dev,
-> > +				struct iio_chan_spec const *chan,
-> > +				int *val, int *val2, long mask)
-> > +{
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +	int lo, hi;
-> > +	int cfg, tmp;
-> > +	int ret;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_CALIBSCALE:
-> > +		switch (chan->type) {
-> > +		case IIO_LIGHT:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_CALIB, &tmp);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			/* Scale is multiplied by 1/64 */
-> > +			*val = tmp;
-> > +			*val2 = AP3216C_ALS_CALIB_DENOM;
-> > +			return IIO_VAL_FRACTIONAL;
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	case IIO_CHAN_INFO_CALIBBIAS:
-> > +		switch (chan->type) {
-> > +		case IIO_PROXIMITY:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_CALIB_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_CALIB_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +
-> > +			*val = lo | (hi << AP3216C_PS_CALIB_HI_SHIFT);
-> > +			return IIO_VAL_INT;
-> > +
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +	case IIO_CHAN_INFO_PROCESSED:
-> > +		switch (chan->type) {
-> > +		case IIO_LIGHT:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_DATA_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_DATA_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_ALS_CFG, &cfg);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			tmp = (hi << AP3216C_ALS_DATA_HI_SHIFT) | lo;
-> > +			tmp *= ap3216c_gain_array[cfg & AP3216C_ALS_CFG_GAIN_MASK];
-> > +
-> > +			*val = tmp;
-> > +			*val2 = AP3216C_ALS_DATA_DENOM;
-> > +
-> > +			return IIO_VAL_FRACTIONAL;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		switch (chan->type) {
-> > +		case IIO_LIGHT:
-> > +			if (chan->channel2 != IIO_MOD_LIGHT_IR)
-> > +				return -EINVAL;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_IR_DATA_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_IR_DATA_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			tmp = lo & AP3216C_IR_DATA_LO_MASK;
-> > +			tmp |= hi << AP3216C_IR_DATA_HI_SHIFT;
-> > +			*val = tmp;
-> > +
-> > +			return IIO_VAL_INT;
-> > +
-> > +		case IIO_PROXIMITY:
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_DATA_LO, &lo);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_DATA_HI, &hi);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			ret = regmap_read(data->regmap,
-> > +					  AP3216C_PS_CFG, &cfg);
-> > +			if (ret < 0)
-> > +				return ret;
-> > +
-> > +			tmp = lo & AP3216C_PS_DATA_LO_MASK;
-> > +			tmp |= (hi & AP3216C_PS_DATA_HI_MASK) <<
-> > +				AP3216C_PS_DATA_HI_SHIFT;
-> > +			*val = tmp * AP3216C_PS_CFG_GAIN(cfg);
-> > +
-> > +			return IIO_VAL_INT;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static const struct iio_info ap3216c_info = {
-> > +	.read_raw = ap3216c_read_raw,
-> > +	.write_raw = ap3216c_write_raw,
-> > +	.read_event_value = ap3216c_read_event_value,
-> > +	.write_event_value = ap3216c_write_event_value,
-> > +	.read_event_config = ap3216c_read_event_config,
-> > +	.write_event_config = ap3216c_write_event_config,
-> > +};
-> > +
-> > +static int ap3216c_clear_int(struct ap3216c_data *data)
-> 
-> function needed?
-> 
-
-Will decompose this, and move to individual clearing of bits.
-
-> > +{
-> > +	return regmap_write(data->regmap,
-> > +			    AP3216C_INT_STATUS, AP3216C_INT_STATUS_CLR);
-> > +}
-> > +
-> > +static irqreturn_t ap3216c_event_handler(int irq, void *p)
-> > +{
-> > +	struct iio_dev *indio_dev = p;
-> > +	struct ap3216c_data *data = iio_priv(indio_dev);
-> > +	int status;
-> > +	s64 timestamp;
-> > +	int ret;
-> > +
-> > +	ret = regmap_read(data->regmap, AP3216C_INT_STATUS, &status);
-> > +	if (ret) {
-> > +		/*
-> > +		 * Without being able to guarantee the interrupt came from
-> > +		 * this device, we must return IRQ_HANDLED instead of
-> > +		 * IRQ_NONE.
-> > +		 */
-> > +		dev_err(&data->client->dev, "error reading IRQ status\n");
-> > +		return IRQ_HANDLED;
-> > +	}
-> > +
-> > +	/* The IRQ was not from this device */
-> > +	if (!status)
-> > +		return IRQ_NONE;
-> > +
-> > +	timestamp = iio_get_time_ns(indio_dev);
-> > +	if ((status & AP3216C_INT_STATUS_PS_MASK) && data->prox_thresh_en)
-> > +		iio_push_event(indio_dev,
-> > +			       IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
-> > +						    IIO_EV_TYPE_THRESH,
-> > +						    IIO_EV_DIR_EITHER),
-> > +			       timestamp);
-> > +
-> > +	if ((status & AP3216C_INT_STATUS_ALS_MASK) && data->als_thresh_en)
-> > +		iio_push_event(indio_dev,
-> > +			       IIO_UNMOD_EVENT_CODE(IIO_LIGHT, 0,
-> > +						    IIO_EV_TYPE_THRESH,
-> > +						    IIO_EV_DIR_EITHER),
-> > +			       timestamp);
-> > +
-> > +	ret = ap3216c_clear_int(data);
-> > +	if (ret < 0)
-> > +		dev_err(&data->client->dev, "error clearing IRQ\n");
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int ap3216c_probe(struct i2c_client *client,
-> > +			  const struct i2c_device_id *id)
-> > +{
-> > +	struct ap3216c_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +	int ret;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	data->client = client;
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->info = &ap3216c_info;
-> > +	indio_dev->name = AP3216C_DRV_NAME;
-> > +	indio_dev->channels = ap3216c_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(ap3216c_channels);
-> > +
-> > +	data->regmap = devm_regmap_init_i2c(client, &ap3216c_regmap_config);
-> > +	if (IS_ERR(data->regmap)) {
-> > +		dev_err(&client->dev, "Failed to allocate register map\n");
-> > +		return PTR_ERR(data->regmap);
-> > +	}
-> > +
-> > +	/* Default to thresh events disabled */
-> > +	data->als_thresh_en = false;
-> > +	data->prox_thresh_en = false;
-> > +
-> > +	/*
-> > +	 * Require that that the interrupt is cleared only when the INT
-> 
-> that that
-> 
-> > +	 * register is written to, instead of when data is read.  This
-> > +	 * prevents the interrupt from falsely reporting IRQ_NONE.
-> > +	 */
-> > +	ret = regmap_write(data->regmap,
-> > +			   AP3216C_INT_CLR, AP3216C_INT_CLR_MANUAL);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/* Before setting up IRQ, clear any stale interrupt */
-> > +	ret = ap3216c_clear_int(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	if (client->irq) {
-> > +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> > +						NULL, ap3216c_event_handler,
-> > +						IRQF_TRIGGER_FALLING |
-> > +						IRQF_SHARED | IRQF_ONESHOT,
-> > +						client->name, indio_dev);
-> > +		if (ret)
-> > +			return ret;
-> > +	}
-> > +
-> > +	/* Enable ALS and PS+IR */
-> > +	ret = regmap_write(data->regmap, AP3216C_SYS, AP3216C_SYS_MODE_ALS_PS);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return devm_iio_device_register(&client->dev, indio_dev);
-> > +}
-> > +
-> > +static const struct of_device_id ap3216c_of_match[] = {
-> > +	{ .compatible = "liteon,ap3216c", },
-> > +	{ },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, ap3216c_of_match);
-> > +
-> > +static const struct i2c_device_id ap3216c_id[] = {
-> > +	{"ap3216c", 0},
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(i2c, ap3216c_id);
-> > +
-> > +static struct i2c_driver ap3216c_driver = {
-> > +	.driver = {
-> > +		.name	= AP3216C_DRV_NAME,
-> > +	},
-> > +	.probe		= ap3216c_probe,
-> > +	.id_table	= ap3216c_id,
-> > +};
-> > +module_i2c_driver(ap3216c_driver);
-> > +
-> > +MODULE_AUTHOR("Robert Eshleman <bobbyeshleman@gmail.com>");
-> > +MODULE_DESCRIPTION("APC3216C Ambient Light and Proximity Sensor");
-> > +MODULE_LICENSE("GPL v2");
-> > 
-> 
-> -- 
-> 
-> Peter Meerwald-Stadler
-> Mobile: +43 664 24 44 418
+59b9bb0 iio:chemical:sps30 Suppress some switch fallthrough warnings.
 
 
-Thanks for the feedback again.
-
--Bobby
+> drivers/iio/chemical/sps30.c: In function =E2=80=98sps30_read_raw=E2=80=
+=99:
+> drivers/iio/chemical/sps30.c:289:4: warning: this statement may fall thro=
+ugh [-Wimplicit-fallthrough=3D]
+>     switch (chan->channel2) {
+>     ^~~~~~
+> drivers/iio/chemical/sps30.c:299:3: note: here
+>    default:
+>    ^~~~~~~
+> drivers/iio/chemical/sps30.c: In function =E2=80=98sps30_do_cmd=E2=80=99:
+> drivers/iio/chemical/sps30.c:120:10: warning: this statement may fall thr=
+ough [-Wimplicit-fallthrough=3D]
+>    buf[1] =3D (u8)SPS30_AUTO_CLEANING_PERIOD;
+>           ^
+> drivers/iio/chemical/sps30.c:121:2: note: here
+>   case SPS30_READ_DATA_READY_FLAG:
+>   ^~~~
+> drivers/gpio/gpio-eic-sprd.c: In function =E2=80=98sprd_eic_irq_set_type=
+=E2=80=99:
+> drivers/gpio/gpio-eic-sprd.c:403:3: warning: this statement may fall thro=
+ugh [-Wimplicit-fallthrough=3D]
+>    switch (flow_type) {
+>    ^~~~~~
+> drivers/gpio/gpio-eic-sprd.c:435:2: note: here
+>   default:
+>   ^~~~~~~
+>
+> Warning level 3 was used: -Wimplicit-fallthrough=3D3
+>
+> This patch is part of the ongoing efforts to enable
+> -Wimplicit-fallthrough.
+>
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> ---
+>  drivers/iio/chemical/sps30.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+> index e03a28a67146..f308d8ddceec 100644
+> --- a/drivers/iio/chemical/sps30.c
+> +++ b/drivers/iio/chemical/sps30.c
+> @@ -118,6 +118,7 @@ static int sps30_do_cmd(struct sps30_state *state, u1=
+6 cmd, u8 *data, int size)
+>  	case SPS30_READ_AUTO_CLEANING_PERIOD:
+>  		buf[0] =3D SPS30_AUTO_CLEANING_PERIOD >> 8;
+>  		buf[1] =3D (u8)SPS30_AUTO_CLEANING_PERIOD;
+> +		/* fall through */
+>  	case SPS30_READ_DATA_READY_FLAG:
+>  	case SPS30_READ_DATA:
+>  	case SPS30_READ_SERIAL:
+> @@ -296,6 +297,7 @@ static int sps30_read_raw(struct iio_dev *indio_dev,
+>
+>  				return IIO_VAL_INT_PLUS_MICRO;
+>  			}
+> +			/* fall through */
+>  		default:
+>  			return -EINVAL;
+>  		}
+> --
+> 2.20.1
+>
