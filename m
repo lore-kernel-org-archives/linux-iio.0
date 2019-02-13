@@ -2,314 +2,129 @@ Return-Path: <SRS0=lja0=QU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 033FEC282C4
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 01:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1A3BC282CA
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:17:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B40FD222BB
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 01:39:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9A4DA222BB
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Feb 2019 02:17:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="X+H842bw"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ffw98skW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfBMBjF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Feb 2019 20:39:05 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:43614 "EHLO
-        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726026AbfBMBjF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 20:39:05 -0500
-Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 80E9330C24C;
-        Tue, 12 Feb 2019 17:39:03 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 80E9330C24C
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1550021943;
-        bh=VE0gVzv134jCDUn3824+3CpYz9zUoV9OQmuoQw1n6Kg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=X+H842bwk65ZSL+te5N3gQ6eQ2U/r6ZN5112DeDyHmvJEuWuQi+FXgAdkohXTnqPi
-         wJmIZUmIRg9442+qk3mKfOjNViZ/ej1veOeojTXmD6q5xwb+DVekE6an+Cu9Dy47z+
-         1DoA76+KnWES/h7RoQjyEnhTYo52sdlqHGhClu6c=
-Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
-        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id A7BD7AC0783;
-        Tue, 12 Feb 2019 17:39:03 -0800 (PST)
-Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
-        id 9245A27ECF1; Tue, 12 Feb 2019 17:39:03 -0800 (PST)
-From:   justinpopo6@gmail.com
-To:     linux-iio@vger.kernel.org
-Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
-        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, david@lechnology.com,
-        linux-kernel@vger.kernel.org, jic23@kernel.org,
-        Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v2] iio: adc: ti-ads7950: add GPIO support
-Date:   Tue, 12 Feb 2019 17:38:57 -0800
-Message-Id: <1550021937-12202-1-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1730138AbfBMCRz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Feb 2019 21:17:55 -0500
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:37782 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729117AbfBMCRy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Feb 2019 21:17:54 -0500
+Received: by mail-pf1-f193.google.com with SMTP id s22so403475pfh.4;
+        Tue, 12 Feb 2019 18:17:54 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vnz5kzABQYt2zuTvXNxw6aywAdp4yjjXOdzhLQ2Y/60=;
+        b=ffw98skWAAwrBvrqacLBFPEYjOaLHW0HqfKUxurjkTKF9efgjf1uwHbTuVL3IFGxn3
+         W9dzJUJ9+5jQOlrNlx4MCA65A7qHsXu2b8J3BBv6XfYu0NBIUBMG3OQbAHcz2Q27PO7Y
+         q6TGdiWpL3mRAoFTQOJ+SundWwrwbh12r91ZYLisEQkKNUg46HIOBCZ1pUhLZObORaWR
+         WLuKSOLsHkgFbklzMvdsO05pMRDqv+viO3YNZSkQrq0+OYR/FZQAp86czn3byO/D8L8u
+         ZG/1NwuKxDdEDYW366KENnR/57jzyU0VpWMWZ7HqA2d+gvev6jitJNLvFuZIEmpQGO8T
+         Ca7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vnz5kzABQYt2zuTvXNxw6aywAdp4yjjXOdzhLQ2Y/60=;
+        b=co9q9YjVDCsKf/E+kHay0DnD//LGOiFmXqeRUI5eNZ8gfy6XJy5qotobYOjaDaRK+K
+         DAu78V4stmA3qhL9WATpeZNWvaSOS3CIDDyQhStVIQBFp+fBIVu6ZZPFXqa5x21ReAF0
+         2L1iM9Pz9SAS0r1JS4dta2yLB2fHphuB2tl5HYiw4B1PT5KmZ0M8W7pyuwyOCMAffKRE
+         oqtVbi5TKblZoacLqKT8pRpiWbRrF8DMlc8aAY2C4p3Ouc6PAu5Ac8D9qggVewFFK67v
+         U1poa17B9JJILhfo2MtZk2cXSieSNGnC9ALdnI2dbLWgg//a7fAg496sdgjlPhDFh+pb
+         eI0Q==
+X-Gm-Message-State: AHQUAuY5m3F6AKy7xZIacEWNeK6xZpDSVb+mj5WrRXZNJ83DgunhsFKC
+        Ld3WNxFe/dKpiCCgcoJ+jIM=
+X-Google-Smtp-Source: AHgI3Ianr/k1MEUCfMlVY+1tBZn21L5jD6ZUM7GHT5N6gLOgmvUXcry7/7WE4Tl6pVq4glLIuwuS6g==
+X-Received: by 2002:a63:ea56:: with SMTP id l22mr6615008pgk.391.1550024273694;
+        Tue, 12 Feb 2019 18:17:53 -0800 (PST)
+Received: from bobby.localdomain ([2601:1c0:5501:37e2::72a1])
+        by smtp.gmail.com with ESMTPSA id h8sm17027993pgv.27.2019.02.12.18.17.52
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Feb 2019 18:17:52 -0800 (PST)
+Date:   Tue, 12 Feb 2019 18:17:53 -0800
+From:   Robert Eshleman <bobbyeshleman@gmail.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
+Message-ID: <20190213021753.GA19621@bobby.localdomain>
+References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
+ <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAGngYiXPsj-TAZxC43UtAZYTkbztFtDB-z4jW29CthmaoeNy_w@mail.gmail.com>
+User-Agent: Mutt/1.11.2 (2019-01-07)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Justin Chen <justinpopo6@gmail.com>
+On Mon, Feb 11, 2019 at 02:29:58PM -0500, Sven Van Asbroeck wrote:
+> On Sun, Feb 10, 2019 at 3:39 PM Robert Eshleman <bobbyeshleman@gmail.com> wrote:
+> >
+> > This patch adds support for the ap3216c ambient light and proximity
+> > sensor.
+> 
+> PS
+> 
+> Why not use the chip in the mode where the interrupt is automatically cleared by
+> reading the data? This could work if you read the data in the
+> interrupt routine, store
+> it in a buffer, then send the event to iio. Then when userspace wants
+> to read out the
+> value, don't actually touch the hardware, but return the buffered value.
+> 
+> I don't think you then need any synchronization primitives to
+> accomplish this, such as
+> mutexes, spin locks, etc. Because the interrupt routine is single-threaded.
+> 
+> You don't even need a memory barrier for the buffered value,
+> because the iio core uses a waitqueue internally, which automatically issues
+> an mb(). As far as I know.
 
-The ADS79XX has GPIO pins that can be used. Add support for the GPIO
-pins using the GPIO chip framework.
+Hey Sven,
 
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
----
- drivers/iio/adc/ti-ads7950.c | 168 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 165 insertions(+), 3 deletions(-)
+First, thank you for the feedback.
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 0ad6359..b229581 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -17,6 +17,7 @@
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/err.h>
-+#include <linux/gpio/driver.h>
- #include <linux/interrupt.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -36,10 +37,14 @@
-  */
- #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
- 
-+#define TI_ADS7950_CR_GPIO	BIT(14)
- #define TI_ADS7950_CR_MANUAL	BIT(12)
- #define TI_ADS7950_CR_WRITE	BIT(11)
- #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
- #define TI_ADS7950_CR_RANGE_5V	BIT(6)
-+#define TI_ADS7950_CR_GPIO_DATA	BIT(5)
-+#define TI_ADS7950_NUM_GPIOS	4
-+#define TI_ADS7950_GPIO_MASK	GENMASK(TI_ADS7950_NUM_GPIOS - 1, 0)
- 
- #define TI_ADS7950_MAX_CHAN	16
- 
-@@ -56,11 +61,17 @@ struct ti_ads7950_state {
- 	struct spi_message	ring_msg;
- 	struct spi_message	scan_single_msg;
- 
-+	struct gpio_chip	chip;
-+	struct mutex		slock;
-+
- 	struct regulator	*reg;
- 	unsigned int		vref_mv;
- 
- 	unsigned int		settings;
- 
-+	unsigned int		gpio_direction_bitmask;
-+	unsigned int		gpio_signal_bitmask;
-+
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-@@ -248,7 +259,8 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
- 
- 	len = 0;
- 	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
--		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
-+		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings
-+		      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
- 		st->tx_buf[len++] = cmd;
- 	}
- 
-@@ -287,8 +299,9 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 	int ret, cmd;
- 
- 	mutex_lock(&indio_dev->mlock);
--
--	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
-+	mutex_lock(&st->slock);
-+	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings
-+	      | (st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK);
- 	st->single_tx = cmd;
- 
- 	ret = spi_sync(st->spi, &st->scan_single_msg);
-@@ -298,6 +311,7 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 	ret = st->single_rx;
- 
- out:
-+	mutex_unlock(&st->slock);
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	return ret;
-@@ -362,6 +376,144 @@ static const struct iio_info ti_ads7950_info = {
- 	.update_scan_mode	= ti_ads7950_update_scan_mode,
- };
- 
-+static void ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
-+			   int value)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+
-+	mutex_lock(&st->slock);
-+
-+	if (value)
-+		st->gpio_signal_bitmask |= BIT(offset);
-+	else
-+		st->gpio_signal_bitmask &= ~BIT(offset);
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
-+			(st->gpio_signal_bitmask & TI_ADS7950_GPIO_MASK));
-+	spi_sync(st->spi, &st->scan_single_msg);
-+
-+	mutex_unlock(&st->slock);
-+}
-+
-+static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+	int ret;
-+
-+	mutex_lock(&st->slock);
-+
-+	/* If set as output, return the output */
-+	if (st->gpio_direction_bitmask & BIT(offset)) {
-+		ret = st->gpio_signal_bitmask & BIT(offset);
-+		goto out;
-+	}
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_WRITE |
-+				    TI_ADS7950_CR_GPIO_DATA);
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	if (ret)
-+		goto out;
-+
-+	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
-+
-+out:
-+	mutex_unlock(&st->slock);
-+
-+	return ret;
-+}
-+
-+static int ti_ads7950_get_direction(struct gpio_chip *chip,
-+				    unsigned int offset)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+
-+	return !(st->gpio_direction_bitmask & BIT(offset));
-+}
-+
-+static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
-+				     int input)
-+{
-+	struct ti_ads7950_state *st = gpiochip_get_data(chip);
-+	int ret = 0;
-+
-+	mutex_lock(&st->slock);
-+
-+	if (input && (st->gpio_direction_bitmask & BIT(offset)))
-+		st->gpio_direction_bitmask &= ~BIT(offset);
-+	else if (!input && !(st->gpio_direction_bitmask & BIT(offset)))
-+		st->gpio_direction_bitmask |= BIT(offset);
-+	else
-+		goto out;
-+
-+
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
-+				    (st->gpio_direction_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+
-+out:
-+	mutex_unlock(&st->slock);
-+
-+	return ret;
-+}
-+
-+static int ti_ads7950_direction_input(struct gpio_chip *chip,
-+				      unsigned int offset)
-+{
-+	return _ti_ads7950_set_direction(chip, offset, 1);
-+}
-+
-+static int ti_ads7950_direction_output(struct gpio_chip *chip,
-+				       unsigned int offset, int value)
-+{
-+	ti_ads7950_set(chip, offset, value);
-+
-+	return _ti_ads7950_set_direction(chip, offset, 0);
-+}
-+
-+static int ti_ads7950_init_gpio(struct ti_ads7950_state *st)
-+{
-+	int ret;
-+
-+	/* Initialize GPIO */
-+	mutex_lock(&st->slock);
-+
-+	/* Default to GPIO input */
-+	st->gpio_direction_bitmask = 0x0;
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_GPIO |
-+				    (st->gpio_direction_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	mutex_unlock(&st->slock);
-+	if (ret)
-+		return ret;
-+
-+	/* Default to signal low */
-+	st->gpio_signal_bitmask = 0x0;
-+	st->single_tx = cpu_to_be16(TI_ADS7950_CR_MANUAL |
-+				    TI_ADS7950_CR_WRITE |
-+				    (st->gpio_signal_bitmask &
-+				    TI_ADS7950_GPIO_MASK));
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	mutex_unlock(&st->slock);
-+	if (ret)
-+		return ret;
-+
-+	/* Add GPIO chip */
-+	st->chip.label = dev_name(&st->spi->dev);
-+	st->chip.parent = &st->spi->dev;
-+	st->chip.owner = THIS_MODULE;
-+	st->chip.base = -1;
-+	st->chip.ngpio = TI_ADS7950_NUM_GPIOS;
-+	st->chip.get_direction = ti_ads7950_get_direction;
-+	st->chip.direction_input = ti_ads7950_direction_input;
-+	st->chip.direction_output = ti_ads7950_direction_output;
-+	st->chip.get = ti_ads7950_get;
-+	st->chip.set = ti_ads7950_set;
-+
-+	return gpiochip_add_data(&st->chip, st);
-+}
-+
- static int ti_ads7950_probe(struct spi_device *spi)
- {
- 	struct ti_ads7950_state *st;
-@@ -457,8 +609,17 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 		goto error_cleanup_ring;
- 	}
- 
-+	mutex_init(&st->slock);
-+	ret = ti_ads7950_init_gpio(st);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to initialize GPIOs\n");
-+		goto error_destroy_mutex;
-+	}
-+
- 	return 0;
- 
-+error_destroy_mutex:
-+	mutex_destroy(&st->slock);
- error_cleanup_ring:
- 	iio_triggered_buffer_cleanup(indio_dev);
- error_disable_reg:
-@@ -475,6 +636,7 @@ static int ti_ads7950_remove(struct spi_device *spi)
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	regulator_disable(st->reg);
-+	mutex_destroy(&st->slock);
- 
- 	return 0;
- }
--- 
-2.7.4
+I had initially went with a similar design, but there is
+the case in which the interrupt fires and then before the status
+register is read by the handler a user process reads the data and
+clears the interrupt.  When the handler continues execution it will
+read a zero status and return IRQ_NONE.  My understanding of how
+Linux handles IRQ_NONE is pretty poor, but I felt that this behavior
+is incorrect even if inconsequential.  This could be avoided by
+doing a status register read with every data read, and buffering
+that as well, but then we lose the benefit altogether by increasing
+I2C reads.
+
+In the approach you describe here, it seems like that would
+work if this driver wasn't supporting shared interrupts.  In the
+case that a user-space read happens to clear the interrupt before
+the handler reads the status register, I think we would end up
+falsely returning IRQ_NONE.
+
+Is my understanding of this correct?  It's very possible I'm
+misunderstanding IRQ_NONE and shared interrupts.
+
+Again, thank you for the feedback.
+
+-Bobby
 
