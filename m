@@ -1,550 +1,422 @@
-Return-Path: <SRS0=pVyT=QV=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=BOa2=QW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10E1CC43381
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Feb 2019 20:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B605FC4360F
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Feb 2019 13:48:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A87D921B68
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Feb 2019 20:48:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="U9swLmQ4"
+	by mail.kernel.org (Postfix) with ESMTP id 795BD21929
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Feb 2019 13:48:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2408084AbfBNUsX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Feb 2019 15:48:23 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:39727 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389639AbfBNUsW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Feb 2019 15:48:22 -0500
-Received: by mail-qk1-f195.google.com with SMTP id x6so4447312qki.6;
-        Thu, 14 Feb 2019 12:48:21 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=bAfG3GQCvjOJ9Wp3jhHGCMlnCPMx14zA8MaB6jGLgfs=;
-        b=U9swLmQ4+sanKJuiMGfEURd9yZtJyk9PnL0adUZjRe/uJr+1A2rKhw05xBcJ8KxopO
-         OkSK2muDU/lbT9CYTpyO3cYKYaCBw2JiY3/L6rW8WGCzHkMG+0eLavmt+UcYE4QYDsYv
-         JqS8x4ou7oqlou+2G+xMmV0OoHEM3g+rTOq0AJb73O/6zx65rKcaHR3PREZfUYRPl1S3
-         RsLGq5bkhQkHX8+Vxc2/5ctN7LBFcIY69UAZWwwa1CQjEQY/PIGW82T+dFFsanDSfH7a
-         x43HWhaR6v9xXn2TZNWBfodz0FjfxZQjuRT2zey/s/IddDW5jj6RrgubeMD0fxBFzh6a
-         NvJw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=bAfG3GQCvjOJ9Wp3jhHGCMlnCPMx14zA8MaB6jGLgfs=;
-        b=gZFFugFVGw9hredJOzw3JthE9WfrLD0O+6LVJiQ7q3j+Kr7Sc/xb/gMA8+KpmTjPGC
-         mfbJmKVsZ8NDe2lPSjspcoGWByos4M/48o6L/EQJEfbtb1+RrTy0SseR08TmJIzbbX//
-         mJ4HBSdsmTDsRNtW3vgHMXaY2l+QP1UJVfd3k03epjuSWWlPOi9PSyNkvVpjZ5MxQRpb
-         ZO1gme12+crULsSIstYUs6xr407INVCcWXOBRSdtScr5sHyoWLM1YbrJaRRcHVtQzHvv
-         x9ERqYZWWVx7HRJGizz3SzU4VKXCqYGnVmYYBbFW/tz0YJ7WWSRUYl84DqWshJYPv0xQ
-         iUHQ==
-X-Gm-Message-State: AHQUAuaSsRNBj97lm1pPMFVflUYdorPHmJuLWDgM8ECp7JunewDs4r9M
-        NGo+sx+zegCnrCzhYlBo3jw=
-X-Google-Smtp-Source: AHgI3IaZ0capQ0rGmME3ndnB45doe39RvS9iwK1sIqKHltrneRuRkhFQYLPr6fmj31QaOeWccR3PHw==
-X-Received: by 2002:a37:94c6:: with SMTP id w189mr4448086qkd.300.1550177300554;
-        Thu, 14 Feb 2019 12:48:20 -0800 (PST)
-Received: from renatolg ([191.180.128.219])
-        by smtp.gmail.com with ESMTPSA id d55sm2162764qtb.93.2019.02.14.12.48.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 14 Feb 2019 12:48:20 -0800 (PST)
-From:   Renato Lui Geh <renatogeh@gmail.com>
-X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
-Date:   Thu, 14 Feb 2019 18:48:15 -0200
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Renato Lui Geh <renatogeh@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, stefan.popa@analog.com,
-        alexandru.Ardelean@analog.com, giuliano.belinassi@usp.br,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH v3 4/4] staging: iio: ad7780: moving ad7780 out of staging
-Message-ID: <20190214204814.kqblknn65pjcb3ve@renatolg>
-References: <cover.1549385784.git.renatogeh@gmail.com>
- <b1feb550e130e22ce2907e45cd0def81bd653349.1549385784.git.renatogeh@gmail.com>
- <20190209163732.3966de58@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <20190209163732.3966de58@archlinux>
-User-Agent: NeoMutt/20180716
+        id S1730852AbfBONsH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Feb 2019 08:48:07 -0500
+Received: from jax4mhob09.myregisteredsite.com ([64.69.218.89]:44176 "EHLO
+        jax4mhob09.myregisteredsite.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728867AbfBONsG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Feb 2019 08:48:06 -0500
+Received: from mailpod.hostingplatform.com (atl4qobmail01pod0.registeredsite.com [10.30.71.203])
+        by jax4mhob09.myregisteredsite.com (8.14.4/8.14.4) with ESMTP id x1FDm0hk000624
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <linux-iio@vger.kernel.org>; Fri, 15 Feb 2019 08:48:00 -0500
+Received: (qmail 31469 invoked by uid 0); 15 Feb 2019 13:48:00 -0000
+X-TCPREMOTEIP: 81.173.50.109
+X-Authenticated-UID: mike@milosoftware.com
+Received: from unknown (HELO mikebuntu.TOPIC.LOCAL) (mike@milosoftware.com@81.173.50.109)
+  by 0 with ESMTPA; 15 Feb 2019 13:47:59 -0000
+From:   Mike Looijmans <mike.looijmans@topic.nl>
+To:     linux-iio@vger.kernel.org, himanshujha199640@gmail.com
+Cc:     linux-kernel@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, dpfrey@gmail.com,
+        colin.king@canonical.com, Mike Looijmans <mike.looijmans@topic.nl>
+Subject: [PATCH] iio/chemical/bme680: Fix SPI read interface
+Date:   Fri, 15 Feb 2019 14:47:55 +0100
+Message-Id: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
+X-Mailer: git-send-email 1.9.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 02/09, Jonathan Cameron wrote:
->On Tue, 5 Feb 2019 15:14:03 -0200
->Renato Lui Geh <renatogeh@gmail.com> wrote:
->
->> Move ad7780 ADC driver out of staging and into the mainline.
->>
->> The ad7780 is a sigma-delta analog to digital converter. This driver provides
->> reading voltage values and status bits from both the ad778x and ad717x series.
->> Its interface also allows writing on the FILTER and GAIN GPIO pins on the
->> ad778x.
->>
->> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
->> Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
->> Co-developed-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
->
->This needs a device tree binding doc which should be reviewed before we move
->the driver out of staging.  Make sure to cc the dt-binding maintainers and
->list.  Doesn't really matter if that patch is before or after this one
->in the series but needs to be in the same series.
+The SPI interface implementation was completely broken.
 
-Ok! I see that some Analog dt-bindings are prefixed by adi and some are
-not. Should I follow any naming standard?
->
->There are a few more minor tidy ups that would be nice to have inline
->given you are doing a v4. Stuff like this could have been cleaned up
->after moving out of staging (nothing wrong with improving non staging
->drivers after all) but always better to do it whilst we remember!
->
->> ---
->> Changes in v3:
->> 	- Changes unrelated to moving the driver to main tree were resent as
->> 	  individual patches
->>
->>  drivers/iio/adc/Kconfig          |  13 ++
->>  drivers/iio/adc/Makefile         |   1 +
->>  drivers/iio/adc/ad7780.c         | 359 +++++++++++++++++++++++++++++++
->>  drivers/staging/iio/adc/Kconfig  |  13 --
->>  drivers/staging/iio/adc/Makefile |   1 -
->>  drivers/staging/iio/adc/ad7780.c | 359 -------------------------------
->>  6 files changed, 373 insertions(+), 373 deletions(-)
->>  create mode 100644 drivers/iio/adc/ad7780.c
->>  delete mode 100644 drivers/staging/iio/adc/ad7780.c
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index f3cc7a31bce5..2cdee166d0e9 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -108,6 +108,19 @@ config AD7766
->>  	  To compile this driver as a module, choose M here: the module will be
->>  	  called ad7766.
->>
->> +config AD7780
->> +	tristate "Analog Devices AD7780 and similar ADCs driver"
->> +	depends on SPI
->> +	depends on GPIOLIB || COMPILE_TEST
->> +	select AD_SIGMA_DELTA
->> +	help
->> +	  Say yes here to build support for Analog Devices AD7170, AD7171,
->> +	  AD7780 and AD7781 SPI analog to digital converters (ADC).
->> +	  If unsure, say N (but it's safe to say "Y").
->
->I wouldn't bother with this statement, doesn't add any real info!
->
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called ad7780.
->> +
->>  config AD7791
->>  	tristate "Analog Devices AD7791 ADC driver"
->>  	depends on SPI
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index ea5031348052..b48852157115 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -15,6 +15,7 @@ obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
->>  obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
->>  obj-$(CONFIG_AD7606) += ad7606.o
->>  obj-$(CONFIG_AD7766) += ad7766.o
->> +obj-$(CONFIG_AD7780) += ad7780.o
->>  obj-$(CONFIG_AD7791) += ad7791.o
->>  obj-$(CONFIG_AD7793) += ad7793.o
->>  obj-$(CONFIG_AD7887) += ad7887.o
->> diff --git a/drivers/iio/adc/ad7780.c b/drivers/iio/adc/ad7780.c
->> new file mode 100644
->> index 000000000000..163e3c983598
->> --- /dev/null
->> +++ b/drivers/iio/adc/ad7780.c
->> @@ -0,0 +1,359 @@
->> +// SPDX-License-Identifier: GPL-2.0
->> +/*
->> + * AD7170/AD7171 and AD7780/AD7781 SPI ADC driver
->> + *
->> + * Copyright 2011 Analog Devices Inc.
->
->I think you have done more than enough to this driver to add
->an additional copyright line if you want to!
+When using the SPI interface, there are only 7 address bits, the upper bit
+is controlled by a page select register. The core needs access to both
+ranges, so implement register read/write for both regions. The regmap
+paging functionality didn't agree with a register that needs to be read
+and modified, so I implemented a custom paging algorithm.
 
-Oh wow, that'd be awesome! Thanks! Should I just add my full name there?
->
->> + */
->> +
->> +#include <linux/interrupt.h>
->> +#include <linux/device.h>
->> +#include <linux/kernel.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->> +#include <linux/spi/spi.h>
->> +#include <linux/regulator/consumer.h>
->> +#include <linux/err.h>
->> +#include <linux/sched.h>
->> +#include <linux/gpio/consumer.h>
->> +#include <linux/module.h>
->> +
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/iio/adc/ad_sigma_delta.h>
->> +
->> +#define AD7780_RDY		BIT(7)
->> +#define AD7780_FILTER		BIT(6)
->> +#define AD7780_ERR		BIT(5)
->> +#define AD7780_ID1		BIT(4)
->> +#define AD7780_ID0		BIT(3)
->> +#define AD7780_GAIN		BIT(2)
->> +#define AD7780_PAT1		BIT(1)
->> +#define AD7780_PAT0		BIT(0)
->These two bits of pattern don't really add anything. I'd drop them in
->favour of something like
->
->#define AD7780_PATTERN_GOOD 1
->#define AD7780_PATTERN_MASK GENMASK(1, 0)
->
->Same for ID for that matter.  These aren't one bit fields, so we shouldn't
->ever present them as such (though the datasheet confusingly sort of does
->so!)
->
->> +
->> +#define AD7780_PATTERN		(AD7780_PAT0)
->> +#define AD7780_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1)
->> +
->> +#define AD7170_PAT2		BIT(2)
->> +
->> +#define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
->> +#define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
->I'd use a value for the pattern directly and
->GENMASK for the mask.
->
->> +
->> +#define AD7780_GAIN_GPIO	0
->> +#define AD7780_FILTER_GPIO	1
->> +
->> +#define AD7780_GAIN_MIDPOINT	64
->> +#define AD7780_FILTER_MIDPOINT	13350
->> +
->> +static const unsigned int ad778x_gain[2]      = { 1, 128 };
->> +static const unsigned int ad778x_odr_avail[2] = { 10000, 16700 };
->> +
->> +struct ad7780_chip_info {
->> +	struct iio_chan_spec	channel;
->> +	unsigned int		pattern_mask;
->> +	unsigned int		pattern;
->> +	bool			is_ad778x;
->> +};
->> +
->> +struct ad7780_state {
->> +	const struct ad7780_chip_info	*chip_info;
->> +	struct regulator		*reg;
->> +	struct gpio_desc		*powerdown_gpio;
->> +	struct gpio_desc		*gain_gpio;
->> +	struct gpio_desc		*filter_gpio;
->> +	unsigned int			gain;
->> +	unsigned int			odr;
->> +	unsigned int			int_vref_mv;
->> +
->> +	struct ad_sigma_delta sd;
->> +};
->> +
->> +enum ad7780_supported_device_ids {
->> +	ID_AD7170,
->> +	ID_AD7171,
->> +	ID_AD7780,
->> +	ID_AD7781,
->> +};
->> +
->> +static struct ad7780_state *ad_sigma_delta_to_ad7780(struct ad_sigma_delta *sd)
->> +{
->> +	return container_of(sd, struct ad7780_state, sd);
->> +}
->> +
->> +static int ad7780_set_mode(struct ad_sigma_delta *sigma_delta,
->> +			   enum ad_sigma_delta_mode mode)
->> +{
->> +	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
->> +	unsigned int val;
->> +
->> +	switch (mode) {
->> +	case AD_SD_MODE_SINGLE:
->> +	case AD_SD_MODE_CONTINUOUS:
->> +		val = 1;
->> +		break;
->> +	default:
->> +		val = 0;
->> +		break;
->> +	}
->> +
->> +	gpiod_set_value(st->powerdown_gpio, val);
->> +
->> +	return 0;
->> +}
->> +
->> +static int ad7780_read_raw(struct iio_dev *indio_dev,
->> +			   struct iio_chan_spec const *chan,
->> +			   int *val,
->> +			   int *val2,
->> +			   long m)
->> +{
->> +	struct ad7780_state *st = iio_priv(indio_dev);
->> +	int voltage_uv;
->> +
->> +	switch (m) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
->> +	case IIO_CHAN_INFO_SCALE:
->> +		voltage_uv = regulator_get_voltage(st->reg);
->> +		if (voltage_uv < 0)
->> +			return voltage_uv;
->> +		voltage_uv /= 1000;
->> +		*val = voltage_uv * st->gain;
->> +		*val2 = chan->scan_type.realbits - 1;
->> +		st->int_vref_mv = voltage_uv;
->> +		return IIO_VAL_FRACTIONAL_LOG2;
->> +	case IIO_CHAN_INFO_OFFSET:
->> +		*val = -(1 << (chan->scan_type.realbits - 1));
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		*val = st->odr;
->> +		return IIO_VAL_INT;
->> +	}
->> +
->> +	return -EINVAL;
->> +}
->> +
->> +static int ad7780_write_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan,
->> +			    int val,
->> +			    int val2,
->> +			    long m)
->> +{
->> +	struct ad7780_state *st = iio_priv(indio_dev);
->> +	const struct ad7780_chip_info *chip_info = st->chip_info;
->> +	unsigned long long vref;
->> +	unsigned int full_scale, gain;
->> +
->> +	if (!chip_info->is_ad778x)
->> +		return 0;
->> +
->> +	switch (m) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		if (val != 0)
->> +			return -EINVAL;
->> +
->> +		vref = st->int_vref_mv * 1000000LL;
->> +		full_scale = 1 << (chip_info->channel.scan_type.realbits - 1);
->> +		gain = DIV_ROUND_CLOSEST(vref, full_scale);
->> +		gain = DIV_ROUND_CLOSEST(gain, val2);
->> +		st->gain = gain;
->> +		if (gain < AD7780_GAIN_MIDPOINT)
->> +			gain = 0;
->> +		else
->> +			gain = 1;
->> +		gpiod_set_value(st->gain_gpio, gain);
->> +	break;
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		if (1000*val + val2/1000 < AD7780_FILTER_MIDPOINT)
->> +			val = 0;
->> +		else
->> +			val = 1;
->> +		st->odr = ad778x_odr_avail[val];
->> +		gpiod_set_value(st->filter_gpio, val);
->> +	break;
->We'll get a warning here due to the lack of a default handler.
->It's pointless except to suppress the warning, but best to add one.
->
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
->> +				     unsigned int raw_sample)
->> +{
->> +	struct ad7780_state *st = ad_sigma_delta_to_ad7780(sigma_delta);
->> +	const struct ad7780_chip_info *chip_info = st->chip_info;
->> +
->> +	if ((raw_sample & AD7780_ERR) ||
->> +	    ((raw_sample & chip_info->pattern_mask) != chip_info->pattern))
->> +		return -EIO;
->> +
->> +	if (chip_info->is_ad778x) {
->> +		st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
->> +		st->odr = ad778x_odr_avail[raw_sample & AD7780_FILTER];
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
->> +	.set_mode = ad7780_set_mode,
->> +	.postprocess_sample = ad7780_postprocess_sample,
->> +	.has_registers = false,
->> +};
->> +
->> +#define AD7780_CHANNEL(bits, wordsize) \
->> +	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
->> +
->> +static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
->> +	[ID_AD7170] = {
->> +		.channel = AD7780_CHANNEL(12, 24),
->> +		.pattern = AD7170_PATTERN,
->> +		.pattern_mask = AD7170_PATTERN_MASK,
->> +		.is_ad778x = false,
->> +	},
->> +	[ID_AD7171] = {
->> +		.channel = AD7780_CHANNEL(16, 24),
->> +		.pattern = AD7170_PATTERN,
->> +		.pattern_mask = AD7170_PATTERN_MASK,
->> +		.is_ad778x = false,
->> +	},
->> +	[ID_AD7780] = {
->> +		.channel = AD7780_CHANNEL(24, 32),
->> +		.pattern = AD7780_PATTERN,
->> +		.pattern_mask = AD7780_PATTERN_MASK,
->> +		.is_ad778x = true,
->> +	},
->> +	[ID_AD7781] = {
->> +		.channel = AD7780_CHANNEL(20, 32),
->> +		.pattern = AD7780_PATTERN,
->> +		.pattern_mask = AD7780_PATTERN_MASK,
->> +		.is_ad778x = true,
->> +	},
->> +};
->> +
->> +static const struct iio_info ad7780_info = {
->> +	.read_raw = ad7780_read_raw,
->> +	.write_raw = ad7780_write_raw,
->> +};
->> +
->> +static int ad7780_probe(struct spi_device *spi)
->> +{
->> +	struct ad7780_state *st;
->> +	struct iio_dev *indio_dev;
->> +	int ret;
->> +
->> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
->> +	if (!indio_dev)
->> +		return -ENOMEM;
->> +
->> +	st = iio_priv(indio_dev);
->> +	st->gain = 1;
->> +
->> +	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
->> +
->> +	st->chip_info =
->> +		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
->> +
->> +	spi_set_drvdata(spi, indio_dev);
->> +
->> +	indio_dev->dev.parent = &spi->dev;
->> +	indio_dev->name = spi_get_device_id(spi)->name;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->channels = &st->chip_info->channel;
->> +	indio_dev->num_channels = 1;
->> +	indio_dev->info = &ad7780_info;
->> +
->> +	st->powerdown_gpio = devm_gpiod_get_optional(&spi->dev,
->> +						     "powerdown",
->> +						     GPIOD_OUT_LOW);
->> +	if (IS_ERR(st->powerdown_gpio)) {
->> +		ret = PTR_ERR(st->powerdown_gpio);
->> +		dev_err(&spi->dev, "Failed to request powerdown GPIO: %d\n",
->> +			ret);
->> +		return ret;
->> +	}
->> +
->> +	if (st->chip_info->is_ad778x) {
->> +		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
->> +							"gain",
->> +							GPIOD_OUT_HIGH);
->> +		if (IS_ERR(st->gain_gpio)) {
->> +			ret = PTR_ERR(st->gain_gpio);
->> +			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
->> +				ret);
->> +			return ret;
->> +		}
->> +
->> +		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
->> +							  "filter",
->> +							  GPIOD_OUT_HIGH);
->> +		if (IS_ERR(st->filter_gpio)) {
->> +			ret = PTR_ERR(st->filter_gpio);
->> +			dev_err(&spi->dev,
->> +				"Failed to request filter GPIO: %d\n",
->> +				ret);
->> +			return ret;
->> +		}
->> +	}
->> +
->> +	st->reg = devm_regulator_get(&spi->dev, "avdd");
->> +	if (IS_ERR(st->reg))
->> +		return PTR_ERR(st->reg);
->> +
->> +	ret = regulator_enable(st->reg);
->> +	if (ret) {
->> +		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
->> +	if (ret)
->> +		goto error_disable_reg;
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret)
->> +		goto error_cleanup_buffer_and_trigger;
->> +
->> +	return 0;
->> +
->> +error_cleanup_buffer_and_trigger:
->> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
->> +error_disable_reg:
->> +	regulator_disable(st->reg);
->> +
->> +	return ret;
->> +}
->> +
->> +static int ad7780_remove(struct spi_device *spi)
->> +{
->> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> +	struct ad7780_state *st = iio_priv(indio_dev);
->> +
->> +	iio_device_unregister(indio_dev);
->> +	ad_sd_cleanup_buffer_and_trigger(indio_dev);
->> +
->> +	regulator_disable(st->reg);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct spi_device_id ad7780_id[] = {
->> +	{"ad7170", ID_AD7170},
->> +	{"ad7171", ID_AD7171},
->> +	{"ad7780", ID_AD7780},
->> +	{"ad7781", ID_AD7781},
->> +	{}
->> +};
->> +MODULE_DEVICE_TABLE(spi, ad7780_id);
->> +
->> +static struct spi_driver ad7780_driver = {
->> +	.driver = {
->> +		.name	= "ad7780",
->> +	},
->> +	.probe		= ad7780_probe,
->> +	.remove		= ad7780_remove,
->> +	.id_table	= ad7780_id,
->> +};
->> +module_spi_driver(ad7780_driver);
->> +
->> +MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
->> +MODULE_DESCRIPTION("Analog Devices AD7780 and similar ADCs");
->> +MODULE_LICENSE("GPL v2");
+This fixes that the device wouldn't even probe in SPI mode.
+
+The SPI interface then isn't different from I2C, merged them into the core,
+and the I2C/SPI named registers are no longer needed.
+
+Implemented register value caching for the registers to reduce the I2C/SPI
+data transfers considerably.
+
+The calibration set reads as all zeroes until some undefined point in time,
+and I couldn't determine what makes it valid. The datasheet mentions these
+registers but does not provide any hints on when they become valid, and they
+aren't even enumerated in the memory map. So check the calibration and
+retry reading it from the device after each measurement until it provides
+something valid.
+
+Report temperature in millidegrees Celcius instead of degrees.
+
+Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+---
+ drivers/iio/chemical/bme680.h      |   6 +-
+ drivers/iio/chemical/bme680_core.c |  54 ++++++++++++++---
+ drivers/iio/chemical/bme680_i2c.c  |  21 -------
+ drivers/iio/chemical/bme680_spi.c  | 116 +++++++++++++++++++++++++------------
+ 4 files changed, 126 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+index 0ae89b87..4edc5d21 100644
+--- a/drivers/iio/chemical/bme680.h
++++ b/drivers/iio/chemical/bme680.h
+@@ -2,11 +2,9 @@
+ #ifndef BME680_H_
+ #define BME680_H_
+ 
+-#define BME680_REG_CHIP_I2C_ID			0xD0
+-#define BME680_REG_CHIP_SPI_ID			0x50
++#define BME680_REG_CHIP_ID			0xD0
+ #define   BME680_CHIP_ID_VAL			0x61
+-#define BME680_REG_SOFT_RESET_I2C		0xE0
+-#define BME680_REG_SOFT_RESET_SPI		0x60
++#define BME680_REG_SOFT_RESET			0xE0
+ #define   BME680_CMD_SOFTRESET			0xB6
+ #define BME680_REG_STATUS			0x73
+ #define   BME680_SPI_MEM_PAGE_BIT		BIT(4)
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index 70c1fe4..ccde4c6 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -63,9 +63,23 @@ struct bme680_data {
+ 	s32 t_fine;
+ };
+ 
++static const struct regmap_range bme680_volatile_ranges[] = {
++	regmap_reg_range(BME680_REG_MEAS_STAT_0, BME680_REG_GAS_R_LSB),
++	regmap_reg_range(BME680_REG_STATUS, BME680_REG_STATUS),
++	regmap_reg_range(BME680_T2_LSB_REG, BME680_GH3_REG),
++};
++
++static const struct regmap_access_table bme680_volatile_table = {
++	.yes_ranges	= bme680_volatile_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(bme680_volatile_ranges),
++};
++
+ const struct regmap_config bme680_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
++	.max_register = 0xef,
++	.volatile_table = &bme680_volatile_table,
++	.cache_type = REGCACHE_RBTREE,
+ };
+ EXPORT_SYMBOL(bme680_regmap_config);
+ 
+@@ -316,6 +330,10 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
+ 	s64 var1, var2, var3;
+ 	s16 calc_temp;
+ 
++	/* If the calibration is invalid, attempt to reload it */
++	if (!calib->par_t2)
++		bme680_read_calib(data, calib);
++
+ 	var1 = (adc_temp >> 3) - (calib->par_t1 << 1);
+ 	var2 = (var1 * calib->par_t2) >> 11;
+ 	var3 = ((var1 >> 1) * (var1 >> 1)) >> 12;
+@@ -583,8 +601,7 @@ static int bme680_gas_config(struct bme680_data *data)
+ 	return ret;
+ }
+ 
+-static int bme680_read_temp(struct bme680_data *data,
+-			    int *val, int *val2)
++static int bme680_read_temp(struct bme680_data *data, int *val)
+ {
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+@@ -617,10 +634,9 @@ static int bme680_read_temp(struct bme680_data *data,
+ 	 * compensate_press/compensate_humid to get compensated
+ 	 * pressure/humidity readings.
+ 	 */
+-	if (val && val2) {
+-		*val = comp_temp;
+-		*val2 = 100;
+-		return IIO_VAL_FRACTIONAL;
++	if (val) {
++		*val = comp_temp * 10; /* Centidegrees to millidegrees */
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return ret;
+@@ -635,7 +651,7 @@ static int bme680_read_press(struct bme680_data *data,
+ 	s32 adc_press;
+ 
+ 	/* Read and compensate temperature to get a reading of t_fine */
+-	ret = bme680_read_temp(data, NULL, NULL);
++	ret = bme680_read_temp(data, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -668,7 +684,7 @@ static int bme680_read_humid(struct bme680_data *data,
+ 	u32 comp_humidity;
+ 
+ 	/* Read and compensate temperature to get a reading of t_fine */
+-	ret = bme680_read_temp(data, NULL, NULL);
++	ret = bme680_read_temp(data, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -761,7 +777,7 @@ static int bme680_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-			return bme680_read_temp(data, val, val2);
++			return bme680_read_temp(data, val);
+ 		case IIO_PRESSURE:
+ 			return bme680_read_press(data, val, val2);
+ 		case IIO_HUMIDITYRELATIVE:
+@@ -867,8 +883,28 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct bme680_data *data;
++	unsigned int val;
+ 	int ret;
+ 
++	ret = regmap_write(regmap, BME680_REG_SOFT_RESET,
++			   BME680_CMD_SOFTRESET);
++	if (ret < 0) {
++		dev_err(dev, "Failed to reset chip\n");
++		return ret;
++	}
++
++	ret = regmap_read(regmap, BME680_REG_CHIP_ID, &val);
++	if (ret < 0) {
++		dev_err(dev, "Error reading chip ID\n");
++		return ret;
++	}
++
++	if (val != BME680_CHIP_ID_VAL) {
++		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
++				val, BME680_CHIP_ID_VAL);
++		return -ENODEV;
++	}
++
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+index 06d4be5..cfc4449 100644
+--- a/drivers/iio/chemical/bme680_i2c.c
++++ b/drivers/iio/chemical/bme680_i2c.c
+@@ -23,8 +23,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+ {
+ 	struct regmap *regmap;
+ 	const char *name = NULL;
+-	unsigned int val;
+-	int ret;
+ 
+ 	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
+ 	if (IS_ERR(regmap)) {
+@@ -33,25 +31,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_I2C,
+-			   BME680_CMD_SOFTRESET);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Failed to reset chip\n");
+-		return ret;
+-	}
+-
+-	ret = regmap_read(regmap, BME680_REG_CHIP_I2C_ID, &val);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Error reading I2C chip ID\n");
+-		return ret;
+-	}
+-
+-	if (val != BME680_CHIP_ID_VAL) {
+-		dev_err(&client->dev, "Wrong chip ID, got %x expected %x\n",
+-				val, BME680_CHIP_ID_VAL);
+-		return -ENODEV;
+-	}
+-
+ 	if (id)
+ 		name = id->name;
+ 
+diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+index c9fb05e..e130715 100644
+--- a/drivers/iio/chemical/bme680_spi.c
++++ b/drivers/iio/chemical/bme680_spi.c
+@@ -11,28 +11,94 @@
+ 
+ #include "bme680.h"
+ 
++struct bme680_spi_bus_context {
++	struct spi_device *spi;
++	u8 current_page;
++};
++
++/*
++ * In SPI mode there are only 7 address bits, a "page" register determines
++ * which part of the 8-bit range is active. This function looks at the address
++ * and writes the page selection bit if needed
++ */
++static int bme680_regmap_spi_select_page(
++	struct bme680_spi_bus_context *ctx, u8 reg)
++{
++	struct spi_device *spi = ctx->spi;
++	int ret;
++	u8 buf[2];
++	u8 page = (reg & 0x80) ? 0 : 1; /* Page "1" is low range */
++
++	if (page == ctx->current_page)
++		return 0;
++
++	/*
++	 * Data sheet claims we're only allowed to change bit 4, so we must do
++	 * a read-modify-write on each and every page select
++	 */
++	buf[0] = BME680_REG_STATUS;
++	ret = spi_write_then_read(spi, buf, 1, buf + 1, 1);
++	if (ret < 0) {
++		dev_err(&spi->dev, "failed to set page %u\n", page);
++		return ret;
++	}
++
++	buf[0] = BME680_REG_STATUS;
++	if (page)
++		buf[1] |= BME680_SPI_MEM_PAGE_BIT;
++	else
++		buf[1] &= ~BME680_SPI_MEM_PAGE_BIT;
++
++	ret = spi_write(spi, buf, 2);
++	if (ret < 0) {
++		dev_err(&spi->dev, "failed to set page %u\n", page);
++		return ret;
++	}
++
++	ctx->current_page = page;
++
++	return 0;
++}
++
+ static int bme680_regmap_spi_write(void *context, const void *data,
+ 				   size_t count)
+ {
+-	struct spi_device *spi = context;
++	struct bme680_spi_bus_context *ctx = context;
++	struct spi_device *spi = ctx->spi;
++	int ret;
+ 	u8 buf[2];
+ 
+ 	memcpy(buf, data, 2);
++
++	ret = bme680_regmap_spi_select_page(ctx, buf[0]);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * The SPI register address (= full register address without bit 7)
+ 	 * and the write command (bit7 = RW = '0')
+ 	 */
+ 	buf[0] &= ~0x80;
+ 
+-	return spi_write_then_read(spi, buf, 2, NULL, 0);
++	return spi_write(spi, buf, 2);
+ }
+ 
+ static int bme680_regmap_spi_read(void *context, const void *reg,
+ 				  size_t reg_size, void *val, size_t val_size)
+ {
+-	struct spi_device *spi = context;
++	struct bme680_spi_bus_context *ctx = context;
++	struct spi_device *spi = ctx->spi;
++	int ret;
++	u8 addr = *(const u8 *)reg;
++	u8 addr7;
++
++	ret = bme680_regmap_spi_select_page(ctx, addr);
++	if (ret)
++		return ret;
+ 
+-	return spi_write_then_read(spi, reg, reg_size, val, val_size);
++	addr |= 0x80; /* bit7 = RW = '1' */
++
++	return spi_write_then_read(spi, &addr, 1, val, val_size);
+ }
+ 
+ static struct regmap_bus bme680_regmap_bus = {
+@@ -45,8 +111,8 @@ static int bme680_regmap_spi_read(void *context, const void *reg,
+ static int bme680_spi_probe(struct spi_device *spi)
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct bme680_spi_bus_context *bus_context;
+ 	struct regmap *regmap;
+-	unsigned int val;
+ 	int ret;
+ 
+ 	spi->bits_per_word = 8;
+@@ -56,45 +122,21 @@ static int bme680_spi_probe(struct spi_device *spi)
+ 		return ret;
+ 	}
+ 
++	bus_context = devm_kzalloc(&spi->dev, sizeof(*bus_context), GFP_KERNEL);
++	if (!bus_context)
++		return -ENOMEM;
++
++	bus_context->spi = spi;
++	bus_context->current_page = 0xff; /* Undefined on warm boot */
++
+ 	regmap = devm_regmap_init(&spi->dev, &bme680_regmap_bus,
+-				  &spi->dev, &bme680_regmap_config);
++				  bus_context, &bme680_regmap_config);
+ 	if (IS_ERR(regmap)) {
+ 		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+ 				(int)PTR_ERR(regmap));
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_SPI,
+-			   BME680_CMD_SOFTRESET);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "Failed to reset chip\n");
+-		return ret;
+-	}
+-
+-	/* after power-on reset, Page 0(0x80-0xFF) of spi_mem_page is active */
+-	ret = regmap_read(regmap, BME680_REG_CHIP_SPI_ID, &val);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "Error reading SPI chip ID\n");
+-		return ret;
+-	}
+-
+-	if (val != BME680_CHIP_ID_VAL) {
+-		dev_err(&spi->dev, "Wrong chip ID, got %x expected %x\n",
+-				val, BME680_CHIP_ID_VAL);
+-		return -ENODEV;
+-	}
+-	/*
+-	 * select Page 1 of spi_mem_page to enable access to
+-	 * to registers from address 0x00 to 0x7F.
+-	 */
+-	ret = regmap_write_bits(regmap, BME680_REG_STATUS,
+-				BME680_SPI_MEM_PAGE_BIT,
+-				BME680_SPI_MEM_PAGE_1_VAL);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "failed to set page 1 of spi_mem_page\n");
+-		return ret;
+-	}
+-
+ 	return bme680_core_probe(&spi->dev, regmap, id->name);
+ }
+ 
+-- 
+1.9.1
+
