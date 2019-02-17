@@ -6,23 +6,23 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C49EEC10F09
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Feb 2019 14:28:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F064BC10F09
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Feb 2019 14:28:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9C1EC217F5
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Feb 2019 14:28:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8F20217F5
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Feb 2019 14:28:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727806AbfBQO2X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Feb 2019 09:28:23 -0500
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:38699 "EHLO
+        id S1727499AbfBQO2U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Feb 2019 09:28:20 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:60931 "EHLO
         relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727727AbfBQO2W (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Feb 2019 09:28:22 -0500
+        with ESMTP id S1727634AbfBQO2T (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Feb 2019 09:28:19 -0500
 X-Originating-IP: 91.192.165.7
 Received: from pc.localdomain (unknown [91.192.165.7])
         (Authenticated sender: contact@artur-rojek.eu)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id EC8621BF204;
-        Sun, 17 Feb 2019 14:28:17 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id D46721BF203;
+        Sun, 17 Feb 2019 14:28:15 +0000 (UTC)
 From:   Artur Rojek <contact@artur-rojek.eu>
 To:     Sebastian Reichel <sre@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -32,9 +32,9 @@ Cc:     linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Paul Cercueil <paul@crapouillou.net>,
         Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH 4/7] dt-bindings: power: supply: Add docs for Ingenic JZ47xx SoCs battery.
-Date:   Sun, 17 Feb 2019 15:29:13 +0100
-Message-Id: <20190217142914.17433-4-contact@artur-rojek.eu>
+Subject: [PATCH 3/7] dt-bindings: power: supply: Add voltage-max-design-microvolt property
+Date:   Sun, 17 Feb 2019 15:29:12 +0100
+Message-Id: <20190217142914.17433-3-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190217142914.17433-1-contact@artur-rojek.eu>
 References: <20190217142914.17433-1-contact@artur-rojek.eu>
@@ -45,51 +45,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the ingenic-battery driver, used on JZ47xx SoCs.
+Add documentation for the "voltage-max-design-microvolt" property.
 
 Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 ---
- .../bindings/power/supply/ingenic,battery.txt | 31 +++++++++++++++++++
- 1 file changed, 31 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
+ Documentation/devicetree/bindings/power/supply/battery.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
-new file mode 100644
-index 000000000000..66430bf73815
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
-@@ -0,0 +1,31 @@
-+* Ingenic JZ47xx battery bindings
-+
-+Required properties:
-+
-+- compatible: Must be "ingenic,jz4740-battery".
-+- io-channels: phandle and IIO specifier pair to the IIO device.
-+  Format described in iio-bindings.txt.
-+- monitored-battery: phandle to a "simple-battery" compatible node.
-+
-+The "monitored-battery" property must be a phandle to a node using the format
-+described in battery.txt, with the following properties being required:
-+
-+- voltage-min-design-microvolt: Drained battery voltage.
-+- voltage-max-design-microvolt: Fully charged battery voltage.
-+
-+Example:
-+
-+#include <dt-bindings/iio/adc/ingenic,adc.h>
-+
-+simple_battery: battery {
-+	compatible = "simple-battery";
-+	voltage-min-design-microvolt = <3600000>;
-+	voltage-max-design-microvolt = <4200000>;
-+};
-+
-+ingenic_battery {
-+	compatible = "ingenic,jz4740-battery";
-+	io-channels = <&adc INGENIC_ADC_BATTERY>;
-+	io-channel-names = "battery";
-+	monitored-battery = <&simple_battery>;
-+};
+diff --git a/Documentation/devicetree/bindings/power/supply/battery.txt b/Documentation/devicetree/bindings/power/supply/battery.txt
+index 89871ab8c704..5c913d4cf36c 100644
+--- a/Documentation/devicetree/bindings/power/supply/battery.txt
++++ b/Documentation/devicetree/bindings/power/supply/battery.txt
+@@ -16,6 +16,7 @@ Required Properties:
+ 
+ Optional Properties:
+  - voltage-min-design-microvolt: drained battery voltage
++ - voltage-max-design-microvolt: fully charged battery voltage
+  - energy-full-design-microwatt-hours: battery design energy
+  - charge-full-design-microamp-hours: battery design capacity
+  - precharge-current-microamp: current for pre-charge phase
+@@ -48,6 +49,7 @@ Example:
+ 	bat: battery {
+ 		compatible = "simple-battery";
+ 		voltage-min-design-microvolt = <3200000>;
++		voltage-max-design-microvolt = <4200000>;
+ 		energy-full-design-microwatt-hours = <5290000>;
+ 		charge-full-design-microamp-hours = <1430000>;
+ 		precharge-current-microamp = <256000>;
 -- 
 2.20.1
 
