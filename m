@@ -2,103 +2,162 @@ Return-Path: <SRS0=AGAg=QZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5407AC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:23:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AB06C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 19:36:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2368D217F5
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:23:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4BAA02177E
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 19:36:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D4Z4Peqm"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sro6cm8L"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391099AbfBRRWz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 12:22:55 -0500
-Received: from mail-qk1-f195.google.com ([209.85.222.195]:33059 "EHLO
-        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728216AbfBRRWx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 12:22:53 -0500
-Received: by mail-qk1-f195.google.com with SMTP id x9so10433159qkf.0;
-        Mon, 18 Feb 2019 09:22:52 -0800 (PST)
+        id S1727276AbfBRTgE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 14:36:04 -0500
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:40144 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726941AbfBRTgE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 14:36:04 -0500
+Received: by mail-ot1-f68.google.com with SMTP id s5so30200446oth.7;
+        Mon, 18 Feb 2019 11:36:03 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8f/RQxPk8w5vx1KMybhUvbJejAVoWVDWzs9ol8JQZ1c=;
-        b=D4Z4PeqmpMSIfmTDLPAvrbgJL/ta41Rym3oJMFZnKCdciMf5kXHCjoqqNvSnR4yMBv
-         du07+VMTeIerJZ2HR5dg4HmIiDLSCID/ZHyYoSVoQhRSFa90YuUHpDmnISkuE0zDMFDj
-         t5Nf2021PE0wglo8fXEQdq7czIdS+IDGY7tzh3wb4NZ5fwmWKD9Tr3mFXK2M8AsaKm+r
-         xLp5F15Jcgjwih76PL2d1k8HyU9TYgfen9aWaPq8hhcd60HuRMLYIj302hMO7bQMDct8
-         VPtGZePJPsV/MzxYohqfWdKxFgqX63zOgvtpzlu1Y51E3+nSqrRW9Hl+ZInMF3R/sSOH
-         6KEQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=nOgLOSyhNJEm2kI71BkED8gf/b8v+/2mCm5wJ4HWDVY=;
+        b=Sro6cm8LtEaiFOo+6rddm/BD3UPAQfuGAdGdB+0Xy0cOxDAmJXurYYbS/EzdpUdMD4
+         o+Mpjo6dM2wFzrs6qIxhW/fKymcHzJEAlVa+CE2pFcxEr4NaD4NJ0qv8mN1rI/Zc/3Po
+         JQmSzoN/0iCGRvxVzvEOEG4Ze6MTA8SBO36/ecEwu7bjlLSpKZklr7FAFKVbRGi1HfGm
+         +24XoWcaJu9ieNN+8fAs3T96R316PSglz/y9jT8kVdQPM5R9829eK0dLTb0Sz8efX7PE
+         o3+Bi2yz2EkEz4BYkj48Zql1eQRSQNgRir+9l2tNSQ/kHpBtLE96zDeo4j+EPtr6y2ll
+         +3pA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8f/RQxPk8w5vx1KMybhUvbJejAVoWVDWzs9ol8JQZ1c=;
-        b=kwYCzF2DFoRtbyILf+w7yG47cF2V1cnl0ngsS5SthFbGFy1n8O/7lDEk2PmOgIEBcA
-         6pJZ4zku5oLUPxGark267s2260nGT2DjU1xvy3eGyV3Qqq63PsUUoA+ky7xpPek+85VJ
-         bc2RjsqjFtmz2yFALFDgTogoEyD/iTE4hXurlUlGkOqtFm4s3pXosrqxtciJF6t75y8R
-         MqHvQuJyAWk0abcwHSbZiz2I+hfY+lCxh+6LCSF3cUycHVBWje29cNfEJ7h6gU4aXxAG
-         vppSkxgWK7UOHpItsBVwP8hKrzF/Pu0C7QN5C17o6U+6QAs7AxXXXgc8KlKkZRuOyw+p
-         siRQ==
-X-Gm-Message-State: AHQUAuaEAB9kMCSwzDp5NmztoQtcrb1qcolaDTSIHsfmmzNPuGEz74g4
-        tsrP025C5x05IjH41Xew1c0=
-X-Google-Smtp-Source: AHgI3IbPOfnDVF554JcRsmLOcrYo+jAVM2pH8PtN413oi8Cl1ObCViKRfQ78/aM+BOQ3qU2ZlPW0PQ==
-X-Received: by 2002:a37:6a44:: with SMTP id f65mr17961115qkc.244.1550510572615;
-        Mon, 18 Feb 2019 09:22:52 -0800 (PST)
-Received: from wall-e.ime.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id v18sm6525275qkj.13.2019.02.18.09.22.50
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Feb 2019 09:22:52 -0800 (PST)
-From:   Lucas Oshiro <lucasseikioshiro@gmail.com>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Anderson Reis <andersonreisrosa@gmail.com>
-Subject: [PATCH 1/5] iio:potentiostat:lmp91000: remove unnecessary parentheses
-Date:   Mon, 18 Feb 2019 14:22:32 -0300
-Message-Id: <20190218172236.7781-2-lucasseikioshiro@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
-References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=nOgLOSyhNJEm2kI71BkED8gf/b8v+/2mCm5wJ4HWDVY=;
+        b=tabW2jisn8pUiDqojIxO4CF0kzGWDwlfWyIs+xy48BaTSUw4aXiRC6/IALU0AvXvjk
+         c07lLRV7ZTFWp/2numNVcDwYqTR4o7x1vgHci1TzLF3kLIbjmB+wRDMETtlw3Gkagza7
+         A94eqy9vLuVoYEFjfn8S5NQQxz/jaG0LpVhmUT2jJWKutU3RyfqMCgfAL8swfM8jKV/3
+         3UHP91Uw6p68oelxKNWmQirzo11P1q6BwMxCpmbiQvh0qJ8ymo3U1mG/9W2IGpGU6Rab
+         9avsl1C/lgNFoX7aXGZapVhehDPAP4y94sMCyCd0uhP5r4pXnm7NjTdb37quF6NhEaiu
+         s7ZA==
+X-Gm-Message-State: AHQUAube6pc9rnUko5k6/Z4zgCtQGsvB7752bm5gV1rayVr1zy19dZyO
+        jk+MJPuoJLrxg8sfm0Uc/x7tSdDmEYau3QcK0fk=
+X-Google-Smtp-Source: AHgI3IbntwkE3tX0v9iyqFrFRQdJ+FiY43O2mHD08CNZ1rn7c5F4BROEblNkVCxoZ6qag0m2Mzz3ushvlvrtuh9rElw=
+X-Received: by 2002:aca:37d5:: with SMTP id e204mr287472oia.134.1550518563343;
+ Mon, 18 Feb 2019 11:36:03 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <89716a4433cd83aea5f4200359b184b0ee2cc8bd.1549828313.git.bobbyeshleman@gmail.com>
+ <CAGngYiV6zm12XhB6WChSXNndLMSJ3e4NAB=BLq_mrXtWLKEruQ@mail.gmail.com>
+ <20190211212734.01909e62@archlinux> <CAGngYiV_6MzKOSomAWs1znp8ThPRAL-e2CVZfn+ZHZOq8DiD0A@mail.gmail.com>
+ <20190212204730.16864802@archlinux> <CAGngYiVGjPSnVfnJhR+0YJg+qOzMQfJM+Cd9ZRe===9pk1_3pA@mail.gmail.com>
+ <20190218151606.00000d10@huawei.com>
+In-Reply-To: <20190218151606.00000d10@huawei.com>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Mon, 18 Feb 2019 14:35:51 -0500
+Message-ID: <CAGngYiVQLwFxNJcCCH3byL=_p=L_BjMHJ1kCbjR8XkOF2mN3Ew@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: light: Add driver for ap3216c
+To:     Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Robert Eshleman <bobbyeshleman@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove unnecessary parentheses on line 116, and solve these checkpatch.pl
-CHECKs:
+Hi Jonathan,
 
-- lmp91000.c:116: CHECK: Unnecessary parentheses around 'state != channel'
-- lmp91000.c:116: CHECK: Unnecessary parentheses around 'channel == LMP91000_REG_MODECN_TEMP'
+Thanks again for your clear and extensive feedback !
 
-Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
-Signed-off-by: Anderson Reis <andersonreisrosa@gmail.com>
----
- drivers/iio/potentiostat/lmp91000.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Mon, Feb 18, 2019 at 10:16 AM Jonathan Cameron
+<jonathan.cameron@huawei.com> wrote:
+>
+> I suspect that would break lots of devices if it happened, but
+> fair enough that explicit might be good.  One option would be
+> to document clearly in regmap the requirement that bulk read is ordered.
+>
 
-diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-index 90e895adf997..03d277621861 100644
---- a/drivers/iio/potentiostat/lmp91000.c
-+++ b/drivers/iio/potentiostat/lmp91000.c
-@@ -113,7 +113,7 @@ static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
- 		return -EINVAL;
- 
- 	/* delay till first temperature reading is complete */
--	if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
-+	if (state != channel && channel == LMP91000_REG_MODECN_TEMP)
- 		usleep_range(3000, 4000);
- 
- 	data->chan_select = channel != LMP91000_REG_MODECN_3LEAD;
--- 
-2.20.1
+Yes, it would be interesting to hear the regmap people's opinion on ordering.
+In the mean time, we can make this explicit.
+Re-reading the thread, I can also see that Peter Meerwald-Stadler was first
+to spot this race condition.
 
+> What we need to guarantee is:
+>
+> 1) If the sensor reads on an occasion where the threshold is passed, we do not miss the event
+>    The event is the threshold being passed, not the existence of the reading, or how many
+>    readings etc.
+>
+> 2) A data read will result in a value.  There is no guarantee that it will match with the
+>    event.  All manner of delays could result in new data having occurred before that read.
+>
+
+My feedback was based on two incorrect assumptions:
+a. the interrupt fires whenever new PS/ALS values become available (wrong)
+b. there are strict consistency guarantees between the THRESH event, and what
+userspace will read out (also wrong)
+
+Taking that into account, I am 100% in agreement with your other comments.
+Thank you so much for the explanation!
+
+There is one exception, though:
+
+> > +static int ap3216c_write_event_config(struct iio_dev *indio_dev,
+> > +                                    const struct iio_chan_spec *chan,
+> > +                                    enum iio_event_type type,
+> > +                                    enum iio_event_direction dir, int state)
+> > +{
+> > +       struct ap3216c_data *data = iio_priv(indio_dev);
+> > +
+> > +       switch (chan->type) {
+> > +       case IIO_LIGHT:
+> > +               data->als_thresh_en = state;
+> > +               return 0;
+> > +
+> > +       case IIO_PROXIMITY:
+> > +               data->prox_thresh_en = state;
+> > +               return 0;
+> > +
+> > +       default:
+> > +               return -EINVAL;
+> > +       }
+> > +static irqreturn_t ap3216c_event_handler(int irq, void *p)
+> > +{
+> > + if ((status & AP3216C_INT_STATUS_PS_MASK) && data->prox_thresh_en)
+> > + iio_push_event(...);
+> > +
+> >
+> > I think this may not work as intended. One thread (userspace) writes
+> > a variable, another thread (threaded irq handler) checks it. but there
+> > is no explicit or implicit memory barrier. So when userspace activates
+> > thresholding, it may take a long time for the handler to 'see' it !
+>
+> Yes.  But if userspace took a while to get around to writing this value,
+> it would also take longer...  It's not time critical exactly when you
+> enable the event.  One can create cases where someone might
+> care, but they are pretty obscure.
+>
+
+Are you sure? I suspect that it's perfectly possible for the threaded irq
+handler not to 'see' the store to (als|prox)_thresh_en for a _very_ long time.
+
+AFAIK only a memory barrier will guarantee that the handler 'sees' the store
+right away. A lock will do - it issues an implicit memory barrier.
+
+Most drivers use a lock to guarantee visibility. There are a few drivers that
+resort to explicit barriers to make a flag visible from one thread to another.
+
+E.g. search for mb() or wmb() in:
+drivers/input/keyboard/matrix_keypad.c
+drivers/input/misc/cm109.c
+drivers/input/misc/yealink.c
