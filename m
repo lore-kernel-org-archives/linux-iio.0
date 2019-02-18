@@ -2,84 +2,66 @@ Return-Path: <SRS0=AGAg=QZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 571EEC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 19:39:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85411C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 21:01:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C88D2177E
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 19:39:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550518752;
-	bh=f2rWkJR+eJzuGqJqv1Up4F5qctNljHuU5YaRTwS1naQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=jO36wV1g06PbHb3E/5DOvGjsPVk5gG8KnEMw7DPqYZxmW5OZ1OGmnWb19mEb0bjHy
-	 Ara2ZNRmSLoV2od8gMYXy4MQztkFQMDCKo88/MFoMHsLgEOOGoSXBwm/SrDxyYhS+H
-	 5QbdVN0Ech+qQ4RdwFPYA2Iwyg/3eNCZ6rAlrZ0g=
+	by mail.kernel.org (Postfix) with ESMTP id 46AD12176F
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 21:01:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725770AbfBRTjL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 14:39:11 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:37600 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfBRTjL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 14:39:11 -0500
-Received: by mail-ot1-f68.google.com with SMTP id b3so30224090otp.4;
-        Mon, 18 Feb 2019 11:39:11 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9FUx/CZlt0xCIU204slR3UemaF12G534vBVyxna6+jc=;
-        b=UEMjx4VLm0DOUke7A1rGp2WBBsYXNkXc5pBfdLEmL/Ozukq5Dh/TkfqSNb5m//5dS/
-         Z9ji3nxCwWiR310CuCtDVRoCoGDWX6Cv6e+kMMz/IUvN8sVEtuyZrL73CDZVAj0ML2q2
-         y8hVLexp/Wwds9tZdpXzjyUEQ3P+j2KLTh0DUXq89EPV6G87jsVxCVTtEsz1W3JR5AZ/
-         4pflpxHkmPxd0XHg1+m8Uxj2ZnQ9dYlCiS+/+qxudotK9p4xhm+UaCpUlZ/Sohkg8fjV
-         3RYHu4MA1TOAwTu0h0KPBPyOnlhMj8eFrlFohHlYQU0mKPNFcw3NgWwmpELTj0ga4Pzz
-         /k4g==
-X-Gm-Message-State: AHQUAuZUk+dTgKTkNzK9SugkXM6RwdA6Pd5Pygg+CagKmKTMyEh6KUS7
-        auogg7rE2/6OhCrYiKNW+g==
-X-Google-Smtp-Source: AHgI3IZvYTVTmsZRudp5UupScuzFzD1LZyFSN5lnVVUSQpvKkIA0CWp+nf8S77tehTud55oM2UUFLw==
-X-Received: by 2002:a9d:1a7:: with SMTP id e36mr14748889ote.270.1550518750744;
-        Mon, 18 Feb 2019 11:39:10 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id n187sm2966177oia.34.2019.02.18.11.39.09
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 18 Feb 2019 11:39:09 -0800 (PST)
-Date:   Mon, 18 Feb 2019 13:39:08 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rui Miguel Silva <rui.silva@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Rui Miguel Silva <rui.silva@linaro.org>
-Subject: Re: [PATCH v2 1/5] iio: gyro: add DT bindings to fxas21002
-Message-ID: <20190218193908.GA25214@bogus>
-References: <20190205174333.17672-1-rui.silva@linaro.org>
- <20190205174333.17672-2-rui.silva@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190205174333.17672-2-rui.silva@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1729911AbfBRVB1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 16:01:27 -0500
+Received: from smtprelay0022.hostedemail.com ([216.40.44.22]:43696 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729486AbfBRVB1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 16:01:27 -0500
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay03.hostedemail.com (Postfix) with ESMTP id EB3DF837F24C;
+        Mon, 18 Feb 2019 21:01:25 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: comb75_6396683d9720e
+X-Filterd-Recvd-Size: 1640
+Received: from XPS-9350.home (unknown [47.151.153.53])
+        (Authenticated sender: joe@perches.com)
+        by omf07.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 18 Feb 2019 21:01:24 +0000 (UTC)
+Message-ID: <d5d88a5acc984554240047944cb3071371025085.camel@perches.com>
+Subject: Re: [PATCH 5/5] iio:potentiostat:lmp91000: add '\n' on dev_err
+From:   Joe Perches <joe@perches.com>
+To:     Lucas Oshiro <lucasseikioshiro@gmail.com>, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com,
+        Anderson Reis <andersonreisrosa@gmail.com>
+Date:   Mon, 18 Feb 2019 13:01:23 -0800
+In-Reply-To: <20190218172236.7781-6-lucasseikioshiro@gmail.com>
+References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+         <20190218172236.7781-6-lucasseikioshiro@gmail.com>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.30.1-1build1 
+Mime-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue,  5 Feb 2019 17:43:29 +0000, Rui Miguel Silva wrote:
-> Add device tree bindings for the FXAS21002 gyroscope.
-> 
-> Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
-> ---
->  .../bindings/iio/gyroscope/fxas2100x.txt       | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
-> 
+On Mon, 2019-02-18 at 14:22 -0300, Lucas Oshiro wrote:
+> Add missing '\n' at the end of dev_err message on line 215.
+[]
+> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+[]
+> @@ -212,7 +212,7 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+>  	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+>  	if (ret) {
+>  		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
+> -			dev_err(dev, "no ti,tia-gain-ohm defined");
+> +			dev_err(dev, "no ti,tia-gain-ohm defined\n");
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Perhaps a copy/paste error as the test is for
+external-tia-resistor and not tia-gain-ohm
+
+
