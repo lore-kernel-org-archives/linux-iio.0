@@ -4,55 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC7D0C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DB0C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A2EE020851
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 86ABE20851
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="1EEQllAK"
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="lPdVLPON"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731473AbfBROYg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 09:24:36 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:42414 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389782AbfBRODz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:55 -0500
-Received: by mail-ed1-f66.google.com with SMTP id j89so4517479edb.9
-        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:53 -0800 (PST)
+        id S2389726AbfBRODx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 09:03:53 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:32771 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389759AbfBRODw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:52 -0500
+Received: by mail-ed1-f67.google.com with SMTP id a2so13947289edi.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=essensium-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=y8ELJQgbv7DeZTb+dT/figIxEA2QKkZyGqslXLAy5pw=;
-        b=1EEQllAKYnQmKGyF7FtBV8s+Yo0LgZ+xETEnQoTbs89uCfBgFIQ0qHbAaUYBZBPsKS
-         fwFn/5j6UMtojlsPU7N8YLaHy18t/D6CuMvAXYNDRIUtQk/eCiX9LSKmj6GwJCC3WR8l
-         mchRPF0/tfIt1ap/CB6BXikspkpVKxs3SSEdLUlDWBBPnYeez50q7QhiUYLNud3XA+Le
-         LByS6/3fi9R3gdcpvfOaFHw0k5Ivdg7qqhSklk5ULNmLTmb/AgDfU2BqomRkWEATbXc/
-         M15uee4hiqq4EopIi4zU3U84DDY781Duvz2ek9XRndzF0Rj6m6jcRRQcLG84cdIaKg84
-         w1lw==
+        bh=kDOvI7KHRas/e++nV1MAoAVesXibxebovw6lFI3t2LQ=;
+        b=lPdVLPONMX15tVFEdOGTWdO0qWE/4jq/BAze0ALMLuA0nMhYdTscqDSDouBdQJMKI+
+         9P9j1Oo5wGvSlAFqwJ5MbsxrTSd68gxajlZug9ZW4tzsNll+n461GjbggeOeqUQpgDm7
+         W1pyYQRMbpuwsNn1TXoxIgHxqzMBLkEm6z/Mm2OFJDHKy3mdBVweK2p66YcDrrpeiyKy
+         popuvplA8CMeHuToUOieTP7qkuHWUthsRGN5rVdQwprYyfywzPhUboAT3lTaCfKDFUXD
+         GZCmTGPgJsVS9ZBLdp8t6SAGMuf9SNrpjtxDkSgWKiN8DRRDgz3mzZ/37doMnbxznzr/
+         OTcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=y8ELJQgbv7DeZTb+dT/figIxEA2QKkZyGqslXLAy5pw=;
-        b=Odmu5XTmolmGppQI0CMoUzIDac61v/Gax2owHcywUg32649UFbPkNUTtyq8ycYZ1K7
-         GfmuDsaxIgldoWMOlpfDCg6GP+KGzL30mCK4fSpWJq5rTt1wBS8Hg7uq7DAMHpHQRN7T
-         qm4T3gIMboT9i/X8Iy/X1xCfDeEMa5M1Q2UIuFZzNWpr27vEXUm9PV/V8qUAmQzV5CXx
-         mr/J8qm+Ql/TnTbIkFHECGuHr/zrquCtI9rgv4PLZR5y1AIMircmv5wo0B8G5AFo2GbV
-         ZrN1SsPKSf7AwFUBzxuhkXG3NK07eaWRRMf+yhjk9AxDRInsn3pIxY3uslTGUWFvECw5
-         2Pww==
-X-Gm-Message-State: AHQUAuZ1FcWxFSNqKIMTLCYHwg3uOzgEXvpwarxGqH4ZI4PGMTJD8gcy
-        PxZ1IIMOn5fU26YJ50S1h8Ai+g==
-X-Google-Smtp-Source: AHgI3IYrC+euDCA6+19B7LQzEHnG2fbshumRDoikpwE8u2sTiM5Yfqae37ry7AmGJn2cYvKCWgnr7w==
-X-Received: by 2002:a50:94d6:: with SMTP id t22mr19337308eda.232.1550498632701;
-        Mon, 18 Feb 2019 06:03:52 -0800 (PST)
+        bh=kDOvI7KHRas/e++nV1MAoAVesXibxebovw6lFI3t2LQ=;
+        b=IDZdy40S+oJq4dhQN/HOxuAz0l5NIfjsHwhJxhJge2LAMD+dVLllavStEOgYXYVOHY
+         tZGfAGpW9rPDZxJH8WKHLhxgc/R++NHru03mfVERiJMbCY+E2WOTwM7navT+llJomslS
+         jfTjvZqTtRW7JyzHlLwm8zZO5bd6OvgHgDRTLAea5TaOTYQzyypdtR9G+ivKkLqiJtS4
+         rZfKmXDDyeX2y647xKqPxopiPtuduq9IidJNTQuUzBhhMiAU7ZbE45gZzCk4If5j8RSD
+         MP0BC/CviuB6n+L71BJZpouFxvS8Si4qQG737HxBVMkLGrauRh/X3bz2yiZxJIUIT97s
+         53aQ==
+X-Gm-Message-State: AHQUAuayCWlfX4VGAvWUQ4Ijkbj23hc4z/MB7vZfxW0q2dhYTa8kA9t9
+        cmtv6mlYAowEVG0FGwk5NZUFHg==
+X-Google-Smtp-Source: AHgI3IZ8OLgKjAeX/g4O2478yycvuHIzPgfc0uD5abEOkLT1aY3Iky8/UzyD7nuf/AReqmoOjyDzEw==
+X-Received: by 2002:a17:906:791:: with SMTP id l17mr13001446ejc.1.1550498630266;
+        Mon, 18 Feb 2019 06:03:50 -0800 (PST)
 Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.51
+        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.49
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Feb 2019 06:03:52 -0800 (PST)
+        Mon, 18 Feb 2019 06:03:49 -0800 (PST)
 From:   Patrick Havelange <patrick.havelange@essensium.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -71,9 +71,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature decoder counter driver
-Date:   Mon, 18 Feb 2019 15:03:18 +0100
-Message-Id: <20190218140321.19166-5-patrick.havelange@essensium.com>
+Subject: [PATCH 3/8] drivers/clocksource: timer-fsl-ftm: use common header for FlexTimer #defines
+Date:   Mon, 18 Feb 2019 15:03:16 +0100
+Message-Id: <20190218140321.19166-3-patrick.havelange@essensium.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190218140321.19166-1-patrick.havelange@essensium.com>
 References: <20190218140321.19166-1-patrick.havelange@essensium.com>
@@ -82,346 +82,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This driver exposes the counter for the quadrature decoder of the
-FlexTimer Module, present in the LS1021A soc.
-
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 ---
- drivers/iio/counter/Kconfig       |  10 +
- drivers/iio/counter/Makefile      |   1 +
- drivers/iio/counter/ftm-quaddec.c | 294 ++++++++++++++++++++++++++++++
- 3 files changed, 305 insertions(+)
- create mode 100644 drivers/iio/counter/ftm-quaddec.c
+ drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
+ 1 file changed, 2 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
-index bf1e559ad7cd..4641cb2e752a 100644
---- a/drivers/iio/counter/Kconfig
-+++ b/drivers/iio/counter/Kconfig
-@@ -31,4 +31,14 @@ config STM32_LPTIMER_CNT
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called stm32-lptimer-cnt.
-+
-+config FTM_QUADDEC
-+	tristate "Flex Timer Module Quadrature decoder driver"
-+	help
-+	  Select this option to enable the Flex Timer Quadrature decoder
-+	  driver.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ftm-quaddec.
-+
- endmenu
-diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
-index 1b9a896eb488..757c1f4196af 100644
---- a/drivers/iio/counter/Makefile
-+++ b/drivers/iio/counter/Makefile
-@@ -6,3 +6,4 @@
- 
- obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
- obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
-+obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
-diff --git a/drivers/iio/counter/ftm-quaddec.c b/drivers/iio/counter/ftm-quaddec.c
-new file mode 100644
-index 000000000000..ca7e55a9ab3f
---- /dev/null
-+++ b/drivers/iio/counter/ftm-quaddec.c
-@@ -0,0 +1,294 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Flex Timer Module Quadrature decoder
-+ *
-+ * This module implements a driver for decoding the FTM quadrature
-+ * of ex. a LS1021A
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/err.h>
-+#include <linux/device.h>
-+#include <linux/platform_device.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/of_address.h>
-+#include <linux/of_irq.h>
-+#include <linux/workqueue.h>
-+#include <linux/swait.h>
-+#include <linux/sched.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mutex.h>
+diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
+index 846d18daf893..e1c34b2f53a5 100644
+--- a/drivers/clocksource/timer-fsl-ftm.c
++++ b/drivers/clocksource/timer-fsl-ftm.c
+@@ -19,20 +19,9 @@
+ #include <linux/of_irq.h>
+ #include <linux/sched_clock.h>
+ #include <linux/slab.h>
 +#include <linux/fsl/ftm.h>
-+
-+struct ftm_quaddec {
-+	struct platform_device *pdev;
-+	void __iomem *ftm_base;
-+	bool big_endian;
-+	struct mutex ftm_quaddec_mutex;
-+};
-+
-+#define HASFLAGS(flag, bits) ((flag & bits) ? 1 : 0)
-+
-+#define DEFAULT_POLL_INTERVAL    100 /* in msec */
-+
-+static void ftm_read(struct ftm_quaddec *ftm, uint32_t offset, uint32_t *data)
-+{
-+	if (ftm->big_endian)
-+		*data = ioread32be(ftm->ftm_base + offset);
-+	else
-+		*data = ioread32(ftm->ftm_base + offset);
-+}
-+
-+static void ftm_write(struct ftm_quaddec *ftm, uint32_t offset, uint32_t data)
-+{
-+	if (ftm->big_endian)
-+		iowrite32be(data, ftm->ftm_base + offset);
-+	else
-+		iowrite32(data, ftm->ftm_base + offset);
-+}
-+
-+/* take mutex
-+ * call ftm_clear_write_protection
-+ * update settings
-+ * call ftm_set_write_protection
-+ * release mutex
-+ */
-+static void ftm_clear_write_protection(struct ftm_quaddec *ftm)
-+{
-+	uint32_t flag;
-+
-+	/* First see if it is enabled */
-+	ftm_read(ftm, FTM_FMS, &flag);
-+
-+	if (flag & FTM_FMS_WPEN) {
-+		ftm_read(ftm, FTM_MODE, &flag);
-+		ftm_write(ftm, FTM_MODE, flag | FTM_MODE_WPDIS);
-+	}
-+}
-+
-+static void ftm_set_write_protection(struct ftm_quaddec *ftm)
-+{
-+	ftm_write(ftm, FTM_FMS, FTM_FMS_WPEN);
-+}
-+
-+static void ftm_reset_counter(struct ftm_quaddec *ftm)
-+{
-+	/* Reset hardware counter to CNTIN */
-+	ftm_write(ftm, FTM_CNT, 0x0);
-+}
-+
-+static void ftm_quaddec_init(struct ftm_quaddec *ftm)
-+{
-+	ftm_clear_write_protection(ftm);
-+
-+	/* Do not write in the region from the CNTIN register through the
-+	 * PWMLOAD register when FTMEN = 0.
-+	 */
-+	ftm_write(ftm, FTM_MODE, FTM_MODE_FTMEN); /* enable FTM */
-+	ftm_write(ftm, FTM_CNTIN, 0x0000);         /* zero init value */
-+	ftm_write(ftm, FTM_MOD, 0xffff);        /* max overflow value */
-+	ftm_write(ftm, FTM_CNT, 0x0);           /* reset counter value */
-+	ftm_write(ftm, FTM_SC, FTM_SC_PS_1);    /* prescale with x1 */
-+	/* Select quad mode */
-+	ftm_write(ftm, FTM_QDCTRL, FTM_QDCTRL_QUADEN);
-+
-+	/* Unused features and reset to default section */
-+	ftm_write(ftm, FTM_POL, 0x0);     /* polarity is active high */
-+	ftm_write(ftm, FTM_FLTCTRL, 0x0); /* all faults disabled */
-+	ftm_write(ftm, FTM_SYNCONF, 0x0); /* disable all sync */
-+	ftm_write(ftm, FTM_SYNC, 0xffff);
-+
-+	/* Lock the FTM */
-+	ftm_set_write_protection(ftm);
-+}
-+
-+static int ftm_quaddec_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-+	uint32_t counter;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ftm_read(ftm, FTM_CNT, &counter);
-+		*val = counter;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static ssize_t ftm_write_reset(struct iio_dev *indio_dev,
-+				uintptr_t private,
-+				struct iio_chan_spec const *chan,
-+				const char *buf, size_t len)
-+{
-+	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-+
-+	/* Only "counter reset" is supported for now */
-+	if (!sysfs_streq(buf, "0")) {
-+		dev_warn(&ftm->pdev->dev, "Reset only accepts '0'\n");
-+		return -EINVAL;
-+	}
-+
-+	ftm_reset_counter(ftm);
-+
-+	return len;
-+}
-+
-+static int ftm_quaddec_get_prescaler(struct iio_dev *indio_dev,
-+					const struct iio_chan_spec *chan)
-+{
-+	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-+	uint32_t scflags;
-+
-+	ftm_read(ftm, FTM_SC, &scflags);
-+
-+	return scflags & FTM_SC_PS_MASK;
-+}
-+
-+static int ftm_quaddec_set_prescaler(struct iio_dev *indio_dev,
-+					const struct iio_chan_spec *chan,
-+					unsigned int type)
-+{
-+	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-+
-+	uint32_t scflags;
-+
-+	mutex_lock(&ftm->ftm_quaddec_mutex);
-+
-+	ftm_read(ftm, FTM_SC, &scflags);
-+
-+	scflags &= ~FTM_SC_PS_MASK;
-+	type &= FTM_SC_PS_MASK; /*just to be 100% sure*/
-+
-+	scflags |= type;
-+
-+	/* Write */
-+	ftm_clear_write_protection(ftm);
-+	ftm_write(ftm, FTM_SC, scflags);
-+	ftm_set_write_protection(ftm);
-+
-+	/* Also resets the counter as it is undefined anyway now */
-+	ftm_reset_counter(ftm);
-+
-+	mutex_unlock(&ftm->ftm_quaddec_mutex);
-+	return 0;
-+}
-+
-+static const char * const ftm_quaddec_prescaler[] = {
-+	"1", "2", "4", "8", "16", "32", "64", "128"
-+};
-+
-+static const struct iio_enum ftm_quaddec_prescaler_en = {
-+	.items = ftm_quaddec_prescaler,
-+	.num_items = ARRAY_SIZE(ftm_quaddec_prescaler),
-+	.get = ftm_quaddec_get_prescaler,
-+	.set = ftm_quaddec_set_prescaler,
-+};
-+
-+static const struct iio_chan_spec_ext_info ftm_quaddec_ext_info[] = {
-+	{
-+		.name = "reset",
-+		.shared = IIO_SEPARATE,
-+		.write = ftm_write_reset,
-+	},
-+	IIO_ENUM("prescaler", IIO_SEPARATE, &ftm_quaddec_prescaler_en),
-+	IIO_ENUM_AVAILABLE("prescaler", &ftm_quaddec_prescaler_en),
-+	{}
-+};
-+
-+static const struct iio_chan_spec ftm_quaddec_channels = {
-+	.type = IIO_COUNT,
-+	.channel = 0,
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+	.ext_info = ftm_quaddec_ext_info,
-+	.indexed = 1,
-+};
-+
-+static const struct iio_info ftm_quaddec_iio_info = {
-+	.read_raw = ftm_quaddec_read_raw,
-+};
-+
-+static int ftm_quaddec_probe(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev;
-+	struct ftm_quaddec *ftm;
-+	int ret;
-+
-+	struct device_node *node = pdev->dev.of_node;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ftm));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	ftm = iio_priv(indio_dev);
-+
-+	platform_set_drvdata(pdev, ftm);
-+
-+	ftm->pdev = pdev;
-+	ftm->big_endian = of_property_read_bool(node, "big-endian");
-+	ftm->ftm_base = of_iomap(node, 0);
-+	if (!ftm->ftm_base)
-+		return -EINVAL;
-+
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &ftm_quaddec_iio_info;
-+	indio_dev->num_channels = 1;
-+	indio_dev->channels = &ftm_quaddec_channels;
-+
-+	ftm_quaddec_init(ftm);
-+
-+	mutex_init(&ftm->ftm_quaddec_mutex);
-+
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-+	if (ret) {
-+		mutex_destroy(&ftm->ftm_quaddec_mutex);
-+		iounmap(ftm->ftm_base);
-+	}
-+	return ret;
-+}
-+
-+static int ftm_quaddec_remove(struct platform_device *pdev)
-+{
-+	struct ftm_quaddec *ftm;
-+	struct iio_dev *indio_dev;
-+
-+	ftm = (struct ftm_quaddec *)platform_get_drvdata(pdev);
-+	indio_dev = iio_priv_to_dev(ftm);
-+	/* This is needed to remove sysfs entries */
-+	devm_iio_device_unregister(&pdev->dev, indio_dev);
-+
-+	ftm_write(ftm, FTM_MODE, 0);
-+
-+	iounmap(ftm->ftm_base);
-+	mutex_destroy(&ftm->ftm_quaddec_mutex);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id ftm_quaddec_match[] = {
-+	{ .compatible = "fsl,ftm-quaddec" },
-+	{},
-+};
-+
-+static struct platform_driver ftm_quaddec_driver = {
-+	.driver = {
-+		.name = "ftm-quaddec",
-+		.owner = THIS_MODULE,
-+		.of_match_table = ftm_quaddec_match,
-+	},
-+	.probe = ftm_quaddec_probe,
-+	.remove = ftm_quaddec_remove,
-+};
-+
-+module_platform_driver(ftm_quaddec_driver);
-+
-+MODULE_LICENSE("GPL");
-+MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com");
-+MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com");
+ 
+-#define FTM_SC		0x00
+-#define FTM_SC_CLK_SHIFT	3
+-#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
+-#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
+-#define FTM_SC_PS_MASK	0x7
+-#define FTM_SC_TOIE	BIT(6)
+-#define FTM_SC_TOF	BIT(7)
+-
+-#define FTM_CNT		0x04
+-#define FTM_MOD		0x08
+-#define FTM_CNTIN	0x4C
+-
+-#define FTM_PS_MAX	7
++#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
+ 
+ struct ftm_clock_device {
+ 	void __iomem *clksrc_base;
 -- 
 2.17.1
 
