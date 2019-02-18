@@ -3,62 +3,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A0C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0340C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:48:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 209572070B
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:48:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BDFDA21736
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:48:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731293AbfBROrz convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 09:47:55 -0500
-Received: from szxga07-in.huawei.com ([45.249.212.35]:41288 "EHLO huawei.com"
+        id S1729676AbfBROs2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 09:48:28 -0500
+Received: from szxga06-in.huawei.com ([45.249.212.32]:55960 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1731769AbfBROrA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 18 Feb 2019 09:47:00 -0500
-Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 7EDED4B7DD1476A1272A;
-        Mon, 18 Feb 2019 22:46:51 +0800 (CST)
-Received: from localhost (10.47.94.189) by DGGEMS411-HUB.china.huawei.com
- (10.3.19.211) with Microsoft SMTP Server id 14.3.408.0; Mon, 18 Feb 2019
- 22:46:48 +0800
-Date:   Mon, 18 Feb 2019 14:46:34 +0000
+        id S1731032AbfBROs2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 18 Feb 2019 09:48:28 -0500
+Received: from DGGEMS410-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id A4431C9523565378E47A;
+        Mon, 18 Feb 2019 22:48:25 +0800 (CST)
+Received: from localhost (10.47.94.189) by DGGEMS410-HUB.china.huawei.com
+ (10.3.19.210) with Microsoft SMTP Server id 14.3.408.0; Mon, 18 Feb 2019
+ 22:48:19 +0800
+Date:   Mon, 18 Feb 2019 14:48:05 +0000
 From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
-CC:     "ardeleanalex@gmail.com" <ardeleanalex@gmail.com>,
-        "rodrigorsdc@gmail.com" <rodrigorsdc@gmail.com>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Ardelean, Alexandru" <Alex.Ardelean@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "rafael.tsuha@usp.br" <rafael.tsuha@usp.br>
-Subject: Re: [PATCH] staging:iio:ad7152: Rename misspelled RESEVERD ->
- RESERVED
-Message-ID: <20190218144634.00001d74@huawei.com>
-In-Reply-To: <1550141494.9460.51.camel@analog.com>
-References: <1548358316-8062-1-git-send-email-rodrigorsdc@gmail.com>
-        <CA+U=DsqG6PKs1Off9QP_3_q+c5=uzRypHCs+O6iur=NC5QdDdQ@mail.gmail.com>
-        <CAOeBkLogWyxbB3ZNwZh9=6xVUKxmT1YGZQseAx4uo7a4u+M+gw@mail.gmail.com>
-        <CAOeBkLq18nP6xsOCNNE2Bew=u37MsLCgH=W-8ofnFSAi6dYx=Q@mail.gmail.com>
-        <20190126181321.1439e485@archlinux>
-        <CA+U=DsqwVsXyaDiBa1VLUjWmEcGLCYfk3iVZ5h5xEAcqyrXgQw@mail.gmail.com>
-        <CAOeBkLok_PJ-ZbHcTN-yc6+p-qb5RMMmALp4fOpfAr2cqRO5Ug@mail.gmail.com>
-        <1550141494.9460.51.camel@analog.com>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <gregkh@linuxfoundation.org>,
+        <stefan.popa@analog.com>, <alexandru.Ardelean@analog.com>,
+        <giuliano.belinassi@usp.br>, <linux-iio@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
+        <kernel-usp@googlegroups.com>
+Subject: Re: [PATCH v3 1/4] staging: iio: ad7780: add gain & filter gpio
+ support
+Message-ID: <20190218144805.00006388@huawei.com>
+In-Reply-To: <20190214203110.wxdhdnpicfll2ms3@renatolg>
+References: <cover.1549385784.git.renatogeh@gmail.com>
+        <786543cbd8d60776083bcaca66f83502f23f561b.1549385784.git.renatogeh@gmail.com>
+        <20190209162506.0e790885@archlinux>
+        <20190214203110.wxdhdnpicfll2ms3@renatolg>
 Organization: Huawei
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.47.94.189]
 X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
@@ -66,197 +54,210 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 14 Feb 2019 10:51:49 +0000
-"Popa, Stefan Serban" <StefanSerban.Popa@analog.com> wrote:
+On Thu, 14 Feb 2019 18:31:12 -0200
+Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-> On Mi, 2019-02-13 at 22:25 -0200, Rodrigo Ribeiro wrote:
-> > [External]
-> > 
-> > 
-> > Em ter, 29 de jan de 2019 às 07:10, Alexandru Ardelean <ardeleanalex@gmai  
-> > l.com> escreveu:
-> > >
-> > > On Sat, Jan 26, 2019 at 8:13 PM Jonathan Cameron <jic23@kernel.org>  
-> > wrote:  
-> > > >
-> > > > On Fri, 25 Jan 2019 22:14:32 -0200
-> > > > Rodrigo Ribeiro <rodrigorsdc@gmail.com> wrote:
-> > > >  
-> > > > > Em sex, 25 de jan de 2019 às 21:46, Rodrigo Ribeiro
-> > > > > <rodrigorsdc@gmail.com> escreveu:  
-> > > > > >
-> > > > > > Em sex, 25 de jan de 2019 às 06:20, Alexandru Ardelean
-> > > > > > <ardeleanalex@gmail.com> escreveu:  
-> > > > > > >
-> > > > > > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gm  
-> > ail.com> wrote:  
-> > > > > > > >
-> > > > > > > > Remove the checkpatch.pl check:
-> > > > > > > >
-> > > > > > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?  
-> > > > > > >
-> > > > > > > Hey,  
-> > > > > >
-> > > > > > Hi,
-> > > > > >
-> > > > > > Thanks for answering.
-> > > > > >  
-> > > > > > > A bit curios about this one.
-> > > > > > > Are you using this chip/driver ?  
-> > > > > >
-> > > > > > No, I am just a student at USP (University of São Paulo) starting  
-> > in Linux  
-> > > > > > Kernel and a new member of the USP Linux Kernel group that has  
-> > contributed  
-> > > > > > for a few months.
-> > > > > >  
-> > > > > > > Thing is: the part is nearing EOL, and it could be an idea to  
-> > be  
-> > > > > > > marked for removal (since it's still in staging).
-> > > > > > > But if there are users for this driver, it could be left around  
-> > for a while.  
-> > > > > >
-> > > > > > This is my first patch in Linux Kernel, but if the driver will be  
-> > removed, I  
-> > > > > > can send a patch for another driver. Is there any driver that I  
-> > can  
-> > > > > > fix a style warning?  
-> > > > >
-> > > > > Maybe, one checkstyle patch is enough, right? Which drivers can I  
-> > truly  
-> > > > > contribute to?  
-> > > >
-> > > > How about the ad7150?  That one is still listed as production.
-> > > > What do you think Alex, you probably have better visibility on the
-> > > > status of these parts and their drivers than I do!
-> > > >
-> > > > (note I haven't even opened that one for a few years so no idea
-> > > > what state the driver is in!)
-> > > >  
-> > >
-> > > ad7150 is a good alternative.
-> > > At a first glance over the driver it looks like it could do with some
-> > > polish/conversions to newer IIO constructs (like IIO triggers, maybe
-> > > some newer event handling mechanisms?).
-> > > I'll sync with Stefan [Popa] to see about this stuff at a later point  
-> > in time.  
-> > >
-> > > I'd also add here the adxl345 driver.
-> > > This is mostly informational for anyone who'd find this interesting.
-> > > There are 2 drivers for this chip, one in IIO
-> > > [drivers/iio/accel/adxl345] and another one in
-> > > "drivers/misc/adxl34x.c" as part of the input sub-system.
-> > > What would be interesting here is to finalize the IIO driver [ I think
-> > > some features are lacking behind the input driver], and make the input
-> > > driver a consumer of the IIO driver.
-> > >
-> > > From my side, both these variants are fine to take on.
-> > > The ad7150 is a good idea as a starter project, and the adxl one is
-> > > more of a long-term medium-level project.
-> > >
-> > > Thanks
-> > > Alex
-> > >  
-> > 
-> > Hi Alex, thanks for suggestions.
-> > 
-> > I read the IIO trigger documentation 
-> > (https://www.kernel.org/doc/html/v4.12/driver-api/iio/triggers.html) and
-> > ask one question: What is the difference between events and triggers? 
-> > They are sounds me same things.
-> > 
-> > I am trying to understand how to implement a IIO trigger by reading
-> > the IIO Simple Dummy code but this driver does not implements IIO
-> > triggers
-> > but only IIO events. Is there a didactic example like IIO Simple Dummy
-> > that implements IIO triggers?
-> > 
-> > Thanks
-> > Rodrigo
-> >   
+> Hi Jonathan,
 > 
-> Hi Rodrigo,
+> Thanks for the review. Comments inline.
 > 
-> From what I know, IIO Events are not used for passing readings from devices
-> to userspace, but rather out of bounds information such as crossing of
-> voltage thresholds, proximity detection, motion detection, etc.
-> Triggers are typically used to determine when valid data can be read from a
-> device which is then stored in the buffer.
+> Renato
 > 
-> After a quick look over the AD7150, I think that using IIO events, might be
-> the correct approach, since it is a proximity sensing device. 
+> On 02/09, Jonathan Cameron wrote:
+> >On Tue, 5 Feb 2019 15:13:00 -0200
+> >Renato Lui Geh <renatogeh@gmail.com> wrote:
+> >  
+> >> Previously, the AD7780 driver only supported gpio for the 'powerdown'
+> >> pin. This commit adds suppport for the 'gain' and 'filter' pin.
+> >>
+> >> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+> >> Signed-off-by: Giuliano Belinassi <giuliano.belinassi@usp.br>
+> >> Co-developed-by: Giuliano Belinassi <giuliano.belinassi@usp.br>  
+> >Comments inline.
+> >  
+> >> ---
+> >> Changes in v3:
+> >> 	- Renamed ad7780_chip_info's filter to odr
+> >> 	- Renamed ad778x_filter to ad778x_odr_avail
+> >> 	- Changed vref variable from unsigned int to unsigned long long to
+> >> 	  avoid overflow
+> >> 	- Removed unnecessary AD_SD_CHANNEL macro
+> >>
+> >>  drivers/staging/iio/adc/ad7780.c | 95 ++++++++++++++++++++++++++++++--
+> >>  1 file changed, 89 insertions(+), 6 deletions(-)
+> >>
+> >> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+> >> index c4a85789c2db..6e4357800d31 100644
+> >> --- a/drivers/staging/iio/adc/ad7780.c
+> >> +++ b/drivers/staging/iio/adc/ad7780.c
+> >> @@ -39,6 +39,15 @@
+> >>  #define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
+> >>  #define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
+> >>
+> >> +#define AD7780_GAIN_GPIO	0
+> >> +#define AD7780_FILTER_GPIO	1  
+> >What are these for?  
+> 
+> Sorry about that. That's leftover from a previous attempt.
+> >  
+> >> +
+> >> +#define AD7780_GAIN_MIDPOINT	64
+> >> +#define AD7780_FILTER_MIDPOINT	13350
+> >> +
+> >> +static const unsigned int ad778x_gain[2]      = { 1, 128 };
+> >> +static const unsigned int ad778x_odr_avail[2] = { 10000, 16700 };
+> >> +
+> >>  struct ad7780_chip_info {
+> >>  	struct iio_chan_spec	channel;
+> >>  	unsigned int		pattern_mask;
+> >> @@ -50,7 +59,11 @@ struct ad7780_state {
+> >>  	const struct ad7780_chip_info	*chip_info;
+> >>  	struct regulator		*reg;
+> >>  	struct gpio_desc		*powerdown_gpio;
+> >> -	unsigned int	gain;
+> >> +	struct gpio_desc		*gain_gpio;
+> >> +	struct gpio_desc		*filter_gpio;
+> >> +	unsigned int			gain;
+> >> +	unsigned int			odr;
+> >> +	unsigned int			int_vref_mv;
+> >>
+> >>  	struct ad_sigma_delta sd;
+> >>  };
+> >> @@ -104,17 +117,65 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
+> >>  		voltage_uv = regulator_get_voltage(st->reg);
+> >>  		if (voltage_uv < 0)
+> >>  			return voltage_uv;
+> >> -		*val = (voltage_uv / 1000) * st->gain;
+> >> +		voltage_uv /= 1000;
+> >> +		*val = voltage_uv * st->gain;
+> >>  		*val2 = chan->scan_type.realbits - 1;
+> >> +		st->int_vref_mv = voltage_uv;
+> >>  		return IIO_VAL_FRACTIONAL_LOG2;
+> >>  	case IIO_CHAN_INFO_OFFSET:
+> >>  		*val = -(1 << (chan->scan_type.realbits - 1));
+> >>  		return IIO_VAL_INT;
+> >> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> >> +		*val = st->odr;
+> >> +		return IIO_VAL_INT;
+> >>  	}
+> >>
+> >>  	return -EINVAL;
+> >>  }
+> >>
+> >> +static int ad7780_write_raw(struct iio_dev *indio_dev,
+> >> +			    struct iio_chan_spec const *chan,
+> >> +			    int val,
+> >> +			    int val2,
+> >> +			    long m)
+> >> +{
+> >> +	struct ad7780_state *st = iio_priv(indio_dev);
+> >> +	const struct ad7780_chip_info *chip_info = st->chip_info;
+> >> +	unsigned long long vref;
+> >> +	unsigned int full_scale, gain;
+> >> +
+> >> +	if (!chip_info->is_ad778x)
+> >> +		return 0;
+> >> +
+> >> +	switch (m) {
+> >> +	case IIO_CHAN_INFO_SCALE:
+> >> +		if (val != 0)
+> >> +			return -EINVAL;
+> >> +
+> >> +		vref = st->int_vref_mv * 1000000LL;
+> >> +		full_scale = 1 << (chip_info->channel.scan_type.realbits - 1);
+> >> +		gain = DIV_ROUND_CLOSEST(vref, full_scale);
+> >> +		gain = DIV_ROUND_CLOSEST(gain, val2);
+> >> +		st->gain = gain;
+> >> +		if (gain < AD7780_GAIN_MIDPOINT)
+> >> +			gain = 0;
+> >> +		else
+> >> +			gain = 1;
+> >> +		gpiod_set_value(st->gain_gpio, gain);
+> >> +	break;
+> >> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> >> +		if (1000*val + val2/1000 < AD7780_FILTER_MIDPOINT)
+> >> +			val = 0;
+> >> +		else
+> >> +			val = 1;
+> >> +		st->odr = ad778x_odr_avail[val];
+> >> +		gpiod_set_value(st->filter_gpio, val);
+> >> +	break;
+> >> +	}
+> >> +
+> >> +	return 0;
+> >> +}
+> >> +
+> >>  static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+> >>  				     unsigned int raw_sample)
+> >>  {
+> >> @@ -126,10 +187,8 @@ static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+> >>  		return -EIO;
+> >>
+> >>  	if (chip_info->is_ad778x) {
+> >> -		if (raw_sample & AD7780_GAIN)
+> >> -			st->gain = 1;
+> >> -		else
+> >> -			st->gain = 128;
+> >> +		st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
+> >> +		st->odr = ad778x_odr_avail[raw_sample & AD7780_FILTER];
+> >>  	}
+> >>
+> >>  	return 0;
+> >> @@ -173,6 +232,7 @@ static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
+> >>
+> >>  static const struct iio_info ad7780_info = {
+> >>  	.read_raw = ad7780_read_raw,
+> >> +	.write_raw = ad7780_write_raw,
+> >>  };
+> >>
+> >>  static int ad7780_probe(struct spi_device *spi)
+> >> @@ -222,6 +282,29 @@ static int ad7780_probe(struct spi_device *spi)
+> >>  		goto error_disable_reg;
+> >>  	}
+> >>
+> >> +	if (st->chip_info->is_ad778x) {
+> >> +		st->gain_gpio = devm_gpiod_get_optional(&spi->dev,
+> >> +							"gain",  
+> >
+> >These are not particularly standard names (basically not "reset"),
+> >so they should be vendor prefixed, so that people know to go
+> >look at the device specific binding.  
+> 
+> I see. Should they be something like "adi,gain" and "adi,filter"? Am I
+> correct to assume that I'll have to somehow mention these in the
+> dt-binding?
+yes and yes - name is just adi,gain-gpios rather than gain-gpios.
 
-To answer the question on generic triggers (agreed, probably not relevant here
-from what Stefan has said), there are several software triggers under
-drivers/iio/triggers.
-
-Wasn't a lot of point in adding another one to the dummy driver given you
-can use the hrtimer, or sysfs triggers directly.
-(loop will result in craziness given the near zero read time of the
-dummy driver ;)
+Take a look at the other drivers doing the same thing.  We used to
+be more lax on this so there are drivers without the prefixes, but
+can't fix them now.
 
 Jonathan
 
-> 
-> -Stefan
-> 
-> > > > Jonathan
-> > > >  
-> > > > >  
-> > > > > > Thanks
-> > > > > >
-> > > > > >
-> > > > > > Em sex, 25 de jan de 2019 às 06:20, Alexandru Ardelean
-> > > > > > <ardeleanalex@gmail.com> escreveu:  
-> > > > > > >
-> > > > > > > On Thu, Jan 24, 2019 at 9:35 PM Rodrigo Ribeiro <rodrigorsdc@gm  
-> > ail.com> wrote:  
-> > > > > > > >
-> > > > > > > > Remove the checkpatch.pl check:
-> > > > > > > >
-> > > > > > > > CHECK: 'RESEVERD' may be misspelled - perhaps 'RESERVED'?  
-> > > > > > >
-> > > > > > > Hey,
-> > > > > > >
-> > > > > > > A bit curios about this one.
-> > > > > > > Are you using this chip/driver ?
-> > > > > > >
-> > > > > > > Thing is: the part is nearing EOL, and it could be an idea to  
-> > be  
-> > > > > > > marked for removal (since it's still in staging).
-> > > > > > > But if there are users for this driver, it could be left around  
-> > for a while.  
-> > > > > > >
-> > > > > > > Thanks
-> > > > > > > Alex
-> > > > > > >  
-> > > > > > > >
-> > > > > > > > Signed-off-by: Rodrigo Ribeiro <rodrigorsdc@gmail.com>
-> > > > > > > > Signed-off-by: Rafael Tsuha <rafael.tsuha@usp.br>
-> > > > > > > > ---
-> > > > > > > > This macro is not used anywhere. Should we just correct the
-> > > > > > > > spelling or remove the macro?
-> > > > > > > >
-> > > > > > > >  drivers/staging/iio/cdc/ad7152.c | 2 +-
-> > > > > > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > > > > >
-> > > > > > > > diff --git a/drivers/staging/iio/cdc/ad7152.c  
-> > b/drivers/staging/iio/cdc/ad7152.c  
-> > > > > > > > index 25f51db..c9da6d4 100644
-> > > > > > > > --- a/drivers/staging/iio/cdc/ad7152.c
-> > > > > > > > +++ b/drivers/staging/iio/cdc/ad7152.c
-> > > > > > > > @@ -35,7 +35,7 @@
-> > > > > > > >  #define AD7152_REG_CH2_GAIN_HIGH       12
-> > > > > > > >  #define AD7152_REG_CH2_SETUP           14
-> > > > > > > >  #define AD7152_REG_CFG                 15
-> > > > > > > > -#define AD7152_REG_RESEVERD            16
-> > > > > > > > +#define AD7152_REG_RESERVED            16
-> > > > > > > >  #define AD7152_REG_CAPDAC_POS          17
-> > > > > > > >  #define AD7152_REG_CAPDAC_NEG          18
-> > > > > > > >  #define AD7152_REG_CFG2                        26
-> > > > > > > > --
-> > > > > > > > 2.7.4
-> > > > > > > >  
-> > >   
+> >  
+> >> +							GPIOD_OUT_HIGH);
+> >> +		if (IS_ERR(st->gain_gpio)) {
+> >> +			ret = PTR_ERR(st->gain_gpio);
+> >> +			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
+> >> +				ret);
+> >> +			goto error_disable_reg;
+> >> +		}
+> >> +
+> >> +		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
+> >> +							  "filter",
+> >> +							  GPIOD_OUT_HIGH);
+> >> +		if (IS_ERR(st->filter_gpio)) {
+> >> +			ret = PTR_ERR(st->filter_gpio);
+> >> +			dev_err(&spi->dev,
+> >> +				"Failed to request filter GPIO: %d\n",
+> >> +				ret);
+> >> +			goto error_disable_reg;
+> >> +		}
+> >> +	}
+> >> +
+> >>  	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+> >>  	if (ret)
+> >>  		goto error_disable_reg;  
+> >  
 
 
