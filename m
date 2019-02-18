@@ -4,55 +4,55 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6DB0C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35628C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:25:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 86ABE20851
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 037BB21903
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:25:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="lPdVLPON"
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="r986BO1B"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389726AbfBRODx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 09:03:53 -0500
-Received: from mail-ed1-f67.google.com ([209.85.208.67]:32771 "EHLO
-        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389759AbfBRODw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:52 -0500
-Received: by mail-ed1-f67.google.com with SMTP id a2so13947289edi.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:50 -0800 (PST)
+        id S2389766AbfBROZB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 09:25:01 -0500
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:32769 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389154AbfBRODu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:50 -0500
+Received: by mail-ed1-f68.google.com with SMTP id a2so13947236edi.0
+        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=essensium-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kDOvI7KHRas/e++nV1MAoAVesXibxebovw6lFI3t2LQ=;
-        b=lPdVLPONMX15tVFEdOGTWdO0qWE/4jq/BAze0ALMLuA0nMhYdTscqDSDouBdQJMKI+
-         9P9j1Oo5wGvSlAFqwJ5MbsxrTSd68gxajlZug9ZW4tzsNll+n461GjbggeOeqUQpgDm7
-         W1pyYQRMbpuwsNn1TXoxIgHxqzMBLkEm6z/Mm2OFJDHKy3mdBVweK2p66YcDrrpeiyKy
-         popuvplA8CMeHuToUOieTP7qkuHWUthsRGN5rVdQwprYyfywzPhUboAT3lTaCfKDFUXD
-         GZCmTGPgJsVS9ZBLdp8t6SAGMuf9SNrpjtxDkSgWKiN8DRRDgz3mzZ/37doMnbxznzr/
-         OTcQ==
+        bh=yRbFDaxWpy1WZcEaSiXFGy4r6+XphTOi/wCgftAJFLc=;
+        b=r986BO1Bzxok2V8E1eD37WYjzK2SBEteAVMs6PJ+GyfPBhlMmSQusvvsx60zQIua0j
+         HEtFc2Cbjy57gwxNqqBkJTEfiend4iuH9mrGHHfaPOHdhozsGK7yXfjWIX5pNCwVJfzf
+         Hi7DRrqfs8UCedwzmElcbeS4l2np34oQ+BmVxFRzAKISQbXvMikWdJV9/RWIbEHMnp8t
+         B7CuoCwlSNrRceunX/D+BNQP/vorwExi5Q3k3KPWa29v4DiDhCkN4xsC777AFI8ZwwZc
+         VzHmLw2/DQxlDztf1WTkxkdvMn9z8ND9aIuIVSjPg6LbZqJVTe885POnip9mNLyZWwYu
+         I2Dw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=kDOvI7KHRas/e++nV1MAoAVesXibxebovw6lFI3t2LQ=;
-        b=IDZdy40S+oJq4dhQN/HOxuAz0l5NIfjsHwhJxhJge2LAMD+dVLllavStEOgYXYVOHY
-         tZGfAGpW9rPDZxJH8WKHLhxgc/R++NHru03mfVERiJMbCY+E2WOTwM7navT+llJomslS
-         jfTjvZqTtRW7JyzHlLwm8zZO5bd6OvgHgDRTLAea5TaOTYQzyypdtR9G+ivKkLqiJtS4
-         rZfKmXDDyeX2y647xKqPxopiPtuduq9IidJNTQuUzBhhMiAU7ZbE45gZzCk4If5j8RSD
-         MP0BC/CviuB6n+L71BJZpouFxvS8Si4qQG737HxBVMkLGrauRh/X3bz2yiZxJIUIT97s
-         53aQ==
-X-Gm-Message-State: AHQUAuayCWlfX4VGAvWUQ4Ijkbj23hc4z/MB7vZfxW0q2dhYTa8kA9t9
-        cmtv6mlYAowEVG0FGwk5NZUFHg==
-X-Google-Smtp-Source: AHgI3IZ8OLgKjAeX/g4O2478yycvuHIzPgfc0uD5abEOkLT1aY3Iky8/UzyD7nuf/AReqmoOjyDzEw==
-X-Received: by 2002:a17:906:791:: with SMTP id l17mr13001446ejc.1.1550498630266;
-        Mon, 18 Feb 2019 06:03:50 -0800 (PST)
-Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.49
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        bh=yRbFDaxWpy1WZcEaSiXFGy4r6+XphTOi/wCgftAJFLc=;
+        b=aj00xY6K50sjnld2+ynjcQiurOJxZ60lAAJr/tK77KnKsA/AVjG6d5Rb//u0cAoCHe
+         VTR7cW/bQxNkf4rc0hd6ysog7l0w78WqaIaDwIdbHR63NF22EGl4CqNeJzARahzAP3tD
+         nfBz8K8h7nhQ6Ho+sfGkz+EnaeXjvKUoT+Rf+xsZIWEXKiPMLvtdppQHTdsDubbXEZfG
+         G0KORL/F5eJz9X8xSPSGQ3rMPD+4IZ/XvtY7i5uVH1BjE3GA06z/Yq902COYIUW5xYey
+         zXPUyIKul/7NKC0a2WzewXroGyYkp1K6gwtEjszTn8T6sQ4zYizHXNGsE2XgCQRF/qBa
+         9sbQ==
+X-Gm-Message-State: AHQUAubAk5ENGoeSmSk2yqYim+tVZVxlfsq+++W17Rop/OK6n/uqc9QY
+        v/OMTW8OnosRrb76+4NyDftoqg==
+X-Google-Smtp-Source: AHgI3IYj7ckxoDKJl3E4bX/rvyXEihO7cEuEYlmgZecPBrtn60bN0Tp19Cvro+2kMS5QDOx/dl2T5Q==
+X-Received: by 2002:a50:b527:: with SMTP id y36mr19649567edd.83.1550498629140;
         Mon, 18 Feb 2019 06:03:49 -0800 (PST)
+Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
+        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.47
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Feb 2019 06:03:48 -0800 (PST)
 From:   Patrick Havelange <patrick.havelange@essensium.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -71,9 +71,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
 Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH 3/8] drivers/clocksource: timer-fsl-ftm: use common header for FlexTimer #defines
-Date:   Mon, 18 Feb 2019 15:03:16 +0100
-Message-Id: <20190218140321.19166-3-patrick.havelange@essensium.com>
+Subject: [PATCH 2/8] drivers/pwm: pwm-fsl-ftm: use common header for FlexTimer #defines
+Date:   Mon, 18 Feb 2019 15:03:15 +0100
+Message-Id: <20190218140321.19166-2-patrick.havelange@essensium.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190218140321.19166-1-patrick.havelange@essensium.com>
 References: <20190218140321.19166-1-patrick.havelange@essensium.com>
@@ -82,39 +82,72 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This also fixes the wrong value for the previously defined
+FTM_MODE_INIT macro (it was not used).
+
 Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
 Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 ---
- drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
- 1 file changed, 2 insertions(+), 13 deletions(-)
+ drivers/pwm/pwm-fsl-ftm.c | 44 +--------------------------------------
+ 1 file changed, 1 insertion(+), 43 deletions(-)
 
-diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
-index 846d18daf893..e1c34b2f53a5 100644
---- a/drivers/clocksource/timer-fsl-ftm.c
-+++ b/drivers/clocksource/timer-fsl-ftm.c
-@@ -19,20 +19,9 @@
- #include <linux/of_irq.h>
- #include <linux/sched_clock.h>
+diff --git a/drivers/pwm/pwm-fsl-ftm.c b/drivers/pwm/pwm-fsl-ftm.c
+index 883378d055c6..f21ea1b97116 100644
+--- a/drivers/pwm/pwm-fsl-ftm.c
++++ b/drivers/pwm/pwm-fsl-ftm.c
+@@ -22,51 +22,9 @@
+ #include <linux/pwm.h>
+ #include <linux/regmap.h>
  #include <linux/slab.h>
 +#include <linux/fsl/ftm.h>
  
 -#define FTM_SC		0x00
--#define FTM_SC_CLK_SHIFT	3
--#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
--#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
+-#define FTM_SC_CLK_MASK_SHIFT	3
+-#define FTM_SC_CLK_MASK	(3 << FTM_SC_CLK_MASK_SHIFT)
+ #define FTM_SC_CLK(c)	(((c) + 1) << FTM_SC_CLK_MASK_SHIFT)
 -#define FTM_SC_PS_MASK	0x7
--#define FTM_SC_TOIE	BIT(6)
--#define FTM_SC_TOF	BIT(7)
 -
 -#define FTM_CNT		0x04
 -#define FTM_MOD		0x08
--#define FTM_CNTIN	0x4C
 -
--#define FTM_PS_MAX	7
-+#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
+-#define FTM_CSC_BASE	0x0C
+-#define FTM_CSC_MSB	BIT(5)
+-#define FTM_CSC_MSA	BIT(4)
+-#define FTM_CSC_ELSB	BIT(3)
+-#define FTM_CSC_ELSA	BIT(2)
+-#define FTM_CSC(_channel)	(FTM_CSC_BASE + ((_channel) * 8))
+-
+-#define FTM_CV_BASE	0x10
+-#define FTM_CV(_channel)	(FTM_CV_BASE + ((_channel) * 8))
+-
+-#define FTM_CNTIN	0x4C
+-#define FTM_STATUS	0x50
+-
+-#define FTM_MODE	0x54
+-#define FTM_MODE_FTMEN	BIT(0)
+-#define FTM_MODE_INIT	BIT(2)
+-#define FTM_MODE_PWMSYNC	BIT(3)
+-
+-#define FTM_SYNC	0x58
+-#define FTM_OUTINIT	0x5C
+-#define FTM_OUTMASK	0x60
+-#define FTM_COMBINE	0x64
+-#define FTM_DEADTIME	0x68
+-#define FTM_EXTTRIG	0x6C
+-#define FTM_POL		0x70
+-#define FTM_FMS		0x74
+-#define FTM_FILTER	0x78
+-#define FTM_FLTCTRL	0x7C
+-#define FTM_QDCTRL	0x80
+-#define FTM_CONF	0x84
+-#define FTM_FLTPOL	0x88
+-#define FTM_SYNCONF	0x8C
+-#define FTM_INVCTRL	0x90
+-#define FTM_SWOCTRL	0x94
+-#define FTM_PWMLOAD	0x98
  
- struct ftm_clock_device {
- 	void __iomem *clksrc_base;
+ enum fsl_pwm_clk {
+ 	FSL_PWM_CLK_SYS,
 -- 
 2.17.1
 
