@@ -2,68 +2,66 @@ Return-Path: <SRS0=AGAg=QZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B2CC10F03
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10A24C4360F
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CD10321901
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:20:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C553220851
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:24:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kXmgAKPS"
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="Xjqf2CUT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390774AbfBROUL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 09:20:11 -0500
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:50216 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391043AbfBROUL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:20:11 -0500
-Received: by mail-wm1-f66.google.com with SMTP id x7so17466680wmj.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:20:10 -0800 (PST)
+        id S2389142AbfBROYV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 09:24:21 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:42421 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389815AbfBROD7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:59 -0500
+Received: by mail-ed1-f65.google.com with SMTP id j89so4517658edb.9
+        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:57 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=ClZXXrP3BYB32DX7heYICw4CsezNlo5nX4c0OSIYVrs=;
-        b=kXmgAKPSzKBlErTbTVMwRbNVX5C/bVcgD4Ddc/3EUJDlxf70Bljrs/ZTu/t49hqqje
-         hyU5qP81E5t9C9u+juruGkNJI7IV6MVL5GigmXKuwqgC3qZfXjRqElUZ5yF4WlCYBjhT
-         JaBcDpFthRsAKQVdU9jxYKesXz93pUFjJraXpFxnOizq3ettppOWVf0gXs0uCQkUJ5TM
-         vBCrG6XNkXO08k47y67EXgSUG40Ph75TeVxq4eD06H4frl76UtHBb9tj2ytiGkvE4YQc
-         ruMCtxcwjWVuPSH9mj1IY951KdG9XyTbtnHWk/LQZ6JJ2YO2zHYZcMvHZwVk3HaX/sOI
-         o82g==
+        d=essensium-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=KlgMi7EUDch9k0ALR7Q1zPGaXCvfUKqLAbFj7Wd2gYI=;
+        b=Xjqf2CUTK3wWht17aEOAfDSRolyYwwEgAB17Hbj0Bz1DyXH86CotYo4nyRklgT/rSD
+         eSN/mf1lcvmMZNhjgf2Dp8QQ+OyaQjqhflJKsAyk5ch7c2anSejIDuxPg351D9OIAC5I
+         XB3aJL8f0SYEaijY2jGLrVizGZKqjfbrSJSe+2kJBlPHaAH7LcdIx+zEfL9v9JDjLy40
+         /NbM3Rj+BpkJlVDwreItXS2VB22ny0PZcUA8/SWtfN/mEK2Hv2lt+fhuYFIeCy88I+Ue
+         sEi0cl3RD+LfCL9Y8iK6nm2P9yPlSY0h1O6Soci3IDh16V+wUgIMKJ+o9mLZj8yEnKXB
+         A3oA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=ClZXXrP3BYB32DX7heYICw4CsezNlo5nX4c0OSIYVrs=;
-        b=rscyqS8BGeSNDzVIsHOthWhgnUwwAlumrCMTEtrw54k8/DrGY49xBn/aBY/pQ+44On
-         jfGf/lo+l4bqtYFOweJ3953I4oP/6CWUY21RS9ISWrPP4l637h7tIVcf7kZLCSn6Gh/k
-         uTL3myCUg3UQiKNbeUsxQqHAEwPtL/HVmqkT3y+t6jY5wq7o4CqUIYmL5BACMDthM44s
-         JN6rtOt82E/u/Wuc2LnACiexReGswJaLrGCOsu3p0W5gZiZSaAygkWbn24yQPA88uUJg
-         xUNJ/kT+G+y9zWlmjhY0Yz1WuEEMKMfNbVLyLw+axPes0lMo0WsPW2IhmLc4wkFOcgWh
-         meyw==
-X-Gm-Message-State: AHQUAuYq/PLoBCTnTBFo5Y3clRT+iG5jRFmGnSm0ix5BBRHLSdSsG77i
-        xt2rtyT3GjSgS1cuIKY0UWkdMQ==
-X-Google-Smtp-Source: AHgI3Ib455TygYVlPC1SJ0oM7R+duaUfW4js4OfK+qogmUfNV65oGh4+/Typu4wLNSWvEwxM/qa/Kg==
-X-Received: by 2002:a1c:41c5:: with SMTP id o188mr16028078wma.147.1550499609210;
-        Mon, 18 Feb 2019 06:20:09 -0800 (PST)
-Received: from [192.168.0.41] (148.125.92.92.rev.sfr.net. [92.92.125.148])
-        by smtp.googlemail.com with ESMTPSA id e6sm15839091wrt.14.2019.02.18.06.20.06
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=KlgMi7EUDch9k0ALR7Q1zPGaXCvfUKqLAbFj7Wd2gYI=;
+        b=UC4wiCehRYXzS52E6JJdLHHQR7BJadGq/NU1aQjeMEtndJ3v0dxBuYCtk6g7QLne3v
+         58p8dyu77mU41PL0Edo67/a03MwmXBOqZJmWcZPS4PsnN9sPI8I5Q9UD+EICnK+5qQwn
+         9QW3bkIku5CVO6twAgsJ28J/QmOkU5UKWRHdi3c20/njoJWow0AgACnkzj+VB+mwECAq
+         VdSdiRr2ipgjD1d4wscsyVMRn7FS7CIPNax99p1bUiRC3nFx1yHB0QUzUr8kiA+qSuiT
+         I3EliMUjx5h3osg7RqgJmMI2vKv3AqytbFE7ZIta1QeYXq1mFQBb9HPAbXDzxsyYbcMR
+         FohQ==
+X-Gm-Message-State: AHQUAuYkokIvZxHj9dUh3I/cZrOyOh4izXb2EgYcugBtMzTU5hehnRa5
+        0E6fBlNDLageky/DZ8XxgAChSw==
+X-Google-Smtp-Source: AHgI3IY0ceN0vfQ9xmpYZOcoyNSJemRZclaQngynB0UdW0cgs6sy04XzxzixF0mhiQPAsNetmxb/iA==
+X-Received: by 2002:a17:906:82d1:: with SMTP id a17mr16402415ejy.164.1550498636470;
+        Mon, 18 Feb 2019 06:03:56 -0800 (PST)
+Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
+        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.55
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Feb 2019 06:20:08 -0800 (PST)
-Subject: Re: [PATCH 3/8] drivers/clocksource: timer-fsl-ftm: use common header
- for FlexTimer #defines
-To:     Patrick Havelange <patrick.havelange@essensium.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        Mon, 18 Feb 2019 06:03:55 -0800 (PST)
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         Thierry Reding <thierry.reding@gmail.com>,
         Esben Haabendal <esben@haabendal.dk>,
@@ -72,67 +70,328 @@ To:     Patrick Havelange <patrick.havelange@essensium.com>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Patrick Havelange <patrick.havelange@essensium.com>
+Subject: [PATCH 8/8] iio/counter/ftm-quaddec: add handling of under/overflow of the counter.
+Date:   Mon, 18 Feb 2019 15:03:21 +0100
+Message-Id: <20190218140321.19166-8-patrick.havelange@essensium.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190218140321.19166-1-patrick.havelange@essensium.com>
 References: <20190218140321.19166-1-patrick.havelange@essensium.com>
- <20190218140321.19166-3-patrick.havelange@essensium.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <5ed4658a-7ef6-91c7-7afa-2f73f038ff95@linaro.org>
-Date:   Mon, 18 Feb 2019 15:20:05 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
-MIME-Version: 1.0
-In-Reply-To: <20190218140321.19166-3-patrick.havelange@essensium.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 18/02/2019 15:03, Patrick Havelange wrote:
+This is implemented by polling the counter value. A new parameter
+"poll-interval" can be set in the device tree, or can be changed
+at runtime. The reason for the polling is to avoid interrupts flooding.
+If the quadrature input is going up and down around the overflow value
+(or around 0), the interrupt will be triggering all the time. Thus,
+polling is an easy way to handle overflow in a consistent way.
+Polling can still be disabled by setting poll-interval to 0.
 
-Changelog please
+Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+---
+ drivers/iio/counter/ftm-quaddec.c | 199 +++++++++++++++++++++++++++++-
+ 1 file changed, 193 insertions(+), 6 deletions(-)
 
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-> ---
->  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
->  1 file changed, 2 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
-> index 846d18daf893..e1c34b2f53a5 100644
-> --- a/drivers/clocksource/timer-fsl-ftm.c
-> +++ b/drivers/clocksource/timer-fsl-ftm.c
-> @@ -19,20 +19,9 @@
->  #include <linux/of_irq.h>
->  #include <linux/sched_clock.h>
->  #include <linux/slab.h>
-> +#include <linux/fsl/ftm.h>
->  
-> -#define FTM_SC		0x00
-> -#define FTM_SC_CLK_SHIFT	3
-> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_PS_MASK	0x7
-> -#define FTM_SC_TOIE	BIT(6)
-> -#define FTM_SC_TOF	BIT(7)
-> -
-> -#define FTM_CNT		0x04
-> -#define FTM_MOD		0x08
-> -#define FTM_CNTIN	0x4C
-> -
-> -#define FTM_PS_MAX	7
-> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
->  
->  struct ftm_clock_device {
->  	void __iomem *clksrc_base;
-> 
-
-
+diff --git a/drivers/iio/counter/ftm-quaddec.c b/drivers/iio/counter/ftm-quaddec.c
+index ca7e55a9ab3f..3a0395c3ef33 100644
+--- a/drivers/iio/counter/ftm-quaddec.c
++++ b/drivers/iio/counter/ftm-quaddec.c
+@@ -25,11 +25,33 @@
+ 
+ struct ftm_quaddec {
+ 	struct platform_device *pdev;
++	struct delayed_work delayedcounterwork;
+ 	void __iomem *ftm_base;
+ 	bool big_endian;
++
++	/* Offset added to the counter to adjust for overflows of the
++	 * 16 bit HW counter. Only the 16 MSB are set.
++	 */
++	uint32_t counteroffset;
++
++	/* Store the counter on each read, this is used to detect
++	 * if the counter readout if we over or underflow
++	 */
++	uint8_t lastregion;
++
++	/* Poll-interval, in ms before delayed work must poll counter */
++	uint16_t poll_interval;
++
+ 	struct mutex ftm_quaddec_mutex;
+ };
+ 
++struct counter_result {
++	/* 16 MSB are from the counteroffset
++	 * 16 LSB are from the hardware counter
++	 */
++	uint32_t value;
++};
++
+ #define HASFLAGS(flag, bits) ((flag & bits) ? 1 : 0)
+ 
+ #define DEFAULT_POLL_INTERVAL    100 /* in msec */
+@@ -74,8 +96,75 @@ static void ftm_set_write_protection(struct ftm_quaddec *ftm)
+ 	ftm_write(ftm, FTM_FMS, FTM_FMS_WPEN);
+ }
+ 
++/* must be called with mutex locked */
++static void ftm_work_reschedule(struct ftm_quaddec *ftm)
++{
++	cancel_delayed_work(&ftm->delayedcounterwork);
++	if (ftm->poll_interval > 0)
++		schedule_delayed_work(&ftm->delayedcounterwork,
++				   msecs_to_jiffies(ftm->poll_interval));
++}
++
++/* Reports the hardware counter added the offset counter.
++ *
++ * The quadrature decodes does not use interrupts, because it cannot be
++ * guaranteed that the counter won't flip between 0xFFFF and 0x0000 at a high
++ * rate, causing Real Time performance degration. Instead the counter must be
++ * read frequently enough - the assumption is 150 KHz input can be handled with
++ * 100 ms read cycles.
++ */
++static void ftm_work_counter(struct ftm_quaddec *ftm,
++			     struct counter_result *returndata)
++{
++	/* only 16bits filled in*/
++	uint32_t hwcounter;
++	uint8_t currentregion;
++
++	mutex_lock(&ftm->ftm_quaddec_mutex);
++
++	ftm_read(ftm, FTM_CNT, &hwcounter);
++
++	/* Divide the counter in four regions:
++	 *   0x0000-0x4000-0x8000-0xC000-0xFFFF
++	 * When the hwcounter changes between region 0 and 3 there is an
++	 * over/underflow
++	 */
++	currentregion = hwcounter / 0x4000;
++
++	if (ftm->lastregion == 3 && currentregion == 0)
++		ftm->counteroffset += 0x10000;
++
++	if (ftm->lastregion == 0 && currentregion == 3)
++		ftm->counteroffset -= 0x10000;
++
++	ftm->lastregion = currentregion;
++
++	if (returndata)
++		returndata->value = ftm->counteroffset + hwcounter;
++
++	ftm_work_reschedule(ftm);
++
++	mutex_unlock(&ftm->ftm_quaddec_mutex);
++}
++
++/* wrapper around the real function */
++static void ftm_work_counter_delay(struct work_struct *workptr)
++{
++	struct delayed_work *work;
++	struct ftm_quaddec *ftm;
++
++	work = container_of(workptr, struct delayed_work, work);
++	ftm = container_of(work, struct ftm_quaddec, delayedcounterwork);
++
++	ftm_work_counter(ftm, NULL);
++}
++
++/* must be called with mutex locked */
+ static void ftm_reset_counter(struct ftm_quaddec *ftm)
+ {
++	ftm->counteroffset = 0;
++	ftm->lastregion = 0;
++
+ 	/* Reset hardware counter to CNTIN */
+ 	ftm_write(ftm, FTM_CNT, 0x0);
+ }
+@@ -110,18 +199,91 @@ static int ftm_quaddec_read_raw(struct iio_dev *indio_dev,
+ 				int *val, int *val2, long mask)
+ {
+ 	struct ftm_quaddec *ftm = iio_priv(indio_dev);
+-	uint32_t counter;
++	struct counter_result counter;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ftm_read(ftm, FTM_CNT, &counter);
+-		*val = counter;
++	case IIO_CHAN_INFO_PROCESSED:
++		ftm_work_counter(ftm, &counter);
++		if (mask == IIO_CHAN_INFO_RAW)
++			counter.value &= 0xffff;
++
++		*val = counter.value;
++
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static uint32_t ftm_get_default_poll_interval(const struct ftm_quaddec *ftm)
++{
++	/* Read values from device tree */
++	uint32_t val;
++	const struct device_node *node = ftm->pdev->dev.of_node;
++
++	if (of_property_read_u32(node, "poll-interval", &val))
++		val = DEFAULT_POLL_INTERVAL;
++
++	return val;
++}
++
++static ssize_t ftm_read_default_poll_interval(struct iio_dev *indio_dev,
++					uintptr_t private,
++					struct iio_chan_spec const *chan,
++					char *buf)
++{
++	const struct ftm_quaddec *ftm = iio_priv(indio_dev);
++	uint32_t val = ftm_get_default_poll_interval(ftm);
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", val);
++}
++
++static ssize_t ftm_read_poll_interval(struct iio_dev *indio_dev,
++				uintptr_t private,
++				struct iio_chan_spec const *chan,
++				char *buf)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++
++	uint32_t poll_interval = READ_ONCE(ftm->poll_interval);
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", poll_interval);
++}
++
++static ssize_t ftm_write_poll_interval(struct iio_dev *indio_dev,
++				uintptr_t private,
++				struct iio_chan_spec const *chan,
++				const char *buf, size_t len)
++{
++	struct ftm_quaddec *ftm = iio_priv(indio_dev);
++	uint32_t newpoll_interval;
++	uint32_t default_interval;
++
++	if (kstrtouint(buf, 10, &newpoll_interval) != 0) {
++		dev_err(&ftm->pdev->dev, "poll_interval not a number: '%s'\n",
++			buf);
++		return -EINVAL;
++	}
++
++	/* Don't accept polling times below the default value to protect the
++	 * system.
++	 */
++	default_interval = ftm_get_default_poll_interval(ftm);
++
++	if (newpoll_interval < default_interval && newpoll_interval != 0)
++		newpoll_interval = default_interval;
++
++	mutex_lock(&ftm->ftm_quaddec_mutex);
++
++	WRITE_ONCE(ftm->poll_interval, newpoll_interval);
++	ftm_work_reschedule(ftm);
++
++	mutex_unlock(&ftm->ftm_quaddec_mutex);
++
++	return len;
++}
++
+ static ssize_t ftm_write_reset(struct iio_dev *indio_dev,
+ 				uintptr_t private,
+ 				struct iio_chan_spec const *chan,
+@@ -135,8 +297,11 @@ static ssize_t ftm_write_reset(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 	}
+ 
++	mutex_lock(&ftm->ftm_quaddec_mutex);
++
+ 	ftm_reset_counter(ftm);
+ 
++	mutex_unlock(&ftm->ftm_quaddec_mutex);
+ 	return len;
+ }
+ 
+@@ -192,6 +357,17 @@ static const struct iio_enum ftm_quaddec_prescaler_en = {
+ };
+ 
+ static const struct iio_chan_spec_ext_info ftm_quaddec_ext_info[] = {
++	{
++		.name = "default_poll_interval",
++		.shared = IIO_SHARED_BY_TYPE,
++		.read = ftm_read_default_poll_interval,
++	},
++	{
++		.name = "poll_interval",
++		.shared = IIO_SHARED_BY_TYPE,
++		.read = ftm_read_poll_interval,
++		.write = ftm_write_poll_interval,
++	},
+ 	{
+ 		.name = "reset",
+ 		.shared = IIO_SEPARATE,
+@@ -205,7 +381,8 @@ static const struct iio_chan_spec_ext_info ftm_quaddec_ext_info[] = {
+ static const struct iio_chan_spec ftm_quaddec_channels = {
+ 	.type = IIO_COUNT,
+ 	.channel = 0,
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			      BIT(IIO_CHAN_INFO_PROCESSED),
+ 	.ext_info = ftm_quaddec_ext_info,
+ 	.indexed = 1,
+ };
+@@ -232,10 +409,14 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
+ 
+ 	ftm->pdev = pdev;
+ 	ftm->big_endian = of_property_read_bool(node, "big-endian");
++	ftm->counteroffset = 0;
++	ftm->lastregion = 0;
+ 	ftm->ftm_base = of_iomap(node, 0);
+ 	if (!ftm->ftm_base)
+ 		return -EINVAL;
+ 
++	ftm->poll_interval = ftm_get_default_poll_interval(ftm);
++
+ 	indio_dev->name = dev_name(&pdev->dev);
+ 	indio_dev->dev.parent = &pdev->dev;
+ 	indio_dev->info = &ftm_quaddec_iio_info;
+@@ -245,9 +426,13 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
+ 	ftm_quaddec_init(ftm);
+ 
+ 	mutex_init(&ftm->ftm_quaddec_mutex);
++	INIT_DELAYED_WORK(&ftm->delayedcounterwork, ftm_work_counter_delay);
++
++	ftm_work_reschedule(ftm);
+ 
+ 	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+ 	if (ret) {
++		cancel_delayed_work_sync(&ftm->delayedcounterwork);
+ 		mutex_destroy(&ftm->ftm_quaddec_mutex);
+ 		iounmap(ftm->ftm_base);
+ 	}
+@@ -261,13 +446,15 @@ static int ftm_quaddec_remove(struct platform_device *pdev)
+ 
+ 	ftm = (struct ftm_quaddec *)platform_get_drvdata(pdev);
+ 	indio_dev = iio_priv_to_dev(ftm);
+-	/* This is needed to remove sysfs entries */
++	/* Make sure no concurrent attribute reads happen*/
+ 	devm_iio_device_unregister(&pdev->dev, indio_dev);
+ 
++	cancel_delayed_work_sync(&ftm->delayedcounterwork);
++
+ 	ftm_write(ftm, FTM_MODE, 0);
+ 
+-	iounmap(ftm->ftm_base);
+ 	mutex_destroy(&ftm->ftm_quaddec_mutex);
++	iounmap(ftm->ftm_base);
+ 
+ 	return 0;
+ }
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+2.17.1
 
