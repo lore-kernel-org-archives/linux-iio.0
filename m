@@ -2,67 +2,70 @@ Return-Path: <SRS0=AGAg=QZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F59C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:22:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF417C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:23:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0512D217D9
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:22:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD89E217D9
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 17:23:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CmhZL6g+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BSynU4j7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390340AbfBRRWv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 12:22:51 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:46238 "EHLO
+        id S2388005AbfBRRXH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 12:23:07 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:40424 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728216AbfBRRWv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 12:22:51 -0500
-Received: by mail-qt1-f193.google.com with SMTP id y20so19947086qtm.13;
-        Mon, 18 Feb 2019 09:22:50 -0800 (PST)
+        with ESMTP id S2403774AbfBRRXD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 12:23:03 -0500
+Received: by mail-qt1-f193.google.com with SMTP id j36so20006623qta.7;
+        Mon, 18 Feb 2019 09:23:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oKlhuD7R0WkRQ8r9+a4cSAG6VdZm70kh8u647eLl2is=;
-        b=CmhZL6g+XGqqTyEtMWlNiSrk4ektfxZV5t7vNsot102EqrU520R7PTqJT0UE0pcEGL
-         rtzMs91VaIPUylYWm0cqe7njsBJTJmbNUwbD9IDvEKpcehO4T5AGuI1w4yIaJ9uMlUmX
-         Yiliz62BorMnObi1WS0dxaVrTDbt1rRMS1PzUlKfKkiIxKvrTfCm6Gfm29fJ3KmO+REW
-         YSF8Te6hI+imGfRrTsy4E4zeyVXo85gvbpgWbmnHmk5v5XfIlpePOJ2zuSz4M2BFkE6i
-         hJYOjvW7aFvSYrT2pOD0Hbc82P1caIqtaKss7Pc64WhY8AE/hb+GrmchWjciHBg36q4E
-         JcAQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Bpm4uv7ht7FRHap3/HLE7Hw5o+LrP45Gwqaa5tT8iVY=;
+        b=BSynU4j7WSq5kg40pvVsfv/0dOdWzXwAAbhh1spJXKwhUKsupYqORZoFxefqHPO8oA
+         QbImx0RefbX0sSH0OtQKkB6/ZwgJ92zFlKtWfKvYylR31FXSy45JJt33YbM3S7bCq2as
+         R2/puNqxKYLW7TPzmoXj4DxCaL+ggpQ2NPUjXKS/KAdD7Bi7gwLpGdQs3hjEO2NKKkwv
+         qaG5YwuZvHdF1jNTGrFAUtY0Qd0WER2xn2aCUtzzD/O/k+8rq2hqPMfIysIABzXiuL7T
+         3N5W26bBb3ToBAmbtQrwrBe4uSBx3xt/Z3GsfLpmv7cmOuQO/+H5tBzPFu7OoSEJSLvL
+         MKpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oKlhuD7R0WkRQ8r9+a4cSAG6VdZm70kh8u647eLl2is=;
-        b=Ie8AN/tjPr8pG7QKehGc3TsNrfu+MC84+pDveoLIu2Zb/GyH21nRfuZhm5kAzlWX2F
-         PB6rZCEdN+832KzCDI/0+rPvPngA1+Rzz2kWMxcxVs6hP+6gg+Al75mp+ZMEuQPQJ6rC
-         OkjhTVmXYcATTNzH2FvUVCaCvjcQb1uVY8cdmwS+l3rDHqgBl+qjzprzPQZ6suj8W2mN
-         IH8sOGKSL5aTYijEpzhLqriExiQtpTu/TvqHkyCEKiHj2WaMGh9hMsg3A6ySs6Iuv1gh
-         eNoxr4oxQi6sCRkxMNPD3tHTjmINCrnHkcOtNChy4a7nS42mkjTw1I5IWXOatmu++D31
-         G50w==
-X-Gm-Message-State: AHQUAubAdbzmfTlATkfQrPJ3SEzslWtyZSWZYYDu0DVT7dy44rnSVole
-        6psfHuvjvGd805dgCLDjuRY=
-X-Google-Smtp-Source: AHgI3IYzTl1gBl+A+ye6UBydBdjXuI9XSuWyQNsOkMoO218KHsJ7Qa6EjoebYDeeq8IdcXBW6BjjnA==
-X-Received: by 2002:aed:3b92:: with SMTP id r18mr19003277qte.7.1550510570286;
-        Mon, 18 Feb 2019 09:22:50 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Bpm4uv7ht7FRHap3/HLE7Hw5o+LrP45Gwqaa5tT8iVY=;
+        b=DHJ+kMAmcTcQgZgOS2QCTNCZvO2pN/3/jfiwmIba/F19jeUYwp+NMh7VoD4jMBn5yN
+         XjMeyinW3x5yYKbrQb0CanDKkd+S9tTVF/iiaZUtIzCXoADEKEjxhUA4Ix8xy5sK5AEp
+         ZREhN5u8OemTw3kQL8uvIq5DBg7H1CgyO5supq2S6xRAqRbRUPAAaQfsUA7uKx9e5YfN
+         f83OgQT6OgXwqYithvbjjjEZD0CS1dAxw0HCsWXugWbC53oQAseIlgYxAuuPMikZTAZJ
+         RwVSRSnPlSiZPUzreAxMpL+OsE+LPP1Au+6/SYdEIid1tyvqlWPfiEzIVZP5dc7+Ahhs
+         mi2Q==
+X-Gm-Message-State: AHQUAuZSG//s/VlIUkiwgyTMox4oiil/8XlJUx6m7Y0IZcLRG78aCvDR
+        etidPdfNK+rRHaE8JLunsEc=
+X-Google-Smtp-Source: AHgI3IZ0DDPlDCNBTFxSGjJe6+FtcTQq2tiPOeCHMj4ocf3fVvzDFL57fUpFbAfID+15uochVFQJMA==
+X-Received: by 2002:ac8:34b2:: with SMTP id w47mr19513924qtb.112.1550510582324;
+        Mon, 18 Feb 2019 09:23:02 -0800 (PST)
 Received: from wall-e.ime.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id v18sm6525275qkj.13.2019.02.18.09.22.47
+        by smtp.gmail.com with ESMTPSA id v18sm6525275qkj.13.2019.02.18.09.23.00
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 18 Feb 2019 09:22:49 -0800 (PST)
+        Mon, 18 Feb 2019 09:23:02 -0800 (PST)
 From:   Lucas Oshiro <lucasseikioshiro@gmail.com>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: [PATCH 0/5] iio:potentiostat:lmp91000: Adjust codestyle, and minor cleanup changes 
-Date:   Mon, 18 Feb 2019 14:22:31 -0300
-Message-Id: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+        kernel-usp@googlegroups.com,
+        Anderson Reis <andersonreisrosa@gmail.com>
+Subject: [PATCH 5/5] iio:potentiostat:lmp91000: add '\n' on dev_err
+Date:   Mon, 18 Feb 2019 14:22:36 -0300
+Message-Id: <20190218172236.7781-6-lucasseikioshiro@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -70,22 +73,27 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Add missing '\n' at the end of dev_err message on line 215.
 
-We solved some checkpath.el CHECKs and WARNINGs. We also inverted the arms of
-an if statement, in order to make the code smaller as the else statement was
-supressed. We added a missing '\n' on a dev_err message.
+Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
+Signed-off-by: Anderson Reis <andersonreisrosa@gmail.com>
+---
+ drivers/iio/potentiostat/lmp91000.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Lucas Oshiro (5):
-  iio:potentiostat:lmp91000: remove unnecessary parentheses
-  iio:potentiostat:lmp91000: insert braces around if arms
-  iio:potentiostat:lmp91000: reduce line width and remove blank line
-  iio:potentiostat:lmp91000: invert if statement
-  iio:potentiostat:lmp91000: add '\n' on dev_err
-
- drivers/iio/potentiostat/lmp91000.c | 14 ++++++--------
- 1 file changed, 6 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+index 7229ef59590a..aecdda757586 100644
+--- a/drivers/iio/potentiostat/lmp91000.c
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -212,7 +212,7 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+ 	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+ 	if (ret) {
+ 		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
+-			dev_err(dev, "no ti,tia-gain-ohm defined");
++			dev_err(dev, "no ti,tia-gain-ohm defined\n");
+ 			return ret;
+ 		}
+ 		val = 0;
 -- 
 2.20.1
 
