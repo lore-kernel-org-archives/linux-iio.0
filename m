@@ -2,80 +2,119 @@ Return-Path: <SRS0=AGAg=QZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F7EC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 07:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D065C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:03:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4E21F217F5
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 07:54:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C5BE21916
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Feb 2019 14:03:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="kdHcXhxC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728697AbfBRHye (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Feb 2019 02:54:34 -0500
-Received: from mout.gmx.net ([212.227.17.20]:52657 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728577AbfBRHye (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 18 Feb 2019 02:54:34 -0500
-Received: from localhost.localdomain ([218.18.229.179]) by mail.gmx.com
- (mrgmx102 [212.227.17.174]) with ESMTPSA (Nemesis) id
- 0LdKs1-1hMPul0Uk5-00iWRz; Mon, 18 Feb 2019 08:54:11 +0100
-From:   Chengguang Xu <cgxu519@gmx.com>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, Chengguang Xu <cgxu519@gmx.com>
-Subject: [PATCH] iio: remove redundant unlikely annotation
-Date:   Mon, 18 Feb 2019 15:53:26 +0800
-Message-Id: <20190218075326.24672-1-cgxu519@gmx.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Provags-ID: V03:K1:827lQk+zNT9LRn4NSrietVouqyIWKGrmfs/qJEvFEdWilt9HefE
- E3mLR2Mmilda3YmyS4erocoMIZEsPl9hRvz1u2FL4kGdN+i2uzFyisJNaET5iCTu8YeclLI
- QqovBbFSW6rPJFw0RJN01PEx1YJvmsXUNRCSnx9jwqn8+seMicBpfKjgAtkkWmtdY9YMH32
- 8YVfwPE3NU2lAbFQX0nKQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:26lZBUUhyF8=:ULZxvzstX3eN2kkkfDxtoe
- qNnO0ayBUwQvmCwxjQoWfvWykvdLHmRmo/ZEH3QS14O+BaEX/XIh5BP5DXI+Vga+1xPwjuRa1
- RrLmKex8GmGaStImH6c9KnU4UsnBbGu8t03U1W254rnvKRF+XkPa8sPGamHSDe14iIJFeSl5H
- bmZ+9/rmxUuQ42g0oxOU3FRZ7X8wfi36Rx+xGipv6eMuDs6jeAgkwUUElL2pPwgqg6JcboFsa
- /p2NT+6E3/fXctWx+N3WbAXZlLj7FkPfBXIhNU1SQ4IE2Cb8GinHUil4JROAeqytWPxRvEavA
- Bcpdi7KoQJQMVc636JWq/8jVfWwytfMtD0i5/Ds7TQDVlOPO9+yRx4CxW3Bd9AmomcRvOGf1e
- q0NWuZ2XPiV+MRNCwXj3/2YnBsZY0IhBbS+/shJinmJHU7yLgJ0TCy0VOJku0BM6xQTq71Ia7
- j9KmBmfhTNlcJ8phDr6SaS2iuzCBC629L5vDfTrZZg/ECONo7LSrz6uDT1eFZ28CJIc5zorZ6
- Eo70/welR5Bg0wo7kz6c1G1yXqCfS5woHr1tS077F2YyD3axmyZ5uJHI/GfhGUHzel9DUyFnD
- l6khfsLdD9ahj0jb7s2BTEBEq/wjc8GdcUknAXFltsrsnCRpXMfvnBeHfU3gyoLY+YJbb9p0+
- 9WlTxqkAVSHwC63WIq5sIZy8QhDj95uYPuaMUp8lhDoHhN3SAoD97tIEdvXTAXOwaw7gFcbEB
- +4hwBdM9kds5ivlqUlH4eCjxs06DLrZtA2ahsFfVVk5mgI4I2KdE8DxvMqZbujoDdLNxXWyX4
- 21xn5EE2XNB2hrWisBWPxY+MXm/1S/MnNUS3GoF0xBsYh4RDZq0sBP3J81dS1diTmBoakjPED
- GcRgvWAWIFGrJwodsV3+AOOAbn3WKGndrQwwmlhpCOAO2sDU3WW8fS3jlBu1JD
+        id S2389749AbfBRODy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Feb 2019 09:03:54 -0500
+Received: from mail-ed1-f65.google.com ([209.85.208.65]:38349 "EHLO
+        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389771AbfBRODx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Feb 2019 09:03:53 -0500
+Received: by mail-ed1-f65.google.com with SMTP id h58so13900665edb.5
+        for <linux-iio@vger.kernel.org>; Mon, 18 Feb 2019 06:03:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=essensium-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=I6Qr3PnJqhUErKNHRtGnpwGVLGbDm4vYaQedao4hHXI=;
+        b=kdHcXhxCjuyfL/RsbUdI7m1L2Yqy6Ch6aOf/JLBNnD5HRcGRSlgFnLV7GDHT0+O/ZH
+         WwhadtXZC4vVGNOZDuBn55xN7S4uRWX++KyhraFKHbfOfDIpV2BF2i1X1ZZmPSUG4VoF
+         AkRhIRakB9igwGHCOjQRaHFAWn158WcLofcO9Bvujyxj6a9Q5/FR2tK/sXcaVtMFDepB
+         mzDtU5X9T6XAokc0oVHVyJYLk6aWrjK7mlq7vIRYN+67ZQfflVjoZTlS3hBnJ8v3vCvY
+         cUmqgkNmUgZCJM9+9LD/mdkYFxEuSclcXauFOzLsjW1gmke/0ca5/PZRLVfeL0qwR77Y
+         7kDw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=I6Qr3PnJqhUErKNHRtGnpwGVLGbDm4vYaQedao4hHXI=;
+        b=a4S8VO/pgx/cbD/2nmCiAEsRU/cdhYTsn1q0WWRmuC6XDwlwphfs7gBD85l8ugsSGe
+         JhJLaGx+2Dfsz+uyzZiMaRIxasHFy3qdNPO5vdyijz8LmHOKJ9Igwrw/LBleN/xMcH59
+         HAc6z6IxUmB6o/TDm+qnbROdHvE5z9mraKV7TNZl0Y0wUW2liYjiseBhpIP9uMVUNbo5
+         /VQRHvc17XKBOr49zUm1+mRCkQyw+2CMlFEZifDc/uxiI0ARnHonpppHEb4Gc0HZLxJ5
+         03LsLXcRXqsuD5DxqPvK80/c0lanjk2CH/pX1yqWHs9qFO1ugfZJpp0IcP0S0ahDI7Od
+         PJkQ==
+X-Gm-Message-State: AHQUAuZ08VerAVkfF6FYEPC5l7KUOw8WwIlTKqAEBzI1FUI9ZP/wPle9
+        wOXNvYFFBGEVVKndLtkmdrOTIw==
+X-Google-Smtp-Source: AHgI3IZi9n1v6BYfISfADbqQLufHezmPHIqiJiJUI3/6IPWV+cI2byGpqq/pa18Sn/cvn8B5knGS2w==
+X-Received: by 2002:a17:906:ee2:: with SMTP id x2mr16832980eji.202.1550498631380;
+        Mon, 18 Feb 2019 06:03:51 -0800 (PST)
+Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
+        by smtp.gmail.com with ESMTPSA id w48sm1421606eda.88.2019.02.18.06.03.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 18 Feb 2019 06:03:50 -0800 (PST)
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Esben Haabendal <esben@haabendal.dk>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Cc:     Patrick Havelange <patrick.havelange@essensium.com>
+Subject: [PATCH 4/8] dt-bindings: iio/counter: ftm-quaddec
+Date:   Mon, 18 Feb 2019 15:03:17 +0100
+Message-Id: <20190218140321.19166-4-patrick.havelange@essensium.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190218140321.19166-1-patrick.havelange@essensium.com>
+References: <20190218140321.19166-1-patrick.havelange@essensium.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-unlikely has already included in IS_ERR(),
-so just remove redundant unlikely annotation.
+FlexTimer quadrature decoder driver.
 
-Signed-off-by: Chengguang Xu <cgxu519@gmx.com>
+Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 ---
- drivers/iio/trigger/iio-trig-loop.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../bindings/iio/counter/ftm-quaddec.txt       | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/counter/ftm-quaddec.txt
 
-diff --git a/drivers/iio/trigger/iio-trig-loop.c b/drivers/iio/trigger/iio-trig-loop.c
-index 94a90e0a3fdb..9258d3cf149b 100644
---- a/drivers/iio/trigger/iio-trig-loop.c
-+++ b/drivers/iio/trigger/iio-trig-loop.c
-@@ -60,7 +60,7 @@ static int iio_loop_trigger_set_state(struct iio_trigger *trig, bool state)
- 	if (state) {
- 		loop_trig->task = kthread_run(iio_loop_thread,
- 					      trig, trig->name);
--		if (unlikely(IS_ERR(loop_trig->task))) {
-+		if (IS_ERR(loop_trig->task)) {
- 			dev_err(&trig->dev,
- 				"failed to create trigger loop thread\n");
- 			return PTR_ERR(loop_trig->task);
+diff --git a/Documentation/devicetree/bindings/iio/counter/ftm-quaddec.txt b/Documentation/devicetree/bindings/iio/counter/ftm-quaddec.txt
+new file mode 100644
+index 000000000000..4d18cd722074
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/counter/ftm-quaddec.txt
+@@ -0,0 +1,18 @@
++FlexTimer Quadrature decoder counter
++
++This driver exposes a simple counter for the quadrature decoder mode.
++
++Required properties:
++- compatible:		Must be "fsl,ftm-quaddec".
++- reg:			Must be set to the memory region of the flextimer.
++
++Optional property:
++- big-endian:		Access the device registers in big-endian mode.
++
++Example:
++		counter0: counter@29d0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29d0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
 -- 
-2.20.1
+2.17.1
 
