@@ -2,155 +2,290 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B493BC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:26:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A754BC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:42:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 86E2E2147C
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:26:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Wekbfpxx"
+	by mail.kernel.org (Postfix) with ESMTP id 6F2BB21773
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726213AbfBTQ0i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 11:26:38 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([81.169.146.175]:25222 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725806AbfBTQ0i (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 11:26:38 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550679995;
-        s=strato-dkim-0002; d=goldelico.com;
-        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=38npVTSk79CYr/muKAs9IwN6DMdJ6DzoI417b2xdfK0=;
-        b=Wekbfpxxhl1B7PeOoeNlZM5yC841m61bnyKOdYgSkqf8Op4ej9BgP7bytDlvQ5NXrJ
-        XUkMzq6IHIfoUOwXiC5eye2TIFIgYVzgIM0tdr7KOENt8b5yKecRfPfM/b2FXD7e/RgE
-        8iGJEq1gbCbKgEzBDS3bovbCwMJpTdPbz4AoCFCH0zOGw9Hv/tZ3NNumSsrlDSHW9tzD
-        F1SpuNFJHpob0M490wMvNMLxCX5PPdInFXxKfxKV0cmdvHwcTp4CqFcaghnRSs0LOMrj
-        quH0K5BBM6Zo0JQLFM8RnVXaxuu4GX+ZRFCN3F6u4RbY0vQZJTQHIM6MaoRTeYMvHiHQ
-        QJYw==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NMGH/ztwDXG"
-X-RZG-CLASS-ID: mo00
-Received: from mbp-13-nikolaus.fritz.box
-        by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KGQYFdn
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Wed, 20 Feb 2019 17:26:34 +0100 (CET)
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH 0/9] iio mount matrix - revitalize missing bindings documentation and provide code for bmc150, bmg160, bma180, itg3200, hmc584x
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20190220161303.GY9224@smile.fi.intel.com>
-Date:   Wed, 20 Feb 2019 17:26:33 +0100
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
+        id S1726415AbfBTQmS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 11:42:18 -0500
+Received: from mga01.intel.com ([192.55.52.88]:57579 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725798AbfBTQmP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 11:42:15 -0500
+X-Amp-Result: UNKNOWN
+X-Amp-Original-Verdict: FILE UNKNOWN
+X-Amp-File-Uploaded: False
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2019 08:41:43 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.58,391,1544515200"; 
+   d="scan'208";a="119450048"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
+  by orsmga008.jf.intel.com with ESMTP; 20 Feb 2019 08:41:41 -0800
+Received: from andy by smile with local (Exim 4.92-RC6)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1gwUwG-00068u-1F; Wed, 20 Feb 2019 18:41:40 +0200
+Date:   Wed, 20 Feb 2019 18:41:40 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <3A9E6DFC-1A81-4503-9A92-547944BBDFC1@goldelico.com>
-References: <cover.1550671256.git.hns@goldelico.com> <20190220161303.GY9224@smile.fi.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-X-Mailer: Apple Mail (2.3124)
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [PATCH v1] iio: Allow to read mount matrix from ACPI
+Message-ID: <20190220164140.GC9224@smile.fi.intel.com>
+References: <20190220152052.31901-1-andriy.shevchenko@linux.intel.com>
+ <20190220160239.79f2566c@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190220160239.79f2566c@archlinux>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+On Wed, Feb 20, 2019 at 04:02:39PM +0000, Jonathan Cameron wrote:
+> On Wed, 20 Feb 2019 18:20:52 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> > Currently mount matrix is allowed in Device Tree, though there is
+> > no technical issue to extend it to support ACPI.
+> > 
+> > Convert the function to use device_property_read_string_array() and
+> > thus allow to read mount matrix from ACPI if available.
+> > 
+> > At the same time drop the "of" prefix from its name and
+> > convert current users.
+> > 
+> > No functional change intended.
+> > 
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> 
+> Hi Andy,
+> 
+> I sort of agree that there is no obvious reason to limit it to
+> DT. One corner that is unfortunate is that we have ACPI DSDT with
+> _OFT providing the same thing.  Neither is 'standard' as such.
 
-> Am 20.02.2019 um 17:13 schrieb Andy Shevchenko =
-<andriy.shevchenko@linux.intel.com>:
->=20
-> On Wed, Feb 20, 2019 at 03:00:47PM +0100, H. Nikolaus Schaller wrote:
->> This patch series adds the mount-matrix to several iio sensor drivers
->> used in handheld devices.
->>=20
->> The mount-matrix translates the quite arbitrary orientation of the =
-sensor
->> on some printed circuit board to user-tangible orientation in =
-handheld
->> devices that relates to typical screen orientation.
->>=20
->> There was a bindings documentation by Linus Walleij but the patch
->> did not make it into mainline. Therefore I resend it here.
->>=20
->> Next I have added some clarifications (at least I hope it clarifies)
->> in a second patch.
->>=20
->> Finally, the patch set implements the hooks for the mount matrix
->> in several iio drivers: bmc150, bma180, bmg160, itg3200, hmc5843.
->> This includes also one patch for the bma180 to convert it to devm =
-API.
->>=20
->> We use them in different variants of the omap3-gta04 so a separate
->> patch set will provide device tree additions for them.
->=20
-> Thanks for the patch, overall good stuff there.
-> Couple of things, though:
-> - address my comments (consider them against entire series)
-> - check my patch I sent today to support this from ACPI
->=20
-> I wouldn't like to spread more drivers use specific of_foo_bar stuff =
-where it's
-> easily to support everything (note: device_property_* calls supports =
-software
-> fw nodes as well).
->=20
-> Perhaps, you may incorporate my patch into your nice series.
+He-h, that _OFT should be parsed on per device basis. I'm tired of firmware
+writers that are (abusing / not using  in a clever way) ACPI features.
 
-Ok, that looks like a good proposal which avoids compile issues right
-from beginning of v2.
+> Also, could we have an example of what the DSDT would look like
+> to provide this for a device?  I'm too lazy to figure it out for
+> myself given you probably already know off the top of your head ;)
 
-BR and thanks,
-Nikolaus
+Sure.
 
->=20
->>=20
->>=20
->> H. Nikolaus Schaller (8):
->>  iio: bindings: clarifications for mount-matrix bindings
->>  iio: accel: bmc150: add mount matrix support
->>  iio: accel: bma180: add mount matrix support
->>  iio: accel: bma180: convert to devm
->>  iio: gyro: bmg160: add mount matrix support
->>  iio: gyro: itg3200: add mount matrix support
->>  iio: magnetometer: bmc150: add mount matrix support
->>  iio: magnetometer: hmc5843: add mount matrix support
->>=20
->> Linus Walleij (1):
->>  iio: document bindings for mounting matrices
->>=20
->> .../devicetree/bindings/iio/mount-matrix.txt  | 162 =
-++++++++++++++++++
->> drivers/iio/accel/bma180.c                    |  70 ++++----
->> drivers/iio/accel/bmc150-accel-core.c         |  19 ++
->> drivers/iio/gyro/bmg160_core.c                |  19 ++
->> drivers/iio/gyro/itg3200_core.c               |  18 ++
->> drivers/iio/magnetometer/bmc150_magn.c        |  19 ++
->> drivers/iio/magnetometer/hmc5843.h            |   1 +
->> drivers/iio/magnetometer/hmc5843_core.c       |  14 ++
->> include/linux/iio/gyro/itg3200.h              |   1 +
->> 9 files changed, 288 insertions(+), 35 deletions(-)
->> create mode 100644 =
-Documentation/devicetree/bindings/iio/mount-matrix.txt
->>=20
->> --=20
->> 2.19.1
->>=20
->=20
-> --=20
-> With Best Regards,
-> Andy Shevchenko
->=20
->=20
+Since it's an array of strings it would be as simple as
+
+
+Name (_DSD, Package ()
+{
+	ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+	Package ()
+	{
+		Package () { "mount-matrix", Package() {
+			"1", "0", "0",
+			"0", "0.866", "0.5",
+			"0", "-0.5", "0.866"
+		} }
+	}
+})
+
+Should I send a version with extended commit message?
+
+P.S. This is basically the example of any property that can be provided
+     via ACPI. Just add / replace name and value(s).
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/accel/kxsd9.c                  |  2 +-
+> >  drivers/iio/gyro/mpu3050-core.c            |  2 +-
+> >  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 +-
+> >  drivers/iio/industrialio-core.c            | 46 +++++++++-------------
+> >  drivers/iio/magnetometer/ak8974.c          |  2 +-
+> >  drivers/iio/magnetometer/ak8975.c          |  2 +-
+> >  include/linux/iio/iio.h                    |  4 +-
+> >  7 files changed, 25 insertions(+), 35 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> > index 0c0df4fce420..f73404ca715e 100644
+> > --- a/drivers/iio/accel/kxsd9.c
+> > +++ b/drivers/iio/accel/kxsd9.c
+> > @@ -420,7 +420,7 @@ int kxsd9_common_probe(struct device *dev,
+> >  	indio_dev->available_scan_masks = kxsd9_scan_masks;
+> >  
+> >  	/* Read the mounting matrix, if present */
+> > -	ret = of_iio_read_mount_matrix(dev,
+> > +	ret = iio_read_mount_matrix(dev,
+> >  				       "mount-matrix",
+> >  				       &st->orientation);
+> >  	if (ret)
+> > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+> > index 77fac81a3adc..0a7d0dde020e 100644
+> > --- a/drivers/iio/gyro/mpu3050-core.c
+> > +++ b/drivers/iio/gyro/mpu3050-core.c
+> > @@ -1149,7 +1149,7 @@ int mpu3050_common_probe(struct device *dev,
+> >  	mpu3050->divisor = 99;
+> >  
+> >  	/* Read the mounting matrix, if present */
+> > -	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
+> > +	ret = iio_read_mount_matrix(dev, "mount-matrix",
+> >  				       &mpu3050->orientation);
+> >  	if (ret)
+> >  		return ret;
+> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > index 1e428c196a82..e2c8e8ca324a 100644
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> > @@ -990,7 +990,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+> >  
+> >  	pdata = dev_get_platdata(dev);
+> >  	if (!pdata) {
+> > -		result = of_iio_read_mount_matrix(dev, "mount-matrix",
+> > +		result = iio_read_mount_matrix(dev, "mount-matrix",
+> >  						  &st->orientation);
+> >  		if (result) {
+> >  			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
+> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> > index 4f5cd9f60870..3baede140d69 100644
+> > --- a/drivers/iio/industrialio-core.c
+> > +++ b/drivers/iio/industrialio-core.c
+> > @@ -19,6 +19,7 @@
+> >  #include <linux/device.h>
+> >  #include <linux/fs.h>
+> >  #include <linux/poll.h>
+> > +#include <linux/property.h>
+> >  #include <linux/sched.h>
+> >  #include <linux/wait.h>
+> >  #include <linux/cdev.h>
+> > @@ -525,8 +526,8 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+> >  EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+> >  
+> >  /**
+> > - * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
+> > - *                              device-tree "mount-matrix" property
+> > + * iio_read_mount_matrix() - retrieve iio device mounting matrix from
+> > + *                           device "mount-matrix" property
+> >   * @dev:	device the mounting matrix property is assigned to
+> >   * @propname:	device specific mounting matrix property name
+> >   * @matrix:	where to store retrieved matrix
+> > @@ -536,40 +537,29 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+> >   *
+> >   * Return: 0 if success, or a negative error code on failure.
+> >   */
+> > -#ifdef CONFIG_OF
+> > -int of_iio_read_mount_matrix(const struct device *dev,
+> > -			     const char *propname,
+> > -			     struct iio_mount_matrix *matrix)
+> > +int iio_read_mount_matrix(struct device *dev, const char *propname,
+> > +			  struct iio_mount_matrix *matrix)
+> >  {
+> > -	if (dev->of_node) {
+> > -		int err = of_property_read_string_array(dev->of_node,
+> > -				propname, matrix->rotation,
+> > -				ARRAY_SIZE(iio_mount_idmatrix.rotation));
+> > +	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation); 
+> > +	int err;
+> >  
+> > -		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
+> > -			return 0;
+> > +	err = device_property_read_string_array(dev, propname,
+> > +						matrix->rotation, len);
+> > +	if (err == len)
+> > +		return 0;
+> >  
+> > -		if (err >= 0)
+> > -			/* Invalid number of matrix entries. */
+> > -			return -EINVAL;
+> > +	if (err >= 0)
+> > +		/* Invalid number of matrix entries. */
+> > +		return -EINVAL;
+> >  
+> > -		if (err != -EINVAL)
+> > -			/* Invalid matrix declaration format. */
+> > -			return err;
+> > -	}
+> > +	if (err != -EINVAL)
+> > +		/* Invalid matrix declaration format. */
+> > +		return err;
+> >  
+> >  	/* Matrix was not declared at all: fallback to identity. */
+> >  	return iio_setup_mount_idmatrix(dev, matrix);
+> >  }
+> > -#else
+> > -int of_iio_read_mount_matrix(const struct device *dev,
+> > -			     const char *propname,
+> > -			     struct iio_mount_matrix *matrix)
+> > -{
+> > -	return iio_setup_mount_idmatrix(dev, matrix);
+> > -}
+> > -#endif
+> > -EXPORT_SYMBOL(of_iio_read_mount_matrix);
+> > +EXPORT_SYMBOL(iio_read_mount_matrix);
+> >  
+> >  static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+> >  				  int size, const int *vals)
+> > diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> > index 93be1f4c0f27..9bf21e5fe3fc 100644
+> > --- a/drivers/iio/magnetometer/ak8974.c
+> > +++ b/drivers/iio/magnetometer/ak8974.c
+> > @@ -733,7 +733,7 @@ static int ak8974_probe(struct i2c_client *i2c,
+> >  	ak8974->i2c = i2c;
+> >  	mutex_init(&ak8974->lock);
+> >  
+> > -	ret = of_iio_read_mount_matrix(&i2c->dev,
+> > +	ret = iio_read_mount_matrix(&i2c->dev,
+> >  				       "mount-matrix",
+> >  				       &ak8974->orientation);
+> >  	if (ret)
+> > diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> > index d430b80808ef..dca20df1310e 100644
+> > --- a/drivers/iio/magnetometer/ak8975.c
+> > +++ b/drivers/iio/magnetometer/ak8975.c
+> > @@ -911,7 +911,7 @@ static int ak8975_probe(struct i2c_client *client,
+> >  	data->eoc_irq = 0;
+> >  
+> >  	if (!pdata) {
+> > -		err = of_iio_read_mount_matrix(&client->dev,
+> > +		err = iio_read_mount_matrix(&client->dev,
+> >  					       "mount-matrix",
+> >  					       &data->orientation);
+> >  		if (err)
+> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> > index a74cb177dc6f..bb10c1bee301 100644
+> > --- a/include/linux/iio/iio.h
+> > +++ b/include/linux/iio/iio.h
+> > @@ -130,8 +130,8 @@ struct iio_mount_matrix {
+> >  
+> >  ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+> >  			      const struct iio_chan_spec *chan, char *buf);
+> > -int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
+> > -			     struct iio_mount_matrix *matrix);
+> > +int iio_read_mount_matrix(struct device *dev, const char *propname,
+> > +			  struct iio_mount_matrix *matrix);
+> >  
+> >  typedef const struct iio_mount_matrix *
+> >  	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
+> 
+
+-- 
+With Best Regards,
+Andy Shevchenko
+
 
