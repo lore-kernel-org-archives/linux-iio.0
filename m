@@ -4,42 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C50EFC4151A
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5EFD6C4360F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9820E2146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C9CD2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="CdrY3jLv"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="eUjkD2yl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726441AbfBTOHD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 09:07:03 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.103]:21387 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfBTOHC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:02 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671620;
+        id S1726516AbfBTOHE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 09:07:04 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:14697 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726194AbfBTOHE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:04 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671622;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=XsPC/aju7F7ifIrh5ctlr6x24fEHYPUbd63O6lin5RY=;
-        b=CdrY3jLvSXGtny0ImCQKnw6TOAKvxvDeJm/oeRonIMWrPGlUYQ3hhp3v3qGcepydmI
-        UWE3tMR32g8+sciGM/XcpQk5+hF6BGHd+XsRlVNzx2kLDD4Bh6L38W7MzyPhBI83lQpJ
-        scTjv6Unm+l6HsgZuulviJac/KXWMvv8bdgph9MG/x48X7PEIBeSYr2r0ukjumqgkKQS
-        HI7jMSBTPLmBl4F/8YtGNN9ICOGyWhoFmQ2PXB7OAeW62FmmhoNss09wrpnUsSwmT9SB
-        AxO1uwxR3VqLRlxNB3tWFgpnHCFOtNgbKLkEhGgJq8XiHuDU39hYhiZAqJ6NZ9ZrvTVW
-        A+ug==
+        bh=3YyYLwxG3hBqEadq6UfEYuZtABQsVtYz2+97qjPDuYg=;
+        b=eUjkD2yloCCyoWrBaSN1ymU6K3HniaQ6wSAz8yuGAyQHlq3eyY1thWVl/QHQbca6HR
+        djYsVNgx6jjAUoFbX+2gDNEh6ZShetQTBoqyjPQQmlHZ7CFnyfngqgKqKr1q2bHLoh7P
+        YK6mhqtHkTfJvn24+lHax4oxD0ZVHx7N144/yjCxWRnF7gP+D/FUhq3f4x2gUoIeaIok
+        LV8SiB29ZC3nmS/8SbUrWnUIgIfy6JwAPWdS/equhigCCZg8ysmmc3s8DaSnoYh4CjTl
+        2p7M5VJuQ1mRHf8OuzH/2w2VNyvNxd07taRLx5h5VrxeRxCcOFgdz+St0zMIX1nGwKIO
+        cC2g==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE10EqX
+        with ESMTPSA id 608499v1KE0wEqU
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:01:00 +0100 (CET)
+        Wed, 20 Feb 2019 15:00:58 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -54,9 +53,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 5/9] iio: accel: bma180: convert to devm
-Date:   Wed, 20 Feb 2019 15:00:52 +0100
-Message-Id: <900f59b94ef2e1b5559b363c0d1af4fefccd0366.1550671256.git.hns@goldelico.com>
+Subject: [PATCH 2/9] iio: bindings: clarifications for mount-matrix bindings
+Date:   Wed, 20 Feb 2019 15:00:49 +0100
+Message-Id: <aec7d48bcb514e37604be901f210c98ec1a52c02.1550671256.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
 References: <cover.1550671256.git.hns@goldelico.com>
@@ -67,116 +66,119 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This simplifies the code a little.
+This adds some clarifications and drawings to make the
+orientation of the X/Y/Z axis more clear and better
+prescribe how the values of the matrix are intended to
+be used.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/accel/bma180.c | 56 ++++++++++++++------------------------
- 1 file changed, 21 insertions(+), 35 deletions(-)
+ .../devicetree/bindings/iio/mount-matrix.txt  | 60 ++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index 248be67e4f41..3f5ee2d495d3 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -738,7 +738,7 @@ static int bma180_probe(struct i2c_client *client,
+diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+index a3714727f739..003279fd735b 100644
+--- a/Documentation/devicetree/bindings/iio/mount-matrix.txt
++++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+@@ -23,6 +23,8 @@ For a screen you probably want (x) coordinates to go from negative on the left
+ to positive on the right and (z) depth to be negative under the screen and
+ positive in front of it, toward the face of the user.
  
- 	ret = data->part_info->chip_config(data);
- 	if (ret < 0)
--		goto err_chip_disable;
-+		goto err;
- 
- 	mutex_init(&data->mutex);
- 	indio_dev->dev.parent = &client->dev;
-@@ -748,12 +748,25 @@ static int bma180_probe(struct i2c_client *client,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &bma180_info;
- 
-+	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
-+			bma180_trigger_handler, NULL);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
-+		goto err;
-+	}
++??? whatabout y-axis orientation - bottop-up or top-down?
 +
-+	ret = devm_iio_device_register(&client->dev, indio_dev);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "unable to register iio device\n");
-+		goto err;
-+	}
+ A sensor can be mounted in any angle along the axes relative to the frame of
+ reference. This means that the sensor may be flipped upside-down, left-right,
+ or tilted at any angle relative to the frame of reference.
+@@ -46,6 +48,20 @@ Device-to-world examples for some three-dimensional sensor types:
+   is held with its screen flat on the planets surface and 0 on the other axes,
+   as the gravity vector is projected 1:1 onto the sensors (z)-axis.
+ 
 +
- 	if (client->irq > 0) {
--		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
--			indio_dev->id);
-+		data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
-+			indio_dev->name, indio_dev->id);
- 		if (!data->trig) {
- 			ret = -ENOMEM;
--			goto err_chip_disable;
-+			goto err;
- 		}
++     (---------)
++     !         !           y: +g
++     !         !             ^
++     !         !             !
++     !         !
++     !         !  x; -g <- z: +g  -> x: +g
++     ! 1  2  3 !
++     ! 4  5  6 !             !
++     ! 7  8  9 !             v
++     ! *  0  # !           y: -g
++     (---------)
++
++
+ - Magnetometers (compasses) have their world frame of reference relative to the
+   geomagnetic field. The system orientation vis-a-vis the world is defined with
+   respect to the local earth geomagnetic reference frame where (y) is in the
+@@ -53,6 +69,22 @@ Device-to-world examples for some three-dimensional sensor types:
+   perpendicular to the North axis and positive towards the East and (z) is
+   perpendicular to the ground plane and positive upwards.
  
- 		ret = devm_request_irq(&client->dev, client->irq,
-@@ -761,7 +774,7 @@ static int bma180_probe(struct i2c_client *client,
- 			"bma180_event", data->trig);
- 		if (ret) {
- 			dev_err(&client->dev, "unable to request IRQ\n");
--			goto err_trigger_free;
-+			goto err;
- 		}
++
++     ^^^ North: y > 0
++
++     (---------)
++     !         !
++     !         !
++     !         !
++     !         !  >
++     !         !  > North: x > 0
++     ! 1  2  3 !  >
++     ! 4  5  6 !
++     ! 7  8  9 !
++     ! *  0  # !
++     (---------)
++
++
+ - Gyroscopes detects the movement relative the device itself. The angular
+   velocity is defined as orthogonal to the plane of rotation, so if you put the
+   device on a flat surface and spin it around the z axis (such as rotating a
+@@ -60,6 +92,20 @@ Device-to-world examples for some three-dimensional sensor types:
+   along the (z) axis if rotated clockwise, and a positive value if rotated
+   counter-clockwise according to the right-hand rule.
  
- 		data->trig->dev.parent = &client->dev;
-@@ -769,34 +782,14 @@ static int bma180_probe(struct i2c_client *client,
- 		iio_trigger_set_drvdata(data->trig, indio_dev);
- 		indio_dev->trig = iio_trigger_get(data->trig);
++
++     (---------)     y > 0
++     !         !     v---\
++     !         !
++     !         !
++     !         !      <--\
++     !         !         ! z > 0
++     ! 1  2  3 !       --/
++     ! 4  5  6 !
++     ! 7  8  9 !
++     ! *  0  # !
++     (---------)
++
++
+ So unless the sensor is ideally mounted, we need a means to indicate the
+ relative orientation of any given sensor of this type with respect to the
+ frame of reference.
+@@ -76,9 +122,15 @@ https://en.wikipedia.org/wiki/Rotation_matrix
  
--		ret = iio_trigger_register(data->trig);
-+		ret = devm_iio_trigger_register(&client->dev, data->trig);
- 		if (ret)
--			goto err_trigger_free;
--	}
--
--	ret = iio_triggered_buffer_setup(indio_dev, NULL,
--			bma180_trigger_handler, NULL);
--	if (ret < 0) {
--		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
--		goto err_trigger_unregister;
--	}
--
--	ret = iio_device_register(indio_dev);
--	if (ret < 0) {
--		dev_err(&client->dev, "unable to register iio device\n");
--		goto err_buffer_cleanup;
-+			goto err;
- 	}
+ The mounting matrix has the layout:
  
- 	return 0;
+- (x0, y0, z0)
+- (x1, y1, z1)
+- (x2, y2, z3)
++ (mxx, myx, mzx)
++ (mxy, myy, mzy)
++ (mxz, myz, mzz)
++
++Values are intended to be multiplied as:
++
++  x' = mxx * x + myx * y + mzx * z
++  y' = mxy * x + myy * y + mzy * z
++  z' = mxz * x + myz * y + mzz * z
  
--err_buffer_cleanup:
--	iio_triggered_buffer_cleanup(indio_dev);
--err_trigger_unregister:
--	if (data->trig)
--		iio_trigger_unregister(data->trig);
--err_trigger_free:
--	iio_trigger_free(data->trig);
--err_chip_disable:
-+err:
- 	data->part_info->chip_disable(data);
- 
- 	return ret;
-@@ -807,13 +800,6 @@ static int bma180_remove(struct i2c_client *client)
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct bma180_data *data = iio_priv(indio_dev);
- 
--	iio_device_unregister(indio_dev);
--	iio_triggered_buffer_cleanup(indio_dev);
--	if (data->trig) {
--		iio_trigger_unregister(data->trig);
--		iio_trigger_free(data->trig);
--	}
--
- 	mutex_lock(&data->mutex);
- 	data->part_info->chip_disable(data);
- 	mutex_unlock(&data->mutex);
+ And it is represented as an array of strings containing the real values for
+ producing the transformation matrix. The real values use a decimal point and
+@@ -106,3 +158,5 @@ upside-down:
+ mount-matrix = "0.998", "0.054", "0",
+                "-0.054", "0.998", "0",
+                "0", "0", "1";
++
++??? does not match "180 degrees" - factors indicate ca. 3 degrees compensation
 -- 
 2.19.1
 
