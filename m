@@ -2,138 +2,285 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D68CC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:24:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18F2BC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:31:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2290D2147A
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:24:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFA9521841
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:31:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550687040;
-	bh=lYGfJpYLNnnp7CHqcE5YIq/veFJuIhIRZfTjzCT7OII=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=qpTa2QQDw9viRvvcYjCuHRpuFSRom9RByzdSLlCW2NcRWnzo2saSRn8/srsQzDqST
-	 2LU1hfHhn9RxD2PGlcA2iUveNOQaRwA+ukVe1wqq1KcLx3QkCb0+OAnf6T4qLHFFDL
-	 jxhmkMeMT0eLsko3Yg3OnbbV94dRH8Ul9H0o6db8=
+	s=default; t=1550687495;
+	bh=VNZ4Z1Ktj7YoCNLfO05RpEyZdcPIDz3Ph5T1OZeiChU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=FUzjQ5RzghimUQKDLVG8JrdJ2kUeSflJsviOj2IGLeNx/wEx0JtNallc8DM6MGcs+
+	 HERyA5LDlOwIef5639LdUG+vZBBLM10ePDo2tZ4wdawhtvuik0oPWqMDlkNG3RmqR1
+	 vUTbqm4zh1bDL9jBaeCx00zPG7yxmPZifarQ9NYk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726084AbfBTSX7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 13:23:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45016 "EHLO mail.kernel.org"
+        id S1725836AbfBTSbf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 13:31:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46132 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726078AbfBTSX7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 13:23:59 -0500
-Received: from localhost.localdomain (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1725834AbfBTSbf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 13:31:35 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2ACE0206B7;
-        Wed, 20 Feb 2019 18:23:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 629BD2146E;
+        Wed, 20 Feb 2019 18:31:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550687038;
-        bh=lYGfJpYLNnnp7CHqcE5YIq/veFJuIhIRZfTjzCT7OII=;
-        h=From:To:Cc:Subject:Date:From;
-        b=1owYn4ik0WJ7rN7kQXZP6e5sMwapF9BR6zDumjm3E/Cd8L5RQ7o2lKStV1oUkaCAb
-         cNhOfa7mDkFkvonwVUw1wnB/Ju0YT6kqr4GABM4n0Ejb5GUkQNonT27Yv156vIAPLw
-         iRDoTWDqvdlulSMUwRcS69W+XcAMhjuaBKt2eH70=
-From:   jic23@kernel.org
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH] iio:dac:ad5064 mlock cleanup - move to a local lock.
-Date:   Wed, 20 Feb 2019 18:23:44 +0000
-Message-Id: <20190220182344.19236-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.20.1
+        s=default; t=1550687493;
+        bh=VNZ4Z1Ktj7YoCNLfO05RpEyZdcPIDz3Ph5T1OZeiChU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=vhe7uL/+9hNBPGPE20SEGelE5GmYMtDAVcNFTXJj7qPsR9oKkNANojUnEuPoKkPCf
+         lvNaCSYh1sxEVu1LWY3raEke5Xw+xn533z25ME+3xEo0RPceVDssPJzd23AOCcbTGH
+         /pAbGjbQQSxIXgCH6WH+snheDST/LVnfMUWsxwJk=
+Date:   Wed, 20 Feb 2019 18:31:28 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: Re: [PATCH v2] iio: Allow to read mount matrix from ACPI
+Message-ID: <20190220183128.4ff6f950@archlinux>
+In-Reply-To: <20190220175441.31455-1-andriy.shevchenko@linux.intel.com>
+References: <20190220175441.31455-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Wed, 20 Feb 2019 20:54:41 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-indio_dev->mlock is intended to protect state transitions in
-the core. It's scope is tightly defined. For device specific
-uses such as those made here, we should define a local lock
-allowing the scope of the lock to be defined near to what it
-is protecting.
+> Currently mount matrix is allowed in Device Tree, though there is
+> no technical issue to extend it to support ACPI.
+> 
+> Convert the function to use device_property_read_string_array() and
+> thus allow to read mount matrix from ACPI if available.
+> 
+> Example of use in _DSD method:
+> 
+>   Name (_DSD, Package ()
+>   {
+>      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+>      Package ()
+>      {
+>         Package () { "mount-matrix", Package() {
+>                 "1", "0",     "0",
+>                 "0", "0.866", "0.5",
+>                 "0", "-0.5",  "0.866",
+>         } },
+>      }
+>   })
+> 
+> At the same time drop the "of" prefix from its name and
+> convert current users.
+> 
+> No functional change intended.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+You got a stray white space. I'll fix up.
 
-These mlock changes can be non obvious, but given we don't do
-anything other than direct for DACs, these ones are easy to do.
+Would like this to sit for a few days though before I take it.
+We have missed this merge window anyway so no rush.
 
-If anyone wants to help with this particular effort it would
-be most welcome!
+Jonathan
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/iio/dac/ad5064.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 2f98cb2a3b96..6c3ba143839b 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -112,6 +112,8 @@ struct ad5064_state {
- 	bool				use_internal_vref;
- 
- 	ad5064_write_func		write;
-+	/* Lock used to maintain consistency between cached and dev state */
-+	struct mutex lock;
- 
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
-@@ -248,11 +250,11 @@ static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
- 	struct ad5064_state *st = iio_priv(indio_dev);
- 	int ret;
- 
--	mutex_lock(&indio_dev->mlock);
-+	mutex_lock(&st->lock);
- 	st->pwr_down_mode[chan->channel] = mode + 1;
- 
- 	ret = ad5064_sync_powerdown_mode(st, chan);
--	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&st->lock);
- 
- 	return ret;
- }
-@@ -291,11 +293,11 @@ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
- 
--	mutex_lock(&indio_dev->mlock);
-+	mutex_lock(&st->lock);
- 	st->pwr_down[chan->channel] = pwr_down;
- 
- 	ret = ad5064_sync_powerdown_mode(st, chan);
--	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&st->lock);
- 	return ret ? ret : len;
- }
- 
-@@ -349,12 +351,12 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
--		mutex_lock(&indio_dev->mlock);
-+		mutex_lock(&st->lock);
- 		ret = ad5064_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
- 				chan->address, val, chan->scan_type.shift);
- 		if (ret == 0)
- 			st->dac_cache[chan->channel] = val;
--		mutex_unlock(&indio_dev->mlock);
-+		mutex_unlock(&st->lock);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -856,6 +858,7 @@ static int ad5064_probe(struct device *dev, enum ad5064_type type,
- 		return  -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
-+	mutex_init(&st->lock);
- 	dev_set_drvdata(dev, indio_dev);
- 
- 	st->chip_info = &ad5064_chip_info_tbl[type];
--- 
-2.20.1
+> ---
+> 
+> - added _DSD example
+> - fixed indentation
+> 
+>  drivers/iio/accel/kxsd9.c                  |  4 +-
+>  drivers/iio/gyro/mpu3050-core.c            |  3 +-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  4 +-
+>  drivers/iio/industrialio-core.c            | 46 +++++++++-------------
+>  drivers/iio/magnetometer/ak8974.c          |  5 +--
+>  drivers/iio/magnetometer/ak8975.c          |  5 +--
+>  include/linux/iio/iio.h                    |  4 +-
+>  7 files changed, 28 insertions(+), 43 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index 0c0df4fce420..70c60db62247 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -420,9 +420,7 @@ int kxsd9_common_probe(struct device *dev,
+>  	indio_dev->available_scan_masks = kxsd9_scan_masks;
+>  
+>  	/* Read the mounting matrix, if present */
+> -	ret = of_iio_read_mount_matrix(dev,
+> -				       "mount-matrix",
+> -				       &st->orientation);
+> +	ret = iio_read_mount_matrix(dev, "mount-matrix", &st->orientation);
+>  	if (ret)
+>  		return ret;
+>  
+> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+> index 77fac81a3adc..8200e48f561b 100644
+> --- a/drivers/iio/gyro/mpu3050-core.c
+> +++ b/drivers/iio/gyro/mpu3050-core.c
+> @@ -1149,8 +1149,7 @@ int mpu3050_common_probe(struct device *dev,
+>  	mpu3050->divisor = 99;
+>  
+>  	/* Read the mounting matrix, if present */
+> -	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
+> -				       &mpu3050->orientation);
+> +	ret = iio_read_mount_matrix(dev, "mount-matrix", &mpu3050->orientation);
+>  	if (ret)
+>  		return ret;
+>  
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 1e428c196a82..533d1f8321ac 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -990,8 +990,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  
+>  	pdata = dev_get_platdata(dev);
+>  	if (!pdata) {
+> -		result = of_iio_read_mount_matrix(dev, "mount-matrix",
+> -						  &st->orientation);
+> +		result = iio_read_mount_matrix(dev, "mount-matrix",
+> +					       &st->orientation);
+>  		if (result) {
+>  			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
+>  				result);
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 4f5cd9f60870..3baede140d69 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -19,6 +19,7 @@
+>  #include <linux/device.h>
+>  #include <linux/fs.h>
+>  #include <linux/poll.h>
+> +#include <linux/property.h>
+>  #include <linux/sched.h>
+>  #include <linux/wait.h>
+>  #include <linux/cdev.h>
+> @@ -525,8 +526,8 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+>  EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+>  
+>  /**
+> - * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
+> - *                              device-tree "mount-matrix" property
+> + * iio_read_mount_matrix() - retrieve iio device mounting matrix from
+> + *                           device "mount-matrix" property
+>   * @dev:	device the mounting matrix property is assigned to
+>   * @propname:	device specific mounting matrix property name
+>   * @matrix:	where to store retrieved matrix
+> @@ -536,40 +537,29 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+>   *
+>   * Return: 0 if success, or a negative error code on failure.
+>   */
+> -#ifdef CONFIG_OF
+> -int of_iio_read_mount_matrix(const struct device *dev,
+> -			     const char *propname,
+> -			     struct iio_mount_matrix *matrix)
+> +int iio_read_mount_matrix(struct device *dev, const char *propname,
+> +			  struct iio_mount_matrix *matrix)
+>  {
+> -	if (dev->of_node) {
+> -		int err = of_property_read_string_array(dev->of_node,
+> -				propname, matrix->rotation,
+> -				ARRAY_SIZE(iio_mount_idmatrix.rotation));
+> +	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation); 
+Space at end of line above.
+
+> +	int err;
+>  
+> -		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
+> -			return 0;
+> +	err = device_property_read_string_array(dev, propname,
+> +						matrix->rotation, len);
+> +	if (err == len)
+> +		return 0;
+>  
+> -		if (err >= 0)
+> -			/* Invalid number of matrix entries. */
+> -			return -EINVAL;
+> +	if (err >= 0)
+> +		/* Invalid number of matrix entries. */
+> +		return -EINVAL;
+>  
+> -		if (err != -EINVAL)
+> -			/* Invalid matrix declaration format. */
+> -			return err;
+> -	}
+> +	if (err != -EINVAL)
+> +		/* Invalid matrix declaration format. */
+> +		return err;
+>  
+>  	/* Matrix was not declared at all: fallback to identity. */
+>  	return iio_setup_mount_idmatrix(dev, matrix);
+>  }
+> -#else
+> -int of_iio_read_mount_matrix(const struct device *dev,
+> -			     const char *propname,
+> -			     struct iio_mount_matrix *matrix)
+> -{
+> -	return iio_setup_mount_idmatrix(dev, matrix);
+> -}
+> -#endif
+> -EXPORT_SYMBOL(of_iio_read_mount_matrix);
+> +EXPORT_SYMBOL(iio_read_mount_matrix);
+>  
+>  static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>  				  int size, const int *vals)
+> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> index 93be1f4c0f27..f4d0a6c0fde7 100644
+> --- a/drivers/iio/magnetometer/ak8974.c
+> +++ b/drivers/iio/magnetometer/ak8974.c
+> @@ -733,9 +733,8 @@ static int ak8974_probe(struct i2c_client *i2c,
+>  	ak8974->i2c = i2c;
+>  	mutex_init(&ak8974->lock);
+>  
+> -	ret = of_iio_read_mount_matrix(&i2c->dev,
+> -				       "mount-matrix",
+> -				       &ak8974->orientation);
+> +	ret = iio_read_mount_matrix(&i2c->dev, "mount-matrix",
+> +				    &ak8974->orientation);
+>  	if (ret)
+>  		return ret;
+>  
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index d430b80808ef..db7214ac514c 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -911,9 +911,8 @@ static int ak8975_probe(struct i2c_client *client,
+>  	data->eoc_irq = 0;
+>  
+>  	if (!pdata) {
+> -		err = of_iio_read_mount_matrix(&client->dev,
+> -					       "mount-matrix",
+> -					       &data->orientation);
+> +		err = iio_read_mount_matrix(&client->dev, "mount-matrix",
+> +					    &data->orientation);
+>  		if (err)
+>  			return err;
+>  	} else
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index a74cb177dc6f..bb10c1bee301 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -130,8 +130,8 @@ struct iio_mount_matrix {
+>  
+>  ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+>  			      const struct iio_chan_spec *chan, char *buf);
+> -int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
+> -			     struct iio_mount_matrix *matrix);
+> +int iio_read_mount_matrix(struct device *dev, const char *propname,
+> +			  struct iio_mount_matrix *matrix);
+>  
+>  typedef const struct iio_mount_matrix *
+>  	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
 
