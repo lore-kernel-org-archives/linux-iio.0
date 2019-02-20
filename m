@@ -4,51 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 746B9C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 11:39:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0430BC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 11:50:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3B32020C01
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 11:39:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BC63220C01
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 11:50:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550662780;
-	bh=nKe5OxFGPEEdeg4FSILn38n1AbI/2H7u9qAXI8g4rJI=;
+	s=default; t=1550663438;
+	bh=pSw1aYmKuJXm3uSxXOHm/soDtFK9+aL9zcq1tn9NfWA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=IySMMZo8PHvcAJCS/KZLt5RGRAUH1Y/6xoUUl/Ljmp6971NGButZWiRYgC1R34/TV
-	 trNdaPdqAOQ5ZtyPtGMxw1MUdCbnrnDOwao3fcqQhfpt6Pnihroxt1UuQ6iMsjidCq
-	 RkANp41A8+qtsK8Gxgz8KIFalh0/JS2aPq5C9ZvM=
+	b=pFd6SaRiakVVlABK3WQeRi2EmcMLmK8F2r463GLyIBW04QatEufVfEg7w3C55pG5O
+	 sWbLjhFOTXjgZf9Lm87wd7SDpW1zzq4VjBWC/JN9+QRI5CMgMZmVOMTb1vNxF6f75s
+	 01AI0Boi3YHX0qveEDdOuRTra3ZEv2f8e/e5pOIg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726197AbfBTLjj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 06:39:39 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57418 "EHLO mail.kernel.org"
+        id S1726414AbfBTLui (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 06:50:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbfBTLjj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 06:39:39 -0500
+        id S1726360AbfBTLuh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 06:50:37 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7C6692089F;
-        Wed, 20 Feb 2019 11:39:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 380732086C;
+        Wed, 20 Feb 2019 11:50:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550662778;
-        bh=nKe5OxFGPEEdeg4FSILn38n1AbI/2H7u9qAXI8g4rJI=;
+        s=default; t=1550663436;
+        bh=pSw1aYmKuJXm3uSxXOHm/soDtFK9+aL9zcq1tn9NfWA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ebNWFKTyw98pdtQuZ0iCNPuXLdRf/X3/PaeUkc8v2szmpLrPfMLgugeRIhtPhaw+C
-         +V9sjtAkvbf+HkaGxt/pyO/hvVGtQdOeMHiba30G58Cw2pty1jmPr03j2/+jrU74PI
-         gWs5pOiN6I/52sRI2kDCeYl8WjXvIzitPeLOyTDc=
-Date:   Wed, 20 Feb 2019 11:39:34 +0000
+        b=sv22PkZBYqg/ssR3ysOE3fPKu+9k9ycE9VX0b5uOIT28J2mouCen+xYlD/M2JMfJU
+         0pwZ+AqYFEf3n/966HMAN2exQhliSKHxkJ47RNVzDjcX4NSzTNfysnLSaORno1TAR+
+         lWxacoXOqwbrgDXa2b8VCN1LTIa6aOpeLOOEsjsE=
+Date:   Wed, 20 Feb 2019 11:50:30 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Cc:     Leonard Pollak <leonardp@tr-host.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] Staging: iio: meter: fixed typo
-Message-ID: <20190220113934.68c85449@archlinux>
-In-Reply-To: <BY1PR0301MB090177F0A5F558A90D7A87088E660@BY1PR0301MB0901.namprd03.prod.outlook.com>
-References: <20190213101952.29816-1-leonardp@tr-host.de>
-        <BY1PR0301MB090177F0A5F558A90D7A87088E660@BY1PR0301MB0901.namprd03.prod.outlook.com>
+To:     Beniamin Bia <beniamin.bia@analog.com>
+Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
+        <biabeniamin@outlook.com>
+Subject: Re: [PATCH v2 1/2] staging: iio: frequency: ad9834: Move frequency
+ to standard iio types
+Message-ID: <20190220115030.0de87cfc@archlinux>
+In-Reply-To: <20190214164130.30085-1-beniamin.bia@analog.com>
+References: <20190214164130.30085-1-beniamin.bia@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,50 +59,275 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 13 Feb 2019 10:25:18 +0000
-"Hennerich, Michael" <Michael.Hennerich@analog.com> wrote:
+On Thu, 14 Feb 2019 18:41:29 +0200
+Beniamin Bia <beniamin.bia@analog.com> wrote:
 
-> > -----Original Message-----
-> > From: leonard.pollak@tr-host.de [mailto:leonard.pollak@tr-host.de] On Behalf Of Leonard Pollak
-> > Sent: Mittwoch, 13. Februar 2019 11:20
-> > To: jic23@kernel.org; lars@metafoo.de; pmeerw@pmeerw.net; Hennerich, Michael <Michael.Hennerich@analog.com>
-> > Cc: linux-iio@vger.kernel.org; Leonard Pollak <leonardp@tr-host.de>
-> > Subject: [PATCH] Staging: iio: meter: fixed typo
-> > 
-> > This patch fixes an obvious typo, which will cause erroneously returning the Peak
-> > Voltage instead of the Peak Current.
-> > 
-> > Signed-off-by: Leonard Pollak <leonardp@tr-host.de>  
+> Frequency attribute is added with a standard type from iio framework
+> instead of custom attribute. This is a small step towards removing any
+> unnecessary custom attribute. Ad9834 will diverge from ad9833 in the
+> future, that is why we have two identical arrays for ad9834 and 9833.
 > 
-> Acked-by: Michael Hennerich <michael.hennerich@analog.com>
-Applied to the fixes-togreg branch of iio.git, marked for stable.
+> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+Hi Beniamin
 
-Will probably not go upstream until after the coming merge window.
-It's been broken a 'while' so I'm not going to rush it in.
+When you make a change like this, please explain in detail how the ABI
+changes.  Here I'm not sure we can actually map it to channels like this.
+We are controlling the two frequencies of FSK not independent channels.
+
+The ABI around this needs very careful thinking out.  I would document
+your proposed ABI first and share that.  Once we reach agreement on the
+ABI, the actual code should be more straight forward!
 
 Thanks,
 
 Jonathan
 
+> ---
+> Changes in v2:
+> 	-the personal email address was replaced by the work email
+> 	-separate define for frequency channel
+> 	-address field from channel specification was removed
+> 	-frequency variables were replaced by an array
+> 	-specified in comment why we have differente chan_spec for ad9834 and ad9833
+> 	-enum used for write_frequency function
 > 
-> > ---
-> >  drivers/staging/iio/meter/ade7854.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
-> > index 029c3bf42d4d..07774c000c5a 100644
-> > --- a/drivers/staging/iio/meter/ade7854.c
-> > +++ b/drivers/staging/iio/meter/ade7854.c
-> > @@ -269,7 +269,7 @@ static IIO_DEV_ATTR_VPEAK(0644,
-> >  static IIO_DEV_ATTR_IPEAK(0644,
-> >                 ade7854_read_32bit,
-> >                 ade7854_write_32bit,
-> > -               ADE7854_VPEAK);
-> > +               ADE7854_IPEAK);
-> >  static IIO_DEV_ATTR_APHCAL(0644,
-> >                 ade7854_read_16bit,
-> >                 ade7854_write_16bit,
-> > --
-> > 2.17.1  
+>  drivers/staging/iio/frequency/ad9834.c | 110 ++++++++++++++++++++-----
+>  1 file changed, 91 insertions(+), 19 deletions(-)
 > 
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+> index f036f75d1f22..561617046c20 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -81,6 +81,8 @@ struct ad9834_state {
+>  	struct spi_message		freq_msg;
+>  	struct mutex                    lock;   /* protect sensor state */
+>  
+> +	unsigned long			frequency[2];
+> +
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> @@ -89,6 +91,11 @@ struct ad9834_state {
+>  	__be16				freq_data[2];
+>  };
+>  
+> +enum ad9834_ch_addr {
+> +	AD9834_CHANNEL_ADDRESS0,
+> +	AD9834_CHANNEL_ADDRESS1,
+> +};
+> +
+>  /**
+>   * ad9834_supported_device_ids:
+>   */
+> @@ -100,6 +107,24 @@ enum ad9834_supported_device_ids {
+>  	ID_AD9838,
+>  };
+>  
+> +#define AD9833_CHANNEL(chan) {						\
+> +		.type = IIO_ALTVOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.output = 1,						\
+> +		.channel = (chan),					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY)	\
+> +}
+> +
+> +static const struct iio_chan_spec ad9833_channels[] = {
+> +	AD9833_CHANNEL(0),
+> +	AD9833_CHANNEL(1),
+> +};
+> +
+> +static const struct iio_chan_spec ad9834_channels[] = {
+> +	AD9833_CHANNEL(0),
+> +	AD9833_CHANNEL(1),
+> +};
+> +
+>  static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
+>  {
+>  	unsigned long long freqreg = (u64)fout * (u64)BIT(AD9834_FREQ_BITS);
+> @@ -109,10 +134,12 @@ static unsigned int ad9834_calc_freqreg(unsigned long mclk, unsigned long fout)
+>  }
+>  
+>  static int ad9834_write_frequency(struct ad9834_state *st,
+> -				  unsigned long addr, unsigned long fout)
+> +				  enum ad9834_ch_addr addr,
+> +				  unsigned long fout)
+>  {
+>  	unsigned long clk_freq;
+>  	unsigned long regval;
+> +	int ret;
+>  
+>  	clk_freq = clk_get_rate(st->mclk);
+>  
+> @@ -121,13 +148,27 @@ static int ad9834_write_frequency(struct ad9834_state *st,
+>  
+>  	regval = ad9834_calc_freqreg(clk_freq, fout);
+>  
+> -	st->freq_data[0] = cpu_to_be16(addr | (regval &
+> -				       RES_MASK(AD9834_FREQ_BITS / 2)));
+> -	st->freq_data[1] = cpu_to_be16(addr | ((regval >>
+> -				       (AD9834_FREQ_BITS / 2)) &
+> -				       RES_MASK(AD9834_FREQ_BITS / 2)));
+> +	if (addr == AD9834_CHANNEL_ADDRESS0) {
+
+So this if statement picks between the two addresses with no other differences?
+That's fine, but use a local variable for the register address to simplify
+the code.
+
+> +		st->freq_data[0] = cpu_to_be16(AD9834_REG_FREQ0 | (regval &
+> +					       RES_MASK(AD9834_FREQ_BITS / 2)));
+> +		st->freq_data[1] = cpu_to_be16(AD9834_REG_FREQ0 | ((regval >>
+> +					       (AD9834_FREQ_BITS / 2)) &
+> +					       RES_MASK(AD9834_FREQ_BITS / 2)));
+> +	} else {
+> +		st->freq_data[0] = cpu_to_be16(AD9834_REG_FREQ1 | (regval &
+> +					       RES_MASK(AD9834_FREQ_BITS / 2)));
+> +		st->freq_data[1] = cpu_to_be16(AD9834_REG_FREQ1 | ((regval >>
+> +					       (AD9834_FREQ_BITS / 2)) &
+> +					       RES_MASK(AD9834_FREQ_BITS / 2)));
+> +	}
+> +
+> +	ret = spi_sync(st->spi, &st->freq_msg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	st->frequency[(int)addr] = fout;
+>  
+> -	return spi_sync(st->spi, &st->freq_msg);
+> +	return 0;
+>  }
+>  
+>  static int ad9834_write_phase(struct ad9834_state *st,
+> @@ -140,6 +181,39 @@ static int ad9834_write_phase(struct ad9834_state *st,
+>  	return spi_sync(st->spi, &st->msg);
+>  }
+>  
+> +static int ad9834_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2, long mask)
+> +{
+> +	struct ad9834_state *st = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_FREQUENCY:
+> +		*val = st->frequency[chan->channel];
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static int ad9834_write_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int val, int val2, long mask)
+> +{
+> +	struct ad9834_state *st = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_FREQUENCY:
+> +		return ad9834_write_frequency(st,
+> +					      (enum ad9834_ch_addr)chan->channel,
+> +					      val);
+> +	default:
+> +		return  -EINVAL;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static ssize_t ad9834_write(struct device *dev,
+>  			    struct device_attribute *attr,
+>  			    const char *buf,
+> @@ -157,10 +231,6 @@ static ssize_t ad9834_write(struct device *dev,
+>  
+>  	mutex_lock(&st->lock);
+>  	switch ((u32)this_attr->address) {
+> -	case AD9834_REG_FREQ0:
+> -	case AD9834_REG_FREQ1:
+> -		ret = ad9834_write_frequency(st, this_attr->address, val);
+> -		break;
+>  	case AD9834_REG_PHASE0:
+>  	case AD9834_REG_PHASE1:
+>  		ret = ad9834_write_phase(st, this_attr->address, val);
+> @@ -323,8 +393,6 @@ static IIO_DEVICE_ATTR(out_altvoltage0_out1_wavetype_available, 0444,
+>   * see dds.h for further information
+>   */
+>  
+> -static IIO_DEV_ATTR_FREQ(0, 0, 0200, NULL, ad9834_write, AD9834_REG_FREQ0);
+> -static IIO_DEV_ATTR_FREQ(0, 1, 0200, NULL, ad9834_write, AD9834_REG_FREQ1);
+>  static IIO_DEV_ATTR_FREQSYMBOL(0, 0200, NULL, ad9834_write, AD9834_FSEL);
+>  static IIO_CONST_ATTR_FREQ_SCALE(0, "1"); /* 1Hz */
+>  
+> @@ -342,8 +410,6 @@ static IIO_DEV_ATTR_OUT_WAVETYPE(0, 0, ad9834_store_wavetype, 0);
+>  static IIO_DEV_ATTR_OUT_WAVETYPE(0, 1, ad9834_store_wavetype, 1);
+>  
+>  static struct attribute *ad9834_attributes[] = {
+> -	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
+>  	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
+>  	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
+>  	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
+> @@ -361,8 +427,6 @@ static struct attribute *ad9834_attributes[] = {
+>  };
+>  
+>  static struct attribute *ad9833_attributes[] = {
+> -	&iio_dev_attr_out_altvoltage0_frequency0.dev_attr.attr,
+> -	&iio_dev_attr_out_altvoltage0_frequency1.dev_attr.attr,
+
+This may be a problem...  These don't fit in the existing ABI in that they
+are (IIRC) two different frequencies for the same channel, not two different
+channels...  This is meant for simple FSK modulation.
+
+>  	&iio_const_attr_out_altvoltage0_frequency_scale.dev_attr.attr,
+>  	&iio_dev_attr_out_altvoltage0_phase0.dev_attr.attr,
+>  	&iio_dev_attr_out_altvoltage0_phase1.dev_attr.attr,
+> @@ -384,11 +448,15 @@ static const struct attribute_group ad9833_attribute_group = {
+>  };
+>  
+>  static const struct iio_info ad9834_info = {
+> +	.write_raw = &ad9834_write_raw,
+> +	.read_raw = &ad9834_read_raw,
+>  	.attrs = &ad9834_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+>  
+>  static const struct iio_info ad9833_info = {
+> +	.write_raw = &ad9834_write_raw,
+> +	.read_raw = &ad9834_read_raw,
+>  	.attrs = &ad9833_attribute_group,
+>  	.driver_module = THIS_MODULE,
+>  };
+> @@ -435,9 +503,13 @@ static int ad9834_probe(struct spi_device *spi)
+>  	switch (st->devid) {
+>  	case ID_AD9833:
+>  	case ID_AD9837:
+> +		indio_dev->channels = ad9833_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad9833_channels);
+>  		indio_dev->info = &ad9833_info;
+>  		break;
+>  	default:
+
+For future reference, I would definitely like to see the options that
+lead to here explicitly listed.  Semantically it's not a 'default'
+but rather an alternative equally valid choice.
+People also tend to grep for their devid ;)
+
+> +		indio_dev->channels = ad9834_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad9834_channels);
+>  		indio_dev->info = &ad9834_info;
+>  		break;
+>  	}
+> @@ -474,11 +546,11 @@ static int ad9834_probe(struct spi_device *spi)
+>  		goto error_clock_unprepare;
+>  	}
+>  
+> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ0, 1000000);
+> +	ret = ad9834_write_frequency(st, AD9834_CHANNEL_ADDRESS0, 1000000);
+>  	if (ret)
+>  		goto error_clock_unprepare;
+>  
+> -	ret = ad9834_write_frequency(st, AD9834_REG_FREQ1, 5000000);
+> +	ret = ad9834_write_frequency(st, AD9834_CHANNEL_ADDRESS1, 5000000);
+>  	if (ret)
+>  		goto error_clock_unprepare;
+>  
 
