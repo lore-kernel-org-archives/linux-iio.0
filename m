@@ -2,150 +2,159 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D67C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:23:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F604C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:51:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7487F21841
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:23:38 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550683418;
-	bh=OSBSwVtCgR8A4XgFCpqYDru7e7KRGNRNbm9XfmdizDU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=J8OMtwY72J/gxL6qsn4rhwVK0ko/mIJkpTvWl4XNoEO2XQK3kBEwhiCZf7iI4LyFE
-	 9ErvhrAS5Vm3tUmjBN3jMZUCUxF1tA8AKD+ngE4ACW9Z8+/RWkop/JsHqVcuD2JwA+
-	 c5aqRytgz0wBVtHkY3gqxX1EVrJIHvsm3wF2Kb68=
+	by mail.kernel.org (Postfix) with ESMTP id F3C7C2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:51:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726126AbfBTRXi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 12:23:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58754 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725806AbfBTRXh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 12:23:37 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 82EC92083E;
-        Wed, 20 Feb 2019 17:23:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550683417;
-        bh=OSBSwVtCgR8A4XgFCpqYDru7e7KRGNRNbm9XfmdizDU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=JUQESAOdCRU26G4Hs5WVWvyBJJS/YdvCcvHhKYjI3ZD4rHgzGTEyuIOB9BMoS+Bv3
-         BjL/+vwroPAQx/tz0gMzIbLjn3iJjVhy5H34EadG9Np6sKpbSxqPaptwgqbQV+APNC
-         i93sFQv1hT7Xg2AYvDbtNQ8kELnPq234BWPX/6ZA=
-Date:   Wed, 20 Feb 2019 17:23:31 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     David Lechner <david@lechnology.com>
-Cc:     justinpopo6@gmail.com, linux-iio@vger.kernel.org,
-        linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
-        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio: adc: ti-ads7950: add GPIO support
-Message-ID: <20190220172331.40d7cbf0@archlinux>
-In-Reply-To: <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com>
-References: <1550030242-5241-1-git-send-email-justinpopo6@gmail.com>
-        <9e0a8a08-9636-906b-08cf-d99947d6f51a@lechnology.com>
-        <20190220120021.65c91b83@archlinux>
-        <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726381AbfBTRvp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 12:51:45 -0500
+Received: from gateway30.websitewelcome.com ([192.185.147.85]:37645 "EHLO
+        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726003AbfBTRvp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 12:51:45 -0500
+X-Greylist: delayed 1340 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Feb 2019 12:51:44 EST
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway30.websitewelcome.com (Postfix) with ESMTP id 7B5F663DE7
+        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 11:21:23 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id wVYhgDTg12PzOwVYhgfz1q; Wed, 20 Feb 2019 11:21:23 -0600
+X-Authority-Reason: nr=8
+Received: from [189.250.119.20] (port=58140 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1gwVYg-000bIL-Uk; Wed, 20 Feb 2019 11:21:23 -0600
+Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>
+References: <20190211222318.GA21656@embeddedor>
+ <20190220121726.3b10e0ec@archlinux>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
+Date:   Wed, 20 Feb 2019 11:21:21 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+In-Reply-To: <20190220121726.3b10e0ec@archlinux>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.119.20
+X-Source-L: No
+X-Exim-ID: 1gwVYg-000bIL-Uk
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.119.20]:58140
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 5
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Feb 2019 10:48:49 -0600
-David Lechner <david@lechnology.com> wrote:
 
-> On 2/20/19 6:00 AM, Jonathan Cameron wrote:
-> > On Wed, 13 Feb 2019 09:10:53 +0100
-> > David Lechner <david@lechnology.com> wrote:
-> >   
-> >> On 2/12/19 9:57 PM, justinpopo6@gmail.com wrote:  
-> >>> From: Justin Chen <justinpopo6@gmail.com>
-> >>>
-> >>> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
-> >>> pins using the GPIO chip framework.
-> >>>
-> >>> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
-> >>> ---  
-> >>
-> >> It will be better to split this up into two patches[1]. One to replace
-> >> all uses of indio_dev->mlock with the new local lock and then another to
-> >> add GPIO support.
-> >>
-> >> How are you using/testing this patch? Do we need device tree bindings?
-> >>
-> >> It will also help reviewers if you add a note about what you changed in
-> >> each revision of the patch when you resubmit. The usual way to do this
-> >> is something like:
-> >>
-> >>       v3 changes:
-> >>
-> >>       - Fixed unlocking mutex too many times in ti_ads7950_init_gpio()
-> >>
-> >> It also is nice to wait a few days at least before submitting the next
-> >> revision to give people some time to respond.  
-> > 
-> > Agreed with all comments except the endian one.
-> > SPI doesn't define an endianness of data on the wire, so we may need
-> > to convert to match whatever ordering the ti chip expects.
-> > I would expect things to be thoroughly broken if we remove those
-> > conversions - particularly as I doubt this is being tested with a
-> > big endian host!
-> > 
-> > Jonathan  
-> 
-> I'm a bit confused then. I got this idea from include/linux/spi.h, which
-> says:
-> 
->   * In-memory data values are always in native CPU byte order, translated
->   * from the wire byte order (big-endian except with SPI_LSB_FIRST).  So
->   * for example when bits_per_word is sixteen, buffers are 2N bytes long
->   * (@len = 2N) and hold N sixteen bit words in CPU byte order.
-> 
-> 
-> And in the most recent patches to the ti-ads7950 driver where we switched
-> from 8-bit words to 16-bit words, I had to remove the calls to cpu_to_be16()
-> to keep things working.
-Ah, my apologies, I didn't look at this closely enough.
 
-I was assuming we weren't in 16 bit mode here - oops.
-
-Otherwise this wouldn't have any hope of working... Except I'm assuming it is...
-hohum.
-
-Hmm. Given the result of that cpu_to_be16 will be to swap (as almost certainly
-on le system), I'm going to hazzard a guess that the ti device is expecting
-little endian and we should be setting SPI_LSB_FIRST.
-Which is odd because the data sheet definitely looks MSB first. Not to mention
-this isn't be done elsewhere in the driver.
-
-So only option I can fall back on is that it is being used on a be system
-(hence noop) or is a forward port of an older patch for the driver that missed
-your 16 bit change...
-
+On 2/20/19 6:17 AM, Jonathan Cameron wrote:
+> On Mon, 11 Feb 2019 16:23:18 -0600
+> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
 > 
-> I realize that I am only using one SPI controller, so I may be making a bad
-> assumption here, but it seems to me that it is up to the SPI controller to
-> make sure the bits get sent over the wire in the correct order and we
-> shouldn't have to worry about it here. We are implicitly telling the SPI
-> controller that we need big-endian over the wire by omitting the SPI_LSB_FIRST
-> flag here:
+>> In preparation to enabling -Wimplicit-fallthrough, mark switch
+>> cases where we are expecting to fall through.
+>>
+>> This patch fixes the following warning:
+>>
+>> drivers/iio/accel/mma8452.c: In function ‘mma8452_probe’:
+>> drivers/iio/accel/mma8452.c:1581:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
+>>    if (ret == data->chip_info->chip_id)
+>>       ^
+>> drivers/iio/accel/mma8452.c:1584:2: note: here
+>>   default:
+>>   ^~~~~~~
+>>
+>> Warning level 3 was used: -Wimplicit-fallthrough=3
+>>
+>> Notice that, in this particular case, the code comment is modified
+>> in accordance with what GCC is expecting to find.
+>>
+>> This patch is part of the ongoing efforts to enable
+>> -Wimplicit-fallthrough.
+>>
+>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+> I know Peter probably won't like this, as it doesn't
+> read a as well, with the else dropped, but I'm going to take
+> it as we have had a lot of bugs caught by this code and this
+> is generating a false positive.
 > 
-> 	spi->bits_per_word = 16;
-> 	spi->mode |= SPI_CS_WORD;
-> 	ret = spi_setup(spi);
+> Applied to the togreg branch of iio.git and pushed out as testing
+> for the autobuilders to play with it.
 > 
-You are entirely correct, I was too lazy and had forgotten your change to
-move to 16 bits.
 
-Jonathan
+Thanks, Jonathan.
+
+--
+Gustavo
 
