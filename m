@@ -2,62 +2,56 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A7F3C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9D67C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:23:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EF1D421841
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:10:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7487F21841
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:23:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550682602;
-	bh=OAFAiPYOdfY9WOwvpDt3atX4+fpl2D3WkVuOFhyZKFc=;
+	s=default; t=1550683418;
+	bh=OSBSwVtCgR8A4XgFCpqYDru7e7KRGNRNbm9XfmdizDU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=WBKwZ4Iri3EJUexg9DV5HhELDNaupIZc+9k6sQGd3nJ+kRnDQLiIV9ptECC2t8fE6
-	 ShQqDNiYBE8ZcrSeqQm85FEkubQZpj4vLTIADpnxAcFf5qW+AyqpIOLc400woPhAWA
-	 bvVlCtMr5l18ariC+DKxU7vLVrWemiNKKp2i91hw=
+	b=J8OMtwY72J/gxL6qsn4rhwVK0ko/mIJkpTvWl4XNoEO2XQK3kBEwhiCZf7iI4LyFE
+	 9ErvhrAS5Vm3tUmjBN3jMZUCUxF1tA8AKD+ngE4ACW9Z8+/RWkop/JsHqVcuD2JwA+
+	 c5aqRytgz0wBVtHkY3gqxX1EVrJIHvsm3wF2Kb68=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbfBTRKB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 12:10:01 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49380 "EHLO mail.kernel.org"
+        id S1726126AbfBTRXi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 12:23:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58754 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725806AbfBTRKB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 12:10:01 -0500
+        id S1725806AbfBTRXh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 12:23:37 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B9D12146E;
-        Wed, 20 Feb 2019 17:09:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 82EC92083E;
+        Wed, 20 Feb 2019 17:23:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550682600;
-        bh=OAFAiPYOdfY9WOwvpDt3atX4+fpl2D3WkVuOFhyZKFc=;
+        s=default; t=1550683417;
+        bh=OSBSwVtCgR8A4XgFCpqYDru7e7KRGNRNbm9XfmdizDU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aysJ6Us5neCeHdlHypxxdHxIoA2KAlXWwuUgr81AlUI8zvyNM9NsBhCxwod6O55Lx
-         JvV1zyXPOQG83RCx5X7IE/sIpbuuvSSRVnCueSWL9ZnJf0ZKIwiV0rR1IX/+SdEXpP
-         UTc99Euq+yKn/0Q71ePktP6FAvph8iaon4hO2p18=
-Date:   Wed, 20 Feb 2019 17:09:53 +0000
+        b=JUQESAOdCRU26G4Hs5WVWvyBJJS/YdvCcvHhKYjI3ZD4rHgzGTEyuIOB9BMoS+Bv3
+         BjL/+vwroPAQx/tz0gMzIbLjn3iJjVhy5H34EadG9Np6sKpbSxqPaptwgqbQV+APNC
+         i93sFQv1hT7Xg2AYvDbtNQ8kELnPq234BWPX/6ZA=
+Date:   Wed, 20 Feb 2019 17:23:31 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/9] iio: accel: bmc150: add mount matrix support
-Message-ID: <20190220170953.0200e256@archlinux>
-In-Reply-To: <4C07F0C8-3149-4DEA-B108-39F2CC04ED88@goldelico.com>
-References: <cover.1550671256.git.hns@goldelico.com>
-        <71ef51037525ae6324bc22e933c00a514d518b31.1550671256.git.hns@goldelico.com>
-        <20190220161444.78f34a61@archlinux>
-        <4C07F0C8-3149-4DEA-B108-39F2CC04ED88@goldelico.com>
+To:     David Lechner <david@lechnology.com>
+Cc:     justinpopo6@gmail.com, linux-iio@vger.kernel.org,
+        linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
+        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: adc: ti-ads7950: add GPIO support
+Message-ID: <20190220172331.40d7cbf0@archlinux>
+In-Reply-To: <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com>
+References: <1550030242-5241-1-git-send-email-justinpopo6@gmail.com>
+        <9e0a8a08-9636-906b-08cf-d99947d6f51a@lechnology.com>
+        <20190220120021.65c91b83@archlinux>
+        <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,102 +61,91 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Feb 2019 17:20:29 +0100
-"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+On Wed, 20 Feb 2019 10:48:49 -0600
+David Lechner <david@lechnology.com> wrote:
 
-> > Am 20.02.2019 um 17:14 schrieb Jonathan Cameron <jic23@kernel.org>:
-> > 
-> > On Wed, 20 Feb 2019 15:00:50 +0100
-> > "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+> On 2/20/19 6:00 AM, Jonathan Cameron wrote:
+> > On Wed, 13 Feb 2019 09:10:53 +0100
+> > David Lechner <david@lechnology.com> wrote:
 > >   
-> >> This patch allows to read a mount-matrix device tree
-> >> property and report to user-space or in-kernel iio
-> >> clients.
-> >> 
-> >> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>  
-> > This will clash with Andy's current patch, but I'll fix that up if
-> > needed. Otherwise, one trivial suggestion inline.  
-> 
-> Ok, thanks!
-> 
+> >> On 2/12/19 9:57 PM, justinpopo6@gmail.com wrote:  
+> >>> From: Justin Chen <justinpopo6@gmail.com>
+> >>>
+> >>> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+> >>> pins using the GPIO chip framework.
+> >>>
+> >>> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+> >>> ---  
+> >>
+> >> It will be better to split this up into two patches[1]. One to replace
+> >> all uses of indio_dev->mlock with the new local lock and then another to
+> >> add GPIO support.
+> >>
+> >> How are you using/testing this patch? Do we need device tree bindings?
+> >>
+> >> It will also help reviewers if you add a note about what you changed in
+> >> each revision of the patch when you resubmit. The usual way to do this
+> >> is something like:
+> >>
+> >>       v3 changes:
+> >>
+> >>       - Fixed unlocking mutex too many times in ti_ads7950_init_gpio()
+> >>
+> >> It also is nice to wait a few days at least before submitting the next
+> >> revision to give people some time to respond.  
 > > 
-> > Jonathan
-> >   
-> >> ---
-> >> drivers/iio/accel/bmc150-accel-core.c | 19 +++++++++++++++++++
-> >> 1 file changed, 19 insertions(+)
-> >> 
-> >> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> >> index 383c802eb5b8..9178846cfddc 100644
-> >> --- a/drivers/iio/accel/bmc150-accel-core.c
-> >> +++ b/drivers/iio/accel/bmc150-accel-core.c
-> >> @@ -204,6 +204,7 @@ struct bmc150_accel_data {
-> >> 	int ev_enable_state;
-> >> 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
-> >> 	const struct bmc150_accel_chip_info *chip_info;
-> >> +	struct iio_mount_matrix orientation;
-> >> };
-> >> 
-> >> static const struct {
-> >> @@ -796,6 +797,18 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
-> >> 	return sprintf(buf, "%d\n", state);
-> >> }
-> >> 
-> >> +static const struct iio_mount_matrix *
-> >> +bmc150_accel_get_mount_matrix(const struct iio_dev *indio_dev,
-> >> +				const struct iio_chan_spec *chan)
-> >> +{
-> >> +	return &((struct bmc150_accel_data *)iio_priv(indio_dev))->orientation;  
+> > Agreed with all comments except the endian one.
+> > SPI doesn't define an endianness of data on the wire, so we may need
+> > to convert to match whatever ordering the ti chip expects.
+> > I would expect things to be thoroughly broken if we remove those
+> > conversions - particularly as I doubt this is being tested with a
+> > big endian host!
 > > 
-> > I would use a local variable as that casting is less than simple to parse
-> > to my eyes anyway!  
+> > Jonathan  
 > 
-> Yes, Andy already suggested that. I just happend to pick one of the only two bad examples
-> from all iio drivers as template...
+> I'm a bit confused then. I got this idea from include/linux/spi.h, which
+> says:
 > 
-> drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> drivers/iio/magnetometer/ak8975.c
+>   * In-memory data values are always in native CPU byte order, translated
+>   * from the wire byte order (big-endian except with SPI_LSB_FIRST).  So
+>   * for example when bits_per_word is sixteen, buffers are 2N bytes long
+>   * (@len = 2N) and hold N sixteen bit words in CPU byte order.
+> 
+> 
+> And in the most recent patches to the ti-ads7950 driver where we switched
+> from 8-bit words to 16-bit words, I had to remove the calls to cpu_to_be16()
+> to keep things working.
+Ah, my apologies, I didn't look at this closely enough.
 
-If you like, feel free to send patches to tidy those up as well!
-Then no one else can be unlucky on the same thing in future.
+I was assuming we weren't in 16 bit mode here - oops.
+
+Otherwise this wouldn't have any hope of working... Except I'm assuming it is...
+hohum.
+
+Hmm. Given the result of that cpu_to_be16 will be to swap (as almost certainly
+on le system), I'm going to hazzard a guess that the ti device is expecting
+little endian and we should be setting SPI_LSB_FIRST.
+Which is odd because the data sheet definitely looks MSB first. Not to mention
+this isn't be done elsewhere in the driver.
+
+So only option I can fall back on is that it is being used on a be system
+(hence noop) or is a forward port of an older patch for the driver that missed
+your 16 bit change...
+
+> 
+> I realize that I am only using one SPI controller, so I may be making a bad
+> assumption here, but it seems to me that it is up to the SPI controller to
+> make sure the bits get sent over the wire in the correct order and we
+> shouldn't have to worry about it here. We are implicitly telling the SPI
+> controller that we need big-endian over the wire by omitting the SPI_LSB_FIRST
+> flag here:
+> 
+> 	spi->bits_per_word = 16;
+> 	spi->mode |= SPI_CS_WORD;
+> 	ret = spi_setup(spi);
+> 
+You are entirely correct, I was too lazy and had forgotten your change to
+move to 16 bits.
 
 Jonathan
-
-> 
-> >   
-> >> +}
-> >> +
-> >> +static const struct iio_chan_spec_ext_info bmc150_accel_ext_info[] = {
-> >> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmc150_accel_get_mount_matrix),
-> >> +	{ },
-> >> +};
-> >> +
-> >> static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
-> >> static IIO_CONST_ATTR(hwfifo_watermark_max,
-> >> 		      __stringify(BMC150_ACCEL_FIFO_LENGTH));
-> >> @@ -978,6 +991,7 @@ static const struct iio_event_spec bmc150_accel_event = {
-> >> 		.shift = 16 - (bits),					\
-> >> 		.endianness = IIO_LE,					\
-> >> 	},								\
-> >> +	.ext_info = bmc150_accel_ext_info,				\
-> >> 	.event_spec = &bmc150_accel_event,				\
-> >> 	.num_event_specs = 1						\
-> >> }
-> >> @@ -1555,6 +1569,11 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >> 
-> >> 	data->regmap = regmap;
-> >> 
-> >> +	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-> >> +				       &data->orientation);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> 	ret = bmc150_accel_chip_init(data);
-> >> 	if (ret < 0)
-> >> 		return ret;  
-> >   
-> 
-> BR and thanks,
-> Nikolaus
-> 
 
