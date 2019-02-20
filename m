@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2993C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C50EFC4151A
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 374632146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9820E2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="VKE7nCNZ"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="CdrY3jLv"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726526AbfBTOHH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 09:07:07 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.171]:25364 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfBTOHH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:07 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671625;
+        id S1726441AbfBTOHD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 09:07:03 -0500
+Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.103]:21387 "EHLO
+        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfBTOHC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:02 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671620;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=JjLKcD6SybLoGGMj2NW9my+OGmD8xw5CJs25CVdSDkU=;
-        b=VKE7nCNZTZrw74CSV3fpiDmUqtFnmhFfu9Dafpvle3OwO1LLszVKXiFcJYNdEx8BF2
-        iuTvGYRaJb4QrFeBeTwLVrKR1nXOv0xFTH6NaHGl0Ar2PffeW5WWjX/qa4UOI2zdkTh4
-        QM/wYOjEZHUKX/AJpBm/uUBaBHmFmc7yIp4YkLkWz4GCZYzwXwLR5Q9f8ju2u5i+1hGo
-        bHzP6WvOL/VXWqGac6fUtIkg52wkXGppUa8plxpmWTdFckJ6970wH4WnQc7jUeEJQCd1
-        9r64eodlI6wMXFsHoQiJJl793WSs9h81slVj0q/HocwnPS7XGGkz9Qt8uDyiRzwBFrBc
-        HGog==
+        bh=XsPC/aju7F7ifIrh5ctlr6x24fEHYPUbd63O6lin5RY=;
+        b=CdrY3jLvSXGtny0ImCQKnw6TOAKvxvDeJm/oeRonIMWrPGlUYQ3hhp3v3qGcepydmI
+        UWE3tMR32g8+sciGM/XcpQk5+hF6BGHd+XsRlVNzx2kLDD4Bh6L38W7MzyPhBI83lQpJ
+        scTjv6Unm+l6HsgZuulviJac/KXWMvv8bdgph9MG/x48X7PEIBeSYr2r0ukjumqgkKQS
+        HI7jMSBTPLmBl4F/8YtGNN9ICOGyWhoFmQ2PXB7OAeW62FmmhoNss09wrpnUsSwmT9SB
+        AxO1uwxR3VqLRlxNB3tWFgpnHCFOtNgbKLkEhGgJq8XiHuDU39hYhiZAqJ6NZ9ZrvTVW
+        A+ug==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE0xEqV
+        with ESMTPSA id 608499v1KE10EqX
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:00:59 +0100 (CET)
+        Wed, 20 Feb 2019 15:01:00 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -54,9 +54,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 3/9] iio: accel: bmc150: add mount matrix support
-Date:   Wed, 20 Feb 2019 15:00:50 +0100
-Message-Id: <71ef51037525ae6324bc22e933c00a514d518b31.1550671256.git.hns@goldelico.com>
+Subject: [PATCH 5/9] iio: accel: bma180: convert to devm
+Date:   Wed, 20 Feb 2019 15:00:52 +0100
+Message-Id: <900f59b94ef2e1b5559b363c0d1af4fefccd0366.1550671256.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
 References: <cover.1550671256.git.hns@goldelico.com>
@@ -67,66 +67,116 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch allows to read a mount-matrix device tree
-property and report to user-space or in-kernel iio
-clients.
+This simplifies the code a little.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/accel/bmc150-accel-core.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+ drivers/iio/accel/bma180.c | 56 ++++++++++++++------------------------
+ 1 file changed, 21 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 383c802eb5b8..9178846cfddc 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -204,6 +204,7 @@ struct bmc150_accel_data {
- 	int ev_enable_state;
- 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
- 	const struct bmc150_accel_chip_info *chip_info;
-+	struct iio_mount_matrix orientation;
- };
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 248be67e4f41..3f5ee2d495d3 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -738,7 +738,7 @@ static int bma180_probe(struct i2c_client *client,
  
- static const struct {
-@@ -796,6 +797,18 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
- 	return sprintf(buf, "%d\n", state);
- }
- 
-+static const struct iio_mount_matrix *
-+bmc150_accel_get_mount_matrix(const struct iio_dev *indio_dev,
-+				const struct iio_chan_spec *chan)
-+{
-+	return &((struct bmc150_accel_data *)iio_priv(indio_dev))->orientation;
-+}
-+
-+static const struct iio_chan_spec_ext_info bmc150_accel_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmc150_accel_get_mount_matrix),
-+	{ },
-+};
-+
- static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
- static IIO_CONST_ATTR(hwfifo_watermark_max,
- 		      __stringify(BMC150_ACCEL_FIFO_LENGTH));
-@@ -978,6 +991,7 @@ static const struct iio_event_spec bmc150_accel_event = {
- 		.shift = 16 - (bits),					\
- 		.endianness = IIO_LE,					\
- 	},								\
-+	.ext_info = bmc150_accel_ext_info,				\
- 	.event_spec = &bmc150_accel_event,				\
- 	.num_event_specs = 1						\
- }
-@@ -1555,6 +1569,11 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
- 
- 	data->regmap = regmap;
- 
-+	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-+				       &data->orientation);
-+	if (ret)
-+		return ret;
-+
- 	ret = bmc150_accel_chip_init(data);
+ 	ret = data->part_info->chip_config(data);
  	if (ret < 0)
- 		return ret;
+-		goto err_chip_disable;
++		goto err;
+ 
+ 	mutex_init(&data->mutex);
+ 	indio_dev->dev.parent = &client->dev;
+@@ -748,12 +748,25 @@ static int bma180_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bma180_info;
+ 
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
++			bma180_trigger_handler, NULL);
++	if (ret < 0) {
++		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
++		goto err;
++	}
++
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "unable to register iio device\n");
++		goto err;
++	}
++
+ 	if (client->irq > 0) {
+-		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
+-			indio_dev->id);
++		data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
++			indio_dev->name, indio_dev->id);
+ 		if (!data->trig) {
+ 			ret = -ENOMEM;
+-			goto err_chip_disable;
++			goto err;
+ 		}
+ 
+ 		ret = devm_request_irq(&client->dev, client->irq,
+@@ -761,7 +774,7 @@ static int bma180_probe(struct i2c_client *client,
+ 			"bma180_event", data->trig);
+ 		if (ret) {
+ 			dev_err(&client->dev, "unable to request IRQ\n");
+-			goto err_trigger_free;
++			goto err;
+ 		}
+ 
+ 		data->trig->dev.parent = &client->dev;
+@@ -769,34 +782,14 @@ static int bma180_probe(struct i2c_client *client,
+ 		iio_trigger_set_drvdata(data->trig, indio_dev);
+ 		indio_dev->trig = iio_trigger_get(data->trig);
+ 
+-		ret = iio_trigger_register(data->trig);
++		ret = devm_iio_trigger_register(&client->dev, data->trig);
+ 		if (ret)
+-			goto err_trigger_free;
+-	}
+-
+-	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-			bma180_trigger_handler, NULL);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
+-		goto err_trigger_unregister;
+-	}
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "unable to register iio device\n");
+-		goto err_buffer_cleanup;
++			goto err;
+ 	}
+ 
+ 	return 0;
+ 
+-err_buffer_cleanup:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-err_trigger_unregister:
+-	if (data->trig)
+-		iio_trigger_unregister(data->trig);
+-err_trigger_free:
+-	iio_trigger_free(data->trig);
+-err_chip_disable:
++err:
+ 	data->part_info->chip_disable(data);
+ 
+ 	return ret;
+@@ -807,13 +800,6 @@ static int bma180_remove(struct i2c_client *client)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+ 	struct bma180_data *data = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	if (data->trig) {
+-		iio_trigger_unregister(data->trig);
+-		iio_trigger_free(data->trig);
+-	}
+-
+ 	mutex_lock(&data->mutex);
+ 	data->part_info->chip_disable(data);
+ 	mutex_unlock(&data->mutex);
 -- 
 2.19.1
 
