@@ -2,44 +2,43 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5A8C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFBEC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9ABF82146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C187B2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="eMsQsmMY"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Zb8X2zXk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726531AbfBTOHS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 09:07:18 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([81.169.146.174]:15468 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfBTOHS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:18 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671636;
+        id S1726535AbfBTOHU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 09:07:20 -0500
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:33262 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfBTOHU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:20 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671638;
         s=strato-dkim-0002; d=goldelico.com;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=2LcgofzNxEjPO3GVT4ckoQGiD6xO6IBxIdmdzI73Vn0=;
-        b=eMsQsmMYyqUxssnOx7HFL7fP14Tg4+ifnFyKttZppS5KxyQ4ybSmBsCduFO4OUzDex
-        e35qKG0Cl9H4PanzpJ7MHw8hqOmErRvl7I/p2RClBf6x5usESVlRjm8gbX5MCKF1SWDX
-        iOD5s5nzcjS3WWdvoIg8vouRYPEP2GU53/E/Vg9p4LnkMQtGpfeJoy0VKcItNXYfM/xW
-        kxlJMxuVL4LaWJG59N6gKYjh3tmc/bYYYu1KoJxICRWQftcvraAptO76ALNRXFdNpmm2
-        gr7m8i2W64IonwKvF1CeCZ49ThcXh8jKDQCr9JFG5UqZqs5JJ36aRnEK5Tu8jhqqDkCW
-        //Hw==
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=Z/73S7C4Zbhem92dU01yFfCmWRBwMMtw98BYsPvuu9M=;
+        b=Zb8X2zXkstR15EXYvVQYp03v44sMDEi/MFNWmAfW3YGoIjCb/QyGjoL5wAsk96ZpOi
+        W3AEed1yKmrYwbDV9Su1zS48q0exiWj2j8dbAz3WuDzTx4US5iIVK1vHpR7D8PQ2Dz5B
+        9yASPvAPR48ScQWpl1nU858c+X0d+/ziLsHuCPYfV3EgOdwY7hxfyeeyKDXX8Lhb51Kz
+        yIa8jewClk1xr5gi0V+Ztu4MG/gpmLqYfTvcjmmyOvEVfVeqmnCrSyxoEXq95/TWX6bw
+        GAQjp7si0VcFZia6nFYp+gdDWLHDYSlBGpU5pflbM7NUgj6J92KsPnOx3ZRqR1S7Axdn
+        bWgA==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE12Eqb
+        with ESMTPSA id 608499v1KE0vEqS
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:01:02 +0100 (CET)
+        Wed, 20 Feb 2019 15:00:57 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -54,12 +53,10 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 9/9] iio: magnetometer: hmc5843: add mount matrix support
-Date:   Wed, 20 Feb 2019 15:00:56 +0100
-Message-Id: <effcfa7fb13fb8ba2b8b13ab07a6eb86defec77e.1550671256.git.hns@goldelico.com>
+Subject: [PATCH 0/9] iio mount matrix - revitalize missing bindings documentation and provide code for bmc150, bmg160, bma180, itg3200, hmc584x
+Date:   Wed, 20 Feb 2019 15:00:47 +0100
+Message-Id: <cover.1550671256.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
-References: <cover.1550671256.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -67,74 +64,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch allows to read a mount-matrix device tree
-property and report to user-space or in-kernel iio
-clients.
+This patch series adds the mount-matrix to several iio sensor drivers
+used in handheld devices.
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/iio/magnetometer/hmc5843.h      |  1 +
- drivers/iio/magnetometer/hmc5843_core.c | 14 ++++++++++++++
- 2 files changed, 15 insertions(+)
+The mount-matrix translates the quite arbitrary orientation of the sensor
+on some printed circuit board to user-tangible orientation in handheld
+devices that relates to typical screen orientation.
 
-diff --git a/drivers/iio/magnetometer/hmc5843.h b/drivers/iio/magnetometer/hmc5843.h
-index a75224cf99df..e3e22d2508d3 100644
---- a/drivers/iio/magnetometer/hmc5843.h
-+++ b/drivers/iio/magnetometer/hmc5843.h
-@@ -43,6 +43,7 @@ struct hmc5843_data {
- 	struct mutex lock;
- 	struct regmap *regmap;
- 	const struct hmc5843_chip_info *variant;
-+	struct iio_mount_matrix orientation;
- 	__be16 buffer[8];
- };
- 
-diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
-index ada142fb7aa3..e6b6da70c152 100644
---- a/drivers/iio/magnetometer/hmc5843_core.c
-+++ b/drivers/iio/magnetometer/hmc5843_core.c
-@@ -237,6 +237,13 @@ int hmc5843_set_measurement_configuration(struct iio_dev *indio_dev,
- 	return hmc5843_set_meas_conf(data, meas_conf);
- }
- 
-+static const struct iio_mount_matrix *
-+hmc5843_get_mount_matrix(const struct iio_dev *indio_dev,
-+			  const struct iio_chan_spec *chan)
-+{
-+	return &((struct hmc5843_data *)iio_priv(indio_dev))->orientation;
-+}
-+
- static const struct iio_enum hmc5843_meas_conf_enum = {
- 	.items = hmc5843_meas_conf_modes,
- 	.num_items = ARRAY_SIZE(hmc5843_meas_conf_modes),
-@@ -247,6 +254,7 @@ static const struct iio_enum hmc5843_meas_conf_enum = {
- static const struct iio_chan_spec_ext_info hmc5843_ext_info[] = {
- 	IIO_ENUM("meas_conf", true, &hmc5843_meas_conf_enum),
- 	IIO_ENUM_AVAILABLE("meas_conf", &hmc5843_meas_conf_enum),
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, hmc5843_get_mount_matrix),
- 	{ },
- };
- 
-@@ -260,6 +268,7 @@ static const struct iio_enum hmc5983_meas_conf_enum = {
- static const struct iio_chan_spec_ext_info hmc5983_ext_info[] = {
- 	IIO_ENUM("meas_conf", true, &hmc5983_meas_conf_enum),
- 	IIO_ENUM_AVAILABLE("meas_conf", &hmc5983_meas_conf_enum),
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, hmc5843_get_mount_matrix),
- 	{ },
- };
- 
-@@ -635,6 +644,11 @@ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
- 	data->variant = &hmc5843_chip_info_tbl[id];
- 	mutex_init(&data->lock);
- 
-+	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-+				&data->orientation);
-+	if (ret)
-+		return ret;
-+
- 	indio_dev->dev.parent = dev;
- 	indio_dev->name = name;
- 	indio_dev->info = &hmc5843_info;
+There was a bindings documentation by Linus Walleij but the patch
+did not make it into mainline. Therefore I resend it here.
+
+Next I have added some clarifications (at least I hope it clarifies)
+in a second patch.
+
+Finally, the patch set implements the hooks for the mount matrix
+in several iio drivers: bmc150, bma180, bmg160, itg3200, hmc5843.
+This includes also one patch for the bma180 to convert it to devm API.
+
+We use them in different variants of the omap3-gta04 so a separate
+patch set will provide device tree additions for them.
+
+
+H. Nikolaus Schaller (8):
+  iio: bindings: clarifications for mount-matrix bindings
+  iio: accel: bmc150: add mount matrix support
+  iio: accel: bma180: add mount matrix support
+  iio: accel: bma180: convert to devm
+  iio: gyro: bmg160: add mount matrix support
+  iio: gyro: itg3200: add mount matrix support
+  iio: magnetometer: bmc150: add mount matrix support
+  iio: magnetometer: hmc5843: add mount matrix support
+
+Linus Walleij (1):
+  iio: document bindings for mounting matrices
+
+ .../devicetree/bindings/iio/mount-matrix.txt  | 162 ++++++++++++++++++
+ drivers/iio/accel/bma180.c                    |  70 ++++----
+ drivers/iio/accel/bmc150-accel-core.c         |  19 ++
+ drivers/iio/gyro/bmg160_core.c                |  19 ++
+ drivers/iio/gyro/itg3200_core.c               |  18 ++
+ drivers/iio/magnetometer/bmc150_magn.c        |  19 ++
+ drivers/iio/magnetometer/hmc5843.h            |   1 +
+ drivers/iio/magnetometer/hmc5843_core.c       |  14 ++
+ include/linux/iio/gyro/itg3200.h              |   1 +
+ 9 files changed, 288 insertions(+), 35 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
+
 -- 
 2.19.1
 
