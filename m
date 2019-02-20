@@ -2,496 +2,136 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1434C4360F
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:42:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8ED4C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:48:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6E36721902
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:42:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550680940;
-	bh=LjrCiXhIRDdj3buwI7JxKjklU+7gD4+5KLfsnc4pbRc=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=pBdQ2xmrncdgHpi8Ulcej4Sq8OA8hpQ2e/lNV2NtvUaNpXr7/NLr+ZDviZTYgt6bG
-	 FNeh/5VWpC7S8pjQn1Xo3A1DhVwj+ti+2MsEj/QPY0A36MqWVAJHYOizYXWGFQx8p+
-	 /AscyaNW5/VauoAekua5jLvoj25LvqoIyYQfodVg=
+	by mail.kernel.org (Postfix) with ESMTP id B59772084F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:48:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="EtpFfkfA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726345AbfBTQmE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 11:42:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34246 "EHLO mail.kernel.org"
+        id S1726012AbfBTQsz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 11:48:55 -0500
+Received: from vern.gendns.com ([98.142.107.122]:32778 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725877AbfBTQmD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 11:42:03 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2BAC82147C;
-        Wed, 20 Feb 2019 16:41:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550680922;
-        bh=LjrCiXhIRDdj3buwI7JxKjklU+7gD4+5KLfsnc4pbRc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1PVIg3cO+TY5Uv6XGFT6WIdpBZWssMZGJc2qLiZNhfKFPLtJj7T2s5911TV/k/vTK
-         fyiQHRNQ/5wSeK9O/+s8MRUfD4cT4wJikdO8/L9q2dk6YASEmALRJ9+aMJEu+F8Z/O
-         O0b/QGygjvV2Ua3FDSlMF7YedBem+9mGBIUAnKjQ=
-Date:   Wed, 20 Feb 2019 16:41:54 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Patrick Havelange <patrick.havelange@essensium.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Esben Haabendal <esben@haabendal.dk>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature
- decoder counter driver
-Message-ID: <20190220164154.00547a77@archlinux>
-In-Reply-To: <20190218140321.19166-5-patrick.havelange@essensium.com>
-References: <20190218140321.19166-1-patrick.havelange@essensium.com>
-        <20190218140321.19166-5-patrick.havelange@essensium.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726192AbfBTQsz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 11:48:55 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=IkoDWKsx69eeASFUk0VZnoFbek30b+h9rUbZRZVnz7w=; b=EtpFfkfAnoGL4Wq7oN6KzSxwGW
+        2u7OVwiKyHeL9vQ3gecF2zZJnSX/t/+1LlhDSNv0t5+uvmWjGBkf/IGOdMvjaIfKugDxQdLDaRlBt
+        hpgd4PbARhBw0OvpMJ5NzEtnwnblCkloeNiQGkkZbtWzwA3Ml87KksPlumXNLmQFBM/RmjacPWMzS
+        BtOREBxbcrkA8LYk6b9znqrktT4y8jHk1HdUkbnUuFtYDb6xxQnvci+D3g35DTycd06diQFuEgo7X
+        lFepsxEV1Cs/DvqqGeKnU7Cf3ulUbUkVJEwoa1Fdu50KwtLBtNQr2neytb2Elx/HUi1AgFc2e1PG+
+        s/FY/kKQ==;
+Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:36472 helo=[192.168.0.134])
+        by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <david@lechnology.com>)
+        id 1gwV2w-0001Hi-HB; Wed, 20 Feb 2019 11:48:34 -0500
+Subject: Re: [PATCH v3] iio: adc: ti-ads7950: add GPIO support
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     justinpopo6@gmail.com, linux-iio@vger.kernel.org,
+        linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
+        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
+        linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
+References: <1550030242-5241-1-git-send-email-justinpopo6@gmail.com>
+ <9e0a8a08-9636-906b-08cf-d99947d6f51a@lechnology.com>
+ <20190220120021.65c91b83@archlinux>
+From:   David Lechner <david@lechnology.com>
+Message-ID: <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com>
+Date:   Wed, 20 Feb 2019 10:48:49 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190220120021.65c91b83@archlinux>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Feb 2019 15:03:18 +0100
-Patrick Havelange <patrick.havelange@essensium.com> wrote:
-
-> This driver exposes the counter for the quadrature decoder of the
-> FlexTimer Module, present in the LS1021A soc.
+On 2/20/19 6:00 AM, Jonathan Cameron wrote:
+> On Wed, 13 Feb 2019 09:10:53 +0100
+> David Lechner <david@lechnology.com> wrote:
 > 
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-Given you cc'd William, I'm guessing you know about the counter
-subsystem effort.  I would really rather not take any drivers
-into IIO if we have any hope of getting that upstreamed soon
-(which I personally think we do and should!).  The reason is
-we end up having to maintain old ABI just because someone might be using
-it and it makes the drivers very messy.
-
-I'll review as is though as may be there are some elements that will
-cross over.
-
-Comments inline.  William: Looks like a straight forward conversion if
-it makes sense to get this lined up as part of your initial submission?
-You have quite a few drivers so I wouldn't have said it needs to be there
-at the start, but good to have it soon after.
-
-Jonathan
-
-> ---
->  drivers/iio/counter/Kconfig       |  10 +
->  drivers/iio/counter/Makefile      |   1 +
->  drivers/iio/counter/ftm-quaddec.c | 294 ++++++++++++++++++++++++++++++
->  3 files changed, 305 insertions(+)
->  create mode 100644 drivers/iio/counter/ftm-quaddec.c
+>> On 2/12/19 9:57 PM, justinpopo6@gmail.com wrote:
+>>> From: Justin Chen <justinpopo6@gmail.com>
+>>>
+>>> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+>>> pins using the GPIO chip framework.
+>>>
+>>> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+>>> ---
+>>
+>> It will be better to split this up into two patches[1]. One to replace
+>> all uses of indio_dev->mlock with the new local lock and then another to
+>> add GPIO support.
+>>
+>> How are you using/testing this patch? Do we need device tree bindings?
+>>
+>> It will also help reviewers if you add a note about what you changed in
+>> each revision of the patch when you resubmit. The usual way to do this
+>> is something like:
+>>
+>>       v3 changes:
+>>
+>>       - Fixed unlocking mutex too many times in ti_ads7950_init_gpio()
+>>
+>> It also is nice to wait a few days at least before submitting the next
+>> revision to give people some time to respond.
 > 
-> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
-> index bf1e559ad7cd..4641cb2e752a 100644
-> --- a/drivers/iio/counter/Kconfig
-> +++ b/drivers/iio/counter/Kconfig
-> @@ -31,4 +31,14 @@ config STM32_LPTIMER_CNT
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called stm32-lptimer-cnt.
-> +
-> +config FTM_QUADDEC
-> +	tristate "Flex Timer Module Quadrature decoder driver"
-> +	help
-> +	  Select this option to enable the Flex Timer Quadrature decoder
-> +	  driver.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ftm-quaddec.
-> +
->  endmenu
-> diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
-> index 1b9a896eb488..757c1f4196af 100644
-> --- a/drivers/iio/counter/Makefile
-> +++ b/drivers/iio/counter/Makefile
-> @@ -6,3 +6,4 @@
->  
->  obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
->  obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
-> +obj-$(CONFIG_FTM_QUADDEC)	+= ftm-quaddec.o
-> diff --git a/drivers/iio/counter/ftm-quaddec.c b/drivers/iio/counter/ftm-quaddec.c
-> new file mode 100644
-> index 000000000000..ca7e55a9ab3f
-> --- /dev/null
-> +++ b/drivers/iio/counter/ftm-quaddec.c
-> @@ -0,0 +1,294 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Flex Timer Module Quadrature decoder
-> + *
-> + * This module implements a driver for decoding the FTM quadrature
-> + * of ex. a LS1021A
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/err.h>
-> +#include <linux/device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/of_address.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/workqueue.h>
-Tidy these up. Not all are used.
-> +#include <linux/swait.h>
-> +#include <linux/sched.h>
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/mutex.h>
-> +#include <linux/fsl/ftm.h>
-> +
-> +struct ftm_quaddec {
-> +	struct platform_device *pdev;
-> +	void __iomem *ftm_base;
-> +	bool big_endian;
+> Agreed with all comments except the endian one.
+> SPI doesn't define an endianness of data on the wire, so we may need
+> to convert to match whatever ordering the ti chip expects.
+> I would expect things to be thoroughly broken if we remove those
+> conversions - particularly as I doubt this is being tested with a
+> big endian host!
+> 
+> Jonathan
 
-I'm curious. What is the benefit of running in big endian mode?
+I'm a bit confused then. I got this idea from include/linux/spi.h, which
+says:
 
-> +	struct mutex ftm_quaddec_mutex;
-> +};
-> +
-> +#define HASFLAGS(flag, bits) ((flag & bits) ? 1 : 0)
-Not used.
+  * In-memory data values are always in native CPU byte order, translated
+  * from the wire byte order (big-endian except with SPI_LSB_FIRST).  So
+  * for example when bits_per_word is sixteen, buffers are 2N bytes long
+  * (@len = 2N) and hold N sixteen bit words in CPU byte order.
 
 
-> +
-> +#define DEFAULT_POLL_INTERVAL    100 /* in msec */
-> +
-> +static void ftm_read(struct ftm_quaddec *ftm, uint32_t offset, uint32_t *data)
-> +{
-> +	if (ftm->big_endian)
-> +		*data = ioread32be(ftm->ftm_base + offset);
-> +	else
-> +		*data = ioread32(ftm->ftm_base + offset);
-> +}
-> +
-> +static void ftm_write(struct ftm_quaddec *ftm, uint32_t offset, uint32_t data)
-> +{
-> +	if (ftm->big_endian)
-> +		iowrite32be(data, ftm->ftm_base + offset);
-> +	else
-> +		iowrite32(data, ftm->ftm_base + offset);
-> +}
-> +
-> +/* take mutex
+And in the most recent patches to the ti-ads7950 driver where we switched
+from 8-bit words to 16-bit words, I had to remove the calls to cpu_to_be16()
+to keep things working.
 
-Tidy this comment up.  I  would have said the flow as fairly
-obvious and the only thing needed here is to document that
-the mutex must be held?
+I realize that I am only using one SPI controller, so I may be making a bad
+assumption here, but it seems to me that it is up to the SPI controller to
+make sure the bits get sent over the wire in the correct order and we
+shouldn't have to worry about it here. We are implicitly telling the SPI
+controller that we need big-endian over the wire by omitting the SPI_LSB_FIRST
+flag here:
 
-> + * call ftm_clear_write_protection
-> + * update settings
-> + * call ftm_set_write_protection
-> + * release mutex
-> + */
-> +static void ftm_clear_write_protection(struct ftm_quaddec *ftm)
-> +{
-> +	uint32_t flag;
-> +
-> +	/* First see if it is enabled */
-> +	ftm_read(ftm, FTM_FMS, &flag);
-> +
-> +	if (flag & FTM_FMS_WPEN) {
-> +		ftm_read(ftm, FTM_MODE, &flag);
-> +		ftm_write(ftm, FTM_MODE, flag | FTM_MODE_WPDIS);
-> +	}
-> +}
-> +
-> +static void ftm_set_write_protection(struct ftm_quaddec *ftm)
-> +{
-> +	ftm_write(ftm, FTM_FMS, FTM_FMS_WPEN);
-> +}
-> +
-> +static void ftm_reset_counter(struct ftm_quaddec *ftm)
-> +{
-> +	/* Reset hardware counter to CNTIN */
-> +	ftm_write(ftm, FTM_CNT, 0x0);
-> +}
-> +
-> +static void ftm_quaddec_init(struct ftm_quaddec *ftm)
-> +{
-> +	ftm_clear_write_protection(ftm);
-> +
-> +	/* Do not write in the region from the CNTIN register through the
-IIO multiline syntax is
-/*
- * Do not write
- * PWM..
- */
-> +	 * PWMLOAD register when FTMEN = 0.
-> +	 */
-> +	ftm_write(ftm, FTM_MODE, FTM_MODE_FTMEN); /* enable FTM */
-
-Drop any comments that are self explanatory.
-
-> +	ftm_write(ftm, FTM_CNTIN, 0x0000);         /* zero init value */
-> +	ftm_write(ftm, FTM_MOD, 0xffff);        /* max overflow value */
-> +	ftm_write(ftm, FTM_CNT, 0x0);           /* reset counter value */
-> +	ftm_write(ftm, FTM_SC, FTM_SC_PS_1);    /* prescale with x1 */
-> +	/* Select quad mode */
-> +	ftm_write(ftm, FTM_QDCTRL, FTM_QDCTRL_QUADEN);
-> +
-> +	/* Unused features and reset to default section */
-> +	ftm_write(ftm, FTM_POL, 0x0);     /* polarity is active high */
-> +	ftm_write(ftm, FTM_FLTCTRL, 0x0); /* all faults disabled */
-> +	ftm_write(ftm, FTM_SYNCONF, 0x0); /* disable all sync */
-> +	ftm_write(ftm, FTM_SYNC, 0xffff);
-> +
-> +	/* Lock the FTM */
-> +	ftm_set_write_protection(ftm);
-> +}
-> +
-> +static int ftm_quaddec_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-> +	uint32_t counter;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ftm_read(ftm, FTM_CNT, &counter);
-> +		*val = counter;
-> +		return IIO_VAL_INT;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static ssize_t ftm_write_reset(struct iio_dev *indio_dev,
-> +				uintptr_t private,
-> +				struct iio_chan_spec const *chan,
-> +				const char *buf, size_t len)
-> +{
-> +	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-> +
-> +	/* Only "counter reset" is supported for now */
-> +	if (!sysfs_streq(buf, "0")) {
-> +		dev_warn(&ftm->pdev->dev, "Reset only accepts '0'\n");
-> +		return -EINVAL;
-
-Why not just make the channel attribute itself writeable given we are
-setting it to 0?
-
-> +	}
-> +
-> +	ftm_reset_counter(ftm);
-> +
-> +	return len;
-> +}
-> +
-> +static int ftm_quaddec_get_prescaler(struct iio_dev *indio_dev,
-> +					const struct iio_chan_spec *chan)
-> +{
-> +	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-> +	uint32_t scflags;
-> +
-> +	ftm_read(ftm, FTM_SC, &scflags);
-> +
-> +	return scflags & FTM_SC_PS_MASK;
-> +}
-> +
-> +static int ftm_quaddec_set_prescaler(struct iio_dev *indio_dev,
-> +					const struct iio_chan_spec *chan,
-> +					unsigned int type)
-> +{
-> +	struct ftm_quaddec *ftm = iio_priv(indio_dev);
-> +
-> +	uint32_t scflags;
-> +
-> +	mutex_lock(&ftm->ftm_quaddec_mutex);
-> +
-> +	ftm_read(ftm, FTM_SC, &scflags);
-> +
-> +	scflags &= ~FTM_SC_PS_MASK;
-> +	type &= FTM_SC_PS_MASK; /*just to be 100% sure*/
-> +
-> +	scflags |= type;
-> +
-> +	/* Write */
-> +	ftm_clear_write_protection(ftm);
-> +	ftm_write(ftm, FTM_SC, scflags);
-> +	ftm_set_write_protection(ftm);
-> +
-> +	/* Also resets the counter as it is undefined anyway now */
-> +	ftm_reset_counter(ftm);
-> +
-> +	mutex_unlock(&ftm->ftm_quaddec_mutex);
-> +	return 0;
-> +}
-> +
-> +static const char * const ftm_quaddec_prescaler[] = {
-> +	"1", "2", "4", "8", "16", "32", "64", "128"
-> +};
-> +
-> +static const struct iio_enum ftm_quaddec_prescaler_en = {
-> +	.items = ftm_quaddec_prescaler,
-> +	.num_items = ARRAY_SIZE(ftm_quaddec_prescaler),
-> +	.get = ftm_quaddec_get_prescaler,
-> +	.set = ftm_quaddec_set_prescaler,
-> +};
-> +
-> +static const struct iio_chan_spec_ext_info ftm_quaddec_ext_info[] = {
-> +	{
-> +		.name = "reset",
-> +		.shared = IIO_SEPARATE,
-> +		.write = ftm_write_reset,
-> +	},
-> +	IIO_ENUM("prescaler", IIO_SEPARATE, &ftm_quaddec_prescaler_en),
-
-This looks like non standard ABI.  Needs documentation in
-Documentation/ABI/testing/sysfs-bus-iio-*
-
-> +	IIO_ENUM_AVAILABLE("prescaler", &ftm_quaddec_prescaler_en),
-> +	{}
-> +};
-> +
-> +static const struct iio_chan_spec ftm_quaddec_channels = {
-> +	.type = IIO_COUNT,
-> +	.channel = 0,
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +	.ext_info = ftm_quaddec_ext_info,
-> +	.indexed = 1,
-> +};
-> +
-> +static const struct iio_info ftm_quaddec_iio_info = {
-> +	.read_raw = ftm_quaddec_read_raw,
-> +};
-> +
-> +static int ftm_quaddec_probe(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ftm_quaddec *ftm;
-> +	int ret;
-> +
-> +	struct device_node *node = pdev->dev.of_node;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ftm));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ftm = iio_priv(indio_dev);
-> +
-> +	platform_set_drvdata(pdev, ftm);
-> +
-> +	ftm->pdev = pdev;
-> +	ftm->big_endian = of_property_read_bool(node, "big-endian");
-> +	ftm->ftm_base = of_iomap(node, 0);
-> +	if (!ftm->ftm_base)
-> +		return -EINVAL;
-> +
-> +	indio_dev->name = dev_name(&pdev->dev);
-
-This should be a nice part number like string.  What does
-it evaluate to here?
-
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &ftm_quaddec_iio_info;
-> +	indio_dev->num_channels = 1;
-> +	indio_dev->channels = &ftm_quaddec_channels;
-> +
-> +	ftm_quaddec_init(ftm);
-> +
-> +	mutex_init(&ftm->ftm_quaddec_mutex);
-> +
-> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-> +	if (ret) {
-> +		mutex_destroy(&ftm->ftm_quaddec_mutex);
-
-Don't have managed devm_ calls after anything unmanaged.
-I opens you up to races and is hard to review.
-
-> +		iounmap(ftm->ftm_base);
-I would suggest not using of_iomap, then you can
-use the devm_ioremap form handle this for you.
-
-> +	}
-> +	return ret;
-> +}
-> +
-> +static int ftm_quaddec_remove(struct platform_device *pdev)
-> +{
-> +	struct ftm_quaddec *ftm;
-> +	struct iio_dev *indio_dev;
-> +
-> +	ftm = (struct ftm_quaddec *)platform_get_drvdata(pdev);
-
-platform_get_drvdata returns a void *.
-
-C spec says you can always cast implicitly from a void * to any
-other point type.  Hence you don't need the cast.
-(I'm too lazy to find the reference now as it's been a long
-day of reviewing but google will find it for you if interested)
-
-> +	indio_dev = iio_priv_to_dev(ftm);
-> +	/* This is needed to remove sysfs entries */
-
-It does a lot more than that, so please remove the comment.
-Actually this worries me.  You should not need to manually
-call devm_iio_device_register, but you do because of the ordering
-and the fact you want to remove the interfaces before turning the
-device off.  In that case, do not use the devm_ form but
-instead iio_device_register and do the error handling paths
-manually.  An alternative is to use
-devm_add_action_or_reset to call unwind functions automatically
-for the few device specific calls you have.
-
-
-> +	devm_iio_device_unregister(&pdev->dev, indio_dev);
-> +
-> +	ftm_write(ftm, FTM_MODE, 0);
-> +
-> +	iounmap(ftm->ftm_base);
-> +	mutex_destroy(&ftm->ftm_quaddec_mutex);
-
-mutex destroy is only really used in debug paths and is often
-skipped in remove functions to simplify things.
-(particularly when managed cleanup is going on).
-
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id ftm_quaddec_match[] = {
-> +	{ .compatible = "fsl,ftm-quaddec" },
-> +	{},
-> +};
-> +
-> +static struct platform_driver ftm_quaddec_driver = {
-> +	.driver = {
-> +		.name = "ftm-quaddec",
-> +		.owner = THIS_MODULE,
-> +		.of_match_table = ftm_quaddec_match,
-> +	},
-> +	.probe = ftm_quaddec_probe,
-> +	.remove = ftm_quaddec_remove,
-> +};
-> +
-> +module_platform_driver(ftm_quaddec_driver);
-> +
-> +MODULE_LICENSE("GPL");
-> +MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com");
-> +MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com");
+	spi->bits_per_word = 16;
+	spi->mode |= SPI_CS_WORD;
+	ret = spi_setup(spi);
 
