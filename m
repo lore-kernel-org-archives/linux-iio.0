@@ -4,102 +4,113 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0967BC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 12:10:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2BF1C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 12:17:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C45942146F
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 12:10:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 78C902183F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 12:17:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550664649;
-	bh=kBLIvt+BwNMZ4NXB6/DD8Fp6ceWVWnGpEWpSzWOwy3o=;
+	s=default; t=1550665052;
+	bh=oneBnyUlP9YvWU35HqXsEbn4oXF4ltkqonZuN13WDns=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=iWArYomL/NYBuln2Js3owDSWUuN4SlDmcX5/ZoYNm2QXAt5Sv3chqmjNeljeVVW0t
-	 XJVMSB54sUpLId5ACxwDv8RDlKSBhOA31tTC5fRNDgUfBwXHB7AWfXwRQtzGVSWpXy
-	 ZZDIIE5CSdev1X5kSrzf36Lio1dAtISwOqiuEU1k=
+	b=Cq9723fhqHQvKVENLIBJ7oH8c1PVa694BwtqXNs0uun8Ou+IQkb67sTc2++ELddWy
+	 EZeIlZlV9FEzDAHWcxEJjJiPxjxX8iFsUu0OkNkO+moKl9DuGf4GLFiSvpJRmUYjIk
+	 fB1HJYoi8AqHFAENINGenO0n6mIfxuzGdmmU9TgM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726347AbfBTMKt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 07:10:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58468 "EHLO mail.kernel.org"
+        id S1726209AbfBTMRc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 07:17:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44620 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725812AbfBTMKt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 07:10:49 -0500
+        id S1725836AbfBTMRb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 07:17:31 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8B2C20C01;
-        Wed, 20 Feb 2019 12:10:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 767A42147A;
+        Wed, 20 Feb 2019 12:17:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550664648;
-        bh=kBLIvt+BwNMZ4NXB6/DD8Fp6ceWVWnGpEWpSzWOwy3o=;
+        s=default; t=1550665051;
+        bh=oneBnyUlP9YvWU35HqXsEbn4oXF4ltkqonZuN13WDns=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=n+ow22Bqizka1zeQmAKyFap3i3zFXA6F2YLx5WxRP4MfV13ekD33j7ZVl20gc+/9F
-         9y+ErFSLy1B3C0uGcbHGMpiZXAPdWixn8ze3etaF07UGyYdWONlya8QWIJtbP58sAC
-         8IgiPp3MVeLUCrfstmyFWgHTSxvNOki9WCC+vDvY=
-Date:   Wed, 20 Feb 2019 12:10:42 +0000
+        b=dIF6CrnElBK6iAUdHgj9P4hGiEXVQ60Wxgb32bmdTG93L75kQ9l2nmD22HUEBgCxx
+         iQSOr6IhOUXr8ueD0qVU2vydZv6Zq1qC8uFyObvGB5UXBThDHLxwcPMp6MHqJJ6ZfW
+         HWcUGNGaDBU2z9nxQA93ZM3KzYmX89a+yfPXWRG8=
+Date:   Wed, 20 Feb 2019 12:17:26 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Mike Looijmans <mike.looijmans@topic.nl>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH v2] iio/gyro/bmg160: Use millidegrees for temperature
- scale
-Message-ID: <20190220121042.6459176b@archlinux>
-In-Reply-To: <1550043707-13040-1-git-send-email-mike.looijmans@topic.nl>
-References: <1549981549-19786-1-git-send-email-mike.looijmans@topic.nl>
-        <1550043707-13040-1-git-send-email-mike.looijmans@topic.nl>
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>
+Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
+Message-ID: <20190220121726.3b10e0ec@archlinux>
+In-Reply-To: <20190211222318.GA21656@embeddedor>
+References: <20190211222318.GA21656@embeddedor>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 13 Feb 2019 08:41:47 +0100
-Mike Looijmans <mike.looijmans@topic.nl> wrote:
+On Mon, 11 Feb 2019 16:23:18 -0600
+"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
 
-> Standard unit for temperature is millidegrees Celcius, whereas this driver
-> was reporting in degrees. Fix the scale factor in the driver.
-> 
-> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+> In preparation to enabling -Wimplicit-fallthrough, mark switch
+> cases where we are expecting to fall through.
+>=20
+> This patch fixes the following warning:
+>=20
+> drivers/iio/accel/mma8452.c: In function =E2=80=98mma8452_probe=E2=80=99:
+> drivers/iio/accel/mma8452.c:1581:6: warning: this statement may fall thro=
+ugh [-Wimplicit-fallthrough=3D]
+>    if (ret =3D=3D data->chip_info->chip_id)
+>       ^
+> drivers/iio/accel/mma8452.c:1584:2: note: here
+>   default:
+>   ^~~~~~~
+>=20
+> Warning level 3 was used: -Wimplicit-fallthrough=3D3
+>=20
+> Notice that, in this particular case, the code comment is modified
+> in accordance with what GCC is expecting to find.
+>=20
+> This patch is part of the ongoing efforts to enable
+> -Wimplicit-fallthrough.
+>=20
+> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+I know Peter probably won't like this, as it doesn't
+read a as well, with the else dropped, but I'm going to take
+it as we have had a lot of bugs caught by this code and this
+is generating a false positive.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
+
 > ---
-> v2: Don't touch val2 when returning IIO_VAL_INT
->     Only touch val when returning a value
-> 
->  drivers/iio/gyro/bmg160_core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> index 63ca316..92c07ab 100644
-> --- a/drivers/iio/gyro/bmg160_core.c
-> +++ b/drivers/iio/gyro/bmg160_core.c
-> @@ -582,11 +582,10 @@ static int bmg160_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
->  		return bmg160_get_filter(data, val);
->  	case IIO_CHAN_INFO_SCALE:
-> -		*val = 0;
->  		switch (chan->type) {
->  		case IIO_TEMP:
-> -			*val2 = 500000;
-> -			return IIO_VAL_INT_PLUS_MICRO;
-> +			*val = 500;
-> +			return IIO_VAL_INT;
->  		case IIO_ANGL_VEL:
->  		{
->  			int i;
-> @@ -594,6 +593,7 @@ static int bmg160_read_raw(struct iio_dev *indio_dev,
->  			for (i = 0; i < ARRAY_SIZE(bmg160_scale_table); ++i) {
->  				if (bmg160_scale_table[i].dps_range ==
->  							data->dps_range) {
-> +					*val = 0;
->  					*val2 = bmg160_scale_table[i].scale;
->  					return IIO_VAL_INT_PLUS_MICRO;
->  				}
+>  drivers/iio/accel/mma8452.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 302781126bc6..00e100fc845a 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -1580,7 +1580,7 @@ static int mma8452_probe(struct i2c_client *client,
+>  	case FXLS8471_DEVICE_ID:
+>  		if (ret =3D=3D data->chip_info->chip_id)
+>  			break;
+> -		/* else: fall through */
+> +		/* fall through */
+>  	default:
+>  		ret =3D -ENODEV;
+>  		goto disable_regulators;
 
