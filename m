@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C26B2C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:20:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FC26C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:29:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 92D1721773
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:20:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBA072146F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:29:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550658039;
-	bh=z2pN6gqw9dJSz+KlwnI2Ir4v6pm/sy9t0RnyvQTcVSo=;
+	s=default; t=1550658593;
+	bh=ihNkSzqAAFhFcoXkz2WEuxqjMgKZDHQGckxMKV/yXhs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=hN+3tJGD1P71mrRzcdJLOBzachPO6HQG7rLsLEX8OK35wW6GKosYHpWUTxFcGZFPH
-	 INQpax9dufZT4LxmqssUe2SM38Ut3D9AWy2bakcsfIUlq3/0CFbNDDkDd4guflrFSB
-	 xsB8JGuaOv1y028trQsaiFQ9dyvyq35oWI6fWSes=
+	b=yMTu9UjJOLY+2DP8r6L7RGBBBa1IhMzB5zVDByvc1zxk+Wy6wscS2SLvxE3GWjxkQ
+	 Wl4qFFDXUfIi8iGZGzuk4qQ19++VDF5OmP9PjMtL79tRGWW9W3L17juFytBGjlo+FU
+	 1uKAwFOMZo95RQQz9TD7G/PYkfkZWMjtagICUYCQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726283AbfBTKUd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 05:20:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43732 "EHLO mail.kernel.org"
+        id S1726760AbfBTK3w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 05:29:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49448 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726142AbfBTKUd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 05:20:33 -0500
+        id S1726209AbfBTK3w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 05:29:52 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 804472146E;
-        Wed, 20 Feb 2019 10:20:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B1EF02086A;
+        Wed, 20 Feb 2019 10:29:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550658032;
-        bh=z2pN6gqw9dJSz+KlwnI2Ir4v6pm/sy9t0RnyvQTcVSo=;
+        s=default; t=1550658590;
+        bh=ihNkSzqAAFhFcoXkz2WEuxqjMgKZDHQGckxMKV/yXhs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VoMTkp4QFdHB86sd4C4X0Zpw9PuRHlo8j4QJLuRRqyPy3mg2+ovZlZ5fjoh6Zxs4e
-         OYqUk/v8KQWFik/Yuyb4hWWQ+mTK0pXiLdjJXagV7H2IHtLlFpbPamQdSbUE866T/4
-         1m/Mmiwopgbtqw8F2lSjvi11pzC8xugTXjTN87c0=
-Date:   Wed, 20 Feb 2019 10:20:23 +0000
+        b=xBzPO2rd3xpbV4mrMY4Cc3byCCoD/euq+T9Yo5168BniUPbH03RmUwTPQFA0nMRED
+         oKAFM/2J+2G3hJR7xpKfz7Jn5rzbGUbF5GbSuNN381XeHmwAzQFOzQkYbjCF/Lkvz/
+         aZsLx7y1Bpyu5B07tYjjMax6BLHd56XZx2qkDmBQ=
+Date:   Wed, 20 Feb 2019 10:29:45 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Stefan Popa <stefan.popa@analog.com>
 Cc:     <robh+dt@kernel.org>, <Michael.Hennerich@analog.com>,
         <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/6] iio: imu: adis16480: Use the default data ready pin
- configuration
-Message-ID: <20190220102002.5f918e74@archlinux>
-In-Reply-To: <1550596338-24220-2-git-send-email-stefan.popa@analog.com>
+Subject: Re: [PATCH 2/6] iio: imu: adis16480: Add support for configurable
+ drdy indicator
+Message-ID: <20190220102945.6af3edc4@archlinux>
+In-Reply-To: <1550596338-24220-3-git-send-email-stefan.popa@analog.com>
 References: <1550596338-24220-1-git-send-email-stefan.popa@analog.com>
-        <1550596338-24220-2-git-send-email-stefan.popa@analog.com>
+        <1550596338-24220-3-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,79 +59,150 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 19 Feb 2019 19:12:13 +0200
+On Tue, 19 Feb 2019 19:12:14 +0200
 Stefan Popa <stefan.popa@analog.com> wrote:
 
-> The FNCTIO_CTRL register, Bits[3:0] provide three configuration options
-> for the data ready function: on/off, polarity, and DIOx line. The
-> factory default assigns DIO2 as a positive polarity, data ready signal.
+> The FNCTIO_CTRL register provides configuration control for each I/O pin
+> (DIO1, DIO2, DIO3 and DIO4).
 > 
-> The adis16480_enable_irq() function, overwrites this configuration when
-> it enables/disables the data ready pin by only setting BIT[3].
-> As a result, the data ready signal becomes DIO1 pin which is assigned as
-> negative polarity.
-> 
-> This patch reads the FNCTIO_CTRL register and creates a mask, such that
-> only data ready enable (BIT[3]) will be modified when
-> adis16480_enable_irq function is called.
-
-So this is potentially a problem.  As I read this, we just changed the default.
-So a device that has been relying on this 'bug' for a long time will now
-not work as it will be expecting the interrupt on the wrong physical pin.
-
-So, whilst it might seem logical to let the device stay with it's default
-we can't do it because the defacto Linux default is the other choice.
-
-The delights of having to support old 'bugs' :)
-
-Jonathan
+> This patch adds the option to configure each DIOx pin as data ready
+> indicator with positive or negative polarity by reading the 'interrupts'
+> and 'interrupt-names' properties from the devicetree. The
+> 'interrupt-names' property is optional, if it is not specified, then the
+> factory default DIO2 data ready signal is used.
 > 
 > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Other than follow on from the previous patch change of the default, this
+looks fine to me.
+
+One question inline.
+
+Jonathan
 > ---
->  drivers/iio/imu/adis16480.c | 18 ++++++++++++++++--
->  1 file changed, 16 insertions(+), 2 deletions(-)
+>  drivers/iio/imu/adis16480.c | 76 +++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 76 insertions(+)
 > 
 > diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> index a27fe20..d222188 100644
+> index d222188..38ba0c1 100644
 > --- a/drivers/iio/imu/adis16480.c
 > +++ b/drivers/iio/imu/adis16480.c
-> @@ -9,6 +9,7 @@
->   *
+> @@ -10,6 +10,7 @@
 >   */
 >  
-> +#include <linux/bitfield.h>
+>  #include <linux/bitfield.h>
+> +#include <linux/of_irq.h>
 >  #include <linux/interrupt.h>
 >  #include <linux/delay.h>
 >  #include <linux/mutex.h>
-> @@ -107,6 +108,10 @@
->  #define ADIS16480_FIR_COEF_C(x)			ADIS16480_FIR_COEF(0x09, (x))
+> @@ -109,6 +110,10 @@
 >  #define ADIS16480_FIR_COEF_D(x)			ADIS16480_FIR_COEF(0x0B, (x))
 >  
-> +/* ADIS16480_REG_FNCTIO_CTRL */
-> +#define ADIS16480_DRDY_EN_MSK		BIT(3)
-> +#define ADIS16480_DRDY_EN(x)		FIELD_PREP(ADIS16480_DRDY_EN_MSK, x)
-> +
->  struct adis16480_chip_info {
->  	unsigned int num_channels;
->  	const struct iio_chan_spec *channels;
-> @@ -741,8 +746,17 @@ static int adis16480_stop_device(struct iio_dev *indio_dev)
+>  /* ADIS16480_REG_FNCTIO_CTRL */
+> +#define ADIS16480_DRDY_SEL_MSK		GENMASK(1, 0)
+> +#define ADIS16480_DRDY_SEL(x)		FIELD_PREP(ADIS16480_DRDY_SEL_MSK, x)
+> +#define ADIS16480_DRDY_POL_MSK		BIT(2)
+> +#define ADIS16480_DRDY_POL(x)		FIELD_PREP(ADIS16480_DRDY_POL_MSK, x)
+>  #define ADIS16480_DRDY_EN_MSK		BIT(3)
+>  #define ADIS16480_DRDY_EN(x)		FIELD_PREP(ADIS16480_DRDY_EN_MSK, x)
 >  
->  static int adis16480_enable_irq(struct adis *adis, bool enable)
->  {
-> -	return adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL,
-> -		enable ? BIT(3) : 0);
-> +	uint16_t val;
-> +	int ret;
+> @@ -121,12 +126,26 @@ struct adis16480_chip_info {
+>  	unsigned int accel_max_scale;
+>  };
+>  
+> +enum adis16480_int_pin {
+> +	ADIS16480_PIN_DIO1,
+> +	ADIS16480_PIN_DIO2,
+> +	ADIS16480_PIN_DIO3,
+> +	ADIS16480_PIN_DIO4
+> +};
 > +
-> +	ret = adis_read_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, &val);
-> +	if (ret < 0)
+>  struct adis16480 {
+>  	const struct adis16480_chip_info *chip_info;
+>  
+>  	struct adis adis;
+>  };
+>  
+> +static const char * const adis16480_int_pin_names[4] = {
+> +	[ADIS16480_PIN_DIO1] = "DIO1",
+> +	[ADIS16480_PIN_DIO2] = "DIO2",
+> +	[ADIS16480_PIN_DIO3] = "DIO3",
+> +	[ADIS16480_PIN_DIO4] = "DIO4",
+> +};
+> +
+>  #ifdef CONFIG_DEBUG_FS
+>  
+>  static ssize_t adis16480_show_firmware_revision(struct file *file,
+> @@ -840,6 +859,59 @@ static const struct adis_data adis16480_data = {
+>  	.enable_irq = adis16480_enable_irq,
+>  };
+>  
+> +static int adis16480_config_irq_pin(struct device_node *of_node,
+> +				    struct adis16480 *st)
+> +{
+> +	struct irq_data *desc;
+> +	enum adis16480_int_pin pin;
+> +	unsigned int irq_type;
+> +	uint16_t val;
+> +	int i, irq = 0;
+> +
+> +	desc = irq_get_irq_data(st->adis.spi->irq);
+> +	if (!desc) {
+> +		dev_err(&st->adis.spi->dev, "Could not find IRQ %d\n", irq);
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Disable data ready */
+> +	val = ADIS16480_DRDY_EN(0);
+Does it default to on after reset?
+That's a little unusual and nasty.  If not, why are you disabling here?
+> +
+> +	/*
+> +	 * Get the interrupt from the devicetre by reading the
+> +	 * interrupt-names property. If it is not specified, use
+> +	 * the default interrupt on DIO2 pin.
+> +	 */
+> +	pin = ADIS16480_PIN_DIO2;
+> +	for (i = 0; i < ARRAY_SIZE(adis16480_int_pin_names); i++) {
+> +		irq = of_irq_get_byname(of_node, adis16480_int_pin_names[i]);
+> +		if (irq > 0) {
+> +			pin = i;
+> +			break;
+> +		}
+> +	}
+> +
+> +	val |= ADIS16480_DRDY_SEL(pin);
+> +
+> +	/*
+> +	 * Get the interrupt line behaviour. The data ready polarity can be
+> +	 * configured as positive or negative, corresponding to
+> +	 * IRQF_TRIGGER_RISING or IRQF_TRIGGER_FALLING respectively.
+> +	 */
+> +	irq_type = irqd_get_trigger_type(desc);
+> +	if (irq_type == IRQF_TRIGGER_RISING) { /* Default */
+> +		val |= ADIS16480_DRDY_POL(1);
+> +	} else if (irq_type == IRQF_TRIGGER_FALLING) {
+> +		val |= ADIS16480_DRDY_POL(0);
+> +	} else {
+> +		dev_err(&st->adis.spi->dev,
+> +			"Invalid interrupt type 0x%x specified\n", irq_type);
+> +		return -EINVAL;
+> +	}
+> +	/* Write the data ready configuration to the FNCTIO_CTRL register */
+> +	return adis_write_reg_16(&st->adis, ADIS16480_REG_FNCTIO_CTRL, val);
+> +}
+> +
+>  static int adis16480_probe(struct spi_device *spi)
+>  {
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+> @@ -867,6 +939,10 @@ static int adis16480_probe(struct spi_device *spi)
+>  	if (ret)
+>  		return ret;
+>  
+> +	ret =  adis16480_config_irq_pin(spi->dev.of_node, st);
+> +	if (ret)
 > +		return ret;
 > +
-> +	val &= ~ADIS16480_DRDY_EN_MSK;
-> +	val |= ADIS16480_DRDY_EN(enable);
-> +
-> +	return adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, val);
->  }
->  
->  static int adis16480_initial_setup(struct iio_dev *indio_dev)
+>  	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev, NULL);
+>  	if (ret)
+>  		return ret;
 
