@@ -4,49 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BDCC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:35:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F1C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:43:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 575BE20880
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:35:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B7AFA2147A
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:43:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550676908;
-	bh=+Aoj9Da2eXF3fDgmxkSjt8Q8Xf9yjX4rzfYUxCafbTM=;
+	s=default; t=1550677435;
+	bh=bi+qanXOjDom+VxJq86nTdeOq1T/hkl2sy2A0pVsXEg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=nwmISzQYfELXYavke3BgBb5zdXnu8fJm8WQNGkYsK6u18IpyvD3ctE2JAPkoQ91M7
-	 +7Y52NqpxK1XjmP8G/BYmRJjnjndVxvgDYT8xZiQfVUqOjNLIgnzVy7JVxLwv87u1E
-	 uy1TeMTdgjck9oxsGEIs7ego3JHeIM1iBEmTrEAc=
+	b=PqOOcXMP7L+cfdAVRYV5YddVwzaNPr0nwrOfoVO5HHB4Fq5mHAz7bHhGwS8Ar6xDD
+	 NI7YME9IZa866HNB+TLt6qgUZ5grf3ZZOlTKrSq6XxjYNPPS1pfdUZZn72rf9Yi1CG
+	 vYmwvOdCQfgoCxp7HEOCehxteryHxm53gZuclexQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726265AbfBTPfH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 10:35:07 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50504 "EHLO mail.kernel.org"
+        id S1725881AbfBTPnz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 10:43:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52100 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725836AbfBTPfH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 10:35:07 -0500
+        id S1725842AbfBTPnz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 10:43:55 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 863BB2084F;
-        Wed, 20 Feb 2019 15:35:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F0752086D;
+        Wed, 20 Feb 2019 15:43:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550676907;
-        bh=+Aoj9Da2eXF3fDgmxkSjt8Q8Xf9yjX4rzfYUxCafbTM=;
+        s=default; t=1550677434;
+        bh=bi+qanXOjDom+VxJq86nTdeOq1T/hkl2sy2A0pVsXEg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pO+1bructOEz3NmzI9cA4Vc49LqL0tXC8Xt+7IF5Be+1VmPgRuLI8altmELzi/ppX
-         iQGl3REOrVq+azCyJSF/X4kBMn5E5NvRhqi/R/mt8Nzgnougib4LsvkjBWnYZ5Z8LZ
-         inWWgvSA3Eg3JyUJ1pN+iqkEKd3tZ10awXXbS/uE=
-Date:   Wed, 20 Feb 2019 15:35:01 +0000
+        b=1JB3JZ0VDvVnCwy9iLbDL1B4kwg6n+4RyfuOPjvJXLDBpXZI4C2dVBlOb63NyFRRe
+         bIFcqeT+FmfuYYjJQTRemuLsSblcyXEU9e08rmW949PiXZMmz1gfaBTCJrd1h4KK8P
+         amLUQPqNxLW1UyTIUlKYLmTY8vPDwsvhBITyitps=
+Date:   Wed, 20 Feb 2019 15:43:49 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Mircea Caprioru <mircea.caprioru@analog.com>
-Cc:     <Michael.Hennerich@analog.com>, <lars@metafoo.de>,
-        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: ad7192: Fix ad7193 channel address
-Message-ID: <20190220153501.4fed22c0@archlinux>
-In-Reply-To: <20190220110820.25580-1-mircea.caprioru@analog.com>
-References: <20190220110820.25580-1-mircea.caprioru@analog.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [V2 PATCH] iio: Fix scan mask selection
+Message-ID: <20190220154349.15a8c8cb@archlinux>
+In-Reply-To: <20190220151132.10791-1-alexandru.ardelean@analog.com>
+References: <20190220151132.10791-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,43 +54,57 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Feb 2019 13:08:20 +0200
-Mircea Caprioru <mircea.caprioru@analog.com> wrote:
+On Wed, 20 Feb 2019 17:11:32 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> This patch fixes the differential channels addresses for the ad7193.
+> From: Lars-Peter Clausen <lars@metafoo.de>
 > 
-> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
-Hi
+> Fixes commit 057ac1acdfc4 ("iio: Use kmalloc_array() in
+> iio_scan_mask_set()").
+> 
+> The trialmask is expected to have all bits set to 0 after allocation.
+> Currently kmalloc_array() is used which does not zero the memory and so
+> random bits are set. This results in random channels being enabled when
+> they shouldn't. Replace kmalloc_array() with kcalloc() which has the same
+> interface but zeros the memory.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Applied with a bit of tidying as the fixes tag should be down here.
 
-This is an impressively confusing datasheet, but I agree with the fix.
-Applied to the fixes-togreg branch of iio.git.
+I also added a note to observe that the fixes tag isn't entirely accurate
+as the bug was there before that one, it's just that a different fix will
+be necessary to backport further.
+
+Added stable tag.
 
 Thanks,
 
 Jonathan
 
-
 > ---
->  drivers/staging/iio/adc/ad7192.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index acdbc07fd259..2fc8bc22b57b 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -109,10 +109,10 @@
->  #define AD7192_CH_AIN3		BIT(6) /* AIN3 - AINCOM */
->  #define AD7192_CH_AIN4		BIT(7) /* AIN4 - AINCOM */
+> Changelog V1->V2:
+> * added `Fixes commit 057ac1acdfc4 ("iio: Use kmalloc_array() in
+>   iio_scan_mask_set()").` comment
+> 
+>  drivers/iio/industrialio-buffer.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index cd5bfe39591b..dadd921a4a30 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -320,9 +320,8 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+>  	const unsigned long *mask;
+>  	unsigned long *trialmask;
 >  
-> -#define AD7193_CH_AIN1P_AIN2M	0x000  /* AIN1(+) - AIN2(-) */
-> -#define AD7193_CH_AIN3P_AIN4M	0x001  /* AIN3(+) - AIN4(-) */
-> -#define AD7193_CH_AIN5P_AIN6M	0x002  /* AIN5(+) - AIN6(-) */
-> -#define AD7193_CH_AIN7P_AIN8M	0x004  /* AIN7(+) - AIN8(-) */
-> +#define AD7193_CH_AIN1P_AIN2M	0x001  /* AIN1(+) - AIN2(-) */
-> +#define AD7193_CH_AIN3P_AIN4M	0x002  /* AIN3(+) - AIN4(-) */
-> +#define AD7193_CH_AIN5P_AIN6M	0x004  /* AIN5(+) - AIN6(-) */
-> +#define AD7193_CH_AIN7P_AIN8M	0x008  /* AIN7(+) - AIN8(-) */
->  #define AD7193_CH_TEMP		0x100 /* Temp senseor */
->  #define AD7193_CH_AIN2P_AIN2M	0x200 /* AIN2(+) - AIN2(-) */
->  #define AD7193_CH_AIN1		0x401 /* AIN1 - AINCOM */
+> -	trialmask = kmalloc_array(BITS_TO_LONGS(indio_dev->masklength),
+> -				  sizeof(*trialmask),
+> -				  GFP_KERNEL);
+> +	trialmask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
+> +			    sizeof(*trialmask), GFP_KERNEL);
+>  	if (trialmask == NULL)
+>  		return -ENOMEM;
+>  	if (!indio_dev->masklength) {
 
