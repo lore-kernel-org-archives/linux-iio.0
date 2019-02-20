@@ -2,186 +2,176 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B4C8C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 19:07:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8031EC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 19:44:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1ED6F2081B
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 19:07:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C3D12086A
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 19:44:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F42v8VeB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725847AbfBTTHe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 14:07:34 -0500
-Received: from gateway23.websitewelcome.com ([192.185.49.184]:46014 "EHLO
-        gateway23.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725822AbfBTTHe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 14:07:34 -0500
-X-Greylist: delayed 1222 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Feb 2019 14:07:33 EST
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway23.websitewelcome.com (Postfix) with ESMTP id 668E69EA0
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 12:47:10 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id wWtigFDtp2PzOwWtighiA4; Wed, 20 Feb 2019 12:47:10 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=32946 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gwWth-001PZ4-PZ; Wed, 20 Feb 2019 12:47:09 -0600
-Subject: Re: [PATCH] iio: cros_ec_accel_legacy: Mark expected switch
- fall-throughs
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>
-References: <20181008172332.GA29816@embeddedor.com>
- <CAGXu5jLsQ_Uc4kp=md2SrOERopjZmnQK_fAsru4MQUqEHRvEeA@mail.gmail.com>
- <20190220183425.202d4d40@archlinux>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <89471d5e-fab7-9d00-8b3e-562a5a510fa6@embeddedor.com>
-Date:   Wed, 20 Feb 2019 12:47:08 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        id S1726199AbfBTToH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 14:44:07 -0500
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:37423 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725806AbfBTToH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 14:44:07 -0500
+Received: by mail-yw1-f67.google.com with SMTP id k14so9683060ywe.4;
+        Wed, 20 Feb 2019 11:44:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RQB61uwHnSl3NkeJPsOwHj2N+ljtIFfoj1M7VZlO8fU=;
+        b=F42v8VeBTiYfxj+TPPNO9z9CvHjhxUWnOUmgPk+F2j/q1VKd7SQQpE4ohrCMd7NiXG
+         mYmm2aauCxdudWrYuWPGk3jtcJ6Lbc9VUbB56mpYZ8O4Ie2/2UTkY73w7ezintJSgINx
+         XyzrKh7Q+oFwm2VebBNsXVsQDEYsoPVRs8dwUexXqLxLHdHtVDZXHZcxwyQty47rHn2q
+         V5+EV7xGFO/Fk3zM8DkPo8rla3Tk7mu1SjohOiI0ozfuN9fJVkPViiBuhSzAFRMUZwid
+         Tqp912GIMuKR6xhRu3FK/4jyH/Xv+2Q88ke9MBgrTc7nvb0MyZ9DiqMyu9z9WLZDXUxi
+         SKSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RQB61uwHnSl3NkeJPsOwHj2N+ljtIFfoj1M7VZlO8fU=;
+        b=Pe8Ka2wWMrwLPpQmSfnt3oOShSYo5ZVDqFld85+NlowCF/hD9mxqf3VAfsWk79o4QV
+         GycLm+CYGshj3vZwauNvaPtXjfXP4+V48zvss0jLqf4HhHa0zW9vwI/YLNoVL5XNBoEu
+         jBuK7gaxlr+JbiFePftxKwFIlA2hTm7s64wTFutJcYUD9DJTsDsGtZNaxK6bGKf8tejd
+         Swl8Vqh+Vl5WOXuWVfXBY+6Y7fQFg21g42/S6Lk617OOx8KvFRTFzBG+QIFz+bd+tkEL
+         dnoycs+1tftYN9UJONSugnUf9YzZtMSOgOBNyF8qfAiEwAFWpFuoJxnsZ/8zbkiH2YJ0
+         zZ5w==
+X-Gm-Message-State: AHQUAuZhNeQv51OYrvtsMv4H3W82hqxr75LrW9oSmpRCoOALNEj1XBDn
+        7FgUVn+gCekgmcF3fLXGZ7De3qsQ/0KOpoyjrZU=
+X-Google-Smtp-Source: AHgI3IZWc4BjUtICdNIkV4UL2szMBjEvUitsO8bcGnJPG2Eh1qO7bQYubJYYG3RnC48xTCd1VSnIwVlIehzu2+A7NNo=
+X-Received: by 2002:a81:2ed6:: with SMTP id u205mr29453047ywu.176.1550691845917;
+ Wed, 20 Feb 2019 11:44:05 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20190220183425.202d4d40@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gwWth-001PZ4-PZ
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.119.20]:32946
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 22
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+References: <1550030242-5241-1-git-send-email-justinpopo6@gmail.com>
+ <9e0a8a08-9636-906b-08cf-d99947d6f51a@lechnology.com> <20190220120021.65c91b83@archlinux>
+ <96ec33f3-6e58-325f-9c55-4f1a92f635f7@lechnology.com> <20190220172331.40d7cbf0@archlinux>
+In-Reply-To: <20190220172331.40d7cbf0@archlinux>
+From:   Justin Chen <justinpopo6@gmail.com>
+Date:   Wed, 20 Feb 2019 11:43:54 -0800
+Message-ID: <CAJx26kVjseUjT-89v=wb7+kq_o6OUuN7acTAkRQ_oCSDJzrNDg@mail.gmail.com>
+Subject: Re: [PATCH v3] iio: adc: ti-ads7950: add GPIO support
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        bgolaszewski@baylibre.com,
+        Linus Walleij <linus.walleij@linaro.org>, knaack.h@gmx.de,
+        lars@metafoo.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Wed, Feb 20, 2019 at 9:23 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Wed, 20 Feb 2019 10:48:49 -0600
+> David Lechner <david@lechnology.com> wrote:
+>
+> > On 2/20/19 6:00 AM, Jonathan Cameron wrote:
+> > > On Wed, 13 Feb 2019 09:10:53 +0100
+> > > David Lechner <david@lechnology.com> wrote:
+> > >
+> > >> On 2/12/19 9:57 PM, justinpopo6@gmail.com wrote:
+> > >>> From: Justin Chen <justinpopo6@gmail.com>
+> > >>>
+> > >>> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+> > >>> pins using the GPIO chip framework.
+> > >>>
+> > >>> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
+> > >>> ---
+> > >>
+> > >> It will be better to split this up into two patches[1]. One to replace
+> > >> all uses of indio_dev->mlock with the new local lock and then another to
+> > >> add GPIO support.
+> > >>
+> > >> How are you using/testing this patch? Do we need device tree bindings?
+> > >>
+I have a custom board with a SoC that is connected to the ADC with
+SPI. You don't need any addition device tree binding. Just whatever is
+already necessary for the ti-ads7950 driver.
+> > >> It will also help reviewers if you add a note about what you changed in
+> > >> each revision of the patch when you resubmit. The usual way to do this
+> > >> is something like:
+> > >>
+> > >>       v3 changes:
+> > >>
+> > >>       - Fixed unlocking mutex too many times in ti_ads7950_init_gpio()
+> > >>
+> > >> It also is nice to wait a few days at least before submitting the next
+> > >> revision to give people some time to respond.
+Will do.
+> > >
+> > > Agreed with all comments except the endian one.
+> > > SPI doesn't define an endianness of data on the wire, so we may need
+> > > to convert to match whatever ordering the ti chip expects.
+> > > I would expect things to be thoroughly broken if we remove those
+> > > conversions - particularly as I doubt this is being tested with a
+> > > big endian host!
+> > >
+> > > Jonathan
+> >
+> > I'm a bit confused then. I got this idea from include/linux/spi.h, which
+> > says:
+> >
+> >   * In-memory data values are always in native CPU byte order, translated
+> >   * from the wire byte order (big-endian except with SPI_LSB_FIRST).  So
+> >   * for example when bits_per_word is sixteen, buffers are 2N bytes long
+> >   * (@len = 2N) and hold N sixteen bit words in CPU byte order.
+> >
+> >
+> > And in the most recent patches to the ti-ads7950 driver where we switched
+> > from 8-bit words to 16-bit words, I had to remove the calls to cpu_to_be16()
+> > to keep things working.
+> Ah, my apologies, I didn't look at this closely enough.
+>
+> I was assuming we weren't in 16 bit mode here - oops.
+>
+> Otherwise this wouldn't have any hope of working... Except I'm assuming it is...
+> hohum.
+>
+> Hmm. Given the result of that cpu_to_be16 will be to swap (as almost certainly
+> on le system), I'm going to hazzard a guess that the ti device is expecting
+> little endian and we should be setting SPI_LSB_FIRST.
+> Which is odd because the data sheet definitely looks MSB first. Not to mention
+> this isn't be done elsewhere in the driver.
+>
+> So only option I can fall back on is that it is being used on a be system
+> (hence noop) or is a forward port of an older patch for the driver that missed
+> your 16 bit change...
+>
+Yes sorry! This was my mistake. I was juggling two different kernel
+versions and one of them didn't have those changes.
 
+Thanks for the review, will address the comments and submit a v4:)
 
-On 2/20/19 12:34 PM, Jonathan Cameron wrote:
-> On Wed, 20 Feb 2019 10:20:39 -0800
-> Kees Cook <keescook@chromium.org> wrote:
-> 
->> On Mon, Oct 8, 2018 at 10:24 AM Gustavo A. R. Silva
->> <gustavo@embeddedor.com> wrote:
->>>
->>> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
->>> where we are expecting to fall through.
->>>
->>> Addresses-Coverity-ID: 1397962 ("Missing break in switch")
->>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->>> ---
->>>  drivers/iio/accel/cros_ec_accel_legacy.c | 2 ++
->>>  1 file changed, 2 insertions(+)
->>>
->>> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
->>> index 063e89e..d609654 100644
->>> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
->>> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
->>> @@ -385,8 +385,10 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
->>>                 switch (i) {
->>>                 case X:
->>>                         ec_accel_channels[X].scan_index = Y;
->>> +                       /* fall through */
->>>                 case Y:
->>>                         ec_accel_channels[Y].scan_index = X;
->>> +                       /* fall through */
->>>                 case Z:
->>>                         ec_accel_channels[Z].scan_index = Z;
->>>                 }  
->>
->> Shouldn't these actually be "break;"s ? It seems like the loop is
->> stepping through X, Y, and Z. The _result_ is accidentally the same:
->>
->> X: set X, Y, and Z
->> Y: set Y and Z
->> Z: set Z
->>
->> result: X, Y, and Z are set correctly. But the code is technically wrong.
->>
+Justin
 
-Yeah. Actually, we can even take the switch and for out of the equation,
-and the code can be rewritten as follows:
-
-ec_accel_channels[X].scan_index = Y;
-ec_accel_channels[Y].scan_index = X;
-ec_accel_channels[Z].scan_index = Z;
-
-if (state->sensor_num == MOTIONSENSE_LOC_LID)
-	state->sign[X] = state->sign[Z] = -1;
-else
-	state->sign[X] = state->sign[Y] = state->sign[Z] = 1;
-
-> 
-> Agreed, it's 'novel'.  Waiting for Gwendal or someone else to come
-> back and check it wasn't meant to be doing something else.
-> 
-
-We've been waiting 5 months for Gwendal. :/
-
-Thanks
---
-Gustavo
+> >
+> > I realize that I am only using one SPI controller, so I may be making a bad
+> > assumption here, but it seems to me that it is up to the SPI controller to
+> > make sure the bits get sent over the wire in the correct order and we
+> > shouldn't have to worry about it here. We are implicitly telling the SPI
+> > controller that we need big-endian over the wire by omitting the SPI_LSB_FIRST
+> > flag here:
+> >
+> >       spi->bits_per_word = 16;
+> >       spi->mode |= SPI_CS_WORD;
+> >       ret = spi_setup(spi);
+> >
+> You are entirely correct, I was too lazy and had forgotten your change to
+> move to 16 bits.
+>
+> Jonathan
+>
