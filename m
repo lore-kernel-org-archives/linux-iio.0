@@ -2,168 +2,117 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 080C3C4360F
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:39:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 344ACC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:54:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DD35C2190B
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:39:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 074FA20859
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:54:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VsxGiD0S"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727004AbfBTSju (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 13:39:50 -0500
-Received: from gateway36.websitewelcome.com ([192.185.184.18]:45469 "EHLO
-        gateway36.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727835AbfBTSjt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 13:39:49 -0500
-X-Greylist: delayed 1346 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Feb 2019 13:39:48 EST
-Received: from cm13.websitewelcome.com (cm13.websitewelcome.com [100.42.49.6])
-        by gateway36.websitewelcome.com (Postfix) with ESMTP id AB83840A61F5F
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 11:22:07 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id wWHKg25iAYTGMwWHKgKGxC; Wed, 20 Feb 2019 12:07:30 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=59826 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gwWHJ-00135L-Ia; Wed, 20 Feb 2019 12:07:30 -0600
-Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>
-References: <20190211222318.GA21656@embeddedor>
- <20190220121726.3b10e0ec@archlinux>
- <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <e612e707-4a54-7b59-e350-139766529316@embeddedor.com>
-Date:   Wed, 20 Feb 2019 12:07:28 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        id S1727037AbfBTSym (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 13:54:42 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:36006 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727027AbfBTSym (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 13:54:42 -0500
+Received: by mail-lf1-f65.google.com with SMTP id q11so18388146lfd.3;
+        Wed, 20 Feb 2019 10:54:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=JV6Cyl6pCK3iK5vDBwetgD0gngkjKzAduoHOCuYNJ78=;
+        b=VsxGiD0S0pxySvBsLu+eOVTSjppiLdiq6f1fv5WgclWvnDkrjdXgtmBf3aPyNxnvRB
+         h31bDX0U+WUB1jFVRgygi/X7clV1bw5SI/D/IYFrY7dQJKoFXOOmIO98Dy05fXjzwZLI
+         ByXuud6os09NESyR1qLksvAorgoOSLCguYAZLtMq+oirk5BgGqrnjs13Y8l71hYc3DLB
+         VXgD2ygcC7nOf+N5Ho9B9LadhUbzkKWGL9KagZxKML0fYMgQpzXcti2cAnrivhb6eMw2
+         XGep0j6N/zQRhIxVQkVvqGuJ+0CaRYhKuPyLH+3bKIM4qc7xlDb/mVf8yKVJbFqJFx98
+         AuIg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=JV6Cyl6pCK3iK5vDBwetgD0gngkjKzAduoHOCuYNJ78=;
+        b=FHP6h0/srjb8QG9tLhoetusE1dx/oyCwDL8in7O7W0Pb837O1eSYz4vfvP1waPh0Ff
+         H4R/xWtjxsIv9NBAloRScbNhsmBhEYWwATO8dUN8BQkNSLE9u25f9c1vxzCatn/YEluR
+         bAdFwJ/z0I9uox8Q2OXILdCjv5HUlH+fem/CBNrKsi0JLKhAPDnc00RQiD8rBi3Vs36P
+         jgkrlnpwuH9GCAaKMx6NKvYP1AkoZ14sV9PXvp5G2DmodtV4dR2sVBxIJFLNygLkwE9h
+         ytaNCu/RjNZeJa5MPdM/QXFZUy87a0c+KowdWzxvmaCviXKKkDVFlIgYPMpn19uaVOQE
+         SvCw==
+X-Gm-Message-State: AHQUAubGXiEBiV4z1kI9Uvgy+tNR+4D27w8YKvH3TsLqYSMHCUtr/TpI
+        wftYlEjiAxHPsZnnVIC1lLE=
+X-Google-Smtp-Source: AHgI3IYGWhV+BIyJve2umAoZStx2FcQYWuDHiW+7DcNlnvlIVAJCI3WuFTmVArGWn8CXwqZuFZCDTA==
+X-Received: by 2002:a19:d250:: with SMTP id j77mr21097138lfg.21.1550688879460;
+        Wed, 20 Feb 2019 10:54:39 -0800 (PST)
+Received: from localhost (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id o14sm2213982lfl.41.2019.02.20.10.54.38
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 20 Feb 2019 10:54:38 -0800 (PST)
+Date:   Wed, 20 Feb 2019 19:54:14 +0100
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     Tomasz Duszynski <tduszyns@gmail.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: chemical: sps30: fix attribute kernel version
+Message-ID: <20190220185412.GA1793@arch>
+References: <20190215195759.31304-1-tduszyns@gmail.com>
+ <20190220111632.4e523380@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gwWHJ-00135L-Ia
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.119.20]:59826
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Disposition: inline
+In-Reply-To: <20190220111632.4e523380@archlinux>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Wed, Feb 20, 2019 at 11:16:32AM +0000, Jonathan Cameron wrote:
+> On Fri, 15 Feb 2019 20:57:59 +0100
+> Tomasz Duszynski <tduszyns@gmail.com> wrote:
+>
+> > 4.22 has never existed and this change was actually added to 4.21
+> > hence fix the numbering.
+> >
+> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+> 4.21 isn't going to exist either.
+>
+> Current is targeting 5.0.
 
+Right, my bad.
 
-On 2/20/19 11:21 AM, Gustavo A. R. Silva wrote:
-> 
-> 
-> On 2/20/19 6:17 AM, Jonathan Cameron wrote:
->> On Mon, 11 Feb 2019 16:23:18 -0600
->> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
->>
->>> In preparation to enabling -Wimplicit-fallthrough, mark switch
->>> cases where we are expecting to fall through.
->>>
->>> This patch fixes the following warning:
->>>
->>> drivers/iio/accel/mma8452.c: In function ‘mma8452_probe’:
->>> drivers/iio/accel/mma8452.c:1581:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>>    if (ret == data->chip_info->chip_id)
->>>       ^
->>> drivers/iio/accel/mma8452.c:1584:2: note: here
->>>   default:
->>>   ^~~~~~~
->>>
->>> Warning level 3 was used: -Wimplicit-fallthrough=3
->>>
->>> Notice that, in this particular case, the code comment is modified
->>> in accordance with what GCC is expecting to find.
->>>
->>> This patch is part of the ongoing efforts to enable
->>> -Wimplicit-fallthrough.
->>>
->>> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
->> I know Peter probably won't like this, as it doesn't
->> read a as well, with the else dropped, but I'm going to take
->> it as we have had a lot of bugs caught by this code and this
->> is generating a false positive.
->>
->> Applied to the togreg branch of iio.git and pushed out as testing
->> for the autobuilders to play with it.
->>
-> 
-> Thanks, Jonathan.
-> 
+> https://elixir.bootlin.com/linux/v5.0-rc7/source/Makefile
+>
+> Hmm. Shy Crocodile :)
+>
 
-BTW, Jonathan, I wonder if you can apply this one too:
+Catchy name.
 
-https://lore.kernel.org/patchwork/patch/996804/
-
-Thanks
---
-Gustavo
+> Jonathan
+>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-iio-sps30 | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sps30 b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > index 143df8e89d08..bef52f3e47bc 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-sps30
+> > @@ -1,6 +1,6 @@
+> >  What:		/sys/bus/iio/devices/iio:deviceX/start_cleaning
+> >  Date:		December 2018
+> > -KernelVersion:	4.22
+> > +KernelVersion:	4.21
+> >  Contact:	linux-iio@vger.kernel.org
+> >  Description:
+> >  		Writing 1 starts sensor self cleaning. Internal fan accelerates
+> > --
+> > 2.20.1
+> >
+>
