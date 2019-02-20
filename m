@@ -2,43 +2,44 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFFBEC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4D6C4360F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C187B2146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27F9D2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Zb8X2zXk"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="biigvlur"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbfBTOHU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726427AbfBTOHU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 20 Feb 2019 09:07:20 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:33262 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726427AbfBTOHU (ORCPT
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.171]:10749 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726524AbfBTOHU (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671638;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671636;
         s=strato-dkim-0002; d=goldelico.com;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=Z/73S7C4Zbhem92dU01yFfCmWRBwMMtw98BYsPvuu9M=;
-        b=Zb8X2zXkstR15EXYvVQYp03v44sMDEi/MFNWmAfW3YGoIjCb/QyGjoL5wAsk96ZpOi
-        W3AEed1yKmrYwbDV9Su1zS48q0exiWj2j8dbAz3WuDzTx4US5iIVK1vHpR7D8PQ2Dz5B
-        9yASPvAPR48ScQWpl1nU858c+X0d+/ziLsHuCPYfV3EgOdwY7hxfyeeyKDXX8Lhb51Kz
-        yIa8jewClk1xr5gi0V+Ztu4MG/gpmLqYfTvcjmmyOvEVfVeqmnCrSyxoEXq95/TWX6bw
-        GAQjp7si0VcFZia6nFYp+gdDWLHDYSlBGpU5pflbM7NUgj6J92KsPnOx3ZRqR1S7Axdn
-        bWgA==
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=1IFuc55rwlfc6zpSYhsAS9A4VqfKVOVf5pVcZTbBJ2w=;
+        b=biigvlurB+2x5rU46dUBJrlXOf0Sl6PeejL7asrraYyblkgYdaxtTgawu5F1/ULUlJ
+        UykQKKNpMyw+za4aCSitNMB8xqdknYqux7uRiUppqCMpl/WFNXlRhllNWvwa4AroxL7G
+        kOvbdgRnuUxN6sSCtctViEf1khjzjOm8taEOb9pPpu5cAk5vxGKzXZQGo2NHeKZoMdfx
+        whe+UWHLJf7R0wfcxId8XWaiIZmn6TAOK7J61dfZHyt7n1x69k6WlHLc4wRNJ99lXqMo
+        BdNYV39GPDrzVeYd8vY9E5aHT9yWvy0tFZ7QyvzSZ9rFqYsjUsHy86Qs8bTlBlzADPD7
+        IYUQ==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE0vEqS
+        with ESMTPSA id 608499v1KE0wEqT
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:00:57 +0100 (CET)
+        Wed, 20 Feb 2019 15:00:58 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -52,11 +53,16 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 0/9] iio mount matrix - revitalize missing bindings documentation and provide code for bmc150, bmg160, bma180, itg3200, hmc584x
-Date:   Wed, 20 Feb 2019 15:00:47 +0100
-Message-Id: <cover.1550671256.git.hns@goldelico.com>
+        linux-kernel@vger.kernel.org,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Samu Onkalo <samu.onkalo@intel.com>
+Subject: [PATCH 1/9] iio: document bindings for mounting matrices
+Date:   Wed, 20 Feb 2019 15:00:48 +0100
+Message-Id: <a1fcef308d9193cac33cda2420b6df5000cfc9c7.1550671256.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
+In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
+References: <cover.1550671256.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -64,52 +70,145 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series adds the mount-matrix to several iio sensor drivers
-used in handheld devices.
+From: Linus Walleij <linus.walleij@linaro.org>
 
-The mount-matrix translates the quite arbitrary orientation of the sensor
-on some printed circuit board to user-tangible orientation in handheld
-devices that relates to typical screen orientation.
+The mounting matrix for sensors was introduced in
+commit dfc57732ad38 ("iio:core: mounting matrix support")
 
-There was a bindings documentation by Linus Walleij but the patch
-did not make it into mainline. Therefore I resend it here.
+However the device tree bindings are very terse and since this is
+a widely applicable property, we need a proper binding for it
+that the other bindings can reference. This will also be useful
+for other operating systems and sensor engineering at large.
 
-Next I have added some clarifications (at least I hope it clarifies)
-in a second patch.
+I think all 3D sensors should support it, the current situation
+is probably that the mounting information is confined in magic
+userspace components rather than using the mounting matrix, which
+is not good for portability and reuse.
 
-Finally, the patch set implements the hooks for the mount matrix
-in several iio drivers: bmc150, bma180, bmg160, itg3200, hmc5843.
-This includes also one patch for the bma180 to convert it to devm API.
-
-We use them in different variants of the omap3-gta04 so a separate
-patch set will provide device tree additions for them.
-
-
-H. Nikolaus Schaller (8):
-  iio: bindings: clarifications for mount-matrix bindings
-  iio: accel: bmc150: add mount matrix support
-  iio: accel: bma180: add mount matrix support
-  iio: accel: bma180: convert to devm
-  iio: gyro: bmg160: add mount matrix support
-  iio: gyro: itg3200: add mount matrix support
-  iio: magnetometer: bmc150: add mount matrix support
-  iio: magnetometer: hmc5843: add mount matrix support
-
-Linus Walleij (1):
-  iio: document bindings for mounting matrices
-
- .../devicetree/bindings/iio/mount-matrix.txt  | 162 ++++++++++++++++++
- drivers/iio/accel/bma180.c                    |  70 ++++----
- drivers/iio/accel/bmc150-accel-core.c         |  19 ++
- drivers/iio/gyro/bmg160_core.c                |  19 ++
- drivers/iio/gyro/itg3200_core.c               |  18 ++
- drivers/iio/magnetometer/bmc150_magn.c        |  19 ++
- drivers/iio/magnetometer/hmc5843.h            |   1 +
- drivers/iio/magnetometer/hmc5843_core.c       |  14 ++
- include/linux/iio/gyro/itg3200.h              |   1 +
- 9 files changed, 288 insertions(+), 35 deletions(-)
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Sebastian Reichel <sre@kernel.org>
+Cc: Samu Onkalo <samu.onkalo@intel.com>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ .../devicetree/bindings/iio/mount-matrix.txt  | 108 ++++++++++++++++++
+ 1 file changed, 108 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
 
+diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+new file mode 100644
+index 000000000000..a3714727f739
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+@@ -0,0 +1,108 @@
++Mounting matrix
++
++The mounting matrix is a device tree property used to orient any IIO device
++that produce three-dimensional data in relation to the world where it is
++deployed.
++
++The purpose of the mounting matrix is to translate the sensor frame of
++reference into the device frame of reference using a translation matrix as
++defined in linear algebra.
++
++The typical usecase is that where a component has an internal representation
++of the (x,y,z) triplets, such as different registers to read these coordinates,
++and thus implying that the component should be mounted in a certain orientation
++relative to some specific device frame of reference.
++
++For example a device with some kind of screen, where the user is supposed to
++interact with the environment using an accelerometer, gyroscope or magnetometer
++mounted on the same chassis as this screen, will likely take the screen as
++reference to (x,y,z) orientation, with (x,y) corresponding to these axes on the
++screen and (z) being depth, the axis perpendicular to the screen.
++
++For a screen you probably want (x) coordinates to go from negative on the left
++to positive on the right and (z) depth to be negative under the screen and
++positive in front of it, toward the face of the user.
++
++A sensor can be mounted in any angle along the axes relative to the frame of
++reference. This means that the sensor may be flipped upside-down, left-right,
++or tilted at any angle relative to the frame of reference.
++
++Another frame of reference is how the device with its sensor relates to the
++external world, the environment where the device is deployed. Usually the data
++from the sensor is used to figure out how the device is oriented with respect
++to this world. When using the mounting matrix, the sensor and device orientation
++becomes identical and we can focus on the data as it relates to the surrounding
++world.
++
++Device-to-world examples for some three-dimensional sensor types:
++
++- Accelerometers have their world frame of reference toward the center of
++  gravity, usually to the core of the planet. A reading of the (x,y,z) values
++  from the sensor will give a projection of the gravity vector through the
++  device relative to the center of the planet, i.e. relative to its surface at
++  this point. Up and down in the world relative to the device frame of
++  reference can thus be determined. and users would likely expect a value of
++  9.81 m/s^2 upwards along the (z) axis, i.e. out of the screen when the device
++  is held with its screen flat on the planets surface and 0 on the other axes,
++  as the gravity vector is projected 1:1 onto the sensors (z)-axis.
++
++- Magnetometers (compasses) have their world frame of reference relative to the
++  geomagnetic field. The system orientation vis-a-vis the world is defined with
++  respect to the local earth geomagnetic reference frame where (y) is in the
++  ground plane and positive towards magnetic North, (x) is in the ground plane,
++  perpendicular to the North axis and positive towards the East and (z) is
++  perpendicular to the ground plane and positive upwards.
++
++- Gyroscopes detects the movement relative the device itself. The angular
++  velocity is defined as orthogonal to the plane of rotation, so if you put the
++  device on a flat surface and spin it around the z axis (such as rotating a
++  device with a screen lying flat on a table), you should get a negative value
++  along the (z) axis if rotated clockwise, and a positive value if rotated
++  counter-clockwise according to the right-hand rule.
++
++So unless the sensor is ideally mounted, we need a means to indicate the
++relative orientation of any given sensor of this type with respect to the
++frame of reference.
++
++To achieve this, use the device tree property "mount-matrix" for the sensor.
++This supplies a 3x3 rotation matrix in the strict linear algebraic sense,
++to orient the senor axes relative to a desired point of reference. This means
++the resulting values from the sensor, after scaling to proper units, should be
++multiplied by this matrix to give the proper vectors values in three-dimensional
++space, relative to the device or world point of reference.
++
++For more information, consult:
++https://en.wikipedia.org/wiki/Rotation_matrix
++
++The mounting matrix has the layout:
++
++ (x0, y0, z0)
++ (x1, y1, z1)
++ (x2, y2, z3)
++
++And it is represented as an array of strings containing the real values for
++producing the transformation matrix. The real values use a decimal point and
++a minus (-) to indicate a negative value.
++
++Examples:
++
++Identity matrix (nothing happens to the coordinates, which means the device was
++mechanically mounted in an ideal way and we need no transformation):
++
++mount-matrix = "1", "0", "0",
++               "0", "1", "0",
++               "0", "0", "1";
++
++The sensor is mounted 30 degrees (Pi/6 radians) tilted along the X axis, so we
++compensate by performing a -30 degrees rotation around the X axis:
++
++mount-matrix = "1", "0", "0",
++               "0", "0.866", "0.5",
++               "0", "-0.5", "0.866";
++
++The sensor is flipped 180 degrees (Pi radians) around the Z axis, i.e. mounted
++upside-down:
++
++mount-matrix = "0.998", "0.054", "0",
++               "-0.054", "0.998", "0",
++               "0", "0", "1";
 -- 
 2.19.1
 
