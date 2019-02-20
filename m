@@ -2,199 +2,301 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3447BC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:18:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A370CC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:18:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F08782146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:18:41 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550679522;
-	bh=ASqfysCwL+tC33N/uzRs0kWMrQM+XaI/iaFEtun+8nU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=BVg3xKjzNodR8roXFKVypg2d9nEDbN3JVjtEytZ9PD9SuswSbjrEjcvlKjP/1zbeY
-	 QcPPifzM8P36doe2T1YaBr2lRutwtIoPJh4B20FYOwsuKWqQqaMkU7gTW4MdT3bXE+
-	 uU8yPgeTLbsxlyxje5dXphuig2I0HTi+WfShGgCQ=
+	by mail.kernel.org (Postfix) with ESMTP id F175C20880
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:18:53 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="jJytOFgR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726445AbfBTQSg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 11:18:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725801AbfBTQSg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 11:18:36 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF41F20880;
-        Wed, 20 Feb 2019 16:18:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550679514;
-        bh=ASqfysCwL+tC33N/uzRs0kWMrQM+XaI/iaFEtun+8nU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FbkdnERMaVjd78abn0Mig7QSsFA6tqWzJ61tmk+Ifpk7EeE+qe8Dd6ahm2djqaaFr
-         o1Ia1y0eMOAhhrTbf8uJMbTazPa1yC8qnECi9NNsAFVV922e5RH30tVvy1jqX03B1e
-         YFxw2FBLUAdhy9Tem8JIaEFifKJBjT34ZDOro1vw=
-Date:   Wed, 20 Feb 2019 16:18:28 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
+        id S1727450AbfBTQSx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 11:18:53 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.80]:34123 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725801AbfBTQSx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 11:18:53 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550679529;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=u6N/SgiboUGhCZbiRP8QCeF89OEYpgiNlI0SOpkjfSY=;
+        b=jJytOFgRWYTfi1NlVNq+I3t5sa42Hy03gktapub8wZJ/sq/7eOo+eSRn29qZs5jNr8
+        zlUhrweZTUjrYn+uvwa/k48yS7PbxQ6qB02fLWkuQ1O02mEJo5v/onR2UBQpUI9d1Xdq
+        Y2H+ncLrhb/PrLlQolR+aqxVJXjF0VWF7ttoa7k4UyCQrz9CtPQYzNw1wsIxP2LZJjXY
+        /HopNmr9yDfZQvZkdbpNKmbvmxA7cECkIXijeRwKRiFsgb0P6d+mClsuFUln7qXfOC4L
+        qcnLhhKzDH+nxZYJSfh81lbQp4nvccNsqiJYv+3CdNC8xVkTkWuHLnd+QzM5nLYjhV3g
+        KnaQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NMGH/ztwDXG"
+X-RZG-CLASS-ID: mo00
+Received: from mbp-13-nikolaus.fritz.box
+        by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
+        with ESMTPSA id 608499v1KGIgFbg
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Wed, 20 Feb 2019 17:18:42 +0100 (CET)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH 1/9] iio: document bindings for mounting matrices
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20190220161017.35f2f3a4@archlinux>
+Date:   Wed, 20 Feb 2019 17:18:41 +0100
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Charles Keepax <ckeepax@opensource.cirrus.com>,
         Song Qiang <songqiang1304521@gmail.com>,
-        letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/9] iio: accel: bma180: convert to devm
-Message-ID: <20190220161828.0c6fcd8e@archlinux>
-In-Reply-To: <900f59b94ef2e1b5559b363c0d1af4fefccd0366.1550671256.git.hns@goldelico.com>
-References: <cover.1550671256.git.hns@goldelico.com>
-        <900f59b94ef2e1b5559b363c0d1af4fefccd0366.1550671256.git.hns@goldelico.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Samu Onkalo <samu.onkalo@intel.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <49606C25-608D-4F77-8038-E2C7A11B861D@goldelico.com>
+References: <cover.1550671256.git.hns@goldelico.com> <a1fcef308d9193cac33cda2420b6df5000cfc9c7.1550671256.git.hns@goldelico.com> <20190220161017.35f2f3a4@archlinux>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
+X-Mailer: Apple Mail (2.3124)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Feb 2019 15:00:52 +0100
-"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 
-> This simplifies the code a little.
-It does, but at the cost of introducing potential race conditions.
-Please don't do this.  See below for why and a suggestion on how
-to resolve things if you want to make this change safely.
+> Am 20.02.2019 um 17:10 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> On Wed, 20 Feb 2019 15:00:48 +0100
+> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+>=20
+>> From: Linus Walleij <linus.walleij@linaro.org>
+>>=20
+>> The mounting matrix for sensors was introduced in
+>> commit dfc57732ad38 ("iio:core: mounting matrix support")
+>>=20
+>> However the device tree bindings are very terse and since this is
+>> a widely applicable property, we need a proper binding for it
+>> that the other bindings can reference. This will also be useful
+>> for other operating systems and sensor engineering at large.
+>>=20
+>> I think all 3D sensors should support it, the current situation
+>> is probably that the mounting information is confined in magic
+>> userspace components rather than using the mounting matrix, which
+>> is not good for portability and reuse.
+>>=20
+>> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+>> Cc: Sebastian Reichel <sre@kernel.org>
+>> Cc: Samu Onkalo <samu.onkalo@intel.com>
+>> Cc: devicetree@vger.kernel.org
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Hmm. I looked back and seems there were still some outstanding =
+questions
+> on this last time around.
+>=20
+> =
+https://lore.kernel.org/linux-iio/a6d866f2-ee20-282b-def0-f65de2177aee@ker=
+nel.org/
+>=20
+> Particularly hard as ever to define the magnetic planes when near the
+> magnetic poles when in 3D.
+>=20
+> That needs cleaning up ideally before we apply this.
 
-Jonathan
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/iio/accel/bma180.c | 56 ++++++++++++++------------------------
->  1 file changed, 21 insertions(+), 35 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index 248be67e4f41..3f5ee2d495d3 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -738,7 +738,7 @@ static int bma180_probe(struct i2c_client *client,
->  
->  	ret = data->part_info->chip_config(data);
->  	if (ret < 0)
-> -		goto err_chip_disable;
-> +		goto err;
->  
->  	mutex_init(&data->mutex);
->  	indio_dev->dev.parent = &client->dev;
-> @@ -748,12 +748,25 @@ static int bma180_probe(struct i2c_client *client,
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->info = &bma180_info;
->  
-> +	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev, NULL,
-> +			bma180_trigger_handler, NULL);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
-> +		goto err;
-> +	}
-> +
-> +	ret = devm_iio_device_register(&client->dev, indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "unable to register iio device\n");
-> +		goto err;
-> +	}
-> +
->  	if (client->irq > 0) {
-> -		data->trig = iio_trigger_alloc("%s-dev%d", indio_dev->name,
-> -			indio_dev->id);
-> +		data->trig = devm_iio_trigger_alloc(&client->dev, "%s-dev%d",
-> +			indio_dev->name, indio_dev->id);
->  		if (!data->trig) {
->  			ret = -ENOMEM;
-> -			goto err_chip_disable;
-> +			goto err;
->  		}
->  
->  		ret = devm_request_irq(&client->dev, client->irq,
-> @@ -761,7 +774,7 @@ static int bma180_probe(struct i2c_client *client,
->  			"bma180_event", data->trig);
->  		if (ret) {
->  			dev_err(&client->dev, "unable to request IRQ\n");
-> -			goto err_trigger_free;
-> +			goto err;
->  		}
->  
->  		data->trig->dev.parent = &client->dev;
-> @@ -769,34 +782,14 @@ static int bma180_probe(struct i2c_client *client,
->  		iio_trigger_set_drvdata(data->trig, indio_dev);
->  		indio_dev->trig = iio_trigger_get(data->trig);
->  
-> -		ret = iio_trigger_register(data->trig);
-> +		ret = devm_iio_trigger_register(&client->dev, data->trig);
->  		if (ret)
-> -			goto err_trigger_free;
-> -	}
-> -
-> -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> -			bma180_trigger_handler, NULL);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
-> -		goto err_trigger_unregister;
-> -	}
-> -
-> -	ret = iio_device_register(indio_dev);
-> -	if (ret < 0) {
-> -		dev_err(&client->dev, "unable to register iio device\n");
-> -		goto err_buffer_cleanup;
-> +			goto err;
->  	}
->  
->  	return 0;
->  
-> -err_buffer_cleanup:
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -err_trigger_unregister:
-> -	if (data->trig)
-> -		iio_trigger_unregister(data->trig);
-> -err_trigger_free:
-> -	iio_trigger_free(data->trig);
-> -err_chip_disable:
-> +err:
->  	data->part_info->chip_disable(data);
->  
->  	return ret;
-> @@ -807,13 +800,6 @@ static int bma180_remove(struct i2c_client *client)
->  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->  	struct bma180_data *data = iio_priv(indio_dev);
->  
-> -	iio_device_unregister(indio_dev);
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> -	if (data->trig) {
-> -		iio_trigger_unregister(data->trig);
-> -		iio_trigger_free(data->trig);
-> -	}
-> -
-Now we disable the device before removing it's userspace interface.
-Not a good idea.
+Agreed. I already placed my proposal for improvement on top of that,
+but I did not try to solve the magnetic planes issue.
 
-Generally I will insist on the remove order always being the precise
-opposite of probe simply because it is obviously correct.
-That includes cases which can be simply argued to be fine (not
-this one which isn't). The reason is readability trumps saving
-a few lines of code and it's a lot easier to check a probe and
-remove function against each other if the order is maintained.
+Maybe Linus could squeeze the patches and edit a new one that solves
+all issues.
 
-Of course, there are ways to do this by making all the unwind
-managed, but you haven't done this here.
-devm_add_action_or_reset is handy for this if you want to do it.
+What I am most interested at the moment is to get an unambigous
+description for accelerometers first. The otehr topic was that I
+did not clearly see how the matrix is applied to the raw values
+(one could do row index first or column index first).
 
->  	mutex_lock(&data->mutex);
->  	data->part_info->chip_disable(data);
->  	mutex_unlock(&data->mutex);
+BR and thanks,
+Nikolaus
+
+>=20
+> Jonathan
+>=20
+>> ---
+>> .../devicetree/bindings/iio/mount-matrix.txt  | 108 =
+++++++++++++++++++
+>> 1 file changed, 108 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/iio/mount-matrix.txt
+>>=20
+>> diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt =
+b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+>> new file mode 100644
+>> index 000000000000..a3714727f739
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+>> @@ -0,0 +1,108 @@
+>> +Mounting matrix
+>> +
+>> +The mounting matrix is a device tree property used to orient any IIO =
+device
+>> +that produce three-dimensional data in relation to the world where =
+it is
+>> +deployed.
+>> +
+>> +The purpose of the mounting matrix is to translate the sensor frame =
+of
+>> +reference into the device frame of reference using a translation =
+matrix as
+>> +defined in linear algebra.
+>> +
+>> +The typical usecase is that where a component has an internal =
+representation
+>> +of the (x,y,z) triplets, such as different registers to read these =
+coordinates,
+>> +and thus implying that the component should be mounted in a certain =
+orientation
+>> +relative to some specific device frame of reference.
+>> +
+>> +For example a device with some kind of screen, where the user is =
+supposed to
+>> +interact with the environment using an accelerometer, gyroscope or =
+magnetometer
+>> +mounted on the same chassis as this screen, will likely take the =
+screen as
+>> +reference to (x,y,z) orientation, with (x,y) corresponding to these =
+axes on the
+>> +screen and (z) being depth, the axis perpendicular to the screen.
+>> +
+>> +For a screen you probably want (x) coordinates to go from negative =
+on the left
+>> +to positive on the right and (z) depth to be negative under the =
+screen and
+>> +positive in front of it, toward the face of the user.
+>> +
+>> +A sensor can be mounted in any angle along the axes relative to the =
+frame of
+>> +reference. This means that the sensor may be flipped upside-down, =
+left-right,
+>> +or tilted at any angle relative to the frame of reference.
+>> +
+>> +Another frame of reference is how the device with its sensor relates =
+to the
+>> +external world, the environment where the device is deployed. =
+Usually the data
+>> +from the sensor is used to figure out how the device is oriented =
+with respect
+>> +to this world. When using the mounting matrix, the sensor and device =
+orientation
+>> +becomes identical and we can focus on the data as it relates to the =
+surrounding
+>> +world.
+>> +
+>> +Device-to-world examples for some three-dimensional sensor types:
+>> +
+>> +- Accelerometers have their world frame of reference toward the =
+center of
+>> +  gravity, usually to the core of the planet. A reading of the =
+(x,y,z) values
+>> +  from the sensor will give a projection of the gravity vector =
+through the
+>> +  device relative to the center of the planet, i.e. relative to its =
+surface at
+>> +  this point. Up and down in the world relative to the device frame =
+of
+>> +  reference can thus be determined. and users would likely expect a =
+value of
+>> +  9.81 m/s^2 upwards along the (z) axis, i.e. out of the screen when =
+the device
+>> +  is held with its screen flat on the planets surface and 0 on the =
+other axes,
+>> +  as the gravity vector is projected 1:1 onto the sensors (z)-axis.
+>> +
+>> +- Magnetometers (compasses) have their world frame of reference =
+relative to the
+>> +  geomagnetic field. The system orientation vis-a-vis the world is =
+defined with
+>> +  respect to the local earth geomagnetic reference frame where (y) =
+is in the
+>> +  ground plane and positive towards magnetic North, (x) is in the =
+ground plane,
+>> +  perpendicular to the North axis and positive towards the East and =
+(z) is
+>> +  perpendicular to the ground plane and positive upwards.
+>> +
+>> +- Gyroscopes detects the movement relative the device itself. The =
+angular
+>> +  velocity is defined as orthogonal to the plane of rotation, so if =
+you put the
+>> +  device on a flat surface and spin it around the z axis (such as =
+rotating a
+>> +  device with a screen lying flat on a table), you should get a =
+negative value
+>> +  along the (z) axis if rotated clockwise, and a positive value if =
+rotated
+>> +  counter-clockwise according to the right-hand rule.
+>> +
+>> +So unless the sensor is ideally mounted, we need a means to indicate =
+the
+>> +relative orientation of any given sensor of this type with respect =
+to the
+>> +frame of reference.
+>> +
+>> +To achieve this, use the device tree property "mount-matrix" for the =
+sensor.
+>> +This supplies a 3x3 rotation matrix in the strict linear algebraic =
+sense,
+>> +to orient the senor axes relative to a desired point of reference. =
+This means
+>> +the resulting values from the sensor, after scaling to proper units, =
+should be
+>> +multiplied by this matrix to give the proper vectors values in =
+three-dimensional
+>> +space, relative to the device or world point of reference.
+>> +
+>> +For more information, consult:
+>> +https://en.wikipedia.org/wiki/Rotation_matrix
+>> +
+>> +The mounting matrix has the layout:
+>> +
+>> + (x0, y0, z0)
+>> + (x1, y1, z1)
+>> + (x2, y2, z3)
+>> +
+>> +And it is represented as an array of strings containing the real =
+values for
+>> +producing the transformation matrix. The real values use a decimal =
+point and
+>> +a minus (-) to indicate a negative value.
+>> +
+>> +Examples:
+>> +
+>> +Identity matrix (nothing happens to the coordinates, which means the =
+device was
+>> +mechanically mounted in an ideal way and we need no transformation):
+>> +
+>> +mount-matrix =3D "1", "0", "0",
+>> +               "0", "1", "0",
+>> +               "0", "0", "1";
+>> +
+>> +The sensor is mounted 30 degrees (Pi/6 radians) tilted along the X =
+axis, so we
+>> +compensate by performing a -30 degrees rotation around the X axis:
+>> +
+>> +mount-matrix =3D "1", "0", "0",
+>> +               "0", "0.866", "0.5",
+>> +               "0", "-0.5", "0.866";
+>> +
+>> +The sensor is flipped 180 degrees (Pi radians) around the Z axis, =
+i.e. mounted
+>> +upside-down:
+>> +
+>> +mount-matrix =3D "0.998", "0.054", "0",
+>> +               "-0.054", "0.998", "0",
+>> +               "0", "0", "1";
+>=20
 
