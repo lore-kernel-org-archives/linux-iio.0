@@ -2,234 +2,333 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91BBAC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:20:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B06BC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:25:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F7672086A
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:20:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 015F22086A
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:25:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbfBTPU5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 10:20:57 -0500
-Received: from mga07.intel.com ([134.134.136.100]:55853 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726630AbfBTPU5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 10:20:57 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga105.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2019 07:20:56 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.58,391,1544515200"; 
-   d="scan'208";a="119429462"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 20 Feb 2019 07:20:54 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3567A159; Wed, 20 Feb 2019 17:20:52 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] iio: Allow to read mount matrix from ACPI
-Date:   Wed, 20 Feb 2019 18:20:52 +0300
-Message-Id: <20190220152052.31901-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.20.1
+        id S1727160AbfBTPZC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 10:25:02 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:54545 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726019AbfBTPZC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 10:25:02 -0500
+Received: from webmail.gandi.net (webmail6.sd4.0x35.net [10.200.201.6])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPA id 70FED6000B;
+        Wed, 20 Feb 2019 15:24:58 +0000 (UTC)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Wed, 20 Feb 2019 16:24:58 +0100
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 5/7] power: supply: add Ingenic JZ47xx battery driver.
+In-Reply-To: <20190220111441.585eb3eb@archlinux>
+References: <20190217142914.17433-1-contact@artur-rojek.eu>
+ <20190217142914.17433-5-contact@artur-rojek.eu>
+ <20190220111441.585eb3eb@archlinux>
+Message-ID: <6ee815b0186622c5c0bcdf41fe179650@artur-rojek.eu>
+X-Sender: contact@artur-rojek.eu
+User-Agent: Roundcube Webmail/1.1.2
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Currently mount matrix is allowed in Device Tree, though there is
-no technical issue to extend it to support ACPI.
+On 2019-02-20 12:14, Jonathan Cameron wrote:
+> On Sun, 17 Feb 2019 15:29:14 +0100
+> Artur Rojek <contact@artur-rojek.eu> wrote:
+> 
+>> Add a driver for battery present on Ingenic JZ47xx SoCs.
+>> 
+>> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> A few things inline.
+> 
+> thanks,
+> 
+> Jonathan
+> 
 
-Convert the function to use device_property_read_string_array() and
-thus allow to read mount matrix from ACPI if available.
+Hi Jonathan,
 
-At the same time drop the "of" prefix from its name and
-convert current users.
+Thanks for the review.
 
-No functional change intended.
+>> ---
+>>  drivers/power/supply/Kconfig           |  11 ++
+>>  drivers/power/supply/Makefile          |   1 +
+>>  drivers/power/supply/ingenic-battery.c | 182 
+>> +++++++++++++++++++++++++
+>>  3 files changed, 194 insertions(+)
+>>  create mode 100644 drivers/power/supply/ingenic-battery.c
+>> 
+>> diff --git a/drivers/power/supply/Kconfig 
+>> b/drivers/power/supply/Kconfig
+>> index e901b9879e7e..9bfb1637ec28 100644
+>> --- a/drivers/power/supply/Kconfig
+>> +++ b/drivers/power/supply/Kconfig
+>> @@ -169,6 +169,17 @@ config BATTERY_COLLIE
+>>  	  Say Y to enable support for the battery on the Sharp Zaurus
+>>  	  SL-5500 (collie) models.
+>> 
+>> +config BATTERY_INGENIC
+>> +	tristate "Ingenic JZ47xx SoCs battery driver"
+>> +	depends on MIPS || COMPILE_TEST
+>> +	depends on INGENIC_ADC
+>> +	help
+>> +	  Choose this option if you want to monitor battery status on
+>> +	  Ingenic JZ47xx SoC based devices.
+>> +
+>> +	  This driver can also be built as a module. If so, the module will 
+>> be
+>> +	  called ingenic-battery.
+>> +
+>>  config BATTERY_IPAQ_MICRO
+>>  	tristate "iPAQ Atmel Micro ASIC battery driver"
+>>  	depends on MFD_IPAQ_MICRO
+>> diff --git a/drivers/power/supply/Makefile 
+>> b/drivers/power/supply/Makefile
+>> index b731c2a9b695..9e2c481d0187 100644
+>> --- a/drivers/power/supply/Makefile
+>> +++ b/drivers/power/supply/Makefile
+>> @@ -34,6 +34,7 @@ obj-$(CONFIG_BATTERY_PMU)	+= pmu_battery.o
+>>  obj-$(CONFIG_BATTERY_OLPC)	+= olpc_battery.o
+>>  obj-$(CONFIG_BATTERY_TOSA)	+= tosa_battery.o
+>>  obj-$(CONFIG_BATTERY_COLLIE)	+= collie_battery.o
+>> +obj-$(CONFIG_BATTERY_INGENIC)	+= ingenic-battery.o
+>>  obj-$(CONFIG_BATTERY_IPAQ_MICRO) += ipaq_micro_battery.o
+>>  obj-$(CONFIG_BATTERY_WM97XX)	+= wm97xx_battery.o
+>>  obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
+>> diff --git a/drivers/power/supply/ingenic-battery.c 
+>> b/drivers/power/supply/ingenic-battery.c
+>> new file mode 100644
+>> index 000000000000..4ee75c1ac241
+>> --- /dev/null
+>> +++ b/drivers/power/supply/ingenic-battery.c
+>> @@ -0,0 +1,182 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Battery driver for the Ingenic JZ47xx SoCs
+>> + * Copyright (c) 2019 Artur Rojek <contact@artur-rojek.eu>
+>> + *
+>> + * based on drivers/power/supply/jz4740-battery.c
+> 
+> What is the relationship between this driver and the older one?
+This driver intends to replace the older one.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/accel/kxsd9.c                  |  2 +-
- drivers/iio/gyro/mpu3050-core.c            |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  2 +-
- drivers/iio/industrialio-core.c            | 46 +++++++++-------------
- drivers/iio/magnetometer/ak8974.c          |  2 +-
- drivers/iio/magnetometer/ak8975.c          |  2 +-
- include/linux/iio/iio.h                    |  4 +-
- 7 files changed, 25 insertions(+), 35 deletions(-)
-
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 0c0df4fce420..f73404ca715e 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -420,7 +420,7 @@ int kxsd9_common_probe(struct device *dev,
- 	indio_dev->available_scan_masks = kxsd9_scan_masks;
- 
- 	/* Read the mounting matrix, if present */
--	ret = of_iio_read_mount_matrix(dev,
-+	ret = iio_read_mount_matrix(dev,
- 				       "mount-matrix",
- 				       &st->orientation);
- 	if (ret)
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 77fac81a3adc..0a7d0dde020e 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1149,7 +1149,7 @@ int mpu3050_common_probe(struct device *dev,
- 	mpu3050->divisor = 99;
- 
- 	/* Read the mounting matrix, if present */
--	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-+	ret = iio_read_mount_matrix(dev, "mount-matrix",
- 				       &mpu3050->orientation);
- 	if (ret)
- 		return ret;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 1e428c196a82..e2c8e8ca324a 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -990,7 +990,7 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 
- 	pdata = dev_get_platdata(dev);
- 	if (!pdata) {
--		result = of_iio_read_mount_matrix(dev, "mount-matrix",
-+		result = iio_read_mount_matrix(dev, "mount-matrix",
- 						  &st->orientation);
- 		if (result) {
- 			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4f5cd9f60870..3baede140d69 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -19,6 +19,7 @@
- #include <linux/device.h>
- #include <linux/fs.h>
- #include <linux/poll.h>
-+#include <linux/property.h>
- #include <linux/sched.h>
- #include <linux/wait.h>
- #include <linux/cdev.h>
-@@ -525,8 +526,8 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
- EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
- 
- /**
-- * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
-- *                              device-tree "mount-matrix" property
-+ * iio_read_mount_matrix() - retrieve iio device mounting matrix from
-+ *                           device "mount-matrix" property
-  * @dev:	device the mounting matrix property is assigned to
-  * @propname:	device specific mounting matrix property name
-  * @matrix:	where to store retrieved matrix
-@@ -536,40 +537,29 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
-  *
-  * Return: 0 if success, or a negative error code on failure.
-  */
--#ifdef CONFIG_OF
--int of_iio_read_mount_matrix(const struct device *dev,
--			     const char *propname,
--			     struct iio_mount_matrix *matrix)
-+int iio_read_mount_matrix(struct device *dev, const char *propname,
-+			  struct iio_mount_matrix *matrix)
- {
--	if (dev->of_node) {
--		int err = of_property_read_string_array(dev->of_node,
--				propname, matrix->rotation,
--				ARRAY_SIZE(iio_mount_idmatrix.rotation));
-+	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation); 
-+	int err;
- 
--		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
--			return 0;
-+	err = device_property_read_string_array(dev, propname,
-+						matrix->rotation, len);
-+	if (err == len)
-+		return 0;
- 
--		if (err >= 0)
--			/* Invalid number of matrix entries. */
--			return -EINVAL;
-+	if (err >= 0)
-+		/* Invalid number of matrix entries. */
-+		return -EINVAL;
- 
--		if (err != -EINVAL)
--			/* Invalid matrix declaration format. */
--			return err;
--	}
-+	if (err != -EINVAL)
-+		/* Invalid matrix declaration format. */
-+		return err;
- 
- 	/* Matrix was not declared at all: fallback to identity. */
- 	return iio_setup_mount_idmatrix(dev, matrix);
- }
--#else
--int of_iio_read_mount_matrix(const struct device *dev,
--			     const char *propname,
--			     struct iio_mount_matrix *matrix)
--{
--	return iio_setup_mount_idmatrix(dev, matrix);
--}
--#endif
--EXPORT_SYMBOL(of_iio_read_mount_matrix);
-+EXPORT_SYMBOL(iio_read_mount_matrix);
- 
- static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
- 				  int size, const int *vals)
-diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-index 93be1f4c0f27..9bf21e5fe3fc 100644
---- a/drivers/iio/magnetometer/ak8974.c
-+++ b/drivers/iio/magnetometer/ak8974.c
-@@ -733,7 +733,7 @@ static int ak8974_probe(struct i2c_client *i2c,
- 	ak8974->i2c = i2c;
- 	mutex_init(&ak8974->lock);
- 
--	ret = of_iio_read_mount_matrix(&i2c->dev,
-+	ret = iio_read_mount_matrix(&i2c->dev,
- 				       "mount-matrix",
- 				       &ak8974->orientation);
- 	if (ret)
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index d430b80808ef..dca20df1310e 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -911,7 +911,7 @@ static int ak8975_probe(struct i2c_client *client,
- 	data->eoc_irq = 0;
- 
- 	if (!pdata) {
--		err = of_iio_read_mount_matrix(&client->dev,
-+		err = iio_read_mount_matrix(&client->dev,
- 					       "mount-matrix",
- 					       &data->orientation);
- 		if (err)
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index a74cb177dc6f..bb10c1bee301 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -130,8 +130,8 @@ struct iio_mount_matrix {
- 
- ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
- 			      const struct iio_chan_spec *chan, char *buf);
--int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
--			     struct iio_mount_matrix *matrix);
-+int iio_read_mount_matrix(struct device *dev, const char *propname,
-+			  struct iio_mount_matrix *matrix);
- 
- typedef const struct iio_mount_matrix *
- 	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
--- 
-2.20.1
+Artur
+> 
+>> + */
+>> +
+>> +#include <linux/iio/consumer.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/power_supply.h>
+>> +#include <linux/property.h>
+>> +
+>> +struct ingenic_battery {
+>> +	struct device *dev;
+>> +	struct iio_channel *channel;
+>> +	struct power_supply_desc desc;
+>> +	struct power_supply *battery;
+>> +	struct power_supply_battery_info info;
+>> +};
+>> +
+>> +static int ingenic_battery_get_property(struct power_supply *psy,
+>> +					enum power_supply_property psp,
+>> +					union power_supply_propval *val)
+>> +{
+>> +	struct ingenic_battery *bat = power_supply_get_drvdata(psy);
+>> +	struct power_supply_battery_info *info = &bat->info;
+>> +	int ret = 0;
+>> +
+>> +	switch (psp) {
+>> +	case POWER_SUPPLY_PROP_HEALTH:
+>> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
+>> +		val->intval *= 1000;
+>> +		if (val->intval < info->voltage_min_design_uv)
+>> +			val->intval = POWER_SUPPLY_HEALTH_DEAD;
+>> +		else if (val->intval > info->voltage_max_design_uv)
+>> +			val->intval = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
+>> +		else
+>> +			val->intval = POWER_SUPPLY_HEALTH_GOOD;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+>> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
+>> +		val->intval *= 1000;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+>> +		val->intval = info->voltage_min_design_uv;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+>> +		val->intval = info->voltage_max_design_uv;
+>> +	break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	};
+>> +
+> Can't get here, so drop.
+> 
+>> +	return ret;
+>> +}
+>> +
+>> +/* Set the most appropriate IIO channel voltage reference scale
+>> + * based on the battery's max voltage.
+>> + */
+>> +static int ingenic_battery_set_scale(struct ingenic_battery *bat)
+>> +{
+>> +	const int *scale_raw;
+>> +	int scale_len, scale_type, best_idx = -1, best_mV, max_raw, i, ret;
+>> +	u64 max_mV;
+>> +
+>> +	ret = iio_read_max_channel_raw(bat->channel, &max_raw);
+>> +	if (ret) {
+>> +		dev_err(bat->dev, "Unable to read max raw channel value\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = iio_read_avail_channel_attribute(bat->channel, &scale_raw,
+>> +					       &scale_type, &scale_len,
+>> +					       IIO_CHAN_INFO_SCALE);
+>> +	if (ret < 0) {
+>> +		dev_err(bat->dev, "Unable to read channel avail scale\n");
+>> +		return ret;
+>> +	}
+> This works under the constraints of knowing what ADC we are talking to, 
+> but
+> this isn't generic.  The relationship between scale and the range isn't 
+> always
+> direct.  i.e. there are devices where you sample the same range at a 
+> lower
+> scale to be able to read it faster (can be thought of as oversampling, 
+> or
+> just not running the last stages of a pipelined ADC).
+> Anyhow, doesn't matter here as I assume this is fine on this part.
+> 
+>> +	if (ret != IIO_AVAIL_LIST || scale_type != IIO_VAL_FRACTIONAL_LOG2)
+>> +		return -EINVAL;
+>> +
+>> +	max_mV = bat->info.voltage_max_design_uv / 1000;
+>> +
+>> +	for (i = 1; i < scale_len; i += 2) {
+>> +		u64 scale_mV = (max_raw * scale_raw[i - 1]) >> scale_raw[i];
+> Not keen on the offset in the index being backwards.
+> 
+> This would be clearer I think as
+> 
+> for (i = 0; i < scale_len; i+= 2) {
+> 	u64 scale_mv = (max_raw * scale_raw[i]) >> scale_raw[i + 1];
+> 	...
+> 	best_idx = i;
+> }
+> 
+>> +
+>> +		if (scale_mV < max_mV)
+>> +			continue;
+>> +
+>> +		if (best_idx >= 0 && scale_mV > best_mV)
+>> +			continue;
+>> +
+>> +		best_mV = scale_mV;
+>> +		best_idx = i - 1;
+>> +	}
+>> +
+>> +	if (best_idx < 0) {
+>> +		dev_err(bat->dev, "Unable to find matching voltage scale\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return iio_write_channel_attribute(bat->channel,
+>> +					   scale_raw[best_idx],
+>> +					   scale_raw[best_idx+1],
+> 
+> Spacing around that +.
+> 
+>> +					   IIO_CHAN_INFO_SCALE);
+>> +}
+>> +
+>> +static enum power_supply_property ingenic_battery_properties[] = {
+>> +	POWER_SUPPLY_PROP_HEALTH,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+>> +};
+>> +
+>> +static int ingenic_battery_probe(struct platform_device *pdev)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct ingenic_battery *bat;
+>> +	struct power_supply_config psy_cfg = {};
+>> +	struct power_supply_desc *desc;
+>> +	int ret;
+>> +
+>> +	bat = devm_kzalloc(dev, sizeof(*bat), GFP_KERNEL);
+>> +	if (!bat)
+>> +		return -ENOMEM;
+>> +
+>> +	bat->dev = dev;
+>> +	bat->channel = devm_iio_channel_get(dev, "battery");
+>> +	if (IS_ERR(bat->channel))
+>> +		return PTR_ERR(bat->channel);
+>> +
+>> +	desc = &bat->desc;
+>> +	desc->name = "jz-battery";
+>> +	desc->type = POWER_SUPPLY_TYPE_BATTERY;
+>> +	desc->properties = ingenic_battery_properties;
+>> +	desc->num_properties = ARRAY_SIZE(ingenic_battery_properties);
+>> +	desc->get_property = ingenic_battery_get_property;
+>> +	psy_cfg.drv_data = bat;
+>> +	psy_cfg.of_node = dev->of_node;
+>> +
+>> +	bat->battery = devm_power_supply_register(dev, desc, &psy_cfg);
+>> +	if (IS_ERR(bat->battery)) {
+>> +		dev_err(dev, "Unable to register battery\n");
+>> +		return PTR_ERR(bat->battery);
+>> +	}
+>> +
+>> +	ret = power_supply_get_battery_info(bat->battery, &bat->info);
+>> +	if (ret) {
+>> +		dev_err(dev, "Unable to get battery info: %d\n", ret);
+>> +		return ret;
+>> +	}
+>> +	if (bat->info.voltage_min_design_uv < 0) {
+>> +		dev_err(dev, "Unable to get voltage min design\n");
+>> +		return bat->info.voltage_min_design_uv;
+>> +	}
+>> +	if (bat->info.voltage_max_design_uv < 0) {
+>> +		dev_err(dev, "Unable to get voltage max design\n");
+>> +		return bat->info.voltage_max_design_uv;
+>> +	}
+>> +
+>> +	return ingenic_battery_set_scale(bat);
+>> +}
+>> +
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id ingenic_battery_of_match[] = {
+>> +	{ .compatible = "ingenic,jz4740-battery", },
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, ingenic_battery_of_match);
+>> +#endif
+>> +
+>> +static struct platform_driver ingenic_battery_driver = {
+>> +	.driver = {
+>> +		.name = "ingenic-battery",
+>> +		.of_match_table = of_match_ptr(ingenic_battery_of_match),
+>> +	},
+>> +	.probe = ingenic_battery_probe,
+>> +};
+>> +module_platform_driver(ingenic_battery_driver);
 
