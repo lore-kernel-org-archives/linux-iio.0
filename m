@@ -4,51 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7E70C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26B2C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:20:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BC7C22147C
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:52:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 92D1721773
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 10:20:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550656347;
-	bh=j8GiWdTrnDJPHmV7leWtmNUgsY8cNOh8pxNO06m8gsU=;
+	s=default; t=1550658039;
+	bh=z2pN6gqw9dJSz+KlwnI2Ir4v6pm/sy9t0RnyvQTcVSo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=1ViCXiwjWpYYd8H7oACe6RMmQHDEv3WETZQ8E7BkjHM3iVlV8FRuLB08zonEA0Z7H
-	 yk4nZxe6QQGOHD3OwwygHGbYSDfVVMB1pWiSll5akZZ8wXjJaLLjiD4xRy8KANJUEE
-	 W3LIXYkNLvVbSRwW5wcW9rIO+7nGBb9uUkcnESBA=
+	b=hN+3tJGD1P71mrRzcdJLOBzachPO6HQG7rLsLEX8OK35wW6GKosYHpWUTxFcGZFPH
+	 INQpax9dufZT4LxmqssUe2SM38Ut3D9AWy2bakcsfIUlq3/0CFbNDDkDd4guflrFSB
+	 xsB8JGuaOv1y028trQsaiFQ9dyvyq35oWI6fWSes=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726573AbfBTJw1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 04:52:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52972 "EHLO mail.kernel.org"
+        id S1726283AbfBTKUd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 05:20:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725816AbfBTJw1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 04:52:27 -0500
+        id S1726142AbfBTKUd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 05:20:33 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B1522089F;
-        Wed, 20 Feb 2019 09:52:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 804472146E;
+        Wed, 20 Feb 2019 10:20:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550656346;
-        bh=j8GiWdTrnDJPHmV7leWtmNUgsY8cNOh8pxNO06m8gsU=;
+        s=default; t=1550658032;
+        bh=z2pN6gqw9dJSz+KlwnI2Ir4v6pm/sy9t0RnyvQTcVSo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=2PTKxnvBdDg2iiWiB2vYYYtYURNWy5HjXZhahrpp4L4NyyfhPbhi9hMwCZ1CVgrMv
-         /OPTNbgydhBshltWjqwXpbxQNii+FN9gtKdi4XbQoFkD3MXLNVuGJ8x948yxqqUYmK
-         PZwwJ4aDHQLHBB9HQ40lJ2wmxlYwjpFd6cwshpoo=
-Date:   Wed, 20 Feb 2019 09:52:19 +0000
+        b=VoMTkp4QFdHB86sd4C4X0Zpw9PuRHlo8j4QJLuRRqyPy3mg2+ovZlZ5fjoh6Zxs4e
+         OYqUk/v8KQWFik/Yuyb4hWWQ+mTK0pXiLdjJXagV7H2IHtLlFpbPamQdSbUE866T/4
+         1m/Mmiwopgbtqw8F2lSjvi11pzC8xugTXjTN87c0=
+Date:   Wed, 20 Feb 2019 10:20:23 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lucas Oshiro <lucasseikioshiro@gmail.com>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Anderson Reis <andersonreisrosa@gmail.com>
-Subject: Re: [PATCH 4/5] iio:potentiostat:lmp91000: invert if statement
-Message-ID: <20190220095219.2f1efa85@archlinux>
-In-Reply-To: <20190218172236.7781-5-lucasseikioshiro@gmail.com>
-References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
-        <20190218172236.7781-5-lucasseikioshiro@gmail.com>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     <robh+dt@kernel.org>, <Michael.Hennerich@analog.com>,
+        <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/6] iio: imu: adis16480: Use the default data ready pin
+ configuration
+Message-ID: <20190220102002.5f918e74@archlinux>
+In-Reply-To: <1550596338-24220-2-git-send-email-stefan.popa@analog.com>
+References: <1550596338-24220-1-git-send-email-stefan.popa@analog.com>
+        <1550596338-24220-2-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,39 +59,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Feb 2019 14:22:35 -0300
-Lucas Oshiro <lucasseikioshiro@gmail.com> wrote:
+On Tue, 19 Feb 2019 19:12:13 +0200
+Stefan Popa <stefan.popa@analog.com> wrote:
 
-> Invert if statement arms in line 214, in order to make the code cleaner
+> The FNCTIO_CTRL register, Bits[3:0] provide three configuration options
+> for the data ready function: on/off, polarity, and DIOx line. The
+> factory default assigns DIO2 as a positive polarity, data ready signal.
 > 
-> Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
-> Signed-off-by: Anderson Reis <andersonreisrosa@gmail.com>
+> The adis16480_enable_irq() function, overwrites this configuration when
+> it enables/disables the data ready pin by only setting BIT[3].
+> As a result, the data ready signal becomes DIO1 pin which is assigned as
+> negative polarity.
+> 
+> This patch reads the FNCTIO_CTRL register and creates a mask, such that
+> only data ready enable (BIT[3]) will be modified when
+> adis16480_enable_irq function is called.
 
-Given this undoes one of the earlier changes, please merge them.
+So this is potentially a problem.  As I read this, we just changed the default.
+So a device that has been relying on this 'bug' for a long time will now
+not work as it will be expecting the interrupt on the wrong physical pin.
+
+So, whilst it might seem logical to let the device stay with it's default
+we can't do it because the defacto Linux default is the other choice.
+
+The delights of having to support old 'bugs' :)
 
 Jonathan
-
-> ---
->  drivers/iio/potentiostat/lmp91000.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> index 6dba26121a62..7229ef59590a 100644
-> --- a/drivers/iio/potentiostat/lmp91000.c
-> +++ b/drivers/iio/potentiostat/lmp91000.c
-> @@ -211,12 +211,11 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+>  drivers/iio/imu/adis16480.c | 18 ++++++++++++++++--
+>  1 file changed, 16 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index a27fe20..d222188 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+> @@ -9,6 +9,7 @@
+>   *
+>   */
 >  
->  	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
->  	if (ret) {
-> -		if (of_property_read_bool(np, "ti,external-tia-resistor")) {
-> -			val = 0;
-> -		} else {
-> +		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
->  			dev_err(dev, "no ti,tia-gain-ohm defined");
->  			return ret;
->  		}
-> +		val = 0;
->  	}
+> +#include <linux/bitfield.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/delay.h>
+>  #include <linux/mutex.h>
+> @@ -107,6 +108,10 @@
+>  #define ADIS16480_FIR_COEF_C(x)			ADIS16480_FIR_COEF(0x09, (x))
+>  #define ADIS16480_FIR_COEF_D(x)			ADIS16480_FIR_COEF(0x0B, (x))
 >  
->  	ret = -EINVAL;
+> +/* ADIS16480_REG_FNCTIO_CTRL */
+> +#define ADIS16480_DRDY_EN_MSK		BIT(3)
+> +#define ADIS16480_DRDY_EN(x)		FIELD_PREP(ADIS16480_DRDY_EN_MSK, x)
+> +
+>  struct adis16480_chip_info {
+>  	unsigned int num_channels;
+>  	const struct iio_chan_spec *channels;
+> @@ -741,8 +746,17 @@ static int adis16480_stop_device(struct iio_dev *indio_dev)
+>  
+>  static int adis16480_enable_irq(struct adis *adis, bool enable)
+>  {
+> -	return adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL,
+> -		enable ? BIT(3) : 0);
+> +	uint16_t val;
+> +	int ret;
+> +
+> +	ret = adis_read_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, &val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	val &= ~ADIS16480_DRDY_EN_MSK;
+> +	val |= ADIS16480_DRDY_EN(enable);
+> +
+> +	return adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, val);
+>  }
+>  
+>  static int adis16480_initial_setup(struct iio_dev *indio_dev)
 
