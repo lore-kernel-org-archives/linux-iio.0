@@ -2,213 +2,143 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F4D6C4360F
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA6F3C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:14:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 27F9D2146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7921E2075C
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:14:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="biigvlur"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="o1wFYMr1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726427AbfBTOHU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 09:07:20 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.171]:10749 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726524AbfBTOHU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671636;
-        s=strato-dkim-0002; d=goldelico.com;
-        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=1IFuc55rwlfc6zpSYhsAS9A4VqfKVOVf5pVcZTbBJ2w=;
-        b=biigvlurB+2x5rU46dUBJrlXOf0Sl6PeejL7asrraYyblkgYdaxtTgawu5F1/ULUlJ
-        UykQKKNpMyw+za4aCSitNMB8xqdknYqux7uRiUppqCMpl/WFNXlRhllNWvwa4AroxL7G
-        kOvbdgRnuUxN6sSCtctViEf1khjzjOm8taEOb9pPpu5cAk5vxGKzXZQGo2NHeKZoMdfx
-        whe+UWHLJf7R0wfcxId8XWaiIZmn6TAOK7J61dfZHyt7n1x69k6WlHLc4wRNJ99lXqMo
-        BdNYV39GPDrzVeYd8vY9E5aHT9yWvy0tFZ7QyvzSZ9rFqYsjUsHy86Qs8bTlBlzADPD7
-        IYUQ==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-        by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE0wEqT
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:00:58 +0100 (CET)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Song Qiang <songqiang1304521@gmail.com>
-Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Samu Onkalo <samu.onkalo@intel.com>
-Subject: [PATCH 1/9] iio: document bindings for mounting matrices
-Date:   Wed, 20 Feb 2019 15:00:48 +0100
-Message-Id: <a1fcef308d9193cac33cda2420b6df5000cfc9c7.1550671256.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
-References: <cover.1550671256.git.hns@goldelico.com>
+        id S1726237AbfBTOOd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 09:14:33 -0500
+Received: from mail-eopbgr690049.outbound.protection.outlook.com ([40.107.69.49]:43648
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726030AbfBTOOc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 09:14:32 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=d3/C4z+/3UxWP1FKNernIKKLja+SuA47A3x7psmZgIU=;
+ b=o1wFYMr1t86lR4ibtK6gcx4xYGBLLG3Kt0LrpLta5eW6CUoMUQ7ZM4QAq9yqQ4RDiRLQbwJUYs8WurNYWtDhRUbWEsH4pIDfEUE8rxew5fx9gS/WU+EzXoT84s1vx6BcpsDqfA1uTlqp3yx6k3Kcpnopt9OHihiMDo3YkTO7WoQ=
+Received: from MWHPR03CA0032.namprd03.prod.outlook.com (2603:10b6:301:3b::21)
+ by BN7PR03MB3507.namprd03.prod.outlook.com (2603:10b6:406:c2::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1622.18; Wed, 20 Feb
+ 2019 14:14:28 +0000
+Received: from SN1NAM02FT050.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::207) by MWHPR03CA0032.outlook.office365.com
+ (2603:10b6:301:3b::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1643.15 via Frontend
+ Transport; Wed, 20 Feb 2019 14:14:28 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ SN1NAM02FT050.mail.protection.outlook.com (10.152.72.128) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1643.11
+ via Frontend Transport; Wed, 20 Feb 2019 14:14:27 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x1KEERnV025484
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Wed, 20 Feb 2019 06:14:27 -0800
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Wed, 20 Feb 2019
+ 09:14:26 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <jic23@kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: Fix scan mask selection
+Date:   Wed, 20 Feb 2019 16:14:03 +0200
+Message-ID: <20190220141403.11571-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(396003)(39860400002)(376002)(136003)(2980300002)(199004)(189003)(48376002)(50466002)(426003)(336012)(126002)(486006)(476003)(2616005)(50226002)(44832011)(7636002)(305945005)(246002)(2906002)(107886003)(8676002)(4326008)(8936002)(478600001)(72206003)(54906003)(356004)(6666004)(77096007)(53416004)(1076003)(7696005)(51416003)(106466001)(110136005)(186003)(316002)(16586007)(5660300002)(36756003)(26005)(106002)(47776003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN7PR03MB3507;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 49ea940a-2bb3-4159-93f2-08d6973db998
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600110)(711020)(4605104)(4608103)(4709054)(2017052603328)(7153060);SRVR:BN7PR03MB3507;
+X-MS-TrafficTypeDiagnostic: BN7PR03MB3507:
+X-Microsoft-Exchange-Diagnostics: 1;BN7PR03MB3507;20:kcV+vBmh35r84fwFffG6sYx3yZ90iDZ7mPRQtALLvTjW9rrHYZbhGZeSBgdotY+aAXxiU56SVKbQ3u6Yst7yGOoqhqEwJ2Rv0nsl+jk2I3S8VxyY7dlM50LNR+LqqIYXcL0m2q0/rKuP8kB18oQCFiJFd/520yJIGT+f8OdikDY7yHz9+95SFI6+yHu4Fg43wAA7c3iDw1FOZ09ikaTHhMRVj9voDtwZ6KWX/tO4ozsLmrISmafXxZpmwd3fM3US0co+MOT8wUxv8Sz26oqLKG28G6As7VPTImoBryqHLewxzrJZPFGOegq9twifANRWdKLlc5WrIWs4aof+1v/V9TJt9qO4j6rhTtgTOdh85kvNSLLbAaKbpZOsiMPkzjF6FbZ4kvxmWayigtdod9DvWpZ1mD1O0OASbqYgtYNrxXcqY0eNhc6RkX7zR2dJM3nDknp50dMz6RyLO9bolJPV35rf8cu6dJB7EbzkdbYPFvG08HCyOoJUys5yxpyReDOr
+X-Microsoft-Antispam-PRVS: <BN7PR03MB35070F19C78A46D478C55801957D0@BN7PR03MB3507.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 0954EE4910
+X-Microsoft-Exchange-Diagnostics: =?us-ascii?Q?1;BN7PR03MB3507;23:wvzbKYxrSVNvqmwvuq+4sFGOziWKwWj9Cod1tzWMQ?=
+ =?us-ascii?Q?NU/gqYv4dmIkToFtFEMZEjY9tooG/TTzVh99os30zEhb+cFU2AXuTiFfvnqM?=
+ =?us-ascii?Q?QHcc2tC1Pj3dJi2VgoChsCWG+MFTbjYutMPugrXZr15oC6seuA4Wicjs2h93?=
+ =?us-ascii?Q?uvQOqGn3Qerj4TSREh2wK1JVs5wTsTwc3qhCpUQgnE4EoayKnkH4quaiRP2f?=
+ =?us-ascii?Q?G80upsmR2bZYIyK/TiHR/rVo95GCx6MWXDuZQMPZSIE3QvOSl+VUqIFXCl42?=
+ =?us-ascii?Q?fG6ONVii/llC2xL7oEUG6zdi5LFp1oWx0nrI2VUlVVf3/2+pYqM532EEi6nc?=
+ =?us-ascii?Q?obQ4SHgrcLJd3sBj/AIETGtqdpccT6sGgYdvrIQYZNrljZnhcQUol+rLWbwC?=
+ =?us-ascii?Q?01Nk8gaBmEFz6R3zOG1IFnhlz65f4uzTbcZ+nIrTOUrWAXyZwDhQRE6MYiph?=
+ =?us-ascii?Q?o54D6f1abENL1nnNTyIDh8eXTilwiu+RB9gOOdFy/mpqhnZNMESTNB4OQsMn?=
+ =?us-ascii?Q?rzFdw8pVX9W8qBCfZSMuSASveg1kMCMYkamKLV0dZoIbEtcfsDUHEyUFLe6y?=
+ =?us-ascii?Q?mLCpWLiaf9Nb4KgwZ/16yi40nhPYS4xNH1urog5SB7OikK88U9kZ1e/vQnMk?=
+ =?us-ascii?Q?dSb8pWZxXfruSDCTUhzS8jtFRbxIY2FnmveH85AyORLB3AAJXtr3BvS4kjCv?=
+ =?us-ascii?Q?5rLJqyD8YVqyXXTIxTKfdOHOsOSNC4gb5VbFFS1xdIDRWtiAvJX93J1hdc/H?=
+ =?us-ascii?Q?JnHUDIsIR2U6qhF3BMoFBnpee0cW20v1NECtlJi9XP08GG+VaTYqjZ9jxiWt?=
+ =?us-ascii?Q?eNw3KUmKBO9WLX07RBFq9fRNRDX3AUzmoWu1tyL7+yua5F5HuC35XWucgF2X?=
+ =?us-ascii?Q?yp0e1/QhpNKMTVHj6QWcywdosN92RQmdWzg1Ga4Aq6z9sKVsqTOyd72Q+g6V?=
+ =?us-ascii?Q?HjWSrgdFOfA/21UXEAf55Awcw5JbaQjUv2TElqKmUgcpEOT+lK1vOMnQWfNJ?=
+ =?us-ascii?Q?+C395vMjgBCXdtWLcomHJSNEgQYT5LJq6sjgr2Pve0LHQ=3D=3D?=
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: BS+376jEqG9CsLt9y+VJP8BWhNNzqc77rO0LzN4rLYWLxdKwxibXpoDSWFbPoQPXfH7qx7glZKVy/ypF/LA/wh+sH1MdW4z02DDLMWw9o4oL9SMHn3RDWDk7PFVKdeNj2C8QShncq4109eK4oAg+7PhKY62UU9aozFpMuZASTpygDYdH4SIGQPiPC4yP6udfd+QEZjlllXVTjqYYOdB0eQERGWd4n6vaBsop/845aBvQurRdZTbvF1O0joxrp5/Y1UkkC7LU7Cm6Adulmlu+UpOlf7/8eAfaAvBYhstqDLo3Hl4A4FhMxTlKXKg7gqlF0T3ufIJ0u5N8/XxqClteRSgLrmQmv+BprIa2aYxkLt6uqYrNothA6FJxiBOQHzVgwf0gOwEx8ZfsHmM9za/zbFUmIvlCihlbxb5ychN5Hu0=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Feb 2019 14:14:27.9805
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 49ea940a-2bb3-4159-93f2-08d6973db998
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR03MB3507
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Linus Walleij <linus.walleij@linaro.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-The mounting matrix for sensors was introduced in
-commit dfc57732ad38 ("iio:core: mounting matrix support")
+The trialmask is expected to have all bits set to 0 after allocation.
+Currently kmalloc_array() is used which does not zero the memory and so
+random bits are set. This results in random channels being enabled when
+they shouldn't. Replace kmalloc_array() with kcalloc() which has the same
+interface but zeros the memory.
 
-However the device tree bindings are very terse and since this is
-a widely applicable property, we need a proper binding for it
-that the other bindings can reference. This will also be useful
-for other operating systems and sensor engineering at large.
-
-I think all 3D sensors should support it, the current situation
-is probably that the mounting information is confined in magic
-userspace components rather than using the mounting matrix, which
-is not good for portability and reuse.
-
-Cc: Gregor Boirie <gregor.boirie@parrot.com>
-Cc: Sebastian Reichel <sre@kernel.org>
-Cc: Samu Onkalo <samu.onkalo@intel.com>
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../devicetree/bindings/iio/mount-matrix.txt  | 108 ++++++++++++++++++
- 1 file changed, 108 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
+ drivers/iio/industrialio-buffer.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt b/Documentation/devicetree/bindings/iio/mount-matrix.txt
-new file mode 100644
-index 000000000000..a3714727f739
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
-@@ -0,0 +1,108 @@
-+Mounting matrix
-+
-+The mounting matrix is a device tree property used to orient any IIO device
-+that produce three-dimensional data in relation to the world where it is
-+deployed.
-+
-+The purpose of the mounting matrix is to translate the sensor frame of
-+reference into the device frame of reference using a translation matrix as
-+defined in linear algebra.
-+
-+The typical usecase is that where a component has an internal representation
-+of the (x,y,z) triplets, such as different registers to read these coordinates,
-+and thus implying that the component should be mounted in a certain orientation
-+relative to some specific device frame of reference.
-+
-+For example a device with some kind of screen, where the user is supposed to
-+interact with the environment using an accelerometer, gyroscope or magnetometer
-+mounted on the same chassis as this screen, will likely take the screen as
-+reference to (x,y,z) orientation, with (x,y) corresponding to these axes on the
-+screen and (z) being depth, the axis perpendicular to the screen.
-+
-+For a screen you probably want (x) coordinates to go from negative on the left
-+to positive on the right and (z) depth to be negative under the screen and
-+positive in front of it, toward the face of the user.
-+
-+A sensor can be mounted in any angle along the axes relative to the frame of
-+reference. This means that the sensor may be flipped upside-down, left-right,
-+or tilted at any angle relative to the frame of reference.
-+
-+Another frame of reference is how the device with its sensor relates to the
-+external world, the environment where the device is deployed. Usually the data
-+from the sensor is used to figure out how the device is oriented with respect
-+to this world. When using the mounting matrix, the sensor and device orientation
-+becomes identical and we can focus on the data as it relates to the surrounding
-+world.
-+
-+Device-to-world examples for some three-dimensional sensor types:
-+
-+- Accelerometers have their world frame of reference toward the center of
-+  gravity, usually to the core of the planet. A reading of the (x,y,z) values
-+  from the sensor will give a projection of the gravity vector through the
-+  device relative to the center of the planet, i.e. relative to its surface at
-+  this point. Up and down in the world relative to the device frame of
-+  reference can thus be determined. and users would likely expect a value of
-+  9.81 m/s^2 upwards along the (z) axis, i.e. out of the screen when the device
-+  is held with its screen flat on the planets surface and 0 on the other axes,
-+  as the gravity vector is projected 1:1 onto the sensors (z)-axis.
-+
-+- Magnetometers (compasses) have their world frame of reference relative to the
-+  geomagnetic field. The system orientation vis-a-vis the world is defined with
-+  respect to the local earth geomagnetic reference frame where (y) is in the
-+  ground plane and positive towards magnetic North, (x) is in the ground plane,
-+  perpendicular to the North axis and positive towards the East and (z) is
-+  perpendicular to the ground plane and positive upwards.
-+
-+- Gyroscopes detects the movement relative the device itself. The angular
-+  velocity is defined as orthogonal to the plane of rotation, so if you put the
-+  device on a flat surface and spin it around the z axis (such as rotating a
-+  device with a screen lying flat on a table), you should get a negative value
-+  along the (z) axis if rotated clockwise, and a positive value if rotated
-+  counter-clockwise according to the right-hand rule.
-+
-+So unless the sensor is ideally mounted, we need a means to indicate the
-+relative orientation of any given sensor of this type with respect to the
-+frame of reference.
-+
-+To achieve this, use the device tree property "mount-matrix" for the sensor.
-+This supplies a 3x3 rotation matrix in the strict linear algebraic sense,
-+to orient the senor axes relative to a desired point of reference. This means
-+the resulting values from the sensor, after scaling to proper units, should be
-+multiplied by this matrix to give the proper vectors values in three-dimensional
-+space, relative to the device or world point of reference.
-+
-+For more information, consult:
-+https://en.wikipedia.org/wiki/Rotation_matrix
-+
-+The mounting matrix has the layout:
-+
-+ (x0, y0, z0)
-+ (x1, y1, z1)
-+ (x2, y2, z3)
-+
-+And it is represented as an array of strings containing the real values for
-+producing the transformation matrix. The real values use a decimal point and
-+a minus (-) to indicate a negative value.
-+
-+Examples:
-+
-+Identity matrix (nothing happens to the coordinates, which means the device was
-+mechanically mounted in an ideal way and we need no transformation):
-+
-+mount-matrix = "1", "0", "0",
-+               "0", "1", "0",
-+               "0", "0", "1";
-+
-+The sensor is mounted 30 degrees (Pi/6 radians) tilted along the X axis, so we
-+compensate by performing a -30 degrees rotation around the X axis:
-+
-+mount-matrix = "1", "0", "0",
-+               "0", "0.866", "0.5",
-+               "0", "-0.5", "0.866";
-+
-+The sensor is flipped 180 degrees (Pi radians) around the Z axis, i.e. mounted
-+upside-down:
-+
-+mount-matrix = "0.998", "0.054", "0",
-+               "-0.054", "0.998", "0",
-+               "0", "0", "1";
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index cd5bfe39591b..dadd921a4a30 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -320,9 +320,8 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 	const unsigned long *mask;
+ 	unsigned long *trialmask;
+ 
+-	trialmask = kmalloc_array(BITS_TO_LONGS(indio_dev->masklength),
+-				  sizeof(*trialmask),
+-				  GFP_KERNEL);
++	trialmask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
++			    sizeof(*trialmask), GFP_KERNEL);
+ 	if (trialmask == NULL)
+ 		return -ENOMEM;
+ 	if (!indio_dev->masklength) {
 -- 
-2.19.1
+2.17.1
 
