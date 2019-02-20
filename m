@@ -2,117 +2,138 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D252C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D68CC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:24:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7331A20838
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:20:55 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Nhqu5q/K"
+	by mail.kernel.org (Postfix) with ESMTP id 2290D2147A
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 18:24:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1550687040;
+	bh=lYGfJpYLNnnp7CHqcE5YIq/veFJuIhIRZfTjzCT7OII=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=qpTa2QQDw9viRvvcYjCuHRpuFSRom9RByzdSLlCW2NcRWnzo2saSRn8/srsQzDqST
+	 2LU1hfHhn9RxD2PGlcA2iUveNOQaRwA+ukVe1wqq1KcLx3QkCb0+OAnf6T4qLHFFDL
+	 jxhmkMeMT0eLsko3Yg3OnbbV94dRH8Ul9H0o6db8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726692AbfBTSUz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 13:20:55 -0500
-Received: from mail-vs1-f66.google.com ([209.85.217.66]:46567 "EHLO
-        mail-vs1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726192AbfBTSUy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 13:20:54 -0500
-Received: by mail-vs1-f66.google.com with SMTP id n10so14526940vso.13
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 10:20:54 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=VUU1T+vuYO12a2cKI5zt86WTM2zYaN6mxHhWTPZosm0=;
-        b=Nhqu5q/KXoMlA03l4AfDe0kVGindGn0EpAZPZt5hGT3Ata1iMGpt2VlYz8d1xxXQ6d
-         KJtmdOwfhECihW/nHnUAfJPAQVDQMw2+P9dj5hbyRoCVpwsiiDiTXoHQKPrmYKQTgL29
-         gKxdz941pGWMN4xMdanXlLJPdI9Jx/faG9veE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=VUU1T+vuYO12a2cKI5zt86WTM2zYaN6mxHhWTPZosm0=;
-        b=DpKmJuTCqhHGbK4w/sPrfFJCFWTBToG/T8YxGkU7jnNYKMjd08rdBkKOVeL3FvpKy1
-         Jxsw1LKKozRjEGfc0pwWj606IPcoKiiln6DPhU5PzArWW0kXOdW/kCHEsPd7EofWRjPX
-         vkRhZOCriCk1iz4dCqlDOejGxJx1SN5NKUsckS3GB6t81CDzqL9c5opZbMCbnS/3P7PO
-         /N3yOuGdtmnje2f0OhKZiMl2FfkaEZr1+jKVqorF9dfDzdeKvlxtCE/TRZBtChxeET2Z
-         6dCJdwFhvWbUkYcwIuB4MbajnNwC3hbsPZGpWZPMm2v7x8nM/n98ZlYAxd4dz5dSiLI0
-         ePpQ==
-X-Gm-Message-State: AHQUAuZJInphQHXbKnG4R32np/qptbmchJ3/BV4tFbCK7WmRSB8ALYZ8
-        R53JZuIaDj2Ds1qWo9W96B9lfvEm294=
-X-Google-Smtp-Source: AHgI3IbYnD5XbD42ubfEaRt5vMlbAZ/jRjgVbUqH/YytVwzdc+3aF6sR0KXFXhYswCfj5BF5yCgTVg==
-X-Received: by 2002:a67:c415:: with SMTP id c21mr936628vsk.100.1550686853220;
-        Wed, 20 Feb 2019 10:20:53 -0800 (PST)
-Received: from mail-vs1-f42.google.com (mail-vs1-f42.google.com. [209.85.217.42])
-        by smtp.gmail.com with ESMTPSA id d73sm3150709vsc.1.2019.02.20.10.20.52
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Feb 2019 10:20:52 -0800 (PST)
-Received: by mail-vs1-f42.google.com with SMTP id t13so14558210vsk.3
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 10:20:52 -0800 (PST)
-X-Received: by 2002:a67:6f44:: with SMTP id k65mr17619777vsc.222.1550686851781;
- Wed, 20 Feb 2019 10:20:51 -0800 (PST)
+        id S1726084AbfBTSX7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 13:23:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45016 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726078AbfBTSX7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 13:23:59 -0500
+Received: from localhost.localdomain (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2ACE0206B7;
+        Wed, 20 Feb 2019 18:23:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1550687038;
+        bh=lYGfJpYLNnnp7CHqcE5YIq/veFJuIhIRZfTjzCT7OII=;
+        h=From:To:Cc:Subject:Date:From;
+        b=1owYn4ik0WJ7rN7kQXZP6e5sMwapF9BR6zDumjm3E/Cd8L5RQ7o2lKStV1oUkaCAb
+         cNhOfa7mDkFkvonwVUw1wnB/Ju0YT6kqr4GABM4n0Ejb5GUkQNonT27Yv156vIAPLw
+         iRDoTWDqvdlulSMUwRcS69W+XcAMhjuaBKt2eH70=
+From:   jic23@kernel.org
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH] iio:dac:ad5064 mlock cleanup - move to a local lock.
+Date:   Wed, 20 Feb 2019 18:23:44 +0000
+Message-Id: <20190220182344.19236-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20181008172332.GA29816@embeddedor.com>
-In-Reply-To: <20181008172332.GA29816@embeddedor.com>
-From:   Kees Cook <keescook@chromium.org>
-Date:   Wed, 20 Feb 2019 10:20:39 -0800
-X-Gmail-Original-Message-ID: <CAGXu5jLsQ_Uc4kp=md2SrOERopjZmnQK_fAsru4MQUqEHRvEeA@mail.gmail.com>
-Message-ID: <CAGXu5jLsQ_Uc4kp=md2SrOERopjZmnQK_fAsru4MQUqEHRvEeA@mail.gmail.com>
-Subject: Re: [PATCH] iio: cros_ec_accel_legacy: Mark expected switch fall-throughs
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Oct 8, 2018 at 10:24 AM Gustavo A. R. Silva
-<gustavo@embeddedor.com> wrote:
->
-> In preparation to enabling -Wimplicit-fallthrough, mark switch cases
-> where we are expecting to fall through.
->
-> Addresses-Coverity-ID: 1397962 ("Missing break in switch")
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> ---
->  drivers/iio/accel/cros_ec_accel_legacy.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-> index 063e89e..d609654 100644
-> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
-> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-> @@ -385,8 +385,10 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
->                 switch (i) {
->                 case X:
->                         ec_accel_channels[X].scan_index = Y;
-> +                       /* fall through */
->                 case Y:
->                         ec_accel_channels[Y].scan_index = X;
-> +                       /* fall through */
->                 case Z:
->                         ec_accel_channels[Z].scan_index = Z;
->                 }
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Shouldn't these actually be "break;"s ? It seems like the loop is
-stepping through X, Y, and Z. The _result_ is accidentally the same:
+indio_dev->mlock is intended to protect state transitions in
+the core. It's scope is tightly defined. For device specific
+uses such as those made here, we should define a local lock
+allowing the scope of the lock to be defined near to what it
+is protecting.
 
-X: set X, Y, and Z
-Y: set Y and Z
-Z: set Z
+These mlock changes can be non obvious, but given we don't do
+anything other than direct for DACs, these ones are easy to do.
 
-result: X, Y, and Z are set correctly. But the code is technically wrong.
+If anyone wants to help with this particular effort it would
+be most welcome!
 
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/dac/ad5064.c | 15 +++++++++------
+ 1 file changed, 9 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+index 2f98cb2a3b96..6c3ba143839b 100644
+--- a/drivers/iio/dac/ad5064.c
++++ b/drivers/iio/dac/ad5064.c
+@@ -112,6 +112,8 @@ struct ad5064_state {
+ 	bool				use_internal_vref;
+ 
+ 	ad5064_write_func		write;
++	/* Lock used to maintain consistency between cached and dev state */
++	struct mutex lock;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+@@ -248,11 +250,11 @@ static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
+ 	struct ad5064_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	st->pwr_down_mode[chan->channel] = mode + 1;
+ 
+ 	ret = ad5064_sync_powerdown_mode(st, chan);
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret;
+ }
+@@ -291,11 +293,11 @@ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	st->pwr_down[chan->channel] = pwr_down;
+ 
+ 	ret = ad5064_sync_powerdown_mode(st, chan);
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 	return ret ? ret : len;
+ }
+ 
+@@ -349,12 +351,12 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		ret = ad5064_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
+ 				chan->address, val, chan->scan_type.shift);
+ 		if (ret == 0)
+ 			st->dac_cache[chan->channel] = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -856,6 +858,7 @@ static int ad5064_probe(struct device *dev, enum ad5064_type type,
+ 		return  -ENOMEM;
+ 
+ 	st = iio_priv(indio_dev);
++	mutex_init(&st->lock);
+ 	dev_set_drvdata(dev, indio_dev);
+ 
+ 	st->chip_info = &ad5064_chip_info_tbl[type];
 -- 
-Kees Cook
+2.20.1
+
