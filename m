@@ -2,159 +2,264 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F604C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C97C8C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:55:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3C7C2146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:51:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ACD1D2146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 17:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbfBTRvp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 12:51:45 -0500
-Received: from gateway30.websitewelcome.com ([192.185.147.85]:37645 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726003AbfBTRvp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 12:51:45 -0500
-X-Greylist: delayed 1340 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Feb 2019 12:51:44 EST
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 7B5F663DE7
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 11:21:23 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id wVYhgDTg12PzOwVYhgfz1q; Wed, 20 Feb 2019 11:21:23 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=58140 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gwVYg-000bIL-Uk; Wed, 20 Feb 2019 11:21:23 -0600
-Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        id S1725798AbfBTRzQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 12:55:16 -0500
+Received: from mga01.intel.com ([192.55.52.88]:63221 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725806AbfBTRzP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 12:55:15 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2019 09:54:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.58,391,1544515200"; 
+   d="scan'208";a="145102587"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Feb 2019 09:54:42 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 8B0DC189; Wed, 20 Feb 2019 19:54:41 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>
-References: <20190211222318.GA21656@embeddedor>
- <20190220121726.3b10e0ec@archlinux>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
-Date:   Wed, 20 Feb 2019 11:21:21 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2] iio: Allow to read mount matrix from ACPI
+Date:   Wed, 20 Feb 2019 20:54:41 +0300
+Message-Id: <20190220175441.31455-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190220121726.3b10e0ec@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gwVYg-000bIL-Uk
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.119.20]:58140
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Currently mount matrix is allowed in Device Tree, though there is
+no technical issue to extend it to support ACPI.
 
+Convert the function to use device_property_read_string_array() and
+thus allow to read mount matrix from ACPI if available.
 
-On 2/20/19 6:17 AM, Jonathan Cameron wrote:
-> On Mon, 11 Feb 2019 16:23:18 -0600
-> "Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
-> 
->> In preparation to enabling -Wimplicit-fallthrough, mark switch
->> cases where we are expecting to fall through.
->>
->> This patch fixes the following warning:
->>
->> drivers/iio/accel/mma8452.c: In function ‘mma8452_probe’:
->> drivers/iio/accel/mma8452.c:1581:6: warning: this statement may fall through [-Wimplicit-fallthrough=]
->>    if (ret == data->chip_info->chip_id)
->>       ^
->> drivers/iio/accel/mma8452.c:1584:2: note: here
->>   default:
->>   ^~~~~~~
->>
->> Warning level 3 was used: -Wimplicit-fallthrough=3
->>
->> Notice that, in this particular case, the code comment is modified
->> in accordance with what GCC is expecting to find.
->>
->> This patch is part of the ongoing efforts to enable
->> -Wimplicit-fallthrough.
->>
->> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-> I know Peter probably won't like this, as it doesn't
-> read a as well, with the else dropped, but I'm going to take
-> it as we have had a lot of bugs caught by this code and this
-> is generating a false positive.
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
-> 
+Example of use in _DSD method:
 
-Thanks, Jonathan.
+  Name (_DSD, Package ()
+  {
+     ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
+     Package ()
+     {
+        Package () { "mount-matrix", Package() {
+                "1", "0",     "0",
+                "0", "0.866", "0.5",
+                "0", "-0.5",  "0.866",
+        } },
+     }
+  })
 
---
-Gustavo
+At the same time drop the "of" prefix from its name and
+convert current users.
+
+No functional change intended.
+
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+
+- added _DSD example
+- fixed indentation
+
+ drivers/iio/accel/kxsd9.c                  |  4 +-
+ drivers/iio/gyro/mpu3050-core.c            |  3 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  4 +-
+ drivers/iio/industrialio-core.c            | 46 +++++++++-------------
+ drivers/iio/magnetometer/ak8974.c          |  5 +--
+ drivers/iio/magnetometer/ak8975.c          |  5 +--
+ include/linux/iio/iio.h                    |  4 +-
+ 7 files changed, 28 insertions(+), 43 deletions(-)
+
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index 0c0df4fce420..70c60db62247 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -420,9 +420,7 @@ int kxsd9_common_probe(struct device *dev,
+ 	indio_dev->available_scan_masks = kxsd9_scan_masks;
+ 
+ 	/* Read the mounting matrix, if present */
+-	ret = of_iio_read_mount_matrix(dev,
+-				       "mount-matrix",
+-				       &st->orientation);
++	ret = iio_read_mount_matrix(dev, "mount-matrix", &st->orientation);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 77fac81a3adc..8200e48f561b 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -1149,8 +1149,7 @@ int mpu3050_common_probe(struct device *dev,
+ 	mpu3050->divisor = 99;
+ 
+ 	/* Read the mounting matrix, if present */
+-	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
+-				       &mpu3050->orientation);
++	ret = iio_read_mount_matrix(dev, "mount-matrix", &mpu3050->orientation);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 1e428c196a82..533d1f8321ac 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -990,8 +990,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 
+ 	pdata = dev_get_platdata(dev);
+ 	if (!pdata) {
+-		result = of_iio_read_mount_matrix(dev, "mount-matrix",
+-						  &st->orientation);
++		result = iio_read_mount_matrix(dev, "mount-matrix",
++					       &st->orientation);
+ 		if (result) {
+ 			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
+ 				result);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 4f5cd9f60870..3baede140d69 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -19,6 +19,7 @@
+ #include <linux/device.h>
+ #include <linux/fs.h>
+ #include <linux/poll.h>
++#include <linux/property.h>
+ #include <linux/sched.h>
+ #include <linux/wait.h>
+ #include <linux/cdev.h>
+@@ -525,8 +526,8 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+ 
+ /**
+- * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
+- *                              device-tree "mount-matrix" property
++ * iio_read_mount_matrix() - retrieve iio device mounting matrix from
++ *                           device "mount-matrix" property
+  * @dev:	device the mounting matrix property is assigned to
+  * @propname:	device specific mounting matrix property name
+  * @matrix:	where to store retrieved matrix
+@@ -536,40 +537,29 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
+  *
+  * Return: 0 if success, or a negative error code on failure.
+  */
+-#ifdef CONFIG_OF
+-int of_iio_read_mount_matrix(const struct device *dev,
+-			     const char *propname,
+-			     struct iio_mount_matrix *matrix)
++int iio_read_mount_matrix(struct device *dev, const char *propname,
++			  struct iio_mount_matrix *matrix)
+ {
+-	if (dev->of_node) {
+-		int err = of_property_read_string_array(dev->of_node,
+-				propname, matrix->rotation,
+-				ARRAY_SIZE(iio_mount_idmatrix.rotation));
++	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation); 
++	int err;
+ 
+-		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
+-			return 0;
++	err = device_property_read_string_array(dev, propname,
++						matrix->rotation, len);
++	if (err == len)
++		return 0;
+ 
+-		if (err >= 0)
+-			/* Invalid number of matrix entries. */
+-			return -EINVAL;
++	if (err >= 0)
++		/* Invalid number of matrix entries. */
++		return -EINVAL;
+ 
+-		if (err != -EINVAL)
+-			/* Invalid matrix declaration format. */
+-			return err;
+-	}
++	if (err != -EINVAL)
++		/* Invalid matrix declaration format. */
++		return err;
+ 
+ 	/* Matrix was not declared at all: fallback to identity. */
+ 	return iio_setup_mount_idmatrix(dev, matrix);
+ }
+-#else
+-int of_iio_read_mount_matrix(const struct device *dev,
+-			     const char *propname,
+-			     struct iio_mount_matrix *matrix)
+-{
+-	return iio_setup_mount_idmatrix(dev, matrix);
+-}
+-#endif
+-EXPORT_SYMBOL(of_iio_read_mount_matrix);
++EXPORT_SYMBOL(iio_read_mount_matrix);
+ 
+ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ 				  int size, const int *vals)
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index 93be1f4c0f27..f4d0a6c0fde7 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -733,9 +733,8 @@ static int ak8974_probe(struct i2c_client *i2c,
+ 	ak8974->i2c = i2c;
+ 	mutex_init(&ak8974->lock);
+ 
+-	ret = of_iio_read_mount_matrix(&i2c->dev,
+-				       "mount-matrix",
+-				       &ak8974->orientation);
++	ret = iio_read_mount_matrix(&i2c->dev, "mount-matrix",
++				    &ak8974->orientation);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index d430b80808ef..db7214ac514c 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -911,9 +911,8 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_irq = 0;
+ 
+ 	if (!pdata) {
+-		err = of_iio_read_mount_matrix(&client->dev,
+-					       "mount-matrix",
+-					       &data->orientation);
++		err = iio_read_mount_matrix(&client->dev, "mount-matrix",
++					    &data->orientation);
+ 		if (err)
+ 			return err;
+ 	} else
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a74cb177dc6f..bb10c1bee301 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -130,8 +130,8 @@ struct iio_mount_matrix {
+ 
+ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
+ 			      const struct iio_chan_spec *chan, char *buf);
+-int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
+-			     struct iio_mount_matrix *matrix);
++int iio_read_mount_matrix(struct device *dev, const char *propname,
++			  struct iio_mount_matrix *matrix);
+ 
+ typedef const struct iio_mount_matrix *
+ 	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
+-- 
+2.20.1
 
