@@ -4,47 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E80F1C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:43:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC676C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:01:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B7AFA2147A
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 15:43:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFA972183F
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 16:01:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550677435;
-	bh=bi+qanXOjDom+VxJq86nTdeOq1T/hkl2sy2A0pVsXEg=;
+	s=default; t=1550678498;
+	bh=VA11CboM5qkJIYXUl341o3u+2dd0EkwKSbMV09NscyY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=PqOOcXMP7L+cfdAVRYV5YddVwzaNPr0nwrOfoVO5HHB4Fq5mHAz7bHhGwS8Ar6xDD
-	 NI7YME9IZa866HNB+TLt6qgUZ5grf3ZZOlTKrSq6XxjYNPPS1pfdUZZn72rf9Yi1CG
-	 vYmwvOdCQfgoCxp7HEOCehxteryHxm53gZuclexQ=
+	b=OG4pgbnQYto1R0PecRa8fzNhHIoojJFB0LCPJUV7xd/pXqfdfqNQXlI4Q28hKZ3Vq
+	 062lYWn53OnOeic7QklREbtgLEXc2HevZ8YOhC6HBzcHs3Q4b9Fmy9YVoi1a0Q72Oj
+	 LbmJBT7HfuHaV8UiKZ/qUhbtKhY7vmhenps3fO2U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725881AbfBTPnz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 10:43:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52100 "EHLO mail.kernel.org"
+        id S1726275AbfBTQBd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 11:01:33 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725842AbfBTPnz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 10:43:55 -0500
+        id S1726060AbfBTQBd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 11:01:33 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F0752086D;
-        Wed, 20 Feb 2019 15:43:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2E66A2147A;
+        Wed, 20 Feb 2019 16:01:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550677434;
-        bh=bi+qanXOjDom+VxJq86nTdeOq1T/hkl2sy2A0pVsXEg=;
+        s=default; t=1550678492;
+        bh=VA11CboM5qkJIYXUl341o3u+2dd0EkwKSbMV09NscyY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1JB3JZ0VDvVnCwy9iLbDL1B4kwg6n+4RyfuOPjvJXLDBpXZI4C2dVBlOb63NyFRRe
-         bIFcqeT+FmfuYYjJQTRemuLsSblcyXEU9e08rmW949PiXZMmz1gfaBTCJrd1h4KK8P
-         amLUQPqNxLW1UyTIUlKYLmTY8vPDwsvhBITyitps=
-Date:   Wed, 20 Feb 2019 15:43:49 +0000
+        b=Ic3UeBuo4USauXxARH5ELp+4A6W5Gqjr3vsS/FQ0mhPrAAYjqfKXm7XYXdpNlgp7N
+         bgHfCswhGft4dJw6rD2ovkDdkp6+kJCpK4mFGfYyiCT7fYlyJ4JqZQidmoWR/bygXc
+         Bl2g+lbG0YNN3gVsfgUJcsmBqpJoH6n8EwA+TAeQ=
+Date:   Wed, 20 Feb 2019 16:01:26 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [V2 PATCH] iio: Fix scan mask selection
-Message-ID: <20190220154349.15a8c8cb@archlinux>
-In-Reply-To: <20190220151132.10791-1-alexandru.ardelean@analog.com>
-References: <20190220151132.10791-1-alexandru.ardelean@analog.com>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, kernel@collabora.com,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH] iio: cros_ec: Fix gyro scale calculation
+Message-ID: <20190220160126.12568f92@archlinux>
+In-Reply-To: <20190220150300.3302-1-enric.balletbo@collabora.com>
+References: <20190220150300.3302-1-enric.balletbo@collabora.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -54,57 +60,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Feb 2019 17:11:32 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Wed, 20 Feb 2019 16:03:00 +0100
+Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
 
-> From: Lars-Peter Clausen <lars@metafoo.de>
+> From: Gwendal Grignou <gwendal@chromium.org>
 > 
-> Fixes commit 057ac1acdfc4 ("iio: Use kmalloc_array() in
-> iio_scan_mask_set()").
+> Calculation was copied from IIO_DEGREE_TO_RAD, but offset added to avoid
+> rounding error is wrong. It should be only half of the divider.
 > 
-> The trialmask is expected to have all bits set to 0 after allocation.
-> Currently kmalloc_array() is used which does not zero the memory and so
-> random bits are set. This results in random channels being enabled when
-> they shouldn't. Replace kmalloc_array() with kcalloc() which has the same
-> interface but zeros the memory.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied with a bit of tidying as the fixes tag should be down here.
+> Fixes: c14dca07a31d ("iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver")
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-I also added a note to observe that the fixes tag isn't entirely accurate
-as the bug was there before that one, it's just that a different fix will
-be necessary to backport further.
-
-Added stable tag.
-
-Thanks,
-
-Jonathan
+This one is kind of interesting. See below.
 
 > ---
 > 
-> Changelog V1->V2:
-> * added `Fixes commit 057ac1acdfc4 ("iio: Use kmalloc_array() in
->   iio_scan_mask_set()").` comment
+>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
->  drivers/iio/industrialio-buffer.c | 5 ++---
->  1 file changed, 2 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index cd5bfe39591b..dadd921a4a30 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -320,9 +320,8 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
->  	const unsigned long *mask;
->  	unsigned long *trialmask;
->  
-> -	trialmask = kmalloc_array(BITS_TO_LONGS(indio_dev->masklength),
-> -				  sizeof(*trialmask),
-> -				  GFP_KERNEL);
-> +	trialmask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
-> +			    sizeof(*trialmask), GFP_KERNEL);
->  	if (trialmask == NULL)
->  		return -ENOMEM;
->  	if (!indio_dev->masklength) {
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> index 89cb0066a6e0..600942af9f9c 100644
+> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> @@ -103,7 +103,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
+>  			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
+>  			 * loss. Round to the nearest integer.
+>  			 */
+> -			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
+> +			*val = div_s64(val64 * 314159 + 500ULL, 1000);
+That is only one of two divides going on.  Firstly we divide by 1000 here,
+then we provide it in fractional form which means that the actual value you get
+from sysfs etc is 
+val/val2.  It's this one we are protecting against rounding error on I guess.
+Now this is even less obviously because it's not 18000 either, but 
+18000 * 2^CROS_EC_SENSOR_BITS.
+
+Which ultimately means neither answer is correct. Hmm.
+Not totally sure what the right answer actually is..
+
+Jonathan
+
+>  			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
+>  			ret = IIO_VAL_FRACTIONAL;
+>  			break;
 
