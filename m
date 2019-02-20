@@ -2,87 +2,98 @@ Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D99C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 917F0C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:49:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 519C921773
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:41:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6408D2147C
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 09:49:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1550655710;
-	bh=ByzLbcUcmSF3faEyYikSKFWJ858JBmNi+gUQLh8XMn0=;
+	s=default; t=1550656168;
+	bh=b0/CIC/3g6HjGTT/aSCcFLmZwYcBydbElzyyHpjyemU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xBFns7e4ZdwUZmUpAbY5ryQvttktOXWXNFGpSDz3NWtBiyLFjl0VvsiA156cC+aRC
-	 MuRz8nFdox8cuMewsDNfZorWF3RUNgyXxmsnzb2nECAyBj5ASSV8w8Ufgzs5sGdheZ
-	 SpdtQYGTHeFiDrrDTyF8YWg5CrYjC2qyQCdtsFrQ=
+	b=kaLdzyQOszSIs6toa0PhTfwUUasg1ae9thKydNWG880/AlYlELo7i4TDE7E+G6Ojm
+	 vzGlARce68QJq5+PxKjRoztvi7ugcYIztmIa0K7hwdHcfXMMCSDkkmqLHhwKb/s2Fx
+	 drLOYkbD8TtD8/cbiEk0GMxA+pzXr5m5DCdPiXmw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726142AbfBTJlt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 04:41:49 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44282 "EHLO mail.kernel.org"
+        id S1726989AbfBTJt1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 04:49:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726000AbfBTJlt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Feb 2019 04:41:49 -0500
+        id S1726323AbfBTJt1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 04:49:27 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 80B432089F;
-        Wed, 20 Feb 2019 09:41:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B56BC2089F;
+        Wed, 20 Feb 2019 09:49:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1550655708;
-        bh=ByzLbcUcmSF3faEyYikSKFWJ858JBmNi+gUQLh8XMn0=;
+        s=default; t=1550656166;
+        bh=b0/CIC/3g6HjGTT/aSCcFLmZwYcBydbElzyyHpjyemU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k7a9BBvleNSL4T7JuNjNLgoi4p3xYsIRgoawPlm08ODqsVE/abSOHGr90IU23oGnc
-         WM/1Q7xGl464CRiHEtPHeDyu+6hwN26+oXN047Prbsb9irOf9s1eeoRXI4iAN07afY
-         dcnfC7uUcT8vVU1u7c+Eao/yBpKKZ2RKlcrYCQg4=
-Date:   Wed, 20 Feb 2019 09:41:40 +0000
+        b=bgEGcttpXfXIZolrISb4fbJrPZvRY2od1JDYtJjVMv8QBxOXuJb0onmtuKuflee08
+         85kozmuBkornmsXSD5fxD+YRKOEDmZhKXtsxfWf1a27zdjdbfv1xyJCqZ2N9gftHtd
+         0yvD1lcF4e0BJEIiuaPAUREfbXe3PwbUKQMOfAzw=
+Date:   Wed, 20 Feb 2019 09:49:21 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lucas Oshiro <lucasseikioshiro@gmail.com>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com, matt.ranostay@konsulko.com
-Subject: Re: [PATCH 0/5] iio:potentiostat:lmp91000: Adjust codestyle, and
- minor cleanup changes
-Message-ID: <20190220094140.0f2ad613@archlinux>
-In-Reply-To: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     Lucas Oshiro <lucasseikioshiro@gmail.com>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
+        Anderson Reis <andersonreisrosa@gmail.com>
+Subject: Re: [PATCH 5/5] iio:potentiostat:lmp91000: add '\n' on dev_err
+Message-ID: <20190220094921.6777d6f8@archlinux>
+In-Reply-To: <d5d88a5acc984554240047944cb3071371025085.camel@perches.com>
 References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
+        <20190218172236.7781-6-lucasseikioshiro@gmail.com>
+        <d5d88a5acc984554240047944cb3071371025085.camel@perches.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Feb 2019 14:22:31 -0300
-Lucas Oshiro <lucasseikioshiro@gmail.com> wrote:
+On Mon, 18 Feb 2019 13:01:23 -0800
+Joe Perches <joe@perches.com> wrote:
 
-> Hi,
-> 
-> We solved some checkpath.el CHECKs and WARNINGs. We also inverted the arms of
-> an if statement, in order to make the code smaller as the else statement was
-> supressed. We added a missing '\n' on a dev_err message.
+> On Mon, 2019-02-18 at 14:22 -0300, Lucas Oshiro wrote:
+> > Add missing '\n' at the end of dev_err message on line 215. =20
+> []
+> > diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentio=
+stat/lmp91000.c =20
+> []
+> > @@ -212,7 +212,7 @@ static int lmp91000_read_config(struct lmp91000_dat=
+a *data)
+> >  	ret =3D of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+> >  	if (ret) {
+> >  		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
+> > -			dev_err(dev, "no ti,tia-gain-ohm defined");
+> > +			dev_err(dev, "no ti,tia-gain-ohm defined\n"); =20
+>=20
+> Perhaps a copy/paste error as the test is for
+> external-tia-resistor and not tia-gain-ohm
+>=20
+It is an odd construct, but I think this is correct.  What it is actually
+saying is that, given that we don't have an external resistor, we care
+that the tia-gain-ohm isn't set (otherwise it wouldn't matter).
 
-Please try to identify the original author.  Matt is still definitely
-about, and he is obviously likely to be able to provide the most detailed
-review of changes to this driver.
+=46rom the docs
+  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not define=
+d this
+    needs to be set to signal that an external resistor value is being used.
 
-Thanks,
+So, it might be ideal to say that tia-gain-ohm is not defined and we do
+not have an external resistor specified.
+
+So not wrong, but could be more informative!  So perhaps a follow up patch
+to tidy that up would be good.
 
 Jonathan
-
-> 
-> Lucas Oshiro (5):
->   iio:potentiostat:lmp91000: remove unnecessary parentheses
->   iio:potentiostat:lmp91000: insert braces around if arms
->   iio:potentiostat:lmp91000: reduce line width and remove blank line
->   iio:potentiostat:lmp91000: invert if statement
->   iio:potentiostat:lmp91000: add '\n' on dev_err
-> 
->  drivers/iio/potentiostat/lmp91000.c | 14 ++++++--------
->  1 file changed, 6 insertions(+), 8 deletions(-)
-> 
+>=20
 
