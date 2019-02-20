@@ -7,40 +7,39 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73133C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2993C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BE3312146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 374632146E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 14:07:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="mCfeC4O8"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="VKE7nCNZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726430AbfBTOHC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 09:07:02 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([81.169.146.174]:34003 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726313AbfBTOHC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:02 -0500
-X-Greylist: delayed 360 seconds by postgrey-1.27 at vger.kernel.org; Wed, 20 Feb 2019 09:07:01 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671620;
+        id S1726526AbfBTOHH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 09:07:07 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.171]:25364 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726427AbfBTOHH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 09:07:07 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550671625;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=tAOISD3iWzCXIygNiYBq/rqPTyFXJizn2hEMyYbGHpg=;
-        b=mCfeC4O8Qro1VxCzVl7oFSsTYEgAsgXLYxdBSkuUuZ2wkvB0mppTLrP5KkDF9aW4Vm
-        kStlqa+xR0kNt+Fu9Nd3nDAWHW6J2I0V50Eop6lf+aSxP8uEnS5S1H3uCnvzge6MZJtw
-        dh3DGPx1LY7XVl988x0lRb/xaf7jvhMig15whXBnpgmOZ2ws37xd45VH4hAezem9qwWH
-        lgVtx1gDArrA1Y7prRazMxzC6Ehjs6JLLWc/Z9k4rzCu/lmCvBw2QBGB8Dijee2HDR6Y
-        7ikRPt0SgRPNhNNQaDN7OtIt7OkxRGeGG918/nmzGlKshvMBD8GbjtiIybTUjYWngAvS
-        O1/w==
+        bh=JjLKcD6SybLoGGMj2NW9my+OGmD8xw5CJs25CVdSDkU=;
+        b=VKE7nCNZTZrw74CSV3fpiDmUqtFnmhFfu9Dafpvle3OwO1LLszVKXiFcJYNdEx8BF2
+        iuTvGYRaJb4QrFeBeTwLVrKR1nXOv0xFTH6NaHGl0Ar2PffeW5WWjX/qa4UOI2zdkTh4
+        QM/wYOjEZHUKX/AJpBm/uUBaBHmFmc7yIp4YkLkWz4GCZYzwXwLR5Q9f8ju2u5i+1hGo
+        bHzP6WvOL/VXWqGac6fUtIkg52wkXGppUa8plxpmWTdFckJ6970wH4WnQc7jUeEJQCd1
+        9r64eodlI6wMXFsHoQiJJl793WSs9h81slVj0q/HocwnPS7XGGkz9Qt8uDyiRzwBFrBc
+        HGog==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M0OzzrKQ=="
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1KE11Eqa
+        with ESMTPSA id 608499v1KE0xEqV
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Wed, 20 Feb 2019 15:01:01 +0100 (CET)
+        Wed, 20 Feb 2019 15:00:59 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -55,9 +54,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 8/9] iio: magnetometer: bmc150: add mount matrix support
-Date:   Wed, 20 Feb 2019 15:00:55 +0100
-Message-Id: <2600653840b79a9817b68c17b47ef9b043137d20.1550671256.git.hns@goldelico.com>
+Subject: [PATCH 3/9] iio: accel: bmc150: add mount matrix support
+Date:   Wed, 20 Feb 2019 15:00:50 +0100
+Message-Id: <71ef51037525ae6324bc22e933c00a514d518b31.1550671256.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550671256.git.hns@goldelico.com>
 References: <cover.1550671256.git.hns@goldelico.com>
@@ -74,60 +73,60 @@ clients.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 19 +++++++++++++++++++
+ drivers/iio/accel/bmc150-accel-core.c | 19 +++++++++++++++++++
  1 file changed, 19 insertions(+)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index d91cb845e3d6..48e3a16432b4 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -143,6 +143,7 @@ struct bmc150_magn_data {
- 	 */
- 	struct mutex mutex;
- 	struct regmap *regmap;
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 383c802eb5b8..9178846cfddc 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -204,6 +204,7 @@ struct bmc150_accel_data {
+ 	int ev_enable_state;
+ 	int64_t timestamp, old_timestamp; /* Only used in hw fifo mode. */
+ 	const struct bmc150_accel_chip_info *chip_info;
 +	struct iio_mount_matrix orientation;
- 	/* 4 x 32 bits for x, y z, 4 bytes align, 64 bits timestamp */
- 	s32 buffer[6];
- 	struct iio_trigger *dready_trig;
-@@ -612,6 +613,18 @@ static ssize_t bmc150_magn_show_samp_freq_avail(struct device *dev,
- 	return len;
+ };
+ 
+ static const struct {
+@@ -796,6 +797,18 @@ static ssize_t bmc150_accel_get_fifo_state(struct device *dev,
+ 	return sprintf(buf, "%d\n", state);
  }
  
 +static const struct iio_mount_matrix *
-+bmc150_magn_get_mount_matrix(const struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan)
++bmc150_accel_get_mount_matrix(const struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan)
 +{
-+	return &((struct bmc150_magn_data *)iio_priv(indio_dev))->orientation;
++	return &((struct bmc150_accel_data *)iio_priv(indio_dev))->orientation;
 +}
 +
-+static const struct iio_chan_spec_ext_info bmc150_magn_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmc150_magn_get_mount_matrix),
++static const struct iio_chan_spec_ext_info bmc150_accel_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmc150_accel_get_mount_matrix),
 +	{ },
 +};
 +
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(bmc150_magn_show_samp_freq_avail);
- 
- static struct attribute *bmc150_magn_attributes[] = {
-@@ -638,6 +651,7 @@ static const struct attribute_group bmc150_magn_attrs_group = {
- 		.storagebits = 32,					\
- 		.endianness = IIO_LE					\
+ static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
+ static IIO_CONST_ATTR(hwfifo_watermark_max,
+ 		      __stringify(BMC150_ACCEL_FIFO_LENGTH));
+@@ -978,6 +991,7 @@ static const struct iio_event_spec bmc150_accel_event = {
+ 		.shift = 16 - (bits),					\
+ 		.endianness = IIO_LE,					\
  	},								\
-+	.ext_info = bmc150_magn_ext_info,				\
++	.ext_info = bmc150_accel_ext_info,				\
+ 	.event_spec = &bmc150_accel_event,				\
+ 	.num_event_specs = 1						\
  }
+@@ -1555,6 +1569,11 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
  
- static const struct iio_chan_spec bmc150_magn_channels[] = {
-@@ -861,6 +875,11 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
- 	data->irq = irq;
- 	data->dev = dev;
+ 	data->regmap = regmap;
  
 +	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-+				&data->orientation);
++				       &data->orientation);
 +	if (ret)
 +		return ret;
 +
- 	if (!name && ACPI_HANDLE(dev))
- 		name = bmc150_magn_match_acpi_device(dev);
- 
+ 	ret = bmc150_accel_chip_init(data);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.19.1
 
