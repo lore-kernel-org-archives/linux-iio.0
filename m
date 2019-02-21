@@ -2,141 +2,105 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-1.2 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0AFC43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C76CC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:23:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C11AF2086C
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:09:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 45A872086D
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:23:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ir3kaq5O"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="GPTC1GiS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726751AbfBUBJ1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 20:09:27 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:34854 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbfBUBJ1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 20:09:27 -0500
-Received: by mail-pl1-f193.google.com with SMTP id p19so1984838plo.2;
-        Wed, 20 Feb 2019 17:09:27 -0800 (PST)
+        id S1726172AbfBUBXu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 20:23:50 -0500
+Received: from mail-vk1-f193.google.com ([209.85.221.193]:43609 "EHLO
+        mail-vk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726137AbfBUBXq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 20:23:46 -0500
+Received: by mail-vk1-f193.google.com with SMTP id e131so5971860vkf.10
+        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 17:23:45 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XazLWlV0OGpxiqeWsTijGEnFhzyXIMqtdbgnm6gIsFM=;
-        b=Ir3kaq5OJ38gwHc9MbQ93aEeS78o9Jb4ne68ygRM17PEd63kJOo+HfHEWvo2v6rFiJ
-         KNYERTWt52IYRarCIpcC1mVk1oyBJSudCfe/mrer7nGIXxOQfMaIBZgPLS5E0qfkrTuR
-         Ufcc+iHE+jP6nCO9LsKxSD5q7SBg9FiHsm2wuwXwH1rl5CqFTnOIsTsRYhJM99KY7ViM
-         RDtd512mwClfGkHF+cFrWtS4roAOGZlMoAUDdXJCtPTQKqqgDUvg55Iz6UpGom9V5/tM
-         rYjA6mpl3jFJNGylRInO0RX6Q8KhsMw2lnhEeJib7zATI8G10gN3XcdVfuDdZ2ooSgqO
-         Krag==
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=q9ICpafhgGzeqErvTe6lKiQENs0ImusOCchpoLeIwvo=;
+        b=GPTC1GiSn7DAWecGYPibIpz+qk2/ekx2F0XryjEZwJvlqo2jVkScE18K85k/YCkb77
+         l2zrKDYJC08FcSHRKMSZ5Ci5KmmfwwBEDz5sYxpUHCddoWj5lFJw/UPxpebunvzxg814
+         8WlxkLlTvOfcWKTAQZ3UZ32yJQvn5nO05e/yc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XazLWlV0OGpxiqeWsTijGEnFhzyXIMqtdbgnm6gIsFM=;
-        b=tQD+ULYz3cCSfjmpAWczOy06LwI645/UfJoHcL8Z3wmFPfCRn9wTNR+7d/aqvpVY8Z
-         VOtoy+DS1U9IfoBh0LdBfDNKOvcRfz31HXaHOGXocNFqfckbf7V5YtBoqMRQkCACwBwz
-         q4xMoaE2RMjc14AlobwUVWCsdDk9WG+MeOkUg+QKtd9KttqT6/OKc37ZqZn8X3MvsN6w
-         sT/fevD+Vi6dLpHk/IrD5wY2GSvp+eCq/goYKDaS9/f5u7AaqA+k6VE1/2AHpYSMuyFs
-         DMdOchW5j1CZqG0LaBorNaUQqnLhDkcz4QGx8b1trpVOXiWXxkvXLwpHujkumYN5cxzV
-         51Xg==
-X-Gm-Message-State: AHQUAuYZsRn4/OPB4riM8r26HObgyIC7ZRHoyVBB/EX+Qhutk+qs8T10
-        4hhpSSrfAEfNaE3cOkf8APk=
-X-Google-Smtp-Source: AHgI3IZYhlTQw7CzP9sWgh7rfxqpLNlgl3p6nVnERXteNg31B4yHe6oKSgrg84EyP7emiFpwT7JXKQ==
-X-Received: by 2002:a17:902:9a95:: with SMTP id w21mr39384222plp.118.1550711366749;
-        Wed, 20 Feb 2019 17:09:26 -0800 (PST)
-Received: from icarus ([2001:268:c0a3:577d:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id d23sm26808746pfn.180.2019.02.20.17.09.16
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 20 Feb 2019 17:09:25 -0800 (PST)
-Date:   Thu, 21 Feb 2019 10:09:54 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Patrick Havelange <patrick.havelange@essensium.com>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=q9ICpafhgGzeqErvTe6lKiQENs0ImusOCchpoLeIwvo=;
+        b=GteEjaTqwxI9D8/rAIe/oWEZ8znPJCEoFb1HMWmD0L+1UjieL3UBYIPR9+fv6AIU9U
+         ++iwX+fvCTlIITsBZv7cJF78MdDhdrfh2Hquh801GBpnZqGkw9AdKcwnrEAWXMk543I2
+         tcLpfsAQC6LXBo7NkqSAkIC9YL0VujJ6ig5iB4Dls2YG47NnO2hLOe9pa/TROS6XduTS
+         w+y/ot622X42dBYfyg4hnuCY2+8FzsWz9d0qmZiWH6OCncMXyLvSPLdjSg9slNSoWdKY
+         cgsyF1gWkRW6tstKBLxafWSOy4e+Y0NGm2pu7nC9c+PUHubWUmCjZRkp1S/NYfbpefHP
+         T8wA==
+X-Gm-Message-State: AHQUAubDozTqenkPjxxn1+o9ys1OE4JM71voDToCquImInDqAwWrmKuw
+        HjvtOkc5W8F/8emV5g3PNkzeT8hSxKI=
+X-Google-Smtp-Source: AHgI3IZXReHFltH6dcdnvj0sGgZ2DEXuudQroM7EcF1qmg/l7hg5PpefP4cscJHIzFyJkNIIMXrfQQ==
+X-Received: by 2002:a1f:d8b:: with SMTP id 133mr11120967vkn.78.1550712224939;
+        Wed, 20 Feb 2019 17:23:44 -0800 (PST)
+Received: from mail-ua1-f46.google.com (mail-ua1-f46.google.com. [209.85.222.46])
+        by smtp.gmail.com with ESMTPSA id j4sm14568749vke.0.2019.02.20.17.23.43
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Feb 2019 17:23:43 -0800 (PST)
+Received: by mail-ua1-f46.google.com with SMTP id v26so8950017uap.4
+        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 17:23:43 -0800 (PST)
+X-Received: by 2002:ab0:645:: with SMTP id f63mr18789241uaf.106.1550712223306;
+ Wed, 20 Feb 2019 17:23:43 -0800 (PST)
+MIME-Version: 1.0
+References: <20181008172332.GA29816@embeddedor.com> <CAGXu5jLsQ_Uc4kp=md2SrOERopjZmnQK_fAsru4MQUqEHRvEeA@mail.gmail.com>
+ <20190220183425.202d4d40@archlinux> <89471d5e-fab7-9d00-8b3e-562a5a510fa6@embeddedor.com>
+In-Reply-To: <89471d5e-fab7-9d00-8b3e-562a5a510fa6@embeddedor.com>
+From:   Kees Cook <keescook@chromium.org>
+Date:   Wed, 20 Feb 2019 17:23:31 -0800
+X-Gmail-Original-Message-ID: <CAGXu5jLeYO4dNxs7n9Bt97A6N0b48uuXhLjq0bsfF=k5OaSrmA@mail.gmail.com>
+Message-ID: <CAGXu5jLeYO4dNxs7n9Bt97A6N0b48uuXhLjq0bsfF=k5OaSrmA@mail.gmail.com>
+Subject: Re: [PATCH] iio: cros_ec_accel_legacy: Mark expected switch fall-throughs
+To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Esben Haabendal <esben@haabendal.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature decoder
- counter driver
-Message-ID: <20190221010931.GA3471@icarus>
-References: <20190218140321.19166-1-patrick.havelange@essensium.com>
- <20190218140321.19166-5-patrick.havelange@essensium.com>
- <20190220164154.00547a77@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190220164154.00547a77@archlinux>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Feb 20, 2019 at 04:41:54PM +0000, Jonathan Cameron wrote:
-> On Mon, 18 Feb 2019 15:03:18 +0100
-> Patrick Havelange <patrick.havelange@essensium.com> wrote:
-> 
-> > This driver exposes the counter for the quadrature decoder of the
-> > FlexTimer Module, present in the LS1021A soc.
-> > 
-> > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> > Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-> Given you cc'd William, I'm guessing you know about the counter
-> subsystem effort.  I would really rather not take any drivers
-> into IIO if we have any hope of getting that upstreamed soon
-> (which I personally think we do and should!).  The reason is
-> we end up having to maintain old ABI just because someone might be using
-> it and it makes the drivers very messy.
-> 
-> I'll review as is though as may be there are some elements that will
-> cross over.
-> 
-> Comments inline.  William: Looks like a straight forward conversion if
-> it makes sense to get this lined up as part of your initial submission?
-> You have quite a few drivers so I wouldn't have said it needs to be there
-> at the start, but good to have it soon after.
-> 
-> Jonathan
+On Wed, Feb 20, 2019 at 10:47 AM Gustavo A. R. Silva
+<gustavo@embeddedor.com> wrote:
+> Yeah. Actually, we can even take the switch and for out of the equation,
+> and the code can be rewritten as follows:
+>
+> ec_accel_channels[X].scan_index = Y;
+> ec_accel_channels[Y].scan_index = X;
+> ec_accel_channels[Z].scan_index = Z;
+>
+> if (state->sensor_num == MOTIONSENSE_LOC_LID)
+>         state->sign[X] = state->sign[Z] = -1;
+> else
+>         state->sign[X] = state->sign[Y] = state->sign[Z] = 1;
 
-I agree, we should try to merge this as part of Counter subsystem
-introduction rather than as another IIO Counter driver. As we determined
-when adding support for the STM32 timers, the existing IIO Counter API
-is fundamentally unsuitable for representing counter devices. So
-regardless of how a new Counter API is merged, the existing IIO Counter
-API must be deprecated.
+Actually, should be an unconditional "state->sign[Y] = 1", but
+otherwise, yes. Can you send that patch?
 
-Patrick, I apologize for the confusion this has caused. Would you be
-able to convert this driver to use the proposed Counter subsystem API
-from this patchset that I believe you encountered before:
-https://marc.info/?l=linux-arm-kernel&m=153229982404051
 
-Although it was last updated in October, I believe you should be able to
-rebase that Counter subsystem introduction patchset cleanly on top of
-the IIO tree (if there are any merge conflicts send me an email). Take a
-look at the generic-counter.rst file under the Documentation/driver-api/
-directory for an overview of the API; the counter drivers under the
-drivers/counter/ directory also make good references.
+> > Agreed, it's 'novel'.  Waiting for Gwendal or someone else to come
+> > back and check it wasn't meant to be doing something else.
+>
+> We've been waiting 5 months for Gwendal. :/
 
-If you have any difficulties understanding the API, or any other
-troubles, don't hesitate to ask. Hopefully, I've made the documentation
-clear enough to make the conversion of this driver quick and easy -- and
-if not, then it's something I need to fix, so let me know. :-)
+I've looked at this enough. I'm happy to Ack it, if that helps. :)
 
-William Breathitt Gray
+-- 
+Kees Cook
