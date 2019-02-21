@@ -1,87 +1,142 @@
-Return-Path: <SRS0=QBqV=Q3=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73284C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 22:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D0AFC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:09:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4683E20859
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Feb 2019 22:22:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C11AF2086C
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 01:09:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ir3kaq5O"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725826AbfBTWW4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 17:22:56 -0500
-Received: from smtprelay0065.hostedemail.com ([216.40.44.65]:37355 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725804AbfBTWW4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 17:22:56 -0500
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay06.hostedemail.com (Postfix) with ESMTP id 1F41618224D6E;
-        Wed, 20 Feb 2019 22:22:55 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: girls60_365b2667a3c4d
-X-Filterd-Recvd-Size: 2648
-Received: from XPS-9350.home (unknown [47.151.153.53])
-        (Authenticated sender: joe@perches.com)
-        by omf10.hostedemail.com (Postfix) with ESMTPA;
-        Wed, 20 Feb 2019 22:22:53 +0000 (UTC)
-Message-ID: <68f8ea8165f4a87cd1c99c14f2d1cc3ecdd54ed3.camel@perches.com>
-Subject: Re: [PATCH 5/5] iio:potentiostat:lmp91000: add '\n' on dev_err
-From:   Joe Perches <joe@perches.com>
+        id S1726751AbfBUBJ1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 20:09:27 -0500
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:34854 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbfBUBJ1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 20:09:27 -0500
+Received: by mail-pl1-f193.google.com with SMTP id p19so1984838plo.2;
+        Wed, 20 Feb 2019 17:09:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XazLWlV0OGpxiqeWsTijGEnFhzyXIMqtdbgnm6gIsFM=;
+        b=Ir3kaq5OJ38gwHc9MbQ93aEeS78o9Jb4ne68ygRM17PEd63kJOo+HfHEWvo2v6rFiJ
+         KNYERTWt52IYRarCIpcC1mVk1oyBJSudCfe/mrer7nGIXxOQfMaIBZgPLS5E0qfkrTuR
+         Ufcc+iHE+jP6nCO9LsKxSD5q7SBg9FiHsm2wuwXwH1rl5CqFTnOIsTsRYhJM99KY7ViM
+         RDtd512mwClfGkHF+cFrWtS4roAOGZlMoAUDdXJCtPTQKqqgDUvg55Iz6UpGom9V5/tM
+         rYjA6mpl3jFJNGylRInO0RX6Q8KhsMw2lnhEeJib7zATI8G10gN3XcdVfuDdZ2ooSgqO
+         Krag==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XazLWlV0OGpxiqeWsTijGEnFhzyXIMqtdbgnm6gIsFM=;
+        b=tQD+ULYz3cCSfjmpAWczOy06LwI645/UfJoHcL8Z3wmFPfCRn9wTNR+7d/aqvpVY8Z
+         VOtoy+DS1U9IfoBh0LdBfDNKOvcRfz31HXaHOGXocNFqfckbf7V5YtBoqMRQkCACwBwz
+         q4xMoaE2RMjc14AlobwUVWCsdDk9WG+MeOkUg+QKtd9KttqT6/OKc37ZqZn8X3MvsN6w
+         sT/fevD+Vi6dLpHk/IrD5wY2GSvp+eCq/goYKDaS9/f5u7AaqA+k6VE1/2AHpYSMuyFs
+         DMdOchW5j1CZqG0LaBorNaUQqnLhDkcz4QGx8b1trpVOXiWXxkvXLwpHujkumYN5cxzV
+         51Xg==
+X-Gm-Message-State: AHQUAuYZsRn4/OPB4riM8r26HObgyIC7ZRHoyVBB/EX+Qhutk+qs8T10
+        4hhpSSrfAEfNaE3cOkf8APk=
+X-Google-Smtp-Source: AHgI3IZYhlTQw7CzP9sWgh7rfxqpLNlgl3p6nVnERXteNg31B4yHe6oKSgrg84EyP7emiFpwT7JXKQ==
+X-Received: by 2002:a17:902:9a95:: with SMTP id w21mr39384222plp.118.1550711366749;
+        Wed, 20 Feb 2019 17:09:26 -0800 (PST)
+Received: from icarus ([2001:268:c0a3:577d:c70:4af9:86e2:2])
+        by smtp.gmail.com with ESMTPSA id d23sm26808746pfn.180.2019.02.20.17.09.16
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 20 Feb 2019 17:09:25 -0800 (PST)
+Date:   Thu, 21 Feb 2019 10:09:54 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lucas Oshiro <lucasseikioshiro@gmail.com>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
-        Anderson Reis <andersonreisrosa@gmail.com>
-Date:   Wed, 20 Feb 2019 14:22:52 -0800
-In-Reply-To: <20190220094921.6777d6f8@archlinux>
-References: <20190218172236.7781-1-lucasseikioshiro@gmail.com>
-         <20190218172236.7781-6-lucasseikioshiro@gmail.com>
-         <d5d88a5acc984554240047944cb3071371025085.camel@perches.com>
-         <20190220094921.6777d6f8@archlinux>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.30.1-1build1 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Cc:     Patrick Havelange <patrick.havelange@essensium.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Esben Haabendal <esben@haabendal.dk>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
+Subject: Re: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature decoder
+ counter driver
+Message-ID: <20190221010931.GA3471@icarus>
+References: <20190218140321.19166-1-patrick.havelange@essensium.com>
+ <20190218140321.19166-5-patrick.havelange@essensium.com>
+ <20190220164154.00547a77@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190220164154.00547a77@archlinux>
+User-Agent: Mutt/1.11.3 (2019-02-01)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 2019-02-20 at 09:49 +0000, Jonathan Cameron wrote:
-> On Mon, 18 Feb 2019 13:01:23 -0800 Joe Perches <joe@perches.com> wrote:
-> > On Mon, 2019-02-18 at 14:22 -0300, Lucas Oshiro wrote:
-> > > Add missing '\n' at the end of dev_err message on line 215.  
-> > []
-> > > diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c  
-> > []
-> > > @@ -212,7 +212,7 @@ static int lmp91000_read_config(struct lmp91000_data *data)
-> > >  	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
-> > >  	if (ret) {
-> > >  		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
-> > > -			dev_err(dev, "no ti,tia-gain-ohm defined");
-> > > +			dev_err(dev, "no ti,tia-gain-ohm defined\n");  
+On Wed, Feb 20, 2019 at 04:41:54PM +0000, Jonathan Cameron wrote:
+> On Mon, 18 Feb 2019 15:03:18 +0100
+> Patrick Havelange <patrick.havelange@essensium.com> wrote:
+> 
+> > This driver exposes the counter for the quadrature decoder of the
+> > FlexTimer Module, present in the LS1021A soc.
 > > 
-> > Perhaps a copy/paste error as the test is for
-> > external-tia-resistor and not tia-gain-ohm
-> > 
-> It is an odd construct, but I think this is correct.  What it is actually
-> saying is that, given that we don't have an external resistor, we care
-> that the tia-gain-ohm isn't set (otherwise it wouldn't matter).
+> > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> > Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+> Given you cc'd William, I'm guessing you know about the counter
+> subsystem effort.  I would really rather not take any drivers
+> into IIO if we have any hope of getting that upstreamed soon
+> (which I personally think we do and should!).  The reason is
+> we end up having to maintain old ABI just because someone might be using
+> it and it makes the drivers very messy.
 > 
-> From the docs
->   - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
->     needs to be set to signal that an external resistor value is being used.
+> I'll review as is though as may be there are some elements that will
+> cross over.
 > 
-> So, it might be ideal to say that tia-gain-ohm is not defined and we do
-> not have an external resistor specified.
+> Comments inline.  William: Looks like a straight forward conversion if
+> it makes sense to get this lined up as part of your initial submission?
+> You have quite a few drivers so I wouldn't have said it needs to be there
+> at the start, but good to have it soon after.
 > 
-> So not wrong, but could be more informative!  So perhaps a follow up patch
-> to tidy that up would be good.
+> Jonathan
 
-Then thanks in advance for doing that.
-cheers, Joe
+I agree, we should try to merge this as part of Counter subsystem
+introduction rather than as another IIO Counter driver. As we determined
+when adding support for the STM32 timers, the existing IIO Counter API
+is fundamentally unsuitable for representing counter devices. So
+regardless of how a new Counter API is merged, the existing IIO Counter
+API must be deprecated.
 
+Patrick, I apologize for the confusion this has caused. Would you be
+able to convert this driver to use the proposed Counter subsystem API
+from this patchset that I believe you encountered before:
+https://marc.info/?l=linux-arm-kernel&m=153229982404051
+
+Although it was last updated in October, I believe you should be able to
+rebase that Counter subsystem introduction patchset cleanly on top of
+the IIO tree (if there are any merge conflicts send me an email). Take a
+look at the generic-counter.rst file under the Documentation/driver-api/
+directory for an overview of the API; the counter drivers under the
+drivers/counter/ directory also make good references.
+
+If you have any difficulties understanding the API, or any other
+troubles, don't hesitate to ask. Hopefully, I've made the documentation
+clear enough to make the conversion of this driver quick and easy -- and
+if not, then it's something I need to fix, so let me know. :-)
+
+William Breathitt Gray
