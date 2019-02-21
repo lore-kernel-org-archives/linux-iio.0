@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C27BDC00319
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34641C00319
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:04:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 925D42084D
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 02AB82080D
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:04:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="ghwwnpLK"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="DoFpGSDK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728312AbfBURDE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 12:03:04 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.104]:28039 "EHLO
+        id S1728180AbfBURDD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 12:03:03 -0500
+Received: from mo4-p03-ob.smtp.rzone.de ([81.169.146.173]:28493 "EHLO
         mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726311AbfBURDD (ORCPT
+        with ESMTP id S1725767AbfBURDD (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 12:03:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768580;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768579;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=PgYW71VV5zuIFDBdoh7slkAGHQH5JhhNRoG++nx1oII=;
-        b=ghwwnpLK21diaZsRZwiQpBlE2bUs0C5JsnVcVpiAxBRA0d8F6aygeeCt0GdbrpKbqh
-        TyZ+UHxS+Enie0rKiiyoMM2na5oV/Log8ATMExFFuNSZUYTtqkGwjkkXOcU/bBl/aOyF
-        u4Th1uy98iF7YZnwdR2YTb3Ofb3GkxqJ0RdnTlC4HS8b6y5EpMb6ZXsy4pXfjsV9R8Lx
-        /HjuFqpUMVaLQzqACU6520ILWfYBOUOZjQe+CCVokmLmXS4h2w/qbYdlLwdTPdV4WwIu
-        Xpb0lNU2DYn0SZ0yLpeq7h+/jNUgwq/SR3loTtuKXvUPmg7wpS4bPGRnr5LudJqbhEgQ
-        dKtA==
+        bh=uN2R+Bp3hLSDrzisYlD3VTQSLxI7298D5STEY1XzS8U=;
+        b=DoFpGSDKH8n+PD7z6DcoMthhFKdi7Kb1MC2s79Sv9zv59+OWaaPx0Gk0lFhUTewQlm
+        KlUVVW5ENRoRrdveT6hX+PvLhGfVCjO4guJniG9FtPk5aFvZY0BWwygfy8HJtt11iM4/
+        HWjtlOO54J2zVo6ChLw2awF5d6LBqgQW9vpILHmVkW8d73gbwTN71kkH3Ga8B8p/C9JA
+        lVp1XwtSUmfW47TNvzNc3v122J1bIZ73efsox319wCkYV1mBB0irGSFuNdxqDTPfmmC/
+        CsIC7dPIvMOD4EKwWI4vKXqlHGjgoDC563ZMoQ0/fpg5TRwYv4rax4MWV/VUEyFg4DsE
+        Cn6A==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2MzNl43D1ri"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1LH2xLXG
+        with ESMTPSA id 608499v1LH2xLXF
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
         Thu, 21 Feb 2019 18:02:59 +0100 (CET)
@@ -58,9 +58,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 05/10] iio: gyro: bmg160: add mount matrix support
-Date:   Thu, 21 Feb 2019 18:02:50 +0100
-Message-Id: <49a4b6c13b1d293050ad11bcdeb35f2694428574.1550768574.git.hns@goldelico.com>
+Subject: [PATCH v2 04/10] iio: accel: bma180: add mount matrix support
+Date:   Thu, 21 Feb 2019 18:02:49 +0100
+Message-Id: <39eb050ab5ba5a10f624f95f2bf4582e4e7ccbde.1550768574.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550768574.git.hns@goldelico.com>
 References: <cover.1550768574.git.hns@goldelico.com>
@@ -77,62 +77,59 @@ clients.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/gyro/bmg160_core.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/iio/accel/bma180.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-index 63ca31628a93..e7b38adee39a 100644
---- a/drivers/iio/gyro/bmg160_core.c
-+++ b/drivers/iio/gyro/bmg160_core.c
-@@ -102,6 +102,7 @@ struct bmg160_data {
- 	struct regmap *regmap;
- 	struct iio_trigger *dready_trig;
- 	struct iio_trigger *motion_trig;
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index cb9765a3de60..f9720a1e8a7c 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -116,6 +116,7 @@ struct bma180_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *trig;
+ 	const struct bma180_part_info *part_info;
 +	struct iio_mount_matrix orientation;
  	struct mutex mutex;
- 	s16 buffer[8];
- 	u32 dps_range;
-@@ -794,6 +795,20 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
- 	return 0;
+ 	bool sleep_state;
+ 	int scale;
+@@ -561,6 +562,15 @@ static int bma180_set_power_mode(struct iio_dev *indio_dev,
+ 	return ret;
  }
  
 +static const struct iio_mount_matrix *
-+bmg160_get_mount_matrix(const struct iio_dev *indio_dev,
-+			 const struct iio_chan_spec *chan)
++bma180_accel_get_mount_matrix(const struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan)
 +{
-+	struct bmg160_data *data = iio_priv(indio_dev);
++	struct bma180_data *data = iio_priv(indio_dev);
 +
 +	return &data->orientation;
 +}
 +
-+static const struct iio_chan_spec_ext_info bmg160_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmg160_get_mount_matrix),
+ static const struct iio_enum bma180_power_mode_enum = {
+ 	.items = bma180_power_modes,
+ 	.num_items = ARRAY_SIZE(bma180_power_modes),
+@@ -571,7 +581,8 @@ static const struct iio_enum bma180_power_mode_enum = {
+ static const struct iio_chan_spec_ext_info bma180_ext_info[] = {
+ 	IIO_ENUM("power_mode", true, &bma180_power_mode_enum),
+ 	IIO_ENUM_AVAILABLE("power_mode", &bma180_power_mode_enum),
+-	{ },
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bma180_accel_get_mount_matrix),
 +	{ }
-+};
-+
- static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 400 1000 2000");
+ };
  
- static IIO_CONST_ATTR(in_anglvel_scale_available,
-@@ -831,6 +846,7 @@ static const struct iio_event_spec bmg160_event = {
- 		.storagebits = 16,					\
- 		.endianness = IIO_LE,					\
- 	},								\
-+	.ext_info = bmg160_ext_info,					\
- 	.event_spec = &bmg160_event,					\
- 	.num_event_specs = 1						\
- }
-@@ -1075,6 +1091,11 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
- 	data->irq = irq;
- 	data->regmap = regmap;
+ #define BMA180_ACC_CHANNEL(_axis, _bits) {				\
+@@ -722,6 +733,11 @@ static int bma180_probe(struct i2c_client *client,
+ 		chip = id->driver_data;
+ 	data->part_info = &bma180_part_info[chip];
  
-+	ret = iio_read_mount_matrix(dev, "mount-matrix",
++	ret = iio_read_mount_matrix(&client->dev, "mount-matrix",
 +				&data->orientation);
 +	if (ret)
 +		return ret;
 +
- 	ret = bmg160_chip_init(data);
+ 	ret = data->part_info->chip_config(data);
  	if (ret < 0)
- 		return ret;
+ 		goto err_chip_disable;
 -- 
 2.19.1
 
