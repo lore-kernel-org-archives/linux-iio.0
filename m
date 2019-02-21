@@ -2,284 +2,332 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AA38C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 18:56:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E572AC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 19:18:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C447A2077B
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 18:56:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qS7sLLZE"
+	by mail.kernel.org (Postfix) with ESMTP id A4F2620836
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 19:18:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725932AbfBUS46 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 13:56:58 -0500
-Received: from mail-qt1-f170.google.com ([209.85.160.170]:37170 "EHLO
-        mail-qt1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725866AbfBUS45 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 13:56:57 -0500
-Received: by mail-qt1-f170.google.com with SMTP id a48so32759817qtb.4
-        for <linux-iio@vger.kernel.org>; Thu, 21 Feb 2019 10:56:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=NL8oKw5x/XaZ7dg0adafVC8nvdReBlDu/pZR22Rs5Ds=;
-        b=qS7sLLZEs4ll51bmkEZv31caZXaGw7Mk+daaBdvOP2LzkqP5uuoRA4hqXT2DVMNFOR
-         qIA+yx1gk9gr0AbLVwdf7hE8e1aWhayZDVTQ3gAqG4YH3pJRmHTSVm1A6zTwEmysHIHO
-         pdRWCO7Zrsd5BdcHw8Zwj5C+4i1moAtGPP0pjVokbRkZ7kkBKxHFJPJAvrSbADitOqMp
-         b8Pd5bovU/Tfh9l8PE1cLgvN4r0KpZjUNI46HRXbQPK2tXbrJ/9SB8UBxG0Xz4xJlMdi
-         524kstUGB3qLSDJNjupoPWmgUB4IfdGNlRLpjhEya+/xhX8ePqZlqtCtcp183aeRWN9i
-         QqYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=NL8oKw5x/XaZ7dg0adafVC8nvdReBlDu/pZR22Rs5Ds=;
-        b=ng8PXWGFq4ASCJhOJdllLJQfrKNntT4dIPOgBwAsirFaX0SKxp2r2jXJTYt39qnpXL
-         /TzBQ0jlmXIsGg2uGhY9DIJPV9LR4xZl0OJdpklxqUEIqYxvmcw0/IJLSfxN3tnwwnsG
-         ZkYex1hopN1jlcO0lwQsH8bMr6dEhnRNmMwYYaN+Pr1ibAL1WwVU7le1osaF1SXu7fw+
-         Fdmoh4QmCt0YPP9GpfKQW2d/2J4q6flJWSjslbU3fybsJw+vSf6w88em57bN1gv6/hCa
-         fJ0QhSn3/Iku34OG9yfare/NPGz2IQDQjHXZF4VrElbviUX30iPWHnRLDY8aAubV8oku
-         Dxrg==
-X-Gm-Message-State: AHQUAua6sH6JPJaFN7WEUXRaUHxuAW5jujLiqvopBA+34zQ+edU2HFkg
-        CYiLaOXZX3bnEISKY4+ffbw=
-X-Google-Smtp-Source: AHgI3IZAk0V5SMPRzpPJGyVKDQW0Ew4Un6x+D5XvZjfbFa0FKkBmkHF9EaPV9UmeUMPYmpUDLzxGDg==
-X-Received: by 2002:a0c:932a:: with SMTP id d39mr20549379qvd.85.1550775416207;
-        Thu, 21 Feb 2019 10:56:56 -0800 (PST)
-Received: from localhost.localdomain (167-4-17-190.fibertel.com.ar. [190.17.4.167])
-        by smtp.gmail.com with ESMTPSA id m12sm14474313qke.17.2019.02.21.10.56.53
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 21 Feb 2019 10:56:55 -0800 (PST)
-Date:   Thu, 21 Feb 2019 15:56:37 -0300
-From:   Gaston Gonzalez <gascoar@gmail.com>
-To:     Daniel Baluta <daniel.baluta@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Kernelnewbies <kernelnewbies@kernelnewbies.org>,
-        gascoar@gmail.com
-Subject: Re: Add IIO example to the kernelnewbies wiki
-Message-ID: <20190221185637.GA1462@localhost.localdomain>
-References: <20180402170637.wlx5xru2wyahm42f@localhost.localdomain>
- <CAEnQRZDzKS_KXF9QRQPAtD6i3nwhknyx9K-YmrY_OFpb2RXisw@mail.gmail.com>
+        id S1726189AbfBUTSl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 14:18:41 -0500
+Received: from relay11.mail.gandi.net ([217.70.178.231]:36041 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726050AbfBUTSl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 14:18:41 -0500
+Received: from webmail.gandi.net (webmail6.sd4.0x35.net [10.200.201.6])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay11.mail.gandi.net (Postfix) with ESMTPA id 3F6AA100008;
+        Thu, 21 Feb 2019 19:18:36 +0000 (UTC)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAEnQRZDzKS_KXF9QRQPAtD6i3nwhknyx9K-YmrY_OFpb2RXisw@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Content-Transfer-Encoding: 7bit
+Date:   Thu, 21 Feb 2019 20:18:36 +0100
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 5/7] power: supply: add Ingenic JZ47xx battery driver.
+In-Reply-To: <20190220111441.585eb3eb@archlinux>
+References: <20190217142914.17433-1-contact@artur-rojek.eu>
+ <20190217142914.17433-5-contact@artur-rojek.eu>
+ <20190220111441.585eb3eb@archlinux>
+Message-ID: <a53ba58dddea94c011d2ec839d438c51@artur-rojek.eu>
+X-Sender: contact@artur-rojek.eu
+User-Agent: Roundcube Webmail/1.1.2
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, May 09, 2018 at 10:21:08AM +0300, Daniel Baluta wrote:
-> Sure, you can do that. Nice to see that you are using Diolan DLN-2 adapter.
+On 2019-02-20 12:14, Jonathan Cameron wrote:
+> On Sun, 17 Feb 2019 15:29:14 +0100
+> Artur Rojek <contact@artur-rojek.eu> wrote:
+> 
+>> Add a driver for battery present on Ingenic JZ47xx SoCs.
+>> 
+>> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> A few things inline.
 > 
 > thanks,
-> Daniel.
 > 
-> On Mon, Apr 2, 2018 at 8:06 PM, Gaston Gonzalez <gascoar@gmail.com> wrote:
-> > Hi,
-> >
-> > I'm testing an AD7746 eval board using a Diolan DLN-2 adapter. I wrote
-> > some basic notes about the installation an instanciation process for my
-> > own use. But then I thought it could be useful for someone else. So
-> > maybe I could put this in the kernel newbies page under the IIO section?
-> >
-> > If you think is worth it, I would be glad to add it to the wiki page.
-> >
-> > Best regards,
-> >
-> > Gaston
-> >
-> > Notes:
-> >
-> > The setup
-> > =========
-> >
-> >         AD7746-EVAL BOARD --> Diolan DLN-2 Adapter --> Thinkpad T430
-> >
-> > The connection between the AD7746 eval board and adapter is as detailed
-> > in [2] I2C Interface Configuration Options, External connection (pag 4).
-> >
-> > The connection between Diolan DLN-2 and the T430 is USB straighforward.
-> >
-> > Drivers
-> > =======
-> >
-> > Both in mainline kernel:
-> >
-> >  - Diolan DLN-2 driver: I2C_DLN2 (prompt Diolan DLN-2 USB I2C adapter)
-> >         Loc: drivers/i2c/busses/
-> >  - AD7746: AD7746
-> >         Loc: drivers/staging/iio/cdc/
-> >
-> > Bus of interest
-> > ===============
-> >
-> >  $  sudo i2cdetect -l
-> >
-> > We get something like:
-> >
-> >  ...
-> >  i2c-10  i2c             dln2-i2c-1-1.2:1.0-0                    I2C adapter
-> >  ...
-> >
-> > So our bus is the number 10.
-> >
-> > Getting the address
-> > ===================
-> >
-> >  $ sudo i2cdetect -y -r 10
-> >
-> > We get something like:
-> >
-> >       0  1  2  3  4  5  6  7  8  9  a  b  c  d  e  f
-> > 00:          -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 10: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 20: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 30: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 40: -- -- -- -- -- -- -- -- 48 -- -- -- -- -- -- --
-> > 50: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 60: -- -- -- -- -- -- -- -- -- -- -- -- -- -- -- --
-> > 70: -- -- -- -- -- -- -- --
-> >
-> > 3. Device instantiation:
-> >
-> >  # echo add7746 0x48 > /sys/bus/i2c/devices/i2c-10/new_device
-> >
-> > We must see something like:
-> >
-> > $ cd /sys/bus/i2c/devices/i2c-10/10-0048/
-> > $ ls
-> > driver  iio:device0  modalias  name  power  subsystem  uevent
-> >
-> > $ cd iio:device0
-> > $ ls
-> > dev                                      in_capacitance-capacitance_calibbias
-> > in_capacitance0_calibbias_calibration    in_capacitance-capacitance_sampling_frequency
-> > in_capacitance0_calibscale               in_capacitance-capacitance_scale
-> > in_capacitance0_calibscale_calibration   in_capacitance_sampling_frequency
-> > in_capacitance0-capacitance2_calibscale  in_capacitance_sampling_frequency_available
-> > in_capacitance0-capacitance2_offset      in_capacitance_scale
-> > in_capacitance0-capacitance2_raw         in_temp0_input
-> > in_capacitance0_offset                   in_temp1_input
-> > in_capacitance0_raw                      in_voltage0_calibscale_calibration
-> > in_capacitance1_calibbias_calibration    in_voltage0_raw
-> > in_capacitance1_calibscale               in_voltage1_supply_raw
-> > in_capacitance1_calibscale_calibration   in_voltage_sampling_frequency
-> > in_capacitance1-capacitance3_calibscale  in_voltage_sampling_frequency_available
-> > in_capacitance1-capacitance3_offset      in_voltage_scale
-> > in_capacitance1-capacitance3_raw         name
-> > in_capacitance1_offset                   power
-> > in_capacitance1_raw                      subsystem
-> > in_capacitance_calibbias                 uevent
-> >
-> > Checking the permits:
-> >
-> > $ ll
-> > -r--r--r-- 1 root root 4096 mar 31 09:57 dev
-> > --w------- 1 root root 4096 mar 31 09:57 in_capacitance0_calibbias_calibration
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0_calibscale
-> > --w------- 1 root root 4096 mar 31 09:57 in_capacitance0_calibscale_calibration
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0-capacitance2_calibscale
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0-capacitance2_offset
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0-capacitance2_raw
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0_offset
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance0_raw
-> > --w------- 1 root root 4096 mar 31 09:57 in_capacitance1_calibbias_calibration
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1_calibscale
-> > --w------- 1 root root 4096 mar 31 09:57 in_capacitance1_calibscale_calibration
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1-capacitance3_calibscale
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1-capacitance3_offset
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1-capacitance3_raw
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1_offset
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance1_raw
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance_calibbias
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance-capacitance_calibbias
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance-capacitance_sampling_frequency
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance-capacitance_scale
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance_sampling_frequency
-> > -r--r--r-- 1 root root 4096 mar 31 09:57 in_capacitance_sampling_frequency_available
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_capacitance_scale
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_temp0_input
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_temp1_input
-> > --w------- 1 root root 4096 mar 31 09:57 in_voltage0_calibscale_calibration
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_voltage0_raw
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_voltage1_supply_raw
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_voltage_sampling_frequency
-> > -r--r--r-- 1 root root 4096 mar 31 09:57 in_voltage_sampling_frequency_available
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 in_voltage_scale
-> > -r--r--r-- 1 root root 4096 mar 31 09:57 name
-> > drwxr-xr-x 2 root root    0 mar 31 09:57 power
-> > lrwxrwxrwx 1 root root    0 mar 31 09:57 subsystem -> ../../../../../../../../../../../bus/iio
-> > -rw-r--r-- 1 root root 4096 mar 31 09:57 uevent
-> >
-> > 4. Capacitance
-> >
-> > According to [2], the capacitive length sensor is connected to CIN2+ and
-> > CIN2-. In the driver, the values are mapped to capacitance0.
-> >
-> > Raw values vs sensor length:
-> >
-> > Note: (+) values means the sensor was moved to the left, (-) values
-> > means the sensor was moved to the right. I.e. +1 cm means the rule was
-> > moved 1 to the left, while -1 means the rule was moved 1 cm to the
-> > right.
-> >
-> > Note2: note the raw value for -10 is 8224733, while +10 is -8224726, the
-> > difference is because when the rule is moved 10 cm to the left, the is
-> > still 2 o 3 cm of dielectric between the plates. The design is obviously
-> > thought to move the rule to the right.
-> >
-> >
-> >         Length (cm) |   Raw Value Cap0
-> >         ------------------------------
-> >         -10             -8224733
-> >         -9              -8224730
-> >         -8              -8224728
-> >         -7              -8224725
-> >         -6              -8224724
-> >         -5              -8224722
-> >         -4              -8224720
-> >         -3              -8224718
-> >         -2              -8224716
-> >         -1              -8224714
-> >         +0              -8224711
-> >         +1              -8224711
-> >         +2              -8224711
-> >         +3              -8224711
-> >         +4              -8224713
-> >         +5              -8224715
-> >         +6              -8224717
-> >         +7              -8224719
-> >         +8              -8224721
-> >         +9              -8224723
-> >         +10             -8224726
-> >
-> >
-> > References
-> > ==========
-> >
-> > [1] http://www.analog.com/media/en/technical-documentation/data-sheets/AD7745_7746.pdf
-> > [2] http://www.analog.com/media/en/technical-documentation/evaluation-documentation/EVAL-AD7746EB.PDF
-> > [3] https://i2c.wiki.kernel.org/index.php/Main_Page
-> > [4] https://kernelsense.wordpress.com/2016/01/22/achievement-unlocked-first-iio-driver/
-> >
-> > _______________________________________________
-> > Kernelnewbies mailing list
-> > Kernelnewbies@kernelnewbies.org
-> > https://lists.kernelnewbies.org/mailman/listinfo/kernelnewbies
+> Jonathan
+Hi Jonathan.
 
-Hi,
+One thing inline.
 
-(Sorry for the 'little' late reply)
+Artur
+> 
+>> ---
+>>  drivers/power/supply/Kconfig           |  11 ++
+>>  drivers/power/supply/Makefile          |   1 +
+>>  drivers/power/supply/ingenic-battery.c | 182 
+>> +++++++++++++++++++++++++
+>>  3 files changed, 194 insertions(+)
+>>  create mode 100644 drivers/power/supply/ingenic-battery.c
+>> 
+>> diff --git a/drivers/power/supply/Kconfig 
+>> b/drivers/power/supply/Kconfig
+>> index e901b9879e7e..9bfb1637ec28 100644
+>> --- a/drivers/power/supply/Kconfig
+>> +++ b/drivers/power/supply/Kconfig
+>> @@ -169,6 +169,17 @@ config BATTERY_COLLIE
+>>  	  Say Y to enable support for the battery on the Sharp Zaurus
+>>  	  SL-5500 (collie) models.
+>> 
+>> +config BATTERY_INGENIC
+>> +	tristate "Ingenic JZ47xx SoCs battery driver"
+>> +	depends on MIPS || COMPILE_TEST
+>> +	depends on INGENIC_ADC
+>> +	help
+>> +	  Choose this option if you want to monitor battery status on
+>> +	  Ingenic JZ47xx SoC based devices.
+>> +
+>> +	  This driver can also be built as a module. If so, the module will 
+>> be
+>> +	  called ingenic-battery.
+>> +
+>>  config BATTERY_IPAQ_MICRO
+>>  	tristate "iPAQ Atmel Micro ASIC battery driver"
+>>  	depends on MFD_IPAQ_MICRO
+>> diff --git a/drivers/power/supply/Makefile 
+>> b/drivers/power/supply/Makefile
+>> index b731c2a9b695..9e2c481d0187 100644
+>> --- a/drivers/power/supply/Makefile
+>> +++ b/drivers/power/supply/Makefile
+>> @@ -34,6 +34,7 @@ obj-$(CONFIG_BATTERY_PMU)	+= pmu_battery.o
+>>  obj-$(CONFIG_BATTERY_OLPC)	+= olpc_battery.o
+>>  obj-$(CONFIG_BATTERY_TOSA)	+= tosa_battery.o
+>>  obj-$(CONFIG_BATTERY_COLLIE)	+= collie_battery.o
+>> +obj-$(CONFIG_BATTERY_INGENIC)	+= ingenic-battery.o
+>>  obj-$(CONFIG_BATTERY_IPAQ_MICRO) += ipaq_micro_battery.o
+>>  obj-$(CONFIG_BATTERY_WM97XX)	+= wm97xx_battery.o
+>>  obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
+>> diff --git a/drivers/power/supply/ingenic-battery.c 
+>> b/drivers/power/supply/ingenic-battery.c
+>> new file mode 100644
+>> index 000000000000..4ee75c1ac241
+>> --- /dev/null
+>> +++ b/drivers/power/supply/ingenic-battery.c
+>> @@ -0,0 +1,182 @@
+>> +// SPDX-License-Identifier: GPL-2.0
+>> +/*
+>> + * Battery driver for the Ingenic JZ47xx SoCs
+>> + * Copyright (c) 2019 Artur Rojek <contact@artur-rojek.eu>
+>> + *
+>> + * based on drivers/power/supply/jz4740-battery.c
+> 
+> What is the relationship between this driver and the older one?
+> 
+>> + */
+>> +
+>> +#include <linux/iio/consumer.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/power_supply.h>
+>> +#include <linux/property.h>
+>> +
+>> +struct ingenic_battery {
+>> +	struct device *dev;
+>> +	struct iio_channel *channel;
+>> +	struct power_supply_desc desc;
+>> +	struct power_supply *battery;
+>> +	struct power_supply_battery_info info;
+>> +};
+>> +
+>> +static int ingenic_battery_get_property(struct power_supply *psy,
+>> +					enum power_supply_property psp,
+>> +					union power_supply_propval *val)
+>> +{
+>> +	struct ingenic_battery *bat = power_supply_get_drvdata(psy);
+>> +	struct power_supply_battery_info *info = &bat->info;
+>> +	int ret = 0;
+>> +
+>> +	switch (psp) {
+>> +	case POWER_SUPPLY_PROP_HEALTH:
+>> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
+>> +		val->intval *= 1000;
+>> +		if (val->intval < info->voltage_min_design_uv)
+>> +			val->intval = POWER_SUPPLY_HEALTH_DEAD;
+>> +		else if (val->intval > info->voltage_max_design_uv)
+>> +			val->intval = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
+>> +		else
+>> +			val->intval = POWER_SUPPLY_HEALTH_GOOD;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
+>> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
+>> +		val->intval *= 1000;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
+>> +		val->intval = info->voltage_min_design_uv;
+>> +	break;
+>> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
+>> +		val->intval = info->voltage_max_design_uv;
+>> +	break;
+>> +	default:
+>> +		return -EINVAL;
+>> +	};
+>> +
+> Can't get here, so drop.
+Execution actually does reach this point.
+Would you rather have me return in individual switch cases instead?
+> 
+>> +	return ret;
+>> +}
+>> +
+>> +/* Set the most appropriate IIO channel voltage reference scale
+>> + * based on the battery's max voltage.
+>> + */
+>> +static int ingenic_battery_set_scale(struct ingenic_battery *bat)
+>> +{
+>> +	const int *scale_raw;
+>> +	int scale_len, scale_type, best_idx = -1, best_mV, max_raw, i, ret;
+>> +	u64 max_mV;
+>> +
+>> +	ret = iio_read_max_channel_raw(bat->channel, &max_raw);
+>> +	if (ret) {
+>> +		dev_err(bat->dev, "Unable to read max raw channel value\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = iio_read_avail_channel_attribute(bat->channel, &scale_raw,
+>> +					       &scale_type, &scale_len,
+>> +					       IIO_CHAN_INFO_SCALE);
+>> +	if (ret < 0) {
+>> +		dev_err(bat->dev, "Unable to read channel avail scale\n");
+>> +		return ret;
+>> +	}
+> This works under the constraints of knowing what ADC we are talking to, 
+> but
+> this isn't generic.  The relationship between scale and the range isn't 
+> always
+> direct.  i.e. there are devices where you sample the same range at a 
+> lower
+> scale to be able to read it faster (can be thought of as oversampling, 
+> or
+> just not running the last stages of a pipelined ADC).
+> Anyhow, doesn't matter here as I assume this is fine on this part.
+> 
+>> +	if (ret != IIO_AVAIL_LIST || scale_type != IIO_VAL_FRACTIONAL_LOG2)
+>> +		return -EINVAL;
+>> +
+>> +	max_mV = bat->info.voltage_max_design_uv / 1000;
+>> +
+>> +	for (i = 1; i < scale_len; i += 2) {
+>> +		u64 scale_mV = (max_raw * scale_raw[i - 1]) >> scale_raw[i];
+> Not keen on the offset in the index being backwards.
+> 
+> This would be clearer I think as
+> 
+> for (i = 0; i < scale_len; i+= 2) {
+> 	u64 scale_mv = (max_raw * scale_raw[i]) >> scale_raw[i + 1];
+> 	...
+> 	best_idx = i;
+> }
+> 
+>> +
+>> +		if (scale_mV < max_mV)
+>> +			continue;
+>> +
+>> +		if (best_idx >= 0 && scale_mV > best_mV)
+>> +			continue;
+>> +
+>> +		best_mV = scale_mV;
+>> +		best_idx = i - 1;
+>> +	}
+>> +
+>> +	if (best_idx < 0) {
+>> +		dev_err(bat->dev, "Unable to find matching voltage scale\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	return iio_write_channel_attribute(bat->channel,
+>> +					   scale_raw[best_idx],
+>> +					   scale_raw[best_idx+1],
+> 
+> Spacing around that +.
+> 
+>> +					   IIO_CHAN_INFO_SCALE);
+>> +}
+>> +
+>> +static enum power_supply_property ingenic_battery_properties[] = {
+>> +	POWER_SUPPLY_PROP_HEALTH,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
+>> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
+>> +};
+>> +
+>> +static int ingenic_battery_probe(struct platform_device *pdev)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct ingenic_battery *bat;
+>> +	struct power_supply_config psy_cfg = {};
+>> +	struct power_supply_desc *desc;
+>> +	int ret;
+>> +
+>> +	bat = devm_kzalloc(dev, sizeof(*bat), GFP_KERNEL);
+>> +	if (!bat)
+>> +		return -ENOMEM;
+>> +
+>> +	bat->dev = dev;
+>> +	bat->channel = devm_iio_channel_get(dev, "battery");
+>> +	if (IS_ERR(bat->channel))
+>> +		return PTR_ERR(bat->channel);
+>> +
+>> +	desc = &bat->desc;
+>> +	desc->name = "jz-battery";
+>> +	desc->type = POWER_SUPPLY_TYPE_BATTERY;
+>> +	desc->properties = ingenic_battery_properties;
+>> +	desc->num_properties = ARRAY_SIZE(ingenic_battery_properties);
+>> +	desc->get_property = ingenic_battery_get_property;
+>> +	psy_cfg.drv_data = bat;
+>> +	psy_cfg.of_node = dev->of_node;
+>> +
+>> +	bat->battery = devm_power_supply_register(dev, desc, &psy_cfg);
+>> +	if (IS_ERR(bat->battery)) {
+>> +		dev_err(dev, "Unable to register battery\n");
+>> +		return PTR_ERR(bat->battery);
+>> +	}
+>> +
+>> +	ret = power_supply_get_battery_info(bat->battery, &bat->info);
+>> +	if (ret) {
+>> +		dev_err(dev, "Unable to get battery info: %d\n", ret);
+>> +		return ret;
+>> +	}
+>> +	if (bat->info.voltage_min_design_uv < 0) {
+>> +		dev_err(dev, "Unable to get voltage min design\n");
+>> +		return bat->info.voltage_min_design_uv;
+>> +	}
+>> +	if (bat->info.voltage_max_design_uv < 0) {
+>> +		dev_err(dev, "Unable to get voltage max design\n");
+>> +		return bat->info.voltage_max_design_uv;
+>> +	}
+>> +
+>> +	return ingenic_battery_set_scale(bat);
+>> +}
+>> +
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id ingenic_battery_of_match[] = {
+>> +	{ .compatible = "ingenic,jz4740-battery", },
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, ingenic_battery_of_match);
+>> +#endif
+>> +
+>> +static struct platform_driver ingenic_battery_driver = {
+>> +	.driver = {
+>> +		.name = "ingenic-battery",
+>> +		.of_match_table = of_match_ptr(ingenic_battery_of_match),
+>> +	},
+>> +	.probe = ingenic_battery_probe,
+>> +};
+>> +module_platform_driver(ingenic_battery_driver);
 
-If still possible, please add me to the editor list so I can edit the page.
-My user is 'Gaston Gonzalez'
-
-Thanks !
-
-Gaston
