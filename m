@@ -2,153 +2,424 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E179C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 08:27:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F95DC4360F
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 09:21:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E71DE2148D
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 08:27:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ZPC4HrPd"
+	by mail.kernel.org (Postfix) with ESMTP id 7DDB72086A
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 09:21:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725866AbfBUI1w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 03:27:52 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:33694 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725850AbfBUI1v (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 03:27:51 -0500
-Received: by mail-pf1-f196.google.com with SMTP id i19so377672pfd.0;
-        Thu, 21 Feb 2019 00:27:50 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=g5gN4Ti0gN+mczLgHhdKVrENWOTE09jCVWnpN/478RY=;
-        b=ZPC4HrPdz+WY6AK9hfFZDhcbS7CxkySmfmXhtYXcQUQkKmLIAX2EVxo+MN8tnhNrYs
-         H8pwsE6LR931tqfoTltTDeciYj8gMZmnFqHzpapNqLYGZtsqxLEsJG49B4dDFRzAXZAI
-         wxfFc6d+QlYwVFgCJY5jvgbyWQTOwPVzSA/3Mb4QWd6TrCafEYiFPbnL6vzD2cxJ+LDi
-         n6pTfn2IQTzSakuXkbroS7vy3VeVtWj0C8jFqGj8OMMn0t+BuQQGORqy7lmBXo6ae1wV
-         pTPOR2prRD++s9vCn/842lnW2bGWhrohsW6tTp2vtR18jlTInv5qUO1oBuF8mTooMCM9
-         W6ng==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=g5gN4Ti0gN+mczLgHhdKVrENWOTE09jCVWnpN/478RY=;
-        b=XnKdpljItlULc+G5Q46zzDg/e1VItwxb1NYtdQ/PhUJtk9q79GHHWDd5cMnikCnm8G
-         OEVteNdT8tKTRcjrrdUYZEccdTTh0X8LBMTmzmzzyoU+BPvl0hx2PDyd0ffOS2tLXfkT
-         XzC1GioUY80yuT1oeeeSZ+bczPpfvz3YUOLOOfAZZzCPVApDsJUjIbpwZ7Dts6zPvFRJ
-         ZE+QblKs9NEiVtTXQnbleEWDZqd21pta0TtmIZaVgF11AN7rhw5GUxtxb6nSD58HaRJx
-         RZolXG0bV0GNYehJcumc9ho2SIsg+Ni2N5uc64fYudYkC9hP4SdC2czihPIH9N4KZj9s
-         rp8Q==
-X-Gm-Message-State: AHQUAua/oWx/qo3VBBa9oQtkthuCKJe4T85q1YqhltKwlbjI68COAL2W
-        M81AgfGFieNzr6eimrAL2i8=
-X-Google-Smtp-Source: AHgI3IZHNJbq9wAWv/DgJ7abDmOyMDM9OF93XsPXA58Q+3Eb1CGKbsQCgm4TJ1+6HhEgw1vRQJEhcA==
-X-Received: by 2002:a63:1766:: with SMTP id 38mr33480045pgx.204.1550737670185;
-        Thu, 21 Feb 2019 00:27:50 -0800 (PST)
-Received: from icarus ([2001:268:c0a4:888c:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id f67sm29158116pff.29.2019.02.21.00.27.38
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 21 Feb 2019 00:27:48 -0800 (PST)
-Date:   Thu, 21 Feb 2019 17:28:21 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Patrick Havelange <patrick.havelange@essensium.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Esben Haabendal <esben@haabendal.dk>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org
-Subject: Re: [PATCH 5/8] iio/counter: add FlexTimer Module Quadrature decoder
- counter driver
-Message-ID: <20190221082758.GA3380@icarus>
-References: <20190218140321.19166-1-patrick.havelange@essensium.com>
- <20190218140321.19166-5-patrick.havelange@essensium.com>
- <20190220164154.00547a77@archlinux>
- <20190221010931.GA3471@icarus>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190221010931.GA3471@icarus>
-User-Agent: Mutt/1.11.3 (2019-02-01)
+        id S1726452AbfBUJVD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 04:21:03 -0500
+Received: from jax4mhob22.registeredsite.com ([64.69.218.110]:52948 "EHLO
+        jax4mhob22.registeredsite.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725385AbfBUJU7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 04:20:59 -0500
+Received: from mailpod.hostingplatform.com ([10.30.71.203])
+        by jax4mhob22.registeredsite.com (8.14.4/8.14.4) with ESMTP id x1L9KtlB052434
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
+        for <linux-iio@vger.kernel.org>; Thu, 21 Feb 2019 04:20:55 -0500
+Received: (qmail 12094 invoked by uid 0); 21 Feb 2019 09:20:55 -0000
+X-TCPREMOTEIP: 81.173.50.109
+X-Authenticated-UID: mike@milosoftware.com
+Received: from unknown (HELO mikebuntu.TOPIC.LOCAL) (mike@milosoftware.com@81.173.50.109)
+  by 0 with ESMTPA; 21 Feb 2019 09:20:55 -0000
+From:   Mike Looijmans <mike.looijmans@topic.nl>
+To:     linux-iio@vger.kernel.org, himanshujha199640@gmail.com
+Cc:     linux-kernel@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, dpfrey@gmail.com,
+        colin.king@canonical.com, Mike Looijmans <mike.looijmans@topic.nl>
+Subject: [PATCH v2] iio/chemical/bme680: Fix SPI read interface
+Date:   Thu, 21 Feb 2019 10:20:49 +0100
+Message-Id: <1550740849-16029-1-git-send-email-mike.looijmans@topic.nl>
+X-Mailer: git-send-email 1.9.1
+References: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
+In-Reply-To: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Feb 21, 2019 at 10:09:54AM +0900, William Breathitt Gray wrote:
-> On Wed, Feb 20, 2019 at 04:41:54PM +0000, Jonathan Cameron wrote:
-> > On Mon, 18 Feb 2019 15:03:18 +0100
-> > Patrick Havelange <patrick.havelange@essensium.com> wrote:
-> > 
-> > > This driver exposes the counter for the quadrature decoder of the
-> > > FlexTimer Module, present in the LS1021A soc.
-> > > 
-> > > Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> > > Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-> > Given you cc'd William, I'm guessing you know about the counter
-> > subsystem effort.  I would really rather not take any drivers
-> > into IIO if we have any hope of getting that upstreamed soon
-> > (which I personally think we do and should!).  The reason is
-> > we end up having to maintain old ABI just because someone might be using
-> > it and it makes the drivers very messy.
-> > 
-> > I'll review as is though as may be there are some elements that will
-> > cross over.
-> > 
-> > Comments inline.  William: Looks like a straight forward conversion if
-> > it makes sense to get this lined up as part of your initial submission?
-> > You have quite a few drivers so I wouldn't have said it needs to be there
-> > at the start, but good to have it soon after.
-> > 
-> > Jonathan
-> 
-> I agree, we should try to merge this as part of Counter subsystem
-> introduction rather than as another IIO Counter driver. As we determined
-> when adding support for the STM32 timers, the existing IIO Counter API
-> is fundamentally unsuitable for representing counter devices. So
-> regardless of how a new Counter API is merged, the existing IIO Counter
-> API must be deprecated.
-> 
-> Patrick, I apologize for the confusion this has caused. Would you be
-> able to convert this driver to use the proposed Counter subsystem API
-> from this patchset that I believe you encountered before:
-> https://marc.info/?l=linux-arm-kernel&m=153229982404051
-> 
-> Although it was last updated in October, I believe you should be able to
-> rebase that Counter subsystem introduction patchset cleanly on top of
-> the IIO tree (if there are any merge conflicts send me an email). Take a
-> look at the generic-counter.rst file under the Documentation/driver-api/
-> directory for an overview of the API; the counter drivers under the
-> drivers/counter/ directory also make good references.
-> 
-> If you have any difficulties understanding the API, or any other
-> troubles, don't hesitate to ask. Hopefully, I've made the documentation
-> clear enough to make the conversion of this driver quick and easy -- and
-> if not, then it's something I need to fix, so let me know. :-)
-> 
-> William Breathitt Gray
+The SPI interface implementation was completely broken.
 
-Patrick,
+When using the SPI interface, there are only 7 address bits, the upper bit
+is controlled by a page select register. The core needs access to both
+ranges, so implement register read/write for both regions. The regmap
+paging functionality didn't agree with a register that needs to be read
+and modified, so I implemented a custom paging algorithm.
 
-It looks like there were some minor conflicts with the v9 patchset, so
-I've rebased it on top of the latest iio tree testing branch and
-resolved the conflicts in my personal repository. Please pull from my
-personal repository at https://gitlab.com/vilhelmgray/iio.git and base
-your patches on top of the generic_counter_v10 branch.
+This fixes that the device wouldn't even probe in SPI mode.
 
-William Breathitt Gray
+The SPI interface then isn't different from I2C, merged them into the core,
+and the I2C/SPI named registers are no longer needed.
+
+Implemented register value caching for the registers to reduce the I2C/SPI
+data transfers considerably.
+
+The calibration set reads as all zeroes until some undefined point in time,
+and I couldn't determine what makes it valid. The datasheet mentions these
+registers but does not provide any hints on when they become valid, and they
+aren't even enumerated in the memory map. So check the calibration and
+retry reading it from the device after each measurement until it provides
+something valid.
+
+Report temperature in millidegrees Celcius instead of degrees.
+
+Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+---
+v2: Remove unused 'addr7' variable
+
+ drivers/iio/chemical/bme680.h      |   6 +-
+ drivers/iio/chemical/bme680_core.c |  54 ++++++++++++++---
+ drivers/iio/chemical/bme680_i2c.c  |  21 -------
+ drivers/iio/chemical/bme680_spi.c  | 115 +++++++++++++++++++++++++------------
+ 4 files changed, 125 insertions(+), 71 deletions(-)
+
+diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+index 0ae89b87..4edc5d21 100644
+--- a/drivers/iio/chemical/bme680.h
++++ b/drivers/iio/chemical/bme680.h
+@@ -2,11 +2,9 @@
+ #ifndef BME680_H_
+ #define BME680_H_
+ 
+-#define BME680_REG_CHIP_I2C_ID			0xD0
+-#define BME680_REG_CHIP_SPI_ID			0x50
++#define BME680_REG_CHIP_ID			0xD0
+ #define   BME680_CHIP_ID_VAL			0x61
+-#define BME680_REG_SOFT_RESET_I2C		0xE0
+-#define BME680_REG_SOFT_RESET_SPI		0x60
++#define BME680_REG_SOFT_RESET			0xE0
+ #define   BME680_CMD_SOFTRESET			0xB6
+ #define BME680_REG_STATUS			0x73
+ #define   BME680_SPI_MEM_PAGE_BIT		BIT(4)
+diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+index 70c1fe4..ccde4c6 100644
+--- a/drivers/iio/chemical/bme680_core.c
++++ b/drivers/iio/chemical/bme680_core.c
+@@ -63,9 +63,23 @@ struct bme680_data {
+ 	s32 t_fine;
+ };
+ 
++static const struct regmap_range bme680_volatile_ranges[] = {
++	regmap_reg_range(BME680_REG_MEAS_STAT_0, BME680_REG_GAS_R_LSB),
++	regmap_reg_range(BME680_REG_STATUS, BME680_REG_STATUS),
++	regmap_reg_range(BME680_T2_LSB_REG, BME680_GH3_REG),
++};
++
++static const struct regmap_access_table bme680_volatile_table = {
++	.yes_ranges	= bme680_volatile_ranges,
++	.n_yes_ranges	= ARRAY_SIZE(bme680_volatile_ranges),
++};
++
+ const struct regmap_config bme680_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
++	.max_register = 0xef,
++	.volatile_table = &bme680_volatile_table,
++	.cache_type = REGCACHE_RBTREE,
+ };
+ EXPORT_SYMBOL(bme680_regmap_config);
+ 
+@@ -316,6 +330,10 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
+ 	s64 var1, var2, var3;
+ 	s16 calc_temp;
+ 
++	/* If the calibration is invalid, attempt to reload it */
++	if (!calib->par_t2)
++		bme680_read_calib(data, calib);
++
+ 	var1 = (adc_temp >> 3) - (calib->par_t1 << 1);
+ 	var2 = (var1 * calib->par_t2) >> 11;
+ 	var3 = ((var1 >> 1) * (var1 >> 1)) >> 12;
+@@ -583,8 +601,7 @@ static int bme680_gas_config(struct bme680_data *data)
+ 	return ret;
+ }
+ 
+-static int bme680_read_temp(struct bme680_data *data,
+-			    int *val, int *val2)
++static int bme680_read_temp(struct bme680_data *data, int *val)
+ {
+ 	struct device *dev = regmap_get_device(data->regmap);
+ 	int ret;
+@@ -617,10 +634,9 @@ static int bme680_read_temp(struct bme680_data *data,
+ 	 * compensate_press/compensate_humid to get compensated
+ 	 * pressure/humidity readings.
+ 	 */
+-	if (val && val2) {
+-		*val = comp_temp;
+-		*val2 = 100;
+-		return IIO_VAL_FRACTIONAL;
++	if (val) {
++		*val = comp_temp * 10; /* Centidegrees to millidegrees */
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return ret;
+@@ -635,7 +651,7 @@ static int bme680_read_press(struct bme680_data *data,
+ 	s32 adc_press;
+ 
+ 	/* Read and compensate temperature to get a reading of t_fine */
+-	ret = bme680_read_temp(data, NULL, NULL);
++	ret = bme680_read_temp(data, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -668,7 +684,7 @@ static int bme680_read_humid(struct bme680_data *data,
+ 	u32 comp_humidity;
+ 
+ 	/* Read and compensate temperature to get a reading of t_fine */
+-	ret = bme680_read_temp(data, NULL, NULL);
++	ret = bme680_read_temp(data, NULL);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -761,7 +777,7 @@ static int bme680_read_raw(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_PROCESSED:
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
+-			return bme680_read_temp(data, val, val2);
++			return bme680_read_temp(data, val);
+ 		case IIO_PRESSURE:
+ 			return bme680_read_press(data, val, val2);
+ 		case IIO_HUMIDITYRELATIVE:
+@@ -867,8 +883,28 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct bme680_data *data;
++	unsigned int val;
+ 	int ret;
+ 
++	ret = regmap_write(regmap, BME680_REG_SOFT_RESET,
++			   BME680_CMD_SOFTRESET);
++	if (ret < 0) {
++		dev_err(dev, "Failed to reset chip\n");
++		return ret;
++	}
++
++	ret = regmap_read(regmap, BME680_REG_CHIP_ID, &val);
++	if (ret < 0) {
++		dev_err(dev, "Error reading chip ID\n");
++		return ret;
++	}
++
++	if (val != BME680_CHIP_ID_VAL) {
++		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
++				val, BME680_CHIP_ID_VAL);
++		return -ENODEV;
++	}
++
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+index 06d4be5..cfc4449 100644
+--- a/drivers/iio/chemical/bme680_i2c.c
++++ b/drivers/iio/chemical/bme680_i2c.c
+@@ -23,8 +23,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+ {
+ 	struct regmap *regmap;
+ 	const char *name = NULL;
+-	unsigned int val;
+-	int ret;
+ 
+ 	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
+ 	if (IS_ERR(regmap)) {
+@@ -33,25 +31,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_I2C,
+-			   BME680_CMD_SOFTRESET);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Failed to reset chip\n");
+-		return ret;
+-	}
+-
+-	ret = regmap_read(regmap, BME680_REG_CHIP_I2C_ID, &val);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "Error reading I2C chip ID\n");
+-		return ret;
+-	}
+-
+-	if (val != BME680_CHIP_ID_VAL) {
+-		dev_err(&client->dev, "Wrong chip ID, got %x expected %x\n",
+-				val, BME680_CHIP_ID_VAL);
+-		return -ENODEV;
+-	}
+-
+ 	if (id)
+ 		name = id->name;
+ 
+diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+index c9fb05e..881778e 100644
+--- a/drivers/iio/chemical/bme680_spi.c
++++ b/drivers/iio/chemical/bme680_spi.c
+@@ -11,28 +11,93 @@
+ 
+ #include "bme680.h"
+ 
++struct bme680_spi_bus_context {
++	struct spi_device *spi;
++	u8 current_page;
++};
++
++/*
++ * In SPI mode there are only 7 address bits, a "page" register determines
++ * which part of the 8-bit range is active. This function looks at the address
++ * and writes the page selection bit if needed
++ */
++static int bme680_regmap_spi_select_page(
++	struct bme680_spi_bus_context *ctx, u8 reg)
++{
++	struct spi_device *spi = ctx->spi;
++	int ret;
++	u8 buf[2];
++	u8 page = (reg & 0x80) ? 0 : 1; /* Page "1" is low range */
++
++	if (page == ctx->current_page)
++		return 0;
++
++	/*
++	 * Data sheet claims we're only allowed to change bit 4, so we must do
++	 * a read-modify-write on each and every page select
++	 */
++	buf[0] = BME680_REG_STATUS;
++	ret = spi_write_then_read(spi, buf, 1, buf + 1, 1);
++	if (ret < 0) {
++		dev_err(&spi->dev, "failed to set page %u\n", page);
++		return ret;
++	}
++
++	buf[0] = BME680_REG_STATUS;
++	if (page)
++		buf[1] |= BME680_SPI_MEM_PAGE_BIT;
++	else
++		buf[1] &= ~BME680_SPI_MEM_PAGE_BIT;
++
++	ret = spi_write(spi, buf, 2);
++	if (ret < 0) {
++		dev_err(&spi->dev, "failed to set page %u\n", page);
++		return ret;
++	}
++
++	ctx->current_page = page;
++
++	return 0;
++}
++
+ static int bme680_regmap_spi_write(void *context, const void *data,
+ 				   size_t count)
+ {
+-	struct spi_device *spi = context;
++	struct bme680_spi_bus_context *ctx = context;
++	struct spi_device *spi = ctx->spi;
++	int ret;
+ 	u8 buf[2];
+ 
+ 	memcpy(buf, data, 2);
++
++	ret = bme680_regmap_spi_select_page(ctx, buf[0]);
++	if (ret)
++		return ret;
++
+ 	/*
+ 	 * The SPI register address (= full register address without bit 7)
+ 	 * and the write command (bit7 = RW = '0')
+ 	 */
+ 	buf[0] &= ~0x80;
+ 
+-	return spi_write_then_read(spi, buf, 2, NULL, 0);
++	return spi_write(spi, buf, 2);
+ }
+ 
+ static int bme680_regmap_spi_read(void *context, const void *reg,
+ 				  size_t reg_size, void *val, size_t val_size)
+ {
+-	struct spi_device *spi = context;
++	struct bme680_spi_bus_context *ctx = context;
++	struct spi_device *spi = ctx->spi;
++	int ret;
++	u8 addr = *(const u8 *)reg;
++
++	ret = bme680_regmap_spi_select_page(ctx, addr);
++	if (ret)
++		return ret;
+ 
+-	return spi_write_then_read(spi, reg, reg_size, val, val_size);
++	addr |= 0x80; /* bit7 = RW = '1' */
++
++	return spi_write_then_read(spi, &addr, 1, val, val_size);
+ }
+ 
+ static struct regmap_bus bme680_regmap_bus = {
+@@ -45,8 +110,8 @@ static int bme680_regmap_spi_read(void *context, const void *reg,
+ static int bme680_spi_probe(struct spi_device *spi)
+ {
+ 	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct bme680_spi_bus_context *bus_context;
+ 	struct regmap *regmap;
+-	unsigned int val;
+ 	int ret;
+ 
+ 	spi->bits_per_word = 8;
+@@ -56,45 +121,21 @@ static int bme680_spi_probe(struct spi_device *spi)
+ 		return ret;
+ 	}
+ 
++	bus_context = devm_kzalloc(&spi->dev, sizeof(*bus_context), GFP_KERNEL);
++	if (!bus_context)
++		return -ENOMEM;
++
++	bus_context->spi = spi;
++	bus_context->current_page = 0xff; /* Undefined on warm boot */
++
+ 	regmap = devm_regmap_init(&spi->dev, &bme680_regmap_bus,
+-				  &spi->dev, &bme680_regmap_config);
++				  bus_context, &bme680_regmap_config);
+ 	if (IS_ERR(regmap)) {
+ 		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+ 				(int)PTR_ERR(regmap));
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_SPI,
+-			   BME680_CMD_SOFTRESET);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "Failed to reset chip\n");
+-		return ret;
+-	}
+-
+-	/* after power-on reset, Page 0(0x80-0xFF) of spi_mem_page is active */
+-	ret = regmap_read(regmap, BME680_REG_CHIP_SPI_ID, &val);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "Error reading SPI chip ID\n");
+-		return ret;
+-	}
+-
+-	if (val != BME680_CHIP_ID_VAL) {
+-		dev_err(&spi->dev, "Wrong chip ID, got %x expected %x\n",
+-				val, BME680_CHIP_ID_VAL);
+-		return -ENODEV;
+-	}
+-	/*
+-	 * select Page 1 of spi_mem_page to enable access to
+-	 * to registers from address 0x00 to 0x7F.
+-	 */
+-	ret = regmap_write_bits(regmap, BME680_REG_STATUS,
+-				BME680_SPI_MEM_PAGE_BIT,
+-				BME680_SPI_MEM_PAGE_1_VAL);
+-	if (ret < 0) {
+-		dev_err(&spi->dev, "failed to set page 1 of spi_mem_page\n");
+-		return ret;
+-	}
+-
+ 	return bme680_core_probe(&spi->dev, regmap, id->name);
+ }
+ 
+-- 
+1.9.1
+
