@@ -2,424 +2,127 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F95DC4360F
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 09:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFCB1C43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 10:17:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DDB72086A
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 09:21:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC5772148D
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 10:17:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=bidouilliste.com header.i=@bidouilliste.com header.b="hIgWGRzf"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726452AbfBUJVD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 04:21:03 -0500
-Received: from jax4mhob22.registeredsite.com ([64.69.218.110]:52948 "EHLO
-        jax4mhob22.registeredsite.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725385AbfBUJU7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 04:20:59 -0500
-Received: from mailpod.hostingplatform.com ([10.30.71.203])
-        by jax4mhob22.registeredsite.com (8.14.4/8.14.4) with ESMTP id x1L9KtlB052434
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL)
-        for <linux-iio@vger.kernel.org>; Thu, 21 Feb 2019 04:20:55 -0500
-Received: (qmail 12094 invoked by uid 0); 21 Feb 2019 09:20:55 -0000
-X-TCPREMOTEIP: 81.173.50.109
-X-Authenticated-UID: mike@milosoftware.com
-Received: from unknown (HELO mikebuntu.TOPIC.LOCAL) (mike@milosoftware.com@81.173.50.109)
-  by 0 with ESMTPA; 21 Feb 2019 09:20:55 -0000
-From:   Mike Looijmans <mike.looijmans@topic.nl>
-To:     linux-iio@vger.kernel.org, himanshujha199640@gmail.com
-Cc:     linux-kernel@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, dpfrey@gmail.com,
-        colin.king@canonical.com, Mike Looijmans <mike.looijmans@topic.nl>
-Subject: [PATCH v2] iio/chemical/bme680: Fix SPI read interface
-Date:   Thu, 21 Feb 2019 10:20:49 +0100
-Message-Id: <1550740849-16029-1-git-send-email-mike.looijmans@topic.nl>
-X-Mailer: git-send-email 1.9.1
-References: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
-In-Reply-To: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
+        id S1726123AbfBUKRA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 05:17:00 -0500
+Received: from mail.blih.net ([212.83.177.182]:53717 "EHLO mail.blih.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725943AbfBUKQ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 21 Feb 2019 05:16:59 -0500
+X-Greylist: delayed 398 seconds by postgrey-1.27 at vger.kernel.org; Thu, 21 Feb 2019 05:16:58 EST
+Received: from mail.blih.net (mail.blih.net [212.83.177.182])
+        by mail.blih.net (OpenSMTPD) with ESMTP id 0b330c4b;
+        Thu, 21 Feb 2019 11:10:18 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha1; c=relaxed; d=bidouilliste.com; h=date
+        :from:to:cc:subject:message-id:in-reply-to:references
+        :mime-version:content-type:content-transfer-encoding; s=mail;
+         bh=8yA3uPBAxUDLtORA2o8u5XjRGpQ=; b=hIgWGRzfkrQKS+fhohCpQ2a4K150
+        FIhalBWBd8DSrWgrZ3edjSTvh2hWv2OB3HKlNZh7Qc/ZJ4RI9IsZ9Vz+FXUdlI6B
+        7FpCz5d7VzOntoqXOK1sktIr7y2wuann1kUT7694COT8ArZXxP9TYp/Htb4xd3cw
+        nzYcjOVneArKNdc=
+DomainKey-Signature: a=rsa-sha1; c=nofws; d=bidouilliste.com; h=date
+        :from:to:cc:subject:message-id:in-reply-to:references
+        :mime-version:content-type:content-transfer-encoding; q=dns; s=
+        mail; b=n8biuWE4Ic7RwUXC8QdHKN+0r5bqI73iJdDcyTW/YZJMgB4oHpQe7I0a
+        FpnGfhfJR3swnBv4wpQ+OeArTEufFcdPbWNf/DGRTFit6aEVXXqMIV8X8pYJC9yn
+        O2COT811qeUfwr7FdwyCE/M0jUpUQGN7eOmeY2t69AxT+ebsGms=
+Received: from knuckles.blih.net (ip-9.net-89-3-105.rev.numericable.fr [89.3.105.9])
+        by mail.blih.net (OpenSMTPD) with ESMTPSA id ed322229
+        TLS version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NO;
+        Thu, 21 Feb 2019 11:10:17 +0100 (CET)
+Date:   Thu, 21 Feb 2019 11:10:17 +0100
+From:   Emmanuel Vadot <manu@bidouilliste.com>
+To:     Chen-Yu Tsai <wens@csie.org>
+Cc:     Maxime Ripard <maxime.ripard@bootlin.com>,
+        Philipp Rossak <embed3d@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Quentin Schulz <quentin.schulz@bootlin.com>,
+        Icenowy Zheng <icenowy@aosc.io>, linux-iio@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-sunxi <linux-sunxi@googlegroups.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Subject: Re: Allwinner SID THS calibration data cell representation?
+Message-Id: <20190221111017.f3be5d56b419d9b90876b4c2@bidouilliste.com>
+In-Reply-To: <CAGb2v65p0G83BVODsxxnXmiSCwuuwPFtY2k2ZV1F5xoFKrJjWQ@mail.gmail.com>
+References: <20180830154518.29507-1-embed3d@gmail.com>
+        <20180830154518.29507-28-embed3d@gmail.com>
+        <20180904184623.e4386b8e6b657b1b25e90c09@bidouilliste.com>
+        <55579dd6-625d-e71b-1482-4592dccac665@gmail.com>
+        <20180906115114.inc6dhqhy47obo25@flea>
+        <CAGb2v65p0G83BVODsxxnXmiSCwuuwPFtY2k2ZV1F5xoFKrJjWQ@mail.gmail.com>
+X-Mailer: Sylpheed 3.7.0 (GTK+ 2.24.32; amd64-portbld-freebsd13.0)
+Mime-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The SPI interface implementation was completely broken.
+On Tue, 19 Feb 2019 15:54:00 +0800
+Chen-Yu Tsai <wens@csie.org> wrote:
 
-When using the SPI interface, there are only 7 address bits, the upper bit
-is controlled by a page select register. The core needs access to both
-ranges, so implement register read/write for both regions. The regmap
-paging functionality didn't agree with a register that needs to be read
-and modified, so I implemented a custom paging algorithm.
+> Sorry for resurrecting an old discussion, but since someone posted patches
+> for H5 and H6, I thought we should resolve this. I'm working on patches to
+> fix / replace the big-endian issue.
+> 
+> On Thu, Sep 6, 2018 at 7:51 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
+> >
+> > On Thu, Sep 06, 2018 at 01:47:47PM +0200, Philipp Rossak wrote:
+> > > On 04.09.2018 18:46, Emmanuel Vadot wrote:
+> > > > > +                 /* Data cells */
+> > > > > +                 thermal_calibration: calib@234 {
+> > > > > +                         reg = <0x234 0x8>;
+> > > > > +                 };
+> > > >   You are declaring 8 bytes of calibration data but to my knowledge it's
+> > > > only 2 bytes per sensor, so 2 bytes for H3.
+> > > >   Am I missing something ?
+> > > >
+> > > >   Thanks,
+> > >
+> > > Emmanuel you are right, it is 2 bytes per Sensor and should be 2 bytes for
+> > > H3, but the thermal calibration data field is on all chips 64 bit wide - so
+> > > 8 bytes. So I'm reading here the complete calibration data field.
+> >
+> > Having one cell per channel would make more sense I guess.
+> 
+> Would it? The 2 32-bit words directly map onto the registers 0x74 / 0x78 in
+> the THS. As far as the SID is concerned, their is just one consumer for this
+> data, the thermal sensor. How the thermal sensor uses that data is really not
+> its concern. And the thermal sensor is really just copying the data from the
+> e-fuses into its registers. Nothing more.
 
-This fixes that the device wouldn't even probe in SPI mode.
+ If you see this at the controller lever and not at the sensor level it
+might make sense to use the full 32bits data even some bits are ignored
+I guess.
 
-The SPI interface then isn't different from I2C, merged them into the core,
-and the I2C/SPI named registers are no longer needed.
+> Furthermore, with the register access interface, the e-fuses are read/write
+> 32 bits at a time. Seems to me it would make more sense to enforce a 32-bit
+> word size, so cells should be multiples of 32 bits.
 
-Implemented register value caching for the registers to reduce the I2C/SPI
-data transfers considerably.
+ Ok, honestly at this point I don't really care what choice is done as
+long as the dts is updated, I'll deal with the diff for FreeBSD and
+ping the others BSD (Net and Open who also have a driver) for this
+change.
 
-The calibration set reads as all zeroes until some undefined point in time,
-and I couldn't determine what makes it valid. The datasheet mentions these
-registers but does not provide any hints on when they become valid, and they
-aren't even enumerated in the memory map. So check the calibration and
-retry reading it from the device after each measurement until it provides
-something valid.
+> Regards
+> ChenYu
 
-Report temperature in millidegrees Celcius instead of degrees.
+ Cheers,
 
-Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
----
-v2: Remove unused 'addr7' variable
-
- drivers/iio/chemical/bme680.h      |   6 +-
- drivers/iio/chemical/bme680_core.c |  54 ++++++++++++++---
- drivers/iio/chemical/bme680_i2c.c  |  21 -------
- drivers/iio/chemical/bme680_spi.c  | 115 +++++++++++++++++++++++++------------
- 4 files changed, 125 insertions(+), 71 deletions(-)
-
-diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
-index 0ae89b87..4edc5d21 100644
---- a/drivers/iio/chemical/bme680.h
-+++ b/drivers/iio/chemical/bme680.h
-@@ -2,11 +2,9 @@
- #ifndef BME680_H_
- #define BME680_H_
- 
--#define BME680_REG_CHIP_I2C_ID			0xD0
--#define BME680_REG_CHIP_SPI_ID			0x50
-+#define BME680_REG_CHIP_ID			0xD0
- #define   BME680_CHIP_ID_VAL			0x61
--#define BME680_REG_SOFT_RESET_I2C		0xE0
--#define BME680_REG_SOFT_RESET_SPI		0x60
-+#define BME680_REG_SOFT_RESET			0xE0
- #define   BME680_CMD_SOFTRESET			0xB6
- #define BME680_REG_STATUS			0x73
- #define   BME680_SPI_MEM_PAGE_BIT		BIT(4)
-diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
-index 70c1fe4..ccde4c6 100644
---- a/drivers/iio/chemical/bme680_core.c
-+++ b/drivers/iio/chemical/bme680_core.c
-@@ -63,9 +63,23 @@ struct bme680_data {
- 	s32 t_fine;
- };
- 
-+static const struct regmap_range bme680_volatile_ranges[] = {
-+	regmap_reg_range(BME680_REG_MEAS_STAT_0, BME680_REG_GAS_R_LSB),
-+	regmap_reg_range(BME680_REG_STATUS, BME680_REG_STATUS),
-+	regmap_reg_range(BME680_T2_LSB_REG, BME680_GH3_REG),
-+};
-+
-+static const struct regmap_access_table bme680_volatile_table = {
-+	.yes_ranges	= bme680_volatile_ranges,
-+	.n_yes_ranges	= ARRAY_SIZE(bme680_volatile_ranges),
-+};
-+
- const struct regmap_config bme680_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
-+	.max_register = 0xef,
-+	.volatile_table = &bme680_volatile_table,
-+	.cache_type = REGCACHE_RBTREE,
- };
- EXPORT_SYMBOL(bme680_regmap_config);
- 
-@@ -316,6 +330,10 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
- 	s64 var1, var2, var3;
- 	s16 calc_temp;
- 
-+	/* If the calibration is invalid, attempt to reload it */
-+	if (!calib->par_t2)
-+		bme680_read_calib(data, calib);
-+
- 	var1 = (adc_temp >> 3) - (calib->par_t1 << 1);
- 	var2 = (var1 * calib->par_t2) >> 11;
- 	var3 = ((var1 >> 1) * (var1 >> 1)) >> 12;
-@@ -583,8 +601,7 @@ static int bme680_gas_config(struct bme680_data *data)
- 	return ret;
- }
- 
--static int bme680_read_temp(struct bme680_data *data,
--			    int *val, int *val2)
-+static int bme680_read_temp(struct bme680_data *data, int *val)
- {
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
-@@ -617,10 +634,9 @@ static int bme680_read_temp(struct bme680_data *data,
- 	 * compensate_press/compensate_humid to get compensated
- 	 * pressure/humidity readings.
- 	 */
--	if (val && val2) {
--		*val = comp_temp;
--		*val2 = 100;
--		return IIO_VAL_FRACTIONAL;
-+	if (val) {
-+		*val = comp_temp * 10; /* Centidegrees to millidegrees */
-+		return IIO_VAL_INT;
- 	}
- 
- 	return ret;
-@@ -635,7 +651,7 @@ static int bme680_read_press(struct bme680_data *data,
- 	s32 adc_press;
- 
- 	/* Read and compensate temperature to get a reading of t_fine */
--	ret = bme680_read_temp(data, NULL, NULL);
-+	ret = bme680_read_temp(data, NULL);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -668,7 +684,7 @@ static int bme680_read_humid(struct bme680_data *data,
- 	u32 comp_humidity;
- 
- 	/* Read and compensate temperature to get a reading of t_fine */
--	ret = bme680_read_temp(data, NULL, NULL);
-+	ret = bme680_read_temp(data, NULL);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -761,7 +777,7 @@ static int bme680_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_PROCESSED:
- 		switch (chan->type) {
- 		case IIO_TEMP:
--			return bme680_read_temp(data, val, val2);
-+			return bme680_read_temp(data, val);
- 		case IIO_PRESSURE:
- 			return bme680_read_press(data, val, val2);
- 		case IIO_HUMIDITYRELATIVE:
-@@ -867,8 +883,28 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
- {
- 	struct iio_dev *indio_dev;
- 	struct bme680_data *data;
-+	unsigned int val;
- 	int ret;
- 
-+	ret = regmap_write(regmap, BME680_REG_SOFT_RESET,
-+			   BME680_CMD_SOFTRESET);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to reset chip\n");
-+		return ret;
-+	}
-+
-+	ret = regmap_read(regmap, BME680_REG_CHIP_ID, &val);
-+	if (ret < 0) {
-+		dev_err(dev, "Error reading chip ID\n");
-+		return ret;
-+	}
-+
-+	if (val != BME680_CHIP_ID_VAL) {
-+		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
-+				val, BME680_CHIP_ID_VAL);
-+		return -ENODEV;
-+	}
-+
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
-index 06d4be5..cfc4449 100644
---- a/drivers/iio/chemical/bme680_i2c.c
-+++ b/drivers/iio/chemical/bme680_i2c.c
-@@ -23,8 +23,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
- {
- 	struct regmap *regmap;
- 	const char *name = NULL;
--	unsigned int val;
--	int ret;
- 
- 	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
- 	if (IS_ERR(regmap)) {
-@@ -33,25 +31,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
- 		return PTR_ERR(regmap);
- 	}
- 
--	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_I2C,
--			   BME680_CMD_SOFTRESET);
--	if (ret < 0) {
--		dev_err(&client->dev, "Failed to reset chip\n");
--		return ret;
--	}
--
--	ret = regmap_read(regmap, BME680_REG_CHIP_I2C_ID, &val);
--	if (ret < 0) {
--		dev_err(&client->dev, "Error reading I2C chip ID\n");
--		return ret;
--	}
--
--	if (val != BME680_CHIP_ID_VAL) {
--		dev_err(&client->dev, "Wrong chip ID, got %x expected %x\n",
--				val, BME680_CHIP_ID_VAL);
--		return -ENODEV;
--	}
--
- 	if (id)
- 		name = id->name;
- 
-diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
-index c9fb05e..881778e 100644
---- a/drivers/iio/chemical/bme680_spi.c
-+++ b/drivers/iio/chemical/bme680_spi.c
-@@ -11,28 +11,93 @@
- 
- #include "bme680.h"
- 
-+struct bme680_spi_bus_context {
-+	struct spi_device *spi;
-+	u8 current_page;
-+};
-+
-+/*
-+ * In SPI mode there are only 7 address bits, a "page" register determines
-+ * which part of the 8-bit range is active. This function looks at the address
-+ * and writes the page selection bit if needed
-+ */
-+static int bme680_regmap_spi_select_page(
-+	struct bme680_spi_bus_context *ctx, u8 reg)
-+{
-+	struct spi_device *spi = ctx->spi;
-+	int ret;
-+	u8 buf[2];
-+	u8 page = (reg & 0x80) ? 0 : 1; /* Page "1" is low range */
-+
-+	if (page == ctx->current_page)
-+		return 0;
-+
-+	/*
-+	 * Data sheet claims we're only allowed to change bit 4, so we must do
-+	 * a read-modify-write on each and every page select
-+	 */
-+	buf[0] = BME680_REG_STATUS;
-+	ret = spi_write_then_read(spi, buf, 1, buf + 1, 1);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "failed to set page %u\n", page);
-+		return ret;
-+	}
-+
-+	buf[0] = BME680_REG_STATUS;
-+	if (page)
-+		buf[1] |= BME680_SPI_MEM_PAGE_BIT;
-+	else
-+		buf[1] &= ~BME680_SPI_MEM_PAGE_BIT;
-+
-+	ret = spi_write(spi, buf, 2);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "failed to set page %u\n", page);
-+		return ret;
-+	}
-+
-+	ctx->current_page = page;
-+
-+	return 0;
-+}
-+
- static int bme680_regmap_spi_write(void *context, const void *data,
- 				   size_t count)
- {
--	struct spi_device *spi = context;
-+	struct bme680_spi_bus_context *ctx = context;
-+	struct spi_device *spi = ctx->spi;
-+	int ret;
- 	u8 buf[2];
- 
- 	memcpy(buf, data, 2);
-+
-+	ret = bme680_regmap_spi_select_page(ctx, buf[0]);
-+	if (ret)
-+		return ret;
-+
- 	/*
- 	 * The SPI register address (= full register address without bit 7)
- 	 * and the write command (bit7 = RW = '0')
- 	 */
- 	buf[0] &= ~0x80;
- 
--	return spi_write_then_read(spi, buf, 2, NULL, 0);
-+	return spi_write(spi, buf, 2);
- }
- 
- static int bme680_regmap_spi_read(void *context, const void *reg,
- 				  size_t reg_size, void *val, size_t val_size)
- {
--	struct spi_device *spi = context;
-+	struct bme680_spi_bus_context *ctx = context;
-+	struct spi_device *spi = ctx->spi;
-+	int ret;
-+	u8 addr = *(const u8 *)reg;
-+
-+	ret = bme680_regmap_spi_select_page(ctx, addr);
-+	if (ret)
-+		return ret;
- 
--	return spi_write_then_read(spi, reg, reg_size, val, val_size);
-+	addr |= 0x80; /* bit7 = RW = '1' */
-+
-+	return spi_write_then_read(spi, &addr, 1, val, val_size);
- }
- 
- static struct regmap_bus bme680_regmap_bus = {
-@@ -45,8 +110,8 @@ static int bme680_regmap_spi_read(void *context, const void *reg,
- static int bme680_spi_probe(struct spi_device *spi)
- {
- 	const struct spi_device_id *id = spi_get_device_id(spi);
-+	struct bme680_spi_bus_context *bus_context;
- 	struct regmap *regmap;
--	unsigned int val;
- 	int ret;
- 
- 	spi->bits_per_word = 8;
-@@ -56,45 +121,21 @@ static int bme680_spi_probe(struct spi_device *spi)
- 		return ret;
- 	}
- 
-+	bus_context = devm_kzalloc(&spi->dev, sizeof(*bus_context), GFP_KERNEL);
-+	if (!bus_context)
-+		return -ENOMEM;
-+
-+	bus_context->spi = spi;
-+	bus_context->current_page = 0xff; /* Undefined on warm boot */
-+
- 	regmap = devm_regmap_init(&spi->dev, &bme680_regmap_bus,
--				  &spi->dev, &bme680_regmap_config);
-+				  bus_context, &bme680_regmap_config);
- 	if (IS_ERR(regmap)) {
- 		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
- 				(int)PTR_ERR(regmap));
- 		return PTR_ERR(regmap);
- 	}
- 
--	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_SPI,
--			   BME680_CMD_SOFTRESET);
--	if (ret < 0) {
--		dev_err(&spi->dev, "Failed to reset chip\n");
--		return ret;
--	}
--
--	/* after power-on reset, Page 0(0x80-0xFF) of spi_mem_page is active */
--	ret = regmap_read(regmap, BME680_REG_CHIP_SPI_ID, &val);
--	if (ret < 0) {
--		dev_err(&spi->dev, "Error reading SPI chip ID\n");
--		return ret;
--	}
--
--	if (val != BME680_CHIP_ID_VAL) {
--		dev_err(&spi->dev, "Wrong chip ID, got %x expected %x\n",
--				val, BME680_CHIP_ID_VAL);
--		return -ENODEV;
--	}
--	/*
--	 * select Page 1 of spi_mem_page to enable access to
--	 * to registers from address 0x00 to 0x7F.
--	 */
--	ret = regmap_write_bits(regmap, BME680_REG_STATUS,
--				BME680_SPI_MEM_PAGE_BIT,
--				BME680_SPI_MEM_PAGE_1_VAL);
--	if (ret < 0) {
--		dev_err(&spi->dev, "failed to set page 1 of spi_mem_page\n");
--		return ret;
--	}
--
- 	return bme680_core_probe(&spi->dev, regmap, id->name);
- }
- 
 -- 
-1.9.1
-
+Emmanuel Vadot <manu@bidouilliste.com> <manu@freebsd.org>
