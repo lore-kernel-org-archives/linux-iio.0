@@ -4,42 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05D10C43381
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 948A1C4360F
 	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:04:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C3F3E2077B
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:04:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 637252080D
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:04:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="ffPPfWLk"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="RRHq5Xmp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726232AbfBURDz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 12:03:55 -0500
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.103]:20738 "EHLO
+        id S1728027AbfBURDD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 12:03:03 -0500
+Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.101]:30809 "EHLO
         mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726371AbfBURDE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 12:03:04 -0500
+        with ESMTP id S1726155AbfBURDD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 12:03:03 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768581;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=Bb4qNjnoSsFX6gssQVbJgzru/6GuCa9xGr0eyLH83FA=;
-        b=ffPPfWLkotfHb3HpVXEnLTUKKW1atQgrt81VYDHS8sg3k/psMPjP9/WJPnbjTkhaKs
-        WDLwtlh85wN1XZ14A4S6IkqOuD67/lq6D4xEo11lnQQO57tEksxi3E6Rlv/B8MgCl8aT
-        RgHM5nAjE/UEcVeDVSlcbI5SiQSHkOxkcK5xI1NZIVI5GuNVBdzqVR1An3cDceFncseE
-        2dBEDdoVXOH9mL4mQtZPhyr0POtN+4wMhdaAikoxHbso5RCO0hHsUKRe74gqtkZFD2sv
-        k7eMvZ4bFCIlU3lHpCAeJt20PexaEwNIYuoKKGwDECn6oyKnDPCmZO3wUf5ahRG7LT2h
-        tszw==
+        bh=JjKSK3nOEyXy4/RAny4zSi/l8B45ILeBinF/xXI8OQI=;
+        b=RRHq5XmpcAbf0zv5sE/xgikgkz+be+lgJkFQuaJJX1cblTpWFZs5d2SWx3FNcMMXys
+        3IuLeD9NLW5dRxcKNH1rlw90zwvjdW+r1Su0VgLLBwlp7pvyOCA4mujq0iXOWodb29sq
+        oggp7OVt2iDXRQg512fVU8HCVF3RBte/WT04Xm64jyY5SRoRu3+IUOZzG/NCLi4MZHv7
+        bln4BlaaKZ6/S67lHW79h0+qjLJ+cxpF2jNWIPHeSOvqQtQ+syCFJ6Xjzp/Cojyl1q/V
+        Y1psxGOWPaiNEhmxqv8xZD8hPFz2q6WF4RYFysVhejxI7mc5+N7ZH5uRC+8I7BvAQEvx
+        lksQ==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2MzNl43D1ri"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1LH31LXI
+        with ESMTPSA id 608499v1LH30LXH
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Thu, 21 Feb 2019 18:03:01 +0100 (CET)
+        Thu, 21 Feb 2019 18:03:00 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -59,9 +58,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 07/10] iio: magnetometer: bmc150: add mount matrix support
-Date:   Thu, 21 Feb 2019 18:02:52 +0100
-Message-Id: <92f9b04e6540612b8bb8450803df1fcda21e364b.1550768574.git.hns@goldelico.com>
+Subject: [PATCH v2 06/10] iio: gyro: itg3200: add mount matrix support
+Date:   Thu, 21 Feb 2019 18:02:51 +0100
+Message-Id: <ad1f1af237439dcf2a0769280f9e7b1806d484f2.1550768574.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550768574.git.hns@goldelico.com>
 References: <cover.1550768574.git.hns@goldelico.com>
@@ -78,62 +77,67 @@ clients.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ drivers/iio/gyro/itg3200_core.c  | 20 ++++++++++++++++++++
+ include/linux/iio/gyro/itg3200.h |  1 +
+ 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index d91cb845e3d6..b0d8b036d9bb 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -143,6 +143,7 @@ struct bmc150_magn_data {
- 	 */
- 	struct mutex mutex;
- 	struct regmap *regmap;
-+	struct iio_mount_matrix orientation;
- 	/* 4 x 32 bits for x, y z, 4 bytes align, 64 bits timestamp */
- 	s32 buffer[6];
- 	struct iio_trigger *dready_trig;
-@@ -612,6 +613,20 @@ static ssize_t bmc150_magn_show_samp_freq_avail(struct device *dev,
- 	return len;
+diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+index 7adecb562c81..203a6be33b70 100644
+--- a/drivers/iio/gyro/itg3200_core.c
++++ b/drivers/iio/gyro/itg3200_core.c
+@@ -242,6 +242,20 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
+ 	return ret;
  }
  
 +static const struct iio_mount_matrix *
-+bmc150_magn_get_mount_matrix(const struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan)
++itg3200_get_mount_matrix(const struct iio_dev *indio_dev,
++			  const struct iio_chan_spec *chan)
 +{
-+	struct bmc150_magn_data *data = iio_priv(indio_dev);
++	struct itg3200 *data = iio_priv(indio_dev);
 +
 +	return &data->orientation;
 +}
 +
-+static const struct iio_chan_spec_ext_info bmc150_magn_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmc150_magn_get_mount_matrix),
++static const struct iio_chan_spec_ext_info itg3200_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, itg3200_get_mount_matrix),
 +	{ }
 +};
 +
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(bmc150_magn_show_samp_freq_avail);
+ #define ITG3200_ST						\
+ 	{ .sign = 's', .realbits = 16, .storagebits = 16, .endianness = IIO_BE }
  
- static struct attribute *bmc150_magn_attributes[] = {
-@@ -638,6 +653,7 @@ static const struct attribute_group bmc150_magn_attrs_group = {
- 		.storagebits = 32,					\
- 		.endianness = IIO_LE					\
- 	},								\
-+	.ext_info = bmc150_magn_ext_info,				\
+@@ -255,6 +269,7 @@ static int itg3200_initial_setup(struct iio_dev *indio_dev)
+ 	.address = ITG3200_REG_GYRO_ ## _mod ## OUT_H, \
+ 	.scan_index = ITG3200_SCAN_GYRO_ ## _mod, \
+ 	.scan_type = ITG3200_ST, \
++	.ext_info = itg3200_ext_info, \
  }
  
- static const struct iio_chan_spec bmc150_magn_channels[] = {
-@@ -861,6 +877,11 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
- 	data->irq = irq;
- 	data->dev = dev;
+ static const struct iio_chan_spec itg3200_channels[] = {
+@@ -297,6 +312,11 @@ static int itg3200_probe(struct i2c_client *client,
  
-+	ret = iio_read_mount_matrix(dev, "mount-matrix",
-+				&data->orientation);
+ 	st = iio_priv(indio_dev);
+ 
++	ret = iio_read_mount_matrix(&client->dev, "mount-matrix",
++				&st->orientation);
 +	if (ret)
 +		return ret;
 +
- 	if (!name && ACPI_HANDLE(dev))
- 		name = bmc150_magn_match_acpi_device(dev);
+ 	i2c_set_clientdata(client, indio_dev);
+ 	st->i2c = client;
  
+diff --git a/include/linux/iio/gyro/itg3200.h b/include/linux/iio/gyro/itg3200.h
+index 2a820850f284..0a30fddccfb3 100644
+--- a/include/linux/iio/gyro/itg3200.h
++++ b/include/linux/iio/gyro/itg3200.h
+@@ -104,6 +104,7 @@
+ struct itg3200 {
+ 	struct i2c_client	*i2c;
+ 	struct iio_trigger	*trig;
++	struct iio_mount_matrix orientation;
+ };
+ 
+ enum ITG3200_SCAN_INDEX {
 -- 
 2.19.1
 
