@@ -6,39 +6,39 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F95BC43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB09FC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2BC342077B
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 983152077B
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="W9C5VznC"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="L8ZmpFe5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728620AbfBURDW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Feb 2019 12:03:22 -0500
-Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.124]:22383 "EHLO
+        id S1728679AbfBURDc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Feb 2019 12:03:32 -0500
+Received: from mo4-p04-ob.smtp.rzone.de ([85.215.255.121]:26169 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728420AbfBURDG (ORCPT
+        with ESMTP id S1728422AbfBURDG (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 12:03:06 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768583;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=om4yHxvARHVzUBURVF43RiiPc/zmEfyQWi5eZUdSxRY=;
-        b=W9C5VznCzFtZl7l3pcWPzP0EPmlThcYG8ooa4AJlO7ac3qD6Bbb8m1sNJYJ11c1Boz
-        ih5rrEm/vBYBbOexC2b2W/NQnVtcIADg55xQOUUuujuUsA6LgE/qwc2Aai86gn7q4trQ
-        clBOm8CVC0F78bjuriOrhOib6ujyT9XGyAb3yKVyHfHA3harL3+RnwKPXknsXoMpZpbY
-        o19vZcmCu4W4/BQ29RPPIGVzWnSdQJVvP2U7ZP/ATWPDg+hXoSYIjK7cI4n6jVhrLMh7
-        VVGGRmfuWXoj9osKrOEA07ZSAa0zjRmlmrypeugVoh0bZu+qvNjjVx28uet7zR0iy21z
-        xfFg==
+        bh=/vKjHstlbkF/gn80TIMS2PAHdi7H6t37WZ0u54p80Q0=;
+        b=L8ZmpFe5bw7Fyxi/zqGBSJZiSO8PsyspkPPrlDk/5NGqMHnf9l4K7mGMoz3UqdUujT
+        YyGn6HDSUuZe+KY2WpuHWvPo8R7b+YNuR1kPh5jUhzgeNYHurRQV3Ub0xvXPGJ0vmWPk
+        5b43NfuJwAm/5PrSJORYgLmT2IXTIG+FGM/SpjmQdDIEsqhtSO7EFaHxHLnLYRAPNOKQ
+        5GCvyE/FPKEZuZVvgA+52TcfEBexdXrfdvDb7z3cji5WGwYEjglkDM0Smwz0TGgPa30s
+        20EC8yCASEwuKZIG/N+2+UjwYoBk/LR78mkZW9JfNYih11XYiZxGXknsyvHEp2DOcSJO
+        vvFA==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2MzNl43D1ri"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1LH32LXK
+        with ESMTPSA id 608499v1LH33LXL
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Thu, 21 Feb 2019 18:03:02 +0100 (CET)
+        Thu, 21 Feb 2019 18:03:03 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -58,9 +58,9 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 09/10] iio: mpu6050: improve code readability
-Date:   Thu, 21 Feb 2019 18:02:54 +0100
-Message-Id: <1493d22e5c0710a4ced34bf3bc714d367bdf58a3.1550768574.git.hns@goldelico.com>
+Subject: [PATCH v2 10/10] iio: ak8975: improve code readability
+Date:   Thu, 21 Feb 2019 18:02:55 +0100
+Message-Id: <8a4498a761bf63e38c16f17d437715be0399a957.1550768574.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1550768574.git.hns@goldelico.com>
 References: <cover.1550768574.git.hns@goldelico.com>
@@ -76,30 +76,39 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/magnetometer/ak8975.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 533d1f8321ac..e7721b6fb441 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -765,12 +765,14 @@ static const struct iio_mount_matrix *
- inv_get_mount_matrix(const struct iio_dev *indio_dev,
- 		     const struct iio_chan_spec *chan)
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index db7214ac514c..43d08c089792 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -746,12 +746,14 @@ static const struct iio_mount_matrix *
+ ak8975_get_mount_matrix(const struct iio_dev *indio_dev,
+ 			const struct iio_chan_spec *chan)
  {
--	return &((struct inv_mpu6050_state *)iio_priv(indio_dev))->orientation;
-+	struct inv_mpu6050_state *data = iio_priv(indio_dev);
+-	return &((struct ak8975_data *)iio_priv(indio_dev))->orientation;
++	struct ak8975_data *data = iio_priv(indio_dev);
 +
 +	return &data->orientation;
  }
  
- static const struct iio_chan_spec_ext_info inv_ext_info[] = {
- 	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, inv_get_mount_matrix),
+ static const struct iio_chan_spec_ext_info ak8975_ext_info[] = {
+ 	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, ak8975_get_mount_matrix),
 -	{ },
 +	{ }
  };
  
- #define INV_MPU6050_CHAN(_type, _channel2, _index)                    \
+ #define AK8975_CHANNEL(axis, index)					\
+@@ -792,7 +794,7 @@ static const struct acpi_device_id ak_acpi_match[] = {
+ 	{"AK09911", AK09911},
+ 	{"AKM9911", AK09911},
+ 	{"AK09912", AK09912},
+-	{ },
++	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
+ #endif
 -- 
 2.19.1
 
