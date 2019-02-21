@@ -2,149 +2,98 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2CC5C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 02:06:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6448FC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 03:13:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B1FCD2086D
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 02:06:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 326CF2086C
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 03:13:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726137AbfBUCGg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Feb 2019 21:06:36 -0500
-Received: from gateway21.websitewelcome.com ([192.185.45.250]:32605 "EHLO
-        gateway21.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725989AbfBUCGf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Feb 2019 21:06:35 -0500
-Received: from cm17.websitewelcome.com (cm17.websitewelcome.com [100.42.49.20])
-        by gateway21.websitewelcome.com (Postfix) with ESMTP id D961D400CE932
-        for <linux-iio@vger.kernel.org>; Wed, 20 Feb 2019 20:06:34 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id wdkwgsfRa90onwdkwgESUl; Wed, 20 Feb 2019 20:06:34 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.119.20] (port=50666 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1gwdkv-001AYf-SQ; Wed, 20 Feb 2019 20:06:34 -0600
-Date:   Wed, 20 Feb 2019 20:06:33 -0600
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Kees Cook <keescook@chromium.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH] iio: cros_ec_accel_legacy: Refactor code in
- cros_ec_accel_legacy_probe
-Message-ID: <20190221020633.GA4195@embeddedor>
+        id S1726152AbfBUDNs convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Feb 2019 22:13:48 -0500
+Received: from mga02.intel.com ([134.134.136.20]:22077 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725989AbfBUDNs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Feb 2019 22:13:48 -0500
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Feb 2019 19:13:47 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.58,393,1544515200"; 
+   d="scan'208";a="124040098"
+Received: from fmsmsx103.amr.corp.intel.com ([10.18.124.201])
+  by fmsmga007.fm.intel.com with ESMTP; 20 Feb 2019 19:13:47 -0800
+Received: from fmsmsx126.amr.corp.intel.com (10.18.125.43) by
+ FMSMSX103.amr.corp.intel.com (10.18.124.201) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Wed, 20 Feb 2019 19:13:46 -0800
+Received: from shsmsx105.ccr.corp.intel.com (10.239.4.158) by
+ FMSMSX126.amr.corp.intel.com (10.18.125.43) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Wed, 20 Feb 2019 19:13:46 -0800
+Received: from shsmsx104.ccr.corp.intel.com ([169.254.5.102]) by
+ SHSMSX105.ccr.corp.intel.com ([169.254.11.253]) with mapi id 14.03.0415.000;
+ Thu, 21 Feb 2019 11:13:44 +0800
+From:   "He, Bo" <bo.he@intel.com>
+To:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "ic23@kernel.org" <ic23@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "Chen, Hu1" <hu1.chen@intel.com>
+Subject: [PATCH] io: accel: kxcjk1013: restore the range after resume.
+Thread-Topic: [PATCH] io: accel: kxcjk1013: restore the range after resume.
+Thread-Index: AdTJklHsGhceer30SUizI4A3viRlAQ==
+Date:   Thu, 21 Feb 2019 03:13:44 +0000
+Message-ID: <CD6925E8781EFD4D8E11882D20FC406D52A4C63F@SHSMSX104.ccr.corp.intel.com>
+Accept-Language: zh-CN, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-ctpclassification: CTP_NT
+x-titus-metadata-40: eyJDYXRlZ29yeUxhYmVscyI6IiIsIk1ldGFkYXRhIjp7Im5zIjoiaHR0cDpcL1wvd3d3LnRpdHVzLmNvbVwvbnNcL0ludGVsMyIsImlkIjoiN2ZiMzNmMTAtNmNkNS00ZGU3LWE2NTAtZjhkYjNiYjVjMWUyIiwicHJvcHMiOlt7Im4iOiJDVFBDbGFzc2lmaWNhdGlvbiIsInZhbHMiOlt7InZhbHVlIjoiQ1RQX05UIn1dfV19LCJTdWJqZWN0TGFiZWxzIjpbXSwiVE1DVmVyc2lvbiI6IjE3LjEwLjE4MDQuNDkiLCJUcnVzdGVkTGFiZWxIYXNoIjoiaHZEaktHTFlYY2tSUlZJK29cL1NKSmt1SFFiRUdFMzdvTVJucktmQ2tQSDRyQ3VMZFY0eUJaeFpEK01iZFhXQncifQ==
+dlp-product: dlpe-windows
+dlp-version: 11.0.400.15
+dlp-reaction: no-action
+x-originating-ip: [10.239.127.40]
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: 8BIT
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.119.20
-X-Source-L: No
-X-Exim-ID: 1gwdkv-001AYf-SQ
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.250.119.20]:50666
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 9
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Refactor some code in order to fix both the technical implementation
-and the following warnings:
+restore the range register in case kxcjk1013 power is off after suspend
 
-drivers/iio/accel/cros_ec_accel_legacy.c: In function ‘cros_ec_accel_legacy_probe’:
-drivers/iio/accel/cros_ec_accel_legacy.c:387:36: warning: this statement may fall through [-Wimplicit-fallthrough=]
-    ec_accel_channels[X].scan_index = Y;
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-drivers/iio/accel/cros_ec_accel_legacy.c:388:3: note: here
-   case Y:
-   ^~~~
-drivers/iio/accel/cros_ec_accel_legacy.c:389:36: warning: this statement may fall through [-Wimplicit-fallthrough=]
-    ec_accel_channels[Y].scan_index = X;
-    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-drivers/iio/accel/cros_ec_accel_legacy.c:390:3: note: here
-   case Z:
-   ^~~~
+we see the issue on some laptops, after system suspend and resume,
+the CTRL_REG1 register changed from 0xc8 to 0x80, so acceleration range
+is changed, the patch is to restore the acceleration range after resume.
 
-Notice that neither the for loop nor the switch statement is needed.
-Also, "state->sign[Y] = 1" should be unconditional.
-
-This patch is part of the ongoing efforts to enable
--Wimplicit-fallthrough.
-
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
+Signed-off-by: he, bo <bo.he@intel.com>
+Signed-off-by: Chen, Hu <hu1.chen@intel.com>
 ---
- drivers/iio/accel/cros_ec_accel_legacy.c | 27 +++++++++++-------------
- 1 file changed, 12 insertions(+), 15 deletions(-)
+ drivers/iio/accel/kxcjk-1013.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-index 063e89eff791..021f9f5cd3bb 100644
---- a/drivers/iio/accel/cros_ec_accel_legacy.c
-+++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-@@ -353,7 +353,7 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
- 	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
- 	struct iio_dev *indio_dev;
- 	struct cros_ec_accel_legacy_state *state;
--	int ret, i;
-+	int ret;
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 7506bd9..c6bb3be 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -1340,6 +1340,7 @@ static int kxcjk1013_resume(struct device *dev)
  
- 	if (!ec || !ec->ec_dev) {
- 		dev_warn(&pdev->dev, "No EC device found.\n");
-@@ -381,20 +381,17 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
- 	 * Present the channel using HTML5 standard:
- 	 * need to invert X and Y and invert some lid axis.
- 	 */
--	for (i = X ; i < MAX_AXIS; i++) {
--		switch (i) {
--		case X:
--			ec_accel_channels[X].scan_index = Y;
--		case Y:
--			ec_accel_channels[Y].scan_index = X;
--		case Z:
--			ec_accel_channels[Z].scan_index = Z;
--		}
--		if (state->sensor_num == MOTIONSENSE_LOC_LID && i != Y)
--			state->sign[i] = -1;
--		else
--			state->sign[i] = 1;
--	}
-+	ec_accel_channels[X].scan_index = Y;
-+	ec_accel_channels[Y].scan_index = X;
-+	ec_accel_channels[Z].scan_index = Z;
-+
-+	state->sign[Y] = 1;
-+
-+	if (state->sensor_num == MOTIONSENSE_LOC_LID)
-+		state->sign[X] = state->sign[Z] = -1;
-+	else
-+		state->sign[X] = state->sign[Z] = 1;
-+
- 	indio_dev->num_channels = ARRAY_SIZE(ec_accel_channels);
- 	indio_dev->dev.parent = &pdev->dev;
- 	indio_dev->info = &cros_ec_accel_legacy_info;
+ 	mutex_lock(&data->mutex);
+ 	ret = kxcjk1013_set_mode(data, OPERATION);
++	ret += kxcjk1013_set_range(data, data->range);
+ 	mutex_unlock(&data->mutex);
+ 
+ 	return ret;
 -- 
-2.20.1
+2.7.4
+
+
 
