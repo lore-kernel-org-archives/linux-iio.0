@@ -2,43 +2,43 @@ Return-Path: <SRS0=ELbO=Q4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91429C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C27BDC00319
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5AFBD2077B
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 925D42084D
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Feb 2019 17:03:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="DWCbmD2P"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="ghwwnpLK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728337AbfBURDE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1728312AbfBURDE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 21 Feb 2019 12:03:04 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.53]:15304 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726344AbfBURDD (ORCPT
+Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.104]:28039 "EHLO
+        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726311AbfBURDD (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Feb 2019 12:03:03 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768578;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1550768580;
         s=strato-dkim-0002; d=goldelico.com;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=TLMlIm/hIkZOX9FyIXY451GG997a+O3Wm5+D1WT15BM=;
-        b=DWCbmD2PtWv1b0iX3ssITxyMQTWI7E0ZUH5sOzHMT84JcB7/6WVSWdCSWgOatgOKqD
-        dnuqBElet990wfglzp4aICixmrwQq798cgUzFphQzJvh6fvfKmE3IDWBCqrNwGnO10wg
-        7QK7GBlow22lvQeJ7sqMU8uFbz8azi1YOaFuQjr+Eqs8nh5uI/+XnLgfkAQVWm92dBhP
-        ZNDqZrrZcs226PmwZCQ6HcoZremlq1E3R0YUN6Jbtwb2UrttPwYgJ7PZFiiwAcwPHd4h
-        WvxHjSKxdK/vZqeHeEB4nA731PtYMDa/2aL5Z4wWOBdS7KKYWaHWIdjLuYy4ywULe/Zn
-        Z/pQ==
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=PgYW71VV5zuIFDBdoh7slkAGHQH5JhhNRoG++nx1oII=;
+        b=ghwwnpLK21diaZsRZwiQpBlE2bUs0C5JsnVcVpiAxBRA0d8F6aygeeCt0GdbrpKbqh
+        TyZ+UHxS+Enie0rKiiyoMM2na5oV/Log8ATMExFFuNSZUYTtqkGwjkkXOcU/bBl/aOyF
+        u4Th1uy98iF7YZnwdR2YTb3Ofb3GkxqJ0RdnTlC4HS8b6y5EpMb6ZXsy4pXfjsV9R8Lx
+        /HjuFqpUMVaLQzqACU6520ILWfYBOUOZjQe+CCVokmLmXS4h2w/qbYdlLwdTPdV4WwIu
+        Xpb0lNU2DYn0SZ0yLpeq7h+/jNUgwq/SR3loTtuKXvUPmg7wpS4bPGRnr5LudJqbhEgQ
+        dKtA==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2MzNl43D1ri"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.9 DYNA|AUTH)
-        with ESMTPSA id 608499v1LH2tLXB
+        with ESMTPSA id 608499v1LH2xLXG
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Thu, 21 Feb 2019 18:02:55 +0100 (CET)
+        Thu, 21 Feb 2019 18:02:59 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -58,10 +58,12 @@ Cc:     letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 00/10] iio mount matrix - revitalize missing bindings documentation and provide code for bmc150, bmg160, bma180, itg3200, hmc584x
-Date:   Thu, 21 Feb 2019 18:02:45 +0100
-Message-Id: <cover.1550768574.git.hns@goldelico.com>
+Subject: [PATCH v2 05/10] iio: gyro: bmg160: add mount matrix support
+Date:   Thu, 21 Feb 2019 18:02:50 +0100
+Message-Id: <49a4b6c13b1d293050ad11bcdeb35f2694428574.1550768574.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
+In-Reply-To: <cover.1550768574.git.hns@goldelico.com>
+References: <cover.1550768574.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -69,80 +71,68 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fixes V2:
-* make get_mount_matrix() functions more readable (use temp variable)
-  (suggested by Jonathan and Andy)
-* add these readability improvements also for ak8975 and mpu6050
-  (suggested by Jonathan and Andy)
-* squash bindings documentation into single commit for better discussion
-  (suggested by Linus)
-* FOR DISCUSSION: add some more clarifications to the bindings documentation
-  and an attempt to define the magnetometer orientation
-* add "iio: Allow to read mount matrix from ACPI" to the beginning of
-  the series to make it compile
-  (suggested by Andy)
-* replace of_iio_read_mount_matrix() by iio_read_mount_matrix()
-  (required by "iio: Allow to read mount matrix from ACPI")
-* drop patch to convert bma180 to devm (potential race)
-  (suggested by Jonathan)
+This patch allows to read a mount-matrix device tree
+property and report to user-space or in-kernel iio
+clients.
 
-PATCH V1 2019-02-20 15:01:02:
-This patch series adds the mount-matrix to several iio sensor drivers
-used in handheld devices.
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/iio/gyro/bmg160_core.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-The mount-matrix translates the quite arbitrary orientation of the sensor
-on some printed circuit board to user-tangible orientation in handheld
-devices that relates to typical screen orientation.
-
-There was a bindings documentation by Linus Walleij but the patch
-did not make it into mainline. Therefore I resend it here.
-
-Next I have added some clarifications (at least I hope it clarifies)
-in a second patch.
-
-Finally, the patch set implements the hooks for the mount matrix
-in several iio drivers: bmc150, bma180, bmg160, itg3200, hmc5843.
-This includes also one patch for the bma180 to convert it to devm API.
-
-We use them in different variants of the omap3-gta04 so a separate
-patch set will provide device tree additions for them.
-
-
-Andy Shevchenko (1):
-  iio: Allow to read mount matrix from ACPI
-
-H. Nikolaus Schaller (8):
-  iio: accel: bmc150: add mount matrix support
-  iio: accel: bma180: add mount matrix support
-  iio: gyro: bmg160: add mount matrix support
-  iio: gyro: itg3200: add mount matrix support
-  iio: magnetometer: bmc150: add mount matrix support
-  iio: magnetometer: hmc5843: add mount matrix support
-  iio: mpu6050: improve code readability
-  iio: ak8975: improve code readability
-
-Linus Walleij (1):
-  iio: document bindings for mounting matrices
-
- .../devicetree/bindings/iio/mount-matrix.txt  | 204 ++++++++++++++++++
- drivers/iio/accel/bma180.c                    |  18 +-
- drivers/iio/accel/bmc150-accel-core.c         |  21 ++
- drivers/iio/accel/kxsd9.c                     |   4 +-
- drivers/iio/gyro/bmg160_core.c                |  21 ++
- drivers/iio/gyro/itg3200_core.c               |  20 ++
- drivers/iio/gyro/mpu3050-core.c               |   3 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    |  10 +-
- drivers/iio/industrialio-core.c               |  46 ++--
- drivers/iio/magnetometer/ak8974.c             |   5 +-
- drivers/iio/magnetometer/ak8975.c             |  13 +-
- drivers/iio/magnetometer/bmc150_magn.c        |  21 ++
- drivers/iio/magnetometer/hmc5843.h            |   1 +
- drivers/iio/magnetometer/hmc5843_core.c       |  20 +-
- include/linux/iio/gyro/itg3200.h              |   1 +
- include/linux/iio/iio.h                       |   4 +-
- 16 files changed, 361 insertions(+), 51 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
-
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index 63ca31628a93..e7b38adee39a 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -102,6 +102,7 @@ struct bmg160_data {
+ 	struct regmap *regmap;
+ 	struct iio_trigger *dready_trig;
+ 	struct iio_trigger *motion_trig;
++	struct iio_mount_matrix orientation;
+ 	struct mutex mutex;
+ 	s16 buffer[8];
+ 	u32 dps_range;
+@@ -794,6 +795,20 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
+ 	return 0;
+ }
+ 
++static const struct iio_mount_matrix *
++bmg160_get_mount_matrix(const struct iio_dev *indio_dev,
++			 const struct iio_chan_spec *chan)
++{
++	struct bmg160_data *data = iio_priv(indio_dev);
++
++	return &data->orientation;
++}
++
++static const struct iio_chan_spec_ext_info bmg160_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmg160_get_mount_matrix),
++	{ }
++};
++
+ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("100 200 400 1000 2000");
+ 
+ static IIO_CONST_ATTR(in_anglvel_scale_available,
+@@ -831,6 +846,7 @@ static const struct iio_event_spec bmg160_event = {
+ 		.storagebits = 16,					\
+ 		.endianness = IIO_LE,					\
+ 	},								\
++	.ext_info = bmg160_ext_info,					\
+ 	.event_spec = &bmg160_event,					\
+ 	.num_event_specs = 1						\
+ }
+@@ -1075,6 +1091,11 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 	data->irq = irq;
+ 	data->regmap = regmap;
+ 
++	ret = iio_read_mount_matrix(dev, "mount-matrix",
++				&data->orientation);
++	if (ret)
++		return ret;
++
+ 	ret = bmg160_chip_init(data);
+ 	if (ret < 0)
+ 		return ret;
 -- 
 2.19.1
 
