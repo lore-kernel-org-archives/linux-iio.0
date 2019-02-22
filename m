@@ -4,56 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0F3C43381
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05827C4360F
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B814620700
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C477B20700
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp-br.20150623.gappssmtp.com header.i=@usp-br.20150623.gappssmtp.com header.b="K5I7KxLb"
+	dkim=pass (2048-bit key) header.d=usp-br.20150623.gappssmtp.com header.i=@usp-br.20150623.gappssmtp.com header.b="ZIIR996g"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727462AbfBVUch (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Feb 2019 15:32:37 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:35490 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725902AbfBVUcg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Feb 2019 15:32:36 -0500
-Received: by mail-qk1-f194.google.com with SMTP id z13so1959769qki.2
-        for <linux-iio@vger.kernel.org>; Fri, 22 Feb 2019 12:32:36 -0800 (PST)
+        id S1726287AbfBVUcr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Feb 2019 15:32:47 -0500
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:46544 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727530AbfBVUcn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Feb 2019 15:32:43 -0500
+Received: by mail-qt1-f195.google.com with SMTP id z25so3981133qti.13
+        for <linux-iio@vger.kernel.org>; Fri, 22 Feb 2019 12:32:43 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=usp-br.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kvvzSc4t3o2R7pWzEPHRmrdi9rCvNLjs4c+WRCjXEjk=;
-        b=K5I7KxLbqnE4yuHfARvYND3aunWyNYwasdaRypPqIr385aRTMXK1C/ZCCXCM3bvdzy
-         binp6R+CHO5mbsL5tU/KKR64lwwLer2djStLZN9i5gsqqt3imxWoXxxR9Svex2fIHMs9
-         V6pHznAvm1yBZx6iSe7rUPBRFiVuA+uXfR2Vj/v097QwvO5XXtcHhTj4pP8gDn7rR0AF
-         dfiH7yK0RG8670+4NM/vIln+XS9pfYRkhgf7QHxb/OLkeLH88cDnCJYnB64S9DD1iUOD
-         oi/3xsjloBXMLFGMWQJ7EqcILqWOZGY9T2z6si1dReBOaCzA6kc6frJ3gx4QV79w//pT
-         xLJQ==
+        bh=KWrDT+N2hTJztj5qg3/F190Jbid6q1JWQQqk7w1nQHk=;
+        b=ZIIR996g2a525uzIzoHH7wyxHA46C4r1XCwqy1KEpi38vgU43lq6jWMKHLu28/UvRt
+         Ju7nRtb01XOt5WS15JWzTXd1mozlNlln6O8vBo4qduyS3F8SOIEPsTMpgZcSp2hovlE0
+         FV++ecxyaxiQxcHvSPK3l+8BLHe8Rx8r9tNaS83DpDDYt1TyGqN9ImB1S+8RAVeuvgqI
+         2exgCoY4wkD6dtLkqeLjj9BrG+xlkhPz1q808iZC63tPe8S2wvAYccXOkYpMqKf4qkzX
+         0dmd0EPsi+GjoDfjzWJlabGYWMhZ6U9U9QrJwHJSyg4zOrPoNBlyN5OFYRyeRaoBNoPi
+         MPFw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kvvzSc4t3o2R7pWzEPHRmrdi9rCvNLjs4c+WRCjXEjk=;
-        b=j58fzNH/8gjGve8BqgaQWD+0L7uE/IltxCjP5vk5PQrgfC+I8YPZmdVLaJYgdwPCOw
-         Zuwslo7koPxuofq9m/MOLUWj9ejKmCe/UoBFDuMxeheCOet8xoB7Twz+hwxdeGSNAMWS
-         lfps+brY7Z+SbFXoWQynqTOIjwIX3xRNpoFks6jc1Z+t/Vh+9UPtEy+ECnY/jgUgGaT6
-         Pgfj+hrcMiPWmSuh1OoBUs3rfidQpgogZ/fGRGh0pdYE0YxlOiqs8KLL4VgsLHbIoc+u
-         hABo6Lr3rrsSFgBUkCUqG6pBwacFfg5UPFU4bZ+YWunJE0qZRNIeCgZgz1yYaF0QIfY3
-         A9Ig==
-X-Gm-Message-State: AHQUAuZFv/cznvZOhhAffdURPiVocXyEjxbQeSM4oec/1AFkZywL2Bth
-        vnT4J4XDEGGkrfM5QTjKWS6yjQ==
-X-Google-Smtp-Source: AHgI3IbJfkIthHg6+Jg3H0vK4CuDLmwe12wJzP1xpgA1w8GvMa6O/no7rPh/SZ0ugQQyrQMqil5DBA==
-X-Received: by 2002:ae9:c119:: with SMTP id z25mr4353813qki.222.1550867556032;
-        Fri, 22 Feb 2019 12:32:36 -0800 (PST)
+        bh=KWrDT+N2hTJztj5qg3/F190Jbid6q1JWQQqk7w1nQHk=;
+        b=fV/95PxR5mZZJaAXWNi3GY0Sw8sJRWHtvx/mpI9knCQjUTboIOIz68S9CbzTfHMmUy
+         w+9nnYHp9FTAUcUMRptvoLmA0gcmv5jYLYHWwZVQ1j6VrcSnZ1OTQSfXGMxLUvG/iO01
+         QZYmgpwyWOqFVqDtgmlDStWEUfoDY/yA1td0FwtQZ7fhTH7Qg/MKHHvuc0yS14ZKVYvj
+         6xzLdLlv5vG98BTP608TUbX44i/a+tf2yb+1HhWydFUYLcYlHrqKsRdDPyyC2vWO+Txm
+         KuvvcHh1Sth8Rh+WJswsTnvdtpkRE6MflivRIrYlnNsTZMBDaWyWPPEPa6JpogSa0qqg
+         p4zg==
+X-Gm-Message-State: AHQUAub6NpvGUW29IMOQyZQeq0VvS8FZXCrq+Ufdo+xLNi+WjIkYMa7k
+        ECCD3e5xW2FA+3VfKR5U7kYX4wiPHh6s1A==
+X-Google-Smtp-Source: AHgI3IbaMKql4aox766FC7vjTtMxLaJYWeE2bmiXIYFXJMKlBpnJFOfYcUj6u1RpYE74XTQwKesSDg==
+X-Received: by 2002:a0c:b5c8:: with SMTP id o8mr4697533qvf.213.1550867562632;
+        Fri, 22 Feb 2019 12:32:42 -0800 (PST)
 Received: from greta.semfio.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id v26sm1449149qtk.22.2019.02.22.12.32.33
+        by smtp.gmail.com with ESMTPSA id v26sm1449149qtk.22.2019.02.22.12.32.39
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Feb 2019 12:32:35 -0800 (PST)
+        Fri, 22 Feb 2019 12:32:41 -0800 (PST)
 From:   =?UTF-8?q?B=C3=A1rbara=20Fernandes?= <barbara.fernandes@usp.br>
 To:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -63,9 +63,9 @@ To:     Lars-Peter Clausen <lars@metafoo.de>,
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com,
         =?UTF-8?q?B=C3=A1rbara=20Fernandes?= <barbara.fernandes@usp.br>
-Subject: [PATCH 3/4] iio:adc:ad7923: Put macro argument between ()'s
-Date:   Fri, 22 Feb 2019 17:31:58 -0300
-Message-Id: <20190222203159.15116-4-barbara.fernandes@usp.br>
+Subject: [PATCH 4/4] iio:adc:ad7923: Rewrite comparison to NULL
+Date:   Fri, 22 Feb 2019 17:31:59 -0300
+Message-Id: <20190222203159.15116-5-barbara.fernandes@usp.br>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190222203159.15116-1-barbara.fernandes@usp.br>
 References: <20190222203159.15116-1-barbara.fernandes@usp.br>
@@ -77,54 +77,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Put macro argument between parenthesis in order to avoid precedence
-issues. Solves the following checkpath.pl's messages:
+Solves checkpath.pl's message:
 
-CHECK: Macro argument 'mode' may be better as '(mode)' to avoid
-precedence issues
-CHECK: Macro argument 'channel' may be better as '(channel)' to
-avoid precedence issues
-CHECK: Macro argument reuse 'sequence' - possible side-effects?
-CHECK: Macro argument 'sequence' may be better as '(sequence)' to
-avoid precedence issues
-CHECK: Macro argument 'val' may be better as '(val)' to avoid
-precedence issues
-CHECK: Macro argument 'dec' may be better as '(dec)' to avoid precedence
-issues
-CHECK: Macro argument 'bits' may be better as '(bits)' to avoid
-precedence issues
+CHECK: Comparison to NULL could be written "!indio_dev"
 
 Signed-off-by: Bárbara Fernandes <barbara.fernandes@usp.br>
 ---
- drivers/iio/adc/ad7923.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/adc/ad7923.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index b39ea834cdd6..dbece44e26e4 100644
+index dbece44e26e4..cb7b854df00c 100644
 --- a/drivers/iio/adc/ad7923.c
 +++ b/drivers/iio/adc/ad7923.c
-@@ -40,16 +40,16 @@
+@@ -272,7 +272,7 @@ static int ad7923_probe(struct spi_device *spi)
+ 	int ret;
  
- #define AD7923_MAX_CHAN		4
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (indio_dev == NULL)
++	if (!indio_dev)
+ 		return -ENOMEM;
  
--#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
--#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
--#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
--					+ ((sequence & 2) << 9))
-+#define AD7923_PM_MODE_WRITE(mode)	((mode) << 4)	 /* write mode */
-+#define AD7923_CHANNEL_WRITE(channel)	((channel) << 6) /* write channel */
-+#define AD7923_SEQUENCE_WRITE(sequence)	((((sequence) & 1) << 3) \
-+					+ (((sequence) & 2) << 9))
- 						/* write sequence fonction */
- /* left shift for CR : bit 11 transmit in first */
- #define AD7923_SHIFT_REGISTER	4
- 
- /* val = value, dec = left shift, bits = number of bits of the mask */
--#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
-+#define EXTRACT(val, dec, bits)		(((val) >> (dec)) & ((1 << (bits)) - 1))
- 
- struct ad7923_state {
- 	struct spi_device		*spi;
+ 	st = iio_priv(indio_dev);
 -- 
 2.17.1
 
