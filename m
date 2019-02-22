@@ -2,103 +2,83 @@ Return-Path: <SRS0=zyAD=Q5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05827C4360F
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21BACC43381
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 22:56:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C477B20700
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 20:32:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=usp-br.20150623.gappssmtp.com header.i=@usp-br.20150623.gappssmtp.com header.b="ZIIR996g"
+	by mail.kernel.org (Postfix) with ESMTP id E69F120651
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Feb 2019 22:56:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1550876215;
+	bh=PcIqB+aVAFyVSwW0dREdhZaR0Ihyl/7OoK9Kw1XUJFg=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=jcfXB5HfZdrWzROPUK0/wXe+bZnhIcDpvMUOmGbY+vB/HnYjoIzt+gOsPx3NbYWFy
+	 KOYRWLXbG4+EpHqyHewkriWAeuEjmg726LakoH3XVUEzA9BZfq/Jh7tIyXYz8hoScT
+	 Oukjm6G4BPeqvd79PrVvOT4R+RChg6JHrhh0Z3kE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726287AbfBVUcr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Feb 2019 15:32:47 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:46544 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727530AbfBVUcn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Feb 2019 15:32:43 -0500
-Received: by mail-qt1-f195.google.com with SMTP id z25so3981133qti.13
-        for <linux-iio@vger.kernel.org>; Fri, 22 Feb 2019 12:32:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=usp-br.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=KWrDT+N2hTJztj5qg3/F190Jbid6q1JWQQqk7w1nQHk=;
-        b=ZIIR996g2a525uzIzoHH7wyxHA46C4r1XCwqy1KEpi38vgU43lq6jWMKHLu28/UvRt
-         Ju7nRtb01XOt5WS15JWzTXd1mozlNlln6O8vBo4qduyS3F8SOIEPsTMpgZcSp2hovlE0
-         FV++ecxyaxiQxcHvSPK3l+8BLHe8Rx8r9tNaS83DpDDYt1TyGqN9ImB1S+8RAVeuvgqI
-         2exgCoY4wkD6dtLkqeLjj9BrG+xlkhPz1q808iZC63tPe8S2wvAYccXOkYpMqKf4qkzX
-         0dmd0EPsi+GjoDfjzWJlabGYWMhZ6U9U9QrJwHJSyg4zOrPoNBlyN5OFYRyeRaoBNoPi
-         MPFw==
+        id S1726298AbfBVW4u (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Feb 2019 17:56:50 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:35422 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725832AbfBVW4t (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Feb 2019 17:56:49 -0500
+Received: by mail-ot1-f65.google.com with SMTP id z19so3299535otm.2;
+        Fri, 22 Feb 2019 14:56:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=KWrDT+N2hTJztj5qg3/F190Jbid6q1JWQQqk7w1nQHk=;
-        b=fV/95PxR5mZZJaAXWNi3GY0Sw8sJRWHtvx/mpI9knCQjUTboIOIz68S9CbzTfHMmUy
-         w+9nnYHp9FTAUcUMRptvoLmA0gcmv5jYLYHWwZVQ1j6VrcSnZ1OTQSfXGMxLUvG/iO01
-         QZYmgpwyWOqFVqDtgmlDStWEUfoDY/yA1td0FwtQZ7fhTH7Qg/MKHHvuc0yS14ZKVYvj
-         6xzLdLlv5vG98BTP608TUbX44i/a+tf2yb+1HhWydFUYLcYlHrqKsRdDPyyC2vWO+Txm
-         KuvvcHh1Sth8Rh+WJswsTnvdtpkRE6MflivRIrYlnNsTZMBDaWyWPPEPa6JpogSa0qqg
-         p4zg==
-X-Gm-Message-State: AHQUAub6NpvGUW29IMOQyZQeq0VvS8FZXCrq+Ufdo+xLNi+WjIkYMa7k
-        ECCD3e5xW2FA+3VfKR5U7kYX4wiPHh6s1A==
-X-Google-Smtp-Source: AHgI3IbaMKql4aox766FC7vjTtMxLaJYWeE2bmiXIYFXJMKlBpnJFOfYcUj6u1RpYE74XTQwKesSDg==
-X-Received: by 2002:a0c:b5c8:: with SMTP id o8mr4697533qvf.213.1550867562632;
-        Fri, 22 Feb 2019 12:32:42 -0800 (PST)
-Received: from greta.semfio.usp.br ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id v26sm1449149qtk.22.2019.02.22.12.32.39
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 22 Feb 2019 12:32:41 -0800 (PST)
-From:   =?UTF-8?q?B=C3=A1rbara=20Fernandes?= <barbara.fernandes@usp.br>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        =?UTF-8?q?B=C3=A1rbara=20Fernandes?= <barbara.fernandes@usp.br>
-Subject: [PATCH 4/4] iio:adc:ad7923: Rewrite comparison to NULL
-Date:   Fri, 22 Feb 2019 17:31:59 -0300
-Message-Id: <20190222203159.15116-5-barbara.fernandes@usp.br>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190222203159.15116-1-barbara.fernandes@usp.br>
-References: <20190222203159.15116-1-barbara.fernandes@usp.br>
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=HD5FTT9hBZ0bM+NIU9EAFNjfYPH1ctaCbugogqgW418=;
+        b=tU9iuhpSG7NflKzdCWxGlQmGfA3DVFJgKuv3T45RQz2qLRIMBZawL5vw5TgJq7CJ61
+         QqdoBTzvW83P62TKKjT9yka8Nm1Dk1WvTb/RrjjqyVOHo/pgPUJbzn2oBvSSwVokKtx5
+         8J0X72jTWj66tHVHWKS2PwL2Yw+Gdht9I3T/7Y/K2VH+56Nkuil8bLaYvQP2uK8LzGaf
+         9AVkVP31lbVvbVYuJcUCz/gwKIaSmcgmhpk5BmrRTwA+8QvOjUT6owaBpz0cA250laYu
+         3E6zbDejO7OXd322L03ZT3frWzrIeAsICn1qP6VMeoXluC/kfZS3GWmKO4e/YaHYVsV6
+         L4VQ==
+X-Gm-Message-State: AHQUAuZUr4pePgTOi5JTe5c6Hhut9E5f40NtmMI9ty+b+80gA+D7LgBe
+        eK3Ajz3TV4vGAXUOX6XKVA==
+X-Google-Smtp-Source: AHgI3IZbklDTTQcxAdjp7izHyogLJLCYpL8hvM/VH7fs1gC5KVa6CNivqJIexD1vHtilA9NI0dXZdg==
+X-Received: by 2002:a9d:64c1:: with SMTP id n1mr4294810otl.175.1550876209151;
+        Fri, 22 Feb 2019 14:56:49 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id m84sm1133812oig.49.2019.02.22.14.56.48
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Fri, 22 Feb 2019 14:56:48 -0800 (PST)
+Date:   Fri, 22 Feb 2019 16:56:47 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Stefan Popa <stefan.popa@analog.com>
+Cc:     jic23@kernel.org, robh+dt@kernel.org,
+        Stefan Popa <stefan.popa@analog.com>,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 5/5] iio: imu: adis16480: Add docs for ADIS16480 IMU
+Message-ID: <20190222225647.GA14942@bogus>
+References: <1550754906-24640-1-git-send-email-stefan.popa@analog.com>
+ <1550754906-24640-6-git-send-email-stefan.popa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1550754906-24640-6-git-send-email-stefan.popa@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Solves checkpath.pl's message:
+On Thu, 21 Feb 2019 15:15:06 +0200, Stefan Popa wrote:
+> Document support for ADIS16480 Inertial Measurement Unit.
+> 
+> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+> ---
+>  .../devicetree/bindings/iio/imu/adi,adis16480.txt  | 49 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  1 +
+>  2 files changed, 50 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16480.txt
+> 
 
-CHECK: Comparison to NULL could be written "!indio_dev"
-
-Signed-off-by: Bárbara Fernandes <barbara.fernandes@usp.br>
----
- drivers/iio/adc/ad7923.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index dbece44e26e4..cb7b854df00c 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -272,7 +272,7 @@ static int ad7923_probe(struct spi_device *spi)
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
--	if (indio_dev == NULL)
-+	if (!indio_dev)
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
--- 
-2.17.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
