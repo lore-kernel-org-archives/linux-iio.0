@@ -2,110 +2,117 @@ Return-Path: <SRS0=SLRy=Q7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5972AC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:55:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BE34C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 20:33:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2551A2084D
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:55:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69E0E20663
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 20:33:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="G5E238wT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728410AbfBXQz6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Feb 2019 11:55:58 -0500
-Received: from mx2.suse.de ([195.135.220.15]:56096 "EHLO mx1.suse.de"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728179AbfBXQz6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Feb 2019 11:55:58 -0500
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id E2527AC43;
-        Sun, 24 Feb 2019 16:55:56 +0000 (UTC)
-Subject: Re: [PATCH 2/4] iio/proximity: add mb12x2 driver to Kconfig and
- Makefile
-To:     Andreas Klinger <ak@it-klinger.de>
-References: <20190224162235.7kidyum2dwg5bua5@arbad>
-Cc:     arnd@arndb.de, davem@davemloft.net, devicetree@vger.kernel.org,
-        gregkh@linuxfoundation.org, jic23@kernel.org, johan@kernel.org,
-        khilman@baylibre.com, knaack.h@gmx.de, lars@metafoo.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        mark.rutland@arm.com, martin.blumenstingl@googlemail.com,
-        mchehab+samsung@kernel.org, m.othacehe@gmail.com,
-        nicolas.ferre@microchip.com, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        robh@kernel.org, songqiang1304521@gmail.com, treding@nvidia.com
-From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Openpgp: preference=signencrypt
-Organization: SUSE Linux GmbH
-Message-ID: <49905636-cdba-f9e1-f8d4-7876d2981c4b@suse.de>
-Date:   Sun, 24 Feb 2019 17:55:56 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.3.0
+        id S1728407AbfBXUdp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Feb 2019 15:33:45 -0500
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:38186 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726458AbfBXUdo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Feb 2019 15:33:44 -0500
+Received: by mail-pl1-f196.google.com with SMTP id g37so661404plb.5;
+        Sun, 24 Feb 2019 12:33:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=KnnxHwkDJFIYf3W9dWpRpBGaF42LRM0p/MCcNDxRd+E=;
+        b=G5E238wTz3ko9ARX0FzIuZ6Dsv++poSBZhwhSAmots9FzBMCadcMTkXg/EECFdy/GO
+         ME3ukX40PkccPuhu2wV8+ywJCboaCmP9aedkIKMcvI7G7rN/MuHun/6XJyHwuzoDSrS/
+         sWyGkHG87ezV8C1eYwyd9q3jnhJZu7sCy1H1M7s4jpzdfx1JPoLJeDjBkj9U9Wrr3dYy
+         yHzgSJyx1H3a4WTRDtVgp+L2NrI09Y1w/zSIg1dSaWYGNTYCJAjdNOiAgIQBCxPFsb2/
+         nV01+WXuwdmNNEvSN9hCw41iMKq09vdVKOavYX/nZZVu8a3qgpoEki/9Z5wm4Un0NV3q
+         7cYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=KnnxHwkDJFIYf3W9dWpRpBGaF42LRM0p/MCcNDxRd+E=;
+        b=THyGsN4ABEX3/23ixAEvC2dhnVKvfJR3+Ci3TveV2voOthTykcZmeWx13/m2/Y+n01
+         Moxu6wQWqGcPyZkrUlSCjM6yomxZWDQVj2mgweI8qEuwlyPufwOerB3RIRQVNHBFZYoY
+         ooWydM0r7tpVtQ7fTDPt1ZSBtTePJ4aohrD3qpfvoAO8cQPO9BzH1S+vQ0Q0tCMFT6t+
+         gXmJbjiXWKQ0zMxFqP+DJWpdZVV7/MjcRMRNhJqEugLk7qFG6bti/+WjkOfci6dz63ih
+         sBokKMLeOMIZH9CE3tyG0vQw+JNEIsKDSK+bLgZPdgN5nfTflvS0F37nuIEy2SK6ijsv
+         NwKg==
+X-Gm-Message-State: AHQUAuYQf22gkO+PRJ7GKD652zEv8f0pCGHgezn8+lWM39nEEwCDIhVB
+        C7DDqs+g0zIgP0SHXhWJtiY=
+X-Google-Smtp-Source: AHgI3IYSkoMu8iFfOkRNLemNOJK67HMqduXj7Rfo35bEb2b0RKjUosTyhviihirW38li95+BENJx2Q==
+X-Received: by 2002:a17:902:7688:: with SMTP id m8mr15054553pll.248.1551040423865;
+        Sun, 24 Feb 2019 12:33:43 -0800 (PST)
+Received: from bobby.hsd1.or.comcast.net ([2601:1c0:5501:37e2::e774])
+        by smtp.googlemail.com with ESMTPSA id 70sm24105423pfr.43.2019.02.24.12.33.42
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 24 Feb 2019 12:33:43 -0800 (PST)
+From:   Robert Eshleman <bobbyeshleman@gmail.com>
+To:     bobbyeshleman@gmail.com
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 3/3] dt-bindings: iio: light: Add ap3216c
+Date:   Sun, 24 Feb 2019 12:33:51 -0800
+Message-Id: <b1689e99c868d19aa33932b0a96944852e91db45.1551037168.git.bobbyeshleman@gmail.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <42dbbd7568e4216a320c6fd617bd91c1ee045af0.1551037168.git.bobbyeshleman@gmail.com>
+References: <42dbbd7568e4216a320c6fd617bd91c1ee045af0.1551037168.git.bobbyeshleman@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20190224162235.7kidyum2dwg5bua5@arbad>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Am 24.02.19 um 17:22 schrieb Andreas Klinger:
-> Makefile and Kconfig: add configuration for mb12x2 ultrasonic proximity
-> driver
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  drivers/iio/proximity/Kconfig  | 11 +++++++++++
->  drivers/iio/proximity/Makefile |  1 +
->  2 files changed, 12 insertions(+)
-> 
-> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-> index b99367a89f81..5d57ca44e30d 100644
-> --- a/drivers/iio/proximity/Kconfig
-> +++ b/drivers/iio/proximity/Kconfig
-> @@ -45,6 +45,17 @@ config LIDAR_LITE_V2
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called pulsedlight-lite-v2
->  
-> +config MB12X2
-> +	tristate "MaxSonar MB12X2 family ultrasonic sensors"
-> +	depends on I2C
-> +	help
-> +	  Say Y to build a driver for the ultrasonic sensors of MaxSonar
-> +	  with i2c interface. It can be used to measure the distance of
-> +	  objects.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called mb12x2.
-> +
->  config RFD77402
->  	tristate "RFD77402 ToF sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
-> index 6d031f903c4c..c56b72a8be87 100644
-> --- a/drivers/iio/proximity/Makefile
-> +++ b/drivers/iio/proximity/Makefile
-> @@ -6,6 +6,7 @@
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_AS3935)		+= as3935.o
->  obj-$(CONFIG_ISL29501)		+= isl29501.o
-> +obj-$(CONFIG_MB12X2)		+= mb12x2.o
+Adds device tree bindings for the ap3216c ambient light and proximity
+sensor.
 
-This commit will fail to build, as you add the source file only in 3/4.
-It needs to be in this patch.
+Signed-off-by: Robert Eshleman <bobbyeshleman@gmail.com>
+---
+ .../devicetree/bindings/iio/light/ap3216c.txt | 22 +++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/ap3216c.txt
 
-Regards,
-Andreas
-
->  obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
->  obj-$(CONFIG_RFD77402)		+= rfd77402.o
->  obj-$(CONFIG_SRF04)		+= srf04.o
-> 
-
-
+diff --git a/Documentation/devicetree/bindings/iio/light/ap3216c.txt b/Documentation/devicetree/bindings/iio/light/ap3216c.txt
+new file mode 100644
+index 000000000000..c5ae80c79dd8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/ap3216c.txt
+@@ -0,0 +1,22 @@
++* AP3216C Ambient Light and Proximity Sensor
++
++Required properties:
++  - compatible: should be "liteon,ap3216c"
++  - reg: the I2C address of the sensor (default is <0x1e>)
++
++Optional properties:
++  - interrupts: interrupt mapping for GPIO IRQ. Should be configured with
++    IRQ_TYPE_EDGE_FALLING.
++
++Refer to interrupt-controller/interrupts.txt for generic interrupt client
++node bindings.
++
++Example:
++
++light-sensor@1e {
++	compatible = "liteon,ap3216c";
++	reg = <0x1e>;
++
++	interrupt-parent = <&gpio1>;
++	interrupts = <17 IRQ_TYPE_EDGE_FALLING>;
++};
 -- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
+2.20.1
+
