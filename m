@@ -3,28 +3,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C84C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:52:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5972AC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:55:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DE73D205C9
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:52:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2551A2084D
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 16:55:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728299AbfBXQv7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Feb 2019 11:51:59 -0500
-Received: from mx2.suse.de ([195.135.220.15]:54304 "EHLO mx1.suse.de"
+        id S1728410AbfBXQz6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Feb 2019 11:55:58 -0500
+Received: from mx2.suse.de ([195.135.220.15]:56096 "EHLO mx1.suse.de"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728179AbfBXQv7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Feb 2019 11:51:59 -0500
+        id S1728179AbfBXQz6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Feb 2019 11:55:58 -0500
 X-Virus-Scanned: by amavisd-new at test-mx.suse.de
 Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx1.suse.de (Postfix) with ESMTP id 5B0A8ADC6;
-        Sun, 24 Feb 2019 16:51:56 +0000 (UTC)
-Subject: Re: [PATCH 1/4] maxbotix,mb12x2.txt: add dt doc for maxbotix,mb12x2
+        by mx1.suse.de (Postfix) with ESMTP id E2527AC43;
+        Sun, 24 Feb 2019 16:55:56 +0000 (UTC)
+Subject: Re: [PATCH 2/4] iio/proximity: add mb12x2 driver to Kconfig and
+ Makefile
 To:     Andreas Klinger <ak@it-klinger.de>
-References: <20190224162208.esbrzartgfqxptsw@arbad>
+References: <20190224162235.7kidyum2dwg5bua5@arbad>
 Cc:     arnd@arndb.de, davem@davemloft.net, devicetree@vger.kernel.org,
         gregkh@linuxfoundation.org, jic23@kernel.org, johan@kernel.org,
         khilman@baylibre.com, knaack.h@gmx.de, lars@metafoo.de,
@@ -36,12 +37,12 @@ Cc:     arnd@arndb.de, davem@davemloft.net, devicetree@vger.kernel.org,
 From:   =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
 Openpgp: preference=signencrypt
 Organization: SUSE Linux GmbH
-Message-ID: <5c2efbb1-e243-a272-5106-9cd279d1c973@suse.de>
-Date:   Sun, 24 Feb 2019 17:51:53 +0100
+Message-ID: <49905636-cdba-f9e1-f8d4-7876d2981c4b@suse.de>
+Date:   Sun, 24 Feb 2019 17:55:56 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.3.0
 MIME-Version: 1.0
-In-Reply-To: <20190224162208.esbrzartgfqxptsw@arbad>
+In-Reply-To: <20190224162235.7kidyum2dwg5bua5@arbad>
 Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
 Content-Transfer-Encoding: 8bit
@@ -50,85 +51,59 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andreas,
-
 Am 24.02.19 um 17:22 schrieb Andreas Klinger:
-> add dt doc for maxbotix,mb12x2 and also a new vendor prefix maxbotix
-
-Please don't mix the two.
-The subject prefix should be "dt-bindings:". Please compare git log.
-And please avoid putting the whole world in To rather than CC.
-
+> Makefile and Kconfig: add configuration for mb12x2 ultrasonic proximity
+> driver
 > 
 > Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 > ---
->  .../bindings/iio/proximity/maxbotix,mb12x2.txt     | 22 ++++++++++++++++++++++
->  .../devicetree/bindings/vendor-prefixes.txt        |  1 +
->  2 files changed, 23 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/maxbotix,mb12x2.txt
+>  drivers/iio/proximity/Kconfig  | 11 +++++++++++
+>  drivers/iio/proximity/Makefile |  1 +
+>  2 files changed, 12 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb12x2.txt b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb12x2.txt
-> new file mode 100644
-> index 000000000000..29f7fc09cfdc
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb12x2.txt
-> @@ -0,0 +1,22 @@
-
-You're aware that a conversion from txt to YAML was under way?
-
-> +* MaxSonar-I2CXL ultrasonic distance sensor of type mb12x2 using the i2c
-> +  interface for ranging
+> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+> index b99367a89f81..5d57ca44e30d 100644
+> --- a/drivers/iio/proximity/Kconfig
+> +++ b/drivers/iio/proximity/Kconfig
+> @@ -45,6 +45,17 @@ config LIDAR_LITE_V2
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called pulsedlight-lite-v2
+>  
+> +config MB12X2
+> +	tristate "MaxSonar MB12X2 family ultrasonic sensors"
+> +	depends on I2C
+> +	help
+> +	  Say Y to build a driver for the ultrasonic sensors of MaxSonar
+> +	  with i2c interface. It can be used to measure the distance of
+> +	  objects.
 > +
-> +Required properties:
-> + - compatible:		Should be "maxbotix,mb12x2"
-
-Is that really the model name with x? No wildcards as compatible please.
-
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called mb12x2.
 > +
-> + - reg:			i2c address of the device
-> +
-> +Optional properties:
-> + - status-gpios:	Definition of the status gpio (input) which is used
-> +			to announce the preceding reading request has
-> +			finished and that data is available. If no status
-> +			gpio is specified the device driver falls back to
-> +			wait a certain amount of time (15 ms) until data
-> +			can be retrieved.
+>  config RFD77402
+>  	tristate "RFD77402 ToF sensor"
+>  	depends on I2C
+> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+> index 6d031f903c4c..c56b72a8be87 100644
+> --- a/drivers/iio/proximity/Makefile
+> +++ b/drivers/iio/proximity/Makefile
+> @@ -6,6 +6,7 @@
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AS3935)		+= as3935.o
+>  obj-$(CONFIG_ISL29501)		+= isl29501.o
+> +obj-$(CONFIG_MB12X2)		+= mb12x2.o
 
-That sounds like an implementation detail that should not be part of the
-binding? It at least needs to be reworded.
-
-> +
-> +Example:
-> +mb@70 {
-
-Please use a generic node name - maybe proximity? Check other examples.
-
-> +	compatible = "maxbotix,mb12x2";
-> +	reg = <0x70>;
-> +	status-gpios = <&gpio2 2 GPIO_ACTIVE_HIGH>;
-> +};
-> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> index 389508584f48..added54a1108 100644
-> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-> @@ -225,6 +225,7 @@ lsi	LSI Corp. (LSI Logic)
->  lwn	Liebherr-Werk Nenzing GmbH
->  macnica	Macnica Americas
->  marvell	Marvell Technology Group Ltd.
-> +maxbotix	MaxBotix Inc.
->  maxim	Maxim Integrated Products
->  mbvl	Mobiveil Inc.
->  mcube	mCube
-
-This part looks fine and could get my Reviewed-by if you split it off as
-"dt-bindings: Add vendor prefix for MaxBotix" and add a sentence about
-the company in its commit message.
-
-You might want to CC the vendor, if you're not contracted by them.
+This commit will fail to build, as you add the source file only in 3/4.
+It needs to be in this patch.
 
 Regards,
 Andreas
+
+>  obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
+>  obj-$(CONFIG_RFD77402)		+= rfd77402.o
+>  obj-$(CONFIG_SRF04)		+= srf04.o
+> 
+
 
 -- 
 SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
