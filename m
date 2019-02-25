@@ -2,136 +2,109 @@ Return-Path: <SRS0=UDTk=RA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E4FDC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 20:38:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DED50C4360F
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 21:45:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 36C3B2084D
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 20:38:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o9gjqnJJ"
+	by mail.kernel.org (Postfix) with ESMTP id AC31920652
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 21:45:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1551131121;
+	bh=OrMEaWOKJ1KKoLlQnim+NyCNlRJI/mi4WXMQ/XRLd6U=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=JQhHMdI5ZRWlQMHrqjGF88kkzxDBCERoFYg/mCopPMJERz6j5LpMflQ/qEke3/P79
+	 GQxPT3IACU+3ytL2O08gAFUTWHJXkWLvGFsBwHP51b7sNu9f4DE81uHst7nKDxY5FB
+	 uj6ZVLiGpkk0fIQ0w5MD3j5m8nLwkcfQ170jtqjc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727230AbfBYUh7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Feb 2019 15:37:59 -0500
-Received: from mail-wm1-f47.google.com ([209.85.128.47]:50488 "EHLO
-        mail-wm1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727113AbfBYUh7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2019 15:37:59 -0500
-Received: by mail-wm1-f47.google.com with SMTP id x7so297263wmj.0;
-        Mon, 25 Feb 2019 12:37:58 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=OlMfOERKozt0qCMopgmfdQ2h0YOTELN011HcmqzEV9s=;
-        b=o9gjqnJJZ7PyKFRd/AhbVmlk0ALQg6hynrw1/yZPSPoeUI/0ZgcIInuEWdt/Ws3stV
-         IpXDfvus0eNTR20XuIJ0D1kS4a5QKEfcVua57JaAMNClSwUlheQsAIIPB8UrP5+e7zEu
-         6DgFn3Oc8Sa/gFKBIeCmku4UvtVXKxBVMc1aFhAz9eqPjpJ1qSKE6s5YoxCo1k3IiUMg
-         Rmy62U77zPIICGnLkOcTks5jgYkaSFYDz/EyezLTbylcDij50GZ+iAjrFukRbPO3rSVL
-         zoDQZ2xT/KXPDkK5YzHLaGEtnFFb3aAepxd3QDbLsA8asTAmf45Mr9GCo1N+iAXXUu+a
-         7NKg==
+        id S1729834AbfBYV3W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Feb 2019 16:29:22 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:38654 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729111AbfBYV3R (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2019 16:29:17 -0500
+Received: by mail-oi1-f193.google.com with SMTP id q81so8563353oic.5;
+        Mon, 25 Feb 2019 13:29:17 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OlMfOERKozt0qCMopgmfdQ2h0YOTELN011HcmqzEV9s=;
-        b=GmE8gb3YsAzFWccUHxX4RhcJPuSx20PzpmVcX16f4ciqKWbdtjqK4bs3SLwu/glFBs
-         c3R7yJMeC8DG6DxS3fWl7PSIgu0o0ipOb5FmPY/pigZcHP9DVFb85Jik+3QnhtSs9p1H
-         QA6iNufRQdpwTMfzcH/AWgU4abkFJ7TPvsGlt+Rbup4ieqCpM4bDETKBjNDGmnGl0uPB
-         LWJ5gsVtdTJCgvRbq3QpElUwFv4OLcE4wVFJp1DA9KD9C7JCY87n1QqMfxDhoKW6Unr8
-         7IGtzgU+M6YXufW8Y46spIOLNfcSxQp++zbfbABwpfSG4F1uDUcWc7j/wIyf6cLGJM4j
-         z96g==
-X-Gm-Message-State: AHQUAua7Qlxhaf1Gf5GSg/gs7Vz6MIr0FdESoxWeDswHmlhEdt4WOWlc
-        li4bw2Ir2C3weVYkvHzejJk=
-X-Google-Smtp-Source: AHgI3Iat2Vez/Yw8eQjcbBw0HXd/LW7bK4USr5BGZCbAyMoNRDQPiRHrX4XxQBKhmocYaD3FGT4uqw==
-X-Received: by 2002:a1c:30b:: with SMTP id 11mr380532wmd.110.1551127077093;
-        Mon, 25 Feb 2019 12:37:57 -0800 (PST)
-Received: from ?IPv6:2a02:810d:340:17ec::1b62? ([2a02:810d:340:17ec::1b62])
-        by smtp.gmail.com with ESMTPSA id v6sm13268375wrd.88.2019.02.25.12.37.55
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 25 Feb 2019 12:37:56 -0800 (PST)
-Subject: Re: Allwinner SID THS calibration data cell representation?
-To:     Chen-Yu Tsai <wens@csie.org>,
-        Maxime Ripard <maxime.ripard@bootlin.com>
-Cc:     Emmanuel Vadot <manu@bidouilliste.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Quentin Schulz <quentin.schulz@bootlin.com>,
-        Icenowy Zheng <icenowy@aosc.io>, linux-iio@vger.kernel.org,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-sunxi <linux-sunxi@googlegroups.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-References: <20180830154518.29507-1-embed3d@gmail.com>
- <20180830154518.29507-28-embed3d@gmail.com>
- <20180904184623.e4386b8e6b657b1b25e90c09@bidouilliste.com>
- <55579dd6-625d-e71b-1482-4592dccac665@gmail.com>
- <20180906115114.inc6dhqhy47obo25@flea>
- <CAGb2v65p0G83BVODsxxnXmiSCwuuwPFtY2k2ZV1F5xoFKrJjWQ@mail.gmail.com>
-From:   Philipp Rossak <embed3d@gmail.com>
-Message-ID: <dfbe9a71-ccab-2415-fe5b-6944df721bff@gmail.com>
-Date:   Mon, 25 Feb 2019 21:37:55 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=oEm2I/RzozCs4QQvh3z+zp7aPsoDhy9f6U+iD0QDs7A=;
+        b=pJb8VNLlGtJN9PdMehRG5swo16gGuwdwQTqcEFv9cSoLs9Szoa0hW/2ajQvvOrHKym
+         jsqYCYEZNrshmFwMAl5+HaMuocrEkMdwyLJMjB2aY/fExns4bRH0Y3fICCl6Id5GjcTR
+         9icKYSZ47zQFqrDF/ueCfMS8c/F+O2ax2DCz6uUnnwf0kbLAQIXVQ4sxSxWx5ZVAPTZt
+         thvYqbXeiIsOkwDm1Ct+kKVVYla2XQ0hWmL/tKltwcjpqNJ8CXB+BWdKHHvbs3q3y/6w
+         fdPH32ZWJWdydd0U+nk16a2nciKRkfRJoqpv389dEeccSF9rAGye4Krw0fXH5bryRWV0
+         2q8w==
+X-Gm-Message-State: AHQUAuYLTZcoV4iHDzii9K4yR5/i6QZejjCSWITMWTGhn8II84C1SoM4
+        E6e4rYY9xX+EmwgWcga4M90bkB0=
+X-Google-Smtp-Source: AHgI3IZ4FAzSEVNUavrAuqhjbLD5MOeXET8Q4z7N1T1rSt+sQ6NevBVZYZ0qTnxdIMC7chLitG3aCg==
+X-Received: by 2002:aca:ddd7:: with SMTP id u206mr261599oig.46.1551130156651;
+        Mon, 25 Feb 2019 13:29:16 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 97sm5109421otn.39.2019.02.25.13.29.15
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 25 Feb 2019 13:29:16 -0800 (PST)
+Date:   Mon, 25 Feb 2019 15:29:15 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rui Miguel Silva <rui.silva@linaro.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Fabio Estevam <fabio.estevam@nxp.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: gyro: add DT bindings to fxas2100x
+Message-ID: <20190225212915.GA15828@bogus>
+References: <20190204170012.13617-1-rui.silva@linaro.org>
+ <20190204170012.13617-2-rui.silva@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <CAGb2v65p0G83BVODsxxnXmiSCwuuwPFtY2k2ZV1F5xoFKrJjWQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190204170012.13617-2-rui.silva@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Mon, Feb 04, 2019 at 05:00:08PM +0000, Rui Miguel Silva wrote:
+> Add device tree bindings for the FXAS2100x gyroscope.
+> 
+> Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
+> ---
+>  .../bindings/iio/gyroscope/fxas2100x.txt           | 14 ++++++++++++++
+>  1 file changed, 14 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt b/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
+> new file mode 100644
+> index 000000000000..2aeef9aafec4
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
+> @@ -0,0 +1,14 @@
+> +* NXP FXAS2100X Gyroscope device tree bindings
+> +
+> +http://www.nxp.com/products/sensors/gyroscopes/3-axis-digital-gyroscope:FXAS21002C
+> +
+> +Required properties:
+> +  - compatible : should be "nxp,fxas2100x"
+> +  - reg : the I2C address of the sensor
+> +
+> +Example:
+> +
+> +fxas2100x@20 {
 
+gyroscope@20
 
-On 19.02.19 08:54, Chen-Yu Tsai wrote:
-> Sorry for resurrecting an old discussion, but since someone posted patches
-> for H5 and H6, I thought we should resolve this. I'm working on patches to
-> fix / replace the big-endian issue.
-> 
-> On Thu, Sep 6, 2018 at 7:51 PM Maxime Ripard <maxime.ripard@bootlin.com> wrote:
->>
->> On Thu, Sep 06, 2018 at 01:47:47PM +0200, Philipp Rossak wrote:
->>> On 04.09.2018 18:46, Emmanuel Vadot wrote:
->>>>> +                 /* Data cells */
->>>>> +                 thermal_calibration: calib@234 {
->>>>> +                         reg = <0x234 0x8>;
->>>>> +                 };
->>>>    You are declaring 8 bytes of calibration data but to my knowledge it's
->>>> only 2 bytes per sensor, so 2 bytes for H3.
->>>>    Am I missing something ?
->>>>
->>>>    Thanks,
->>>
->>> Emmanuel you are right, it is 2 bytes per Sensor and should be 2 bytes for
->>> H3, but the thermal calibration data field is on all chips 64 bit wide - so
->>> 8 bytes. So I'm reading here the complete calibration data field.
->>
->> Having one cell per channel would make more sense I guess.
-> 
-> Would it? The 2 32-bit words directly map onto the registers 0x74 / 0x78 in
-> the THS. As far as the SID is concerned, their is just one consumer for this
-> data, the thermal sensor. How the thermal sensor uses that data is really not
-> its concern. And the thermal sensor is really just copying the data from the
-> e-fuses into its registers. Nothing more.
+in addition to what's already been mentioned.
 
-Using 2 32-bit words for the THS would be also ok (from my perspective).
+> +	compatible = "nxp,fxas2100x"
+> +	reg = <0x20>;
+> +};
+> -- 
+> 2.20.1
 > 
-> Furthermore, with the register access interface, the e-fuses are read/write
-> 32 bits at a time. Seems to me it would make more sense to enforce a 32-bit
-> word size, so cells should be multiples of 32 bits.
-> 
-For THS I'm ok with that.
-
-> Regards
-> ChenYu
-> 
-Regards,
-Philipp
