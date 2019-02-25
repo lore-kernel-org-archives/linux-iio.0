@@ -1,156 +1,176 @@
-Return-Path: <SRS0=SLRy=Q7=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=UDTk=RA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C055AC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 21:40:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5110FC43381
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 10:43:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8092E2084D
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Feb 2019 21:40:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MbiCrIZF"
+	by mail.kernel.org (Postfix) with ESMTP id 2853320842
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 10:43:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726337AbfBXVkY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Feb 2019 16:40:24 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:39822 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726332AbfBXVkX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Feb 2019 16:40:23 -0500
-Received: by mail-qt1-f193.google.com with SMTP id o6so8402244qtk.6;
-        Sun, 24 Feb 2019 13:40:22 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Qa9ZzQ4ViF1H9Hw3jMJanuqn5quGoLiOQ0qxsvv8VJE=;
-        b=MbiCrIZFpnB3sX3RIdNkNnKPKo3PRzvbrdLPUejtJintpIQpwB07+5mXeVJldVQKcW
-         q97H5twugQ233oCFsZnm7HaWNaGgqewW5rkk3b+JyEmZz2VqkKdkMVHzZFvUUpVS2hZp
-         klqX8y/fPcEZavJzhVaPJytcZro7ZUz2jgRZmw8TB9Q2651ozpdYAUGSxyMdkbnmipMU
-         3fs0mvLQdokZOgwwdIjFDPpof8IcJF3yNmid6Mw4NZMFdyIgJV1HnM01fLd66ZFDvTqb
-         kYQKxCL/LYJmUov3YJAeD8ER3MkokPtEnPvUXM72mQpYZrAOg+PyloNi1oXpXuAIVRZP
-         +qTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Qa9ZzQ4ViF1H9Hw3jMJanuqn5quGoLiOQ0qxsvv8VJE=;
-        b=DyKEEPVjUiLiJM5Vn1vOwf8UzIO+ARbNjCKx8pGvDFtemL22miHpC17CdFN1fwEYnn
-         poxWdLU/mToYTe4wFkdt3iaDmWNVjuVgF2on5XrN8tE9HqfkFjz5+bgYkuMjZjvvLFRx
-         IUNy9E7211sD11cvskeaDD/0hkJJsjrBUPe3fRMnwqKGxufFmA5QJo/f3hVA+Rzz3uP+
-         ftueBWdqg118TgPZMQ3+eOyEdsLamQEuS7GsjrwNaWv8fla6zbZZhimX3hxrG/4Pxqa1
-         R6b6aFNU0ZELzAutjD+xMhQf/WBIqth3DEgzYb4KcdZyWr4OblMxGtX9J9jl03V+0Ecf
-         lpPg==
-X-Gm-Message-State: AHQUAuY3A5006034iMmhHTyKt+TI0wPr1htmLeiyQlpJdWg4FhJXnG2Q
-        +ZxarT3L3ICrSwPfmpj9NVY=
-X-Google-Smtp-Source: AHgI3IbqkzmqBi5eWqJzIeC1TZ1U8N5OLLH+z6S69ygaV742kutnWxvyp/XG1JLYPoiUU2+SDyPxSw==
-X-Received: by 2002:a0c:fac3:: with SMTP id p3mr11418394qvo.190.1551044422054;
-        Sun, 24 Feb 2019 13:40:22 -0800 (PST)
-Received: from voyager.ufabc.int.br ([2801:a4:102:5::5ae3])
-        by smtp.gmail.com with ESMTPSA id a68sm4794146qkj.82.2019.02.24.13.40.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 24 Feb 2019 13:40:21 -0800 (PST)
-From:   =?UTF-8?q?Camylla=20Gon=C3=A7alves=20Cantanheide?= 
-        <c.cantanheide@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: [PATCH] iio: adc: ad7766: Change alignment to match paranthesis
-Date:   Sun, 24 Feb 2019 18:40:10 -0300
-Message-Id: <20190224214010.10894-1-c.cantanheide@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726668AbfBYKnp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Feb 2019 05:43:45 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:32339 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726617AbfBYKnp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2019 05:43:45 -0500
+Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x1PAftBv025960;
+        Mon, 25 Feb 2019 11:43:15 +0100
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2qtvtwsdep-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Mon, 25 Feb 2019 11:43:15 +0100
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id BE1C73A;
+        Mon, 25 Feb 2019 10:43:12 +0000 (GMT)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 92F242844;
+        Mon, 25 Feb 2019 10:43:12 +0000 (GMT)
+Received: from localhost (10.75.127.44) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 25 Feb 2019 11:43:11
+ +0100
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <alexandre.torgue@st.com>
+CC:     <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <benjamin.gaignard@linaro.org>,
+        <arnaud.pouliquen@st.com>
+Subject: [PATCH 2/2] iio: counter: stm32-lptimer: Add power management support
+Date:   Mon, 25 Feb 2019 11:42:47 +0100
+Message-ID: <1551091367-21718-3-git-send-email-fabrice.gasnier@st.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1551091367-21718-1-git-send-email-fabrice.gasnier@st.com>
+References: <1551091367-21718-1-git-send-email-fabrice.gasnier@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG7NODE3.st.com (10.75.127.21) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-02-25_06:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This commit align broken line to match upper line parenthesis,
-in lines 80, 130, 237, 242, 255, 264 and 293. Solves the checkpatch.pl's message:
+Add suspend/resume PM sleep ops. When going to low power, disable
+active counter. Only active counter should be resumed: don't touch
+disabled counter, as it may be used by other LPTimer MFD child driver.
 
-CHECK: Alignment should match open parenthesis
-
-In lines 130, 255, 264 and 293 it was necessary to break a line.
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/iio/adc/ad7766.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/iio/counter/stm32-lptimer-cnt.c | 55 +++++++++++++++++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index 3ae14fc8c649..101502435768 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -77,7 +77,7 @@ static irqreturn_t ad7766_trigger_handler(int irq, void *p)
- 		goto done;
+diff --git a/drivers/iio/counter/stm32-lptimer-cnt.c b/drivers/iio/counter/stm32-lptimer-cnt.c
+index 42fb8ba..2a49cce 100644
+--- a/drivers/iio/counter/stm32-lptimer-cnt.c
++++ b/drivers/iio/counter/stm32-lptimer-cnt.c
+@@ -14,6 +14,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/mfd/stm32-lptimer.h>
+ #include <linux/module.h>
++#include <linux/pinctrl/consumer.h>
+ #include <linux/platform_device.h>
  
- 	iio_push_to_buffers_with_timestamp(indio_dev, ad7766->data,
--		pf->timestamp);
-+					   pf->timestamp);
- done:
- 	iio_trigger_notify_done(indio_dev->trig);
+ struct stm32_lptim_cnt {
+@@ -23,6 +24,7 @@ struct stm32_lptim_cnt {
+ 	u32 preset;
+ 	u32 polarity;
+ 	u32 quadrature_mode;
++	bool enabled;
+ };
  
-@@ -127,7 +127,8 @@ static int ad7766_postdisable(struct iio_dev *indio_dev)
+ static int stm32_lptim_is_enabled(struct stm32_lptim_cnt *priv)
+@@ -50,6 +52,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
+ 
+ 	if (!enable) {
+ 		clk_disable(priv->clk);
++		priv->enabled = false;
+ 		return 0;
+ 	}
+ 
+@@ -79,6 +82,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
+ 		regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
+ 		return ret;
+ 	}
++	priv->enabled = true;
+ 
+ 	/* Start LP timer in continuous mode */
+ 	return regmap_update_bits(priv->regmap, STM32_LPTIM_CR,
+@@ -361,6 +365,56 @@ static int stm32_lptim_cnt_probe(struct platform_device *pdev)
+ 	return devm_iio_device_register(&pdev->dev, indio_dev);
  }
  
- static int ad7766_read_raw(struct iio_dev *indio_dev,
--	const struct iio_chan_spec *chan, int *val, int *val2, long info)
-+			   const struct iio_chan_spec *chan, int *val,
-+			   int *val2, long info)
- {
- 	struct ad7766 *ad7766 = iio_priv(indio_dev);
- 	struct regulator *vref = ad7766->reg[AD7766_SUPPLY_VREF].consumer;
-@@ -234,12 +235,12 @@ static int ad7766_probe(struct spi_device *spi)
- 	ad7766->reg[AD7766_SUPPLY_VREF].supply = "vref";
- 
- 	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
--		ad7766->reg);
-+				      ad7766->reg);
- 	if (ret)
- 		return ret;
- 
- 	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
--		GPIOD_OUT_HIGH);
-+						  GPIOD_OUT_HIGH);
- 	if (IS_ERR(ad7766->pd_gpio))
- 		return PTR_ERR(ad7766->pd_gpio);
- 
-@@ -252,7 +253,8 @@ static int ad7766_probe(struct spi_device *spi)
- 
- 	if (spi->irq > 0) {
- 		ad7766->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
--			indio_dev->name, indio_dev->id);
-+						      indio_dev->name,
-+						      indio_dev->id);
- 		if (!ad7766->trig)
- 			return -ENOMEM;
- 
-@@ -261,8 +263,9 @@ static int ad7766_probe(struct spi_device *spi)
- 		iio_trigger_set_drvdata(ad7766->trig, ad7766);
- 
- 		ret = devm_request_irq(&spi->dev, spi->irq, ad7766_irq,
--			IRQF_TRIGGER_FALLING, dev_name(&spi->dev),
--			ad7766->trig);
-+				       IRQF_TRIGGER_FALLING,
-+				       dev_name(&spi->dev),
-+				       ad7766->trig);
- 		if (ret < 0)
- 			return ret;
- 
-@@ -290,8 +293,9 @@ static int ad7766_probe(struct spi_device *spi)
- 	spi_message_add_tail(&ad7766->xfer, &ad7766->msg);
- 
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
--		&iio_pollfunc_store_time, &ad7766_trigger_handler,
--		&ad7766_buffer_setup_ops);
-+					      &iio_pollfunc_store_time,
-+					      &ad7766_trigger_handler,
-+					      &ad7766_buffer_setup_ops);
- 	if (ret)
- 		return ret;
- 
++#ifdef CONFIG_PM_SLEEP
++static int stm32_lptim_cnt_suspend(struct device *dev)
++{
++	struct stm32_lptim_cnt *priv = dev_get_drvdata(dev);
++	int ret;
++
++	/* Only take care of enabled counter: don't disturb other MFD child */
++	if (priv->enabled) {
++		ret = stm32_lptim_setup(priv, 0);
++		if (ret)
++			return ret;
++
++		ret = stm32_lptim_set_enable_state(priv, 0);
++		if (ret)
++			return ret;
++
++		/* Force enable state for later resume */
++		priv->enabled = true;
++	}
++
++	return pinctrl_pm_select_sleep_state(dev);
++}
++
++static int stm32_lptim_cnt_resume(struct device *dev)
++{
++	struct stm32_lptim_cnt *priv = dev_get_drvdata(dev);
++	int ret;
++
++	ret = pinctrl_pm_select_default_state(dev);
++	if (ret)
++		return ret;
++
++	if (priv->enabled) {
++		priv->enabled = false;
++		ret = stm32_lptim_setup(priv, 1);
++		if (ret)
++			return ret;
++
++		ret = stm32_lptim_set_enable_state(priv, 1);
++		if (ret)
++			return ret;
++	}
++
++	return 0;
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(stm32_lptim_cnt_pm_ops, stm32_lptim_cnt_suspend,
++			 stm32_lptim_cnt_resume);
++
+ static const struct of_device_id stm32_lptim_cnt_of_match[] = {
+ 	{ .compatible = "st,stm32-lptimer-counter", },
+ 	{},
+@@ -372,6 +426,7 @@ static struct platform_driver stm32_lptim_cnt_driver = {
+ 	.driver = {
+ 		.name = "stm32-lptimer-counter",
+ 		.of_match_table = stm32_lptim_cnt_of_match,
++		.pm = &stm32_lptim_cnt_pm_ops,
+ 	},
+ };
+ module_platform_driver(stm32_lptim_cnt_driver);
 -- 
-2.17.1
+2.7.4
 
