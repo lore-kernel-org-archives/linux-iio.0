@@ -2,120 +2,146 @@ Return-Path: <SRS0=UDTk=RA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FA9AC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 19:38:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57493C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 20:23:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 613E920842
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 19:38:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551123511;
-	bh=KSmsmKN6qjX5vloDCqN5D0x044wPYCLAPrMJpTQyfd0=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=fnl6VeF+oNyDve/SQH7/qVD2B5ClpRsfKxTUe9atB/XJbijPOVOAZjBWIbTLisvBs
-	 fZvqcSG5NfKyAtstuANUwD0d6bsUX2c3JKfC4JRui6+S5XPYNWlV+ZL9rNwp7hxK1Q
-	 J5VjEBCq4wOBYis8FoWlPS0T/+cgFcloIJ94trCc=
+	by mail.kernel.org (Postfix) with ESMTP id 1816C20842
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 20:23:56 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cxep7No9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbfBYTi0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Feb 2019 14:38:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40730 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726377AbfBYTi0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 25 Feb 2019 14:38:26 -0500
-Received: from mail-qk1-f177.google.com (mail-qk1-f177.google.com [209.85.222.177])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 914D92146F;
-        Mon, 25 Feb 2019 19:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551123505;
-        bh=KSmsmKN6qjX5vloDCqN5D0x044wPYCLAPrMJpTQyfd0=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=fiye4bGX6HhnKB/QoRXcUg3TXoLJ3aN1E3XSv3y4yVCKsIPLXUgKaWneGLOmInz/4
-         bXdVj2kKSxQrIv/eHVlMSmX8TGmHE+l5vnXWr6QIqY0nMWSInT8BCZHw4YuXsfKWJO
-         FajtrdKxh4WlhT+G7EmMzUd4VCzj7Yq3mSbCQT9c=
-Received: by mail-qk1-f177.google.com with SMTP id v139so6057201qkb.12;
-        Mon, 25 Feb 2019 11:38:25 -0800 (PST)
-X-Gm-Message-State: AHQUAuYpzCTEU7ZbICCTb0E8IPZCjxv8ao9ScHdRap6diZJNxU3ExyM4
-        OdPxRR1UzprDUHthPw5wWeJQLN74+l3ZXukkcA==
-X-Google-Smtp-Source: AHgI3IZfSaFkbA/O2OlfukUtkZqmUAe+0Qnv6PKa6leIkb9xWJI3bOkebs1Z/B6EjKyG+1Wpp4cYXhb6fT7koFn7Ng0=
-X-Received: by 2002:a37:4a84:: with SMTP id x126mr14099784qka.326.1551123504754;
- Mon, 25 Feb 2019 11:38:24 -0800 (PST)
+        id S1727113AbfBYUXz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Feb 2019 15:23:55 -0500
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:44918 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727021AbfBYUXz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2019 15:23:55 -0500
+Received: by mail-lj1-f194.google.com with SMTP id q128so8611166ljb.11;
+        Mon, 25 Feb 2019 12:23:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/ZZbDJ03fuvRTtOjkU1SQSqYPNvtWoI29SVzP7AwhVw=;
+        b=cxep7No9mmfbbUWbJ830/O89fa1vM6POERPWIScRoV/bm3G1C4eFXcPeaX/RPe/A5q
+         3n+jY0nYXVRIO7dbNl+EUx0Nyd9sPiUzbLZ4p76gddMqi04i5PGDgxJakRbSgI4a7X7N
+         V+iE1cOEBbuug1GNztE6gZ3GBUL1UU8yRCux8U1cOEJ999wT6lqUSzXngliRtSy4+Qdx
+         OQlIezOZzkuANgGvHjSRdS46St+D4oORt0DJbvMANCJ2LtY2OCpcvv6BbrlORLSmBEis
+         +JHRuKw5IV8MMZKevhBErSv0m8julpNU6z4rRxrWOEboSvAFnokE3XWWxAnbfwxKbUL/
+         IsFw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/ZZbDJ03fuvRTtOjkU1SQSqYPNvtWoI29SVzP7AwhVw=;
+        b=kKZnTWAeWcAV4Z95KvOHoH3jtfKjyVP3ioAxNaEJLDzA5VEmGkRQ74Kz9zb1LuqVMq
+         PTtbJNR3JxtE7/88+lXHQAMHU5usORq9x8neRWOlagcZfDO7SnjBTkh4whDWlFpH1XmD
+         1P8u5S4wp/Y3Gft7pQ+X+b2k6kot2F2Kwbfz9KC3FwO5Fwjyeoth5JoVB9QQjYd7Z7eM
+         8TN2VKoarT1Ak1flUN8YAwXiZHFeZLHc0rHzvVL/LKDCyreuaZCm7vkhAIohUCZhPWUl
+         nQPu6ZvH2+QSfH/sxkOoACCNgKgtH6Bi/UyvKN4dLA72oshAjMrCBUdmhKSQm43UbTbx
+         NB+w==
+X-Gm-Message-State: AHQUAuYfrb0UkUht9+Okeb2uBfAyAte3vZmTJK7jPNKNhjFgn0F2coWw
+        oES3B4ezitDl3c1ig3JsYsHL5RTfyZw=
+X-Google-Smtp-Source: AHgI3IZJWz8/WgB7k1CGtY680C4WP4CPq/iUOd/tOpkEM/W4UnL6NEYrM1weRbzlr16/Oal+PpkVlQ==
+X-Received: by 2002:a2e:5357:: with SMTP id t23mr10953668ljd.8.1551126232172;
+        Mon, 25 Feb 2019 12:23:52 -0800 (PST)
+Received: from arch.domain.name (89-70-37-207.dynamic.chello.pl. [89.70.37.207])
+        by smtp.gmail.com with ESMTPSA id 5sm2449485ljf.86.2019.02.25.12.23.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 25 Feb 2019 12:23:51 -0800 (PST)
+From:   Tomasz Duszynski <tduszyns@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-doc@vger.kernel.org,
+        corbet@lwn.net, Tomasz Duszynski <tduszyns@gmail.com>
+Subject: [PATCH] docs: driver-api: iio: fix errors in documentation
+Date:   Mon, 25 Feb 2019 21:23:26 +0100
+Message-Id: <20190225202326.17178-1-tduszyns@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <cover.1550768574.git.hns@goldelico.com> <32025b2a8ccc97cc01f8115ee962529eb5990f00.1550768574.git.hns@goldelico.com>
- <20190225093222.40533238@lwn.net> <CACRpkdZn6pS7vBwKk8FNnuSigZjHHjYciQ3V8WR_Fdb=COTdTw@mail.gmail.com>
-In-Reply-To: <CACRpkdZn6pS7vBwKk8FNnuSigZjHHjYciQ3V8WR_Fdb=COTdTw@mail.gmail.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 25 Feb 2019 13:38:12 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKZUoqonTcCFEaQeGpg1SxJ31cVu0=Bm5r_2TmjCYjG3Q@mail.gmail.com>
-Message-ID: <CAL_JsqKZUoqonTcCFEaQeGpg1SxJ31cVu0=Bm5r_2TmjCYjG3Q@mail.gmail.com>
-Subject: Re: [PATCH v2 02/10] iio: document bindings for mounting matrices
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jonathan Corbet <corbet@lwn.net>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Martin Kelly <mkelly@xevo.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Brian Masney <masneyb@onstation.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Samu Onkalo <samu.onkalo@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 25, 2019 at 12:24 PM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> Hi Jon,
->
-> On Mon, Feb 25, 2019 at 5:32 PM Jonathan Corbet <corbet@lwn.net> wrote:
->
-> > >  .../devicetree/bindings/iio/mount-matrix.txt  | 204 ++++++++++++++++++
->
-> So this is a device tree binding.
->
-> > So forgive me, but I have to ask: what are the chances of getting this
-> > file in RST format?  It's 99% of the way there now, finishing the job
-> > would allow it to be integrated into our docs tree.
-> >
-> > It should probably have an SPDX line too.
->
-> The recent direction of the Device Tree bindings are not in the RST
-> direction but in the direction of using another formal structure: YAML
-> schemas.
->
-> See e.g. Documentation/devicetree/bindings/example-schema.yaml
->
-> The YAML schema makes it possible to verify device trees and examples
-> inside the bindings to the specification using a context-free grammar.
->
-> If we can join the RST and YAML ambitions is a good question. RST
-> has nice typesetting properties, YAML has nice grammatic properties.
+Improve IIO documentation by fixing a few mistakes.
 
-In fact there has been some experimentation there. The 'description'
-portion of DT schema can be RST. And the rest being structured data
-could be transformed to RST. Grant did some experiments there. The
-idea being to generate the DT spec from schema (rather than integrate
-into the kernel docs). But not much progress there and it's not
-something I'm spending time on ATM.
+Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
+---
+ Documentation/driver-api/iio/buffers.rst     | 2 +-
+ Documentation/driver-api/iio/core.rst        | 6 +++---
+ Documentation/driver-api/iio/hw-consumer.rst | 2 +-
+ Documentation/driver-api/iio/triggers.rst    | 2 +-
+ 4 files changed, 6 insertions(+), 6 deletions(-)
 
-Rob
+diff --git a/Documentation/driver-api/iio/buffers.rst b/Documentation/driver-api/iio/buffers.rst
+index 02c99a6bee18..e9036ef9f8f4 100644
+--- a/Documentation/driver-api/iio/buffers.rst
++++ b/Documentation/driver-api/iio/buffers.rst
+@@ -26,7 +26,7 @@ IIO buffer setup
+ ================
+
+ The meta information associated with a channel reading placed in a buffer is
+-called a scan element . The important bits configuring scan elements are
++called a scan element. The important bits configuring scan elements are
+ exposed to userspace applications via the
+ :file:`/sys/bus/iio/iio:device{X}/scan_elements/*` directory. This file contains
+ attributes of the following form:
+diff --git a/Documentation/driver-api/iio/core.rst b/Documentation/driver-api/iio/core.rst
+index 9a34ae03b679..54f193edbf8b 100644
+--- a/Documentation/driver-api/iio/core.rst
++++ b/Documentation/driver-api/iio/core.rst
+@@ -2,8 +2,8 @@
+ Core elements
+ =============
+
+-The Industrial I/O core offers a unified framework for writing drivers for
+-many different types of embedded sensors. a standard interface to user space
++The Industrial I/O core offers both a unified framework for writing drivers for
++many different types of embedded sensors and a standard interface to user space
+ applications manipulating sensors. The implementation can be found under
+ :file:`drivers/iio/industrialio-*`
+
+@@ -11,7 +11,7 @@ Industrial I/O Devices
+ ----------------------
+
+ * struct :c:type:`iio_dev` - industrial I/O device
+-* :c:func:`iio_device_alloc()` - alocate an :c:type:`iio_dev` from a driver
++* :c:func:`iio_device_alloc()` - allocate an :c:type:`iio_dev` from a driver
+ * :c:func:`iio_device_free()` - free an :c:type:`iio_dev` from a driver
+ * :c:func:`iio_device_register()` - register a device with the IIO subsystem
+ * :c:func:`iio_device_unregister()` - unregister a device from the IIO
+diff --git a/Documentation/driver-api/iio/hw-consumer.rst b/Documentation/driver-api/iio/hw-consumer.rst
+index 8facce6a6733..e0fe0b98230e 100644
+--- a/Documentation/driver-api/iio/hw-consumer.rst
++++ b/Documentation/driver-api/iio/hw-consumer.rst
+@@ -1,7 +1,7 @@
+ ===========
+ HW consumer
+ ===========
+-An IIO device can be directly connected to another device in hardware. in this
++An IIO device can be directly connected to another device in hardware. In this
+ case the buffers between IIO provider and IIO consumer are handled by hardware.
+ The Industrial I/O HW consumer offers a way to bond these IIO devices without
+ software buffer for data. The implementation can be found under
+diff --git a/Documentation/driver-api/iio/triggers.rst b/Documentation/driver-api/iio/triggers.rst
+index f89d37e7dd82..5c2156de6284 100644
+--- a/Documentation/driver-api/iio/triggers.rst
++++ b/Documentation/driver-api/iio/triggers.rst
+@@ -38,7 +38,7 @@ There are two locations in sysfs related to triggers:
+
+ * :file:`/sys/bus/iio/devices/iio:device{X}/trigger/*`, this directory is
+   created once the device supports a triggered buffer. We can associate a
+-  trigger with our  device by writing the trigger's name in the
++  trigger with our device by writing the trigger's name in the
+   :file:`current_trigger` file.
+
+ IIO trigger setup
+--
+2.20.1
+
