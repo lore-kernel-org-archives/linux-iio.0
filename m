@@ -1,110 +1,78 @@
-Return-Path: <SRS0=UDTk=RA=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=nq9j=RB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DED50C4360F
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 21:45:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0FC8C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Feb 2019 07:22:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AC31920652
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Feb 2019 21:45:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551131121;
-	bh=OrMEaWOKJ1KKoLlQnim+NyCNlRJI/mi4WXMQ/XRLd6U=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=JQhHMdI5ZRWlQMHrqjGF88kkzxDBCERoFYg/mCopPMJERz6j5LpMflQ/qEke3/P79
-	 GQxPT3IACU+3ytL2O08gAFUTWHJXkWLvGFsBwHP51b7sNu9f4DE81uHst7nKDxY5FB
-	 uj6ZVLiGpkk0fIQ0w5MD3j5m8nLwkcfQ170jtqjc=
+	by mail.kernel.org (Postfix) with ESMTP id 15C8A217F5
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Feb 2019 07:22:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="dbT3jUCE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729834AbfBYV3W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Feb 2019 16:29:22 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:38654 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729111AbfBYV3R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Feb 2019 16:29:17 -0500
-Received: by mail-oi1-f193.google.com with SMTP id q81so8563353oic.5;
-        Mon, 25 Feb 2019 13:29:17 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oEm2I/RzozCs4QQvh3z+zp7aPsoDhy9f6U+iD0QDs7A=;
-        b=pJb8VNLlGtJN9PdMehRG5swo16gGuwdwQTqcEFv9cSoLs9Szoa0hW/2ajQvvOrHKym
-         jsqYCYEZNrshmFwMAl5+HaMuocrEkMdwyLJMjB2aY/fExns4bRH0Y3fICCl6Id5GjcTR
-         9icKYSZ47zQFqrDF/ueCfMS8c/F+O2ax2DCz6uUnnwf0kbLAQIXVQ4sxSxWx5ZVAPTZt
-         thvYqbXeiIsOkwDm1Ct+kKVVYla2XQ0hWmL/tKltwcjpqNJ8CXB+BWdKHHvbs3q3y/6w
-         fdPH32ZWJWdydd0U+nk16a2nciKRkfRJoqpv389dEeccSF9rAGye4Krw0fXH5bryRWV0
-         2q8w==
-X-Gm-Message-State: AHQUAuYLTZcoV4iHDzii9K4yR5/i6QZejjCSWITMWTGhn8II84C1SoM4
-        E6e4rYY9xX+EmwgWcga4M90bkB0=
-X-Google-Smtp-Source: AHgI3IZ4FAzSEVNUavrAuqhjbLD5MOeXET8Q4z7N1T1rSt+sQ6NevBVZYZ0qTnxdIMC7chLitG3aCg==
-X-Received: by 2002:aca:ddd7:: with SMTP id u206mr261599oig.46.1551130156651;
-        Mon, 25 Feb 2019 13:29:16 -0800 (PST)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 97sm5109421otn.39.2019.02.25.13.29.15
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 25 Feb 2019 13:29:16 -0800 (PST)
-Date:   Mon, 25 Feb 2019 15:29:15 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Rui Miguel Silva <rui.silva@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/5] iio: gyro: add DT bindings to fxas2100x
-Message-ID: <20190225212915.GA15828@bogus>
-References: <20190204170012.13617-1-rui.silva@linaro.org>
- <20190204170012.13617-2-rui.silva@linaro.org>
+        id S1725977AbfBZHWE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Feb 2019 02:22:04 -0500
+Received: from ns.pmeerw.net ([84.19.176.117]:42840 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725901AbfBZHWE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 Feb 2019 02:22:04 -0500
+Received: by ns.pmeerw.net (Postfix, from userid 1000)
+        id 70E00E03A6; Tue, 26 Feb 2019 08:22:02 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
+        t=1551165722; bh=UvSQdG1BgU+nfAkFDJfhBws6uIyd9bO8eERDo6twXCg=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=dbT3jUCEL5mP5kvc5HuIYv321Z23UV1rzIQXBvxRwKrULstDtR4LhlxgOcOMGEnrB
+         oAADa4Fkn4kcu2TujuSaZbP6If2XABYOU0U4kWiVqhuqpMmpS23rj6ccHVEc/vHWU7
+         BU14XYKUfBthNaww7JbRXpPp8MotuXOtnngsIAGs=
+Received: from localhost (localhost [127.0.0.1])
+        by ns.pmeerw.net (Postfix) with ESMTP id 6014BE00EE;
+        Tue, 26 Feb 2019 08:22:02 +0100 (CET)
+Date:   Tue, 26 Feb 2019 08:22:02 +0100 (CET)
+From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To:     Andreas Klinger <ak@it-klinger.de>
+cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/4] iio/proximity: add mb12x2 driver to Kconfig and
+ Makefile
+In-Reply-To: <20190224162235.7kidyum2dwg5bua5@arbad>
+Message-ID: <alpine.DEB.2.21.1902260820570.17137@vps.pmeerw.net>
+References: <20190224162235.7kidyum2dwg5bua5@arbad>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190204170012.13617-2-rui.silva@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 04, 2019 at 05:00:08PM +0000, Rui Miguel Silva wrote:
-> Add device tree bindings for the FXAS2100x gyroscope.
-> 
-> Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
-> ---
->  .../bindings/iio/gyroscope/fxas2100x.txt           | 14 ++++++++++++++
->  1 file changed, 14 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt b/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
-> new file mode 100644
-> index 000000000000..2aeef9aafec4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/gyroscope/fxas2100x.txt
-> @@ -0,0 +1,14 @@
-> +* NXP FXAS2100X Gyroscope device tree bindings
-> +
-> +http://www.nxp.com/products/sensors/gyroscopes/3-axis-digital-gyroscope:FXAS21002C
-> +
-> +Required properties:
-> +  - compatible : should be "nxp,fxas2100x"
-> +  - reg : the I2C address of the sensor
-> +
-> +Example:
-> +
-> +fxas2100x@20 {
+On Sun, 24 Feb 2019, Andreas Klinger wrote:
 
-gyroscope@20
-
-in addition to what's already been mentioned.
-
-> +	compatible = "nxp,fxas2100x"
-> +	reg = <0x20>;
-> +};
-> -- 
-> 2.20.1
+> Makefile and Kconfig: add configuration for mb12x2 ultrasonic proximity
+> driver
 > 
+
+> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+> index 6d031f903c4c..c56b72a8be87 100644
+> --- a/drivers/iio/proximity/Makefile
+> +++ b/drivers/iio/proximity/Makefile
+> @@ -6,6 +6,7 @@
+>  # When adding new entries keep the list in alphabetical order
+>  obj-$(CONFIG_AS3935)		+= as3935.o
+>  obj-$(CONFIG_ISL29501)		+= isl29501.o
+> +obj-$(CONFIG_MB12X2)		+= mb12x2.o
+
+alphabetic order please
+
+>  obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
+>  obj-$(CONFIG_RFD77402)		+= rfd77402.o
+>  obj-$(CONFIG_SRF04)		+= srf04.o
+> 
+
+-- 
+
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
