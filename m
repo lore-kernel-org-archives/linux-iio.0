@@ -2,126 +2,92 @@ Return-Path: <SRS0=4tHG=RD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9446AC43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 19:03:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38A73C43381
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 19:47:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 695A220854
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 19:03:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="sFkClUBd"
+	by mail.kernel.org (Postfix) with ESMTP id 0366F20C01
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 19:47:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1551383260;
+	bh=fvbKvB9dpvLtQwPPibVB73QLTFflU1juHCDsoYXUn3M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=k+kDPUJGy1ibgryGFITy1+uK2mFKKxkWsz9DS0C1vQiZOrBev1hVDZuqDxvYrrfEL
+	 b6owd4OqUmxXZ/wnrhrvci+QLt1J5fHV7Vdc7eS/9JdXgbN1SWvh/RzUWXxnWTUV2t
+	 844pJlLYqS9cEEqU2yD9xyne1XH5RWqXdOxWrND0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727340AbfB1TD2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Feb 2019 14:03:28 -0500
-Received: from outils.crapouillou.net ([89.234.176.41]:37850 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726232AbfB1TD1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 14:03:27 -0500
-X-Greylist: delayed 425 seconds by postgrey-1.27 at vger.kernel.org; Thu, 28 Feb 2019 14:03:26 EST
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1551380179; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=30SEL/MMjAJMNKdXS74lACgIJDPDuweQsqa9AAKNPLY=;
-        b=sFkClUBdoDytdf3XaP4n7TzR37bpcg7LwUxkoAUExpo7QrNg2AoDSk/1mYlYS/2jmS2PAd
-        TkujAnzaDXvNLbZN8ua3YLX519oFTcgOf0xYvDegmxufwTtBanwW5F72Bp8aK7VX/WSrx+
-        99dggwQkWMK/GDL6muNyZBi9GeizuD0=
-Date:   Thu, 28 Feb 2019 15:56:04 -0300
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 4/7] dt-bindings: power: supply: Add docs for Ingenic
- JZ47xx SoCs battery.
-To:     Rob Herring <robh@kernel.org>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
+        id S1727918AbfB1Trj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Feb 2019 14:47:39 -0500
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:37485 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727873AbfB1Trj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 14:47:39 -0500
+Received: by mail-oi1-f193.google.com with SMTP id w66so17507204oia.4;
+        Thu, 28 Feb 2019 11:47:38 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=4zLpkg9lasy0oknFW0BAb173RlRaDWUARDEXV2KYlVQ=;
+        b=o7zRIWV3FhGdxXJUerpGpGuNMuQQkk+cbUfZATCfk2upseiL5K4W7hV10mNdjx1nyG
+         ZFQN6QwgmG/6CFHxWIj1vSDEWkznOxvbOtU1yGx7h3JCHQmFo9tlYFIevQMgwMNVddzn
+         aUrJc5su1FMOFph4P28Rcsw2NcTSndQVwoz33t7I7hfk8tIzefT+buoPYBbmjp+EdxSB
+         5NRz2NhNLRSnuERQsIppqI+P6SP3QGCSRQsDRla+T/NzkoojD1Tm9HLcVWIGFZO7MoEQ
+         JGGPnezuDTnMzGq6Y8p4B2xw+3rxj3e9LBQiLGwF8g7huqzYOJ55fLiknt+rRG/3clBG
+         K9jw==
+X-Gm-Message-State: APjAAAVJXpLD/xNcdbG/nmu1qW4ZUnh3iPiuplgOmBfu/GhvbtIJ+l5e
+        fdPx3eWn2xk6q1VQ76vKAg==
+X-Google-Smtp-Source: AHgI3IZcVaVIt3JIXFrJEaqwgrZfby2Bq9Ok7clcX8jSWYhPXacngMqyeXKcxOKyylxGRBhN6jT2vw==
+X-Received: by 2002:aca:fc09:: with SMTP id a9mr874570oii.106.1551383258425;
+        Thu, 28 Feb 2019 11:47:38 -0800 (PST)
+Received: from localhost ([2607:fb90:20de:307f:59ce:35b2:628:2365])
+        by smtp.gmail.com with ESMTPSA id a15sm7951821otq.35.2019.02.28.11.47.37
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 28 Feb 2019 11:47:37 -0800 (PST)
+Date:   Thu, 28 Feb 2019 13:47:36 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Patrick Havelange <patrick.havelange@essensium.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Li Yang <leoyang.li@nxp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Esben Haabendal <esben@haabendal.dk>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Message-Id: <1551380164.10612.0@crapouillou.net>
-In-Reply-To: <20190228184822.GA17624@bogus>
-References: <20190217142914.17433-1-contact@artur-rojek.eu>
-        <20190217142914.17433-4-contact@artur-rojek.eu>
-        <20190228184822.GA17624@bogus>
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Patrick Havelange <patrick.havelange@essensium.com>
+Subject: Re: [PATCH 7/8] dt-bindings: iio/counter: ftm-quaddec: add
+ poll-interval parameter
+Message-ID: <20190228194736.GA6079@bogus>
+References: <20190218140321.19166-1-patrick.havelange@essensium.com>
+ <20190218140321.19166-7-patrick.havelange@essensium.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190218140321.19166-7-patrick.havelange@essensium.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Rob,
+On Mon, 18 Feb 2019 15:03:20 +0100, Patrick Havelange wrote:
+> New optional parameter supported by updated driver.
+> 
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+> ---
+>  .../devicetree/bindings/iio/counter/ftm-quaddec.txt       | 8 +++++++-
+>  1 file changed, 7 insertions(+), 1 deletion(-)
+> 
 
-Le jeu. 28 f=E9vr. 2019 =E0 15:48, Rob Herring <robh@kernel.org> a =E9crit=20
-:
-> On Sun, Feb 17, 2019 at 03:29:13PM +0100, Artur Rojek wrote:
->>  Add documentation for the ingenic-battery driver, used on JZ47xx=20
->> SoCs.
->>=20
->>  Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
->>  ---
->>   .../bindings/power/supply/ingenic,battery.txt | 31=20
->> +++++++++++++++++++
->>   1 file changed, 31 insertions(+)
->>   create mode 100644=20
->> Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
->>=20
->>  diff --git=20
->> a/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt=20
->> b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
->>  new file mode 100644
->>  index 000000000000..66430bf73815
->>  --- /dev/null
->>  +++=20
->> b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
->>  @@ -0,0 +1,31 @@
->>  +* Ingenic JZ47xx battery bindings
->>  +
->>  +Required properties:
->>  +
->>  +- compatible: Must be "ingenic,jz4740-battery".
->>  +- io-channels: phandle and IIO specifier pair to the IIO device.
->>  +  Format described in iio-bindings.txt.
->>  +- monitored-battery: phandle to a "simple-battery" compatible node.
->>  +
->>  +The "monitored-battery" property must be a phandle to a node using=20
->> the format
->>  +described in battery.txt, with the following properties being=20
->> required:
->>  +
->>  +- voltage-min-design-microvolt: Drained battery voltage.
->>  +- voltage-max-design-microvolt: Fully charged battery voltage.
->>  +
->>  +Example:
->>  +
->>  +#include <dt-bindings/iio/adc/ingenic,adc.h>
->>  +
->>  +simple_battery: battery {
->>  +	compatible =3D "simple-battery";
->>  +	voltage-min-design-microvolt =3D <3600000>;
->>  +	voltage-max-design-microvolt =3D <4200000>;
->>  +};
->>  +
->>  +ingenic_battery {
->>  +	compatible =3D "ingenic,jz4740-battery";
->>  +	io-channels =3D <&adc INGENIC_ADC_BATTERY>;
->>  +	io-channel-names =3D "battery";
->>  +	monitored-battery =3D <&simple_battery>;
->=20
-> Isn't this just an ADC monitored battery? What's specific to JZ4740?
->=20
-> Maybe a generic binding is appropriate here?
->=20
-> Rob
-
-There is no generic driver, is there? The generic-adc-battery driver
-isn't OF-compatible and looks like dead code (nothing uses it).
-
--Paul
-=
-
+Reviewed-by: Rob Herring <robh@kernel.org>
