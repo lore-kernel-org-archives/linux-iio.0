@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_PASS,USER_AGENT_NEOMUTT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 190C1C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 14:25:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 987D7C4360F
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 14:25:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DD0BB2171F
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 14:25:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 689D5218AE
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 14:25:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D1at2AIp"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tTp8qRSX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731538AbfB1OZC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Feb 2019 09:25:02 -0500
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:46762 "EHLO
+        id S1732852AbfB1OZR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Feb 2019 09:25:17 -0500
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:42864 "EHLO
         mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726027AbfB1OZC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 09:25:02 -0500
-Received: by mail-qt1-f193.google.com with SMTP id z25so23591916qti.13;
-        Thu, 28 Feb 2019 06:25:01 -0800 (PST)
+        with ESMTP id S1732841AbfB1OZQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 09:25:16 -0500
+Received: by mail-qt1-f193.google.com with SMTP id u7so14432483qtg.9;
+        Thu, 28 Feb 2019 06:25:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=JlOPTet1jflBzo+5BdxF8+Muf08K1vBJXDoi85DvXoE=;
-        b=D1at2AIpfc4kQH9PDPQ7Hu+KVHj75AmMkEbR48B5PmKzB21NL+YaM/YbuU1NgyXguE
-         MpacssVkC+snup9EkdUDD59MyG/u6NQfg8Tc3xMw2u10WC4jb/lnhrBuVIPBCj9QN5jW
-         L7DK8cp58FC0QDc4p0gsuhOZU4hwvj/wie0rIolWWFo9yL/4+v7+bdi+x4iIJKiR1NYp
-         Rnzrr9XE7nltNUiZjJ84wV4VF+lN3V0x5MUZ3yPudPlxdB0szmop3brD2qBevAFj5xkm
-         fCvas5JWXMGI8TG/e9SAL9sjtwPD2kBIEP0IA/Dllz0+PT0UXN/qVmlvvUlfNRy5/shA
-         yhgQ==
+        bh=7IjTEn/vSJKDmLNmxTfgAiOgC0kjjMvr7wAaLhI+NQw=;
+        b=tTp8qRSXsofJF+XuoEKGP3DhVSrrCLPYQim2iMK9FbzOojDAMcBqp4a9N1PyyMkMX6
+         X3HmpjMyMptSfQOgAu3gBtHmVuVZIBkxMNbjpVNjTaoy0X2VKzhTlwBfBaZAdGsKhUUY
+         o2XK13B4eY7AqcMq8CmywCL00gyACUsqpf6/rfWvxkTvOET6FTFCxdY3C2fgO5V/Un8Q
+         tvYSSjNOLkKqQyTmgUE2tk7R8B6UE185ZMQ3Yz79OjKnfX1MDMHLOycZMEVDbe8xfmMt
+         +wvwBi8eFC7uOTbavvWln3bAGKzhk+jjCVFAeQWdxmbveM0x5E4ofg5mWM89Ptbwtjoq
+         EbnA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=JlOPTet1jflBzo+5BdxF8+Muf08K1vBJXDoi85DvXoE=;
-        b=K+I47oz2jTTD+t9ARSdpUxjBsxXplaEWLhTLMI2OSY/j0KbOEzp91RRyOb32Tb/Ahd
-         399JFoUD9c2OOyl5+m+QkTf63tDlZ9QradeBUv7m0jlyfdwsTDuu8Q5RatbVDJScNYdX
-         qiaQM2WlgmWjdkCP3Be0j8/m1wKEg6xQfRCH9KHHcAL30ElMw7nTeU5tyvNU3E14mrVy
-         XJz12xrxiMHV/sfRlWVe3Qf0Y5/j/gKy3YobDsxyLCcS6QU87XSd/XgIYoZdgDNiftk4
-         pB8755NCtMAl9Tw2uPo/V+1hKKPwP8OeLauwhHZz/B9O/Veu5wAQUVrtnn0qMCjDNEz3
-         MZ7Q==
-X-Gm-Message-State: AHQUAuZ0670Vt8rVPACX4wghKzWnLDVNLPloUUgR3KMasb5/bWTwtIra
-        GsbHkrEfPQzOsuXf6H0fDxA=
-X-Google-Smtp-Source: AHgI3IbNBQSWJZ7YL9OnkX9z4vP0Vihqwk9J8bKDwKdnWuks71j/SYxjKVcOlli3gz3ODWhqUMTQmQ==
-X-Received: by 2002:ac8:3474:: with SMTP id v49mr6334393qtb.132.1551363901206;
-        Thu, 28 Feb 2019 06:25:01 -0800 (PST)
+        bh=7IjTEn/vSJKDmLNmxTfgAiOgC0kjjMvr7wAaLhI+NQw=;
+        b=iLDp+nJ4ZN+bfhzjwzvdFLf/c0NUEXZcZChFVz5zbRp5YOl1WqpeO2CXDH9htKbKQJ
+         Ca1kOoFjxQgGH42vC/JWFHbwuMcSTVkK7bubcW8giAiwRT3C269qzuDMPm6NYrD8Ptod
+         kocYx3mGndWrdynJ+bUNl+671F2ESGHiB+uXmewPN3EZ/Vsfugu6aYi+9JM4DaJlf3x1
+         yxzZGVWXt6dQHed5zmx6UuJda9bctsPM89is2pP/W71s2AztgandeZZoc6uCXoJxJ5sG
+         kWzWeoPj0REQb5uXsQhas+vxXgNv7XVQbxztYUtpTcdmR212BoeyP5JhvA7ckMIeFu6+
+         yiQQ==
+X-Gm-Message-State: AHQUAuZDOwNluXEQw6YaQOe4YeDTmq60JgfWTir4LwW45iJPGrMYE+fZ
+        IykDuD+ix3ZpOU71VJZwI+d1HeSbGfE=
+X-Google-Smtp-Source: AHgI3IZKH/KcRhkXWV3NEWKKP/hULaaU1gfc7Gn7mS4D4fsTmW3F4mQLWFHA7xWHToxqPINP434b8w==
+X-Received: by 2002:ac8:2314:: with SMTP id a20mr6523370qta.127.1551363915303;
+        Thu, 28 Feb 2019 06:25:15 -0800 (PST)
 Received: from renatolg ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id e4sm10608705qta.84.2019.02.28.06.24.57
+        by smtp.gmail.com with ESMTPSA id p64sm3673740qkc.62.2019.02.28.06.25.11
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 28 Feb 2019 06:25:00 -0800 (PST)
-Date:   Thu, 28 Feb 2019 11:24:55 -0300
+        Thu, 28 Feb 2019 06:25:15 -0800 (PST)
+Date:   Thu, 28 Feb 2019 11:25:09 -0300
 From:   Renato Lui Geh <renatogeh@gmail.com>
 To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
         knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
@@ -64,8 +64,9 @@ To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
 Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
         devicetree@vger.kernel.org
-Subject: [PATCH v4 4/9] staging:iio:ad7780: add chip ID values and mask
-Message-ID: <90c573cd53bb54d49de6ac270bcff66880ccfeb5.1551358569.git.renatogeh@gmail.com>
+Subject: [PATCH v4 5/9] staging: iio: ad7780: move regulator to after GPIO
+ init
+Message-ID: <93cabb081605ac356f2f0d9a9a41d5bc5e63820d.1551358569.git.renatogeh@gmail.com>
 References: <cover.1551358569.git.renatogeh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
@@ -77,37 +78,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ad7780 supports both the ad778x and ad717x families. Each chip has
-a corresponding ID. This patch provides a mask for extracting ID values
-from the status bits and also macros for the correct values for the
-ad7170, ad7171, ad7780 and ad7781.
+To maintain consistency between ad7780_probe and ad7780_remove orders,
+regulator initialization has been moved to after GPIO initializations.
 
 Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
 ---
- drivers/staging/iio/adc/ad7780.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7780.c | 26 +++++++++++++-------------
+ 1 file changed, 13 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index 56c49e28f432..ad7617a3a141 100644
+index ad7617a3a141..12aef0f101bc 100644
 --- a/drivers/staging/iio/adc/ad7780.c
 +++ b/drivers/staging/iio/adc/ad7780.c
-@@ -26,10 +26,14 @@
- #define AD7780_RDY		BIT(7)
- #define AD7780_FILTER		BIT(6)
- #define AD7780_ERR		BIT(5)
--#define AD7780_ID1		BIT(4)
--#define AD7780_ID0		BIT(3)
- #define AD7780_GAIN		BIT(2)
+@@ -255,16 +255,6 @@ static int ad7780_probe(struct spi_device *spi)
  
-+#define AD7170_ID		0
-+#define AD7171_ID		1
-+#define AD7780_ID		1
-+#define AD7781_ID		0
+ 	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
+ 
+-	st->reg = devm_regulator_get(&spi->dev, "avdd");
+-	if (IS_ERR(st->reg))
+-		return PTR_ERR(st->reg);
+-
+-	ret = regulator_enable(st->reg);
+-	if (ret) {
+-		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
+-		return ret;
+-	}
+-
+ 	st->chip_info =
+ 		&ad7780_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+ 
+@@ -284,7 +274,7 @@ static int ad7780_probe(struct spi_device *spi)
+ 		ret = PTR_ERR(st->powerdown_gpio);
+ 		dev_err(&spi->dev, "Failed to request powerdown GPIO: %d\n",
+ 			ret);
+-		goto error_disable_reg;
++		return ret;
+ 	}
+ 
+ 	if (st->chip_info->is_ad778x) {
+@@ -295,7 +285,7 @@ static int ad7780_probe(struct spi_device *spi)
+ 			ret = PTR_ERR(st->gain_gpio);
+ 			dev_err(&spi->dev, "Failed to request gain GPIO: %d\n",
+ 				ret);
+-			goto error_disable_reg;
++			return ret;
+ 		}
+ 
+ 		st->filter_gpio = devm_gpiod_get_optional(&spi->dev,
+@@ -306,10 +296,20 @@ static int ad7780_probe(struct spi_device *spi)
+ 			dev_err(&spi->dev,
+ 				"Failed to request filter GPIO: %d\n",
+ 				ret);
+-			goto error_disable_reg;
++			return ret;
+ 		}
+ 	}
+ 
++	st->reg = devm_regulator_get(&spi->dev, "avdd");
++	if (IS_ERR(st->reg))
++		return PTR_ERR(st->reg);
 +
-+#define AD7780_ID_MASK		(BIT(3) | BIT(4))
- 
- #define AD7780_PATTERN_GOOD	1
- #define AD7780_PATTERN_MASK	GENMASK(1, 0)
++	ret = regulator_enable(st->reg);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to enable specified AVdd supply\n");
++		return ret;
++	}
++
+ 	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
+ 	if (ret)
+ 		goto error_disable_reg;
 -- 
 2.21.0
 
