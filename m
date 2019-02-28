@@ -2,41 +2,41 @@ Return-Path: <SRS0=4tHG=RD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
 	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54004C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 117D4C43381
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1E68420863
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C81E920863
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="tAulTENt"
+	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="o2tTkXWP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728823AbfB1WRr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Feb 2019 17:17:47 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:54740 "EHLO
+        id S1728394AbfB1WRp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Feb 2019 17:17:45 -0500
+Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:54696 "EHLO
         rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726203AbfB1WRq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 17:17:46 -0500
+        by vger.kernel.org with ESMTP id S1726203AbfB1WRp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 17:17:45 -0500
 Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 5EF4D30C04C;
-        Thu, 28 Feb 2019 14:17:44 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 5EF4D30C04C
+        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 374F130C041;
+        Thu, 28 Feb 2019 14:17:43 -0800 (PST)
+DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 374F130C041
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1551392264;
-        bh=6v8rWmKbm19cPG30ujMQBqdZv3fhMujqMeaEXG+Iib8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tAulTENtbAevIfGMN+Ey1ef+DKh8Z7K9E+8FhQ4VcLaMFWP9VcX+c6GPChWYQW1Rx
-         APK26cWNPoVeuZHhz3jQgMFroS8VyYPysDj7ReYsl8bLU2G1DoHCqUssxLHCV5JvD4
-         kvzIUTPYpgIW8buOApeZNunwFCSlLIN/NjbgoOWY=
+        s=dkimrelay; t=1551392263;
+        bh=CCd6yypswlM4xGV+ZzfyYO6YjL4Q5DmUlzfNaCiLAP4=;
+        h=From:To:Cc:Subject:Date:From;
+        b=o2tTkXWPKHcxvhyoHNoKG2buOo0iUTrb+h8Emlj/0JVl7jsSsXAwS6iu9M9BH3qoq
+         ECYxiJM+Bu1a4mxl0YK6WGf8iS23+E9CK9XAjljKwNx2vErfZwC+MT27LcT7O5gIm2
+         vYK2dVS+VaAoafT9TbQJ4zCOouJNTxo77Aui47e0=
 Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
-        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 11D77AC0798;
-        Thu, 28 Feb 2019 14:17:45 -0800 (PST)
+        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 87943AC0761;
+        Thu, 28 Feb 2019 14:17:43 -0800 (PST)
 Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
-        id 09E6B27ECE7; Thu, 28 Feb 2019 14:17:45 -0800 (PST)
+        id 79D1727ECE7; Thu, 28 Feb 2019 14:17:43 -0800 (PST)
 From:   justinpopo6@gmail.com
 To:     linux-iio@vger.kernel.org
 Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
@@ -44,12 +44,10 @@ Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
         linus.walleij@linaro.org, jic23@kernel.org, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
         Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v4 1/2] iio: adc: ti-ads7950: Fix improper use of mlock
-Date:   Thu, 28 Feb 2019 14:16:48 -0800
-Message-Id: <1551392209-20004-2-git-send-email-justinpopo6@gmail.com>
+Subject: [PATCH v4 0/2] iio: adc: ads7950: add gpio support
+Date:   Thu, 28 Feb 2019 14:16:47 -0800
+Message-Id: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com>
-References: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -57,103 +55,21 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Justin Chen <justinpopo6@gmail.com>
 
-Indio->mlock is used for protecting the different iio device modes.
-It is currently not being used in this way. Replace the lock with
-an internal lock specifically used for protecting the SPI transfer
-buffer.
+Add GPIO support for ads7950.
 
-Signed-off-by: Justin Chen <justinpopo6@gmail.com>
----
- drivers/iio/adc/ti-ads7950.c | 19 +++++++++++++++----
- 1 file changed, 15 insertions(+), 4 deletions(-)
+v4
+Split patch into two commits.
+Refractored code to capture the state of the adc instead of only the GPIOs.
+Added comments to clarify the intend of the code.
+Fix improper use of mlock.
 
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-index 0ad6359..1e47bef 100644
---- a/drivers/iio/adc/ti-ads7950.c
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -56,6 +56,9 @@ struct ti_ads7950_state {
- 	struct spi_message	ring_msg;
- 	struct spi_message	scan_single_msg;
- 
-+	/* Lock to protect the spi xfer buffers */
-+	struct mutex		slock;
-+
- 	struct regulator	*reg;
- 	unsigned int		vref_mv;
- 
-@@ -268,6 +271,7 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
- 	struct ti_ads7950_state *st = iio_priv(indio_dev);
- 	int ret;
- 
-+	mutex_lock(&st->slock);
- 	ret = spi_sync(st->spi, &st->ring_msg);
- 	if (ret < 0)
- 		goto out;
-@@ -276,6 +280,7 @@ static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
- 					   iio_get_time_ns(indio_dev));
- 
- out:
-+	mutex_unlock(&st->slock);
- 	iio_trigger_notify_done(indio_dev->trig);
- 
- 	return IRQ_HANDLED;
-@@ -286,7 +291,7 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 	struct ti_ads7950_state *st = iio_priv(indio_dev);
- 	int ret, cmd;
- 
--	mutex_lock(&indio_dev->mlock);
-+	mutex_lock(&st->slock);
- 
- 	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
- 	st->single_tx = cmd;
-@@ -298,7 +303,7 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 	ret = st->single_rx;
- 
- out:
--	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&st->slock);
- 
- 	return ret;
- }
-@@ -432,16 +437,19 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	if (ACPI_COMPANION(&spi->dev))
- 		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;
- 
-+	mutex_init(&st->slock);
-+
- 	st->reg = devm_regulator_get(&spi->dev, "vref");
- 	if (IS_ERR(st->reg)) {
- 		dev_err(&spi->dev, "Failed get get regulator \"vref\"\n");
--		return PTR_ERR(st->reg);
-+		ret = PTR_ERR(st->reg);
-+		goto error_destroy_mutex;
- 	}
- 
- 	ret = regulator_enable(st->reg);
- 	if (ret) {
- 		dev_err(&spi->dev, "Failed to enable regulator \"vref\"\n");
--		return ret;
-+		goto error_destroy_mutex;
- 	}
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-@@ -463,6 +471,8 @@ static int ti_ads7950_probe(struct spi_device *spi)
- 	iio_triggered_buffer_cleanup(indio_dev);
- error_disable_reg:
- 	regulator_disable(st->reg);
-+error_destroy_mutex:
-+	mutex_destroy(&st->slock);
- 
- 	return ret;
- }
-@@ -475,6 +485,7 @@ static int ti_ads7950_remove(struct spi_device *spi)
- 	iio_device_unregister(indio_dev);
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	regulator_disable(st->reg);
-+	mutex_destroy(&st->slock);
- 
- 	return 0;
- }
+Justin Chen (2):
+  iio: adc: ti-ads7950: Fix improper use of mlock
+  iio: adc: ti-ads7950: add GPIO support
+
+ drivers/iio/adc/ti-ads7950.c | 219 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 209 insertions(+), 10 deletions(-)
+
 -- 
 2.7.4
 
