@@ -2,1802 +2,313 @@ Return-Path: <SRS0=Lp50=RE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5287EC43381
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 02:53:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A55DC43381
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 06:56:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E082020854
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 02:53:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27AA82186A
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 06:56:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="r8jSP4i8"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="m+jOBv6/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732596AbfCACxj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Feb 2019 21:53:39 -0500
-Received: from mail-qt1-f195.google.com ([209.85.160.195]:39752 "EHLO
-        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731450AbfCACxj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 21:53:39 -0500
-Received: by mail-qt1-f195.google.com with SMTP id o6so26158639qtk.6;
-        Thu, 28 Feb 2019 18:53:36 -0800 (PST)
+        id S1727707AbfCAG4X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Mar 2019 01:56:23 -0500
+Received: from mail-eopbgr700046.outbound.protection.outlook.com ([40.107.70.46]:35808
+        "EHLO NAM04-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725290AbfCAG4W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 1 Mar 2019 01:56:22 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=s8V3ZSittUmUcpdN+PVjJMKRr0wDvf17c7b1Tila8UY=;
-        b=r8jSP4i8Patg6kJkQrPhZk50F8hFjggE8nkCcGnSm6vf3RNY3ISh7HI6RFgn/mBwYt
-         UD8dOY5eNpApXo1H99aj0i0v54az2C9GQykAzkEVoINYW8CSRS4aGviNOGYgjuOmr+mJ
-         6wXhcZBYiqCEzOq4se4zdq3DGKr/3FC1jTYgX/QLzKUkSb+fiECV2wABO8a9q7e+p8Xy
-         RPHg8BgSCsRct5sFy3/C/WmA+VJ2VBLCblRnJhCvVy092b0lDjZ/cZNg6Ipg+orWBl+B
-         Cqeutyi4NyaVMjKuHtUkKxltdQRJ5wGKwSDQOk4ijrXEqpG28iA799r5jm9dzV8z0k+S
-         5q5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=s8V3ZSittUmUcpdN+PVjJMKRr0wDvf17c7b1Tila8UY=;
-        b=gGhvNo7v9MhY+vK4vSP6Cq2Yw5oHOTj/ViLjkjCUC6bFeflQHfhTm4E09MzBffTXHe
-         CC+0OV1aQM66BAJm22sJy+FbUcVWTda/PFX0W6R9yiSpFEVeM1J19By4AwgKIOwvQPkv
-         8e5QUt28/L/fZOU1awviTOgd0KEPxe45cBzmO7NP9BEHmINqe/aKPyWklQSWY1PN8rcL
-         ZFVoVFfo8zFUvMA+TLbPddISprtThg1Smgq/4iKPNlLWTmQl39AREA2Gly97uAGbb77M
-         X5/hn0potrrdSEA/RpZywQYzf43WFwospFLd4rAl66ekbECs0ETgREVZeYEWnTpPAnf1
-         TAIg==
-X-Gm-Message-State: APjAAAXLpRa4ScTxHnfkcy3tXP5ocdBtr9NU3UtQwM6/+zq7Lddy51nX
-        8Yzx7/VI8AdHdtswKkkT8NM=
-X-Google-Smtp-Source: APXvYqyTlFj8reLKv558xU2R03qJAyTopvTiLfXTo9RscymjQOIjKi0ve/gNhd4s++SlzA+rpjfnjQ==
-X-Received: by 2002:a0c:8876:: with SMTP id 51mr2015045qvm.38.1551408815698;
-        Thu, 28 Feb 2019 18:53:35 -0800 (PST)
-Received: from smtp.gmail.com ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id k39sm13612534qtb.37.2019.02.28.18.53.33
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Thu, 28 Feb 2019 18:53:35 -0800 (PST)
-Date:   Thu, 28 Feb 2019 23:53:31 -0300
-From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: [PATCH v2 4/4] staging: iio: ad5933: move out of staging
-Message-ID: <20190301025331.ucqd7unbgaqfcuaf@smtp.gmail.com>
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=eAK7B9oEFasYKh+1Df5zjP/wtzjadyL24FnHwrBFxF8=;
+ b=m+jOBv6/lJG4l6TYvqs/gIUnHTR21aWQDb3yn+d4uEIxDA0E1eIat89PH8+o6D8lEWNR7ynhuJQHssBSzcFu6TfDRvLlQhNwku0N3jYd52+N4bUNjiMtQt1f+qkfZuBxKJoNQ4zf+Afk6WGng95r2G2a9m2uh7FyvrB/Y1D2NJs=
+Received: from DM6PR03CA0054.namprd03.prod.outlook.com (2603:10b6:5:100::31)
+ by BN6PR03MB3058.namprd03.prod.outlook.com (2603:10b6:405:44::25) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1665.16; Fri, 1 Mar
+ 2019 06:56:17 +0000
+Received: from CY1NAM02FT016.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::205) by DM6PR03CA0054.outlook.office365.com
+ (2603:10b6:5:100::31) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1665.18 via Frontend
+ Transport; Fri, 1 Mar 2019 06:56:16 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ CY1NAM02FT016.mail.protection.outlook.com (10.152.75.164) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1643.11
+ via Frontend Transport; Fri, 1 Mar 2019 06:56:15 +0000
+Received: from NWD2HUBCAS9.ad.analog.com (nwd2hubcas9.ad.analog.com [10.64.69.109])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x216uEad004213
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Thu, 28 Feb 2019 22:56:14 -0800
+Received: from NWD2MBX7.ad.analog.com ([fe80::190e:f9c1:9a22:9663]) by
+ NWD2HUBCAS9.ad.analog.com ([fe80::44a2:871b:49ab:ea47%12]) with mapi id
+ 14.03.0415.000; Fri, 1 Mar 2019 01:56:14 -0500
+From:   "Ardelean, Alexandru" <Alex.Ardelean@analog.com>
+To:     "lars@metafoo.de" <lars@metafoo.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 1/9] staging: iio: ad7780: add gain & filter gpio
+ support
+Thread-Topic: [PATCH v4 1/9] staging: iio: ad7780: add gain & filter gpio
+ support
+Thread-Index: AQHUz3E0BI7+t2AKoEiQ8XbtBSWtN6X2rKSA
+Date:   Fri, 1 Mar 2019 06:56:14 +0000
+Message-ID: <4f945f058c8536a2731c4de3e0b9227a41cd2891.camel@analog.com>
+References: <cover.1551358569.git.renatogeh@gmail.com>
+         <b83c0558a600cb44677b0d06f31e014be550b8bf.1551358569.git.renatogeh@gmail.com>
+In-Reply-To: <b83c0558a600cb44677b0d06f31e014be550b8bf.1551358569.git.renatogeh@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.50.1.244]
+x-adiroutedonprem: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <4F09E2FDB8CAE349AE074D38FE9DF402@analog.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(136003)(396003)(39860400002)(2980300002)(189003)(199004)(2201001)(14444005)(86362001)(4326008)(36756003)(23676004)(7416002)(6246003)(2486003)(436003)(8676002)(426003)(486006)(446003)(118296001)(126002)(356004)(2616005)(11346002)(476003)(229853002)(6116002)(3846002)(26005)(186003)(102836004)(50466002)(2501003)(336012)(106466001)(47776003)(8936002)(316002)(14454004)(7636002)(5660300002)(305945005)(478600001)(2906002)(7696005)(246002)(72206003)(106002)(110136005)(54906003)(7736002)(76176011)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR03MB3058;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: e3687249-26cc-47a0-a846-08d69e130035
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600127)(711020)(4605104)(4608103)(4709054)(2017052603328)(7153060)(7193020);SRVR:BN6PR03MB3058;
+X-MS-TrafficTypeDiagnostic: BN6PR03MB3058:
+X-Microsoft-Exchange-Diagnostics: 1;BN6PR03MB3058;20:L3wTgRIqGbbKHiyce5vp0WRSd8Gql0djCX3B3+lOYlhOvl0eQcQY6S/BG9JkItLvyiA4ArVdtQsVF7iSo3i0U8SWy6mEsVJpkK1gnPHvZtT2tz+QDBe14mjjKSEl76mGSptjjfCrk0wjnH3VmXHcg0IPLsNjJGiN/EloNUU93ESbEOr1fbXnid6fiEpVo5uXLMDvOff6gSf/LeQi4khKhXNRPa0WHSAPsCqxleBtl43+HtphxsWrYPclILEcWRQF2Gnq5h9AJKppecP20pYBUoG64KVBBMdFyXqOE9tClMiLaxJ+NDtKe7IkNA2wwgsjEbN5QIjJwgpaMOxgKo0gJ2tTKn/sF5vUSitAHXZJyk+Xpxig3abxw27BDz55yeg/g/kFG7Hi9O+CudZiuwwECKI2gdEcR9P/GQLt5ggliPfVwMOhXz5scHrKpvzQAZ3gcl3OO+HPXMvp57BiyDbYMTw0N2qwUvRgEv404rMm5cXWG0TsUQkBV9jeZCDhQDM6
+X-Microsoft-Antispam-PRVS: <BN6PR03MB305876F6C9C4F459FC6C46CC95760@BN6PR03MB3058.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 09634B1196
+X-Microsoft-Exchange-Diagnostics: =?utf-8?B?MTtCTjZQUjAzTUIzMDU4OzIzOnFXL2FjMzRPQzRPNkRFU1JSdFBPN29JUHpu?=
+ =?utf-8?B?OFlFa3lNR3E5c3UrOU10TCt3Ykdpd21zRFJOMGdiTmw1WUJnUGVmRGtKanMv?=
+ =?utf-8?B?THVBaTlWaklaT1QwRHkzN0p1d2U0M1FHN29pUkZhTlRXK0NMSXhVeHRXME10?=
+ =?utf-8?B?N0RWZnRVMUI2ZHE0RWRVWjlKUk9oMXZIeENxZ1psSGxRTis0bmJoNjVzODEv?=
+ =?utf-8?B?MTRCcStIZTFCTnVHNzZJaGx2RnZpbHlZdjdYdnE1VzE4dkp3cXBJZXJLdTha?=
+ =?utf-8?B?djUvTXZMZXJHWG1ieTc4aXRaanZMc09vdThmaEdaaUhnUlNWTlNQd0dSVE52?=
+ =?utf-8?B?VkpHYk5oaGpYUEZ4UEJjZlpWN1lyRWVBbFlOTnQ1WCszQWVXS242Q0pDdHJI?=
+ =?utf-8?B?RTlwaWpmbnNjQTNLVGhma2JaSndpQmhxNDAxRmdLL29pMFNqLzFRMHBLczhW?=
+ =?utf-8?B?WVlYdkpiaGlIamVkQVZob1BJNHg3UjJIUE02eExpTHAyRHZTdGVQVGZBcEJM?=
+ =?utf-8?B?KzFGQnF5RFdDcmFYSDFvVSt2Tnh6R0Iya0FKelAwNlRNdUNHMWRDM3NZQ2Vu?=
+ =?utf-8?B?WGJVcG02Q3lZV1BRREhEWDRMUnk0K0RJM29rbG96K21aa0d4aWNtZFZhZURs?=
+ =?utf-8?B?Mm9INldUeGIxUUpjUlNSZFJiV1E2TEN1U094UW56TWhjcElGR0J4VGFJb3lr?=
+ =?utf-8?B?L25xV09OOW5QenVvdDQ4cC80MWoxb2JiVUtVTHUzS21GV2xkdnF4cG8wRlJV?=
+ =?utf-8?B?ODg5WThyLy9SbFg3RWQ2Zy9WdDBVOGtkbDVkTkdhMVBMTVdMUm13V0FDajRN?=
+ =?utf-8?B?aVBiMnZFdVdpNW1jZk9Cakd4RjdmWXBNeWJIK2lUempPSWRsL3BHM2RQanlu?=
+ =?utf-8?B?WDNnNU5JQjJ3WjFrc0FVMGgvOVd4Qys0OTh3TENaS3BiNlErK2pZZjBMSWhB?=
+ =?utf-8?B?M2NPNXFkZUZKMlEzVkJIK2tmYm0weFgzYmcwYTVhdzVCSW1jQW81OWdTRXBF?=
+ =?utf-8?B?aWxVR0pLVVpNNEQzVHA0ZDk1VzNuOVBaZDBQemxvVExRc1dmMWhHb1NML0xH?=
+ =?utf-8?B?K1d2Ly9LVFNWUGpMWnpmTGJwSjhKcmk0YklSWXEvMmMwb0ZYdThJdEt2cDcv?=
+ =?utf-8?B?eGlYTXBiQ3NOQTU4a2NFNVRWU2dMSXd2UEFQZmUrVGhFZTd0WmxobUdWSUxO?=
+ =?utf-8?B?WlNpTU5INzIyZGZsLzBHOXQ0dFY0VmFGZTR6enRidXozdUhsOUxmbVJWRmYr?=
+ =?utf-8?B?azVqQ0ZXM1VTQll3VEE4Qmw4UmVSUUxkUTUvTFdRZ3Q2Mlk3N0VhU0l1YXdl?=
+ =?utf-8?B?YSt2MnVuYnU4LzhxR2gvanl6WEpteUNuRHE0bWhaeENaR0p5K1gyRUliZGVZ?=
+ =?utf-8?B?MWRJUGNSWUxKMVg1eUphdFR4ZXlTcWtXQ1BVTmtRRTFCcDhOaVhqVVpiUlJl?=
+ =?utf-8?B?V2pCWnFvUjZBRUw0OW9zWEZKTHl6S29kWklMT0JRNzh1N1ZneWdUR0tRWjFS?=
+ =?utf-8?B?SFVIcTZxRzhsdFdvRjBCRGFYbDhFSjRpdXJRVUNpQy9GNjBMYTZDOXUwQ2Rv?=
+ =?utf-8?B?ang4Ym96WStxS24wdGh0R0drZnVvekk0YnBHbExDcHRsdzJEWVJoTXYzaEVW?=
+ =?utf-8?B?c05kSXNadSsrNEJPRW9KWXVhWkRhNnR6VlJqQm5yUDVPRUpKd2xXdzdBPT0=?=
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 67C8I8iHphGpNeuNUZp5I8sJMD+w4SXppKZ1ZysLsCUIQDW2Pfo6cqhGl3UbjojP9LuONu965M/Yvh+IXSKsf2oZLOCVU4Q7gwCfKOkJf3capsgA8/D62Lxtm+tHUxZm1qgnt2A/Olx032jcwQrfQP/4euAcP1xmCpc55K9qGQgRYiTHPw1IlS66iNo+MnLA5UoXrxGgKhnlfeaHmQ7rbJk2zDl8Tq6Y2ZXTYe4oXMvJwhB+OFm/uttiWrfw0PTk09Z8u0Gs2yUHA6kizyA6FENWTRcBkkdGbJvJCGyUBYcxW1i5PfPrrsuVReOtEKcMcmUCs+lHdZ7n1W+LFczDHtZcTLED/6NmOqLTFzjf4igb2cnrNmJc5xCv61TcqxIYvXkmjz0GiBAJy8pf23l7eCJ4d5pww57GxVpZc0PkDR8=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Mar 2019 06:56:15.5598
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: e3687249-26cc-47a0-a846-08d69e130035
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB3058
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move ad5933 impedance-analyzer driver from staging to mainline.
-
-The ad5933 is a high precision impedance converter system solution that
-combines an on-board frequency generator with an analog-to-digital
-converter (ADC). This driver was designed to be compatible with both
-ad5933 and ad5934 chips.
-
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
----
- drivers/iio/impedance-analyzer/Kconfig        |  18 +
- drivers/iio/impedance-analyzer/Makefile       |   5 +
- drivers/iio/impedance-analyzer/ad5933.c       | 811 ++++++++++++++++++
- .../staging/iio/impedance-analyzer/Kconfig    |  18 -
- .../staging/iio/impedance-analyzer/Makefile   |   5 -
- .../staging/iio/impedance-analyzer/ad5933.c   | 811 ------------------
- 6 files changed, 834 insertions(+), 834 deletions(-)
- create mode 100644 drivers/iio/impedance-analyzer/Kconfig
- create mode 100644 drivers/iio/impedance-analyzer/Makefile
- create mode 100644 drivers/iio/impedance-analyzer/ad5933.c
- delete mode 100644 drivers/staging/iio/impedance-analyzer/Kconfig
- delete mode 100644 drivers/staging/iio/impedance-analyzer/Makefile
- delete mode 100644 drivers/staging/iio/impedance-analyzer/ad5933.c
-
-diff --git a/drivers/iio/impedance-analyzer/Kconfig b/drivers/iio/impedance-analyzer/Kconfig
-new file mode 100644
-index 000000000000..b9a679cdd146
---- /dev/null
-+++ b/drivers/iio/impedance-analyzer/Kconfig
-@@ -0,0 +1,18 @@
-+#
-+# Impedance Converter, Network Analyzer drivers
-+#
-+menu "Network Analyzer, Impedance Converters"
-+
-+config AD5933
-+	tristate "Analog Devices AD5933, AD5934 driver"
-+	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_KFIFO_BUF
-+	help
-+	  Say yes here to build support for Analog Devices Impedance Converter,
-+	  Network Analyzer, AD5933/4.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5933.
-+
-+endmenu
-diff --git a/drivers/iio/impedance-analyzer/Makefile b/drivers/iio/impedance-analyzer/Makefile
-new file mode 100644
-index 000000000000..7604d786583e
---- /dev/null
-+++ b/drivers/iio/impedance-analyzer/Makefile
-@@ -0,0 +1,5 @@
-+#
-+# Makefile for Impedance Converter, Network Analyzer drivers
-+#
-+
-+obj-$(CONFIG_AD5933) += ad5933.o
-diff --git a/drivers/iio/impedance-analyzer/ad5933.c b/drivers/iio/impedance-analyzer/ad5933.c
-new file mode 100644
-index 000000000000..d75bdfbf93de
---- /dev/null
-+++ b/drivers/iio/impedance-analyzer/ad5933.c
-@@ -0,0 +1,811 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AD5933 AD5934 Impedance Converter, Network Analyzer
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ */
-+
-+#include <linux/clk.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/sysfs.h>
-+#include <linux/types.h>
-+
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/sysfs.h>
-+
-+/* AD5933/AD5934 Registers */
-+#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
-+#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
-+#define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
-+#define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
-+#define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
-+#define AD5933_REG_SETTLING_CYCLES	0x8A	/* R/W, 2 bytes */
-+#define AD5933_REG_STATUS		0x8F	/* R, 1 byte */
-+#define AD5933_REG_TEMP_DATA		0x92	/* R, 2 bytes*/
-+#define AD5933_REG_REAL_DATA		0x94	/* R, 2 bytes*/
-+#define AD5933_REG_IMAG_DATA		0x96	/* R, 2 bytes*/
-+
-+/* AD5933_REG_CONTROL_HB Bits */
-+#define AD5933_CTRL_INIT_START_FREQ	(0x1 << 4)
-+#define AD5933_CTRL_START_SWEEP		(0x2 << 4)
-+#define AD5933_CTRL_INC_FREQ		(0x3 << 4)
-+#define AD5933_CTRL_REPEAT_FREQ		(0x4 << 4)
-+#define AD5933_CTRL_MEASURE_TEMP	(0x9 << 4)
-+#define AD5933_CTRL_POWER_DOWN		(0xA << 4)
-+#define AD5933_CTRL_STANDBY		(0xB << 4)
-+
-+#define AD5933_CTRL_RANGE_2000mVpp	(0x0 << 1)
-+#define AD5933_CTRL_RANGE_200mVpp	(0x1 << 1)
-+#define AD5933_CTRL_RANGE_400mVpp	(0x2 << 1)
-+#define AD5933_CTRL_RANGE_1000mVpp	(0x3 << 1)
-+#define AD5933_CTRL_RANGE(x)		((x) << 1)
-+
-+#define AD5933_CTRL_PGA_GAIN_1		(0x1 << 0)
-+#define AD5933_CTRL_PGA_GAIN_5		(0x0 << 0)
-+
-+/* AD5933_REG_CONTROL_LB Bits */
-+#define AD5933_CTRL_RESET		(0x1 << 4)
-+#define AD5933_CTRL_INT_SYSCLK		(0x0 << 3)
-+#define AD5933_CTRL_EXT_SYSCLK		(0x1 << 3)
-+
-+/* AD5933_REG_STATUS Bits */
-+#define AD5933_STAT_TEMP_VALID		(0x1 << 0)
-+#define AD5933_STAT_DATA_VALID		(0x1 << 1)
-+#define AD5933_STAT_SWEEP_DONE		(0x1 << 2)
-+
-+/* I2C Block Commands */
-+#define AD5933_I2C_BLOCK_WRITE		0xA0
-+#define AD5933_I2C_BLOCK_READ		0xA1
-+#define AD5933_I2C_ADDR_POINTER		0xB0
-+
-+/* Device Specs */
-+#define AD5933_INT_OSC_FREQ_Hz		16776000
-+#define AD5933_MAX_OUTPUT_FREQ_Hz	100000
-+#define AD5933_MAX_RETRIES		100
-+
-+#define AD5933_OUT_RANGE		1
-+#define AD5933_OUT_RANGE_AVAIL		2
-+#define AD5933_OUT_SETTLING_CYCLES	3
-+#define AD5933_IN_PGA_GAIN		4
-+#define AD5933_IN_PGA_GAIN_AVAIL	5
-+#define AD5933_FREQ_POINTS		6
-+
-+#define AD5933_POLL_TIME_ms		10
-+#define AD5933_INIT_EXCITATION_TIME_ms	100
-+
-+struct ad5933_state {
-+	struct i2c_client		*client;
-+	struct regulator		*reg;
-+	struct clk			*mclk;
-+	struct delayed_work		work;
-+	struct mutex			lock; /* Protect sensor state */
-+	unsigned long			mclk_hz;
-+	unsigned char			ctrl_hb;
-+	unsigned char			ctrl_lb;
-+	unsigned int			range_avail[4];
-+	unsigned short			vref_mv;
-+	unsigned short			settling_cycles;
-+	unsigned short			freq_points;
-+	unsigned int			freq_start;
-+	unsigned int			freq_inc;
-+	unsigned int			state;
-+	unsigned int			poll_time_jiffies;
-+};
-+
-+#define AD5933_CHANNEL(_type, _extend_name, _info_mask_separate, _address, \
-+		_scan_index, _realbits) { \
-+	.type = (_type), \
-+	.extend_name = (_extend_name), \
-+	.info_mask_separate = (_info_mask_separate), \
-+	.address = (_address), \
-+	.scan_index = (_scan_index), \
-+	.scan_type = { \
-+		.sign = 's', \
-+		.realbits = (_realbits), \
-+		.storagebits = 16, \
-+	}, \
-+}
-+
-+static const struct iio_chan_spec ad5933_channels[] = {
-+	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
-+	/* Ring Channels */
-+	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
-+	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
-+};
-+
-+static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
-+{
-+	int ret;
-+
-+	while (len--) {
-+		ret = i2c_smbus_write_byte_data(client, reg++, *data++);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "I2C write error\n");
-+			return ret;
-+		}
-+	}
-+	return 0;
-+}
-+
-+static int ad5933_i2c_read(struct i2c_client *client, u8 reg, u8 len, u8 *data)
-+{
-+	int ret;
-+
-+	while (len--) {
-+		ret = i2c_smbus_read_byte_data(client, reg++);
-+		if (ret < 0) {
-+			dev_err(&client->dev, "I2C read error\n");
-+			return ret;
-+		}
-+		*data++ = ret;
-+	}
-+	return 0;
-+}
-+
-+static int ad5933_cmd(struct ad5933_state *st, unsigned char cmd)
-+{
-+	unsigned char dat = st->ctrl_hb | cmd;
-+
-+	return ad5933_i2c_write(st->client,
-+			AD5933_REG_CONTROL_HB, 1, &dat);
-+}
-+
-+static int ad5933_reset(struct ad5933_state *st)
-+{
-+	unsigned char dat = st->ctrl_lb | AD5933_CTRL_RESET;
-+
-+	return ad5933_i2c_write(st->client,
-+			AD5933_REG_CONTROL_LB, 1, &dat);
-+}
-+
-+static int ad5933_wait_busy(struct ad5933_state *st, unsigned char event)
-+{
-+	unsigned char val, timeout = AD5933_MAX_RETRIES;
-+	int ret;
-+
-+	while (timeout--) {
-+		ret =  ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &val);
-+		if (ret < 0)
-+			return ret;
-+		if (val & event)
-+			return val;
-+		cpu_relax();
-+		mdelay(1);
-+	}
-+
-+	return -EAGAIN;
-+}
-+
-+static int ad5933_set_freq(struct ad5933_state *st,
-+			   unsigned int reg, unsigned long freq)
-+{
-+	unsigned long long freqreg;
-+	union {
-+		__be32 d32;
-+		u8 d8[4];
-+	} dat;
-+
-+	freqreg = (u64)freq * (u64)(1 << 27);
-+	do_div(freqreg, st->mclk_hz / 4);
-+
-+	switch (reg) {
-+	case AD5933_REG_FREQ_START:
-+		st->freq_start = freq;
-+		break;
-+	case AD5933_REG_FREQ_INC:
-+		st->freq_inc = freq;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	dat.d32 = cpu_to_be32(freqreg);
-+	return ad5933_i2c_write(st->client, reg, 3, &dat.d8[1]);
-+}
-+
-+static int ad5933_setup(struct ad5933_state *st)
-+{
-+	__be16 dat;
-+	int ret;
-+
-+	ret = ad5933_reset(st);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ad5933_set_freq(st, AD5933_REG_FREQ_START, 10000);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ad5933_set_freq(st, AD5933_REG_FREQ_INC, 200);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->settling_cycles = 10;
-+	dat = cpu_to_be16(st->settling_cycles);
-+
-+	ret = ad5933_i2c_write(st->client,
-+			       AD5933_REG_SETTLING_CYCLES,
-+			       2, (u8 *)&dat);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->freq_points = 100;
-+	dat = cpu_to_be16(st->freq_points);
-+
-+	return ad5933_i2c_write(st->client, AD5933_REG_INC_NUM, 2, (u8 *)&dat);
-+}
-+
-+static void ad5933_calc_out_ranges(struct ad5933_state *st)
-+{
-+	int i;
-+	unsigned int normalized_3v3[4] = {1980, 198, 383, 970};
-+
-+	for (i = 0; i < 4; i++)
-+		st->range_avail[i] = normalized_3v3[i] * st->vref_mv / 3300;
-+}
-+
-+/*
-+ * handles: AD5933_REG_FREQ_START and AD5933_REG_FREQ_INC
-+ */
-+
-+static ssize_t ad5933_show_frequency(struct device *dev,
-+				     struct device_attribute *attr,
-+				     char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret;
-+	unsigned long long freqreg;
-+	union {
-+		__be32 d32;
-+		u8 d8[4];
-+	} dat;
-+
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+	ret = ad5933_i2c_read(st->client, this_attr->address, 3, &dat.d8[1]);
-+	iio_device_release_direct_mode(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
-+	freqreg = be32_to_cpu(dat.d32) & 0xFFFFFF;
-+
-+	freqreg = (u64)freqreg * (u64)(st->mclk_hz / 4);
-+	do_div(freqreg, 1 << 27);
-+
-+	return sprintf(buf, "%d\n", (int)freqreg);
-+}
-+
-+static ssize_t ad5933_store_frequency(struct device *dev,
-+				      struct device_attribute *attr,
-+				      const char *buf,
-+				      size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	unsigned long val;
-+	int ret;
-+
-+	ret = kstrtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
-+		return -EINVAL;
-+
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+	ret = ad5933_set_freq(st, this_attr->address, val);
-+	iio_device_release_direct_mode(indio_dev);
-+
-+	return ret ? ret : len;
-+}
-+
-+static IIO_DEVICE_ATTR(out_voltage0_freq_start, 0644,
-+			ad5933_show_frequency,
-+			ad5933_store_frequency,
-+			AD5933_REG_FREQ_START);
-+
-+static IIO_DEVICE_ATTR(out_voltage0_freq_increment, 0644,
-+			ad5933_show_frequency,
-+			ad5933_store_frequency,
-+			AD5933_REG_FREQ_INC);
-+
-+static ssize_t ad5933_show(struct device *dev,
-+			   struct device_attribute *attr,
-+			   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	int ret = 0, len = 0;
-+
-+	mutex_lock(&st->lock);
-+	switch ((u32)this_attr->address) {
-+	case AD5933_OUT_RANGE:
-+		len = sprintf(buf, "%u\n",
-+			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
-+		break;
-+	case AD5933_OUT_RANGE_AVAIL:
-+		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
-+			      st->range_avail[3], st->range_avail[2],
-+			      st->range_avail[1]);
-+		break;
-+	case AD5933_OUT_SETTLING_CYCLES:
-+		len = sprintf(buf, "%d\n", st->settling_cycles);
-+		break;
-+	case AD5933_IN_PGA_GAIN:
-+		len = sprintf(buf, "%s\n",
-+			      (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
-+			      "1" : "0.2");
-+		break;
-+	case AD5933_IN_PGA_GAIN_AVAIL:
-+		len = sprintf(buf, "1 0.2\n");
-+		break;
-+	case AD5933_FREQ_POINTS:
-+		len = sprintf(buf, "%d\n", st->freq_points);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	mutex_unlock(&st->lock);
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t ad5933_store(struct device *dev,
-+			    struct device_attribute *attr,
-+			    const char *buf,
-+			    size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	u16 val;
-+	int i, ret = 0;
-+	__be16 dat;
-+
-+	if (this_attr->address != AD5933_IN_PGA_GAIN) {
-+		ret = kstrtou16(buf, 10, &val);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+	mutex_lock(&st->lock);
-+	switch ((u32)this_attr->address) {
-+	case AD5933_OUT_RANGE:
-+		ret = -EINVAL;
-+		for (i = 0; i < 4; i++)
-+			if (val == st->range_avail[i]) {
-+				st->ctrl_hb &= ~AD5933_CTRL_RANGE(0x3);
-+				st->ctrl_hb |= AD5933_CTRL_RANGE(i);
-+				ret = ad5933_cmd(st, 0);
-+				break;
-+			}
-+		break;
-+	case AD5933_IN_PGA_GAIN:
-+		if (sysfs_streq(buf, "1")) {
-+			st->ctrl_hb |= AD5933_CTRL_PGA_GAIN_1;
-+		} else if (sysfs_streq(buf, "0.2")) {
-+			st->ctrl_hb &= ~AD5933_CTRL_PGA_GAIN_1;
-+		} else {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		ret = ad5933_cmd(st, 0);
-+		break;
-+	case AD5933_OUT_SETTLING_CYCLES:
-+		val = clamp(val, (u16)0, (u16)0x7FF);
-+		st->settling_cycles = val;
-+
-+		/* 2x, 4x handling, see datasheet */
-+		if (val > 1022)
-+			val = (val >> 2) | (3 << 9);
-+		else if (val > 511)
-+			val = (val >> 1) | (1 << 9);
-+
-+		dat = cpu_to_be16(val);
-+		ret = ad5933_i2c_write(st->client,
-+				       AD5933_REG_SETTLING_CYCLES,
-+				       2, (u8 *)&dat);
-+		break;
-+	case AD5933_FREQ_POINTS:
-+		val = clamp(val, (u16)0, (u16)511);
-+		st->freq_points = val;
-+
-+		dat = cpu_to_be16(val);
-+		ret = ad5933_i2c_write(st->client, AD5933_REG_INC_NUM, 2,
-+				       (u8 *)&dat);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	mutex_unlock(&st->lock);
-+	iio_device_release_direct_mode(indio_dev);
-+	return ret ? ret : len;
-+}
-+
-+static IIO_DEVICE_ATTR(out_voltage0_scale, 0644,
-+			ad5933_show,
-+			ad5933_store,
-+			AD5933_OUT_RANGE);
-+
-+static IIO_DEVICE_ATTR(out_voltage0_scale_available, 0444,
-+			ad5933_show,
-+			NULL,
-+			AD5933_OUT_RANGE_AVAIL);
-+
-+static IIO_DEVICE_ATTR(in_voltage0_scale, 0644,
-+			ad5933_show,
-+			ad5933_store,
-+			AD5933_IN_PGA_GAIN);
-+
-+static IIO_DEVICE_ATTR(in_voltage0_scale_available, 0444,
-+			ad5933_show,
-+			NULL,
-+			AD5933_IN_PGA_GAIN_AVAIL);
-+
-+static IIO_DEVICE_ATTR(out_voltage0_freq_points, 0644,
-+			ad5933_show,
-+			ad5933_store,
-+			AD5933_FREQ_POINTS);
-+
-+static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
-+			ad5933_show,
-+			ad5933_store,
-+			AD5933_OUT_SETTLING_CYCLES);
-+
-+/*
-+ * note:
-+ * ideally we would handle the scale attributes via the iio_info
-+ * (read|write)_raw methods, however this part is a untypical since we
-+ * don't create dedicated sysfs channel attributes for out0 and in0.
-+ */
-+static struct attribute *ad5933_attributes[] = {
-+	&iio_dev_attr_out_voltage0_scale.dev_attr.attr,
-+	&iio_dev_attr_out_voltage0_scale_available.dev_attr.attr,
-+	&iio_dev_attr_out_voltage0_freq_start.dev_attr.attr,
-+	&iio_dev_attr_out_voltage0_freq_increment.dev_attr.attr,
-+	&iio_dev_attr_out_voltage0_freq_points.dev_attr.attr,
-+	&iio_dev_attr_out_voltage0_settling_cycles.dev_attr.attr,
-+	&iio_dev_attr_in_voltage0_scale.dev_attr.attr,
-+	&iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
-+	NULL
-+};
-+
-+static const struct attribute_group ad5933_attribute_group = {
-+	.attrs = ad5933_attributes,
-+};
-+
-+static int ad5933_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val,
-+			   int *val2,
-+			   long m)
-+{
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	__be16 dat;
-+	int ret;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+		ret = ad5933_cmd(st, AD5933_CTRL_MEASURE_TEMP);
-+		if (ret < 0)
-+			goto out;
-+		ret = ad5933_wait_busy(st, AD5933_STAT_TEMP_VALID);
-+		if (ret < 0)
-+			goto out;
-+
-+		ret = ad5933_i2c_read(st->client,
-+				      AD5933_REG_TEMP_DATA,
-+				      2, (u8 *)&dat);
-+		if (ret < 0)
-+			goto out;
-+		iio_device_release_direct_mode(indio_dev);
-+		*val = sign_extend32(be16_to_cpu(dat), 13);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 1000;
-+		*val2 = 5;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	}
-+
-+	return -EINVAL;
-+out:
-+	iio_device_release_direct_mode(indio_dev);
-+	return ret;
-+}
-+
-+static const struct iio_info ad5933_info = {
-+	.read_raw = ad5933_read_raw,
-+	.attrs = &ad5933_attribute_group,
-+};
-+
-+static int ad5933_ring_preenable(struct iio_dev *indio_dev)
-+{
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
-+		return -EINVAL;
-+
-+	ret = ad5933_reset(st);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ad5933_cmd(st, AD5933_CTRL_STANDBY);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = ad5933_cmd(st, AD5933_CTRL_INIT_START_FREQ);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->state = AD5933_CTRL_INIT_START_FREQ;
-+
-+	return 0;
-+}
-+
-+static int ad5933_ring_postenable(struct iio_dev *indio_dev)
-+{
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+
-+	/*
-+	 * AD5933_CTRL_INIT_START_FREQ:
-+	 * High Q complex circuits require a long time to reach steady state.
-+	 * To facilitate the measurement of such impedances, this mode allows
-+	 * the user full control of the settling time requirement before
-+	 * entering start frequency sweep mode where the impedance measurement
-+	 * takes place. In this mode the impedance is excited with the
-+	 * programmed start frequency (ad5933_ring_preenable),
-+	 * but no measurement takes place.
-+	 */
-+
-+	schedule_delayed_work(&st->work,
-+			      msecs_to_jiffies(AD5933_INIT_EXCITATION_TIME_ms));
-+	return 0;
-+}
-+
-+static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
-+{
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+
-+	cancel_delayed_work_sync(&st->work);
-+	return ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
-+}
-+
-+static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
-+	.preenable = ad5933_ring_preenable,
-+	.postenable = ad5933_ring_postenable,
-+	.postdisable = ad5933_ring_postdisable,
-+};
-+
-+static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
-+{
-+	struct iio_buffer *buffer;
-+
-+	buffer = iio_kfifo_allocate();
-+	if (!buffer)
-+		return -ENOMEM;
-+
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
-+	/* Ring buffer functions - here trigger setup related */
-+	indio_dev->setup_ops = &ad5933_ring_setup_ops;
-+
-+	return 0;
-+}
-+
-+static void ad5933_work(struct work_struct *work)
-+{
-+	struct ad5933_state *st = container_of(work,
-+		struct ad5933_state, work.work);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(st->client);
-+	__be16 buf[2];
-+	int val[2];
-+	unsigned char status;
-+	int ret;
-+
-+	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
-+		/* start sweep */
-+		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
-+		st->state = AD5933_CTRL_START_SWEEP;
-+		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-+		return;
-+	}
-+
-+	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-+	if (ret)
-+		return;
-+
-+	if (status & AD5933_STAT_DATA_VALID) {
-+		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
-+					       indio_dev->masklength);
-+		ret = ad5933_i2c_read(st->client,
-+				test_bit(1, indio_dev->active_scan_mask) ?
-+				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
-+				scan_count * 2, (u8 *)buf);
-+		if (ret)
-+			return;
-+
-+		if (scan_count == 2) {
-+			val[0] = be16_to_cpu(buf[0]);
-+			val[1] = be16_to_cpu(buf[1]);
-+		} else {
-+			val[0] = be16_to_cpu(buf[0]);
-+		}
-+		iio_push_to_buffers(indio_dev, val);
-+	} else {
-+		/* no data available - try again later */
-+		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-+		return;
-+	}
-+
-+	if (status & AD5933_STAT_SWEEP_DONE) {
-+		/*
-+		 * last sample received - power down do
-+		 * nothing until the ring enable is toggled
-+		 */
-+		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
-+	} else {
-+		/* we just received a valid datum, move on to the next */
-+		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
-+		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-+	}
-+}
-+
-+static int ad5933_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
-+	struct ad5933_state *st;
-+	struct iio_dev *indio_dev;
-+	unsigned long ext_clk_hz = 0;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	st->client = client;
-+
-+	mutex_init(&st->lock);
-+
-+	st->reg = devm_regulator_get(&client->dev, "vdd");
-+	if (IS_ERR(st->reg))
-+		return PTR_ERR(st->reg);
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret) {
-+		dev_err(&client->dev, "Failed to enable specified VDD supply\n");
-+		return ret;
-+	}
-+	ret = regulator_get_voltage(st->reg);
-+
-+	if (ret < 0)
-+		goto error_disable_reg;
-+
-+	st->vref_mv = ret / 1000;
-+
-+	st->mclk = devm_clk_get(&client->dev, "mclk");
-+	if (IS_ERR(st->mclk) && PTR_ERR(st->mclk) != -ENOENT) {
-+		ret = PTR_ERR(st->mclk);
-+		goto error_disable_reg;
-+	}
-+
-+	if (!IS_ERR(st->mclk)) {
-+		ret = clk_prepare_enable(st->mclk);
-+		if (ret < 0)
-+			goto error_disable_reg;
-+		ext_clk_hz = clk_get_rate(st->mclk);
-+	}
-+
-+	if (ext_clk_hz) {
-+		st->mclk_hz = ext_clk_hz;
-+		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
-+	} else {
-+		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
-+		st->ctrl_lb = AD5933_CTRL_INT_SYSCLK;
-+	}
-+
-+	ad5933_calc_out_ranges(st);
-+	INIT_DELAYED_WORK(&st->work, ad5933_work);
-+	st->poll_time_jiffies = msecs_to_jiffies(AD5933_POLL_TIME_ms);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &ad5933_info;
-+	indio_dev->name = id->name;
-+	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
-+	indio_dev->channels = ad5933_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
-+
-+	ret = ad5933_register_ring_funcs_and_init(indio_dev);
-+	if (ret)
-+		goto error_disable_mclk;
-+
-+	ret = ad5933_setup(st);
-+	if (ret)
-+		goto error_unreg_ring;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_unreg_ring;
-+
-+	return 0;
-+
-+error_unreg_ring:
-+	iio_kfifo_free(indio_dev->buffer);
-+error_disable_mclk:
-+	clk_disable_unprepare(st->mclk);
-+error_disable_reg:
-+	regulator_disable(st->reg);
-+
-+	return ret;
-+}
-+
-+static int ad5933_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct ad5933_state *st = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_kfifo_free(indio_dev->buffer);
-+	regulator_disable(st->reg);
-+	clk_disable_unprepare(st->mclk);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id ad5933_id[] = {
-+	{ "ad5933", 0 },
-+	{ "ad5934", 0 },
-+	{}
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, ad5933_id);
-+
-+static const struct of_device_id ad5933_of_match[] = {
-+	{ .compatible = "adi,ad5933" },
-+	{ .compatible = "adi,ad5934" },
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, ad5933_of_match);
-+
-+static struct i2c_driver ad5933_driver = {
-+	.driver = {
-+		.name = "ad5933",
-+		.of_match_table = ad5933_of_match,
-+	},
-+	.probe = ad5933_probe,
-+	.remove = ad5933_remove,
-+	.id_table = ad5933_id,
-+};
-+module_i2c_driver(ad5933_driver);
-+
-+MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD5933 Impedance Conv. Network Analyzer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/impedance-analyzer/Kconfig b/drivers/staging/iio/impedance-analyzer/Kconfig
-deleted file mode 100644
-index b9a679cdd146..000000000000
---- a/drivers/staging/iio/impedance-analyzer/Kconfig
-+++ /dev/null
-@@ -1,18 +0,0 @@
--#
--# Impedance Converter, Network Analyzer drivers
--#
--menu "Network Analyzer, Impedance Converters"
--
--config AD5933
--	tristate "Analog Devices AD5933, AD5934 driver"
--	depends on I2C
--	select IIO_BUFFER
--	select IIO_KFIFO_BUF
--	help
--	  Say yes here to build support for Analog Devices Impedance Converter,
--	  Network Analyzer, AD5933/4.
--
--	  To compile this driver as a module, choose M here: the
--	  module will be called ad5933.
--
--endmenu
-diff --git a/drivers/staging/iio/impedance-analyzer/Makefile b/drivers/staging/iio/impedance-analyzer/Makefile
-deleted file mode 100644
-index 7604d786583e..000000000000
---- a/drivers/staging/iio/impedance-analyzer/Makefile
-+++ /dev/null
-@@ -1,5 +0,0 @@
--#
--# Makefile for Impedance Converter, Network Analyzer drivers
--#
--
--obj-$(CONFIG_AD5933) += ad5933.o
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-deleted file mode 100644
-index d75bdfbf93de..000000000000
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ /dev/null
-@@ -1,811 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * AD5933 AD5934 Impedance Converter, Network Analyzer
-- *
-- * Copyright 2011 Analog Devices Inc.
-- */
--
--#include <linux/clk.h>
--#include <linux/delay.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/i2c.h>
--#include <linux/interrupt.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/regulator/consumer.h>
--#include <linux/sysfs.h>
--#include <linux/types.h>
--
--#include <linux/iio/buffer.h>
--#include <linux/iio/iio.h>
--#include <linux/iio/kfifo_buf.h>
--#include <linux/iio/sysfs.h>
--
--/* AD5933/AD5934 Registers */
--#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
--#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
--#define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
--#define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
--#define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
--#define AD5933_REG_SETTLING_CYCLES	0x8A	/* R/W, 2 bytes */
--#define AD5933_REG_STATUS		0x8F	/* R, 1 byte */
--#define AD5933_REG_TEMP_DATA		0x92	/* R, 2 bytes*/
--#define AD5933_REG_REAL_DATA		0x94	/* R, 2 bytes*/
--#define AD5933_REG_IMAG_DATA		0x96	/* R, 2 bytes*/
--
--/* AD5933_REG_CONTROL_HB Bits */
--#define AD5933_CTRL_INIT_START_FREQ	(0x1 << 4)
--#define AD5933_CTRL_START_SWEEP		(0x2 << 4)
--#define AD5933_CTRL_INC_FREQ		(0x3 << 4)
--#define AD5933_CTRL_REPEAT_FREQ		(0x4 << 4)
--#define AD5933_CTRL_MEASURE_TEMP	(0x9 << 4)
--#define AD5933_CTRL_POWER_DOWN		(0xA << 4)
--#define AD5933_CTRL_STANDBY		(0xB << 4)
--
--#define AD5933_CTRL_RANGE_2000mVpp	(0x0 << 1)
--#define AD5933_CTRL_RANGE_200mVpp	(0x1 << 1)
--#define AD5933_CTRL_RANGE_400mVpp	(0x2 << 1)
--#define AD5933_CTRL_RANGE_1000mVpp	(0x3 << 1)
--#define AD5933_CTRL_RANGE(x)		((x) << 1)
--
--#define AD5933_CTRL_PGA_GAIN_1		(0x1 << 0)
--#define AD5933_CTRL_PGA_GAIN_5		(0x0 << 0)
--
--/* AD5933_REG_CONTROL_LB Bits */
--#define AD5933_CTRL_RESET		(0x1 << 4)
--#define AD5933_CTRL_INT_SYSCLK		(0x0 << 3)
--#define AD5933_CTRL_EXT_SYSCLK		(0x1 << 3)
--
--/* AD5933_REG_STATUS Bits */
--#define AD5933_STAT_TEMP_VALID		(0x1 << 0)
--#define AD5933_STAT_DATA_VALID		(0x1 << 1)
--#define AD5933_STAT_SWEEP_DONE		(0x1 << 2)
--
--/* I2C Block Commands */
--#define AD5933_I2C_BLOCK_WRITE		0xA0
--#define AD5933_I2C_BLOCK_READ		0xA1
--#define AD5933_I2C_ADDR_POINTER		0xB0
--
--/* Device Specs */
--#define AD5933_INT_OSC_FREQ_Hz		16776000
--#define AD5933_MAX_OUTPUT_FREQ_Hz	100000
--#define AD5933_MAX_RETRIES		100
--
--#define AD5933_OUT_RANGE		1
--#define AD5933_OUT_RANGE_AVAIL		2
--#define AD5933_OUT_SETTLING_CYCLES	3
--#define AD5933_IN_PGA_GAIN		4
--#define AD5933_IN_PGA_GAIN_AVAIL	5
--#define AD5933_FREQ_POINTS		6
--
--#define AD5933_POLL_TIME_ms		10
--#define AD5933_INIT_EXCITATION_TIME_ms	100
--
--struct ad5933_state {
--	struct i2c_client		*client;
--	struct regulator		*reg;
--	struct clk			*mclk;
--	struct delayed_work		work;
--	struct mutex			lock; /* Protect sensor state */
--	unsigned long			mclk_hz;
--	unsigned char			ctrl_hb;
--	unsigned char			ctrl_lb;
--	unsigned int			range_avail[4];
--	unsigned short			vref_mv;
--	unsigned short			settling_cycles;
--	unsigned short			freq_points;
--	unsigned int			freq_start;
--	unsigned int			freq_inc;
--	unsigned int			state;
--	unsigned int			poll_time_jiffies;
--};
--
--#define AD5933_CHANNEL(_type, _extend_name, _info_mask_separate, _address, \
--		_scan_index, _realbits) { \
--	.type = (_type), \
--	.extend_name = (_extend_name), \
--	.info_mask_separate = (_info_mask_separate), \
--	.address = (_address), \
--	.scan_index = (_scan_index), \
--	.scan_type = { \
--		.sign = 's', \
--		.realbits = (_realbits), \
--		.storagebits = 16, \
--	}, \
--}
--
--static const struct iio_chan_spec ad5933_channels[] = {
--	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
--	/* Ring Channels */
--	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
--	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
--};
--
--static int ad5933_i2c_write(struct i2c_client *client, u8 reg, u8 len, u8 *data)
--{
--	int ret;
--
--	while (len--) {
--		ret = i2c_smbus_write_byte_data(client, reg++, *data++);
--		if (ret < 0) {
--			dev_err(&client->dev, "I2C write error\n");
--			return ret;
--		}
--	}
--	return 0;
--}
--
--static int ad5933_i2c_read(struct i2c_client *client, u8 reg, u8 len, u8 *data)
--{
--	int ret;
--
--	while (len--) {
--		ret = i2c_smbus_read_byte_data(client, reg++);
--		if (ret < 0) {
--			dev_err(&client->dev, "I2C read error\n");
--			return ret;
--		}
--		*data++ = ret;
--	}
--	return 0;
--}
--
--static int ad5933_cmd(struct ad5933_state *st, unsigned char cmd)
--{
--	unsigned char dat = st->ctrl_hb | cmd;
--
--	return ad5933_i2c_write(st->client,
--			AD5933_REG_CONTROL_HB, 1, &dat);
--}
--
--static int ad5933_reset(struct ad5933_state *st)
--{
--	unsigned char dat = st->ctrl_lb | AD5933_CTRL_RESET;
--
--	return ad5933_i2c_write(st->client,
--			AD5933_REG_CONTROL_LB, 1, &dat);
--}
--
--static int ad5933_wait_busy(struct ad5933_state *st, unsigned char event)
--{
--	unsigned char val, timeout = AD5933_MAX_RETRIES;
--	int ret;
--
--	while (timeout--) {
--		ret =  ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &val);
--		if (ret < 0)
--			return ret;
--		if (val & event)
--			return val;
--		cpu_relax();
--		mdelay(1);
--	}
--
--	return -EAGAIN;
--}
--
--static int ad5933_set_freq(struct ad5933_state *st,
--			   unsigned int reg, unsigned long freq)
--{
--	unsigned long long freqreg;
--	union {
--		__be32 d32;
--		u8 d8[4];
--	} dat;
--
--	freqreg = (u64)freq * (u64)(1 << 27);
--	do_div(freqreg, st->mclk_hz / 4);
--
--	switch (reg) {
--	case AD5933_REG_FREQ_START:
--		st->freq_start = freq;
--		break;
--	case AD5933_REG_FREQ_INC:
--		st->freq_inc = freq;
--		break;
--	default:
--		return -EINVAL;
--	}
--
--	dat.d32 = cpu_to_be32(freqreg);
--	return ad5933_i2c_write(st->client, reg, 3, &dat.d8[1]);
--}
--
--static int ad5933_setup(struct ad5933_state *st)
--{
--	__be16 dat;
--	int ret;
--
--	ret = ad5933_reset(st);
--	if (ret < 0)
--		return ret;
--
--	ret = ad5933_set_freq(st, AD5933_REG_FREQ_START, 10000);
--	if (ret < 0)
--		return ret;
--
--	ret = ad5933_set_freq(st, AD5933_REG_FREQ_INC, 200);
--	if (ret < 0)
--		return ret;
--
--	st->settling_cycles = 10;
--	dat = cpu_to_be16(st->settling_cycles);
--
--	ret = ad5933_i2c_write(st->client,
--			       AD5933_REG_SETTLING_CYCLES,
--			       2, (u8 *)&dat);
--	if (ret < 0)
--		return ret;
--
--	st->freq_points = 100;
--	dat = cpu_to_be16(st->freq_points);
--
--	return ad5933_i2c_write(st->client, AD5933_REG_INC_NUM, 2, (u8 *)&dat);
--}
--
--static void ad5933_calc_out_ranges(struct ad5933_state *st)
--{
--	int i;
--	unsigned int normalized_3v3[4] = {1980, 198, 383, 970};
--
--	for (i = 0; i < 4; i++)
--		st->range_avail[i] = normalized_3v3[i] * st->vref_mv / 3300;
--}
--
--/*
-- * handles: AD5933_REG_FREQ_START and AD5933_REG_FREQ_INC
-- */
--
--static ssize_t ad5933_show_frequency(struct device *dev,
--				     struct device_attribute *attr,
--				     char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad5933_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret;
--	unsigned long long freqreg;
--	union {
--		__be32 d32;
--		u8 d8[4];
--	} dat;
--
--	ret = iio_device_claim_direct_mode(indio_dev);
--	if (ret)
--		return ret;
--	ret = ad5933_i2c_read(st->client, this_attr->address, 3, &dat.d8[1]);
--	iio_device_release_direct_mode(indio_dev);
--	if (ret < 0)
--		return ret;
--
--	freqreg = be32_to_cpu(dat.d32) & 0xFFFFFF;
--
--	freqreg = (u64)freqreg * (u64)(st->mclk_hz / 4);
--	do_div(freqreg, 1 << 27);
--
--	return sprintf(buf, "%d\n", (int)freqreg);
--}
--
--static ssize_t ad5933_store_frequency(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf,
--				      size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad5933_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	unsigned long val;
--	int ret;
--
--	ret = kstrtoul(buf, 10, &val);
--	if (ret)
--		return ret;
--
--	if (val > AD5933_MAX_OUTPUT_FREQ_Hz)
--		return -EINVAL;
--
--	ret = iio_device_claim_direct_mode(indio_dev);
--	if (ret)
--		return ret;
--	ret = ad5933_set_freq(st, this_attr->address, val);
--	iio_device_release_direct_mode(indio_dev);
--
--	return ret ? ret : len;
--}
--
--static IIO_DEVICE_ATTR(out_voltage0_freq_start, 0644,
--			ad5933_show_frequency,
--			ad5933_store_frequency,
--			AD5933_REG_FREQ_START);
--
--static IIO_DEVICE_ATTR(out_voltage0_freq_increment, 0644,
--			ad5933_show_frequency,
--			ad5933_store_frequency,
--			AD5933_REG_FREQ_INC);
--
--static ssize_t ad5933_show(struct device *dev,
--			   struct device_attribute *attr,
--			   char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad5933_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int ret = 0, len = 0;
--
--	mutex_lock(&st->lock);
--	switch ((u32)this_attr->address) {
--	case AD5933_OUT_RANGE:
--		len = sprintf(buf, "%u\n",
--			      st->range_avail[(st->ctrl_hb >> 1) & 0x3]);
--		break;
--	case AD5933_OUT_RANGE_AVAIL:
--		len = sprintf(buf, "%u %u %u %u\n", st->range_avail[0],
--			      st->range_avail[3], st->range_avail[2],
--			      st->range_avail[1]);
--		break;
--	case AD5933_OUT_SETTLING_CYCLES:
--		len = sprintf(buf, "%d\n", st->settling_cycles);
--		break;
--	case AD5933_IN_PGA_GAIN:
--		len = sprintf(buf, "%s\n",
--			      (st->ctrl_hb & AD5933_CTRL_PGA_GAIN_1) ?
--			      "1" : "0.2");
--		break;
--	case AD5933_IN_PGA_GAIN_AVAIL:
--		len = sprintf(buf, "1 0.2\n");
--		break;
--	case AD5933_FREQ_POINTS:
--		len = sprintf(buf, "%d\n", st->freq_points);
--		break;
--	default:
--		ret = -EINVAL;
--	}
--
--	mutex_unlock(&st->lock);
--	return ret ? ret : len;
--}
--
--static ssize_t ad5933_store(struct device *dev,
--			    struct device_attribute *attr,
--			    const char *buf,
--			    size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad5933_state *st = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	u16 val;
--	int i, ret = 0;
--	__be16 dat;
--
--	if (this_attr->address != AD5933_IN_PGA_GAIN) {
--		ret = kstrtou16(buf, 10, &val);
--		if (ret)
--			return ret;
--	}
--
--	ret = iio_device_claim_direct_mode(indio_dev);
--	if (ret)
--		return ret;
--	mutex_lock(&st->lock);
--	switch ((u32)this_attr->address) {
--	case AD5933_OUT_RANGE:
--		ret = -EINVAL;
--		for (i = 0; i < 4; i++)
--			if (val == st->range_avail[i]) {
--				st->ctrl_hb &= ~AD5933_CTRL_RANGE(0x3);
--				st->ctrl_hb |= AD5933_CTRL_RANGE(i);
--				ret = ad5933_cmd(st, 0);
--				break;
--			}
--		break;
--	case AD5933_IN_PGA_GAIN:
--		if (sysfs_streq(buf, "1")) {
--			st->ctrl_hb |= AD5933_CTRL_PGA_GAIN_1;
--		} else if (sysfs_streq(buf, "0.2")) {
--			st->ctrl_hb &= ~AD5933_CTRL_PGA_GAIN_1;
--		} else {
--			ret = -EINVAL;
--			break;
--		}
--		ret = ad5933_cmd(st, 0);
--		break;
--	case AD5933_OUT_SETTLING_CYCLES:
--		val = clamp(val, (u16)0, (u16)0x7FF);
--		st->settling_cycles = val;
--
--		/* 2x, 4x handling, see datasheet */
--		if (val > 1022)
--			val = (val >> 2) | (3 << 9);
--		else if (val > 511)
--			val = (val >> 1) | (1 << 9);
--
--		dat = cpu_to_be16(val);
--		ret = ad5933_i2c_write(st->client,
--				       AD5933_REG_SETTLING_CYCLES,
--				       2, (u8 *)&dat);
--		break;
--	case AD5933_FREQ_POINTS:
--		val = clamp(val, (u16)0, (u16)511);
--		st->freq_points = val;
--
--		dat = cpu_to_be16(val);
--		ret = ad5933_i2c_write(st->client, AD5933_REG_INC_NUM, 2,
--				       (u8 *)&dat);
--		break;
--	default:
--		ret = -EINVAL;
--	}
--
--	mutex_unlock(&st->lock);
--	iio_device_release_direct_mode(indio_dev);
--	return ret ? ret : len;
--}
--
--static IIO_DEVICE_ATTR(out_voltage0_scale, 0644,
--			ad5933_show,
--			ad5933_store,
--			AD5933_OUT_RANGE);
--
--static IIO_DEVICE_ATTR(out_voltage0_scale_available, 0444,
--			ad5933_show,
--			NULL,
--			AD5933_OUT_RANGE_AVAIL);
--
--static IIO_DEVICE_ATTR(in_voltage0_scale, 0644,
--			ad5933_show,
--			ad5933_store,
--			AD5933_IN_PGA_GAIN);
--
--static IIO_DEVICE_ATTR(in_voltage0_scale_available, 0444,
--			ad5933_show,
--			NULL,
--			AD5933_IN_PGA_GAIN_AVAIL);
--
--static IIO_DEVICE_ATTR(out_voltage0_freq_points, 0644,
--			ad5933_show,
--			ad5933_store,
--			AD5933_FREQ_POINTS);
--
--static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
--			ad5933_show,
--			ad5933_store,
--			AD5933_OUT_SETTLING_CYCLES);
--
--/*
-- * note:
-- * ideally we would handle the scale attributes via the iio_info
-- * (read|write)_raw methods, however this part is a untypical since we
-- * don't create dedicated sysfs channel attributes for out0 and in0.
-- */
--static struct attribute *ad5933_attributes[] = {
--	&iio_dev_attr_out_voltage0_scale.dev_attr.attr,
--	&iio_dev_attr_out_voltage0_scale_available.dev_attr.attr,
--	&iio_dev_attr_out_voltage0_freq_start.dev_attr.attr,
--	&iio_dev_attr_out_voltage0_freq_increment.dev_attr.attr,
--	&iio_dev_attr_out_voltage0_freq_points.dev_attr.attr,
--	&iio_dev_attr_out_voltage0_settling_cycles.dev_attr.attr,
--	&iio_dev_attr_in_voltage0_scale.dev_attr.attr,
--	&iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
--	NULL
--};
--
--static const struct attribute_group ad5933_attribute_group = {
--	.attrs = ad5933_attributes,
--};
--
--static int ad5933_read_raw(struct iio_dev *indio_dev,
--			   struct iio_chan_spec const *chan,
--			   int *val,
--			   int *val2,
--			   long m)
--{
--	struct ad5933_state *st = iio_priv(indio_dev);
--	__be16 dat;
--	int ret;
--
--	switch (m) {
--	case IIO_CHAN_INFO_RAW:
--		ret = iio_device_claim_direct_mode(indio_dev);
--		if (ret)
--			return ret;
--		ret = ad5933_cmd(st, AD5933_CTRL_MEASURE_TEMP);
--		if (ret < 0)
--			goto out;
--		ret = ad5933_wait_busy(st, AD5933_STAT_TEMP_VALID);
--		if (ret < 0)
--			goto out;
--
--		ret = ad5933_i2c_read(st->client,
--				      AD5933_REG_TEMP_DATA,
--				      2, (u8 *)&dat);
--		if (ret < 0)
--			goto out;
--		iio_device_release_direct_mode(indio_dev);
--		*val = sign_extend32(be16_to_cpu(dat), 13);
--
--		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_SCALE:
--		*val = 1000;
--		*val2 = 5;
--		return IIO_VAL_FRACTIONAL_LOG2;
--	}
--
--	return -EINVAL;
--out:
--	iio_device_release_direct_mode(indio_dev);
--	return ret;
--}
--
--static const struct iio_info ad5933_info = {
--	.read_raw = ad5933_read_raw,
--	.attrs = &ad5933_attribute_group,
--};
--
--static int ad5933_ring_preenable(struct iio_dev *indio_dev)
--{
--	struct ad5933_state *st = iio_priv(indio_dev);
--	int ret;
--
--	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
--		return -EINVAL;
--
--	ret = ad5933_reset(st);
--	if (ret < 0)
--		return ret;
--
--	ret = ad5933_cmd(st, AD5933_CTRL_STANDBY);
--	if (ret < 0)
--		return ret;
--
--	ret = ad5933_cmd(st, AD5933_CTRL_INIT_START_FREQ);
--	if (ret < 0)
--		return ret;
--
--	st->state = AD5933_CTRL_INIT_START_FREQ;
--
--	return 0;
--}
--
--static int ad5933_ring_postenable(struct iio_dev *indio_dev)
--{
--	struct ad5933_state *st = iio_priv(indio_dev);
--
--	/*
--	 * AD5933_CTRL_INIT_START_FREQ:
--	 * High Q complex circuits require a long time to reach steady state.
--	 * To facilitate the measurement of such impedances, this mode allows
--	 * the user full control of the settling time requirement before
--	 * entering start frequency sweep mode where the impedance measurement
--	 * takes place. In this mode the impedance is excited with the
--	 * programmed start frequency (ad5933_ring_preenable),
--	 * but no measurement takes place.
--	 */
--
--	schedule_delayed_work(&st->work,
--			      msecs_to_jiffies(AD5933_INIT_EXCITATION_TIME_ms));
--	return 0;
--}
--
--static int ad5933_ring_postdisable(struct iio_dev *indio_dev)
--{
--	struct ad5933_state *st = iio_priv(indio_dev);
--
--	cancel_delayed_work_sync(&st->work);
--	return ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
--}
--
--static const struct iio_buffer_setup_ops ad5933_ring_setup_ops = {
--	.preenable = ad5933_ring_preenable,
--	.postenable = ad5933_ring_postenable,
--	.postdisable = ad5933_ring_postdisable,
--};
--
--static int ad5933_register_ring_funcs_and_init(struct iio_dev *indio_dev)
--{
--	struct iio_buffer *buffer;
--
--	buffer = iio_kfifo_allocate();
--	if (!buffer)
--		return -ENOMEM;
--
--	iio_device_attach_buffer(indio_dev, buffer);
--
--	/* Ring buffer functions - here trigger setup related */
--	indio_dev->setup_ops = &ad5933_ring_setup_ops;
--
--	return 0;
--}
--
--static void ad5933_work(struct work_struct *work)
--{
--	struct ad5933_state *st = container_of(work,
--		struct ad5933_state, work.work);
--	struct iio_dev *indio_dev = i2c_get_clientdata(st->client);
--	__be16 buf[2];
--	int val[2];
--	unsigned char status;
--	int ret;
--
--	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
--		/* start sweep */
--		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
--		st->state = AD5933_CTRL_START_SWEEP;
--		schedule_delayed_work(&st->work, st->poll_time_jiffies);
--		return;
--	}
--
--	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
--	if (ret)
--		return;
--
--	if (status & AD5933_STAT_DATA_VALID) {
--		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
--					       indio_dev->masklength);
--		ret = ad5933_i2c_read(st->client,
--				test_bit(1, indio_dev->active_scan_mask) ?
--				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
--				scan_count * 2, (u8 *)buf);
--		if (ret)
--			return;
--
--		if (scan_count == 2) {
--			val[0] = be16_to_cpu(buf[0]);
--			val[1] = be16_to_cpu(buf[1]);
--		} else {
--			val[0] = be16_to_cpu(buf[0]);
--		}
--		iio_push_to_buffers(indio_dev, val);
--	} else {
--		/* no data available - try again later */
--		schedule_delayed_work(&st->work, st->poll_time_jiffies);
--		return;
--	}
--
--	if (status & AD5933_STAT_SWEEP_DONE) {
--		/*
--		 * last sample received - power down do
--		 * nothing until the ring enable is toggled
--		 */
--		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
--	} else {
--		/* we just received a valid datum, move on to the next */
--		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
--		schedule_delayed_work(&st->work, st->poll_time_jiffies);
--	}
--}
--
--static int ad5933_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
--{
--	int ret;
--	struct ad5933_state *st;
--	struct iio_dev *indio_dev;
--	unsigned long ext_clk_hz = 0;
--
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
--	if (!indio_dev)
--		return -ENOMEM;
--
--	st = iio_priv(indio_dev);
--	i2c_set_clientdata(client, indio_dev);
--	st->client = client;
--
--	mutex_init(&st->lock);
--
--	st->reg = devm_regulator_get(&client->dev, "vdd");
--	if (IS_ERR(st->reg))
--		return PTR_ERR(st->reg);
--
--	ret = regulator_enable(st->reg);
--	if (ret) {
--		dev_err(&client->dev, "Failed to enable specified VDD supply\n");
--		return ret;
--	}
--	ret = regulator_get_voltage(st->reg);
--
--	if (ret < 0)
--		goto error_disable_reg;
--
--	st->vref_mv = ret / 1000;
--
--	st->mclk = devm_clk_get(&client->dev, "mclk");
--	if (IS_ERR(st->mclk) && PTR_ERR(st->mclk) != -ENOENT) {
--		ret = PTR_ERR(st->mclk);
--		goto error_disable_reg;
--	}
--
--	if (!IS_ERR(st->mclk)) {
--		ret = clk_prepare_enable(st->mclk);
--		if (ret < 0)
--			goto error_disable_reg;
--		ext_clk_hz = clk_get_rate(st->mclk);
--	}
--
--	if (ext_clk_hz) {
--		st->mclk_hz = ext_clk_hz;
--		st->ctrl_lb = AD5933_CTRL_EXT_SYSCLK;
--	} else {
--		st->mclk_hz = AD5933_INT_OSC_FREQ_Hz;
--		st->ctrl_lb = AD5933_CTRL_INT_SYSCLK;
--	}
--
--	ad5933_calc_out_ranges(st);
--	INIT_DELAYED_WORK(&st->work, ad5933_work);
--	st->poll_time_jiffies = msecs_to_jiffies(AD5933_POLL_TIME_ms);
--
--	indio_dev->dev.parent = &client->dev;
--	indio_dev->info = &ad5933_info;
--	indio_dev->name = id->name;
--	indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
--	indio_dev->channels = ad5933_channels;
--	indio_dev->num_channels = ARRAY_SIZE(ad5933_channels);
--
--	ret = ad5933_register_ring_funcs_and_init(indio_dev);
--	if (ret)
--		goto error_disable_mclk;
--
--	ret = ad5933_setup(st);
--	if (ret)
--		goto error_unreg_ring;
--
--	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto error_unreg_ring;
--
--	return 0;
--
--error_unreg_ring:
--	iio_kfifo_free(indio_dev->buffer);
--error_disable_mclk:
--	clk_disable_unprepare(st->mclk);
--error_disable_reg:
--	regulator_disable(st->reg);
--
--	return ret;
--}
--
--static int ad5933_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct ad5933_state *st = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--	iio_kfifo_free(indio_dev->buffer);
--	regulator_disable(st->reg);
--	clk_disable_unprepare(st->mclk);
--
--	return 0;
--}
--
--static const struct i2c_device_id ad5933_id[] = {
--	{ "ad5933", 0 },
--	{ "ad5934", 0 },
--	{}
--};
--
--MODULE_DEVICE_TABLE(i2c, ad5933_id);
--
--static const struct of_device_id ad5933_of_match[] = {
--	{ .compatible = "adi,ad5933" },
--	{ .compatible = "adi,ad5934" },
--	{ },
--};
--
--MODULE_DEVICE_TABLE(of, ad5933_of_match);
--
--static struct i2c_driver ad5933_driver = {
--	.driver = {
--		.name = "ad5933",
--		.of_match_table = ad5933_of_match,
--	},
--	.probe = ad5933_probe,
--	.remove = ad5933_remove,
--	.id_table = ad5933_id,
--};
--module_i2c_driver(ad5933_driver);
--
--MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
--MODULE_DESCRIPTION("Analog Devices AD5933 Impedance Conv. Network Analyzer");
--MODULE_LICENSE("GPL v2");
--- 
-2.20.1
-
+T24gVGh1LCAyMDE5LTAyLTI4IGF0IDExOjIzIC0wMzAwLCBSZW5hdG8gTHVpIEdlaCB3cm90ZToN
+Cj4gDQo+IA0KPiBQcmV2aW91c2x5LCB0aGUgQUQ3NzgwIGRyaXZlciBvbmx5IHN1cHBvcnRlZCBn
+cGlvIGZvciB0aGUgJ3Bvd2VyZG93bicNCj4gcGluLiBUaGlzIGNvbW1pdCBhZGRzIHN1cHBwb3J0
+IGZvciB0aGUgJ2dhaW4nIGFuZCAnZmlsdGVyJyBwaW4uDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBS
+ZW5hdG8gTHVpIEdlaCA8cmVuYXRvZ2VoQGdtYWlsLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogR2l1
+bGlhbm8gQmVsaW5hc3NpIDxnaXVsaWFuby5iZWxpbmFzc2lAdXNwLmJyPg0KPiBDby1kZXZlbG9w
+ZWQtYnk6IEdpdWxpYW5vIEJlbGluYXNzaSA8Z2l1bGlhbm8uYmVsaW5hc3NpQHVzcC5icj4NCj4g
+LS0tDQo+IENoYW5nZXMgaW4gdjM6DQo+ICAtIFJlbmFtZWQgYWQ3NzgwX2NoaXBfaW5mbydzIGZp
+bHRlciB0byBvZHINCj4gIC0gUmVuYW1lZCBhZDc3OHhfZmlsdGVyIHRvIGFkNzc4eF9vZHJfYXZh
+aWwNCj4gIC0gQ2hhbmdlZCB2cmVmIHZhcmlhYmxlIGZyb20gdW5zaWduZWQgaW50IHRvIHVuc2ln
+bmVkIGxvbmcgbG9uZyB0byBhdm9pZA0KPiAgICBvdmVyZmxvdw0KPiAgLSBSZW1vdmVkIHVubmVj
+ZXNzYXJ5IEFEX1NEX0NIQU5ORUwgbWFjcm8NCj4gQ2hhbmdlcyBpbiB2NDoNCj4gIC0gUmVtb3Zl
+ZCB1c2VsZXNzIG1hY3JvDQo+ICAtIEFkZGVkIGRlZmF1bHQgY2FzZSBmb3Igc3dpdGNoIHRvIHN1
+cHByZXNzIHdhcm5pbmcNCj4gIC0gUmVtb3ZlZCBjaHVua3MgYmVsb25naW5nIHRvIGZpbHRlciBy
+ZWFkaW5nLCBhZGRpbmcgdGhlc2UgYXMgYQ0KPiAgICBwYXRjaCBmb3IgaXRzZWxmDQo+IA0KPiAg
+ZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMgfCA5MCArKysrKysrKysrKysrKysrKysr
+KysrKysrKysrKy0tLQ0KPiAgMSBmaWxlIGNoYW5nZWQsIDg0IGluc2VydGlvbnMoKyksIDYgZGVs
+ZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3
+NzgwLmMNCj4gYi9kcml2ZXJzL3N0YWdpbmcvaWlvL2FkYy9hZDc3ODAuYw0KPiBpbmRleCBjNGE4
+NTc4OWMyZGIuLjg3ZmJjZjUxMGQ0NSAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9zdGFnaW5nL2lp
+by9hZGMvYWQ3NzgwLmMNCj4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hZGMvYWQ3NzgwLmMN
+Cj4gQEAgLTM5LDYgKzM5LDEyIEBADQo+ICAjZGVmaW5lIEFENzE3MF9QQVRURVJOICAgICAgICAg
+KEFENzc4MF9QQVQwIHwgQUQ3MTcwX1BBVDIpDQo+ICAjZGVmaW5lIEFENzE3MF9QQVRURVJOX01B
+U0sgICAgKEFENzc4MF9QQVQwIHwgQUQ3NzgwX1BBVDEgfCBBRDcxNzBfUEFUMikNCj4gDQo+ICsj
+ZGVmaW5lIEFENzc4MF9HQUlOX01JRFBPSU5UICAgNjQNCj4gKyNkZWZpbmUgQUQ3NzgwX0ZJTFRF
+Ul9NSURQT0lOVCAxMzM1MA0KPiArDQo+ICtzdGF0aWMgY29uc3QgdW5zaWduZWQgaW50IGFkNzc4
+eF9nYWluWzJdICAgICAgPSB7IDEsIDEyOCB9Ow0KPiArc3RhdGljIGNvbnN0IHVuc2lnbmVkIGlu
+dCBhZDc3OHhfb2RyX2F2YWlsWzJdID0geyAxMDAwMCwgMTY3MDAgfTsNCg0KYWQ3Nzh4X29kcl9h
+dmFpbFsyXSBpcyBub3QgdXNlZCBpbiB0aGlzIHBhdGNoLCBzbyBpdCBzaG91bGQgcHJvYmFibHkg
+Z28NCmludG8gdGhlIG5leHQgb25lIA0KKGkuZS4gc3RhZ2luZzogaWlvOiBhZDc3ODA6IGFkZCBm
+aWx0ZXIgcmVhZGluZyB0byBhZDc3OHggKQ0KDQpvbmUgZ29vZCB3YXkgb2YgY2F0Y2hpbmcgc3R1
+ZmYgbGlrZSB0aGlzIGlzIHRvIGRvIGludGVyYWN0aXZlIHJlYmFzZSBhbmQNCmNvbXBpbGUgeW91
+ciBkcml2ZXIgb24gZWFjaCBwYXRjaCB0byBzZWUgaWYgdGhlIGNvbXBpbGVyIGNhdGNoZXMgdGhp
+czsNCmkgc3VzcGVjdCB0aGUgY29tcGlsZXIgd291bGQgaGF2ZSB0aHJvd24gYW4gZXJyb3IgZm9y
+IHRoaXMgY2hhbmdlDQoNCg0KPiANCj4gIHN0cnVjdCBhZDc3ODBfY2hpcF9pbmZvDQo+ICAgICAg
+ICAgc3RydWN0IGlpb19jaGFuX3NwZWMgICAgY2hhbm5lbDsNCj4gICAgICAgICB1bnNpZ25lZCBp
+bnQgICAgICAgICAgICBwYXR0ZXJuX21hc2s7DQo+IEBAIC01MCw3ICs1NiwxMCBAQCBzdHJ1Y3Qg
+YWQ3NzgwX3N0YXRlIHsNCj4gICAgICAgICBjb25zdCBzdHJ1Y3QgYWQ3NzgwX2NoaXBfaW5mbyAg
+ICpjaGlwX2luZm87DQo+ICAgICAgICAgc3RydWN0IHJlZ3VsYXRvciAgICAgICAgICAgICAgICAq
+cmVnOw0KPiAgICAgICAgIHN0cnVjdCBncGlvX2Rlc2MgICAgICAgICAgICAgICAgKnBvd2VyZG93
+bl9ncGlvOw0KPiAtICAgICAgIHVuc2lnbmVkIGludCAgICBnYWluOw0KPiArICAgICAgIHN0cnVj
+dCBncGlvX2Rlc2MgICAgICAgICAgICAgICAgKmdhaW5fZ3BpbzsNCj4gKyAgICAgICBzdHJ1Y3Qg
+Z3Bpb19kZXNjICAgICAgICAgICAgICAgICpmaWx0ZXJfZ3BpbzsNCj4gKyAgICAgICB1bnNpZ25l
+ZCBpbnQgICAgICAgICAgICAgICAgICAgIGdhaW47DQo+ICsgICAgICAgdW5zaWduZWQgaW50ICAg
+ICAgICAgICAgICAgICAgICBpbnRfdnJlZl9tdjsNCj4gDQo+ICAgICAgICAgc3RydWN0IGFkX3Np
+Z21hX2RlbHRhIHNkOw0KPiAgfTsNCj4gQEAgLTEwNCwxNyArMTEzLDY1IEBAIHN0YXRpYyBpbnQg
+YWQ3NzgwX3JlYWRfcmF3KHN0cnVjdCBpaW9fZGV2DQo+ICppbmRpb19kZXYsDQo+ICAgICAgICAg
+ICAgICAgICB2b2x0YWdlX3V2ID0gcmVndWxhdG9yX2dldF92b2x0YWdlKHN0LT5yZWcpOw0KPiAg
+ICAgICAgICAgICAgICAgaWYgKHZvbHRhZ2VfdXYgPCAwKQ0KPiAgICAgICAgICAgICAgICAgICAg
+ICAgICByZXR1cm4gdm9sdGFnZV91djsNCj4gLSAgICAgICAgICAgICAgICp2YWwgPSAodm9sdGFn
+ZV91diAvIDEwMDApICogc3QtPmdhaW47DQo+ICsgICAgICAgICAgICAgICB2b2x0YWdlX3V2IC89
+IDEwMDA7DQo+ICsgICAgICAgICAgICAgICAqdmFsID0gdm9sdGFnZV91diAqIHN0LT5nYWluOw0K
+PiAgICAgICAgICAgICAgICAgKnZhbDIgPSBjaGFuLT5zY2FuX3R5cGUucmVhbGJpdHMgLSAxOw0K
+PiArICAgICAgICAgICAgICAgc3QtPmludF92cmVmX212ID0gdm9sdGFnZV91djsNCj4gICAgICAg
+ICAgICAgICAgIHJldHVybiBJSU9fVkFMX0ZSQUNUSU9OQUxfTE9HMjsNCj4gICAgICAgICBjYXNl
+IElJT19DSEFOX0lORk9fT0ZGU0VUOg0KPiAgICAgICAgICAgICAgICAgKnZhbCA9IC0oMSA8PCAo
+Y2hhbi0+c2Nhbl90eXBlLnJlYWxiaXRzIC0gMSkpOw0KPiAgICAgICAgICAgICAgICAgcmV0dXJu
+IElJT19WQUxfSU5UOw0KPiArICAgICAgIGRlZmF1bHQ6DQo+ICsgICAgICAgYnJlYWs7DQoNClRo
+ZSBpbmRlbnRhdGlvbiBvZiB0aGUgYnJlYWsgc3RhdGVtZW50IGlzIGluY29uc2lzdGVudCB3aXRo
+IG90aGVyIHBsYWNlcy4NClN0aWxsLCBpdCBkb2VzIG5vdCBhZGQgbXVjaCB2YWx1ZSBhZGRpbmcg
+dGhpcyBjaGFuZ2UgYXMtaXMsIHNpbmNlIGl0IGRvZXMNCm5vdCBjaGFuZ2UgYW55IGJlaGF2aW9y
+LCBhbmQgaXMgbm90IGFuIGVsZW1lbnQgbmVlZGVkIGJ5IHRoaXMgY2hhbmdlIChpLmUuDQphZGRp
+bmcgZ2FpbiAmIGZpbHRlciBzdXBwb3J0IHZpYSBncGlvcykNCg0KPiAgICAgICAgIH0NCj4gDQo+
+ICAgICAgICAgcmV0dXJuIC1FSU5WQUw7DQo+ICB9DQo+IA0KPiArc3RhdGljIGludCBhZDc3ODBf
+d3JpdGVfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICsgICAgICAgICAgICAgICAg
+ICAgICAgICAgICBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBjb25zdCAqY2hhbiwNCj4gKyAgICAgICAg
+ICAgICAgICAgICAgICAgICAgIGludCB2YWwsDQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBpbnQgdmFsMiwNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgICAgIGxvbmcgbSkNCj4gK3sN
+Cj4gKyAgICAgICBzdHJ1Y3QgYWQ3NzgwX3N0YXRlICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7
+DQo+ICsgICAgICAgY29uc3Qgc3RydWN0IGFkNzc4MF9jaGlwX2luZm8gKmNoaXBfaW5mbyA9IHN0
+LT5jaGlwX2luZm87DQo+ICsgICAgICAgdW5zaWduZWQgbG9uZyBsb25nIHZyZWY7DQo+ICsgICAg
+ICAgdW5zaWduZWQgaW50IGZ1bGxfc2NhbGUsIGdhaW47DQo+ICsNCj4gKyAgICAgICBpZiAoIWNo
+aXBfaW5mby0+aXNfYWQ3Nzh4KQ0KPiArICAgICAgICAgICAgICAgcmV0dXJuIDA7DQo+ICsNCj4g
+KyAgICAgICBzd2l0Y2ggKG0pIHsNCj4gKyAgICAgICBjYXNlIElJT19DSEFOX0lORk9fU0NBTEU6
+DQo+ICsgICAgICAgICAgICAgICBpZiAodmFsICE9IDApDQo+ICsgICAgICAgICAgICAgICAgICAg
+ICAgIHJldHVybiAtRUlOVkFMOw0KPiArDQo+ICsgICAgICAgICAgICAgICB2cmVmID0gc3QtPmlu
+dF92cmVmX212ICogMTAwMDAwMExMOw0KPiArICAgICAgICAgICAgICAgZnVsbF9zY2FsZSA9IDEg
+PDwgKGNoaXBfaW5mby0+Y2hhbm5lbC5zY2FuX3R5cGUucmVhbGJpdHMNCj4gLSAxKTsNCj4gKyAg
+ICAgICAgICAgICAgIGdhaW4gPSBESVZfUk9VTkRfQ0xPU0VTVCh2cmVmLCBmdWxsX3NjYWxlKTsN
+Cj4gKyAgICAgICAgICAgICAgIGdhaW4gPSBESVZfUk9VTkRfQ0xPU0VTVChnYWluLCB2YWwyKTsN
+Cj4gKyAgICAgICAgICAgICAgIHN0LT5nYWluID0gZ2FpbjsNCj4gKyAgICAgICAgICAgICAgIGlm
+IChnYWluIDwgQUQ3NzgwX0dBSU5fTUlEUE9JTlQpDQo+ICsgICAgICAgICAgICAgICAgICAgICAg
+IGdhaW4gPSAwOw0KPiArICAgICAgICAgICAgICAgZWxzZQ0KPiArICAgICAgICAgICAgICAgICAg
+ICAgICBnYWluID0gMTsNCj4gKyAgICAgICAgICAgICAgIGdwaW9kX3NldF92YWx1ZShzdC0+Z2Fp
+bl9ncGlvLCBnYWluKTsNCj4gKyAgICAgICAgICAgICAgIGJyZWFrOw0KPiArICAgICAgIGNhc2Ug
+SUlPX0NIQU5fSU5GT19TQU1QX0ZSRVE6DQo+ICsgICAgICAgICAgICAgICBpZiAoMTAwMCp2YWwg
+KyB2YWwyLzEwMDAgPCBBRDc3ODBfRklMVEVSX01JRFBPSU5UKQ0KPiArICAgICAgICAgICAgICAg
+ICAgICAgICB2YWwgPSAwOw0KPiArICAgICAgICAgICAgICAgZWxzZQ0KPiArICAgICAgICAgICAg
+ICAgICAgICAgICB2YWwgPSAxOw0KPiArICAgICAgICAgICAgICAgZ3Bpb2Rfc2V0X3ZhbHVlKHN0
+LT5maWx0ZXJfZ3BpbywgdmFsKTsNCj4gKyAgICAgICAgICAgICAgIGJyZWFrOw0KPiArICAgICAg
+IGRlZmF1bHQ6DQo+ICsgICAgICAgYnJlYWs7DQo+ICsgICAgICAgfQ0KPiArDQo+ICsgICAgICAg
+cmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gIHN0YXRpYyBpbnQgYWQ3NzgwX3Bvc3Rwcm9jZXNzX3Nh
+bXBsZShzdHJ1Y3QgYWRfc2lnbWFfZGVsdGEgKnNpZ21hX2RlbHRhLA0KPiAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgdW5zaWduZWQgaW50IHJhd19zYW1wbGUpDQo+ICB7DQo+
+IEBAIC0xMjYsMTAgKzE4Myw3IEBAIHN0YXRpYyBpbnQgYWQ3NzgwX3Bvc3Rwcm9jZXNzX3NhbXBs
+ZShzdHJ1Y3QNCj4gYWRfc2lnbWFfZGVsdGEgKnNpZ21hX2RlbHRhLA0KPiAgICAgICAgICAgICAg
+ICAgcmV0dXJuIC1FSU87DQo+IA0KPiAgICAgICAgIGlmIChjaGlwX2luZm8tPmlzX2FkNzc4eCkg
+ew0KPiAtICAgICAgICAgICAgICAgaWYgKHJhd19zYW1wbGUgJiBBRDc3ODBfR0FJTikNCj4gLSAg
+ICAgICAgICAgICAgICAgICAgICAgc3QtPmdhaW4gPSAxOw0KPiAtICAgICAgICAgICAgICAgZWxz
+ZQ0KPiAtICAgICAgICAgICAgICAgICAgICAgICBzdC0+Z2FpbiA9IDEyODsNCj4gKyAgICAgICAg
+ICAgICAgIHN0LT5nYWluID0gYWQ3Nzh4X2dhaW5bcmF3X3NhbXBsZSAmIEFENzc4MF9HQUlOXTsN
+Cg0KVGhlIG5ldyBgYWQ3Nzh4X2dhaW5bXWAgYXJyYXkgY291bGQgaGF2ZSBiZWVuIGl0J3Mgb3du
+IHBhdGNoLCBidXQgZnJvbSBteQ0Kc2lkZSBpdCdzIGZpbmUgdG8gbGVhdmUgaXQgaGVyZS4NCkkg
+ZG8gbGlrZSB0aGlzIGNoYW5nZSwgYnV0IGl0J3Mgbm90IGEgcGF0Y2ggdGhhdCBzZW1hbnRpY2Fs
+bHkgaGFzIHRvIGRvDQphbnl0aGluZyB3aXRoIGFkZGluZyBnYWluICYgZmlsdGVyIGdwaW8gc3Vw
+cG9ydC4NCg0KDQpMZXQncyBzZWUgd2hhdCBKb25hdGhhbiBzYXlzLg0KDQo+ICAgICAgICAgfQ0K
+PiANCj4gICAgICAgICByZXR1cm4gMDsNCj4gQEAgLTE3Myw2ICsyMjcsNyBAQCBzdGF0aWMgY29u
+c3Qgc3RydWN0IGFkNzc4MF9jaGlwX2luZm8NCj4gYWQ3NzgwX2NoaXBfaW5mb190YmxbXSA9IHsN
+Cj4gDQo+ICBzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19pbmZvIGFkNzc4MF9pbmZvID0gew0KPiAg
+ICAgICAgIC5yZWFkX3JhdyA9IGFkNzc4MF9yZWFkX3JhdywNCj4gKyAgICAgICAud3JpdGVfcmF3
+ID0gYWQ3NzgwX3dyaXRlX3JhdywNCj4gIH07DQo+IA0KPiAgc3RhdGljIGludCBhZDc3ODBfcHJv
+YmUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gQEAgLTIyMiw2ICsyNzcsMjkgQEAgc3RhdGlj
+IGludCBhZDc3ODBfcHJvYmUoc3RydWN0IHNwaV9kZXZpY2UgKnNwaSkNCj4gICAgICAgICAgICAg
+ICAgIGdvdG8gZXJyb3JfZGlzYWJsZV9yZWc7DQo+ICAgICAgICAgfQ0KPiANCj4gKyAgICAgICBp
+ZiAoc3QtPmNoaXBfaW5mby0+aXNfYWQ3Nzh4KSB7DQo+ICsgICAgICAgICAgICAgICBzdC0+Z2Fp
+bl9ncGlvID0gZGV2bV9ncGlvZF9nZXRfb3B0aW9uYWwoJnNwaS0+ZGV2LA0KPiArICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJhZGksZ2FpbiIs
+DQo+ICsgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgR1BJT0RfT1VUX0hJR0gpOw0KPiArICAgICAgICAgICAgICAgaWYgKElTX0VSUihzdC0+Z2Fp
+bl9ncGlvKSkgew0KPiArICAgICAgICAgICAgICAgICAgICAgICByZXQgPSBQVFJfRVJSKHN0LT5n
+YWluX2dwaW8pOw0KPiArICAgICAgICAgICAgICAgICAgICAgICBkZXZfZXJyKCZzcGktPmRldiwg
+IkZhaWxlZCB0byByZXF1ZXN0IGdhaW4gR1BJTzoNCj4gJWRcbiIsDQo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgcmV0KTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAgZ290byBl
+cnJvcl9kaXNhYmxlX3JlZzsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKw0KPiArICAgICAgICAg
+ICAgICAgc3QtPmZpbHRlcl9ncGlvID0gZGV2bV9ncGlvZF9nZXRfb3B0aW9uYWwoJnNwaS0+ZGV2
+LA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgImFkaSxmaWx0ZXIiLA0KPiArICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgR1BJT0RfT1VUX0hJR0gpDQo+IDsNCj4gKyAgICAgICAg
+ICAgICAgIGlmIChJU19FUlIoc3QtPmZpbHRlcl9ncGlvKSkgew0KPiArICAgICAgICAgICAgICAg
+ICAgICAgICByZXQgPSBQVFJfRVJSKHN0LT5maWx0ZXJfZ3Bpbyk7DQo+ICsgICAgICAgICAgICAg
+ICAgICAgICAgIGRldl9lcnIoJnNwaS0+ZGV2LA0KPiArICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICJGYWlsZWQgdG8gcmVxdWVzdCBmaWx0ZXIgR1BJTzogJWRcbiIsDQo+ICsgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgcmV0KTsNCj4gKyAgICAgICAgICAgICAgICAgICAgICAg
+Z290byBlcnJvcl9kaXNhYmxlX3JlZzsNCj4gKyAgICAgICAgICAgICAgIH0NCj4gKyAgICAgICB9
+DQo+ICsNCg0KVGhpcyBpcyBqdXN0IGEgcHJlZmVyZW5jZSBvZiBtaW5lIFtmZWVsIGZyZWUgdG8g
+aWdub3JlIGZvciB0aGlzIHBhdGNoXS4NCkJ1dCwgZm9yIHRoaXMgYmxvY2sgb2YgY29kZSwgSSB3
+b3VsZCBoYXZlIGFkZGVkIGEgc2VwYXJhdGUgZnVuY3Rpb24gWw0KY2FsbGVkIHNvbWV0aGluZyBs
+aWtlIGFkNzc4MF9pbml0X2dwaW9zKHN0cnVjdCBkZXZpY2UgKmRldiwgc3RydWN0DQphZDc3ODBf
+c3RhdGUgKnN0KSApDQoNCnlvdSBjb3VsZCBhbHNvIG1vdmUgdGhlIHBvd2VyZG93biBncGlvIHRo
+ZXJlOyBhbmQgZG8gc29tZXRoaW5nIGxpa2UNCg0Kc3RhdGljIGludCBhZDc3ODBfaW5pdF9ncGlv
+cyhzdHJ1Y3QgZGV2aWNlICpkZXYsIHN0cnVjdCBhZDc3ODBfc3RhdGUgKnN0KQ0Kew0KDQogICAg
+ICBzdC0+cG93ZXJkb3duX2dwaW8gPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbChkZXYsDQogICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICJwb3dlcmRv
+d24iLA0KICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICBHUElPRF9PVVRfTE9XKTsNCiAgICAgICAgaWYgKElTX0VSUihzdC0+cG93ZXJkb3duX2dwaW8p
+KSB7DQogICAgICAgICAgICAgIHJldCA9IFBUUl9FUlIoc3QtPnBvd2VyZG93bl9ncGlvKTsNCiAg
+ICAgICAgICAgICAgZGV2X2VycihkZXYsICJGYWlsZWQgdG8gcmVxdWVzdCBwb3dlcmRvd24gR1BJ
+TzogJWRcbiIsIHJldCk7DQogICAgICAgICAgICAgIHJldHVybiByZXQ7DQogICAgICAgIH0NCg0K
+ICAgICAgIC8qKg0KICAgICAgICAqIE5vdGUgQWxleDogSSdtIGEgYmlnIGZhbiBvZiBrZWVwaW5n
+IHRoaW5ncyB0byBhIG1pbmltYWwgDQogICAgICAgICogaW5kZW50YXRpb24gbGV2ZWwgW2VzcGVj
+aWFsbHkgd2hlcmUgdGhpbmdzIGNhbiBiZSBlbGVnYW50XSwgDQogICAgICAgICogYnV0IHRoYXQn
+cyBhIHByZWZlcmVuY2Ugb2YgbWluZQ0KICAgICAgICAqLw0KICAgICAgIGlmICghc3QtPmNoaXBf
+aW5mby0+aXNfYWQ3Nzh4KQ0KICAgICAgICAgICByZXR1cm4gMDsNCg0KDQogICAgICAgIHN0LT5n
+YWluX2dwaW8gPSBkZXZtX2dwaW9kX2dldF9vcHRpb25hbChkZXYsDQogICAgICAgICAgICAgICAg
+ICAgICAgICAiYWRpLGdhaW4iLA0KICAgICAgICAgICAgICAgICAgICAgICAgR1BJT0RfT1VUX0hJ
+R0gpOw0KICAgICAgICBpZiAoSVNfRVJSKHN0LT5nYWluX2dwaW8pKSB7DQogICAgICAgICAgICAg
+ICAgcmV0ID0gUFRSX0VSUihzdC0+Z2Fpbl9ncGlvKTsNCiAgICAgICAgICAgICAgICBkZXZfZXJy
+KGRldiwgIkZhaWxlZCB0byByZXF1ZXN0IGdhaW4gR1BJTzogJWRcbiIsIHJldCk7DQogICAgICAg
+ICAgICAgICAgcmV0dXJuIHJldDsNCiAgICAgICAgfQ0KDQogICAgICAgIHN0LT5maWx0ZXJfZ3Bp
+byA9IGRldm1fZ3Bpb2RfZ2V0X29wdGlvbmFsKGRldiwNCiAgICAgICAgICAgICAgICAgICAgICAg
+ICJhZGksZmlsdGVyIiwNCiAgICAgICAgICAgICAgICAgICAgICAgIEdQSU9EX09VVF9ISUdIKTsN
+Cg0KICAgICAgICBpZiAoSVNfRVJSKHN0LT5maWx0ZXJfZ3BpbykpIHsNCiAgICAgICAgICAgICAg
+ICByZXQgPSBQVFJfRVJSKHN0LT5maWx0ZXJfZ3Bpbyk7DQogICAgICAgICAgICAgICAgZGV2X2Vy
+cihkZXYsICJGYWlsZWQgdG8gcmVxdWVzdCBmaWx0ZXIgR1BJTzogJWRcbiIsIHJldCk7DQogICAg
+ICAgICAgICAgICAgcmV0dXJuIHJldDsNCiAgICAgICAgfQ0KDQogICAgICAgIHJldHVybiAwOw0K
+fQ0KDQoNCg0KPiAgICAgICAgIHJldCA9IGFkX3NkX3NldHVwX2J1ZmZlcl9hbmRfdHJpZ2dlcihp
+bmRpb19kZXYpOw0KPiAgICAgICAgIGlmIChyZXQpDQo+ICAgICAgICAgICAgICAgICBnb3RvIGVy
+cm9yX2Rpc2FibGVfcmVnOw0KPiAtLQ0KPiAyLjIxLjANCj4gDQo=
