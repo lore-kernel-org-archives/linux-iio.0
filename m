@@ -2,88 +2,96 @@ Return-Path: <SRS0=Lp50=RE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E162FC43381
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 13:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76DC4C43381
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 13:42:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A71D820850
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 13:25:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="FBPKZx85"
+	by mail.kernel.org (Postfix) with ESMTP id 4688F20643
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 13:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728300AbfCANZw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Mar 2019 08:25:52 -0500
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:40711 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732808AbfCANZv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2019 08:25:51 -0500
-Received: by mail-lj1-f194.google.com with SMTP id w6so20360032ljd.7
-        for <linux-iio@vger.kernel.org>; Fri, 01 Mar 2019 05:25:49 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=V7YXjj6FthcgYc/eHQE7KUwu0HKMTksPy9gturuX4q4=;
-        b=FBPKZx85GGzcqpffUquGe9ktuOQIIN9vFHMr/FLayA9Auy8o5rmp/7DzB/+2vOV4kn
-         2D7T3xvnRhCaLwkZDP+Ika35fXiEj/lacLFygIZP8Im32Q3winPVUHL/6/VdMh50B+oa
-         /EGHiqoEvXa+m30vbI88tW81nvp0+SsajTfed//xyIjlXUyLrqjuc4Cnvz+JDzUrve6O
-         Zg5h8o6EABkuqKF0jlymEAbRdp+TDb5hMB77AjGd8Mt5lnKVwxOhlfhFjTQHra7A0/uu
-         i4Ssz8KYl3gRL2E+ENCrQRglQ6hdzELjdKPB/3Btxo87klJxCg9qUgxoxoprVzy9cIMp
-         m53Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=V7YXjj6FthcgYc/eHQE7KUwu0HKMTksPy9gturuX4q4=;
-        b=G0lGSIchWKqBWoXkf4EOufQ1Ub2VD7Hna9A30LqgC0tdRvp6Q8KfSHCNjxidTPqWJv
-         J99OY54uyJFR1pPHf7kvE0dYrY6cYlMpYyNDX0Ro0h0PNaGO5KuRZ6tRT+VLAzRRbLbt
-         o6CbpG3CyQw9jzCVOgx9MmMKCcHzGV1hKwomsn3tiQn9zM4HP/qV0Uq8RKzmzqdtHGSr
-         G9C0VK33Y0su9+HDGksBC6UIwcxBZD6Vs9AUJHGgr35a+MLTb10Q+9nQa7rNFdN4WCJu
-         3WNJeXK9x5nm4Zbf4FfApKLNnynBT81SleVP8aMVvhmh4QUEU8L/PrY2H/K37A4nxa7j
-         kovQ==
-X-Gm-Message-State: APjAAAXLJcnLYRRhb/vpYQXcfv9z14gJbsrXzflTTU3NZlYlyzEYGnRK
-        d0NrzzIXgbf4bo2uGL4BofMPf1kjfo/WZA+WLCr3xA==
-X-Google-Smtp-Source: APXvYqwwClf7Ywf1G84ceXV4hDUegWOuep38etn+0iQeEJeYJJJb7iSvOmsNj/jEsv5orKAP6S3OEQYnDPVeFpJTXQc=
-X-Received: by 2002:a2e:2ce:: with SMTP id y75mr2637491lje.126.1551446749098;
- Fri, 01 Mar 2019 05:25:49 -0800 (PST)
+        id S2387794AbfCANmG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Mar 2019 08:42:06 -0500
+Received: from mout.kundenserver.de ([212.227.17.10]:49431 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387620AbfCANmG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Mar 2019 08:42:06 -0500
+Received: from localhost ([2.174.161.193]) by mrelayeu.kundenserver.de
+ (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1Mtfa5-1hGhMp0rGR-00v3r9; Fri, 01 Mar 2019 14:41:32 +0100
+Date:   Fri, 1 Mar 2019 14:41:27 +0100
+From:   Andreas Klinger <ak@it-klinger.de>
+To:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Cc:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        afaerber@suse.de, arnd@arndb.de, davem@davemloft.net,
+        gregkh@linuxfoundation.org, johan@kernel.org, khilman@baylibre.com,
+        knaack.h@gmx.de, lars@metafoo.de, linux-kernel@vger.kernel.org,
+        martin.blumenstingl@googlemail.com, mchehab+samsung@kernel.org,
+        m.othacehe@gmail.com, nicolas.ferre@microchip.com,
+        pmeerw@pmeerw.net, robh@kernel.org, songqiang1304521@gmail.com,
+        treding@nvidia.com, techsupport@maxbotix.com
+Subject: [PATCH v2 0/4] add MaxBotix I2CXL ultrasonic iio driver
+Message-ID: <20190301134125.4zqbyzoc2exxigae@arbad>
 MIME-Version: 1.0
-References: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com> <1551392209-20004-3-git-send-email-justinpopo6@gmail.com>
-In-Reply-To: <1551392209-20004-3-git-send-email-justinpopo6@gmail.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 1 Mar 2019 14:25:37 +0100
-Message-ID: <CACRpkdaDVvOQnYUGPLFEjqWOnLS=sw=mAn4WkJPHrLtp0gtCdQ@mail.gmail.com>
-Subject: Re: [PATCH v4 2/2] iio: adc: ti-ads7950: add GPIO support
-To:     Justin Chen <justinpopo6@gmail.com>
-Cc:     linux-iio@vger.kernel.org,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Provags-ID: V03:K1:YIegJHTSBnCTm18ULkcHOwaQRb+8PqeJchXSMnzIv8nXC3DPZcO
+ ua9OhQb01ctK0RGvHgROQ91Bw7gFXMH3WEMMycKUv6qCXHmq3fOsWFLCJN4JNAMxxq8Czck
+ pfj/Lsx6Yz+6UkUgH0usFeJy2vISjcKpkS2lSSMXUZW2E6UADAN3Uv+cIZ5gvA2O2JfH0/N
+ /zYVyPDVVO8BI8IUvKgkQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:dg7b07Dl2Pw=:h2+G2Zkf1ATk0Kx6wxpL+V
+ GDLgKT94fO9W2HGBoXTougYaZ+Hx/i8KSUnHkfmYeiCCF21JQFDLHqgfTvDkH+C7pIQivrS1y
+ Kqzt27x53bO+Ly7yAIFyCNZa4tPXSCA+1LVBtIC52sgCaOmV7Ch9kIhvIHv28cAhbAX3bwFil
+ SKZGDUOZfcuRTnz9Jh6KSaO6cfWY9XLOgkH+V8Bcou9uB4un0ePdyDQlxuGenkjv/HFisS2ZI
+ 2sye8NNLu3PTsasCiR6GNTFLgOU1fWdxvOPbX0cw6BeoIoHfYK9sDn7tXTXOUoQrGIXmq/Okc
+ YWxVdV1gd12H9UqIx2lihvaCw8ree3gTXR4bikt1Y+XC+mW7R6nUaIZk02IorFjflVI1+dUQe
+ 2btXdXURlUBUMT5Y5ixvuHLZukHKQBCeJLNFdM6RLUwrXvCFClwBCGySWwHY5HMBVzTtfbPYU
+ NUQPLHjn7vVgE1fKbv5ng2ASOzM6FlnMfigKsZyfa9bUEhxxqA1VJaZuaubrF2St3+wOErDre
+ 6wNsyu0MAdI6I5pdJJq5JmlX0knu9K/QvZkksvL06tqgTIm25f8RWpJQzN1n/ruaUgJNvhiiV
+ 1rakDNwjvGb273HQpqYbkk/1AO24m4tvPMVrgwI/izF/slao/qLPXGqIxQ2OnBHJSKxwca7mL
+ PERrzH5R9efM/xCExhcr/Maje/IeG8YuLbjGGa+kPXvApZ702h7UYmowPQN253HBfL/uqOwpb
+ jlKse5oOhjAqzG9jKBJAC/RSU4tlRJOCZKLL/Q==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Feb 28, 2019 at 11:17 PM <justinpopo6@gmail.com> wrote:
+This patch series adds support for I2CXL-MaxSonar ultrasonic distance
+sensors of family mb12x2 using the i2c interface of vendor MaxBotix
+    
+Implemented and tested functionality:
+- reading the distance via in_distance_raw
+- buffered mode with trigger
+- make use of status gpio to announce completion of ranging
 
-> From: Justin Chen <justinpopo6@gmail.com>
->
-> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
-> pins using the GPIO chip framework.
->
-> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
-This looks good from a GPIO point of view.
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Changes in v2:
+Thanks to the review of Andreas and Peter there are a couple of changes:
+- rename type wildcard mb12x2 to i2cxl in dt binding
+- split changes in vendor list and dt doc into two patches
+- merge driver source and Kconfig/Makefile change into one patch
+- reword dt documentation
+- use directly __be16 datatype to read directly from i2c
+- use s16 as return value from mb12x2_read_distance()
 
-Yours,
-Linus Walleij
+Andreas Klinger (4):
+  dt-bindings: Add vendor prefix for MaxBotix
+  dt-bindings: maxbotix,i2cxl: Add MaxBotix i2c ultrasonic rangers
+  mb12x2.c: add distance iio sensor with i2c
+  MAINTAINERS: add maintainer for maxbotix ultrasonic driver
+
+ .../bindings/iio/proximity/maxbotix,i2cxl.txt      |  21 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ MAINTAINERS                                        |   7 +
+ drivers/iio/proximity/Kconfig                      |  11 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/mb12x2.c                     | 283 +++++++++++++++++++++
+ 6 files changed, 324 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/maxbotix,i2cxl.txt
+ create mode 100644 drivers/iio/proximity/mb12x2.c
+
+-- 
+2.11.0
