@@ -1,75 +1,106 @@
-Return-Path: <SRS0=4tHG=RD=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Lp50=RE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_SIGNED,DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 117D4C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DB71C43381
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 02:52:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C81E920863
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Feb 2019 22:18:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 66A8C20854
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Mar 2019 02:52:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=broadcom.com header.i=@broadcom.com header.b="o2tTkXWP"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g1Dxfcb4"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728394AbfB1WRp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Feb 2019 17:17:45 -0500
-Received: from rnd-relay.smtp.broadcom.com ([192.19.229.170]:54696 "EHLO
-        rnd-relay.smtp.broadcom.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726203AbfB1WRp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 17:17:45 -0500
-Received: from nis-sj1-27.broadcom.com (nis-sj1-27.lvn.broadcom.net [10.75.144.136])
-        by rnd-relay.smtp.broadcom.com (Postfix) with ESMTP id 374F130C041;
-        Thu, 28 Feb 2019 14:17:43 -0800 (PST)
-DKIM-Filter: OpenDKIM Filter v2.10.3 rnd-relay.smtp.broadcom.com 374F130C041
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=broadcom.com;
-        s=dkimrelay; t=1551392263;
-        bh=CCd6yypswlM4xGV+ZzfyYO6YjL4Q5DmUlzfNaCiLAP4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=o2tTkXWPKHcxvhyoHNoKG2buOo0iUTrb+h8Emlj/0JVl7jsSsXAwS6iu9M9BH3qoq
-         ECYxiJM+Bu1a4mxl0YK6WGf8iS23+E9CK9XAjljKwNx2vErfZwC+MT27LcT7O5gIm2
-         vYK2dVS+VaAoafT9TbQJ4zCOouJNTxo77Aui47e0=
-Received: from stbirv-lnx-2.igp.broadcom.net (stbirv-lnx-2.igp.broadcom.net [10.67.48.34])
-        by nis-sj1-27.broadcom.com (Postfix) with ESMTP id 87943AC0761;
-        Thu, 28 Feb 2019 14:17:43 -0800 (PST)
-Received: by stbirv-lnx-2.igp.broadcom.net (Postfix, from userid 47169)
-        id 79D1727ECE7; Thu, 28 Feb 2019 14:17:43 -0800 (PST)
-From:   justinpopo6@gmail.com
-To:     linux-iio@vger.kernel.org
-Cc:     linux-gpio@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com,
-        f.fainelli@gmail.com, bgolaszewski@baylibre.com,
-        linus.walleij@linaro.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        Justin Chen <justinpopo6@gmail.com>
-Subject: [PATCH v4 0/2] iio: adc: ads7950: add gpio support
-Date:   Thu, 28 Feb 2019 14:16:47 -0800
-Message-Id: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728127AbfCACwR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Feb 2019 21:52:17 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:34373 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727826AbfCACwR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Feb 2019 21:52:17 -0500
+Received: by mail-qt1-f196.google.com with SMTP id w4so26222031qtc.1;
+        Thu, 28 Feb 2019 18:52:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=2ouc+cg8TlBHaJZoXCHlt07od+tAcu91kLq/UPARe2o=;
+        b=g1Dxfcb42pJnC83VsG7hj1pVvBbwVEAuZI8azikQ3ifyx4J/4hQ/SaORoskKlqTAvS
+         8/fks1elon4x5IO05ReQfBMv37YfT4M9bEdARITzDl+gkegt/KuE686t1n8l1qBar6kz
+         TqW2CAnQxLt+MFHrKiUIb6oDc6ZwYXoK/Y4o8n0DyqBiCnFKo2XRZzF3pGU4t9lRnFaD
+         CkTXSpyXCJThQu4equ63UGjGI6WF4CYKzhHoBSkmX7gT9YHi+7UhlZwdCy4HblBy6rDF
+         iodLnAPg4muXIIOTpPS2uRI4SFzCC6p0BmzMXTMdAfsopXwa9CDyhQ/6FTY+gnmlvzsz
+         QP3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=2ouc+cg8TlBHaJZoXCHlt07od+tAcu91kLq/UPARe2o=;
+        b=lv7wuAvDm+VHUKkG9OVHuFz26wTCzmQ1+ngnwK3w34fx6C/C7zQ+AqRwGMvt6Vjry1
+         jAakmKYrGG/4H8mK2GCcI4rzXkK7f0+M5hvWSy00hzQ7Jz8L8GLcsdvUXDJfzqdggDuX
+         UWK8hv77C5WqXthI4itiuJfVgijiUiLtZGspYxuSyQEiIyBhZYN4M/10fPP8RoyMyOr0
+         BpViPv5nUyr2Qcclmkc2f0OttTZ/fDxoDp5AfHinNeyue7NMPGnfn/RQXt1UeRthxbTM
+         7HdDRIwtRbsEHlBWU2YUKmM0Ph2SV0o25bzs6Po31vGHTgnhgaDQhHA81cZL59K/dro5
+         ISnQ==
+X-Gm-Message-State: APjAAAWzjVVU8EafBmdP0nYDdy1fzwtOvLXGckWLu7HItM3aaUg3hHM0
+        I5wtNvoKWx9O4k5OSzJRY9Q=
+X-Google-Smtp-Source: APXvYqxo2wFo/HjEbkizLY/uvImGbZLpPNC2G8E/bZa6W2epO8B9jTtACzOkL98exURKVG/YdX5QMw==
+X-Received: by 2002:ac8:34ae:: with SMTP id w43mr2195151qtb.145.1551408736149;
+        Thu, 28 Feb 2019 18:52:16 -0800 (PST)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id r47sm13667117qtc.48.2019.02.28.18.52.13
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 28 Feb 2019 18:52:15 -0800 (PST)
+Date:   Thu, 28 Feb 2019 23:52:11 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com
+Subject: [PATCH v2 0/4] staging: iio: ad5933: move out of staging
+Message-ID: <20190301025211.ve6crq7rqd2cxbj3@smtp.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Justin Chen <justinpopo6@gmail.com>
+This series of patches add SPDX license identifier for GPL-2.0 along
+with minor code style ajusts.
+It makes Kconfig help message more compact and correct.
+Also it adds an ABI documentation for the devise attributes.
+Finally, it moves the ad5933 driver from staging directory to iio main
+drivers directory.
 
-Add GPIO support for ads7950.
 
-v4
-Split patch into two commits.
-Refractored code to capture the state of the adc instead of only the GPIOs.
-Added comments to clarify the intend of the code.
-Fix improper use of mlock.
+Marcelo Schmitt (4):
+  staging: iio: ad5933: add SPDX identifier
+  staging: iio: ad5933: change help rule message
+  staging: iio: ad5933: add ABI documentation
+  staging: iio: ad5933: move out of staging
 
-Justin Chen (2):
-  iio: adc: ti-ads7950: Fix improper use of mlock
-  iio: adc: ti-ads7950: add GPIO support
-
- drivers/iio/adc/ti-ads7950.c | 219 +++++++++++++++++++++++++++++++++++++++++--
- 1 file changed, 209 insertions(+), 10 deletions(-)
+ .../ABI/testing/sysfs-bus-iio-ad5933          |  91 ++
+ drivers/iio/impedance-analyzer/Kconfig        |  18 +
+ drivers/iio/impedance-analyzer/Makefile       |   5 +
+ drivers/iio/impedance-analyzer/ad5933.c       | 811 ++++++++++++++++++
+ .../staging/iio/impedance-analyzer/Kconfig    |  18 -
+ .../staging/iio/impedance-analyzer/Makefile   |   5 -
+ .../staging/iio/impedance-analyzer/ad5933.c   | 809 -----------------
+ 7 files changed, 925 insertions(+), 832 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ad5933
+ create mode 100644 drivers/iio/impedance-analyzer/Kconfig
+ create mode 100644 drivers/iio/impedance-analyzer/Makefile
+ create mode 100644 drivers/iio/impedance-analyzer/ad5933.c
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Kconfig
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Makefile
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/ad5933.c
 
 -- 
-2.7.4
+2.20.1
 
