@@ -2,108 +2,380 @@ Return-Path: <SRS0=Vd33=RF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DD4EC43381
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 18:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 49D4DC43381
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 18:53:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CA8652086D
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 18:48:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=mail.ru header.i=@mail.ru header.b="tikhzNPB"
+	by mail.kernel.org (Postfix) with ESMTP id 118312086D
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 18:53:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1551552799;
+	bh=KAYO6anrJiQITx6LMqrhEQ1rfME7Bk/MjluRi/13Yu8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=D80vdRTbkJK7LTjL6vBTzKEQIL3QJ2BGRIZdT0CzuS5mdKafbfdHcqOu7Crk3lTWM
+	 zF6GBi9vj9d44RzrSAMHWb474rlBu6qRlCP2plmhdgdtVYpCTrjw0J/G8YV3xsTwXQ
+	 PlEPgiLQfuT0njFcXL5Cjx34e8nK4V70Pkp/t4dY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726742AbfCBSsq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Mar 2019 13:48:46 -0500
-Received: from smtpng3.m.smailru.net ([94.100.177.149]:52006 "EHLO
-        smtpng3.m.smailru.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726648AbfCBSsq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2019 13:48:46 -0500
-X-Greylist: delayed 6817 seconds by postgrey-1.27 at vger.kernel.org; Sat, 02 Mar 2019 13:48:44 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=In-Reply-To:Content-Type:MIME-Version:References:Message-ID:Subject:Cc:To:From:Date; bh=1id5Ub3a4AM/c3g7b+V/97rKwwBRIwcc1rpiJ62YYmo=;
-        b=tikhzNPBFVADJZ64p7BwOCRGC8kWYWGgXYjgjUFm9SOhGZujwwJ7YudZap63wucnER4/xUkElFgTSaUBC9JtOS+OtfqMIwdIwZq1UuxnTqwN/7ANe9FJjz120cgavFMspMIGqxmfkPeM+90t5Hcx0T4c34HFdGZCt9XO4dGXt2Q=;
-Received: by smtpng3.m.smailru.net with esmtpa (envelope-from <cerg2010cerg2010@mail.ru>)
-        id 1h09gg-0002IU-GW; Sat, 02 Mar 2019 21:48:43 +0300
-Date:   Sat, 2 Mar 2019 21:48:30 +0300
-From:   Sergey Larin <cerg2010cerg2010@mail.ru>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: mpu3050: fix chip ID reading
-Message-ID: <20190302184829.GA7375@hp>
-References: <20190302165455.6594-1-cerg2010cerg2010@mail.ru>
- <20190302180824.646398a2@archlinux>
+        id S1727164AbfCBSxS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Mar 2019 13:53:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43760 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726648AbfCBSxS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Mar 2019 13:53:18 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 610C620830;
+        Sat,  2 Mar 2019 18:53:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1551552796;
+        bh=KAYO6anrJiQITx6LMqrhEQ1rfME7Bk/MjluRi/13Yu8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=emhEQEJKmQuRuBSC5QVF6l94/Zu1EihsF4nD8wn5cdzTJ0+s7DtI0Uy3QbpyIqZZ1
+         I2gTvrtr+92ey5Wq7fe0hIokF5hdU8XjYa2MWWO1r7HGAbpSB7g/DRVbTo4SjNkGxE
+         rgfBKqkAdgYJ9ruJdPKjap7TfyREk+yovIay6s4g=
+Date:   Sat, 2 Mar 2019 18:53:10 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     justinpopo6@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        bcm-kernel-feedback-list@broadcom.com, f.fainelli@gmail.com,
+        bgolaszewski@baylibre.com, linus.walleij@linaro.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] iio: adc: ti-ads7950: add GPIO support
+Message-ID: <20190302185310.6d155df7@archlinux>
+In-Reply-To: <1551392209-20004-3-git-send-email-justinpopo6@gmail.com>
+References: <1551392209-20004-1-git-send-email-justinpopo6@gmail.com>
+        <1551392209-20004-3-git-send-email-justinpopo6@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190302180824.646398a2@archlinux>
-User-Agent: Mutt/1.11.3 (2019-02-01)
-Authentication-Results: smtpng3.m.smailru.net; auth=pass smtp.auth=cerg2010cerg2010@mail.ru smtp.mailfrom=cerg2010cerg2010@mail.ru
-X-77F55803: E14BCC6235C710295A78504BD2AC294173B5FE5E8078F29643051AECEE952BD826571D752CD617CC271E572A60368839
-X-7FA49CB5: 0D63561A33F958A5D4465939ED5BE96CE59CBFC17EE01A0A343677170ABA59278941B15DA834481FA18204E546F3947CEDCF5861DED71B2F389733CBF5DBD5E9C8A9BA7A39EFB7666BA297DBC24807EA117882F44604297287769387670735209ECD01F8117BC8BEA471835C12D1D977C4224003CC836476C0CAF46E325F83A522CA9DD8327EE4930A3850AC1BE2E735D40979ECBF88E8C6B771977FE7C074C9731C566533BA786A40A5AABA2AD371193C9F3DD0FB1AF5EB2526A3BF303149AF3C9F3DD0FB1AF5EB4E70A05D1297E1BBCB5012B2E24CD356
-X-Mailru-Sender: 689FA8AB762F739359CD701D0F70D3B180F2DF78441075F862EADBECDC371F2E59BDA819A5E6616DA8F624234B89B86CE8B5287D445C8DCEAF94EBD2C457D57F4B70C0F398F9AAE4ECC6A6E4A36FFAA567EA787935ED9F1B
-X-Mras: OK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Mar 02, 2019 at 06:08:24PM +0000, Jonathan Cameron wrote:
-> On Sat,  2 Mar 2019 19:54:55 +0300
-> Sergey Larin <cerg2010cerg2010@mail.ru> wrote:
-> 
-> > According to the datasheet, the last bit of CHIP_ID register controls
-> > I2C bus, and the first one is unused. Handle this correctly.
-> > 
-> > Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
-> Fix certainly seems to be correct, but seeing as we only support i2c for
-> this chip and that I assume the bottom bit is actually set (though
-> reserved), currently this is a tidy up rather than a fix.
-> 
-> Hence I'll take this the slow way rather than quickly as I would
-> a fix with actual effect.
-> 
-> Let me know if I've missed something!
-> 
-> Jonathan
+On Thu, 28 Feb 2019 14:16:49 -0800
+justinpopo6@gmail.com wrote:
 
-That's actually a fix for me. On my device, the bottom bit is set so driver
-reports an error. With this patch, driver probes OK, prints chip info to
-dmesg (die ID, revision, etc) and reports the data to sysfs, which looks
-correct.
+> From: Justin Chen <justinpopo6@gmail.com>
+> 
+> The ADS79XX has GPIO pins that can be used. Add support for the GPIO
+> pins using the GPIO chip framework.
+> 
+> Signed-off-by: Justin Chen <justinpopo6@gmail.com>
 
+Hi Justin
+
+A few minor things below, particularly around the ordering in probe and
+possible missing cleanup in the case of errors.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/adc/ti-ads7950.c | 200 +++++++++++++++++++++++++++++++++++++++++--
+>  1 file changed, 194 insertions(+), 6 deletions(-)
 > 
-> > ---
-> >  drivers/iio/gyro/mpu3050-core.c | 8 +++++---
-> >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> > index 77fac81a3adc..5ddebede31a6 100644
-> > --- a/drivers/iio/gyro/mpu3050-core.c
-> > +++ b/drivers/iio/gyro/mpu3050-core.c
-> > @@ -29,7 +29,8 @@
-> >  
-> >  #include "mpu3050.h"
-> >  
-> > -#define MPU3050_CHIP_ID		0x69
-> > +#define MPU3050_CHIP_ID		0x68
-> > +#define MPU3050_CHIP_ID_MASK	0x7E
-> >  
-> >  /*
-> >   * Register map: anything suffixed *_H is a big-endian high byte and always
-> > @@ -1176,8 +1177,9 @@ int mpu3050_common_probe(struct device *dev,
-> >  		goto err_power_down;
-> >  	}
-> >  
-> > -	if (val != MPU3050_CHIP_ID) {
-> > -		dev_err(dev, "unsupported chip id %02x\n", (u8)val);
-> > +	if ((val & MPU3050_CHIP_ID_MASK) != MPU3050_CHIP_ID) {
-> > +		dev_err(dev, "unsupported chip id %02x\n",
-> > +				(u8)(val & MPU3050_CHIP_ID_MASK));
-> >  		ret = -ENODEV;
-> >  		goto err_power_down;
-> >  	}
-> 
+> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> index 1e47bef..0964053 100644
+> --- a/drivers/iio/adc/ti-ads7950.c
+> +++ b/drivers/iio/adc/ti-ads7950.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+>  #include <linux/err.h>
+> +#include <linux/gpio/driver.h>
+>  #include <linux/interrupt.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> @@ -36,12 +37,15 @@
+>   */
+>  #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
+>  
+> +#define TI_ADS7950_CR_GPIO	BIT(14)
+>  #define TI_ADS7950_CR_MANUAL	BIT(12)
+>  #define TI_ADS7950_CR_WRITE	BIT(11)
+>  #define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
+>  #define TI_ADS7950_CR_RANGE_5V	BIT(6)
+> +#define TI_ADS7950_CR_GPIO_DATA	BIT(4)
+>  
+>  #define TI_ADS7950_MAX_CHAN	16
+> +#define TI_ADS7950_NUM_GPIOS	4
+>  
+>  #define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
+>  
+> @@ -49,6 +53,16 @@
+>  #define TI_ADS7950_EXTRACT(val, dec, bits) \
+>  	(((val) >> (dec)) & ((1 << (bits)) - 1))
+>  
+> +#define TI_ADS7950_MAN_CMD(cmd)         (TI_ADS7950_CR_MANUAL | (cmd))
+> +#define TI_ADS7950_GPIO_CMD(cmd)        (TI_ADS7950_CR_GPIO | (cmd))
+> +
+> +/* Manual mode configuration */
+> +#define TI_ADS7950_MAN_CMD_SETTINGS(st) \
+> +	(TI_ADS7950_MAN_CMD(TI_ADS7950_CR_WRITE | st->cmd_settings_bitmask))
+> +/* GPIO mode configuration */
+> +#define TI_ADS7950_GPIO_CMD_SETTINGS(st) \
+> +	(TI_ADS7950_GPIO_CMD(st->gpio_cmd_settings_bitmask))
+> +
+>  struct ti_ads7950_state {
+>  	struct spi_device	*spi;
+>  	struct spi_transfer	ring_xfer;
+> @@ -58,11 +72,34 @@ struct ti_ads7950_state {
+>  
+>  	/* Lock to protect the spi xfer buffers */
+>  	struct mutex		slock;
+> +	struct gpio_chip	chip;
+>  
+>  	struct regulator	*reg;
+>  	unsigned int		vref_mv;
+>  
+> -	unsigned int		settings;
+> +	/*
+> +	 * Bitmask of lower 7 bits used for configuration
+> +	 * These bits only can be written when TI_ADS7950_CR_WRITE
+> +	 * is set, otherwise it retains its original state.
+> +	 * [0-3] GPIO signal
+> +	 * [4]   Set following frame to return GPIO signal values
+> +	 * [5]   Powers down device
+> +	 * [6]   Sets Vref range1(2.5v) or range2(5v)
+> +	 *
+> +	 * Bits present on Manual/Auto1/Auto2 commands
+> +	 */
+> +	unsigned int		cmd_settings_bitmask;
+> +
+> +	/*
+> +	 * Bitmask of GPIO command
+> +	 * [0-3] GPIO direction
+> +	 * [4-6] Different GPIO alarm mode configurations
+> +	 * [7]   GPIO 2 as device range input
+> +	 * [8]   GPIO 3 as device power down input
+> +	 * [9]   Reset all registers
+> +	 * [10-11] N/A
+> +	 */
+> +	unsigned int		gpio_cmd_settings_bitmask;
+>  
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+> @@ -251,7 +288,7 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
+>  
+>  	len = 0;
+>  	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
+> -		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
+> +		cmd = TI_ADS7950_MAN_CMD(TI_ADS7950_CR_CHAN(i));
+>  		st->tx_buf[len++] = cmd;
+>  	}
+>  
+> @@ -292,8 +329,7 @@ static int ti_ads7950_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+>  	int ret, cmd;
+>  
+>  	mutex_lock(&st->slock);
+> -
+> -	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
+> +	cmd = TI_ADS7950_MAN_CMD(TI_ADS7950_CR_CHAN(ch));
+>  	st->single_tx = cmd;
+>  
+>  	ret = spi_sync(st->spi, &st->scan_single_msg);
+> @@ -322,7 +358,7 @@ static int ti_ads7950_get_range(struct ti_ads7950_state *st)
+>  		vref /= 1000;
+>  	}
+>  
+> -	if (st->settings & TI_ADS7950_CR_RANGE_5V)
+> +	if (st->cmd_settings_bitmask & TI_ADS7950_CR_RANGE_5V)
+>  		vref *= 2;
+>  
+>  	return vref;
+> @@ -367,6 +403,135 @@ static const struct iio_info ti_ads7950_info = {
+>  	.update_scan_mode	= ti_ads7950_update_scan_mode,
+>  };
+>  
+> +static void ti_ads7950_set(struct gpio_chip *chip, unsigned int offset,
+> +			   int value)
+> +{
+> +	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+> +
+> +	mutex_lock(&st->slock);
+> +
+> +	if (value)
+> +		st->cmd_settings_bitmask |= BIT(offset);
+> +	else
+> +		st->cmd_settings_bitmask &= ~BIT(offset);
+> +
+> +	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+> +	spi_sync(st->spi, &st->scan_single_msg);
+> +
+> +	mutex_unlock(&st->slock);
+> +}
+> +
+> +static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
+> +{
+> +	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+> +	int ret;
+> +
+> +	mutex_lock(&st->slock);
+> +
+> +	/* If set as output, return the output */
+> +	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
+> +		ret = st->cmd_settings_bitmask & BIT(offset);
+> +		goto out;
+> +	}
+> +
+> +	/* GPIO data bit sets SDO bits 12-15 to GPIO input */
+> +	st->cmd_settings_bitmask |= TI_ADS7950_CR_GPIO_DATA;
+> +	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+> +	ret = spi_sync(st->spi, &st->scan_single_msg);
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
+> +
+> +	/* Revert back to original settings */
+> +	st->cmd_settings_bitmask &= ~TI_ADS7950_CR_GPIO_DATA;
+> +	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+> +	ret = spi_sync(st->spi, &st->scan_single_msg);
+> +	if (ret)
+> +		goto out;
+> +
+> +out:
+> +	mutex_unlock(&st->slock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ti_ads7950_get_direction(struct gpio_chip *chip,
+> +				    unsigned int offset)
+> +{
+> +	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+> +
+> +	/* Bitmask is inverted from GPIO framework 0=input/1=output */
+> +	return !(st->gpio_cmd_settings_bitmask & BIT(offset));
+> +}
+> +
+> +static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
+> +				     int input)
+> +{
+> +	struct ti_ads7950_state *st = gpiochip_get_data(chip);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&st->slock);
+> +
+> +	/* Only change direction if needed */
+> +	if (input && (st->gpio_cmd_settings_bitmask & BIT(offset)))
+> +		st->gpio_cmd_settings_bitmask &= ~BIT(offset);
+> +	else if (!input && !(st->gpio_cmd_settings_bitmask & BIT(offset)))
+> +		st->gpio_cmd_settings_bitmask |= BIT(offset);
+> +	else
+> +		goto out;
+> +
+> +	st->single_tx = TI_ADS7950_GPIO_CMD_SETTINGS(st);
+> +	ret = spi_sync(st->spi, &st->scan_single_msg);
+> +
+> +out:
+> +	mutex_unlock(&st->slock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ti_ads7950_direction_input(struct gpio_chip *chip,
+> +				      unsigned int offset)
+> +{
+> +	return _ti_ads7950_set_direction(chip, offset, 1);
+> +}
+> +
+> +static int ti_ads7950_direction_output(struct gpio_chip *chip,
+> +				       unsigned int offset, int value)
+> +{
+> +	ti_ads7950_set(chip, offset, value);
+> +
+> +	return _ti_ads7950_set_direction(chip, offset, 0);
+> +}
+> +
+> +static int ti_ads7950_init_hw(struct ti_ads7950_state *st)
+> +{
+> +	int ret = 0;
+> +
+> +	mutex_lock(&st->slock);
+> +
+> +	/* Settings for Manual/Auto1/Auto2 commands */
+> +	/* Default to 5v ref */
+> +	st->cmd_settings_bitmask = TI_ADS7950_CR_RANGE_5V;
+> +	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
+> +	ret = spi_sync(st->spi, &st->scan_single_msg);
+> +	if (ret)
+> +		goto out;
+> +
+> +	/* Settings for GPIO command */
+> +	st->gpio_cmd_settings_bitmask = 0x0;
+> +	st->single_tx = TI_ADS7950_GPIO_CMD_SETTINGS(st);
+> +	ret = spi_sync(st->spi, &st->scan_single_msg);
+> +	mutex_unlock(&st->slock);
+> +	if (ret)
+> +		goto out;
+
+This path doesn't actually differently than if you
+drop the two lines above.  Hence just drop them.
+
+> +
+> +out:
+> +	mutex_unlock(&st->slock);
+> +
+> +	return ret;
+> +}
+> +
+>  static int ti_ads7950_probe(struct spi_device *spi)
+>  {
+>  	struct ti_ads7950_state *st;
+> @@ -391,7 +556,6 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>  	spi_set_drvdata(spi, indio_dev);
+>  
+>  	st->spi = spi;
+> -	st->settings = TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_RANGE_5V;
+>  
+>  	info = &ti_ads7950_chip_info[spi_get_device_id(spi)->driver_data];
+>  
+> @@ -465,6 +629,30 @@ static int ti_ads7950_probe(struct spi_device *spi)
+>  		goto error_cleanup_ring;
+>  	}
+>  
+> +	ret = ti_ads7950_init_hw(st);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to init adc chip\n");
+> +		goto error_cleanup_ring;
+> +	}
+
+At this point the IIO userspace interface is exposed.  Seems likely that
+we should have called this earlier.  Also if it fails, you want to unregister
+the iio_device.
+
+> +
+> +	/* Add GPIO chip */
+> +	st->chip.label = dev_name(&st->spi->dev);
+> +	st->chip.parent = &st->spi->dev;
+> +	st->chip.owner = THIS_MODULE;
+> +	st->chip.base = -1;
+> +	st->chip.ngpio = TI_ADS7950_NUM_GPIOS;
+> +	st->chip.get_direction = ti_ads7950_get_direction;
+> +	st->chip.direction_input = ti_ads7950_direction_input;
+> +	st->chip.direction_output = ti_ads7950_direction_output;
+> +	st->chip.get = ti_ads7950_get;
+> +	st->chip.set = ti_ads7950_set;
+> +
+> +	ret = gpiochip_add_data(&st->chip, st);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to init GPIOs\n");
+> +		goto error_cleanup_ring;
+
+What about unregistering the iio_device?
+
+> +	}
+> +
+>  	return 0;
+>  
+>  error_cleanup_ring:
+
