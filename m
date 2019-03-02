@@ -2,94 +2,171 @@ Return-Path: <SRS0=Vd33=RF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00EA6C43381
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 16:55:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 466B4C43381
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 17:52:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8EC6820838
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 16:55:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=mail.ru header.i=@mail.ru header.b="JuTdK8WD";
-	dkim=pass (1024-bit key) header.d=mail.ru header.i=@mail.ru header.b="JuTdK8WD"
+	by mail.kernel.org (Postfix) with ESMTP id 1340320863
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Mar 2019 17:52:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1551549172;
+	bh=ErHy3ovxwvATOAWjmmb9dQaeypMFTB6azca/L2zrnYU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=RHIgSDw5d+5uXgddLbvcyvTHHyn9wiQKrPkU/vkIhKyEKvhpegKlbCYdyu2gi0K5m
+	 aJ8ndCqTm/FL9ViHOxtlidRLfUvPF2VFyL6Q/3k2VlUppGXXGI87Fme5uYB4nsMxqz
+	 dMJEy3aqwemRI7Agi0x7oRYnndSIGv7wNMOm/ABc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726295AbfCBQzX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Mar 2019 11:55:23 -0500
-Received: from fallback17.m.smailru.net ([94.100.176.130]:34218 "EHLO
-        fallback17.mail.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbfCBQzX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Mar 2019 11:55:23 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=MMIdQh2xGdSnf2wsmllip47qNoLWVp0xpB7bMpVfuCk=;
-        b=JuTdK8WD8UcrSOfWVrdBqOyhUn8BQt4RcjQ5+d//KKPGmZ5iPCiXvnwNkXVvMB9XjYU1HTGXCuByNf8/wo+5u7D0XUrDMVAtTgfaezdfr7Pg3PoC1qAIMbaxexc3FG8FcMOz4f2wlw1iav9l17mfNiPsR5lW1+HqA1IA6WZLBKA=;
-Received: from [10.161.100.15] (port=52612 helo=smtpng3.m.smailru.net)
-        by fallback17.m.smailru.net with esmtp (envelope-from <cerg2010cerg2010@mail.ru>)
-        id 1h07ux-0004Ur-UV; Sat, 02 Mar 2019 19:55:20 +0300
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=mail.ru; s=mail2;
-        h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject:Cc:To:From; bh=MMIdQh2xGdSnf2wsmllip47qNoLWVp0xpB7bMpVfuCk=;
-        b=JuTdK8WD8UcrSOfWVrdBqOyhUn8BQt4RcjQ5+d//KKPGmZ5iPCiXvnwNkXVvMB9XjYU1HTGXCuByNf8/wo+5u7D0XUrDMVAtTgfaezdfr7Pg3PoC1qAIMbaxexc3FG8FcMOz4f2wlw1iav9l17mfNiPsR5lW1+HqA1IA6WZLBKA=;
-Received: by smtpng3.m.smailru.net with esmtpa (envelope-from <cerg2010cerg2010@mail.ru>)
-        id 1h07uj-0002Fo-Fe; Sat, 02 Mar 2019 19:55:05 +0300
-From:   Sergey Larin <cerg2010cerg2010@mail.ru>
-To:     linus.walleij@linaro.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, Sergey Larin <cerg2010cerg2010@mail.ru>
-Subject: [PATCH] iio: gyro: mpu3050: fix chip ID reading
-Date:   Sat,  2 Mar 2019 19:54:55 +0300
-Message-Id: <20190302165455.6594-1-cerg2010cerg2010@mail.ru>
-X-Mailer: git-send-email 2.21.0
+        id S1726362AbfCBRwv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Mar 2019 12:52:51 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44892 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726295AbfCBRwv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 2 Mar 2019 12:52:51 -0500
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BA38E20836;
+        Sat,  2 Mar 2019 17:52:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1551549169;
+        bh=ErHy3ovxwvATOAWjmmb9dQaeypMFTB6azca/L2zrnYU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=w6SPMPoCbFjsMIBVupnbfuKeNBXJhkdLtVo6hoDdafLQvt4SaT97RtRjuTuSAdu0m
+         TjBehxf98pkuc2b/2a2JPzFoERPW6pRS9ZgU2dA1XJLAOALiolrx6V4On5D4WNUP/n
+         SzOELLyf+63U9J1BPY68NB60u1kbBqw7iENZUYfg=
+Date:   Sat, 2 Mar 2019 17:52:44 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        alexandru.ardelean@analog.com
+Subject: Re: [PATCH] iio:dac:ad5064 mlock cleanup - move to a local lock.
+Message-ID: <20190302175244.01e1b43f@archlinux>
+In-Reply-To: <CA+U=Dsr2Yiu60fOvcR18EePM22Z1N-d_W6RXHf2QvxvTj-hpGw@mail.gmail.com>
+References: <20190220182344.19236-1-jic23@kernel.org>
+        <CA+U=Dsr2Yiu60fOvcR18EePM22Z1N-d_W6RXHf2QvxvTj-hpGw@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-77F55803: 260C666A7D66B36A5A78504BD2AC294173B5FE5E8078F296D5885A35BB6CD9191570026D6B5434CDA73A9F2227E2EA61
-X-7FA49CB5: 0D63561A33F958A5CE3FF36B95377A5D7DFDA410385C74B468C0371F3ECE78B68941B15DA834481FA18204E546F3947C2FFDA4F57982C5F4F6B57BC7E64490618DEB871D839B7333395957E7521B51C2545D4CF71C94A83E9FA2833FD35BB23D27C277FBC8AE2E8BF1175FABE1C0F9B6A471835C12D1D977C4224003CC836476C0CAF46E325F83A522CA9DD8327EE4930A3850AC1BE2E7359F34C67CCB0B91AF45CB49CF220575A2731C566533BA786A40A5AABA2AD371193C9F3DD0FB1AF5EB2526A3BF303149AF3C9F3DD0FB1AF5EB4E70A05D1297E1BBCB5012B2E24CD356
-X-Mailru-Sender: 689FA8AB762F739359CD701D0F70D3B13A3A3B9558049ECB6543E3B619AB9AD359BDA819A5E6616DA8F624234B89B86CE8B5287D445C8DCEAF94EBD2C457D57F4B70C0F398F9AAE4ECC6A6E4A36FFAA567EA787935ED9F1B
-X-Mras: OK
-X-77F55803: 6AF0DA0BABFA9FDB7F9F52485CB584D7271FD7DF62800FDC9DC7353DBE0221D904A00C6BAFA453F3A2E3B5DA1BBD9376BF3CD1B365EBDF45
-X-7FA49CB5: 0D63561A33F958A5AC7DC85961B7BE17578A4CA62F6722183F6588960E8096ED8941B15DA834481FA18204E546F3947CEDCF5861DED71B2F389733CBF5DBD5E9C8A9BA7A39EFB7666BA297DBC24807EA117882F44604297287769387670735209ECD01F8117BC8BEA471835C12D1D977C4224003CC836476C0CAF46E325F83A50BF2EBBBDD9D6B0F2EF91E2201DEA5EC574AF45C6390F7469DAA53EE0834AAEE
-X-Mailru-Sender: A5480F10D64C90052060E016933BC039B608E4A14D3004D73D81AD2EF8AB3108B18789A3A159887F51913ECE9F5D4CE557914126969F3D9578C09B768FF42B7F4F0A872F021F9059A8B6234B51EB8B42EAB4BC95F72C04283CDA0F3B3F5B9367
-X-Mras: OK
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-According to the datasheet, the last bit of CHIP_ID register controls
-I2C bus, and the first one is unused. Handle this correctly.
+On Fri, 22 Feb 2019 13:58:13 +0200
+Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
 
-Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>
----
- drivers/iio/gyro/mpu3050-core.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+> On Wed, Feb 20, 2019 at 8:24 PM <jic23@kernel.org> wrote:
+> >  
+> 
+> Hey,
+> 
+> One comment inline.
+> 
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >
+> > indio_dev->mlock is intended to protect state transitions in
+> > the core. It's scope is tightly defined. For device specific
+> > uses such as those made here, we should define a local lock
+> > allowing the scope of the lock to be defined near to what it
+> > is protecting.
+> >
+> > These mlock changes can be non obvious, but given we don't do
+> > anything other than direct for DACs, these ones are easy to do.
+> >
+> > If anyone wants to help with this particular effort it would
+> > be most welcome!
+> >
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > ---
+> >  drivers/iio/dac/ad5064.c | 15 +++++++++------
+> >  1 file changed, 9 insertions(+), 6 deletions(-)
+> >
+> > diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> > index 2f98cb2a3b96..6c3ba143839b 100644
+> > --- a/drivers/iio/dac/ad5064.c
+> > +++ b/drivers/iio/dac/ad5064.c
+> > @@ -112,6 +112,8 @@ struct ad5064_state {
+> >         bool                            use_internal_vref;
+> >
+> >         ad5064_write_func               write;
+> > +       /* Lock used to maintain consistency between cached and dev state */
+> > +       struct mutex lock;
+> >
+> >         /*
+> >          * DMA (thus cache coherency maintenance) requires the
+> > @@ -248,11 +250,11 @@ static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
+> >         struct ad5064_state *st = iio_priv(indio_dev);
+> >         int ret;
+> >
+> > -       mutex_lock(&indio_dev->mlock);
+> > +       mutex_lock(&st->lock);
+> >         st->pwr_down_mode[chan->channel] = mode + 1;
+> >
+> >         ret = ad5064_sync_powerdown_mode(st, chan);
+> > -       mutex_unlock(&indio_dev->mlock);
+> > +       mutex_unlock(&st->lock);
+> >
+> >         return ret;
+> >  }
+> > @@ -291,11 +293,11 @@ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
+> >         if (ret)
+> >                 return ret;
+> >
+> > -       mutex_lock(&indio_dev->mlock);
+> > +       mutex_lock(&st->lock);
+> >         st->pwr_down[chan->channel] = pwr_down;
+> >
+> >         ret = ad5064_sync_powerdown_mode(st, chan);
+> > -       mutex_unlock(&indio_dev->mlock);
+> > +       mutex_unlock(&st->lock);
+> >         return ret ? ret : len;
+> >  }
+> >
+> > @@ -349,12 +351,12 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
+> >                 if (val >= (1 << chan->scan_type.realbits) || val < 0)
+> >                         return -EINVAL;
+> >
+> > -               mutex_lock(&indio_dev->mlock);
+> > +               mutex_lock(&st->lock);
+> >                 ret = ad5064_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
+> >                                 chan->address, val, chan->scan_type.shift);
+> >                 if (ret == 0)
+> >                         st->dac_cache[chan->channel] = val;
+> > -               mutex_unlock(&indio_dev->mlock);
+> > +               mutex_unlock(&st->lock);
+> >                 break;
+> >         default:
+> >                 ret = -EINVAL;
+> > @@ -856,6 +858,7 @@ static int ad5064_probe(struct device *dev, enum ad5064_type type,
+> >                 return  -ENOMEM;
+> >
+> >         st = iio_priv(indio_dev);
+> > +       mutex_init(&st->lock);  
+> 
+> An equivalent `mutex_destroy()` call would be a good idea in ad5064_remove()
+> 
+Ah, this one..
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 77fac81a3adc..5ddebede31a6 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -29,7 +29,8 @@
- 
- #include "mpu3050.h"
- 
--#define MPU3050_CHIP_ID		0x69
-+#define MPU3050_CHIP_ID		0x68
-+#define MPU3050_CHIP_ID_MASK	0x7E
- 
- /*
-  * Register map: anything suffixed *_H is a big-endian high byte and always
-@@ -1176,8 +1177,9 @@ int mpu3050_common_probe(struct device *dev,
- 		goto err_power_down;
- 	}
- 
--	if (val != MPU3050_CHIP_ID) {
--		dev_err(dev, "unsupported chip id %02x\n", (u8)val);
-+	if ((val & MPU3050_CHIP_ID_MASK) != MPU3050_CHIP_ID) {
-+		dev_err(dev, "unsupported chip id %02x\n",
-+				(u8)(val & MPU3050_CHIP_ID_MASK));
- 		ret = -ENODEV;
- 		goto err_power_down;
- 	}
--- 
-2.21.0
+mutex_destroy is only useful in finding use after free if mutex debugging is
+turned on.  In my view it is of dubious benefit if it's getting called only
+in remove, on the basis we should be pretty sure the driver won't take
+the lock if we hit that path.
+
+The downside is that it complicates the remove path because there is no devm
+version of mutex_init to automate the cleanup.
+
+I'll look at whether it makes sense here (i.e. if there is too much
+cost to adding it).
+
+> >         dev_set_drvdata(dev, indio_dev);
+> >
+> >         st->chip_info = &ad5064_chip_info_tbl[type];
+> > --
+> > 2.20.1
+> >  
 
