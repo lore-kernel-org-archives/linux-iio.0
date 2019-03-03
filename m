@@ -2,145 +2,289 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AD3C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 18:00:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B64DC43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 19:30:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C31B420835
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 18:00:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBF77208E4
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 19:30:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mmiZJyl3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbfCCSAM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 13:00:12 -0500
-Received: from gateway24.websitewelcome.com ([192.185.50.45]:39765 "EHLO
-        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726416AbfCCSAL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 13:00:11 -0500
-X-Greylist: delayed 1484 seconds by postgrey-1.27 at vger.kernel.org; Sun, 03 Mar 2019 13:00:10 EST
-Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
-        by gateway24.websitewelcome.com (Postfix) with ESMTP id 269278413
-        for <linux-iio@vger.kernel.org>; Sun,  3 Mar 2019 11:35:26 -0600 (CST)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 0V1Kh9BbT2PzO0V1KhYgB5; Sun, 03 Mar 2019 11:35:26 -0600
-X-Authority-Reason: nr=8
-Received: from [189.250.88.58] (port=37370 helo=[192.168.1.76])
-        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
-        (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1h0V1J-0048tk-NT; Sun, 03 Mar 2019 11:35:25 -0600
-Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
+        id S1726490AbfCCTaO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 14:30:14 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:46975 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726482AbfCCTaO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 14:30:14 -0500
+Received: by mail-qt1-f196.google.com with SMTP id z25so3016441qti.13;
+        Sun, 03 Mar 2019 11:30:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=7LwkNeOQccyN4n3K/Df2XoYgzkpFPLKz3Wbx6cPlJ9Y=;
+        b=mmiZJyl3IeVS82gVRA6lMZ7GIFtlVyGQSeg68MoSYEr2qn5mCqRMVVWdMKRcKlD1Xf
+         5BglZ+8g1ApdN8mau6GRAHeiq2yDwc5/F2/p4rcUJeIOhvRgZ0SBVngt5dN/FjqoQMG2
+         jfgpnWspD4XEgjcqXXDMZSIRlBsMFsL/mMzhaxbGjjspoZbYvS0WPubV+z8iXznPnGyY
+         YKDCdlofHW+sr74Y48y9Y7DQuamiJSojh7x8ZYAdPFPcaYBCMTzlg4Rz8GoInX+q3DT+
+         AUJTmazK5fTYB4gfMnWXMwxZu9yLsSrusYwl4kEk6R4VICcM4UfRIFqoy7i5ic6uuhoh
+         OijQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=7LwkNeOQccyN4n3K/Df2XoYgzkpFPLKz3Wbx6cPlJ9Y=;
+        b=LnfiuqUsG12C/8LQKUhDihGEbhJjuky45Av8TZaDVjdPLJ3NexqbEsGFZ6muRwLNjM
+         +bJMkUC2494jhxpa7tOWeMh3q5a5kUX4FOX5hFyLcZOaeg6+ruXVo/Cm7hxxUL2Dzgl5
+         eVNu2zqH9VgLK3m2Bc7NRx43/UuPEHlUx0k4U2RwASzeqjb1xry6p927uzT92V/4bsec
+         TzRK0dLiv7kM+MYkABEFSjptTfsnZBKEm61l6dKIX83rJNKfo1nw9HLCbu5Q8YE7gCBp
+         8at2VcDWM5BZN5YU06qwLAyAFGc4M38A+mPuUl9xZQrTw1G2iPjCoFNao3bFmqkxh7i6
+         a4sA==
+X-Gm-Message-State: APjAAAXdbSJJ3+ISEvL5uM16UijL+HAAGxpogUh7WG3RQSWCF6aBWIUm
+        TwXZRjSxbr5Wrbgn6GDaA0s=
+X-Google-Smtp-Source: APXvYqxq3+lO6kleVAaJhVpO7+xF4yBaRtHEdL1Ka6mBYBVLYMv/jz414W7yfrzEcGtodEHhAlpA7w==
+X-Received: by 2002:aed:3504:: with SMTP id a4mr12232461qte.139.1551641412188;
+        Sun, 03 Mar 2019 11:30:12 -0800 (PST)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id x80sm3634297qkx.85.2019.03.03.11.30.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 03 Mar 2019 11:30:11 -0800 (PST)
+Date:   Sun, 3 Mar 2019 16:30:07 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Kees Cook <keescook@chromium.org>
-References: <20190211222318.GA21656@embeddedor>
- <20190220121726.3b10e0ec@archlinux>
- <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
- <e612e707-4a54-7b59-e350-139766529316@embeddedor.com>
- <20190303170428.1d3f631b@archlinux>
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Openpgp: preference=signencrypt
-Autocrypt: addr=gustavo@embeddedor.com; keydata=
- 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
- VtSixD1uOgytAP7RWS474w==
-Message-ID: <642343a8-4107-3f31-8c29-ea0a49f8fe66@embeddedor.com>
-Date:   Sun, 3 Mar 2019 11:35:24 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.4.0
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: Re: [PATCH v2 3/4] staging: iio: ad5933: add ABI documentation
+Message-ID: <20190303193007.2zyvil4gmr7pv2pp@smtp.gmail.com>
+References: <20190301025314.p53nlcfey3qarms4@smtp.gmail.com>
+ <20190303121341.7a689124@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <20190303170428.1d3f631b@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.88.58
-X-Source-L: No
-X-Exim-ID: 1h0V1J-0048tk-NT
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: ([192.168.1.76]) [189.250.88.58]:37370
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 5
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190303121341.7a689124@archlinux>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On 03/03, Jonathan Cameron wrote:
+> On Thu, 28 Feb 2019 23:53:14 -0300
+> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+> 
+> > Add an ABI documentation for the ad5933 driver.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> Hi Marcelo,
+> 
+> The ABI that you have defined which is actually new is mostly fine,
+> however it seems that some of the existing ABI is not used correctly
+> and that will need to be fixed.
+> 
+> Jonathan
 
+Hi Jonathan,
 
-On 3/3/19 11:04 AM, Jonathan Cameron wrote:
+Thanks for the comments.
 
->>
->> BTW, Jonathan, I wonder if you can apply this one too:
->>
->> https://lore.kernel.org/patchwork/patch/996804/
->>
->> Thanks
-> Now resolved.  The issue here was the code was 'interesting/crazy' so
-> we needed someone with hardware to rewrite it and test the result.
+> 
+> > ---
+> >  .../ABI/testing/sysfs-bus-iio-ad5933          | 91 +++++++++++++++++++
+> >  1 file changed, 91 insertions(+)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-ad5933 b/Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > new file mode 100644
+> > index 000000000000..81e3d3f6f724
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > @@ -0,0 +1,91 @@
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_scale
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The output peak-to-peak voltage range. Writting 0 sets range
+> > +		to 2.0V p-p typical, 1 sets range to 200mV p-p typical, 2 sets
+> > +		range to 400mV p-p typical, 3 sets range to 1.0V p-p typical.
+> > +		The p-p value of the ac output exitation voltage scales with 
+> > +		supply voltage according to the following formula:
+> > +		Output Excitation Voltage (V p-p) = normalized_3v3 × [VDD/3.3]
+> > +		where normalized_3v3 is one of the four voltage range above and
+> > +		VDD is the supply voltage.
+> 
+> Definitely not. The device must comply with standard ABI and this is not
+> using it correctly (see below or the docs).
+> 
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_scale_available
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:	
+> > +		Prints available peak-to-peak voltage range to buffer.
+> 
+> I really hope it doesn't.  Scale is a mulitplier not a range.  It should be
+> printing out the value by which the _raw reading should be multiplied to
+> get the voltage in the base units for voltage (millivolts)
+
+As the driver is right now I believe that calling this device attribute will
+print "1980, 970, 383, 198" which are the mean values of four distributions
+(called range1 to range4) of possible actual millivolt values used as the AC
+output excitation. Certainly they don't mean "the value by which the _raw
+reading should be multiplied to get the voltage in the base units for voltage"
+so, as you said, this ABI is probably being misused here. Hence, I guess
+I ought to change this attribute's call to something different than 
+out_voltage0_scale_available (as well as the out_voltage0_scale above). Maybe
+out_voltage0_excit_available or out_voltage0_mean_excit_available, any other
+suggestion?
+
+> 
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_start
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The start frequency. Set this to define de frequency point at
+> > +		which the device should start the next frequency sweep. Default
+> > +		start frequency point set to 10000Hz.
+> 
+> No need to specify the default. It's trivial to read and any user of this
+> chip should set it to the value they want.
+
+OK, then I will remove these on the next patch.
+
+> 
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_increment
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The frequency sweep increment. Set this to define at which rate
+> > +		frequency sweep points are incremented. 
+> Rate is a temporal term.  Perhaps "step by which the frequency is incremented"?
+
+Maybe
+
+"define the amount by which the frequency is incremented after each scan point."
+
+would it be ok?
+
+> 
+> > After the measurement at
+> > +		a frequency point is completed, the next measurement will be 
+> > +		made with a frequency 'frequency increment'Hz higher than the
+> > +		previous point until the defined number of increments has been
+> > +		made. Default frequency increment set to 200Hz.
+> 
+> No need to specify the default. People can just read the file to find that out.
+> 
+> > +		
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_points
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The number of increments. This defines the number of frequency
+> > +		points in the frequency sweep. Device stores a 9-bit integer
+> > +		number in binary format for this so the maximum number of
+> > +		increments that can be programmed is 511.
+> I would relax this ABI description so that it doesn't describe the bit depth
+> and ideally doesn't describe the range either.  If we want to provide the
+> range, then provide an available attribute to pair with this.
+> 
+> The reason is that we should be looking to define interfaces in a way that
+> allows them to be potentially generalised to similar devices in future.
+> 
+> I suspect a lot of this is generic to impedance measuring ICs.
 > 
 
-Yep.
+Then I think we would keep just the very beginning of it "The number of ... 
+frequency sweep."
 
-> Simply fixing the fall through wasn't enough :(
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_settling_cycles
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Number of settling time cycles. This attribute is a 11 bit field
+> > +		divided in two parts. The 9 least significant bit define the
+> > +		number of output excitation cycles that are passed through the
+> > +		unknown impedance, after the receipt of a start frequency sweep,
+> > +		increment frequency, or repeat frequency command, before the ADC
+> > +		is triggered to perform a conversion of the response signal. The
+> > +		2 most significant bits define a multiplier for the number of
+> > +		cycles obtained from de least significant bits. Let D10 and D9
 > 
+> de -> the 
 
-I'm happy this was finally resolved. :)
+oops, thanks for pointing it out.
 
-Thanks, Jonathan.
+> 
+> > +		be these two bits, the resulting multiplier is defined as
+> > +		follows.
+> > +		D10 D9 = 0 0 => No. of cycles x 1 (default)
+> > +		D10 D9 = 0 1 => No. of cycles x 2
+> > +		D10 D9 = 1 0 => Reserved
+> > +		D10 D9 = 1 1 => No. of cycles x 4
+> > +
+> > +		See the datasheet for detailed information.
+> 
+> Hmm. This is a bizare interface - but such is hardware.
+> 
+> However, just because it is bizare in the hardware doesn't mean the
+> userspace interface should be.  Just hide all this complexity and
+> map whatever number of cycles is input to the nearest possible value.
+>
 
---
-Gustavo
+Trying to be generic I would say:
+
+	Number of settling time cycles. This sets the delay between a start
+	frequency sweep/increment frequency /repeat frequency to be proportional
+	to the excitation signal frequency times the number of settling time
+	cycles.
+ 
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/in_voltage0_scale
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		The PGA gain amplifier for the response signal. Set this to 0
+> > +		to gain the output of the current-to-voltage amplifier by a
+> > +		factor of 5. Set to 1 (default) to amplify the response signal
+> > +		into the ADC by a multiplication factor of x1.
+> > +
+> > +What:/sys/bus/iio/devices/iio:deviceX/in_voltage0_scale_available
+> 
+> There is no need to document standard ABI.  If this isn't documented in the
+> main Documentation/ABI/testing/sysfs-bus-iio please add it there.
+
+I guess this would be /sys/bus/iio/devices/iio:deviceX/in_voltage_scale.
+
+> 
+> > +Date:		February 2019
+> > +KernelVersion:	Kernel 4.19
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Prints available PGA gain amplifier to buffer.
+> Pga is one element that should effect this, but it's not the only
+> one.  The resolution of the device also matters for example.
+> 
+>
+ 
+Weren't this one described in /sys/.../iio:deviceX/in_voltageX_scale_available?
+
