@@ -2,61 +2,61 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91874C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:52:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 944D9C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:01:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 536DA20836
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:52:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5F41B20823
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:01:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gs9P4bZP"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IcNwWM6Z"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726342AbfCCNwa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 08:52:30 -0500
-Received: from mail-qk1-f194.google.com ([209.85.222.194]:37739 "EHLO
-        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726186AbfCCNw3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 08:52:29 -0500
-Received: by mail-qk1-f194.google.com with SMTP id m9so1418295qkl.4;
-        Sun, 03 Mar 2019 05:52:28 -0800 (PST)
+        id S1726294AbfCCOBR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 09:01:17 -0500
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:44674 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726279AbfCCOBQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 09:01:16 -0500
+Received: by mail-qt1-f196.google.com with SMTP id d2so2507038qti.11;
+        Sun, 03 Mar 2019 06:01:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:date:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=vVKH27wJS7+cOMDP8DvHCQLrRQHLTE7flgi1uer+sT0=;
-        b=gs9P4bZP/oqNpe3evrSx7hF0i2t/DTORJQJcGpi8lXC61sUg03oPLS0DGe1ASvO0x4
-         +yBTu+uy15Fq4XB8ZMBJwmqueaiXBhMrTikuq81/dPXWYDcPzVfyFIHCbzCJyleXr95a
-         ooVvXtOBEl+c3RHzr2BNpvws0pdrf7HsPs5Pe1yh/uDIYQ4jGyXYGLq7W7PtxumYucaC
-         fUJtr75tHYBZpyvapzhCqLaWslH+ez/byhSm2dNf/Mu4xwW54ZQ2hk5qv1c273xIbt32
-         BGYZjXCEsQa90zKonu1T+GOovKUpunvLUoH9ZWJva+P/JKPAkk3HdlbC6TMUPOGfnTYR
-         6Wng==
+        bh=XzcbIbIjJxWYB1FT7VpeLNoZ8jMBhFFxl9MPY5fbVW0=;
+        b=IcNwWM6Z+798YB4TvVkCZcaWBgf+I6mZ/BupHRlPaZxAF+UZ/ok4zJjnYeXZe541GU
+         5Fe0zoM7rE4zAKbS60kY3WYZuObafuHI1ahYA14N8Cq+vdzTTJ3PDdWrHYXd77xXWpX8
+         CFs9IVD9zRtWC++no/ensNLj1JUuTWSXsav9PVsYmrLf1nR8E3cvv1UR12OH8LZyOREK
+         5+hB7/bPN1ZtGzspiKQr4NCM88tTK/YFwfjL1MznmSabV7DKvhnqCX6/AXOV5Bvnd67g
+         Nj9Bp5gFsVo/r1FzABhz7/Yt+iJtQ4NWlxcFQ0yGMgnLfbjFZrQ5rirEWdRGGz4+W7l8
+         wnSA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:date:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=vVKH27wJS7+cOMDP8DvHCQLrRQHLTE7flgi1uer+sT0=;
-        b=qLLBF2hYbHEmFIrMUyIm2kIcFdfJ60l5QrxMYlqxi4q6vqE+OUVt/IO7W4cqcQORsI
-         gn7ahYg169KNp9WPsTwUxuWVs87Uq7S1MBl9onI/Za2wwI3/LNOdMtPMV40hN8+6NiOo
-         BapEXlLvhxsPr5l39IZAH0VziD9Qqis0rJx31UDyiv5Zlhjm5dnXn8D0AU2SF/REAnLm
-         TI1peDi6wUH+SZVkLIeSpYyZQCemZJy4ddbQdCQcbhwgQEKuKpRcSV/qnbaZgz+MVIJA
-         pbVo6Icl3qCss4fmYs4YB4Mwmn6nZ/Q0tPf6rzE2ZaAVThtp4IfhX9S/Sj8dN33FWjjm
-         KvVQ==
-X-Gm-Message-State: APjAAAUH/37xo5j8eurhBUMZ/lzQD/6+l5MusMEzpIanwIj76A7BiJ/y
-        1kdZg/p7O6OLAXTDMWwxEb8=
-X-Google-Smtp-Source: APXvYqy2RFKurXlsJz536Y1ny6Kq7mOiFkwoYjY8rVyAY0E7oZlxskeJDIjr1ituAD1PHQkVdOeWeA==
-X-Received: by 2002:a37:62ce:: with SMTP id w197mr10192281qkb.108.1551621147863;
-        Sun, 03 Mar 2019 05:52:27 -0800 (PST)
+        bh=XzcbIbIjJxWYB1FT7VpeLNoZ8jMBhFFxl9MPY5fbVW0=;
+        b=UR0ciYimNGx9sQisLvfnt3oS4lHvjbCKn5hYIkm4YggcWy1uDiebZqxGOSehwfx37D
+         /GiEdFJHErKO8V2Tt/87uOFIQe3V6KjTv35ijfixRLQq8Okw8Q78PhV6fgvCVqxtlwPn
+         03hin2ixX04WJR3t51oHd52jOB61PtZ2Kxoiq33jiEkq0/HoRGZl86uPhWXI0YSKX83p
+         U0Ean61USE6uxWgOxAM4u8x/h3g2I77PoN7oAOSY4nXHGjZX9Hfgjw3VabmPl9LebxKO
+         j+gRLrb5Y5SsIz7wua9wIghbnThB6Oo4rHTCh7KBaALSjKPVebRsO1aTDAkJPGyumd4H
+         EheA==
+X-Gm-Message-State: APjAAAW2msgHI/QGDplDSnmPFyEhvDZZv7zcniGodGtKH5rRUalGeUBc
+        iLxLqq7V6bH4WLGqzEWZ6Tk=
+X-Google-Smtp-Source: APXvYqz1rn1wTvuHZyVHCK9/GQMYyTJHHBcBp4JXeDilpLgnCEdQXsPOoYzXURrp7Thy97DNDYlABw==
+X-Received: by 2002:ac8:1735:: with SMTP id w50mr11343081qtj.361.1551621675023;
+        Sun, 03 Mar 2019 06:01:15 -0800 (PST)
 Received: from renatolg ([186.220.23.48])
-        by smtp.gmail.com with ESMTPSA id w1sm2201498qtc.75.2019.03.03.05.52.23
+        by smtp.gmail.com with ESMTPSA id j139sm2067799qke.26.2019.03.03.06.01.11
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 03 Mar 2019 05:52:27 -0800 (PST)
+        Sun, 03 Mar 2019 06:01:14 -0800 (PST)
 From:   Renato Lui Geh <renatogeh@gmail.com>
 X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
-Date:   Sun, 3 Mar 2019 10:52:21 -0300
+Date:   Sun, 3 Mar 2019 11:01:09 -0300
 To:     "Ardelean, Alexandru" <Alex.Ardelean@analog.com>
 Cc:     "lars@metafoo.de" <lars@metafoo.de>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>,
@@ -74,122 +74,68 @@ Cc:     "lars@metafoo.de" <lars@metafoo.de>,
         "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
         "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v4 0/9] staging: iio: ad7780: move out of staging
-Message-ID: <20190303135220.swjrc4r7jb52rw6n@renatolg>
+Subject: Re: [PATCH v4 4/9] staging:iio:ad7780: add chip ID values and mask
+Message-ID: <20190303140107.ljjo3flatwmd44ya@renatolg>
 References: <cover.1551358569.git.renatogeh@gmail.com>
- <72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel@analog.com>
+ <90c573cd53bb54d49de6ac270bcff66880ccfeb5.1551358569.git.renatogeh@gmail.com>
+ <190e26b19b8ed6559b92d3a000d852bbb0099a52.camel@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Disposition: inline
-In-Reply-To: <72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel@analog.com>
+In-Reply-To: <190e26b19b8ed6559b92d3a000d852bbb0099a52.camel@analog.com>
 User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Alexandru,
-
-Thanks for the review. Some questions inline.
-
-Thanks,
-Renato
-
 On 03/01, Ardelean, Alexandru wrote:
->On Thu, 2019-02-28 at 11:23 -0300, Renato Lui Geh wrote:
+>On Thu, 2019-02-28 at 11:24 -0300, Renato Lui Geh wrote:
 >>
+>>
+>> The ad7780 supports both the ad778x and ad717x families. Each chip has
+>> a corresponding ID. This patch provides a mask for extracting ID values
+>> from the status bits and also macros for the correct values for the
+>> ad7170, ad7171, ad7780 and ad7781.
+>>
+>> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+>> ---
+>>  drivers/staging/iio/adc/ad7780.c | 8 ++++++--
+>>  1 file changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/staging/iio/adc/ad7780.c
+>> b/drivers/staging/iio/adc/ad7780.c
+>> index 56c49e28f432..ad7617a3a141 100644
+>> --- a/drivers/staging/iio/adc/ad7780.c
+>> +++ b/drivers/staging/iio/adc/ad7780.c
+>> @@ -26,10 +26,14 @@
+>>  #define AD7780_RDY             BIT(7)
+>>  #define AD7780_FILTER          BIT(6)
+>>  #define AD7780_ERR             BIT(5)
+>> -#define AD7780_ID1             BIT(4)
+>> -#define AD7780_ID0             BIT(3)
+>>  #define AD7780_GAIN            BIT(2)
+>>
+>> +#define AD7170_ID              0
+>> +#define AD7171_ID              1
+>> +#define AD7780_ID              1
+>> +#define AD7781_ID              0
+>> +
+>> +#define AD7780_ID_MASK         (BIT(3) | BIT(4))
 >
->The patch-series is a bit big.
->I guess that the intent is to move this out-of-staging, but various patches
->are holding this in it's place.
->For patch series above a certain size, you could get many re-spins
->[V2,3,4... so on].
->
->You could send some of the changes as individual patches, or group them in
->series of 1,2 or 3 patches. That way, you "parallelize" patch sending, and
->when you get reviews on each patch, you can re-spin them individually.
->You'll find over time that certain patches get accepted on V1, others on V2
->and some on V7 [ hopefully, there isn't any frustration at that point ].
+>This also doesn't have any functionality change.
+>The AD7170_ID, AD7171_ID, AD7780_ID & AD7781_ID IDs are also unused (maybe
+>in a later patch they are ?).
 
-On these subseries, should versioning follow this patchset (v5) or should
-they start anew (v1), ignoring this series version?
+They aren't. I added them following a previous review suggestion. Should
+I remove them?
 >
->Well, this is a technique I use to distribute some of my upstream-patch-
->work, so that I can switch easier between internal-work & upstreaming-work.
->
->Coming back to this patch-series.
->My general input, is that the patches are fine over-all; some are just
->cosmetics/noise/a-different-way-of-doing-things-for-this-driver, and those
->usually can be left to preference [of the maintainer usually].
->
->I do suggest to not hurry when re-spinning patches, and not change too much
->the number of patches in a new series. That can complicate things
->sometimes. But, if doing small patch-series or individual patches, you
->won't have this problem too much.
->
->Thanks
->Alex
+>I would also leave the AD7780_ID1 & AD7780_ID0 definitions in place, since
+>they're easier matched with the datasheet.
 >
 >>
->> This series of patches contains the following:
->>  - Adds user input for the 'gain' and 'filter' GPIO pins for the ad778x
->>    family chips;
->>  - Filter reading for the ad778x;
->>  - Sets pattern macro values and mask for PATTERN status bits;
->>  - Adds ID values for the ad7170, ad7171, ad7780 and ad7781 for ID
->>    status bits checking;
->>  - Moves regulator initialization to after GPIO init to maintain
->>    consistency between probe and remove;
->>  - Copyright edits, adding SPDX identifier and new copyright holder;
->>  - Moves the ad7780 driver out of staging to the mainline;
->>  - Adds device tree binding for the ad7780 driver.
->>
->> Renato Lui Geh (9):
->>   staging: iio: ad7780: add gain & filter gpio support
->>   staging: iio: ad7780: add filter reading to ad778x
->>   staging: iio: ad7780: set pattern values and masks directly
->>   staging:iio:ad7780: add chip ID values and mask
->>   staging: iio: ad7780: move regulator to after GPIO init
->>   staging: iio: ad7780: add SPDX identifier
->>   staging: iio: ad7780: add new copyright holder
->>   staging: iio: ad7780: moving ad7780 out of staging
->>   staging: iio: ad7780: add device tree binding
->>
->> Changelog:
->> *v3
->>  - SPDX and regulator init as patches
->>  - Renamed filter to odr and ad778x_filter to ad778x_odr_avail
->>  - Removed unnecessary regulator disabling
->>  - Removed unnecessary AD_SD_CHANNEL macro
->>  - Changed unsigned int to unsigned long long to avoid overflow
->> *v4
->>  - Split gain & filter patch into two, with the new commit adding only
->>    filter reading
->>  - Changed pattern values to direct values, and added pattern mask
->>  - Added ID values and mask
->>  - Added new copyright holder
->>  - Added device tree binding to the ad7780 driver
->>
->>  .../bindings/iio/adc/adi,ad7780.txt           |  48 +++
->>  drivers/iio/adc/Kconfig                       |  12 +
->>  drivers/iio/adc/Makefile                      |   1 +
->>  drivers/iio/adc/ad7780.c                      | 365 ++++++++++++++++++
->>  drivers/staging/iio/adc/Kconfig               |  13 -
->>  drivers/staging/iio/adc/Makefile              |   1 -
->>  drivers/staging/iio/adc/ad7780.c              | 277 -------------
->>  7 files changed, 426 insertions(+), 291 deletions(-)
->>  create mode 100644
->> Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
->>  create mode 100644 drivers/iio/adc/ad7780.c
->>  delete mode 100644 drivers/staging/iio/adc/ad7780.c
->>
+>>  #define AD7780_PATTERN_GOOD    1
+>>  #define AD7780_PATTERN_MASK    GENMASK(1, 0)
 >> --
 >> 2.21.0
 >>
->
->-- 
->You received this message because you are subscribed to the Google Groups "Kernel USP" group.
->To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
->To post to this group, send email to kernel-usp@googlegroups.com.
->To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel%40analog.com.
->For more options, visit https://groups.google.com/d/optout.
