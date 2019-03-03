@@ -6,50 +6,50 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13B52C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:47:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0ED9C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:51:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D47D320866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:47:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 68BEB20866
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:51:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551617271;
-	bh=E2HkPwXGrgM27CZAke25vLwGR+iBhhZBrDe/33OOzzw=;
+	s=default; t=1551617471;
+	bh=gF81hsfkbUWmkTb4lwetaCe4FI4errIsYOlUYYwsO/s=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=kjtVOnLNlssQgfOpNBGV4p1bzSZmEmEOkbEJQBO8HOI1ZmxN65/cJFcTAlUxBAEq7
-	 KShPF9WnkdjLlkYjEF8vQzxKrL7Yhemwuzl0QWbkyW24vQk1wPX/K+rxxzCsOCXfgs
-	 WNKbsWm4Be86I1Vqhj5Zq3CkWPg1+L/i3CNBGIZY=
+	b=mL6U3287dZaIWqBYAsBYrGcXnsjkhWM9urg9UVreKIIzsZ3sDYckX6t2D5DSVQUq/
+	 RhCshyxLfa1JKq+Yl/Yr2+sMczYQujVJyZoAiOOdU5KS/ydDUqPI4wgU3sANdMoHIz
+	 bfOSJxnIk8ufLKmLqzYX3uUfe4GygJoPupl3u50c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726215AbfCCMrv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 07:47:51 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51798 "EHLO mail.kernel.org"
+        id S1726166AbfCCMvK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 07:51:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53412 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726136AbfCCMrv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 07:47:51 -0500
+        id S1726136AbfCCMvK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 07:51:10 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8D01620857;
-        Sun,  3 Mar 2019 12:47:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 23B1420857;
+        Sun,  3 Mar 2019 12:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551617269;
-        bh=E2HkPwXGrgM27CZAke25vLwGR+iBhhZBrDe/33OOzzw=;
+        s=default; t=1551617469;
+        bh=gF81hsfkbUWmkTb4lwetaCe4FI4errIsYOlUYYwsO/s=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uwvn/SCAhbOo8WOvh6ENLz+PpMvsyd0MG60te1jem+LHw+W4obov/jYWuFdCfC8B2
-         xPszf8/PLNO5tVY68ujosrywTgCJvp1Q/N8AfLKuPOTb6N0QUx0dzHflNu0frgXgUb
-         Uiw5fxjy3X4BLQNOnsP0oEy0osvcAgorFYhAYACQ=
-Date:   Sun, 3 Mar 2019 12:47:44 +0000
+        b=ThAkEMSdLu16IwuxNThuMb1olxbqHgh72ZIhDOISHCHZHpC5OWXb0rdbLjossEDiH
+         ZYi5j/VJK8fPsG3zbI4tZBHT9ISw4Rs8ia5CWoCsC3vqEb80O7dnlOCZLTR3SrHBwZ
+         /biYCZMYxMLnETNJgRGPQfky3SCvZma4sReAQbR4=
+Date:   Sun, 3 Mar 2019 12:51:03 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Stefan Popa <stefan.popa@analog.com>
 Cc:     <robh+dt@kernel.org>, <Michael.Hennerich@analog.com>,
         <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <gregkh@linuxfoundation.org>, <linux-kernel@vger.kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v3 3/7] iio: imu: adis16480: Treat temperature scale in
- a generic way
-Message-ID: <20190303124744.3bd0ac0a@archlinux>
-In-Reply-To: <1551284068-4882-4-git-send-email-stefan.popa@analog.com>
+Subject: Re: [PATCH v3 4/7] iio: imu: adis16480: Calculate the sampling
+ frequency in a generic way
+Message-ID: <20190303125103.5d9b5e5a@archlinux>
+In-Reply-To: <1551284068-4882-5-git-send-email-stefan.popa@analog.com>
 References: <1551284068-4882-1-git-send-email-stefan.popa@analog.com>
-        <1551284068-4882-4-git-send-email-stefan.popa@analog.com>
+        <1551284068-4882-5-git-send-email-stefan.popa@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,101 +59,104 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 27 Feb 2019 18:14:24 +0200
+On Wed, 27 Feb 2019 18:14:25 +0200
 Stefan Popa <stefan.popa@analog.com> wrote:
 
-> All supported devices provide internal temperature measurement from -40 C
-> to +85 C, with +25 C representing value 0x00.
+> The adis1648x devices have an internal clock of 2.46 kSPS. The sampling
+> frequency is calculated by applying a decimation rate which can take the
+> maximum value of 2047.
 > 
-> This patch treats the temperature scale in a generic way, similar to the
-> accelerometer and gyroscope scales. So far, there are no temperature max
-> scale differences between the supported devices. However, devices that
-> will make use of this feature will be added in the future.
+> Although all adis1648x devices are similar in this regard, devices that
+> will use this feature will be added in the future.
 > 
 > Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Applied.  Thanks,
+Straight forward refactor so fine.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+A comment inline about something in the old code!
+
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/imu/adis16480.c | 18 +++++++++++++++---
->  1 file changed, 15 insertions(+), 3 deletions(-)
+>  drivers/iio/imu/adis16480.c | 18 ++++++++++++++----
+>  1 file changed, 14 insertions(+), 4 deletions(-)
 > 
 > diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-> index 150d814..5a2864a 100644
+> index 5a2864a..92abc95 100644
 > --- a/drivers/iio/imu/adis16480.c
 > +++ b/drivers/iio/imu/adis16480.c
-> @@ -124,6 +124,7 @@ struct adis16480_chip_info {
->  	unsigned int gyro_max_scale;
+> @@ -125,6 +125,8 @@ struct adis16480_chip_info {
 >  	unsigned int accel_max_val;
 >  	unsigned int accel_max_scale;
-> +	unsigned int temp_scale;
+>  	unsigned int temp_scale;
+> +	unsigned int int_clk;
+> +	unsigned int max_dec_rate;
 >  };
 >  
 >  enum adis16480_int_pin {
-> @@ -530,6 +531,7 @@ static int adis16480_read_raw(struct iio_dev *indio_dev,
->  	const struct iio_chan_spec *chan, int *val, int *val2, long info)
->  {
->  	struct adis16480 *st = iio_priv(indio_dev);
-> +	unsigned int temp;
+> @@ -299,9 +301,9 @@ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
+>  	if (t <= 0)
+>  		return -EINVAL;
 >  
->  	switch (info) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -549,8 +551,13 @@ static int adis16480_read_raw(struct iio_dev *indio_dev,
->  			*val2 = 100; /* 0.0001 gauss */
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		case IIO_TEMP:
-> -			*val = 5;
-> -			*val2 = 650000; /* 5.65 milli degree Celsius */
-> +			/*
-> +			 * +85 degrees Celsius = temp_max_scale
-> +			 * +25 degrees Celsius = 0
-> +			 * LSB, 25 degrees Celsius  = 60 / temp_max_scale
-> +			 */
-> +			*val = st->chip_info->temp_scale / 1000;
-> +			*val2 = (st->chip_info->temp_scale % 1000) * 1000;
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		case IIO_PRESSURE:
->  			*val = 0;
-> @@ -561,7 +568,8 @@ static int adis16480_read_raw(struct iio_dev *indio_dev,
->  		}
->  	case IIO_CHAN_INFO_OFFSET:
->  		/* Only the temperature channel has a offset */
-> -		*val = 4425; /* 25 degree Celsius = 0x0000 */
-> +		temp = 25 * 1000000LL; /* 25 degree Celsius = 0x0000 */
-> +		*val = DIV_ROUND_CLOSEST_ULL(temp, st->chip_info->temp_scale);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_CALIBBIAS:
->  		return adis16480_get_calibbias(indio_dev, chan, val);
-> @@ -717,6 +725,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
->  		.gyro_max_scale = 300,
+> -	t = 2460000 / t;
+> -	if (t > 2048)
+> -		t = 2048;
+> +	t = st->chip_info->int_clk / t;
+> +	if (t > st->chip_info->max_dec_rate)
+> +		t = st->chip_info->max_dec_rate;
+>  
+>  	if (t != 0)
+>  		t--;
+> @@ -320,7 +322,7 @@ static int adis16480_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	freq = 2460000 / (t + 1);
+> +	freq = st->chip_info->int_clk / (t + 1);
+
+I'm a little curious about why t + 1?  Presumably to avoid weird rounding
+issues, but maybe a nice addition would be a comment explaining this.
+
+>  	*val = freq / 1000;
+>  	*val2 = (freq % 1000) * 1000;
+>  
+> @@ -726,6 +728,8 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
 >  		.accel_max_val = IIO_M_S_2_TO_G(21973),
 >  		.accel_max_scale = 18,
-> +		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+>  		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+> +		.int_clk = 2460000,
+> +		.max_dec_rate = 2048,
 >  	},
 >  	[ADIS16480] = {
 >  		.channels = adis16480_channels,
-> @@ -725,6 +734,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
->  		.gyro_max_scale = 450,
+> @@ -735,6 +739,8 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
 >  		.accel_max_val = IIO_M_S_2_TO_G(12500),
 >  		.accel_max_scale = 10,
-> +		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+>  		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+> +		.int_clk = 2460000,
+> +		.max_dec_rate = 2048,
 >  	},
 >  	[ADIS16485] = {
 >  		.channels = adis16485_channels,
-> @@ -733,6 +743,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
->  		.gyro_max_scale = 450,
+> @@ -744,6 +750,8 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
 >  		.accel_max_val = IIO_M_S_2_TO_G(20000),
 >  		.accel_max_scale = 5,
-> +		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+>  		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+> +		.int_clk = 2460000,
+> +		.max_dec_rate = 2048,
 >  	},
 >  	[ADIS16488] = {
 >  		.channels = adis16480_channels,
-> @@ -741,6 +752,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
->  		.gyro_max_scale = 450,
+> @@ -753,6 +761,8 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
 >  		.accel_max_val = IIO_M_S_2_TO_G(22500),
 >  		.accel_max_scale = 18,
-> +		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+>  		.temp_scale = 5650, /* 5.65 milli degree Celsius */
+> +		.int_clk = 2460000,
+> +		.max_dec_rate = 2048,
 >  	},
 >  };
 >  
