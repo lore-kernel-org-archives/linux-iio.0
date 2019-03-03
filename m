@@ -2,156 +2,194 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_PASS
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AADDC43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:32:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91874C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:52:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 162AC20866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:32:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551619954;
-	bh=zoeb5Z64Oe5aT6A127U/7Dm2Kz+Q4+31DdQqC0+D2UM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=AIXg2xoES6dyt/A1LwycjnGN/xcU7UiMLFx2ZdL0OaYDMScY8Pf1QFL/9n+wt/I+X
-	 tIdrj4OoLvFLnj8okRGOc1a+i2/yJ4S4gchr10IguaDUeSNVR5MoIsLyH1l3ft/0hT
-	 eHDubVcIG2yrzXrzDSkS20ah+baL8Res1q2adug0=
+	by mail.kernel.org (Postfix) with ESMTP id 536DA20836
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 13:52:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gs9P4bZP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726260AbfCCNcd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 08:32:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43538 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726186AbfCCNcd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 08:32:33 -0500
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 182D120857;
-        Sun,  3 Mar 2019 13:32:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551619952;
-        bh=zoeb5Z64Oe5aT6A127U/7Dm2Kz+Q4+31DdQqC0+D2UM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1Op0xkCgpQfRuNk3TzkyuWjNaR+Qg6P81C+HlvrVAyLdLZyapvwuiYOhZFGyS6MT3
-         eKvj2XMxdaSsEKDIA2p5QDgoalgxQBRk/MFNZbCPW4KQi/MUBkcGla8cAYz8KjoENM
-         Qe3mh19sLoGBecGiIaot23WynOZYLaWwjYokFUho=
-Date:   Sun, 3 Mar 2019 13:32:25 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Camylla =?UTF-8?B?R29uw6dhbHZlcw==?= Cantanheide 
-        <c.cantanheide@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: Re: [PATCH] iio: adc: ad7766: Change alignment to match paranthesis
-Message-ID: <20190303133225.6a102146@archlinux>
-In-Reply-To: <20190224214010.10894-1-c.cantanheide@gmail.com>
-References: <20190224214010.10894-1-c.cantanheide@gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726342AbfCCNwa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 08:52:30 -0500
+Received: from mail-qk1-f194.google.com ([209.85.222.194]:37739 "EHLO
+        mail-qk1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726186AbfCCNw3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 08:52:29 -0500
+Received: by mail-qk1-f194.google.com with SMTP id m9so1418295qkl.4;
+        Sun, 03 Mar 2019 05:52:28 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=vVKH27wJS7+cOMDP8DvHCQLrRQHLTE7flgi1uer+sT0=;
+        b=gs9P4bZP/oqNpe3evrSx7hF0i2t/DTORJQJcGpi8lXC61sUg03oPLS0DGe1ASvO0x4
+         +yBTu+uy15Fq4XB8ZMBJwmqueaiXBhMrTikuq81/dPXWYDcPzVfyFIHCbzCJyleXr95a
+         ooVvXtOBEl+c3RHzr2BNpvws0pdrf7HsPs5Pe1yh/uDIYQ4jGyXYGLq7W7PtxumYucaC
+         fUJtr75tHYBZpyvapzhCqLaWslH+ez/byhSm2dNf/Mu4xwW54ZQ2hk5qv1c273xIbt32
+         BGYZjXCEsQa90zKonu1T+GOovKUpunvLUoH9ZWJva+P/JKPAkk3HdlbC6TMUPOGfnTYR
+         6Wng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=vVKH27wJS7+cOMDP8DvHCQLrRQHLTE7flgi1uer+sT0=;
+        b=qLLBF2hYbHEmFIrMUyIm2kIcFdfJ60l5QrxMYlqxi4q6vqE+OUVt/IO7W4cqcQORsI
+         gn7ahYg169KNp9WPsTwUxuWVs87Uq7S1MBl9onI/Za2wwI3/LNOdMtPMV40hN8+6NiOo
+         BapEXlLvhxsPr5l39IZAH0VziD9Qqis0rJx31UDyiv5Zlhjm5dnXn8D0AU2SF/REAnLm
+         TI1peDi6wUH+SZVkLIeSpYyZQCemZJy4ddbQdCQcbhwgQEKuKpRcSV/qnbaZgz+MVIJA
+         pbVo6Icl3qCss4fmYs4YB4Mwmn6nZ/Q0tPf6rzE2ZaAVThtp4IfhX9S/Sj8dN33FWjjm
+         KvVQ==
+X-Gm-Message-State: APjAAAUH/37xo5j8eurhBUMZ/lzQD/6+l5MusMEzpIanwIj76A7BiJ/y
+        1kdZg/p7O6OLAXTDMWwxEb8=
+X-Google-Smtp-Source: APXvYqy2RFKurXlsJz536Y1ny6Kq7mOiFkwoYjY8rVyAY0E7oZlxskeJDIjr1ituAD1PHQkVdOeWeA==
+X-Received: by 2002:a37:62ce:: with SMTP id w197mr10192281qkb.108.1551621147863;
+        Sun, 03 Mar 2019 05:52:27 -0800 (PST)
+Received: from renatolg ([186.220.23.48])
+        by smtp.gmail.com with ESMTPSA id w1sm2201498qtc.75.2019.03.03.05.52.23
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Sun, 03 Mar 2019 05:52:27 -0800 (PST)
+From:   Renato Lui Geh <renatogeh@gmail.com>
+X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
+Date:   Sun, 3 Mar 2019 10:52:21 -0300
+To:     "Ardelean, Alexandru" <Alex.Ardelean@analog.com>
+Cc:     "lars@metafoo.de" <lars@metafoo.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "renatogeh@gmail.com" <renatogeh@gmail.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 0/9] staging: iio: ad7780: move out of staging
+Message-ID: <20190303135220.swjrc4r7jb52rw6n@renatolg>
+References: <cover.1551358569.git.renatogeh@gmail.com>
+ <72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
+In-Reply-To: <72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel@analog.com>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 24 Feb 2019 18:40:10 -0300
-Camylla Gon=C3=A7alves Cantanheide <c.cantanheide@gmail.com> wrote:
+Hi Alexandru,
 
-> This commit align broken line to match upper line parenthesis,
-> in lines 80, 130, 237, 242, 255, 264 and 293. Solves the checkpatch.pl's =
-message:
->=20
-> CHECK: Alignment should match open parenthesis
->=20
-> In lines 130, 255, 264 and 293 it was necessary to break a line.
-Applied to the togreg branch of iio.git and pushed out as testing
-because of other patches that are queued up.
+Thanks for the review. Some questions inline.
 
 Thanks,
+Renato
 
-Jonathan
+On 03/01, Ardelean, Alexandru wrote:
+>On Thu, 2019-02-28 at 11:23 -0300, Renato Lui Geh wrote:
+>>
+>
+>The patch-series is a bit big.
+>I guess that the intent is to move this out-of-staging, but various patches
+>are holding this in it's place.
+>For patch series above a certain size, you could get many re-spins
+>[V2,3,4... so on].
+>
+>You could send some of the changes as individual patches, or group them in
+>series of 1,2 or 3 patches. That way, you "parallelize" patch sending, and
+>when you get reviews on each patch, you can re-spin them individually.
+>You'll find over time that certain patches get accepted on V1, others on V2
+>and some on V7 [ hopefully, there isn't any frustration at that point ].
 
-> ---
->  drivers/iio/adc/ad7766.c | 22 +++++++++++++---------
->  1 file changed, 13 insertions(+), 9 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-> index 3ae14fc8c649..101502435768 100644
-> --- a/drivers/iio/adc/ad7766.c
-> +++ b/drivers/iio/adc/ad7766.c
-> @@ -77,7 +77,7 @@ static irqreturn_t ad7766_trigger_handler(int irq, void=
- *p)
->  		goto done;
-> =20
->  	iio_push_to_buffers_with_timestamp(indio_dev, ad7766->data,
-> -		pf->timestamp);
-> +					   pf->timestamp);
->  done:
->  	iio_trigger_notify_done(indio_dev->trig);
-> =20
-> @@ -127,7 +127,8 @@ static int ad7766_postdisable(struct iio_dev *indio_d=
-ev)
->  }
-> =20
->  static int ad7766_read_raw(struct iio_dev *indio_dev,
-> -	const struct iio_chan_spec *chan, int *val, int *val2, long info)
-> +			   const struct iio_chan_spec *chan, int *val,
-> +			   int *val2, long info)
->  {
->  	struct ad7766 *ad7766 =3D iio_priv(indio_dev);
->  	struct regulator *vref =3D ad7766->reg[AD7766_SUPPLY_VREF].consumer;
-> @@ -234,12 +235,12 @@ static int ad7766_probe(struct spi_device *spi)
->  	ad7766->reg[AD7766_SUPPLY_VREF].supply =3D "vref";
-> =20
->  	ret =3D devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
-> -		ad7766->reg);
-> +				      ad7766->reg);
->  	if (ret)
->  		return ret;
-> =20
->  	ad7766->pd_gpio =3D devm_gpiod_get_optional(&spi->dev, "powerdown",
-> -		GPIOD_OUT_HIGH);
-> +						  GPIOD_OUT_HIGH);
->  	if (IS_ERR(ad7766->pd_gpio))
->  		return PTR_ERR(ad7766->pd_gpio);
-> =20
-> @@ -252,7 +253,8 @@ static int ad7766_probe(struct spi_device *spi)
-> =20
->  	if (spi->irq > 0) {
->  		ad7766->trig =3D devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
-> -			indio_dev->name, indio_dev->id);
-> +						      indio_dev->name,
-> +						      indio_dev->id);
->  		if (!ad7766->trig)
->  			return -ENOMEM;
-> =20
-> @@ -261,8 +263,9 @@ static int ad7766_probe(struct spi_device *spi)
->  		iio_trigger_set_drvdata(ad7766->trig, ad7766);
-> =20
->  		ret =3D devm_request_irq(&spi->dev, spi->irq, ad7766_irq,
-> -			IRQF_TRIGGER_FALLING, dev_name(&spi->dev),
-> -			ad7766->trig);
-> +				       IRQF_TRIGGER_FALLING,
-> +				       dev_name(&spi->dev),
-> +				       ad7766->trig);
->  		if (ret < 0)
->  			return ret;
-> =20
-> @@ -290,8 +293,9 @@ static int ad7766_probe(struct spi_device *spi)
->  	spi_message_add_tail(&ad7766->xfer, &ad7766->msg);
-> =20
->  	ret =3D devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-> -		&iio_pollfunc_store_time, &ad7766_trigger_handler,
-> -		&ad7766_buffer_setup_ops);
-> +					      &iio_pollfunc_store_time,
-> +					      &ad7766_trigger_handler,
-> +					      &ad7766_buffer_setup_ops);
->  	if (ret)
->  		return ret;
-> =20
-
+On these subseries, should versioning follow this patchset (v5) or should
+they start anew (v1), ignoring this series version?
+>
+>Well, this is a technique I use to distribute some of my upstream-patch-
+>work, so that I can switch easier between internal-work & upstreaming-work.
+>
+>Coming back to this patch-series.
+>My general input, is that the patches are fine over-all; some are just
+>cosmetics/noise/a-different-way-of-doing-things-for-this-driver, and those
+>usually can be left to preference [of the maintainer usually].
+>
+>I do suggest to not hurry when re-spinning patches, and not change too much
+>the number of patches in a new series. That can complicate things
+>sometimes. But, if doing small patch-series or individual patches, you
+>won't have this problem too much.
+>
+>Thanks
+>Alex
+>
+>>
+>> This series of patches contains the following:
+>>  - Adds user input for the 'gain' and 'filter' GPIO pins for the ad778x
+>>    family chips;
+>>  - Filter reading for the ad778x;
+>>  - Sets pattern macro values and mask for PATTERN status bits;
+>>  - Adds ID values for the ad7170, ad7171, ad7780 and ad7781 for ID
+>>    status bits checking;
+>>  - Moves regulator initialization to after GPIO init to maintain
+>>    consistency between probe and remove;
+>>  - Copyright edits, adding SPDX identifier and new copyright holder;
+>>  - Moves the ad7780 driver out of staging to the mainline;
+>>  - Adds device tree binding for the ad7780 driver.
+>>
+>> Renato Lui Geh (9):
+>>   staging: iio: ad7780: add gain & filter gpio support
+>>   staging: iio: ad7780: add filter reading to ad778x
+>>   staging: iio: ad7780: set pattern values and masks directly
+>>   staging:iio:ad7780: add chip ID values and mask
+>>   staging: iio: ad7780: move regulator to after GPIO init
+>>   staging: iio: ad7780: add SPDX identifier
+>>   staging: iio: ad7780: add new copyright holder
+>>   staging: iio: ad7780: moving ad7780 out of staging
+>>   staging: iio: ad7780: add device tree binding
+>>
+>> Changelog:
+>> *v3
+>>  - SPDX and regulator init as patches
+>>  - Renamed filter to odr and ad778x_filter to ad778x_odr_avail
+>>  - Removed unnecessary regulator disabling
+>>  - Removed unnecessary AD_SD_CHANNEL macro
+>>  - Changed unsigned int to unsigned long long to avoid overflow
+>> *v4
+>>  - Split gain & filter patch into two, with the new commit adding only
+>>    filter reading
+>>  - Changed pattern values to direct values, and added pattern mask
+>>  - Added ID values and mask
+>>  - Added new copyright holder
+>>  - Added device tree binding to the ad7780 driver
+>>
+>>  .../bindings/iio/adc/adi,ad7780.txt           |  48 +++
+>>  drivers/iio/adc/Kconfig                       |  12 +
+>>  drivers/iio/adc/Makefile                      |   1 +
+>>  drivers/iio/adc/ad7780.c                      | 365 ++++++++++++++++++
+>>  drivers/staging/iio/adc/Kconfig               |  13 -
+>>  drivers/staging/iio/adc/Makefile              |   1 -
+>>  drivers/staging/iio/adc/ad7780.c              | 277 -------------
+>>  7 files changed, 426 insertions(+), 291 deletions(-)
+>>  create mode 100644
+>> Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
+>>  create mode 100644 drivers/iio/adc/ad7780.c
+>>  delete mode 100644 drivers/staging/iio/adc/ad7780.c
+>>
+>> --
+>> 2.21.0
+>>
+>
+>-- 
+>You received this message because you are subscribed to the Google Groups "Kernel USP" group.
+>To unsubscribe from this group and stop receiving emails from it, send an email to kernel-usp+unsubscribe@googlegroups.com.
+>To post to this group, send email to kernel-usp@googlegroups.com.
+>To view this discussion on the web visit https://groups.google.com/d/msgid/kernel-usp/72a54cd5f58aeb9507b95b7e33ca3d9a38c853e9.camel%40analog.com.
+>For more options, visit https://groups.google.com/d/optout.
