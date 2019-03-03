@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30199C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:30:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAD91C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:30:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EC22020857
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:30:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A10720857
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:30:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551627016;
-	bh=R9PHUsibk37ktvFzG2+GTjffZ4eq4jELKz4oa9HP+90=;
+	s=default; t=1551627041;
+	bh=IsqtGwrYku6pC1vL41Ziwj9ch2d4QaqpQ+uaEM0NEew=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=LO300wa/GePyN1X3KQIn/nCgmcPBhXqK8uVSnNN5iey8F/9zS3upozxsKpcU9pFeH
-	 LGXYtI8W/tgjvZdqvDP/F5w12TBbY0UV6wcbq5kRazo0RyujLD4I5QoTXl2fjNJz9X
-	 V2O0cusnDb6Hcjd7ZG8BCX85TMoi+1DEIP6rpfFo=
+	b=UTqp8FKUXChkowPaX2ByZc8HrCDOOV/AzEDJA9MWmzlBugboupMVB7o0l40pHxdgh
+	 O+vunye4Ao/DguAv3VrBNogx6O2yZZofavXo3U5/KvPxHszkXoV9QK01O0FKlnHcfd
+	 7bJd9pwhKS5C7XUHVuQE7qSQbX/VwsgvSg07IGhU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726253AbfCCPaP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 10:30:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37112 "EHLO mail.kernel.org"
+        id S1726369AbfCCPal (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 10:30:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726242AbfCCPaP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 10:30:15 -0500
+        id S1726242AbfCCPak (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 10:30:40 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6D57E20835;
-        Sun,  3 Mar 2019 15:30:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 46DB720835;
+        Sun,  3 Mar 2019 15:30:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551627014;
-        bh=R9PHUsibk37ktvFzG2+GTjffZ4eq4jELKz4oa9HP+90=;
+        s=default; t=1551627040;
+        bh=IsqtGwrYku6pC1vL41Ziwj9ch2d4QaqpQ+uaEM0NEew=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=xVt+kNziAC94xIKnvZAyCi/Jv2IZw66pT5YnN99BBTNyrR1iAQHYBOBDp78fQ18tl
-         lIvD4EGwEaugv5BHVT5OIs5fBSrSHKIuYEyX/Etuscx+lWOpZYfGS08RXC4Qr6rXxy
-         B99HATIUEriWtOxjt2q9/5cLLszkBJAKMHCgdOvE=
-Date:   Sun, 3 Mar 2019 15:30:07 +0000
+        b=BweXhYQEPqbuxsST1CTSJSiuajIcfjcxZW0LJJdvmprWtTHELlLaNUWy/CRoxSAep
+         H67puDT6xfTVGbAkUGtBQj4o1OGyhooX/NWE6hjOFNmVY9f6q9PmEFK2VhitpXVwx1
+         B8zSPp8WTqbXuij8GA0TDItVjFgYe8UKRSpi4Hps=
+Date:   Sun, 3 Mar 2019 15:30:32 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     "H. Nikolaus Schaller" <hns@goldelico.com>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -56,11 +56,11 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 09/10] iio: mpu6050: improve code readability
-Message-ID: <20190303153007.643fe422@archlinux>
-In-Reply-To: <1493d22e5c0710a4ced34bf3bc714d367bdf58a3.1550768574.git.hns@goldelico.com>
+Subject: Re: [PATCH v2 10/10] iio: ak8975: improve code readability
+Message-ID: <20190303153032.580537fe@archlinux>
+In-Reply-To: <8a4498a761bf63e38c16f17d437715be0399a957.1550768574.git.hns@goldelico.com>
 References: <cover.1550768574.git.hns@goldelico.com>
-        <1493d22e5c0710a4ced34bf3bc714d367bdf58a3.1550768574.git.hns@goldelico.com>
+        <8a4498a761bf63e38c16f17d437715be0399a957.1550768574.git.hns@goldelico.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,7 +70,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Feb 2019 18:02:54 +0100
+On Thu, 21 Feb 2019 18:02:55 +0100
 "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 
 > - use temporary variable in get_mount_matrix()
@@ -84,28 +84,37 @@ Thanks,
 Jonathan
 
 > ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 ++++--
->  1 file changed, 4 insertions(+), 2 deletions(-)
+>  drivers/iio/magnetometer/ak8975.c | 8 +++++---
+>  1 file changed, 5 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 533d1f8321ac..e7721b6fb441 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -765,12 +765,14 @@ static const struct iio_mount_matrix *
->  inv_get_mount_matrix(const struct iio_dev *indio_dev,
->  		     const struct iio_chan_spec *chan)
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index db7214ac514c..43d08c089792 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -746,12 +746,14 @@ static const struct iio_mount_matrix *
+>  ak8975_get_mount_matrix(const struct iio_dev *indio_dev,
+>  			const struct iio_chan_spec *chan)
 >  {
-> -	return &((struct inv_mpu6050_state *)iio_priv(indio_dev))->orientation;
-> +	struct inv_mpu6050_state *data = iio_priv(indio_dev);
+> -	return &((struct ak8975_data *)iio_priv(indio_dev))->orientation;
+> +	struct ak8975_data *data = iio_priv(indio_dev);
 > +
 > +	return &data->orientation;
 >  }
 >  
->  static const struct iio_chan_spec_ext_info inv_ext_info[] = {
->  	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, inv_get_mount_matrix),
+>  static const struct iio_chan_spec_ext_info ak8975_ext_info[] = {
+>  	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, ak8975_get_mount_matrix),
 > -	{ },
 > +	{ }
 >  };
 >  
->  #define INV_MPU6050_CHAN(_type, _channel2, _index)                    \
+>  #define AK8975_CHANNEL(axis, index)					\
+> @@ -792,7 +794,7 @@ static const struct acpi_device_id ak_acpi_match[] = {
+>  	{"AK09911", AK09911},
+>  	{"AKM9911", AK09911},
+>  	{"AK09912", AK09912},
+> -	{ },
+> +	{ }
+>  };
+>  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
+>  #endif
 
