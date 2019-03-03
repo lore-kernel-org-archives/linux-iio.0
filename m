@@ -2,405 +2,145 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B082C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 17:49:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00AD3C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 18:00:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2441E20866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 17:49:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="UkK5CBtP"
+	by mail.kernel.org (Postfix) with ESMTP id C31B420835
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 18:00:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726533AbfCCRtk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 12:49:40 -0500
-Received: from ns.pmeerw.net ([84.19.176.117]:48420 "EHLO ns.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726488AbfCCRtk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 12:49:40 -0500
-Received: by ns.pmeerw.net (Postfix, from userid 1000)
-        id 497AAE02CB; Sun,  3 Mar 2019 18:49:38 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
-        t=1551635378; bh=chbnfze41O/2X5TjNQ0QWgNPPlcGJvRPNDcLCCJb3Ok=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=UkK5CBtPQi2IBrAa+31T9r8B87O1lO55xY0ViaT3IaSYcLSSHz5/Kf+RKQQgzMEsW
-         WH/HKt2YW+7qXPVFvdNG8QpaqwdCe91UcPBQwPlhc1HEKn6+/DWPCjMkse7wWL8XIH
-         Tdm6ecOCa1jEGeehYdEYeAww50w4TGOM9gqk5kIo=
-Received: from localhost (localhost [127.0.0.1])
-        by ns.pmeerw.net (Postfix) with ESMTP id 2D309E0205;
-        Sun,  3 Mar 2019 18:49:38 +0100 (CET)
-Date:   Sun, 3 Mar 2019 18:49:38 +0100 (CET)
-From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To:     Andreas Klinger <ak@it-klinger.de>
-cc:     linux-iio@vger.kernel.org, jic23@kernel.org,
-        linux-kernel@vger.kernel.org, techsupport@maxbotix.com
-Subject: Re: [PATCH v2 3/4] mb12x2.c: add distance iio sensor with i2c
-In-Reply-To: <20190301134255.tsixtoqlxnoa2kig@arbad>
-Message-ID: <alpine.DEB.2.21.1903031848260.28276@vps.pmeerw.net>
-References: <20190301134255.tsixtoqlxnoa2kig@arbad>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1726539AbfCCSAM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 13:00:12 -0500
+Received: from gateway24.websitewelcome.com ([192.185.50.45]:39765 "EHLO
+        gateway24.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726416AbfCCSAL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 13:00:11 -0500
+X-Greylist: delayed 1484 seconds by postgrey-1.27 at vger.kernel.org; Sun, 03 Mar 2019 13:00:10 EST
+Received: from cm10.websitewelcome.com (cm10.websitewelcome.com [100.42.49.4])
+        by gateway24.websitewelcome.com (Postfix) with ESMTP id 269278413
+        for <linux-iio@vger.kernel.org>; Sun,  3 Mar 2019 11:35:26 -0600 (CST)
+Received: from gator4166.hostgator.com ([108.167.133.22])
+        by cmsmtp with SMTP
+        id 0V1Kh9BbT2PzO0V1KhYgB5; Sun, 03 Mar 2019 11:35:26 -0600
+X-Authority-Reason: nr=8
+Received: from [189.250.88.58] (port=37370 helo=[192.168.1.76])
+        by gator4166.hostgator.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <gustavo@embeddedor.com>)
+        id 1h0V1J-0048tk-NT; Sun, 03 Mar 2019 11:35:25 -0600
+Subject: Re: [PATCH] iio: mma8452: mark expected switch fall-through
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Kees Cook <keescook@chromium.org>
+References: <20190211222318.GA21656@embeddedor>
+ <20190220121726.3b10e0ec@archlinux>
+ <5f52a67e-d1b8-4f2f-d6f3-309e6683c02b@embeddedor.com>
+ <e612e707-4a54-7b59-e350-139766529316@embeddedor.com>
+ <20190303170428.1d3f631b@archlinux>
+From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+Openpgp: preference=signencrypt
+Autocrypt: addr=gustavo@embeddedor.com; keydata=
+ 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
+ VtSixD1uOgytAP7RWS474w==
+Message-ID: <642343a8-4107-3f31-8c29-ea0a49f8fe66@embeddedor.com>
+Date:   Sun, 3 Mar 2019 11:35:24 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.4.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20190303170428.1d3f631b@archlinux>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - embeddedor.com
+X-BWhitelist: no
+X-Source-IP: 189.250.88.58
+X-Source-L: No
+X-Exim-ID: 1h0V1J-0048tk-NT
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: ([192.168.1.76]) [189.250.88.58]:37370
+X-Source-Auth: gustavo@embeddedor.com
+X-Email-Count: 5
+X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
+X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 1 Mar 2019, Andreas Klinger wrote:
 
-> Add I2CXL-MaxSonar ultrasonic distance sensors of type family mb12x2 using
-> an i2c interface
 
-small comment below
- 
-> Implemented functionality:
-> - reading the distance via in_distance_raw
-> - buffered mode with trigger
-> - make use of status gpio to announce completion of ranging
-> 
-> Add mb12x2 driver to Kconfig and Makefile
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  drivers/iio/proximity/Kconfig  |  11 ++
->  drivers/iio/proximity/Makefile |   1 +
->  drivers/iio/proximity/mb12x2.c | 283 +++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 295 insertions(+)
->  create mode 100644 drivers/iio/proximity/mb12x2.c
-> 
-> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-> index b99367a89f81..a420f2cb314b 100644
-> --- a/drivers/iio/proximity/Kconfig
-> +++ b/drivers/iio/proximity/Kconfig
-> @@ -45,6 +45,17 @@ config LIDAR_LITE_V2
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called pulsedlight-lite-v2
->  
-> +config MB12X2
-> +	tristate "MaxSonar MB12X2 family ultrasonic sensors"
-> +	depends on I2C
-> +	help
-> +	  Say Y to build a driver for the ultrasonic sensors I2CXL of
-> +	  MaxBotix which have an i2c interface. It can be used to measure
-> +	  the distance of objects.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called mb12x2.
-> +
->  config RFD77402
->  	tristate "RFD77402 ToF sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
-> index 6d031f903c4c..be9a14db77e7 100644
-> --- a/drivers/iio/proximity/Makefile
-> +++ b/drivers/iio/proximity/Makefile
-> @@ -7,6 +7,7 @@
->  obj-$(CONFIG_AS3935)		+= as3935.o
->  obj-$(CONFIG_ISL29501)		+= isl29501.o
->  obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
-> +obj-$(CONFIG_MB12X2)		+= mb12x2.o
->  obj-$(CONFIG_RFD77402)		+= rfd77402.o
->  obj-$(CONFIG_SRF04)		+= srf04.o
->  obj-$(CONFIG_SRF08)		+= srf08.o
-> diff --git a/drivers/iio/proximity/mb12x2.c b/drivers/iio/proximity/mb12x2.c
-> new file mode 100644
-> index 000000000000..8b1ac901c253
-> --- /dev/null
-> +++ b/drivers/iio/proximity/mb12x2.c
-> @@ -0,0 +1,283 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * mb12x2.c - Support for MaxBotix I2CXL-MaxSonar-EZ series ultrasonic
-> + *   ranger with i2c interface
-> + * actually supported are mb12x2 types
-> + *
-> + * Copyright (c) 2019 Andreas Klinger <ak@it-klinger.de>
-> + *
-> + * For details about the device see:
-> + * https://www.maxbotix.com/documents/I2CXL-MaxSonar-EZ_Datasheet.pdf
-> + *
-> + */
-> +
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/bitops.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +/* registers of MaxSonar device */
-> +#define MB12X2_RANGE_COMMAND	0x51	/* Command for reading range */
-> +#define MB12X2_ADDR_UNLOCK_1	0xAA	/* Command 1 for changing address */
-> +#define MB12X2_ADDR_UNLOCK_2	0xA5	/* Command 2 for changing address */
-> +
-> +struct mb12x2_data {
-> +	struct i2c_client	*client;
-> +
-> +	struct mutex		lock;
-> +
-> +	/*
-> +	 * optionally a gpio can be used to announce when ranging has
-> +	 * finished
-> +	 */
-> +	struct completion	ranging;
-> +	struct gpio_desc	*gpiod_status;
-> +	int			irqnr;
-> +
-> +	/*
-> +	 * triggered buffer
-> +	 * 1x16-bit channel + 3x16 padding + 4x16 timestamp
-> +	 */
-> +	s16			buffer[8];
-> +};
-> +
-> +static irqreturn_t mb12x2_handle_irq(int irq, void *dev_id)
-> +{
-> +	struct iio_dev *indio_dev = dev_id;
-> +	struct mb12x2_data *data = iio_priv(indio_dev);
-> +
-> +	/* double check to make sure data is now available */
-> +	if (!gpiod_get_value(data->gpiod_status))
-> +		complete(&data->ranging);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static s16 mb12x2_read_distance(struct mb12x2_data *data)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	int ret;
-> +	s16 distance;
-> +	__be16 buf;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	reinit_completion(&data->ranging);
-> +
-> +	ret = i2c_smbus_write_byte(client, MB12X2_RANGE_COMMAND);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "write command - err: %d\n", ret);
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +
-> +	if (data->gpiod_status) {
-> +		/* it cannot take more than 100 ms */
-> +		ret = wait_for_completion_killable_timeout(&data->ranging,
-> +									HZ/10);
-> +		if (ret < 0) {
-> +			mutex_unlock(&data->lock);
-> +			return ret;
-> +		} else if (ret == 0) {
-> +			mutex_unlock(&data->lock);
-> +			return -ETIMEDOUT;
-> +		}
-> +	} else {
-> +		/*
-> +		 * use simple sleep if gpio announce pin is not connected
-> +		 */
-> +		msleep(15);
-> +	}
-> +
-> +	ret = i2c_master_recv(client, (char *)&buf, sizeof(buf));
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "i2c_master_recv: ret=%d\n", ret);
-> +		mutex_unlock(&data->lock);
-> +		return ret;
-> +	}
-> +
-> +	distance = __be16_to_cpu(buf);
-> +	/* check for not returning misleading error codes */
-> +	if (distance < 0) {
-> +		dev_err(&client->dev, "distance=%d\n", distance);
+On 3/3/19 11:04 AM, Jonathan Cameron wrote:
 
-mutex_unlock() missing, the unlock could be done right after 
-i2c_master_recv()
-
-> +		return -EINVAL;
-> +	}
-> +
-> +	mutex_unlock(&data->lock);
-> +
-> +	return distance;
-> +}
-> +
-> +static irqreturn_t mb12x2_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct mb12x2_data *data = iio_priv(indio_dev);
-> +	s16 sensor_data;
-> +
-> +	sensor_data = mb12x2_read_distance(data);
-> +	if (sensor_data < 0)
-> +		goto err;
-> +
-> +	mutex_lock(&data->lock);
-> +
-> +	data->buffer[0] = sensor_data;
-> +	iio_push_to_buffers_with_timestamp(indio_dev,
-> +						data->buffer, pf->timestamp);
-> +
-> +	mutex_unlock(&data->lock);
-> +err:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int mb12x2_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct mb12x2_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (channel->type != IIO_DISTANCE)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = mb12x2_read_distance(data);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* 1 LSB is 1 cm */
-> +		*val = 0;
-> +		*val2 = 10000;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec mb12x2_channels[] = {
-> +	{
-> +		.type = IIO_DISTANCE,
-> +		.info_mask_separate =
-> +				BIT(IIO_CHAN_INFO_RAW) |
-> +				BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
-> +};
-> +
-> +static const struct iio_info mb12x2_info = {
-> +	.read_raw = mb12x2_read_raw,
-> +};
-> +
-> +static int mb12x2_probe(struct i2c_client *client,
-> +					 const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct mb12x2_data *data;
-> +	int ret;
-> +	struct device *dev = &client->dev;
-> +
-> +	if (!i2c_check_functionality(client->adapter,
-> +					I2C_FUNC_SMBUS_READ_BYTE |
-> +					I2C_FUNC_SMBUS_WRITE_BYTE))
-> +		return -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->info = &mb12x2_info;
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mb12x2_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mb12x2_channels);
-> +
-> +	mutex_init(&data->lock);
-> +
-> +	init_completion(&data->ranging);
-> +
-> +	data->gpiod_status = devm_gpiod_get(dev, "status", GPIOD_IN);
-> +	if (IS_ERR(data->gpiod_status)) {
-> +		if (PTR_ERR(data->gpiod_status) == -ENOENT) {
-> +			dev_warn(dev, "no status gpio --> use sleep instead\n");
-> +			data->gpiod_status = NULL;
-> +		} else {
-> +			dev_err(dev, "cannot setup gpio; err=%ld\n",
-> +					PTR_ERR(data->gpiod_status));
-> +			return PTR_ERR(data->gpiod_status);
-> +		}
-> +	}
-> +
-> +	if (data->gpiod_status) {
-> +		data->irqnr = gpiod_to_irq(data->gpiod_status);
-> +		if (data->irqnr < 0) {
-> +			dev_err(dev, "gpiod_to_irq: %d\n", data->irqnr);
-> +			return data->irqnr;
-> +		}
-> +
-> +		ret = devm_request_irq(dev, data->irqnr, mb12x2_handle_irq,
-> +				IRQF_TRIGGER_FALLING, id->name, indio_dev);
-> +		if (ret < 0) {
-> +			dev_err(dev, "request_irq: %d\n", ret);
-> +			return ret;
-> +		}
-> +	}
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-> +			iio_pollfunc_store_time, mb12x2_trigger_handler, NULL);
-> +	if (ret < 0) {
-> +		dev_err(dev, "setup of iio triggered buffer failed\n");
-> +		return ret;
-> +	}
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct of_device_id of_mb12x2_match[] = {
-> +	{ .compatible = "maxbotix,i2cxl", },
-> +	{},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, of_mb12x2_match);
-> +
-> +static const struct i2c_device_id mb12x2_id[] = {
-> +	{ "maxbotix-i2cxl", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mb12x2_id);
-> +
-> +static struct i2c_driver mb12x2_driver = {
-> +	.driver = {
-> +		.name	= "maxbotix-i2cxl",
-> +		.of_match_table	= of_mb12x2_match,
-> +	},
-> +	.probe = mb12x2_probe,
-> +	.id_table = mb12x2_id,
-> +};
-> +module_i2c_driver(mb12x2_driver);
-> +
-> +MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-> +MODULE_DESCRIPTION("Maxbotix I2CXL-MaxSonar i2c ultrasonic ranger driver");
-> +MODULE_LICENSE("GPL");
+>>
+>> BTW, Jonathan, I wonder if you can apply this one too:
+>>
+>> https://lore.kernel.org/patchwork/patch/996804/
+>>
+>> Thanks
+> Now resolved.  The issue here was the code was 'interesting/crazy' so
+> we needed someone with hardware to rewrite it and test the result.
 > 
 
--- 
+Yep.
 
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
+> Simply fixing the fall through wasn't enough :(
+> 
+
+I'm happy this was finally resolved. :)
+
+Thanks, Jonathan.
+
+--
+Gustavo
