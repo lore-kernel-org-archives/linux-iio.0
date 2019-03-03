@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28E52C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:59:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83A96C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:19:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DD06920866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:59:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E96520883
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 15:19:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551625182;
-	bh=wyDliC9bCNVzwFLinI9ggxIcdbF1D/J5XfSx1LwAcwg=;
+	s=default; t=1551626361;
+	bh=7JHEdgFSzZ+bHV7NrXNQRU2he/QhwmUwGlCxPSyVIY0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=AM66h+G+21hBTJgHTpCERQH0LwK2W48GPsPVsMV33zMN+xIl6OpJX8GX0P25igBFs
-	 lsCjBbFNootmfltHTgzhwZ5IK/x2DVPlaVYkFm7PZ1CRTbPbEDyo9pK70EnhFMOWML
-	 DqxKW2IG27iWzTiqlCbEB3AFtChYy3bdcRbac0uc=
+	b=Qa/A+hEKiSaeRNTE9FT/vOhDY0P5rXBeD0Zw94b71XbxnwCXz12gcp37bz24gk8dY
+	 xY3oSOjmYysyk961uAaNVqvH5ELQf256zGIFy+ZeTZMdwKXfJmIJwzNuGxVAJNxAGn
+	 DkrNARd8sybxdeAphVcADLCuIq8LyoDwCHR+aX3Q=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfCCO7l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 09:59:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55380 "EHLO mail.kernel.org"
+        id S1726270AbfCCPTU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 10:19:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33158 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726252AbfCCO7l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 09:59:41 -0500
+        id S1726242AbfCCPTU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 10:19:20 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4B6F620857;
-        Sun,  3 Mar 2019 14:59:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E42DE20836;
+        Sun,  3 Mar 2019 15:19:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551625179;
-        bh=wyDliC9bCNVzwFLinI9ggxIcdbF1D/J5XfSx1LwAcwg=;
+        s=default; t=1551626359;
+        bh=7JHEdgFSzZ+bHV7NrXNQRU2he/QhwmUwGlCxPSyVIY0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qqiqTDz6BinD7KWcNHpz9Tw7K7XArFpzVoSoMJFStRkkBNjPz/HeWHTQUBd0R7w4X
-         aKfvFswxY7vBNwFyGLw/cmqCYnONU0l2wJhA2kSZiygY0M2EcvZgKUCZFYe1gmwyGw
-         lnNyBIwuE0eGvNJLnoKRACdJtpimYF4RPFw/ZSPg=
-Date:   Sun, 3 Mar 2019 14:59:31 +0000
+        b=i+jj1ncZ6FMD8LCyvt1oD5gONxXitTdCXzb1HxR4FhB8JvpiP/rCWJ/GhMoJ979Al
+         yyrmf9DsfEtujPJtTA8EM8MaOWZgxRvlliMJAVrH7CWBDQWpC2dgxLvOsd/R2l7EWB
+         U+PKfm0KV2Huev5yuoz2g7qnxwgr0/NE6s4nqJ7g=
+Date:   Sun, 3 Mar 2019 15:19:11 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     "H. Nikolaus Schaller" <hns@goldelico.com>
 Cc:     Linus Walleij <linus.walleij@linaro.org>,
@@ -55,12 +55,15 @@ Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 01/10] iio: Allow to read mount matrix from ACPI
-Message-ID: <20190303145931.31b7ad65@archlinux>
-In-Reply-To: <9a71e39afb40900d79b833cb413d9d018e1d7d4b.1550768574.git.hns@goldelico.com>
+        linux-kernel@vger.kernel.org,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Samu Onkalo <samu.onkalo@intel.com>
+Subject: Re: [PATCH v2 02/10] iio: document bindings for mounting matrices
+Message-ID: <20190303151911.1e134bd4@archlinux>
+In-Reply-To: <32025b2a8ccc97cc01f8115ee962529eb5990f00.1550768574.git.hns@goldelico.com>
 References: <cover.1550768574.git.hns@goldelico.com>
-        <9a71e39afb40900d79b833cb413d9d018e1d7d4b.1550768574.git.hns@goldelico.com>
+        <32025b2a8ccc97cc01f8115ee962529eb5990f00.1550768574.git.hns@goldelico.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -70,228 +73,274 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Feb 2019 18:02:46 +0100
+On Thu, 21 Feb 2019 18:02:47 +0100
 "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 
-> From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> From: Linus Walleij <linus.walleij@linaro.org>
 > 
-> Currently mount matrix is allowed in Device Tree, though there is
-> no technical issue to extend it to support ACPI.
+> The mounting matrix for sensors was introduced in
+> commit dfc57732ad38 ("iio:core: mounting matrix support")
 > 
-> Convert the function to use device_property_read_string_array() and
-> thus allow to read mount matrix from ACPI if available.
+> However the device tree bindings are very terse and since this is
+> a widely applicable property, we need a proper binding for it
+> that the other bindings can reference. This will also be useful
+> for other operating systems and sensor engineering at large.
 > 
-> Example of use in _DSD method:
+> I think all 3D sensors should support it, the current situation
+> is probably that the mounting information is confined in magic
+> userspace components rather than using the mounting matrix, which
+> is not good for portability and reuse.
 > 
->   Name (_DSD, Package ()
->   {
->      ToUUID("daffd814-6eba-4d8c-8a91-bc9bbf4aa301"),
->      Package ()
->      {
->         Package () { "mount-matrix", Package() {
->                 "1", "0",     "0",
->                 "0", "0.866", "0.5",
->                 "0", "-0.5",  "0.866",
->         } },
->      }
->   })
-> 
-> At the same time drop the "of" prefix from its name and
-> convert current users.
-> 
-> No functional change intended.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-I'm not so very fussed about this one as Andy had posted it to the
-list previously, but in theory you should have added your signed-off-by
-as an intermediate person who handled the patch.
+> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Cc: Samu Onkalo <samu.onkalo@intel.com>
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Hi Nikolaus
 
-Otherwise, great and applied to the togreg branch of iio.git and
-pushed out as testing for the autobuilders to see if we got anything
-wrong.
+A few minor notes inline.
 
-Thanks,
+> ---
+>  .../devicetree/bindings/iio/mount-matrix.txt  | 204 ++++++++++++++++++
+>  1 file changed, 204 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+> new file mode 100644
+> index 000000000000..1b64c8b1f689
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+> @@ -0,0 +1,204 @@
+> +For discussion. Unclear are:
+> +* is the definition of +/- values practical or counterintuitive?
+> +* are the definitions unambiguous and easy to follow?
+> +* are the examples correct?
+> +* should we have HOWTO engineer a correct matrix for a new device (without comparing to a different one)?
+> +
+> +====
+> +
+> +
+> +Mounting matrix
+> +
+> +The mounting matrix is a device tree property used to orient any IIO device
+
+Minor, but DT bindings are in theory not Linux specific and IIO is, so
+should be "any device"
+
+> +that produce three-dimensional data in relation to the world where it is
+> +deployed.
+> +
+> +The purpose of the mounting matrix is to translate the sensor frame of
+> +reference into the device frame of reference using a translation matrix as
+> +defined in linear algebra.
+> +
+> +The typical usecase is that where a component has an internal representation
+> +of the (x,y,z) triplets, such as different registers to read these coordinates,
+> +and thus implying that the component should be mounted in a certain orientation
+> +relative to some specific device frame of reference.
+> +
+> +For example a device with some kind of screen, where the user is supposed to
+> +interact with the environment using an accelerometer, gyroscope or magnetometer
+> +mounted on the same chassis as this screen, will likely take the screen as
+> +reference to (x,y,z) orientation, with (x,y) corresponding to these axes on the
+> +screen and (z) being depth, the axis perpendicular to the screen.
+> +
+> +For a screen you probably want (x) coordinates to go from negative on the left
+> +to positive on the right, (y) from negative on the bottom to positive on top
+> +and (z) depth to be negative under the screen and positive in front of it,
+> +toward the face of the user.
+> +
+> +A sensor can be mounted in any angle along the axes relative to the frame of
+> +reference. This means that the sensor may be flipped upside-down, left-right,
+> +or tilted at any angle relative to the frame of reference.
+> +
+> +Another frame of reference is how the device with its sensor relates to the
+> +external world, the environment where the device is deployed. Usually the data
+> +from the sensor is used to figure out how the device is oriented with respect
+> +to this world. When using the mounting matrix, the sensor and device orientation
+> +becomes identical and we can focus on the data as it relates to the surrounding
+> +world.
+> +
+> +Device-to-world examples for some three-dimensional sensor types:
+> +
+> +- Accelerometers have their world frame of reference toward the center of
+> +  gravity, usually to the core of the planet. A reading of the (x,y,z) values
+> +  from the sensor will give a projection of the gravity vector through the
+> +  device relative to the center of the planet, i.e. relative to its surface at
+> +  this point. Up and down in the world relative to the device frame of
+> +  reference can thus be determined. and users would likely expect a value of
+> +  9.81 m/s^2 upwards along the (z) axis, i.e. out of the screen when the device
+> +  is held with its screen flat on the planets surface and 0 on the other axes,
+> +  as the gravity vector is projected 1:1 onto the sensors (z)-axis.
+
+Nitpick: Screen is face down or face up?  Someone might think a screen is
+flat when looking up at them from the floor or the other way up.
+I 'think' it's face down in the following...
+
+
+> +
+> +  If you tilt the device, the g vector virtually coming out of the display
+> +  is projected onto the (x,y) plane of the display panel.
+> +
+> +  Example:
+> +
+
+space after > for z. Or making it consistent anyway.
+Hmm. 
+
+> +         ^ z: +g                   ^ z: >0
+> +         !                        /!
+> +         ! x=y=0                 / ! x: > 0
+> +     +--------+             +--------+
+> +     !        !             !        !
+> +     +--------+             +--------+
+> +         !                    /
+> +         !                   /
+> +         v                  v
+> +      center of         center of
+> +       gravity           gravity
+> +
+> +
+> +  If the device is tilted to the left, you get a positive x value. If you point
+> +  its top towards surface, you get a negative y axis.
+> +
+> +     (---------)
+> +     !         !           y: -g
+> +     !         !             ^
+> +     !         !             !
+> +     !         !
+> +     !         !  x: +g <- z: +g  -> x: -g
+> +     ! 1  2  3 !
+> +     ! 4  5  6 !             !
+> +     ! 7  8  9 !             v
+> +     ! *  0  # !           y: +g
+> +     (---------)
+> +
+> +
+> +- Magnetometers (compasses) have their world frame of reference relative to the
+> +  geomagnetic field. The system orientation vis-a-vis the world is defined with
+> +  respect to the local earth geomagnetic reference frame where (y) is in the
+> +  ground plane and positive towards magnetic North, (x) is in the ground plane,
+> +  perpendicular to the North axis and positive towards the East and (z) is
+> +  perpendicular to the ground plane and positive upwards.
+> +
+> +
+> +     ^^^ North: y > 0
+> +
+> +     (---------)
+> +     !         !
+> +     !         !
+> +     !         !
+> +     !         !  >
+> +     !         !  > North: x > 0
+> +     ! 1  2  3 !  >
+> +     ! 4  5  6 !
+> +     ! 7  8  9 !
+> +     ! *  0  # !
+> +     (---------)
+> +
+> +  Since the geomagnetic field is not uniform this definition fails if we come
+> +  closer to the poles.
+> +
+> +  Sensors and driver can not and should not take care of this because there
+> +  are complex calculations and empirical data to be taken care of. We leave
+> +  this up to user space.
+> +
+> +  The definition we take:
+> +
+> +  If the device is placed at the equator and the top is pointing north, the
+> +  display is readable by a person standing upright on the earth surface, this
+> +  defines a positive y value.
+Nice definition. <wonders how consistent it is at the equator - meh close enough :)>
+> +
+> +
+> +- Gyroscopes detects the movement relative the device itself. The angular
+> +  velocity is defined as orthogonal to the plane of rotation, so if you put the
+> +  device on a flat surface and spin it around the z axis (such as rotating a
+> +  device with a screen lying flat on a table), you should get a negative value
+> +  along the (z) axis if rotated clockwise, and a positive value if rotated
+> +  counter-clockwise according to the right-hand rule.
+> +
+> +
+> +     (---------)     y > 0
+> +     !         !     v---\
+> +     !         !
+> +     !         !
+> +     !         !      <--\
+> +     !         !         ! z > 0
+> +     ! 1  2  3 !       --/
+> +     ! 4  5  6 !
+> +     ! 7  8  9 !
+> +     ! *  0  # !
+> +     (---------)
+> +
+> +
+> +So unless the sensor is ideally mounted, we need a means to indicate the
+> +relative orientation of any given sensor of this type with respect to the
+> +frame of reference.
+> +
+> +To achieve this, use the device tree property "mount-matrix" for the sensor.
+> +
+> +This supplies a 3x3 rotation matrix in the strict linear algebraic sense,
+> +to orient the senor axes relative to a desired point of reference. This means
+> +the resulting values from the sensor, after scaling to proper units, should be
+> +multiplied by this matrix to give the proper vectors values in three-dimensional
+> +space, relative to the device or world point of reference.
+> +
+> +For more information, consult:
+> +https://en.wikipedia.org/wiki/Rotation_matrix
+> +
+> +The mounting matrix has the layout:
+> +
+> + (mxx, myx, mzx)
+> + (mxy, myy, mzy)
+> + (mxz, myz, mzz)
+> +
+> +Values are intended to be multiplied as:
+> +
+> +  x' = mxx * x + myx * y + mzx * z
+> +  y' = mxy * x + myy * y + mzy * z
+> +  z' = mxz * x + myz * y + mzz * z
+> +
+> +It is represented as an array of strings containing the real values for
+> +producing the transformation matrix. The real values use a decimal point and
+> +a minus (-) to indicate a negative value.
+
+I'd drop the decimal point and negative as both fairly obvious and this
+sentence can currently be read as a decimal point is necessary for a negative.
+
+> +
+> +Examples:
+> +
+> +Identity matrix (nothing happens to the coordinates, which means the device was
+> +mechanically mounted in an ideal way and we need no transformation):
+> +
+> +mount-matrix = "1", "0", "0",
+> +               "0", "1", "0",
+> +               "0", "0", "1";
+> +
+> +The sensor is mounted 30 degrees (Pi/6 radians) tilted along the X axis, so we
+> +compensate by performing a -30 degrees rotation around the X axis:
+> +
+> +mount-matrix = "1", "0", "0",
+> +               "0", "0.866", "0.5",
+> +               "0", "-0.5", "0.866";
+> +
+> +The sensor is flipped 180 degrees (Pi radians) around the Z axis, i.e. mounted
+> +upside-down:
+> +
+> +mount-matrix = "0.998", "0.054", "0",
+> +               "-0.054", "0.998", "0",
+> +               "0", "0", "1";
+> +
+> +???: this does not match "180 degrees" - factors indicate ca. 3 degrees compensation
+Yes. Good to say this.
+
+Very nice indeed, just these little tidy ups and I'm very happy with the
+result!
 
 Jonathan
 
-> ---
->  drivers/iio/accel/kxsd9.c                  |  4 +-
->  drivers/iio/gyro/mpu3050-core.c            |  3 +-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  4 +-
->  drivers/iio/industrialio-core.c            | 46 +++++++++-------------
->  drivers/iio/magnetometer/ak8974.c          |  5 +--
->  drivers/iio/magnetometer/ak8975.c          |  5 +--
->  include/linux/iio/iio.h                    |  4 +-
->  7 files changed, 28 insertions(+), 43 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 0c0df4fce420..70c60db62247 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -420,9 +420,7 @@ int kxsd9_common_probe(struct device *dev,
->  	indio_dev->available_scan_masks = kxsd9_scan_masks;
->  
->  	/* Read the mounting matrix, if present */
-> -	ret = of_iio_read_mount_matrix(dev,
-> -				       "mount-matrix",
-> -				       &st->orientation);
-> +	ret = iio_read_mount_matrix(dev, "mount-matrix", &st->orientation);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> index 77fac81a3adc..8200e48f561b 100644
-> --- a/drivers/iio/gyro/mpu3050-core.c
-> +++ b/drivers/iio/gyro/mpu3050-core.c
-> @@ -1149,8 +1149,7 @@ int mpu3050_common_probe(struct device *dev,
->  	mpu3050->divisor = 99;
->  
->  	/* Read the mounting matrix, if present */
-> -	ret = of_iio_read_mount_matrix(dev, "mount-matrix",
-> -				       &mpu3050->orientation);
-> +	ret = iio_read_mount_matrix(dev, "mount-matrix", &mpu3050->orientation);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 1e428c196a82..533d1f8321ac 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -990,8 +990,8 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  
->  	pdata = dev_get_platdata(dev);
->  	if (!pdata) {
-> -		result = of_iio_read_mount_matrix(dev, "mount-matrix",
-> -						  &st->orientation);
-> +		result = iio_read_mount_matrix(dev, "mount-matrix",
-> +					       &st->orientation);
->  		if (result) {
->  			dev_err(dev, "Failed to retrieve mounting matrix %d\n",
->  				result);
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 4f5cd9f60870..0a40f1df49c7 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -19,6 +19,7 @@
->  #include <linux/device.h>
->  #include <linux/fs.h>
->  #include <linux/poll.h>
-> +#include <linux/property.h>
->  #include <linux/sched.h>
->  #include <linux/wait.h>
->  #include <linux/cdev.h>
-> @@ -525,8 +526,8 @@ ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
->  EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
->  
->  /**
-> - * of_iio_read_mount_matrix() - retrieve iio device mounting matrix from
-> - *                              device-tree "mount-matrix" property
-> + * iio_read_mount_matrix() - retrieve iio device mounting matrix from
-> + *                           device "mount-matrix" property
->   * @dev:	device the mounting matrix property is assigned to
->   * @propname:	device specific mounting matrix property name
->   * @matrix:	where to store retrieved matrix
-> @@ -536,40 +537,29 @@ EXPORT_SYMBOL_GPL(iio_show_mount_matrix);
->   *
->   * Return: 0 if success, or a negative error code on failure.
->   */
-> -#ifdef CONFIG_OF
-> -int of_iio_read_mount_matrix(const struct device *dev,
-> -			     const char *propname,
-> -			     struct iio_mount_matrix *matrix)
-> +int iio_read_mount_matrix(struct device *dev, const char *propname,
-> +			  struct iio_mount_matrix *matrix)
->  {
-> -	if (dev->of_node) {
-> -		int err = of_property_read_string_array(dev->of_node,
-> -				propname, matrix->rotation,
-> -				ARRAY_SIZE(iio_mount_idmatrix.rotation));
-> +	size_t len = ARRAY_SIZE(iio_mount_idmatrix.rotation);
-> +	int err;
->  
-> -		if (err == ARRAY_SIZE(iio_mount_idmatrix.rotation))
-> -			return 0;
-> +	err = device_property_read_string_array(dev, propname,
-> +						matrix->rotation, len);
-> +	if (err == len)
-> +		return 0;
->  
-> -		if (err >= 0)
-> -			/* Invalid number of matrix entries. */
-> -			return -EINVAL;
-> +	if (err >= 0)
-> +		/* Invalid number of matrix entries. */
-> +		return -EINVAL;
->  
-> -		if (err != -EINVAL)
-> -			/* Invalid matrix declaration format. */
-> -			return err;
-> -	}
-> +	if (err != -EINVAL)
-> +		/* Invalid matrix declaration format. */
-> +		return err;
->  
->  	/* Matrix was not declared at all: fallback to identity. */
->  	return iio_setup_mount_idmatrix(dev, matrix);
->  }
-> -#else
-> -int of_iio_read_mount_matrix(const struct device *dev,
-> -			     const char *propname,
-> -			     struct iio_mount_matrix *matrix)
-> -{
-> -	return iio_setup_mount_idmatrix(dev, matrix);
-> -}
-> -#endif
-> -EXPORT_SYMBOL(of_iio_read_mount_matrix);
-> +EXPORT_SYMBOL(iio_read_mount_matrix);
->  
->  static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
->  				  int size, const int *vals)
-> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-> index 93be1f4c0f27..f4d0a6c0fde7 100644
-> --- a/drivers/iio/magnetometer/ak8974.c
-> +++ b/drivers/iio/magnetometer/ak8974.c
-> @@ -733,9 +733,8 @@ static int ak8974_probe(struct i2c_client *i2c,
->  	ak8974->i2c = i2c;
->  	mutex_init(&ak8974->lock);
->  
-> -	ret = of_iio_read_mount_matrix(&i2c->dev,
-> -				       "mount-matrix",
-> -				       &ak8974->orientation);
-> +	ret = iio_read_mount_matrix(&i2c->dev, "mount-matrix",
-> +				    &ak8974->orientation);
->  	if (ret)
->  		return ret;
->  
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index d430b80808ef..db7214ac514c 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -911,9 +911,8 @@ static int ak8975_probe(struct i2c_client *client,
->  	data->eoc_irq = 0;
->  
->  	if (!pdata) {
-> -		err = of_iio_read_mount_matrix(&client->dev,
-> -					       "mount-matrix",
-> -					       &data->orientation);
-> +		err = iio_read_mount_matrix(&client->dev, "mount-matrix",
-> +					    &data->orientation);
->  		if (err)
->  			return err;
->  	} else
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index a74cb177dc6f..bb10c1bee301 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -130,8 +130,8 @@ struct iio_mount_matrix {
->  
->  ssize_t iio_show_mount_matrix(struct iio_dev *indio_dev, uintptr_t priv,
->  			      const struct iio_chan_spec *chan, char *buf);
-> -int of_iio_read_mount_matrix(const struct device *dev, const char *propname,
-> -			     struct iio_mount_matrix *matrix);
-> +int iio_read_mount_matrix(struct device *dev, const char *propname,
-> +			  struct iio_mount_matrix *matrix);
->  
->  typedef const struct iio_mount_matrix *
->  	(iio_get_mount_matrix_t)(const struct iio_dev *indio_dev,
 
