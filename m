@@ -2,140 +2,188 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 944D9C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:01:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE5B8C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:27:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F41B20823
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:01:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A462120857
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:27:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="IcNwWM6Z"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RqrJZXrx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726294AbfCCOBR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 09:01:17 -0500
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:44674 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726279AbfCCOBQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 09:01:16 -0500
-Received: by mail-qt1-f196.google.com with SMTP id d2so2507038qti.11;
-        Sun, 03 Mar 2019 06:01:15 -0800 (PST)
+        id S1726313AbfCCO07 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 09:26:59 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:45475 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726241AbfCCO07 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Mar 2019 09:26:59 -0500
+Received: by mail-ot1-f65.google.com with SMTP id i12so2087163otp.12
+        for <linux-iio@vger.kernel.org>; Sun, 03 Mar 2019 06:26:58 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:date:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XzcbIbIjJxWYB1FT7VpeLNoZ8jMBhFFxl9MPY5fbVW0=;
-        b=IcNwWM6Z+798YB4TvVkCZcaWBgf+I6mZ/BupHRlPaZxAF+UZ/ok4zJjnYeXZe541GU
-         5Fe0zoM7rE4zAKbS60kY3WYZuObafuHI1ahYA14N8Cq+vdzTTJ3PDdWrHYXd77xXWpX8
-         CFs9IVD9zRtWC++no/ensNLj1JUuTWSXsav9PVsYmrLf1nR8E3cvv1UR12OH8LZyOREK
-         5+hB7/bPN1ZtGzspiKQr4NCM88tTK/YFwfjL1MznmSabV7DKvhnqCX6/AXOV5Bvnd67g
-         Nj9Bp5gFsVo/r1FzABhz7/Yt+iJtQ4NWlxcFQ0yGMgnLfbjFZrQ5rirEWdRGGz4+W7l8
-         wnSA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=056n2a/LOWc7FF8NjLxHft+JCTjXjrTsKdbfvBPwRlI=;
+        b=RqrJZXrxISMgtbaMRMCVSMyWgVp1aloYJWirf/Du9q9SOxo7VtWQezeScFVsjd99SG
+         ojAnDcSFH5qHhE5U8Kzw6/tRDffigUIEbKk/xNfrw5U7qviFJmJ8fa6q9tnTf2RSCilT
+         +vaC7J3AZzwRxecWuJO3YF4bgN8yim6koPcV/uhQS5+KEidre/oEVk1hLlRrEMgwF2Kd
+         WUt1iII/objP+KFhjXa3czNFDeVTK6yW11HfJZdDEofFoLhgjE16asnVdmurqQZYhqdw
+         vzAbi0tAzxJ3WypIlH5byS8bJrh0/r5tDIRhTcnBNBuquiD2CEqPFWcfk//PMRNgHiC5
+         ZzQQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:date:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XzcbIbIjJxWYB1FT7VpeLNoZ8jMBhFFxl9MPY5fbVW0=;
-        b=UR0ciYimNGx9sQisLvfnt3oS4lHvjbCKn5hYIkm4YggcWy1uDiebZqxGOSehwfx37D
-         /GiEdFJHErKO8V2Tt/87uOFIQe3V6KjTv35ijfixRLQq8Okw8Q78PhV6fgvCVqxtlwPn
-         03hin2ixX04WJR3t51oHd52jOB61PtZ2Kxoiq33jiEkq0/HoRGZl86uPhWXI0YSKX83p
-         U0Ean61USE6uxWgOxAM4u8x/h3g2I77PoN7oAOSY4nXHGjZX9Hfgjw3VabmPl9LebxKO
-         j+gRLrb5Y5SsIz7wua9wIghbnThB6Oo4rHTCh7KBaALSjKPVebRsO1aTDAkJPGyumd4H
-         EheA==
-X-Gm-Message-State: APjAAAW2msgHI/QGDplDSnmPFyEhvDZZv7zcniGodGtKH5rRUalGeUBc
-        iLxLqq7V6bH4WLGqzEWZ6Tk=
-X-Google-Smtp-Source: APXvYqz1rn1wTvuHZyVHCK9/GQMYyTJHHBcBp4JXeDilpLgnCEdQXsPOoYzXURrp7Thy97DNDYlABw==
-X-Received: by 2002:ac8:1735:: with SMTP id w50mr11343081qtj.361.1551621675023;
-        Sun, 03 Mar 2019 06:01:15 -0800 (PST)
-Received: from renatolg ([186.220.23.48])
-        by smtp.gmail.com with ESMTPSA id j139sm2067799qke.26.2019.03.03.06.01.11
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 03 Mar 2019 06:01:14 -0800 (PST)
-From:   Renato Lui Geh <renatogeh@gmail.com>
-X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
-Date:   Sun, 3 Mar 2019 11:01:09 -0300
-To:     "Ardelean, Alexandru" <Alex.Ardelean@analog.com>
-Cc:     "lars@metafoo.de" <lars@metafoo.de>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "renatogeh@gmail.com" <renatogeh@gmail.com>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
-        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v4 4/9] staging:iio:ad7780: add chip ID values and mask
-Message-ID: <20190303140107.ljjo3flatwmd44ya@renatolg>
-References: <cover.1551358569.git.renatogeh@gmail.com>
- <90c573cd53bb54d49de6ac270bcff66880ccfeb5.1551358569.git.renatogeh@gmail.com>
- <190e26b19b8ed6559b92d3a000d852bbb0099a52.camel@analog.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=056n2a/LOWc7FF8NjLxHft+JCTjXjrTsKdbfvBPwRlI=;
+        b=XkgYTTEuG6WgA5ft6CnaDuY8IVPJg8uYMUsxbdVit0KmEHnUvZsD57IwqS/uGwpR8S
+         5cJUesx55nCVzy/H2VYBt7gyrb8VGBhLQglDNn6x7BpVaaKWgPh4fCDzzOSK7t7DCCTx
+         b5EPgS8PGC49ATjslX5X+w54JKTebb4OskkofzrhXHjTpZObg49eIMOE3132AYY8bL5N
+         +mvb4XC63j4/jUI2bNWmYF+FDIrAwisPNNJXkG9NWGhmyfNcjUrDlE/xjSPZx6z+npW1
+         uuggnUnYk0IBBS3gVd+8gBuN88GiSHXYDwrAIJ+/8OlwrdVJAWhsP6kbqd5mtjOUlcIf
+         DLJA==
+X-Gm-Message-State: APjAAAWydI+ZOjZIGDwwUlu4JRMjiHJACbuSF1eRXJq1PA9d7mppJ/z1
+        m1LZMIKFDvmD9yl8x71ZXcysGPJZNHmXvyvsk/g=
+X-Google-Smtp-Source: APXvYqytn7VX4ANfTiRPIJ7PYFYQseR68hYueDAjWhKl6+4Xxrom8mgYCHQD7BKbOuKYbirInQOyGE/2wA70u7rtSEI=
+X-Received: by 2002:a9d:7608:: with SMTP id k8mr8763697otl.157.1551623218564;
+ Sun, 03 Mar 2019 06:26:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Disposition: inline
-In-Reply-To: <190e26b19b8ed6559b92d3a000d852bbb0099a52.camel@analog.com>
-User-Agent: NeoMutt/20180716
+References: <20190220182344.19236-1-jic23@kernel.org> <CA+U=Dsr2Yiu60fOvcR18EePM22Z1N-d_W6RXHf2QvxvTj-hpGw@mail.gmail.com>
+ <20190302175244.01e1b43f@archlinux>
+In-Reply-To: <20190302175244.01e1b43f@archlinux>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Sun, 3 Mar 2019 16:26:45 +0200
+Message-ID: <CA+U=DsojKKDnVzY7fzQVBkpKPQaT0XvydZ=c-T7HW5FEeaFpYg@mail.gmail.com>
+Subject: Re: [PATCH] iio:dac:ad5064 mlock cleanup - move to a local lock.
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        alexandru.ardelean@analog.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 03/01, Ardelean, Alexandru wrote:
->On Thu, 2019-02-28 at 11:24 -0300, Renato Lui Geh wrote:
->>
->>
->> The ad7780 supports both the ad778x and ad717x families. Each chip has
->> a corresponding ID. This patch provides a mask for extracting ID values
->> from the status bits and also macros for the correct values for the
->> ad7170, ad7171, ad7780 and ad7781.
->>
->> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
->> ---
->>  drivers/staging/iio/adc/ad7780.c | 8 ++++++--
->>  1 file changed, 6 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/staging/iio/adc/ad7780.c
->> b/drivers/staging/iio/adc/ad7780.c
->> index 56c49e28f432..ad7617a3a141 100644
->> --- a/drivers/staging/iio/adc/ad7780.c
->> +++ b/drivers/staging/iio/adc/ad7780.c
->> @@ -26,10 +26,14 @@
->>  #define AD7780_RDY             BIT(7)
->>  #define AD7780_FILTER          BIT(6)
->>  #define AD7780_ERR             BIT(5)
->> -#define AD7780_ID1             BIT(4)
->> -#define AD7780_ID0             BIT(3)
->>  #define AD7780_GAIN            BIT(2)
->>
->> +#define AD7170_ID              0
->> +#define AD7171_ID              1
->> +#define AD7780_ID              1
->> +#define AD7781_ID              0
->> +
->> +#define AD7780_ID_MASK         (BIT(3) | BIT(4))
+On Sat, Mar 2, 2019 at 7:52 PM Jonathan Cameron <jic23@kernel.org> wrote:
 >
->This also doesn't have any functionality change.
->The AD7170_ID, AD7171_ID, AD7780_ID & AD7781_ID IDs are also unused (maybe
->in a later patch they are ?).
+> On Fri, 22 Feb 2019 13:58:13 +0200
+> Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
+>
+> > On Wed, Feb 20, 2019 at 8:24 PM <jic23@kernel.org> wrote:
+> > >
+> >
+> > Hey,
+> >
+> > One comment inline.
+> >
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >
+> > > indio_dev->mlock is intended to protect state transitions in
+> > > the core. It's scope is tightly defined. For device specific
+> > > uses such as those made here, we should define a local lock
+> > > allowing the scope of the lock to be defined near to what it
+> > > is protecting.
+> > >
+> > > These mlock changes can be non obvious, but given we don't do
+> > > anything other than direct for DACs, these ones are easy to do.
+> > >
+> > > If anyone wants to help with this particular effort it would
+> > > be most welcome!
+> > >
+> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > ---
+> > >  drivers/iio/dac/ad5064.c | 15 +++++++++------
+> > >  1 file changed, 9 insertions(+), 6 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
+> > > index 2f98cb2a3b96..6c3ba143839b 100644
+> > > --- a/drivers/iio/dac/ad5064.c
+> > > +++ b/drivers/iio/dac/ad5064.c
+> > > @@ -112,6 +112,8 @@ struct ad5064_state {
+> > >         bool                            use_internal_vref;
+> > >
+> > >         ad5064_write_func               write;
+> > > +       /* Lock used to maintain consistency between cached and dev state */
+> > > +       struct mutex lock;
+> > >
+> > >         /*
+> > >          * DMA (thus cache coherency maintenance) requires the
+> > > @@ -248,11 +250,11 @@ static int ad5064_set_powerdown_mode(struct iio_dev *indio_dev,
+> > >         struct ad5064_state *st = iio_priv(indio_dev);
+> > >         int ret;
+> > >
+> > > -       mutex_lock(&indio_dev->mlock);
+> > > +       mutex_lock(&st->lock);
+> > >         st->pwr_down_mode[chan->channel] = mode + 1;
+> > >
+> > >         ret = ad5064_sync_powerdown_mode(st, chan);
+> > > -       mutex_unlock(&indio_dev->mlock);
+> > > +       mutex_unlock(&st->lock);
+> > >
+> > >         return ret;
+> > >  }
+> > > @@ -291,11 +293,11 @@ static ssize_t ad5064_write_dac_powerdown(struct iio_dev *indio_dev,
+> > >         if (ret)
+> > >                 return ret;
+> > >
+> > > -       mutex_lock(&indio_dev->mlock);
+> > > +       mutex_lock(&st->lock);
+> > >         st->pwr_down[chan->channel] = pwr_down;
+> > >
+> > >         ret = ad5064_sync_powerdown_mode(st, chan);
+> > > -       mutex_unlock(&indio_dev->mlock);
+> > > +       mutex_unlock(&st->lock);
+> > >         return ret ? ret : len;
+> > >  }
+> > >
+> > > @@ -349,12 +351,12 @@ static int ad5064_write_raw(struct iio_dev *indio_dev,
+> > >                 if (val >= (1 << chan->scan_type.realbits) || val < 0)
+> > >                         return -EINVAL;
+> > >
+> > > -               mutex_lock(&indio_dev->mlock);
+> > > +               mutex_lock(&st->lock);
+> > >                 ret = ad5064_write(st, AD5064_CMD_WRITE_INPUT_N_UPDATE_N,
+> > >                                 chan->address, val, chan->scan_type.shift);
+> > >                 if (ret == 0)
+> > >                         st->dac_cache[chan->channel] = val;
+> > > -               mutex_unlock(&indio_dev->mlock);
+> > > +               mutex_unlock(&st->lock);
+> > >                 break;
+> > >         default:
+> > >                 ret = -EINVAL;
+> > > @@ -856,6 +858,7 @@ static int ad5064_probe(struct device *dev, enum ad5064_type type,
+> > >                 return  -ENOMEM;
+> > >
+> > >         st = iio_priv(indio_dev);
+> > > +       mutex_init(&st->lock);
+> >
+> > An equivalent `mutex_destroy()` call would be a good idea in ad5064_remove()
+> >
+> Ah, this one..
+>
+> mutex_destroy is only useful in finding use after free if mutex debugging is
+> turned on.  In my view it is of dubious benefit if it's getting called only
+> in remove, on the basis we should be pretty sure the driver won't take
+> the lock if we hit that path.
+>
+> The downside is that it complicates the remove path because there is no devm
+> version of mutex_init to automate the cleanup.
+>
+> I'll look at whether it makes sense here (i.e. if there is too much
+> cost to adding it).
 
-They aren't. I added them following a previous review suggestion. Should
-I remove them?
+Hmm, ok.
+From my side it's fine whether to leave it or add it.
+
 >
->I would also leave the AD7780_ID1 & AD7780_ID0 definitions in place, since
->they're easier matched with the datasheet.
+> > >         dev_set_drvdata(dev, indio_dev);
+> > >
+> > >         st->chip_info = &ad5064_chip_info_tbl[type];
+> > > --
+> > > 2.20.1
+> > >
 >
->>
->>  #define AD7780_PATTERN_GOOD    1
->>  #define AD7780_PATTERN_MASK    GENMASK(1, 0)
->> --
->> 2.21.0
->>
