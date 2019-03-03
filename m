@@ -6,93 +6,130 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B287DC43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:47:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25889C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:53:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7463620866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:47:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DC1DE20866
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:53:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551624458;
-	bh=Ldejzf8jupG2qN/3MS05lPeJ0Rmi6kaNmQH+mgKbkHI=;
+	s=default; t=1551624836;
+	bh=Mvo+X3wRoMGON/YmscCJuQvZhEiGKLrVtGJpcZX9Oz8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=tWUqkQx8F+N91Gpyq8FL2iS0Dpiou7DsSLU3njcW2WiB9jVgpbFiCAhbBRrC0MgEY
-	 n1hqwJmkSOvbY9PQK5rzi/LPFWoXsaYqvjs6N4Raw6zNwO0kOge6TuRGJ5AP5Ep/GN
-	 0oAxM1QrO+wxMM6zY7uu6qYMeLryq5IJVUexPTW4=
+	b=y+bTgLwBlZ7NPe6FVDnU1toLVjMBLsgWOtz0CcSGJR7/7o6Zyuxxvfvti8O0b1nT/
+	 ri+cGRRbbtlY1rQUpFmp5W4KMLfbLMrEBZh3143B+jtn64c0qoOa3rFJ28I9L0aruz
+	 ZEOJLfkf8TRd1RE1fM4jfVmv+P7GElTny+K+jNfQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726252AbfCCOri (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 09:47:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48518 "EHLO mail.kernel.org"
+        id S1726217AbfCCOx4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 09:53:56 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52154 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726217AbfCCOrh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 09:47:37 -0500
+        id S1726252AbfCCOx4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 09:53:56 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 69CCB20835;
-        Sun,  3 Mar 2019 14:47:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C127C20835;
+        Sun,  3 Mar 2019 14:53:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551624457;
-        bh=Ldejzf8jupG2qN/3MS05lPeJ0Rmi6kaNmQH+mgKbkHI=;
+        s=default; t=1551624835;
+        bh=Mvo+X3wRoMGON/YmscCJuQvZhEiGKLrVtGJpcZX9Oz8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZSvZ3aazne/NZRPZrMkAJpzRyziwjO0veMEyd0aO7eR2/9csUJJPspjsFBWS4yIst
-         50pR7nnk0bJDyuYrrHukgHJKuv6TUyY3/Z0U1dKgFON6AN56E7O4V3n0rEODUrA5Qm
-         1eItRKuIF9o3bc4mYkxD4hld8iYLEXS1CVoXjOIc=
-Date:   Sun, 3 Mar 2019 14:47:32 +0000
+        b=rzTOSD/K/72B+LUjlQccxXfeCMneZxAjw7OeSnPSzPOpV2Pkngfx0jVrU5JqDKtBB
+         K6y3dxnzU3CPc7/pEGq1FqHZdZfAVdogHdBSy6OVU/lJRw2O9UmUcwS00Eh0Lfe+6m
+         ol9GnRog1L2RQyZb0oiqjiOeRwf5JtKeFTHFfD94=
+Date:   Sun, 3 Mar 2019 14:53:47 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?QsOhcmJhcmE=?= Fernandes <barbara.fernandes@usp.br>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: Re: [PATCH 4/4] iio:adc:ad7923: Rewrite comparison to NULL
-Message-ID: <20190303144732.38f57096@archlinux>
-In-Reply-To: <20190222203159.15116-5-barbara.fernandes@usp.br>
-References: <20190222203159.15116-1-barbara.fernandes@usp.br>
-        <20190222203159.15116-5-barbara.fernandes@usp.br>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+Cc:     "Ardelean, Alexandru" <Alex.Ardelean@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "giuliano.belinassi@usp.br" <giuliano.belinassi@usp.br>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v4 4/9] staging:iio:ad7780: add chip ID values and mask
+Message-ID: <20190303145347.41d49646@archlinux>
+In-Reply-To: <20190303140107.ljjo3flatwmd44ya@renatolg>
+References: <cover.1551358569.git.renatogeh@gmail.com>
+        <90c573cd53bb54d49de6ac270bcff66880ccfeb5.1551358569.git.renatogeh@gmail.com>
+        <190e26b19b8ed6559b92d3a000d852bbb0099a52.camel@analog.com>
+        <20190303140107.ljjo3flatwmd44ya@renatolg>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Feb 2019 17:31:59 -0300
-B=C3=A1rbara Fernandes <barbara.fernandes@usp.br> wrote:
+On Sun, 3 Mar 2019 11:01:09 -0300
+Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-> Solves checkpath.pl's message:
->=20
-> CHECK: Comparison to NULL could be written "!indio_dev"
->=20
-> Signed-off-by: B=C3=A1rbara Fernandes <barbara.fernandes@usp.br>
-Applied, thanks.
+> On 03/01, Ardelean, Alexandru wrote:
+> >On Thu, 2019-02-28 at 11:24 -0300, Renato Lui Geh wrote:  
+> >>
+> >>
+> >> The ad7780 supports both the ad778x and ad717x families. Each chip has
+> >> a corresponding ID. This patch provides a mask for extracting ID values
+> >> from the status bits and also macros for the correct values for the
+> >> ad7170, ad7171, ad7780 and ad7781.
+> >>
+> >> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+> >> ---
+> >>  drivers/staging/iio/adc/ad7780.c | 8 ++++++--
+> >>  1 file changed, 6 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/staging/iio/adc/ad7780.c
+> >> b/drivers/staging/iio/adc/ad7780.c
+> >> index 56c49e28f432..ad7617a3a141 100644
+> >> --- a/drivers/staging/iio/adc/ad7780.c
+> >> +++ b/drivers/staging/iio/adc/ad7780.c
+> >> @@ -26,10 +26,14 @@
+> >>  #define AD7780_RDY             BIT(7)
+> >>  #define AD7780_FILTER          BIT(6)
+> >>  #define AD7780_ERR             BIT(5)
+> >> -#define AD7780_ID1             BIT(4)
+> >> -#define AD7780_ID0             BIT(3)
+> >>  #define AD7780_GAIN            BIT(2)
+> >>
+> >> +#define AD7170_ID              0
+> >> +#define AD7171_ID              1
+> >> +#define AD7780_ID              1
+> >> +#define AD7781_ID              0
+> >> +
+> >> +#define AD7780_ID_MASK         (BIT(3) | BIT(4))  
+> >
+> >This also doesn't have any functionality change.
+> >The AD7170_ID, AD7171_ID, AD7780_ID & AD7781_ID IDs are also unused (maybe
+> >in a later patch they are ?).  
+> 
+> They aren't. I added them following a previous review suggestion. Should
+> I remove them?
 
-It's nice to get some cleanup for drivers that aren't in staging
-sometimes.  After all, in recent years the kernel coding style
-and tools to check it have improved considerably.
+Can we check them?  It's always useful to confirm that the device is
+the one you think it is.  Then we can either use what is there
+with a suitable warning, or if that is tricky just fault out as the
+dt is giving us the wrong part number.
 
-Thanks,
+J
 
-Jonathan
-
-> ---
->  drivers/iio/adc/ad7923.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-> index dbece44e26e4..cb7b854df00c 100644
-> --- a/drivers/iio/adc/ad7923.c
-> +++ b/drivers/iio/adc/ad7923.c
-> @@ -272,7 +272,7 @@ static int ad7923_probe(struct spi_device *spi)
->  	int ret;
-> =20
->  	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> -	if (indio_dev =3D=3D NULL)
-> +	if (!indio_dev)
->  		return -ENOMEM;
-> =20
->  	st =3D iio_priv(indio_dev);
+> >
+> >I would also leave the AD7780_ID1 & AD7780_ID0 definitions in place, since
+> >they're easier matched with the datasheet.
+> >  
+> >>
+> >>  #define AD7780_PATTERN_GOOD    1
+> >>  #define AD7780_PATTERN_MASK    GENMASK(1, 0)
+> >> --
+> >> 2.21.0
+> >>  
 
