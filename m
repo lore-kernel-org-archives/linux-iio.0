@@ -6,48 +6,47 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D3902C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 11:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6181C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:01:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9874220815
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 11:58:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 983C220866
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 12:01:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551614335;
-	bh=ZP5FvJZ8Dx9/IuUiB+GqTNylY8ZwBkMbAFbhgr5ZcdQ=;
+	s=default; t=1551614518;
+	bh=YjxwWWvpW6yuX0IiUvg0tiNWFBIz09WOon+wWCI89nU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=mjFgtqdkP/rK790t/L7WAiLyeACzTD4lXePLrZcboY2cVYPjFlLLTMGsoDGtm1vzz
-	 xqwSnzSdTWRBr5zHKgbqQn/WvN++TmdjCtGPfDn6SPUV66FPmEEXLs838T7YZrcsHP
-	 WrH6s6JhUU3t1hQMmk94T7m3B9jcYMYE8jVS4QYk=
+	b=IbOuhQNG99X74TFs/SXXgLuFjh11RlhMW2+4zFAyoYU1j/ucF23+6hC3vz9YlThBo
+	 nVdb0X3DDd3d1U1K99TUbrM/2texN9KqqVzGOiEeNLmrnSndWA0r+bXWx5fpc+1ilm
+	 m7XuXO18IduNa2xJ3p0qxFfV2w9+03D5K6QIpt4Q=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726068AbfCCL6y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 06:58:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35812 "EHLO mail.kernel.org"
+        id S1726095AbfCCMB6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 07:01:58 -0500
+Received: from mail.kernel.org ([198.145.29.99]:36316 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726063AbfCCL6y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 06:58:54 -0500
+        id S1726054AbfCCMB5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 07:01:57 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B788E20857;
-        Sun,  3 Mar 2019 11:58:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B586720857;
+        Sun,  3 Mar 2019 12:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551614334;
-        bh=ZP5FvJZ8Dx9/IuUiB+GqTNylY8ZwBkMbAFbhgr5ZcdQ=;
+        s=default; t=1551614516;
+        bh=YjxwWWvpW6yuX0IiUvg0tiNWFBIz09WOon+wWCI89nU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ol4lFjUDsn/PKN7E6DUMObAomYy1Tiz33dXjA1V/YUvFgOjifS45HBD+ks716AzVW
-         p/nsTtzhqJM5Opo/V7+/3LNuR9MTnQNmT+dBA79AMc6FH3hXiVftJpAOBh/Ius+/DO
-         UZ+4v++us89Vq2kJwS+Q8zSImuCMnjRqyMdLg+gM=
-Date:   Sun, 3 Mar 2019 11:58:49 +0000
+        b=bHOjgra8rlE3VoQJ+GX+3GCQJ6g55hO02Oq7jj2n8fbjU/1/n/v+XuYr2cX9uQKR8
+         DE4Q+YPdSm9I5+9wIu8qZjusz60wbPJg9bZE+ifddomch5Zy25+Fv0sxTQuDo9f/GS
+         RAm4ChkqfeZkXE5nVP7T4vL3MWggbWDQu83pTwAg=
+Date:   Sun, 3 Mar 2019 12:01:51 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sergey Larin <cerg2010cerg2010@mail.ru>
-Cc:     linus.walleij@linaro.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: gyro: mpu3050: fix chip ID reading
-Message-ID: <20190303115849.0475aa05@archlinux>
-In-Reply-To: <20190302184829.GA7375@hp>
-References: <20190302165455.6594-1-cerg2010cerg2010@mail.ru>
-        <20190302180824.646398a2@archlinux>
-        <20190302184829.GA7375@hp>
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: Re: [PATCH v2 1/4] staging: iio: ad5933: add SPDX identifier
+Message-ID: <20190303120151.6b40fe53@archlinux>
+In-Reply-To: <20190301025230.2cws5uths6yyuo5t@smtp.gmail.com>
+References: <20190301025230.2cws5uths6yyuo5t@smtp.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,73 +56,99 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 2 Mar 2019 21:48:30 +0300
-Sergey Larin <cerg2010cerg2010@mail.ru> wrote:
+On Thu, 28 Feb 2019 23:52:30 -0300
+Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> On Sat, Mar 02, 2019 at 06:08:24PM +0000, Jonathan Cameron wrote:
-> > On Sat,  2 Mar 2019 19:54:55 +0300
-> > Sergey Larin <cerg2010cerg2010@mail.ru> wrote:
-> >   
-> > > According to the datasheet, the last bit of CHIP_ID register controls
-> > > I2C bus, and the first one is unused. Handle this correctly.
-> > > 
-> > > Signed-off-by: Sergey Larin <cerg2010cerg2010@mail.ru>  
-> > Fix certainly seems to be correct, but seeing as we only support i2c for
-> > this chip and that I assume the bottom bit is actually set (though
-> > reserved), currently this is a tidy up rather than a fix.
-> > 
-> > Hence I'll take this the slow way rather than quickly as I would
-> > a fix with actual effect.
-> > 
-> > Let me know if I've missed something!
-> > 
-> > Jonathan  
-> 
-> That's actually a fix for me. On my device, the bottom bit is set so driver
-> reports an error. With this patch, driver probes OK, prints chip info to
-> dmesg (die ID, revision, etc) and reports the data to sysfs, which looks
-> correct.
-Ah fair enough. Moved to the fixes-togreg branch with a note added
-to the description that there are real parts out there where this matters.
+> Add SPDX identifier of GPL-2.0 for the ad5933 driver.
+> Organize imports.
+> Make multi-line comments compliant with the preferred code style.
 
-Also added Linus' tag.
+One type of change per patch please.
+So this is at least 3 patches.
+SPDX,
+Imports,
+comment style.
 
-This will upstream sometime after rc1 in a few weeks time.
-
-Thanks,
+Actual contents looks fine.
 
 Jonathan
+
 > 
-> >   
-> > > ---
-> > >  drivers/iio/gyro/mpu3050-core.c | 8 +++++---
-> > >  1 file changed, 5 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-> > > index 77fac81a3adc..5ddebede31a6 100644
-> > > --- a/drivers/iio/gyro/mpu3050-core.c
-> > > +++ b/drivers/iio/gyro/mpu3050-core.c
-> > > @@ -29,7 +29,8 @@
-> > >  
-> > >  #include "mpu3050.h"
-> > >  
-> > > -#define MPU3050_CHIP_ID		0x69
-> > > +#define MPU3050_CHIP_ID		0x68
-> > > +#define MPU3050_CHIP_ID_MASK	0x7E
-> > >  
-> > >  /*
-> > >   * Register map: anything suffixed *_H is a big-endian high byte and always
-> > > @@ -1176,8 +1177,9 @@ int mpu3050_common_probe(struct device *dev,
-> > >  		goto err_power_down;
-> > >  	}
-> > >  
-> > > -	if (val != MPU3050_CHIP_ID) {
-> > > -		dev_err(dev, "unsupported chip id %02x\n", (u8)val);
-> > > +	if ((val & MPU3050_CHIP_ID_MASK) != MPU3050_CHIP_ID) {
-> > > +		dev_err(dev, "unsupported chip id %02x\n",
-> > > +				(u8)(val & MPU3050_CHIP_ID_MASK));
-> > >  		ret = -ENODEV;
-> > >  		goto err_power_down;
-> > >  	}  
-> >   
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> ---
+>  .../staging/iio/impedance-analyzer/ad5933.c   | 30 ++++++++++---------
+>  1 file changed, 16 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index 3134295f014f..d75bdfbf93de 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -1,27 +1,26 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5933 AD5934 Impedance Converter, Network Analyzer
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
+>   */
+>  
+> -#include <linux/interrupt.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+>  #include <linux/device.h>
+> -#include <linux/kernel.h>
+> -#include <linux/sysfs.h>
+> +#include <linux/err.h>
+>  #include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/sysfs.h>
+>  #include <linux/types.h>
+> -#include <linux/err.h>
+> -#include <linux/delay.h>
+> -#include <linux/module.h>
+> -#include <linux/clk.h>
+>  
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+>  #include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/sysfs.h>
+>  
+>  /* AD5933/AD5934 Registers */
+>  #define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
+> @@ -474,7 +473,8 @@ static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
+>  			ad5933_store,
+>  			AD5933_OUT_SETTLING_CYCLES);
+>  
+> -/* note:
+> +/*
+> + * note:
+>   * ideally we would handle the scale attributes via the iio_info
+>   * (read|write)_raw methods, however this part is a untypical since we
+>   * don't create dedicated sysfs channel attributes for out0 and in0.
+> @@ -572,7 +572,8 @@ static int ad5933_ring_postenable(struct iio_dev *indio_dev)
+>  {
+>  	struct ad5933_state *st = iio_priv(indio_dev);
+>  
+> -	/* AD5933_CTRL_INIT_START_FREQ:
+> +	/*
+> +	 * AD5933_CTRL_INIT_START_FREQ:
+>  	 * High Q complex circuits require a long time to reach steady state.
+>  	 * To facilitate the measurement of such impedances, this mode allows
+>  	 * the user full control of the settling time requirement before
+> @@ -663,7 +664,8 @@ static void ad5933_work(struct work_struct *work)
+>  	}
+>  
+>  	if (status & AD5933_STAT_SWEEP_DONE) {
+> -		/* last sample received - power down do
+> +		/*
+> +		 * last sample received - power down do
+>  		 * nothing until the ring enable is toggled
+>  		 */
+>  		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
 
