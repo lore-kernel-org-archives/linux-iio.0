@@ -2,56 +2,52 @@ Return-Path: <SRS0=rKOe=RG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A595C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D56C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:57:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4DA1E20842
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:53:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2B9F020818
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:57:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551631991;
-	bh=8QtOm4BjupGo7jGED8zJq1X4T+W+mpI8t9wSXM90/08=;
+	s=default; t=1551632234;
+	bh=CReKZODjbKJKyi8okuBnzjOD0fhxc5BgECcMG8mu9Xc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=GAFuYOnlstVl1EHj9hEoU7n1X0hr9ctnawjAxz6kqj98EwM8+fRCr+/KvCs/Ihrq0
-	 TkqTOeEU/mhLh0oX++EaGg3ss3qPKJqdxeFk7nRc8CqaA/pWxN1ILXB819iA9vDt96
-	 GXdO4Nux+UX1N2zMYBHvTJdEvoLntGi+Nc1f1ugo=
+	b=PhirYmcQI8Z9xrlOIlWGwnn/yYLsYqkSY1+pyuQw0prCc+l4CdF93VwEV7qMbSNFo
+	 bsO6jQW2qGf0xVZvDBXl/ym3aL/qn5oyEQc+DnYZNipdea2LJqpg/gOFLWNOrTlNqE
+	 Byb4YvfYvAjK+TvcXybMoW3GFcYTwqt3xYF3GoDY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbfCCQxK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 11:53:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44132 "EHLO mail.kernel.org"
+        id S1726425AbfCCQ5N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 11:57:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48456 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726382AbfCCQxK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 11:53:10 -0500
+        id S1726293AbfCCQ5N (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 11:57:13 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C89812070B;
-        Sun,  3 Mar 2019 16:53:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E73FB2070B;
+        Sun,  3 Mar 2019 16:57:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551631988;
-        bh=8QtOm4BjupGo7jGED8zJq1X4T+W+mpI8t9wSXM90/08=;
+        s=default; t=1551632231;
+        bh=CReKZODjbKJKyi8okuBnzjOD0fhxc5BgECcMG8mu9Xc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=baY+hrtLgzVpW1VyA/qQUr8/mYYBVih6i2CWVpn5jBdWHOPa1WKQHc23BigCC49eu
-         5ByHLceGM76eHFZuU4ktwvKDO7sniHJqbdMFHh/d8cFnNX7NE21fTrGrZlnJ4e+wpD
-         gaYm3ak4ISDHplQC/3GAIxA401rTiarR3IsmnIhM=
-Date:   Sun, 3 Mar 2019 16:53:03 +0000
+        b=omDuctF1VGld2rUWFURgjoGJ57PbVdOQ9OIOg61QLCvOPvhaQ3Bvp3ahfxICjQ98o
+         OEqfgj/pJtDDFt4EQ2ruQUS/zcXchSSTbd9AIEKyxDQT1EQUzZ7HnY9tGSgACut7zQ
+         IVOqueGZiWFo/ww8jA+JQRK2IsrdQHgE+dvGthEA=
+Date:   Sun, 3 Mar 2019 16:57:06 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Sebastian Reichel <sre@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 5/7] power: supply: add Ingenic JZ47xx battery driver.
-Message-ID: <20190303165303.5e5c07bd@archlinux>
-In-Reply-To: <a53ba58dddea94c011d2ec839d438c51@artur-rojek.eu>
-References: <20190217142914.17433-1-contact@artur-rojek.eu>
-        <20190217142914.17433-5-contact@artur-rojek.eu>
-        <20190220111441.585eb3eb@archlinux>
-        <a53ba58dddea94c011d2ec839d438c51@artur-rojek.eu>
+To:     Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     linux-iio@vger.kernel.org, himanshujha199640@gmail.com,
+        linux-kernel@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, dpfrey@gmail.com, colin.king@canonical.com
+Subject: Re: [PATCH v2] iio/chemical/bme680: Fix SPI read interface
+Message-ID: <20190303165706.08c81e80@archlinux>
+In-Reply-To: <1550740849-16029-1-git-send-email-mike.looijmans@topic.nl>
+References: <1550238475-25698-1-git-send-email-mike.looijmans@topic.nl>
+        <1550740849-16029-1-git-send-email-mike.looijmans@topic.nl>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,297 +57,398 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Feb 2019 20:18:36 +0100
-Artur Rojek <contact@artur-rojek.eu> wrote:
+On Thu, 21 Feb 2019 10:20:49 +0100
+Mike Looijmans <mike.looijmans@topic.nl> wrote:
 
-> On 2019-02-20 12:14, Jonathan Cameron wrote:
-> > On Sun, 17 Feb 2019 15:29:14 +0100
-> > Artur Rojek <contact@artur-rojek.eu> wrote:
-> >   
-> >> Add a driver for battery present on Ingenic JZ47xx SoCs.
-> >> 
-> >> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>  
-> > A few things inline.
-> > 
-> > thanks,
-> > 
-> > Jonathan  
-> Hi Jonathan.
+> The SPI interface implementation was completely broken.
 > 
-> One thing inline.
+> When using the SPI interface, there are only 7 address bits, the upper bit
+> is controlled by a page select register. The core needs access to both
+> ranges, so implement register read/write for both regions. The regmap
+> paging functionality didn't agree with a register that needs to be read
+> and modified, so I implemented a custom paging algorithm.
 > 
-> Artur
-> >   
-> >> ---
-> >>  drivers/power/supply/Kconfig           |  11 ++
-> >>  drivers/power/supply/Makefile          |   1 +
-> >>  drivers/power/supply/ingenic-battery.c | 182 
-> >> +++++++++++++++++++++++++
-> >>  3 files changed, 194 insertions(+)
-> >>  create mode 100644 drivers/power/supply/ingenic-battery.c
-> >> 
-> >> diff --git a/drivers/power/supply/Kconfig 
-> >> b/drivers/power/supply/Kconfig
-> >> index e901b9879e7e..9bfb1637ec28 100644
-> >> --- a/drivers/power/supply/Kconfig
-> >> +++ b/drivers/power/supply/Kconfig
-> >> @@ -169,6 +169,17 @@ config BATTERY_COLLIE
-> >>  	  Say Y to enable support for the battery on the Sharp Zaurus
-> >>  	  SL-5500 (collie) models.
-> >> 
-> >> +config BATTERY_INGENIC
-> >> +	tristate "Ingenic JZ47xx SoCs battery driver"
-> >> +	depends on MIPS || COMPILE_TEST
-> >> +	depends on INGENIC_ADC
-> >> +	help
-> >> +	  Choose this option if you want to monitor battery status on
-> >> +	  Ingenic JZ47xx SoC based devices.
-> >> +
-> >> +	  This driver can also be built as a module. If so, the module will 
-> >> be
-> >> +	  called ingenic-battery.
-> >> +
-> >>  config BATTERY_IPAQ_MICRO
-> >>  	tristate "iPAQ Atmel Micro ASIC battery driver"
-> >>  	depends on MFD_IPAQ_MICRO
-> >> diff --git a/drivers/power/supply/Makefile 
-> >> b/drivers/power/supply/Makefile
-> >> index b731c2a9b695..9e2c481d0187 100644
-> >> --- a/drivers/power/supply/Makefile
-> >> +++ b/drivers/power/supply/Makefile
-> >> @@ -34,6 +34,7 @@ obj-$(CONFIG_BATTERY_PMU)	+= pmu_battery.o
-> >>  obj-$(CONFIG_BATTERY_OLPC)	+= olpc_battery.o
-> >>  obj-$(CONFIG_BATTERY_TOSA)	+= tosa_battery.o
-> >>  obj-$(CONFIG_BATTERY_COLLIE)	+= collie_battery.o
-> >> +obj-$(CONFIG_BATTERY_INGENIC)	+= ingenic-battery.o
-> >>  obj-$(CONFIG_BATTERY_IPAQ_MICRO) += ipaq_micro_battery.o
-> >>  obj-$(CONFIG_BATTERY_WM97XX)	+= wm97xx_battery.o
-> >>  obj-$(CONFIG_BATTERY_SBS)	+= sbs-battery.o
-> >> diff --git a/drivers/power/supply/ingenic-battery.c 
-> >> b/drivers/power/supply/ingenic-battery.c
-> >> new file mode 100644
-> >> index 000000000000..4ee75c1ac241
-> >> --- /dev/null
-> >> +++ b/drivers/power/supply/ingenic-battery.c
-> >> @@ -0,0 +1,182 @@
-> >> +// SPDX-License-Identifier: GPL-2.0
-> >> +/*
-> >> + * Battery driver for the Ingenic JZ47xx SoCs
-> >> + * Copyright (c) 2019 Artur Rojek <contact@artur-rojek.eu>
-> >> + *
-> >> + * based on drivers/power/supply/jz4740-battery.c  
-> > 
-> > What is the relationship between this driver and the older one?
-> >   
-> >> + */
-> >> +
-> >> +#include <linux/iio/consumer.h>
-> >> +#include <linux/module.h>
-> >> +#include <linux/of.h>
-> >> +#include <linux/platform_device.h>
-> >> +#include <linux/power_supply.h>
-> >> +#include <linux/property.h>
-> >> +
-> >> +struct ingenic_battery {
-> >> +	struct device *dev;
-> >> +	struct iio_channel *channel;
-> >> +	struct power_supply_desc desc;
-> >> +	struct power_supply *battery;
-> >> +	struct power_supply_battery_info info;
-> >> +};
-> >> +
-> >> +static int ingenic_battery_get_property(struct power_supply *psy,
-> >> +					enum power_supply_property psp,
-> >> +					union power_supply_propval *val)
-> >> +{
-> >> +	struct ingenic_battery *bat = power_supply_get_drvdata(psy);
-> >> +	struct power_supply_battery_info *info = &bat->info;
-> >> +	int ret = 0;
-> >> +
-> >> +	switch (psp) {
-> >> +	case POWER_SUPPLY_PROP_HEALTH:
-> >> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
-> >> +		val->intval *= 1000;
-> >> +		if (val->intval < info->voltage_min_design_uv)
-> >> +			val->intval = POWER_SUPPLY_HEALTH_DEAD;
-> >> +		else if (val->intval > info->voltage_max_design_uv)
-> >> +			val->intval = POWER_SUPPLY_HEALTH_OVERVOLTAGE;
-> >> +		else
-> >> +			val->intval = POWER_SUPPLY_HEALTH_GOOD;
-> >> +	break;
-> >> +	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
-> >> +		ret = iio_read_channel_processed(bat->channel, &val->intval);
-> >> +		val->intval *= 1000;
-> >> +	break;
-> >> +	case POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN:
-> >> +		val->intval = info->voltage_min_design_uv;
-> >> +	break;
-> >> +	case POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN:
-> >> +		val->intval = info->voltage_max_design_uv;
-> >> +	break;
-> >> +	default:
-> >> +		return -EINVAL;
-> >> +	};
-> >> +  
-> > Can't get here, so drop.  
-> Execution actually does reach this point.
-> Would you rather have me return in individual switch cases instead?
-good point. I'm clearly blind ;)
+> This fixes that the device wouldn't even probe in SPI mode.
+> 
+> The SPI interface then isn't different from I2C, merged them into the core,
+> and the I2C/SPI named registers are no longer needed.
+> 
+> Implemented register value caching for the registers to reduce the I2C/SPI
+> data transfers considerably.
+> 
+> The calibration set reads as all zeroes until some undefined point in time,
+> and I couldn't determine what makes it valid. The datasheet mentions these
+> registers but does not provide any hints on when they become valid, and they
+> aren't even enumerated in the memory map. So check the calibration and
+> retry reading it from the device after each measurement until it provides
+> something valid.
+> 
+> Report temperature in millidegrees Celcius instead of degrees.
+Hi Mike,
 
-Yes, return in each case would probably be cleaner for consistency
-with the default case.  Either that or set ret and break in that
-path as well.
+This last bit is an unrelated issue. Would you mind splitting the patch into two?
+Please put the temperature one first as that is definitely a stable
+worthy patch.  The larger one is more debatable as it seems that it
+never worked and is a fairly large patch.
 
-> >   
-> >> +	return ret;
-> >> +}
-> >> +
-> >> +/* Set the most appropriate IIO channel voltage reference scale
-> >> + * based on the battery's max voltage.
-> >> + */
-> >> +static int ingenic_battery_set_scale(struct ingenic_battery *bat)
-> >> +{
-> >> +	const int *scale_raw;
-> >> +	int scale_len, scale_type, best_idx = -1, best_mV, max_raw, i, ret;
-> >> +	u64 max_mV;
-> >> +
-> >> +	ret = iio_read_max_channel_raw(bat->channel, &max_raw);
-> >> +	if (ret) {
-> >> +		dev_err(bat->dev, "Unable to read max raw channel value\n");
-> >> +		return ret;
-> >> +	}
-> >> +
-> >> +	ret = iio_read_avail_channel_attribute(bat->channel, &scale_raw,
-> >> +					       &scale_type, &scale_len,
-> >> +					       IIO_CHAN_INFO_SCALE);
-> >> +	if (ret < 0) {
-> >> +		dev_err(bat->dev, "Unable to read channel avail scale\n");
-> >> +		return ret;
-> >> +	}  
-> > This works under the constraints of knowing what ADC we are talking to, 
-> > but
-> > this isn't generic.  The relationship between scale and the range isn't 
-> > always
-> > direct.  i.e. there are devices where you sample the same range at a 
-> > lower
-> > scale to be able to read it faster (can be thought of as oversampling, 
-> > or
-> > just not running the last stages of a pipelined ADC).
-> > Anyhow, doesn't matter here as I assume this is fine on this part.
-> >   
-> >> +	if (ret != IIO_AVAIL_LIST || scale_type != IIO_VAL_FRACTIONAL_LOG2)
-> >> +		return -EINVAL;
-> >> +
-> >> +	max_mV = bat->info.voltage_max_design_uv / 1000;
-> >> +
-> >> +	for (i = 1; i < scale_len; i += 2) {
-> >> +		u64 scale_mV = (max_raw * scale_raw[i - 1]) >> scale_raw[i];  
-> > Not keen on the offset in the index being backwards.
-> > 
-> > This would be clearer I think as
-> > 
-> > for (i = 0; i < scale_len; i+= 2) {
-> > 	u64 scale_mv = (max_raw * scale_raw[i]) >> scale_raw[i + 1];
-> > 	...
-> > 	best_idx = i;
-> > }
-> >   
-> >> +
-> >> +		if (scale_mV < max_mV)
-> >> +			continue;
-> >> +
-> >> +		if (best_idx >= 0 && scale_mV > best_mV)
-> >> +			continue;
-> >> +
-> >> +		best_mV = scale_mV;
-> >> +		best_idx = i - 1;
-> >> +	}
-> >> +
-> >> +	if (best_idx < 0) {
-> >> +		dev_err(bat->dev, "Unable to find matching voltage scale\n");
-> >> +		return -EINVAL;
-> >> +	}
-> >> +
-> >> +	return iio_write_channel_attribute(bat->channel,
-> >> +					   scale_raw[best_idx],
-> >> +					   scale_raw[best_idx+1],  
-> > 
-> > Spacing around that +.
-> >   
-> >> +					   IIO_CHAN_INFO_SCALE);
-> >> +}
-> >> +
-> >> +static enum power_supply_property ingenic_battery_properties[] = {
-> >> +	POWER_SUPPLY_PROP_HEALTH,
-> >> +	POWER_SUPPLY_PROP_VOLTAGE_NOW,
-> >> +	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
-> >> +	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
-> >> +};
-> >> +
-> >> +static int ingenic_battery_probe(struct platform_device *pdev)
-> >> +{
-> >> +	struct device *dev = &pdev->dev;
-> >> +	struct ingenic_battery *bat;
-> >> +	struct power_supply_config psy_cfg = {};
-> >> +	struct power_supply_desc *desc;
-> >> +	int ret;
-> >> +
-> >> +	bat = devm_kzalloc(dev, sizeof(*bat), GFP_KERNEL);
-> >> +	if (!bat)
-> >> +		return -ENOMEM;
-> >> +
-> >> +	bat->dev = dev;
-> >> +	bat->channel = devm_iio_channel_get(dev, "battery");
-> >> +	if (IS_ERR(bat->channel))
-> >> +		return PTR_ERR(bat->channel);
-> >> +
-> >> +	desc = &bat->desc;
-> >> +	desc->name = "jz-battery";
-> >> +	desc->type = POWER_SUPPLY_TYPE_BATTERY;
-> >> +	desc->properties = ingenic_battery_properties;
-> >> +	desc->num_properties = ARRAY_SIZE(ingenic_battery_properties);
-> >> +	desc->get_property = ingenic_battery_get_property;
-> >> +	psy_cfg.drv_data = bat;
-> >> +	psy_cfg.of_node = dev->of_node;
-> >> +
-> >> +	bat->battery = devm_power_supply_register(dev, desc, &psy_cfg);
-> >> +	if (IS_ERR(bat->battery)) {
-> >> +		dev_err(dev, "Unable to register battery\n");
-> >> +		return PTR_ERR(bat->battery);
-> >> +	}
-> >> +
-> >> +	ret = power_supply_get_battery_info(bat->battery, &bat->info);
-> >> +	if (ret) {
-> >> +		dev_err(dev, "Unable to get battery info: %d\n", ret);
-> >> +		return ret;
-> >> +	}
-> >> +	if (bat->info.voltage_min_design_uv < 0) {
-> >> +		dev_err(dev, "Unable to get voltage min design\n");
-> >> +		return bat->info.voltage_min_design_uv;
-> >> +	}
-> >> +	if (bat->info.voltage_max_design_uv < 0) {
-> >> +		dev_err(dev, "Unable to get voltage max design\n");
-> >> +		return bat->info.voltage_max_design_uv;
-> >> +	}
-> >> +
-> >> +	return ingenic_battery_set_scale(bat);
-> >> +}
-> >> +
-> >> +#ifdef CONFIG_OF
-> >> +static const struct of_device_id ingenic_battery_of_match[] = {
-> >> +	{ .compatible = "ingenic,jz4740-battery", },
-> >> +	{ },
-> >> +};
-> >> +MODULE_DEVICE_TABLE(of, ingenic_battery_of_match);
-> >> +#endif
-> >> +
-> >> +static struct platform_driver ingenic_battery_driver = {
-> >> +	.driver = {
-> >> +		.name = "ingenic-battery",
-> >> +		.of_match_table = of_match_ptr(ingenic_battery_of_match),
-> >> +	},
-> >> +	.probe = ingenic_battery_probe,
-> >> +};
-> >> +module_platform_driver(ingenic_battery_driver);  
+I'll probably mark them both for stable, but it is possible not all
+the stable branches will pick them both up.
+
+Thanks,
+
+Jonathan
+
 > 
+> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+> ---
+> v2: Remove unused 'addr7' variable
+> 
+>  drivers/iio/chemical/bme680.h      |   6 +-
+>  drivers/iio/chemical/bme680_core.c |  54 ++++++++++++++---
+>  drivers/iio/chemical/bme680_i2c.c  |  21 -------
+>  drivers/iio/chemical/bme680_spi.c  | 115 +++++++++++++++++++++++++------------
+>  4 files changed, 125 insertions(+), 71 deletions(-)
+> 
+> diff --git a/drivers/iio/chemical/bme680.h b/drivers/iio/chemical/bme680.h
+> index 0ae89b87..4edc5d21 100644
+> --- a/drivers/iio/chemical/bme680.h
+> +++ b/drivers/iio/chemical/bme680.h
+> @@ -2,11 +2,9 @@
+>  #ifndef BME680_H_
+>  #define BME680_H_
+>  
+> -#define BME680_REG_CHIP_I2C_ID			0xD0
+> -#define BME680_REG_CHIP_SPI_ID			0x50
+> +#define BME680_REG_CHIP_ID			0xD0
+>  #define   BME680_CHIP_ID_VAL			0x61
+> -#define BME680_REG_SOFT_RESET_I2C		0xE0
+> -#define BME680_REG_SOFT_RESET_SPI		0x60
+> +#define BME680_REG_SOFT_RESET			0xE0
+>  #define   BME680_CMD_SOFTRESET			0xB6
+>  #define BME680_REG_STATUS			0x73
+>  #define   BME680_SPI_MEM_PAGE_BIT		BIT(4)
+> diff --git a/drivers/iio/chemical/bme680_core.c b/drivers/iio/chemical/bme680_core.c
+> index 70c1fe4..ccde4c6 100644
+> --- a/drivers/iio/chemical/bme680_core.c
+> +++ b/drivers/iio/chemical/bme680_core.c
+> @@ -63,9 +63,23 @@ struct bme680_data {
+>  	s32 t_fine;
+>  };
+>  
+> +static const struct regmap_range bme680_volatile_ranges[] = {
+> +	regmap_reg_range(BME680_REG_MEAS_STAT_0, BME680_REG_GAS_R_LSB),
+> +	regmap_reg_range(BME680_REG_STATUS, BME680_REG_STATUS),
+> +	regmap_reg_range(BME680_T2_LSB_REG, BME680_GH3_REG),
+> +};
+> +
+> +static const struct regmap_access_table bme680_volatile_table = {
+> +	.yes_ranges	= bme680_volatile_ranges,
+> +	.n_yes_ranges	= ARRAY_SIZE(bme680_volatile_ranges),
+> +};
+> +
+>  const struct regmap_config bme680_regmap_config = {
+>  	.reg_bits = 8,
+>  	.val_bits = 8,
+> +	.max_register = 0xef,
+> +	.volatile_table = &bme680_volatile_table,
+> +	.cache_type = REGCACHE_RBTREE,
+>  };
+>  EXPORT_SYMBOL(bme680_regmap_config);
+>  
+> @@ -316,6 +330,10 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
+>  	s64 var1, var2, var3;
+>  	s16 calc_temp;
+>  
+> +	/* If the calibration is invalid, attempt to reload it */
+> +	if (!calib->par_t2)
+> +		bme680_read_calib(data, calib);
+> +
+>  	var1 = (adc_temp >> 3) - (calib->par_t1 << 1);
+>  	var2 = (var1 * calib->par_t2) >> 11;
+>  	var3 = ((var1 >> 1) * (var1 >> 1)) >> 12;
+> @@ -583,8 +601,7 @@ static int bme680_gas_config(struct bme680_data *data)
+>  	return ret;
+>  }
+>  
+> -static int bme680_read_temp(struct bme680_data *data,
+> -			    int *val, int *val2)
+> +static int bme680_read_temp(struct bme680_data *data, int *val)
+>  {
+>  	struct device *dev = regmap_get_device(data->regmap);
+>  	int ret;
+> @@ -617,10 +634,9 @@ static int bme680_read_temp(struct bme680_data *data,
+>  	 * compensate_press/compensate_humid to get compensated
+>  	 * pressure/humidity readings.
+>  	 */
+> -	if (val && val2) {
+> -		*val = comp_temp;
+> -		*val2 = 100;
+> -		return IIO_VAL_FRACTIONAL;
+> +	if (val) {
+> +		*val = comp_temp * 10; /* Centidegrees to millidegrees */
+> +		return IIO_VAL_INT;
+>  	}
+>  
+>  	return ret;
+> @@ -635,7 +651,7 @@ static int bme680_read_press(struct bme680_data *data,
+>  	s32 adc_press;
+>  
+>  	/* Read and compensate temperature to get a reading of t_fine */
+> -	ret = bme680_read_temp(data, NULL, NULL);
+> +	ret = bme680_read_temp(data, NULL);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -668,7 +684,7 @@ static int bme680_read_humid(struct bme680_data *data,
+>  	u32 comp_humidity;
+>  
+>  	/* Read and compensate temperature to get a reading of t_fine */
+> -	ret = bme680_read_temp(data, NULL, NULL);
+> +	ret = bme680_read_temp(data, NULL);
+>  	if (ret < 0)
+>  		return ret;
+>  
+> @@ -761,7 +777,7 @@ static int bme680_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_PROCESSED:
+>  		switch (chan->type) {
+>  		case IIO_TEMP:
+> -			return bme680_read_temp(data, val, val2);
+> +			return bme680_read_temp(data, val);
+>  		case IIO_PRESSURE:
+>  			return bme680_read_press(data, val, val2);
+>  		case IIO_HUMIDITYRELATIVE:
+> @@ -867,8 +883,28 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct bme680_data *data;
+> +	unsigned int val;
+>  	int ret;
+>  
+> +	ret = regmap_write(regmap, BME680_REG_SOFT_RESET,
+> +			   BME680_CMD_SOFTRESET);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Failed to reset chip\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = regmap_read(regmap, BME680_REG_CHIP_ID, &val);
+> +	if (ret < 0) {
+> +		dev_err(dev, "Error reading chip ID\n");
+> +		return ret;
+> +	}
+> +
+> +	if (val != BME680_CHIP_ID_VAL) {
+> +		dev_err(dev, "Wrong chip ID, got %x expected %x\n",
+> +				val, BME680_CHIP_ID_VAL);
+> +		return -ENODEV;
+> +	}
+> +
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> diff --git a/drivers/iio/chemical/bme680_i2c.c b/drivers/iio/chemical/bme680_i2c.c
+> index 06d4be5..cfc4449 100644
+> --- a/drivers/iio/chemical/bme680_i2c.c
+> +++ b/drivers/iio/chemical/bme680_i2c.c
+> @@ -23,8 +23,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+>  {
+>  	struct regmap *regmap;
+>  	const char *name = NULL;
+> -	unsigned int val;
+> -	int ret;
+>  
+>  	regmap = devm_regmap_init_i2c(client, &bme680_regmap_config);
+>  	if (IS_ERR(regmap)) {
+> @@ -33,25 +31,6 @@ static int bme680_i2c_probe(struct i2c_client *client,
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> -	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_I2C,
+> -			   BME680_CMD_SOFTRESET);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "Failed to reset chip\n");
+> -		return ret;
+> -	}
+> -
+> -	ret = regmap_read(regmap, BME680_REG_CHIP_I2C_ID, &val);
+> -	if (ret < 0) {
+> -		dev_err(&client->dev, "Error reading I2C chip ID\n");
+> -		return ret;
+> -	}
+> -
+> -	if (val != BME680_CHIP_ID_VAL) {
+> -		dev_err(&client->dev, "Wrong chip ID, got %x expected %x\n",
+> -				val, BME680_CHIP_ID_VAL);
+> -		return -ENODEV;
+> -	}
+> -
+>  	if (id)
+>  		name = id->name;
+>  
+> diff --git a/drivers/iio/chemical/bme680_spi.c b/drivers/iio/chemical/bme680_spi.c
+> index c9fb05e..881778e 100644
+> --- a/drivers/iio/chemical/bme680_spi.c
+> +++ b/drivers/iio/chemical/bme680_spi.c
+> @@ -11,28 +11,93 @@
+>  
+>  #include "bme680.h"
+>  
+> +struct bme680_spi_bus_context {
+> +	struct spi_device *spi;
+> +	u8 current_page;
+> +};
+> +
+> +/*
+> + * In SPI mode there are only 7 address bits, a "page" register determines
+> + * which part of the 8-bit range is active. This function looks at the address
+> + * and writes the page selection bit if needed
+> + */
+> +static int bme680_regmap_spi_select_page(
+> +	struct bme680_spi_bus_context *ctx, u8 reg)
+> +{
+> +	struct spi_device *spi = ctx->spi;
+> +	int ret;
+> +	u8 buf[2];
+> +	u8 page = (reg & 0x80) ? 0 : 1; /* Page "1" is low range */
+> +
+> +	if (page == ctx->current_page)
+> +		return 0;
+> +
+> +	/*
+> +	 * Data sheet claims we're only allowed to change bit 4, so we must do
+> +	 * a read-modify-write on each and every page select
+> +	 */
+> +	buf[0] = BME680_REG_STATUS;
+> +	ret = spi_write_then_read(spi, buf, 1, buf + 1, 1);
+> +	if (ret < 0) {
+> +		dev_err(&spi->dev, "failed to set page %u\n", page);
+> +		return ret;
+> +	}
+> +
+> +	buf[0] = BME680_REG_STATUS;
+> +	if (page)
+> +		buf[1] |= BME680_SPI_MEM_PAGE_BIT;
+> +	else
+> +		buf[1] &= ~BME680_SPI_MEM_PAGE_BIT;
+> +
+> +	ret = spi_write(spi, buf, 2);
+> +	if (ret < 0) {
+> +		dev_err(&spi->dev, "failed to set page %u\n", page);
+> +		return ret;
+> +	}
+> +
+> +	ctx->current_page = page;
+> +
+> +	return 0;
+> +}
+> +
+>  static int bme680_regmap_spi_write(void *context, const void *data,
+>  				   size_t count)
+>  {
+> -	struct spi_device *spi = context;
+> +	struct bme680_spi_bus_context *ctx = context;
+> +	struct spi_device *spi = ctx->spi;
+> +	int ret;
+>  	u8 buf[2];
+>  
+>  	memcpy(buf, data, 2);
+> +
+> +	ret = bme680_regmap_spi_select_page(ctx, buf[0]);
+> +	if (ret)
+> +		return ret;
+> +
+>  	/*
+>  	 * The SPI register address (= full register address without bit 7)
+>  	 * and the write command (bit7 = RW = '0')
+>  	 */
+>  	buf[0] &= ~0x80;
+>  
+> -	return spi_write_then_read(spi, buf, 2, NULL, 0);
+> +	return spi_write(spi, buf, 2);
+>  }
+>  
+>  static int bme680_regmap_spi_read(void *context, const void *reg,
+>  				  size_t reg_size, void *val, size_t val_size)
+>  {
+> -	struct spi_device *spi = context;
+> +	struct bme680_spi_bus_context *ctx = context;
+> +	struct spi_device *spi = ctx->spi;
+> +	int ret;
+> +	u8 addr = *(const u8 *)reg;
+> +
+> +	ret = bme680_regmap_spi_select_page(ctx, addr);
+> +	if (ret)
+> +		return ret;
+>  
+> -	return spi_write_then_read(spi, reg, reg_size, val, val_size);
+> +	addr |= 0x80; /* bit7 = RW = '1' */
+> +
+> +	return spi_write_then_read(spi, &addr, 1, val, val_size);
+>  }
+>  
+>  static struct regmap_bus bme680_regmap_bus = {
+> @@ -45,8 +110,8 @@ static int bme680_regmap_spi_read(void *context, const void *reg,
+>  static int bme680_spi_probe(struct spi_device *spi)
+>  {
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+> +	struct bme680_spi_bus_context *bus_context;
+>  	struct regmap *regmap;
+> -	unsigned int val;
+>  	int ret;
+>  
+>  	spi->bits_per_word = 8;
+> @@ -56,45 +121,21 @@ static int bme680_spi_probe(struct spi_device *spi)
+>  		return ret;
+>  	}
+>  
+> +	bus_context = devm_kzalloc(&spi->dev, sizeof(*bus_context), GFP_KERNEL);
+> +	if (!bus_context)
+> +		return -ENOMEM;
+> +
+> +	bus_context->spi = spi;
+> +	bus_context->current_page = 0xff; /* Undefined on warm boot */
+> +
+>  	regmap = devm_regmap_init(&spi->dev, &bme680_regmap_bus,
+> -				  &spi->dev, &bme680_regmap_config);
+> +				  bus_context, &bme680_regmap_config);
+>  	if (IS_ERR(regmap)) {
+>  		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+>  				(int)PTR_ERR(regmap));
+>  		return PTR_ERR(regmap);
+>  	}
+>  
+> -	ret = regmap_write(regmap, BME680_REG_SOFT_RESET_SPI,
+> -			   BME680_CMD_SOFTRESET);
+> -	if (ret < 0) {
+> -		dev_err(&spi->dev, "Failed to reset chip\n");
+> -		return ret;
+> -	}
+> -
+> -	/* after power-on reset, Page 0(0x80-0xFF) of spi_mem_page is active */
+> -	ret = regmap_read(regmap, BME680_REG_CHIP_SPI_ID, &val);
+> -	if (ret < 0) {
+> -		dev_err(&spi->dev, "Error reading SPI chip ID\n");
+> -		return ret;
+> -	}
+> -
+> -	if (val != BME680_CHIP_ID_VAL) {
+> -		dev_err(&spi->dev, "Wrong chip ID, got %x expected %x\n",
+> -				val, BME680_CHIP_ID_VAL);
+> -		return -ENODEV;
+> -	}
+> -	/*
+> -	 * select Page 1 of spi_mem_page to enable access to
+> -	 * to registers from address 0x00 to 0x7F.
+> -	 */
+> -	ret = regmap_write_bits(regmap, BME680_REG_STATUS,
+> -				BME680_SPI_MEM_PAGE_BIT,
+> -				BME680_SPI_MEM_PAGE_1_VAL);
+> -	if (ret < 0) {
+> -		dev_err(&spi->dev, "failed to set page 1 of spi_mem_page\n");
+> -		return ret;
+> -	}
+> -
+>  	return bme680_core_probe(&spi->dev, regmap, id->name);
+>  }
+>  
 
