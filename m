@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67E0FC43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:45:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B287DC43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:47:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 30FA920866
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:45:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7463620866
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 14:47:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551624357;
-	bh=e6hMBWvCf0/I4khZmvPOAG49OI3KZZXdn9hL+ThKQe8=;
+	s=default; t=1551624458;
+	bh=Ldejzf8jupG2qN/3MS05lPeJ0Rmi6kaNmQH+mgKbkHI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=YtIn9b7ZBlid6YcCgtXteGl+aOL0VXRB5t+yaQdeBxf3D4EoEG6bxSG4fuW8O1Pt6
-	 3EBcy57A2cI8dBSDaDNYwE03iPcmxog5c+P9ZPHuClq8QiTS7dEcQ6AQEI5KqyJayx
-	 rd9QPsxfo8herAm8dddGrsFBN7uoarCzivF2FIgY=
+	b=tWUqkQx8F+N91Gpyq8FL2iS0Dpiou7DsSLU3njcW2WiB9jVgpbFiCAhbBRrC0MgEY
+	 n1hqwJmkSOvbY9PQK5rzi/LPFWoXsaYqvjs6N4Raw6zNwO0kOge6TuRGJ5AP5Ep/GN
+	 0oAxM1QrO+wxMM6zY7uu6qYMeLryq5IJVUexPTW4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726317AbfCCOp4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 09:45:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47204 "EHLO mail.kernel.org"
+        id S1726252AbfCCOri (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 09:47:38 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48518 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726217AbfCCOp4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 09:45:56 -0500
+        id S1726217AbfCCOrh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 09:47:37 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BEBE720835;
-        Sun,  3 Mar 2019 14:45:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 69CCB20835;
+        Sun,  3 Mar 2019 14:47:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551624355;
-        bh=e6hMBWvCf0/I4khZmvPOAG49OI3KZZXdn9hL+ThKQe8=;
+        s=default; t=1551624457;
+        bh=Ldejzf8jupG2qN/3MS05lPeJ0Rmi6kaNmQH+mgKbkHI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tpYTcXEi4u+mJJJRZ49eUFvMBPFQuef9GZIvZKnUZO7trufqJnLkBbn9lR0N5LOIa
-         8x00YWMRMpSXWYMo2PVEUB6y/H6DLQJMH/pGuoq3x6a+AZI/Ov/sGngsROZUtbP2Vq
-         UMWrAa1o/VQvQ8k4CO+MwUVo/48xm3tkWVCnaEtY=
-Date:   Sun, 3 Mar 2019 14:45:50 +0000
+        b=ZSvZ3aazne/NZRPZrMkAJpzRyziwjO0veMEyd0aO7eR2/9csUJJPspjsFBWS4yIst
+         50pR7nnk0bJDyuYrrHukgHJKuv6TUyY3/Z0U1dKgFON6AN56E7O4V3n0rEODUrA5Qm
+         1eItRKuIF9o3bc4mYkxD4hld8iYLEXS1CVoXjOIc=
+Date:   Sun, 3 Mar 2019 14:47:32 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     =?UTF-8?B?QsOhcmJhcmE=?= Fernandes <barbara.fernandes@usp.br>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -46,11 +46,11 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com
-Subject: Re: [PATCH 3/4] iio:adc:ad7923: Put macro argument between ()'s
-Message-ID: <20190303144550.5a1b2039@archlinux>
-In-Reply-To: <20190222203159.15116-4-barbara.fernandes@usp.br>
+Subject: Re: [PATCH 4/4] iio:adc:ad7923: Rewrite comparison to NULL
+Message-ID: <20190303144732.38f57096@archlinux>
+In-Reply-To: <20190222203159.15116-5-barbara.fernandes@usp.br>
 References: <20190222203159.15116-1-barbara.fernandes@usp.br>
-        <20190222203159.15116-4-barbara.fernandes@usp.br>
+        <20190222203159.15116-5-barbara.fernandes@usp.br>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -60,63 +60,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Feb 2019 17:31:58 -0300
+On Fri, 22 Feb 2019 17:31:59 -0300
 B=C3=A1rbara Fernandes <barbara.fernandes@usp.br> wrote:
 
-> Put macro argument between parenthesis in order to avoid precedence
-> issues. Solves the following checkpath.pl's messages:
+> Solves checkpath.pl's message:
 >=20
-> CHECK: Macro argument 'mode' may be better as '(mode)' to avoid
-> precedence issues
-> CHECK: Macro argument 'channel' may be better as '(channel)' to
-> avoid precedence issues
-> CHECK: Macro argument reuse 'sequence' - possible side-effects?
-> CHECK: Macro argument 'sequence' may be better as '(sequence)' to
-> avoid precedence issues
-> CHECK: Macro argument 'val' may be better as '(val)' to avoid
-> precedence issues
-> CHECK: Macro argument 'dec' may be better as '(dec)' to avoid precedence
-> issues
-> CHECK: Macro argument 'bits' may be better as '(bits)' to avoid
-> precedence issues
+> CHECK: Comparison to NULL could be written "!indio_dev"
 >=20
 > Signed-off-by: B=C3=A1rbara Fernandes <barbara.fernandes@usp.br>
-Applied.
+Applied, thanks.
+
+It's nice to get some cleanup for drivers that aren't in staging
+sometimes.  After all, in recent years the kernel coding style
+and tools to check it have improved considerably.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/ad7923.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  drivers/iio/adc/ad7923.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >=20
 > diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-> index b39ea834cdd6..dbece44e26e4 100644
+> index dbece44e26e4..cb7b854df00c 100644
 > --- a/drivers/iio/adc/ad7923.c
 > +++ b/drivers/iio/adc/ad7923.c
-> @@ -40,16 +40,16 @@
+> @@ -272,7 +272,7 @@ static int ad7923_probe(struct spi_device *spi)
+>  	int ret;
 > =20
->  #define AD7923_MAX_CHAN		4
+>  	indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> -	if (indio_dev =3D=3D NULL)
+> +	if (!indio_dev)
+>  		return -ENOMEM;
 > =20
-> -#define AD7923_PM_MODE_WRITE(mode)	(mode << 4)	/* write mode */
-> -#define AD7923_CHANNEL_WRITE(channel)	(channel << 6)	/* write channel */
-> -#define AD7923_SEQUENCE_WRITE(sequence)	(((sequence & 1) << 3) \
-> -					+ ((sequence & 2) << 9))
-> +#define AD7923_PM_MODE_WRITE(mode)	((mode) << 4)	 /* write mode */
-> +#define AD7923_CHANNEL_WRITE(channel)	((channel) << 6) /* write channel =
-*/
-> +#define AD7923_SEQUENCE_WRITE(sequence)	((((sequence) & 1) << 3) \
-> +					+ (((sequence) & 2) << 9))
->  						/* write sequence fonction */
->  /* left shift for CR : bit 11 transmit in first */
->  #define AD7923_SHIFT_REGISTER	4
-> =20
->  /* val =3D value, dec =3D left shift, bits =3D number of bits of the mas=
-k */
-> -#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
-> +#define EXTRACT(val, dec, bits)		(((val) >> (dec)) & ((1 << (bits)) - 1))
-> =20
->  struct ad7923_state {
->  	struct spi_device		*spi;
+>  	st =3D iio_priv(indio_dev);
 
