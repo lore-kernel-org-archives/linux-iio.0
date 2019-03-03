@@ -4,177 +4,154 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C464EC43381
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:20:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D55C43381
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:47:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 80C7020842
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:20:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A167F20842
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Mar 2019 16:47:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1551630048;
-	bh=Fl4XDc1TSgQkLG8CUDvtRZ9nUfLZ6Zal4BNSZ1/lgpY=;
+	s=default; t=1551631674;
+	bh=/WUQLVfiVQQ6IEi/ZjL2VXXVtZTzFkcrR1n6HytZEpc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=yv59WPYSVyuY3YpNphUkJxfWOZ8dPz7GJs4cuNATs2Tq53P+R7pGwtTaJTQLCXl/a
-	 yLTaLpGw13WZcL2NXDWVJN+dfImyE3y7FF6eESUkiIG9wLv0xQvmuJfDxqxrH/pMCd
-	 vU4GwxpGFJQirRE25kJwcPG9OyZDpZd/3zdxuBe4=
+	b=rrPxtbfrYGH/BztSoPwym3o+rafkbq38S4Yp4BF0Q9dVtquO0P+brzyVXw/5A3m86
+	 Fyc1BDEXef32eX0vi4nJYJ8nOkaLZ270Y00o58ZfWsSK/cSP/0EX8DqkZSOK3nI4z6
+	 gz6jNteAh3mrQQD8oW2nCNICPrPhTs7a0QHzWt8c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726411AbfCCQUs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Mar 2019 11:20:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58518 "EHLO mail.kernel.org"
+        id S1726632AbfCCQrt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Mar 2019 11:47:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:41328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726400AbfCCQUr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Mar 2019 11:20:47 -0500
+        id S1726382AbfCCQrs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Mar 2019 11:47:48 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AC3E20818;
-        Sun,  3 Mar 2019 16:20:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A831206DD;
+        Sun,  3 Mar 2019 16:47:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1551630046;
-        bh=Fl4XDc1TSgQkLG8CUDvtRZ9nUfLZ6Zal4BNSZ1/lgpY=;
+        s=default; t=1551631667;
+        bh=/WUQLVfiVQQ6IEi/ZjL2VXXVtZTzFkcrR1n6HytZEpc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r826n7cJYFo2rmUXxf8vF59/ioGtth63YZ04yLvRsEpJPqDX3NkSbL5qO9ZJwppp9
-         eTuHNIDsZGtyuuIlmMeLYbUv/MN74mcNyUp7aU6ofrNi1C5YoGhKngn+drLRPjsshG
-         1eajzbjNREKDg2P3WKKfl6uvU0qpPc1k0bS6gNGU=
-Date:   Sun, 3 Mar 2019 16:20:40 +0000
+        b=XbAXpB4be+mLM1OKqgHjwY0igy+UJ5+du3BPTZP1Kuni+W5d9BHOSivYFAiHIcCiP
+         tkHyPhWXqhcCFIXm/SaXVMrEL7oUqSj33LK2VQM78IYVcEX2V0RCTnPxEWvmcW0EaS
+         NHJKrl8SzvzsjZKVxR/FCiVpnQ9ZzjavLSKMANyE=
+Date:   Sun, 3 Mar 2019 16:47:41 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
         Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: Re: [PATCH] iio: cros_ec_accel_legacy: Refactor code in
- cros_ec_accel_legacy_probe
-Message-ID: <20190303162040.152e4613@archlinux>
-In-Reply-To: <946ab58e-ad7e-4815-4dd3-42aeaa3f4299@collabora.com>
-References: <20190221020633.GA4195@embeddedor>
-        <CAGXu5jK1fKaSSfHP1dGFyKVjRM7APvqdOhHNjZnN=+An950J1A@mail.gmail.com>
-        <946ab58e-ad7e-4815-4dd3-42aeaa3f4299@collabora.com>
+        Lars-Peter Clausen <lars@metafoo.de>, kernel@collabora.com,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH] iio: cros_ec: Fix gyro scale calculation
+Message-ID: <20190303164741.6cb3c58b@archlinux>
+In-Reply-To: <7d36153b-65e9-6702-e72f-caaeeb032077@collabora.com>
+References: <20190220150300.3302-1-enric.balletbo@collabora.com>
+        <20190220160126.12568f92@archlinux>
+        <7d36153b-65e9-6702-e72f-caaeeb032077@collabora.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Feb 2019 09:03:39 +0100
+On Fri, 22 Feb 2019 11:24:24 +0100
 Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
 
-> On 21/2/19 8:00, Kees Cook wrote:
-> > On Wed, Feb 20, 2019 at 6:06 PM Gustavo A. R. Silva
-> > <gustavo@embeddedor.com> wrote: =20
+> Hi Jonathan,
+> 
+> On 20/2/19 17:01, Jonathan Cameron wrote:
+> > On Wed, 20 Feb 2019 16:03:00 +0100
+> > Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
+> >   
+> >> From: Gwendal Grignou <gwendal@chromium.org>
 > >>
-> >> Refactor some code in order to fix both the technical implementation
-> >> and the following warnings:
+> >> Calculation was copied from IIO_DEGREE_TO_RAD, but offset added to avoid
+> >> rounding error is wrong. It should be only half of the divider.
 > >>
-> >> drivers/iio/accel/cros_ec_accel_legacy.c: In function =E2=80=98cros_ec=
-_accel_legacy_probe=E2=80=99:
-> >> drivers/iio/accel/cros_ec_accel_legacy.c:387:36: warning: this stateme=
-nt may fall through [-Wimplicit-fallthrough=3D]
-> >>     ec_accel_channels[X].scan_index =3D Y;
-> >>     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-> >> drivers/iio/accel/cros_ec_accel_legacy.c:388:3: note: here
-> >>    case Y:
-> >>    ^~~~
-> >> drivers/iio/accel/cros_ec_accel_legacy.c:389:36: warning: this stateme=
-nt may fall through [-Wimplicit-fallthrough=3D]
-> >>     ec_accel_channels[Y].scan_index =3D X;
-> >>     ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^~~
-> >> drivers/iio/accel/cros_ec_accel_legacy.c:390:3: note: here
-> >>    case Z:
-> >>    ^~~~
-> >>
-> >> Notice that neither the for loop nor the switch statement is needed.
-> >> Also, "state->sign[Y] =3D 1" should be unconditional.
-> >>
-> >> This patch is part of the ongoing efforts to enable
-> >> -Wimplicit-fallthrough.
-> >>
-> >> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com> =20
-> >=20
-> > Acked-by: Kees Cook <keescook@chromium.org>
-> >  =20
->=20
-> Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
-
-This will probably only make it upstream at the 'next' merge window
-given the timing.
-
-Jonathan
-
->=20
-> Thanks,
->  Enric
->=20
-> > -Kees
-> >  =20
+> >> Fixes: c14dca07a31d ("iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver")
+> >> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> >> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>  
+> > 
+> > This one is kind of interesting. See below.
+> >   
 > >> ---
-> >>  drivers/iio/accel/cros_ec_accel_legacy.c | 27 +++++++++++-------------
-> >>  1 file changed, 12 insertions(+), 15 deletions(-)
 > >>
-> >> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/ac=
-cel/cros_ec_accel_legacy.c
-> >> index 063e89eff791..021f9f5cd3bb 100644
-> >> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
-> >> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-> >> @@ -353,7 +353,7 @@ static int cros_ec_accel_legacy_probe(struct platf=
-orm_device *pdev)
-> >>         struct cros_ec_sensor_platform *sensor_platform =3D dev_get_pl=
-atdata(dev);
-> >>         struct iio_dev *indio_dev;
-> >>         struct cros_ec_accel_legacy_state *state;
-> >> -       int ret, i;
-> >> +       int ret;
+> >>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
 > >>
-> >>         if (!ec || !ec->ec_dev) {
-> >>                 dev_warn(&pdev->dev, "No EC device found.\n");
-> >> @@ -381,20 +381,17 @@ static int cros_ec_accel_legacy_probe(struct pla=
-tform_device *pdev)
-> >>          * Present the channel using HTML5 standard:
-> >>          * need to invert X and Y and invert some lid axis.
-> >>          */
-> >> -       for (i =3D X ; i < MAX_AXIS; i++) {
-> >> -               switch (i) {
-> >> -               case X:
-> >> -                       ec_accel_channels[X].scan_index =3D Y;
-> >> -               case Y:
-> >> -                       ec_accel_channels[Y].scan_index =3D X;
-> >> -               case Z:
-> >> -                       ec_accel_channels[Z].scan_index =3D Z;
-> >> -               }
-> >> -               if (state->sensor_num =3D=3D MOTIONSENSE_LOC_LID && i =
-!=3D Y)
-> >> -                       state->sign[i] =3D -1;
-> >> -               else
-> >> -                       state->sign[i] =3D 1;
-> >> -       }
-> >> +       ec_accel_channels[X].scan_index =3D Y;
-> >> +       ec_accel_channels[Y].scan_index =3D X;
-> >> +       ec_accel_channels[Z].scan_index =3D Z;
-> >> +
-> >> +       state->sign[Y] =3D 1;
-> >> +
-> >> +       if (state->sensor_num =3D=3D MOTIONSENSE_LOC_LID)
-> >> +               state->sign[X] =3D state->sign[Z] =3D -1;
-> >> +       else
-> >> +               state->sign[X] =3D state->sign[Z] =3D 1;
-> >> +
-> >>         indio_dev->num_channels =3D ARRAY_SIZE(ec_accel_channels);
-> >>         indio_dev->dev.parent =3D &pdev->dev;
-> >>         indio_dev->info =3D &cros_ec_accel_legacy_info;
-> >> --
-> >> 2.20.1
-> >> =20
-> >=20
-> >  =20
+> >> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> >> index 89cb0066a6e0..600942af9f9c 100644
+> >> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> >> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> >> @@ -103,7 +103,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
+> >>  			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
+> >>  			 * loss. Round to the nearest integer.
+> >>  			 */
+> >> -			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
+> >> +			*val = div_s64(val64 * 314159 + 500ULL, 1000);  
+> > That is only one of two divides going on.  Firstly we divide by 1000 here,
+> > then we provide it in fractional form which means that the actual value you get
+> > from sysfs etc is 
+> > val/val2.  It's this one we are protecting against rounding error on I guess.
+> > Now this is even less obviously because it's not 18000 either, but 
+> > 18000 * 2^CROS_EC_SENSOR_BITS.
+> > 
+> > Which ultimately means neither answer is correct. Hmm.
+> > Not totally sure what the right answer actually is..
+> >   
+> 
+> If I understood well the Gwendal's patch the problem that we're trying to solve
+> is that current calculation is not closer from the float calculation.
+> 
+> For 1000dps, the result should be:
+> 
+>     (1000 * pi ) / 180 >> 15 ~= 0.000532632218
+> 
+> But with current calculation we get
+> 
+>     $ cat scale
+>     0.000547890
+> 
+> With that patch (modifying the offset to avoid the rounding error) we get a
+> closer result
+> 
+>     $ cat scale
+>     0.000532631
+> 
+> So, what we're trying to do is have val/val2 closer to the real value. Makes
+> this sense to you or I'm missing something? I can improve the commit message if
+> it's not clear.
+
+I think we are in enough of a mess here with the different dividers that we
+should just do the maths here, then we can avoid the bia.
+
+aiming for nano value.
+val * pi * 10e12 / (180 * 2^15)
+div_s64(val * 3141592653000 + 2949120, 5898240) = 532632
+vs 532632 for floating point division.
+Then use IIO_INT_PLUS_NANO to return it.
+
+Even then I suspect the +2949120 is only effecting the last digit so
+you could probably drop it safely enough.
+
+I'd certainly rather we had all the magic in one place rather than
+trying to correct for divisions that aren't apparent here.
+
+> 
+> -- Enric
+> 
+> > Jonathan
+> >   
+> >>  			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
+> >>  			ret = IIO_VAL_FRACTIONAL;
+> >>  			break;  
+> >   
 
