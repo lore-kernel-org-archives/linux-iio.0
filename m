@@ -2,878 +2,227 @@ Return-Path: <SRS0=AU7e=RJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BEBC43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 14:52:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 290CAC43381
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 17:46:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6A00520661
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 14:52:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA41A20661
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 17:46:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QAFBqdQ5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727454AbfCFOwv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 09:52:51 -0500
-Received: from mout.kundenserver.de ([212.227.126.135]:55693 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726934AbfCFOwu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 09:52:50 -0500
-Received: from orion.localdomain ([95.118.27.116]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MDhQt-1gqqn11fZH-00Akb5; Wed, 06 Mar 2019 15:52:24 +0100
-From:   "Enrico Weigelt, metux IT consult" <info@metux.net>
-To:     linux-kernel@vger.kernel.org
-Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: [PATCH] drivers: iio: Kconfig: pedantic cleanup
-Date:   Wed,  6 Mar 2019 15:52:23 +0100
-Message-Id: <1551883943-4930-1-git-send-email-info@metux.net>
-X-Mailer: git-send-email 1.9.1
-X-Provags-ID: V03:K1:c056N/AxyFNB4r6VkZ1lK/Zk6OdtKsQ998kUAum4rxnBZ6CJQLZ
- eLXmO7Zm1kg5/I24GnBg7cOl894fVlwlhehqfF7RPm68hs5TBGq8fbD52WILtASzkBrv8Ck
- Deul8cQr2tsSg3k2VFQ+nc7Z0AuXoX6b+LGn3+ZfcUSe2H+FcR7gSBWdKIF+Ppng5R4q3tw
- XxUj1jwYqhYsJ7qBEWCWg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:iyVQsPSZirk=:ObUIFGsGmN2gP1p6j/NRN1
- xQ+UEgYh5pBEomEVuRqp/4QPno9Td05Fkx1PzGexOHBWhv4e2+XpkM4s+2h3d0T/Z5sHUNu6S
- 0el5n38v2UUYuMv9DlUvMBsG98mKb6h7JzWyZYoc+PTYn3MhKcZH486twQztJK2CZ0qeAdhuB
- Ux6FdLpNiU9lB4w7h82rJeA71D9+xKUB9tSHrAwvgFgtfiH+K9OQ9bwdzbUIBBkurvsC+wVoc
- izZBM7IPe4y/aZsUdSZvE5YSn6dh4MDFXD83NaOn0+9VklSKfwFTeIh15k/xnNA1bSm+Cet/o
- P2+iSk/wbUuWtnhW562y+D4QsC0zWof5GyUfwHTltBDzaAEH/Vs6v7k+ehecdLPgiu+oyLFmI
- 9J8odH07DpH0lQtoT40Nca/JZBaK4ARhY7h/SJNLkylYz9kmGEfIo6LwxVB/0DoRemkcEpdrC
- KiCLx/9D77kLYi4K63FkmIjI6jkyQ5rOB/jBlL/eOfEM3z5CJ3IE1sgVOvuvVCjNis+rPwgjm
- LN1LD+iHfBGLEY8r6ZxM6Wwii44fAB5t0DgKxACbexChBakl7l6HkzHZ7Jvu9oSH+2sDmsfSN
- d0o8w4FGZjj3N0ubJAkrM3PwEA/1vfJCwVLalEX6Bjd9TcxotImDTCdthWoZ4hKCmHPMbKXV3
- 56R5iGT7tD0qGWxZnenVVwbotP/sqMu9o8T7ifPENDTMWP3q/Fxl8OGBHeNdCzeUQOPz5f5zJ
- ulZx+jk1KahaSraIPOLF91rqop1Tq5PjZYlfTA==
+        id S1730517AbfCFRqF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 12:46:05 -0500
+Received: from mail-io1-f68.google.com ([209.85.166.68]:42344 "EHLO
+        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726178AbfCFRqF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 12:46:05 -0500
+Received: by mail-io1-f68.google.com with SMTP id p196so10931661iod.9;
+        Wed, 06 Mar 2019 09:46:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=9YO8SR86inZc1b2mQpXlAZ6SeDpN9rzGMQWtwqV89Ew=;
+        b=QAFBqdQ5i6qs5Tmji+oH95X1zm5AKq3g2QMADW+3FVDsSAKUl0w6GbnSiRmaWhsUpy
+         tRLEQeKKq0IaT4f77T4uQ3WYJ5RxSXUEkFIye6Dx4eXv8a7uA4aLihh043ZPb04bqL9O
+         ay/sfWXeF5EnhEQuYNDMwUeS7/3sEqb/lWKuDa25xCsRt2eUZx9pemeT4ZxhgdN3FbKa
+         Fmwfwm74bpNOYoiilvs8nZTCuXN7wgOUQrnvisJZpm/ly2zQ/te+87z4FhJ+y5z/RGbp
+         qh98L0cQFeAH57HEyA092gq/Kt2VMwI5GLfTkjA0NU3tei2s6MMD93VVrrm0XZn1ZZsj
+         +MpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=9YO8SR86inZc1b2mQpXlAZ6SeDpN9rzGMQWtwqV89Ew=;
+        b=QDfxLAlVdaTanxwR03xUQZIz+xeaE4gSekoFAEVrTG+lwnuzfDfnvU7P7GCx1SngA+
+         Y14yyJ8lyVVDSgeJwjZAn0Cf0NwcZGL8c1d1udDIJg3XLu7i7ZN2I2N7uJviqnSING3O
+         fgpSMLNGd0IBDuF1oACe/830Gqy9MbSa2yj7lT07utiTYxcoeDuiddqs7fwgidBS5eVj
+         6mOHbU0jupFy8tP6MYXMPpRhqESjOQSOV2bOdOw8KFa6MJtejCmVy/gc7LEkLSLjGcvI
+         rKv5Q3HuIDWSx4mRy2u2xSfd0LlM9ArPl5hLtST1lui5w9KNkgb6FSFILmsEU/ENvAMT
+         iYZQ==
+X-Gm-Message-State: APjAAAXtqaseYt2o+9+SDOjjV/tPDYeq5ybnVW9/O9CJrW7xDNSbHuxN
+        y3tLmrio5J1VHpnYD1lpxV8=
+X-Google-Smtp-Source: APXvYqwStjxtcIbFvVFhKN8/AZg037K8J5WzqiVN5r0GR7a6I1PW+QgF6ljII8/ru/K7ihlX/tiWVg==
+X-Received: by 2002:a5d:8d02:: with SMTP id p2mr4040658ioj.113.1551894363874;
+        Wed, 06 Mar 2019 09:46:03 -0800 (PST)
+Received: from svens-asus.arcx.com ([184.94.50.30])
+        by smtp.gmail.com with ESMTPSA id p4sm760763ioj.36.2019.03.06.09.46.02
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 06 Mar 2019 09:46:03 -0800 (PST)
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH] iio: proximity: as3935: fix use-after-free on device remove
+Date:   Wed,  6 Mar 2019 12:45:59 -0500
+Message-Id: <20190306174559.17362-1-TheSven73@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Formatting of Kconfig files doesn't look so pretty, so just
-take damp cloth and clean it up.
+This driver's probe() uses a mix of devm_ and non-devm_ functions. This
+means that the remove order will not be the exact opposite of the probe
+order.
 
-Signed-off-by: Enrico Weigelt, metux IT consult <info@metux.net>
+Remove order:
+1. remove() executes:
+	iio_device_unregister
+	iio_triggered_buffer_cleanup
+	iio_trigger_unregister
+	(A)
+2. core frees devm resources in reverse order:
+	free_irq
+	iio_trigger_free
+	iio_device_free
+
+In (A) the trigger has been unregistered, but the irq handler is still
+registered and active, so the trigger may still be touched via
+interrupt -> as3935_event_work. This is a potential use-after-unregister.
+
+Given that the delayed work is never canceled explicitly, it may run even
+after iio_device_free. This is a potential use-after-free.
+
+Solution: convert all probe functions to their devm_ equivalents.
+Add a devm callback, called by the core on remove right after irq_free,
+which explicitly cancels the delayed work. This will guarantee that all
+resources are freed in the correct order.
+
+As an added bonus, some boilerplate code can be removed.
+
+While we're here, remove redundant &'s in front of function names when
+passing a pointer-to-function.
+
+Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
 ---
- drivers/iio/Kconfig                   |  24 +--
- drivers/iio/accel/Kconfig             |  48 +++---
- drivers/iio/adc/Kconfig               |  20 +--
- drivers/iio/chemical/Kconfig          |  12 +-
- drivers/iio/common/ms_sensors/Kconfig |   2 +-
- drivers/iio/humidity/Kconfig          |  20 +--
- drivers/iio/light/Kconfig             | 274 +++++++++++++++++-----------------
- drivers/iio/potentiometer/Kconfig     |  34 ++---
- drivers/iio/temperature/Kconfig       |  16 +-
- 9 files changed, 225 insertions(+), 225 deletions(-)
+ drivers/iio/proximity/as3935.c | 53 ++++++++++++++--------------------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index d08aeb4..014006d 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -39,28 +39,28 @@ config IIO_TRIGGER
- 	  data now' interrupt.
- 
- config IIO_CONSUMERS_PER_TRIGGER
--       int "Maximum number of consumers per trigger"
--       depends on IIO_TRIGGER
--       default "2"
--       help
--	This value controls the maximum number of consumers that a
--	given trigger may handle. Default is 2.
-+	int "Maximum number of consumers per trigger"
-+	depends on IIO_TRIGGER
-+	default "2"
-+	help
-+	  This value controls the maximum number of consumers that a
-+	  given trigger may handle. Default is 2.
- 
- config IIO_SW_DEVICE
- 	tristate "Enable software IIO device support"
- 	select IIO_CONFIGFS
- 	help
--	 Provides IIO core support for software devices. A software
--	 device can be created via configfs or directly by a driver
--	 using the API provided.
-+	  Provides IIO core support for software devices. A software
-+	  device can be created via configfs or directly by a driver
-+	  using the API provided.
- 
- config IIO_SW_TRIGGER
- 	tristate "Enable software triggers support"
- 	select IIO_CONFIGFS
- 	help
--	 Provides IIO core support for software triggers. A software
--	 trigger can be created via configfs or directly by a driver
--	 using the API provided.
-+	  Provides IIO core support for software triggers. A software
-+	  trigger can be created via configfs or directly by a driver
-+	  using the API provided.
- 
- config IIO_TRIGGERED_EVENT
- 	tristate
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 898839c..4a1f133 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -6,28 +6,28 @@
- menu "Accelerometers"
- 
- config ADIS16201
--        tristate "Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer"
--        depends on SPI
--        select IIO_ADIS_LIB
--        select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
--        help
--          Say Y here to build support for Analog Devices adis16201 dual-axis
--          digital inclinometer and accelerometer.
-+	tristate "Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer"
-+	depends on SPI
-+	select IIO_ADIS_LIB
-+	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-+	help
-+	  Say Y here to build support for Analog Devices adis16201 dual-axis
-+	  digital inclinometer and accelerometer.
- 
--          To compile this driver as a module, say M here: the module will
--          be called adis16201.
-+	  To compile this driver as a module, say M here: the module will
-+	  be called adis16201.
- 
- config ADIS16209
--        tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
--        depends on SPI
--        select IIO_ADIS_LIB
--        select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
--        help
--          Say Y here to build support for Analog Devices adis16209 dual-axis digital inclinometer
--          and accelerometer.
-+	tristate "Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer"
-+	depends on SPI
-+	select IIO_ADIS_LIB
-+	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
-+	help
-+	  Say Y here to build support for Analog Devices adis16209 dual-axis digital inclinometer
-+	  and accelerometer.
- 
--          To compile this driver as a module, say M here: the module will be
--          called adis16209.
-+	  To compile this driver as a module, say M here: the module will be
-+	  called adis16209.
- 
- config ADXL345
- 	tristate
-@@ -100,16 +100,16 @@ config BMA180
- 	  module will be called bma180.
- 
- config BMA220
--    tristate "Bosch BMA220 3-Axis Accelerometer Driver"
-+	tristate "Bosch BMA220 3-Axis Accelerometer Driver"
- 	depends on SPI
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
--    help
--      Say yes here to add support for the Bosch BMA220 triaxial
--      acceleration sensor.
-+	help
-+	  Say yes here to add support for the Bosch BMA220 triaxial
-+	  acceleration sensor.
- 
--      To compile this driver as a module, choose M here: the
--      module will be called bma220_spi.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called bma220_spi.
- 
- config BMC150_ACCEL
- 	tristate "Bosch BMC150 Accelerometer Driver"
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 7a3ca4e..16b8b7e 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -347,7 +347,7 @@ config HX711
- 
- 	  This driver uses two GPIOs, one acts as the clock and controls the
- 	  channel selection and gain, the other one is used for the measurement
--          data
-+	  data
- 
- 	  Currently the raw value is read from the chip and delivered.
- 	  To get an actual weight one needs to subtract the
-@@ -533,17 +533,17 @@ config MCP3911
- 	  called mcp3911.
- 
- config MEDIATEK_MT6577_AUXADC
--        tristate "MediaTek AUXADC driver"
--        depends on ARCH_MEDIATEK || COMPILE_TEST
--        depends on HAS_IOMEM
--        help
--          Say yes here to enable support for MediaTek mt65xx AUXADC.
-+	tristate "MediaTek AUXADC driver"
-+	depends on ARCH_MEDIATEK || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	help
-+	  Say yes here to enable support for MediaTek mt65xx AUXADC.
- 
--          The driver supports immediate mode operation to read from one of sixteen
--          channels (external or internal).
-+	  The driver supports immediate mode operation to read from one of sixteen
-+	  channels (external or internal).
- 
--          This driver can also be built as a module. If so, the module will be
--          called mt6577_auxadc.
-+	  This driver can also be built as a module. If so, the module will be
-+	  called mt6577_auxadc.
- 
- config MEN_Z188_ADC
- 	tristate "MEN 16z188 ADC IP Core support"
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index b8e005b..e6ad533 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -12,14 +12,14 @@ config ATLAS_PH_SENSOR
- 	select IIO_TRIGGERED_BUFFER
- 	select IRQ_WORK
- 	help
--	 Say Y here to build I2C interface support for the following
--	 Atlas Scientific OEM SM sensors:
-+	  Say Y here to build I2C interface support for the following
-+	  Atlas Scientific OEM SM sensors:
- 	    * pH SM sensor
- 	    * EC SM sensor
- 	    * ORP SM sensor
- 
--	 To compile this driver as module, choose M here: the
--	 module will be called atlas-ph-sensor.
-+	  To compile this driver as module, choose M here: the
-+	  module will be called atlas-ph-sensor.
- 
- config BME680
- 	tristate "Bosch Sensortec BME680 sensor driver"
-@@ -47,8 +47,8 @@ config BME680_SPI
- config CCS811
- 	tristate "AMS CCS811 VOC sensor"
- 	depends on I2C
--    select IIO_BUFFER
--    select IIO_TRIGGERED_BUFFER
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say Y here to build I2C interface support for the AMS
- 	  CCS811 VOC (Volatile Organic Compounds) sensor
-diff --git a/drivers/iio/common/ms_sensors/Kconfig b/drivers/iio/common/ms_sensors/Kconfig
-index b28a92b..89398d0 100644
---- a/drivers/iio/common/ms_sensors/Kconfig
-+++ b/drivers/iio/common/ms_sensors/Kconfig
-@@ -3,4 +3,4 @@
- #
- 
- config IIO_MS_SENSORS_I2C
--        tristate
-+	tristate
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 1a0d458..f1a8ec9 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -4,16 +4,16 @@
- menu "Humidity sensors"
- 
- config AM2315
--    tristate "Aosong AM2315 relative humidity and temperature sensor"
--    depends on I2C
--    select IIO_BUFFER
--    select IIO_TRIGGERED_BUFFER
--    help
--      If you say yes here you get support for the Aosong AM2315
--      relative humidity and ambient temperature sensor.
-+	tristate "Aosong AM2315 relative humidity and temperature sensor"
-+	depends on I2C
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  If you say yes here you get support for the Aosong AM2315
-+	  relative humidity and ambient temperature sensor.
- 
--      This driver can also be built as a module. If so, the module will
--      be called am2315.
-+	  This driver can also be built as a module. If so, the module will
-+	  be called am2315.
- 
- config DHT11
- 	tristate "DHT11 (and compatible sensors) driver"
-@@ -78,7 +78,7 @@ config HTS221_SPI
- config HTU21
- 	tristate "Measurement Specialties HTU21 humidity & temperature sensor"
- 	depends on I2C
--        select IIO_MS_SENSORS_I2C
-+	select IIO_MS_SENSORS_I2C
- 	help
- 	  If you say yes here you get support for the Measurement Specialties
- 	  HTU21 humidity and temperature sensor.
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 36f4584..a378ec7 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -13,11 +13,11 @@ config ACPI_ALS
- 	select IIO_TRIGGERED_BUFFER
- 	select IIO_KFIFO_BUF
- 	help
--	 Say Y here if you want to build a driver for the ACPI0008
--	 Ambient Light Sensor.
-+	  Say Y here if you want to build a driver for the ACPI0008
-+	  Ambient Light Sensor.
- 
--	 To compile this driver as a module, choose M here: the module will
--	 be called acpi-als.
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called acpi-als.
- 
- config ADJD_S311
- 	tristate "ADJD-S311-CR999 digital color sensor"
-@@ -25,31 +25,31 @@ config ADJD_S311
- 	select IIO_TRIGGERED_BUFFER
- 	depends on I2C
- 	help
--	 If you say yes here you get support for the Avago ADJD-S311-CR999
--	 digital color light sensor.
-+	  If you say yes here you get support for the Avago ADJD-S311-CR999
-+	  digital color light sensor.
- 
--	 This driver can also be built as a module.  If so, the module
--	 will be called adjd_s311.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called adjd_s311.
- 
- config AL3320A
- 	tristate "AL3320A ambient light sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the Dyna Image AL3320A
--	 ambient light sensor.
-+	  Say Y here if you want to build a driver for the Dyna Image AL3320A
-+	  ambient light sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called al3320a.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called al3320a.
- 
- config APDS9300
- 	tristate "APDS9300 ambient light sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the Avago APDS9300
--	 ambient light sensor.
-+	  Say Y here if you want to build a driver for the Avago APDS9300
-+	  ambient light sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called apds9300.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called apds9300.
- 
- config APDS9960
- 	tristate "Avago APDS9960 gesture/RGB/ALS/proximity sensor"
-@@ -68,74 +68,74 @@ config BH1750
- 	tristate "ROHM BH1750 ambient light sensor"
- 	depends on I2C
- 	help
--	 Say Y here to build support for the ROHM BH1710, BH1715, BH1721,
--	 BH1750, BH1751 ambient light sensors.
-+	  Say Y here to build support for the ROHM BH1710, BH1715, BH1721,
-+	  BH1750, BH1751 ambient light sensors.
- 
--	 To compile this driver as a module, choose M here: the module will
--	 be called bh1750.
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called bh1750.
- 
- config BH1780
- 	tristate "ROHM BH1780 ambient light sensor"
- 	depends on I2C
- 	help
--	 Say Y here to build support for the ROHM BH1780GLI ambient
--	 light sensor.
-+	  Say Y here to build support for the ROHM BH1780GLI ambient
-+	  light sensor.
- 
--	 To compile this driver as a module, choose M here: the module will
--	 be called bh1780.
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called bh1780.
- 
- config CM32181
- 	depends on I2C
- 	tristate "CM32181 driver"
- 	help
--	 Say Y here if you use cm32181.
--	 This option enables ambient light sensor using
--	 Capella cm32181 device driver.
-+	  Say Y here if you use cm32181.
-+	  This option enables ambient light sensor using
-+	  Capella cm32181 device driver.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called cm32181.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called cm32181.
- 
- config CM3232
- 	depends on I2C
- 	tristate "CM3232 ambient light sensor"
- 	help
--	 Say Y here if you use cm3232.
--	 This option enables ambient light sensor using
--	 Capella Microsystems cm3232 device driver.
-+	  Say Y here if you use cm3232.
-+	  This option enables ambient light sensor using
-+	  Capella Microsystems cm3232 device driver.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called cm3232.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called cm3232.
- 
- config CM3323
- 	depends on I2C
- 	tristate "Capella CM3323 color light sensor"
- 	help
--	 Say Y here if you want to build a driver for Capella CM3323
--	 color sensor.
-+	  Say Y here if you want to build a driver for Capella CM3323
-+	  color sensor.
- 
--	 To compile this driver as a module, choose M here: the module will
--	 be called cm3323.
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called cm3323.
- 
- config CM3605
- 	tristate "Capella CM3605 ambient light and proximity sensor"
- 	depends on OF
- 	help
--	 Say Y here if you want to build a driver for Capella CM3605
--	 ambient light and short range proximity sensor.
-+	  Say Y here if you want to build a driver for Capella CM3605
-+	  ambient light and short range proximity sensor.
- 
--	 To compile this driver as a module, choose M here: the module will
--	 be called cm3605.
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called cm3605.
- 
- config CM36651
- 	depends on I2C
- 	tristate "CM36651 driver"
- 	help
--	 Say Y here if you use cm36651.
--	 This option enables proximity & RGB sensor using
--	 Capella cm36651 device driver.
-+	  Say Y here if you use cm36651.
-+	  This option enables proximity & RGB sensor using
-+	  Capella cm36651 device driver.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called cm36651.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called cm36651.
- 
- config IIO_CROS_EC_LIGHT_PROX
- 	tristate "ChromeOS EC Light and Proximity Sensors"
-@@ -167,21 +167,21 @@ config SENSORS_ISL29018
- 	select REGMAP_I2C
- 	default n
- 	help
--	 If you say yes here you get support for ambient light sensing and
--	 proximity infrared sensing from Intersil ISL29018.
--	 This driver will provide the measurements of ambient light intensity
--	 in lux, proximity infrared sensing and normal infrared sensing.
--	 Data from sensor is accessible via sysfs.
-+	  If you say yes here you get support for ambient light sensing and
-+	  proximity infrared sensing from Intersil ISL29018.
-+	  This driver will provide the measurements of ambient light intensity
-+	  in lux, proximity infrared sensing and normal infrared sensing.
-+	  Data from sensor is accessible via sysfs.
- 
- config SENSORS_ISL29028
- 	tristate "Intersil ISL29028 Concurrent Light and Proximity Sensor"
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Provides driver for the Intersil's ISL29028 device.
--	 This driver supports the sysfs interface to get the ALS, IR intensity,
--	 Proximity value via iio. The ISL29028 provides the concurrent sensing
--	 of ambient light and proximity.
-+	  Provides driver for the Intersil's ISL29028 device.
-+	  This driver supports the sysfs interface to get the ALS, IR intensity,
-+	  Proximity value via iio. The ISL29028 provides the concurrent sensing
-+	  of ambient light and proximity.
- 
- config ISL29125
- 	tristate "Intersil ISL29125 digital color light sensor"
-@@ -228,22 +228,22 @@ config JSA1212
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Say Y here if you want to build a IIO driver for JSA1212
--	 proximity & ALS sensor device.
-+	  Say Y here if you want to build a IIO driver for JSA1212
-+	  proximity & ALS sensor device.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called jsa1212.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called jsa1212.
- 
- config RPR0521
- 	tristate "ROHM RPR0521 ALS and proximity sensor driver"
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Say Y here if you want to build support for ROHM's RPR0521
--	 ambient light and proximity sensor device.
-+	  Say Y here if you want to build support for ROHM's RPR0521
-+	  ambient light and proximity sensor device.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called rpr0521.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called rpr0521.
- 
- config SENSORS_LM3533
- 	tristate "LM3533 ambient light sensor"
-@@ -269,22 +269,22 @@ config LTR501
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	 If you say yes here you get support for the Lite-On LTR-501ALS-01
--	 ambient light and proximity sensor. This driver also supports LTR-559
--	 ALS/PS or LTR-301 ALS sensors.
-+	  If you say yes here you get support for the Lite-On LTR-501ALS-01
-+	  ambient light and proximity sensor. This driver also supports LTR-559
-+	  ALS/PS or LTR-301 ALS sensors.
- 
--	 This driver can also be built as a module.  If so, the module
--         will be called ltr501.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called ltr501.
- 
- config LV0104CS
- 	tristate "LV0104CS Ambient Light Sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build support for the On Semiconductor
--	 LV0104CS ambient light sensor.
-+	  Say Y here if you want to build support for the On Semiconductor
-+	  LV0104CS ambient light sensor.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called lv0104cs.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called lv0104cs.
- 
- config MAX44000
- 	tristate "MAX44000 Ambient and Infrared Proximity Sensor"
-@@ -293,11 +293,11 @@ config MAX44000
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	 Say Y here if you want to build support for Maxim Integrated's
--	 MAX44000 ambient and infrared proximity sensor device.
-+	  Say Y here if you want to build support for Maxim Integrated's
-+	  MAX44000 ambient and infrared proximity sensor device.
- 
--	 To compile this driver as a module, choose M here:
--	 the module will be called max44000.
-+	  To compile this driver as a module, choose M here:
-+	  the module will be called max44000.
- 
- config OPT3001
- 	tristate "Texas Instruments OPT3001 Light Sensor"
-@@ -310,15 +310,15 @@ config OPT3001
- 	  opt3001.
- 
- config PA12203001
--        tristate "TXC PA12203001 light and proximity sensor"
--        depends on I2C
--        select REGMAP_I2C
--        help
--         If you say yes here you get support for the TXC PA12203001
--         ambient light and proximity sensor.
-+	tristate "TXC PA12203001 light and proximity sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  If you say yes here you get support for the TXC PA12203001
-+	  ambient light and proximity sensor.
- 
--         This driver can also be built as a module.  If so, the module
--         will be called pa12203001.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called pa12203001.
- 
- config SI1133
- 	tristate "SI1133 UV Index Sensor and Ambient Light Sensor"
-@@ -349,12 +349,12 @@ config STK3310
- 	depends on I2C
- 	select REGMAP_I2C
- 	help
--	 Say yes here to get support for the Sensortek STK3310 ambient light
--	 and proximity sensor. The STK3311 model is also supported by this
--	 driver.
-+	  Say yes here to get support for the Sensortek STK3310 ambient light
-+	  and proximity sensor. The STK3311 model is also supported by this
-+	  driver.
- 
--	 Choosing M will build the driver as a module. If so, the module
--	 will be called stk3310.
-+	  Choosing M will build the driver as a module. If so, the module
-+	  will be called stk3310.
- 
- config ST_UVIS25
- 	tristate "STMicroelectronics UVIS25 sensor driver"
-@@ -386,11 +386,11 @@ config TCS3414
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	 If you say yes here you get support for the TAOS TCS3414
--	 family of digital color sensors.
-+	  If you say yes here you get support for the TAOS TCS3414
-+	  family of digital color sensors.
- 
--	 This driver can also be built as a module.  If so, the module
--	 will be called tcs3414.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called tcs3414.
- 
- config TCS3472
- 	tristate "TAOS TCS3472 color light-to-digital converter"
-@@ -398,67 +398,67 @@ config TCS3472
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--	 If you say yes here you get support for the TAOS TCS3472
--	 family of color light-to-digital converters with IR filter.
-+	  If you say yes here you get support for the TAOS TCS3472
-+	  family of color light-to-digital converters with IR filter.
- 
--	 This driver can also be built as a module.  If so, the module
--	 will be called tcs3472.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called tcs3472.
- 
- config SENSORS_TSL2563
- 	tristate "TAOS TSL2560, TSL2561, TSL2562 and TSL2563 ambient light sensors"
- 	depends on I2C
- 	help
--	 If you say yes here you get support for the Taos TSL2560,
--	 TSL2561, TSL2562 and TSL2563 ambient light sensors.
-+	  If you say yes here you get support for the Taos TSL2560,
-+	  TSL2561, TSL2562 and TSL2563 ambient light sensors.
- 
--	 This driver can also be built as a module.  If so, the module
--	 will be called tsl2563.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called tsl2563.
- 
- config TSL2583
- 	tristate "TAOS TSL2580, TSL2581 and TSL2583 light-to-digital converters"
- 	depends on I2C
- 	help
--	 Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
--	 Access ALS data via iio, sysfs.
-+	  Provides support for the TAOS tsl2580, tsl2581 and tsl2583 devices.
-+	  Access ALS data via iio, sysfs.
- 
- config TSL2772
- 	tristate "TAOS TSL/TMD2x71 and TSL/TMD2x72 Family of light and proximity sensors"
- 	depends on I2C
- 	help
--	 Support for: tsl2571, tsl2671, tmd2671, tsl2771, tmd2771, tsl2572, tsl2672,
--	 tmd2672, tsl2772, tmd2772 devices.
--	 Provides iio_events and direct access via sysfs.
-+	  Support for: tsl2571, tsl2671, tmd2671, tsl2771, tmd2771, tsl2572, tsl2672,
-+	  tmd2672, tsl2772, tmd2772 devices.
-+	  Provides iio_events and direct access via sysfs.
- 
- config TSL4531
- 	tristate "TAOS TSL4531 ambient light sensors"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the TAOS TSL4531 family
--	 of ambient light sensors with direct lux output.
-+	  Say Y here if you want to build a driver for the TAOS TSL4531 family
-+	  of ambient light sensors with direct lux output.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called tsl4531.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called tsl4531.
- 
- config US5182D
- 	tristate "UPISEMI light and proximity sensor"
- 	depends on I2C
- 	help
--	 If you say yes here you get support for the UPISEMI US5182D
--	 ambient light and proximity sensor.
-+	  If you say yes here you get support for the UPISEMI US5182D
-+	  ambient light and proximity sensor.
- 
--	 This driver can also be built as a module.  If so, the module
--	 will be called us5182d.
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called us5182d.
- 
- config VCNL4000
- 	tristate "VCNL4000/4010/4020/4200 combined ALS and proximity sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the Vishay VCNL4000,
--	 VCNL4010, VCNL4020, VCNL4200 combined ambient light and proximity
--	 sensor.
-+	  Say Y here if you want to build a driver for the Vishay VCNL4000,
-+	  VCNL4010, VCNL4020, VCNL4200 combined ambient light and proximity
-+	  sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called vcnl4000.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called vcnl4000.
- 
- config VCNL4035
- 	tristate "VCNL4035 combined ALS and proximity sensor"
-@@ -466,41 +466,41 @@ config VCNL4035
- 	select REGMAP_I2C
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the Vishay VCNL4035,
--	 combined ambient light (ALS) and proximity sensor. Currently only ALS
--	 function is available.
-+	  Say Y here if you want to build a driver for the Vishay VCNL4035,
-+	  combined ambient light (ALS) and proximity sensor. Currently only ALS
-+	  function is available.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called vcnl4035.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called vcnl4035.
- 
- config VEML6070
- 	tristate "VEML6070 UV A light sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the Vishay VEML6070 UV A
--	 light sensor.
-+	  Say Y here if you want to build a driver for the Vishay VEML6070 UV A
-+	  light sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called veml6070.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called veml6070.
- 
- config VL6180
- 	tristate "VL6180 ALS, range and proximity sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the STMicroelectronics
--	 VL6180 combined ambient light, range and proximity sensor.
-+	  Say Y here if you want to build a driver for the STMicroelectronics
-+	  VL6180 combined ambient light, range and proximity sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called vl6180.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called vl6180.
- 
- config ZOPT2201
- 	tristate "ZOPT2201 ALS and UV B sensor"
- 	depends on I2C
- 	help
--	 Say Y here if you want to build a driver for the IDT
--	 ZOPT2201 ambient light and UV B sensor.
-+	  Say Y here if you want to build a driver for the IDT
-+	  ZOPT2201 ambient light and UV B sensor.
- 
--	 To compile this driver as a module, choose M here: the
--	 module will be called zopt2201.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called zopt2201.
- 
- endmenu
-diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-index 6303cbe..a81a3a1 100644
---- a/drivers/iio/potentiometer/Kconfig
-+++ b/drivers/iio/potentiometer/Kconfig
-@@ -26,26 +26,26 @@ config DS1803
- 	  module will be called ds1803.
- 
- config MAX5481
--        tristate "Maxim MAX5481-MAX5484 Digital Potentiometer driver"
--        depends on SPI
--        help
--          Say yes here to build support for the Maxim
--          MAX5481, MAX5482, MAX5483, MAX5484 digital potentiometer
--          chips.
-+	tristate "Maxim MAX5481-MAX5484 Digital Potentiometer driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for the Maxim
-+	  MAX5481, MAX5482, MAX5483, MAX5484 digital potentiometer
-+	  chips.
- 
--          To compile this driver as a module, choose M here: the
--          module will be called max5481.
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called max5481.
- 
- config MAX5487
--        tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
--        depends on SPI
--        help
--          Say yes here to build support for the Maxim
--          MAX5487, MAX5488, MAX5489 digital potentiometer
--          chips.
--
--          To compile this driver as a module, choose M here: the
--          module will be called max5487.
-+	tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for the Maxim
-+	  MAX5487, MAX5488, MAX5489 digital potentiometer
-+	  chips.
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index f130388a16a0..e33334ea2830 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -213,7 +213,7 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info as3935_info = {
+ 	.attrs = &as3935_attribute_group,
+-	.read_raw = &as3935_read_raw,
++	.read_raw = as3935_read_raw,
+ };
+ 
+ static irqreturn_t as3935_trigger_handler(int irq, void *private)
+@@ -345,6 +345,14 @@ static SIMPLE_DEV_PM_OPS(as3935_pm_ops, as3935_suspend, as3935_resume);
+ #define AS3935_PM_OPS NULL
+ #endif
+ 
++static void as3935_stop_work(void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct as3935_state *st = iio_priv(indio_dev);
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called max5487.
- 
- config MCP4018
- 	tristate "Microchip MCP4017/18/19 Digital Potentiometer driver"
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index 82e4a62..7f0b826 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -66,14 +66,14 @@ config TMP006
- 	  be called tmp006.
- 
- config TMP007
--        tristate "TMP007 infrared thermopile sensor with Integrated Math Engine"
--        depends on I2C
--        help
--          If you say yes here you get support for the Texas Instruments
--          TMP007 infrared thermopile sensor with Integrated Math Engine.
--
--          This driver can also be built as a module. If so, the module will
--          be called tmp007.
-+	tristate "TMP007 infrared thermopile sensor with Integrated Math Engine"
-+	depends on I2C
-+	help
-+	  If you say yes here you get support for the Texas Instruments
-+	  TMP007 infrared thermopile sensor with Integrated Math Engine.
++	cancel_delayed_work_sync(&st->work);
++}
 +
-+	  This driver can also be built as a module. If so, the module will
-+	  be called tmp007.
+ static int as3935_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -368,7 +376,6 @@ static int as3935_probe(struct spi_device *spi)
  
- config TSYS01
- 	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
+ 	spi_set_drvdata(spi, indio_dev);
+ 	mutex_init(&st->lock);
+-	INIT_DELAYED_WORK(&st->work, as3935_event_work);
+ 
+ 	ret = of_property_read_u32(np,
+ 			"ams,tuning-capacitor-pf", &st->tune_cap);
+@@ -414,59 +421,44 @@ static int as3935_probe(struct spi_device *spi)
+ 	iio_trigger_set_drvdata(trig, indio_dev);
+ 	trig->ops = &iio_interrupt_trigger_ops;
+ 
+-	ret = iio_trigger_register(trig);
++	ret = devm_iio_trigger_register(&spi->dev, trig);
+ 	if (ret) {
+ 		dev_err(&spi->dev, "failed to register trigger\n");
+ 		return ret;
+ 	}
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
+-		&as3935_trigger_handler, NULL);
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++		iio_pollfunc_store_time, as3935_trigger_handler, NULL);
+ 
+ 	if (ret) {
+ 		dev_err(&spi->dev, "cannot setup iio trigger\n");
+-		goto unregister_trigger;
++		return ret;
+ 	}
+ 
+ 	calibrate_as3935(st);
+ 
++	INIT_DELAYED_WORK(&st->work, as3935_event_work);
++	ret = devm_add_action(&spi->dev, as3935_stop_work, indio_dev);
++	if (ret)
++		return ret;
++
+ 	ret = devm_request_irq(&spi->dev, spi->irq,
+-				&as3935_interrupt_handler,
++				as3935_interrupt_handler,
+ 				IRQF_TRIGGER_RISING,
+ 				dev_name(&spi->dev),
+ 				indio_dev);
+ 
+ 	if (ret) {
+ 		dev_err(&spi->dev, "unable to request irq\n");
+-		goto unregister_buffer;
++		return ret;
+ 	}
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(&spi->dev, "unable to register device\n");
+-		goto unregister_buffer;
++		return ret;
+ 	}
+ 	return 0;
+-
+-unregister_buffer:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-
+-unregister_trigger:
+-	iio_trigger_unregister(st->trig);
+-
+-	return ret;
+-}
+-
+-static int as3935_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct as3935_state *st = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-	iio_triggered_buffer_cleanup(indio_dev);
+-	iio_trigger_unregister(st->trig);
+-
+-	return 0;
+ }
+ 
+ static const struct of_device_id as3935_of_match[] = {
+@@ -488,7 +480,6 @@ static struct spi_driver as3935_driver = {
+ 		.pm	= AS3935_PM_OPS,
+ 	},
+ 	.probe		= as3935_probe,
+-	.remove		= as3935_remove,
+ 	.id_table	= as3935_id,
+ };
+ module_spi_driver(as3935_driver);
 -- 
-1.9.1
+2.17.1
 
