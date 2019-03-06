@@ -2,192 +2,153 @@ Return-Path: <SRS0=AU7e=RJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55D2CC43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21C5BC43381
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:16:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C86620661
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:13:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="gNltG2/v"
+	by mail.kernel.org (Postfix) with ESMTP id EA10820661
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729831AbfCFLNI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 06:13:08 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:37332 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729684AbfCFLMb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 06:12:31 -0500
-Received: by mail-ed1-f65.google.com with SMTP id m12so10000898edv.4
-        for <linux-iio@vger.kernel.org>; Wed, 06 Mar 2019 03:12:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=essensium-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UDGe8T7uTF1fS0LV360+rebuvgO6XlOWuD/srOZz6kA=;
-        b=gNltG2/vMtp0zBc3u0alXu4S7dYzB3TXOypx/r6LxjqJJJiN4Zy5NdS9fOu+ogGv9/
-         BKmzb0wR5oz2SEELAoJ++4XtWmXjdS96hY4iMAdhNE2FBWSGATmWcIovlZU6EeV7HKNz
-         OEyKN0Bq+O2fW4dc63c4YMt2Akw1la+XrcoiX7X0XkLO8ybFH0fghOfyRNQTGL3BgYAC
-         Rq8DIAxYP2c61dpatuPyaTyBuuup19Doi82hA+uC0ygQdiqgf2thoOcknujXqFxDKFDA
-         vb4FZ2mG146hg65uqzLoRk4rYeO6HABhk/+SQmqE/otWVEXPCOM6Zi8kPfas/ZqOXWke
-         dVjA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UDGe8T7uTF1fS0LV360+rebuvgO6XlOWuD/srOZz6kA=;
-        b=Ic1OTZ+FDSPtTjgy1lGDOZLGzrtvKnVF9jfIpv3zqV6S3G3sXboq5E4xCcgU7Naa1z
-         gyMrY03wo8WtINgucSThKOP6Ws9V3MnHUF96UaYw0JpN3wN8alhFPG8yND0KWGpV3XWX
-         64AhqaQ1LFqLR2/FZm/VXVCg0CbxHD//j1PUgu6YwITw8mqndT6lRpqgBV7qW1SF6b8d
-         DiGrP4SDlelTUS8SYOYVd0fkMAJt0T+KZnX+rtLPa/KWxD7lYwPX02NhaFuASYsMaARG
-         553v84En8/4CGCb9a+A4Wr6pQ0dTsAJ7hOigRMoqeDi1xHbEICoK1dmBNj1CZp3BAE6C
-         EsNg==
-X-Gm-Message-State: APjAAAU5oWdZ6zV4FLPYTDJPMTw0XPnqltBKjzcZyy1XoZMUczCDsWAy
-        fDM5EnI9EUxJU6IffhsJutQ9Jw==
-X-Google-Smtp-Source: APXvYqwYqCMsKkYQWZol5oxl8MNudtVNOddwqzr50VpN9hqC+6iKrexdzDbUUBdgMwFX4xiCo6Itqg==
-X-Received: by 2002:a50:94d6:: with SMTP id t22mr23584689eda.232.1551870749143;
-        Wed, 06 Mar 2019 03:12:29 -0800 (PST)
-Received: from ph-ThinkPad-E560.local.ess-mail.com (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id t25sm277879ejr.30.2019.03.06.03.12.27
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Mar 2019 03:12:28 -0800 (PST)
-From:   Patrick Havelange <patrick.havelange@essensium.com>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Esben Haabendal <esben@haabendal.dk>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH v2 1/7] include/fsl: add common FlexTimer #defines in a separate header.
-Date:   Wed,  6 Mar 2019 12:12:02 +0100
-Message-Id: <20190306111208.7454-2-patrick.havelange@essensium.com>
-X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190306111208.7454-1-patrick.havelange@essensium.com>
-References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+        id S1726386AbfCFLQY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 06:16:24 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:58428 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726028AbfCFLQY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 06:16:24 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: eballetbo)
+        with ESMTPSA id 7BD3C26025D
+Subject: Re: [PATCH] iio: cros_ec: Fix gyro scale calculation
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        Benson Leung <bleung@chromium.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, kernel@collabora.com,
+        Hartmut Knaack <knaack.h@gmx.de>
+References: <20190220150300.3302-1-enric.balletbo@collabora.com>
+ <20190220160126.12568f92@archlinux>
+ <7d36153b-65e9-6702-e72f-caaeeb032077@collabora.com>
+ <20190303164741.6cb3c58b@archlinux>
+From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Message-ID: <311b9802-b271-757a-3d6e-a494b7e63b6d@collabora.com>
+Date:   Wed, 6 Mar 2019 12:16:18 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190303164741.6cb3c58b@archlinux>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Several files are/will be using the same #defines to use the Flextimer
-module. Regroup them in a common file.
+Hi Jonathan,
 
-Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-Reviewed-by: Esben Haabendal <esben@haabendal.dk>
----
-Changes v2
-     - Commit message
----
- include/linux/fsl/ftm.h | 88 +++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 88 insertions(+)
- create mode 100644 include/linux/fsl/ftm.h
+On 3/3/19 17:47, Jonathan Cameron wrote:
+> On Fri, 22 Feb 2019 11:24:24 +0100
+> Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
+> 
+>> Hi Jonathan,
+>>
+>> On 20/2/19 17:01, Jonathan Cameron wrote:
+>>> On Wed, 20 Feb 2019 16:03:00 +0100
+>>> Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
+>>>   
+>>>> From: Gwendal Grignou <gwendal@chromium.org>
+>>>>
+>>>> Calculation was copied from IIO_DEGREE_TO_RAD, but offset added to avoid
+>>>> rounding error is wrong. It should be only half of the divider.
+>>>>
+>>>> Fixes: c14dca07a31d ("iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver")
+>>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>>>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>  
+>>>
+>>> This one is kind of interesting. See below.
+>>>   
+>>>> ---
+>>>>
+>>>>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 2 +-
+>>>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>>>> index 89cb0066a6e0..600942af9f9c 100644
+>>>> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>>>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>>>> @@ -103,7 +103,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
+>>>>  			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
+>>>>  			 * loss. Round to the nearest integer.
+>>>>  			 */
+>>>> -			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
+>>>> +			*val = div_s64(val64 * 314159 + 500ULL, 1000);  
+>>> That is only one of two divides going on.  Firstly we divide by 1000 here,
+>>> then we provide it in fractional form which means that the actual value you get
+>>> from sysfs etc is 
+>>> val/val2.  It's this one we are protecting against rounding error on I guess.
+>>> Now this is even less obviously because it's not 18000 either, but 
+>>> 18000 * 2^CROS_EC_SENSOR_BITS.
+>>>
+>>> Which ultimately means neither answer is correct. Hmm.
+>>> Not totally sure what the right answer actually is..
+>>>   
+>>
+>> If I understood well the Gwendal's patch the problem that we're trying to solve
+>> is that current calculation is not closer from the float calculation.
+>>
+>> For 1000dps, the result should be:
+>>
+>>     (1000 * pi ) / 180 >> 15 ~= 0.000532632218
+>>
+>> But with current calculation we get
+>>
+>>     $ cat scale
+>>     0.000547890
+>>
+>> With that patch (modifying the offset to avoid the rounding error) we get a
+>> closer result
+>>
+>>     $ cat scale
+>>     0.000532631
+>>
+>> So, what we're trying to do is have val/val2 closer to the real value. Makes
+>> this sense to you or I'm missing something? I can improve the commit message if
+>> it's not clear.
+> 
+> I think we are in enough of a mess here with the different dividers that we
+> should just do the maths here, then we can avoid the bia.
+> 
+> aiming for nano value.
+> val * pi * 10e12 / (180 * 2^15)
+> div_s64(val * 3141592653000 + 2949120, 5898240) = 532632
+> vs 532632 for floating point division.
+> Then use IIO_INT_PLUS_NANO to return it.
+> 
+> Even then I suspect the +2949120 is only effecting the last digit so
+> you could probably drop it safely enough.
+> 
+> I'd certainly rather we had all the magic in one place rather than
+> trying to correct for divisions that aren't apparent here.
+> 
 
-diff --git a/include/linux/fsl/ftm.h b/include/linux/fsl/ftm.h
-new file mode 100644
-index 000000000000..d59011acf66c
---- /dev/null
-+++ b/include/linux/fsl/ftm.h
-@@ -0,0 +1,88 @@
-+// SPDX-License-Identifier: GPL-2.0
-+#ifndef __FSL_FTM_H__
-+#define __FSL_FTM_H__
-+
-+#define FTM_SC       0x0 /* Status And Control */
-+#define FTM_CNT      0x4 /* Counter */
-+#define FTM_MOD      0x8 /* Modulo */
-+
-+#define FTM_CNTIN    0x4C /* Counter Initial Value */
-+#define FTM_STATUS   0x50 /* Capture And Compare Status */
-+#define FTM_MODE     0x54 /* Features Mode Selection */
-+#define FTM_SYNC     0x58 /* Synchronization */
-+#define FTM_OUTINIT  0x5C /* Initial State For Channels Output */
-+#define FTM_OUTMASK  0x60 /* Output Mask */
-+#define FTM_COMBINE  0x64 /* Function For Linked Channels */
-+#define FTM_DEADTIME 0x68 /* Deadtime Insertion Control */
-+#define FTM_EXTTRIG  0x6C /* FTM External Trigger */
-+#define FTM_POL      0x70 /* Channels Polarity */
-+#define FTM_FMS      0x74 /* Fault Mode Status */
-+#define FTM_FILTER   0x78 /* Input Capture Filter Control */
-+#define FTM_FLTCTRL  0x7C /* Fault Control */
-+#define FTM_QDCTRL   0x80 /* Quadrature Decoder Control And Status */
-+#define FTM_CONF     0x84 /* Configuration */
-+#define FTM_FLTPOL   0x88 /* FTM Fault Input Polarity */
-+#define FTM_SYNCONF  0x8C /* Synchronization Configuration */
-+#define FTM_INVCTRL  0x90 /* FTM Inverting Control */
-+#define FTM_SWOCTRL  0x94 /* FTM Software Output Control */
-+#define FTM_PWMLOAD  0x98 /* FTM PWM Load */
-+
-+#define FTM_SC_CLK_MASK_SHIFT	3
-+#define FTM_SC_CLK_MASK		(3 << FTM_SC_CLK_MASK_SHIFT)
-+#define FTM_SC_TOF		0x80
-+#define FTM_SC_TOIE		0x40
-+#define FTM_SC_CPWMS		0x20
-+#define FTM_SC_CLKS		0x18
-+#define FTM_SC_PS_1		0x0
-+#define FTM_SC_PS_2		0x1
-+#define FTM_SC_PS_4		0x2
-+#define FTM_SC_PS_8		0x3
-+#define FTM_SC_PS_16		0x4
-+#define FTM_SC_PS_32		0x5
-+#define FTM_SC_PS_64		0x6
-+#define FTM_SC_PS_128		0x7
-+#define FTM_SC_PS_MASK		0x7
-+
-+#define FTM_MODE_FAULTIE	0x80
-+#define FTM_MODE_FAULTM		0x60
-+#define FTM_MODE_CAPTEST	0x10
-+#define FTM_MODE_PWMSYNC	0x8
-+#define FTM_MODE_WPDIS		0x4
-+#define FTM_MODE_INIT		0x2
-+#define FTM_MODE_FTMEN		0x1
-+
-+/* NXP Errata: The PHAFLTREN and PHBFLTREN bits are tide to zero internally
-+ * and these bits cannot be set. Flextimer cannot use Filter in
-+ * Quadrature Decoder Mode.
-+ * https://community.nxp.com/thread/467648#comment-1010319
-+ */
-+#define FTM_QDCTRL_PHAFLTREN	0x80
-+#define FTM_QDCTRL_PHBFLTREN	0x40
-+#define FTM_QDCTRL_PHAPOL	0x20
-+#define FTM_QDCTRL_PHBPOL	0x10
-+#define FTM_QDCTRL_QUADMODE	0x8
-+#define FTM_QDCTRL_QUADDIR	0x4
-+#define FTM_QDCTRL_TOFDIR	0x2
-+#define FTM_QDCTRL_QUADEN	0x1
-+
-+#define FTM_FMS_FAULTF		0x80
-+#define FTM_FMS_WPEN		0x40
-+#define FTM_FMS_FAULTIN		0x10
-+#define FTM_FMS_FAULTF3		0x8
-+#define FTM_FMS_FAULTF2		0x4
-+#define FTM_FMS_FAULTF1		0x2
-+#define FTM_FMS_FAULTF0		0x1
-+
-+#define FTM_CSC_BASE		0xC
-+#define FTM_CSC_MSB		0x20
-+#define FTM_CSC_MSA		0x10
-+#define FTM_CSC_ELSB		0x8
-+#define FTM_CSC_ELSA		0x4
-+#define FTM_CSC(_channel)	(FTM_CSC_BASE + ((_channel) * 8))
-+
-+#define FTM_CV_BASE		0x10
-+#define FTM_CV(_channel)	(FTM_CV_BASE + ((_channel) * 8))
-+
-+#define FTM_PS_MAX		7
-+
-+#endif
--- 
-2.19.1
+Thanks for the clear explanation, yes, this looks better. I'll do some tests and
+submit a second version.
 
+Thanks!
+
+>>
+>> -- Enric
+>>
+>>> Jonathan
+>>>   
+>>>>  			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
+>>>>  			ret = IIO_VAL_FRACTIONAL;
+>>>>  			break;  
+>>>   
+> 
+> 
