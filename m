@@ -7,222 +7,91 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 290CAC43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 17:46:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BC23C43381
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 20:56:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EA41A20661
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 17:46:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D31920657
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 20:56:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QAFBqdQ5"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cXDMZoP7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730517AbfCFRqF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 12:46:05 -0500
-Received: from mail-io1-f68.google.com ([209.85.166.68]:42344 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726178AbfCFRqF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 12:46:05 -0500
-Received: by mail-io1-f68.google.com with SMTP id p196so10931661iod.9;
-        Wed, 06 Mar 2019 09:46:04 -0800 (PST)
+        id S1726423AbfCFU4g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 15:56:36 -0500
+Received: from mail-qk1-f193.google.com ([209.85.222.193]:44605 "EHLO
+        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726216AbfCFU4g (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 15:56:36 -0500
+Received: by mail-qk1-f193.google.com with SMTP id r21so7689334qkl.11
+        for <linux-iio@vger.kernel.org>; Wed, 06 Mar 2019 12:56:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=9YO8SR86inZc1b2mQpXlAZ6SeDpN9rzGMQWtwqV89Ew=;
-        b=QAFBqdQ5i6qs5Tmji+oH95X1zm5AKq3g2QMADW+3FVDsSAKUl0w6GbnSiRmaWhsUpy
-         tRLEQeKKq0IaT4f77T4uQ3WYJ5RxSXUEkFIye6Dx4eXv8a7uA4aLihh043ZPb04bqL9O
-         ay/sfWXeF5EnhEQuYNDMwUeS7/3sEqb/lWKuDa25xCsRt2eUZx9pemeT4ZxhgdN3FbKa
-         Fmwfwm74bpNOYoiilvs8nZTCuXN7wgOUQrnvisJZpm/ly2zQ/te+87z4FhJ+y5z/RGbp
-         qh98L0cQFeAH57HEyA092gq/Kt2VMwI5GLfTkjA0NU3tei2s6MMD93VVrrm0XZn1ZZsj
-         +MpA==
+        bh=gAc+5t/I3Vl2Xt1ej5CqjGLDtBdnNL8t/YFpwa2ZEWM=;
+        b=cXDMZoP7UC0hp7DNrnDQtdpk157pjhq8zZyfXCy/QeFp/Tav+QohwoJgIAQGdDfM7n
+         rHS2QibFwyDO/8BeJcrRBVn01loWpUS65gOMZ2dK/G1Mpxa7vqQ1jAumMUFHK8IjWan/
+         GOhETt4e++Tz/Gw7DqAbzNiQAn9fVyOe0cii/rzwtThQ3DplSyu5ns0RNBBqx0fnpfgM
+         3AmTn/LJM0dTRfwls1E4aH6J5ToUbBmanNX2Y7Ogi8zSp1Ic4+Bxs43sX19zzjZiyYBe
+         /UVgDhy7re8UYfHfOdEEgbLj9+4aavvJVAuER17RnNH8eXKEa9bK2QOe5eQ4BLfbJMaH
+         Baww==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=9YO8SR86inZc1b2mQpXlAZ6SeDpN9rzGMQWtwqV89Ew=;
-        b=QDfxLAlVdaTanxwR03xUQZIz+xeaE4gSekoFAEVrTG+lwnuzfDfnvU7P7GCx1SngA+
-         Y14yyJ8lyVVDSgeJwjZAn0Cf0NwcZGL8c1d1udDIJg3XLu7i7ZN2I2N7uJviqnSING3O
-         fgpSMLNGd0IBDuF1oACe/830Gqy9MbSa2yj7lT07utiTYxcoeDuiddqs7fwgidBS5eVj
-         6mOHbU0jupFy8tP6MYXMPpRhqESjOQSOV2bOdOw8KFa6MJtejCmVy/gc7LEkLSLjGcvI
-         rKv5Q3HuIDWSx4mRy2u2xSfd0LlM9ArPl5hLtST1lui5w9KNkgb6FSFILmsEU/ENvAMT
-         iYZQ==
-X-Gm-Message-State: APjAAAXtqaseYt2o+9+SDOjjV/tPDYeq5ybnVW9/O9CJrW7xDNSbHuxN
-        y3tLmrio5J1VHpnYD1lpxV8=
-X-Google-Smtp-Source: APXvYqwStjxtcIbFvVFhKN8/AZg037K8J5WzqiVN5r0GR7a6I1PW+QgF6ljII8/ru/K7ihlX/tiWVg==
-X-Received: by 2002:a5d:8d02:: with SMTP id p2mr4040658ioj.113.1551894363874;
-        Wed, 06 Mar 2019 09:46:03 -0800 (PST)
-Received: from svens-asus.arcx.com ([184.94.50.30])
-        by smtp.gmail.com with ESMTPSA id p4sm760763ioj.36.2019.03.06.09.46.02
+        bh=gAc+5t/I3Vl2Xt1ej5CqjGLDtBdnNL8t/YFpwa2ZEWM=;
+        b=uB/mT/YPx7yIhzoVTpc1I1/7oxFNnYuy1gxm1hpjsTFsDT79ZkyAp1E5gDqy5NRYJU
+         t9i7zvtHpb2ns45sWheDT02orKUaI0mjyz8UWLdnN5tdT/b0yNjz26NSy1sKFKsVSQXN
+         /C250tBOeSXIb34TtyH+96QlDExjKaBVpA8I8TiZW28R8kVm3SxyYntL/xmsos5lwQdM
+         LDn8jq+sX0rhxxlM9/QYkbFvP9fKrvovjscQEwPRj8MvJ6YvGtoLVRopID/PLw1PwhdT
+         MF63D5mpiv6dQbVhQ3vKj+MBzpfxpGvhcwdBqI9s3laGkE6U6lVVl+EeM8fiqSkV/zJR
+         +jwA==
+X-Gm-Message-State: APjAAAWQMVgh+UwQrXByxzplSuhmBAz2WUgByryVaUORxRw8I4bXx3LS
+        wjepraL4S0pR/+IG3QGj+72zL5L6
+X-Google-Smtp-Source: APXvYqzchnGtuwFf9isYBrboqVMop4saRqxKo7yd3wpjY7vduVuvBNgP/YztmxRvfHeoNrbBk2jVAg==
+X-Received: by 2002:a05:620a:1362:: with SMTP id d2mr7210217qkl.210.1551905795212;
+        Wed, 06 Mar 2019 12:56:35 -0800 (PST)
+Received: from jfddesk.Sonatest.net (ipagstaticip-d73c7528-4de5-0861-800b-03d8b15e3869.sdsl.bell.ca. [174.94.156.236])
+        by smtp.gmail.com with ESMTPSA id s49sm1669601qtk.7.2019.03.06.12.56.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Mar 2019 09:46:03 -0800 (PST)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH] iio: proximity: as3935: fix use-after-free on device remove
-Date:   Wed,  6 Mar 2019 12:45:59 -0500
-Message-Id: <20190306174559.17362-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        Wed, 06 Mar 2019 12:56:34 -0800 (PST)
+From:   Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     jic23@kernel.org, Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Subject: [PATCH] iio: dac: mcp4725: add missing powerdown bits in store eeprom
+Date:   Wed,  6 Mar 2019 15:56:06 -0500
+Message-Id: <20190306205606.30419-1-jeff.dagenais@gmail.com>
+X-Mailer: git-send-email 2.11.0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This driver's probe() uses a mix of devm_ and non-devm_ functions. This
-means that the remove order will not be the exact opposite of the probe
-order.
+When issuing the write DAC register and write eeprom command, the two
+powerdown bits (PD0 and PD1) are assumed by the chip to be present in
+the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
+a different state that the current one. By adding the current state of
+the powerdown in the i2c write, the chip will correctly power-on exactly
+like as it is at the moment of store_eeprom call.
 
-Remove order:
-1. remove() executes:
-	iio_device_unregister
-	iio_triggered_buffer_cleanup
-	iio_trigger_unregister
-	(A)
-2. core frees devm resources in reverse order:
-	free_irq
-	iio_trigger_free
-	iio_device_free
+This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
+for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
+"Write All Memory Command".
 
-In (A) the trigger has been unregistered, but the irq handler is still
-registered and active, so the trigger may still be touched via
-interrupt -> as3935_event_work. This is a potential use-after-unregister.
-
-Given that the delayed work is never canceled explicitly, it may run even
-after iio_device_free. This is a potential use-after-free.
-
-Solution: convert all probe functions to their devm_ equivalents.
-Add a devm callback, called by the core on remove right after irq_free,
-which explicitly cancels the delayed work. This will guarantee that all
-resources are freed in the correct order.
-
-As an added bonus, some boilerplate code can be removed.
-
-While we're here, remove redundant &'s in front of function names when
-passing a pointer-to-function.
-
-Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
 ---
- drivers/iio/proximity/as3935.c | 53 ++++++++++++++--------------------
- 1 file changed, 22 insertions(+), 31 deletions(-)
+ drivers/iio/dac/mcp4725.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-index f130388a16a0..e33334ea2830 100644
---- a/drivers/iio/proximity/as3935.c
-+++ b/drivers/iio/proximity/as3935.c
-@@ -213,7 +213,7 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 6ab1f23e5a79..97bb350d1e77 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -98,6 +98,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
  
- static const struct iio_info as3935_info = {
- 	.attrs = &as3935_attribute_group,
--	.read_raw = &as3935_read_raw,
-+	.read_raw = as3935_read_raw,
- };
+ 	inoutbuf[0] = 0x60; /* write EEPROM */
+ 	inoutbuf[0] |= data->ref_mode << 3;
++	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode+1) << 1) : 0;
+ 	inoutbuf[1] = data->dac_value >> 4;
+ 	inoutbuf[2] = (data->dac_value & 0xf) << 4;
  
- static irqreturn_t as3935_trigger_handler(int irq, void *private)
-@@ -345,6 +345,14 @@ static SIMPLE_DEV_PM_OPS(as3935_pm_ops, as3935_suspend, as3935_resume);
- #define AS3935_PM_OPS NULL
- #endif
- 
-+static void as3935_stop_work(void *data)
-+{
-+	struct iio_dev *indio_dev = data;
-+	struct as3935_state *st = iio_priv(indio_dev);
-+
-+	cancel_delayed_work_sync(&st->work);
-+}
-+
- static int as3935_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
-@@ -368,7 +376,6 @@ static int as3935_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, indio_dev);
- 	mutex_init(&st->lock);
--	INIT_DELAYED_WORK(&st->work, as3935_event_work);
- 
- 	ret = of_property_read_u32(np,
- 			"ams,tuning-capacitor-pf", &st->tune_cap);
-@@ -414,59 +421,44 @@ static int as3935_probe(struct spi_device *spi)
- 	iio_trigger_set_drvdata(trig, indio_dev);
- 	trig->ops = &iio_interrupt_trigger_ops;
- 
--	ret = iio_trigger_register(trig);
-+	ret = devm_iio_trigger_register(&spi->dev, trig);
- 	if (ret) {
- 		dev_err(&spi->dev, "failed to register trigger\n");
- 		return ret;
- 	}
- 
--	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
--		&as3935_trigger_handler, NULL);
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+		iio_pollfunc_store_time, as3935_trigger_handler, NULL);
- 
- 	if (ret) {
- 		dev_err(&spi->dev, "cannot setup iio trigger\n");
--		goto unregister_trigger;
-+		return ret;
- 	}
- 
- 	calibrate_as3935(st);
- 
-+	INIT_DELAYED_WORK(&st->work, as3935_event_work);
-+	ret = devm_add_action(&spi->dev, as3935_stop_work, indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_request_irq(&spi->dev, spi->irq,
--				&as3935_interrupt_handler,
-+				as3935_interrupt_handler,
- 				IRQF_TRIGGER_RISING,
- 				dev_name(&spi->dev),
- 				indio_dev);
- 
- 	if (ret) {
- 		dev_err(&spi->dev, "unable to request irq\n");
--		goto unregister_buffer;
-+		return ret;
- 	}
- 
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&spi->dev, indio_dev);
- 	if (ret < 0) {
- 		dev_err(&spi->dev, "unable to register device\n");
--		goto unregister_buffer;
-+		return ret;
- 	}
- 	return 0;
--
--unregister_buffer:
--	iio_triggered_buffer_cleanup(indio_dev);
--
--unregister_trigger:
--	iio_trigger_unregister(st->trig);
--
--	return ret;
--}
--
--static int as3935_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct as3935_state *st = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--	iio_triggered_buffer_cleanup(indio_dev);
--	iio_trigger_unregister(st->trig);
--
--	return 0;
- }
- 
- static const struct of_device_id as3935_of_match[] = {
-@@ -488,7 +480,6 @@ static struct spi_driver as3935_driver = {
- 		.pm	= AS3935_PM_OPS,
- 	},
- 	.probe		= as3935_probe,
--	.remove		= as3935_remove,
- 	.id_table	= as3935_id,
- };
- module_spi_driver(as3935_driver);
 -- 
-2.17.1
+2.11.0
 
