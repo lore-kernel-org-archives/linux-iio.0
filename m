@@ -2,37 +2,37 @@ Return-Path: <SRS0=AU7e=RJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D804AC43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:56:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03015C4360F
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:56:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A6A2220675
+	by mail.kernel.org (Postfix) with ESMTP id D265D206DD
 	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729572AbfCFI4X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 03:56:23 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:56130 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1729352AbfCFI4V (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 03:56:21 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x268q6XK022884;
-        Wed, 6 Mar 2019 09:55:49 +0100
+        id S1726156AbfCFI4n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 03:56:43 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:47805 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729555AbfCFI4X (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 03:56:23 -0500
+Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x268pquq028239;
+        Wed, 6 Mar 2019 09:55:51 +0100
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2qyhkn6rck-1
+        by mx07-00178001.pphosted.com with ESMTP id 2qygfxpr7w-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 06 Mar 2019 09:55:49 +0100
+        Wed, 06 Mar 2019 09:55:51 +0100
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A7EFC31;
-        Wed,  6 Mar 2019 08:55:47 +0000 (GMT)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 85D273D;
+        Wed,  6 Mar 2019 08:55:50 +0000 (GMT)
 Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 4000C240E;
-        Wed,  6 Mar 2019 08:55:47 +0000 (GMT)
-Received: from localhost (10.75.127.44) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 6 Mar 2019 09:55:46
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6540923F7;
+        Wed,  6 Mar 2019 08:55:50 +0000 (GMT)
+Received: from localhost (10.75.127.45) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 6 Mar 2019 09:55:49
  +0100
 From:   Fabrice Gasnier <fabrice.gasnier@st.com>
 To:     <jic23@kernel.org>
@@ -42,46 +42,99 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
         <pmeerw@pmeerw.net>, <linux-stm32@st-md-mailman.stormreply.com>,
         <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
-Subject: [PATCH 0/8] iio: adc: stm32-dfsdm: add buffer modes
-Date:   Wed, 6 Mar 2019 09:55:16 +0100
-Message-ID: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 4/8] iio: adc: stm32-dfsdm: move dma slave config to start routine
+Date:   Wed, 6 Mar 2019 09:55:20 +0100
+Message-ID: <1551862524-25098-5-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
+References: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG5NODE1.st.com (10.75.127.13) To SFHDAG5NODE3.st.com
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG4NODE2.st.com (10.75.127.11) To SFHDAG5NODE3.st.com
  (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-06_05:,,
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-06_06:,,
  signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patchset adds support for buffer modes, scan mode and triggers
-in STM32 DFSDM ADC driver:
-- 1st patch is an improvement
-- Patch 2 to 5 are basically precursor patchs that reworks the way to
-  configure the dfsdm for the audio part, so it can be common with the
-  iio part.
-- Last patchs add support for triggered buffer mode (with scan mode and
-  hardware triggers)
+Move DMA slave configuration to start routine: depending on regular or
+injected mode is in use, DMA needs to read resp. RDATAR or JDATAR.
+This is precursor patch to introduce injected mode (used for scan).
 
-Fabrice Gasnier (8):
-  iio: adc: stm32-dfsdm: make spi_master_freq more accurate
-  iio: adc: stm32-dfsdm: continuous mode depends on current mode
-  iio: adc: stm32-dfsdm: move dma enable from start_conv() to
-    start_dma()
-  iio: adc: stm32-dfsdm: move dma slave config to start routine
-  iio: adc: stm32-dfsdm: enable hw consumer
-  iio: adc: stm32-dfsdm: add support for scan mode
-  iio: adc: stm32-dfsdm: add support for buffer modes
-  iio: adc: stm32-dfsdm: claim direct mode for raw read and settings
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ drivers/iio/adc/stm32-dfsdm-adc.c | 31 +++++++++++--------------------
+ 1 file changed, 11 insertions(+), 20 deletions(-)
 
- drivers/iio/adc/stm32-dfsdm-adc.c  | 513 +++++++++++++++++++++++++++++--------
- drivers/iio/adc/stm32-dfsdm-core.c |   9 +-
- 2 files changed, 408 insertions(+), 114 deletions(-)
-
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index 818627f..66e2ea0 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -556,6 +556,11 @@ static void stm32_dfsdm_audio_dma_buffer_done(void *data)
+ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
+ {
+ 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
++	struct dma_slave_config config = {
++		.src_addr = (dma_addr_t)adc->dfsdm->phys_base +
++			DFSDM_RDATAR(adc->fl_id),
++		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
++	};
+ 	struct dma_async_tx_descriptor *desc;
+ 	dma_cookie_t cookie;
+ 	int ret;
+@@ -566,6 +571,10 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
+ 	dev_dbg(&indio_dev->dev, "%s size=%d watermark=%d\n", __func__,
+ 		adc->buf_sz, adc->buf_sz / 2);
+ 
++	ret = dmaengine_slave_config(adc->dma_chan, &config);
++	if (ret)
++		return ret;
++
+ 	/* Prepare a DMA cyclic transaction */
+ 	desc = dmaengine_prep_dma_cyclic(adc->dma_chan,
+ 					 adc->dma_buf,
+@@ -925,12 +934,6 @@ static void stm32_dfsdm_dma_release(struct iio_dev *indio_dev)
+ static int stm32_dfsdm_dma_request(struct iio_dev *indio_dev)
+ {
+ 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+-	struct dma_slave_config config = {
+-		.src_addr = (dma_addr_t)adc->dfsdm->phys_base +
+-			DFSDM_RDATAR(adc->fl_id),
+-		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
+-	};
+-	int ret;
+ 
+ 	adc->dma_chan = dma_request_slave_channel(&indio_dev->dev, "rx");
+ 	if (!adc->dma_chan)
+@@ -940,23 +943,11 @@ static int stm32_dfsdm_dma_request(struct iio_dev *indio_dev)
+ 					 DFSDM_DMA_BUFFER_SIZE,
+ 					 &adc->dma_buf, GFP_KERNEL);
+ 	if (!adc->rx_buf) {
+-		ret = -ENOMEM;
+-		goto err_release;
++		dma_release_channel(adc->dma_chan);
++		return -ENOMEM;
+ 	}
+ 
+-	ret = dmaengine_slave_config(adc->dma_chan, &config);
+-	if (ret)
+-		goto err_free;
+-
+ 	return 0;
+-
+-err_free:
+-	dma_free_coherent(adc->dma_chan->device->dev, DFSDM_DMA_BUFFER_SIZE,
+-			  adc->rx_buf, adc->dma_buf);
+-err_release:
+-	dma_release_channel(adc->dma_chan);
+-
+-	return ret;
+ }
+ 
+ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
 -- 
 2.7.4
 
