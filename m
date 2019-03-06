@@ -2,58 +2,58 @@ Return-Path: <SRS0=AU7e=RJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25B17C43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26C92C4360F
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:12:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DF71420840
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:12:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA7C020684
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 11:12:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="U+Q4puwi"
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="B2QkguN+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730015AbfCFLM1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 06:12:27 -0500
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:38753 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729534AbfCFLM1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 06:12:27 -0500
-Received: by mail-ed1-f65.google.com with SMTP id h58so9995654edb.5
-        for <linux-iio@vger.kernel.org>; Wed, 06 Mar 2019 03:12:26 -0800 (PST)
+        id S1729889AbfCFLMj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 06:12:39 -0500
+Received: from mail-ed1-f67.google.com ([209.85.208.67]:46932 "EHLO
+        mail-ed1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730395AbfCFLMh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 06:12:37 -0500
+Received: by mail-ed1-f67.google.com with SMTP id f2so9980071edy.13
+        for <linux-iio@vger.kernel.org>; Wed, 06 Mar 2019 03:12:36 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=essensium-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=peBwF4s7AcJireIW9aEtgVMb0skheqT5dujZbapujjU=;
-        b=U+Q4puwiim6Jb7u4OLSexsa7dEXMdqiBgn0bfCnW7ueHxwqQkYiLqtcAFz1YZG8a48
-         IV9Yronx9+kfZ4LRWxeHTuYZnDzo9xlixk5ipPU1751eoVlcJHstazFQ/2gKBOJ4wSlY
-         2lhbxzkfLgOs1vNSLKTBIer0bmBbGFsvPw386R48jcyF+onY/BZ8Q9XOYmZGIAbU1VAD
-         I67bS2qDOBRtExGkzf+9EenvgAqpjXcsAYXMI906j4V+866d9ITn+wfyAric7bXMzsTV
-         rFkGl64CwczORVIY2lxlz16+cH56iBOlVzdGn6Ravo8XVpkeeqAHNothMPWL91tncDrl
-         IuUQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fBsJhgoGrFCnj+gqRWXLatgkoJvBbncuK8fMCwiAQ1o=;
+        b=B2QkguN+LbzrcAwzI7m0frGmtI8TB6PVamnZR6METHHol5sq0ydKlyInzcbgJv/MrG
+         fg2lt2msy/ap/hiVbl/VNkID3cTlvpPPoaLf6jWe0Dd+Sk2gynMYZTrU6bZr11A+pT+j
+         OUtC0FcvP9iiqbwOS22aN5fn8PxXuJEBJrj0JMamWLZM3O2w0gfkb5Rz4QLgyMq8B6/S
+         CKTCO/xiihyvUTE4ppXewgh+525H/1il+IeFz/+P1dE84S0vwXbgY2tp4VKZTmyyB9eE
+         7CyQ/W2x9+ecIJ8J9MJ7nI7dB7CL/OWLHvx+F8ymntH7WxN0nEJztamnumjRGLcGnlyn
+         ldlA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=peBwF4s7AcJireIW9aEtgVMb0skheqT5dujZbapujjU=;
-        b=fhEBg3uE5KyR8NNgHS5E6OqTWiB7UrSwQB4THSYE/VJctniYcESad3fE6muUVuPCiL
-         MOrF7gDBhL0milGfCDHJnCcgmHIBUXZKkRRWj0+OwA89SQnB0qduQrb9GaIoQYG/OM+e
-         fPiKHZ7rPbqQUti3hYO499lHsxkm+26K6RpYkfRKYCu1910+3Zn0aUUJQUAInLwVmcDe
-         F97/fAxJ+MJTRQOFsPKvpkuolHUhwWEgeUOBXgVrQBKN5n7ODpWj9v9phmg9GX1j1WC5
-         efroNb1JqchriM9Tc6/j2bcgJugXSmtkVbPFTzWknwKQGx9re/DGEY1uaWawyzcCQtrD
-         A90A==
-X-Gm-Message-State: APjAAAWKQc4zzTiKsBFIqx1EG7hicbvAev2Jfz5ASy94HGmwZYPGtsQi
-        KUOuJdex16LEgnIWmWvPfFEgKg==
-X-Google-Smtp-Source: APXvYqwL6qLqdtmDQRVfTtB1ememvfNYtB5rR34Lz4vhgk+9Ie37InYAacfORqy89rYDFGFr4IYarQ==
-X-Received: by 2002:a17:906:3112:: with SMTP id 18mr3600815ejx.84.1551870745347;
-        Wed, 06 Mar 2019 03:12:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fBsJhgoGrFCnj+gqRWXLatgkoJvBbncuK8fMCwiAQ1o=;
+        b=HCVmAdeJfquSk9l93rx9APVjlh+iKY2kapVN1Mc88q1A7Z99KJG5I2fzm7ZtHLICPz
+         qBkOBDAiVQgCirEZIdHgwOBUDN7fqanf0TDFZp4zYIAfOfXdhMol5TUxpxcRhrIec32a
+         N6sVicA4CczoyJpnRAWmNgbkWij5l8FBq1H55xO7/gb08dozpzlaVJBPbyViBlnjJPQV
+         Jj6BAmjgszNmjIEJGBY9jJdjP6uPrQSBRpVO8BwlMo9UWlpUWN0hGGQPXI0XXJ1/iXgE
+         O6d7hT5k72DNlqu0DSaTDVbP7fEaR7Oh86IXvT3/YGj/KIjOiwmRlzVdBZvwrsD4JmUt
+         ZTuA==
+X-Gm-Message-State: APjAAAW8F0beyTnwQvpl5R7AHPQsN+UKK8a3YG9szY7Kwf8X6tUr0Wnn
+        WWrPiaV9CXbCqPu/A6TDTy/iJA==
+X-Google-Smtp-Source: APXvYqyFXAXiCVWXtNAgaIj9RlYtrBEiJ3my+vfuQMRu/79RRgCn9B5KvgVZYlKL83oTfcThvrzD7g==
+X-Received: by 2002:a50:ed8c:: with SMTP id h12mr22261726edr.128.1551870755623;
+        Wed, 06 Mar 2019 03:12:35 -0800 (PST)
 Received: from ph-ThinkPad-E560.local.ess-mail.com (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id t25sm277879ejr.30.2019.03.06.03.12.23
+        by smtp.gmail.com with ESMTPSA id t25sm277879ejr.30.2019.03.06.03.12.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Mar 2019 03:12:24 -0800 (PST)
+        Wed, 06 Mar 2019 03:12:35 -0800 (PST)
 From:   Patrick Havelange <patrick.havelange@essensium.com>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -68,10 +68,12 @@ To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
         linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         Jonathan Cameron <jic23@kernel.org>
 Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH v2 0/7] FlexTimer Module Quadrature decoder counter
-Date:   Wed,  6 Mar 2019 12:12:01 +0100
-Message-Id: <20190306111208.7454-1-patrick.havelange@essensium.com>
+Subject: [PATCH v2 7/7] LS1021A: dtsi: add ftm quad decoder entries
+Date:   Wed,  6 Mar 2019 12:12:08 +0100
+Message-Id: <20190306111208.7454-8-patrick.havelange@essensium.com>
 X-Mailer: git-send-email 2.19.1
+In-Reply-To: <20190306111208.7454-1-patrick.havelange@essensium.com>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -79,43 +81,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch serie is to be applied on top of 
-https://patchwork.kernel.org/project/linux-iio/list/?series=147
-(a more recent version of the serie is available here : 
-https://gitlab.com/vilhelmgray/iio/tree/generic_counter_v10 )
+Add the 4 Quadrature counters for this board.
 
-Main changes in v2: 
-The code is a bit simpler, thanks to more use of devm_* functions.
-The polling/32bit signed version has been dropped, as not needed and
-no other driver is doing that.
+Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+---
+Changes v2
+ - None
+---
+ arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
 
-
-Patrick Havelange (7):
-  include/fsl: add common FlexTimer #defines in a separate header.
-  drivers/pwm: pwm-fsl-ftm: use common header for FlexTimer #defines
-  drivers/clocksource: timer-fsl-ftm: use common header for FlexTimer
-    #defines
-  dt-bindings: counter: ftm-quaddec
-  counter: add FlexTimer Module Quadrature decoder counter driver
-  counter: ftm-quaddec: Documentation: Add specific counter sysfs
-    documentation
-  LS1021A: dtsi: add ftm quad decoder entries
-
- .../ABI/testing/sysfs-bus-counter-ftm-quaddec |  16 +
- .../bindings/counter/ftm-quaddec.txt          |  18 +
- arch/arm/boot/dts/ls1021a.dtsi                |  28 ++
- drivers/clocksource/timer-fsl-ftm.c           |  15 +-
- drivers/counter/Kconfig                       |   9 +
- drivers/counter/Makefile                      |   1 +
- drivers/counter/ftm-quaddec.c                 | 356 ++++++++++++++++++
- drivers/pwm/pwm-fsl-ftm.c                     |  44 +--
- include/linux/fsl/ftm.h                       |  88 +++++
- 9 files changed, 519 insertions(+), 56 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
- create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
- create mode 100644 drivers/counter/ftm-quaddec.c
- create mode 100644 include/linux/fsl/ftm.h
-
+diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
+index ed0941292172..0168fb62590a 100644
+--- a/arch/arm/boot/dts/ls1021a.dtsi
++++ b/arch/arm/boot/dts/ls1021a.dtsi
+@@ -433,6 +433,34 @@
+ 			status = "disabled";
+ 		};
+ 
++		counter0: counter@29d0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29d0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter1: counter@29e0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29e0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter2: counter@29f0000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x29f0000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
++		counter3: counter@2a00000 {
++			compatible = "fsl,ftm-quaddec";
++			reg = <0x0 0x2a00000 0x0 0x10000>;
++			big-endian;
++			status = "disabled";
++		};
++
+ 		gpio0: gpio@2300000 {
+ 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
+ 			reg = <0x0 0x2300000 0x0 0x10000>;
 -- 
 2.19.1
 
