@@ -2,110 +2,142 @@ Return-Path: <SRS0=AU7e=RJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44458C43381
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:43:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1DF8C43381
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:56:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2046A20675
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:43:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7B13820675
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Mar 2019 08:56:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729064AbfCFIn1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Mar 2019 03:43:27 -0500
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:36524 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725747AbfCFIn1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 03:43:27 -0500
-Received: by mail-ed1-f66.google.com with SMTP id g9so9601892eds.3
-        for <linux-iio@vger.kernel.org>; Wed, 06 Mar 2019 00:43:26 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Jk6odKMg/O/nSsls4wjhQaV1/5sByi0cTfR8gR1keOk=;
-        b=o1mhqqLuZEyRozJ2Xbf1obNb8sOJVK1G96RF/YfovAPLWBlL6d1Wf0up2n3bD/qMgq
-         oHjYpsIiiUHvzWtbxsIiFNQ70Tk4EdNXhim8G0nTdK1+XV9gIp74KJZRQLH9RE1oib+r
-         qYTLh1X+3zkMW3HAYaHwz2/uaQTGiW7yODafi+jEVNi35jY10vFIgRh4xmFgaiy29O1t
-         NCtHxtISxdn3jnVw16H82aBW7aosrTofxgQmKnlwg95YoVuyw0q1yeckAeHi8ENX+K6R
-         7q7a+DuVKrxGbQVLyybCdV0zgak27a3525gxZI/MKIwuyaDSc7zjM+jjw+hZAMGnuwtD
-         e9RA==
-X-Gm-Message-State: APjAAAXv+1pXKrVinGfoxSilrxTX1xt0uxwEqw7c1oKTFYKII9rz5ypr
-        iEDiM+jhYdhEi6fXwaltzhWjpw==
-X-Google-Smtp-Source: APXvYqz9UrLPnN6IoYEvk7klLjV8Z6xyCIs21U4FvtisU9CY1LmZqLi6N7tMcn1pF5/P5YTVv+JInw==
-X-Received: by 2002:a17:906:4347:: with SMTP id z7mr3164978ejm.190.1551861805562;
-        Wed, 06 Mar 2019 00:43:25 -0800 (PST)
-Received: from shalem.localdomain (546A5441.cm-12-3b.dynamic.ziggo.nl. [84.106.84.65])
-        by smtp.gmail.com with ESMTPSA id t25sm279483eda.69.2019.03.06.00.43.24
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 06 Mar 2019 00:43:24 -0800 (PST)
-Subject: Re: [PATCH v3] io: accel: kxcjk1013: restore the range after resume.
-To:     "Chen, Hu" <hu1.chen@intel.com>
-Cc:     bo.he@intel.com, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <23ced5ac-b0a0-7d87-76d7-bdec0c3e0e15@redhat.com>
- <20190306023224.23695-1-hu1.chen@intel.com>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <cac7810e-04df-8aca-fbd9-2433b544960c@redhat.com>
-Date:   Wed, 6 Mar 2019 09:43:24 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
+        id S1729150AbfCFI4R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Mar 2019 03:56:17 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:20649 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728438AbfCFI4R (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Mar 2019 03:56:17 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x268sqWW015101;
+        Wed, 6 Mar 2019 09:55:55 +0100
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx08-00178001.pphosted.com with ESMTP id 2qyhgaxr3x-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 06 Mar 2019 09:55:55 +0100
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A8F353A;
+        Wed,  6 Mar 2019 08:55:53 +0000 (GMT)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 67E5E2409;
+        Wed,  6 Mar 2019 08:55:53 +0000 (GMT)
+Received: from localhost (10.75.127.45) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Wed, 6 Mar 2019 09:55:52
+ +0100
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+To:     <jic23@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
+        <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <linux-stm32@st-md-mailman.stormreply.com>,
+        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
+Subject: [PATCH 8/8] iio: adc: stm32-dfsdm: claim direct mode for raw read and settings
+Date:   Wed, 6 Mar 2019 09:55:24 +0100
+Message-ID: <1551862524-25098-9-git-send-email-fabrice.gasnier@st.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
+References: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20190306023224.23695-1-hu1.chen@intel.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG4NODE2.st.com (10.75.127.11) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-06_04:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Claim direct mode to ensure no buffer mode is in use for:
+- single conversion
+- sample rate setting (must be set when filter isn't enabled).
+- oversampling ratio (must be set when filter isn't enabled).
 
-On 06-03-19 03:32, Chen, Hu wrote:
-> From: "he, bo" <bo.he@intel.com>
-> 
-> On some laptops, kxcjk1013 is powered off when system enters S3. We need
-> restore the range regiter during resume. Otherwise, the sensor doesn't
-> work properly after S3.
-> 
-> Signed-off-by: he, bo <bo.he@intel.com>
-> Signed-off-by: Chen, Hu <hu1.chen@intel.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ drivers/iio/adc/stm32-dfsdm-adc.c | 17 ++++++++++++++++-
+ 1 file changed, 16 insertions(+), 1 deletion(-)
 
-Thanks, patch looks good to me:
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index 51688eb..ca42946 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -1039,16 +1039,23 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
+ 		ret = stm32_dfsdm_set_osrs(fl, 0, val);
+ 		if (!ret)
+ 			adc->oversamp = val;
+-
++		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
+ 
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		if (!val)
+ 			return -EINVAL;
+ 
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
+ 		switch (ch->src) {
+ 		case DFSDM_CHANNEL_SPI_CLOCK_INTERNAL:
+ 			spi_freq = adc->dfsdm->spi_master_freq;
+@@ -1070,9 +1077,11 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0) {
+ 			dev_err(&indio_dev->dev,
+ 				"Not able to find parameter that match!\n");
++			iio_device_release_direct_mode(indio_dev);
+ 			return ret;
+ 		}
+ 		adc->sample_freq = val;
++		iio_device_release_direct_mode(indio_dev);
+ 
+ 		return 0;
+ 	}
+@@ -1089,11 +1098,15 @@ static int stm32_dfsdm_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
+ 		ret = iio_hw_consumer_enable(adc->hwc);
+ 		if (ret < 0) {
+ 			dev_err(&indio_dev->dev,
+ 				"%s: IIO enable failed (channel %d)\n",
+ 				__func__, chan->channel);
++			iio_device_release_direct_mode(indio_dev);
+ 			return ret;
+ 		}
+ 		ret = stm32_dfsdm_single_conv(indio_dev, chan, val);
+@@ -1102,8 +1115,10 @@ static int stm32_dfsdm_read_raw(struct iio_dev *indio_dev,
+ 			dev_err(&indio_dev->dev,
+ 				"%s: Conversion failed (channel %d)\n",
+ 				__func__, chan->channel);
++			iio_device_release_direct_mode(indio_dev);
+ 			return ret;
+ 		}
++		iio_device_release_direct_mode(indio_dev);
+ 		return IIO_VAL_INT;
+ 
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+-- 
+2.7.4
 
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-
-Regards,
-
-Hans
-
-
-
-> ---
->   v3: Avoid unnecessary mutex_unlock (Hans).
->   v2: Handle return value independently (Jonathan).
-> 
->   drivers/iio/accel/kxcjk-1013.c | 2 ++
->   1 file changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 7096e577b23f..50f3ff386bea 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1437,6 +1437,8 @@ static int kxcjk1013_resume(struct device *dev)
->   
->   	mutex_lock(&data->mutex);
->   	ret = kxcjk1013_set_mode(data, OPERATION);
-> +	if (ret == 0)
-> +		ret = kxcjk1013_set_range(data, data->range);
->   	mutex_unlock(&data->mutex);
->   
->   	return ret;
-> 
