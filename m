@@ -2,284 +2,428 @@ Return-Path: <SRS0=p+Fr=RK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 386E7C43381
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Mar 2019 12:32:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5C91C10F03
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Mar 2019 12:54:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 06E9220643
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Mar 2019 12:32:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EE94B20835
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Mar 2019 12:54:06 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="hjMK4PXP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726170AbfCGMcu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Mar 2019 07:32:50 -0500
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:36602 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbfCGMcu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Mar 2019 07:32:50 -0500
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 10B94260A49
-Subject: Re: [PATCH v3] iio: cros_ec: Add lid angle driver
-To:     Gwendal Grignou <gwendal@chromium.org>, lee.jones@linaro.org,
-        groeck@chromium.org, bleung@chromium.org, lars@metafoo.de,
-        jic23@kernel.org, egranata@chromium.org
-Cc:     linux-iio@vger.kernel.org
-References: <CAPUE2uutkNsiVtsVfF81WcJyvSvOFWNMYbA86dSd589JnON+JA@mail.gmail.com>
- <20190307003545.29260-1-gwendal@chromium.org>
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <3da262ee-0b0b-e87d-ca60-c877318681ec@collabora.com>
-Date:   Thu, 7 Mar 2019 13:32:44 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.1
-MIME-Version: 1.0
-In-Reply-To: <20190307003545.29260-1-gwendal@chromium.org>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+        id S1726185AbfCGMyG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Mar 2019 07:54:06 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.170]:23202 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726159AbfCGMyG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Mar 2019 07:54:06 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1551963239;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=WJWbt+4uXrF5kNzctZOC4lubGT3KGd/C6/LGNxUyyBQ=;
+        b=hjMK4PXPSw0kcPTM6jm1WraR/wd/TC6s3ohBbOBAjt3u7fI93McMugqR+ApJHPgQLO
+        dUH2Qr4DDXkELXTyIUxdC+pXK/J/FUwsntPeT9aKaHg+60MZ5JMfALvhXjHEVKbla0UX
+        5IeS8iuCZ2jNHr0uRsu9/eWOG19ZyOro3stUVx7qshqF6sU+QsWEfie09aP6p6wvVOA+
+        w7UyNCqSmOzIcLbd4jCJ6E7lNW8PpcjAghx4SOsuIZhHtsQPHg31GKQWSbwemRVWlvXD
+        nvU1rUQ+CBTScmVVYzwokYVKnqBj/VgGa4r99KwZp6wam39vNVBye+jRcDDmaimewXto
+        f6Zw==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj4Qpw9iZeHmMlw4jk6g=="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.13 DYNA|AUTH)
+        with ESMTPSA id h0b8c2v27CrouL5
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Thu, 7 Mar 2019 13:53:50 +0100 (CET)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v2 02/10] iio: document bindings for mounting matrices
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20190303151911.1e134bd4@archlinux>
+Date:   Thu, 7 Mar 2019 13:53:50 +0100
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Martin Kelly <mkelly@xevo.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Brian Masney <masneyb@onstation.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        letux-kernel@openphoenux.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Samu Onkalo <samu.onkalo@intel.com>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <B4B3C161-1F74-483A-9761-EC751618B7FD@goldelico.com>
+References: <cover.1550768574.git.hns@goldelico.com> <32025b2a8ccc97cc01f8115ee962529eb5990f00.1550768574.git.hns@goldelico.com> <20190303151911.1e134bd4@archlinux>
+To:     Jonathan Cameron <jic23@kernel.org>
+X-Mailer: Apple Mail (2.3124)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Hi Jonathan,
 
-On 7/3/19 1:35, Gwendal Grignou wrote:
-> Add a IIO driver that reports the angle between the lid and the base for
-> ChromeOS convertible device.
-> 
-> Tested on eve with ToT EC firmware.
-> Check driver is loaded and lid angle is correct.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> ---
-> Changes in v3:
-> - Use static channel array, simplify code because index is always 0.
-> 
-> Changes in v2:
-> - Fix license, remove driver_module field.
-> 
->  drivers/iio/common/cros_ec_sensors/Kconfig    |   9 ++
->  drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
->  .../cros_ec_sensors/cros_ec_lid_angle.c       | 138 ++++++++++++++++++
->  drivers/mfd/cros_ec_dev.c                     |  15 +-
+> Am 03.03.2019 um 16:19 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> On Thu, 21 Feb 2019 18:02:47 +0100
+> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+>=20
+>> From: Linus Walleij <linus.walleij@linaro.org>
+>>=20
+>> The mounting matrix for sensors was introduced in
+>> commit dfc57732ad38 ("iio:core: mounting matrix support")
+>>=20
+>> However the device tree bindings are very terse and since this is
+>> a widely applicable property, we need a proper binding for it
+>> that the other bindings can reference. This will also be useful
+>> for other operating systems and sensor engineering at large.
+>>=20
+>> I think all 3D sensors should support it, the current situation
+>> is probably that the mounting information is confined in magic
+>> userspace components rather than using the mounting matrix, which
+>> is not good for portability and reuse.
+>>=20
+>> Cc: Linus Walleij <linus.walleij@linaro.org>
+>> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+>> Cc: Sebastian Reichel <sre@kernel.org>
+>> Cc: Samu Onkalo <samu.onkalo@intel.com>
+>> Cc: devicetree@vger.kernel.org
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Hi Nikolaus
+>=20
+> A few minor notes inline.
 
-Note that this patch depends on https://lkml.org/lkml/2019/2/27/723 to build.
+>=20
+>> ---
+>> .../devicetree/bindings/iio/mount-matrix.txt  | 204 =
+++++++++++++++++++
+>> 1 file changed, 204 insertions(+)
+>> create mode 100644 =
+Documentation/devicetree/bindings/iio/mount-matrix.txt
+>>=20
+>> diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt =
+b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+>> new file mode 100644
+>> index 000000000000..1b64c8b1f689
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+>> @@ -0,0 +1,204 @@
+>> +For discussion. Unclear are:
+>> +* is the definition of +/- values practical or counterintuitive?
+>> +* are the definitions unambiguous and easy to follow?
+>> +* are the examples correct?
+>> +* should we have HOWTO engineer a correct matrix for a new device =
+(without comparing to a different one)?
+>> +
+>> +=3D=3D=3D=3D
+>> +
+>> +
+>> +Mounting matrix
+>> +
+>> +The mounting matrix is a device tree property used to orient any IIO =
+device
+>=20
+> Minor, but DT bindings are in theory not Linux specific and IIO is, so
+> should be "any device"
+>=20
+>> +that produce three-dimensional data in relation to the world where =
+it is
+>> +deployed.
+>> +
+>> +The purpose of the mounting matrix is to translate the sensor frame =
+of
+>> +reference into the device frame of reference using a translation =
+matrix as
+>> +defined in linear algebra.
+>> +
+>> +The typical usecase is that where a component has an internal =
+representation
+>> +of the (x,y,z) triplets, such as different registers to read these =
+coordinates,
+>> +and thus implying that the component should be mounted in a certain =
+orientation
+>> +relative to some specific device frame of reference.
+>> +
+>> +For example a device with some kind of screen, where the user is =
+supposed to
+>> +interact with the environment using an accelerometer, gyroscope or =
+magnetometer
+>> +mounted on the same chassis as this screen, will likely take the =
+screen as
+>> +reference to (x,y,z) orientation, with (x,y) corresponding to these =
+axes on the
+>> +screen and (z) being depth, the axis perpendicular to the screen.
+>> +
+>> +For a screen you probably want (x) coordinates to go from negative =
+on the left
+>> +to positive on the right, (y) from negative on the bottom to =
+positive on top
+>> +and (z) depth to be negative under the screen and positive in front =
+of it,
+>> +toward the face of the user.
+>> +
+>> +A sensor can be mounted in any angle along the axes relative to the =
+frame of
+>> +reference. This means that the sensor may be flipped upside-down, =
+left-right,
+>> +or tilted at any angle relative to the frame of reference.
+>> +
+>> +Another frame of reference is how the device with its sensor relates =
+to the
+>> +external world, the environment where the device is deployed. =
+Usually the data
+>> +from the sensor is used to figure out how the device is oriented =
+with respect
+>> +to this world. When using the mounting matrix, the sensor and device =
+orientation
+>> +becomes identical and we can focus on the data as it relates to the =
+surrounding
+>> +world.
+>> +
+>> +Device-to-world examples for some three-dimensional sensor types:
+>> +
+>> +- Accelerometers have their world frame of reference toward the =
+center of
+>> +  gravity, usually to the core of the planet. A reading of the =
+(x,y,z) values
+>> +  from the sensor will give a projection of the gravity vector =
+through the
+>> +  device relative to the center of the planet, i.e. relative to its =
+surface at
+>> +  this point. Up and down in the world relative to the device frame =
+of
+>> +  reference can thus be determined. and users would likely expect a =
+value of
+>> +  9.81 m/s^2 upwards along the (z) axis, i.e. out of the screen when =
+the device
+>> +  is held with its screen flat on the planets surface and 0 on the =
+other axes,
+>> +  as the gravity vector is projected 1:1 onto the sensors (z)-axis.
+>=20
+> Nitpick: Screen is face down or face up?  Someone might think a screen =
+is
+> flat when looking up at them from the floor or the other way up.
+> I 'think' it's face down in the following...
+>=20
+>=20
+>> +
+>> +  If you tilt the device, the g vector virtually coming out of the =
+display
+>> +  is projected onto the (x,y) plane of the display panel.
+>> +
+>> +  Example:
+>> +
+>=20
+> space after > for z. Or making it consistent anyway.
+> Hmm.=20
+>=20
+>> +         ^ z: +g                   ^ z: >0
+>> +         !                        /!
+>> +         ! x=3Dy=3D0                 / ! x: > 0
+>> +     +--------+             +--------+
+>> +     !        !             !        !
+>> +     +--------+             +--------+
+>> +         !                    /
+>> +         !                   /
+>> +         v                  v
+>> +      center of         center of
+>> +       gravity           gravity
+>> +
+>> +
+>> +  If the device is tilted to the left, you get a positive x value. =
+If you point
+>> +  its top towards surface, you get a negative y axis.
+>> +
+>> +     (---------)
+>> +     !         !           y: -g
+>> +     !         !             ^
+>> +     !         !             !
+>> +     !         !
+>> +     !         !  x: +g <- z: +g  -> x: -g
+>> +     ! 1  2  3 !
+>> +     ! 4  5  6 !             !
+>> +     ! 7  8  9 !             v
+>> +     ! *  0  # !           y: +g
+>> +     (---------)
+>> +
+>> +
+>> +- Magnetometers (compasses) have their world frame of reference =
+relative to the
+>> +  geomagnetic field. The system orientation vis-a-vis the world is =
+defined with
+>> +  respect to the local earth geomagnetic reference frame where (y) =
+is in the
+>> +  ground plane and positive towards magnetic North, (x) is in the =
+ground plane,
+>> +  perpendicular to the North axis and positive towards the East and =
+(z) is
+>> +  perpendicular to the ground plane and positive upwards.
+>> +
+>> +
+>> +     ^^^ North: y > 0
+>> +
+>> +     (---------)
+>> +     !         !
+>> +     !         !
+>> +     !         !
+>> +     !         !  >
+>> +     !         !  > North: x > 0
+>> +     ! 1  2  3 !  >
+>> +     ! 4  5  6 !
+>> +     ! 7  8  9 !
+>> +     ! *  0  # !
+>> +     (---------)
+>> +
+>> +  Since the geomagnetic field is not uniform this definition fails =
+if we come
+>> +  closer to the poles.
+>> +
+>> +  Sensors and driver can not and should not take care of this =
+because there
+>> +  are complex calculations and empirical data to be taken care of. =
+We leave
+>> +  this up to user space.
+>> +
+>> +  The definition we take:
+>> +
+>> +  If the device is placed at the equator and the top is pointing =
+north, the
+>> +  display is readable by a person standing upright on the earth =
+surface, this
+>> +  defines a positive y value.
+> Nice definition. <wonders how consistent it is at the equator - meh =
+close enough :)>
+>> +
+>> +
+>> +- Gyroscopes detects the movement relative the device itself. The =
+angular
+>> +  velocity is defined as orthogonal to the plane of rotation, so if =
+you put the
+>> +  device on a flat surface and spin it around the z axis (such as =
+rotating a
+>> +  device with a screen lying flat on a table), you should get a =
+negative value
+>> +  along the (z) axis if rotated clockwise, and a positive value if =
+rotated
+>> +  counter-clockwise according to the right-hand rule.
+>> +
+>> +
+>> +     (---------)     y > 0
+>> +     !         !     v---\
+>> +     !         !
+>> +     !         !
+>> +     !         !      <--\
+>> +     !         !         ! z > 0
+>> +     ! 1  2  3 !       --/
+>> +     ! 4  5  6 !
+>> +     ! 7  8  9 !
+>> +     ! *  0  # !
+>> +     (---------)
+>> +
+>> +
+>> +So unless the sensor is ideally mounted, we need a means to indicate =
+the
+>> +relative orientation of any given sensor of this type with respect =
+to the
+>> +frame of reference.
+>> +
+>> +To achieve this, use the device tree property "mount-matrix" for the =
+sensor.
+>> +
+>> +This supplies a 3x3 rotation matrix in the strict linear algebraic =
+sense,
+>> +to orient the senor axes relative to a desired point of reference. =
+This means
+>> +the resulting values from the sensor, after scaling to proper units, =
+should be
+>> +multiplied by this matrix to give the proper vectors values in =
+three-dimensional
+>> +space, relative to the device or world point of reference.
+>> +
+>> +For more information, consult:
+>> +https://en.wikipedia.org/wiki/Rotation_matrix
+>> +
+>> +The mounting matrix has the layout:
+>> +
+>> + (mxx, myx, mzx)
+>> + (mxy, myy, mzy)
+>> + (mxz, myz, mzz)
+>> +
+>> +Values are intended to be multiplied as:
+>> +
+>> +  x' =3D mxx * x + myx * y + mzx * z
+>> +  y' =3D mxy * x + myy * y + mzy * z
+>> +  z' =3D mxz * x + myz * y + mzz * z
+>> +
+>> +It is represented as an array of strings containing the real values =
+for
+>> +producing the transformation matrix. The real values use a decimal =
+point and
+>> +a minus (-) to indicate a negative value.
+>=20
+> I'd drop the decimal point and negative as both fairly obvious and =
+this
+> sentence can currently be read as a decimal point is necessary for a =
+negative.
+>=20
+>> +
+>> +Examples:
+>> +
+>> +Identity matrix (nothing happens to the coordinates, which means the =
+device was
+>> +mechanically mounted in an ideal way and we need no transformation):
+>> +
+>> +mount-matrix =3D "1", "0", "0",
+>> +               "0", "1", "0",
+>> +               "0", "0", "1";
+>> +
+>> +The sensor is mounted 30 degrees (Pi/6 radians) tilted along the X =
+axis, so we
+>> +compensate by performing a -30 degrees rotation around the X axis:
+>> +
+>> +mount-matrix =3D "1", "0", "0",
+>> +               "0", "0.866", "0.5",
+>> +               "0", "-0.5", "0.866";
+>> +
+>> +The sensor is flipped 180 degrees (Pi radians) around the Z axis, =
+i.e. mounted
+>> +upside-down:
+>> +
+>> +mount-matrix =3D "0.998", "0.054", "0",
+>> +               "-0.054", "0.998", "0",
+>> +               "0", "0", "1";
+>> +
+>> +???: this does not match "180 degrees" - factors indicate ca. 3 =
+degrees compensation
+> Yes. Good to say this.
+>=20
+> Very nice indeed, just these little tidy ups and I'm very happy with =
+the
+> result!
+>=20
+> Jonathan
 
-Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-Thanks,
- Enric
+Thanks for pushing the other patches forwards.
 
->  4 files changed, 160 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> 
-> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> index 135f6825903f..aacc2ab9c34f 100644
-> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
-> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> @@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
->  	  Accelerometers, Gyroscope and Magnetometer that are
->  	  presented by the ChromeOS EC Sensor hub.
->  	  Creates an IIO device for each functions.
-> +
-> +config IIO_CROS_EC_SENSORS_LID_ANGLE
-> +	tristate "ChromeOS EC Sensor for lid angle"
-> +	depends on IIO_CROS_EC_SENSORS_CORE
-> +	help
-> +	  Module to report the angle between lid and base for some
-> +	  convertible devices.
-> +	  This module is loaded when the EC can calculate the angle between the base
-> +	  and the lid.
-> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> index ec716ff2a775..a35ee232ac07 100644
-> --- a/drivers/iio/common/cros_ec_sensors/Makefile
-> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> @@ -4,3 +4,4 @@
->  
->  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
->  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
-> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> new file mode 100644
-> index 000000000000..92be07d7fa36
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> @@ -0,0 +1,138 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +/*
-> + * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
-> + *
-> + * Copyright 2018 Google, Inc
-> + *
-> + * This driver uses the cros-ec interface to communicate with the Chrome OS
-> + * EC about counter sensors. Counters are presented through
-> + * iio sysfs.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/common/cros_ec_sensors_core.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#define DRV_NAME "cros-ec-lid-angle"
-> +
-> +/*
-> + * One channel for the lid angle, the other for timestamp.
-> + */
-> +static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
-> +	{
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.scan_type.realbits = CROS_EC_SENSOR_BITS,
-> +		.scan_type.storagebits = CROS_EC_SENSOR_BITS,
-> +		.scan_type.sign = 'u',
-> +		.type = IIO_ANGL
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1)
-> +};
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_lid_angle_state {
-> +	/* Shared by all sensors */
-> +	struct cros_ec_sensors_core_state core;
-> +};
-> +
-> +static int cros_ec_sensors_read_lid_angle(struct iio_dev *indio_dev,
-> +					  unsigned long scan_mask, s16 *data)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	st->param.cmd = MOTIONSENSE_CMD_LID_ANGLE;
-> +	ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->lid_angle));
-> +	if (ret) {
-> +		dev_warn(&indio_dev->dev, "Unable to read lid angle\n");
-> +		return ret;
-> +	}
-> +
-> +	*data = st->resp->lid_angle.value;
-> +	return 0;
-> +}
-> +
-> +static int cros_ec_lid_angle_read(struct iio_dev *indio_dev,
-> +				    struct iio_chan_spec const *chan,
-> +				    int *val, int *val2, long mask)
-> +{
-> +	struct cros_ec_lid_angle_state *st = iio_priv(indio_dev);
-> +	s16 data;
-> +	int ret;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +	ret = cros_ec_sensors_read_lid_angle(indio_dev, 1, &data);
-> +	if (ret)
-> +		return ret;
-> +	*val = data;
-> +	mutex_unlock(&st->core.cmd_lock);
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static const struct iio_info cros_ec_lid_angle_info = {
-> +	.read_raw = &cros_ec_lid_angle_read,
-> +};
-> +
-> +static int cros_ec_lid_angle_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct iio_dev *indio_dev;
-> +	struct cros_ec_lid_angle_state *state;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->info = &cros_ec_lid_angle_info;
-> +	state = iio_priv(indio_dev);
-> +	indio_dev->channels = cros_ec_lid_angle_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(cros_ec_lid_angle_channels);
-> +
-> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_lid_angle;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> +			cros_ec_sensors_capture, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct platform_device_id cros_ec_lid_angle_ids[] = {
-> +	{
-> +		.name = DRV_NAME,
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
-> +
-> +static struct platform_driver cros_ec_lid_angle_platform_driver = {
-> +	.driver = {
-> +		.name	= DRV_NAME,
-> +		.pm	= &cros_ec_sensors_pm_ops,
-> +	},
-> +	.probe		= cros_ec_lid_angle_probe,
-> +	.id_table	= cros_ec_lid_angle_ids,
-> +};
-> +module_platform_driver(cros_ec_lid_angle_platform_driver);
-> +
-> +MODULE_DESCRIPTION("ChromeOS EC driver for reporting convertible lid angle.");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
-> index d275deaecb12..11b5b2fd1f33 100644
-> --- a/drivers/mfd/cros_ec_dev.c
-> +++ b/drivers/mfd/cros_ec_dev.c
-> @@ -297,13 +297,17 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  
->  	resp = (struct ec_response_motion_sense *)msg->data;
->  	sensor_num = resp->dump.sensor_count;
-> -	/* Allocate 1 extra sensors in FIFO are needed */
-> -	sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
-> +	/*
-> +	 * Allocate extra sensors if lid angle sensor or FIFO are needed.
-> +	 */
-> +#define NUM_EXTRA_SENSORS 2
-> +	sensor_cells = kcalloc(sensor_num + NUM_EXTRA_SENSORS,
-> +			       sizeof(struct mfd_cell),
->  			       GFP_KERNEL);
->  	if (sensor_cells == NULL)
->  		goto error;
->  
-> -	sensor_platforms = kcalloc(sensor_num + 1,
-> +	sensor_platforms = kcalloc(sensor_num,
->  				   sizeof(struct cros_ec_sensor_platform),
->  				   GFP_KERNEL);
->  	if (sensor_platforms == NULL)
-> @@ -363,6 +367,11 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  		sensor_cells[id].name = "cros-ec-ring";
->  		id++;
->  	}
-> +	if (cros_ec_check_features(ec,
-> +				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
-> +		sensor_cells[id].name = "cros-ec-lid-angle";
-> +		id++;
-> +	}
->  
->  	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
->  			      NULL, 0, NULL);
-> 
+Yes, I know this needs more discussion. So I'll go through your comments =
+in a few days and post an update just for this.
+
+BR and thanks,
+Nikolaus
+
+
