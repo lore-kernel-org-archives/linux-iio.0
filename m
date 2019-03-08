@@ -2,54 +2,42 @@ Return-Path: <SRS0=80dm=RL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46AA8C43381
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Mar 2019 16:17:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6735FC43381
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Mar 2019 17:13:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0A771214AE
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Mar 2019 16:17:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4415620851
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Mar 2019 17:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726419AbfCHQRG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Mar 2019 11:17:06 -0500
-Received: from szxga05-in.huawei.com ([45.249.212.191]:5224 "EHLO huawei.com"
+        id S1726485AbfCHRND (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Mar 2019 12:13:03 -0500
+Received: from szxga05-in.huawei.com ([45.249.212.191]:5226 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726275AbfCHQRG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 8 Mar 2019 11:17:06 -0500
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id CA1B9E8FC6EDB16567DE;
-        Sat,  9 Mar 2019 00:17:01 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS401-HUB.china.huawei.com
- (10.3.19.201) with Microsoft SMTP Server id 14.3.408.0; Sat, 9 Mar 2019
- 00:16:58 +0800
-Date:   Fri, 8 Mar 2019 16:16:48 +0000
+        id S1726249AbfCHRND (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 8 Mar 2019 12:13:03 -0500
+Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 68B67B304371D293F130;
+        Sat,  9 Mar 2019 01:12:56 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS412-HUB.china.huawei.com
+ (10.3.19.212) with Microsoft SMTP Server id 14.3.408.0; Sat, 9 Mar 2019
+ 01:12:54 +0800
+Date:   Fri, 8 Mar 2019 17:12:44 +0000
 From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Michael Nazzareno Trimarchi <michael@amarulasolutions.com>
+To:     Sven Van Asbroeck <thesven73@gmail.com>
 CC:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
         Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: potentiometer: add driver for Maxim Integrated
- DS1807
-Message-ID: <20190308161648.00007991@huawei.com>
-In-Reply-To: <CAOf5uwnRzSQtTmrBTWpFE7RREqLWXYb2hvDngugOiZp934fbDQ@mail.gmail.com>
-References: <1525613447-32734-1-git-send-email-michael@amarulasolutions.com>
-        <20180506183745.325e67b8@archlinux>
-        <96251f75-6a0b-9668-b103-8d2453bf8bba@metafoo.de>
-        <c9d22ad5-ba57-486a-fad9-7e1260dc2b62@metafoo.de>
-        <20180507181714.34760596@archlinux>
-        <CAOf5uwkX70XULEAgb_yZVGrCEqvDzZn+o-FV8vAC5ytKvjQc4w@mail.gmail.com>
-        <CAOf5uw=KfbgtBRkw4OTk+6oGYFfv4dbh4bM_P9zqPjd1MhjV9Q@mail.gmail.com>
-        <20180512104533.7d74aa01@archlinux>
-        <CAOf5uwmfMOyb3kJ5g4wMOc78waaF+LNMRm5ZXKADMoTnMWj4GA@mail.gmail.com>
-        <20180512120750.182a9de1@archlinux>
-        <CAOf5uwnV8BQcw3sUK+GRKzbjwDcQ-zGs6ZRPUVoUGZgjNcm5vw@mail.gmail.com>
-        <CAOf5uwktQ85i4uxTmonr9weGB19b7W+3ztY6E7P797A+w1S_bQ@mail.gmail.com>
-        <20190303171154.1838e05f@archlinux>
-        <CAOf5uwnRzSQtTmrBTWpFE7RREqLWXYb2hvDngugOiZp934fbDQ@mail.gmail.com>
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: Re: [PATCH] iio: proximity: as3935: fix use-after-free on device
+ remove
+Message-ID: <20190308171244.00001ec8@huawei.com>
+In-Reply-To: <20190306174559.17362-1-TheSven73@gmail.com>
+References: <20190306174559.17362-1-TheSven73@gmail.com>
 Organization: Huawei
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
@@ -62,337 +50,172 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 4 Mar 2019 10:27:13 +0100
-Michael Nazzareno Trimarchi <michael@amarulasolutions.com> wrote:
+On Wed, 6 Mar 2019 12:45:59 -0500
+Sven Van Asbroeck <thesven73@gmail.com> wrote:
 
-> Hi Jonathan
+> This driver's probe() uses a mix of devm_ and non-devm_ functions. This
+> means that the remove order will not be the exact opposite of the probe
+> order.
 > 
-> On Sun, Mar 3, 2019 at 6:12 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Sat, 23 Feb 2019 10:04:31 +0100
-> > Michael Nazzareno Trimarchi <michael@amarulasolutions.com> wrote:
-> >  
-> > > Hi Jonathan
-> > >
-> > > Very old thread. I have created Giotto Tune based on this design and
-> > > now try to attach to ds1807. I have done some hack on the current
-> > > interface to have it working in alsa. I have some trouble with the API
-> > >
-> > >   fragment@3 {
-> > >                 target = <&sound>;
-> > >                 __overlay__ {
-> > >                         compatible = "bcm2708,bcm2708-audio-giotto";
-> > >                         i2s-controller = <&i2s>;
-> > >                         io-channels = <&volume 0>;  
-> >
-> > This is a list, not just one.  
+> Remove order:
+> 1. remove() executes:
+> 	iio_device_unregister
+> 	iio_triggered_buffer_cleanup
+> 	iio_trigger_unregister
+> 	(A)
+> 2. core frees devm resources in reverse order:
+> 	free_irq
+> 	iio_trigger_free
+> 	iio_device_free
 > 
-> with the driver I have tried <&volume 1> <&volume 0>;
-> >  
-> > >                         #io-channel-cells = <1>;
-> > >                         nreset = <&gpio 5 1>;
-> > >                         status = "okay";
-> > >                 };
-> > >         };
-> > >
-> > >         fragment@4 {
-> > >                 target = <&spidev0>;
-> > >                 __overlay__ {
-> > >                         status = "disabled";
-> > >                 };
-> > >         };
-> > >
-> > >         fragment@5 {
-> > >                 target = <&i2c1>;
-> > >                 __overlay__ {
-> > >                         #address-cells = <1>;
-> > >                         #size-cells = <0>;
-> > >                         status = "okay";
-> > >
-> > >                         volume: ds1807@1 {
-> > >                                 compatible = "maxim,ds1807";
-> > >                                 reg = <0x28>;
-> > >                                 status = "okay";
-> > >                                 #io-channel-cells = <1>;
-> > >                         };
-> > >                 };
-> > >         };
-> > >
-> > > This is the overlay and this is the change of the API
-> > >
-> > > -static int iio_channel_write(struct iio_channel *chan, int val, int val2,
-> > > +static int iio_channel_write(struct iio_channel *chan, int index, int
-> > > val, int val2,
-> > >                              enum iio_chan_info_enum info)
-> > >  {
-> > >         return chan->indio_dev->info->write_raw(chan->indio_dev,
-> > > -                                               chan->channel, val, val2, info);
-> > > +                                               &chan->channel[index],
-> > > val, val2, info);
-> > >  }
-> > >
-> > > +int iio_write_channel_attribute(struct iio_channel *chan, int index,
-> > > int val, int val2,
-> > > +                                enum iio_chan_info_enum attribute)
-> > > +{
-> > > +       int ret;
-> > > +
-> > > +       mutex_lock(&chan->indio_dev->info_exist_lock);
-> > > +       if (chan->indio_dev->info == NULL) {
-> > > +               ret = -ENODEV;
-> > > +               goto err_unlock;
-> > > +       }
-> > > +
-> > > +       if (index < 0 || index > chan->indio_dev->num_channels)  
+> In (A) the trigger has been unregistered, but the irq handler is still
+> registered and active, so the trigger may still be touched via
+> interrupt -> as3935_event_work. This is a potential use-after-unregister.
 > 
-> You mean that num_channels is taken in account when you request each of us.
-> Can one channel has multiple raw output?
+> Given that the delayed work is never canceled explicitly, it may run even
+> after iio_device_free. This is a potential use-after-free.
+> 
+> Solution: convert all probe functions to their devm_ equivalents.
+> Add a devm callback, called by the core on remove right after irq_free,
+> which explicitly cancels the delayed work. This will guarantee that all
+> resources are freed in the correct order.
+> 
+> As an added bonus, some boilerplate code can be removed.
+> 
+> While we're here, remove redundant &'s in front of function names when
+> passing a pointer-to-function.
+> 
+> Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+Hi Sven
 
-No. A channel is basically a wire on the side of the chip. It can't
-have multiple values at the same time.
+Your description makes it clear that there are multiple things in the patch.
+Don't do a 'while we were here' in a patch doing something else please.
+Separate patches.
 
-> 
-> > > +               return -EINVAL;
-> > > +
-> > > +       ret = iio_channel_write(chan, index, val, val2, attribute);
-> > > +err_unlock:
-> > > +       mutex_unlock(&chan->indio_dev->info_exist_lock);
-> > > +
-> > > +       return ret;
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(iio_write_channel_attribute);
-> > >
-> > > I order to trigger both controls
-> > >
-> > > +       ret = iio_write_channel_attribute(&data->iio_ch[0], 0,
-> > > +                                         val, 0,
-> > > +                                         IIO_CHAN_INFO_HARDWAREGAIN);
-> > > +       if (ret < 0)
-> > > +                return ret;
-> > > +
-> > > +       ret = iio_write_channel_attribute(&data->iio_ch[0], 1,
-> > > +                                         val, 0,
-> > > +                                         IIO_CHAN_INFO_HARDWAREGAIN);
-> > > +       if (ret < 0)
-> > > +                return ret;
-> > > +
-> > >
-> > > The problem is that we can have one iio_dev and multiple raw value for
-> > > each one.  
-> >
-> > Absolutely we can, but you need to register multiple channels and get them
-> > all, not just one and then try and build off that.  
-> 
-> Ok I need to check back again
-> 
-> >  
-> > > Is this the correct way?  
-> >
-> > No.  You need to have multiple channels listed, not just the one.
-> >
-> > There are examples in Documentation/bindings/iio/iio-bindings.txt
-> >  
-> 
-> I have followed it but not with expected result. I will try to go in a
-> mainline kernel
-> 
-
-Cool. Let us know if you don't get anywhere.
+Content looks good.
 
 Jonathan
 
-> Michael
-> > I may be misunderstanding what you are trying to do.
-> >
-> > Jonathan
-> >
-> >  
-> > >
-> > > Michael
-> > >
-> > > On Sat, May 12, 2018 at 2:10 PM Michael Nazzareno Trimarchi
-> > > <michael@amarulasolutions.com> wrote:  
-> > > >
-> > > > Hi
-> > > >
-> > > > On Sat, May 12, 2018 at 1:07 PM, Jonathan Cameron <jic23@kernel.org> wrote:  
-> > > > > On Sat, 12 May 2018 11:50:23 +0200
-> > > > > Michael Nazzareno Trimarchi <michael@amarulasolutions.com> wrote:
-> > > > >  
-> > > > >> Hi
-> > > > >>
-> > > > >> On Sat, May 12, 2018 at 11:45 AM, Jonathan Cameron <jic23@kernel.org> wrote:  
-> > > > >> > On Wed, 9 May 2018 11:19:51 +0200
-> > > > >> > Michael Nazzareno Trimarchi <michael@amarulasolutions.com> wrote:
-> > > > >> >  
-> > > > >> >> Hi Jonathan
-> > > > >> >>
-> > > > >> >>
-> > > > >> >> On Wed, May 9, 2018 at 11:01 AM, Michael Nazzareno Trimarchi
-> > > > >> >> <michael@amarulasolutions.com> wrote:  
-> > > > >> >> > Hi
-> > > > >> >> >
-> > > > >> >> > On Mon, May 7, 2018 at 7:17 PM, Jonathan Cameron <jic23@kernel.org> wrote:  
-> > > > >> >> >> On Mon, 7 May 2018 18:55:16 +0200
-> > > > >> >> >> Lars-Peter Clausen <lars@metafoo.de> wrote:
-> > > > >> >> >>  
-> > > > >> >> >>> On 05/07/2018 06:44 PM, Lars-Peter Clausen wrote:  
-> > > > >> >> >>> > On 05/06/2018 07:37 PM, Jonathan Cameron wrote:  
-> > > > >> >> >>> >> On Sun,  6 May 2018 15:30:47 +0200
-> > > > >> >> >>> >> Michael Trimarchi <michael@amarulasolutions.com> wrote:
-> > > > >> >> >>> >>  
-> > > > >> >> >>> >>> The following functions are supported:
-> > > > >> >> >>> >>> - write, read potentiometer value
-> > > > >> >> >>> >>>
-> > > > >> >> >>> >>> Value are exported in DBm because it's used as an audio
-> > > > >> >> >>> >>> attenuator  
-> > > > >> >> >>> >>
-> > > > >> >> >>> >> This is interesting.  The problem is that there is no way for
-> > > > >> >> >>> >> userspace to know that it is reporting in DBm rather than
-> > > > >> >> >>> >> reporting a linear gain or a straight forward resistance.
-> > > > >> >> >>> >>
-> > > > >> >> >>> >> This is rather closer in operation to the analog front end
-> > > > >> >> >>> >> driver I took the other day than to the other potentiometers
-> > > > >> >> >>> >> we have drivers for.
-> > > > >> >> >>> >>
-> > > > >> >> >>> >> Anyhow, how to solve this?  Two options come to mind.
-> > > > >> >> >>> >> 1) Look up table mapping to linear gain as per current ABI
-> > > > >> >> >>> >> 2) Add a new channel type to represent the fact we are
-> > > > >> >> >>> >> looking at a logarithmic value, letting us handle it as DB.  
-> > > > >> >> >>> >
-> > > > >> >> >>> > Yeah, I guess it is a bit difficult. I don't think this should be a separate
-> > > > >> >> >>> > type since we are still describing the same thing, just the scale is
-> > > > >> >> >>> > logarithmic rather than linear. Translation table doesn't work either since
-> > > > >> >> >>> > your values would get ridiculous small/large. We could add a db suffix to
-> > > > >> >> >>> > the type, but that's just terrible. I guess the best we can do is have a
-> > > > >> >> >>> > scale attribute that says 1dB.  
-> > > > >> >> >>>
-> > > > >> >> >>> The other problem of course is that dB is a relative unit. The ratio of one
-> > > > >> >> >>> value to another. Whereas our normal scale refers to an absolute value.  
-> > > > >> >> >> I'm really not keen on this.  We have done the separate types
-> > > > >> >> >> for humidity already, where we had relative (which is a ratio) and absolute
-> > > > >> >> >> (which isn't).  It's not pretty though.
-> > > > >> >> >>
-> > > > >> >> >> Potentially we could define a new attribute that says this one is
-> > > > >> >> >> is db or linear but that's ugly too.
-> > > > >> >> >>
-> > > > >> >> >> As you asked, are we looking at a part that gets used for anything other
-> > > > >> >> >> than audio or not?  If just audio, alsa driver does indeed make more sense.
-> > > > >> >> >>  
-> > > > >> >> >
-> > > > >> >> > This can be used in audio but even in other field. It's just a potentiometer.
-> > > > >> >> > Can I know what is wrong to use the same approch of audio ampliefier that we
-> > > > >> >> > have already in the iio tree?
-> > > > >> >> >  
-> > > > >> >>
-> > > > >> >> cat /sys/bus/iio/devices/iio:device1/out_altvoltage0_hardwaregain
-> > > > >> >> -10.000000 dB
-> > > > >> >> echo -10 > /sys/bus/iio/devices/iio:device1/out_altvoltage0_hardwaregain  
-> > > > >> >
-> > > > >> > Wow, somehow that entire thing had slipped my mind.  I guess we went
-> > > > >> > through the whole question of how to support dB scales years ago
-> > > > >> > and it has just been very little used.
-> > > > >> >
-> > > > >> > Hmm. Sorry for my absent mindedness! Anyhow, there are a few additional
-> > > > >> > comments that need cleaning up.
-> > > > >> >
-> > > > >> > It is going to be a little odd as the only potentiometer (I think) that
-> > > > >> > is acting as a scale free attenuator, rather that being controlled on the basis
-> > > > >> > of resistance, but for the part that seems to make sense so fair enough.
-> > > > >> >
-> > > > >> > I'm slightly curious to know what you have this wired up to though?  
-> > > > >>
-> > > > >> I'm design GIOTTO ;) an audio module that use those to control the
-> > > > >> volume. It's a dsd
-> > > > >> native sound card that demultiplex i2s to L and R dsd on a pcm1795a.
-> > > > >> Everything already
-> > > > >> run under linux. The idea is to create an audio card and connect iio
-> > > > >> device to the volume
-> > > > >> to change dsd volume
-> > > > >>  
-> > > > >> > Are the inputs and outputs invisible to the kernel or is this feeding
-> > > > >> > into another device?  
-> > > > >>
-> > > > >> I think a reply above. Anyway we don't want to have driver duplication
-> > > > >> and I think should be land
-> > > > >> there
-> > > > >>  
-> > > > >> >
-> > > > >> > If we are feeding another device then the work recently done on a
-> > > > >> > generic AFE driver may be useful.  At somepoint we'll need a version  
-> > > > >>
-> > > > >> Can you point to it? I need to read about ;)  
-> > > > >
-> > > > > https://patchwork.kernel.org/patch/10358131/
-> > > > >
-> > > > > Should be in linux-next by now ready for the next merge window.
-> > > > > As it turns out, probably not relevant in your case you will
-> > > > > probably want to have the sound card as a consumer so that
-> > > > > the volume control maps nicely via usual interface etc.
-> > > > >
-> > > > > Perhaps cc the relevant sound lists and maintainers on next version.
-> > > > > I don't want to tread on anyone's toes if they are of the view that
-> > > > > it shouldn't be done this way (should be fine from previous conversations
-> > > > > with a few of them!)  
-> > > >
-> > > > Yes it's a good idea. I will try but I need to move my development
-> > > > board on latest
-> > > > kernel.
-> > > >
-> > > > Michael
-> > > >  
-> > > > >
-> > > > > Jonathan
-> > > > >  
-> > > > >>
-> > > > >> Michael
-> > > > >>  
-> > > > >> > of that which deals with standalone amplifiers and attenuators anyway,
-> > > > >> > but I don't know if it is useful to you.
-> > > > >> >
-> > > > >> > Jonathan
-> > > > >> >
-> > > > >> > Jonathan
-> > > > >> >
-> > > > >> >  
-> > > > >> >>
-> > > > >> >> uname -a
-> > > > >> >> Linux linaro-alip 4.4.93 #7 SMP Sun May 6 13:23:08 CEST 2018 armv7l GNU/Linux
-> > > > >> >>
-> > > > >> >> Michael
-> > > > >> >>  
-> > > > >> >> > Michael
-> > > > >> >> >  
-> > > > >> >> >> Jonathan  
-> > > > >> >> >
-> > > > >> >> >
-> > > > >> >> >
-> > > > >> >> > --
-> > > > >> >> > | Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-> > > > >> >> > | COO  -  Founder                                      Cruquiuskade 47 |
-> > > > >> >> > | +31(0)851119172                                 Amsterdam 1018 AM NL |
-> > > > >> >> > |                  [`as] http://www.amarulasolutions.com               |  
-> > > > >> >>
-> > > > >> >>
-> > > > >> >>  
-> > > > >> >  
-> > > > >>
-> > > > >>
-> > > > >>  
-> > > > >  
-> > > >
-> > > >
-> > > >
-> > > > --
-> > > > | Michael Nazzareno Trimarchi                     Amarula Solutions BV |
-> > > > | COO  -  Founder                                      Cruquiuskade 47 |
-> > > > | +31(0)851119172                                 Amsterdam 1018 AM NL |
-> > > > |                  [`as] http://www.amarulasolutions.com               |  
-> > >
-> > >
-> > >  
-> >  
+> ---
+>  drivers/iio/proximity/as3935.c | 53 ++++++++++++++--------------------
+>  1 file changed, 22 insertions(+), 31 deletions(-)
 > 
-> 
+> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+> index f130388a16a0..e33334ea2830 100644
+> --- a/drivers/iio/proximity/as3935.c
+> +++ b/drivers/iio/proximity/as3935.c
+> @@ -213,7 +213,7 @@ static int as3935_read_raw(struct iio_dev *indio_dev,
+>  
+>  static const struct iio_info as3935_info = {
+>  	.attrs = &as3935_attribute_group,
+> -	.read_raw = &as3935_read_raw,
+> +	.read_raw = as3935_read_raw,
+>  };
+>  
+>  static irqreturn_t as3935_trigger_handler(int irq, void *private)
+> @@ -345,6 +345,14 @@ static SIMPLE_DEV_PM_OPS(as3935_pm_ops, as3935_suspend, as3935_resume);
+>  #define AS3935_PM_OPS NULL
+>  #endif
+>  
+> +static void as3935_stop_work(void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +	struct as3935_state *st = iio_priv(indio_dev);
+> +
+> +	cancel_delayed_work_sync(&st->work);
+> +}
+> +
+>  static int as3935_probe(struct spi_device *spi)
+>  {
+>  	struct iio_dev *indio_dev;
+> @@ -368,7 +376,6 @@ static int as3935_probe(struct spi_device *spi)
+>  
+>  	spi_set_drvdata(spi, indio_dev);
+>  	mutex_init(&st->lock);
+> -	INIT_DELAYED_WORK(&st->work, as3935_event_work);
+>  
+>  	ret = of_property_read_u32(np,
+>  			"ams,tuning-capacitor-pf", &st->tune_cap);
+> @@ -414,59 +421,44 @@ static int as3935_probe(struct spi_device *spi)
+>  	iio_trigger_set_drvdata(trig, indio_dev);
+>  	trig->ops = &iio_interrupt_trigger_ops;
+>  
+> -	ret = iio_trigger_register(trig);
+> +	ret = devm_iio_trigger_register(&spi->dev, trig);
+>  	if (ret) {
+>  		dev_err(&spi->dev, "failed to register trigger\n");
+>  		return ret;
+>  	}
+>  
+> -	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
+> -		&as3935_trigger_handler, NULL);
+> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+> +		iio_pollfunc_store_time, as3935_trigger_handler, NULL);
+>  
+>  	if (ret) {
+>  		dev_err(&spi->dev, "cannot setup iio trigger\n");
+> -		goto unregister_trigger;
+> +		return ret;
+>  	}
+>  
+>  	calibrate_as3935(st);
+>  
+> +	INIT_DELAYED_WORK(&st->work, as3935_event_work);
+> +	ret = devm_add_action(&spi->dev, as3935_stop_work, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+>  	ret = devm_request_irq(&spi->dev, spi->irq,
+> -				&as3935_interrupt_handler,
+> +				as3935_interrupt_handler,
+>  				IRQF_TRIGGER_RISING,
+>  				dev_name(&spi->dev),
+>  				indio_dev);
+>  
+>  	if (ret) {
+>  		dev_err(&spi->dev, "unable to request irq\n");
+> -		goto unregister_buffer;
+> +		return ret;
+>  	}
+>  
+> -	ret = iio_device_register(indio_dev);
+> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+>  	if (ret < 0) {
+>  		dev_err(&spi->dev, "unable to register device\n");
+> -		goto unregister_buffer;
+> +		return ret;
+>  	}
+>  	return 0;
+> -
+> -unregister_buffer:
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -
+> -unregister_trigger:
+> -	iio_trigger_unregister(st->trig);
+> -
+> -	return ret;
+> -}
+> -
+> -static int as3935_remove(struct spi_device *spi)
+> -{
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> -	struct as3935_state *st = iio_priv(indio_dev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -	iio_trigger_unregister(st->trig);
+> -
+> -	return 0;
+>  }
+>  
+>  static const struct of_device_id as3935_of_match[] = {
+> @@ -488,7 +480,6 @@ static struct spi_driver as3935_driver = {
+>  		.pm	= AS3935_PM_OPS,
+>  	},
+>  	.probe		= as3935_probe,
+> -	.remove		= as3935_remove,
+>  	.id_table	= as3935_id,
+>  };
+>  module_spi_driver(as3935_driver);
 
 
