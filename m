@@ -3,38 +3,36 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 165B3C43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C54AC43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:07:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DE53A20657
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:05:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3228920657
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:07:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726359AbfCISFn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 13:05:43 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:60954 "EHLO
+        id S1726313AbfCISHP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 13:07:15 -0500
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:32776 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726286AbfCISFn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Mar 2019 13:05:43 -0500
+        with ESMTP id S1726286AbfCISHP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Mar 2019 13:07:15 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 8BFBF9E749C;
-        Sat,  9 Mar 2019 18:05:38 +0000 (GMT)
-Date:   Sat, 9 Mar 2019 18:05:35 +0000
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id BA0779E7D57;
+        Sat,  9 Mar 2019 18:07:13 +0000 (GMT)
+Date:   Sat, 9 Mar 2019 18:07:11 +0000
 From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 Cc:     Neil Armstrong <narmstrong@baylibre.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-amlogic@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-amlogic@lists.infradead.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: document the Meson G12A
- support
-Message-ID: <20190309180535.070a82de@archlinux>
-In-Reply-To: <CAFBinCA_bGFDOA5sLt26z++=LCtD_3xuaChQWDYJY2D0s2nHZQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: meson-saradc: add support for Meson G12A
+Message-ID: <20190309180711.08514830@archlinux>
+In-Reply-To: <CAFBinCCfEDBcaXt=FBJ8hNwpq1CQ=tuCyXpd6fxHqiEfTwt9Jw@mail.gmail.com>
 References: <20190304111217.882-1-narmstrong@baylibre.com>
-        <20190304111217.882-2-narmstrong@baylibre.com>
-        <CAFBinCA_bGFDOA5sLt26z++=LCtD_3xuaChQWDYJY2D0s2nHZQ@mail.gmail.com>
+        <20190304111217.882-3-narmstrong@baylibre.com>
+        <CAFBinCCfEDBcaXt=FBJ8hNwpq1CQ=tuCyXpd6fxHqiEfTwt9Jw@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -44,20 +42,23 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 5 Mar 2019 22:01:38 +0100
+On Tue, 5 Mar 2019 22:02:48 +0100
 Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 
 > On Mon, Mar 4, 2019 at 12:12 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
 > >
-> > Update the documentation to expicitly support the Meson-G12A SoC.  
-> typo: explicitly
-> 
+> > Add the SAR ADC driver for the Amlogic Meson-G12A SoC.
+> >
 > > Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>  
-> apart from that:
 > Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> 
+> this new compatible string will be especially useful when we want to
+> add "buffer" support which was reworked in the IP block with G12A
 
-Applied to the togreg branch of iio.git and pushed out
-as testing to be completely ignored ;)
+Good to know. Thanks.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
