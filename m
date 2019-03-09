@@ -2,57 +2,57 @@ Return-Path: <SRS0=9Bew=RM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4F18C43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 17:32:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3309C43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 17:33:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6EEA5207E0
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 17:32:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B1AB1207E0
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 17:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552152738;
-	bh=xpR9CZBTvu1EoR62SAfjWrmd5OFjqVE601E5z9BK+E8=;
+	s=default; t=1552152832;
+	bh=u7uVZo5ivGnFwM+oBBJ+0qPmbgn2hj8QK9Zj2CRoG5Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=mhQIQg9hMidjENti081cVNJJ2KodSnVvB3z6rz8SYl0CqjLvLTaCg46LmwzYNqfMe
-	 sgjOSoORU5tsSGY9TZvIMXer4mcM64ys0JaEvzFChM1OXKRos/imsIoxrD7NHixNri
-	 bkkVdeEHu3193Zpckwu285JPHY8tLGcew8Hl4FQE=
+	b=W2XbX+mCCCuz5kObPYYEhg2GDeiL6eYnJRz/xrlNIQ+s5ilMJIFqvSGEOZ26Xh52K
+	 gtf68lEq9IVFRQtepaG1qpENckf6Rw5HnUdltllykyZjwkiU3SDtTL3x1d6+C6r1PK
+	 A4sSH8YVJem0qif4zh/ljA+SsRWtmEfVjZpDJmJQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726308AbfCIRcR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 12:32:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50286 "EHLO mail.kernel.org"
+        id S1726312AbfCIRdw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 12:33:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51264 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726313AbfCIRcR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Mar 2019 12:32:17 -0500
+        id S1726289AbfCIRdv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Mar 2019 12:33:51 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A60ED20652;
-        Sat,  9 Mar 2019 17:32:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5945920652;
+        Sat,  9 Mar 2019 17:33:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552152736;
-        bh=xpR9CZBTvu1EoR62SAfjWrmd5OFjqVE601E5z9BK+E8=;
+        s=default; t=1552152831;
+        bh=u7uVZo5ivGnFwM+oBBJ+0qPmbgn2hj8QK9Zj2CRoG5Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=1CSueVFoKlKYg0cVZaCPmtqp8sKPdWkiU47+NEwTHY/ciNHh4c5xf/nZfxd/RJBGy
-         S+KeIRVz5fcI/JmQCt8f9Openetj6siQFoftXRCs76GvaCLi6bdYrVK7edIfyp0DqV
-         p2XAY2eou8Ajvr2fnsCwgJBZPcRDAZGN+EVKL0xg=
-Date:   Sat, 9 Mar 2019 17:32:11 +0000
+        b=D9qGCnEtaDm1wY/M4dxJuR0Cpb4BgM+wR10rnAhjGKEz5zGDjPPYoCFkZn35zcbJK
+         DmUXsHIwywReCRuUse8J7iN3w6iaks6k+1//NeQzAzidM5JLK2ssXigLEBz4TWL/t2
+         YBrkvaXMJKwdTCsBEoOf59R2ayU859ZibbY9B72U=
+Date:   Sat, 9 Mar 2019 17:33:46 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     "Chen, Hu" <hu1.chen@intel.com>, bo.he@intel.com,
+To:     Sven Van Asbroeck <thesven73@gmail.com>
+Cc:     Robert Eshleman <bobbyeshleman@gmail.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] io: accel: kxcjk1013: restore the range after
- resume.
-Message-ID: <20190309173211.00c205e3@archlinux>
-In-Reply-To: <cac7810e-04df-8aca-fbd9-2433b544960c@redhat.com>
-References: <23ced5ac-b0a0-7d87-76d7-bdec0c3e0e15@redhat.com>
-        <20190306023224.23695-1-hu1.chen@intel.com>
-        <cac7810e-04df-8aca-fbd9-2433b544960c@redhat.com>
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: light: Add driver for ap3216c
+Message-ID: <20190309173346.2a1ea4f8@archlinux>
+In-Reply-To: <CAGngYiW0Sf1mg-F18p_NeJZUMsvvceRn4HvNXAkdLaS9AfFDMQ@mail.gmail.com>
+References: <42dbbd7568e4216a320c6fd617bd91c1ee045af0.1551037168.git.bobbyeshleman@gmail.com>
+        <CAGngYiUkdehPwyN-oEBrUOpBzvkHef=TwyjCXKYawB54pmAdVg@mail.gmail.com>
+        <20190303143813.3b5a3f22@archlinux>
+        <CAGngYiW0Sf1mg-F18p_NeJZUMsvvceRn4HvNXAkdLaS9AfFDMQ@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,60 +62,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 6 Mar 2019 09:43:24 +0100
-Hans de Goede <hdegoede@redhat.com> wrote:
+On Mon, 4 Mar 2019 11:25:01 -0500
+Sven Van Asbroeck <thesven73@gmail.com> wrote:
 
-> Hi,
+> On Sun, Mar 3, 2019 at 9:38 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > Hmm. Just been thinking a bit about the events on here and wondered
+> > if it is possible to mask them through careful use of the threshold
+> > values - i.e. can we stop the hardware generating the interrupts for
+> > the ones we don't want. It would be unusual for hardware to be
+> > designed where this wasn't possible.  
 > 
-> On 06-03-19 03:32, Chen, Hu wrote:
-> > From: "he, bo" <bo.he@intel.com>
-> > 
-> > On some laptops, kxcjk1013 is powered off when system enters S3. We need
-> > restore the range regiter during resume. Otherwise, the sensor doesn't
-> > work properly after S3.
-> > 
-> > Signed-off-by: he, bo <bo.he@intel.com>
-> > Signed-off-by: Chen, Hu <hu1.chen@intel.com>  
+> Excellent point! People with power / battery constraints take a dim view of
+> receiving interrupts when no-one wants them. So disabling them in h/w
+> is definitely the way to go, if possible.
 > 
-> Thanks, patch looks good to me:
-I'd have had an ever so slight preference for a goto as I prefer
-errors to be checked for rather than good paths (as that's the more
-common pattern), but I don't care strongly enough to ask for
-a v4!
+> And yes, this also makes a non-issue of thresh_en visibility concerns, if any.
+> 
+> >
+> > Alternatively if you have a scope or equivalent to verify if it is doing
+> > these as a multi byte read and working that would be even better.
+> > It is not uncommon for hardware to implement fairly standard i2c features
+> > like this and not document them because they weren't what the test code
+> > the docs writer got given does! (may not be true here of course)  
+> 
+> Or alternatively, the current chip rev supports undocumented multi-reads,
+> and the next revision silently drops support, thereby breaking the driver...
+> Been there, done that, got the T-shirt :(
 
-> 
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-
-Thanks,
+Indeed it's a risk.  Sadly hardware guys never have a 'we mustn't break
+software' rule like we do for userspace! 
 
 Jonathan
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-> 
-> > ---
-> >   v3: Avoid unnecessary mutex_unlock (Hans).
-> >   v2: Handle return value independently (Jonathan).
-> > 
-> >   drivers/iio/accel/kxcjk-1013.c | 2 ++
-> >   1 file changed, 2 insertions(+)
-> > 
-> > diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> > index 7096e577b23f..50f3ff386bea 100644
-> > --- a/drivers/iio/accel/kxcjk-1013.c
-> > +++ b/drivers/iio/accel/kxcjk-1013.c
-> > @@ -1437,6 +1437,8 @@ static int kxcjk1013_resume(struct device *dev)
-> >   
-> >   	mutex_lock(&data->mutex);
-> >   	ret = kxcjk1013_set_mode(data, OPERATION);
-> > +	if (ret == 0)
-> > +		ret = kxcjk1013_set_range(data, data->range);
-> >   	mutex_unlock(&data->mutex);
-> >   
-> >   	return ret;
-> >   
+
 
