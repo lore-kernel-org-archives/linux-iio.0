@@ -4,52 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B897C43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A667C43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:32:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0395C2081B
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:29:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 547A22081B
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:32:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552156197;
-	bh=RbmhHhdlK8/OIHbMqIAx7cAYULR/XTZGFJ2zrzfBTWk=;
+	s=default; t=1552156335;
+	bh=6lPZlMTvvri4ScMoHSfcP+yxbIS9i4YA7ALgI779Fn0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=UE8+kDnrUTIMSCoQZNcm6mvhD1Dg4gCk1gIzPeBY4zLWmiH2mD//kYOjnfMObW0Pt
-	 xNMbibzvIp53QqnqKTXeekKW9d0eP4f3Q5eilN+ckn/Nucc5wGHOkRE9rHRy6ZxT4h
-	 qYLta6mxo/G/4j+V9J5/bnGM2Zze4Ss0CHvedFkg=
+	b=jTANMGUagoZkmJnqTIjyhtRfqkXUXUWwHenpWmU0p++MFsobhUpbgn8gddQeF8DoS
+	 t0N7yM/lQnTLT8jI0rhlA1kSElh/osrZlX00+R1r11+Iem2WukA/RnlAd20pxTQ8y6
+	 u0MbI+3meN3u14bu3Syaeja+rX/V8tMO2yMHK2A4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726355AbfCIS34 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 13:29:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49310 "EHLO mail.kernel.org"
+        id S1726545AbfCIScP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 13:32:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50070 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726351AbfCIS34 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Mar 2019 13:29:56 -0500
+        id S1726348AbfCIScO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Mar 2019 13:32:14 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B1C99207E0;
-        Sat,  9 Mar 2019 18:29:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 47C40207E0;
+        Sat,  9 Mar 2019 18:32:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552156195;
-        bh=RbmhHhdlK8/OIHbMqIAx7cAYULR/XTZGFJ2zrzfBTWk=;
+        s=default; t=1552156334;
+        bh=6lPZlMTvvri4ScMoHSfcP+yxbIS9i4YA7ALgI779Fn0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=b0qrFU807pCQY0XooX7Fa9eAaAgkx8gtX95vRPrrdJOd2Kt31nepZKMsvRVEVC+O5
-         GXCBPnYrUsz6KQ7THqnhfZp12ACufiAgir34sQ4BmvzZj8x5fSgJUDt8MrgZXuKxvE
-         n2Fuq61Wc4Bkn+NL1WeZguO89se0kkJvXM1hLmXQ=
-Date:   Sat, 9 Mar 2019 18:29:50 +0000
+        b=HQWnHMIpJfmK0sEV1+od5GAII9LkllxxeWL/0FhrGqzcSZ8YBaziZ07n2pY38BHKq
+         Dx7a5YB9IIbNLV/6xU/0xlOZfh0nkhZo5whWtg3dJtKW8SaDQ8jV8lykDalvKqLMkb
+         ZvUjA9TZASBOZ0I0oKstc1o1G1Cr1YY0T+m3R7Ps=
+Date:   Sat, 9 Mar 2019 18:32:07 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tomasz Duszynski <tduszyns@gmail.com>
-Cc:     Kangjie Lu <kjlu@umn.edu>, pakki001@umn.edu,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To:     Kangjie Lu <kjlu@umn.edu>
+Cc:     pakki001@umn.edu, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: hmc: fix a potential NULL pointer dereference
-Message-ID: <20190309182950.67a7dd9d@archlinux>
-In-Reply-To: <20190309134208.GA7820@arch>
-References: <20190309051533.14309-1-kjlu@umn.edu>
-        <20190309134208.GA7820@arch>
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: fix a potential NULL pointer dereference
+Message-ID: <20190309183207.42b68d90@archlinux>
+In-Reply-To: <20190309045356.8892-1-kjlu@umn.edu>
+References: <20190309045356.8892-1-kjlu@umn.edu>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,51 +63,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 9 Mar 2019 14:42:09 +0100
-Tomasz Duszynski <tduszyns@gmail.com> wrote:
+On Fri,  8 Mar 2019 22:53:55 -0600
+Kangjie Lu <kjlu@umn.edu> wrote:
 
-> On Fri, Mar 08, 2019 at 11:15:32PM -0600, Kangjie Lu wrote:
-> > devm_regmap_init_i2c may fail and return NULL. The fix returns
-> > the error when it fails.
-> >
-> > Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-> > ---
-> >  drivers/iio/magnetometer/hmc5843_i2c.c | 7 ++++++-
-> >  1 file changed, 6 insertions(+), 1 deletion(-)
-> >
-> > diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/magnetometer/hmc5843_i2c.c
-> > index 3de7f4426ac4..c0cd0823f8d5 100644
-> > --- a/drivers/iio/magnetometer/hmc5843_i2c.c
-> > +++ b/drivers/iio/magnetometer/hmc5843_i2c.c
-> > @@ -58,8 +58,13 @@ static const struct regmap_config hmc5843_i2c_regmap_config = {
-> >  static int hmc5843_i2c_probe(struct i2c_client *cli,
-> >  			     const struct i2c_device_id *id)
-> >  {
-> > +	struct regmap *devm_regmap = devm_regmap_init_i2c(cli,
-> > +			&hmc5843_i2c_regmap_config);
-> > +	if (IS_ERR(devm_regmap))
-> > +		return PTR_ERR(devm_regmap);  
+> devm_iio_trigger_alloc may fail and return NULL. The fix returns
+> ENOMEM when it fails.
 > 
-> This fixes only one part of the problem leaving identical spi issue
-> behind. I guess this check should be part of *common_probe().
-It could be, but that somewhat hides the error checking.
+> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+Seems obviously correct to me.  As it's been there a 'while'
+I'm not going to rush it in however. This can wait for the next
+merge window.
 
-I'd prefer to see it fixed like this, but in both here and the spi
-file.  Both this and spi in one patch would be great!
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/adc/mxs-lradc-adc.c | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> > +
-> >  	return hmc5843_common_probe(&cli->dev,
-> > -			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
-> > +			devm_regmap,
-> >  			id->driver_data, id->name);
-> >  }
-> >
-> > --
-> > 2.17.1
-> >  
+> diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
+> index c627513d9f0f..5384472b6c4d 100644
+> --- a/drivers/iio/adc/mxs-lradc-adc.c
+> +++ b/drivers/iio/adc/mxs-lradc-adc.c
+> @@ -465,6 +465,8 @@ static int mxs_lradc_adc_trigger_init(struct iio_dev *iio)
+>  
+>  	trig = devm_iio_trigger_alloc(&iio->dev, "%s-dev%i", iio->name,
+>  				      iio->id);
+> +	if (!trig)
+> +		return -ENOMEM;
+>  
+>  	trig->dev.parent = adc->dev;
+>  	iio_trigger_set_drvdata(trig, iio);
 
