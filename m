@@ -2,58 +2,50 @@ Return-Path: <SRS0=9Bew=RM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AECDC43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3A80C43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:28:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0566C20815
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 910032081B
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:28:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552155896;
-	bh=ptjD8mkNhqOFbBTyepNsMwh3Bqxakssmd0up4SjmIRE=;
+	s=default; t=1552156080;
+	bh=wKF0mJ7wWt7EwxPTBmcWME2lkoj189/yZpvkDMIs+0E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xpk4QpkkFhpK2Sxhk9K78SJCO6lJSSH4g6T04EaLOjmpDh8RI35AtwZmkvUnN0B3o
-	 7q45wbI6k2G474+9izX4CE96jMDMxQSZ5U/HRB5C7Q1jdOQNqjfeU6yBNMWp4Pysht
-	 L3yCq+ZheTQDSFSX3y2vMqBTiNGoi3VqWkFx2n18=
+	b=bQpt+UHSKKN4evlfimXqA3fYjwPetpc4sj6BzkKfhMAx22X/e6S/4I/Yn46pq6rBb
+	 LzJvSHcEnRmHgLhtsIrY4krver875RnayRGo+SV6mj4fK42TUm4dtdJgxDWPCrkQN8
+	 yoOkkwgcA2YNLvEkDaVg0m1eNXE0pxAt4eBa79Ro=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbfCISYz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 13:24:55 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48086 "EHLO mail.kernel.org"
+        id S1726348AbfCIS2A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 13:28:00 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49060 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726298AbfCISYz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Mar 2019 13:24:55 -0500
+        id S1726340AbfCIS17 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Mar 2019 13:27:59 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D5C92206DF;
-        Sat,  9 Mar 2019 18:24:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 329A4207E0;
+        Sat,  9 Mar 2019 18:27:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552155894;
-        bh=ptjD8mkNhqOFbBTyepNsMwh3Bqxakssmd0up4SjmIRE=;
+        s=default; t=1552156079;
+        bh=wKF0mJ7wWt7EwxPTBmcWME2lkoj189/yZpvkDMIs+0E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dfIoNtJLFi6HxuypMAdaGGLxFQ2/AS6MwB9L0InR2XHt+2cLB+4xiP7A5R0aZXQuN
-         LC+TS6VGLtHvpB08k7pg1jPLwSr39OR7ByiWXn4CxmNsNNfLSokGxiCnBlCKLRNcAf
-         OKI/6WZ2LLaKAeUPFfGIm0geLAskDDKs1OOp+L9Y=
-Date:   Sat, 9 Mar 2019 18:24:49 +0000
+        b=0Ly/4Qi7sIKMjQImkcrv231lK07Cd9PMxlFjr7IErdrW5iSE4EhPAXLalUE89UXr+
+         KYdDew5CG0d8hDdtwNDz9P8udzea02agJmEi3Tv/4OnlAGu2ApEWkcHTeRQw8UHVWH
+         tm0JtjtVqx+qBIo5bDx2CcCO+DWpT4WoXvDZLsDs=
+Date:   Sat, 9 Mar 2019 18:27:54 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Jonathan Cameron <jonathan.cameron@huawei.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: Re: [PATCH] iio: proximity: as3935: fix use-after-free on device
- remove
-Message-ID: <20190309182449.45cd1b28@archlinux>
-In-Reply-To: <CAGngYiUGcKrs86_ZARgfZxC_4hOAhW-e69GMpK6yAJMjHrYs6Q@mail.gmail.com>
-References: <20190306174559.17362-1-TheSven73@gmail.com>
-        <20190308171244.00001ec8@huawei.com>
-        <CAGngYiUGcKrs86_ZARgfZxC_4hOAhW-e69GMpK6yAJMjHrYs6Q@mail.gmail.com>
+To:     Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Cc:     linux-iio@vger.kernel.org, Peter Meerwald <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: dac: mcp4725: add missing powerdown bits in store
+ eeprom
+Message-ID: <20190309182754.5222143b@archlinux>
+In-Reply-To: <20190306205606.30419-1-jeff.dagenais@gmail.com>
+References: <20190306205606.30419-1-jeff.dagenais@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,23 +55,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 8 Mar 2019 12:49:30 -0500
-Sven Van Asbroeck <thesven73@gmail.com> wrote:
++Cc Peter.
+On Wed,  6 Mar 2019 15:56:06 -0500
+Jean-Francois Dagenais <jeff.dagenais@gmail.com> wrote:
 
-> On Fri, Mar 8, 2019 at 12:13 PM Jonathan Cameron
-> <jonathan.cameron@huawei.com> wrote:
-> >
-> > Your description makes it clear that there are multiple things in the patch.
-> > Don't do a 'while we were here' in a patch doing something else please.
-> > Separate patches.
-> >  
+> When issuing the write DAC register and write eeprom command, the two
+> powerdown bits (PD0 and PD1) are assumed by the chip to be present in
+> the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
+> a different state that the current one. By adding the current state of
+> the powerdown in the i2c write, the chip will correctly power-on exactly
+> like as it is at the moment of store_eeprom call.
 > 
-> The proposed solution (adding devm_) fixes multiple issues, so that can stay
-> as a single patch, right?
+> This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
+> for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
+> "Write All Memory Command".
 > 
-> It's the 'while we're here' you'd like to see removed? Can do.
+> Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+sounds fine to me, but I'd like to give Peter a chance to comment.
+Give me a poke if it turns out Peter is busy and doesn't get back
+to us in a week or two.
 
-That's the one. Just the & removal.  The rest makes sense in
-one patch as you say.
+Thanks,
 
 Jonathan
+
+> ---
+>  drivers/iio/dac/mcp4725.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> index 6ab1f23e5a79..97bb350d1e77 100644
+> --- a/drivers/iio/dac/mcp4725.c
+> +++ b/drivers/iio/dac/mcp4725.c
+> @@ -98,6 +98,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
+>  
+>  	inoutbuf[0] = 0x60; /* write EEPROM */
+>  	inoutbuf[0] |= data->ref_mode << 3;
+> +	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode+1) << 1) : 0;
+>  	inoutbuf[1] = data->dac_value >> 4;
+>  	inoutbuf[2] = (data->dac_value & 0xf) << 4;
+>  
+
