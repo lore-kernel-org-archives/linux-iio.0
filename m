@@ -4,56 +4,54 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A667C43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:32:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F32FCC43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:34:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 547A22081B
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:32:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C11AA2081B
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:34:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552156335;
-	bh=6lPZlMTvvri4ScMoHSfcP+yxbIS9i4YA7ALgI779Fn0=;
+	s=default; t=1552156484;
+	bh=flmMOEoEdSmSBfc7ltQFCjwpzDC1bz5Oi6wc1NnW0i8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=jTANMGUagoZkmJnqTIjyhtRfqkXUXUWwHenpWmU0p++MFsobhUpbgn8gddQeF8DoS
-	 t0N7yM/lQnTLT8jI0rhlA1kSElh/osrZlX00+R1r11+Iem2WukA/RnlAd20pxTQ8y6
-	 u0MbI+3meN3u14bu3Syaeja+rX/V8tMO2yMHK2A4=
+	b=lOYivS1YiOqZe5dvDz+WjSmh7gPzgrAj9ITr3sGjHXNTk49QY+cTLXSKst6g8vMne
+	 opUM/kR0jylyYtdk0flJY1sgJAQWyh3EIcsG9r960vzKAfiwwPacxEcF/6LMEC65w1
+	 WDeoKNGSOn4mTI+y2gqWCcMHo134vPgjXi4UTo80=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726545AbfCIScP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 13:32:15 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50070 "EHLO mail.kernel.org"
+        id S1726358AbfCISeo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 13:34:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726348AbfCIScO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Mar 2019 13:32:14 -0500
+        id S1726351AbfCISeo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Mar 2019 13:34:44 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 47C40207E0;
-        Sat,  9 Mar 2019 18:32:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A8F3207E0;
+        Sat,  9 Mar 2019 18:34:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552156334;
-        bh=6lPZlMTvvri4ScMoHSfcP+yxbIS9i4YA7ALgI779Fn0=;
+        s=default; t=1552156483;
+        bh=flmMOEoEdSmSBfc7ltQFCjwpzDC1bz5Oi6wc1NnW0i8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HQWnHMIpJfmK0sEV1+od5GAII9LkllxxeWL/0FhrGqzcSZ8YBaziZ07n2pY38BHKq
-         Dx7a5YB9IIbNLV/6xU/0xlOZfh0nkhZo5whWtg3dJtKW8SaDQ8jV8lykDalvKqLMkb
-         ZvUjA9TZASBOZ0I0oKstc1o1G1Cr1YY0T+m3R7Ps=
-Date:   Sat, 9 Mar 2019 18:32:07 +0000
+        b=Ef8CqWZNrYs7uxoff89lnsMQrpfurEyteZqYsCqPUIpjH2kjzfc1wwG7ndZtGKToh
+         23p+alM7FZZKvXuXOYNPWTuu8/P5kRRvp4D8kXxhHOZOhjRDyT/gDVLq9YZuJIMRjy
+         9LInmNB74ivy96meOC2lhl2u9SB6cEdpoIJEhNI0=
+Date:   Sat, 9 Mar 2019 18:34:37 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Kangjie Lu <kjlu@umn.edu>
-Cc:     pakki001@umn.edu, Hartmut Knaack <knaack.h@gmx.de>,
+To:     Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     Kangjie Lu <kjlu@umn.edu>, pakki001@umn.edu,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: fix a potential NULL pointer dereference
-Message-ID: <20190309183207.42b68d90@archlinux>
-In-Reply-To: <20190309045356.8892-1-kjlu@umn.edu>
-References: <20190309045356.8892-1-kjlu@umn.edu>
+        Stefan Agner <stefan@agner.ch>,
+        Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: max9611: fix a NULL pointer dereference
+Message-ID: <20190309183437.479f90a1@archlinux>
+In-Reply-To: <20190309151916.GB7820@arch>
+References: <20190309045141.8015-1-kjlu@umn.edu>
+        <20190309151916.GB7820@arch>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,39 +61,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  8 Mar 2019 22:53:55 -0600
-Kangjie Lu <kjlu@umn.edu> wrote:
+On Sat, 9 Mar 2019 16:19:17 +0100
+Tomasz Duszynski <tduszyns@gmail.com> wrote:
 
-> devm_iio_trigger_alloc may fail and return NULL. The fix returns
-> ENOMEM when it fails.
+> On Fri, Mar 08, 2019 at 10:51:40PM -0600, Kangjie Lu wrote:
+> > of_match_device may return NULL when it fails, and in this case,
+> > there will be a NULL pointer dereference. The fix returns
+> > EINVAL when of_match_device returns NULL.
+> >
+> > Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+> > ---
+> >  drivers/iio/adc/max9611.c | 7 +++++--
+> >  1 file changed, 5 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
+> > index 917223d5ff5b..531b6614ea29 100644
+> > --- a/drivers/iio/adc/max9611.c
+> > +++ b/drivers/iio/adc/max9611.c
+> > @@ -524,13 +524,16 @@ static int max9611_probe(struct i2c_client *client,
+> >  {
+> >  	const char * const shunt_res_prop = "shunt-resistor-micro-ohms";
+> >  	const struct device_node *of_node = client->dev.of_node;
+> > -	const struct of_device_id *of_id =
+> > -		of_match_device(max9611_of_table, &client->dev);  
 > 
-> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
-Seems obviously correct to me.  As it's been there a 'while'
-I'm not going to rush it in however. This can wait for the next
-merge window.
+> Given we got to this point how this can go wrong?
 
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+If this is to squash a warning then there may be some argument
+even though it can't actually fail.  If there is such a warning
+please put it in the patch description.
 
 Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/adc/mxs-lradc-adc.c | 2 ++
->  1 file changed, 2 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/mxs-lradc-adc.c b/drivers/iio/adc/mxs-lradc-adc.c
-> index c627513d9f0f..5384472b6c4d 100644
-> --- a/drivers/iio/adc/mxs-lradc-adc.c
-> +++ b/drivers/iio/adc/mxs-lradc-adc.c
-> @@ -465,6 +465,8 @@ static int mxs_lradc_adc_trigger_init(struct iio_dev *iio)
->  
->  	trig = devm_iio_trigger_alloc(&iio->dev, "%s-dev%i", iio->name,
->  				      iio->id);
-> +	if (!trig)
-> +		return -ENOMEM;
->  
->  	trig->dev.parent = adc->dev;
->  	iio_trigger_set_drvdata(trig, iio);
+> > +	const struct of_device_id *of_id;
+> >  	struct max9611_dev *max9611;
+> >  	struct iio_dev *indio_dev;
+> >  	unsigned int of_shunt;
+> >  	int ret;
+> >
+> > +	of_id = of_match_device(max9611_of_table, &client->dev);
+> > +	if (!of_id)
+> > +		return -EINVAL;
+> > +
+> >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*max9611));
+> >  	if (!indio_dev)
+> >  		return -ENOMEM;
+> > --
+> > 2.17.1
+> >  
 
