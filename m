@@ -2,85 +2,63 @@ Return-Path: <SRS0=9Bew=RM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C85ADC43381
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 165B3C43381
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:05:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8C76020815
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:03:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552154614;
-	bh=XcGvePLVt+HqFfBYKzMH0krcgClzTZDEInJRulyaVQI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=W6m/pG6XR7xmrZ+XGn00hbiMQgJs/LUKP/XDHwWXE9CnFIaY0xsddHDbFd0VDILjq
-	 ++I8bleAF0a9wBWhxKSjMozsdWOx3G87dtJN7/R8vn/uYcRrB7eLgvhFacKV/Chtmp
-	 p6/PrrnxkhBGA8D1OuMZFelvnSFEYwzN3HR31xNg=
+	by mail.kernel.org (Postfix) with ESMTP id DE53A20657
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Mar 2019 18:05:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726340AbfCISDe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Mar 2019 13:03:34 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37588 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726286AbfCISDe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Mar 2019 13:03:34 -0500
+        id S1726359AbfCISFn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Mar 2019 13:05:43 -0500
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:60954 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726286AbfCISFn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Mar 2019 13:05:43 -0500
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4C2ED20645;
-        Sat,  9 Mar 2019 18:03:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552154613;
-        bh=XcGvePLVt+HqFfBYKzMH0krcgClzTZDEInJRulyaVQI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=IlRxMVSh2YFofNdLhk4wLTIX9F05WaqqaLbjfiS4+iBN4tdi0kz6o2pm7eDVrRhqD
-         b6l/7bPc7/59Oyu8rjf1w0ZJOKT6ukM8tDrGR0EAL2tTqgngRgBvlR6RVDOHj2Ew6e
-         cFDmykVje/am+ZDLdbFVhRBje5YGzCn3Sh4OJynw=
-Date:   Sat, 9 Mar 2019 18:03:22 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sean Nyekjaer <sean@geanix.com>
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] mailmap: Update email for Sean Nyekjaer
-Message-ID: <20190309180322.5beb1497@archlinux>
-In-Reply-To: <20190304100808.7391-1-sean@geanix.com>
-References: <20190304100808.7391-1-sean@geanix.com>
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 8BFBF9E749C;
+        Sat,  9 Mar 2019 18:05:38 +0000 (GMT)
+Date:   Sat, 9 Mar 2019 18:05:35 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc:     Neil Armstrong <narmstrong@baylibre.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: document the Meson G12A
+ support
+Message-ID: <20190309180535.070a82de@archlinux>
+In-Reply-To: <CAFBinCA_bGFDOA5sLt26z++=LCtD_3xuaChQWDYJY2D0s2nHZQ@mail.gmail.com>
+References: <20190304111217.882-1-narmstrong@baylibre.com>
+        <20190304111217.882-2-narmstrong@baylibre.com>
+        <CAFBinCA_bGFDOA5sLt26z++=LCtD_3xuaChQWDYJY2D0s2nHZQ@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  4 Mar 2019 11:08:08 +0100
-Sean Nyekjaer <sean@geanix.com> wrote:
+On Tue, 5 Mar 2019 22:01:38 +0100
+Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
 
-> As I'll no longer be working with Prevas, add a mailmap entry so
-> any mail directed towards me reaches the appropriate mailbox.
->=20
-> Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-Applied.
+> On Mon, Mar 4, 2019 at 12:12 PM Neil Armstrong <narmstrong@baylibre.com> wrote:
+> >
+> > Update the documentation to expicitly support the Meson-G12A SoC.  
+> typo: explicitly
+> 
+> > Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>  
+> apart from that:
+> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+
+Applied to the togreg branch of iio.git and pushed out
+as testing to be completely ignored ;)
 
 Thanks,
 
 Jonathan
-
-> ---
->  .mailmap | 1 +
->  1 file changed, 1 insertion(+)
->=20
-> diff --git a/.mailmap b/.mailmap
-> index ea98fcc197e4..4087826d8753 100644
-> --- a/.mailmap
-> +++ b/.mailmap
-> @@ -186,6 +186,7 @@ Santosh Shilimkar <ssantosh@kernel.org>
->  Santosh Shilimkar <santosh.shilimkar@oracle.org>
->  Sascha Hauer <s.hauer@pengutronix.de>
->  S.=C3=87a=C4=9Flar Onur <caglar@pardus.org.tr>
-> +Sean Nyekjaer <sean@geanix.com> <sean.nyekjaer@prevas.dk>
->  Sebastian Reichel <sre@kernel.org> <sre@debian.org>
->  Sebastian Reichel <sre@kernel.org> <sebastian.reichel@collabora.co.uk>
->  Shiraz Hashim <shiraz.linux.kernel@gmail.com> <shiraz.hashim@st.com>
-
