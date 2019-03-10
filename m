@@ -7,113 +7,86 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B00C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 19:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E7C7C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 21:22:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 466D3206BA
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 19:33:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1983D207E0
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 21:22:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CefmRJ5j"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dDdeQIEc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726660AbfCJTdA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 10 Mar 2019 15:33:00 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:36745 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726658AbfCJTdA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Mar 2019 15:33:00 -0400
-Received: by mail-it1-f195.google.com with SMTP id v83so4034880itf.1;
-        Sun, 10 Mar 2019 12:32:59 -0700 (PDT)
+        id S1726895AbfCJVWV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 10 Mar 2019 17:22:21 -0400
+Received: from mail-qk1-f195.google.com ([209.85.222.195]:37833 "EHLO
+        mail-qk1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726878AbfCJVWV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Mar 2019 17:22:21 -0400
+Received: by mail-qk1-f195.google.com with SMTP id m9so1605657qkl.4;
+        Sun, 10 Mar 2019 14:22:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=u+DoI4sI+hMVW166TNGuic0psX3hAbOUaR7E0HZK7I0=;
-        b=CefmRJ5jnqnTC6+suGK+V3lL5Fdyf3x20xpF2m1h0Yp/4na6BEJsEVwe0c+ReE88TJ
-         ePoMYjY0fpr/4IePni2vJFisQPxx5t+FiHG9S2yJXODhIDY5nr17Qiln+EY1pYKUhOws
-         wWe/+PCSXV1O8DnAK9P/+HC2LussSXnDVGFVwkWUtKP9zmWkBca1WKHKSxIpLI4DvMsT
-         fN+o0mF48unpUnzO0qWh7TUA5C7hr48KoaDkOTr6z99mCV3/1BBNjSTEaO53ZU5VHXQi
-         rotkgR4rjtPtlW+nobzBHp+/oe3cc7Q1+2fKoVjqv0xAlQEKuTfIYDpAQJqB85UtX4rW
-         vXhw==
+        bh=cUtzmHatgmbK0VxfWjdt/J/yS8O6Lq2aryN//8xIso8=;
+        b=dDdeQIEcncezyh31faPKZoXsucIYp7NqKxZTSk4q06cbqO3SitlNdmFRsE0PTC2Vux
+         M3qFOdj1efeF+tqvR7SHFrvrPbxTKAMT61uwqrqgWmpZtfL7qKhuVVIPkyDMx2Vty+LQ
+         rCNDKVRXRpTKqft7dSo7YqJ/Tvt6MWFS6VBEMuWAJoWiOro6J7EQTP3g18FxauJy5VHP
+         sai53fOobewvRfqKu/EDgAWf+jB9kWS8NCYuWtPdCAA6vDI8rC9FQlrV0EIVoHCaSPQQ
+         snMZbQg13jD/8iOMFmnPjOiVGyVdyXHwgkZ7Uop7Cz4fLIH3w5/nD+/wCjggk1jPRLny
+         R3rg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=u+DoI4sI+hMVW166TNGuic0psX3hAbOUaR7E0HZK7I0=;
-        b=nrTMph6DntEqGyMenog4KKrehjpvJCxnmgn6OcWjIJfAvCiEtENn1F1OahLCB0G5hb
-         guBJi4mLtQCgCtY9Dj+26KHdUXpm28aTMYpyGyphBubr1JhszsPaxZ7mH9uz+Kxi+rJ/
-         bdF5GF6K1INpt1Li3t7QataEDe9WEtnfrfmpwsu5fyTnxXgp2bc1FTmHHE8b8iD/idGD
-         eMmtFwzQq41P9OZWwYn4vjZKKtlJ27lOkz7O2kjp+mRE6UGztVc/nTRr9KcXJBjdCBxg
-         DraYbN/dY5QCDbs1vA2sJa/wDgnY4anfJVx2ckiU0c9jWEz8yvGO+v8j21AHaK55GI9K
-         UDtA==
-X-Gm-Message-State: APjAAAXqmTpvHdm/eI2BvNmhdUi7592sPpm8ny8RWfLnI/bNedLugd+h
-        vpySIi4JDpKpZZ4WgPeWpVs=
-X-Google-Smtp-Source: APXvYqydBApxDLyKgcWQWctp+hyrCtPmRfUuwKSXCeeunLwJja/XvGr7WBg2/bGL8Tgy8rh0AwRn2w==
-X-Received: by 2002:a24:21d5:: with SMTP id e204mr14309614ita.56.1552246379241;
-        Sun, 10 Mar 2019 12:32:59 -0700 (PDT)
-Received: from localhost.localdomain ([198.52.185.227])
-        by smtp.gmail.com with ESMTPSA id w74sm7160856itb.44.2019.03.10.12.32.58
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Mar 2019 12:32:58 -0700 (PDT)
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: envelope-detector: fix use-after-free on device remove
-Date:   Sun, 10 Mar 2019 15:32:46 -0400
-Message-Id: <20190310193246.31761-1-TheSven73@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        bh=cUtzmHatgmbK0VxfWjdt/J/yS8O6Lq2aryN//8xIso8=;
+        b=gbEXrYQERLO41rKerAEjijYHevE5yEf2ObcCYzsV8F9HU6DlQA0inpKI1LAdIJQjWM
+         s59uqewnuGShjIUjXz986/DRe5pZL47PkEb3MHI3+m1bSDTk0zkFOc+qLOLgKDMgBPns
+         B/sv5lMbBhluJb2kUEBKuoozHstsXSd0cmwhDJH1A8Pjvky5vrSMtXnBSbAbv0/R/b03
+         cRls2+bnXNT9Yf+POqAEzNyaoZCw8d0TvWcii1NBi0Uyyy1shIT7R8SN3A8L6mUXoTva
+         1oDkZvZgpoiw3HLBENjUkTlt4fJdo+2WzDmJaRcGfwdZGos42z9SVY46tEhRC7Kglq9D
+         hnDw==
+X-Gm-Message-State: APjAAAVlevukYEwOnhoyw2UEzXkAqsJNGBnPfAc59I04AKoa/hOseOxw
+        9M5jPVLu/+gM6HThTxVyBXXog/XUmKg=
+X-Google-Smtp-Source: APXvYqw/HswJPsnJlzU2kcerzYgBm3RU62lGV5NIaNMHu/S0I56JN9aGzr4R/Vsf1evr3PRbzUYnlA==
+X-Received: by 2002:a37:d88:: with SMTP id 130mr21888058qkn.314.1552252939974;
+        Sun, 10 Mar 2019 14:22:19 -0700 (PDT)
+Received: from localhost.localdomain (host241.190-138-96.telecom.net.ar. [190.138.96.241])
+        by smtp.gmail.com with ESMTPSA id t55sm2602845qtt.57.2019.03.10.14.22.16
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 10 Mar 2019 14:22:18 -0700 (PDT)
+From:   Karen Palacio <karen.palacio.1994@gmail.com>
+To:     linux-kernel@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+        pmeerw@pmeerw.net, knaack.h@gmx.de, jic23@kernel.org,
+        Michael.Hennerich@analog.com, lars@metafoo.de
+Cc:     Karen Palacio <karen.palacio.1994@gmail.com>
+Subject: [PATCH] staging: iio: adc: ad7192: Add spaces around minus operator
+Date:   Sun, 10 Mar 2019 18:22:11 -0300
+Message-Id: <1552252931-10592-1-git-send-email-karen.palacio.1994@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This driver's remove path never explicitly cancels the
-delayed work. So it is possible for the delayed work to
-run after the core has freed the private structure
-(struct envelope). This is a potential use-after-free.
+Add spaces around minus operator to fix readibility.
 
-Fix by adding a devm_add_action callback to the remove
-path, called right after iio_device_unregister(), which
-explicitly cancels the delayed work.
-
-This issue was detected with the help of Coccinelle.
-
-Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
+Signed-off-by: Karen Palacio <karen.palacio.1994@gmail.com>
 ---
- drivers/iio/adc/envelope-detector.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ drivers/staging/iio/adc/ad7192.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/envelope-detector.c b/drivers/iio/adc/envelope-detector.c
-index 2f2b563c1162..2f1c78b3ff44 100644
---- a/drivers/iio/adc/envelope-detector.c
-+++ b/drivers/iio/adc/envelope-detector.c
-@@ -321,6 +321,14 @@ static const struct iio_info envelope_detector_info = {
- 	.read_raw = &envelope_detector_read_raw,
- };
- 
-+static void envelope_detector_stop_work(void *data)
-+{
-+	struct iio_dev *indio_dev = data;
-+	struct envelope *env = iio_priv(indio_dev);
-+
-+	cancel_delayed_work_sync(&env->comp_timeout);
-+}
-+
- static int envelope_detector_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
-@@ -395,6 +403,10 @@ static int envelope_detector_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	ret = devm_add_action(dev, envelope_detector_stop_work, indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	return devm_iio_device_register(dev, indio_dev);
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index acdbc07..7c632cf 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
  }
  
+ static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+-			     in_voltage-voltage_scale_available,
++			     in_voltage - voltage_scale_available,
+ 			     0444, ad7192_show_scale_available, NULL, 0);
+ 
+ static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
 -- 
-2.17.1
+2.7.4
 
