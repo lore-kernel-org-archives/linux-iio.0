@@ -2,96 +2,110 @@ Return-Path: <SRS0=Fqd7=RN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F06C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 11:31:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C88B8C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 17:44:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 85808207E0
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 11:31:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 91FC720657
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 17:44:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="VQEX5Hnr"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="o6LRP4TY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725875AbfCJLbR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 10 Mar 2019 07:31:17 -0400
-Received: from ns.pmeerw.net ([84.19.176.117]:42760 "EHLO ns.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725853AbfCJLbR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 10 Mar 2019 07:31:17 -0400
-Received: by ns.pmeerw.net (Postfix, from userid 1000)
-        id 46442E08ED; Sun, 10 Mar 2019 12:31:16 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
-        t=1552217476; bh=i9LjFhq/VTTmTGGBvpJ1bPtHNegx6xo7FBC2j0A2IqE=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=VQEX5Hnrbs7XXi5w4o6eVGzTUuhUg0A+1599ynm2qcDg+zJH3UC6qRfTPT8NKPyWl
-         YmKBufBW2yZp04M2OEHYegfxMFGZJsKO8DIOOvl0s1e2E/CXLQXq+FdjTvsIBLppG1
-         LM4u45SHPhi4Q0T1d7HFqPYlwVgFDY+LBvCe4W2g=
-Received: from localhost (localhost [127.0.0.1])
-        by ns.pmeerw.net (Postfix) with ESMTP id 2CA83E04DC;
-        Sun, 10 Mar 2019 12:31:16 +0100 (CET)
-Date:   Sun, 10 Mar 2019 12:31:16 +0100 (CET)
-From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To:     Jonathan Cameron <jic23@kernel.org>
-cc:     Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: mcp4725: add missing powerdown bits in store
- eeprom
-In-Reply-To: <20190309182754.5222143b@archlinux>
-Message-ID: <alpine.DEB.2.21.1903101230020.13266@vps.pmeerw.net>
-References: <20190306205606.30419-1-jeff.dagenais@gmail.com> <20190309182754.5222143b@archlinux>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1726711AbfCJRok (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 10 Mar 2019 13:44:40 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:45641 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726694AbfCJRok (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Mar 2019 13:44:40 -0400
+Received: by mail-qt1-f195.google.com with SMTP id d18so2622288qtg.12;
+        Sun, 10 Mar 2019 10:44:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=L8OIvE4OM34lFiaugtqa8w1MiGZcdM/o1HbxgYDMSIo=;
+        b=o6LRP4TYgY7czD/Rb+PNXujcRbA/uSvJBMHXzm5m2IX4cX0Ju8qoYMA+FgFAYL+Wct
+         cB1CGKeoqmFa51ySYHEeStZWm1iAEtap+IL2O2M6msgRJkGqLvE+nL+5qPtpl9WMR115
+         +4rQ8/UfBT0YzQ32wCrGWb9NNGnOFMaWkfq4gREco6Di/uDNyXSNI3kW8QJycayj+v0c
+         k1qHptVdnqrYoYLxcWIS3CvPI56u7SnRTJ5C6DyJYv7MqrTz2aEK1DAdqAb8zHMjWOIr
+         wGjTPI7R2Oa4QvOQ8wWTLcshtIy+uMseB2D9gjdbjLdT3H29Tyt69BiPipBz53xgY0NK
+         RPpA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=L8OIvE4OM34lFiaugtqa8w1MiGZcdM/o1HbxgYDMSIo=;
+        b=Kd9w/a186uQm6GlhCfLwRd7XpX8T7wKCb52TL87VRt/WaXxQFF9WU5giVC6+m75aMd
+         /EyxNpnVTHgwn+drWGcbeCFDSDfUnq5jeLlBGN3yXQCoKJwvS3TrC1sbCfmC+G0NHrTp
+         kt+21BiDFim+WHu/yGLijDLp15K2NfVBQNRQhKoZjX8nym7METTCNy6/ea4KKhTA8o3p
+         TqsOq6lPVd5JktNffosTQa9c1LD5w+O0z5jdKIkbCN6Q+MgbsK8coTZebMqFx9BBLHH3
+         ppTOSR4T7L46qR/JkUtsU8HZvhefilKRnTNPsrxCbzJG6iwUvjK0M0J8tdW0TkSzSzLM
+         xvww==
+X-Gm-Message-State: APjAAAUYjPFNnjObsJp1TnUw3NFQ2qz/I9Idqpx2JJETEe8ODYfOeO0v
+        Jd965Ud7EO59e5P43LB/DoE=
+X-Google-Smtp-Source: APXvYqyJdbJjP9KszTUftQwBhNMOA0CwQzFu0DX+uXqnOl1/9lwloV5GjehAf3QCXupmU5JYWUM11w==
+X-Received: by 2002:a0c:fa92:: with SMTP id o18mr3821751qvn.81.1552239879330;
+        Sun, 10 Mar 2019 10:44:39 -0700 (PDT)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id 17sm2752290qtt.18.2019.03.10.10.44.36
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Sun, 10 Mar 2019 10:44:38 -0700 (PDT)
+Date:   Sun, 10 Mar 2019 14:44:34 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com
+Subject: [PATCH v3 0/7] move out of staging
+Message-ID: <20190310174434.7t73fdbqbqezh3z6@smtp.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This series of patches make code style adjusts on comments and include
+order.
+It adds a SPDX license identifier of GPL-2.0.
+It makes Kconfig help message more compact and correct.
+It adds an ABI documentation for the device attributes.
+It changes device attributes to use more suitable ABI functions.
+Finally, it moves the ad5933 driver from staging directory to iio main
+drivers directory.
 
-> +Cc Peter.
- 
-> > When issuing the write DAC register and write eeprom command, the two
-> > powerdown bits (PD0 and PD1) are assumed by the chip to be present in
-> > the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
-> > a different state that the current one. By adding the current state of
-> > the powerdown in the i2c write, the chip will correctly power-on exactly
-> > like as it is at the moment of store_eeprom call.
-> > 
-> > This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
-> > for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
-> > "Write All Memory Command".
-> > 
-> > Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
 
-> sounds fine to me, but I'd like to give Peter a chance to comment.
-> Give me a poke if it turns out Peter is busy and doesn't get back
-> to us in a week or two.
+Marcelo Schmitt (7):
+  staging: iio: ad5933: change multi-line comment style
+  staging: iio: ad5933: organize includes
+  staging: iio: ad5933: add SPDX identifier
+  staging: iio: ad5933: change help rule message
+  staging: iio: ad5933: add ABI documentation
+  staging: iio: ad5933: change attributes' ABI call
+  staging: iio: ad5933: move out of staging
 
-I'd suggest whitespace around the + operator, otherwise
-
-Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-
-> > ---
-> >  drivers/iio/dac/mcp4725.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> > index 6ab1f23e5a79..97bb350d1e77 100644
-> > --- a/drivers/iio/dac/mcp4725.c
-> > +++ b/drivers/iio/dac/mcp4725.c
-> > @@ -98,6 +98,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
-> >  
-> >  	inoutbuf[0] = 0x60; /* write EEPROM */
-> >  	inoutbuf[0] |= data->ref_mode << 3;
-> > +	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode+1) << 1) : 0;
-> >  	inoutbuf[1] = data->dac_value >> 4;
-> >  	inoutbuf[2] = (data->dac_value & 0xf) << 4;
-> >  
-> 
+ .../ABI/testing/sysfs-bus-iio-ad5933          |  39 +
+ drivers/iio/impedance-analyzer/Kconfig        |  18 +
+ drivers/iio/impedance-analyzer/Makefile       |   5 +
+ drivers/iio/impedance-analyzer/ad5933.c       | 811 ++++++++++++++++++
+ .../staging/iio/impedance-analyzer/Kconfig    |  18 -
+ .../staging/iio/impedance-analyzer/Makefile   |   5 -
+ .../staging/iio/impedance-analyzer/ad5933.c   | 809 -----------------
+ 7 files changed, 873 insertions(+), 832 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ad5933
+ create mode 100644 drivers/iio/impedance-analyzer/Kconfig
+ create mode 100644 drivers/iio/impedance-analyzer/Makefile
+ create mode 100644 drivers/iio/impedance-analyzer/ad5933.c
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Kconfig
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Makefile
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/ad5933.c
 
 -- 
+2.20.1
 
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
