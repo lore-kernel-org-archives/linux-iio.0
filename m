@@ -5,103 +5,115 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C554FC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 18:58:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B00C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 19:33:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 91ED720657
-	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 18:58:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 466D3206BA
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Mar 2019 19:33:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="a9fshGZZ"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CefmRJ5j"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726950AbfCJS6p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 10 Mar 2019 14:58:45 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:40951 "EHLO
+        id S1726660AbfCJTdA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 10 Mar 2019 15:33:00 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:36745 "EHLO
         mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726721AbfCJS6g (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Mar 2019 14:58:36 -0400
-Received: by mail-it1-f195.google.com with SMTP id l139so3931834ita.5;
-        Sun, 10 Mar 2019 11:58:36 -0700 (PDT)
+        with ESMTP id S1726658AbfCJTdA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 10 Mar 2019 15:33:00 -0400
+Received: by mail-it1-f195.google.com with SMTP id v83so4034880itf.1;
+        Sun, 10 Mar 2019 12:32:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fxgFiCRKgpoCxt3b7qAJzupwn0XavxwiX5uUbpM/OII=;
-        b=a9fshGZZ7i/tLOZepomjCBDfixyvFGzizvaDmgosBgbXN7+q1UJ/ZsN5OMR7TXZO3s
-         OZsLl6fn5MRTxgtWXvRFdonnegXiOaRpFUqi+BHCHk4QjwpF+oxN+I5uNuEo4aOxZ7bZ
-         r3fpKQHgmXCmSfjPDLwXnbs4/ueXM4Q9UrvmuK57Ao1e8UzEoS6wTrrZRp7cJJfs+zJq
-         KtTwS33zSuk6UDDDspaMdOJHuUwGaDrS1JU04+N5oLT71uISpVnTdm0I4ZRxnBW7Qa4q
-         bc2JXN+ybhDqk23+9lFgSLQBqaT+oyXxRhLcNPTVLQlQWMtEy1zu1v6pAlY60w5GoBuV
-         a6xQ==
+        h=from:to:cc:subject:date:message-id;
+        bh=u+DoI4sI+hMVW166TNGuic0psX3hAbOUaR7E0HZK7I0=;
+        b=CefmRJ5jnqnTC6+suGK+V3lL5Fdyf3x20xpF2m1h0Yp/4na6BEJsEVwe0c+ReE88TJ
+         ePoMYjY0fpr/4IePni2vJFisQPxx5t+FiHG9S2yJXODhIDY5nr17Qiln+EY1pYKUhOws
+         wWe/+PCSXV1O8DnAK9P/+HC2LussSXnDVGFVwkWUtKP9zmWkBca1WKHKSxIpLI4DvMsT
+         fN+o0mF48unpUnzO0qWh7TUA5C7hr48KoaDkOTr6z99mCV3/1BBNjSTEaO53ZU5VHXQi
+         rotkgR4rjtPtlW+nobzBHp+/oe3cc7Q1+2fKoVjqv0xAlQEKuTfIYDpAQJqB85UtX4rW
+         vXhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=fxgFiCRKgpoCxt3b7qAJzupwn0XavxwiX5uUbpM/OII=;
-        b=DgPWsdN8enq2zyHdghRBATd7/CMSLa+akuRkozoClIr1xMi3m/qbNVvc8ZUe3tEHGc
-         /VznLSeGbf1n1YgPPVwoQdc3po4s34BUVzWNPHg+zaR8bxl7j9DL/WEDPmE9iaai1hUR
-         NW+ILDj/jPMHIdZ8CwJz1ZXLiD1bXhcCefZ47yIPg4Umr+VsdRvaIKAmU1tvpwOesvOU
-         w14jSLS0qDy+dZuT34ArOO74SlNBWvOOusWxNoNixpCFUHC6FOgLBO0u23Ce1gQVZAJl
-         ATA1eVOCcI/X/KOjTLIILtVsKzcuM9cUOLbGIAssbqUMEFnQTDEir4FwGT24VDlorosf
-         fBiw==
-X-Gm-Message-State: APjAAAUyAJp3ywVIwh+8gOduqA/fGtnZHItTZvey4TXSZXYa8xgTjCLE
-        15HG41w9fn5tFs2JYMP/tT0=
-X-Google-Smtp-Source: APXvYqyGASuFsKMDYrVtGpg9O7HRaj1RL78fLP+QSyIZRt5Ha5mt6iBOlsy3QMRJjIlQs682yv+8YA==
-X-Received: by 2002:a24:1cc6:: with SMTP id c189mr12881577itc.74.1552244315449;
-        Sun, 10 Mar 2019 11:58:35 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=u+DoI4sI+hMVW166TNGuic0psX3hAbOUaR7E0HZK7I0=;
+        b=nrTMph6DntEqGyMenog4KKrehjpvJCxnmgn6OcWjIJfAvCiEtENn1F1OahLCB0G5hb
+         guBJi4mLtQCgCtY9Dj+26KHdUXpm28aTMYpyGyphBubr1JhszsPaxZ7mH9uz+Kxi+rJ/
+         bdF5GF6K1INpt1Li3t7QataEDe9WEtnfrfmpwsu5fyTnxXgp2bc1FTmHHE8b8iD/idGD
+         eMmtFwzQq41P9OZWwYn4vjZKKtlJ27lOkz7O2kjp+mRE6UGztVc/nTRr9KcXJBjdCBxg
+         DraYbN/dY5QCDbs1vA2sJa/wDgnY4anfJVx2ckiU0c9jWEz8yvGO+v8j21AHaK55GI9K
+         UDtA==
+X-Gm-Message-State: APjAAAXqmTpvHdm/eI2BvNmhdUi7592sPpm8ny8RWfLnI/bNedLugd+h
+        vpySIi4JDpKpZZ4WgPeWpVs=
+X-Google-Smtp-Source: APXvYqydBApxDLyKgcWQWctp+hyrCtPmRfUuwKSXCeeunLwJja/XvGr7WBg2/bGL8Tgy8rh0AwRn2w==
+X-Received: by 2002:a24:21d5:: with SMTP id e204mr14309614ita.56.1552246379241;
+        Sun, 10 Mar 2019 12:32:59 -0700 (PDT)
 Received: from localhost.localdomain ([198.52.185.227])
-        by smtp.gmail.com with ESMTPSA id y18sm1359270ioa.56.2019.03.10.11.58.34
+        by smtp.gmail.com with ESMTPSA id w74sm7160856itb.44.2019.03.10.12.32.58
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 10 Mar 2019 11:58:35 -0700 (PDT)
+        Sun, 10 Mar 2019 12:32:58 -0700 (PDT)
 From:   Sven Van Asbroeck <thesven73@gmail.com>
 X-Google-Original-From: Sven Van Asbroeck <TheSven73@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
+To:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 2/3] iio: adc: xilinx: fix potential use-after-free on probe
-Date:   Sun, 10 Mar 2019 14:58:25 -0400
-Message-Id: <20190310185826.25916-2-TheSven73@gmail.com>
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: envelope-detector: fix use-after-free on device remove
+Date:   Sun, 10 Mar 2019 15:32:46 -0400
+Message-Id: <20190310193246.31761-1-TheSven73@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190310185826.25916-1-TheSven73@gmail.com>
-References: <20190310185826.25916-1-TheSven73@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If probe errors out after request_irq(), its error path
-does not explicitly cancel the delayed work, which may
-have been scheduled by the interrupt handler.
+This driver's remove path never explicitly cancels the
+delayed work. So it is possible for the delayed work to
+run after the core has freed the private structure
+(struct envelope). This is a potential use-after-free.
 
-This means the delayed work may still be running when
-the core frees the private structure (struct xadc).
-This is a potential use-after-free.
+Fix by adding a devm_add_action callback to the remove
+path, called right after iio_device_unregister(), which
+explicitly cancels the delayed work.
 
-Fix by inserting cancel_delayed_work_sync() in the probe
-error path.
+This issue was detected with the help of Coccinelle.
 
 Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
 ---
- drivers/iio/adc/xilinx-xadc-core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/envelope-detector.c | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 1960694e8007..15e1a103f37d 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1290,6 +1290,7 @@ static int xadc_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/adc/envelope-detector.c b/drivers/iio/adc/envelope-detector.c
+index 2f2b563c1162..2f1c78b3ff44 100644
+--- a/drivers/iio/adc/envelope-detector.c
++++ b/drivers/iio/adc/envelope-detector.c
+@@ -321,6 +321,14 @@ static const struct iio_info envelope_detector_info = {
+ 	.read_raw = &envelope_detector_read_raw,
+ };
  
- err_free_irq:
- 	free_irq(xadc->irq, indio_dev);
-+	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
- err_clk_disable_unprepare:
- 	clk_disable_unprepare(xadc->clk);
- err_free_samplerate_trigger:
++static void envelope_detector_stop_work(void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct envelope *env = iio_priv(indio_dev);
++
++	cancel_delayed_work_sync(&env->comp_timeout);
++}
++
+ static int envelope_detector_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -395,6 +403,10 @@ static int envelope_detector_probe(struct platform_device *pdev)
+ 		return ret;
+ 	}
+ 
++	ret = devm_add_action(dev, envelope_detector_stop_work, indio_dev);
++	if (ret)
++		return ret;
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ 
 -- 
 2.17.1
 
