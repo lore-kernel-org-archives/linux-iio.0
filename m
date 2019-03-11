@@ -6,107 +6,79 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
 	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1183EC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:28:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B1F3C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:48:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D2ED42148D
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:28:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23CA32087C
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:48:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552343328;
-	bh=h99xRgTolS0sYBymcwweDDJUXvQ0mwPcwApHPzpmQMs=;
+	s=default; t=1552344482;
+	bh=tZQ1MVIPrBMaGtM5X57I8wCHrEQrluOSmU5IWRM1um4=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=NgiObUMpYe+kqgOHWczcrtREv+K4+82qXpapphcSbfReRV9U75L5pP5/y395fbI1U
-	 voVmT9sy37KNZRHHzrCm1QsKEOJfsPiz3HQYmdPnRmmzibxp5OvE4lKdAsqhvv0763
-	 PyRIYjh/psdnGO7w3DaTgBXt5zsM/y7pAC4HWQ9Q=
+	b=ZtdWWt9h344kbvx/RI5s1zw+lvisUmyH3vxRqN6IbA8tQGDJH+A/e6Ehco38BMbkE
+	 gXqSqNTbcek7tWIzIdVvbOV4tkJsu+w1FEZb6BR+bx3Z35PMqG9YOljXZV674K/pcR
+	 Ry4XyA3qe0BP/qWx2YsrI2/a91zUDQCmynPrWHgU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726016AbfCKW2n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Mar 2019 18:28:43 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:39729 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725890AbfCKW2n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 18:28:43 -0400
-Received: by mail-ot1-f67.google.com with SMTP id e15so706176otk.6;
-        Mon, 11 Mar 2019 15:28:43 -0700 (PDT)
+        id S1725843AbfCKWr4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Mar 2019 18:47:56 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:45934 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725826AbfCKWr4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 18:47:56 -0400
+Received: by mail-ot1-f65.google.com with SMTP id i12so706739otp.12;
+        Mon, 11 Mar 2019 15:47:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=sbjLaawG5X+3yVq6Fx8QrylqfUfU65i8TiCSwA7C0bo=;
-        b=pLEnGDvzoXakctlpFP4V+eWFhpANUsET/bfDjEifW8bUzCA/cwcpIPxAdtTdWFcJlC
-         aAcyJXY7g3EKjgdJpmqyfGsZdpE6lHVkQDGwXt16emCzl8DBZyn1UIwlUX8Ob/C5w2FP
-         +JqYFXypDltuV+aBI5nB8VjqJ8Ykqy71xvLnShq6o3Heqbf0AyfLgpQK98dXMBLgBWxz
-         fW0NXoRxZNZrE3Gf7/jCD4jM6SmUIy7tKSg4HEyh4y/stUcuCGX9Je4Czt+afIwGgYhT
-         Ic3WqIKiqJKqdpaFU6LFhvFsDbLlYUgo17c7BBJouwblvZWYP4aqF6PK41URmJP7I9Sd
-         DHWg==
-X-Gm-Message-State: APjAAAXvKL0My7pEcOGwu4cNYz6Yk+lpeHEDSwoBKQEz7MVHC53gztTo
-        bWvXctZFcDs2U//M7ObYJg==
-X-Google-Smtp-Source: APXvYqyVNhIJWksnUQPcukyl8VC9DqPam1VBOKSduDXWgxpG8noWaW24cYO1ZAqDoZfBeElYEl/UmA==
-X-Received: by 2002:a05:6830:2055:: with SMTP id f21mr21242154otp.130.1552343322685;
-        Mon, 11 Mar 2019 15:28:42 -0700 (PDT)
+        bh=M1dZU86o/zb00gvYtMSXbvCESshMXfXrWh7L9zbZ0qA=;
+        b=lnoeJ0S27f7wO7NV8kWFHV+zIr7lvd4BHxpbt3zFjQVq/Bfkfi8fUga7nWcOOb23PN
+         SuBtkGBgLFokWE1MXsjmACvAgu8do3MnRKQ8MnmQnVwdZDStKRqIzFqfQwpRCXjOpv4R
+         4N5XxKqfzqdlJ1UYgFSsJnMfA6MK032ZF0yEsoKYTMwcZg9iGaXVnXE4LwZ8+vKHZfDW
+         c8bDShuLjJp4rajTSRny8zbMvHFZ+OOLoDBL3UJqHm2eWIEG/DIzVqlcPiVmyYZXr0Mo
+         J5kyfx3XlUgsCl2h8VxFlLmZy9b+jtM88Vsh6lmJHzpZUrN+B7S2XeajUVvGUxJt+Wl+
+         FEsQ==
+X-Gm-Message-State: APjAAAX5Yi7Cs5ZPxB2wgjDMQK4de34v/ng4AuFSRe22TGvLrb/bhLdP
+        fL6tYxT7FLuX/EFAx9/zpw==
+X-Google-Smtp-Source: APXvYqyryUCZfiN+nog9fu3JCxr6H6brO22MTu7QW1dF0nlRNP6BgVNadwgOwlPSSQbEjFVdOn6OzA==
+X-Received: by 2002:a9d:5e14:: with SMTP id d20mr22859779oti.172.1552344475086;
+        Mon, 11 Mar 2019 15:47:55 -0700 (PDT)
 Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 39sm2941908ota.11.2019.03.11.15.28.42
+        by smtp.gmail.com with ESMTPSA id t2sm2969906otb.79.2019.03.11.15.47.54
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 11 Mar 2019 15:28:42 -0700 (PDT)
-Date:   Mon, 11 Mar 2019 17:28:41 -0500
+        Mon, 11 Mar 2019 15:47:54 -0700 (PDT)
+Date:   Mon, 11 Mar 2019 17:47:54 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Patrick Havelange <patrick.havelange@essensium.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matt Weber <matthew.weber@rockwellcollins.com>,
-        Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Patrick Havelange <patrick.havelange@essensium.com>
-Subject: Re: [PATCH v6 3/4] iio:temperature:max31856:Add device tree bind info
-Message-ID: <20190311222841.GA6024@bogus>
-References: <20190307103409.24174-1-patrick.havelange@essensium.com>
- <20190307103409.24174-3-patrick.havelange@essensium.com>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        giuliano.belinassi@usp.br, robh+dt@kernel.org,
+        mark.rutland@arm.com, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH v4 9/9] staging: iio: ad7780: add device tree binding
+Message-ID: <20190311224753.GA32052@bogus>
+References: <cover.1551358569.git.renatogeh@gmail.com>
+ <ac8955ea9d903c106535d76549ff9802f527f4f6.1551358569.git.renatogeh@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190307103409.24174-3-patrick.havelange@essensium.com>
+In-Reply-To: <ac8955ea9d903c106535d76549ff9802f527f4f6.1551358569.git.renatogeh@gmail.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  7 Mar 2019 11:34:08 +0100, Patrick Havelange wrote:
-> From: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
+On Thu, 28 Feb 2019 11:26:28 -0300, Renato Lui Geh wrote:
+> Adds a device tree binding for the ad7780 driver.
 > 
-> This patch added device tree binding info for MAX31856 driver.
-> 
-> Signed-off-by: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
-> Signed-off-by: Matt Weber <matthew.weber@rockwellcollins.com>
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
 > ---
-> Changes
-> v1 -> v2
-> [Matt
->  - Removed comment block and added possibilities of
->    thermocouple type in device tree binding doc.
-> 
-> v2 -> v3
->  - Rebased
-> 
-> v3 -> v4
->  - Removed one-shot property related information.
->  - Used standard name 'temp-sensor'
-> 
-> v4 -> v5
-> [Patrick
->  - Rename thermocouple type to maxim,thermocouple-type for DT entry
-> 
-> v5 -> v6
-> [Patrick
->  - use generic thermocouple-type for DT entry
-> ---
->  .../bindings/iio/temperature/max31856.txt     | 24 +++++++++++++++++++
->  1 file changed, 24 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/max31856.txt
+>  .../bindings/iio/adc/adi,ad7780.txt           | 48 +++++++++++++++++++
+>  1 file changed, 48 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
