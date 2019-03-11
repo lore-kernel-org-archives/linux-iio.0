@@ -2,90 +2,120 @@ Return-Path: <SRS0=pZra=RO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A586C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 18:48:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0972C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:26:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C27D206DF
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 18:48:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E3CyCkzO"
+	by mail.kernel.org (Postfix) with ESMTP id 680FE2087F
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 22:26:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1552343189;
+	bh=LbfdkPZG+MsyY5eaWj30/YXSWStVRPcEnMyHmAZpsLc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=bqh6rM+jRDTWCNnh5JTtusaOOOzdxcSDF9gXWkGEVbfHBN/tIaD6oQ4FaPegZEsPE
+	 zsmNk9BAn5CA7aGbZlPQ/21zVdahR1IHK2N6nsxaXG7iPhRfQOzz1+r+k4JodRDK1Q
+	 zKKI21tqfO0/mUBiY9Aq4jL/r7TLdcd7BKdPqgYA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727008AbfCKSsL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Mar 2019 14:48:11 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:44869 "EHLO
+        id S1725826AbfCKW02 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Mar 2019 18:26:28 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:33424 "EHLO
         mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726942AbfCKSsL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 14:48:11 -0400
-Received: by mail-oi1-f193.google.com with SMTP id a81so4520051oii.11;
-        Mon, 11 Mar 2019 11:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=R9aBFyECQDqLE8kcWcrFTaNk6b19WS2DWEH1/8Z/ri4=;
-        b=E3CyCkzOEUn59R3BNajWY/zfmMNPByDSokd+5eP+vb7mg2PgIp94ATtYrj0ugTS6WY
-         LlSWC7yzhsKZzjuwh+Mo5nZHfdWLNNLvuZdPEPgexqucsexTwLTX7BLRchqpR59/xwOs
-         FC9kRZJsIEu2ouSZp9yIhlqEB8H8rY5Mlo3RcbICOyHTGns3N8uuxQZBoR3umWK9miaW
-         vlbTPIYlaccfWQMD9Gg2QFdfECGGLRQDuZb9ABHptzNACEtBLeKwbyepiDf5+hphl/Oy
-         llrcAAzCnVlkJM7Eiy17JTvYJMl34IKg8F+LDynOG4BsjNl/6Tyq10vdPQdHf9jwDh1l
-         gjgA==
+        with ESMTP id S1725843AbfCKW02 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 18:26:28 -0400
+Received: by mail-oi1-f193.google.com with SMTP id z14so489959oid.0;
+        Mon, 11 Mar 2019 15:26:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=R9aBFyECQDqLE8kcWcrFTaNk6b19WS2DWEH1/8Z/ri4=;
-        b=FuwiJByBiJOogbHedZxCBnRlp9X19eVX0nFavRHgls2A6HrQNyf4I9l4RM7fipNLda
-         jzL2q6ET9CfddB2VI9MOWei1LNDz5GGtOcQSpKBSvsnZwCKKpc52OEBO44NqaLHpBvaQ
-         i5sD96++XY39Bp37DiK5mWxzyfoqYJFpXWK90A1WZds9VOmcEt+cZamESlK5/nGsNjDU
-         8ledlIcPdisMHeFrnjbZRbMG55bdM9SY0+UrWQp7xbnfO6mvSHeOjEwXme0Mf8kJebN+
-         fpt1tcQ0CbWomZr40oZCg3hXaA22qpxYjQNwfY1TaAH5dh/0JKomLC1XmBU7N2KnV/pF
-         zWEg==
-X-Gm-Message-State: APjAAAWT/PCdy5QF+BbplsHBhgCsmFuNMsFoWwfCcH0BlndAApsxSKaC
-        ndoOoc41Iswyug95QjJFVqaG0aj2D7eiO9vABxI=
-X-Google-Smtp-Source: APXvYqwPO/t1MO/iIkpZ8udFipCCs0ZyEZ4duBAfeCUcCWrOB32St950yWYE+HJBKD+rPtKjeqrL2W7o/Wvtz9V7cVk=
-X-Received: by 2002:aca:e6d5:: with SMTP id d204mr149970oih.77.1552330090324;
- Mon, 11 Mar 2019 11:48:10 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190310193246.31761-1-TheSven73@gmail.com> <20190311180042.GA17880@arch>
- <fe70de0a-9134-8942-c729-e014807d101b@axentia.se>
-In-Reply-To: <fe70de0a-9134-8942-c729-e014807d101b@axentia.se>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Mon, 11 Mar 2019 14:47:59 -0400
-Message-ID: <CAGngYiXyEksuMDBkrasiwwge4fgoHKKecsSHB6q0GQyEoiZXxw@mail.gmail.com>
-Subject: Re: [PATCH] iio: envelope-detector: fix use-after-free on device remove
-To:     Peter Rosin <peda@axentia.se>
-Cc:     Tomasz Duszynski <tduszyns@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=aBZLUd4hpubjdvlFEYkQ1ouWUmfNmrO8MxfGM+7n9TY=;
+        b=cGqumrwwrxKPX2RRydn/5VutQ/UzrXf8VOXkkZoKKMQOcS9YxnUHtg1G8zNFvzsxQm
+         LjxVtDaIf2F8ujbX7ymv68iqsrqCFZFVDYI8cBSSFyQXVJ4ht9X/CG/aMFfzp3IMoaqp
+         EfaltRXYo7BT7/SgB9L6+Czi8U0GuOT0IS8leosjij4BAHV0VqWVaS06JokYCrHOWWh1
+         V8hqNoQTRYun47tnPvE7QJ6fPiIWqnzGUNWfziDj5baLRyIn31B+9FgDv+4fTRgUwolW
+         lbeqAOIFcI+W5kVAnZ6ZbsFrdxnVsIIl8OSMSDDXb2CFKKkLfhMJA17kqnhNDoREz/Gd
+         bgPg==
+X-Gm-Message-State: APjAAAUEjMIshk/TFIcpKs1FvY1SWfTMbQ1KzIiek54+iIZEt04nC/iF
+        cizESMdOXk4w1x4OtrzCUQ==
+X-Google-Smtp-Source: APXvYqyX2GBVUSSNMy2pVVKB/YdvrRPb+Yq/Arevpw4iUb7kKWFV+jRCwUTv8N2jILMIpx1ncxUcBw==
+X-Received: by 2002:aca:360a:: with SMTP id d10mr357468oia.68.1552343187680;
+        Mon, 11 Mar 2019 15:26:27 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id d11sm2739097otp.18.2019.03.11.15.26.26
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 11 Mar 2019 15:26:27 -0700 (PDT)
+Date:   Mon, 11 Mar 2019 17:26:26 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Patrick Havelange <patrick.havelange@essensium.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Mark Rutland <mark.rutland@arm.com>,
+        Matt Weber <matthew.weber@rockwellcollins.com>,
+        Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v6 2/4] dt-bindings: iio/temperature: Add doc for
+ thermocouple-type
+Message-ID: <20190311222626.GA26688@bogus>
+References: <20190307103409.24174-1-patrick.havelange@essensium.com>
+ <20190307103409.24174-2-patrick.havelange@essensium.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190307103409.24174-2-patrick.havelange@essensium.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Peter,
+On Thu, Mar 07, 2019 at 11:34:07AM +0100, Patrick Havelange wrote:
+> This explains the new generic property "thermocouple-type" that
+> can be used with temperature sensors.
+> 
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> ---
+> Changes v6
+>  - Add this file
+> ---
+>  .../bindings/iio/temperature/temperature-bindings.txt | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt b/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+> new file mode 100644
+> index 000000000000..69a6441d8083
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+> @@ -0,0 +1,11 @@
+> +If the temperature sensor device can be configured to use some specific
+> +thermocouple type, you can use the defined types provided in the file
+> +"include/dt-bindings/iio/temperature/thermocouple.h".
 
-On Mon, Mar 11, 2019 at 2:41 PM Peter Rosin <peda@axentia.se> wrote:
->
-> This is false positive, AFAICT. The delayed work must have
-> finished while envelope_detector_read_raw() holds the read_lock
-> mutex, and it would be highly surprising if the device can go
-> away while it is handling an IIO ->read_raw call. (THAT would be
-> an interesting bug...)
+You can include patch 1 in this patch.
 
-Quite right. I had completely overlooked the fact that wait_for_completion()
-cannot finish unless explicitly completed. Unlike
-wait_for_completion_interruptible().
+> +
+> +Optional property:
 
-So yes, this looks like a false positive. My apologies.
+Optional or not is really up to the specific device.
 
-Sven
+> +thermocouple-type:	The type of the thermocouple used by the device.
+
+What's the type? "A single cell" presumably.
+
+> +
+> +For example:
+
+As this is example is incomplete, I'd drop this.
+
+> +	device {
+> +		thermocouple-type = <THERMOCOUPLE_TYPE_K> ;
+> +	};
+> -- 
+> 2.19.1
+> 
