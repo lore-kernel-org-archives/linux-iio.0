@@ -2,159 +2,114 @@ Return-Path: <SRS0=pZra=RO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E33C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 08:24:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B832DC43381
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 08:32:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DC6020643
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 08:24:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7DD4B20643
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 08:32:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="KqBtjXhH"
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Ef02bbw0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbfCKIYK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Mar 2019 04:24:10 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:47099 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726590AbfCKIYK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 04:24:10 -0400
-Received: by mail-wr1-f66.google.com with SMTP id i16so3957510wrs.13
-        for <linux-iio@vger.kernel.org>; Mon, 11 Mar 2019 01:24:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=H+xgHycD2CyAQhtKTS04Irvt9lPRBhsx1Ip2NgXpHik=;
-        b=KqBtjXhH4KvkCr1z+Ed7NjrSqTdWebqpwLwh62dDOSPrWjhxsoDHn07lgSRgm+S+hq
-         ajqJfibqyth0sqtoEerSZ3gKq+naY6Fxe0JpSTHwGji9QKZdjgX0i5SWv84rpqUZLlf6
-         MHzCgY1QXsqtKEkKpMzYSdV/aLDkuvUvvoCLUAQ542xK4nwFDZ1gDmaRNRQ62mLf3Pgm
-         0UXYcc78AMwGTFhbrYesFCs87yYFF8JOa0j8TVjnrPV1Y8JcbbZutfElUhf/SmRsN3j6
-         gelXMNtRWm5LaLWx6YgoLNHDqpkY4oyMM65zOh/ColU1XN77iLRMIiei3dtV6R1BhfXe
-         2Mag==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=H+xgHycD2CyAQhtKTS04Irvt9lPRBhsx1Ip2NgXpHik=;
-        b=APFiADDxUgXhs4OV9Hd27e0PHzWFx6qxr3auGAqRrxehnF6uAaxzhz0YN7EUU9oQS9
-         X1P/oqg2kDLmgpZnbAiDc+obawBPFHkE8/s05fX0i9qI1PupR1nN2E3/lSJQjGo9R9ka
-         UWrrtyc9gVBxd/vOyrbLc/96mYJoi4efReQJyCj3CJtijB76KZtScLxsWPfrkBls/WSO
-         0I+p/+ZGtM666b6/8gHaXblhNj9IAfk8jjlYZI/SUP2wu7FLPfZCS3z79m28S0D7Kuuy
-         ogp9qxDPO36hvGVxmjyBUY10gdDUua6g/ZmAb761x3jAP3N82eC9k5HNKzyAVRMLWEEJ
-         +UAQ==
-X-Gm-Message-State: APjAAAXnhXJEULxJm5ZPHIIcio7/fS4i7smXEEZQKWGyRVA8KjDRVnWO
-        TCm4NN+4t3my9LoA/O/uUfnEzw==
-X-Google-Smtp-Source: APXvYqwmzZTjxd/o6gpgqnicai2PlvqynVfZlScb+59lEjGsMfNJ5m36pS/yuHWe+Xix8HS10f7Qcw==
-X-Received: by 2002:adf:fd46:: with SMTP id h6mr18862932wrs.170.1552292648376;
-        Mon, 11 Mar 2019 01:24:08 -0700 (PDT)
-Received: from dell ([2.27.35.175])
-        by smtp.gmail.com with ESMTPSA id v196sm19384709wmf.15.2019.03.11.01.24.07
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 11 Mar 2019 01:24:07 -0700 (PDT)
-Date:   Mon, 11 Mar 2019 08:24:05 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     groeck@chromium.org, enric.balletbo@collabora.com,
-        bleung@chromium.org, lars@metafoo.de, jic23@kernel.org,
-        egranata@chromium.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: cros_ec: Add lid angle driver
-Message-ID: <20190311082405.GB4731@dell>
-References: <20190228015005.81232-1-gwendal@chromium.org>
+        id S1726567AbfCKIco (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Mar 2019 04:32:44 -0400
+Received: from userp2120.oracle.com ([156.151.31.85]:35348 "EHLO
+        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725932AbfCKIco (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 04:32:44 -0400
+Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
+        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x2B8T5jV044177;
+        Mon, 11 Mar 2019 08:32:13 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=3Lc7seH0lqZwB3Rlv1142wPh1zLr9fTlvx2nnOI3SNM=;
+ b=Ef02bbw0v1X9/8h99v+gqnxrzX2hCZLee+mEJXbYrYRTzKLF1x2aFyR8OdePR4DJAvIg
+ t0ULfU5+p7KN/5VXubFvYx5LxmDJ4jui1z69nhMY/kQGsOInqBv4fara4XF41B6yv9bi
+ edzArMtpeg5WvVPsfXkx/atY3NYHfKsZkncsm6grI69VWbSToI/c6IPhnPe2yRLMBe9g
+ kOxmygkCWDG+hA2mIvENt6ZL83TbSXir96RkEIcW3ks+7IS7sCdIT2wII//8ar3sBaO/
+ 6XAKmkIps6C4kndHaG4EOJYWUPDN+MMMYVzKjUgtkAY977lI0e2yZ5b2Yqrcvy9KiuUX 0Q== 
+Received: from userv0021.oracle.com (userv0021.oracle.com [156.151.31.71])
+        by userp2120.oracle.com with ESMTP id 2r464r4tr9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Mar 2019 08:32:13 +0000
+Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
+        by userv0021.oracle.com (8.14.4/8.14.4) with ESMTP id x2B8WCbv012906
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 11 Mar 2019 08:32:12 GMT
+Received: from abhmp0017.oracle.com (abhmp0017.oracle.com [141.146.116.23])
+        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x2B8WBdg002890;
+        Mon, 11 Mar 2019 08:32:11 GMT
+Received: from kadam (/197.157.34.165)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 11 Mar 2019 01:32:10 -0700
+Date:   Mon, 11 Mar 2019 11:31:59 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     Karen Palacio <karen.palacio.1994@gmail.com>,
+        devel@driverdev.osuosl.org, lars@metafoo.de,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de,
+        Mircea Caprioru <mircea.caprioru@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH] staging: iio: adc: ad7192: Add spaces around minus
+ operator
+Message-ID: <20190311083159.GE2434@kadam>
+References: <1552252931-10592-1-git-send-email-karen.palacio.1994@gmail.com>
+ <CA+U=Dso8UzRFcHj-2Ss08DmykuXaTzbYmtj3F40tzchgvb7zBw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190228015005.81232-1-gwendal@chromium.org>
+In-Reply-To: <CA+U=Dso8UzRFcHj-2Ss08DmykuXaTzbYmtj3F40tzchgvb7zBw@mail.gmail.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9191 signatures=668685
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1903110065
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 27 Feb 2019, Gwendal Grignou wrote:
-
-> Add a IIO driver that reports the angle between the lid and the base for
-> ChromeOS convertible device.
+On Mon, Mar 11, 2019 at 10:12:48AM +0200, Alexandru Ardelean wrote:
+> On Sun, Mar 10, 2019 at 11:23 PM Karen Palacio
+> <karen.palacio.1994@gmail.com> wrote:
+> >
+> > Add spaces around minus operator to fix readibility.
+> >
+> > Signed-off-by: Karen Palacio <karen.palacio.1994@gmail.com>
+> > ---
+> >  drivers/staging/iio/adc/ad7192.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> > index acdbc07..7c632cf 100644
+> > --- a/drivers/staging/iio/adc/ad7192.c
+> > +++ b/drivers/staging/iio/adc/ad7192.c
+> > @@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
+> >  }
+> >
+> >  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+> > -                            in_voltage-voltage_scale_available,
+> > +                            in_voltage - voltage_scale_available,
 > 
-> Tested on eve with ToT EC firmware.
-> Check driver is loaded and lid angle is correct.
+> This isn't broken, but I do agree it should be addressed.
+> I think it's the second time I see a similar patch trying to fix this.
+> So, obviously the code is a bit misleading.
 > 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> ---
->  drivers/iio/common/cros_ec_sensors/Kconfig    |   9 +
->  drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
->  .../cros_ec_sensors/cros_ec_lid_angle.c       | 164 ++++++++++++++++++
 
->  drivers/mfd/cros_ec_dev.c                     |  15 +-
+It's got to be more than that.  I did a simple grep of my inbox and it
+says that this is the 13th time someone has tried to do this.  It's
+possible that my grep is wrong, 13 seems high but not totaly impossible.
 
-It doesn't look like there are build dependencies between the changes
-in these different subsystems.  If my assumption is correct, please
-pull the MFD changes out into a separate patch.
+regards,
+dan carpenter
 
->  4 files changed, 186 insertions(+), 3 deletions(-)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-
-[...]
-
-> diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
-> index d275deaecb12..11b5b2fd1f33 100644
-> --- a/drivers/mfd/cros_ec_dev.c
-> +++ b/drivers/mfd/cros_ec_dev.c
-> @@ -297,13 +297,17 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  
->  	resp = (struct ec_response_motion_sense *)msg->data;
->  	sensor_num = resp->dump.sensor_count;
-> -	/* Allocate 1 extra sensors in FIFO are needed */
-> -	sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
-> +	/*
-> +	 * Allocate extra sensors if lid angle sensor or FIFO are needed.
-> +	 */
-> +#define NUM_EXTRA_SENSORS 2
-
-Please refrain from placing #defines in the middle of functions.
-
-Move it to the top of the file.
-
-> +	sensor_cells = kcalloc(sensor_num + NUM_EXTRA_SENSORS,
-
-Actually, this isn't something that needs defining.
-
-Just change the comment to:
-
-  "Allocate 2 extra sensors if lid angle sensor or FIFO are needed."
-
-... and drop the define.
-
-> +			       sizeof(struct mfd_cell),
->  			       GFP_KERNEL);
->  	if (sensor_cells == NULL)
->  		goto error;
->  
-> -	sensor_platforms = kcalloc(sensor_num + 1,
-> +	sensor_platforms = kcalloc(sensor_num,
->  				   sizeof(struct cros_ec_sensor_platform),
->  				   GFP_KERNEL);
->  	if (sensor_platforms == NULL)
-> @@ -363,6 +367,11 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  		sensor_cells[id].name = "cros-ec-ring";
->  		id++;
->  	}
-> +	if (cros_ec_check_features(ec,
-> +				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
-> +		sensor_cells[id].name = "cros-ec-lid-angle";
-> +		id++;
-> +	}
->  
->  	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
->  			      NULL, 0, NULL);
-
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
