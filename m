@@ -2,81 +2,121 @@ Return-Path: <SRS0=PpOZ=RP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0672C43381
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 18:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80C56C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 19:10:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9FFB72077B
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 18:36:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D80D2147C
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 19:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552415788;
-	bh=kT/GduMZOOiOGbEJ2HWGcrRbuCDtwpdBkaLEE5MQxT0=;
+	s=default; t=1552417801;
+	bh=o7BTEW1BkV/8JJZr6L8AMtYFTqfQ3eMmuxPFFD4sjy8=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=wBur1AnaXNwkPXdL7lsKmn6MxgQ8So21/O4oOHuCEdldA1xmoQ6gFT1otRjuwmTSA
-	 hSu0rLjb4dhvC3/ERcSmdknBwgVoPlqCz9VOUSlZbOGZitYSlqMquZZvs4WheO2WcL
-	 LjGMDLAEl/6WaMulZyv7czIeu9EiYvHAHkJT4PGs=
+	b=uAG54OYVa+p/x0+LivgrBixixskIJJT+6ijvtXvYFFAlY+1LEaFBDFmJu2/3V6rzL
+	 2my3shgMGDLa5GKnDYlZO/Y2kLhnzJp5bTSQyD6dyVzDEgz6xuXIvARIRW0aYNJ/y5
+	 MGFJjMpTfYuLw6gcSYHvI2wuhP+x63xphbSWIeqQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726412AbfCLSgX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Mar 2019 14:36:23 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:36107 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726372AbfCLSgX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2019 14:36:23 -0400
-Received: by mail-oi1-f196.google.com with SMTP id t206so2976774oib.3;
-        Tue, 12 Mar 2019 11:36:22 -0700 (PDT)
+        id S1727218AbfCLTJz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Mar 2019 15:09:55 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:34933 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726685AbfCLTJz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2019 15:09:55 -0400
+Received: by mail-oi1-f193.google.com with SMTP id u128so3064702oie.2;
+        Tue, 12 Mar 2019 12:09:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=oGe5cppENN7lhKh8rinC2uVCxjTF8ixNh6Di4wbsj6Y=;
-        b=h/2ITUSQUBvh34vZLCJlD2p6nqKMRL1oXlm8kHXGu7LfKRxHlrQUxThyWzY2EaBrjw
-         9OJMcsfHi9qY0fGMqEeMpw3KbKK2wjru9Npa8OHc6AedhXtgvqdxtabGJjZQwP4NpiO/
-         XPKyKp2zOD0zwxi3MB65hHVj2uJe5hwHSQ5jFRuAOhGhr7DKhrLrhqqj6+VkthQRQMT0
-         MsNDn2mFW4UHltgToVZ153HXTvs9P6fDhzSFwB7HKTi37Pykvu7R87ZrZgvbP5WfvePW
-         +t1JhBRE1F4jHJ6Sc4BWSrK0KjIALxF3UiN/GPwR/HQGk3Yid3VIb54j9IQJyCQ5kqik
-         /3IA==
-X-Gm-Message-State: APjAAAXi5ktYlrbpGh32z0/RrpPNHIKi+n13rDGPutgNn6t21tNIqv0u
-        W5RVnZ0ZJMs0W/I2WCSAaQ==
-X-Google-Smtp-Source: APXvYqxMnFhf7Or9Uq2dnwQXwPQGDDwo20oudBuVyrsp1ViE3ymx8sbEzY2eUk6D/OLUnYX8AR/+8Q==
-X-Received: by 2002:aca:ab11:: with SMTP id u17mr2651145oie.98.1552415782226;
-        Tue, 12 Mar 2019 11:36:22 -0700 (PDT)
+        bh=jJKOnB1P9PKNpKShB0uPqUX+B71dLq4m19fT/OZ0LME=;
+        b=dsZOQu8fS6TojTimb/iienLhE/NvQgDG0QUP1TkrfpAYnOF1VnvmGogvCgD+P2MezN
+         QBhmVPA9Gqd4djbE8nWqEeIiRG4x4p4au/PUTZfLwF2/Q1tamfsGwGct+WfRspRilXsE
+         4RqWlqBdU2rIbvZP5YuDfAdA9PuMJJZy/yFktY2Ddz0KJFQ2mgdRN3DYC7+/pXAzRuxQ
+         fHYpesVFand0HXX3WcSUQjzwvos4/TSgqBMq82X2IBuzcgQiuqM8XJZMgWS4fGVU1F2g
+         D5wcQOYk9VEJqPLp1B8mlXm7KKFiLoFL2HjcsB7wNGC5YokhtpBnHLkFDQeK8qof2QPM
+         x8mg==
+X-Gm-Message-State: APjAAAWJPBxpDTTG6/WJURjhRKL+6qZlBqx9pqBzKA4/2DTPqnn2wU7+
+        wnOI07p0QTTN9m+FXuu3HcTuS/WJiw==
+X-Google-Smtp-Source: APXvYqzOmYiyevn4pfx/OmhV9QmJPBrm3c1cxWiC68YfOw7IRUa9Y5zI+wZ8qBznprpY0q72PHFdMw==
+X-Received: by 2002:aca:dec4:: with SMTP id v187mr2810071oig.92.1552417793942;
+        Tue, 12 Mar 2019 12:09:53 -0700 (PDT)
 Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id p188sm3762117oia.58.2019.03.12.11.36.21
+        by smtp.gmail.com with ESMTPSA id l93sm3981536otc.15.2019.03.12.12.09.53
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 12 Mar 2019 11:36:21 -0700 (PDT)
-Date:   Tue, 12 Mar 2019 13:36:21 -0500
+        Tue, 12 Mar 2019 12:09:53 -0700 (PDT)
+Date:   Tue, 12 Mar 2019 14:09:52 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Robert Yang <decatf@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Robert Yang <decatf@gmail.com>
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: accel: kxcjk1013: Add device
- tree binding documentation
-Message-ID: <20190312183621.GA1585@bogus>
-References: <20190304151912.11485-1-decatf@gmail.com>
- <20190304151912.11485-3-decatf@gmail.com>
+To:     Patrick Havelange <patrick.havelange@essensium.com>
+Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Esben Haabendal <esben@haabendal.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 4/7] dt-bindings: counter: ftm-quaddec
+Message-ID: <20190312190952.GA18547@bogus>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+ <20190306111208.7454-5-patrick.havelange@essensium.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190304151912.11485-3-decatf@gmail.com>
+In-Reply-To: <20190306111208.7454-5-patrick.havelange@essensium.com>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  4 Mar 2019 10:19:11 -0500, Robert Yang wrote:
-> Document device tree bindings for Kionix KXCJK-1013 Accelerometer driver.
+On Wed, Mar 06, 2019 at 12:12:05PM +0100, Patrick Havelange wrote:
+> FlexTimer quadrature decoder driver.
 > 
-> Signed-off-by: Robert Yang <decatf@gmail.com>
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 > ---
->  .../bindings/iio/accel/kionix,kxcjk1013.txt     | 17 +++++++++++++++++
->  1 file changed, 17 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/kionix,kxcjk1013.txt
+> Changes v2
+>      - None
+> ---
+>  .../bindings/counter/ftm-quaddec.txt           | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/counter/ftm-quaddec.txt
 > 
+> diff --git a/Documentation/devicetree/bindings/counter/ftm-quaddec.txt b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> new file mode 100644
+> index 000000000000..4d18cd722074
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> @@ -0,0 +1,18 @@
+> +FlexTimer Quadrature decoder counter
+> +
+> +This driver exposes a simple counter for the quadrature decoder mode.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Seems like this is more a mode of a h/w block than describing a h/w 
+block. Bindings should do the latter.
+
+> +
+> +Required properties:
+> +- compatible:		Must be "fsl,ftm-quaddec".
+> +- reg:			Must be set to the memory region of the flextimer.
+> +
+> +Optional property:
+> +- big-endian:		Access the device registers in big-endian mode.
+> +
+> +Example:
+> +		counter0: counter@29d0000 {
+> +			compatible = "fsl,ftm-quaddec";
+> +			reg = <0x0 0x29d0000 0x0 0x10000>;
+> +			big-endian;
+> +			status = "disabled";
+> +		};
+> -- 
+> 2.19.1
+> 
