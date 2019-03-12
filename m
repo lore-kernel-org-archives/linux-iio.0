@@ -1,153 +1,118 @@
-Return-Path: <SRS0=pZra=RO=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=PpOZ=RP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC727C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 23:02:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90629C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 08:40:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 84D1F2087F
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Mar 2019 23:02:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6097D214AF
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Mar 2019 08:40:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="JslS7/ZK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726415AbfCKXCu convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Mar 2019 19:02:50 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:58983 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726365AbfCKXCu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Mar 2019 19:02:50 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2BMuZL3004265;
-        Tue, 12 Mar 2019 00:02:18 +0100
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2r458m69k0-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Tue, 12 Mar 2019 00:02:18 +0100
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6E41434;
-        Mon, 11 Mar 2019 23:02:17 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1071EF56;
-        Mon, 11 Mar 2019 23:02:17 +0000 (GMT)
-Received: from SFHDAG2NODE1.st.com (10.75.127.4) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Tue, 12 Mar
- 2019 00:02:16 +0100
-Received: from SFHDAG2NODE1.st.com ([fe80::4413:c8c:992b:bb90]) by
- SFHDAG2NODE1.st.com ([fe80::4413:c8c:992b:bb90%20]) with mapi id
- 15.00.1347.000; Tue, 12 Mar 2019 00:02:16 +0100
-From:   Denis CIOCCA <denis.ciocca@st.com>
-To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC:     Robert Jones <rjones@gateworks.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: RE: [PATCH 1/2] dt-bindings: iio: accel: add LIS2DE12 sensor device
- binding
-Thread-Topic: [PATCH 1/2] dt-bindings: iio: accel: add LIS2DE12 sensor device
- binding
-Thread-Index: AQHU05dsoL5QAYQjuUa31cW90B4/+qYCg0JwgAEOVACAAADEAIADgrxg
-Date:   Mon, 11 Mar 2019 23:02:16 +0000
-Message-ID: <681ca9e5102c4b59a49c5db1789c366c@SFHDAG2NODE1.st.com>
-References: <20190305203252.13647-1-rjones@gateworks.com>
-        <20190305203252.13647-2-rjones@gateworks.com>
-        <2671a590a8394e76bd795c6bb187bfd1@SFHDAG2NODE1.st.com>
-        <20190309182026.6866b037@archlinux> <20190309182310.25409803@archlinux>
-In-Reply-To: <20190309182310.25409803@archlinux>
-Accept-Language: it-IT, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-ms-exchange-transport-fromentityheader: Hosted
-x-originating-ip: [10.75.127.45]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+        id S1727185AbfCLIk2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Mar 2019 04:40:28 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:35686 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727349AbfCLIk1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2019 04:40:27 -0400
+Received: by mail-lj1-f195.google.com with SMTP id t13so1536792lji.2
+        for <linux-iio@vger.kernel.org>; Tue, 12 Mar 2019 01:40:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=590kX8IU9JdrgkDmrWCgy0wAJi05VBTUAZCrissAwkc=;
+        b=JslS7/ZKnKIHBa3oIioiM+idE6vjxIW9jdzkmc4+9w7ixwUSe62E10OfPuIc4hLk5+
+         TegQnq5hXwqCrGzThCqBiGYynNolUFN6J4yXUfVNVihDoPBxFldZEAeCgZLB4Y8rrHID
+         NR5AeGrtCUopVanDKQgZLAdmo4gmhrIZ5NQ5O0jX5xekepF6UjUc68+itpLbCDqR2p0l
+         odrhCJSnAjpbSB3QS/EzVo8CGtKmergokC3RsDqajvBrjLNgs0cDzeXcfAW8zXkBYREf
+         f5QFEfTln5BTZWYWB4FVIBnQxQPd3DXN/Vqqz5AsH6gHVH9kour/0R6ffULkOaTGsaud
+         HxlA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=590kX8IU9JdrgkDmrWCgy0wAJi05VBTUAZCrissAwkc=;
+        b=Inz4ojWGZA85uV01uV6NTskzc24ATkIUTdi3zQL55djIYBpJL2R7qsku+jWTMuzZpa
+         vKqZMBfhNrVlMIOJWc/lPL9v68xSWLMDllVUypULQq5gZF7C+vRScGgAdIjj4R0CWlTS
+         WKCquTj4nHgYRGSpQd8HxnOHPOVsic+WINCWZQUHtgAJl/kpZruQ4VgfnTGnpCIkJzvn
+         ctm7qVr4NetH/EQm5vMB17zCcZYF18uyWD9EfM2o0UVWxG/jDwsFGk20omkUQx8BTfFi
+         VRS88Ss4IQqUpe91CqzCTjidC5VkdNnB5Z/QGpMObrWCf5DUljT3A9qb8wboRltFLvcr
+         f/7w==
+X-Gm-Message-State: APjAAAXx+maKfhbhs0sO9ckpWID+IxWrlynE7Y+C0dBIg0Xq6WKPqDsQ
+        HAzM3BYieIX7KXOotDQODpMnkQ==
+X-Google-Smtp-Source: APXvYqyfe1dPxnPUgW3ygbMgTG060sOPQwCVIV1tJZmYia+0/M6YhCk5hxgBQJPp66b5XYU+nOcsww==
+X-Received: by 2002:a2e:8659:: with SMTP id i25mr19122404ljj.110.1552380025446;
+        Tue, 12 Mar 2019 01:40:25 -0700 (PDT)
+Received: from genomnajs.ideon.se ([85.235.10.227])
+        by smtp.gmail.com with ESMTPSA id a23sm1260651ljd.20.2019.03.12.01.40.21
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 12 Mar 2019 01:40:21 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Tomasz Duszynski <tduszyns@gmail.com>,
+        Stefan Tatschner <stefan.tatschner@gmail.com>,
+        Andreas Klinger <ak@it-klinger.de>
+Subject: [PATCH] iio: pressure: bmp280: BMP280 calibration to entropy
+Date:   Tue, 12 Mar 2019 09:40:18 +0100
+Message-Id: <20190312084018.12697-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-11_16:,,
- signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Yes, you are right Jonathan.
+The BMP280/BME280 calibration data should also go into the
+entropy pool, like we do for BMP180.
 
-I saw that before but since there are already 15 sensors that are not following my initial convention anymore, I decided to let it go...Not sure I'll be able to catch all of the patches.
-But your point is actually correct. I know it's a small thing but anyway what do you thing about?
+This just adds the temperature and pressure calibration, the
+humidity calibration seems like too much annoying calls to
+add.
 
-Denis
+Cc: Tomasz Duszynski <tduszyns@gmail.com>
+Cc: Stefan Tatschner <stefan.tatschner@gmail.com>
+Cc: Andreas Klinger <ak@it-klinger.de>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/pressure/bmp280-core.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-
------Original Message-----
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk> 
-Sent: Saturday, March 9, 2019 10:23 AM
-To: Denis CIOCCA <denis.ciocca@st.com>
-Cc: Robert Jones <rjones@gateworks.com>; Rob Herring <robh+dt@kernel.org>; Mark Rutland <mark.rutland@arm.com>; devicetree@vger.kernel.org; linux-iio@vger.kernel.org; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: accel: add LIS2DE12 sensor device binding
-
-On Sat, 9 Mar 2019 18:20:26 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On Sat, 9 Mar 2019 01:14:14 +0000
-> Denis CIOCCA <denis.ciocca@st.com> wrote:
-> 
-> > Acked-by: Denis Ciocca <denis.ciocca@st.com>
-> Applied to the togreg branch of iio.git and pushed out as testing for 
-> the autobuilders to play with it.
-> 
-> Thanks
-> 
-> Jonathan
-Actually, sorry too fast to click send!
-
-Why the -accel postfix?
-
-That is normally only done for devices with multiple separate sensors within them.  That isn't true as far as I can see for this one.
-
-Jonathan
-
-> 
-> > 
-> > Thanks,
-> > Denis
-> > 
-> > 
-> > -----Original Message-----
-> > From: linux-iio-owner@vger.kernel.org 
-> > <linux-iio-owner@vger.kernel.org> On Behalf Of Robert Jones
-> > Sent: Tuesday, March 5, 2019 12:33 PM
-> > To: Jonathan Cameron <jic23@kernel.org>; Rob Herring 
-> > <robh+dt@kernel.org>; Mark Rutland <mark.rutland@arm.com>
-> > Cc: devicetree@vger.kernel.org; linux-iio@vger.kernel.org; Hartmut 
-> > Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; 
-> > Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Robert Jones 
-> > <rjones@gateworks.com>
-> > Subject: [PATCH 1/2] dt-bindings: iio: accel: add LIS2DE12 sensor 
-> > device binding
-> > 
-> > Signed-off-by: Robert Jones <rjones@gateworks.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/st-sensors.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt 
-> > b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > index 52ee4ba..7f24b33 100644
-> > --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > +++ b/Documentation/devicetree/bindings/iio/st-sensors.txt
-> > @@ -49,6 +49,7 @@ Accelerometers:
-> >  - st,lis2dw12
-> >  - st,lis3dhh
-> >  - st,lis3de
-> > +- st,lis2de12-accel
-> >  
-> >  Gyroscopes:
-> >  - st,l3g4200d-gyro
-> 
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index fe87d27779d9..3329d740c86c 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -164,6 +164,9 @@ static int bmp280_read_calib(struct bmp280_data *data,
+ 		return ret;
+ 	}
+ 
++	/* Toss the temperature calibration data into the entropy pool */
++	add_device_randomness(t_buf, sizeof(t_buf));
++
+ 	calib->T1 = le16_to_cpu(t_buf[T1]);
+ 	calib->T2 = le16_to_cpu(t_buf[T2]);
+ 	calib->T3 = le16_to_cpu(t_buf[T3]);
+@@ -177,6 +180,9 @@ static int bmp280_read_calib(struct bmp280_data *data,
+ 		return ret;
+ 	}
+ 
++	/* Toss the pressure calibration data into the entropy pool */
++	add_device_randomness(p_buf, sizeof(p_buf));
++
+ 	calib->P1 = le16_to_cpu(p_buf[P1]);
+ 	calib->P2 = le16_to_cpu(p_buf[P2]);
+ 	calib->P3 = le16_to_cpu(p_buf[P3]);
+-- 
+2.20.1
 
