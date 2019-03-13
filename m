@@ -6,21 +6,21 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65F49C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 11:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C019C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 11:41:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3D4A22147C
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 11:40:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B4632147C
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 11:41:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725926AbfCMLkl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Mar 2019 07:40:41 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:35492 "EHLO
+        id S1725895AbfCMLlA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Mar 2019 07:41:00 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:35516 "EHLO
         bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725888AbfCMLkl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2019 07:40:41 -0400
+        with ESMTP id S1725888AbfCMLk7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2019 07:40:59 -0400
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: eballetbo)
-        with ESMTPSA id 99F0727FD1A
+        with ESMTPSA id 5477827FB68
 From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
@@ -30,12 +30,10 @@ Cc:     Gwendal Grignou <gwendal@chromium.org>,
         Benson Leung <bleung@chromium.org>,
         Lars-Peter Clausen <lars@metafoo.de>, kernel@collabora.com,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Kees Cook <keescook@chromium.org>,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>,
         Wolfram Sang <wsa+renesas@sang-engineering.com>
-Subject: [PATCH] iio: cros_ec: Drop unnecessary include files
-Date:   Wed, 13 Mar 2019 12:40:32 +0100
-Message-Id: <20190313114032.11455-1-enric.balletbo@collabora.com>
+Subject: [PATCH] iio: cros_ec: Add kernel-doc for cros_ec_sensors_read_lpc
+Date:   Wed, 13 Mar 2019 12:40:50 +0100
+Message-Id: <20190313114050.11625-1-enric.balletbo@collabora.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -44,101 +42,40 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Guenter Roeck <groeck@chromium.org>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-The cros_ec sensors drivers do not call any sysfs functions
-or use any sysfs defines, and thus do not need to include
-linux/sysfs.h. Also, some cros_ec drivers include linux/delay.h
-and is not used.
+Document cros_ec_sensors_read_lpc, adding an additional note to explain
+that this is the safe function for reading the EC data.
 
-Signed-off-by: Guenter Roeck <groeck@chromium.org>
-[remove linux/delay.h]
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
 
- drivers/iio/accel/cros_ec_accel_legacy.c                  | 1 -
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 2 --
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 1 -
- drivers/iio/light/cros_ec_light_prox.c                    | 2 --
- drivers/iio/pressure/cros_ec_baro.c                       | 1 -
- 5 files changed, 7 deletions(-)
+ .../iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-index 021f9f5cd3bb..3be10b121a28 100644
---- a/drivers/iio/accel/cros_ec_accel_legacy.c
-+++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-@@ -29,7 +29,6 @@
- #include <linux/mfd/cros_ec_commands.h>
- #include <linux/module.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/platform_device.h>
- 
- #define DRV_NAME	"cros-ec-accel-legacy"
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 8d76afb87d87..7d3950952ae6 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -16,7 +16,6 @@
-  * EC about sensors data. Data access is presented through iio sysfs.
-  */
- 
--#include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/common/cros_ec_sensors_core.h>
-@@ -30,7 +29,6 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- 
- #define CROS_EC_SENSORS_MAX_CHANNELS 4
- 
 diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index 414cc43c287e..c770a2a809d7 100644
+index c770a2a809d7..eb7b0edd5da4 100644
 --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
 +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -25,7 +25,6 @@
- #include <linux/mfd/cros_ec_commands.h>
- #include <linux/module.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- #include <linux/platform_device.h>
+@@ -268,6 +268,17 @@ static int cros_ec_sensors_read_data_unsafe(struct iio_dev *indio_dev,
+ 	return 0;
+ }
  
- static char *cros_ec_loc[] = {
-diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
-index fd1609e975ab..7bb3078217b3 100644
---- a/drivers/iio/light/cros_ec_light_prox.c
-+++ b/drivers/iio/light/cros_ec_light_prox.c
-@@ -13,7 +13,6 @@
-  * GNU General Public License for more details.
-  */
- 
--#include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/common/cros_ec_sensors_core.h>
-@@ -28,7 +27,6 @@
- #include <linux/module.h>
- #include <linux/platform_device.h>
- #include <linux/slab.h>
--#include <linux/sysfs.h>
- 
- /*
-  * We only represent one entry for light or proximity. EC is merging different
-diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-index 87c07af9181f..886690785047 100644
---- a/drivers/iio/pressure/cros_ec_baro.c
-+++ b/drivers/iio/pressure/cros_ec_baro.c
-@@ -13,7 +13,6 @@
-  * GNU General Public License for more details.
-  */
- 
--#include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/common/cros_ec_sensors_core.h>
++/**
++ * cros_ec_sensors_read_lpc() - read acceleration data from EC shared memory.
++ * @indio_dev: pointer to IIO device.
++ * @scan_mask: bitmap of the sensor indices to scan.
++ * @data: location to store data.
++ *
++ * Note: this is the safe function for reading the EC data. It guarantees
++ * that the data sampled was not modified by the EC while being read.
++ *
++ * Return: 0 on success, -errno on failure.
++ */
+ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+ 			     unsigned long scan_mask, s16 *data)
+ {
 -- 
 2.20.1
 
