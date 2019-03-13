@@ -2,189 +2,161 @@ Return-Path: <SRS0=Oeur=RQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43262C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 02:39:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A5C9C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 07:09:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F1B4E2177E
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 02:39:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0998A2171F
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 07:09:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="iS48nmZO"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="AAn0aY/i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726418AbfCMCjQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Mar 2019 22:39:16 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:37951 "EHLO
+        id S1726588AbfCMHJA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Mar 2019 03:09:00 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:40779 "EHLO
         mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbfCMCjQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Mar 2019 22:39:16 -0400
-Received: by mail-oi1-f195.google.com with SMTP id a15so228424oid.5
-        for <linux-iio@vger.kernel.org>; Tue, 12 Mar 2019 19:39:15 -0700 (PDT)
+        with ESMTP id S1725888AbfCMHJA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2019 03:09:00 -0400
+Received: by mail-oi1-f195.google.com with SMTP id k11so576802oic.7;
+        Wed, 13 Mar 2019 00:08:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
+        d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=mJPERLPxscd2e8dwN2KPz6Pa8XoKDLP50fZqGnE4Lak=;
-        b=iS48nmZOcfUgcSjDRqssMNUsTk7+2hdnG6b3qyR4W4uo94ZrTBTMihDGuEMYHdp6N/
-         Xa1JciHLX4q1W15wxmtlpchMJScV7fhUnloYkd+45Mnib/AV0SgL7LFx6YN/iDKTfMnf
-         IMn9LUTsLOHNSzrnc4ZUnMiYZXlVhw+gb4wBU=
+        bh=Gw80XlS3yCF4Doylgw+f8iCEzff/0Bfo53KY6fiaRjs=;
+        b=AAn0aY/iXG2J+Cc2N/IaDUKxFTl68IusH+lAMGHSd9uWD0Cs+tvLy1RYMbmFjeTfh0
+         sAKXMzKX8dKj3zyw6BfhlmIPj8PKgoMsnG5QJJ9jDjh3mC4hav+kTctvQlE+KvPC1+eR
+         LuktGRdVwUcrr3FPsCoakKiDdjW9Te0epG3+VGYRoC3D23WBY5wYsUCReFS9gpr9ciXt
+         wNkMfx6IA6x9jzVDfnB6yadKTNwmR7hoc+SJNRkK5w8M6Wc/40qM3vnc+wo9INR9lixD
+         BW7oo3XGmn2p0FMaeFlaN28e1H90pZ/WSEwvd79JWreWQDArgIWYgSYkGS52rTONIb4R
+         9Knw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=mJPERLPxscd2e8dwN2KPz6Pa8XoKDLP50fZqGnE4Lak=;
-        b=DSkVphmhWEJBmOTGE7sLeFTHZRITniq+bPk/R5FBuGwadcwi9crNwmKSBhcGSE6/It
-         PBkJQWJ7j3RjA7HVjA/iPQTt2fgxZmUEflf8Vq8LulUkDVXU7N87FV30tcFlCAvKPU2w
-         diembiPTt5oDms1fUW2N1DRKM2za9heQdgnNwRufOStXBq1plYhoBSQo2AjGbomhERaL
-         PXoDORjmZX06W4ypTwSQFRgjk1wpPnhWtAZyPizAWCB4SzvMmgGCgjhmpxFCfWXkcWda
-         2FIMeVPNxUMyMZqw7ueIu9PNKj2uUyjHFURqvNAad0DCiWaLazXO+qdoemRxm6+cYBZf
-         v3PA==
-X-Gm-Message-State: APjAAAWdg3teToieZ6VXuG0kRHJwjbwY8rkwfCgUjS5pmrHtnDOG8hgO
-        Z4EECwIIEpwuXPOo+8X8F1VdQ62k68U=
-X-Google-Smtp-Source: APXvYqzyiAEEo7rSituoOxTrMX8qDnzjbrQM0yj47BIlPPmO+zdUr2pcdHWW8GzhZ6tBQh3rHPSpIQ==
-X-Received: by 2002:aca:e5c9:: with SMTP id c192mr306558oih.118.1552444754853;
-        Tue, 12 Mar 2019 19:39:14 -0700 (PDT)
-Received: from mail-ot1-f41.google.com (mail-ot1-f41.google.com. [209.85.210.41])
-        by smtp.gmail.com with ESMTPSA id m9sm184483otj.42.2019.03.12.19.39.14
-        for <linux-iio@vger.kernel.org>
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 12 Mar 2019 19:39:14 -0700 (PDT)
-Received: by mail-ot1-f41.google.com with SMTP id c18so366491otl.13
-        for <linux-iio@vger.kernel.org>; Tue, 12 Mar 2019 19:39:14 -0700 (PDT)
-X-Received: by 2002:a9d:760a:: with SMTP id k10mr1931732otl.367.1552444753700;
- Tue, 12 Mar 2019 19:39:13 -0700 (PDT)
+        bh=Gw80XlS3yCF4Doylgw+f8iCEzff/0Bfo53KY6fiaRjs=;
+        b=ckit5Out1An64xqfD+G/tR8AxUzZJhVfJmkBlb2NaSbGF7knwXOipSXKrPgnYjxznk
+         erdR14gLJPNZEn7LyATl1EWCHrb0Oc876IUgFUmdtGGJuQg6YT5XdTiiEyw2l73m7eUe
+         LhHx2GU0rHpJZdlqwAgnOqXx6lwOitk+f8LisYSq2dI9JsQ3Ln/s3lyHtMDqgd93Y1Qz
+         Rkn0mvK7yqCtgv3qzkMnGz8xQXae5dHDpSZo4dcT4e0xNkX/Sl289/i1IobRWOzqP+MP
+         W54hOCvf7EwticdOAXbceXX+UfnT44HMNnGDq9R/ycSLmEMcMLhAGvCs5IvVXRzeJMi8
+         zw4A==
+X-Gm-Message-State: APjAAAWMPY0/YvoRokelJnTBhMMmq1RHOTyzpf4mf8Gflmx1QeHJvY6/
+        zKecEpWRNpvJxMSCSsc7DtiW/pakaxz0v7ILl8E=
+X-Google-Smtp-Source: APXvYqymLlFWsAxzS8lDuYgZsP0nJxTZt5PP/goLdg+pc1rCTEP7elERXXg99wbXEnvN4EOazjoa84hWhiyTUfVNo8Q=
+X-Received: by 2002:aca:b904:: with SMTP id j4mr880943oif.128.1552460939336;
+ Wed, 13 Mar 2019 00:08:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20181017075242.21790-1-henryhsu@chromium.org> <CAAFQd5AL2CnnWLk+i133RRa36HTa0baFkezRhpTXf9YP0DSF1Q@mail.gmail.com>
- <CAHNYxRwbSSp02Zr4a1z5gh0q6cHUUDnZCqRQU7QtP8LMe3Jp2A@mail.gmail.com>
- <1610184.U7oo9Z4Yep@avalon> <CAAFQd5A7k2VgmawF-x=AcKhJiG-shrJiCP4Tu9054J0eE91+9w@mail.gmail.com>
- <d79e0857-c6ae-9e57-52e2-e596864a68f8@metafoo.de> <CAAFQd5C_QucJiZMUgCpztC52Mi3p6HDThHNkcNOm9C+SZUDDYQ@mail.gmail.com>
- <20190313012451.GR891@pendragon.ideasonboard.com>
-In-Reply-To: <20190313012451.GR891@pendragon.ideasonboard.com>
-From:   Tomasz Figa <tfiga@chromium.org>
-Date:   Wed, 13 Mar 2019 11:38:56 +0900
-X-Gmail-Original-Message-ID: <CAAFQd5DtSD3TrXz8jaFnmBgpRQ6Gnq+LKxyY+LNZrqiM1pxNVA@mail.gmail.com>
-Message-ID: <CAAFQd5DtSD3TrXz8jaFnmBgpRQ6Gnq+LKxyY+LNZrqiM1pxNVA@mail.gmail.com>
-Subject: Re: [PATCH] media: uvcvideo: Add boottime clock support
-To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
-Cc:     Alexandru Stan <amstan@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Heng-Ruey Hsu <henryhsu@chromium.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Ricky Liang <jcliang@chromium.org>, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20190310174640.dksy7pfkptrbcdgj@smtp.gmail.com>
+ <CA+U=DsoTGLtnbkKoffm8TW6p_OhTfe2ViE3fEshKX9wJMPUzww@mail.gmail.com> <20190312173107.5gclkelpdswfdqzo@smtp.gmail.com>
+In-Reply-To: <20190312173107.5gclkelpdswfdqzo@smtp.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Wed, 13 Mar 2019 09:08:47 +0200
+Message-ID: <CA+U=DsosXU09CvxLP_fzG12xrbof71=9TxdSsSSNW7pgd2cPkw@mail.gmail.com>
+Subject: Re: [PATCH v3 5/7] staging: iio: ad5933: add ABI documentation
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     lars@metafoo.de,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        kernel-usp@googlegroups.com,
+        "Ardelean, Alexandru" <alex.ardelean@analog.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Mar 13, 2019 at 10:25 AM Laurent Pinchart
-<laurent.pinchart@ideasonboard.com> wrote:
+On Tue, Mar 12, 2019 at 7:31 PM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
 >
-> Hi Tomasz,
->
-> On Fri, Nov 23, 2018 at 11:46:43PM +0900, Tomasz Figa wrote:
-> > On Fri, Nov 2, 2018 at 12:03 AM Lars-Peter Clausen wrote:
-> > > On 11/01/2018 03:30 PM, Tomasz Figa wrote:
-> > >> On Thu, Nov 1, 2018 at 11:03 PM Laurent Pinchart wrote:
-> > >>> On Thursday, 18 October 2018 20:28:06 EET Alexandru M Stan wrote:
-> > >>>> On Wed, Oct 17, 2018 at 9:31 PM, Tomasz Figa wrote:
-> > >>>>> On Thu, Oct 18, 2018 at 5:50 AM Laurent Pinchart wrote:
-> > >>>>>> On Wednesday, 17 October 2018 11:28:52 EEST Tomasz Figa wrote:
-> > >>>>>>> On Wed, Oct 17, 2018 at 5:02 PM Laurent Pinchart wrote:
-> > >>>>>>>> On Wednesday, 17 October 2018 10:52:42 EEST Heng-Ruey Hsu wrote:
-> > >>>>>>>>> Android requires camera timestamps to be reported with
-> > >>>>>>>>> CLOCK_BOOTTIME to sync timestamp with other sensor sources.
-> > >>>>>>>>
-> > >>>>>>>> What's the rationale behind this, why can't CLOCK_MONOTONIC work ? If
-> > >>>>>>>> the monotonic clock has shortcomings that make its use impossible for
-> > >>>>>>>> proper synchronization, then we should consider switching to
-> > >>>>>>>> CLOCK_BOOTTIME globally in V4L2, not in selected drivers only.
-> > >>>>>>>
-> > >>>>>>> CLOCK_BOOTTIME includes the time spent in suspend, while
-> > >>>>>>> CLOCK_MONOTONIC doesn't. I can imagine the former being much more
-> > >>>>>>> useful for anything that cares about the actual, long term, time
-> > >>>>>>> tracking. Especially important since suspend is a very common event on
-> > >>>>>>> Android and doesn't stop the time flow there, i.e. applications might
-> > >>>>>>> wake up the device to perform various tasks at necessary times.
-> > >>>>>>
-> > >>>>>> Sure, but this patch mentions timestamp synchronization with other
-> > >>>>>> sensors, and from that point of view, I'd like to know what is wrong with
-> > >>>>>> the monotonic clock if all devices use it.
-> > >>>>>
-> > >>>>> AFAIK the sensors mentioned there are not camera sensors, but rather
-> > >>>>> things we normally put under IIO, e.g. accelerometers, gyroscopes and
-> > >>>>> so on. I'm not sure how IIO deals with timestamps, but Android seems
-> > >>>>> to operate in the CLOCK_BOTTIME domain. Let me add some IIO folks.
-> > >>>>>
-> > >>>>> Gwendal, Alexandru, do you think you could shed some light on how we
-> > >>>>> handle IIO sensors timestamps across the kernel, Chrome OS and
-> > >>>>> Android?
-> > >>>>
-> > >>>> On our devices of interest have a specialized "sensor" that comes via
-> > >>>> IIO (from the EC, cros-ec-ring driver) that can be used to more
-> > >>>> accurately timestamp each frame (since it's recorded with very low
-> > >>>> jitter by a realtime-ish OS). In some high level userspace thing
-> > >>>> (specifically the Android Camera HAL) we try to pick the best
-> > >>>> timestamp from the IIO, whatever's closest to what the V4L stuff gives
-> > >>>> us.
-> > >>>>
-> > >>>> I guess the Android convention is for sensor timestamps to be in
-> > >>>> CLOCK_BOOTTIME (maybe because it likes sleeping so much). There's
-> > >>>> probably no advantage to using one over the other, but the important
-> > >>>> thing is that they have to be the same, otherwise the closest match
-> > >>>> logic would fail.
-> > >>>
-> > >>> That's my understanding too, I don't think CLOCK_BOOTTIME really brings much
-> > >>> benefit in this case,
-> > >>
-> > >> I think it does have a significant benefit. CLOCK_MONOTONIC stops when
-> > >> the device is sleeping, but the sensors can still capture various
-> > >> actions. We would lose the time keeping of those actions if we use
-> > >> CLOCK_MONOTONIC.
-> > >>
-> > >>> but it's important than all timestamps use the same
-> > >>> clock. The question is thus which clock we should select. Mainline mostly uses
-> > >>> CLOCK_MONOTONIC, and Android CLOCK_BOOTTIME. Would you like to submit patches
-> > >>> to switch Android to CLOCK_MONOTONIC ? :-)
-> > >>
-> > >> Is it Android using CLOCK_BOOTTIME or the sensors (IIO?). I have
-> > >> almost zero familiarity with the IIO subsystem and was hoping someone
-> > >> from there could comment on what time domain is used for those
-> > >> sensors.
+> On 03/11, Alexandru Ardelean wrote:
+> > On Sun, Mar 10, 2019 at 7:47 PM Marcelo Schmitt
+> > <marcelo.schmitt1@gmail.com> wrote:
 > > >
-> > > IIO has the option to choose between BOOTTIME or MONOTONIC (and a few
-> > > others) for the timestamp on a per device basis.
-> > >
-> > > There was a bit of a discussion about this a while back. See
-> > > https://lkml.org/lkml/2018/7/10/432 and the following thread.
+> > > Add an ABI documentation for the ad5933 driver.
 > >
-> > Given that IIO supports BOOTTIME in upstream already and also the
-> > important advantage of using it over MONOTONIC for systems which keep
-> > capturing events during sleep, do you think we could move on with some
-> > way to support it in uvcvideo or preferably V4L2 in general?
+> > There's already an ABI documentation for this driver.
+> > See:
+> > https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/tree/drivers/staging/iio/Documentation/sysfs-bus-iio-impedance-analyzer-ad5933
+> >
+> > Apologies for not mentioning this sooner.
+> >
+> > Could you check for other references for ad5933 in the kernel (in staging) ?
+> > I don't think I missed other stuff, but it's good to check.
+> >
 >
-> I'm not opposed to that, but I don't think we should approach that from
-> a UVC point of view. The issue should be addressed in V4L2, and then
-> driver-specific support could be added, if needed.
+> Didn't see any other reference for ad5933 with find and grep inside iio,
+> neither on general documentation. I'll replace mine ABI doc by yours and
+> add your sign-off-by on my next patch set. OK?
 
-Yes, fully agreed. The purpose of sending this patch was just to start
-the discussion on how to support this.
+You don't need to add me anywhere :)
+I did not contribute anything to that ABI doc.
+I just raised a note about it.
 
-Do you think something like a buffer flag called
-V4L2_BUF_FLAG_TIMESTAMP_BOOTTIME that could be set by the userspace at
-QBUF could work here? (That would change the timestamp flags
-semantics, because it used to be just the information from the driver,
-but shouldn't have any compatibility implications.) I suppose we would
-also need some capability flag for querying purposes, possibly added
-to the capability flags returned by REQBUFS/CREATE_BUFS?
+But, that doc should be taken care of; whether you update it, remove
+it, or anything.
+It's good to not forget it in staging.
 
-Best regards,
-Tomasz
+>
+> > >
+> > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> > > ---
+> > >  .../ABI/testing/sysfs-bus-iio-ad5933          | 39 +++++++++++++++++++
+> > >  1 file changed, 39 insertions(+)
+> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-ad5933 b/Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > > new file mode 100644
+> > > index 000000000000..8a60dd178b1f
+> > > --- /dev/null
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-ad5933
+> > > @@ -0,0 +1,39 @@
+> > > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_start
+> > > +Date:          March 2019
+> > > +KernelVersion: Kernel 4.19
+> > > +Contact:       linux-iio@vger.kernel.org
+> > > +Description:
+> > > +               The start frequency. Set this to define the frequency point at
+> > > +               which the device should start the next frequency sweep.
+> > > +
+> > > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_increment
+> > > +Date:          March 2019
+> > > +KernelVersion: Kernel 4.19
+> > > +Contact:       linux-iio@vger.kernel.org
+> > > +Description:
+> > > +               The frequency sweep increment. Set this to define the amount by
+> > > +               which the frequency is incremented after each scan point. After
+> > > +               the measurement at a frequency point is completed, the next
+> > > +               measurement will be made at a frequency point
+> > > +               'frequency increment'Hz higher than the previous one unless a
+> > > +               repeat frequency command is issued. This behavior will follow
+> > > +               until the defined number of frequency points have been measured
+> > > +               or frequency sweep is somewhat reset.
+> > > +
+> > > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_freq_points
+> > > +Date:          March 2019
+> > > +KernelVersion: Kernel 4.19
+> > > +Contact:       linux-iio@vger.kernel.org
+> > > +Description:
+> > > +               The number of increments. This defines the number of frequency
+> > > +               points in the frequency sweep.
+> > > +
+> > > +What:/sys/bus/iio/devices/iio:deviceX/out_voltage0_settling_cycles
+> > > +Date:          March 2019
+> > > +KernelVersion: Kernel 4.19
+> > > +Contact:       linux-iio@vger.kernel.org
+> > > +Description:
+> > > +               Number of settling time cycles. This sets the delay between a
+> > > +               start frequency sweep/increment frequency /repeat frequency to
+> > > +               be proportional to the excitation signal frequency times the
+> > > +               number of settling time cycles.
+> > > --
+> > > 2.20.1
+> > >
