@@ -2,225 +2,180 @@ Return-Path: <SRS0=pjyC=RR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25520C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 19:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16ACFC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 20:21:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EAB4621874
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 19:45:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C76392077B
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 20:21:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W44kvbc+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GmQ588eB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727228AbfCNTpu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Mar 2019 15:45:50 -0400
-Received: from mail-lj1-f193.google.com ([209.85.208.193]:36733 "EHLO
-        mail-lj1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726972AbfCNTpu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Mar 2019 15:45:50 -0400
-Received: by mail-lj1-f193.google.com with SMTP id v10so5908239lji.3;
-        Thu, 14 Mar 2019 12:45:48 -0700 (PDT)
+        id S1727228AbfCNUVU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Mar 2019 16:21:20 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:39301 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727220AbfCNUVU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Mar 2019 16:21:20 -0400
+Received: by mail-qt1-f193.google.com with SMTP id t28so7672136qte.6;
+        Thu, 14 Mar 2019 13:21:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=3mei27eK+7OO35CVOu3wbY1sNorWl/WGJmqN5xWLeaw=;
-        b=W44kvbc+YDpUr9seX4Z5fy08R2r8j8jKA2a/X4jWGVG++9VVB21jr8lB5TYRLYnpob
-         HJa5Cq2XftngGu85K31r+DCkwvnm/7gpWXJRM6Icz/evr5E8pYjOv9BwoJdjg4mtqw5P
-         iHF0NbSKT/ISZvtVKsEv0z8ohxw+1dvoi4apKs/IFUzKSTqxV0oTu3Isge8oBbB+BoAn
-         dVpiw6Vu7mbNF/I/mB7zBteLVcbkJKCwXqgdZzwwjgIEEj7/SCgKJhQthLQDSh6Hmp47
-         UCunCgZd+k4qTEBG4Y3zyOnULnmWa6qeOOYj1nprPAdnuE71NtFzqBxmiT4iy+sfTxlU
-         HJ6g==
+        bh=CdCSeZ3uBRu5DuVQS4AOy62tYzHdrAD+5IHHcpW0dL4=;
+        b=GmQ588eBtrS0bDOgNRmgf1W6Bt0XA0uCEo4hL5H/kAMTlgltvHrOsJD3g6Dlg9rQPt
+         AjgfHzDnOko4LVvROEXi8uW2uqZQ7a+KuPPrOOZpWzlsFUPVySYoJ0sCSLRETY4vCTQI
+         sI+mcplcqcjOCtxRTZPYJWgN8p2Mpvg/338K6rBvoe0oSIiVdjxb5RXwtzssKLDi0wsB
+         TlFnAah0ta/Up6vIyQerajBZV8b+6qIqFtLTeTSCg+B8dPxXT+pA9DDIFkEm5SymxQj3
+         QVICJ7onz9G+kH51afQq3WPJZsRAQoU04v79KquCy7979gVnsgj2uYNrwv7FdFP4fO7S
+         FtWw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=3mei27eK+7OO35CVOu3wbY1sNorWl/WGJmqN5xWLeaw=;
-        b=uHTfYJ6jApDoEKsCzW3K1bu5cxn6TB5UAH7b4EOao0+vhvD35k9stDj+Rs4F8PDWMa
-         l9eHZh3CO5WGZgxP4UTKEnoSr+6fYNVKUc2QpzBXPAysbREuDHZB0H5we4D5Pr9F4qsk
-         NeXTHe8JjHGD5UXck1sqCY+6Vs4ddSJlQZ/F+F26ZIpMdNAtdQ0FeqYEgIEjlkbIJNqF
-         p+PrrkbEknFO3AQGiBJJ5/JUrRC2p93WGj1us4mkbJY2RiPhwwobbZRGncGA0drClLk8
-         4rolzzs408KmhaR9Vk8Mbv5qPVH+yM45UaqmYWe5sP6gCJgLN9UdX8O5x1EKn/irjr3t
-         TKfw==
-X-Gm-Message-State: APjAAAXD0CkYULSGRGT2Mx1lSTrhtCEPlsePydPqY5eyJ059Dehz3ML1
-        EIp2XgqbIdWE1LTGrCIlLLE=
-X-Google-Smtp-Source: APXvYqwv4NlRn48V75UH9KwNJNBgxXOryLXc2doEjdA68Kn30H1vrg5sAqqIgRdiZwKjmGRJ/MtwEw==
-X-Received: by 2002:a2e:20b:: with SMTP id 11mr27739169ljc.41.1552592311825;
-        Thu, 14 Mar 2019 12:38:31 -0700 (PDT)
-Received: from localhost (89-64-61-106.dynamic.chello.pl. [89.64.61.106])
-        by smtp.gmail.com with ESMTPSA id v1sm2895460lfg.13.2019.03.14.12.38.30
+        bh=CdCSeZ3uBRu5DuVQS4AOy62tYzHdrAD+5IHHcpW0dL4=;
+        b=nkYiwkGzEZE83HRWb6WWV+vEkTl/WN+QRPdp9WTCqxruArRjJbNfoNTV69nOWtckMT
+         cDhODISAnyWLZ+nucvSoT2RpbiqmhvTzEgw2EpwcrzE/ZaQXUSkuP6InoZXkwRL5Xlz1
+         E0M35cDvl3WW6fzbCYAz3Qdbj4Pk1qYfqpHs2mHOFr26VNKR+TmUCLMlvttUs7UgOr7A
+         PWwZym1DywMiZ3imOwD2ML/3iaGUG2hr6j0sivgj8JxdftLtXBStxkylhRh7b2qqMdG9
+         GzGqiRiLewapF8DZKyokoE7mifAKZIT0Nda1G/dgmnrgKFe3mODWJbwT7LdvTY9fo8lA
+         j2HA==
+X-Gm-Message-State: APjAAAUOnwYqZrP9teNBmcUkr/d2Z2nS+Bi2p8ol/4nECKRUVihwUuyU
+        7Lw7Ky6Y7ndDuk3WATp6CZ8=
+X-Google-Smtp-Source: APXvYqwgznsifHX+oLLtv0/wS611d/UNASR9QmRKFcq+UYgzk1UvGjAoECiIUIeg4oL47fziU0WgDQ==
+X-Received: by 2002:aed:233c:: with SMTP id h57mr40735191qtc.233.1552594878914;
+        Thu, 14 Mar 2019 13:21:18 -0700 (PDT)
+Received: from localhost.localdomain ([181.166.206.110])
+        by smtp.gmail.com with ESMTPSA id n91sm8332733qte.94.2019.03.14.13.21.16
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 14 Mar 2019 12:38:31 -0700 (PDT)
-Date:   Thu, 14 Mar 2019 20:38:06 +0100
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     Rui Miguel Silva <rui.silva@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 3/6] iio: gyro: fxas21002c: add i2c driver
-Message-ID: <20190314193805.GD23693@arch>
-References: <20190313184002.2501-1-rui.silva@linaro.org>
- <20190313184002.2501-4-rui.silva@linaro.org>
+        Thu, 14 Mar 2019 13:21:17 -0700 (PDT)
+Date:   Thu, 14 Mar 2019 17:21:02 -0300
+From:   Gaston Gonzalez <gascoar@gmail.com>
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc:     "ardeleanalex@gmail.com" <ardeleanalex@gmail.com>,
+        "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: Testing ad9833 with Diolan DLN2 adapter
+Message-ID: <20190314202102.qcn43e67xgcmzuhv@localhost.localdomain>
+References: <20190313193523.k6vipjv33uoiqx25@localhost.localdomain>
+ <CA+U=Dsry=kmJdr+BwfULTRaU=YF9KMeYd6jxwj8+5Q8bZRt4=g@mail.gmail.com>
+ <0e0834534fb79e0d20033b5ca29cfe5c611fd960.camel@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190313184002.2501-4-rui.silva@linaro.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+In-Reply-To: <0e0834534fb79e0d20033b5ca29cfe5c611fd960.camel@analog.com>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Mar 13, 2019 at 06:39:59PM +0000, Rui Miguel Silva wrote:
-> Add the real driver to talk over i2c and use the fxas21002c core
-> for the main tasks.
+On Thu, Mar 14, 2019 at 01:44:50PM +0000, Ardelean, Alexandru wrote:
+> On Thu, 2019-03-14 at 15:39 +0200, Alexandru Ardelean wrote:
+> > [External]
+> > 
+> > 
+> > On Wed, Mar 13, 2019 at 9:36 PM Gaston Gonzalez <gascoar@gmail.com>
+> > wrote:
+> > > 
+> > > Hi,
+> > > 
+> > > I am trying to test an ad9833 module like the one in [1] using Diolan
+> > > DLN2
+> > > adapter and the driver ad9834.c
+> > > 
+> > > So far I get the DLN2 adapter correctly registered as master device
+> > > (below the spi debug output) but the ad9833 driver doesn't even probe.
+> > > 
+> > > Below the spi log output and pin connections. I'm using the testing
+> > > branch of the iio repo. The ad9834 and dln2 drivers were compiled as
+> > > modules.
+> > > 
+> > > The question is: should this setup probe or extra steps are needed?
+> > 
+> > Hey,
+> > 
+> > I'm assuming you enabled the driver in the kernel ?
+> > How does your device-tree look ?
+> > 
+> > There is some documentation about this chip/driver:
+> > 
+> https://wiki.analog.com/resources/tools-software/linux-drivers/iio-dds/ad9834
+> > 
+> > The old doc still assumes that the driver is using the old
+> > platform-data mechanism.
+> > It needs a bit of updating, but some info should still be useful.
+> 
+> There's this device-tree overlay example/reference for the Raspberry PI:
+> 
+> https://github.com/analogdevicesinc/linux/commit/7e0b66336ed05dab97c5663f7bc43822c79199dd
+> 
+> A lot of our chips/eval-boards are interface with the PI.
 >
-> Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
-> ---
->  drivers/iio/gyro/Kconfig          |  6 +++
->  drivers/iio/gyro/Makefile         |  1 +
->  drivers/iio/gyro/fxas21002c_i2c.c | 73 +++++++++++++++++++++++++++++++
->  3 files changed, 80 insertions(+)
->  create mode 100644 drivers/iio/gyro/fxas21002c_i2c.c
->
-> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
-> index cfd2cf44bac8..71b6552ee06b 100644
-> --- a/drivers/iio/gyro/Kconfig
-> +++ b/drivers/iio/gyro/Kconfig
-> @@ -77,6 +77,8 @@ config FXAS21002C
->         tristate "NXP FXAS21002C Gyro Sensor"
->         select IIO_BUFFER
->         select IIO_TRIGGERED_BUFFER
-> +       select FXAS21002C_I2C if (I2C)
-> +       depends on I2C
->         help
->           Say yes here to build support for NXP FXAS21002C Tri-axis Gyro
->           Sensor driver connected via I2C or SPI.
-> @@ -84,6 +86,10 @@ config FXAS21002C
->           This driver can also be built as a module.  If so, the module
->           will be called fxas21002c_i2c or fxas21002c_spi.
->
-> +config FXAS21002C_I2C
-> +       tristate
-> +       select REGMAP_I2C
-> +
->  config HID_SENSOR_GYRO_3D
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
-> index 247dc600a602..adc18a5eb283 100644
-> --- a/drivers/iio/gyro/Makefile
-> +++ b/drivers/iio/gyro/Makefile
-> @@ -13,6 +13,7 @@ obj-$(CONFIG_BMG160) += bmg160_core.o
->  obj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o
->  obj-$(CONFIG_BMG160_SPI) += bmg160_spi.o
->  obj-$(CONFIG_FXAS21002C) += fxas21002c_core.o
-> +obj-$(CONFIG_FXAS21002C_I2C) += fxas21002c_i2c.o
->
->  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
->
-> diff --git a/drivers/iio/gyro/fxas21002c_i2c.c b/drivers/iio/gyro/fxas21002c_i2c.c
-> new file mode 100644
-> index 000000000000..c248ac5251df
-> --- /dev/null
-> +++ b/drivers/iio/gyro/fxas21002c_i2c.c
-> @@ -0,0 +1,73 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +/*
-> + * Driver for NXP FXAS21002C Gyroscope - I2C
-> + *
-> + * Copyright (C) 2018 Linaro Ltd.
-> + */
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/regmap.h>
-> +
 
-Some headers are missing. Generally not a big deal but better to have
-everything in place.
+Hi Alexandru,
 
-> +#include "fxas21002c.h"
-> +
-> +static const struct regmap_config fxas21002c_regmap_i2c_conf = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.max_register = FXAS21002C_REG_CTRL3,
-> +};
-> +
-> +static int fxas21002c_i2c_probe(struct i2c_client *i2c,
-> +				const struct i2c_device_id *id)
-> +{
-> +	struct regmap *regmap;
-> +	const char *name = NULL;
-> +
-> +	regmap = devm_regmap_init_i2c(i2c, &fxas21002c_regmap_i2c_conf);
-> +	if (IS_ERR(regmap)) {
-> +		dev_err(&i2c->dev, "Failed to register i2c regmap: %ld\n",
-> +			PTR_ERR(regmap));
-> +		return PTR_ERR(regmap);
-> +	}
-> +
-> +	if (id)
-> +		name = id->name;
-> +
-> +	return fxas21002c_core_probe(&i2c->dev, regmap, i2c->irq, name);
-> +}
-> +
-> +static int fxas21002c_i2c_remove(struct i2c_client *i2c)
-> +{
-> +	fxas21002c_core_remove(&i2c->dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct i2c_device_id fxas21002c_i2c_id[] = {
-> +	{ "fxas21002c", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, fxas21002c_i2c_id);
-> +
-> +static const struct of_device_id fxas21002c_i2c_of_match[] = {
-> +	{ .compatible = "nxp,fxas21002c", },
-> +	{ },
+Thank you for your reply.
 
-Comma not really needed?
+Yes, I inserted the driver, but I didn't use any device-tree for this device.
 
-> +};
-> +MODULE_DEVICE_TABLE(of, fxas21002c_i2c_of_match);
-> +
-> +static struct i2c_driver fxas21002c_i2c_driver = {
-> +	.driver = {
-> +		.name = "fxas21002c_i2c",
-> +		.pm = &fxas21002c_pm_ops,
-> +		.of_match_table = of_match_ptr(fxas21002c_i2c_of_match),
+To be completely honest I read the AD9834 Analog wiki page, I thought about
+adding the ad9834_platform_data and spi_board_info but then I saw that the
+ad9834_platform_data structure was removed in commit 80109c32, so I thought
+'I'm missing something...' that's why I asked.
 
-of_match_ptr can be dropped I guess due to the fact that it breaks
-ACPI probing.
+I will try using the files in the Analog tree you pointed to.
 
-> +	},
-> +	.probe		= fxas21002c_i2c_probe,
+Thanks a lot!
 
-New drivers should rather use probe_new.
+Gaston
 
-> +	.remove		= fxas21002c_i2c_remove,
-> +	.id_table	= fxas21002c_i2c_id,
-> +};
-> +module_i2c_driver(fxas21002c_i2c_driver);
-> +
-> +MODULE_AUTHOR("Rui Miguel Silva <rui.silva@linaro.org>");
-> +MODULE_LICENSE("GPL v2");
-> +MODULE_DESCRIPTION("FXAS21002C I2C Gyro driver");
-> --
-> 2.20.1
->
+> > 
+> > Thanks
+> > Alex
+> > 
+> > > 
+> > > Any help appreciated.
+> > > 
+> > > Thanks,
+> > > 
+> > > Gaston
+> > > 
+> > > Hardware device
+> > > ---------------
+> > > 
+> > > [1] 
+> > > https://www.amazon.com/Alloet-AD9833-Generator-Programmable-Triangle/dp/B07GS1CDXZ/ref=sr_1_1?keywords=ad9833&qid=1550752799&s=gateway&sr=8-1
+> > > 
+> > > Kernel tree: IIO, testing branch.
+> > > 
+> > > DLN2 - AD983 connections
+> > > ------------------------
+> > > 
+> > >  - SS -> FSY
+> > >  - SCK -> CLK
+> > >  - MOSI -> DAT
+> > >  - GND -> GND
+> > >  - VCC_OUT -> VCC
+> > > 
+> > > SPI debug output
+> > > ----------------
+> > > 
+> > > [65465.572149] usb 1-1.2: New USB device found, idVendor=a257,
+> > > idProduct=2013, bcdDevice= 1.00
+> > > [65465.572155] usb 1-1.2: New USB device strings: Mfr=1, Product=2,
+> > > SerialNumber=0
+> > > [65465.572158] usb 1-1.2: Product: Diolan DLN2
+> > > [65465.572160] usb 1-1.2: Manufacturer: Diolan
+> > > [65466.553970] dln2 1-1.2:1.0: Diolan DLN2 serial 33629166
+> > > [65466.554925] usbcore: registered new interface driver dln2
+> > > [65466.733716] dln2-spi dln2-spi.3.auto: cs_num = 5
+> > > [65466.734198] dln2-spi dln2-spi.3.auto: freq_min = 2000, freq_max =
+> > > 18000000
+> > > [65466.734453] dln2-spi dln2-spi.3.auto: bpw_mask = 0xFF80
+> > > [65466.735044] dln2-spi dln2-spi.3.auto: registered master spi0
