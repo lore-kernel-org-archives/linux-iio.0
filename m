@@ -3,26 +3,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A49BEC43381
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 23:22:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F3EC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 23:26:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 79BFB2184C
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 23:22:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D9BCB218A1
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 23:26:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728059AbfCNXWl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Mar 2019 19:22:41 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:54080 "EHLO
+        id S1727412AbfCNX0K (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Mar 2019 19:26:10 -0400
+Received: from youngberry.canonical.com ([91.189.89.112]:54116 "EHLO
         youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727412AbfCNXWl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Mar 2019 19:22:41 -0400
+        with ESMTP id S1727729AbfCNX0K (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Mar 2019 19:26:10 -0400
 Received: from 1.general.cking.uk.vpn ([10.172.193.212] helo=localhost)
         by youngberry.canonical.com with esmtpsa (TLS1.0:RSA_AES_256_CBC_SHA1:32)
         (Exim 4.76)
         (envelope-from <colin.king@canonical.com>)
-        id 1h4ZgI-0005Cq-8Z; Thu, 14 Mar 2019 23:22:34 +0000
+        id 1h4Zjf-0005UB-F8; Thu, 14 Mar 2019 23:26:03 +0000
 From:   Colin King <colin.king@canonical.com>
 To:     Stefan Popa <stefan.popa@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -33,8 +33,8 @@ To:     Stefan Popa <stefan.popa@analog.com>,
         linux-iio@vger.kernel.org
 Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
 Subject: [PATCH] iio: adc: fix indentation issue, remove extra tab
-Date:   Thu, 14 Mar 2019 23:22:33 +0000
-Message-Id: <20190314232233.25602-1-colin.king@canonical.com>
+Date:   Thu, 14 Mar 2019 23:26:03 +0000
+Message-Id: <20190314232603.30531-1-colin.king@canonical.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="utf-8"
