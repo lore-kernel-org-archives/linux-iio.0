@@ -1,120 +1,84 @@
-Return-Path: <SRS0=Oeur=RQ=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=pjyC=RR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02B32C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 19:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6428C43381
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 09:01:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C240E20657
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Mar 2019 19:35:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sSVa/5bg"
+	by mail.kernel.org (Postfix) with ESMTP id 6E2CB217F5
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Mar 2019 09:01:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726328AbfCMTfr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Mar 2019 15:35:47 -0400
-Received: from mail-qk1-f176.google.com ([209.85.222.176]:46046 "EHLO
-        mail-qk1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726411AbfCMTfr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Mar 2019 15:35:47 -0400
-Received: by mail-qk1-f176.google.com with SMTP id z76so1851446qkb.12;
-        Wed, 13 Mar 2019 12:35:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=BJ2p3Jy84UTBSluqlnLMaXAMIYi6tpopx84A7m0yWUY=;
-        b=sSVa/5bgzNZbLQdK1pMGzJHFJQ4FoWlkLoFpPThi8aGWB0gCH8Up62SW6P/Mg3V64/
-         A9JGTyQVDh+NAHCJCgMJzno2n1Qbn2AIFaVGnqwzzR/qVVBKZ3Mkdj8545iYPxqHrq12
-         apjTLaKRSDpSjHaNPR/RnQClns3q6EyUsALrn234VpQtueulQG6E/c1Mq9iUfyySZKKx
-         nr0PkT29em5s3l9doZIwdCfaYXpLKNOrZz7vDFqllIkAoQfVrqhuDEBpvc3Ts0lsoeh8
-         x9YI9qOR2Vq1d1IHe7zOjb0EFAGzd++sDXLxeijw+ZUOV/f0ars/k8z2A6JeMz1kHRk4
-         CzQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=BJ2p3Jy84UTBSluqlnLMaXAMIYi6tpopx84A7m0yWUY=;
-        b=KZTJJvvNjVixkPI+la/Xqu6uqTSjxgJYzRyORqWQUZTNT1XNFKQo3VaL05npIh4sik
-         M0ge241cQC27SVR4DwVPZ9+qVRml9l4El6KveFkmMuVy/hyYPcx+kmiylnXFaSez0oQJ
-         sy0WQQwkoaAJxNMrdWyxFDcUkV+gOIKUHCV0UwkaOzaCtr2F60YYfIQZfaUZLLLqzB7m
-         1b8zui1Txy8oa0JW/1t35/c1t2OyWX6UsO/DbIVZ9QU6k7li4tmu/Y01kAGjX+N25P42
-         xZ0URw74lgLpp0ew/UUdNcNi7oP2E0uLXThE6AsFg//fAPnkrJgGWh1EtihRCemUSHmY
-         2MzA==
-X-Gm-Message-State: APjAAAWHuoI+L0O5izz10fy7J2DqTkJwRKzLffrDi4QS3eSmO1rWCscK
-        sRDbs8lQEpFECDKW9ddmB08Wiy6O
-X-Google-Smtp-Source: APXvYqxFNxuUDflIxqm+cRwqKajiLqbm9IUFUwD4A9/lOGaYOY6WAzhx/S3f8GTdUeNQFTF+rU2w6A==
-X-Received: by 2002:a37:7407:: with SMTP id p7mr33658178qkc.13.1552505745475;
-        Wed, 13 Mar 2019 12:35:45 -0700 (PDT)
-Received: from localhost.localdomain ([181.166.206.110])
-        by smtp.gmail.com with ESMTPSA id e85sm1495607qkj.58.2019.03.13.12.35.43
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 13 Mar 2019 12:35:44 -0700 (PDT)
-Date:   Wed, 13 Mar 2019 16:35:23 -0300
-From:   Gaston Gonzalez <gascoar@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     gascoar@gmail.com, linux-spi@vger.kernel.org
-Subject: Testing ad9833 with Diolan DLN2 adapter
-Message-ID: <20190313193523.k6vipjv33uoiqx25@localhost.localdomain>
+        id S1726284AbfCNJBn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Mar 2019 05:01:43 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:60671 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726654AbfCNJBn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Mar 2019 05:01:43 -0400
+Received: from wuerfel.lan ([109.192.41.194]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.145]) with ESMTPA (Nemesis) id
+ 1MC2sF-1hCMao1r9p-00CPPM; Thu, 14 Mar 2019 10:01:19 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Arnd Bergmann <arnd@arndb.de>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Tomasz Duszynski <tduszyns@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: pms7003: sleect IIO_TRIGGERED_BUFFER
+Date:   Thu, 14 Mar 2019 10:00:52 +0100
+Message-Id: <20190314090118.312040-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:1/wqKqH6Pb2x35vhjeXuzv30Pa6M1KHMh+TdBc/rsXhXodVhI83
+ 1NcgzuUMcizvEjocDfAceyWj+HFaFyojkHA4jVjGM9cwtigUBUYp8MEImIj68oJVwn/pnVF
+ XrMr46iBLL0nH/j6Ck/fi0dU/vY2J6NrBb9PANZYUYFxeTQeXVvyizr4lN2H2WSfb5dRoOL
+ OnhoLXTO/8MPdDTPwbwmQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:vnr8RDpwZjw=:5nwaqa8c02CYBiN+P2dIB4
+ j4mufEt0H2d4k7lxipz3eg7/h5/50PLpk/mueQ/ACakQ8EmDG8EwQYWvHnIRjEsOkjDqzESW7
+ TQvoaFoiHR809cDfafC+PX5Vhi+jT9MOYzkWJrpXafH2Tf1DbJGLWso1P7CjdecdPkHlMY1B7
+ jTUxIEOccY18JZCFGs5ROvf9OzmK/Nw480xIOgiwYH+8eryX2z3ixB/Q6JnuHyd8rgTYRrDS3
+ ODWoV/XewQJo3yprhXzhEbdxVFLRn82ndjdzHWDbTmGpkzM6WdVTGtM3GCOwb4//A7gQNG0RR
+ hTWmDyUpKECPEqPgHi/aTjvKOyx+CDeh90Nk1OD8NTGdxIFIlQ3XhPT4Mf2w+HyH/SrVOkU2Y
+ Xllje9ZYJK2clNnvDYmUlnyfYGyOUhQqmVdZb1rpojOZcmfvSR32SPiJwwI0/pjNGUaHoS3Jd
+ WS38Gvv0TRDJEPjaBN54umDzdGdNWqwF0UGszi+U3KDXPEN0EzPqKdk5vIxErv06NquQDlJcc
+ MN5c0FqlbJTxu6HQ0nCapVbMMYbLgIVLPRk/431gXfaMnYXHWvRa1+xBQAYXeNEQd484PbZaQ
+ rO+uAwRuHpfS5JJZpQNFiaGFXjRC79lRvxdXvtcRwcbrWs4HWgj4FjKJAfLqMQ5Tq/Vyh56PT
+ BmkNiyTLcwr+eY1STmK+VTYUCPsRsXxy4avp6z+gw4+i8yHMEXwj4+ssDvJQ9rBCVu8/NCWUN
+ l2ocvB2irIdOMPdQkdjCoEmahIkzIO5kc6v4xA==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Without IIO_TRIGGERED_BUFFER, this driver fails to link:
 
-I am trying to test an ad9833 module like the one in [1] using Diolan DLN2
-adapter and the driver ad9834.c
+drivers/iio/chemical/pms7003.o: In function `pms7003_probe':
+pms7003.c:(.text+0x21c): undefined reference to `devm_iio_triggered_buffer_setup'
+pms7003.c:(.text+0x21c): relocation truncated to fit: R_AARCH64_CALL26 against undefined symbol `devm_iio_triggered_buffer_setup'
 
-So far I get the DLN2 adapter correctly registered as master device
-(below the spi debug output) but the ad9833 driver doesn't even probe.
+Fixes: a1d642266c14 ("iio: chemical: add support for Plantower PMS7003 sensor")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/chemical/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Below the spi log output and pin connections. I'm using the testing
-branch of the iio repo. The ad9834 and dln2 drivers were compiled as
-modules.
+diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+index d5d146e9e372..6f253092a523 100644
+--- a/drivers/iio/chemical/Kconfig
++++ b/drivers/iio/chemical/Kconfig
+@@ -64,6 +64,7 @@ config IAQCORE
+ config PMS7003
+ 	tristate "Plantower PMS7003 particulate matter sensor"
+ 	depends on SERIAL_DEV_BUS
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say Y here to build support for the Plantower PMS7003 particulate
+ 	  matter sensor.
+-- 
+2.20.0
 
-The question is: should this setup probe or extra steps are needed?
-
-Any help appreciated.
-
-Thanks,
-
-Gaston
-
-Hardware device
----------------
-
-[1] https://www.amazon.com/Alloet-AD9833-Generator-Programmable-Triangle/dp/B07GS1CDXZ/ref=sr_1_1?keywords=ad9833&qid=1550752799&s=gateway&sr=8-1
-
-Kernel tree: IIO, testing branch.
-
-DLN2 - AD983 connections
-------------------------
-
- - SS -> FSY
- - SCK -> CLK
- - MOSI -> DAT
- - GND -> GND
- - VCC_OUT -> VCC
-
-SPI debug output
-----------------
-
-[65465.572149] usb 1-1.2: New USB device found, idVendor=a257, idProduct=2013, bcdDevice= 1.00
-[65465.572155] usb 1-1.2: New USB device strings: Mfr=1, Product=2, SerialNumber=0
-[65465.572158] usb 1-1.2: Product: Diolan DLN2
-[65465.572160] usb 1-1.2: Manufacturer: Diolan
-[65466.553970] dln2 1-1.2:1.0: Diolan DLN2 serial 33629166
-[65466.554925] usbcore: registered new interface driver dln2
-[65466.733716] dln2-spi dln2-spi.3.auto: cs_num = 5
-[65466.734198] dln2-spi dln2-spi.3.auto: freq_min = 2000, freq_max = 18000000
-[65466.734453] dln2-spi dln2-spi.3.auto: bpw_mask = 0xFF80
-[65466.735044] dln2-spi dln2-spi.3.auto: registered master spi0
