@@ -4,39 +4,38 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EAF31C43381
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 11:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F6D4C43381
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 11:29:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A5A8921871
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 11:29:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C981921871
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 11:29:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="KUiAKMhz"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="EIfEZcNM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727115AbfCOL3V (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Mar 2019 07:29:21 -0400
-Received: from mail-eopbgr770058.outbound.protection.outlook.com ([40.107.77.58]:3982
-        "EHLO NAM02-SN1-obe.outbound.protection.outlook.com"
+        id S1726503AbfCOL3c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Mar 2019 07:29:32 -0400
+Received: from mail-eopbgr780047.outbound.protection.outlook.com ([40.107.78.47]:40439
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726503AbfCOL3V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 15 Mar 2019 07:29:21 -0400
+        id S1727553AbfCOL3c (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 15 Mar 2019 07:29:32 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector1-analog-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J8Yxv7GbyKkteUmd4avBcIOP/FL9TRzUmLNz1N5nZXM=;
- b=KUiAKMhzX5xzPDV6zf/IKzaBFndR7Rzg98JLguk+idaKW6TcJvPJ3mKwG00PC+1S8C+5b5fkSKxN8UcvP0LtT90v74hCkw8htT5DsgeFg+7eq0xgeyCz2lZ002ziAcDcEFklL9lOMzLrL5S9C2UpH2+eWAKnRmWvEA8JlFtSCkE=
-Received: from BN6PR03CA0010.namprd03.prod.outlook.com (2603:10b6:404:23::20)
- by BLUPR03MB551.namprd03.prod.outlook.com (2a01:111:e400:882::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1709.14; Fri, 15 Mar
- 2019 11:29:15 +0000
-Received: from BL2NAM02FT014.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::202) by BN6PR03CA0010.outlook.office365.com
- (2603:10b6:404:23::20) with Microsoft SMTP Server (version=TLS1_2,
+ bh=1WADb2XkRjRqBoQMxI9IQb8edvNfMsMpwdkP8qBQ1eo=;
+ b=EIfEZcNMgZu3uwCTG3GDFIgWT+26bQye0yMhV6JjsLkY+axIw21OmRUa6luTUCXHPdKPrbbmkJPjrCb6U/zuJetuFLM7k6DnZaQV7JtF8rRrX1z+q1iqT3pfhoS4ceNghTb8yY5WEVxqmjmVL9t9Vv4nv04UaKQuNcr6grom1tw=
+Received: from BN6PR03CA0095.namprd03.prod.outlook.com (10.164.122.161) by
+ BL2PR03MB548.namprd03.prod.outlook.com (10.141.91.140) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1709.14; Fri, 15 Mar 2019 11:29:29 +0000
+Received: from BL2NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::205) by BN6PR03CA0095.outlook.office365.com
+ (2603:10b6:405:6f::33) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1709.13 via Frontend
- Transport; Fri, 15 Mar 2019 11:29:15 +0000
+ Transport; Fri, 15 Mar 2019 11:29:29 +0000
 Authentication-Results: spf=pass (sender IP is 137.71.25.55)
  smtp.mailfrom=analog.com; metafoo.de; dkim=none (message not signed)
  header.d=none;metafoo.de; dmarc=bestguesspass action=none
@@ -45,240 +44,162 @@ Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.55 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
 Received: from nwd2mta1.analog.com (137.71.25.55) by
- BL2NAM02FT014.mail.protection.outlook.com (10.152.76.154) with Microsoft SMTP
+ BL2NAM02FT035.mail.protection.outlook.com (10.152.77.157) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1709.13
- via Frontend Transport; Fri, 15 Mar 2019 11:29:13 +0000
+ via Frontend Transport; Fri, 15 Mar 2019 11:29:22 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x2FBTC8m008748
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x2FBTLFR008781
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 15 Mar 2019 04:29:12 -0700
+        Fri, 15 Mar 2019 04:29:21 -0700
 Received: from mircea-Latitude-E6540.analog.com (10.50.3.101) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 15 Mar 2019 07:29:11 -0400
+ 14.3.408.0; Fri, 15 Mar 2019 07:29:21 -0400
 From:   Mircea Caprioru <mircea.caprioru@analog.com>
 To:     <jic23@kernel.org>
 CC:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
         <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
         <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         Mircea Caprioru <mircea.caprioru@analog.com>
-Subject: [PATCH 1/2] staging: iio: adc: ad7192: Use DT clock binding
-Date:   Fri, 15 Mar 2019 13:29:02 +0200
-Message-ID: <20190315112903.15855-1-mircea.caprioru@analog.com>
+Subject: [PATCH 2/2] staging: iio: adc: ad7192: Convert platform data to DT properties
+Date:   Fri, 15 Mar 2019 13:29:03 +0200
+Message-ID: <20190315112903.15855-2-mircea.caprioru@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190315112903.15855-1-mircea.caprioru@analog.com>
+References: <20190315112903.15855-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(396003)(376002)(39860400002)(136003)(2980300002)(199004)(189003)(50226002)(77096007)(16586007)(54906003)(7696005)(476003)(51416003)(2616005)(47776003)(126002)(106002)(486006)(316002)(426003)(106466001)(14444005)(36756003)(6666004)(53416004)(2351001)(8936002)(44832011)(107886003)(478600001)(356004)(2906002)(1076003)(246002)(4326008)(8676002)(50466002)(48376002)(305945005)(72206003)(26005)(7636002)(186003)(86362001)(6916009)(336012)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:BLUPR03MB551;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(39860400002)(396003)(376002)(346002)(2980300002)(189003)(199004)(72206003)(8676002)(50466002)(6916009)(486006)(7696005)(2616005)(106002)(7636002)(246002)(8936002)(47776003)(478600001)(51416003)(4326008)(6666004)(336012)(48376002)(426003)(305945005)(5660300002)(356004)(36756003)(50226002)(44832011)(107886003)(76176011)(86362001)(446003)(77096007)(2906002)(26005)(11346002)(186003)(106466001)(476003)(126002)(316002)(53416004)(54906003)(14444005)(2351001)(1076003)(16586007);DIR:OUT;SFP:1101;SCL:1;SRVR:BL2PR03MB548;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: e2a953da-dd7c-4d43-b152-08d6a939745d
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600127)(711020)(4605104)(4608103)(4709054)(2017052603328)(7153060);SRVR:BLUPR03MB551;
-X-MS-TrafficTypeDiagnostic: BLUPR03MB551:
-X-Microsoft-Antispam-PRVS: <BLUPR03MB551E75583BAC060B99F309881440@BLUPR03MB551.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: dd582063-3e31-4080-dfcc-08d6a9397c48
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600127)(711020)(4605104)(4608103)(4709054)(2017052603328)(7153060);SRVR:BL2PR03MB548;
+X-MS-TrafficTypeDiagnostic: BL2PR03MB548:
+X-Microsoft-Antispam-PRVS: <BL2PR03MB5483529FA30BFB87340652F81440@BL2PR03MB548.namprd03.prod.outlook.com>
 X-Forefront-PRVS: 09778E995A
 X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: bIH1NtI8M6kNOcWiz4iMwu0i9dVnZR9uoNZiUBlnY6oqTuvsILvpGoEK5wlehJkjldixj3VHr+9gVoQucC5nWJqkTBtB1hjwQke2EUURD5XWCkgYlU3GAYiUwRKGMVN6HqD/pK6RCWJQig7YyABKlQ2Oj5/rt3GhMZ0MehjAupBnxDt/h7TRCfqT84bnZ7gaubS/YqiDWd+t4L7tZ4Ewr8L/YKh8lWvGumHvZUCH0XwqDbyMSKnTQH096zRoYbk6hd32O75EhLNePxUzqwmd54gCRrpJnXs4Fdmf8qSZPMg6KR0Hoxo4upQi+V10IQ6IDNsCU4PLdisDgNprjUEsm+PddivzspL8PsANdg8pdnTHSDPX+cWjcM4KhtMZEAFal7msEka2lfhNn0FYfhLrtX0wgC3Q6A8ukIldiLxRE14=
+X-Microsoft-Antispam-Message-Info: GuyGEbGhNh+ot3w6fB3Bxcrgmb4iPuU2+69fMGL+1Od8+Y2qikEWIRIHlejdEudB+7dpd9Osjx0jG7K8pizwSYl5Im9+xsapoEh24nBhVvQX3G2eOGR3WK78BukQ47074t6KaDzEr4lT0CvdLuqDDZHH3a8oMKR0hm+YQlqdRvex6j21RrB4n3rq5/NWl4CbOLQP7Nro3OUJv37LGmb6j99DKWwnbwVjGoJRvMyTXE2opUAcO1PtB0eMMeljolEiGIZcrsMvjkwU1GoYN5ZOGu4ftGuuuyEwdo7KT0NF+Zj4IQzwj73RCV2nlleObNaZUtz96klMfmcFgvORoiWvJ9qvGxjBubCzJ97Elx5jUOmQZ0GO/pQBxHaRsGQ4Ubyr8WmloKs/8/F1+U1dqTT8KkRclHi9B72Yd6GaEJeo5Kw=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2019 11:29:13.1465
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Mar 2019 11:29:22.4843
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: e2a953da-dd7c-4d43-b152-08d6a939745d
+X-MS-Exchange-CrossTenant-Network-Message-Id: dd582063-3e31-4080-dfcc-08d6a9397c48
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLUPR03MB551
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL2PR03MB548
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch replaces the platform data clock select member with DT clock
-binding. Through the DT the external clock binding is specified. If this is
-not provided then the device will use the internal clock source.
-
-With the external clock binding there is the option to use a clock or a
-crystal as the clock source. When an external crystal is used it is
-connected to MCLK1 and MCLK2 pins. If the external clock is used only MCLK2
-pin will be connected.
+This patch will remove platform data members and replace them with device
+tree properties. These properties will be subject to further modifications
+and probably replaced with other functionalities at some point in time.
 
 Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 ---
- drivers/staging/iio/adc/ad7192.c | 84 ++++++++++++++++++++++----------
- drivers/staging/iio/adc/ad7192.h |  2 -
- 2 files changed, 58 insertions(+), 28 deletions(-)
+ drivers/staging/iio/adc/ad7192.c | 33 ++++++++++++++++++++------------
+ drivers/staging/iio/adc/ad7192.h |  7 -------
+ 2 files changed, 21 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 27f962b8c4ef..5c54ce380fa5 100644
+index 5c54ce380fa5..c56eaefbbe41 100644
 --- a/drivers/staging/iio/adc/ad7192.c
 +++ b/drivers/staging/iio/adc/ad7192.c
-@@ -7,6 +7,7 @@
-  */
- 
- #include <linux/interrupt.h>
-+#include <linux/clk.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
-@@ -156,14 +157,16 @@
- struct ad7192_state {
- 	struct regulator		*avdd;
- 	struct regulator		*dvdd;
-+	struct clk			*mclk;
- 	u16				int_vref_mv;
--	u32				mclk;
-+	u32				fclk;
- 	u32				f_order;
- 	u32				mode;
- 	u32				conf;
- 	u32				scale_avail[8][2];
- 	u8				gpocon;
- 	u8				devid;
-+	u8				clock_sel;
- 	struct mutex			lock;	/* protect sensor state */
- 
- 	struct ad_sigma_delta		sd;
-@@ -226,6 +229,27 @@ static inline bool ad7192_valid_external_frequency(u32 freq)
- 		freq <= AD7192_EXT_FREQ_MHZ_MAX);
+@@ -250,10 +250,11 @@ static int ad7192_of_clock_select(struct ad7192_state *st)
+ 	return clock_sel;
  }
  
-+static int ad7192_of_clock_select(struct ad7192_state *st)
-+{
-+	struct device_node *np = st->sd.spi->dev.of_node;
-+	unsigned int clock_sel;
-+
-+	clock_sel = AD7192_CLK_INT;
-+
-+	/* use internal clock */
-+	if (PTR_ERR(st->mclk) == -ENOENT) {
-+		if (of_property_read_bool(np, "adi,int-clock-output-enable"))
-+			clock_sel = AD7192_CLK_INT_CO;
-+	} else {
-+		if (of_property_read_bool(np, "adi,clock-xtal"))
-+			clock_sel = AD7192_CLK_EXT_MCLK1_2;
-+		else
-+			clock_sel = AD7192_CLK_EXT_MCLK2;
-+	}
-+
-+	return clock_sel;
-+}
-+
- static int ad7192_setup(struct ad7192_state *st,
- 			const struct ad7192_platform_data *pdata)
+-static int ad7192_setup(struct ad7192_state *st,
+-			const struct ad7192_platform_data *pdata)
++static int ad7192_setup(struct ad7192_state *st, struct device_node *np)
  {
-@@ -250,28 +274,8 @@ static int ad7192_setup(struct ad7192_state *st,
- 		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X)\n",
- 			 id);
+ 	struct iio_dev *indio_dev = spi_get_drvdata(st->sd.spi);
++	bool rej60_en, sinc3_en, refin2_en, chop_en;
++	bool buf_en, bipolar, burnout_curr_en;
+ 	unsigned long long scale_uv;
+ 	int i, ret, id;
  
--	switch (pdata->clock_source_sel) {
--	case AD7192_CLK_INT:
--	case AD7192_CLK_INT_CO:
--		st->mclk = AD7192_INT_FREQ_MHZ;
--		break;
--	case AD7192_CLK_EXT_MCLK1_2:
--	case AD7192_CLK_EXT_MCLK2:
--		if (ad7192_valid_external_frequency(pdata->ext_clk_hz)) {
--			st->mclk = pdata->ext_clk_hz;
--			break;
--		}
--		dev_err(&st->sd.spi->dev, "Invalid frequency setting %u\n",
--			pdata->ext_clk_hz);
--		ret = -EINVAL;
--		goto out;
--	default:
--		ret = -EINVAL;
--		goto out;
--	}
--
- 	st->mode = AD7192_MODE_SEL(AD7192_MODE_IDLE) |
--		AD7192_MODE_CLKSRC(pdata->clock_source_sel) |
-+		AD7192_MODE_CLKSRC(st->clock_sel) |
- 		AD7192_MODE_RATE(480);
+@@ -280,18 +281,22 @@ static int ad7192_setup(struct ad7192_state *st,
  
  	st->conf = AD7192_CONF_GAIN(0);
-@@ -496,7 +500,7 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
- 			*val -= 273 * ad7192_get_temp_scale(unipolar);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		*val = st->mclk /
-+		*val = st->fclk /
- 			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
- 		return IIO_VAL_INT;
+ 
+-	if (pdata->rej60_en)
++	rej60_en = of_property_read_bool(np, "adi,rejection-60-Hz-enable");
++	if (rej60_en)
+ 		st->mode |= AD7192_MODE_REJ60;
+ 
+-	if (pdata->sinc3_en)
++	sinc3_en = of_property_read_bool(np, "adi,sinc3-filter-enable");
++	if (sinc3_en)
+ 		st->mode |= AD7192_MODE_SINC3;
+ 
+-	if (pdata->refin2_en && st->devid != ID_AD7195)
++	refin2_en = of_property_read_bool(np, "adi,refin2-pins-enable");
++	if (refin2_en && st->devid != ID_AD7195)
+ 		st->conf |= AD7192_CONF_REFSEL;
+ 
+-	if (pdata->chop_en) {
++	chop_en = of_property_read_bool(np, "adi,chop-enable");
++	if (chop_en) {
+ 		st->conf |= AD7192_CONF_CHOP;
+-		if (pdata->sinc3_en)
++		if (sinc3_en)
+ 			st->f_order = 3; /* SINC 3rd order */
+ 		else
+ 			st->f_order = 4; /* SINC 4th order */
+@@ -299,15 +304,19 @@ static int ad7192_setup(struct ad7192_state *st,
+ 		st->f_order = 1;
  	}
-@@ -543,7 +547,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
- 			break;
+ 
+-	if (pdata->buf_en)
++	buf_en = of_property_read_bool(np, "adi,buffer-enable");
++	if (buf_en)
+ 		st->conf |= AD7192_CONF_BUF;
+ 
+-	if (pdata->unipolar_en)
++	bipolar = of_property_read_bool(np, "bipolar");
++	if (!bipolar)
+ 		st->conf |= AD7192_CONF_UNIPOLAR;
+ 
+-	if (pdata->burnout_curr_en && pdata->buf_en && !pdata->chop_en) {
++	burnout_curr_en = of_property_read_bool(np,
++						"adi,burnout-currents-enable");
++	if (burnout_curr_en && buf_en && !chop_en) {
+ 		st->conf |= AD7192_CONF_BURN;
+-	} else if (pdata->burnout_curr_en) {
++	} else if (burnout_curr_en) {
+ 		dev_warn(&st->sd.spi->dev,
+ 			 "Can't enable burnout currents: see CHOP or buffer\n");
+ 	}
+@@ -735,7 +744,7 @@ static int ad7192_probe(struct spi_device *spi)
  		}
+ 	}
  
--		div = st->mclk / (val * st->f_order * 1024);
-+		div = st->fclk / (val * st->f_order * 1024);
- 		if (div < 1 || div > 1023) {
- 			ret = -EINVAL;
- 			break;
-@@ -706,15 +710,42 @@ static int ad7192_probe(struct spi_device *spi)
+-	ret = ad7192_setup(st, pdata);
++	ret = ad7192_setup(st, spi->dev.of_node);
  	if (ret)
- 		goto error_disable_dvdd;
+ 		goto error_disable_clk;
  
-+	st->fclk = AD7192_INT_FREQ_MHZ;
-+
-+	st->mclk = devm_clk_get(&st->sd.spi->dev, "mclk");
-+	if (IS_ERR(st->mclk) && PTR_ERR(st->mclk) != -ENOENT) {
-+		ret = PTR_ERR(st->mclk);
-+		goto error_remove_trigger;
-+	}
-+
-+	st->clock_sel = ad7192_of_clock_select(st);
-+
-+	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
-+	    st->clock_sel == AD7192_CLK_EXT_MCLK2) {
-+		ret = clk_prepare_enable(st->mclk);
-+		if (ret < 0)
-+			goto error_remove_trigger;
-+
-+		st->fclk = clk_get_rate(st->mclk);
-+		if (!ad7192_valid_external_frequency(st->fclk)) {
-+			ret = -EINVAL;
-+			dev_err(&spi->dev,
-+				"External clock frequency out of bounds\n");
-+			goto error_disable_clk;
-+		}
-+	}
-+
- 	ret = ad7192_setup(st, pdata);
- 	if (ret)
--		goto error_remove_trigger;
-+		goto error_disable_clk;
- 
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
--		goto error_remove_trigger;
-+		goto error_disable_clk;
- 	return 0;
- 
-+error_disable_clk:
-+	clk_disable_unprepare(st->mclk);
- error_remove_trigger:
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- error_disable_dvdd:
-@@ -731,6 +762,7 @@ static int ad7192_remove(struct spi_device *spi)
- 	struct ad7192_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
-+	clk_disable_unprepare(st->mclk);
- 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- 
- 	regulator_disable(st->dvdd);
 diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
-index 7433a43c2611..3be3ee269ed5 100644
+index 3be3ee269ed5..aa3322c14e38 100644
 --- a/drivers/staging/iio/adc/ad7192.h
 +++ b/drivers/staging/iio/adc/ad7192.h
-@@ -33,8 +33,6 @@
+@@ -33,13 +33,6 @@
  
  struct ad7192_platform_data {
  	u16		vref_mv;
--	u8		clock_source_sel;
--	u32		ext_clk_hz;
- 	bool		refin2_en;
- 	bool		rej60_en;
- 	bool		sinc3_en;
+-	bool		refin2_en;
+-	bool		rej60_en;
+-	bool		sinc3_en;
+-	bool		chop_en;
+-	bool		buf_en;
+-	bool		unipolar_en;
+-	bool		burnout_curr_en;
+ };
+ 
+ #endif /* IIO_ADC_AD7192_H_ */
 -- 
 2.17.1
 
