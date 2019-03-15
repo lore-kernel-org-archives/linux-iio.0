@@ -2,46 +2,49 @@ Return-Path: <SRS0=RKAC=RS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8456C43381
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 10:01:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81101C43381
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 10:08:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C1C192184C
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 10:01:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 476CB2186A
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Mar 2019 10:08:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1552644525;
+	bh=XW3X7Tgwo19FaBK41bcSpwSjQgkZkvcJU3MpoK+tG8A=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=uZUxVePoHLbxiwLM0MvkfilptVFLwBUJHPVjcrSEOazJ3NcCSlhpJVvv7vDQntH3G
+	 Mmyh1K6CGCSc0bxpiH6opOXAhAF9QgDbDhZCnEdPEnrojz5c5cqgesHmgw5BZbgskY
+	 BDJgsjYpP3TgEiR9LfDrKydz1+yWIA3T1KD5kC1A=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728809AbfCOKB6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Mar 2019 06:01:58 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:60159 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728107AbfCOKB6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Mar 2019 06:01:58 -0400
-X-Originating-IP: 109.213.80.250
-Received: from localhost (alyon-652-1-57-250.w109-213.abo.wanadoo.fr [109.213.80.250])
-        (Authenticated sender: gregory.clement@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 0596340028;
-        Fri, 15 Mar 2019 10:01:53 +0000 (UTC)
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Cc:     Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 4/4] dt-bindings: iio: adc: lpc32xx-adc: Document vref-supply
-Date:   Fri, 15 Mar 2019 10:52:31 +0100
-Message-Id: <20190315095231.17001-5-gregory.clement@bootlin.com>
+        id S1728719AbfCOKIo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Mar 2019 06:08:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59550 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727469AbfCOKIo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 15 Mar 2019 06:08:44 -0400
+Received: from localhost.localdomain.com (nat-pool-mxp-t.redhat.com [149.6.153.186])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BEE942186A;
+        Fri, 15 Mar 2019 10:08:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1552644523;
+        bh=XW3X7Tgwo19FaBK41bcSpwSjQgkZkvcJU3MpoK+tG8A=;
+        h=From:To:Cc:Subject:Date:From;
+        b=f5Mgt6LFb8y0okqKjUZ2/k+t1B+dTys0HTadf9D84VLMHoEgFpdHEs75rb6ChZI4n
+         VlHG6d3MA2v0xLFD3+sw68Gd26NAjNH8zR6ULZs0BNn39dkLPWXFjUybQwcGz47RZ4
+         hde+fO93wEOXTEQzoEc2RXtwHu/fSQy0NXik0GIw=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@redhat.com
+Subject: [PATCH 0/2] add support for LSM6DSOX
+Date:   Fri, 15 Mar 2019 11:08:23 +0100
+Message-Id: <cover.1552643968.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190315095231.17001-1-gregory.clement@bootlin.com>
-References: <20190315095231.17001-1-gregory.clement@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -49,36 +52,26 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As most of the other ADC the lpc32xx one use a vref-supply property:
-document it.
+Add support for LSM6DSOX IMU mems sensor
+https://www.st.com/resource/en/datasheet/lsm6dsox.pdf
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
----
- Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+Please note I just compiled the series since I have no adapter for this sensor
+but according to the datasheet it has a common register map with lsm6dso (at
+least for supported features)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
-index b3629d3a9adf..3a1bc669bd51 100644
---- a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
-@@ -6,6 +6,10 @@ Required properties:
-   region.
- - interrupts: The ADC interrupt
- 
-+Optional:
-+ - vref-supply: The regulator supply ADC reference voltage, optional
-+   for legacy reason, but highly encouraging to us in new device tree
-+
- Example:
- 
- 	adc@40048000 {
-@@ -13,4 +17,5 @@ Example:
- 		reg = <0x40048000 0x1000>;
- 		interrupt-parent = <&mic>;
- 		interrupts = <39 0>;
-+		vref-supply = <&vcc>;
- 	};
+Lorenzo Bianconi (2):
+  iio: imu: st_lsm6dsx: add support to LSM6DSOX
+  dt-bindings: iio: imu: st_lsm6dsx: add lsm6dsox device bindings
+
+ Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
+ drivers/iio/imu/st_lsm6dsx/Kconfig                       | 2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h                  | 2 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c           | 4 ++--
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c             | 3 ++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c              | 5 +++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c              | 5 +++++
+ 7 files changed, 18 insertions(+), 4 deletions(-)
+
 -- 
 2.20.1
 
