@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FEDCC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:57:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46F7BC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:00:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 71E44218D4
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:57:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1E3CA21903
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:00:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552759035;
-	bh=Q91zTYYwbUuY05bfcjTEGeNsk7Tc5VfIN0iD5Epm2P0=;
+	s=default; t=1552759251;
+	bh=EIRRMJOSKE2TTGtwsZWi5d00hSsrcDSmfBo9LBUbjrM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=kCdFb5vEBcoVFKJ+Bsc0NbIlQAWpQ0IZUNUV43IOV8tTt4AYzW+0+rGk0kiZcOTLR
-	 P/VM1C11BqTuoex/8z9/ELWWJAJpa9GnxNteQK3CFK573dnYZpSiyuVK1XRMYTd/Zu
-	 9W2kCHqus2/qadL9SNjM832zFolKOMZFxmtjfGk0=
+	b=gGfzyHThOoCr49Q+cK/CWbRvw92WjDMlkIE8KBHH+PG74u1drcAR9Igdlx75j7Imo
+	 AqbO74oC1O0AaDao7Zf4ZzH+2XQVw2NTPAphUk1JXztMbnb+kjToCLmasfRsAfRWnu
+	 J9LsWAgq/+EdEtUweNyzdFx5dBpL8YrI1QSko3s8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726547AbfCPR5O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 13:57:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34216 "EHLO mail.kernel.org"
+        id S1726493AbfCPSAu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 14:00:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbfCPR5O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 13:57:14 -0400
+        id S1726466AbfCPSAu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 14:00:50 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6806B218D0;
-        Sat, 16 Mar 2019 17:57:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A7C4218D0;
+        Sat, 16 Mar 2019 18:00:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552759033;
-        bh=Q91zTYYwbUuY05bfcjTEGeNsk7Tc5VfIN0iD5Epm2P0=;
+        s=default; t=1552759249;
+        bh=EIRRMJOSKE2TTGtwsZWi5d00hSsrcDSmfBo9LBUbjrM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ggK6knhAoRX33ZBPBIbCMh7tT3bP2LRyiNJ+Zpim0g9TPuamt8RpQ2pKuZw79VDk1
-         +wPPfy+IrRYwRLlL9yFGcVcKdRU8z2BUZGCCTU3fW3nr8BzDM4NrxaQKHRE723oOO+
-         yKMu7ZeyHF47VYhvCh5VN0GPRRxyoMYx1nkNF7YU=
-Date:   Sat, 16 Mar 2019 17:57:06 +0000
+        b=nVhc5TxviBhM/XmfDhRR3jhgF+xtHAQQqCT5VvwFzZM+IIDmPYMvpBAXk0HHdHhK2
+         0S553AnHjQxeveZcs8B4BeLMAHOdkVSM42Vrm9xKddfPfCv4g1zsKWQoY0/+LGcEU/
+         JoSUQwaOueyeY77pW6b3Pns0gHojCwHnQIcNZrB0=
+Date:   Sat, 16 Mar 2019 18:00:42 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Renato Lui Geh <renatogeh@gmail.com>
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
@@ -47,12 +47,12 @@ Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         mark.rutland@arm.com, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 05/11] staging: iio: ad7780: set pattern values and
- masks directly
-Message-ID: <20190316175706.0012b9f0@archlinux>
-In-Reply-To: <ecfec5163339a3ffa8958876b97c08c601e5cadc.1552700652.git.renatogeh@gmail.com>
+Subject: Re: [PATCH v5 06/11] staging:iio:ad7780: add chip ID values and
+ mask
+Message-ID: <20190316180042.369d55e6@archlinux>
+In-Reply-To: <8154410f6c1b6cdde21cfb781dbc2088f5c91d21.1552700652.git.renatogeh@gmail.com>
 References: <cover.1552700652.git.renatogeh@gmail.com>
-        <ecfec5163339a3ffa8958876b97c08c601e5cadc.1552700652.git.renatogeh@gmail.com>
+        <8154410f6c1b6cdde21cfb781dbc2088f5c91d21.1552700652.git.renatogeh@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,86 +62,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 23:14:14 -0300
+On Fri, 15 Mar 2019 23:14:27 -0300
 Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-> The AD7780 driver contains status pattern bits designed for checking
-> whether serial transfers have been correctly performed. Pattern macros
-> were previously generated through bit fields. This patch sets good
-> pattern values directly and masks through GENMASK.
+> The ad7780 supports both the ad778x and ad717x families. Each chip has
+> a corresponding ID. This patch provides a mask for extracting ID values
+> from the status bits and also macros for the correct values for the
+> ad7170, ad7171, ad7780 and ad7781.
 > 
 > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
-Applied, 
+I'll admit I find it hard to summon an enthusiasm for this patch, but
+it does no harm and I don't want to delay the following ones.
 
-Thanks,
+Hence applied anyway.
 
 Jonathan
 
 > ---
->  drivers/staging/iio/adc/ad7780.c | 20 +++++++++-----------
->  1 file changed, 9 insertions(+), 11 deletions(-)
+> Changes in v5:
+>  - Put AD7780_ID{0,1} back
+> 
+>  drivers/staging/iio/adc/ad7780.c | 6 ++++++
+>  1 file changed, 6 insertions(+)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index 8ff74427d975..94cb60c327d0 100644
+> index 94cb60c327d0..977b381c1260 100644
 > --- a/drivers/staging/iio/adc/ad7780.c
 > +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -17,6 +17,7 @@
->  #include <linux/sched.h>
->  #include <linux/gpio/consumer.h>
->  #include <linux/module.h>
-> +#include <linux/bits.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -28,16 +29,13 @@
->  #define AD7780_ID1		BIT(4)
+> @@ -30,6 +30,12 @@
 >  #define AD7780_ID0		BIT(3)
 >  #define AD7780_GAIN		BIT(2)
-> -#define AD7780_PAT1		BIT(1)
-> -#define AD7780_PAT0		BIT(0)
 >  
-> -#define AD7780_PATTERN		(AD7780_PAT0)
-> -#define AD7780_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1)
+> +#define AD7170_ID		0
+> +#define AD7171_ID		1
+> +#define AD7780_ID		1
+> +#define AD7781_ID		0
+> +
+> +#define AD7780_ID_MASK		(AD7780_ID0 | AD7780_ID1)
 >  
-> -#define AD7170_PAT2		BIT(2)
-> +#define AD7780_PATTERN_GOOD	1
-> +#define AD7780_PATTERN_MASK	GENMASK(1, 0)
->  
-> -#define AD7170_PATTERN		(AD7780_PAT0 | AD7170_PAT2)
-> -#define AD7170_PATTERN_MASK	(AD7780_PAT0 | AD7780_PAT1 | AD7170_PAT2)
-> +#define AD7170_PATTERN_GOOD	5
-> +#define AD7170_PATTERN_MASK	GENMASK(2, 0)
->  
->  #define AD7780_GAIN_MIDPOINT	64
->  #define AD7780_FILTER_MIDPOINT	13350
-> @@ -209,25 +207,25 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
->  static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
->  	[ID_AD7170] = {
->  		.channel = AD7170_CHANNEL(12, 24),
-> -		.pattern = AD7170_PATTERN,
-> +		.pattern = AD7170_PATTERN_GOOD,
->  		.pattern_mask = AD7170_PATTERN_MASK,
->  		.is_ad778x = false,
->  	},
->  	[ID_AD7171] = {
->  		.channel = AD7170_CHANNEL(16, 24),
-> -		.pattern = AD7170_PATTERN,
-> +		.pattern = AD7170_PATTERN_GOOD,
->  		.pattern_mask = AD7170_PATTERN_MASK,
->  		.is_ad778x = false,
->  	},
->  	[ID_AD7780] = {
->  		.channel = AD7780_CHANNEL(24, 32),
-> -		.pattern = AD7780_PATTERN,
-> +		.pattern = AD7780_PATTERN_GOOD,
->  		.pattern_mask = AD7780_PATTERN_MASK,
->  		.is_ad778x = true,
->  	},
->  	[ID_AD7781] = {
->  		.channel = AD7780_CHANNEL(20, 32),
-> -		.pattern = AD7780_PATTERN,
-> +		.pattern = AD7780_PATTERN_GOOD,
->  		.pattern_mask = AD7780_PATTERN_MASK,
->  		.is_ad778x = true,
->  	},
+>  #define AD7780_PATTERN_GOOD	1
+>  #define AD7780_PATTERN_MASK	GENMASK(1, 0)
 
