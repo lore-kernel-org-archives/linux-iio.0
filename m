@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34DA6C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBFA8C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:52:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EA89B21903
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:45:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7805F218AC
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:52:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552754738;
-	bh=EwxsviSqgWFF5K6EzFXfDRm3MpzVLCHAjIyZCyCGhiQ=;
+	s=default; t=1552755120;
+	bh=dmf7QsFHbOzm57ewRg0hW0LygKeGeuE7wm5dGlkeZWk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=hDqdkNR9FDrMfVFBP5CVOtz5BIFC1e9/71VkraC1H8OhEeogqx+rHcZjK05RUxaEx
-	 ESFKRV2ygIxAA/cIAv0sF65Fd8jTIy9LYLUo5leW4Rpt6ww6AvyLXXkp7aA3IZXJUS
-	 i5w79eNxqTsKS926l7pbqaabeNcQ1CYn+IyooU34=
+	b=aMPADZvptLlkG83A8PiXrVAzvzcsS1kvcQO99L/3B6eJCNFU8oJ0FC1KLn+hSJC2Q
+	 nxqkpUHnfg6iXZLkYF1pL265Uy8cWK6a4osUNJPG/YiEB8QhLccENw4ozSZqQta3jj
+	 qOk8NK1R0oRMZemjOqfv+y1i4U2W4KB+QzJCiras=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726828AbfCPQph (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 12:45:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44350 "EHLO mail.kernel.org"
+        id S1726640AbfCPQv7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 12:51:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45954 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbfCPQph (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 12:45:37 -0400
+        id S1726629AbfCPQv7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 12:51:59 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D146D218AC;
-        Sat, 16 Mar 2019 16:45:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 81D9D2186A;
+        Sat, 16 Mar 2019 16:51:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552754735;
-        bh=EwxsviSqgWFF5K6EzFXfDRm3MpzVLCHAjIyZCyCGhiQ=;
+        s=default; t=1552755118;
+        bh=dmf7QsFHbOzm57ewRg0hW0LygKeGeuE7wm5dGlkeZWk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0HVIOAgZWHLCMJPv5tyttMulTyorSjaHLq4XyQCsOfUrcoMRyqMZpN4R/d8MwFMvI
-         Np2DIkwnimeVUvIZ675hcRnj91O/VCuQ4iNy4OhEnRSolp19VoBJfjxRDc4UQOt54f
-         Fv5cBYu3sCjzZTG3qVo3DHP4eIWs2JO01+EzGnWo=
-Date:   Sat, 16 Mar 2019 16:45:31 +0000
+        b=Y6tEi03f94xOwQcY9jBIAfdrg7QC3jtu0LeAEErYevnYt0Gi0zSb/4Bw8yCihKqVy
+         CHMw8ETTlvuRVpcDo9pJou94dYqaGAE+msiX72+CvkFFSuZVmo3dep0RRZYWmd7PrZ
+         zw97kgoQMcIFDz2IXZn3T0VrBuu1vNJpeve/xVEU=
+Date:   Sat, 16 Mar 2019 16:51:53 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add support to LSM6DSOX
-Message-ID: <20190316164531.5ee59121@archlinux>
-In-Reply-To: <c483e74a9bb420a06f2c1d94f5d9f764a4960bc3.1552643968.git.lorenzo@kernel.org>
-References: <cover.1552643968.git.lorenzo@kernel.org>
-        <c483e74a9bb420a06f2c1d94f5d9f764a4960bc3.1552643968.git.lorenzo@kernel.org>
+To:     Mircea Caprioru <mircea.caprioru@analog.com>
+Cc:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
+        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Use DT clock binding
+Message-ID: <20190316165153.14341f49@archlinux>
+In-Reply-To: <20190315112903.15855-1-mircea.caprioru@analog.com>
+References: <20190315112903.15855-1-mircea.caprioru@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,149 +56,203 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 11:08:24 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Fri, 15 Mar 2019 13:29:02 +0200
+Mircea Caprioru <mircea.caprioru@analog.com> wrote:
 
-> Add support to STM LSM6DSOX 6-axis (acc + gyro) Mems sensor
-> https://www.st.com/resource/en/datasheet/lsm6dsox.pdf
+> This patch replaces the platform data clock select member with DT clock
+> binding. Through the DT the external clock binding is specified. If this is
+> not provided then the device will use the internal clock source.
 > 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to play with it.
+> With the external clock binding there is the option to use a clock or a
+> crystal as the clock source. When an external crystal is used it is
+> connected to MCLK1 and MCLK2 pins. If the external clock is used only MCLK2
+> pin will be connected.
+> 
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it.
 
-thanks,
+Note I reordered with earlier patch to avoid breaking bisectablity.
+
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/imu/st_lsm6dsx/Kconfig             | 2 +-
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 4 ++--
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 3 ++-
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 5 +++++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 5 +++++
->  6 files changed, 17 insertions(+), 4 deletions(-)
+>  drivers/staging/iio/adc/ad7192.c | 84 ++++++++++++++++++++++----------
+>  drivers/staging/iio/adc/ad7192.h |  2 -
+>  2 files changed, 58 insertions(+), 28 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> index 36048bf0455a..8dcf5137b8da 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
-> +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> @@ -9,7 +9,7 @@ config IIO_ST_LSM6DSX
->  	help
->  	  Say yes here to build support for STMicroelectronics LSM6DSx imu
->  	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
-> -	  ism330dlc, lsm6dso, asm330lhh
-> +	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index 27f962b8c4ef..5c54ce380fa5 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -7,6 +7,7 @@
+>   */
 >  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called st_lsm6dsx.
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index de2a0dc39353..0a0c56c1701d 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -21,6 +21,7 @@
->  #define ST_ISM330DLC_DEV_NAME	"ism330dlc"
->  #define ST_LSM6DSO_DEV_NAME	"lsm6dso"
->  #define ST_ASM330LHH_DEV_NAME	"asm330lhh"
-> +#define ST_LSM6DSOX_DEV_NAME	"lsm6dsox"
+>  #include <linux/interrupt.h>
+> +#include <linux/clk.h>
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+>  #include <linux/slab.h>
+> @@ -156,14 +157,16 @@
+>  struct ad7192_state {
+>  	struct regulator		*avdd;
+>  	struct regulator		*dvdd;
+> +	struct clk			*mclk;
+>  	u16				int_vref_mv;
+> -	u32				mclk;
+> +	u32				fclk;
+>  	u32				f_order;
+>  	u32				mode;
+>  	u32				conf;
+>  	u32				scale_avail[8][2];
+>  	u8				gpocon;
+>  	u8				devid;
+> +	u8				clock_sel;
+>  	struct mutex			lock;	/* protect sensor state */
 >  
->  enum st_lsm6dsx_hw_id {
->  	ST_LSM6DS3_ID,
-> @@ -30,6 +31,7 @@ enum st_lsm6dsx_hw_id {
->  	ST_ISM330DLC_ID,
->  	ST_LSM6DSO_ID,
->  	ST_ASM330LHH_ID,
-> +	ST_LSM6DSOX_ID,
->  	ST_LSM6DSX_MAX_ID,
->  };
->  
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> index 8f443bdb5b51..2da8c5ff699a 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> @@ -13,7 +13,7 @@
->   * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated depending on the
->   * value of the decimation factor and ODR set for each FIFO data set.
->   *
-> - * LSM6DSO/ASM330LHH: The FIFO buffer can be configured to store data
-> + * LSM6DSO/LSM6DSOX/ASM330LHH: The FIFO buffer can be configured to store data
->   * from gyroscope and accelerometer. Each sample is queued with a tag (1B)
->   * indicating data source (gyroscope, accelerometer, hw timer).
->   *
-> @@ -506,7 +506,7 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
+>  	struct ad_sigma_delta		sd;
+> @@ -226,6 +229,27 @@ static inline bool ad7192_valid_external_frequency(u32 freq)
+>  		freq <= AD7192_EXT_FREQ_MHZ_MAX);
 >  }
 >  
->  /**
-> - * st_lsm6dsx_read_tagged_fifo() - LSM6DSO/ASM330LHH read FIFO routine
-> + * st_lsm6dsx_read_tagged_fifo() - LSM6DSO/LSM6DSOX/ASM330LHH read FIFO routine
->   * @hw: Pointer to instance of struct st_lsm6dsx_hw.
->   *
->   * Read samples from the hw FIFO and push them to IIO buffers.
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 50cab3531b11..c167ae2c21ab 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -23,7 +23,7 @@
->   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
->   *   - FIFO size: 4KB
->   *
-> - * - LSM6DSO/ASM330LHH
-> + * - LSM6DSO/LSM6DSOX/ASM330LHH
->   *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416
->   *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
->   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
-> @@ -287,6 +287,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->  		.max_fifo_size = 512,
->  		.id = {
->  			[0] = ST_LSM6DSO_ID,
-> +			[1] = ST_LSM6DSOX_ID,
->  		},
->  		.batch = {
->  			[ST_LSM6DSX_ID_ACC] = {
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> index 00b4b702645a..0bfc66d2d772 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> @@ -69,6 +69,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
->  		.compatible = "st,asm330lhh",
->  		.data = (void *)ST_ASM330LHH_ID,
->  	},
-> +	{
-> +		.compatible = "st,lsm6dsox",
-> +		.data = (void *)ST_LSM6DSOX_ID,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
-> @@ -81,6 +85,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
->  	{ ST_ISM330DLC_DEV_NAME, ST_ISM330DLC_ID },
->  	{ ST_LSM6DSO_DEV_NAME, ST_LSM6DSO_ID },
->  	{ ST_ASM330LHH_DEV_NAME, ST_ASM330LHH_ID },
-> +	{ ST_LSM6DSOX_DEV_NAME, ST_LSM6DSOX_ID },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> index 836256c2ac7d..9f46d4ce9fc1 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> @@ -69,6 +69,10 @@ static const struct of_device_id st_lsm6dsx_spi_of_match[] = {
->  		.compatible = "st,asm330lhh",
->  		.data = (void *)ST_ASM330LHH_ID,
->  	},
-> +	{
-> +		.compatible = "st,lsm6dsox",
-> +		.data = (void *)ST_LSM6DSOX_ID,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
-> @@ -81,6 +85,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id_table[] = {
->  	{ ST_ISM330DLC_DEV_NAME, ST_ISM330DLC_ID },
->  	{ ST_LSM6DSO_DEV_NAME, ST_LSM6DSO_ID },
->  	{ ST_ASM330LHH_DEV_NAME, ST_ASM330LHH_ID },
-> +	{ ST_LSM6DSOX_DEV_NAME, ST_LSM6DSOX_ID },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
+> +static int ad7192_of_clock_select(struct ad7192_state *st)
+> +{
+> +	struct device_node *np = st->sd.spi->dev.of_node;
+> +	unsigned int clock_sel;
+> +
+> +	clock_sel = AD7192_CLK_INT;
+> +
+> +	/* use internal clock */
+> +	if (PTR_ERR(st->mclk) == -ENOENT) {
+> +		if (of_property_read_bool(np, "adi,int-clock-output-enable"))
+> +			clock_sel = AD7192_CLK_INT_CO;
+> +	} else {
+> +		if (of_property_read_bool(np, "adi,clock-xtal"))
+> +			clock_sel = AD7192_CLK_EXT_MCLK1_2;
+> +		else
+> +			clock_sel = AD7192_CLK_EXT_MCLK2;
+> +	}
+> +
+> +	return clock_sel;
+> +}
+> +
+>  static int ad7192_setup(struct ad7192_state *st,
+>  			const struct ad7192_platform_data *pdata)
+>  {
+> @@ -250,28 +274,8 @@ static int ad7192_setup(struct ad7192_state *st,
+>  		dev_warn(&st->sd.spi->dev, "device ID query failed (0x%X)\n",
+>  			 id);
+>  
+> -	switch (pdata->clock_source_sel) {
+> -	case AD7192_CLK_INT:
+> -	case AD7192_CLK_INT_CO:
+> -		st->mclk = AD7192_INT_FREQ_MHZ;
+> -		break;
+> -	case AD7192_CLK_EXT_MCLK1_2:
+> -	case AD7192_CLK_EXT_MCLK2:
+> -		if (ad7192_valid_external_frequency(pdata->ext_clk_hz)) {
+> -			st->mclk = pdata->ext_clk_hz;
+> -			break;
+> -		}
+> -		dev_err(&st->sd.spi->dev, "Invalid frequency setting %u\n",
+> -			pdata->ext_clk_hz);
+> -		ret = -EINVAL;
+> -		goto out;
+> -	default:
+> -		ret = -EINVAL;
+> -		goto out;
+> -	}
+> -
+>  	st->mode = AD7192_MODE_SEL(AD7192_MODE_IDLE) |
+> -		AD7192_MODE_CLKSRC(pdata->clock_source_sel) |
+> +		AD7192_MODE_CLKSRC(st->clock_sel) |
+>  		AD7192_MODE_RATE(480);
+>  
+>  	st->conf = AD7192_CONF_GAIN(0);
+> @@ -496,7 +500,7 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+>  			*val -= 273 * ad7192_get_temp_scale(unipolar);
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		*val = st->mclk /
+> +		*val = st->fclk /
+>  			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
+>  		return IIO_VAL_INT;
+>  	}
+> @@ -543,7 +547,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+>  			break;
+>  		}
+>  
+> -		div = st->mclk / (val * st->f_order * 1024);
+> +		div = st->fclk / (val * st->f_order * 1024);
+>  		if (div < 1 || div > 1023) {
+>  			ret = -EINVAL;
+>  			break;
+> @@ -706,15 +710,42 @@ static int ad7192_probe(struct spi_device *spi)
+>  	if (ret)
+>  		goto error_disable_dvdd;
+>  
+> +	st->fclk = AD7192_INT_FREQ_MHZ;
+> +
+> +	st->mclk = devm_clk_get(&st->sd.spi->dev, "mclk");
+> +	if (IS_ERR(st->mclk) && PTR_ERR(st->mclk) != -ENOENT) {
+> +		ret = PTR_ERR(st->mclk);
+> +		goto error_remove_trigger;
+> +	}
+> +
+> +	st->clock_sel = ad7192_of_clock_select(st);
+> +
+> +	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
+> +	    st->clock_sel == AD7192_CLK_EXT_MCLK2) {
+> +		ret = clk_prepare_enable(st->mclk);
+> +		if (ret < 0)
+> +			goto error_remove_trigger;
+> +
+> +		st->fclk = clk_get_rate(st->mclk);
+> +		if (!ad7192_valid_external_frequency(st->fclk)) {
+> +			ret = -EINVAL;
+> +			dev_err(&spi->dev,
+> +				"External clock frequency out of bounds\n");
+> +			goto error_disable_clk;
+> +		}
+> +	}
+> +
+>  	ret = ad7192_setup(st, pdata);
+>  	if (ret)
+> -		goto error_remove_trigger;
+> +		goto error_disable_clk;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret < 0)
+> -		goto error_remove_trigger;
+> +		goto error_disable_clk;
+>  	return 0;
+>  
+> +error_disable_clk:
+> +	clk_disable_unprepare(st->mclk);
+>  error_remove_trigger:
+>  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  error_disable_dvdd:
+> @@ -731,6 +762,7 @@ static int ad7192_remove(struct spi_device *spi)
+>  	struct ad7192_state *st = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+> +	clk_disable_unprepare(st->mclk);
+>  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+>  
+>  	regulator_disable(st->dvdd);
+> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
+> index 7433a43c2611..3be3ee269ed5 100644
+> --- a/drivers/staging/iio/adc/ad7192.h
+> +++ b/drivers/staging/iio/adc/ad7192.h
+> @@ -33,8 +33,6 @@
+>  
+>  struct ad7192_platform_data {
+>  	u16		vref_mv;
+> -	u8		clock_source_sel;
+> -	u32		ext_clk_hz;
+>  	bool		refin2_en;
+>  	bool		rej60_en;
+>  	bool		sinc3_en;
 
