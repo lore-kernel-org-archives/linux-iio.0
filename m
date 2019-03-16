@@ -2,43 +2,53 @@ Return-Path: <SRS0=kDFh=RT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD55C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:12:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E04EC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:16:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8172C217F5
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:12:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2666421900
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:16:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1552749417;
+	bh=sED1swGDglN29sRmh+O9lHz6EhAjhJO5bQ/G6J0kinc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=g29AGP1YcUo2YkNGv8Wu9l+V3T0jhNjJks4JA476aakh52Jb7XkAV5MsKjr1vrj+m
+	 ddZ59LbAlnirqPvTNg4vNfZFQO5h3Siad7m8m5EKjy1M6csOxzRmWY8g9miAvQNW9o
+	 uN2u/LC/3mBW8YBZwOsDLEM4PeCdyN0HYXoFmw34=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727092AbfCPPM3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 11:12:29 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:44596 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726959AbfCPPM3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Mar 2019 11:12:29 -0400
+        id S1727075AbfCPPQ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 11:16:56 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37300 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726959AbfCPPQ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 11:16:56 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 3C71F9E749A;
-        Sat, 16 Mar 2019 15:12:25 +0000 (GMT)
-Date:   Sat, 16 Mar 2019 15:12:24 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Denis CIOCCA <denis.ciocca@st.com>
-Cc:     Robert Jones <rjones@gateworks.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 2/2] iio: accel: add support to LIS2DE12
-Message-ID: <20190316151224.41a5f595@archlinux>
-In-Reply-To: <20190316150632.716aedde@archlinux>
-References: <20190305203252.13647-1-rjones@gateworks.com>
-        <20190305203252.13647-3-rjones@gateworks.com>
-        <4e7c32c8a3d74636a6bf5e82d8fa4b72@SFHDAG2NODE1.st.com>
-        <20190316150632.716aedde@archlinux>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A9E8C218D4;
+        Sat, 16 Mar 2019 15:16:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1552749415;
+        bh=sED1swGDglN29sRmh+O9lHz6EhAjhJO5bQ/G6J0kinc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WXO6By0JuzL8S/x+YL/wYfOP0qpQe8d1XdiZ+1ULJaz0omymwvjnFBi/McHgs1zSS
+         AJ5ujLYWneenbppRMt/F/6JZ4WrXQwZsAzxxeaBD91zsJADnMUcbvXXW30yftFs5Z7
+         ZBME0lSHKYfRj6zjOlXSafYQx9XRGTPmrMeqEISI=
+Date:   Sat, 16 Mar 2019 15:16:51 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: dac: mcp4725: add missing powerdown bits in store
+ eeprom
+Message-ID: <20190316151651.33f17575@archlinux>
+In-Reply-To: <alpine.DEB.2.21.1903101230020.13266@vps.pmeerw.net>
+References: <20190306205606.30419-1-jeff.dagenais@gmail.com>
+        <20190309182754.5222143b@archlinux>
+        <alpine.DEB.2.21.1903101230020.13266@vps.pmeerw.net>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -48,197 +58,59 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 16 Mar 2019 15:06:32 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 10 Mar 2019 12:31:16 +0100 (CET)
+Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
 
-> On Sat, 9 Mar 2019 01:14:21 +0000
-> Denis CIOCCA <denis.ciocca@st.com> wrote:
+> > +Cc Peter.  
+>  
+> > > When issuing the write DAC register and write eeprom command, the two
+> > > powerdown bits (PD0 and PD1) are assumed by the chip to be present in
+> > > the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
+> > > a different state that the current one. By adding the current state of
+> > > the powerdown in the i2c write, the chip will correctly power-on exactly
+> > > like as it is at the moment of store_eeprom call.
+> > > 
+> > > This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
+> > > for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
+> > > "Write All Memory Command".
+> > > 
+> > > Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>  
 > 
-> > Acked-by: Denis Ciocca <denis.ciocca@st.com>  
-> Applied with the minor tweak to drop the -accel postfix.
-I clicked too quick as my build test was running slow.
+> > sounds fine to me, but I'd like to give Peter a chance to comment.
+> > Give me a poke if it turns out Peter is busy and doesn't get back
+> > to us in a week or two.  
+> 
+> I'd suggest whitespace around the + operator, otherwise
+> 
+Good point, added...
+> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 
-This doesn't build. See below. For now I've backed out both
-patches.
+Applied to the fixes-togreg branch of iio.git and marked
+for stable. It's not super critical as fixes go but
+things are currently not quite doing what someone might
+expect.
+
+Thanks,
 
 Jonathan
 
 > 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Thanks,
-> > Denis
-> > 
-> > -----Original Message-----
-> > From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> On Behalf Of Robert Jones
-> > Sent: Tuesday, March 5, 2019 12:33 PM
-> > To: Jonathan Cameron <jic23@kernel.org>; Rob Herring <robh+dt@kernel.org>; Mark Rutland <mark.rutland@arm.com>
-> > Cc: devicetree@vger.kernel.org; linux-iio@vger.kernel.org; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Robert Jones <rjones@gateworks.com>
-> > Subject: [PATCH 2/2] iio: accel: add support to LIS2DE12
-> > 
-> > Add support to STMicroelectronics LIS2DE12 accelerometer in st_accel framework.
-> > 
-> > http://www.st.com/resource/en/datasheet/lis2de12.pdf
-> > 
-> > Signed-off-by: Robert Jones <rjones@gateworks.com>
-> > ---
-> >  drivers/iio/accel/Kconfig         |  2 +-
-> >  drivers/iio/accel/st_accel.h      |  2 ++
-> >  drivers/iio/accel/st_accel_core.c | 76 +++++++++++++++++++++++++++++++++++++++
-> >  drivers/iio/accel/st_accel_i2c.c  |  5 +++
-> >  4 files changed, 84 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig index 898839c..ffd0b4d 100644
-> > --- a/drivers/iio/accel/Kconfig
-> > +++ b/drivers/iio/accel/Kconfig
-> > @@ -223,7 +223,7 @@ config IIO_ST_ACCEL_3AXIS
-> >  	  Say yes here to build support for STMicroelectronics accelerometers:
-> >  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
-> >  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12, H3LIS331DL,
-> > -	  LNG2DM, LIS3DE
-> > +	  LNG2DM, LIS3DE, LIS2DE12
-> >  
-> >  	  This driver can also be built as a module. If so, these modules
-> >  	  will be created:
-> > diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h index fd53258..753a5671 100644
-> > --- a/drivers/iio/accel/st_accel.h
-> > +++ b/drivers/iio/accel/st_accel.h
-> > @@ -34,6 +34,7 @@ enum st_accel_type {
-> >  	LIS3LV02DL,
-> >  	LIS2DW12,
-> >  	LIS3DHH,
-> > +	LIS2DE12,
-> >  	ST_ACCEL_MAX,
-> >  };
-> >  
-> > @@ -57,6 +58,7 @@ enum st_accel_type {
-> >  #define LIS2DW12_ACCEL_DEV_NAME		"lis2dw12"
-> >  #define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
-> >  #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
-> > +#define LIS2DE12_ACCEL_DEV_NAME		"lis2de12_accel"
-> >  
-> >  /**
-> >  * struct st_sensors_platform_data - default accel platform data diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> > index 9930edf..aebd611 100644
-> > --- a/drivers/iio/accel/st_accel_core.c
-> > +++ b/drivers/iio/accel/st_accel_core.c
-> > @@ -831,6 +831,82 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
-> >  		.multi_read_bit = false,
-> >  		.bootime = 2,
-> >  	},
-> > +	{
-> > +	.wai = 0x33,
-> > +	.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-> > +	.sensors_supported = {
-> > +		[0] = LIS2DE12_ACCEL_DEV_NAME,
-> > +	},
-> > +	.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
-> > +	.odr = {
-> > +		.addr = 0x20,
-> > +		.mask = 0xf0,
-> > +		.odr_avl = {
-> > +			{ .hz = 1, .value = 0x01, },
-> > +			{ .hz = 10, .value = 0x02, },
-> > +			{ .hz = 25, .value = 0x03, },
-> > +			{ .hz = 50, .value = 0x04, },
-> > +			{ .hz = 100, .value = 0x05, },
-> > +			{ .hz = 200, .value = 0x06, },
-> > +			{ .hz = 400, .value = 0x07, },
-> > +			{ .hz = 1600, .value = 0x08, },
-> > +			{ .hz = 5376, .value = 0x09, },
-> > +		},
-> > +	},
-> > +	.pw = {
-> > +		.addr = 0x20,
-> > +		.mask = 0xf0,
-> > +		.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-> > +	},
-> > +	.enable_axis = {
-> > +		.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-> > +		.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-> > +	},
-> > +	.fs = {
-> > +		.addr = 0x23,
-> > +		.mask = 0x30,
-> > +		.fs_avl = {
-> > +			[0] = {
-> > +				.num = ST_ACCEL_FS_AVL_2G,
-> > +				.value = 0x00,
-> > +				.gain = IIO_G_TO_M_S_2(15600),
-> > +			},
-> > +			[1] = {
-> > +				.num = ST_ACCEL_FS_AVL_4G,
-> > +				.value = 0x01,
-> > +				.gain = IIO_G_TO_M_S_2(31200),
-> > +			},
-> > +			[2] = {
-> > +				.num = ST_ACCEL_FS_AVL_8G,
-> > +				.value = 0x02,
-> > +				.gain = IIO_G_TO_M_S_2(62500),
-> > +			},
-> > +			[3] = {
-> > +				.num = ST_ACCEL_FS_AVL_16G,
-> > +				.value = 0x03,
-> > +				.gain = IIO_G_TO_M_S_2(187500),
-> > +			},
-> > +			},
-> > +	},
-> > +	.bdu = {
-> > +		.addr = 0x23,
-> > +		.mask = 0x80,
-> > +	},
-> > +	.drdy_irq = {
-> > +		.addr = 0x22,
-> > +		.mask_int1 = 0x10,
-> > +		.mask_int2 = 0x00,
-> > +		.addr_ihl = 0x25,
-> > +		.mask_ihl = 0x02,
-> > +		.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
-This has changed completely since.
-
- 75d4c6d2e15d   iio: st_sensors: decouple irq1 configuration parameters from the irq2 ones
- 
-I'm going to guess you are working with a kernel predating that.
-You'll need to update this to work with the current kernel.
-
-   
-> > +	},
-> > +	.sim = {
-> > +		.addr = 0x23,
-> > +		.value = BIT(0),
-> > +	},
-> > +	.multi_read_bit = true,
-> > +	.bootime = 2,
-> > +	},
-> >  };
-> >  
-> >  static int st_accel_read_raw(struct iio_dev *indio_dev, diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> > index de8ae43..cb6eb6f 100644
-> > --- a/drivers/iio/accel/st_accel_i2c.c
-> > +++ b/drivers/iio/accel/st_accel_i2c.c
-> > @@ -102,6 +102,10 @@ static const struct of_device_id st_accel_of_match[] = {
-> >  		.compatible = "st,lis3de",
-> >  		.data = LIS3DE_ACCEL_DEV_NAME,
-> >  	},
-> > +	{
-> > +		.compatible = "st,lis2de12-accel",
-> > +		.data = LIS2DE12_ACCEL_DEV_NAME,
-> > +	},
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(of, st_accel_of_match); @@ -140,6 +144,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
-> >  	{ LIS3LV02DL_ACCEL_DEV_NAME },
-> >  	{ LIS2DW12_ACCEL_DEV_NAME },
-> >  	{ LIS3DE_ACCEL_DEV_NAME },
-> > +	{ LIS2DE12_ACCEL_DEV_NAME },
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
-> > --
-> > 2.9.2
+> > > ---
+> > >  drivers/iio/dac/mcp4725.c | 1 +
+> > >  1 file changed, 1 insertion(+)
+> > > 
+> > > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+> > > index 6ab1f23e5a79..97bb350d1e77 100644
+> > > --- a/drivers/iio/dac/mcp4725.c
+> > > +++ b/drivers/iio/dac/mcp4725.c
+> > > @@ -98,6 +98,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
+> > >  
+> > >  	inoutbuf[0] = 0x60; /* write EEPROM */
+> > >  	inoutbuf[0] |= data->ref_mode << 3;
+> > > +	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode+1) << 1) : 0;
+> > >  	inoutbuf[1] = data->dac_value >> 4;
+> > >  	inoutbuf[2] = (data->dac_value & 0xf) << 4;
+> > >    
 > >   
 > 
 
