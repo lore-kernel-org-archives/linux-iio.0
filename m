@@ -6,47 +6,47 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A6EC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:36:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AE3CC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:38:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7F6F6218AC
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:36:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1D3DF218AC
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:38:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552761417;
-	bh=JRy4/LlN+M/2emxw+uMISN8talfwYN8kYC4PyVZ7wko=;
+	s=default; t=1552761480;
+	bh=EjHprr2erqog/YU+osYmPQNuD/b9AKLLKl2Mm72mso8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xzesiNxfq0Kbc5Mt6YhHIsHNqr8DX5B55wT9rvN8W8tIEMI7n6/LWIX1ct8OnKHfz
-	 Fc7BGLGNIDI+CilfXtIIVejFsCvaYKVz+065tdZRFWk1Z8fHVUli8jdgV5FVPxYCfc
-	 oEsUXTkNRYKGQdNHZkK62XrkB59cZpBNQakazHLY=
+	b=gu0EKZ/21BgbhSwzgouJ7lGK1kA0eNP84R1uspCSIEdJkzoxoRlUbUUJ2e8WtnY8K
+	 ZkOIxhFAx1nKtWBUYMT3OF53fHeWf0dvKNX7ev1GhpQGCw7f4ule5JanB1U2pmyuEP
+	 PK/G8KwgPkuM++9U6Fx0qlYHG+1c4okCWs+2r+JY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbfCPSg5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 14:36:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46248 "EHLO mail.kernel.org"
+        id S1726493AbfCPSh7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 14:37:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46560 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbfCPSg4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 14:36:56 -0400
+        id S1726376AbfCPSh7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 14:37:59 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 343B3218A1;
-        Sat, 16 Mar 2019 18:36:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 03358218A1;
+        Sat, 16 Mar 2019 18:37:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552761416;
-        bh=JRy4/LlN+M/2emxw+uMISN8talfwYN8kYC4PyVZ7wko=;
+        s=default; t=1552761478;
+        bh=EjHprr2erqog/YU+osYmPQNuD/b9AKLLKl2Mm72mso8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=PquzAfqYU/nqhoFMsK5mYAAaLf61+ow7aTyXKfZIdhAuH2htPDpt8/rKy0NJC/nw2
-         dfPRc2WbYJJY/fT+QAI6MCnp/SAHNoXbxC+hB0gK0hRyw+PGU2GZaE7cqi/YiXUohX
-         5wjsPd/GgWf/afNoMA3xiOsECgcbpD5d6Gpu91CU=
-Date:   Sat, 16 Mar 2019 18:36:50 +0000
+        b=BuSuKQlHV1oXIo9OQ3ECbl5asoKhtrLXJ6KYHYMAjrV6a72XILgNy/tLXQWzZGMn/
+         239NED1YKlb/97M4Am/O4iSe3DS39MH24TJ6RZeWEmXwj+G/9wED8cfYlMsvzkCKiW
+         FiPE2nac7FJ8iQSIK1nXsv2pGv4i/68kTjYQyJIU=
+Date:   Sat, 16 Mar 2019 18:37:53 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH v4 2/7] staging: iio: ad5933: organize includes
-Message-ID: <20190316183650.4ce97b18@archlinux>
-In-Reply-To: <20190316150650.jke4uqgnf5w6s3cv@smtp.gmail.com>
-References: <20190316150650.jke4uqgnf5w6s3cv@smtp.gmail.com>
+Subject: Re: [PATCH v4 3/7] staging: iio: ad5933: add SPDX identifier
+Message-ID: <20190316183753.5546a6b7@archlinux>
+In-Reply-To: <20190316150703.n3nlcjl4a32fakb6@smtp.gmail.com>
+References: <20190316150703.n3nlcjl4a32fakb6@smtp.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,52 +56,36 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 16 Mar 2019 12:06:50 -0300
+On Sat, 16 Mar 2019 12:07:03 -0300
 Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> Organize includes to list them in lexicographic order.
+> Add SPDX identifier of GPL-2.0 for the ad5933 driver.
 > 
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Applied. Thanks
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
 
 > ---
->  .../staging/iio/impedance-analyzer/ad5933.c    | 18 +++++++++---------
->  1 file changed, 9 insertions(+), 9 deletions(-)
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 3 +--
+>  1 file changed, 1 insertion(+), 2 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 05e2185bfdae..c2a7a59e469c 100644
+> index c2a7a59e469c..d75bdfbf93de 100644
 > --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
 > +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -6,22 +6,22 @@
->   * Licensed under the GPL-2.
+> @@ -1,9 +1,8 @@
+> +// SPDX-License-Identifier: GPL-2.0
+>  /*
+>   * AD5933 AD5934 Impedance Converter, Network Analyzer
+>   *
+>   * Copyright 2011 Analog Devices Inc.
+> - *
+> - * Licensed under the GPL-2.
 >   */
 >  
-> -#include <linux/interrupt.h>
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
->  #include <linux/device.h>
-> -#include <linux/kernel.h>
-> -#include <linux/sysfs.h>
-> +#include <linux/err.h>
->  #include <linux/i2c.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/sysfs.h>
->  #include <linux/types.h>
-> -#include <linux/err.h>
-> -#include <linux/delay.h>
-> -#include <linux/module.h>
-> -#include <linux/clk.h>
->  
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
->  #include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/sysfs.h>
->  
->  /* AD5933/AD5934 Registers */
->  #define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
+>  #include <linux/clk.h>
 
