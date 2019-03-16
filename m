@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B20ECC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:48:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA4B3C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:54:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DE7C218FE
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:48:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 78493218FE
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:54:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552758519;
-	bh=zfqvj9JtB7otT6UyUIVwQiBiy9Z2CzQtb6MaUrFW2Gc=;
+	s=default; t=1552758871;
+	bh=Gj9AY78cWuTyXg26uwiZXxzoOidrBYGmJghFNFXL9DM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=z9cxM5wN6R9mcGz7YhVIsNqRS9A8HUi/xbxLkIGg6Gy4sj3pTkezt+sZvjgRcuJlD
-	 joDPpIrNy/oBlr88O+qC996VBJGbdCq8YXZMLWzz9vwCp6iTmQQCcCmtkqYEbgBruN
-	 +pY3Hl7qHCEkYKzBMzDpg9Lxp6Xu2TsXnOC+xVJE=
+	b=Sf3lDP9Fxsm8cX2IU3oPoqR0JeLxhn8eonidJ0VmubDVY/PDyLgQW+Mn8v59e0SRV
+	 j/9r3XGtbf4MfdKdcSFkZ9oTkgymx4NlqDKFB56LxywvzRRougmemZxLLRclzMtKCp
+	 PU9LQmtE83Po/FsO2RJkyY6bHSWhGs8K1of1TaUw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726851AbfCPRsi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 13:48:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60084 "EHLO mail.kernel.org"
+        id S1726466AbfCPRyb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 13:54:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33898 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726549AbfCPRsi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 13:48:38 -0400
+        id S1726376AbfCPRya (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 13:54:30 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B770A218D0;
-        Sat, 16 Mar 2019 17:48:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 767F9218D0;
+        Sat, 16 Mar 2019 17:54:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552758518;
-        bh=zfqvj9JtB7otT6UyUIVwQiBiy9Z2CzQtb6MaUrFW2Gc=;
+        s=default; t=1552758869;
+        bh=Gj9AY78cWuTyXg26uwiZXxzoOidrBYGmJghFNFXL9DM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=r2NjMQWxQt2vn10NVzP288IzgW3+ZVOHh+960kz6PBXkD8F7lNjXEz+rY0ddHpldj
-         FdFIWjVHTfIIrLmy28xYkG43MELF3roTaMJ+TxuEBdXg4nqjIe98ICINtcLPNer9po
-         fNPvJFF7M0QVsB5JnziVGmbeWbG68YIHL3BuLhRk=
-Date:   Sat, 16 Mar 2019 17:48:31 +0000
+        b=qmbRlvzsZAdz50kkDc5x+vb6sVwSg2AKd9HssV4bc7PPF/x9AumErlKB1Si+XNEio
+         tzC9Zies6b2jV/k7WNB0+rtGLQeeC1uadTNOVpF1s0qjEveOfuD134JDqHIlSvDhqv
+         8x73Hv6DwymZuCcS//5ZdXuLZr4iIskV8x8eCQVQ=
+Date:   Sat, 16 Mar 2019 17:54:23 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Renato Lui Geh <renatogeh@gmail.com>
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
@@ -47,12 +47,12 @@ Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         mark.rutland@arm.com, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com, devicetree@vger.kernel.org
-Subject: Re: [PATCH v5 02/11] staging: iio: ad7780: add missing switch
- default case
-Message-ID: <20190316174831.04bd818a@archlinux>
-In-Reply-To: <84375be9b21a30dde736e47a7e2f72c1aedf7e92.1552700652.git.renatogeh@gmail.com>
+Subject: Re: [PATCH v5 03/11] staging: iio: ad7780: add gain reading to
+ ad778x
+Message-ID: <20190316175423.26481b43@archlinux>
+In-Reply-To: <aed4d900061c5733decc429d0d0816122dba0991.1552700652.git.renatogeh@gmail.com>
 References: <cover.1552700652.git.renatogeh@gmail.com>
-        <84375be9b21a30dde736e47a7e2f72c1aedf7e92.1552700652.git.renatogeh@gmail.com>
+        <aed4d900061c5733decc429d0d0816122dba0991.1552700652.git.renatogeh@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,33 +62,42 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 23:12:53 -0300
+On Fri, 15 Mar 2019 23:13:13 -0300
 Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-> This patch simply adds a missing switch default case in read_raw.
+> This patch adds a new functionality of reading gain values from the
+> ad778x chips. This value is stored in the chip's state struct and is
+> updated whenever a read or write call is performed on the driver.
 > 
 > Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
-Applied,
 
-Thanks,
-
-Jonathan
+Applied, thanks
 
 > ---
->  drivers/staging/iio/adc/ad7780.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/staging/iio/adc/ad7780.c | 5 +++++
+>  1 file changed, 5 insertions(+)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index 07e5e35c92a3..f4cd7bc3e02f 100644
+> index f4cd7bc3e02f..fbcc0d3345ca 100644
 > --- a/drivers/staging/iio/adc/ad7780.c
 > +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -118,6 +118,8 @@ static int ad7780_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_OFFSET:
->  		*val = -(1 << (chan->scan_type.realbits - 1));
->  		return IIO_VAL_INT;
-> +	default:
-> +		break;
->  	}
+> @@ -42,6 +42,8 @@
+>  #define AD7780_GAIN_MIDPOINT	64
+>  #define AD7780_FILTER_MIDPOINT	13350
 >  
->  	return -EINVAL;
+> +static const unsigned int ad778x_gain[2] = { 1, 128 };
+> +
+>  struct ad7780_chip_info {
+>  	struct iio_chan_spec	channel;
+>  	unsigned int		pattern_mask;
+> @@ -179,6 +181,9 @@ static int ad7780_postprocess_sample(struct ad_sigma_delta *sigma_delta,
+>  	    ((raw_sample & chip_info->pattern_mask) != chip_info->pattern))
+>  		return -EIO;
+>  
+> +	if (chip_info->is_ad778x)
+> +		st->gain = ad778x_gain[raw_sample & AD7780_GAIN];
+> +
+>  	return 0;
+>  }
+>  
 
