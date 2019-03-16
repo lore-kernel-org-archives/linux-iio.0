@@ -2,116 +2,239 @@ Return-Path: <SRS0=kDFh=RT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7F24C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:06:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F68C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:06:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 95A8B218E0
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:06:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="A0HcPPTY"
+	by mail.kernel.org (Postfix) with ESMTP id 7B4ED21900
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:06:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1552748799;
+	bh=Z9GAQlCR4UMnM8SAZ2M2zW94XkVLQMxhntTIKge/uS0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=DD5NRYM4gYiAgrLBqhdq3se2bQYa+coXPQTUhrVZQ2fhGEq1gyrtSXAtobY28LLtA
+	 IExHMZbQt8gCApBuzk0pveZGNrQRo2mmwGvNGsFt6BUH4K3dOxdxORHWtvF+x1dQ3I
+	 WLg/o7UI5JtSeFfWB3ffgyNjLs+8ygQ0/G7npOFw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727047AbfCPPGY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 11:06:24 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:45855 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726461AbfCPPGX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Mar 2019 11:06:23 -0400
-Received: by mail-qt1-f193.google.com with SMTP id v20so13374778qtv.12;
-        Sat, 16 Mar 2019 08:06:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=lobLDAlrnYC0TAuM5nbXmB+CxrZAEtQnGAufgWBeZPs=;
-        b=A0HcPPTY9nSf2kf92LaO44Wk5LS/NaXQJPvFvX6LEM1CYZF1W6AAPMqQP5TqQ0T56n
-         Ba3cVWtIoIYwR+uOxb3I5q6tecAepOADeUDg037Zcn418cI7O/6Z5gdBvK5a6cl1E6x+
-         fEUo2lx4D0Y8C+x+C2Kn1RkSmsv651e9pFTrl9w+rSD8WVyHyocSWRtYvbPdoYVcDyRL
-         E3/9V2ZhFDMULUU/tQiR8TztOq7MgNeUa8sqG8eLb0CHvBQ0AJpDQtRKLX0ncmddWzQ/
-         ttahoWStDTyUrEh6Xrlf64Dh21WrCiSThCVo9h5yx0h/ITx8rAIrsjzwWP6ryVRKLX91
-         gBkg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=lobLDAlrnYC0TAuM5nbXmB+CxrZAEtQnGAufgWBeZPs=;
-        b=eLeKlTTwF0uG/TlOu7e/8Lsjki2g5rXl9dHUpMS8Jv0mOK/jqwEGu9G7MtnyJS7lLI
-         aFyBjUVhlZ2t8G5pII2V4JzaLjpMfNKdWWiN4X4PgSCzQxRW0e9A8hKZLMkQd3mOYymF
-         4Opp5DQ7FvquZvxQk6nh7NL2Hy5YO2reBZlkNSLTML5yM7BEzCkTCRoAl4PcAQLnE6Y8
-         G1J8TmPQBMurgL/wlWVsl3MKswCIyjEgjlKf8ttE4HK1oJX+5wW3zYOLKxq+503pGUEU
-         8NHfp2hkvyZNFr4cJDjQIkfTij8gfo/FJBiNDZnUMaEM3P0biBKN2wokDPDDPBd8lLrp
-         UaZA==
-X-Gm-Message-State: APjAAAU/zOWClOi+jGRbv4TxMs4SznSJ2R8gQDgI4+iDAk2LcHmh0wPh
-        pES8gqdj481zjE0mi5DJd4s=
-X-Google-Smtp-Source: APXvYqxxmy9a7+1TnoFm/IMgrF3Pe4MpfTZtjzNmJz4xkMhgLnG3qHzPKx+tIOR5mVxKBjdzcwGHOg==
-X-Received: by 2002:a0c:9e2d:: with SMTP id p45mr6632266qve.28.1552748782613;
-        Sat, 16 Mar 2019 08:06:22 -0700 (PDT)
-Received: from smtp.gmail.com ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id 55sm3550738qtq.25.2019.03.16.08.06.20
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 16 Mar 2019 08:06:22 -0700 (PDT)
-Date:   Sat, 16 Mar 2019 12:06:18 -0300
-From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: [PATCH v4 1/7] staging: iio: ad5933: change multi-line comment style
-Message-ID: <20190316150618.7g6hxbmadvxe623o@smtp.gmail.com>
+        id S1727112AbfCPPGj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 11:06:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33694 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726982AbfCPPGi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 11:06:38 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 822E4218E0;
+        Sat, 16 Mar 2019 15:06:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1552748797;
+        bh=Z9GAQlCR4UMnM8SAZ2M2zW94XkVLQMxhntTIKge/uS0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N4heyLV1I0tPykKJGsWM67s7ouW48xd8Hb06y7uEwpLjEKSH03QobfVysGeCIgszQ
+         P+8GYHkJnrEJhVZmYLUCmFD1up5PmH4cZidA+Bg1geRxxbcFb1F1hc5SrqZx1m+Vn1
+         X2+DIUKCT8uOFRbyj8w8TVTTGzw9Cic4vHI9lmeo=
+Date:   Sat, 16 Mar 2019 15:06:32 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Denis CIOCCA <denis.ciocca@st.com>
+Cc:     Robert Jones <rjones@gateworks.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>
+Subject: Re: [PATCH 2/2] iio: accel: add support to LIS2DE12
+Message-ID: <20190316150632.716aedde@archlinux>
+In-Reply-To: <4e7c32c8a3d74636a6bf5e82d8fa4b72@SFHDAG2NODE1.st.com>
+References: <20190305203252.13647-1-rjones@gateworks.com>
+        <20190305203252.13647-3-rjones@gateworks.com>
+        <4e7c32c8a3d74636a6bf5e82d8fa4b72@SFHDAG2NODE1.st.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Make multi-line comments compliant with the preferred code style.
+On Sat, 9 Mar 2019 01:14:21 +0000
+Denis CIOCCA <denis.ciocca@st.com> wrote:
 
-Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+> Acked-by: Denis Ciocca <denis.ciocca@st.com>
+Applied with the minor tweak to drop the -accel postfix.
 
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 3134295f014f..05e2185bfdae 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -474,7 +474,8 @@ static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
- 			ad5933_store,
- 			AD5933_OUT_SETTLING_CYCLES);
- 
--/* note:
-+/*
-+ * note:
-  * ideally we would handle the scale attributes via the iio_info
-  * (read|write)_raw methods, however this part is a untypical since we
-  * don't create dedicated sysfs channel attributes for out0 and in0.
-@@ -572,7 +573,8 @@ static int ad5933_ring_postenable(struct iio_dev *indio_dev)
- {
- 	struct ad5933_state *st = iio_priv(indio_dev);
- 
--	/* AD5933_CTRL_INIT_START_FREQ:
-+	/*
-+	 * AD5933_CTRL_INIT_START_FREQ:
- 	 * High Q complex circuits require a long time to reach steady state.
- 	 * To facilitate the measurement of such impedances, this mode allows
- 	 * the user full control of the settling time requirement before
-@@ -663,7 +665,8 @@ static void ad5933_work(struct work_struct *work)
- 	}
- 
- 	if (status & AD5933_STAT_SWEEP_DONE) {
--		/* last sample received - power down do
-+		/*
-+		 * last sample received - power down do
- 		 * nothing until the ring enable is toggled
- 		 */
- 		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
--- 
-2.20.1
+Thanks,
+
+Jonathan
+
+> 
+> Thanks,
+> Denis
+> 
+> -----Original Message-----
+> From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> On Behalf Of Robert Jones
+> Sent: Tuesday, March 5, 2019 12:33 PM
+> To: Jonathan Cameron <jic23@kernel.org>; Rob Herring <robh+dt@kernel.org>; Mark Rutland <mark.rutland@arm.com>
+> Cc: devicetree@vger.kernel.org; linux-iio@vger.kernel.org; Hartmut Knaack <knaack.h@gmx.de>; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Robert Jones <rjones@gateworks.com>
+> Subject: [PATCH 2/2] iio: accel: add support to LIS2DE12
+> 
+> Add support to STMicroelectronics LIS2DE12 accelerometer in st_accel framework.
+> 
+> http://www.st.com/resource/en/datasheet/lis2de12.pdf
+> 
+> Signed-off-by: Robert Jones <rjones@gateworks.com>
+> ---
+>  drivers/iio/accel/Kconfig         |  2 +-
+>  drivers/iio/accel/st_accel.h      |  2 ++
+>  drivers/iio/accel/st_accel_core.c | 76 +++++++++++++++++++++++++++++++++++++++
+>  drivers/iio/accel/st_accel_i2c.c  |  5 +++
+>  4 files changed, 84 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig index 898839c..ffd0b4d 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -223,7 +223,7 @@ config IIO_ST_ACCEL_3AXIS
+>  	  Say yes here to build support for STMicroelectronics accelerometers:
+>  	  LSM303DLH, LSM303DLHC, LIS3DH, LSM330D, LSM330DL, LSM330DLC,
+>  	  LIS331DLH, LSM303DL, LSM303DLM, LSM330, LIS2DH12, H3LIS331DL,
+> -	  LNG2DM, LIS3DE
+> +	  LNG2DM, LIS3DE, LIS2DE12
+>  
+>  	  This driver can also be built as a module. If so, these modules
+>  	  will be created:
+> diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h index fd53258..753a5671 100644
+> --- a/drivers/iio/accel/st_accel.h
+> +++ b/drivers/iio/accel/st_accel.h
+> @@ -34,6 +34,7 @@ enum st_accel_type {
+>  	LIS3LV02DL,
+>  	LIS2DW12,
+>  	LIS3DHH,
+> +	LIS2DE12,
+>  	ST_ACCEL_MAX,
+>  };
+>  
+> @@ -57,6 +58,7 @@ enum st_accel_type {
+>  #define LIS2DW12_ACCEL_DEV_NAME		"lis2dw12"
+>  #define LIS3DHH_ACCEL_DEV_NAME		"lis3dhh"
+>  #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
+> +#define LIS2DE12_ACCEL_DEV_NAME		"lis2de12_accel"
+>  
+>  /**
+>  * struct st_sensors_platform_data - default accel platform data diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index 9930edf..aebd611 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -831,6 +831,82 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+>  		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+> +	{
+> +	.wai = 0x33,
+> +	.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+> +	.sensors_supported = {
+> +		[0] = LIS2DE12_ACCEL_DEV_NAME,
+> +	},
+> +	.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
+> +	.odr = {
+> +		.addr = 0x20,
+> +		.mask = 0xf0,
+> +		.odr_avl = {
+> +			{ .hz = 1, .value = 0x01, },
+> +			{ .hz = 10, .value = 0x02, },
+> +			{ .hz = 25, .value = 0x03, },
+> +			{ .hz = 50, .value = 0x04, },
+> +			{ .hz = 100, .value = 0x05, },
+> +			{ .hz = 200, .value = 0x06, },
+> +			{ .hz = 400, .value = 0x07, },
+> +			{ .hz = 1600, .value = 0x08, },
+> +			{ .hz = 5376, .value = 0x09, },
+> +		},
+> +	},
+> +	.pw = {
+> +		.addr = 0x20,
+> +		.mask = 0xf0,
+> +		.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+> +	},
+> +	.enable_axis = {
+> +		.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
+> +		.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+> +	},
+> +	.fs = {
+> +		.addr = 0x23,
+> +		.mask = 0x30,
+> +		.fs_avl = {
+> +			[0] = {
+> +				.num = ST_ACCEL_FS_AVL_2G,
+> +				.value = 0x00,
+> +				.gain = IIO_G_TO_M_S_2(15600),
+> +			},
+> +			[1] = {
+> +				.num = ST_ACCEL_FS_AVL_4G,
+> +				.value = 0x01,
+> +				.gain = IIO_G_TO_M_S_2(31200),
+> +			},
+> +			[2] = {
+> +				.num = ST_ACCEL_FS_AVL_8G,
+> +				.value = 0x02,
+> +				.gain = IIO_G_TO_M_S_2(62500),
+> +			},
+> +			[3] = {
+> +				.num = ST_ACCEL_FS_AVL_16G,
+> +				.value = 0x03,
+> +				.gain = IIO_G_TO_M_S_2(187500),
+> +			},
+> +			},
+> +	},
+> +	.bdu = {
+> +		.addr = 0x23,
+> +		.mask = 0x80,
+> +	},
+> +	.drdy_irq = {
+> +		.addr = 0x22,
+> +		.mask_int1 = 0x10,
+> +		.mask_int2 = 0x00,
+> +		.addr_ihl = 0x25,
+> +		.mask_ihl = 0x02,
+> +		.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+> +	},
+> +	.sim = {
+> +		.addr = 0x23,
+> +		.value = BIT(0),
+> +	},
+> +	.multi_read_bit = true,
+> +	.bootime = 2,
+> +	},
+>  };
+>  
+>  static int st_accel_read_raw(struct iio_dev *indio_dev, diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+> index de8ae43..cb6eb6f 100644
+> --- a/drivers/iio/accel/st_accel_i2c.c
+> +++ b/drivers/iio/accel/st_accel_i2c.c
+> @@ -102,6 +102,10 @@ static const struct of_device_id st_accel_of_match[] = {
+>  		.compatible = "st,lis3de",
+>  		.data = LIS3DE_ACCEL_DEV_NAME,
+>  	},
+> +	{
+> +		.compatible = "st,lis2de12-accel",
+> +		.data = LIS2DE12_ACCEL_DEV_NAME,
+> +	},
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(of, st_accel_of_match); @@ -140,6 +144,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
+>  	{ LIS3LV02DL_ACCEL_DEV_NAME },
+>  	{ LIS2DW12_ACCEL_DEV_NAME },
+>  	{ LIS3DE_ACCEL_DEV_NAME },
+> +	{ LIS2DE12_ACCEL_DEV_NAME },
+>  	{},
+>  };
+>  MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
+> --
+> 2.9.2
+> 
 
