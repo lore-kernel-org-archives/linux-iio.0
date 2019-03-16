@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78EC8C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D16CC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:26:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 40330218FE
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:23:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52025218FE
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:26:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552757015;
-	bh=/M/9pfkEQ7WjNyCQ+8ogcpDvRVdjYFgkYJFB8AungcM=;
+	s=default; t=1552757202;
+	bh=VU0rq3reJeDpVpe22htPUgcmEuUYpu353RKnyZe2zAQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=ZFkOs+ggD8++jI4/7ATSU4CIOrNf1pwdvSMcF2MHeEWrc9OMqnAOJ9Zd2ROCiKKtQ
-	 Al+TyIJdxOsSA8BdDXjAVo8NscmdVaIZkpkWnVLzU4Dy2cLrmsaFtRHCCcvAHTWOsL
-	 4pWbQDtyBWjJjH9n7rBjM1iRPwbK7u76Ymd6iwjU=
+	b=0m577mhyS7sQSkT9MguOopkMpmsQy3d2ND/eYmr/b7tBP/vlMn3sHkWLy56O00tWT
+	 p2/TIRkqt/X8Ew0pWpQlaYScFgdN4V/Bl/0Pni8LVuHjrU78wDgORLiCfovgnOIN4e
+	 qWsiMsnZ/GoNPSYKpTds1/zWf1zU2q9l3nFgi/gc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726466AbfCPRXe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 13:23:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54454 "EHLO mail.kernel.org"
+        id S1726640AbfCPR0l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 13:26:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726376AbfCPRXe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 13:23:34 -0400
+        id S1726571AbfCPR0l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 13:26:41 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20718218AC;
-        Sat, 16 Mar 2019 17:23:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BD30F218E0;
+        Sat, 16 Mar 2019 17:26:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552757013;
-        bh=/M/9pfkEQ7WjNyCQ+8ogcpDvRVdjYFgkYJFB8AungcM=;
+        s=default; t=1552757200;
+        bh=VU0rq3reJeDpVpe22htPUgcmEuUYpu353RKnyZe2zAQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GzFpm5TnWJtJlrCyBbOSNGWNwC3hwgxyGgBVj7B/9upRVpjDyCJ+BTdsnU96AdqSu
-         t0I4I4wz8nzuOSX3b023kk/dVGUimNH27cIgwHuYEXBUlZVwd5L3zpQrzNrdJnC7QG
-         2OBXxQ6cO5bsqkm0yEjdoVhex2RocZ33keE3d1KY=
-Date:   Sat, 16 Mar 2019 17:23:27 +0000
+        b=sfxIgnaYNjhLvtMnLx+9GCiTFgcKV3ShEfUuXfQhAsHeJgJPYPMh2AISS3ycimOS6
+         ZfOjMQdDxEXKu8T0YVbY5ZwuDN3KqBQDvVkITqCzXbt2C8OcwhnoamNIrPO/u6WSJM
+         /R63sCSBBblsrmECDVlU/EWXr14DIx18Y1VqOi4U=
+Date:   Sat, 16 Mar 2019 17:26:34 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Gregory CLEMENT <gregory.clement@bootlin.com>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -48,11 +48,11 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v2 2/4] iio: adc: lpc32xx: Cleanup headers
-Message-ID: <20190316172327.2c1d7751@archlinux>
-In-Reply-To: <20190315095231.17001-3-gregory.clement@bootlin.com>
+Subject: Re: [PATCH v2 3/4] iio: adc: lpc32xx: Add scale feature
+Message-ID: <20190316172634.4bb51753@archlinux>
+In-Reply-To: <20190315095231.17001-4-gregory.clement@bootlin.com>
 References: <20190315095231.17001-1-gregory.clement@bootlin.com>
-        <20190315095231.17001-3-gregory.clement@bootlin.com>
+        <20190315095231.17001-4-gregory.clement@bootlin.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,40 +62,142 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 10:52:29 +0100
+On Fri, 15 Mar 2019 10:52:30 +0100
 Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
 
-> A few headers is useless: remove them.
+> Until now this driver only exposed the raw value of the channels. With
+> this patch, the scale value is also exposed.
+> 
+> It depends of a regulator supply, and unlike most of the other driver, do
+> not having this regulator won't prevent to use the driver. The reason for
+> it is to allow to continue to use this driver with an old device tree. If
+> there is no regulator supply then the scale won't be exposed.
 > 
 > Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+
+I made a minor tweak to downgrade the message if the regulator isn't
+specified.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+
 > ---
->  drivers/iio/adc/lpc32xx_adc.c | 6 ------
->  1 file changed, 6 deletions(-)
+>  drivers/iio/adc/lpc32xx_adc.c | 44 ++++++++++++++++++++++++++++++-----
+>  1 file changed, 38 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/lpc32xx_adc.c b/drivers/iio/adc/lpc32xx_adc.c
-> index 7084f804504e..f391c1e10136 100644
+> index f391c1e10136..5d1c76e3aad8 100644
 > --- a/drivers/iio/adc/lpc32xx_adc.c
 > +++ b/drivers/iio/adc/lpc32xx_adc.c
-> @@ -9,17 +9,11 @@
->  
->  #include <linux/clk.h>
->  #include <linux/completion.h>
-> -#include <linux/device.h>
-> -#include <linux/err.h>
- -EINVAL comes from asm/errno.h I believe. IS_ERR
-is also in this header.  Otherwise, they are fine, so
-I'll just leave this one.
-
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
->  #include <linux/interrupt.h>
+> @@ -14,6 +14,7 @@
 >  #include <linux/io.h>
-> -#include <linux/kernel.h>
 >  #include <linux/module.h>
-> -#include <linux/of.h>
 >  #include <linux/platform_device.h>
-> -#include <linux/slab.h>
+> +#include <linux/regulator/consumer.h>
 >  
 >  /*
 >   * LPC32XX registers definitions
+> @@ -45,6 +46,7 @@ struct lpc32xx_adc_state {
+>  	void __iomem *adc_base;
+>  	struct clk *clk;
+>  	struct completion completion;
+> +	struct regulator *vref;
+>  
+>  	u32 value;
+>  };
+> @@ -57,7 +59,9 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
+>  {
+>  	struct lpc32xx_adc_state *st = iio_priv(indio_dev);
+>  	int ret;
+> -	if (mask == IIO_CHAN_INFO_RAW) {
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+>  		mutex_lock(&indio_dev->mlock);
+>  		ret = clk_prepare_enable(st->clk);
+>  		if (ret) {
+> @@ -77,22 +81,36 @@ static int lpc32xx_read_raw(struct iio_dev *indio_dev,
+>  		mutex_unlock(&indio_dev->mlock);
+>  
+>  		return IIO_VAL_INT;
+> -	}
+>  
+> -	return -EINVAL;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = regulator_get_voltage(st->vref) / 1000;
+> +		*val2 =  10;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+>  }
+>  
+>  static const struct iio_info lpc32xx_adc_iio_info = {
+>  	.read_raw = &lpc32xx_read_raw,
+>  };
+>  
+> -#define LPC32XX_ADC_CHANNEL(_index) {			\
+> +#define LPC32XX_ADC_CHANNEL_BASE(_index)		\
+>  	.type = IIO_VOLTAGE,				\
+>  	.indexed = 1,					\
+>  	.channel = _index,				\
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>  	.address = LPC32XXAD_IN * _index,		\
+> -	.scan_index = _index,				\
+> +	.scan_index = _index,
+> +
+> +#define LPC32XX_ADC_CHANNEL(_index) {		\
+> +	LPC32XX_ADC_CHANNEL_BASE(_index)	\
+> +}
+> +
+> +#define LPC32XX_ADC_SCALE_CHANNEL(_index) {			\
+> +	LPC32XX_ADC_CHANNEL_BASE(_index)			\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+>  }
+>  
+>  static const struct iio_chan_spec lpc32xx_adc_iio_channels[] = {
+> @@ -101,6 +119,12 @@ static const struct iio_chan_spec lpc32xx_adc_iio_channels[] = {
+>  	LPC32XX_ADC_CHANNEL(2),
+>  };
+>  
+> +static const struct iio_chan_spec lpc32xx_adc_iio_scale_channels[] = {
+> +	LPC32XX_ADC_SCALE_CHANNEL(0),
+> +	LPC32XX_ADC_SCALE_CHANNEL(1),
+> +	LPC32XX_ADC_SCALE_CHANNEL(2),
+> +};
+> +
+>  static irqreturn_t lpc32xx_adc_isr(int irq, void *dev_id)
+>  {
+>  	struct lpc32xx_adc_state *st = dev_id;
+> @@ -159,6 +183,15 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+>  		return retval;
+>  	}
+>  
+> +	st->vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR(st->vref)) {
+> +		iodev->channels = lpc32xx_adc_iio_channels;
+> +		dev_err(&pdev->dev,
+> +			"Missing vref regulator: No scaling available\n");
+It isn't an error, so downgraded to dev_info.
+
+> +	} else {
+> +		iodev->channels = lpc32xx_adc_iio_scale_channels;
+> +	}
+> +
+>  	platform_set_drvdata(pdev, iodev);
+>  
+>  	init_completion(&st->completion);
+> @@ -167,7 +200,6 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+>  	iodev->dev.parent = &pdev->dev;
+>  	iodev->info = &lpc32xx_adc_iio_info;
+>  	iodev->modes = INDIO_DIRECT_MODE;
+> -	iodev->channels = lpc32xx_adc_iio_channels;
+>  	iodev->num_channels = ARRAY_SIZE(lpc32xx_adc_iio_channels);
+>  
+>  	retval = devm_iio_device_register(&pdev->dev, iodev);
 
