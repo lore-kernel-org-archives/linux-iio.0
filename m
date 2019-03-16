@@ -6,183 +6,374 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0E79C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93921C10F0C
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:06:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B6A2E218D0
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:57:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 65C6621903
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:06:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552755425;
-	bh=IUcLFuDlICUROJ6wZx7QspOWCzJQ7JgKZlHRPAQFK8U=;
+	s=default; t=1552756002;
+	bh=h3bu4jNOS0uOKLx0UOwrKkfVKdFvnUOM8ki1U4PdwRc=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=ndc8zaXQVOhn8JcJ5Q800lV4a08cDO08WPcJbjore/QkX+5K+LNGt65BP/M1Qj9lb
-	 lgglDw31drJOhnBMI9AXPt61q/x3LJZ9MhFq7l7B1md8lo4qQ/07XzW1oI4Qd8qgxb
-	 YfiD6ednBkQIukTxka3DSYeybMlWQ7LC6MUcjbe4=
+	b=R+VgBxIrEzleJFU0Ez3Kz9vCeb4R/5OgR6LpDOmqoUemL8ocVkUvmMOpNs8jL1GYt
+	 +WGamKPNiCjOUPxehzIfM8ROSbyD4KF28c653c8Y5ksT57Ss1ZFWc0KUQ01pEuBazU
+	 2PmJKaIbq0nA1weuUK/Tqc8jv2Zpg3Udru4jYdls=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfCPQ5F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 12:57:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47068 "EHLO mail.kernel.org"
+        id S1726972AbfCPRGi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 13:06:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48508 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726653AbfCPQ5F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 12:57:05 -0400
+        id S1726698AbfCPRGh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 13:06:37 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 078842186A;
-        Sat, 16 Mar 2019 16:57:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0409F2186A;
+        Sat, 16 Mar 2019 17:06:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552755423;
-        bh=IUcLFuDlICUROJ6wZx7QspOWCzJQ7JgKZlHRPAQFK8U=;
+        s=default; t=1552755996;
+        bh=h3bu4jNOS0uOKLx0UOwrKkfVKdFvnUOM8ki1U4PdwRc=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EYZ+eemlpMDmcWngmOgeOKWqrqdyWpslFW6xXL7q8QFyuYwjgslHMqJa/mTm7AAJF
-         RXzohacISDN8Av8olta/zedH4jOT5a03Cs9unAkzAe9fKoGwWlsCjCdvt7pHXqjh0p
-         Dhr2RCFj7M4qGM9+zCN5Ahca++y/MaWYLmzc3zrs=
-Date:   Sat, 16 Mar 2019 16:56:58 +0000
+        b=ORHJfEAEuW0ZGZekby7nf+KgyNVV+Y/VZ4Ln2VnmnHzZlqBRiPpjr9opSk9F8FNJm
+         8s6iyZCwWmG3ltcmCl9xl+zttXHJ+UkSDc3LMvLCiV0LE3xl4LBDVEKXyRP5q9cc/O
+         ow2tM1gDyQeQHaP2rd9rPoACuF8pDhis3Z6fMFPk=
+Date:   Sat, 16 Mar 2019 17:06:30 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Mircea Caprioru <mircea.caprioru@analog.com>
-Cc:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
-        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/2] staging: iio: adc: ad7192: Convert platform data to
- DT properties
-Message-ID: <20190316165658.0cdc2f49@archlinux>
-In-Reply-To: <20190315112903.15855-2-mircea.caprioru@analog.com>
-References: <20190315112903.15855-1-mircea.caprioru@analog.com>
-        <20190315112903.15855-2-mircea.caprioru@analog.com>
+To:     Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH 2/2] iio: adc: Add driver for the TI ADS8344 A/DC chips
+Message-ID: <20190316170630.18ab5970@archlinux>
+In-Reply-To: <20190315151152.30467-3-gregory.clement@bootlin.com>
+References: <20190315151152.30467-1-gregory.clement@bootlin.com>
+        <20190315151152.30467-3-gregory.clement@bootlin.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 13:29:03 +0200
-Mircea Caprioru <mircea.caprioru@analog.com> wrote:
+On Fri, 15 Mar 2019 16:11:51 +0100
+Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
 
-> This patch will remove platform data members and replace them with device
-> tree properties. These properties will be subject to further modifications
-> and probably replaced with other functionalities at some point in time.
+> This adds support for the Texas Instruments ADS8344 ADC chip. This chip
+> has a 16-bit 8-Channel ADC and is access directly through SPI.
+> 
+> Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
 
-=46rom the description I was initially thinking this would be a crazy
-temporary binding but as they all seem to be reasonably sensible
-(even if we haven't formally reviewed the binding yet so they may change)
-I'm happy to take this as a step in the right direction.
+Hi Gregory,
 
->=20
-> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+A few minor bits and pieces inline. Some of them due I would guess to
+cut and paste from a driver where things were slightly different!
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+If we were late in the cycle this lot would probably have been
+small enough that I'd just have reworked it whilst applying, but
+we are really early, hence you get to tidy them up ;)
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/staging/iio/adc/ad7192.c | 33 ++++++++++++++++++++------------
->  drivers/staging/iio/adc/ad7192.h |  7 -------
->  2 files changed, 21 insertions(+), 19 deletions(-)
->=20
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/a=
-d7192.c
-> index 5c54ce380fa5..c56eaefbbe41 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -250,10 +250,11 @@ static int ad7192_of_clock_select(struct ad7192_sta=
-te *st)
->  	return clock_sel;
->  }
-> =20
-> -static int ad7192_setup(struct ad7192_state *st,
-> -			const struct ad7192_platform_data *pdata)
-> +static int ad7192_setup(struct ad7192_state *st, struct device_node *np)
->  {
->  	struct iio_dev *indio_dev =3D spi_get_drvdata(st->sd.spi);
-> +	bool rej60_en, sinc3_en, refin2_en, chop_en;
-> +	bool buf_en, bipolar, burnout_curr_en;
->  	unsigned long long scale_uv;
->  	int i, ret, id;
-> =20
-> @@ -280,18 +281,22 @@ static int ad7192_setup(struct ad7192_state *st,
-> =20
->  	st->conf =3D AD7192_CONF_GAIN(0);
-> =20
-> -	if (pdata->rej60_en)
-> +	rej60_en =3D of_property_read_bool(np, "adi,rejection-60-Hz-enable");
-> +	if (rej60_en)
->  		st->mode |=3D AD7192_MODE_REJ60;
-> =20
-> -	if (pdata->sinc3_en)
-> +	sinc3_en =3D of_property_read_bool(np, "adi,sinc3-filter-enable");
-> +	if (sinc3_en)
->  		st->mode |=3D AD7192_MODE_SINC3;
-> =20
-> -	if (pdata->refin2_en && st->devid !=3D ID_AD7195)
-> +	refin2_en =3D of_property_read_bool(np, "adi,refin2-pins-enable");
-> +	if (refin2_en && st->devid !=3D ID_AD7195)
->  		st->conf |=3D AD7192_CONF_REFSEL;
-> =20
-> -	if (pdata->chop_en) {
-> +	chop_en =3D of_property_read_bool(np, "adi,chop-enable");
-> +	if (chop_en) {
->  		st->conf |=3D AD7192_CONF_CHOP;
-> -		if (pdata->sinc3_en)
-> +		if (sinc3_en)
->  			st->f_order =3D 3; /* SINC 3rd order */
->  		else
->  			st->f_order =3D 4; /* SINC 4th order */
-> @@ -299,15 +304,19 @@ static int ad7192_setup(struct ad7192_state *st,
->  		st->f_order =3D 1;
->  	}
-> =20
-> -	if (pdata->buf_en)
-> +	buf_en =3D of_property_read_bool(np, "adi,buffer-enable");
-> +	if (buf_en)
->  		st->conf |=3D AD7192_CONF_BUF;
-> =20
-> -	if (pdata->unipolar_en)
-> +	bipolar =3D of_property_read_bool(np, "bipolar");
-> +	if (!bipolar)
->  		st->conf |=3D AD7192_CONF_UNIPOLAR;
-> =20
-> -	if (pdata->burnout_curr_en && pdata->buf_en && !pdata->chop_en) {
-> +	burnout_curr_en =3D of_property_read_bool(np,
-> +						"adi,burnout-currents-enable");
-> +	if (burnout_curr_en && buf_en && !chop_en) {
->  		st->conf |=3D AD7192_CONF_BURN;
-> -	} else if (pdata->burnout_curr_en) {
-> +	} else if (burnout_curr_en) {
->  		dev_warn(&st->sd.spi->dev,
->  			 "Can't enable burnout currents: see CHOP or buffer\n");
->  	}
-> @@ -735,7 +744,7 @@ static int ad7192_probe(struct spi_device *spi)
->  		}
->  	}
-> =20
-> -	ret =3D ad7192_setup(st, pdata);
-> +	ret =3D ad7192_setup(st, spi->dev.of_node);
->  	if (ret)
->  		goto error_disable_clk;
-> =20
-> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/a=
-d7192.h
-> index 3be3ee269ed5..aa3322c14e38 100644
-> --- a/drivers/staging/iio/adc/ad7192.h
-> +++ b/drivers/staging/iio/adc/ad7192.h
-> @@ -33,13 +33,6 @@
-> =20
->  struct ad7192_platform_data {
->  	u16		vref_mv;
-> -	bool		refin2_en;
-> -	bool		rej60_en;
-> -	bool		sinc3_en;
-> -	bool		chop_en;
-> -	bool		buf_en;
-> -	bool		unipolar_en;
-> -	bool		burnout_curr_en;
->  };
-> =20
->  #endif /* IIO_ADC_AD7192_H_ */
+>  drivers/iio/adc/Kconfig      |  10 ++
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-ads8344.c | 216 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 227 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-ads8344.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 76db6e5cc296..447d3a871746 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -967,6 +967,16 @@ config TI_ADS7950
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called ti-ads7950.
+>  
+> +config TI_ADS8344
+> +	tristate "Texas Instruments ADS8344"
+> +	depends on SPI && OF
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADS8344
+> +	  ADC chips
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-ads8344.
+> +
+>  config TI_ADS8688
+>  	tristate "Texas Instruments ADS8688"
+>  	depends on SPI && OF
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 6fcebd167524..1f3ae934111d 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -87,6 +87,7 @@ obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
+>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>  obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
+> +obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
+>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>  obj-$(CONFIG_TI_ADS124S08) += ti-ads124s08.o
+>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+> diff --git a/drivers/iio/adc/ti-ads8344.c b/drivers/iio/adc/ti-ads8344.c
+> new file mode 100644
+> index 000000000000..6159d8518871
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-ads8344.c
+> @@ -0,0 +1,216 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * ADS8344 16-bit 8-Channel ADC driver
+> + *
+> + * Author: Gregory CLEMENT <gregory.clement@bootlin.com>
+> + *
+> + * Datasheet: http://www.ti.com/lit/ds/symlink/ads8344.pdf
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +
+> +struct ads8344 {
+> +	struct spi_device *spi;
+> +	struct regulator *reg;
+> +	struct mutex lock;
+> +
+> +	u8 tx_buf ____cacheline_aligned;
+> +	u16 rx_buf;
+> +};
+> +
+> +#define ADS8344_VOLTAGE_CHANNEL(chan, si)				\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = chan,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.scan_index = si,					\
+> +		.scan_type = {						\
+
+You aren't currently providing a buffer, so please drop scan_index and
+scan_type until you are.  The code won't do anything with them at the moment.
+
+> +			.sign = 'u',					\
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +		},							\
+> +	}
+> +
+> +#define ADS8344_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (chan1),					\
+> +		.channel2 = (chan2),					\
+> +		.differential = 1,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.scan_index = si,					\
+> +		.scan_type = {						\
+> +			.sign = 'u',					\
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec ads8344_channels[] = {
+> +	ADS8344_VOLTAGE_CHANNEL(0, 0),
+> +	ADS8344_VOLTAGE_CHANNEL(1, 4),
+> +	ADS8344_VOLTAGE_CHANNEL(2, 1),
+> +	ADS8344_VOLTAGE_CHANNEL(3, 5),
+> +	ADS8344_VOLTAGE_CHANNEL(4, 2),
+> +	ADS8344_VOLTAGE_CHANNEL(5, 6),
+> +	ADS8344_VOLTAGE_CHANNEL(6, 3),
+> +	ADS8344_VOLTAGE_CHANNEL(7, 7),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(2, 3, 9),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(4, 5, 10),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(6, 7, 11),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(1, 0, 12),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(3, 2, 13),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(5, 4, 14),
+> +	ADS8344_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
+> +};
+> +
+> +static int ads8344_adc_conversion(struct ads8344 *adc, int channel,
+> +				  bool differential)
+> +{
+> +	struct spi_device *spi = adc->spi;
+> +	int ret;
+> +
+> +	/* start bit */
+> +	adc->tx_buf = BIT(7);
+> +	/* single-ended or differential */
+> +	adc->tx_buf |= differential ? 0 : BIT(2);
+> +	/* select channel(s) */
+The moment you need comments to say what a bit is, you are
+almost always better off adding some defines so that this
+block becomes something like.
+
+
+adc->tx_buff = ADS8344_START;
+if (!differential)
+	adc->tx_buff |= ADS8344_SINGLE_END;
+adc->tx_buff |= ADS8344_CHANNEL(channel);
+adc->tx_buff |= ADS8344_CLOCK_INTERNAL;
+
+Then you can drop the comments and the defines are nice
+and easy to check against a datasheet as they are all in
+one place.
+
+> +	adc->tx_buf |= channel << 4;
+> +	/* internal clock mode */
+> +	adc->tx_buf |= 0x2;
+> +
+> +	ret = spi_write(spi, &adc->tx_buf, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	udelay(9);
+> +
+> +	ret = spi_read(spi, &adc->rx_buf, 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return adc->rx_buf;
+> +}
+> +
+> +static int ads8344_read_raw(struct iio_dev *iio,
+> +			    struct iio_chan_spec const *channel, int *value,
+> +			    int *shift, long mask)
+> +{
+> +	struct ads8344 *adc = iio_priv(iio);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&adc->lock);
+> +		*value = ads8344_adc_conversion(adc, channel->scan_index,
+> +						channel->differential);
+> +		mutex_unlock(&adc->lock);
+> +		if (*value < 0)
+> +			return *value;
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*value = regulator_get_voltage(adc->reg);
+> +		if (*value < 0)
+> +			return *value;
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*value /= 1000;
+> +		*shift = 16;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info ads8344_info = {
+> +	.read_raw = ads8344_read_raw,
+> +};
+> +
+> +static int ads8344_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ads8344 *adc;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	adc = iio_priv(indio_dev);
+> +	adc->spi = spi;
+> +	mutex_init(&adc->lock);
+> +
+> +	indio_dev->name = dev_name(&spi->dev);
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->dev.of_node = spi->dev.of_node;
+> +	indio_dev->info = &ads8344_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = ads8344_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ads8344_channels);
+> +
+> +	adc->reg = devm_regulator_get(&spi->dev, "vref");
+> +	if (IS_ERR(adc->reg))
+> +		return PTR_ERR(adc->reg);
+> +
+> +	ret = regulator_enable(adc->reg);
+> +	if (ret)
+> +		return ret;
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_buffer_cleanup;
+> +
+> +	return 0;
+> +err_buffer_cleanup:
+
+That is not a useful or correct label.. Give it a better name!
+
+> +	regulator_disable(adc->reg);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ads8344_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct ads8344 *adc = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	regulator_disable(adc->reg);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_OF
+
+Given there isn't currently any other way of (normally
+at least) instantiating this I wouldn't bother with the config guards.
+Also see below for additional comment on this.
+
+> +
+> +static const struct of_device_id ads8344_dt_ids[] = {
+> +	{ .compatible = "ti,ads8344", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, ads8344_dt_ids);
+> +
+> +#endif
+> +
+> +static struct spi_driver ads8344_driver = {
+> +	.driver = {
+> +		.name = "ads8344",
+> +		.of_match_table = of_match_ptr(ads8344_dt_ids),
+
+Don't use of_match_ptr as it breaks the magic ACPI binding which
+uses the DT tables.
+
+> +	},
+> +	.probe = ads8344_probe,
+> +	.remove = ads8344_remove,
+> +};
+> +module_spi_driver(ads8344_driver);
+> +
+> +MODULE_AUTHOR("Gregory CLEMENT <gregory.clement@bootlin.com>");
+> +MODULE_DESCRIPTION("ADS8344 driver");
+> +MODULE_LICENSE("GPL v2");
 
