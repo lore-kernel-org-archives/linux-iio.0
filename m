@@ -2,62 +2,56 @@ Return-Path: <SRS0=kDFh=RT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09E9BC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:15:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11806C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:17:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CA33521904
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:15:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D005921907
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 17:17:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552756525;
-	bh=yaBuVQHY5hPsXZmrW0saq5dB6OZCZYvsjwhlKw2zVpQ=;
+	s=default; t=1552756625;
+	bh=smam8LcaKFTpmB2kV++xPykZGbIT+xjXrqgYB8gZyMY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=uI0u/SPr546p0B6rUMGuMvEzkBdMVsNGlnE3QiF34j5m2aKg3TtolH56LMfQsxC9j
-	 30BgtP9Vzqs5fLMdsQaP/0LPoQ3258wSCclGn1du3bj1lWrtA8xuKjTHMvrKNjBqxm
-	 9L/X/v0g6TUpEFqaaDwmBD1qM8ff65aP2vr0SxZk=
+	b=sPwYVROjuSWyCn3a/FxrN1dfNdhORQdHX0xooe10xXUHCFI08BSPzHDYAn9/NETbi
+	 1HG3xxSbOM1z4LKwo/NhhIV+PwMEG4fEbpv3YMRbwU6So1nEGsHUv5WvLC57gyIO2s
+	 aNgrJwNcr7nRg59GjB5X95sgjMnP+YJhq2C3fhb8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbfCPRPZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 13:15:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52554 "EHLO mail.kernel.org"
+        id S1727012AbfCPRRF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 13:17:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53012 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726629AbfCPRPZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 13:15:25 -0400
+        id S1726629AbfCPRRF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 13:17:05 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE60F218E0;
-        Sat, 16 Mar 2019 17:15:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AF28921904;
+        Sat, 16 Mar 2019 17:17:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552756524;
-        bh=yaBuVQHY5hPsXZmrW0saq5dB6OZCZYvsjwhlKw2zVpQ=;
+        s=default; t=1552756624;
+        bh=smam8LcaKFTpmB2kV++xPykZGbIT+xjXrqgYB8gZyMY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ke0KlMeSEfAm1zkXhK9QId6xDS1MtMltiNjV6nMoDyp/VpjE4H35d7ZZD+NQFImL6
-         gSKIHmL1PvPkMhvZhhxnG+HY7su3gUfARpptEXkUC5UjjAVZ+Q4rjUDkybc3+eexV/
-         g78W7hCjQRxFTrOUpVsS9q1zRHLWbtFHZ2YrNN2A=
-Date:   Sat, 16 Mar 2019 17:15:17 +0000
+        b=EwOlCy5g9D+UEH9OG1ar8p2T1kYzkJC+XPCMHaBMrxW4+VPOu+zC7RV9atljRNtz+
+         o8ZYwbMTzJN1XXgFcRWAWQu5wV3bLJSrdx/F7joTbrjujIpJo4O9+6XZJ8OF40q+uu
+         yFeqahtfL/Wp9NjAxepOKwGIGppPh0z6KGkmjrp8=
+Date:   Sat, 16 Mar 2019 17:16:58 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Angus Ainslie (Purism)" <angus@akkea.ca>
-Cc:     angus.ainslie@puri.sm, Hartmut Knaack <knaack.h@gmx.de>,
+To:     Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Tomas Novotny <tomas@novotny.cz>,
-        Brian Masney <masneyb@onstation.org>,
-        Robert Eshleman <bobbyeshleman@gmail.com>,
-        Mathieu Othacehe <m.othacehe@gmail.com>,
-        Parthiban Nallathambi <pn@denx.de>, ryang <decatf@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: iio: light: Document the VCNL4xx0
- device tree bindings
-Message-ID: <20190316171517.4c783134@archlinux>
-In-Reply-To: <20190315215425.24140-3-angus@akkea.ca>
-References: <20190315215425.24140-1-angus@akkea.ca>
-        <20190315215425.24140-3-angus@akkea.ca>
+        linux-iio@vger.kernel.org, Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v2 0/4] Adding scale support to the lpc32xx ADC driver
+Message-ID: <20190316171658.327ab411@archlinux>
+In-Reply-To: <20190315095231.17001-1-gregory.clement@bootlin.com>
+References: <20190315095231.17001-1-gregory.clement@bootlin.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -67,48 +61,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 15 Mar 2019 14:54:25 -0700
-"Angus Ainslie (Purism)" <angus@akkea.ca> wrote:
+On Fri, 15 Mar 2019 10:52:27 +0100
+Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
 
-> devicetree hooks where added to the VCNL4xx0 light and proximity
-> sensor driver.
+> Hello,
 > 
-> Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
-Please avoid wild cards in naming. It goes wrong too often.  People can grep
-if they want to see if their device is supported by any drivers rather
-than try to figure out wildcards.
-
-> ---
->  .../devicetree/bindings/iio/light/vcnl4xx0.txt    | 15 +++++++++++++++
->  1 file changed, 15 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4xx0.txt
+> This is the second version of a series adding the support of the scale
+> feature to the lpc32xx ADC driver. In order to use it we need to have
+> the voltage reference as a device tree property, however in order to
+> be backward compatible, this property is optional and do not prevent
+> to use the driver if missing.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/light/vcnl4xx0.txt b/Documentation/devicetree/bindings/iio/light/vcnl4xx0.txt
-> new file mode 100644
-> index 000000000000..d61cf3c121c3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/vcnl4xx0.txt
-> @@ -0,0 +1,15 @@
-> +VISHAY VCNL4xx0 -  Ambient Light and proximity sensor
-> +
-> +This driver supports the VCNL4000/10/20/40 and VCNL4200
-> +
-> +Required properties:
-> +
-> +	-compatible: should be "vishay,vcnl4000" or "vishay,vcnl4040"
-One per line.
+> I updated the binding documentation accordingly.
+> 
+> Gregory
+> 
+> Changelog:
+> v1 -> v2:
+> 
+>  - "dt-bindings: iio: adc: move lpc32xx-adc out of staging" and
+>    "iio:adc:lpc32xx use SPDX-License-Identifier" has been merged
+> 
+>  - split "iio:adc:lpc32xx use SPDX-License-Identifier" in 2 patches
+>    one foe sorting and the second one for removal
+Hohum. I'm reviewing cover letters now. Must have too much time on 
+my hands ;)
 
-I'd also like to see all the options in the list.  We already seem
-to have an undocumented difference between your new part and some
-of the older ones.  It's always better for people to use the 'most
-correct' part name the can.
+This is talking about the wrong patch.
 
-> +	-reg: I2C address of the sensor, should be 0x60
-> +
-> +Example:
-> +
-> +light-sensor@60 {
-> +	compatible = "vishay,vcnl4040";
-> +	reg = <0x60>;
-> +};
+> 
+>  - add reviewed-by from Rob Herring on the binding documentation patch
+> 
+>  - add default in the switch/case in lpc32xx_read_raw()
+> 
+>  - no more use scan_type.realbits and directly put the value in the
+>    IIO_CHAN_INFO_SCALE case
+> 
+>  - keep the const for the struct iio_chan_spec and declare 2 of them.
+> 
+>  - remove the unrelated and bad whitespace change.
+> 
+> Gregory CLEMENT (4):
+>   iio: adc: lpc32xx: Sort headers
+>   iio: adc: lpc32xx: Cleanup headers
+>   iio: adc: lpc32xx: Add scale feature
+>   dt-bindings: iio: adc: lpc32xx-adc: Document vref-supply
+> 
+>  .../bindings/iio/adc/lpc32xx-adc.txt          |  5 ++
+>  drivers/iio/adc/lpc32xx_adc.c                 | 59 +++++++++++++------
+>  2 files changed, 47 insertions(+), 17 deletions(-)
+> 
 
