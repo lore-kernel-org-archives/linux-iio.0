@@ -6,53 +6,55 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F199EC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:51:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77027C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:59:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BC26721900
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:51:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B43921903
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:59:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552751495;
-	bh=U/7GB3yO9nwOwezA2Ypi8xHH1JhtqFwT5fxZexfGrkE=;
+	s=default; t=1552751984;
+	bh=mVJarcQv/YHOjAk4T/YkGdhG6fG8rue5kalYxIcEXts=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=aGnpeInj70xkP7zTxCQ9ZQ4mF2iVdH2wcjr4jEY1dQq8jKxgnYaF4tHEqk8zIv3sZ
-	 XjuknO7czn15De6eudhYendy66+FBpWP38vtsPfD0AxUZM2OxDZDz2lIPKzxM+RKdh
-	 7oeAQRZ4HIAsUmTtvHoSIOTsuXR4ilqfgVnLIqr0=
+	b=Du3nJCbWQ9EBU3PPabu6hNf80nsmC4/MaWpVycwykmwUlUCmFVhQhAqh5Bk3HvnFf
+	 Cp2YklHw7AQ7ZwDyGy94FqHPnvTV4oOUKswFvToTLnNjRDwxRCzrCQqgmDT7LCE8AO
+	 s+se5C4bxBSMTiKUfTLDJD6G/ZwQs6+qaNttCDEU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726376AbfCPPvf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 11:51:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58562 "EHLO mail.kernel.org"
+        id S1726504AbfCPP7n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 11:59:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60572 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726105AbfCPPvf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 11:51:35 -0400
+        id S1726151AbfCPP7n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 11:59:43 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F6F6218E0;
-        Sat, 16 Mar 2019 15:51:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BE6BB21900;
+        Sat, 16 Mar 2019 15:59:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552751494;
-        bh=U/7GB3yO9nwOwezA2Ypi8xHH1JhtqFwT5fxZexfGrkE=;
+        s=default; t=1552751982;
+        bh=mVJarcQv/YHOjAk4T/YkGdhG6fG8rue5kalYxIcEXts=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rc86m/K9ZH2df2aMzzt+dkgX7BDH9/ICZ0W8Sm5uwLoROfLBCTljqzeSU1yrVJIny
-         kMTj7dOM3Wrt+Tzn6xky3iidCT04LVGSdKTvZeEiUMrjQ1/VrBahD5Y1OeU5Xg/96R
-         eQ/2XAblBXvS/EA8gx255/IQHf2EhYkxkq92ISvA=
-Date:   Sat, 16 Mar 2019 15:51:28 +0000
+        b=YvcMRp+AkT2n5gSDTBYyVRbUx5XjXl/s3sTJ0Nui54zb+fzMxHybCFmwdxwUkXsnP
+         DQY0wDTZjQaaC8rnCF6/8K+4wtDjKyeo1QBZ/iKOCmq45yBDj90lKSl4cyOy3EMaOa
+         yXIV+F11rjRCThM7JCY1PUtnRHYcgW8jp7OcMmwM=
+Date:   Sat, 16 Mar 2019 15:59:36 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sven Van Asbroeck <thesven73@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Manish Narani <manish.narani@xilinx.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: adc: xilinx: prevent touching unclocked h/w on
- remove
-Message-ID: <20190316155128.16ef1da1@archlinux>
-In-Reply-To: <20190310185826.25916-3-TheSven73@gmail.com>
-References: <20190310185826.25916-1-TheSven73@gmail.com>
-        <20190310185826.25916-3-TheSven73@gmail.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Karen Palacio <karen.palacio.1994@gmail.com>,
+        devel@driverdev.osuosl.org, lars@metafoo.de,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
+        LKML <linux-kernel@vger.kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de,
+        Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: Re: [PATCH] staging: iio: adc: ad7192: Add spaces around minus
+ operator
+Message-ID: <20190316155936.4af7ad9d@archlinux>
+In-Reply-To: <20190311083159.GE2434@kadam>
+References: <1552252931-10592-1-git-send-email-karen.palacio.1994@gmail.com>
+        <CA+U=Dso8UzRFcHj-2Ss08DmykuXaTzbYmtj3F40tzchgvb7zBw@mail.gmail.com>
+        <20190311083159.GE2434@kadam>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,40 +64,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 10 Mar 2019 14:58:26 -0400
-Sven Van Asbroeck <thesven73@gmail.com> wrote:
+On Mon, 11 Mar 2019 11:31:59 +0300
+Dan Carpenter <dan.carpenter@oracle.com> wrote:
 
-> In remove, the clock is disabled before canceling the
-> delayed work. This means that the delayed work may be
-> touching unclocked hardware.
+> On Mon, Mar 11, 2019 at 10:12:48AM +0200, Alexandru Ardelean wrote:
+> > On Sun, Mar 10, 2019 at 11:23 PM Karen Palacio
+> > <karen.palacio.1994@gmail.com> wrote:  
+> > >
+> > > Add spaces around minus operator to fix readibility.
+> > >
+> > > Signed-off-by: Karen Palacio <karen.palacio.1994@gmail.com>
+> > > ---
+> > >  drivers/staging/iio/adc/ad7192.c | 2 +-
+> > >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > >
+> > > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> > > index acdbc07..7c632cf 100644
+> > > --- a/drivers/staging/iio/adc/ad7192.c
+> > > +++ b/drivers/staging/iio/adc/ad7192.c
+> > > @@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
+> > >  }
+> > >
+> > >  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+> > > -                            in_voltage-voltage_scale_available,
+> > > +                            in_voltage - voltage_scale_available,  
+> > 
+> > This isn't broken, but I do agree it should be addressed.
+> > I think it's the second time I see a similar patch trying to fix this.
+> > So, obviously the code is a bit misleading.
+> >   
 > 
-> Fix by disabling the clock after the delayed work is
-> fully canceled. This is consistent with the probe error
-> path order.
-> 
-> Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
-Applied to the fixes-togreg branch of iio.git.
+> It's got to be more than that.  I did a simple grep of my inbox and it
+> says that this is the 13th time someone has tried to do this.  It's
+> possible that my grep is wrong, 13 seems high but not totaly impossible.
+
+That sounds about right.
+
+Best bet is to move this over to the read_avail callback and do it using
+the core handling for available attributes which will build the name
+in code so checkpatch won't find it.
+
+Anyone want to spin up a patch to do that and save anyone else wasting
+time on this?  Or we could just put a comment right next to it and hope
+people read it..  
 
 Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/adc/xilinx-xadc-core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-> index 15e1a103f37d..1ae86e7359f7 100644
-> --- a/drivers/iio/adc/xilinx-xadc-core.c
-> +++ b/drivers/iio/adc/xilinx-xadc-core.c
-> @@ -1320,8 +1320,8 @@ static int xadc_remove(struct platform_device *pdev)
->  		iio_triggered_buffer_cleanup(indio_dev);
->  	}
->  	free_irq(xadc->irq, indio_dev);
-> -	clk_disable_unprepare(xadc->clk);
->  	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
-> +	clk_disable_unprepare(xadc->clk);
->  	kfree(xadc->data);
->  	kfree(indio_dev->channels);
->  
+> regards,
+> dan carpenter
+> 
 
