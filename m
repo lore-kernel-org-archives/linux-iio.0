@@ -6,48 +6,47 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A85D8C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A6EC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:36:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7780A218AC
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:35:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F6F6218AC
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 18:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552761305;
-	bh=t6hm1KPkxQqeBOBR+vbbTNI2Ybsx4e0YryVvGAJx0uU=;
+	s=default; t=1552761417;
+	bh=JRy4/LlN+M/2emxw+uMISN8talfwYN8kYC4PyVZ7wko=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=DxpD9GY3GPWSHB0Gwm9PAQy1FU6BdFTOhfbYMfuwg62DxzwedWLiK6A7jkLDLBuhU
-	 tAoTESUPKf6OKY0QlVUYiRalb7uT4y6r9nxeB+NNjF2dkX8WIQDv7/CHjFOwTrwgpw
-	 EveF55Gdw8Zbx4QDvH5jzfTA3TgT+SicdgU+FO4M=
+	b=xzesiNxfq0Kbc5Mt6YhHIsHNqr8DX5B55wT9rvN8W8tIEMI7n6/LWIX1ct8OnKHfz
+	 Fc7BGLGNIDI+CilfXtIIVejFsCvaYKVz+065tdZRFWk1Z8fHVUli8jdgV5FVPxYCfc
+	 oEsUXTkNRYKGQdNHZkK62XrkB59cZpBNQakazHLY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726663AbfCPSfE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 14:35:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46084 "EHLO mail.kernel.org"
+        id S1727205AbfCPSg5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 14:36:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726549AbfCPSfE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 14:35:04 -0400
+        id S1726376AbfCPSg4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 14:36:56 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07FE0218A1;
-        Sat, 16 Mar 2019 18:35:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 343B3218A1;
+        Sat, 16 Mar 2019 18:36:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552761303;
-        bh=t6hm1KPkxQqeBOBR+vbbTNI2Ybsx4e0YryVvGAJx0uU=;
+        s=default; t=1552761416;
+        bh=JRy4/LlN+M/2emxw+uMISN8talfwYN8kYC4PyVZ7wko=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hHoGViqXDmCEwUrzZ2VESpgNktNV85eVvu+8tFqaUO7KkVJyrQ/lDNFOinf5xwL8B
-         gOW0PS0FNdvJs0fu6ewaJhMGzLb87Jblwz+ipQzZCIZehD7x+HXeggpvFJy8Sc3E+m
-         jU+dHuYGqk5UvtEz7Qo52Yh2MwUCdA3XfZhN8dnM=
-Date:   Sat, 16 Mar 2019 18:34:58 +0000
+        b=PquzAfqYU/nqhoFMsK5mYAAaLf61+ow7aTyXKfZIdhAuH2htPDpt8/rKy0NJC/nw2
+         dfPRc2WbYJJY/fT+QAI6MCnp/SAHNoXbxC+hB0gK0hRyw+PGU2GZaE7cqi/YiXUohX
+         5wjsPd/GgWf/afNoMA3xiOsECgcbpD5d6Gpu91CU=
+Date:   Sat, 16 Mar 2019 18:36:50 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
         pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH v4 1/7] staging: iio: ad5933: change multi-line comment
- style
-Message-ID: <20190316183458.1cdddb28@archlinux>
-In-Reply-To: <20190316150618.7g6hxbmadvxe623o@smtp.gmail.com>
-References: <20190316150618.7g6hxbmadvxe623o@smtp.gmail.com>
+Subject: Re: [PATCH v4 2/7] staging: iio: ad5933: organize includes
+Message-ID: <20190316183650.4ce97b18@archlinux>
+In-Reply-To: <20190316150650.jke4uqgnf5w6s3cv@smtp.gmail.com>
+References: <20190316150650.jke4uqgnf5w6s3cv@smtp.gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,55 +56,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 16 Mar 2019 12:06:18 -0300
+On Sat, 16 Mar 2019 12:06:50 -0300
 Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> Make multi-line comments compliant with the preferred code style.
+> Organize includes to list them in lexicographic order.
 > 
 > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to hopefully ignore.
-
-Thanks,
-
-Jonathan
+Applied. Thanks
 
 > ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  .../staging/iio/impedance-analyzer/ad5933.c    | 18 +++++++++---------
+>  1 file changed, 9 insertions(+), 9 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 3134295f014f..05e2185bfdae 100644
+> index 05e2185bfdae..c2a7a59e469c 100644
 > --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
 > +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -474,7 +474,8 @@ static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
->  			ad5933_store,
->  			AD5933_OUT_SETTLING_CYCLES);
+> @@ -6,22 +6,22 @@
+>   * Licensed under the GPL-2.
+>   */
 >  
-> -/* note:
-> +/*
-> + * note:
->   * ideally we would handle the scale attributes via the iio_info
->   * (read|write)_raw methods, however this part is a untypical since we
->   * don't create dedicated sysfs channel attributes for out0 and in0.
-> @@ -572,7 +573,8 @@ static int ad5933_ring_postenable(struct iio_dev *indio_dev)
->  {
->  	struct ad5933_state *st = iio_priv(indio_dev);
+> -#include <linux/interrupt.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+>  #include <linux/device.h>
+> -#include <linux/kernel.h>
+> -#include <linux/sysfs.h>
+> +#include <linux/err.h>
+>  #include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+>  #include <linux/regulator/consumer.h>
+> +#include <linux/sysfs.h>
+>  #include <linux/types.h>
+> -#include <linux/err.h>
+> -#include <linux/delay.h>
+> -#include <linux/module.h>
+> -#include <linux/clk.h>
 >  
-> -	/* AD5933_CTRL_INIT_START_FREQ:
-> +	/*
-> +	 * AD5933_CTRL_INIT_START_FREQ:
->  	 * High Q complex circuits require a long time to reach steady state.
->  	 * To facilitate the measurement of such impedances, this mode allows
->  	 * the user full control of the settling time requirement before
-> @@ -663,7 +665,8 @@ static void ad5933_work(struct work_struct *work)
->  	}
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/sysfs.h>
+>  #include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+>  #include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/sysfs.h>
 >  
->  	if (status & AD5933_STAT_SWEEP_DONE) {
-> -		/* last sample received - power down do
-> +		/*
-> +		 * last sample received - power down do
->  		 * nothing until the ring enable is toggled
->  		 */
->  		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
+>  /* AD5933/AD5934 Registers */
+>  #define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
 
