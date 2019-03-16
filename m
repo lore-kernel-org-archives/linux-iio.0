@@ -4,113 +4,126 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E04EC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:16:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97313C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:19:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2666421900
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:16:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E8DF218D4
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:19:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552749417;
-	bh=sED1swGDglN29sRmh+O9lHz6EhAjhJO5bQ/G6J0kinc=;
+	s=default; t=1552749559;
+	bh=gOOpIFtVh5xUu2k7isOm9AZJajRq6QzGqLm65AeifFo=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=g29AGP1YcUo2YkNGv8Wu9l+V3T0jhNjJks4JA476aakh52Jb7XkAV5MsKjr1vrj+m
-	 ddZ59LbAlnirqPvTNg4vNfZFQO5h3Siad7m8m5EKjy1M6csOxzRmWY8g9miAvQNW9o
-	 uN2u/LC/3mBW8YBZwOsDLEM4PeCdyN0HYXoFmw34=
+	b=Xel1Zh/FlFRvPmFgNKlbahODAboy283EoNXj9BJqWYLkfsqeP1R3DeXE+j67lN+cl
+	 8CSKONiV5cwBX0Lo1BRLs0VcWzJKHLb/2BHZ666ebewKxV55UrxljipVU+NOmEE8JC
+	 /lQkMxD+RscOeewMf7LoAbMw/J6zMTANvsiuQ1dA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727075AbfCPPQ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 11:16:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37300 "EHLO mail.kernel.org"
+        id S1727096AbfCPPTS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 11:19:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38124 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726959AbfCPPQ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 11:16:56 -0400
+        id S1726461AbfCPPTS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 11:19:18 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A9E8C218D4;
-        Sat, 16 Mar 2019 15:16:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3FB8B20449;
+        Sat, 16 Mar 2019 15:19:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552749415;
-        bh=sED1swGDglN29sRmh+O9lHz6EhAjhJO5bQ/G6J0kinc=;
+        s=default; t=1552749557;
+        bh=gOOpIFtVh5xUu2k7isOm9AZJajRq6QzGqLm65AeifFo=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WXO6By0JuzL8S/x+YL/wYfOP0qpQe8d1XdiZ+1ULJaz0omymwvjnFBi/McHgs1zSS
-         AJ5ujLYWneenbppRMt/F/6JZ4WrXQwZsAzxxeaBD91zsJADnMUcbvXXW30yftFs5Z7
-         ZBME0lSHKYfRj6zjOlXSafYQx9XRGTPmrMeqEISI=
-Date:   Sat, 16 Mar 2019 15:16:51 +0000
+        b=oh3Qfp0qkhvw8/3t0OKODyUVJcPDFpxaC5IqmZeFzpsHttN4505YxMhTrZXKJxC31
+         uffKpHqY+JHZ0hT4RFTJyMVlF/bo7KN6IHTgmue4rGTNiPVcnpQOLXmrdaBGNU+Ucm
+         qUwkLBdep/DRtNeKq1vmwZSIlkuHnDslRNaM4DxY=
+Date:   Sat, 16 Mar 2019 15:19:12 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: dac: mcp4725: add missing powerdown bits in store
- eeprom
-Message-ID: <20190316151651.33f17575@archlinux>
-In-Reply-To: <alpine.DEB.2.21.1903101230020.13266@vps.pmeerw.net>
-References: <20190306205606.30419-1-jeff.dagenais@gmail.com>
-        <20190309182754.5222143b@archlinux>
-        <alpine.DEB.2.21.1903101230020.13266@vps.pmeerw.net>
+To:     Kangjie Lu <kjlu@umn.edu>
+Cc:     Tomasz Duszynski <tduszyns@gmail.com>, pakki001@umn.edu,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: hmc: fix a potential NULL pointer dereference
+Message-ID: <20190316151912.4a7ea87d@archlinux>
+In-Reply-To: <57617810-6F1A-41BF-889C-7A056423C360@umn.edu>
+References: <20190309051533.14309-1-kjlu@umn.edu>
+        <20190309134208.GA7820@arch>
+        <20190309182950.67a7dd9d@archlinux>
+        <57617810-6F1A-41BF-889C-7A056423C360@umn.edu>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 10 Mar 2019 12:31:16 +0100 (CET)
-Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+On Tue, 12 Mar 2019 02:19:25 -0500
+Kangjie Lu <kjlu@umn.edu> wrote:
 
-> > +Cc Peter.  
->  
-> > > When issuing the write DAC register and write eeprom command, the two
-> > > powerdown bits (PD0 and PD1) are assumed by the chip to be present in
-> > > the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
-> > > a different state that the current one. By adding the current state of
-> > > the powerdown in the i2c write, the chip will correctly power-on exactly
-> > > like as it is at the moment of store_eeprom call.
-> > > 
-> > > This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
-> > > for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
-> > > "Write All Memory Command".
-> > > 
-> > > Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>  
-> 
-> > sounds fine to me, but I'd like to give Peter a chance to comment.
-> > Give me a poke if it turns out Peter is busy and doesn't get back
-> > to us in a week or two.  
-> 
-> I'd suggest whitespace around the + operator, otherwise
-> 
-Good point, added...
-> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> > On Mar 9, 2019, at 12:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> >=20
+> > On Sat, 9 Mar 2019 14:42:09 +0100
+> > Tomasz Duszynski <tduszyns@gmail.com <mailto:tduszyns@gmail.com>> wrote:
+> >  =20
+> >> On Fri, Mar 08, 2019 at 11:15:32PM -0600, Kangjie Lu wrote: =20
+> >>> devm_regmap_init_i2c may fail and return NULL. The fix returns
+> >>> the error when it fails.
+> >>>=20
+> >>> Signed-off-by: Kangjie Lu <kjlu@umn.edu>
+> >>> ---
+> >>> drivers/iio/magnetometer/hmc5843_i2c.c | 7 ++++++-
+> >>> 1 file changed, 6 insertions(+), 1 deletion(-)
+> >>>=20
+> >>> diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/mag=
+netometer/hmc5843_i2c.c
+> >>> index 3de7f4426ac4..c0cd0823f8d5 100644
+> >>> --- a/drivers/iio/magnetometer/hmc5843_i2c.c
+> >>> +++ b/drivers/iio/magnetometer/hmc5843_i2c.c
+> >>> @@ -58,8 +58,13 @@ static const struct regmap_config hmc5843_i2c_regm=
+ap_config =3D {
+> >>> static int hmc5843_i2c_probe(struct i2c_client *cli,
+> >>> 			     const struct i2c_device_id *id)
+> >>> {
+> >>> +	struct regmap *devm_regmap =3D devm_regmap_init_i2c(cli,
+> >>> +			&hmc5843_i2c_regmap_config);
+> >>> +	if (IS_ERR(devm_regmap))
+> >>> +		return PTR_ERR(devm_regmap);   =20
+> >>=20
+> >> This fixes only one part of the problem leaving identical spi issue
+> >> behind. I guess this check should be part of *common_probe(). =20
+> > It could be, but that somewhat hides the error checking.
+> >=20
+> > I'd prefer to see it fixed like this, but in both here and the spi
+> > file.  Both this and spi in one patch would be great! =20
+>=20
+> I=E2=80=99ve submitted the patch for spi as well.
+>=20
+Ah. I missed it because of inconsistent patch naming.
+Anyhow, there were some minor suggestions for that patch so please
+send a v2 with the two combined.
 
-Applied to the fixes-togreg branch of iio.git and marked
-for stable. It's not super critical as fixes go but
-things are currently not quite doing what someone might
-expect.
-
-Thanks,
+Thanks
 
 Jonathan
 
-> 
-> > > ---
-> > >  drivers/iio/dac/mcp4725.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > > 
-> > > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> > > index 6ab1f23e5a79..97bb350d1e77 100644
-> > > --- a/drivers/iio/dac/mcp4725.c
-> > > +++ b/drivers/iio/dac/mcp4725.c
-> > > @@ -98,6 +98,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
-> > >  
-> > >  	inoutbuf[0] = 0x60; /* write EEPROM */
-> > >  	inoutbuf[0] |= data->ref_mode << 3;
-> > > +	inoutbuf[0] |= data->powerdown ? ((data->powerdown_mode+1) << 1) : 0;
-> > >  	inoutbuf[1] = data->dac_value >> 4;
-> > >  	inoutbuf[2] = (data->dac_value & 0xf) << 4;
-> > >    
-> >   
-> 
+> >=20
+> > Thanks,
+> >=20
+> > Jonathan
+> >  =20
+> >>  =20
+> >>> +
+> >>> 	return hmc5843_common_probe(&cli->dev,
+> >>> -			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
+> >>> +			devm_regmap,
+> >>> 			id->driver_data, id->name);
+> >>> }
+> >>>=20
+> >>> --
+> >>> 2.17.1 =20
+>=20
 
