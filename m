@@ -2,59 +2,51 @@ Return-Path: <SRS0=kDFh=RT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77027C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:59:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D092C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:01:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3B43921903
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 15:59:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3A19A21900
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 16:01:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552751984;
-	bh=mVJarcQv/YHOjAk4T/YkGdhG6fG8rue5kalYxIcEXts=;
+	s=default; t=1552752065;
+	bh=45p14o7XAXziKj/bRUV9kn51jA6xSXauRZ/lIi0h1+Y=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Du3nJCbWQ9EBU3PPabu6hNf80nsmC4/MaWpVycwykmwUlUCmFVhQhAqh5Bk3HvnFf
-	 Cp2YklHw7AQ7ZwDyGy94FqHPnvTV4oOUKswFvToTLnNjRDwxRCzrCQqgmDT7LCE8AO
-	 s+se5C4bxBSMTiKUfTLDJD6G/ZwQs6+qaNttCDEU=
+	b=DLkQAc//9SyTFlmd0fv3GXv5Ce+IamMFrHN7whDRrN2NjKj4DUcs43wI6OJ9FeghI
+	 DzAEuU/p+adMR8u1quQOl9ztPNFCP6iwbhXR3iwH9xf3ikJxExahQmJ6PjPGvlaTIu
+	 1WTQ0hL7yDLjrj4ylOHhM0PqWNQkaiHrRVGhFVN4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726504AbfCPP7n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 11:59:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60572 "EHLO mail.kernel.org"
+        id S1726376AbfCPQBE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 12:01:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726151AbfCPP7n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Mar 2019 11:59:43 -0400
+        id S1726151AbfCPQBE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Mar 2019 12:01:04 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE6BB21900;
-        Sat, 16 Mar 2019 15:59:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6448121900;
+        Sat, 16 Mar 2019 16:01:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1552751982;
-        bh=mVJarcQv/YHOjAk4T/YkGdhG6fG8rue5kalYxIcEXts=;
+        s=default; t=1552752064;
+        bh=45p14o7XAXziKj/bRUV9kn51jA6xSXauRZ/lIi0h1+Y=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YvcMRp+AkT2n5gSDTBYyVRbUx5XjXl/s3sTJ0Nui54zb+fzMxHybCFmwdxwUkXsnP
-         DQY0wDTZjQaaC8rnCF6/8K+4wtDjKyeo1QBZ/iKOCmq45yBDj90lKSl4cyOy3EMaOa
-         yXIV+F11rjRCThM7JCY1PUtnRHYcgW8jp7OcMmwM=
-Date:   Sat, 16 Mar 2019 15:59:36 +0000
+        b=UmR01JElhf+9J/rBsvoNQA0g1964e6RYmQvtl+86FZp1T8CH+4kj1qik1eHcTb1C4
+         4Myloz6dLpAJUvxeC53cYz/RBFsJEDtsNKZtexqeAp627tPtCK4SJkR4pHDcOtQ139
+         37dPfbRklXXGUuti1COUDeE3MrWGRDjYhKZU4lMM=
+Date:   Sat, 16 Mar 2019 16:00:59 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Karen Palacio <karen.palacio.1994@gmail.com>,
-        devel@driverdev.osuosl.org, lars@metafoo.de,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de,
-        Mircea Caprioru <mircea.caprioru@analog.com>
-Subject: Re: [PATCH] staging: iio: adc: ad7192: Add spaces around minus
- operator
-Message-ID: <20190316155936.4af7ad9d@archlinux>
-In-Reply-To: <20190311083159.GE2434@kadam>
-References: <1552252931-10592-1-git-send-email-karen.palacio.1994@gmail.com>
-        <CA+U=Dso8UzRFcHj-2Ss08DmykuXaTzbYmtj3F40tzchgvb7zBw@mail.gmail.com>
-        <20190311083159.GE2434@kadam>
+To:     Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: mcp4725: add missing powerdown bits in
+ store eeprom
+Message-ID: <20190316160059.10e133e2@archlinux>
+In-Reply-To: <15603225-C392-42AE-92A1-893BB7C322E3@gmail.com>
+References: <20190311114239.30512-1-jeff.dagenais@gmail.com>
+        <15603225-C392-42AE-92A1-893BB7C322E3@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,56 +56,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 11 Mar 2019 11:31:59 +0300
-Dan Carpenter <dan.carpenter@oracle.com> wrote:
+On Tue, 12 Mar 2019 08:32:22 -0400
+Jean-Francois Dagenais <jeff.dagenais@gmail.com> wrote:
 
-> On Mon, Mar 11, 2019 at 10:12:48AM +0200, Alexandru Ardelean wrote:
-> > On Sun, Mar 10, 2019 at 11:23 PM Karen Palacio
-> > <karen.palacio.1994@gmail.com> wrote:  
-> > >
-> > > Add spaces around minus operator to fix readibility.
-> > >
-> > > Signed-off-by: Karen Palacio <karen.palacio.1994@gmail.com>
-> > > ---
-> > >  drivers/staging/iio/adc/ad7192.c | 2 +-
-> > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > >
-> > > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> > > index acdbc07..7c632cf 100644
-> > > --- a/drivers/staging/iio/adc/ad7192.c
-> > > +++ b/drivers/staging/iio/adc/ad7192.c
-> > > @@ -355,7 +355,7 @@ ad7192_show_scale_available(struct device *dev,
-> > >  }
-> > >
-> > >  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
-> > > -                            in_voltage-voltage_scale_available,
-> > > +                            in_voltage - voltage_scale_available,  
+> > On Mar 11, 2019, at 07:42, Jean-Francois Dagenais <jeff.dagenais@gmail.com> wrote:
 > > 
-> > This isn't broken, but I do agree it should be addressed.
-> > I think it's the second time I see a similar patch trying to fix this.
-> > So, obviously the code is a bit misleading.
-> >   
+> > When issuing the write DAC register and write eeprom command, the two
+> > powerdown bits (PD0 and PD1) are assumed by the chip to be present in
+> > the bytes sent. Leaving them at 0 implies "powerdown disabled" which is
+> > a different state that the current one. By adding the current state of
+> > the powerdown in the i2c write, the chip will correctly power-on exactly
+> > like as it is at the moment of store_eeprom call.
+> > 
+> > This is documented in MCP4725's datasheet, FIGURE 6-2: "Write Commands
+> > for DAC Input Register and EEPROM" and MCP4726's datasheet, FIGURE 6-3:
+> > "Write All Memory Command".
+> > 
+> > Signed-off-by: Jean-Francois Dagenais <jeff.dagenais@gmail.com>
+> > ---  
 > 
-> It's got to be more than that.  I did a simple grep of my inbox and it
-> says that this is the 13th time someone has tried to do this.  It's
-> possible that my grep is wrong, 13 seems high but not totaly impossible.
-
-That sounds about right.
-
-Best bet is to move this over to the read_avail callback and do it using
-the core handling for available attributes which will build the name
-in code so checkpatch won't find it.
-
-Anyone want to spin up a patch to do that and save anyone else wasting
-time on this?  Or we could just put a comment right next to it and hope
-people read it..  
-
-Thanks,
+> I forgot to add:
+> 
+> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> 
+> in v2
+> 
+> v3 just for that?
+Ah,  I picked up v1 and fixed it anyway.  So don't bother ;)
 
 Jonathan
-
-> 
-> regards,
-> dan carpenter
-> 
-
