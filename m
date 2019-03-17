@@ -2,87 +2,74 @@ Return-Path: <SRS0=squ6=RU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A4CEC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D22DC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:08:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3A4E020896
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 174792087F
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:08:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="T6fqjNs/";
-	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="caJWXrR/"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NMVUfEE6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727084AbfCQPsL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 11:48:11 -0400
-Received: from node.akkea.ca ([192.155.83.177]:34200 "EHLO node.akkea.ca"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726782AbfCQPsK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Mar 2019 11:48:10 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by node.akkea.ca (Postfix) with ESMTP id 58F314E2050;
-        Sun, 17 Mar 2019 15:48:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1552837690; bh=unGjJltg8u9g2EY98mxhLEZEt6mxzTeC2pwjMH5zOvg=;
-        h=From:To:Cc:Subject:Date;
-        b=T6fqjNs/o7KSb9Dk2iIzfCG/fd/rIa0k2d7BIwkNULf8wbqUpgYjCGOQ7hk65E2HU
-         LqFmmGZq8/8JBEfxx0pSBBwWRNPIQyRV/DoTwPWkWLBknzip+XBBFIlXz/swpSDlz+
-         FPIvPIa2YQKuEMY1eN6XrvO7r3FW4WT9XuCuoU38=
-X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
-Received: from node.akkea.ca ([127.0.0.1])
-        by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id LHUApSl3AATF; Sun, 17 Mar 2019 15:48:09 +0000 (UTC)
-Received: from midas.localdomain (S0106788a2041785e.gv.shawcable.net [70.66.86.75])
-        by node.akkea.ca (Postfix) with ESMTPSA id 7275B4E204B;
-        Sun, 17 Mar 2019 15:48:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1552837689; bh=unGjJltg8u9g2EY98mxhLEZEt6mxzTeC2pwjMH5zOvg=;
-        h=From:To:Cc:Subject:Date;
-        b=caJWXrR/23zXdrStR9xGz8ZQQAbgBVTPcWGyfaKfY+9uZ2Up0zDqvtFG144tauCb3
-         HAH2a/ebz4QybTd3w6Q2wqPBP4/k00Wek2zCo0BLASE7ic+dPa57iFeF/WmdmKwYGP
-         MB42eLJLeXGWd9BW8lyXdGQpYE8kF8Oz1YNJEI7E=
-From:   "Angus Ainslie (Purism)" <angus@akkea.ca>
+        id S1726888AbfCQQH7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 12:07:59 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:39166 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726844AbfCQQH7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 12:07:59 -0400
+Received: by mail-oi1-f195.google.com with SMTP id b4so11092881oif.6;
+        Sun, 17 Mar 2019 09:07:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qVpnvbaFJ2G1TnnFgwXVlajGfkq6jkzEOBnMmrgWz3I=;
+        b=NMVUfEE6liUcGBqCe94xlvG6ftb6PoUlsmzAxby6KS0Ef5aOei/ADRSvKYyDm1q7Ev
+         BsShAL/ZVcgxXA+mEHMiZS23Z4z5xSnrhHG0uK1VOYB6UV9ikV9JfQfmWnGnMXss5QNj
+         +Stx5wLpe6gE7XV8jbFeh5BUocnjmZj3sF6D/yUlO+/z0Lbryfgv+ss2GVFmwIkIrtGz
+         +Zi2NXuAl1zhTUcUuconz5uz6TzA08IIoYnHtzc+YzBgT0Or/6g3DcMuzQUQjW1/2Yr2
+         B5mCu2ClGkJ/TAAFNm/USyC75B/d8cU046SzetD5ED9laUTtP91pEHrA2HWNN1u7MsHA
+         ks7A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qVpnvbaFJ2G1TnnFgwXVlajGfkq6jkzEOBnMmrgWz3I=;
+        b=IEvdJ7GN9Iwap2lhIqgFN3Qpp8Q5OpEyvqnE7+47uB+dWeUDWR2A/AbDoQhEMSMViT
+         DSpKnTgYCPowBOCzb2dl6HyCp4v/Tn6ldPhlGklpMXYbg3W7AsEiaQt/XY/6k9mgThwI
+         D0ioOzidI62q6JxpbP/ifjyFQDSmxm1djQa8cvacg+F9Bs/TNFF+rcg2i1avlE0J2ZEQ
+         F7cgb/OPZStfwHdowKDaJo1jJp+yZ1KwJyd9HBX3dV7Z5ZbsmRn01akIitc9O/MOeUGy
+         XB5uWpOuAvFch+39jus2tR9i2FHlSppv1MxveqUgvJmtdVfsmMf66aBhiHBapaJCXgiF
+         iN0Q==
+X-Gm-Message-State: APjAAAXM5JiyWv42X8pZPtZA7YFKFKX7FkR+2N5IazpujumCYXpW7vmx
+        BP3J1CkWgs7HOm9pUqGhlNn8Os4aTX/ps9RTIMI=
+X-Google-Smtp-Source: APXvYqzS90z1jPzZ7XyI8AJKYo33hAKc46zFDGwfq/6mow9lpSq7gG6kDDBoag84+WCH2rAPa2JKmVZOfjIMrvD5Qkg=
+X-Received: by 2002:aca:5747:: with SMTP id l68mr134939oib.103.1552838878378;
+ Sun, 17 Mar 2019 09:07:58 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190310185826.25916-1-TheSven73@gmail.com> <20190310185826.25916-3-TheSven73@gmail.com>
+ <20190316155128.16ef1da1@archlinux>
+In-Reply-To: <20190316155128.16ef1da1@archlinux>
+From:   Sven Van Asbroeck <thesven73@gmail.com>
+Date:   Sun, 17 Mar 2019 12:07:47 -0400
+Message-ID: <CAGngYiW8=0aA=oAvB+e=DNVAijyf+2G2zVXj_DX2uNLvzLbYFQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: adc: xilinx: prevent touching unclocked h/w on remove
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Angus Ainslie (Purism)" <angus@akkea.ca>,
-        Tomas Novotny <tomas@novotny.cz>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/5] Add a VCNL4040 light and proximity driver
-Date:   Sun, 17 Mar 2019 08:47:57 -0700
-Message-Id: <20190317154802.15174-1-angus@akkea.ca>
-X-Mailer: git-send-email 2.17.1
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Extend the Vishay VCNL4000/4010/4020/4200 driver to work with the VCNL4040
-chip.
+On Sat, Mar 16, 2019 at 11:51 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> Applied to the fixes-togreg branch of iio.git.
+>
 
-Changes since V1:
-    Separated byte vs word bug fix.
-    Separated device tree hooks.
-    Separated devicetree binding patches.
-
-Angus Ainslie (Purism) (5):
-  iio: light: vcnl4000 use word writes instead of byte writes
-  iio: light: vcnl4000 add devicetree hooks
-  dt-bindings: iio: light: add vcnl4000 devicetree bindings
-  iio: light: vcnl4000 add support for the VCNL4040 proximity and light
-    sensor
-  dt-bindings: iio: light: add vcnl4040 devicetree bindings
-
- .../bindings/iio/light/vcnl4000.txt           | 24 ++++++
- drivers/iio/light/vcnl4000.c                  | 77 ++++++++++++++++---
- 2 files changed, 91 insertions(+), 10 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
-
--- 
-2.17.1
-
+Thank you kindly for taking this patch set, Jonathan.
