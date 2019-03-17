@@ -2,74 +2,152 @@ Return-Path: <SRS0=squ6=RU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D22DC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:08:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F5FC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:20:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 174792087F
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:08:00 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NMVUfEE6"
+	by mail.kernel.org (Postfix) with ESMTP id 5549D2087C
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:20:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726888AbfCQQH7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 12:07:59 -0400
-Received: from mail-oi1-f195.google.com ([209.85.167.195]:39166 "EHLO
-        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726844AbfCQQH7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 12:07:59 -0400
-Received: by mail-oi1-f195.google.com with SMTP id b4so11092881oif.6;
-        Sun, 17 Mar 2019 09:07:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qVpnvbaFJ2G1TnnFgwXVlajGfkq6jkzEOBnMmrgWz3I=;
-        b=NMVUfEE6liUcGBqCe94xlvG6ftb6PoUlsmzAxby6KS0Ef5aOei/ADRSvKYyDm1q7Ev
-         BsShAL/ZVcgxXA+mEHMiZS23Z4z5xSnrhHG0uK1VOYB6UV9ikV9JfQfmWnGnMXss5QNj
-         +Stx5wLpe6gE7XV8jbFeh5BUocnjmZj3sF6D/yUlO+/z0Lbryfgv+ss2GVFmwIkIrtGz
-         +Zi2NXuAl1zhTUcUuconz5uz6TzA08IIoYnHtzc+YzBgT0Or/6g3DcMuzQUQjW1/2Yr2
-         B5mCu2ClGkJ/TAAFNm/USyC75B/d8cU046SzetD5ED9laUTtP91pEHrA2HWNN1u7MsHA
-         ks7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qVpnvbaFJ2G1TnnFgwXVlajGfkq6jkzEOBnMmrgWz3I=;
-        b=IEvdJ7GN9Iwap2lhIqgFN3Qpp8Q5OpEyvqnE7+47uB+dWeUDWR2A/AbDoQhEMSMViT
-         DSpKnTgYCPowBOCzb2dl6HyCp4v/Tn6ldPhlGklpMXYbg3W7AsEiaQt/XY/6k9mgThwI
-         D0ioOzidI62q6JxpbP/ifjyFQDSmxm1djQa8cvacg+F9Bs/TNFF+rcg2i1avlE0J2ZEQ
-         F7cgb/OPZStfwHdowKDaJo1jJp+yZ1KwJyd9HBX3dV7Z5ZbsmRn01akIitc9O/MOeUGy
-         XB5uWpOuAvFch+39jus2tR9i2FHlSppv1MxveqUgvJmtdVfsmMf66aBhiHBapaJCXgiF
-         iN0Q==
-X-Gm-Message-State: APjAAAXM5JiyWv42X8pZPtZA7YFKFKX7FkR+2N5IazpujumCYXpW7vmx
-        BP3J1CkWgs7HOm9pUqGhlNn8Os4aTX/ps9RTIMI=
-X-Google-Smtp-Source: APXvYqzS90z1jPzZ7XyI8AJKYo33hAKc46zFDGwfq/6mow9lpSq7gG6kDDBoag84+WCH2rAPa2JKmVZOfjIMrvD5Qkg=
-X-Received: by 2002:aca:5747:: with SMTP id l68mr134939oib.103.1552838878378;
- Sun, 17 Mar 2019 09:07:58 -0700 (PDT)
+        id S1726784AbfCQQUX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 12:20:23 -0400
+Received: from mga18.intel.com ([134.134.136.126]:4700 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726735AbfCQQUX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 17 Mar 2019 12:20:23 -0400
+X-Amp-Result: UNSCANNABLE
+X-Amp-File-Uploaded: False
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Mar 2019 09:20:22 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.58,489,1544515200"; 
+   d="p7s'?scan'208";a="328070654"
+Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
+  by fmsmga006.fm.intel.com with ESMTP; 17 Mar 2019 09:20:21 -0700
+Received: from orsmsx154.amr.corp.intel.com (10.22.226.12) by
+ ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Sun, 17 Mar 2019 09:20:21 -0700
+Received: from orsmsx109.amr.corp.intel.com ([169.254.11.11]) by
+ ORSMSX154.amr.corp.intel.com ([169.254.11.183]) with mapi id 14.03.0415.000;
+ Sun, 17 Mar 2019 09:20:20 -0700
+From:   "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To:     "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>,
+        "aik@ozlabs.ru" <aik@ozlabs.ru>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>
+Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
+Thread-Topic: Debugging 3D sensor on Lenovo YOGA 700-11ISK
+Thread-Index: AQHU3CbSy/88SJFrT0i65NWQX4BOOaYPRuKAgAEwvYA=
+Date:   Sun, 17 Mar 2019 16:20:20 +0000
+Message-ID: <f7ddea9d434a3524651ecf1317fdbb75c15c2455.camel@intel.com>
+References: <eb33acca-f48d-a689-c5e7-6f9b66f50caf@ozlabs.ru>
+         <20190316183348.76573887@archlinux>
+         <d37ad7df-cd57-549c-bc5a-0c5f74e1fbde@ozlabs.ru>
+In-Reply-To: <d37ad7df-cd57-549c-bc5a-0c5f74e1fbde@ozlabs.ru>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: yes
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.251.139.14]
+Content-Type: multipart/signed; micalg=sha-1;
+        protocol="application/x-pkcs7-signature"; boundary="=-Qmsst7chNQOyni33I0H2"
 MIME-Version: 1.0
-References: <20190310185826.25916-1-TheSven73@gmail.com> <20190310185826.25916-3-TheSven73@gmail.com>
- <20190316155128.16ef1da1@archlinux>
-In-Reply-To: <20190316155128.16ef1da1@archlinux>
-From:   Sven Van Asbroeck <thesven73@gmail.com>
-Date:   Sun, 17 Mar 2019 12:07:47 -0400
-Message-ID: <CAGngYiW8=0aA=oAvB+e=DNVAijyf+2G2zVXj_DX2uNLvzLbYFQ@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: adc: xilinx: prevent touching unclocked h/w on remove
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Mar 16, 2019 at 11:51 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> Applied to the fixes-togreg branch of iio.git.
->
+--=-Qmsst7chNQOyni33I0H2
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Thank you kindly for taking this patch set, Jonathan.
+[...]
+
+> [root@aikyoga iio:device4]# for i in
+> /sys/bus/iio/devices/iio\:device0/scan_elements/* ; do echo $i ; cat
+> $i
+> ; done
+> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_en
+> 0
+> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_inde
+> x
+> 0
+> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_type
+> le:s32/32X4>>0
+>=20
+>=20
+> The values do not change whether iio-sensor-proxy is running or not.
+iio-sensor-proxy don't use quaternion. It depends on accel-3D for
+rotation.
+
+Thanks,
+Srinivas
+
+--=-Qmsst7chNQOyni33I0H2
+Content-Type: application/x-pkcs7-signature; name="smime.p7s"
+Content-Disposition: attachment; filename="smime.p7s"
+Content-Transfer-Encoding: base64
+
+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
+n4IJlKBiiK7B8oFPhD7KEZOWboHrE2uHLEkIXpp852sG0oFkLLstEDK9Z46WS4Ni1yfGRE6jY79A
+DJOEZIX9AgMBAAGjggI9MIICOTAdBgNVHQ4EFgQUZ2w0kbL1uZEoQTmAiMqoAXL81L8wHwYDVR0j
+BBgwFoAU2kEjnFqPca9Xgz4g0+Nl2wzLC9swZQYDVR0fBF4wXDBaoFigVoZUaHR0cDovL3d3dy5p
+bnRlbC5jb20vcmVwb3NpdG9yeS9DUkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWlu
+ZyUyMENBJTIwNEIuY3JsMIGfBggrBgEFBQcBAQSBkjCBjzAiBggrBgEFBQcwAYYWaHR0cDovL29j
+c3AuaW50ZWwuY29tLzBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRlbC5jb20vcmVwb3NpdG9y
+eS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIw
+NEIuY3J0MAsGA1UdDwQEAwIHgDA8BgkrBgEEAYI3FQcELzAtBiUrBgEEAYI3FQiGw4x1hJnlUYP9
+gSiFjp9TgpHACWeB3r05lfBDAgFkAgEJMB8GA1UdJQQYMBYGCCsGAQUFBwMEBgorBgEEAYI3CgMM
+MCkGCSsGAQQBgjcVCgQcMBowCgYIKwYBBQUHAwQwDAYKKwYBBAGCNwoDDDBXBgNVHREEUDBOoC0G
+CisGAQQBgjcUAgOgHwwdc3Jpbml2YXMucGFuZHJ1dmFkYUBpbnRlbC5jb22BHXNyaW5pdmFzLnBh
+bmRydXZhZGFAaW50ZWwuY29tMA0GCSqGSIb3DQEBBQUAA4IBAQAXirNmyawI/PJRnjPoqNcgSr8N
+8VXBvv8kwQidSNWKswBqo8ul8u+pkG7v8YjZUy1OJQUFXPvihht10Tb5O2xZ9hpIo4WFcRX2eg2Z
+t6koRJUB9ZDjEETG2j4EpcGmWIBrDBNZLZTLIYG5JzsS6mGCq42AKspSAJD00vwfL0KlCc4BVUvC
+64+q7etbf6c90n05KjfLfoUXBqwWLJCe3KPD20d/kbvesTzs2PVQxI7K1eL9n2rBoqBpcRY0ppkz
+FKjiTQ8IcwhyWQbzLfVIy5tNuyinhNBRv3COOMGoayaljijEPcEHLE63tA2OIao2Hz6GLRYzg0mT
+hCtsB4xSboPZMYICFzCCAhMCAQEwgZAweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYD
+VQQHEwtTYW50YSBDbGFyYTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIklu
+dGVsIEV4dGVybmFsIEJhc2ljIElzc3VpbmcgQ0EgNEICEzMAAGknngjvas7THxUAAAAAaScwCQYF
+Kw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDMx
+NzE2MjAwOVowIwYJKoZIhvcNAQkEMRYEFILr34+Nh8yGFA59+u7AMgbu3vCSMA0GCSqGSIb3DQEB
+AQUABIIBAJq6E5WVd+p0vZ5zDSFZ9OJvynoVCWssrw9g2tzHRTb1XRZegm/HiVLOb0SDNE4MZG36
+Rq8yTTdiNpo4c+A+UWUdhmV5B/e0q9ddr9PbGEjo5VGcNm/6YMb6CQ0Hw3iLcCnNcEXrBpzWwlfA
+jwdzMNhkLNc6siLWmkoQItJznLcRpWftMdalpr4Nar1avKPP5M9oDDIdgQPIktsBScStt1CSNl74
+mpORJ4Mow4oM1dAGsES34lqlINITAEZk9cS7kmulIPROqR9Iflr1fzS58Ws7zid93PiflmgZxWOO
+rDOYPa1gRcqXr/kggOAq13MGLGWN0TVPofqj/zBNzF4cGl0AAAAAAAA=
+
+
+--=-Qmsst7chNQOyni33I0H2--
