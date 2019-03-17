@@ -1,60 +1,60 @@
-Return-Path: <SRS0=kDFh=RT=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=squ6=RU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3ED2AC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 22:09:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B0BFC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 01:58:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DC3D6218AC
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Mar 2019 22:09:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 963452184C
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 01:58:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="sBuV5zqS"
+	dkim=pass (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="Zkqk4kXF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726562AbfCPWJf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Mar 2019 18:09:35 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:41014 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726418AbfCPWJf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Mar 2019 18:09:35 -0400
-Received: by mail-pg1-f193.google.com with SMTP id k11so8790263pgb.8
-        for <linux-iio@vger.kernel.org>; Sat, 16 Mar 2019 15:09:34 -0700 (PDT)
+        id S1726831AbfCQB6Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Mar 2019 21:58:24 -0400
+Received: from mail-pf1-f176.google.com ([209.85.210.176]:44816 "EHLO
+        mail-pf1-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726828AbfCQB6Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Mar 2019 21:58:24 -0400
+Received: by mail-pf1-f176.google.com with SMTP id a3so8875817pff.11
+        for <linux-iio@vger.kernel.org>; Sat, 16 Mar 2019 18:58:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
         h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
          :user-agent:mime-version:in-reply-to:content-language
          :content-transfer-encoding;
-        bh=thuslrntLteJwjfHDMnEy2gUfPPO04UE/CuQNeo1W5g=;
-        b=sBuV5zqSDlfxSTgnK9Qq0cAlFQAFd1cIR9z/57DSB5OLmwBLVnH9PZM1lCKpq8Z1OB
-         ywKtyiwB4LhpVgMEeLhpZmazqlTDogg8bNAdZKYT697e7pidq1jGj5PbvvrmzJCr75ap
-         uC7JgCXsa/Slm2vuO8l+ewI3ZNKbQD1o/DS6V+yc6NngaLzheN563nA8O3WHlG68vOf7
-         3f0GDA11RFYlJOgSPM7wCw0uaQ60LAjWoGxKQgUqY0oANefaICn+Nj4DmI9XMLw1zcjC
-         QVi0W4H2W9FLPItFroftxOIG9D4AbJGUgwP2Gf72gwvXHZKst2R7ZIT781q1eVCPQZTf
-         +c2Q==
+        bh=Nr4hshi1v1b5XawD0gXLDYtj5LMDTkM84T0wvjGT34Y=;
+        b=Zkqk4kXFVm8j7JtIu3JO1hvsl8JUZEJM3Z9acR32Ho/nzU0UlPKFxTo59dduaj2Hnk
+         scOFjtmXexex/LVSCOlhr2htIN0+w28iVTpDsSbtkREMSPBWCkS6kw4Up6d4R59tblcX
+         5bHAcVFClvAAQPZ5ZDz7WwJLn52c0vlg9dy+VUhOJ7rvPdqzdOEYXgcElf0t7eCBcULu
+         vTlJ383wUrQ8Frtjujr2yqv2Q5yGcVUjuttxKGerk/sg2OVE75qGGd/Z15dqYGLVyF4J
+         yqulVD6KG11GXZcgcLqUBL5yV0BqVRzffet6JCY9kEmy3qU+2QbcJug2GYsomSIACcst
+         5mPw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
          :message-id:date:user-agent:mime-version:in-reply-to
          :content-language:content-transfer-encoding;
-        bh=thuslrntLteJwjfHDMnEy2gUfPPO04UE/CuQNeo1W5g=;
-        b=cqeuBWR7yhCxDFrFWA2slyu9CIodCuVRWSseEH7kt7N4IgtHB4/4mhHBNs8RN0+bD9
-         43J6v2i7cIio9AIpD7CiZyGss5YQiptDfGih8C0tSuoQFquvT6u01TsT9jVOPMTahilD
-         ZWqTfi0IA97p9bhS5mQenm3yo5nwlWyNyOygqMPRYlAXS41g1SKl9SoXlWHvw33S3Zzf
-         U7SdJU6zK4XchAbylNk/ml3tyj2iieQz9fOHBkQoqygxn/EY2fCuSqJgpuRJP8B/TSrJ
-         PXOoYDhV0cU5u46s6xK/ZTXjTAYMchaW6nY665XYEuNJSDCwrXO8xw9ysF+FI3Iq3Dyj
-         iHIA==
-X-Gm-Message-State: APjAAAUhMl3BNVTLD0DD1Kn8jQk02LmDkopzhGIJAeqZ52Ci9Ci0mWvO
-        DTqo2wtPqThosFcuKmG+8bHxnQ==
-X-Google-Smtp-Source: APXvYqwOgxbYHMpqkqC3gWBXsA4bJjuqpQhYgLFlfOzXtcvde/8P9p7WJmH+CFgTy0E4SihF5/E3wg==
-X-Received: by 2002:a17:902:a714:: with SMTP id w20mr11924800plq.331.1552774173691;
-        Sat, 16 Mar 2019 15:09:33 -0700 (PDT)
+        bh=Nr4hshi1v1b5XawD0gXLDYtj5LMDTkM84T0wvjGT34Y=;
+        b=ElrLaiEc3dz258OPGTEW2L3hK9r615MyRv6jeHCynnVfujtunv8pQtOLfy00VjgP8U
+         P7n0r/55/d7YcFabJtcedFkFMJ6XL06x8K4J5ZU8op8+TxFM+jALtWL+6d0s8hCBz5nn
+         heDlJ4VhM96EchJFMOccLKN8jP4Hr/i4rd6WYlqDNjoeIIIqs+U5vuMAiYCgF/SkIwRI
+         UUTnpMn55BJeZxJHaRnk6xXzwWfIccTucmCnwrlibXxkubZk/4LH1nPCdfD4nM7h1kLX
+         53bWYWc4HQL6eKoNeR0E/ZiaxqTa1X3FzNP2brxT6xtwbJjMXOj7x0XraPjhifHAuOoh
+         p+kg==
+X-Gm-Message-State: APjAAAXHNzkEDmH2+jd0Es9882zDHSkA0X/7djMv3ZJYf2PVH9OJR4Xm
+        6HIbigxoglSKScUVKBIWHKWVwffeAcI=
+X-Google-Smtp-Source: APXvYqxG2qMKAUU+7LOZUSQqHBNVwGijWdg7uMBcVM0euWQmFvM+5WIZweeel40+yktf3fS0qHM9Jg==
+X-Received: by 2002:a62:b286:: with SMTP id z6mr12048493pfl.106.1552787903230;
+        Sat, 16 Mar 2019 18:58:23 -0700 (PDT)
 Received: from [192.168.10.152] (124-171-140-5.dyn.iinet.net.au. [124.171.140.5])
-        by smtp.gmail.com with ESMTPSA id h184sm11352956pfc.78.2019.03.16.15.09.29
+        by smtp.gmail.com with ESMTPSA id 13sm7777672pgq.66.2019.03.16.18.58.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 16 Mar 2019 15:09:32 -0700 (PDT)
+        Sat, 16 Mar 2019 18:58:22 -0700 (PDT)
 Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
 To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 Cc:     linux-iio@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
@@ -136,8 +136,8 @@ Autocrypt: addr=aik@ozlabs.ru; keydata=
  c7E5M+/NpslPCmYnDjs5qg0/3ihh6XuOGggZQOqrYPC3PnsNs3NxirwOkVPQgO6mXxpuifvJ
  DG9EMkK8IBXnLulqVk54kf7fE0jT/d8RTtJIA92GzsgdK2rpT1MBKKVffjRFGwN7nQVOzi4T
  XrB5p+6ML7Bd84xOEGsj/vdaXmz1esuH7BOZAGEZfLRCHJ0GVCSssg==
-Message-ID: <d37ad7df-cd57-549c-bc5a-0c5f74e1fbde@ozlabs.ru>
-Date:   Sun, 17 Mar 2019 09:09:27 +1100
+Message-ID: <72654c40-b274-08ad-cbe6-de5e9967a6e6@ozlabs.ru>
+Date:   Sun, 17 Mar 2019 12:58:18 +1100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
  Thunderbird/60.5.3
 MIME-Version: 1.0
@@ -163,159 +163,12 @@ On 17/03/2019 05:33, Jonathan Cameron wrote:
 >> I got a quite old Lenovo YOGA 700-11ISK with flip screen and run
 >> fedora29 on it. I found that gnome3 cannot properly detect the screen
 >> orientation and the screen keeps rotating non stop.
->>
->> I opened an issue agains iio-sensor-proxy, not much luck there.
->> https://github.com/hadess/iio-sensor-proxy/issues/220
->>
->> I resumed my debugging and the situation seems improving.
->>
->> The yoga is running fedora29 v4.20.14. The fedora's iio-sensor-proxy
->> still has this problem and so does the iio-sensor-proxy upstream version.
->>
->> Then I commented out &iio_buffer_accel to make &iio_poll_accel work -
->> and things worked nicely. I looked in sysfs and in_accel_?_raw seem to
->> have correct values (same as in the first log below, give or take), all
->> good. Recorded some debug from iio-sensor-proxy:
->>
->> Accel read from IIO on 'accel_3d': -39, -937, -378 (scale 0.009807)
->> Accel sent by driver (quirk applied): -39, -937, -378 (scale: 0.009807)
->> Emitted orientation changed: from undefined to normal
->> No new data available on 'iio:device3'
->> Accel read from IIO on 'accel_3d': -39, -933, -371 (scale 0.009807)
->> Accel sent by driver (quirk applied): -39, -933, -371 (scale: 0.009807)
->> No new data available on 'iio:device3'
->> Accel read from IIO on 'accel_3d': -39, -933, -367 (scale 0.009807)
->> Accel sent by driver (quirk applied): -39, -933, -367 (scale: 0.009807)
->>
->> This is the good log, gnome works fine.
->>
->>
->> Then I recorded debug with the buffer driver enabled:
->>
->> rocess_scan_1: channel_index: 0, chan_name: in_accel_x,
->> channel_data_index: 0 location: 0
->> process_scan_1: channel_index: 1, chan_name: in_accel_y,
->> channel_data_index: 1 location: 4
->> process_scan_1: channel_index: 2, chan_name: in_accel_z,
->> channel_data_index: 2 location: 8
->> Accel read from IIO on 'iio:device4': -15, -898, -375 (scale 0.009807)
->> Accel sent by driver (quirk applied): -15, -898, -375 (scale: 0.009807)
->> Emitted orientation changed: from undefined to normal
->> No new data available on 'iio:device3'
->> process_scan_1: channel_index: 0, chan_name: in_accel_x,
->> channel_data_index: 0 location: 0
->> process_scan_1: channel_index: 1, chan_name: in_accel_y,
->> channel_data_index: 1 location: 4
->> process_scan_1: channel_index: 2, chan_name: in_accel_z,
->> channel_data_index: 2 location: 8
->> Accel read from IIO on 'iio:device4': 20774, 27203, 0 (scale 0.009807)
->> Accel sent by driver (quirk applied): 20774, 27203, 0 (scale: 0.009807)
->> Emitted orientation changed: from normal to left-up
->> No new data available on 'iio:device3'
->> process_scan_1: channel_index: 0, chan_name: in_accel_x,
->> channel_data_index: 0 location: 0
->> process_scan_1: channel_index: 1, chan_name: in_accel_y,
->> channel_data_index: 1 location: 4
->> process_scan_1: channel_index: 2, chan_name: in_accel_z,
->> channel_data_index: 2 location: 8
->> Accel read from IIO on 'iio:device4': -31, -929, -398 (scale 0.009807)
->> Accel sent by driver (quirk applied): -31, -929, -398 (scale: 0.009807)
->> Emitted orientation changed: from left-up to normal
->> No new data available on 'iio:device3'
->> process_scan_1: channel_index: 0, chan_name: in_accel_x,
->> channel_data_index: 0 location: 0
->> process_scan_1: channel_index: 1, chan_name: in_accel_y,
->> channel_data_index: 1 location: 4
->> process_scan_1: channel_index: 2, chan_name: in_accel_z,
->> channel_data_index: 2 location: 8
->> Accel read from IIO on 'iio:device4': -14345, -32024, 12738 (scale 0.009807)
->> Accel sent by driver (quirk applied): -14345, -32024, 12738 (scale:
->> 0.009807)
->>
->> So it is good reading, bad reading, good reading, bad reading, and gnome
->> rotates the screen non stop. No wonder gnome3 goes crazy.
->>
->> I would debug further and even come up with a fix but I failed to find
->> quickly where there reads are handled in the kernel, and what defines
->> these in_accel_?_raw files in sysfs, tried grepping - nothing. Any pointers?
-> 
-> The raw files are built by the IIO core to call the read_raw callback in the
-> each driver.  The path for buffered data is very different. Ultimately
-> it goes through a call to iio_push_to_buffers.
-> 
->>
->>
->> Also, how do I identify my particular 3d sensor? Or it is the same model
->> everywhere? Or it is the driver for all of them?
-> Lots an lots and lots of drivers ;)   But in laptops they are often
-> hid-sensors, or at least there is a little microcontroller that handles
-> the different streams and reformats them as hid sensor records.
 
-And lots and lots of such microcontrollers as well? :)
+While at this topic, when I "convert" the laptop to a tablet (one side
+is screen, the other is keyboard and touchpad), the keyboard gets
+disabled (good) but the touchpad does not (bad). What in
+gnome3/fedora/linux/... does handle this?
 
-
->>
->> Here is dmesg | grep i2c:
-> 
-> First of all, let us check the device. I'm going to guess it's a hid
-> sensor of some type.
-> Could you cat
-> /sys/bus/iio/devices/iio\:device0/name
-
-
-[root@aikyoga iio:device4]# cat /sys/bus/iio/devices/iio\:device0/name
-dev_rotation
-
-
-> When iio-sensor-proxy is running (or after you've killed it) check
-> what the values in the various files in
-> /sys/bus/iio/devices/iio\:device0/scan_elements/*
-
-> are.  One thought is we have some unexpected channels enabled and
-> the code is thinking they are acceleration when they aren't.
-
-
-[root@aikyoga iio:device4]# for i in
-/sys/bus/iio/devices/iio\:device0/scan_elements/* ; do echo $i ; cat $i
-; done
-/sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_en
-0
-/sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_index
-0
-/sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_type
-le:s32/32X4>>0
-
-
-The values do not change whether iio-sensor-proxy is running or not.
-
-> 
->>
->> [root@aikyoga iio:device4]# dmesg | egrep '(i2c|iio)'
->> [    5.389867] i2c_hid i2c-ITE8350:00: i2c-ITE8350:00 supply vdd not
->> found, using dummy regulator
->> [    5.389893] i2c_hid i2c-ITE8350:00: Linked as a consumer to regulator.0
->> [    5.389896] i2c_hid i2c-ITE8350:00: i2c-ITE8350:00 supply vddl not
->> found, using dummy regulator
->> [    5.502896] hid-generic 0018:048D:8350.0002: hidraw1: I2C HID v1.00
->> Device [ITE8350:00 048D:8350] on i2c-ITE8350:00
->> [    5.528455] i2c_hid i2c-SYNA2B23:00: i2c-SYNA2B23:00 supply vdd not
->> found, using dummy regulator
->> [    5.528485] i2c_hid i2c-SYNA2B23:00: Linked as a consumer to regulator.0
->> [    5.528489] i2c_hid i2c-SYNA2B23:00: i2c-SYNA2B23:00 supply vddl not
->> found, using dummy regulator
->> [    5.543440] input: SYNA2B23:00 06CB:2714 Mouse as
->> /devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-6/i2c-SYNA2B23:00/0018:06CB:2714.0003/input/input13
->> [    5.543690] hid-generic 0018:06CB:2714.0003: input,hidraw2: I2C HID
->> v1.00 Mouse [SYNA2B23:00 06CB:2714] on i2c-SYNA2B23:00
->> [    6.053237] input: Synaptics TM2714-002 as
->> /devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-6/i2c-SYNA2B23:00/0018:06CB:2714.0003/input/input16
->> [    6.053444] hid-rmi 0018:06CB:2714.0003: input,hidraw1: I2C HID v1.00
->> Mouse [SYNA2B23:00 06CB:2714] on i2c-SYNA2B23:00
->>
->> Thanks!
->>
->>
-> 
 
 -- 
 Alexey
