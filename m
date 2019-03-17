@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89088C10F05
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7DDBC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4FA7321019
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6E51C21019
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 15:48:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="M8023vFK";
-	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="oZ56cnsy"
+	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="Hw5l19dT";
+	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="Hw5l19dT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727437AbfCQPs1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 11:48:27 -0400
-Received: from node.akkea.ca ([192.155.83.177]:34276 "EHLO node.akkea.ca"
+        id S1727404AbfCQPsN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 11:48:13 -0400
+Received: from node.akkea.ca ([192.155.83.177]:34250 "EHLO node.akkea.ca"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727390AbfCQPsO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Mar 2019 11:48:14 -0400
+        id S1726782AbfCQPsM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 17 Mar 2019 11:48:12 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by node.akkea.ca (Postfix) with ESMTP id 143864E205C;
-        Sun, 17 Mar 2019 15:48:12 +0000 (UTC)
+        by node.akkea.ca (Postfix) with ESMTP id 729AA4E2056;
+        Sun, 17 Mar 2019 15:48:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1552837692; bh=4TFo43pNxPR5bE8qq1l7k0ic0qIUblTF7AASecUk58s=;
+        t=1552837691; bh=rKJyCKYehJxa9HWEDvX0uM4L4oEIc6dpgHKd9QL9f+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=M8023vFKaw/b0KMgCrSJkoEtuoUPgdX4pO8wgDLM5TMh6wU8ZySeIk8ZusT2mKCYg
-         Nj2XxqEkiIvXQjH7/o3Fl2xq02OSNR4UJ7qktDZfDb/HM+05TJ3NvRy386kQh4/l2W
-         KLE3yzLwVYtJCHh1aZhowsqS/YUqcbixRqQldgVM=
+        b=Hw5l19dTWlaOcBOaJMGoai2/NecFH61h1agDTczrHGcfwXjBte4uO6ieSLrV2LZTH
+         75Gx1W78Ae1KwHZehL8uCpged63ycci6XLc0zGXmPg8+50BXMUirN3QKtaSeJwl4tt
+         GR9E4vUTLkt7iLPiHvJgBLabSeP8PGlEHqlloWGQ=
 X-Virus-Scanned: Debian amavisd-new at mail.akkea.ca
 Received: from node.akkea.ca ([127.0.0.1])
         by localhost (mail.akkea.ca [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id WgsHLtUOjcEQ; Sun, 17 Mar 2019 15:48:11 +0000 (UTC)
+        with ESMTP id HvROGue_SdbH; Sun, 17 Mar 2019 15:48:11 +0000 (UTC)
 Received: from midas.localdomain (S0106788a2041785e.gv.shawcable.net [70.66.86.75])
-        by node.akkea.ca (Postfix) with ESMTPSA id 3DACC4E204D;
-        Sun, 17 Mar 2019 15:48:11 +0000 (UTC)
+        by node.akkea.ca (Postfix) with ESMTPSA id A190E4E204B;
+        Sun, 17 Mar 2019 15:48:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1552837691; bh=4TFo43pNxPR5bE8qq1l7k0ic0qIUblTF7AASecUk58s=;
+        t=1552837691; bh=rKJyCKYehJxa9HWEDvX0uM4L4oEIc6dpgHKd9QL9f+I=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=oZ56cnsy1qQ7tkGM25cMmHE7ntOk27CDMmIUY+jazE9wzVJs1qhrd4u6eZPwktHnv
-         pOXMnU1NVuT6XYhppyvheGPJg7Unfp86vj6GtZ5NACdyX5c17wZbis9RWfncO8JrdP
-         TSQgL7u4rE+46cRXA2l1onEFXX5IMmg3SMCdR97c=
+        b=Hw5l19dTWlaOcBOaJMGoai2/NecFH61h1agDTczrHGcfwXjBte4uO6ieSLrV2LZTH
+         75Gx1W78Ae1KwHZehL8uCpged63ycci6XLc0zGXmPg8+50BXMUirN3QKtaSeJwl4tt
+         GR9E4vUTLkt7iLPiHvJgBLabSeP8PGlEHqlloWGQ=
 From:   "Angus Ainslie (Purism)" <angus@akkea.ca>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -54,9 +54,9 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         "Angus Ainslie (Purism)" <angus@akkea.ca>,
         Tomas Novotny <tomas@novotny.cz>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 3/5] dt-bindings: iio: light: add vcnl4000 devicetree bindings
-Date:   Sun, 17 Mar 2019 08:48:00 -0700
-Message-Id: <20190317154802.15174-4-angus@akkea.ca>
+Subject: [PATCH v2 2/5] iio: light: vcnl4000 add devicetree hooks
+Date:   Sun, 17 Mar 2019 08:47:59 -0700
+Message-Id: <20190317154802.15174-3-angus@akkea.ca>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190317154802.15174-1-angus@akkea.ca>
 References: <20190317154802.15174-1-angus@akkea.ca>
@@ -65,42 +65,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document the vishay VCNL4000 devicetree bindings.
+Add an of_match table for devicetree probing.
 
 Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
 ---
- .../bindings/iio/light/vcnl4000.txt           | 22 +++++++++++++++++++
+ drivers/iio/light/vcnl4000.c | 22 ++++++++++++++++++++++
  1 file changed, 22 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/light/vcnl4000.txt b/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
-new file mode 100644
-index 000000000000..4a9d558a412a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
-@@ -0,0 +1,22 @@
-+VISHAY VCNL4000 -  Ambient Light and proximity sensor
-+
-+This driver supports the VCNL4000/10/20 and VCNL4200 chips
-+
-+Required properties:
-+
-+	-compatible: must be one of :
-+        vishay,vcnl4000
-+        vishay,vcnl4010
-+        vishay,vcnl4020
-+        vishay,vcnl4200
-+
-+	-reg: I2C address of the sensor, should be one from below based on the model:
-+        0x13
-+        0x51
-+
-+Example:
-+
-+light-sensor@51 {
-+	compatible = "vishay,vcnl4200";
-+	reg = <0x51>;
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 5295330b65e2..836fa97b4e0c 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -363,9 +363,31 @@ static int vcnl4000_probe(struct i2c_client *client,
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
++static const struct of_device_id vcnl_4000_of_match[] = {
++	{
++		.compatible = "vishay,vcnl4000",
++		.data = "VCNL4000",
++	},
++	{
++		.compatible = "vishay,vcnl4010",
++		.data = "VCNL4010",
++	},
++	{
++		.compatible = "vishay,vcnl4010",
++		.data = "VCNL4020",
++	},
++	{
++		.compatible = "vishay,vcnl4200",
++		.data = "VCNL4200",
++	},
++	{},
 +};
++MODULE_DEVICE_TABLE(of, vcnl4000_of_match);
++
+ static struct i2c_driver vcnl4000_driver = {
+ 	.driver = {
+ 		.name   = VCNL4000_DRV_NAME,
++		.of_match_table = of_match_ptr(vcnl_4000_of_match),
+ 	},
+ 	.probe  = vcnl4000_probe,
+ 	.id_table = vcnl4000_id,
 -- 
 2.17.1
 
