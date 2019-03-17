@@ -2,92 +2,91 @@ Return-Path: <SRS0=squ6=RU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EB72C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:39:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D38EC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:53:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 09F452087C
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:39:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EC6C20857
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:53:21 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DcAsnqgV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726735AbfCQUjI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 16:39:08 -0400
-Received: from mout.kundenserver.de ([212.227.17.10]:33085 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726452AbfCQUjI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 16:39:08 -0400
-Received: from localhost ([46.189.28.64]) by mrelayeu.kundenserver.de
- (mreue107 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M2fM1-1h23ui0Ypj-004CDZ; Sun, 17 Mar 2019 21:38:31 +0100
-Date:   Sun, 17 Mar 2019 21:38:29 +0100
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Cc:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        afaerber@suse.de, arnd@arndb.de, davem@davemloft.net,
-        gregkh@linuxfoundation.org, johan@kernel.org, khilman@baylibre.com,
-        knaack.h@gmx.de, lars@metafoo.de, linux-kernel@vger.kernel.org,
-        martin.blumenstingl@googlemail.com, mchehab+samsung@kernel.org,
-        m.othacehe@gmail.com, nicolas.ferre@microchip.com,
-        pmeerw@pmeerw.net, robh@kernel.org, songqiang1304521@gmail.com,
-        treding@nvidia.com, techsupport@maxbotix.com
-Subject: [PATCH v3 4/4] MAINTAINERS: add maintainer for maxbotix ultrasonic
- driver
-Message-ID: <20190317203827.ocgsj24itlqzqjvc@arbad>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:qPNL7kc4ifmmZvoWQ1c7Q0xrViiHLGYKe4xdT643yPVyEPmTonq
- OGfvCOxVUMJaKI/vpimJr7l5tPKVy5xP/C+7udw5VGRI+Mv7eXr24iYAKe2ccY7KTo5xfTa
- sx94EMhpLvJIskwsROn9HUJ2uOxEXVVdIXN97TZwUvC+gOxxIA9QlgMVdqBOGKlT/RoWvtx
- ixGeAn3k8O9De+M4ZlHPQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:31Xcbi7fnYw=:gTJHj9gWotClFEx0uc7VNk
- j4Hi8yaDqPOG7cOYDUbDukyPU/jhCXxhsrhNYvr5gCpdTMWodloSOs8FwR0+HCO/86ugQZokw
- TSnsnpzkh2dzX7/NSS/llmx1qC0wj5IxlEDg1ZOAQlLIh2jepc+lHVM1KLZ2QEyk5jmbANwQ5
- OioSa/67jUesM2jo8PLu8jwqxzSeFP3cTMXkpgUVekRsvlIGH9kllKAzYXscOYC3OrLPypVUJ
- umbZcpYq+nTfqeSh+FbP6U51NhSdlVpE2wxyP2X2DhE3evzSNQdBi5HjEQA6lBimNwNCStvHl
- ixpCZYNvRAbYZTCL5fLtayVgOzPJcYT+pJ6T1+tYt+y+k4/YYs0zh1eh2kvJF2NTQDQu3x292
- +6te1+f6lh8KnLUI6lGRZ8B5U0QGdZiF8Oz7IE8Te8dsvqoRCSObf5HWPNS4dE4hnSFueFtJI
- qdnBPhlrbOn/O0UUVhxb+xpnY9Qxkv1mNTna/hKVjJRB78gqWy1ojD8KIgX3u3oOn3ZuplYEx
- k0La4ZnMxnreZzNspJ9BGaSXPdFxi+IClSoUhvDMo8vWW8oxRfPBHryxbLm3gSu55hLvpHShk
- B5wKQShco7P3bTf+mQN1SfntIsSVcL45c5x2hGP7I3/unafgBffxaxyU7sJOQqK7dtsbKIRBh
- Ea7DHZecg0XDsM/F2YArF/4b5HjDZRa3E4yBy4wgduiuPPlgLJ7WPGFLO3DIaPwmt26Ikg88A
- 7YQY8XYITL+bry4+1gWRAD7E1sfJwjZXHKWCTQ6bx632/5eFJG+yp6O2NewDTVUqTLy2aupaz
- yKOsM7Op6AHluECfOCMaU/HI42wPEnkDaUQTKCmfMDP2VYx1XkTwvxMqE3PfsflA4piO0h1Bn
- 7qi4fk2nYv4iv92WbPhhHSvQ0D2UiTyCwRdwrAQQThVp06cddc6xaDY6uJYwuPC7QVwOwFqxo
- 7jOro3khI4w==
+        id S1726493AbfCQUxU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 16:53:20 -0400
+Received: from mail-lj1-f196.google.com ([209.85.208.196]:32838 "EHLO
+        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725914AbfCQUxU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 16:53:20 -0400
+Received: by mail-lj1-f196.google.com with SMTP id z7so12232227lji.0
+        for <linux-iio@vger.kernel.org>; Sun, 17 Mar 2019 13:53:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=PctDhGTTLR51kSJgr1rpsEFGwcMNgxZDiIyPFpij1eI=;
+        b=DcAsnqgV6cqa2p6WLOC0NkJmIWGEEBc9rKKkFs5FxwPInPFIMg09Aut+6wFRY4TR6N
+         0pK38QuJVe/Be6Iepu6YrZHoDtG4gk5Wpq0hJiMcsN3gJHSEyUyDrWro/EF90lZ135As
+         shMtvko3NND9FySdExx8X7dVF/bi1cLFySSJOZcTJAtk3RvHZmg/F5t8cTZeWipuvH9K
+         r4c1Jgp7Hg4b8OgbF9yERHrPmaTH3VYxdv+5bYMAU1rB7GCcDmgvMUZIL5CuQ6wd1vKQ
+         9rvtsiwqrmRuAPxC7doh337VCKfG/CaUjCqFx6j3Qa6+72bEK4W0Nv0884LkBdqPUIQW
+         6/qw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=PctDhGTTLR51kSJgr1rpsEFGwcMNgxZDiIyPFpij1eI=;
+        b=Tad3EEf1P5PZgmhsDP2+3Vro7wttwFD/dkGnoTKyJQ3pxgfulTtZXOCQdD0lw/95hq
+         LKqAo1YyWiqajGSz4MFt9x2uzN8jIFOKUAQgWCXZTXW526AqhZeAZrz0mnUC1ZJfKnQq
+         iMKy5JxGIXOCQq1eRY94g32FkRxglVlPfZVZQXLuyOC4z4APK2zir7sE5Szz9JU3sCO6
+         6Psfqkpa8YFa7z56whzdhk//lJBhic1hu7LNNbxuAlN29ds2vRFMpRX8JvYOX2ddB83O
+         NZw2nfoCrXXu9XL8ASWZs2NulRK3b8HmxVFuSa5PKhNh2JaUkLsCdKdxUICfhZKCAKII
+         RuTQ==
+X-Gm-Message-State: APjAAAV/aiNlP9x2V3GZ8bggl4Vh1YyvktU+7DWUxNdJBQm+vHFq3GSZ
+        pBeElUqJqo4z5CkGLtqQg8rmD+q3ZI8=
+X-Google-Smtp-Source: APXvYqxyhi5kvU1qroBktvn+b9l998/lIovbFV4ltRQvHlEgqjqHnwXl8/9kAj6mtBCNDVIZXvFS1w==
+X-Received: by 2002:a2e:8192:: with SMTP id e18mr963727ljg.6.1552855998517;
+        Sun, 17 Mar 2019 13:53:18 -0700 (PDT)
+Received: from ubuntu.localdomain ([95.161.223.243])
+        by smtp.googlemail.com with ESMTPSA id v4sm1725578ljj.80.2019.03.17.13.53.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 17 Mar 2019 13:53:17 -0700 (PDT)
+From:   Vladimir Petrigo <vladimir.petrigo@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Slawomir Stepien <sst@poczta.fm>,
+        Nishad Kamdar <nishadkamdar@gmail.com>,
+        Renato Lui Geh <renatogeh@gmail.com>,
+        devel@driverdev.osuosl.org,
+        Vladimir Petrigo <vladimir.petrigo@gmail.com>
+Subject: [PATCH 0/3] Code formatting clean up
+Date:   Sun, 17 Mar 2019 23:53:09 +0300
+Message-Id: <1552855992-27653-1-git-send-email-vladimir.petrigo@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-add a maintainer for the newly created ultrasonic driver family of maxbotix
+Introduce small code formatting cleaning up in the staging AD drivers
 
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+Vladimir Petrigo (3):
+  staging: iio: ad7192: Fix style issue
+  staging: iio: ad7280a: Add parentheses to macros
+  staging: iio: ad7780: Add parentheses to macros
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dce5c099f43c..fa054f8cc7fb 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9234,6 +9234,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/sound/max9860.txt
- F:	sound/soc/codecs/max9860.*
- 
-+MAXBOTIX ULTRASONIC RANGER IIO DRIVER
-+M:	Andreas Klinger <ak@it-klinger.de>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
-+F:	drivers/iio/proximity/mb1232.c
-+
- MAXIM MAX77802 PMIC REGULATOR DEVICE DRIVER
- M:	Javier Martinez Canillas <javier@dowhile0.org>
- L:	linux-kernel@vger.kernel.org
+ drivers/staging/iio/adc/ad7192.c  | 2 +-
+ drivers/staging/iio/adc/ad7280a.c | 6 +++---
+ drivers/staging/iio/adc/ad7780.c  | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
 -- 
-2.11.0
+2.7.4
+
