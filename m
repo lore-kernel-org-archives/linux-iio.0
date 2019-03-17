@@ -5,33 +5,33 @@ X-Spam-Level:
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82F5FC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C060EC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:28:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5549D2087C
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:20:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8CA4A2087C
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 16:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726784AbfCQQUX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 12:20:23 -0400
-Received: from mga18.intel.com ([134.134.136.126]:4700 "EHLO mga18.intel.com"
+        id S1726731AbfCQQ2a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 12:28:30 -0400
+Received: from mga09.intel.com ([134.134.136.24]:57010 "EHLO mga09.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726735AbfCQQUX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Mar 2019 12:20:23 -0400
+        id S1726677AbfCQQ23 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 17 Mar 2019 12:28:29 -0400
 X-Amp-Result: UNSCANNABLE
 X-Amp-File-Uploaded: False
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Mar 2019 09:20:22 -0700
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 17 Mar 2019 09:26:26 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.58,489,1544515200"; 
-   d="p7s'?scan'208";a="328070654"
-Received: from orsmsx105.amr.corp.intel.com ([10.22.225.132])
-  by fmsmga006.fm.intel.com with ESMTP; 17 Mar 2019 09:20:21 -0700
-Received: from orsmsx154.amr.corp.intel.com (10.22.226.12) by
- ORSMSX105.amr.corp.intel.com (10.22.225.132) with Microsoft SMTP Server (TLS)
- id 14.3.408.0; Sun, 17 Mar 2019 09:20:21 -0700
+   d="p7s'?scan'208";a="141474489"
+Received: from orsmsx106.amr.corp.intel.com ([10.22.225.133])
+  by FMSMGA003.fm.intel.com with ESMTP; 17 Mar 2019 09:26:26 -0700
+Received: from orsmsx113.amr.corp.intel.com (10.22.240.9) by
+ ORSMSX106.amr.corp.intel.com (10.22.225.133) with Microsoft SMTP Server (TLS)
+ id 14.3.408.0; Sun, 17 Mar 2019 09:26:26 -0700
 Received: from orsmsx109.amr.corp.intel.com ([169.254.11.11]) by
- ORSMSX154.amr.corp.intel.com ([169.254.11.183]) with mapi id 14.03.0415.000;
- Sun, 17 Mar 2019 09:20:20 -0700
+ ORSMSX113.amr.corp.intel.com ([169.254.9.249]) with mapi id 14.03.0415.000;
+ Sun, 17 Mar 2019 09:26:25 -0700
 From:   "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
 To:     "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>,
         "aik@ozlabs.ru" <aik@ozlabs.ru>
@@ -39,53 +39,59 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "hadess@hadess.net" <hadess@hadess.net>
 Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
 Thread-Topic: Debugging 3D sensor on Lenovo YOGA 700-11ISK
-Thread-Index: AQHU3CbSy/88SJFrT0i65NWQX4BOOaYPRuKAgAEwvYA=
-Date:   Sun, 17 Mar 2019 16:20:20 +0000
-Message-ID: <f7ddea9d434a3524651ecf1317fdbb75c15c2455.camel@intel.com>
+Thread-Index: AQHU3CbSy/88SJFrT0i65NWQX4BOOaYPhtMAgADyiAA=
+Date:   Sun, 17 Mar 2019 16:26:24 +0000
+Message-ID: <5672c7f23489674f70a1cf2e469d4f161f07204d.camel@intel.com>
 References: <eb33acca-f48d-a689-c5e7-6f9b66f50caf@ozlabs.ru>
          <20190316183348.76573887@archlinux>
-         <d37ad7df-cd57-549c-bc5a-0c5f74e1fbde@ozlabs.ru>
-In-Reply-To: <d37ad7df-cd57-549c-bc5a-0c5f74e1fbde@ozlabs.ru>
+         <72654c40-b274-08ad-cbe6-de5e9967a6e6@ozlabs.ru>
+In-Reply-To: <72654c40-b274-08ad-cbe6-de5e9967a6e6@ozlabs.ru>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: yes
 X-MS-TNEF-Correlator: 
 x-originating-ip: [10.251.139.14]
 Content-Type: multipart/signed; micalg=sha-1;
-        protocol="application/x-pkcs7-signature"; boundary="=-Qmsst7chNQOyni33I0H2"
+        protocol="application/x-pkcs7-signature"; boundary="=-ab6C/i0+HfreiYNuXs01"
 MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
---=-Qmsst7chNQOyni33I0H2
+--=-ab6C/i0+HfreiYNuXs01
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
-[...]
+On Sun, 2019-03-17 at 12:58 +1100, Alexey Kardashevskiy wrote:
+>=20
+> On 17/03/2019 05:33, Jonathan Cameron wrote:
+> >=20
+> > +CC bastien and (guessing it is a HID sensor) Srinivas.
+> > On Sat, 16 Mar 2019 20:16:39 +1100
+> > Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+> >=20
+> > > Hi!
+> > >=20
+> > > I got a quite old Lenovo YOGA 700-11ISK with flip screen and run
+> > > fedora29 on it. I found that gnome3 cannot properly detect the
+> > > screen
+> > > orientation and the screen keeps rotating non stop.
+>=20
+> While at this topic, when I "convert" the laptop to a tablet (one
+> side
+> is screen, the other is keyboard and touchpad), the keyboard gets
+> disabled (good) but the touchpad does not (bad). What in
+> gnome3/fedora/linux/... does handle this?
 
-> [root@aikyoga iio:device4]# for i in
-> /sys/bus/iio/devices/iio\:device0/scan_elements/* ; do echo $i ; cat
-> $i
-> ; done
-> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_en
-> 0
-> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_inde
-> x
-> 0
-> /sys/bus/iio/devices/iio:device0/scan_elements/in_rot_quaternion_type
-> le:s32/32X4>>0
+These are ACPI events. Monitor input events using evetest.
+Touchpad is coming through another hid device, so the user space may
+not be disabling that.
+
 >=20
 >=20
-> The values do not change whether iio-sensor-proxy is running or not.
-iio-sensor-proxy don't use quaternion. It depends on accel-3D for
-rotation.
 
-Thanks,
-Srinivas
-
---=-Qmsst7chNQOyni33I0H2
+--=-ab6C/i0+HfreiYNuXs01
 Content-Type: application/x-pkcs7-signature; name="smime.p7s"
 Content-Disposition: attachment; filename="smime.p7s"
 Content-Transfer-Encoding: base64
@@ -142,12 +148,12 @@ hCtsB4xSboPZMYICFzCCAhMCAQEwgZAweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYD
 VQQHEwtTYW50YSBDbGFyYTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIklu
 dGVsIEV4dGVybmFsIEJhc2ljIElzc3VpbmcgQ0EgNEICEzMAAGknngjvas7THxUAAAAAaScwCQYF
 Kw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDMx
-NzE2MjAwOVowIwYJKoZIhvcNAQkEMRYEFILr34+Nh8yGFA59+u7AMgbu3vCSMA0GCSqGSIb3DQEB
-AQUABIIBAJq6E5WVd+p0vZ5zDSFZ9OJvynoVCWssrw9g2tzHRTb1XRZegm/HiVLOb0SDNE4MZG36
-Rq8yTTdiNpo4c+A+UWUdhmV5B/e0q9ddr9PbGEjo5VGcNm/6YMb6CQ0Hw3iLcCnNcEXrBpzWwlfA
-jwdzMNhkLNc6siLWmkoQItJznLcRpWftMdalpr4Nar1avKPP5M9oDDIdgQPIktsBScStt1CSNl74
-mpORJ4Mow4oM1dAGsES34lqlINITAEZk9cS7kmulIPROqR9Iflr1fzS58Ws7zid93PiflmgZxWOO
-rDOYPa1gRcqXr/kggOAq13MGLGWN0TVPofqj/zBNzF4cGl0AAAAAAAA=
+NzE2MjYyMlowIwYJKoZIhvcNAQkEMRYEFElMrSuZwr4BT+6UpVcQ0nbdTl+MMA0GCSqGSIb3DQEB
+AQUABIIBAKqF+5zUoeL5dSVLDxnjms3uL0Fgm6miAQDFNqltGH4qHrsw6pR5LrRiqgRR6pwdyTY/
+lHgk551EybeUzKoE259pgeftfRpwmVbyCVyuBYtUXm6AX6Z67kBZN8lGYsnL5Q93SCMd+fuwIaaV
+QxAcKhdpGD4fG3tE/yggx2CQycC1n2aIhZ4jjaAShkkwfHyX94mfJwhE3Ou2AZ9uQjZao/570w8L
++Af0afIIG4ECylI8DrJG3vCfqpvEyq7ncKeym78FRvEoDEPyP/kj/ZBBWBuy3YhAwCCGQdMXts7O
+BL7rxbGRB28PKZi3rKI3ZP7O2g9vXcTBhzw710RjB7CwAZ8AAAAAAAA=
 
 
---=-Qmsst7chNQOyni33I0H2--
+--=-ab6C/i0+HfreiYNuXs01--
