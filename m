@@ -2,103 +2,192 @@ Return-Path: <SRS0=squ6=RU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB74C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:53:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C195C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 23:58:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3752120857
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 20:53:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E0C072086A
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Mar 2019 23:58:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="paTjtOn3"
+	dkim=pass (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="eOxIZy3+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727390AbfCQUx0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Mar 2019 16:53:26 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:32841 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725914AbfCQUx0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 16:53:26 -0400
-Received: by mail-lj1-f194.google.com with SMTP id z7so12232352lji.0
-        for <linux-iio@vger.kernel.org>; Sun, 17 Mar 2019 13:53:25 -0700 (PDT)
+        id S1726735AbfCQX6a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Mar 2019 19:58:30 -0400
+Received: from mail-pf1-f172.google.com ([209.85.210.172]:39893 "EHLO
+        mail-pf1-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726229AbfCQX6a (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Mar 2019 19:58:30 -0400
+Received: by mail-pf1-f172.google.com with SMTP id i17so221861pfo.6
+        for <linux-iio@vger.kernel.org>; Sun, 17 Mar 2019 16:58:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=84H3pTWgezBqcL/wIfsJQc/ezB2F1lkLs6yD0mYdpT8=;
-        b=paTjtOn3P+F8N1tRNQnShp/Pr8jf+Inz6px0B6DSfmeAEretr+KdkPt1Atvv7z37hs
-         8LMHKSordnodVOsBsNq5+SjaZ0dbTPHQb+aNL0vYltRkwS2u2Rx0bn77yAhmUTQWmEOR
-         TGGe7uyiBbZ1zKACQV6NgiZHeGJCoFoJguEKJi2K2Ww5fJCGDyXZnRzhcaM9W7m2+FEg
-         skmh9GPybKZJgkuaWfMTkyhq0GysskQkJqFLC4AQBqBOBkcLMVvTFxVWv9ysrQyzcI0Y
-         COTJeCqHXysxEubXrk/AuNysHBZ4EzcnulWFRldcS6ITVjcBNFvjstpNIHirtaAoBzu1
-         NljQ==
+        d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SbFq0ehzbevAqVp9PqlUaTb5c1uFOZPjqU4jLokcx+Y=;
+        b=eOxIZy3+MZAJWk0lmxcbzZEHUHL14UWkNzC8Oka1d6YEEkotTyPlU5xcIdrxTCX+D2
+         0nz6pnhP3NDaFIDE7LqBhWhqnoifA6sjjLRLNBCqD3PgBwJJKBCdr4kB6MmyNIdJaujy
+         xeMRTCcX4tzoX6mwPUtCtTifZeFX+WRQidmm0unoLV/IBTWqFZyZ31cbjOJ+KO5wW87x
+         5YyblWJFCctwtYzoup43ctD2PBwkdyKGb3TLBZuJVMBwWq8BR3zDySP3VQ1sVYt3s246
+         Yaz0apUyJEbAhBNglaNWICMAkW6mEN+bX4aCl87+Hx49IUMBCLHaqYEa04zbL7kRc2te
+         2CkQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=84H3pTWgezBqcL/wIfsJQc/ezB2F1lkLs6yD0mYdpT8=;
-        b=uKfatmgWIehSOztF5ELIWmkiwYF5wfa2jE07cxys1vCEFZmY92Zgl34yb3chf5axsa
-         Po5/wOsmtb1WoGxe6HnxZTRRxFtRvgRGpKoPxuO+eKXuQLOd/qUGMfr3/bilDp0ly5L8
-         /7Wj/9WpHr0Ig9fsgapyJ5+cfROwje6VMO8yhxXSwdoUGpPgTfuRsO/hTpyPk6O7cr/r
-         SZmJN5Gag7TCfWEQ/UqAJ+hx0tftToJffyyFF2codtmPWeDGOSIbjp6AQsQOmfGqwKcx
-         /TIF+rdrsXvZ8QxiMbITINWsALMhkbELgF5iNWNflB2NQRFPUX6iMGSHTyR7ge7KkUTR
-         Ucgg==
-X-Gm-Message-State: APjAAAXkMKN6hxrcOOHjXs0SAIHsZAI+vrRoh7MLolHain+dU66w7fE2
-        H7SnZTGgUFWOiQ7RsKMroa+VqEWpDlc=
-X-Google-Smtp-Source: APXvYqyJqu86aq0w34OAJtLI2sck0PkGVmb9fQl6eSy2tLBeZxZx7ppllocA34zvuO8SlbREqXC3VQ==
-X-Received: by 2002:a2e:899a:: with SMTP id c26mr6924401lji.192.1552856004523;
-        Sun, 17 Mar 2019 13:53:24 -0700 (PDT)
-Received: from ubuntu.localdomain ([95.161.223.243])
-        by smtp.googlemail.com with ESMTPSA id v4sm1725578ljj.80.2019.03.17.13.53.23
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sun, 17 Mar 2019 13:53:24 -0700 (PDT)
-From:   Vladimir Petrigo <vladimir.petrigo@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        Renato Lui Geh <renatogeh@gmail.com>,
-        devel@driverdev.osuosl.org,
-        Vladimir Petrigo <vladimir.petrigo@gmail.com>
-Subject: [PATCH 3/3] staging: iio: ad7780: Add parentheses to macros
-Date:   Sun, 17 Mar 2019 23:53:12 +0300
-Message-Id: <1552855992-27653-4-git-send-email-vladimir.petrigo@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1552855992-27653-1-git-send-email-vladimir.petrigo@gmail.com>
-References: <1552855992-27653-1-git-send-email-vladimir.petrigo@gmail.com>
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=SbFq0ehzbevAqVp9PqlUaTb5c1uFOZPjqU4jLokcx+Y=;
+        b=r37I+vKXEb8sBjkCLohmnH7KpyfMgtdzv/vDHvM6PifTsFXtpYyzI66Nnl/Qa9g/Am
+         SULQSTI0RxI1xekeCRKME9261xNdmODoivGvaZaPqoZXaCnVCIqc+g7r+oaRKbj/l0kj
+         MmMvn06zXUiRg4YYUlIrFGr9jsvjSNe9EkvpMnEnA0wQEVrha1edAFyIxAt6b9OrwhoS
+         pufGDtFzXknkXXEdTAyXOUerq9rV4yDIJpX6K1nChPcEUrKGXlJrWfH1lQB5TEEsjeuD
+         0KOW5pivsYwRu+phn9sgifgWbaMK6eR4qU6Dwnpk2lBHWbsN+18u1EVoYzGb8FaLDruH
+         UOug==
+X-Gm-Message-State: APjAAAXAjQ9iuQhNy6URVmKPKADeuHmmPYc+Et/tVGHXO/meB9h7lNFX
+        k5ad9G1HCFUzJ2K7CecC7MItTQ==
+X-Google-Smtp-Source: APXvYqyNhVxX9rjOTRW3TZ7BYmjnMBX8ajWkHHIudbVZnHpHIddzYXhHwANtfBCjFvslA8r+R3MMhw==
+X-Received: by 2002:a63:5c60:: with SMTP id n32mr14275616pgm.139.1552867109268;
+        Sun, 17 Mar 2019 16:58:29 -0700 (PDT)
+Received: from [10.61.2.175] ([122.99.82.10])
+        by smtp.gmail.com with ESMTPSA id x7sm11966365pgc.7.2019.03.17.16.58.26
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Sun, 17 Mar 2019 16:58:28 -0700 (PDT)
+Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
+To:     "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+        "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>
+References: <eb33acca-f48d-a689-c5e7-6f9b66f50caf@ozlabs.ru>
+ <20190316183348.76573887@archlinux>
+ <72654c40-b274-08ad-cbe6-de5e9967a6e6@ozlabs.ru>
+ <5672c7f23489674f70a1cf2e469d4f161f07204d.camel@intel.com>
+From:   Alexey Kardashevskiy <aik@ozlabs.ru>
+Openpgp: preference=signencrypt
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+ 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
+Message-ID: <c1aebd9f-87a4-73d2-83b5-51a79af64851@ozlabs.ru>
+Date:   Mon, 18 Mar 2019 10:58:24 +1100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.3
+MIME-Version: 1.0
+In-Reply-To: <5672c7f23489674f70a1cf2e469d4f161f07204d.camel@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-- Fix CHECK Macro argument 'wordsize' may be better as '(wordsize)' to avoid precedence issues
-- Fix CHECK Macro argument reuse 'bits' - possible side-effects?
 
-Signed-off-by: Vladimir Petrigo <vladimir.petrigo@gmail.com>
----
- drivers/staging/iio/adc/ad7780.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index c4a8578..2dfd6f8 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -142,7 +142,7 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
- };
- 
- #define AD7780_CHANNEL(bits, wordsize) \
--	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
-+	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, (bits), 32, ((wordsize) - (bits)))
- 
- static const struct ad7780_chip_info ad7780_chip_info_tbl[] = {
- 	[ID_AD7170] = {
+On 18/03/2019 03:26, Pandruvada, Srinivas wrote:
+> On Sun, 2019-03-17 at 12:58 +1100, Alexey Kardashevskiy wrote:
+>>
+>> On 17/03/2019 05:33, Jonathan Cameron wrote:
+>>>
+>>> +CC bastien and (guessing it is a HID sensor) Srinivas.
+>>> On Sat, 16 Mar 2019 20:16:39 +1100
+>>> Alexey Kardashevskiy <aik@ozlabs.ru> wrote:
+>>>
+>>>> Hi!
+>>>>
+>>>> I got a quite old Lenovo YOGA 700-11ISK with flip screen and run
+>>>> fedora29 on it. I found that gnome3 cannot properly detect the
+>>>> screen
+>>>> orientation and the screen keeps rotating non stop.
+>>
+>> While at this topic, when I "convert" the laptop to a tablet (one
+>> side
+>> is screen, the other is keyboard and touchpad), the keyboard gets
+>> disabled (good) but the touchpad does not (bad). What in
+>> gnome3/fedora/linux/... does handle this?
+> 
+> These are ACPI events. Monitor input events using evetest.
+> Touchpad is coming through another hid device, so the user space may
+> not be disabling that.
+
+So you are saying that the keyboard gets disabled by ACPI with no
+interaction from Linux?
+
+Anyway, if I want to catch such event and disable touchpad, how do I
+catch transition to the tablet mode and back?
+
+
+
 -- 
-2.7.4
-
+Alexey
