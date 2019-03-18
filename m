@@ -4,130 +4,98 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD0A9C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 08:33:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBFFC43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 08:55:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 81CAB2082F
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 08:33:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 97D4D2083D
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 08:55:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F/lqLcAe"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RTTOQbWZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726449AbfCRId6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Mar 2019 04:33:58 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:33414 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726335AbfCRId6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 04:33:58 -0400
-Received: by mail-oi1-f193.google.com with SMTP id e22so5195317oiy.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 Mar 2019 01:33:57 -0700 (PDT)
+        id S1726744AbfCRIzH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Mar 2019 04:55:07 -0400
+Received: from mail-io1-f42.google.com ([209.85.166.42]:42097 "EHLO
+        mail-io1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726291AbfCRIzH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 04:55:07 -0400
+Received: by mail-io1-f42.google.com with SMTP id c4so13715046ioh.9
+        for <linux-iio@vger.kernel.org>; Mon, 18 Mar 2019 01:55:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=KjTmLOyBJcSZsptQ+qGjBLdq44IrHRacKzE0HPEXiM8=;
-        b=F/lqLcAeMWOZt66ITQZzkQcYdOOSaOPckqfUqVtfrCd6qR3Xl7+ZbORnN2PFwo17W3
-         Y8eNHaxcgnLgtqGslHyZiEso4/pIVUwdwkxBcmGq8/nmV8R2NGZy2t5nWGasHhHJCUen
-         oePLhRojvDR8YhDE+yVqHIPF5kKP78sJFqCc8cjaeqL5NFmN+KBNE6ZIUo03W8ksZVmq
-         0/uPmTR8aprQaI2xU1bysCjBWiIez2wDahpZMo4y2q2mVniHJvKl9m00aymfAR8MAr8F
-         /hzNpY0hgd6FzNgEygX6w7H6axrGid9u8eLbRzuQoFzk99tlXnht79Qasky5xhoBgtvy
-         wY3Q==
+         :cc;
+        bh=CgskdyDtcM1KSlqFhdzgKZ2A3FZZy3h7BdCnWHyudwI=;
+        b=RTTOQbWZFnXZyoLsiu+EWHQNfQMurLMySx6P0TdnWXvt+RS1MB8x7/HZzgZxfnVwFq
+         5ssyzOp9fii6uFfKDfTMjBVpDeJWHIdCUkXK6HUWVVFN4LEMO352yetmXDmoUoQ5KccR
+         HE6XNbp/f1Lo/8fb6zsrh5rcBMngtgrYbEBWnkGab3jYml0WUCakJ5COjIurKI2UK5mJ
+         RTBgB60b7Hk2E0TcgWGEGdo5A1Ccgh9chyuZPnxasgjuUKS2mhyx3YGGc9QaZfhQnn7G
+         G6aq0Uh3LLpsV1mWBatgGSF90IC00ZoxghhPjjB9Kv1thfRUoNZ9yLoeHJWc6bTSP5sn
+         gxTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=KjTmLOyBJcSZsptQ+qGjBLdq44IrHRacKzE0HPEXiM8=;
-        b=SbqWneYOxJ704Ukt1wQdA3SkAPaV60+W81dzBMavyu9+/43+N2Lu/RapqLOA0oDChW
-         9UyNi7Wa45/4W3r+PXQ0wTl7kf+bXDDDuJoAaEUuzafqwc2hrmYVuj3uFTEts6pMjBCZ
-         je8fMx3HFOj0QONuqz+GrGNexIlonS9umXAlQ+3nX0Cg4ZtErFKTuRzwBvk/i2KlyrCS
-         sN0xOVsr4CVPkwNGhkiaRB2+Va6UWXnwkJLG9qNHcnpOkH/eTmuxI53X06WgBuAMgVLa
-         +NSO2P1YD5ywMkbFTaWbTqq+37CBSNTy/8Rjihp4H/U5MEFRp0XWssFeXIK3PoFCIzXV
-         z9kQ==
-X-Gm-Message-State: APjAAAW562z5Ir1gePu2hD+7kDdlWH61rVTkkEqo1NcwQeZ398rRY4vE
-        TXtJHMNgkyejeb8DUSLXDmR0IO8lplzw29/gntY=
-X-Google-Smtp-Source: APXvYqxEbVbSvbyI/P38gLOcOA7EJIh4/K49f0n+TunFugecWro0gJQXArHB9geqUZ9MKPmwvYQk6p4sjgmXgOXepC8=
-X-Received: by 2002:aca:ba06:: with SMTP id k6mr9787775oif.159.1552898036788;
- Mon, 18 Mar 2019 01:33:56 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=CgskdyDtcM1KSlqFhdzgKZ2A3FZZy3h7BdCnWHyudwI=;
+        b=UT8EJ1XoJrKnDTKt/zuL34qfKjD3lf8exEn7H2ko637A37D71m8fSj0QZproh349gm
+         0m7foRGMLrcc0ybp9DWcpnI4SIsbI7F6frZtA+YvvE6e05DX8/6z86zemmG/vdbr0dNS
+         useqduFEkqiaKlVB6L1XLBJDDYJ4JT+72e6QdXZZ9sNsCMCGZB6Lk97jpkJuhMIfWXOg
+         MsCdksWiALeo5TJFe1eNRqcLzVwr6vw59YfpP+CsEEouT3UoZ8oBtV2VDzS1EyeKuSjM
+         BtXmM/MVGtofZlYiaOUiYzqLoH4ukdMWYAceShjuL57HwuyaYC6hrGCzTTtvea3RJ1OS
+         WNhw==
+X-Gm-Message-State: APjAAAWnivT+Mz0i3HdC9Z3Vb4AKy5I8PLJUiRXeKj9c/q0T8Sk3dH/r
+        0tSFAnY6e1INH2BP1f5NDT5NoPU+QqiQK8Zzij47cgpH
+X-Google-Smtp-Source: APXvYqw3KgXxypAqA6HsIZX8Ha1Xu7rtC41HX2HBT3LNy/bAUJUEglbDMlJ7tMXr+3eUIB0bSdoScaEezcaCFHyucys=
+X-Received: by 2002:a6b:4e13:: with SMTP id c19mr9286731iob.96.1552899306679;
+ Mon, 18 Mar 2019 01:55:06 -0700 (PDT)
 MIME-Version: 1.0
 References: <CAHRz_ybdmvgntoVjvSizUKLKETJasHyucoPM56v2Xrf=3K30Hw@mail.gmail.com>
- <20190317171848.GA7105@himanshu-Vostro-3559>
-In-Reply-To: <20190317171848.GA7105@himanshu-Vostro-3559>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 18 Mar 2019 10:33:44 +0200
-Message-ID: <CA+U=Dspj8V13kGf0GFBbOgPwkSDnC+Oh43rDzmWvHgcKk2vmkg@mail.gmail.com>
+ <20190316191351.2373d46d@archlinux>
+In-Reply-To: <20190316191351.2373d46d@archlinux>
+From:   Karuna Grewal <karunagrewal98@gmail.com>
+Date:   Mon, 18 Mar 2019 14:24:54 +0530
+Message-ID: <CAHRz_yZTRvz1zxHdZU9v9_RCw6k=ThgU4Qs5FKps7vxMD1=Xfg@mail.gmail.com>
 Subject: Re: [GSoC] AD7292 driver project
-To:     Himanshu Jha <himanshujha199640@gmail.com>
-Cc:     Karuna Grewal <karunagrewal98@gmail.com>,
-        linux-iio@vger.kernel.org, dragos.bogdan@analog.com,
-        alexandru.ardelean@analog.com
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 17, 2019 at 7:19 PM Himanshu Jha
-<himanshujha199640@gmail.com> wrote:
->
-> On Sat, Mar 16, 2019 at 04:09:36PM +0530, Karuna Grewal wrote:
-> > Hello,
-> >
-> > I'm interested in working on the AD7292 driver for Linux kernel as a
-> > part of the GSoC project. I've previous experience working with device
-> > drivers and am also familiar with couple of Linux kernel's subsystems.
-> > For a starting point I wonder if someone can point out some tasks
-> > which I could work upon as the project page doesn't elaborate much
-> > about it.
->
+Apologies for the delayed response.
 
-Curios.
-Is this project listed anywhere ?
-If so, can we get a link ?
+On Sun, Mar 17, 2019 at 12:43 AM Jonathan Cameron
+<jic23@jic23.retrosnub.co.uk> wrote:
+> We have been trying to remove all direct use of the mlock mutex
+> in struct iio_dev from drivers.  It has one very specific and tightly
+> defined purpose to protect drivers from trying to do things they
+> shouldn't when changing from a polled mode to one which is interrupt
+> driven (DIRECT to BUFFERED).  Unfortunately we weren't great at
+> enforcing the distinction in the early days of IIO.
 
-Thanks
-Alex
+> The solution is almost always to replace the use of mlock with
+> either calls to iio_claim_direct_mode (if it is an open coded
+> version of what the mlock is intended for) or to introduce a
+> lock within the driver itself with well defined scope covering
+> whatever mlock was incorrectly being used for.
+>
+> Another traditional area for people first getting involved in IIO is
+> to look at the drivers that are still in drivers/staging/iio
+> but to be honest there are not many left there now so that isn't
+> as fruitful as it used to be.  If you do want to look at those, do
+> send a message to the list to confirm no one else is currently
+> looking a the same driver.
+Thanks for your suggestions.
+I'd tried this staging driver cleanup long time back and I didn't find
+much of the cleanup patches.
+So, preferably I'll go ahead with the former suggestion on "removal of
+mlock_mutex".
+Meanwhile, I'll get started with testing this on a sensor as well.
+I'll get back to you with any doubts while working on these.
 
-> Agreed!
->
-> You may try the following:
-> https://kernelnewbies.org/IIO_tasks
->
-> Please don't send these Tasks on iio list.
->
-> > In case the idea is to start working on the driver itself I'd like to
-> > discuss about the same.
->
-> My personal opinion: Try to get atleast a small patchset accepted in
-> the kernel. It helps you get familiar with all the tools and how kernel
-> cycle moves. I strongly agree with Jonathan on 'setup', whatever
-> hardware you plan to use in the project say., how would you build/test
-> kernel on Rpi or beagle or QEMU or diolan ? dt-overlay, acpi
-> enumeration ?
->
-> Pray that AD7292 doesn't have an unusual SPI interface.
-> Otherwise you end up like me ;)
->
-> If you really want to try some sensor, I would recommend https://www.tano=
-tis.com/
-> to buy them as they have cheap and low duty-taxes+GST+ ...
->
-> In my case I ordered from mouser IIRC:
-> =E2=82=B9 1,459.58(sensor) + =E2=82=B9 1,750.58(duty taxes + other taxes =
-from Indian
-> Gov.)
->
-> Yeah, taxes are more than the actual sensor! Surreal :/
->
-> Feel free to query mentors and community with questions -- I would
-> join you too.
->
->
-> Goodluck!
-> --
-> Himanshu Jha
-> Undergraduate Student
-> Department of Electronics & Communication
-> Guru Tegh Bahadur Institute of Technology
+Regards,
+Karuna
