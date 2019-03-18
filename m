@@ -4,41 +4,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AD15C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 15:14:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A6CC10F00
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 15:14:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2619820879
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 15:14:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69C2C20879
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 15:14:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="JRrArYqT"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="Ay5gYn1J"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726846AbfCRPOe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Mar 2019 11:14:34 -0400
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:24518 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726922AbfCRPO3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 11:14:29 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1552922065;
+        id S1727182AbfCRPO3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Mar 2019 11:14:29 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:28756 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726846AbfCRPO2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 11:14:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1552922064;
         s=strato-dkim-0002; d=goldelico.com;
         h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
         X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=Q3RUb7P1cGK2igFBjOnY9Ll/7tHJl44vEFOExhuJ7SY=;
-        b=JRrArYqTH9toWthTJ6av5T/5hW5e3WgBMn6ArJSaY4oPdw2HclCBXFluaZQN5ydMjy
-        27xlqRDpBUnKliO7+ef5gYVIHQd7ghGIbampjqYP7wt0RC0SGH7vJGnIfmpJFU3qeg5a
-        BSz2X8oquPmiuGQfk0+e6uUspP35mj0+4l6F6isf+Nsgy9jZYeCEQtvcc/GJmcvkxBba
-        ZxvOLvWkHVRSR7+jO7ew0KC9Znec49iW2pAeJqpKw99ZEZs4AEk2l5wVjuY/JbKDk/6B
-        JTMxtloY5VrcZe9NF7QW9Kx5zSreAwQETMBVKUwyTOD92sS0Xr86fcAogYGaO+bydWfa
-        2EOg==
+        bh=j7SYXFUSkqgfNHNWK++iiYXdouzoJ8CzH1JtDVotwvE=;
+        b=Ay5gYn1Jxh7W3kONb4bJv+kWBJY7QORgYrtQcUnAm95GNhgQDaZQqnWaITrXsvhRfY
+        Kq8i5NrKTiN2em5XR2VUbapvOxbDa55JZx2ybm09fDZNAwTUIeBV3ZHYXlp9KDMR4nlc
+        nilWGkBQ4rHMfK5fHgolJLU45J0gCWZMaRDv2Oo3ZG+iBQj/5W98jifZiFOqBIq/rxPw
+        FQdJPdFnnTDo9E+iB4tHrRcmsS4hd2ken+OZXUWaWn3cx0pWtBrW9kk99KbAfPLroME6
+        BmHV8bDSkizb8fjXSCWQ6ef/ozXCNDLiEWghNA3gR1h2692N7FziTL8xJ/Kr/pVRD745
+        3P/w==
 X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M7O2CKNdGj"
 X-RZG-CLASS-ID: mo00
 Received: from iMac.fritz.box
         by smtp.strato.de (RZmta 44.16 DYNA|AUTH)
-        with ESMTPSA id h04075v2IFEHEjj
+        with ESMTPSA id h04075v2IFEGEji
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
         (Client did not present a certificate);
-        Mon, 18 Mar 2019 16:14:17 +0100 (CET)
+        Mon, 18 Mar 2019 16:14:16 +0100 (CET)
 From:   "H. Nikolaus Schaller" <hns@goldelico.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Rob Herring <robh+dt@kernel.org>,
@@ -50,9 +51,9 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
         kernel@pyra-handheld.com
-Subject: [PATCH 2/2] dt-bindings: iio: add Bosch BMG160 gyroscope sensor
-Date:   Mon, 18 Mar 2019 16:14:15 +0100
-Message-Id: <1664da2e7a9cb687eece1f27501d275219bcc4ed.1552922054.git.hns@goldelico.com>
+Subject: [PATCH 1/2] iio: gyro: bmg160: add device tree compatibility table
+Date:   Mon, 18 Mar 2019 16:14:14 +0100
+Message-Id: <090c92487ada60e81fca341ef24e5de33a11ec4b.1552922054.git.hns@goldelico.com>
 X-Mailer: git-send-email 2.19.1
 In-Reply-To: <cover.1552922054.git.hns@goldelico.com>
 References: <cover.1552922054.git.hns@goldelico.com>
@@ -63,40 +64,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Define bindings for "bosch,bmg160" and "bosch,bmi055_gyro".
+Add of_match_table.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- .../bindings/iio/gyroscope/bmg160.txt         | 20 +++++++++++++++++++
- 1 file changed, 20 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt
+ drivers/iio/gyro/bmg160_i2c.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt b/Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt
-new file mode 100644
-index 000000000000..78e18a1e9c1d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt
-@@ -0,0 +1,20 @@
-+* Bosch BMG160 triaxial rotation sensor (gyroscope)
-+
-+Required properties:
-+
-+  - compatible : should be "bosch,bmg160" or "bosch,bmi055_gyro"
-+  - reg : the I2C address of the sensor (0x69)
-+
-+Optional properties:
-+
-+  - interrupts : interrupt mapping for GPIO IRQ, it should by configured with
-+		flags IRQ_TYPE_EDGE_RISING
-+
-+Example:
-+
-+bmg160@69 {
-+	compatible = "bosch,bmg160";
-+	reg = <0x69>;
-+	interrupt-parent = <&gpio6>;
-+	interrupts = <18 (IRQ_TYPE_EDGE_RISING)>;
+diff --git a/drivers/iio/gyro/bmg160_i2c.c b/drivers/iio/gyro/bmg160_i2c.c
+index 90126a5a7663..934a092134f0 100644
+--- a/drivers/iio/gyro/bmg160_i2c.c
++++ b/drivers/iio/gyro/bmg160_i2c.c
+@@ -54,10 +54,19 @@ static const struct i2c_device_id bmg160_i2c_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, bmg160_i2c_id);
+ 
++static const struct of_device_id bmg160_of_match[] = {
++	{ .compatible = "bosch,bmg160" },
++	{ .compatible = "bosch,bmi055_gyro" },
++	{ }
 +};
++
++MODULE_DEVICE_TABLE(of, bmg160_of_match);
++
+ static struct i2c_driver bmg160_i2c_driver = {
+ 	.driver = {
+ 		.name	= "bmg160_i2c",
+ 		.acpi_match_table = ACPI_PTR(bmg160_acpi_match),
++		.of_match_table = bmg160_of_match,
+ 		.pm	= &bmg160_pm_ops,
+ 	},
+ 	.probe		= bmg160_i2c_probe,
 -- 
 2.19.1
 
