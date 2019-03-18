@@ -2,86 +2,100 @@ Return-Path: <SRS0=+BiV=RV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B21C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 18:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC81FC43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 20:39:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9A24B20863
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 18:38:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1552934305;
-	bh=s91BsIfTGiC9zXegJ6Tw4HMNjINgGzjfkAwn1RMmiKI=;
-	h=Date:From:To:Subject:References:In-Reply-To:List-ID:From;
-	b=eVLBbQLshiwWAN1sMZAuXqPEmh/X5/Bzj1310GLCvpzUpCKyXhJdC/Dh+4Fozd2PP
-	 P8jw5dbEdhBp1BiqC79Ek77E1y0cWKehZrqnZFi4D38E6XvYPJMerFkNyYqb/BG7sM
-	 VeHSahC1v554T/Y9GIm8q0wBIgOZX+I+NjB9gSyo=
+	by mail.kernel.org (Postfix) with ESMTP id E6D332085A
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 20:39:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="O5SwATPg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726777AbfCRSiZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Mar 2019 14:38:25 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:42910 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726771AbfCRSiZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 14:38:25 -0400
-Received: by mail-wr1-f65.google.com with SMTP id n9so14163072wrr.9;
-        Mon, 18 Mar 2019 11:38:23 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=f4z6tXM76JhG3eUGSwIrcOrox0AugsjGgYBZnS+uayY=;
-        b=IU0p81HlwBZwUBb76t6gb3rL8aY21QAIcI8a15n+tvzHeJXFiS77c0u9/3hbGcBZw/
-         mMLWJTuYr5U2/2Ma3diYnzAzjCtpGbnsrGQ0dxcxFiH07HhrnRGSzcAVZnU92f168qGe
-         NEGokv1BBaFgoQE63FiTpfxBsz12wjyG/cmrTqrCbyS0X40UEcCs388wCtWh/fhpWu4I
-         Jq2ck3RmVqzmY/SfDs3k/Xq9IVty7bnnNgTfHdVEopNaUAWzKEdFr6OeVkvQnP3+aMGh
-         5eSWHWNOMpDgQX3jhqbvabUaZhsiNjA18nRUir7/KY820i8N8iNciy6Ok9apz0gFINid
-         6KlQ==
-X-Gm-Message-State: APjAAAWF+Tl8wtx8HnwKI1a9i/H2YPlaMIM0cWwigo3sO6WjlTEPjuR0
-        289S2SqERMXKBY/EbWX4zjIUaF+W
-X-Google-Smtp-Source: APXvYqwVeQFDNKPfI0IZk76UoZNeHVTEvIJYOYc4AOvS7VdO4FNVhiHYm7TuyDk/UDykBm3xV9ijFA==
-X-Received: by 2002:a5d:5506:: with SMTP id b6mr12766845wrv.33.1552934302727;
-        Mon, 18 Mar 2019 11:38:22 -0700 (PDT)
-Received: from kozik-lap ([194.230.155.153])
-        by smtp.googlemail.com with ESMTPSA id z20sm205926wma.9.2019.03.18.11.38.21
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 18 Mar 2019 11:38:21 -0700 (PDT)
-Date:   Mon, 18 Mar 2019 19:38:19 +0100
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S1727415AbfCRUji (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Mar 2019 16:39:38 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:29476 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727208AbfCRUji (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 16:39:38 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1552941575;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
+        Subject:Sender;
+        bh=agDPtw/n3WgKjUcJkDAc7cIWnYbVRIjr3hxno9Di6O4=;
+        b=O5SwATPgeUoj7tWcbd1RhktTHEIMrODySadH3/GK0c8wtT3sijrfwmsenHBl855CNd
+        ODUoNvVyZFS+aqH4eA+nfMAfKZqBq8B9P/tPKsVpy/0KdSNR1mXknC7CW7FzOGhhAh33
+        4nQ09jrz9gp9GN7snPZDl1hS7CbwEoUiq/6hIz3Mxls58KxmqyLr9rZmUMvRNEjzz/uB
+        ydyHF9DKfHzhVn4z0TVhekOp5xQa172+KZd2/aeB38Y3X52g5wY1Nld+IjXvCOjSmuuD
+        83JVafyEhWzCWi8ZIs2LJ3hcVC20O5YiIXEP9bDJ5gjGpEUEQrHLyGhlw2Q7ILENKSDd
+        ikAQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UNf2M7O2CKNdGj"
+X-RZG-CLASS-ID: mo00
+Received: from iMac.fritz.box
+        by smtp.strato.de (RZmta 44.16 DYNA|AUTH)
+        with ESMTPSA id h04075v2IKdYFyi
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Mon, 18 Mar 2019 21:39:34 +0100 (CET)
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     letux-kernel@openphoenux.org, kernel@pyra-handheld.com,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kukjin Kim <kgene@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] ARM: dts: exynos: Use ADC for Exynos4x12 on Exyno4412
-Message-ID: <20190318183819.GA4730@kozik-lap>
-References: <20190212174550.4383-1-krzk@kernel.org>
- <20190212174550.4383-3-krzk@kernel.org>
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: [RFC 0/4] iio-input-bridge so that accelerometers which only have an iio driver can still present evdev input events
+Date:   Mon, 18 Mar 2019 21:39:30 +0100
+Message-Id: <cover.1552941573.git.hns@goldelico.com>
+X-Mailer: git-send-email 2.19.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190212174550.4383-3-krzk@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Feb 12, 2019 at 06:45:50PM +0100, Krzysztof Kozlowski wrote:
-> Exynos4412 should use "samsung,exynos4212-adc" compatible to report
-> proper number of (four) channels.
-> 
-> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> ---
->  arch/arm/boot/dts/exynos4412.dtsi | 2 +-
+Some user spaces (e.g. some Android) use /dev/input/event* for handling the 3D
+position of the device with respect to the center of gravity (earth). This can
+be used for gaming input, rotation of screens etc.
 
-Applied.
+This should be the standard because this interface is an abstraction of how
+this data is acquired from sensor chips. Sensor chips may be connected through
+different interfaces and in different positions. They may also have different
+parameters. And, if a chip is replaced by a different one, the values reported
+by the device position interface should remain the same.
 
-Best regards,
-Krzysztof
+But nowadays, new accelerometer chips usually just get iio drivers and rarely
+an evdev input driver.
+
+Therefore we need something like a protocol stack: input device vs. raw data.
+It can be seen as a similar layering like TCP/IP vs. bare Ethernet. Or keyboard
+input events vs. raw gpio or raw USB access.
+
+This patch set bridges the gap between raw iio data and the input device abstraction
+so that accelerometer measurements can also be presented as X/Y/Z accelerometer
+channels (INPUT_PROP_ACCELEROMETER) through /dev/input/event*.
+
+
+H. Nikolaus Schaller (4):
+  iio: input-bridge: optionally bridge iio acceleometers to create a
+    /dev/input
+  iio: input-bridge: add iio-input-bridge to Makefile
+  iio: input-bridge: add IIO_INPUT_BRIDGE kernel config option
+  iio: input-bridge: make the iio-input-bridge driver called by iio-core
+
+ drivers/iio/Kconfig                    |   7 +
+ drivers/iio/Makefile                   |   1 +
+ drivers/iio/industrialio-core.c        |  12 +
+ drivers/iio/industrialio-inputbridge.c | 420 +++++++++++++++++++++++++
+ drivers/iio/industrialio-inputbridge.h |  28 ++
+ 5 files changed, 468 insertions(+)
+ create mode 100644 drivers/iio/industrialio-inputbridge.c
+ create mode 100644 drivers/iio/industrialio-inputbridge.h
+
+-- 
+2.19.1
 
