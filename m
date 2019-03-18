@@ -2,97 +2,86 @@ Return-Path: <SRS0=+BiV=RV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73F6AC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 17:54:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B21C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 18:38:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4602E2133F
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 17:54:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9A24B20863
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Mar 2019 18:38:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1552934305;
+	bh=s91BsIfTGiC9zXegJ6Tw4HMNjINgGzjfkAwn1RMmiKI=;
+	h=Date:From:To:Subject:References:In-Reply-To:List-ID:From;
+	b=eVLBbQLshiwWAN1sMZAuXqPEmh/X5/Bzj1310GLCvpzUpCKyXhJdC/Dh+4Fozd2PP
+	 P8jw5dbEdhBp1BiqC79Ek77E1y0cWKehZrqnZFi4D38E6XvYPJMerFkNyYqb/BG7sM
+	 VeHSahC1v554T/Y9GIm8q0wBIgOZX+I+NjB9gSyo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726806AbfCRRyF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Mar 2019 13:54:05 -0400
-Received: from gateway31.websitewelcome.com ([192.185.143.43]:35108 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726626AbfCRRyF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 13:54:05 -0400
-X-Greylist: delayed 1258 seconds by postgrey-1.27 at vger.kernel.org; Mon, 18 Mar 2019 13:54:05 EDT
-Received: from cm16.websitewelcome.com (cm16.websitewelcome.com [100.42.49.19])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 1862F3528
-        for <linux-iio@vger.kernel.org>; Mon, 18 Mar 2019 12:33:07 -0500 (CDT)
-Received: from gator4166.hostgator.com ([108.167.133.22])
-        by cmsmtp with SMTP
-        id 5w8Jh3elq4FKp5w8JhHqgT; Mon, 18 Mar 2019 12:33:07 -0500
-X-Authority-Reason: nr=8
-Received: from [189.250.104.39] (port=43060 helo=embeddedor)
-        by gator4166.hostgator.com with esmtpa (Exim 4.91)
-        (envelope-from <gustavo@embeddedor.com>)
-        id 1h5w8H-001GT6-O4; Mon, 18 Mar 2019 12:33:05 -0500
-Date:   Mon, 18 Mar 2019 12:33:02 -0500
-From:   "Gustavo A. R. Silva" <gustavo@embeddedor.com>
+        id S1726777AbfCRSiZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Mar 2019 14:38:25 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:42910 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726771AbfCRSiZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Mar 2019 14:38:25 -0400
+Received: by mail-wr1-f65.google.com with SMTP id n9so14163072wrr.9;
+        Mon, 18 Mar 2019 11:38:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=f4z6tXM76JhG3eUGSwIrcOrox0AugsjGgYBZnS+uayY=;
+        b=IU0p81HlwBZwUBb76t6gb3rL8aY21QAIcI8a15n+tvzHeJXFiS77c0u9/3hbGcBZw/
+         mMLWJTuYr5U2/2Ma3diYnzAzjCtpGbnsrGQ0dxcxFiH07HhrnRGSzcAVZnU92f168qGe
+         NEGokv1BBaFgoQE63FiTpfxBsz12wjyG/cmrTqrCbyS0X40UEcCs388wCtWh/fhpWu4I
+         Jq2ck3RmVqzmY/SfDs3k/Xq9IVty7bnnNgTfHdVEopNaUAWzKEdFr6OeVkvQnP3+aMGh
+         5eSWHWNOMpDgQX3jhqbvabUaZhsiNjA18nRUir7/KY820i8N8iNciy6Ok9apz0gFINid
+         6KlQ==
+X-Gm-Message-State: APjAAAWF+Tl8wtx8HnwKI1a9i/H2YPlaMIM0cWwigo3sO6WjlTEPjuR0
+        289S2SqERMXKBY/EbWX4zjIUaF+W
+X-Google-Smtp-Source: APXvYqwVeQFDNKPfI0IZk76UoZNeHVTEvIJYOYc4AOvS7VdO4FNVhiHYm7TuyDk/UDykBm3xV9ijFA==
+X-Received: by 2002:a5d:5506:: with SMTP id b6mr12766845wrv.33.1552934302727;
+        Mon, 18 Mar 2019 11:38:22 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.153])
+        by smtp.googlemail.com with ESMTPSA id z20sm205926wma.9.2019.03.18.11.38.21
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 18 Mar 2019 11:38:21 -0700 (PDT)
+Date:   Mon, 18 Mar 2019 19:38:19 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel Drake <drake@endlessm.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Subject: [PATCH] iio: st_accel: remove unnecessary comparison of unsigned
- integer with < 0
-Message-ID: <20190318173302.GA10761@embeddedor>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Kukjin Kim <kgene@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] ARM: dts: exynos: Use ADC for Exynos4x12 on Exyno4412
+Message-ID: <20190318183819.GA4730@kozik-lap>
+References: <20190212174550.4383-1-krzk@kernel.org>
+ <20190212174550.4383-3-krzk@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
+In-Reply-To: <20190212174550.4383-3-krzk@kernel.org>
 User-Agent: Mutt/1.9.4 (2018-02-28)
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - gator4166.hostgator.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - embeddedor.com
-X-BWhitelist: no
-X-Source-IP: 189.250.104.39
-X-Source-L: No
-X-Exim-ID: 1h5w8H-001GT6-O4
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (embeddedor) [189.250.104.39]:43060
-X-Source-Auth: gustavo@embeddedor.com
-X-Email-Count: 12
-X-Source-Cap: Z3V6aWRpbmU7Z3V6aWRpbmU7Z2F0b3I0MTY2Lmhvc3RnYXRvci5jb20=
-X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There is no need to compare *val* with < 0 because such comparison
-of an unsigned value is always false.
+On Tue, Feb 12, 2019 at 06:45:50PM +0100, Krzysztof Kozlowski wrote:
+> Exynos4412 should use "samsung,exynos4212-adc" compatible to report
+> proper number of (four) channels.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> ---
+>  arch/arm/boot/dts/exynos4412.dtsi | 2 +-
 
-Fix this by removing such comparison.
+Applied.
 
-Addresses-Coverity-ID: 1443919 ("Unsigned compared against 0")
-Fixes: f38ab20b749d ("iio: st_accel: use ACPI orientation data")
-Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
----
- drivers/iio/accel/st_accel_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index a3c0916479fa..9930edf423bf 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -992,7 +992,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev,
- 			goto out;
- 
- 		val = elements[i].integer.value;
--		if (val < 0 || val > 2)
-+		if (val > 2)
- 			goto out;
- 
- 		/* Avoiding full matrix multiplication, we simply reorder the
--- 
-2.21.0
+Best regards,
+Krzysztof
 
