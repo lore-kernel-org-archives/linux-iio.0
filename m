@@ -2,111 +2,225 @@ Return-Path: <SRS0=iua/=RX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C98CC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 07:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 376BDC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 11:54:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6941A2146E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 07:43:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D92482184E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 11:54:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="S6gbB+Ne"
+	dkim=pass (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="RtEdHo6q"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726957AbfCTHnE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Mar 2019 03:43:04 -0400
-Received: from aserp2130.oracle.com ([141.146.126.79]:49506 "EHLO
-        aserp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726303AbfCTHnD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Mar 2019 03:43:03 -0400
-Received: from pps.filterd (aserp2130.oracle.com [127.0.0.1])
-        by aserp2130.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x2K7dTQa111187;
-        Wed, 20 Mar 2019 07:42:30 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2018-07-02;
- bh=ioBlqRWDKJIvY+NVYukHn0j7IxGrvjMjkLrRUqvwhGQ=;
- b=S6gbB+NeVrFMSHiok13OTmFFFg+MgDQWCftp9c2Fd53QWiVxR07KkrtzKXDi8+7pMdI6
- pADi/8c4zaSQlbPXml0wKXJnf7C9/tHUGjH5+P4wck+pbBUILC3NkbB+p7bBlhuq0thw
- xcSsaqHrU+jny2/wqtcDYQpC5+MLJm8FGTxWfaQuCXjsvi9YIs+nRxcEbMl2d0L2pHDA
- v6TZV5NIQwdlJEJ07oMj7zEKAgTjxNQLx8DUg1Znk6XLeqFS29/9cxp6C0WD1gj2H/65
- OE8KMzK/v3A0kXjPFM7AJyT9jqSPWQmT/zEjeIv7yUh0TVlPUZKlOVUWozNPlU/yXnNB 0w== 
-Received: from userv0021.oracle.com (userv0021.oracle.com [156.151.31.71])
-        by aserp2130.oracle.com with ESMTP id 2r8pnes982-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Mar 2019 07:42:30 +0000
-Received: from userv0122.oracle.com (userv0122.oracle.com [156.151.31.75])
-        by userv0021.oracle.com (8.14.4/8.14.4) with ESMTP id x2K7gO8s016429
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 20 Mar 2019 07:42:24 GMT
-Received: from abhmp0005.oracle.com (abhmp0005.oracle.com [141.146.116.11])
-        by userv0122.oracle.com (8.14.4/8.14.4) with ESMTP id x2K7gNir009964;
-        Wed, 20 Mar 2019 07:42:23 GMT
-Received: from kadam (/10.175.25.169)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 20 Mar 2019 00:42:22 -0700
-Date:   Wed, 20 Mar 2019 10:42:17 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Vladimir Petrigo <vladimir.petrigo@gmail.com>
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Nishad Kamdar <nishadkamdar@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Renato Lui Geh <renatogeh@gmail.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 3/3] staging: iio: ad7780: Add parentheses to macros
-Message-ID: <20190320074217.GE2202@kadam>
-References: <1552855992-27653-1-git-send-email-vladimir.petrigo@gmail.com>
- <1552855992-27653-4-git-send-email-vladimir.petrigo@gmail.com>
+        id S1726538AbfCTLy6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Mar 2019 07:54:58 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43978 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726448AbfCTLy6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Mar 2019 07:54:58 -0400
+Received: by mail-pg1-f194.google.com with SMTP id l11so1624385pgq.10
+        for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2019 04:54:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
+        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4Q6A9tgi4ujiNWHNfW2rCbJhjj7jqCjs/1iGgn4T4E4=;
+        b=RtEdHo6q/QAlsiwaoSSMNF6yFPeqWRLM6y8SCZpLqkK83qmZG09DzNNmdjGrwuzcuL
+         K9+4LCbJhaZScXFb7nMDrro1xAN9OGDvnBa9x7BQnXS5eQUkjmE7ANLgyihoLmNfbn8L
+         smamxPE9U8Jw0CGAIC8VkUIxQAUI9s63u+YWPymh7zN+r4jhwqF3mAXrzPH04xPK0/JS
+         o8SrCcpZGntGyeYA6rc89GOXOuJ4Fn1xGBz2IZz5oZHmsXdXhgxXvjRVP9St0pS1MY5j
+         9oU3AB5X5RgSOhBxtTgsEl+fVheFpExr7KiP71W2gxkIa4h/SgHt11GmYV3xIg8a3dGv
+         qBqw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
+         :message-id:date:user-agent:mime-version:in-reply-to
+         :content-language:content-transfer-encoding;
+        bh=4Q6A9tgi4ujiNWHNfW2rCbJhjj7jqCjs/1iGgn4T4E4=;
+        b=QzIYlgdIPAbZcR61b6Ku3gGXbALT3DP/jZrt0gy+WvUbMylaoS7ZtcRahstKDpWGv6
+         c11R8qFFFYlrKTiJPRNl0XF2z1g/6H1klWx1GtBeU+3aMeSR/uAppOMFHZMZXbg18ZD7
+         RuPXVJUVfd0DIG9lQs+ljVtzftdMx+NJwrTski92k4XyxxDJb4nZjqsWGMakX2L0uHOC
+         GKVCX0qoXmpY3mOv2Hz17AXH+7SuoktN/HPSXNB8z6W7+AMfGij+k2l3B0QRT3TZtK8X
+         csbTYNgr3+T7oyzSL9mW33WgYFxVPmMDJzpsCd85mjHDXWIQi0/jmprmigur57aS2cMB
+         gNXw==
+X-Gm-Message-State: APjAAAVn3szNy7K720bZdswdWQQI2P0ffJFJoGbW4XU9/QREv5dxXJLE
+        5DJm4IwvZ9aYE88k/7ItIESYbdo49Ro=
+X-Google-Smtp-Source: APXvYqxYqAFiHvCLaQ/QvDbyFV0Wblr0kUNvkTwpJhvIAEQMiX8Vt//CIHgqAq/j8N2IwRhjX/T9Yg==
+X-Received: by 2002:a17:902:784d:: with SMTP id e13mr1278149pln.152.1553082896668;
+        Wed, 20 Mar 2019 04:54:56 -0700 (PDT)
+Received: from [192.168.10.152] (124-171-140-5.dyn.iinet.net.au. [124.171.140.5])
+        by smtp.gmail.com with ESMTPSA id n15sm6124437pgc.92.2019.03.20.04.54.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 20 Mar 2019 04:54:55 -0700 (PDT)
+Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
+To:     "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+        "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>
+References: <eb33acca-f48d-a689-c5e7-6f9b66f50caf@ozlabs.ru>
+ <20190316183348.76573887@archlinux>
+ <b6795bcb3d1c6e827c256e9c16f6e582b29358fc.camel@intel.com>
+ <7552a684-90ea-2066-ef0b-4e25390b6d55@ozlabs.ru>
+ <d5773e94-043a-2971-2c2e-2838b9105df2@ozlabs.ru>
+ <5a5759a9217baf5eb1fe0c63414260f0d599e81c.camel@intel.com>
+ <9785207e-10e0-3960-04e7-505068653be7@ozlabs.ru>
+ <34ec1627c21f1582cea9088598014820d0eaef5d.camel@intel.com>
+ <2655ef88-da2a-1c7e-045c-c61e821329fd@ozlabs.ru>
+ <363e9402f977dcc56098924a3e230cd8e0ce846a.camel@intel.com>
+From:   Alexey Kardashevskiy <aik@ozlabs.ru>
+Openpgp: preference=signencrypt
+Autocrypt: addr=aik@ozlabs.ru; keydata=
+ mQINBE+rT0sBEADFEI2UtPRsLLvnRf+tI9nA8T91+jDK3NLkqV+2DKHkTGPP5qzDZpRSH6mD
+ EePO1JqpVuIow/wGud9xaPA5uvuVgRS1q7RU8otD+7VLDFzPRiRE4Jfr2CW89Ox6BF+q5ZPV
+ /pS4v4G9eOrw1v09lEKHB9WtiBVhhxKK1LnUjPEH3ifkOkgW7jFfoYgTdtB3XaXVgYnNPDFo
+ PTBYsJy+wr89XfyHr2Ev7BB3Xaf7qICXdBF8MEVY8t/UFsesg4wFWOuzCfqxFmKEaPDZlTuR
+ tfLAeVpslNfWCi5ybPlowLx6KJqOsI9R2a9o4qRXWGP7IwiMRAC3iiPyk9cknt8ee6EUIxI6
+ t847eFaVKI/6WcxhszI0R6Cj+N4y+1rHfkGWYWupCiHwj9DjILW9iEAncVgQmkNPpUsZECLT
+ WQzMuVSxjuXW4nJ6f4OFHqL2dU//qR+BM/eJ0TT3OnfLcPqfucGxubhT7n/CXUxEy+mvWwnm
+ s9p4uqVpTfEuzQ0/bE6t7dZdPBua7eYox1AQnk8JQDwC3Rn9kZq2O7u5KuJP5MfludMmQevm
+ pHYEMF4vZuIpWcOrrSctJfIIEyhDoDmR34bCXAZfNJ4p4H6TPqPh671uMQV82CfTxTrMhGFq
+ 8WYU2AH86FrVQfWoH09z1WqhlOm/KZhAV5FndwVjQJs1MRXD8QARAQABtCRBbGV4ZXkgS2Fy
+ ZGFzaGV2c2tpeSA8YWlrQG96bGFicy5ydT6JAjgEEwECACIFAk+rT0sCGwMGCwkIBwMCBhUI
+ AgkKCwQWAgMBAh4BAheAAAoJEIYTPdgrwSC5fAIP/0wf/oSYaCq9PhO0UP9zLSEz66SSZUf7
+ AM9O1rau1lJpT8RoNa0hXFXIVbqPPKPZgorQV8SVmYRLr0oSmPnTiZC82x2dJGOR8x4E01gK
+ TanY53J/Z6+CpYykqcIpOlGsytUTBA+AFOpdaFxnJ9a8p2wA586fhCZHVpV7W6EtUPH1SFTQ
+ q5xvBmr3KkWGjz1FSLH4FeB70zP6uyuf/B2KPmdlPkyuoafl2UrU8LBADi/efc53PZUAREih
+ sm3ch4AxaL4QIWOmlE93S+9nHZSRo9jgGXB1LzAiMRII3/2Leg7O4hBHZ9Nki8/fbDo5///+
+ kD4L7UNbSUM/ACWHhd4m1zkzTbyRzvL8NAVQ3rckLOmju7Eu9whiPueGMi5sihy9VQKHmEOx
+ OMEhxLRQbzj4ypRLS9a+oxk1BMMu9cd/TccNy0uwx2UUjDQw/cXw2rRWTRCxoKmUsQ+eNWEd
+ iYLW6TCfl9CfHlT6A7Zmeqx2DCeFafqEd69DqR9A8W5rx6LQcl0iOlkNqJxxbbW3ddDsLU/Y
+ r4cY20++WwOhSNghhtrroP+gouTOIrNE/tvG16jHs8nrYBZuc02nfX1/gd8eguNfVX/ZTHiR
+ gHBWe40xBKwBEK2UeqSpeVTohYWGBkcd64naGtK9qHdo1zY1P55lHEc5Uhlk743PgAnOi27Q
+ ns5zuQINBE+rT0sBEACnV6GBSm+25ACT+XAE0t6HHAwDy+UKfPNaQBNTTt31GIk5aXb2Kl/p
+ AgwZhQFEjZwDbl9D/f2GtmUHWKcCmWsYd5M/6Ljnbp0Ti5/xi6FyfqnO+G/wD2VhGcKBId1X
+ Em/B5y1kZVbzcGVjgD3HiRTqE63UPld45bgK2XVbi2+x8lFvzuFq56E3ZsJZ+WrXpArQXib2
+ hzNFwQleq/KLBDOqTT7H+NpjPFR09Qzfa7wIU6pMNF2uFg5ihb+KatxgRDHg70+BzQfa6PPA
+ o1xioKXW1eHeRGMmULM0Eweuvpc7/STD3K7EJ5bBq8svoXKuRxoWRkAp9Ll65KTUXgfS+c0x
+ gkzJAn8aTG0z/oEJCKPJ08CtYQ5j7AgWJBIqG+PpYrEkhjzSn+DZ5Yl8r+JnZ2cJlYsUHAB9
+ jwBnWmLCR3gfop65q84zLXRQKWkASRhBp4JK3IS2Zz7Nd/Sqsowwh8x+3/IUxVEIMaVoUaxk
+ Wt8kx40h3VrnLTFRQwQChm/TBtXqVFIuv7/Mhvvcq11xnzKjm2FCnTvCh6T2wJw3de6kYjCO
+ 7wsaQ2y3i1Gkad45S0hzag/AuhQJbieowKecuI7WSeV8AOFVHmgfhKti8t4Ff758Z0tw5Fpc
+ BFDngh6Lty9yR/fKrbkkp6ux1gJ2QncwK1v5kFks82Cgj+DSXK6GUQARAQABiQIfBBgBAgAJ
+ BQJPq09LAhsMAAoJEIYTPdgrwSC5NYEP/2DmcEa7K9A+BT2+G5GXaaiFa098DeDrnjmRvumJ
+ BhA1UdZRdfqICBADmKHlJjj2xYo387sZpS6ABbhrFxM6s37g/pGPvFUFn49C47SqkoGcbeDz
+ Ha7JHyYUC+Tz1dpB8EQDh5xHMXj7t59mRDgsZ2uVBKtXj2ZkbizSHlyoeCfs1gZKQgQE8Ffc
+ F8eWKoqAQtn3j4nE3RXbxzTJJfExjFB53vy2wV48fUBdyoXKwE85fiPglQ8bU++0XdOr9oyy
+ j1llZlB9t3tKVv401JAdX8EN0++ETiOovQdzE1m+6ioDCtKEx84ObZJM0yGSEGEanrWjiwsa
+ nzeK0pJQM9EwoEYi8TBGhHC9ksaAAQipSH7F2OHSYIlYtd91QoiemgclZcSgrxKSJhyFhmLr
+ QEiEILTKn/pqJfhHU/7R7UtlDAmFMUp7ByywB4JLcyD10lTmrEJ0iyRRTVfDrfVP82aMBXgF
+ tKQaCxcmLCaEtrSrYGzd1sSPwJne9ssfq0SE/LM1J7VdCjm6OWV33SwKrfd6rOtvOzgadrG6
+ 3bgUVBw+bsXhWDd8tvuCXmdY4bnUblxF2B6GOwSY43v6suugBttIyW5Bl2tXSTwP+zQisOJo
+ +dpVG2pRr39h+buHB3NY83NEPXm1kUOhduJUA17XUY6QQCAaN4sdwPqHq938S3EmtVhsuQIN
+ BFq54uIBEACtPWrRdrvqfwQF+KMieDAMGdWKGSYSfoEGGJ+iNR8v255IyCMkty+yaHafvzpl
+ PFtBQ/D7Fjv+PoHdFq1BnNTk8u2ngfbre9wd9MvTDsyP/TmpF0wyyTXhhtYvE267Av4X/BQT
+ lT9IXKyAf1fP4BGYdTNgQZmAjrRsVUW0j6gFDrN0rq2J9emkGIPvt9rQt6xGzrd6aXonbg5V
+ j6Uac1F42ESOZkIh5cN6cgnGdqAQb8CgLK92Yc8eiCVCH3cGowtzQ2m6U32qf30cBWmzfSH0
+ HeYmTP9+5L8qSTA9s3z0228vlaY0cFGcXjdodBeVbhqQYseMF9FXiEyRs28uHAJEyvVZwI49
+ CnAgVV/n1eZa5qOBpBL+ZSURm8Ii0vgfvGSijPGbvc32UAeAmBWISm7QOmc6sWa1tobCiVmY
+ SNzj5MCNk8z4cddoKIc7Wt197+X/X5JPUF5nQRvg3SEHvfjkS4uEst9GwQBpsbQYH9MYWq2P
+ PdxZ+xQE6v7cNB/pGGyXqKjYCm6v70JOzJFmheuUq0Ljnfhfs15DmZaLCGSMC0Amr+rtefpA
+ y9FO5KaARgdhVjP2svc1F9KmTUGinSfuFm3quadGcQbJw+lJNYIfM7PMS9fftq6vCUBoGu3L
+ j4xlgA/uQl/LPneu9mcvit8JqcWGS3fO+YeagUOon1TRqQARAQABiQRsBBgBCAAgFiEEZSrP
+ ibrORRTHQ99dhhM92CvBILkFAlq54uICGwICQAkQhhM92CvBILnBdCAEGQEIAB0WIQQIhvWx
+ rCU+BGX+nH3N7sq0YorTbQUCWrni4gAKCRDN7sq0YorTbVVSD/9V1xkVFyUCZfWlRuryBRZm
+ S4GVaNtiV2nfUfcThQBfF0sSW/aFkLP6y+35wlOGJE65Riw1C2Ca9WQYk0xKvcZrmuYkK3DZ
+ 0M9/Ikkj5/2v0vxz5Z5w/9+IaCrnk7pTnHZuZqOh23NeVZGBls/IDIvvLEjpD5UYicH0wxv+
+ X6cl1RoP2Kiyvenf0cS73O22qSEw0Qb9SId8wh0+ClWet2E7hkjWFkQfgJ3hujR/JtwDT/8h
+ 3oCZFR0KuMPHRDsCepaqb/k7VSGTLBjVDOmr6/C9FHSjq0WrVB9LGOkdnr/xcISDZcMIpbRm
+ EkIQ91LkT/HYIImL33ynPB0SmA+1TyMgOMZ4bakFCEn1vxB8Ir8qx5O0lHMOiWMJAp/PAZB2
+ r4XSSHNlXUaWUg1w3SG2CQKMFX7vzA31ZeEiWO8tj/c2ZjQmYjTLlfDK04WpOy1vTeP45LG2
+ wwtMA1pKvQ9UdbYbovz92oyZXHq81+k5Fj/YA1y2PI4MdHO4QobzgREoPGDkn6QlbJUBf4To
+ pEbIGgW5LRPLuFlOPWHmIS/sdXDrllPc29aX2P7zdD/ivHABslHmt7vN3QY+hG0xgsCO1JG5
+ pLORF2N5XpM95zxkZqvYfC5tS/qhKyMcn1kC0fcRySVVeR3tUkU8/caCqxOqeMe2B6yTiU1P
+ aNDq25qYFLeYxg67D/4w/P6BvNxNxk8hx6oQ10TOlnmeWp1q0cuutccblU3ryRFLDJSngTEu
+ ZgnOt5dUFuOZxmMkqXGPHP1iOb+YDznHmC0FYZFG2KAc9pO0WuO7uT70lL6larTQrEneTDxQ
+ CMQLP3qAJ/2aBH6SzHIQ7sfbsxy/63jAiHiT3cOaxAKsWkoV2HQpnmPOJ9u02TPjYmdpeIfa
+ X2tXyeBixa3i/6dWJ4nIp3vGQicQkut1YBwR7dJq67/FCV3Mlj94jI0myHT5PIrCS2S8LtWX
+ ikTJSxWUKmh7OP5mrqhwNe0ezgGiWxxvyNwThOHc5JvpzJLd32VDFilbxgu4Hhnf6LcgZJ2c
+ Zd44XWqUu7FzVOYaSgIvTP0hNrBYm/E6M7yrLbs3JY74fGzPWGRbBUHTZXQEqQnZglXaVB5V
+ ZhSFtHopZnBSCUSNDbB+QGy4B/E++Bb02IBTGl/JxmOwG+kZUnymsPvTtnNIeTLHxN/H/ae0
+ c7E5M+/NpslPCmYnDjs5qg0/3ihh6XuOGggZQOqrYPC3PnsNs3NxirwOkVPQgO6mXxpuifvJ
+ DG9EMkK8IBXnLulqVk54kf7fE0jT/d8RTtJIA92GzsgdK2rpT1MBKKVffjRFGwN7nQVOzi4T
+ XrB5p+6ML7Bd84xOEGsj/vdaXmz1esuH7BOZAGEZfLRCHJ0GVCSssg==
+Message-ID: <38b94dd1-e907-238c-a821-de03f6077fbe@ozlabs.ru>
+Date:   Wed, 20 Mar 2019 22:54:51 +1100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.3
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1552855992-27653-4-git-send-email-vladimir.petrigo@gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9200 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
- definitions=main-1903200065
+In-Reply-To: <363e9402f977dcc56098924a3e230cd8e0ce846a.camel@intel.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 17, 2019 at 11:53:12PM +0300, Vladimir Petrigo wrote:
-> - Fix CHECK Macro argument 'wordsize' may be better as '(wordsize)' to avoid precedence issues
-> - Fix CHECK Macro argument reuse 'bits' - possible side-effects?
+
+
+On 20/03/2019 07:46, Pandruvada, Srinivas wrote:
+> On Tue, 2019-03-19 at 12:14 +1100, Alexey Kardashevskiy wrote:
+>>
 > 
-> Signed-off-by: Vladimir Petrigo <vladimir.petrigo@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7780.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> [...]
 > 
-> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index c4a8578..2dfd6f8 100644
-> --- a/drivers/staging/iio/adc/ad7780.c
-> +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -142,7 +142,7 @@ static const struct ad_sigma_delta_info ad7780_sigma_delta_info = {
->  };
+>> Refer to iio buffer interface for how to read from buffers by
+>>> enabling
+>>> channels. tools/iio/iio_generic_buffer.c is an example how to use.
+>>
+>>
+>> No, my question was about the kernel side of the device, not the
+>> userspace, it is late to look there - the data seems to be broken. I
+>> am
+>> interested to see how these buffers are filled with data and compare
+>> to
+>> what linux exposes via in_accel_x_raw sysops properties. Oh well, it
+>> is
+>> debugging time them.
+> kernel processing is done in multiple layers, from transport->hid-
+> sensor-hub.c->hid-sensor-accel-3d.c
+> The kernel is just sending what FW is sending in buffer mode.
+> FW is sending 0,0,0 for x,y,z. This is the way FW is telling that it
+> completed a batch. Basically the user space could have gone to sleep by
+> informing that don't bother it for x amount of time or samples. It
+> seems that this platform is enabling batch mode, whether user space
+> wants it or not.
+> 
+> Try this change iio-sensor-proxy. From raw data 
+> 
+> diff --git a/src/drv-iio-buffer-accel.c b/src/drv-iio-buffer-accel.c
+> index ebf94de..84a83a3 100644
+> --- a/src/drv-iio-buffer-accel.c
+> +++ b/src/drv-iio-buffer-accel.c
+> @@ -65,6 +65,11 @@ process_scan (IIOSensorData data, DrvData *or_data)
+>         tmp.y = accel_y;
+>         tmp.z = accel_z;
 >  
->  #define AD7780_CHANNEL(bits, wordsize) \
-> -	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, bits, 32, wordsize - bits)
-> +	AD_SD_CHANNEL_NO_SAMP_FREQ(1, 0, 0, (bits), 32, ((wordsize) - (bits)))
-                                            ^^^^^^
-These parentheses are not required.
+> +       if (tmp.x == 0 && tmp.y == 0 && tmp.z == 0) {
+> +               g_debug("batch complete\n");
+> +               return 0;
+> +       }
+> +
 
-This doesn't fix the "argument reuse" issue...  It's not a reall issue
-though, and it isn't like this a core macro so it doesn't really matter
-too much.
+I tried, it did not help - worked for a little bit - turned laptop 3
+times - and then started rotating it endlessly. The problem is not with
+zero samples (or not just with them) but with wrong samples too.
 
-regards,
-dan carpenter
 
+>         if (!apply_mount_matrix (or_data->mount_matrix, &tmp))
+>                 g_warning ("Could not apply mount matrix");
+>  
+> 
+> Thanks,
+> Srinivas
+> 
+> 
+>>
+>>
+>>
+
+-- 
+Alexey
