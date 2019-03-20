@@ -2,225 +2,128 @@ Return-Path: <SRS0=iua/=RX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 376BDC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 11:54:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 127EEC10F05
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 14:53:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D92482184E
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 11:54:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D4E732184E
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 14:53:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ozlabs-ru.20150623.gappssmtp.com header.i=@ozlabs-ru.20150623.gappssmtp.com header.b="RtEdHo6q"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="YVvGcCai"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726538AbfCTLy6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Mar 2019 07:54:58 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43978 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726448AbfCTLy6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Mar 2019 07:54:58 -0400
-Received: by mail-pg1-f194.google.com with SMTP id l11so1624385pgq.10
-        for <linux-iio@vger.kernel.org>; Wed, 20 Mar 2019 04:54:57 -0700 (PDT)
+        id S1727495AbfCTOxz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Mar 2019 10:53:55 -0400
+Received: from mail-eopbgr780083.outbound.protection.outlook.com ([40.107.78.83]:16565
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728155AbfCTOxz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Mar 2019 10:53:55 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=ozlabs-ru.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:openpgp:autocrypt:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4Q6A9tgi4ujiNWHNfW2rCbJhjj7jqCjs/1iGgn4T4E4=;
-        b=RtEdHo6q/QAlsiwaoSSMNF6yFPeqWRLM6y8SCZpLqkK83qmZG09DzNNmdjGrwuzcuL
-         K9+4LCbJhaZScXFb7nMDrro1xAN9OGDvnBa9x7BQnXS5eQUkjmE7ANLgyihoLmNfbn8L
-         smamxPE9U8Jw0CGAIC8VkUIxQAUI9s63u+YWPymh7zN+r4jhwqF3mAXrzPH04xPK0/JS
-         o8SrCcpZGntGyeYA6rc89GOXOuJ4Fn1xGBz2IZz5oZHmsXdXhgxXvjRVP9St0pS1MY5j
-         9oU3AB5X5RgSOhBxtTgsEl+fVheFpExr7KiP71W2gxkIa4h/SgHt11GmYV3xIg8a3dGv
-         qBqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:openpgp:autocrypt
-         :message-id:date:user-agent:mime-version:in-reply-to
-         :content-language:content-transfer-encoding;
-        bh=4Q6A9tgi4ujiNWHNfW2rCbJhjj7jqCjs/1iGgn4T4E4=;
-        b=QzIYlgdIPAbZcR61b6Ku3gGXbALT3DP/jZrt0gy+WvUbMylaoS7ZtcRahstKDpWGv6
-         c11R8qFFFYlrKTiJPRNl0XF2z1g/6H1klWx1GtBeU+3aMeSR/uAppOMFHZMZXbg18ZD7
-         RuPXVJUVfd0DIG9lQs+ljVtzftdMx+NJwrTski92k4XyxxDJb4nZjqsWGMakX2L0uHOC
-         GKVCX0qoXmpY3mOv2Hz17AXH+7SuoktN/HPSXNB8z6W7+AMfGij+k2l3B0QRT3TZtK8X
-         csbTYNgr3+T7oyzSL9mW33WgYFxVPmMDJzpsCd85mjHDXWIQi0/jmprmigur57aS2cMB
-         gNXw==
-X-Gm-Message-State: APjAAAVn3szNy7K720bZdswdWQQI2P0ffJFJoGbW4XU9/QREv5dxXJLE
-        5DJm4IwvZ9aYE88k/7ItIESYbdo49Ro=
-X-Google-Smtp-Source: APXvYqxYqAFiHvCLaQ/QvDbyFV0Wblr0kUNvkTwpJhvIAEQMiX8Vt//CIHgqAq/j8N2IwRhjX/T9Yg==
-X-Received: by 2002:a17:902:784d:: with SMTP id e13mr1278149pln.152.1553082896668;
-        Wed, 20 Mar 2019 04:54:56 -0700 (PDT)
-Received: from [192.168.10.152] (124-171-140-5.dyn.iinet.net.au. [124.171.140.5])
-        by smtp.gmail.com with ESMTPSA id n15sm6124437pgc.92.2019.03.20.04.54.53
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 20 Mar 2019 04:54:55 -0700 (PDT)
-Subject: Re: Debugging 3D sensor on Lenovo YOGA 700-11ISK
-To:     "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
-        "jic23@jic23.retrosnub.co.uk" <jic23@jic23.retrosnub.co.uk>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "hadess@hadess.net" <hadess@hadess.net>
-References: <eb33acca-f48d-a689-c5e7-6f9b66f50caf@ozlabs.ru>
- <20190316183348.76573887@archlinux>
- <b6795bcb3d1c6e827c256e9c16f6e582b29358fc.camel@intel.com>
- <7552a684-90ea-2066-ef0b-4e25390b6d55@ozlabs.ru>
- <d5773e94-043a-2971-2c2e-2838b9105df2@ozlabs.ru>
- <5a5759a9217baf5eb1fe0c63414260f0d599e81c.camel@intel.com>
- <9785207e-10e0-3960-04e7-505068653be7@ozlabs.ru>
- <34ec1627c21f1582cea9088598014820d0eaef5d.camel@intel.com>
- <2655ef88-da2a-1c7e-045c-c61e821329fd@ozlabs.ru>
- <363e9402f977dcc56098924a3e230cd8e0ce846a.camel@intel.com>
-From:   Alexey Kardashevskiy <aik@ozlabs.ru>
-Openpgp: preference=signencrypt
-Autocrypt: addr=aik@ozlabs.ru; keydata=
- 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
-Message-ID: <38b94dd1-e907-238c-a821-de03f6077fbe@ozlabs.ru>
-Date:   Wed, 20 Mar 2019 22:54:51 +1100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.5.3
-MIME-Version: 1.0
-In-Reply-To: <363e9402f977dcc56098924a3e230cd8e0ce846a.camel@intel.com>
-Content-Type: text/plain; charset=utf-8
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=Caqpy6mt5/gYmw2qL4VRN3xXv/dF5u4+TLK5nSOlWrw=;
+ b=YVvGcCaiPQ/lAskyMcsFDg0cFhdYwikA5qFZFZLGrO0DPyLBNQGgKHwlBEI4pvmtB/CCFVqYpIT4TkBGM3kHjH/iJhV+Ch6AVoAPIvyYExNyX3b8NWqAxMHdBoLBMybN9ZqOnuGK56HVa4PENLBUzptAeNBICiiu7vOVMOlv54M=
+Received: from MWHPR03CA0059.namprd03.prod.outlook.com (2603:10b6:301:3b::48)
+ by DM2PR03MB557.namprd03.prod.outlook.com (2a01:111:e400:241b::24) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1709.14; Wed, 20 Mar
+ 2019 14:53:53 +0000
+Received: from CY1NAM02FT038.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::208) by MWHPR03CA0059.outlook.office365.com
+ (2603:10b6:301:3b::48) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1709.14 via Frontend
+ Transport; Wed, 20 Mar 2019 14:53:52 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.57)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT038.mail.protection.outlook.com (10.152.74.217) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1730.9
+ via Frontend Transport; Wed, 20 Mar 2019 14:53:52 +0000
+Received: from NWD2HUBCAS9.ad.analog.com (nwd2hubcas9.ad.analog.com [10.64.69.109])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x2KErpU4005001
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Wed, 20 Mar 2019 07:53:51 -0700
+Received: from NWD2MBX5.ad.analog.com ([fe80::49e:7a9f:284e:1a49]) by
+ NWD2HUBCAS9.ad.analog.com ([fe80::44a2:871b:49ab:ea47%12]) with mapi id
+ 14.03.0415.000; Wed, 20 Mar 2019 10:53:51 -0400
+From:   "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>
+To:     "jic23@kernel.org" <jic23@kernel.org>
+CC:     "lars@metafoo.de" <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>
+Subject: IIO channel type for status/error flag indicators
+Thread-Topic: IIO channel type for status/error flag indicators
+Thread-Index: AQHU3yy6U4ZOFSV/8kGchvXXyG7r0A==
+Date:   Wed, 20 Mar 2019 14:53:50 +0000
+Message-ID: <1553093626.13791.37.camel@analog.com>
+Accept-Language: en-US
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.50.1.179]
+x-adiroutedonprem: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <AE49445E0D2DE34ABE2CE6878CCDFA57@analog.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(376002)(396003)(39860400002)(346002)(2980300002)(189003)(199004)(86362001)(4326008)(14454004)(5640700003)(478600001)(106466001)(72206003)(26005)(54906003)(2351001)(316002)(107886003)(8936002)(14444005)(186003)(103116003)(7696005)(476003)(3846002)(8676002)(126002)(246002)(426003)(50466002)(2616005)(486006)(336012)(106002)(23676004)(6116002)(2501003)(2486003)(5660300002)(7636002)(2906002)(6306002)(966005)(36756003)(436003)(6916009)(47776003)(356004)(7736002)(305945005)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:DM2PR03MB557;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f619a506-03bc-4f0d-362f-08d6ad43de5c
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600127)(711020)(4605104)(4608103)(4709054)(2017052603328)(7153060)(7193020);SRVR:DM2PR03MB557;
+X-MS-TrafficTypeDiagnostic: DM2PR03MB557:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <DM2PR03MB557A6F1C6E7241DC8D577C49D410@DM2PR03MB557.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 098291215C
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: rSbf+n+Tzwck1p/J9JkARykJErQrURRmRnKT0Wfx2YCr5c4XHQFevod1WqrA3ZcdkXCbDhTHAYaYM7ZMg4K+bOsAydsoLbXlOKDQG5ESWc5rX1NItjUJZ57eVfTil+hQMPPu3A9gA6seQ2BLn619x58DueQ3wBNv46ZEk9HiABx8nI69WeNy3gyCvE7QPW5tVkXUGk6IwTh2d479kZuP9YOrnFhtMl3Q7EtdHDqAVry8y3sPK8KPRfRkqQj7BJpt75G/ZeMhPDJuUzycONRxuxNDrJORHCjpnRAsI3opGho8Y3XyecAQ0nQwWaPKYtJJn5rvd85k64zUmvORBlPCllMcDnxlzJD7oVvsTYx9uQu3WJbBci6wGNeVoecuf2d0mzTvrXw5Y22cAwiDXGTMS8/q1qRohkA2FwGTN5k1SJg=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Mar 2019 14:53:52.1580
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f619a506-03bc-4f0d-362f-08d6ad43de5c
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM2PR03MB557
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
-
-On 20/03/2019 07:46, Pandruvada, Srinivas wrote:
-> On Tue, 2019-03-19 at 12:14 +1100, Alexey Kardashevskiy wrote:
->>
-> 
-> [...]
-> 
->> Refer to iio buffer interface for how to read from buffers by
->>> enabling
->>> channels. tools/iio/iio_generic_buffer.c is an example how to use.
->>
->>
->> No, my question was about the kernel side of the device, not the
->> userspace, it is late to look there - the data seems to be broken. I
->> am
->> interested to see how these buffers are filled with data and compare
->> to
->> what linux exposes via in_accel_x_raw sysops properties. Oh well, it
->> is
->> debugging time them.
-> kernel processing is done in multiple layers, from transport->hid-
-> sensor-hub.c->hid-sensor-accel-3d.c
-> The kernel is just sending what FW is sending in buffer mode.
-> FW is sending 0,0,0 for x,y,z. This is the way FW is telling that it
-> completed a batch. Basically the user space could have gone to sleep by
-> informing that don't bother it for x amount of time or samples. It
-> seems that this platform is enabling batch mode, whether user space
-> wants it or not.
-> 
-> Try this change iio-sensor-proxy. From raw data 
-> 
-> diff --git a/src/drv-iio-buffer-accel.c b/src/drv-iio-buffer-accel.c
-> index ebf94de..84a83a3 100644
-> --- a/src/drv-iio-buffer-accel.c
-> +++ b/src/drv-iio-buffer-accel.c
-> @@ -65,6 +65,11 @@ process_scan (IIOSensorData data, DrvData *or_data)
->         tmp.y = accel_y;
->         tmp.z = accel_z;
->  
-> +       if (tmp.x == 0 && tmp.y == 0 && tmp.z == 0) {
-> +               g_debug("batch complete\n");
-> +               return 0;
-> +       }
-> +
-
-I tried, it did not help - worked for a little bit - turned laptop 3
-times - and then started rotating it endlessly. The problem is not with
-zero samples (or not just with them) but with wrong samples too.
-
-
->         if (!apply_mount_matrix (or_data->mount_matrix, &tmp))
->                 g_warning ("Could not apply mount matrix");
->  
-> 
-> Thanks,
-> Srinivas
-> 
-> 
->>
->>
->>
-
--- 
-Alexey
+SGVsbG8sDQoNCldlIGFyZSBjdXJyZW50bHkgd29ya2luZyBvbiBhIG5ldyBhZGlzMTY0OTUgSU1V
+IGRyaXZlciB3aGljaCBpcyBhbiB1cGdyYWRlDQpmcm9tIHRoZSBhZGlzMTY0ODAgZmFtaWx5OsKg
+aHR0cHM6Ly93d3cuYW5hbG9nLmNvbS9tZWRpYS9lbi90ZWNobmljYWwtZG9jdW1lDQpudGF0aW9u
+L2RhdGEtc2hlZXRzL0FESVMxNjQ5NS5wZGYuDQoNClRoaXMgbmV3IGNoaXAgc3VwcG9ydHMgYSBm
+ZWF0dXJlIGNhbGxlZCAiQnVyc3QgUmVhZCBGdW5jdGlvbiIgKHBhZ2UgMTMgaW4NCnRoZSBkYXRh
+c2hlZXQpLiBUaGUgYnVyc3QgcmVhZCBmdW5jdGlvbiAoQlJGKSBwcm92aWRlcyBhIG1ldGhvZCBm
+b3IgcmVhZGluZw0KYSBiYXRjaCBvZiBkYXRhIChzdGF0dXMsIHRlbXBlcmF0dXJlLCBneXJvc2Nv
+cGVzLCBhY2NlbGVyb21ldGVycywgdGltZQ0Kc3RhbXAvZGF0YSBjb3VudGVyLCBhbmQgQ1JDIGNv
+ZGUpLCB3aGljaCBkb2VzIG5vdCByZXF1aXJlIGEgc3RhbGwNCnRpbWUgYmV0d2VlbiBlYWNoIDE2
+LWJpdCBzZWdtZW50IGFuZCBvbmx5IHJlcXVpcmVzIG9uZSBjb21tYW5kDQpvbiB0aGUgRElOIGxp
+bmUgdG8gaW5pdGlhdGUuDQoNCk1vc3Qgb2YgdGhlIGRhdGEgcmVhZCBpbiB0aGlzIHdheSBjYW4g
+YmUgYXR0cmlidXRlZCB0byBhIHR5cGUgb2YgY2hhbm5lbDrCoA0KSUlPX1RFTVAsIElJT19BTkdM
+X1ZFTCwgSUlPX0FDQ0VMLCBldGMuIEhvd2V2ZXIsIHRoZXJlIGlzIG5vIGVxdWl2YWxlbnQgZm9y
+DQp0aGUgc3RhdHVzIGFuZCBDUkMuIFRoZSBzdGF0dXMgcmVnaXN0ZXIgcHJvdmlkZXMgdmFyaW91
+cyBlcnJvciBmbGFncyBzdWNoDQphcyBzcGkgY29tbXVuaWNhdGlvbiBlcnJvciwgc2Vuc29yIGZh
+aWx1cmUsIHN5bmMgZXJyb3IsIGV0YyAoVGFibGUgMTggaW4NCnRoZSBkYXRhc2hlZXQpLiBUaGlz
+IGluZm9ybWF0aW9uIHRvZ2V0aGVyIHdpdGggdGhlIENSQyBlcnJvciBzaG91bGQgYmUNCmV4cG9z
+ZWQgdG8gdGhlIHVzZXIgc3BhY2UuIFdoYXQgaXMgdGhlIGJlc3Qgd2F5IHRvIGRvIGl0P8KgDQoN
+ClRoZSBtb3N0IG9idmlvdXMgd2F5LCBidXQgbm90IG5lY2Vzc2FyaWx5IHRoZSBjb3JyZWN0IG9u
+ZSwgd291bGQgYmUgdG8gYWRkDQphIG5ldyBjaGFubmVsIHR5cGUgY2FsbGVkIHNvbWV0aGluZyBs
+aWtlIElJT19TVEFUVVMgb3IgSUlPX0ZMQUcuIElzIHRoaXMNCmFjY2VwdGFibGU/DQoNCkEgbW9y
+ZSBvciBsZXNzIHNpbWlsYXIgYnVyc3QgcmVhZCBmdW5jdGlvbiBoYXMgYmVlbiBwcmV2aW91c2x5
+IGltcGxlbWVudGVkDQphcyBwYXJ0IG9mIHRoZSBhZGlzMTY0MDAgZHJpdmVyLiBBbHRob3VnaCBh
+IGJ1cnN0IHJlYWQgd2lsbCBhbHNvIHByb2R1Y2UNCmRpYWdub3N0aWMgc3RhdHVzIGRhdGEsIGl0
+IHdhcyBpZ25vcmVkIGluIHRoZSBkcml2ZXIgaW1wbGVtZW50YXRpb24uDQoNCkxvb2tpbmcgZm9y
+d2FyZCB0byBhbnkgc3VnZ2VzdGlvbi4NCg0KLVN0ZWZhbg==
