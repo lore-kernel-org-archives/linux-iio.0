@@ -3,36 +3,36 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3CD7C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2E3C10F00
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C301121917
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 05C2021925
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728603AbfCUQsj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Mar 2019 12:48:39 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:52981 "EHLO
+        id S1728641AbfCUQsJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Mar 2019 12:48:09 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:19884 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727829AbfCUQsJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2019 12:48:09 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2LGkq56008001;
-        Thu, 21 Mar 2019 17:47:39 +0100
+        by vger.kernel.org with ESMTP id S1728606AbfCUQsH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2019 12:48:07 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2LGlcCk004726;
+        Thu, 21 Mar 2019 17:47:40 +0100
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2r8rwkek1n-1
+        by mx08-00178001.pphosted.com with ESMTP id 2r8q5bpymk-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 21 Mar 2019 17:47:39 +0100
+        Thu, 21 Mar 2019 17:47:40 +0100
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 65F6C3D;
-        Thu, 21 Mar 2019 16:47:38 +0000 (GMT)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CEF0D31;
+        Thu, 21 Mar 2019 16:47:39 +0000 (GMT)
 Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 466C95671;
-        Thu, 21 Mar 2019 16:47:38 +0000 (GMT)
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AB5265670;
+        Thu, 21 Mar 2019 16:47:39 +0000 (GMT)
 Received: from localhost (10.75.127.46) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 21 Mar 2019 17:47:37
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 21 Mar 2019 17:47:39
  +0100
 From:   Fabrice Gasnier <fabrice.gasnier@st.com>
 To:     <jic23@kernel.org>
@@ -42,16 +42,16 @@ CC:     <linux-arm-kernel@lists.infradead.org>,
         <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
         <pmeerw@pmeerw.net>, <linux-stm32@st-md-mailman.stormreply.com>,
         <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
-Subject: [PATCH v2 3/8] iio: adc: stm32-dfsdm: move dma enable from start_conv() to start_dma()
-Date:   Thu, 21 Mar 2019 17:47:24 +0100
-Message-ID: <1553186849-6261-4-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v2 5/8] iio: adc: stm32-dfsdm: enable hw consumer
+Date:   Thu, 21 Mar 2019 17:47:26 +0100
+Message-ID: <1553186849-6261-6-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1553186849-6261-1-git-send-email-fabrice.gasnier@st.com>
 References: <1553186849-6261-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG6NODE2.st.com (10.75.127.17) To SFHDAG5NODE3.st.com
+X-ClientProxiedBy: SFHDAG7NODE1.st.com (10.75.127.19) To SFHDAG5NODE3.st.com
  (10.75.127.15)
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-21_07:,,
  signatures=0
@@ -60,172 +60,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move DMA enable (e.g. set RDMAEN bit) away from start_conv() that is used
-for both buffer and single conversions. Thus, single conv rely on
-interrupt, not dma.
-Note: take care to prepare all DMA stuff and set RDMAEN before starting
-filter (can be set only when DFEN=0).
-
-This is precursor patch to ease support of triggered buffer mode.
+Optionally enable IIO hw consumer, when provided (e.g. for DFSDM_IIO type).
+This is precursor patch to introduce buffer modes.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/iio/adc/stm32-dfsdm-adc.c | 77 +++++++++++++++++++--------------------
- 1 file changed, 38 insertions(+), 39 deletions(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 14 +++++++++++++-
+ 1 file changed, 13 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 8690672..818627f 100644
+index 66e2ea0..b491424 100644
 --- a/drivers/iio/adc/stm32-dfsdm-adc.c
 +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -429,12 +429,10 @@ static ssize_t dfsdm_adc_audio_set_spiclk(struct iio_dev *indio_dev,
- }
+@@ -630,9 +630,15 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
+ 	/* Reset adc buffer index */
+ 	adc->bufi = 0;
  
- static int stm32_dfsdm_start_conv(struct stm32_dfsdm_adc *adc,
--				  const struct iio_chan_spec *chan,
--				  bool dma)
-+				  const struct iio_chan_spec *chan)
- {
- 	struct regmap *regmap = adc->dfsdm->regmap;
- 	int ret;
--	unsigned int dma_en = 0;
- 
- 	ret = stm32_dfsdm_start_channel(adc->dfsdm, chan->channel);
++	if (adc->hwc) {
++		ret = iio_hw_consumer_enable(adc->hwc);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	ret = stm32_dfsdm_start_dfsdm(adc->dfsdm);
  	if (ret < 0)
-@@ -444,25 +442,12 @@ static int stm32_dfsdm_start_conv(struct stm32_dfsdm_adc *adc,
- 	if (ret < 0)
- 		goto stop_channels;
- 
--	if (dma) {
--		/* Enable DMA transfer*/
--		dma_en =  DFSDM_CR1_RDMAEN(1);
--	}
--	/* Enable DMA transfer*/
--	ret = regmap_update_bits(regmap, DFSDM_CR1(adc->fl_id),
--				 DFSDM_CR1_RDMAEN_MASK, dma_en);
--	if (ret < 0)
--		goto filter_unconfigure;
--
- 	ret = stm32_dfsdm_start_filter(adc->dfsdm, adc->fl_id);
- 	if (ret < 0)
--		goto stop_dma;
-+		goto filter_unconfigure;
- 
- 	return 0;
- 
--stop_dma:
--	regmap_update_bits(regmap, DFSDM_CR1(adc->fl_id),
--			   DFSDM_CR1_RDMAEN_MASK, 0);
- filter_unconfigure:
- 	regmap_update_bits(regmap, DFSDM_CR1(adc->fl_id),
- 			   DFSDM_CR1_CFG_MASK, 0);
-@@ -479,10 +464,6 @@ static void stm32_dfsdm_stop_conv(struct stm32_dfsdm_adc *adc,
- 
- 	stm32_dfsdm_stop_filter(adc->dfsdm, adc->fl_id);
- 
--	/* Clean conversion options */
--	regmap_update_bits(regmap, DFSDM_CR1(adc->fl_id),
--			   DFSDM_CR1_RDMAEN_MASK, 0);
--
- 	regmap_update_bits(regmap, DFSDM_CR1(adc->fl_id),
- 			   DFSDM_CR1_CFG_MASK, 0);
- 
-@@ -599,15 +580,36 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
- 
- 	cookie = dmaengine_submit(desc);
- 	ret = dma_submit_error(cookie);
--	if (ret) {
--		dmaengine_terminate_all(adc->dma_chan);
 -		return ret;
--	}
-+	if (ret)
-+		goto err_stop_dma;
++		goto err_stop_hwc;
  
- 	/* Issue pending DMA requests */
- 	dma_async_issue_pending(adc->dma_chan);
- 
-+	/* Enable DMA transfer*/
-+	ret = regmap_update_bits(adc->dfsdm->regmap, DFSDM_CR1(adc->fl_id),
-+				 DFSDM_CR1_RDMAEN_MASK, DFSDM_CR1_RDMAEN_MASK);
-+	if (ret < 0)
-+		goto err_stop_dma;
-+
- 	return 0;
-+
-+err_stop_dma:
-+	dmaengine_terminate_all(adc->dma_chan);
-+
-+	return ret;
-+}
-+
-+static void stm32_dfsdm_adc_dma_stop(struct iio_dev *indio_dev)
-+{
-+	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
-+
-+	if (!adc->dma_chan)
-+		return;
-+
-+	regmap_update_bits(adc->dfsdm->regmap, DFSDM_CR1(adc->fl_id),
-+			   DFSDM_CR1_RDMAEN_MASK, 0);
-+	dmaengine_terminate_all(adc->dma_chan);
- }
- 
- static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
-@@ -623,24 +625,22 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = stm32_dfsdm_start_conv(adc, chan, true);
-+	ret = stm32_dfsdm_adc_dma_start(indio_dev);
+ 	ret = stm32_dfsdm_adc_dma_start(indio_dev);
  	if (ret) {
--		dev_err(&indio_dev->dev, "Can't start conversion\n");
-+		dev_err(&indio_dev->dev, "Can't start DMA\n");
- 		goto stop_dfsdm;
- 	}
- 
--	if (adc->dma_chan) {
--		ret = stm32_dfsdm_adc_dma_start(indio_dev);
--		if (ret) {
--			dev_err(&indio_dev->dev, "Can't start DMA\n");
--			goto err_stop_conv;
--		}
-+	ret = stm32_dfsdm_start_conv(adc, chan);
-+	if (ret) {
-+		dev_err(&indio_dev->dev, "Can't start conversion\n");
-+		goto err_stop_dma;
- 	}
- 
- 	return 0;
- 
--err_stop_conv:
--	stm32_dfsdm_stop_conv(adc, chan);
-+err_stop_dma:
-+	stm32_dfsdm_adc_dma_stop(indio_dev);
+@@ -652,6 +658,9 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
+ 	stm32_dfsdm_adc_dma_stop(indio_dev);
  stop_dfsdm:
  	stm32_dfsdm_stop_dfsdm(adc->dfsdm);
++err_stop_hwc:
++	if (adc->hwc)
++		iio_hw_consumer_disable(adc->hwc);
  
-@@ -652,11 +652,10 @@ static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
- 	const struct iio_chan_spec *chan = &indio_dev->channels[0];
+ 	return ret;
+ }
+@@ -667,6 +676,9 @@ static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
  
--	if (adc->dma_chan)
--		dmaengine_terminate_all(adc->dma_chan);
--
- 	stm32_dfsdm_stop_conv(adc, chan);
- 
-+	stm32_dfsdm_adc_dma_stop(indio_dev);
-+
  	stm32_dfsdm_stop_dfsdm(adc->dfsdm);
  
++	if (adc->hwc)
++		iio_hw_consumer_disable(adc->hwc);
++
  	return 0;
-@@ -736,7 +735,7 @@ static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
- 	if (ret < 0)
- 		goto stop_dfsdm;
+ }
  
--	ret = stm32_dfsdm_start_conv(adc, chan, false);
-+	ret = stm32_dfsdm_start_conv(adc, chan);
- 	if (ret < 0) {
- 		regmap_update_bits(adc->dfsdm->regmap, DFSDM_CR2(adc->fl_id),
- 				   DFSDM_CR2_REOCIE_MASK, DFSDM_CR2_REOCIE(0));
 -- 
 2.7.4
 
