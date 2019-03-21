@@ -2,113 +2,106 @@ Return-Path: <SRS0=q/Pt=RY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D2E3C10F00
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CD0C43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 18:41:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 05C2021925
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 16:48:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 28D4621902
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 18:41:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Xv0uOkzq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728641AbfCUQsJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Mar 2019 12:48:09 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:19884 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728606AbfCUQsH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2019 12:48:07 -0400
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2LGlcCk004726;
-        Thu, 21 Mar 2019 17:47:40 +0100
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2r8q5bpymk-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Thu, 21 Mar 2019 17:47:40 +0100
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id CEF0D31;
-        Thu, 21 Mar 2019 16:47:39 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id AB5265670;
-        Thu, 21 Mar 2019 16:47:39 +0000 (GMT)
-Received: from localhost (10.75.127.46) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 21 Mar 2019 17:47:39
- +0100
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-To:     <jic23@kernel.org>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
-        <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <linux-stm32@st-md-mailman.stormreply.com>,
-        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
-Subject: [PATCH v2 5/8] iio: adc: stm32-dfsdm: enable hw consumer
-Date:   Thu, 21 Mar 2019 17:47:26 +0100
-Message-ID: <1553186849-6261-6-git-send-email-fabrice.gasnier@st.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1553186849-6261-1-git-send-email-fabrice.gasnier@st.com>
-References: <1553186849-6261-1-git-send-email-fabrice.gasnier@st.com>
+        id S1728095AbfCUSls (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Mar 2019 14:41:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:33531 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728057AbfCUSls (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2019 14:41:48 -0400
+Received: by mail-qt1-f194.google.com with SMTP id k14so7839112qtb.0;
+        Thu, 21 Mar 2019 11:41:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=tY6+2yg5kBlO2MGtS1RdpL8kEichnYOMAH7b32Qy3RY=;
+        b=Xv0uOkzqllGXScY4vjGguqYLVr5w6YlrdB12LeF9KMC5TSmugoacp9q+r7J3azEZXQ
+         UTTiGiL2kliydJyEwoKoALs64KgEUWxCNM5/Xq7c/Qxq4O7xRnVZMQOLSwMPnSfhgG+q
+         xQ/Dw46vuInaXcf7VczZBqAydm68JBj6FCn+mtcuqoOIeo98jPA/wnCsCCCHuLKwgFEq
+         U0bH+q2WWiAS53V5pmN1zAuxR3yMJF5SgWUtBvbKcFKQH0yLzhKUtyczVnhQrjC/3WZJ
+         Rd5gVpLXjDWP2Yy2Domhu4BjGNV2232f2xrnHUKS+IzzfrzQCeSIHhQWpS7+98cxATGg
+         VGdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=tY6+2yg5kBlO2MGtS1RdpL8kEichnYOMAH7b32Qy3RY=;
+        b=pBhtkfznCoFS1AEcSQo4luLq5sNbiW+M7d/Obk7wXrBL+weJHjMEjOUore1PwA5Wof
+         GKaZLkBUgrXQ5lLeHMMa1MoS/7iMRhFFzUDX6GeUnkm739qOTR86MGAEUR+F/Ux3KGCg
+         9DcJcLMM5xHbk/UFPgb1NU2voQ+4aNV2L+wFPzDLgqzFNEJ1kNJk46R3ALzRCUsKKMP+
+         Tb4KotYMFPjAquhKVXpBQx3lgi/J0FjwpkFWAF7TuJVQbnWNvASaO+XK6AaUZdFquqti
+         YIAAeZK8B2+KrdS+65UoToPbWAI+JE8pJctUkE7eQunst0gs2zzQadu4l5B4HfBYe6Ii
+         rgMA==
+X-Gm-Message-State: APjAAAUmp9OKIxV+6+VSJONVjhO6/iHF07Xotgv9rDt6mWCF3BaHQ45s
+        kPy/BYbJjLB4X1V2l4E+pmE=
+X-Google-Smtp-Source: APXvYqxzjhFVm4s99YLvolN5QUmAWmBn9FwIuD2PdRLvvn2QaMVXC7jV7TsTUGsU9Hp9a8eAB1prBQ==
+X-Received: by 2002:ac8:1489:: with SMTP id l9mr4264423qtj.267.1553193707492;
+        Thu, 21 Mar 2019 11:41:47 -0700 (PDT)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id a10sm3648694qti.32.2019.03.21.11.41.44
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Thu, 21 Mar 2019 11:41:46 -0700 (PDT)
+Date:   Thu, 21 Mar 2019 15:41:42 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     lars@metafoo.de, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        michael.hennerich@analog.com, stefan.popa@analog.com,
+        alexandru.Ardelean@analog.com
+Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: [PATCH v5 0/2] staging: iio: ad5933: move out of staging
+Message-ID: <cover.1553192834.git.marcelo.schmitt1@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG7NODE1.st.com (10.75.127.19) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-21_07:,,
- signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Optionally enable IIO hw consumer, when provided (e.g. for DFSDM_IIO type).
-This is precursor patch to introduce buffer modes.
+This series of patches makes device attributes' names equal to ABI
+documentation and move ad5933 driver out of staging. More precisely:
+It changes device attributes' names to match or be similar to existing
+ABI.
+It moves the ad5933 driver from staging directory to iio main drivers
+directory.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- drivers/iio/adc/stm32-dfsdm-adc.c | 14 +++++++++++++-
- 1 file changed, 13 insertions(+), 1 deletion(-)
+Marcelo Schmitt (2):
+  staging: iio: ad5933: change attributes to match ABI
+  staging: iio: ad5933: move out of staging
 
-diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 66e2ea0..b491424 100644
---- a/drivers/iio/adc/stm32-dfsdm-adc.c
-+++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -630,9 +630,15 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
- 	/* Reset adc buffer index */
- 	adc->bufi = 0;
- 
-+	if (adc->hwc) {
-+		ret = iio_hw_consumer_enable(adc->hwc);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	ret = stm32_dfsdm_start_dfsdm(adc->dfsdm);
- 	if (ret < 0)
--		return ret;
-+		goto err_stop_hwc;
- 
- 	ret = stm32_dfsdm_adc_dma_start(indio_dev);
- 	if (ret) {
-@@ -652,6 +658,9 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
- 	stm32_dfsdm_adc_dma_stop(indio_dev);
- stop_dfsdm:
- 	stm32_dfsdm_stop_dfsdm(adc->dfsdm);
-+err_stop_hwc:
-+	if (adc->hwc)
-+		iio_hw_consumer_disable(adc->hwc);
- 
- 	return ret;
- }
-@@ -667,6 +676,9 @@ static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
- 
- 	stm32_dfsdm_stop_dfsdm(adc->dfsdm);
- 
-+	if (adc->hwc)
-+		iio_hw_consumer_disable(adc->hwc);
-+
- 	return 0;
- }
- 
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/impedance-analyzer/Kconfig        |  18 +
+ drivers/iio/impedance-analyzer/Makefile       |   5 +
+ drivers/iio/impedance-analyzer/ad5933.c       | 811 ++++++++++++++++++
+ drivers/staging/iio/Kconfig                   |   1 -
+ drivers/staging/iio/Makefile                  |   1 -
+ .../staging/iio/impedance-analyzer/Kconfig    |  18 -
+ .../staging/iio/impedance-analyzer/Makefile   |   5 -
+ .../staging/iio/impedance-analyzer/ad5933.c   | 811 ------------------
+ 10 files changed, 836 insertions(+), 836 deletions(-)
+ create mode 100644 drivers/iio/impedance-analyzer/Kconfig
+ create mode 100644 drivers/iio/impedance-analyzer/Makefile
+ create mode 100644 drivers/iio/impedance-analyzer/ad5933.c
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Kconfig
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/Makefile
+ delete mode 100644 drivers/staging/iio/impedance-analyzer/ad5933.c
+
 -- 
-2.7.4
+2.20.1
 
