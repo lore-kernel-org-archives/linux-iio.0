@@ -1,127 +1,138 @@
-Return-Path: <SRS0=iua/=RX=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=q/Pt=RY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A04EC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 20:22:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F30AFC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 13:41:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4C3B62184D
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Mar 2019 20:22:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=akkea.ca header.i=@akkea.ca header.b="g0zbp/IN"
+	by mail.kernel.org (Postfix) with ESMTP id CC9C7218E2
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Mar 2019 13:41:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727508AbfCTUWB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Mar 2019 16:22:01 -0400
-Received: from node.akkea.ca ([192.155.83.177]:39200 "EHLO node.akkea.ca"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725988AbfCTUWA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Mar 2019 16:22:00 -0400
-Received: by node.akkea.ca (Postfix, from userid 33)
-        id CB9AC4E204B; Wed, 20 Mar 2019 20:21:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=akkea.ca; s=mail;
-        t=1553113318; bh=28gJDAeYHl4IhB3qxEV8or3e+uBqMpDNryGUZGJTh0U=;
-        h=To:Subject:Date:From:Cc:In-Reply-To:References;
-        b=g0zbp/INYUXZ7KaF44V2ZyGF2VafHp3GOqV9DXOjNHC7ycuPdZoJGSOscxZ1KoFBG
-         9BhT0+lM6f+6R4ZSABVBpQW7591xvwuoy3JpcjhbiJUmTHeZPkU03eRy+XEjQIC7vC
-         4PBNngxWz00dCkzJMbG0BP/p+7sQR9jIWlOUBodg=
-To:     Tomas Novotny <tomas@novotny.cz>
-Subject: Re: [PATCH v2 1/5] iio: light: vcnl4000 use word writes instead of  byte writes
-X-PHP-Originating-Script: 1000:rcube.php
+        id S1728317AbfCUNlx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Mar 2019 09:41:53 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:27103 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726551AbfCUNlw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Mar 2019 09:41:52 -0400
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2LDanrX004257;
+        Thu, 21 Mar 2019 14:41:17 +0100
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2r8qg4wqs8-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Thu, 21 Mar 2019 14:41:17 +0100
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C70B33A;
+        Thu, 21 Mar 2019 13:41:14 +0000 (GMT)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id A0EAC508A;
+        Thu, 21 Mar 2019 13:41:14 +0000 (GMT)
+Received: from [10.48.0.167] (10.75.127.44) by SFHDAG5NODE3.st.com
+ (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 21 Mar
+ 2019 14:41:13 +0100
+Subject: Re: [PATCH 1/8] iio: adc: stm32-dfsdm: make spi_master_freq more
+ accurate
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
+References: <1551862524-25098-1-git-send-email-fabrice.gasnier@st.com>
+ <1551862524-25098-2-git-send-email-fabrice.gasnier@st.com>
+ <20190310100932.71fd1af1@archlinux>
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <62742e3f-3860-3020-33a0-dafc9ae66dd1@st.com>
+Date:   Thu, 21 Mar 2019 14:41:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.5.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
+In-Reply-To: <20190310100932.71fd1af1@archlinux>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
-Date:   Wed, 20 Mar 2019 13:21:58 -0700
-From:   Angus Ainslie <angus@akkea.ca>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-In-Reply-To: <20190320155322.3fd9f080@tomas.local.tbs-biometrics.cz>
-References: <20190317154802.15174-1-angus@akkea.ca>
- <20190317154802.15174-2-angus@akkea.ca>
- <20190320155322.3fd9f080@tomas.local.tbs-biometrics.cz>
-Message-ID: <16a2d3e86f296fac2f56fb47e1f1afac@www.akkea.ca>
-X-Sender: angus@akkea.ca
-User-Agent: Roundcube Webmail/1.1.3
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG5NODE3.st.com (10.75.127.15) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-21_06:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Tomas,
-
-On 2019-03-20 07:53, Tomas Novotny wrote:
-> Hi Angus,
+On 3/10/19 11:09 AM, Jonathan Cameron wrote:
+> On Wed, 6 Mar 2019 09:55:17 +0100
+> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
 > 
-> On Sun, 17 Mar 2019 08:47:58 -0700
-> "Angus Ainslie (Purism)" <angus@akkea.ca> wrote:
-> 
->> The VCNL4200 datasheet says that word read and writes should be used
->> to access the registers.
->> 
->> Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
+>> When SPI clock isn't accurate, 'spi_master_freq' is filled in with
+>> expected frequency. Use computed value instead:
+>> - e.g. source clock / (CKOUTDIV + 1)
+>> Also, current divider may be set to value that makes CKOUT to exceed
+>> spi-max-frequency. Rather use lower value (e.g. round up divider when
+>> ckout isn't accurate).
+>>
+>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 >> ---
->>  drivers/iio/light/vcnl4000.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
->> 
->> diff --git a/drivers/iio/light/vcnl4000.c 
->> b/drivers/iio/light/vcnl4000.c
->> index 04fd0d4b6f19..5295330b65e2 100644
->> --- a/drivers/iio/light/vcnl4000.c
->> +++ b/drivers/iio/light/vcnl4000.c
->> @@ -140,10 +140,10 @@ static int vcnl4200_init(struct vcnl4000_data 
->> *data)
->>  	data->rev = (ret >> 8) & 0xf;
->> 
->>  	/* Set defaults and enable both channels */
->> -	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_AL_CONF, 
->> 0x00);
->> +	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, 
->> 0x00);
+>>  drivers/iio/adc/stm32-dfsdm-core.c | 9 +++++++--
+>>  1 file changed, 7 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
+>> index bf089f5..65b7556 100644
+>> --- a/drivers/iio/adc/stm32-dfsdm-core.c
+>> +++ b/drivers/iio/adc/stm32-dfsdm-core.c
+>> @@ -243,13 +243,18 @@ static int stm32_dfsdm_parse_of(struct platform_device *pdev,
+>>  		return 0;
+>>  	}
+>>  
+>> -	priv->spi_clk_out_div = div_u64_rem(clk_freq, spi_freq, &rem) - 1;
+>> +	priv->spi_clk_out_div = div_u64_rem(clk_freq, spi_freq, &rem);
+>> +
+>> +	/* round up divider when clkout isn't accurate (e.g. !rem) */
+>> +	if (priv->spi_clk_out_div && !rem)
+>> +		priv->spi_clk_out_div--;
+>> +
+> This comment perhaps needs adjusting because at the moment it looks
+> like it decrements when it is accurate.   With the old code in place
+> in the patch it's obvious that's because you actually want one less.
 > 
-> minor note: the 0x00 looks like a byte. 0 or 0x0000 would be slightly 
-> better?
-> The same below.
+> Might even be worth the dance of
 > 
->>  	if (ret < 0)
->>  		return ret;
->> -	ret = i2c_smbus_write_byte_data(data->client, VCNL4200_PS_CONF1, 
->> 0x00);
->> +	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, 
->> 0x00);
+> /* round up if not precise */
+> if (priv->spi_clk_out_div && rem)
+> 	priv->spi_clk_out_div++;
 > 
-> The VCNL4200_PS_CONF1 definition is a bit misleading with word write. 
-> Because
-> PS_CONF1 is only a low byte of command code 0x03. The high byte of 0x03 
-> is
-> PS_CONF2. I would rename it.
-> 
+> /* subtract one because....  */
+> priv->spi_clk_out_div--;
 
-As far as a base address for the register that is correct based on the 
-names in the datasheet. I suppose I could add something like:
+Hi Jonathan,
 
-#define VCNL4200_PS_CONF  VCNL4200_PS_CONF1
+I'll rework this patch in v2, make it easier to understand & read.
 
-and change the reference here if you think that would be more clear.
+In a few words: the clock output is divider = ckoutdiv + 1.
+ckoutdiv range can be from 1-255 to provide divider of 2-256.
+So I'll introduce this divider as a variable, and use it to setup
+spi_clk_out_div.
+This should address all your remarks here.
 
->>  	if (ret < 0)
->>  		return ret;
+Thanks for reviewing,
+Best Regards,
+Fabrice
 > 
-> Anyway, the main point is that I've tested this patch on VCNL4200 and 
-> it
-> works, so:
-> Tested-by: Tomas Novotny <tomas@novotny.cz>
+>>  	if (!priv->spi_clk_out_div) {
+>>  		/* spi_clk_out_div == 0 means ckout is OFF */
+>>  		dev_err(&pdev->dev, "spi-max-frequency not achievable\n");
+>>  		return -EINVAL;
+>>  	}
+>> -	priv->dfsdm.spi_master_freq = spi_freq;
+>> +	priv->dfsdm.spi_master_freq = clk_freq / (priv->spi_clk_out_div + 1);
+> And we increment it again here? That needs an explanation as well.
+>>  
+>>  	if (rem) {
+>>  		dev_warn(&pdev->dev, "SPI clock not accurate\n");
 > 
-> T.
-
-Thanks for testing it
-Angus
