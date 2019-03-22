@@ -6,204 +6,87 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C7D4C43381
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 13:54:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 862A5C43381
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 14:09:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 16F5A218A5
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 13:54:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5F30A218E2
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 14:09:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727566AbfCVNyi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Mar 2019 09:54:38 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:16581 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727487AbfCVNyi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Mar 2019 09:54:38 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2MDpoup024526;
-        Fri, 22 Mar 2019 14:54:13 +0100
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2r8qg53r00-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Fri, 22 Mar 2019 14:54:13 +0100
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B8F313A;
-        Fri, 22 Mar 2019 13:54:12 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 96F665020;
-        Fri, 22 Mar 2019 13:54:12 +0000 (GMT)
-Received: from localhost (10.75.127.48) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Fri, 22 Mar 2019 14:54:12
- +0100
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-To:     <jic23@kernel.org>
-CC:     <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <fabrice.gasnier@st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [RFC PATCH] iio: core: fix a possible circular locking dependency
-Date:   Fri, 22 Mar 2019 14:54:06 +0100
-Message-ID: <1553262846-23126-1-git-send-email-fabrice.gasnier@st.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728365AbfCVOJp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Mar 2019 10:09:45 -0400
+Received: from mout.kundenserver.de ([212.227.126.130]:55729 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727943AbfCVOJp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Mar 2019 10:09:45 -0400
+Received: from wuerfel.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue011 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MGzDv-1hCXvq27sJ-00E25M; Fri, 22 Mar 2019 15:09:09 +0100
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     clang-built-linux@googlegroups.com,
+        Nick Desaulniers <ndesaulniers@google.com>,
+        Nathan Chancellor <natechancellor@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stefan Agner <stefan@agner.ch>, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: stmpe-adc: avoid harmless clang warning
+Date:   Fri, 22 Mar 2019 15:08:39 +0100
+Message-Id: <20190322140906.319267-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG8NODE3.st.com (10.75.127.24) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-22_08:,,
- signatures=0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:LsArqJRnc8Nh4Hs3awc98LbB0oEkPJppi5wt30jJ9pQ28ugEIk/
+ Jm4cAL9MCDBiFJr7VLu+YWUmfnMBojlNyJEKZ3rSOByCQiTjc+Y42edEmBTwRKjEnXgRkta
+ fuquITpE1ZPhoI4El/oshu1jTZQwKwfpBDjxGWK3A2Ons3shPsBySLhLInMy2Zfk52S769Y
+ 48xqpH5mDaOFBAbSo+d6A==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:Bg8IhLpgIxU=:+PtXwVmnCw+djAtLG9I0nn
+ ejsH32So6S37sGTZioLsBgCRZZDqzoPaDMd+nCqUoNhn4tnl6fWFjqf5d+i+S0P+zYjtIhOmD
+ WsP4IhOzrIKLbTMFBOm1Zw/MWVVWT+0JUy+tlHCnIIlrjUTm5qBMNCoL98MqM+xgAtrlZn6Kn
+ kOfiEDuuhW0CVLlLNZCQfe/Df5vZrHLvvkYBNKUzGqy8IifrIM+Ue7vhDT91E8xQa4dr3Fr3j
+ R9yWRlX+5ZF+8MPCHHoicc3kYoslm6x71NUgu8aBlp/Fo9FLIuQdI38J0lu1CH7lvC7piLYho
+ vy4mR7UvlxpeDoc4in2Oar3NbPqQiRiZJZ5vdLOHWpK0mw/sGqvQt0kJ4TLYnKkIaqXiyg1HE
+ jC6kEicb2Ztl0tEDHlqxJxjzu7FhuGM4kOpkZ9AMCnmFS3klD4Mk0wHUA/tliK1kGoP82Z4ox
+ 8voguriLbfR5UyN6ujS09uz70iQM0/aMH8DEdhtr72Wf/R1/LjkeUJc0gxKSikn3tkaICpccf
+ JcTCMBM5K0HeiS/K2QYw0ENxdkqNzFcDAiXBdoDBNXEBc4sMPtDQreJWeWJdb5RaQelJec5v1
+ bRuhvWKst+/JlwMk6rAs76BqZlvJA2mBHA1vOkUxMMM8VNlJRzs8C/CVCcqzIB6E1XThW1/gq
+ rhcgf/j9O7gdvaeSFgU55zFbQHz4ZIdcmt8OF4Bq/wEauPbNCRXQVqAfAHptULP3shbKycILj
+ an/9swV2ILGCXbdz+hDUfzbDbHLo6vlPQXKQkA==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This fixes a possible circular locking dependency detected warning seen
-with:
-- CONFIG_PROVE_LOCKING=y
-- consumer/provider IIO devices (ex: "voltage-divider" consumer of "adc")
+Clang points out a control flow bug, which happens to be harmless:
 
-When using the IIO consumer interface, e.g. iio_channel_get(),
-the consumer device will likely call iio_read_channel_raw() or similar that
-rely on 'info_exist_lock' mutex.
+drivers/iio/adc/stmpe-adc.c:204:13: error: variable 'data' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
 
-typically:
-...
-	mutex_lock(&chan->indio_dev->info_exist_lock);
-	if (chan->indio_dev->info == NULL) {
-		ret = -ENODEV;
-		goto err_unlock;
-	}
-	ret = do_some_ops()
-err_unlock:
-	mutex_unlock(&chan->indio_dev->info_exist_lock);
-	return ret;
-...
+The warning is sensible here, so let's just avoid the case by
+adding appropriate error handling.
 
-Same mutex is also hold in iio_device_unregister().
-
-The following deadlock warning happens when:
-- the consumer device has called an API like iio_read_channel_raw()
-  at least once.
-- the consumer driver is unregistered, removed (unbind from sysfs)
-
-======================================================
-WARNING: possible circular locking dependency detected
-4.19.24 #577 Not tainted
-------------------------------------------------------
-sh/372 is trying to acquire lock:
-(kn->count#30){++++}, at: kernfs_remove_by_name_ns+0x3c/0x84
-
-but task is already holding lock:
-(&dev->info_exist_lock){+.+.}, at: iio_device_unregister+0x18/0x60
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&dev->info_exist_lock){+.+.}:
-       __mutex_lock+0x70/0xa3c
-       mutex_lock_nested+0x1c/0x24
-       iio_read_channel_raw+0x1c/0x60
-       iio_read_channel_info+0xa8/0xb0
-       dev_attr_show+0x1c/0x48
-       sysfs_kf_seq_show+0x84/0xec
-       seq_read+0x154/0x528
-       __vfs_read+0x2c/0x15c
-       vfs_read+0x8c/0x110
-       ksys_read+0x4c/0xac
-       ret_fast_syscall+0x0/0x28
-       0xbedefb60
-
--> #0 (kn->count#30){++++}:
-       lock_acquire+0xd8/0x268
-       __kernfs_remove+0x288/0x374
-       kernfs_remove_by_name_ns+0x3c/0x84
-       remove_files+0x34/0x78
-       sysfs_remove_group+0x40/0x9c
-       sysfs_remove_groups+0x24/0x34
-       device_remove_attrs+0x38/0x64
-       device_del+0x11c/0x360
-       cdev_device_del+0x14/0x2c
-       iio_device_unregister+0x24/0x60
-       release_nodes+0x1bc/0x200
-       device_release_driver_internal+0x1a0/0x230
-       unbind_store+0x80/0x130
-       kernfs_fop_write+0x100/0x1e4
-       __vfs_write+0x2c/0x160
-       vfs_write+0xa4/0x17c
-       ksys_write+0x4c/0xac
-       ret_fast_syscall+0x0/0x28
-       0xbe906840
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&dev->info_exist_lock);
-                               lock(kn->count#30);
-                               lock(&dev->info_exist_lock);
-  lock(kn->count#30);
-
- *** DEADLOCK ***
-...
-
-So only hold the mutex to:
-- disable all buffers while 'info' is available
-- set 'info' to NULL
-Then release it to call cdev_device_del and so on.
-
-Help to reproduce:
-See example: Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
-sysv {
-	compatible = "voltage-divider";
-	io-channels = <&adc 0>;
-	output-ohms = <22>;
-	full-ohms = <222>;
-};
-
-First, go to iio:deviceX for the "voltage-divider", do one read:
-$ cd /sys/bus/iio/devices/iio:deviceX
-$ cat in_voltage0_raw
-
-Then, unbind the consumer driver. It triggers above deadlock warning.
-$ cd /sys/bus/platform/drivers/iio-rescale/
-$ echo sysv > unbind
-
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 ---
- drivers/iio/industrialio-core.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/iio/adc/stmpe-adc.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4700fd5..e03d6ff 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1745,19 +1745,19 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- {
- 	mutex_lock(&indio_dev->info_exist_lock);
+diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+index 37f4b74a5d32..ed3817c5c896 100644
+--- a/drivers/iio/adc/stmpe-adc.c
++++ b/drivers/iio/adc/stmpe-adc.c
+@@ -205,6 +205,8 @@ static irqreturn_t stmpe_adc_isr(int irq, void *dev_id)
+ 		/* Read value */
+ 		stmpe_block_read(info->stmpe, STMPE_REG_TEMP_DATA, 2,
+ 				(u8 *) &data);
++	} else {
++		return IRQ_NONE;
+ 	}
  
--	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
--
--	iio_device_unregister_debugfs(indio_dev);
--
- 	iio_disable_all_buffers(indio_dev);
- 
- 	indio_dev->info = NULL;
- 
-+	mutex_unlock(&indio_dev->info_exist_lock);
-+
-+	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
-+
-+	iio_device_unregister_debugfs(indio_dev);
-+
- 	iio_device_wakeup_eventset(indio_dev);
- 	iio_buffer_wakeup_poll(indio_dev);
- 
--	mutex_unlock(&indio_dev->info_exist_lock);
--
- 	iio_buffer_free_sysfs_and_mask(indio_dev);
- }
- EXPORT_SYMBOL(iio_device_unregister);
+ 	info->value = (u32) be16_to_cpu(data);
 -- 
-2.7.4
+2.20.0
 
