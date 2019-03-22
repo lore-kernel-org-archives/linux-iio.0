@@ -2,104 +2,129 @@ Return-Path: <SRS0=R23/=RZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F531C43381
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 15:09:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 139A9C43381
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 20:34:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 77DD920830
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 15:09:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF587218D4
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Mar 2019 20:34:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UU/Zy4ab"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726023AbfCVPJZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Mar 2019 11:09:25 -0400
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:42993 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726014AbfCVPJY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Mar 2019 11:09:24 -0400
-Received: by mail-qk1-f196.google.com with SMTP id b74so1390012qkg.9;
-        Fri, 22 Mar 2019 08:09:24 -0700 (PDT)
+        id S1726910AbfCVUef (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Mar 2019 16:34:35 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:35297 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726611AbfCVUef (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Mar 2019 16:34:35 -0400
+Received: by mail-oi1-f193.google.com with SMTP id j132so2740048oib.2;
+        Fri, 22 Mar 2019 13:34:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=t8sVUOZAowMS+LmGR6+4De+ESHUjd1tom0uV5p4H3y4=;
+        b=UU/Zy4abmxJHUvYJEEOdwhnXE9Q5lp7Av7pP59UoQazmjAmbymm6WZlOJi7GN1JAoh
+         8KYNLFJCuOABs4q/cC5O1fYy5uGg/rou9/wDROIzd1G9SouJnVAP/EuPEKkehAl1L1Op
+         ipkDOxKCLzsdLnOKzJdIva16W/1O02b02a/K9R6D4HkhBnAcxPC18FCQjkc50Y2WdNO3
+         3hYEoZGGkoPTz4MKhVTbwMpf2K8mI8xH+lxrk7NRPU0KbLrjoU2ZJ3RUbs/2gF6je/pq
+         IpiB1eiORgzTBPe1a5zL1kTb2wKtPk+5yf7hbxuv9fEciF1ylbjvMxMZXQQKSrjUySKs
+         uR0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=h95rQ83YoQMRPu5Sl13ZHNA0JXgicA32GOHx8MyGaq4=;
-        b=ZE0Rmpyl5Gkjl0rNDaofunAoKOBvfdIOYs4ZRKIJte1F5zmCHaYsbxARn7f/iXc1bU
-         +QdLC0yflb6YdxHPfDqvtIb952sLjmvxBeHf57QoVEJR3kmP3xG7gyCu8LOBd0ntiu4S
-         Do/2QJ6lPk2uDCQA7KtqN4ejc177mO3CyG51gOtqLza4/jywJoM5MOov5xgBeL6L63ac
-         /AOPeMXY9RQwUA08KBMYA9uZEiaJ8l7rVq+sEELxCoYuJ+SyY0zBYUTM8ubnY2a8h+hO
-         Yv4j3EGyVKHRS+bPh8gJEBBlqk2va4YMsQpgN82RDvGNY47u1ndLz+5VrgmPuNSLboRD
-         KJnw==
-X-Gm-Message-State: APjAAAVKYYlLwOPf/FTgEPZdEvKJYPfFoyHXVvOhOkbPhFz2Rt4ZtDym
-        4ercH9RFLJ0fCCLhYSKKA7xSUu68+hz4uEjy86c=
-X-Google-Smtp-Source: APXvYqyurRQ1eVlJfrOymitwFX/5ej4cXXOOXiovxMWvoiE3sLqql2WET+r+ZW9pKqN1yxwt6+fiisjOYErZT/Fi59o=
-X-Received: by 2002:a37:b386:: with SMTP id c128mr7613983qkf.330.1553267363691;
- Fri, 22 Mar 2019 08:09:23 -0700 (PDT)
+        bh=t8sVUOZAowMS+LmGR6+4De+ESHUjd1tom0uV5p4H3y4=;
+        b=kXvt1ZsS+D39+OgyaBrsxAziTDZhHwvvKWGOlrQ+OCl5/FV5tB59uW6+RjeQzVh0J0
+         aagWm0gEjcRXbisW0RD5kajCAkIjFrSrjp0kxp/O8/3FRsZ9ygEi1x4OwUAyUKAML6Qg
+         MZWZlpbKRNJDHGoOxw0nuYuBQ5RUh4FIcrs5mCs7pC8oiOn/z7/BvBQgKEyotooH9+uG
+         fM9TSo6kbcCFNJnTMnYBgWG7UDb/t0azsKR+rHL0SPwAYnpZu/Ua+n3dwmz7J6nT0SBg
+         wYhtUjdIeDnqZXwVi3fIm1tNpXaw0pXm6EYppYDr4JDI1QiFAHRFoKwn4Kvbx2c1Ob2k
+         A82w==
+X-Gm-Message-State: APjAAAXVsDDF/bS7eSnXJNNegGmOTTD3jzzvAbJ0fPdM4FZyxjC2px+/
+        kGYy64uDudEn12yv8PfQa5RjOFs7+/n6uCZWb7c=
+X-Google-Smtp-Source: APXvYqxCqEP1V0TtDvy91JNeIMhYJo4Rm6qx03OAULJVnyTYI3yzqw6UVbIRQNWlYgIyxDao3YX5KByeto5egkXmA7k=
+X-Received: by 2002:aca:cd54:: with SMTP id d81mr3143641oig.124.1553286873900;
+ Fri, 22 Mar 2019 13:34:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190322140906.319267-1-arnd@arndb.de> <20190322145828.GB6521@archlinux-ryzen>
-In-Reply-To: <20190322145828.GB6521@archlinux-ryzen>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 22 Mar 2019 16:09:05 +0100
-Message-ID: <CAK8P3a1k96x_vqjCWU9Dmj3N7arpD3LLY1Tx3NLwciG-q26hzg@mail.gmail.com>
-Subject: Re: [PATCH] iio: stmpe-adc: avoid harmless clang warning
-To:     Nathan Chancellor <natechancellor@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        clang-built-linux@googlegroups.com,
-        Nick Desaulniers <ndesaulniers@google.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Max Krummenacher <max.krummenacher@toradex.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stefan Agner <stefan@agner.ch>, linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+References: <20190321193913.q46gq3h7h63ltpgp@smtp.gmail.com>
+In-Reply-To: <20190321193913.q46gq3h7h63ltpgp@smtp.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Fri, 22 Mar 2019 22:34:21 +0200
+Message-ID: <CA+U=DsoWsWSfyrSneZfoWzXeYjO0u+G0PPtsPQi9ov11w+pcRQ@mail.gmail.com>
+Subject: Re: Help on testing ad5933 driver
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     "Hennerich, Michael" <michael.hennerich@analog.com>,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        dragos.bogdan@analog.com, Jonathan Cameron <jic23@kernel.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        LKML <linux-kernel@vger.kernel.org>, kernel-usp@googlegroups.com
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Mar 22, 2019 at 3:58 PM Nathan Chancellor
-<natechancellor@gmail.com> wrote:
+On Thu, Mar 21, 2019 at 9:39 PM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
 >
-> On Fri, Mar 22, 2019 at 03:08:39PM +0100, Arnd Bergmann wrote:
-> > Clang points out a control flow bug, which happens to be harmless:
-> >
-> > drivers/iio/adc/stmpe-adc.c:204:13: error: variable 'data' is used uninitialized whenever 'if' condition is false [-Werror,-Wsometimes-uninitialized]
-> >
-> > The warning is sensible here, so let's just avoid the case by
-> > adding appropriate error handling.
-> >
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> > ---
-> >  drivers/iio/adc/stmpe-adc.c | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >
-> > diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-> > index 37f4b74a5d32..ed3817c5c896 100644
-> > --- a/drivers/iio/adc/stmpe-adc.c
-> > +++ b/drivers/iio/adc/stmpe-adc.c
-> > @@ -205,6 +205,8 @@ static irqreturn_t stmpe_adc_isr(int irq, void *dev_id)
-> >               /* Read value */
-> >               stmpe_block_read(info->stmpe, STMPE_REG_TEMP_DATA, 2,
-> >                               (u8 *) &data);
-> > +     } else {
-> > +             return IRQ_NONE;
-> >       }
-> >
-> >       info->value = (u32) be16_to_cpu(data);
-> > --
-> > 2.20.0
-> >
+> Hello, would anyone mind helping me test ad5933 driver on actual
+> hardware?  I went through this
+> (https://oslongjourney.github.io/linux-kernel/experiment-one-iio-dummy/)
+> tutorial so I was able to load iio_simple_dummy driver, create and
+> inspect some dummy devices.  Now, as Jonathan has asked me, I would like
+> to test ad5933 driver on an EVAL-AD5933 board which was donated to FLUSP
+> (https://flusp.ime.usp.br/).
 >
-> I sent a similar patch, which is sitting in Jonathan's testing branch:
+> So far I've been hesitating to plug this device on my Debian distro
+> since this
+> (https://www.analog.com/media/en/technical-documentation/user-guides/UG-364.pdf)
+> user guide for Windows says not to connect it before driver
+> installation. Is there something that could harm the board if plugged
+> on a computer without a proper driver?
 >
-> https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/?id=e15146e4d4349b3f309f5591ea8de8d24071265f
 
-Ok, sorry for the dup. Your seems to be better than mine, too.
+You should take into account that a lot of eval boards have their eval
+SW written for Windows.
+This is something of a legacy-thing, because most corporations have
+been running their computers (for work & dev & offices) on Windows.
 
-      Arnd
+So, you shouldn't take things ad-literam (to the letter) when reading
+stuff for Windows and when writing code for Linux.
+
+> I also didn't understand the hardware configuration showed on this
+> (https://wiki.analog.com/resources/tools-software/linux-drivers/iio-impedance-analyzer/ad5933)
+> page.
+
+Hmm, that doc was written a while ago.
+The newer eval board doesn't look like the one in the wiki.
+
+Also, since the eval SW was targeted for Windows, getting it to work
+for Linux (and IIO) implies some hacking/reverse-engineering.
+The reason for this (reverse-engineering) is because [traditionally]
+eval boards are meant to highlight characteristics of the chip, so if
+using Windows, this should be simple.
+
+Unfortunately, the docs aren't helping in this case. So, in this case,
+I would get some volt-meter & oscilloscope to help.
+It looks to me that U2 is the AD5933 on the eval-board.
+Worst case, you can solder directly to the pins and link them to a
+Raspberry PI [on the I2C], power, ground, etc.
+But, you can take a look at the T1 to T8 (if I didn't miss anything)
+and connect to them, and see what each of them is for.
+Hopefully, one of those test-points is for I2C, in which case you can
+attach wires to them and connect them to a host.
+I did not find a good doc for them yet.
+
+But anyway, I would ask some HW guy to help here (because I'm a SW guy
+mostly),and get help on figuring out the eval board
+
+>
+> Any advice will be greatly appreciated.
+> Thanks in advance,
+>
+> Marcelo
