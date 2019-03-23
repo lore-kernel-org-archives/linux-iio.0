@@ -2,147 +2,116 @@ Return-Path: <SRS0=g6Nv=R2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11FCCC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 12:58:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EAEC43381
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C836B218B0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 12:58:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oFgP7SfO"
+	by mail.kernel.org (Postfix) with ESMTP id 7D89D218A2
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbfCWM6Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Mar 2019 08:58:25 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:34045 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbfCWM6Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Mar 2019 08:58:25 -0400
-Received: by mail-wr1-f68.google.com with SMTP id p10so5192656wrq.1;
-        Sat, 23 Mar 2019 05:58:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VUDfVjt25B5iuZ8LRf+UQ/eDY99yvTEQdrmA2/dK4O0=;
-        b=oFgP7SfO1X8+1TM3kr6Yc6KGNBfuAVRSCYcPHCKXJ/noJbyiyva17iXamZq3Gd5gH1
-         4OYVXU0IRDoXmxKMisvWcJ79/XF94kOVRpw4ad0wHoBEACypK7kaM5XDKK6HJTaw8mQR
-         6J87l/NTSaSFn20h+p5cb5c6M98QQGgK22U55gQ9NMT4TxkcX8M39ymuCiabLVltaXdt
-         vfCdgzMqPM7f55C0TCsWjNJhSDnuOmjsi8wuk8i3COl+ntlP/zY8bHY5bcN+GaySFhkt
-         IMV/9YpanVLXSUSEDg2fq5SdZrMvk/jNrWhd0ayu260WkxnGHtvXJJRfViW4T2k9k5bL
-         E2gw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VUDfVjt25B5iuZ8LRf+UQ/eDY99yvTEQdrmA2/dK4O0=;
-        b=e/SILF85bnOgbacx5YFZZNpgt9xdUmtbsvtwyk4VfawdVajIYxfW0DrpOadizktHPf
-         sFrmq/G31oYQZx/4OcbA5pPBKfmEyadulmeTWy9gPgRs+WmUqMbpBUMf2mcyGj+xVoQ0
-         /sJj976RDMgytNWCjjdSQUdywdmqAypQOMcrbyVBdWq10p9ivb/UcyYFdtcJD3wXrupQ
-         cWoXK5vHa75P+s+kVIx0NXdo8dk1I9IS9kyadhsnlpjhM2ceJ6dBWEy1uVe8OGky3W3P
-         IL2QUggpi2pQKR4wpfy8bcvQTGeHElKLEL3UNvUfyUQiEP8F5hVHUlzjrksL4JOOO3CN
-         yoEg==
-X-Gm-Message-State: APjAAAVo5PwQ7K2T+lhAWp61uleoZlFiolhzSShkNy/9hoJTDLeIXQFo
-        yHHLe5ME22HBDA6b4geQ4fM=
-X-Google-Smtp-Source: APXvYqyaXkVwed/1F72vyi3T6fMrtXlwTftolrOcLFMnydPvj2DIX5Q0+n5q0WAiL6OdlEDJEICL+g==
-X-Received: by 2002:adf:ee07:: with SMTP id y7mr9468401wrn.219.1553345903488;
-        Sat, 23 Mar 2019 05:58:23 -0700 (PDT)
-Received: from peano ([87.19.116.42])
-        by smtp.gmail.com with ESMTPSA id z8sm10608970wrh.80.2019.03.23.05.58.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 23 Mar 2019 05:58:22 -0700 (PDT)
-Date:   Sat, 23 Mar 2019 13:58:21 +0100
-From:   Cristian Sicilia <sicilia.cristian@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
+        id S1727941AbfCWR2T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Mar 2019 13:28:19 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:50937 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728009AbfCWR2S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Mar 2019 13:28:18 -0400
+Received: from pc.localdomain (unknown [91.192.165.7])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 10B4320000E;
+        Sat, 23 Mar 2019 17:28:14 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Sebastian Reichel <sre@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] staging: iio: adc: Tab alignment
-Message-ID: <70101e0eaa253140218d833223e0862d8851c01d.1553335775.git.sicilia.cristian@gmail.com>
-References: <cover.1553335775.git.sicilia.cristian@gmail.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>,
+        Artur Rojek <contact@artur-rojek.eu>
+Subject: [PATCH v2 1/4] iio: inkern: API for reading available iio channel attribute values
+Date:   Sat, 23 Mar 2019 18:28:06 +0100
+Message-Id: <20190323172809.14407-1-contact@artur-rojek.eu>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <cover.1553335775.git.sicilia.cristian@gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Aligned some parameters.
+Extend the inkern API with a function for reading available
+attribute values of iio channels.
 
-Signed-off-by: Cristian Sicilia <sicilia.cristian@gmail.com>
+Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 ---
- drivers/staging/iio/adc/ad7280a.c | 36 ++++++++++++++++++------------------
- 1 file changed, 18 insertions(+), 18 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index d9df126..55b5879 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -830,30 +830,30 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+Changes:
+
+v2: no change
+
+ drivers/iio/inkern.c         | 20 ++++++++++++++++++++
+ include/linux/iio/consumer.h | 14 ++++++++++++++
+ 2 files changed, 34 insertions(+)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 06ca3f7fcc44..f19dbde3c945 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -733,6 +733,26 @@ static int iio_channel_read_avail(struct iio_channel *chan,
+ 						 vals, type, length, info);
  }
  
- static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
--		in_voltage-voltage_thresh_low_value,
--		0644,
--		ad7280_read_channel_config,
--		ad7280_write_channel_config,
--		AD7280A_CELL_UNDERVOLTAGE);
-+			     in_voltage - voltage_thresh_low_value,
-+			     0644,
-+			     ad7280_read_channel_config,
-+			     ad7280_write_channel_config,
-+			     AD7280A_CELL_UNDERVOLTAGE);
++int iio_read_avail_channel_attribute(struct iio_channel *chan,
++				     const int **vals, int *type, int *length,
++				     enum iio_chan_info_enum attribute)
++{
++	int ret;
++
++	mutex_lock(&chan->indio_dev->info_exist_lock);
++	if (!chan->indio_dev->info) {
++		ret = -ENODEV;
++		goto err_unlock;
++	}
++
++	ret = iio_channel_read_avail(chan, vals, type, length, attribute);
++err_unlock:
++	mutex_unlock(&chan->indio_dev->info_exist_lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(iio_read_avail_channel_attribute);
++
+ int iio_read_avail_channel_raw(struct iio_channel *chan,
+ 			       const int **vals, int *length)
+ {
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 9887f4f8e2a8..b2d34831ed7c 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -290,6 +290,20 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+ int iio_read_avail_channel_raw(struct iio_channel *chan,
+ 			       const int **vals, int *length);
  
- static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
--		in_voltage-voltage_thresh_high_value,
--		0644,
--		ad7280_read_channel_config,
--		ad7280_write_channel_config,
--		AD7280A_CELL_OVERVOLTAGE);
-+			     in_voltage - voltage_thresh_high_value,
-+			     0644,
-+			     ad7280_read_channel_config,
-+			     ad7280_write_channel_config,
-+			     AD7280A_CELL_OVERVOLTAGE);
- 
- static IIO_DEVICE_ATTR(in_temp_thresh_low_value,
--		0644,
--		ad7280_read_channel_config,
--		ad7280_write_channel_config,
--		AD7280A_AUX_ADC_UNDERVOLTAGE);
-+		       0644,
-+		       ad7280_read_channel_config,
-+		       ad7280_write_channel_config,
-+		       AD7280A_AUX_ADC_UNDERVOLTAGE);
- 
- static IIO_DEVICE_ATTR(in_temp_thresh_high_value,
--		0644,
--		ad7280_read_channel_config,
--		ad7280_write_channel_config,
--		AD7280A_AUX_ADC_OVERVOLTAGE);
-+		       0644,
-+		       ad7280_read_channel_config,
-+		       ad7280_write_channel_config,
-+		       AD7280A_AUX_ADC_OVERVOLTAGE);
- 
- static struct attribute *ad7280_event_attributes[] = {
- 	&iio_dev_attr_in_thresh_low_value.dev_attr.attr,
++/**
++ * iio_read_avail_channel_attribute() - read available channel attribute values
++ * @chan:		The channel being queried.
++ * @vals:		Available values read back.
++ * @type:		Type of values read back.
++ * @length:		Number of entries in vals.
++ * @attribute:		info attribute to be read back.
++ *
++ * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
++ */
++int iio_read_avail_channel_attribute(struct iio_channel *chan,
++				     const int **vals, int *type, int *length,
++				     enum iio_chan_info_enum attribute);
++
+ /**
+  * iio_get_channel_type() - get the type of a channel
+  * @channel:		The channel being queried.
 -- 
-2.7.4
+2.21.0
 
