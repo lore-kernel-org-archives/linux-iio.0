@@ -4,24 +4,24 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2EAEC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB53C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D89D218A2
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9193D218A2
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Mar 2019 17:28:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727941AbfCWR2T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Mar 2019 13:28:19 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:50937 "EHLO
+        id S1728117AbfCWR2i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Mar 2019 13:28:38 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:58529 "EHLO
         relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728009AbfCWR2S (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Mar 2019 13:28:18 -0400
+        with ESMTP id S1727945AbfCWR2h (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Mar 2019 13:28:37 -0400
 Received: from pc.localdomain (unknown [91.192.165.7])
         (Authenticated sender: contact@artur-rojek.eu)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 10B4320000E;
-        Sat, 23 Mar 2019 17:28:14 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 7F5E4200006;
+        Sat, 23 Mar 2019 17:28:34 +0000 (UTC)
 From:   Artur Rojek <contact@artur-rojek.eu>
 To:     Sebastian Reichel <sre@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -31,10 +31,12 @@ Cc:     linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Paul Cercueil <paul@crapouillou.net>,
         Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v2 1/4] iio: inkern: API for reading available iio channel attribute values
-Date:   Sat, 23 Mar 2019 18:28:06 +0100
-Message-Id: <20190323172809.14407-1-contact@artur-rojek.eu>
+Subject: [PATCH v2 3/4] dt-bindings: power: supply: Add docs for Ingenic JZ47xx SoCs battery.
+Date:   Sat, 23 Mar 2019 18:28:08 +0100
+Message-Id: <20190323172809.14407-3-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.21.0
+In-Reply-To: <20190323172809.14407-1-contact@artur-rojek.eu>
+References: <20190323172809.14407-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -42,8 +44,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Extend the inkern API with a function for reading available
-attribute values of iio channels.
+Add documentation for the ingenic-battery driver, used on JZ47xx SoCs.
 
 Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 ---
@@ -52,66 +53,47 @@ Changes:
 
 v2: no change
 
- drivers/iio/inkern.c         | 20 ++++++++++++++++++++
- include/linux/iio/consumer.h | 14 ++++++++++++++
- 2 files changed, 34 insertions(+)
+ .../bindings/power/supply/ingenic,battery.txt | 31 +++++++++++++++++++
+ 1 file changed, 31 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 06ca3f7fcc44..f19dbde3c945 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -733,6 +733,26 @@ static int iio_channel_read_avail(struct iio_channel *chan,
- 						 vals, type, length, info);
- }
- 
-+int iio_read_avail_channel_attribute(struct iio_channel *chan,
-+				     const int **vals, int *type, int *length,
-+				     enum iio_chan_info_enum attribute)
-+{
-+	int ret;
+diff --git a/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
+new file mode 100644
+index 000000000000..66430bf73815
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/supply/ingenic,battery.txt
+@@ -0,0 +1,31 @@
++* Ingenic JZ47xx battery bindings
 +
-+	mutex_lock(&chan->indio_dev->info_exist_lock);
-+	if (!chan->indio_dev->info) {
-+		ret = -ENODEV;
-+		goto err_unlock;
-+	}
++Required properties:
 +
-+	ret = iio_channel_read_avail(chan, vals, type, length, attribute);
-+err_unlock:
-+	mutex_unlock(&chan->indio_dev->info_exist_lock);
++- compatible: Must be "ingenic,jz4740-battery".
++- io-channels: phandle and IIO specifier pair to the IIO device.
++  Format described in iio-bindings.txt.
++- monitored-battery: phandle to a "simple-battery" compatible node.
 +
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_read_avail_channel_attribute);
++The "monitored-battery" property must be a phandle to a node using the format
++described in battery.txt, with the following properties being required:
 +
- int iio_read_avail_channel_raw(struct iio_channel *chan,
- 			       const int **vals, int *length)
- {
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index 9887f4f8e2a8..b2d34831ed7c 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -290,6 +290,20 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
- int iio_read_avail_channel_raw(struct iio_channel *chan,
- 			       const int **vals, int *length);
- 
-+/**
-+ * iio_read_avail_channel_attribute() - read available channel attribute values
-+ * @chan:		The channel being queried.
-+ * @vals:		Available values read back.
-+ * @type:		Type of values read back.
-+ * @length:		Number of entries in vals.
-+ * @attribute:		info attribute to be read back.
-+ *
-+ * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
-+ */
-+int iio_read_avail_channel_attribute(struct iio_channel *chan,
-+				     const int **vals, int *type, int *length,
-+				     enum iio_chan_info_enum attribute);
++- voltage-min-design-microvolt: Drained battery voltage.
++- voltage-max-design-microvolt: Fully charged battery voltage.
 +
- /**
-  * iio_get_channel_type() - get the type of a channel
-  * @channel:		The channel being queried.
++Example:
++
++#include <dt-bindings/iio/adc/ingenic,adc.h>
++
++simple_battery: battery {
++	compatible = "simple-battery";
++	voltage-min-design-microvolt = <3600000>;
++	voltage-max-design-microvolt = <4200000>;
++};
++
++ingenic_battery {
++	compatible = "ingenic,jz4740-battery";
++	io-channels = <&adc INGENIC_ADC_BATTERY>;
++	io-channel-names = "battery";
++	monitored-battery = <&simple_battery>;
++};
 -- 
 2.21.0
 
