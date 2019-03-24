@@ -5,56 +5,57 @@ X-Spam-Level:
 X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 793FDC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:23:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A32C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:23:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 47DE521741
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:23:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C83B02147C
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:23:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rlp30LAu"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EZ2p5iRE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728960AbfCXRXQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 13:23:16 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:36392 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728948AbfCXRXP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 13:23:15 -0400
-Received: by mail-wr1-f66.google.com with SMTP id y13so7528401wrd.3;
-        Sun, 24 Mar 2019 10:23:13 -0700 (PDT)
+        id S1729023AbfCXRXV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 13:23:21 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:36954 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729021AbfCXRXU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 13:23:20 -0400
+Received: by mail-wm1-f67.google.com with SMTP id v14so6666453wmf.2;
+        Sun, 24 Mar 2019 10:23:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=le4hwhU5UoKaxHO08LbNwF83in7BMskVDQEq5Hh35h4=;
-        b=rlp30LAu0l9GhXqbcK80yYUdVkOjrlhBoyDI+69uA/VPgkmLklynYTw34INX62vaJV
-         kOJol7TTifhveiq7K52099zDLmJ1H65TIbw/wfb1xyZRGTWdHMxOghVQbHGxsngibOtA
-         IRQ9iNUrQGfpKNuxLAxaS7nJ1SXELzLTZ+uy/GWAa2hD1Yz24vO2SG+z5PfWVtYsH+Pk
-         Xe38acs0vmI6ms6UgQ57Gq7Ss//fMcAhmyd54D7yNMXSu0M2bRrHGLg/MC4NsnPnLATs
-         +HGwpyUDmYlCJHZJMeT4vTU+oRdWrsK2sp/AWmBTYiDZu2xSHdNtibUThYQ4JM4dJZsA
-         5Rkw==
+        bh=fonDLlUdPKo0ydLHxZzaMjKAd7fvMqbYiYkKPyuQhkM=;
+        b=EZ2p5iREB4YKYVhGy3eJX7CgB7yK4ACnDIoucOSCDmf5I4CxvJifsrMRlZjDGFVi4A
+         X1gxg15tswFyy+aIS2NQZH9jy3vffcblP4Y3/roA1fbDiiEfv1N+0uXHbQ3lqTGYKF69
+         2lkjSO7eVYB0UF6HZRZ1cEqf+rFPq2bPa9FyB38N0HX7cVEwNx1pEYeILKjN6Q5OC004
+         XsEFNaV3gBYz7ZHO092kxppf67kVL/ThaKSzJ/pIiC+QrHZgHdxoCrsUSldiQPIUZ/7d
+         4hd8LyXfWIzQK0KNoyIj2gy84VgdK0RiiunmNdJtG8xPRVsWVhzU8sqvONpEzpN1wvCO
+         Smsw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=le4hwhU5UoKaxHO08LbNwF83in7BMskVDQEq5Hh35h4=;
-        b=lLUufmffaRiutYG8OeztHP4bhJdwyGLfAAgf7zd1hGPEXL9ctwSqeTMZBBMa/QpSg7
-         HCs/1F+rAuEG6en9lslJnhk+STcunlXoZJYThNxnd1IX8zAfQc9OrhU3gEX1oUm3ujFQ
-         s7Cix0FElMCR7ABnSopUu86QN51N0P0m0wGZqAJDHF3tc/bkkNxdWI652Wh/ui5jiDL8
-         e9xvH5T+cLfnMhMx4eAbqXTDIM2N00EiAhmApYcZXzCPL5kRXrUF9DTLYA9U/bLlMZsP
-         XzTnU99fAYk0606TeB1j/5rerehsTakMrLvPH/SitySfqUlMq2IdttJcBFZ3RZ6ARaPb
-         nrBw==
-X-Gm-Message-State: APjAAAX3HVY14++zI7lA48Yy4Hl/ZFZ4tiQM3ccWFb/uKXBqeADf1fJ5
-        1mWk472ebP7m52MAdK9dZ8w=
-X-Google-Smtp-Source: APXvYqz/34I/TlI1X32cwr+1p6gnXfcG79imkat83GJzZ8HO8leKmskX7U411HZia+Pnz33IPIAhCg==
-X-Received: by 2002:adf:eb89:: with SMTP id t9mr12557703wrn.21.1553448192886;
-        Sun, 24 Mar 2019 10:23:12 -0700 (PDT)
+        bh=fonDLlUdPKo0ydLHxZzaMjKAd7fvMqbYiYkKPyuQhkM=;
+        b=UxoIqj8f85nLO5jl2oSKepAHiiVhtt1Pyl/Qn7Y5DcTfOtilMVr0pyi8F/1SbzkCWP
+         Vw6GlubsCQrA89plaPTDXM3iGQxvzHzb+aWae9n4meEMh2Zud5c/ugwrMbN2k+S5PlAo
+         sETpa5D20rRNkIWYa6FWdeZntZK5J7Ig2yrM9e5OetxxVg05JxceP4dN2oM76gvyrnqW
+         BpNCLX6Z3pVKjaUbF276jEPLuXJBcxyRSTTvV58uOZsDkKUW5ABZWpCASkHBS5LpujC1
+         9/4DevjGPJbTAaEdqtj3nNZ+ADO7UiouHdGR6IxUs1d7jOx6u56s3JGS39+pfTKQkhGx
+         p1Zg==
+X-Gm-Message-State: APjAAAV6K5wyVBuMwphydOaUJ63uvEIW5zlKgsx5/ai/1lShV+GtrKKs
+        sUoO9zzmzYSw1EaFJ9NQSDs=
+X-Google-Smtp-Source: APXvYqx1JRHeWENbo2k+QPUqD1A+5T1/uhJYNd5PCv2Jny0Vdb0lycUFO6FkakUrWuKgpSY9VFct1g==
+X-Received: by 2002:a7b:cd9a:: with SMTP id y26mr3185149wmj.31.1553448198232;
+        Sun, 24 Mar 2019 10:23:18 -0700 (PDT)
 Received: from peano ([87.19.116.42])
-        by smtp.gmail.com with ESMTPSA id y5sm11964759wrw.23.2019.03.24.10.23.11
+        by smtp.gmail.com with ESMTPSA id 61sm15784692wre.50.2019.03.24.10.23.16
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 24 Mar 2019 10:23:12 -0700 (PDT)
-Date:   Sun, 24 Mar 2019 18:23:11 +0100
+        Sun, 24 Mar 2019 10:23:17 -0700 (PDT)
+Date:   Sun, 24 Mar 2019 18:23:16 +0100
 From:   Cristian Sicilia <sicilia.cristian@gmail.com>
 To:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -70,9 +71,8 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v3 2/5] staging: iio: adc: ad7192: Converted bool to bitfield
- format
-Message-ID: <1d0e1d2c7011bfd2d20e8dd728256bf245861a8e.1553447138.git.sicilia.cristian@gmail.com>
+Subject: [PATCH v3 5/5] staging: iio: adc: ad7280a: Remove CamelCase notation
+Message-ID: <e1f26b39dd421d848d5579bd5540644e71416edb.1553447138.git.sicilia.cristian@gmail.com>
 References: <cover.1553366098.git.sicilia.cristian@gmail.com>
  <cover.1553447138.git.sicilia.cristian@gmail.com>
 MIME-Version: 1.0
@@ -85,38 +85,42 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changed bool format to bitfield format to save space.
+Fix CamelCase naming.
 
 Signed-off-by: Cristian Sicilia <sicilia.cristian@gmail.com>
 ---
- drivers/staging/iio/adc/ad7192.h | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/staging/iio/adc/ad7280a.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
-index 7433a43..9c1d223 100644
---- a/drivers/staging/iio/adc/ad7192.h
-+++ b/drivers/staging/iio/adc/ad7192.h
-@@ -35,13 +35,13 @@ struct ad7192_platform_data {
- 	u16		vref_mv;
- 	u8		clock_source_sel;
- 	u32		ext_clk_hz;
--	bool		refin2_en;
--	bool		rej60_en;
--	bool		sinc3_en;
--	bool		chop_en;
--	bool		buf_en;
--	bool		unipolar_en;
--	bool		burnout_curr_en;
-+	u8		refin2_en:1;
-+	u8		rej60_en:1;
-+	u8		sinc3_en:1;
-+	u8		chop_en:1;
-+	u8		buf_en:1;
-+	u8		unipolar_en:1;
-+	u8		burnout_curr_en:1;
- };
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 4ff28f1..229dcad 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -917,8 +917,8 @@ static int ad7280_probe(struct spi_device *spi)
+ 	const struct ad7280_platform_data *pdata = dev_get_platdata(&spi->dev);
+ 	struct ad7280_state *st;
+ 	int ret;
+-	const unsigned short tACQ_ns[4] = {465, 1010, 1460, 1890};
+-	const unsigned short nAVG[4] = {1, 2, 4, 8};
++	const unsigned short t_acq_ns[4] = {465, 1010, 1460, 1890};
++	const unsigned short n_avg[4] = {1, 2, 4, 8};
+ 	struct iio_dev *indio_dev;
  
- #endif /* IIO_ADC_AD7192_H_ */
+ 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+@@ -966,10 +966,9 @@ static int ad7280_probe(struct spi_device *spi)
+ 	 */
+ 
+ 	st->readback_delay_us =
+-		((tACQ_ns[pdata->acquisition_time & 0x3] + 695) *
+-		(AD7280A_NUM_CH * nAVG[pdata->conversion_averaging & 0x3]))
+-		- tACQ_ns[pdata->acquisition_time & 0x3] +
+-		st->slave_num * 250;
++		((t_acq_ns[pdata->acquisition_time & 0x3] + 695) *
++		 (AD7280A_NUM_CH * n_avg[pdata->conversion_averaging & 0x3])) -
++		t_acq_ns[pdata->acquisition_time & 0x3] + st->slave_num * 250;
+ 
+ 	/* Convert to usecs */
+ 	st->readback_delay_us = DIV_ROUND_UP(st->readback_delay_us, 1000);
 -- 
 2.7.4
 
