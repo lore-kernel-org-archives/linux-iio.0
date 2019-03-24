@@ -6,183 +6,241 @@ X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 094BEC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:08:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C8E0C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:10:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C9199222EC
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:08:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 62A23222EC
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:10:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726743AbfCXPI1 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 11:08:27 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:38058 "EHLO
+        id S1726743AbfCXPKG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 11:10:06 -0400
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:38076 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726603AbfCXPI1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 11:08:27 -0400
+        with ESMTP id S1726603AbfCXPKG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 11:10:06 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id DFA9D9E76FE;
-        Sun, 24 Mar 2019 15:08:25 +0000 (GMT)
-Date:   Sun, 24 Mar 2019 15:08:24 +0000
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 156489E76FE;
+        Sun, 24 Mar 2019 15:10:03 +0000 (GMT)
+Date:   Sun, 24 Mar 2019 15:10:02 +0000
 From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To:     Alexandru Ardelean <ardeleanalex@gmail.com>
 Cc:     linux-iio@vger.kernel.org,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH 2/5] iio: imu: adis: generalize burst mode support
-Message-ID: <20190324150824.5f74cf77@archlinux>
-In-Reply-To: <20190322204442.4035-2-ardeleanalex@gmail.com>
+Subject: Re: [PATCH 3/5] iio: imu: adis16400: move burst logic to ADIS lib
+Message-ID: <20190324151002.449ee707@archlinux>
+In-Reply-To: <20190322204442.4035-3-ardeleanalex@gmail.com>
 References: <20190322204442.4035-1-ardeleanalex@gmail.com>
-        <20190322204442.4035-2-ardeleanalex@gmail.com>
+        <20190322204442.4035-3-ardeleanalex@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Mar 2019 22:44:39 +0200
+On Fri, 22 Mar 2019 22:44:40 +0200
 Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
 
 > From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 > 
-> Some variants in the ADIS16400 family support burst mode. This mechanism is
-> implemented in the `adis16400_buffer.c` file.
+> This change has been done separately, so that it's easier to visualize the
+> changed logic in the adis_scan_update() function.
 > 
-> Some variants in ADIS16480 are also adding burst mode, which is
-> functionally similar to ADIS16400, but with different parameters. To get
-> there, a `adis_burst` struct is added to parametrize certain bits of the
-> SPI communication to setup: the register that triggers burst-mode, and the
-> extra-data-length that needs be accounted for when building the bust-length
-> buffer.
-> 
-> The trigger handler cannot be made generic, since it's very specific to
-> each ADIS164XX family.
-> 
-> A future enhancement of this `adis_burst` mode will be the possibility to
-> enable/disable burst-mode. For the ADIS16400 family it's hard-coded to on
-> by default. But for ADIS16480 there will be a need to disable this.
-This sounds interesting. I'll wait to see why you need to disable it :)
-From what I recall there are definitely advantages to turning it off if
-you have a disconnected set of channels to read.
-
-Been a long time since I fired one of these up, though I think the one I have
-still works so I might move it into a more regular test set.
-
-> 
-> When that will be implemented, both ADIS16400 & ADIS16480 will have the
-> burst-mode enable-able/disable-able.
+> Most of the function in this `adis16400_update_scan_mode()` that deals with
+> burst-mode will be re-used in the ADIS16480, but with different parameters.
 > 
 > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Bit of fuzz in here when applying.  Otherwise all looks fine.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/imu/adis16400_buffer.c |  7 +++----
->  drivers/iio/imu/adis16400_core.c   |  8 ++++++++
->  include/linux/iio/imu/adis.h       | 14 ++++++++++++++
->  3 files changed, 25 insertions(+), 4 deletions(-)
+>  drivers/iio/imu/Makefile           |  1 -
+>  drivers/iio/imu/adis16400.h        | 16 --------
+>  drivers/iio/imu/adis16400_buffer.c | 59 ------------------------------
+>  drivers/iio/imu/adis16400_core.c   |  2 +-
+>  drivers/iio/imu/adis_buffer.c      | 40 ++++++++++++++++++++
+>  5 files changed, 41 insertions(+), 77 deletions(-)
+>  delete mode 100644 drivers/iio/imu/adis16400_buffer.c
 > 
-> diff --git a/drivers/iio/imu/adis16400_buffer.c b/drivers/iio/imu/adis16400_buffer.c
-> index 268349eb51c7..199bd72348eb 100644
-> --- a/drivers/iio/imu/adis16400_buffer.c
-> +++ b/drivers/iio/imu/adis16400_buffer.c
-> @@ -22,7 +22,7 @@ int adis16400_update_scan_mode(struct iio_dev *indio_dev,
->  	unsigned int burst_length;
->  	u8 *tx;
+> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+> index 5fd87701259f..c9f85126fbe1 100644
+> --- a/drivers/iio/imu/Makefile
+> +++ b/drivers/iio/imu/Makefile
+> @@ -5,7 +5,6 @@
 >  
-> -	if (st->variant->flags & ADIS16400_NO_BURST)
-> +	if (!adis->burst || !adis->burst->en)
->  		return adis_update_scan_mode(indio_dev, scan_mask);
->  
->  	kfree(adis->xfer);
-> @@ -30,8 +30,7 @@ int adis16400_update_scan_mode(struct iio_dev *indio_dev,
->  
->  	/* All but the timestamp channel */
->  	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
-> -	if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
-> -		burst_length += sizeof(u16);
-> +	burst_length += adis->burst->extra_len;
->  
->  	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
->  	if (!adis->xfer)
-> @@ -42,7 +41,7 @@ int adis16400_update_scan_mode(struct iio_dev *indio_dev,
->  		return -ENOMEM;
->  
->  	tx = adis->buffer + burst_length;
-> -	tx[0] = ADIS_READ_REG(ADIS16400_GLOB_CMD);
-> +	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
->  	tx[1] = 0;
->  
->  	adis->xfer[0].tx_buf = tx;
-> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
-> index 34d52863377a..0d799e983d74 100644
-> --- a/drivers/iio/imu/adis16400_core.c
-> +++ b/drivers/iio/imu/adis16400_core.c
-> @@ -146,6 +146,11 @@ enum adis16400_chip_variant {
->  	ADIS16448,
+>  # When adding new entries keep the list in alphabetical order
+>  adis16400-y             := adis16400_core.o
+> -adis16400-$(CONFIG_IIO_BUFFER) += adis16400_buffer.o
+>  obj-$(CONFIG_ADIS16400) += adis16400.o
+>  obj-$(CONFIG_ADIS16460) += adis16460.o
+>  obj-$(CONFIG_ADIS16480) += adis16480.o
+> diff --git a/drivers/iio/imu/adis16400.h b/drivers/iio/imu/adis16400.h
+> index 93b6c0c41fdd..7e2e0dbaa2e1 100644
+> --- a/drivers/iio/imu/adis16400.h
+> +++ b/drivers/iio/imu/adis16400.h
+> @@ -194,20 +194,4 @@ enum {
+>  	ADIS16400_SCAN_TIMESTAMP,
 >  };
 >  
-> +static struct adis_burst adis16400_burst = {
-> +	.en = true,
-> +	.reg_cmd = ADIS16400_GLOB_CMD,
-> +};
+> -#ifdef CONFIG_IIO_BUFFER
+> -
+> -ssize_t adis16400_read_data_from_ring(struct device *dev,
+> -				      struct device_attribute *attr,
+> -				      char *buf);
+> -
+> -
+> -int adis16400_update_scan_mode(struct iio_dev *indio_dev,
+> -	const unsigned long *scan_mask);
+> -
+> -#else /* CONFIG_IIO_BUFFER */
+> -
+> -#define adis16400_update_scan_mode NULL
+> -
+> -#endif /* CONFIG_IIO_BUFFER */
+> -
+>  #endif /* SPI_ADIS16400_H_ */
+> diff --git a/drivers/iio/imu/adis16400_buffer.c b/drivers/iio/imu/adis16400_buffer.c
+> deleted file mode 100644
+> index 199bd72348eb..000000000000
+> --- a/drivers/iio/imu/adis16400_buffer.c
+> +++ /dev/null
+> @@ -1,59 +0,0 @@
+> -// SPDX-License-Identifier: GPL-2.0
+> -#include <linux/interrupt.h>
+> -#include <linux/mutex.h>
+> -#include <linux/kernel.h>
+> -#include <linux/spi/spi.h>
+> -#include <linux/slab.h>
+> -#include <linux/bitops.h>
+> -#include <linux/export.h>
+> -
+> -#include <linux/iio/iio.h>
+> -#include <linux/iio/buffer.h>
+> -#include <linux/iio/triggered_buffer.h>
+> -#include <linux/iio/trigger_consumer.h>
+> -
+> -#include "adis16400.h"
+> -
+> -int adis16400_update_scan_mode(struct iio_dev *indio_dev,
+> -	const unsigned long *scan_mask)
+> -{
+> -	struct adis16400_state *st = iio_priv(indio_dev);
+> -	struct adis *adis = &st->adis;
+> -	unsigned int burst_length;
+> -	u8 *tx;
+> -
+> -	if (!adis->burst || !adis->burst->en)
+> -		return adis_update_scan_mode(indio_dev, scan_mask);
+> -
+> -	kfree(adis->xfer);
+> -	kfree(adis->buffer);
+> -
+> -	/* All but the timestamp channel */
+> -	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
+> -	burst_length += adis->burst->extra_len;
+> -
+> -	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
+> -	if (!adis->xfer)
+> -		return -ENOMEM;
+> -
+> -	adis->buffer = kzalloc(burst_length + sizeof(u16), GFP_KERNEL);
+> -	if (!adis->buffer)
+> -		return -ENOMEM;
+> -
+> -	tx = adis->buffer + burst_length;
+> -	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
+> -	tx[1] = 0;
+> -
+> -	adis->xfer[0].tx_buf = tx;
+> -	adis->xfer[0].bits_per_word = 8;
+> -	adis->xfer[0].len = 2;
+> -	adis->xfer[1].rx_buf = adis->buffer;
+> -	adis->xfer[1].bits_per_word = 8;
+> -	adis->xfer[1].len = burst_length;
+> -
+> -	spi_message_init(&adis->msg);
+> -	spi_message_add_tail(&adis->xfer[0], &adis->msg);
+> -	spi_message_add_tail(&adis->xfer[1], &adis->msg);
+> -
+> -	return 0;
+> -}
+> diff --git a/drivers/iio/imu/adis16400_core.c b/drivers/iio/imu/adis16400_core.c
+> index 0d799e983d74..265c0a46597f 100644
+> --- a/drivers/iio/imu/adis16400_core.c
+> +++ b/drivers/iio/imu/adis16400_core.c
+> @@ -887,7 +887,7 @@ static const struct iio_info adis16400_info = {
+>  	.driver_module = THIS_MODULE,
+>  	.read_raw = &adis16400_read_raw,
+>  	.write_raw = &adis16400_write_raw,
+> -	.update_scan_mode = adis16400_update_scan_mode,
+> +	.update_scan_mode = adis_update_scan_mode,
+>  	.debugfs_reg_access = adis_debugfs_reg_access,
+>  };
+>  
+> diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+> index 36607d52fee0..a2fa6e75b13e 100644
+> --- a/drivers/iio/imu/adis_buffer.c
+> +++ b/drivers/iio/imu/adis_buffer.c
+> @@ -20,6 +20,43 @@
+>  #include <linux/iio/triggered_buffer.h>
+>  #include <linux/iio/imu/adis.h>
+>  
+> +static int adis_update_scan_mode_burst(struct iio_dev *indio_dev,
+> +	const unsigned long *scan_mask)
+> +{
+> +	struct adis *adis = iio_device_get_drvdata(indio_dev);
+> +	unsigned int burst_length;
+> +	u8 *tx;
 > +
->  static int adis16334_get_freq(struct adis16400_state *st)
+> +	/* All but the timestamp channel */
+> +	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
+> +	burst_length += adis->burst->extra_len;
+> +
+> +	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
+> +	if (!adis->xfer)
+> +		return -ENOMEM;
+> +
+> +	adis->buffer = kzalloc(burst_length + sizeof(u16), GFP_KERNEL);
+> +	if (!adis->buffer)
+> +		return -ENOMEM;
+> +
+> +	tx = adis->buffer + burst_length;
+> +	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
+> +	tx[1] = 0;
+> +
+> +	adis->xfer[0].tx_buf = tx;
+> +	adis->xfer[0].bits_per_word = 8;
+> +	adis->xfer[0].len = 2;
+> +	adis->xfer[1].rx_buf = adis->buffer;
+> +	adis->xfer[1].bits_per_word = 8;
+> +	adis->xfer[1].len = burst_length;
+> +
+> +	spi_message_init(&adis->msg);
+> +	spi_message_add_tail(&adis->xfer[0], &adis->msg);
+> +	spi_message_add_tail(&adis->xfer[1], &adis->msg);
+> +
+> +	return 0;
+> +}
+> +
+>  int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  	const unsigned long *scan_mask)
 >  {
->  	int ret;
-> @@ -973,6 +978,9 @@ static int adis16400_probe(struct spi_device *spi)
->  	if (!(st->variant->flags & ADIS16400_NO_BURST)) {
->  		adis16400_setup_chan_mask(st);
->  		indio_dev->available_scan_masks = st->avail_scan_mask;
-> +		st->adis.burst = &adis16400_burst;
-> +		if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
-> +			st->adis.burst->extra_len = sizeof(u16);
->  	}
+> @@ -32,6 +69,9 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+>  	kfree(adis->xfer);
+>  	kfree(adis->buffer);
 >  
->  	ret = adis_init(&st->adis, indio_dev, spi, &adis16400_data);
-> diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-> index cb6c3ed13459..26141ee87cfb 100644
-> --- a/include/linux/iio/imu/adis.h
-> +++ b/include/linux/iio/imu/adis.h
-> @@ -21,6 +21,7 @@
->  #define ADIS_REG_PAGE_ID 0x00
->  
->  struct adis;
-> +struct adis_burst;
->  
->  /**
->   * struct adis_data - ADIS chip variant specific data
-> @@ -59,6 +60,7 @@ struct adis {
->  	struct iio_trigger	*trig;
->  
->  	const struct adis_data	*data;
-> +	struct adis_burst	*burst;
->  
->  	struct mutex		txrx_lock;
->  	struct spi_message	msg;
-> @@ -234,6 +236,18 @@ int adis_single_conversion(struct iio_dev *indio_dev,
->  
->  #ifdef CONFIG_IIO_ADIS_LIB_BUFFER
->  
-> +/**
-> + * struct adis_burst - ADIS data for burst transfers
-> + * @en			burst mode enabled
-> + * @reg_cmd		register command that triggers burst
-> + * @extra_len		extra length to account in the SPI RX buffer
-> + */
-> +struct adis_burst {
-> +	bool		en;
-> +	unsigned int	reg_cmd;
-> +	unsigned int	extra_len;
-> +};
+> +	if (adis->burst && adis->burst->en)
+> +		return adis_update_scan_mode_burst(indio_dev, scan_mask);
 > +
->  int adis_setup_buffer_and_trigger(struct adis *adis,
->  	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *));
->  void adis_cleanup_buffer_and_trigger(struct adis *adis,
+>  	scan_count = indio_dev->scan_bytes / 2;
+>  
+>  	adis->xfer = kcalloc(scan_count + 1, sizeof(*adis->xfer), GFP_KERNEL);
 
