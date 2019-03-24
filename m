@@ -6,50 +6,54 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBE2C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:25:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB08C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:34:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 89C9C222D6
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:25:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BDAC4222D6
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:34:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553430351;
-	bh=FL3tEc7++85Ctteo5zQGlckdt3wcBl4YBAzOqEiKZOI=;
+	s=default; t=1553430899;
+	bh=veioUJlORlYBTD0o78zA7HRfOnNX8Cm8kLcrUfsYtD0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=qR61+l/uFr//SeGd5ggCNhO7Tv0AcyB5z8VEZdYeOm1ln+H7YsQZW7z9sAZwAYfCq
-	 P8yLePEbZRRlE3vBH/N4XQGN2MYvCHJ8wrUAntjkJnito34pxyOLOmKEMrlErd2Th1
-	 21Bcir+ubbwnJ8NkZGZ3nUOSNKZrUp/FcTXiiJWA=
+	b=viNIm6f7XToC3F97/C4gmNCboBxvhdF4JMa+otO99Z2RsdolnxxShVgfyWZspB8j7
+	 5/Chn4KE/8YkL1WkoSs+/tkWRy8rGSTrx3rWMTE730L8z5gdqn+9fg84P69/2/t0m2
+	 WDrFDEvNZMn+ejk8b7fPFbmA6AaIVOUyblclN1R0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726970AbfCXMZv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 08:25:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48768 "EHLO mail.kernel.org"
+        id S1728606AbfCXMe7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 08:34:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50658 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726160AbfCXMZv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Mar 2019 08:25:51 -0400
+        id S1726963AbfCXMe7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Mar 2019 08:34:59 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CE476222C5;
-        Sun, 24 Mar 2019 12:25:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3DF19222D0;
+        Sun, 24 Mar 2019 12:34:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553430350;
-        bh=FL3tEc7++85Ctteo5zQGlckdt3wcBl4YBAzOqEiKZOI=;
+        s=default; t=1553430898;
+        bh=veioUJlORlYBTD0o78zA7HRfOnNX8Cm8kLcrUfsYtD0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p5bgxZyA3UF3/2teLe1+8jKmvVpI/rbq1VXSaCVK9s1gJ4VtxA4aV20gzddA2rLzv
-         ewUAPD5r5sDucrQVXpCbsG06NDqUqmvMyHmQilNk9eZrfKwFRN1BY53CiDGzEjbHHb
-         +NRggoIRZShXFGENPFYGCFWdoPXjxx9Gkj5M+hgc=
-Date:   Sun, 24 Mar 2019 12:25:44 +0000
+        b=HJJB0NAHSx6ijrqAY2K4y+cwOeuyB3IX/ASm2ytXDH3qdJ7K3HJ4S9VZya9AQFQBC
+         FRR9H5FGqKfEPwXX9Gx9W1NFmOUNFnYYGsnLn6oSGrHyA+2x7v1s2egm5+5T4HK4aj
+         2FBzM40yfDhcmD16zp8xYK6iMXLiCXhF/wY8RAcU=
+Date:   Sun, 24 Mar 2019 12:34:52 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Gustavo A. R. Silva" <gustavo@embeddedor.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+To:     Cristian Sicilia <sicilia.cristian@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel Drake <drake@endlessm.com>, linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: st_accel: remove unnecessary comparison of
- unsigned integer with < 0
-Message-ID: <20190324122544.4fe69a14@archlinux>
-In-Reply-To: <20190318173302.GA10761@embeddedor>
-References: <20190318173302.GA10761@embeddedor>
+Subject: Re: [PATCH v2 2/5] staging: iio: adc: Converted bool to bitfield
+ format
+Message-ID: <20190324123452.66b81183@archlinux>
+In-Reply-To: <93b82557f3610f4bf4d09d0556e502b418376420.1553366098.git.sicilia.cristian@gmail.com>
+References: <cover.1553335775.git.sicilia.cristian@gmail.com>
+        <cover.1553366098.git.sicilia.cristian@gmail.com>
+        <93b82557f3610f4bf4d09d0556e502b418376420.1553366098.git.sicilia.cristian@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,38 +63,57 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Mar 2019 12:33:02 -0500
-"Gustavo A. R. Silva" <gustavo@embeddedor.com> wrote:
+On Sat, 23 Mar 2019 20:21:39 +0100
+Cristian Sicilia <sicilia.cristian@gmail.com> wrote:
 
-> There is no need to compare *val* with < 0 because such comparison
-> of an unsigned value is always false.
+> Changed bool format to bitfield format to save space.
 > 
-> Fix this by removing such comparison.
+> Signed-off-by: Cristian Sicilia <sicilia.cristian@gmail.com>
 > 
-> Addresses-Coverity-ID: 1443919 ("Unsigned compared against 0")
-> Fixes: f38ab20b749d ("iio: st_accel: use ACPI orientation data")
-> Signed-off-by: Gustavo A. R. Silva <gustavo@embeddedor.com>
-Thanks,
+> ---
+> The strange thing is that this struct seems not populated
+> using a DTS binding function.
+Indeed and that should have definitely been a warning sign ;)
+We are looking at traditional platform data here (pre device
+tree) and generally we will want to drop it entirely for old
+drivers that we are looking to move out of staging.
 
-Colin King got there first and I have a patch fixing this queued up.
-
-Jonathan
+I don't mind improving it prior to dropping (as it avoids
+setting bad precedence in the code base in the meantime) but
+one comment inline...
 
 > ---
->  drivers/iio/accel/st_accel_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/staging/iio/adc/ad7192.h | 16 ++++++++--------
+>  1 file changed, 8 insertions(+), 8 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-> index a3c0916479fa..9930edf423bf 100644
-> --- a/drivers/iio/accel/st_accel_core.c
-> +++ b/drivers/iio/accel/st_accel_core.c
-> @@ -992,7 +992,7 @@ static int apply_acpi_orientation(struct iio_dev *indio_dev,
->  			goto out;
+> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
+> index 7433a43..87891ba 100644
+> --- a/drivers/staging/iio/adc/ad7192.h
+> +++ b/drivers/staging/iio/adc/ad7192.h
+> @@ -35,13 +35,13 @@ struct ad7192_platform_data {
+>  	u16		vref_mv;
+>  	u8		clock_source_sel;
+>  	u32		ext_clk_hz;
+> -	bool		refin2_en;
+> -	bool		rej60_en;
+> -	bool		sinc3_en;
+> -	bool		chop_en;
+> -	bool		buf_en;
+> -	bool		unipolar_en;
+> -	bool		burnout_curr_en;
+> -};
+> +	u8		refin2_en:1;
+> +	u8		rej60_en:1;
+> +	u8		sinc3_en:1;
+> +	u8		chop_en:1;
+> +	u8		buf_en:1;
+> +	u8		unipolar_en:1;
+> +	u8		burnout_curr_en:1;
+> +} __attribute__((__packed__));
+Please don't use packed for anything without a very very good reason.
+it may result in data layouts that are much harder to read from.
+That obviously doesn't matter here as I doubt it's read in a fast path.
+
 >  
->  		val = elements[i].integer.value;
-> -		if (val < 0 || val > 2)
-> +		if (val > 2)
->  			goto out;
->  
->  		/* Avoiding full matrix multiplication, we simply reorder the
+>  #endif /* IIO_ADC_AD7192_H_ */
 
