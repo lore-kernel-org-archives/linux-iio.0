@@ -2,133 +2,97 @@ Return-Path: <SRS0=NPK8=R3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C09C7C10F00
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 11:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89E95C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:01:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 96510222CD
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 11:50:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4E671222D6
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:01:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1553428909;
+	bh=qErxrAmqSaxiuqF6E1wBrvr336HeuYhicO0wUOifk1M=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=qe+4zU3ZtgbVmqyFUu4G/iUSnqaSc0yF4E4nyMBorZqOz+7zTZQfddNYA1vfGzEha
+	 0dcIcEb9dow6ORyYk4OFjhkv+b1Z9j9S1hEGi+yksWdAnZ2laZcIRcLBuruUsbpeBm
+	 1UdWKUo+BqWzqjIpmezi2O0AjWI57cNtFGU7WeW0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbfCXLuT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 07:50:19 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:36794 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726160AbfCXLuT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 07:50:19 -0400
+        id S1726811AbfCXMBs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 08:01:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44458 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726160AbfCXMBs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Mar 2019 08:01:48 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 01C8D9E758A;
-        Sun, 24 Mar 2019 11:50:17 +0000 (GMT)
-Date:   Sun, 24 Mar 2019 11:50:15 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Kangjie Lu <kjlu@umn.edu>
-Cc:     pakki001@umn.edu, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: hmc5843: fix potential NULL pointer
- dereferences
-Message-ID: <20190324115015.5fe793ad@archlinux>
-In-Reply-To: <20190324104856.3883150b@archlinux>
-References: <20190316151912.4a7ea87d@archlinux>
-        <20190316220836.25092-1-kjlu@umn.edu>
-        <20190324104856.3883150b@archlinux>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B97F9222D1;
+        Sun, 24 Mar 2019 12:01:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1553428907;
+        bh=qErxrAmqSaxiuqF6E1wBrvr336HeuYhicO0wUOifk1M=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=nA1iHzPcrBx2Serb/GNcRgfoTT+R6oHlBDHyk7IC48hxXC6+do/pdeGohSYyaVO0J
+         2RNDq19OmrcWZ+UDftvKN46CeO1nONyBt6/zA72Oct36EKzn/jTdB+ScIjy6IXrtNI
+         IWC7zuAFdPIHULT6t4gCr6i8AUuUnuqy3sXrqGF0=
+Date:   Sun, 24 Mar 2019 12:01:39 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andreas Klinger <ak@it-klinger.de>
+Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com, afaerber@suse.de,
+        arnd@arndb.de, davem@davemloft.net, gregkh@linuxfoundation.org,
+        johan@kernel.org, khilman@baylibre.com, knaack.h@gmx.de,
+        lars@metafoo.de, linux-kernel@vger.kernel.org,
+        martin.blumenstingl@googlemail.com, mchehab+samsung@kernel.org,
+        m.othacehe@gmail.com, nicolas.ferre@microchip.com,
+        pmeerw@pmeerw.net, robh@kernel.org, songqiang1304521@gmail.com,
+        treding@nvidia.com, techsupport@maxbotix.com
+Subject: Re: [PATCH v3 1/4] dt-bindings: Add vendor prefix for MaxBotix
+Message-ID: <20190324120139.573814dc@archlinux>
+In-Reply-To: <20190317203458.bgculdjvtt44zkch@arbad>
+References: <20190317203458.bgculdjvtt44zkch@arbad>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 24 Mar 2019 10:48:56 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 17 Mar 2019 21:35:00 +0100
+Andreas Klinger <ak@it-klinger.de> wrote:
 
-> On Sat, 16 Mar 2019 17:08:33 -0500
-> Kangjie Lu <kjlu@umn.edu> wrote:
-> 
-> > devm_regmap_init_i2c may fail and return NULL. The fix returns
-> > the error when it fails.
-> > 
-> > Signed-off-by: Kangjie Lu <kjlu@umn.edu>  
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
-> Thanks.
+> Add MaxBotix, which is a vendor of ultrasonic rangers in different
+> varieties and interfaces.
+>=20
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> Reviewed-by: Andreas F=C3=A4rber <afaerber@suse.de>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-Ah, how the eye jumps over the obvious...
-
-Good thing this one was caught by build tests.
-
-See below.
-
-I've fixed up in the tree.
+Thanks,
 
 Jonathan
 
-> 
-> Jonathan
-> 
-> > ---
-> > V2: fix the two together
-> > ---
-> >  drivers/iio/magnetometer/hmc5843_i2c.c | 7 ++++++-
-> >  drivers/iio/magnetometer/hmc5843_spi.c | 7 ++++++-
-> >  2 files changed, 12 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/magnetometer/hmc5843_i2c.c
-> > index 3de7f4426ac4..86abba5827a2 100644
-> > --- a/drivers/iio/magnetometer/hmc5843_i2c.c
-> > +++ b/drivers/iio/magnetometer/hmc5843_i2c.c
-> > @@ -58,8 +58,13 @@ static const struct regmap_config hmc5843_i2c_regmap_config = {
-> >  static int hmc5843_i2c_probe(struct i2c_client *cli,
-> >  			     const struct i2c_device_id *id)
-> >  {
-> > +	struct regmap *regmap = devm_regmap_init_i2c(cli,
-> > +			&hmc5843_i2c_regmap_config);
-> > +	if (IS_ERR(regmap))
-> > +		return PTR_ERR(regmap);
-> > +
-> >  	return hmc5843_common_probe(&cli->dev,
-> > -			devm_regmap_init_i2c(cli, &hmc5843_i2c_regmap_config),
-> > +			regmap,
-> >  			id->driver_data, id->name);
-> >  }
-> >  
-> > diff --git a/drivers/iio/magnetometer/hmc5843_spi.c b/drivers/iio/magnetometer/hmc5843_spi.c
-> > index 535f03a70d63..8355713651d4 100644
-> > --- a/drivers/iio/magnetometer/hmc5843_spi.c
-> > +++ b/drivers/iio/magnetometer/hmc5843_spi.c
-> > @@ -58,6 +58,7 @@ static const struct regmap_config hmc5843_spi_regmap_config = {
-> >  static int hmc5843_spi_probe(struct spi_device *spi)
-> >  {
-> >  	int ret;
-> > +	struct regmap *regmap;
-> >  	const struct spi_device_id *id = spi_get_device_id(spi);
-> >  
-> >  	spi->mode = SPI_MODE_3;
-> > @@ -67,8 +68,12 @@ static int hmc5843_spi_probe(struct spi_device *spi)
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > +	regmap = devm_regmap_init(spi, &hmc5843_spi_regmap_config);
-
-devm_regmap_init_spi
-
-
-> > +	if (IS_ERR(regmap))
-> > +		return PTR_ERR(devm_regmap);
-
-It's called regmap.
-
-> > +
-> >  	return hmc5843_common_probe(&spi->dev,
-> > -			devm_regmap_init_spi(spi, &hmc5843_spi_regmap_config),
-> > +			regmap,
-> >  			id->driver_data, id->name);
-> >  }
-> >    
-> 
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+>  1 file changed, 1 insertion(+)
+>=20
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Docu=
+mentation/devicetree/bindings/vendor-prefixes.txt
+> index 389508584f48..added54a1108 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -225,6 +225,7 @@ lsi	LSI Corp. (LSI Logic)
+>  lwn	Liebherr-Werk Nenzing GmbH
+>  macnica	Macnica Americas
+>  marvell	Marvell Technology Group Ltd.
+> +maxbotix	MaxBotix Inc.
+>  maxim	Maxim Integrated Products
+>  mbvl	Mobiveil Inc.
+>  mcube	mCube
 
