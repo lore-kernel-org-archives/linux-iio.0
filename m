@@ -2,105 +2,248 @@ Return-Path: <SRS0=NPK8=R3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2653C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:27:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDE2AC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:34:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A6B52147A
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:27:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DW6K8/Ho"
+	by mail.kernel.org (Postfix) with ESMTP id B3AF721741
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 17:34:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1553448874;
+	bh=PvoCuKwW7DI2JVBDkf0YUNNjEdKODMrujI7t4XtFxlY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=srbH0sR4B5rRYqfrlehaYSvp/1/qnviiXUG/swEShGSMR/PBYUJGYUjXlwTMC6lMf
+	 7Pt98yYM1ONvumk6ziWdfk7ElPwRHZ/dQSZ/WaTPn1cNA6Umt1HoNd05Et3ESD2ONP
+	 lSRsfmpun8oMN842lk1sEWjHv1PNCrRCvYM3yDf4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726788AbfCXR14 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 13:27:56 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:50903 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726317AbfCXR1z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 13:27:55 -0400
-Received: by mail-wm1-f67.google.com with SMTP id z11so6643329wmi.0;
-        Sun, 24 Mar 2019 10:27:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=VNt7l5+VWi0XRfJBxBlcdQKQzBExlbpk0rX49ypfAus=;
-        b=DW6K8/HoDgT9nu8uPVRVK37ABFUpuZzLQ2fO2uDhSMqWczhbJKI/FPkxitQNT27Ooi
-         SjdOGiB6V5hpcFUXCidnnCpNn5sSDa01anKaj2qyTW+0CApd+vCVCGrdbYiWtDcL+SXW
-         tTI1X4d+2MJDMUHwgQNKADg1RPgUb3ebjpZSuR/QQg/coAXogjpGwOgh9qsy1FfHW/fx
-         VA4z76PGsmmgPfUheGFCtEmm83NASbf5OP8nQOH/q/JjHcS/t+JFmc5kKoMh16n49kF5
-         +mnsNif95zX7R1y0a+44yvefch0rlrK3GLQf1bG7smRM+vXVPmbgyjfTCOChQr9BepZ+
-         BwAg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=VNt7l5+VWi0XRfJBxBlcdQKQzBExlbpk0rX49ypfAus=;
-        b=AdA+SQdiF/AuGYgAa2g5hF0lVxEF2+ALkwVtPRIZIBdZdqPjFbasr8ss3edZ4WYYQc
-         7c7Lqgm8+nuZM+Ax0PFdc3g5T962xBfTVwUid4vq9C/vdsaNDLCRfLp+ITvgCDPKUwQK
-         G5e/vrOgkOKn1HLMrNhYsSoeyGUq1lTeWa2Ni3xEFN0pct7X+qyRp4F7X+b+nS3eJM3x
-         mV414Cdxw3ekAlEyNgSJd1LAUVZJlSoEsMvv6+scdMfM2kfyYVb0KjiDnGfGGNbeWFfO
-         Wxut+CKSM3RsLOxZh+hoNCWEVZL+uDbXRvscN8Y23ZI3C6/+VRjuKAojCv6kK91YT5RH
-         w94g==
-X-Gm-Message-State: APjAAAXB/+FrvfdYh0DU+cB3XdgtfAVOn5VGjGrcsSBMQBctsUjyaPX7
-        pR0XylZc1MCA2lnLhyjfSDQ=
-X-Google-Smtp-Source: APXvYqxVRIm8qR19JHncT/7Qe6fqhGzN0grfDmXLHbf/7ONSIkDUUEpWd90ibIzOb36QY1GkE92Nvg==
-X-Received: by 2002:a1c:18d:: with SMTP id 135mr3019774wmb.12.1553448473944;
-        Sun, 24 Mar 2019 10:27:53 -0700 (PDT)
-Received: from peano ([87.19.116.42])
-        by smtp.gmail.com with ESMTPSA id z8sm13454718wrh.80.2019.03.24.10.27.52
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sun, 24 Mar 2019 10:27:53 -0700 (PDT)
-Date:   Sun, 24 Mar 2019 18:27:52 +0100
-From:   Cristian Sicilia <sicilia.cristian@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 0/5] staging: iio: adc: Code refactoring and bool to
- bitfield change
-Message-ID: <cover.1553447138.git.sicilia.cristian@gmail.com>
-References: <cover.1553366098.git.sicilia.cristian@gmail.com>
+        id S1726811AbfCXRee (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 13:34:34 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39278 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726139AbfCXRee (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Mar 2019 13:34:34 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D84202171F;
+        Sun, 24 Mar 2019 17:34:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1553448872;
+        bh=PvoCuKwW7DI2JVBDkf0YUNNjEdKODMrujI7t4XtFxlY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=QB17A7qHAdjV89iF9ddnmZkCyOHmTzkJIx3wdgmraQVA3/Iq1IxaLOKO/WLw8usi4
+         BgnZCkDO4VFC9/MfYMcVChxorxbbjLKCt66W25IhmLXiX6eh2jLejQzZQEJ4pZ0NAA
+         kohvZiSoKCvgVnJwDVHGcaPfcLysEYRxCHoO4J0A=
+Date:   Sun, 24 Mar 2019 17:34:27 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Mircea Caprioru <mircea.caprioru@analog.com>
+Cc:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
+        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] staging: iio: adc: ad7192: Use read_avail for available
+ attributes
+Message-ID: <20190324173427.62f004cb@archlinux>
+In-Reply-To: <20190319142520.664-1-mircea.caprioru@analog.com>
+References: <20190319142520.664-1-mircea.caprioru@analog.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Disposition: inline
-In-Reply-To: <cover.1553366098.git.sicilia.cristian@gmail.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
-Message-ID: <20190324172752.Fkq16sIPDkG1TtFDCCpRaRs4Q7ec6Ofx8-Y4JUVrWKY@z>
 
-Some source refactoring, parameters alignment and camel case clearing.
+On Tue, 19 Mar 2019 16:25:20 +0200
+Mircea Caprioru <mircea.caprioru@analog.com> wrote:
 
-Replacement of bool to bitfield in a struct, but not found
-the population to check if it is done correctly.
+> This patch removes the in_voltage-voltage_scale_available and
+> in_voltage_scale_available attributes. These are replaced with available
+> attributes added in info_mask_shared_by_type_available.
+> 
+> With this modification the iio core will be responsible with naming the
+> attributes thus removing the checkpatch warning related to
+> in_voltage-voltage_scale_available naming.
+> 
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 
-Cristian Sicilia (5):
-  staging: iio: adc: ad7280a: Tab alignment
-  staging: iio: adc: ad7192: Converted bool to bitfield format
-  staging: iio: adc: ad7280a: Avoid precedence issues in macro
-  staging: iio: adc: ad7280a: Adding temp var to improve readability
-  staging: iio: adc: ad7280a: Remove CamelCase notation
+Thanks for sorting this out!  Many future newbies will avoid the
+trap this set a a result of this ;)
 
- drivers/staging/iio/adc/ad7192.h  |  14 ++---
- drivers/staging/iio/adc/ad7280a.c | 109 ++++++++++++++++++--------------------
- 2 files changed, 59 insertions(+), 64 deletions(-)
+There is a lot of code in here just to tweak whether the scale available bit
+is set or not.
 
--- 
-2.7.4
+Hmm. Lets do this for now, but we may need to have a a think about whether
+to adjust the ad_ core to deal with it at some point.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+thanks,
+
+Jonathan
+
+> ---
+>  drivers/staging/iio/adc/ad7192.c | 99 ++++++++++++++++++++------------
+>  1 file changed, 61 insertions(+), 38 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index acdbc07fd259..d8a20f9066f4 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -337,30 +337,6 @@ static int ad7192_setup(struct ad7192_state *st,
+>  	return ret;
+>  }
+>  
+> -static ssize_t
+> -ad7192_show_scale_available(struct device *dev,
+> -			    struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -	int i, len = 0;
+> -
+> -	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
+> -		len += sprintf(buf + len, "%d.%09u ", st->scale_avail[i][0],
+> -			       st->scale_avail[i][1]);
+> -
+> -	len += sprintf(buf + len, "\n");
+> -
+> -	return len;
+> -}
+> -
+> -static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+> -			     in_voltage-voltage_scale_available,
+> -			     0444, ad7192_show_scale_available, NULL, 0);
+> -
+> -static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
+> -		       ad7192_show_scale_available, NULL, 0);
+> -
+>  static ssize_t ad7192_show_ac_excitation(struct device *dev,
+>  					 struct device_attribute *attr,
+>  					 char *buf)
+> @@ -435,8 +411,6 @@ static IIO_DEVICE_ATTR(ac_excitation_en, 0644,
+>  		       AD7192_REG_MODE);
+>  
+>  static struct attribute *ad7192_attributes[] = {
+> -	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+> -	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+>  	&iio_dev_attr_ac_excitation_en.dev_attr.attr,
+>  	NULL
+> @@ -447,8 +421,6 @@ static const struct attribute_group ad7192_attribute_group = {
+>  };
+>  
+>  static struct attribute *ad7195_attributes[] = {
+> -	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+> -	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+>  	NULL
+>  };
+> @@ -579,10 +551,31 @@ static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
+>  	}
+>  }
+>  
+> +static int ad7192_read_avail(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     const int **vals, int *type, int *length,
+> +			     long mask)
+> +{
+> +	struct ad7192_state *st = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*vals = (int *)st->scale_avail;
+> +		*type = IIO_VAL_INT_PLUS_NANO;
+> +		/* Values are stored in a 2D matrix  */
+> +		*length = ARRAY_SIZE(st->scale_avail) * 2;
+> +
+> +		return IIO_AVAIL_LIST;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>  static const struct iio_info ad7192_info = {
+>  	.read_raw = ad7192_read_raw,
+>  	.write_raw = ad7192_write_raw,
+>  	.write_raw_get_fmt = ad7192_write_raw_get_fmt,
+> +	.read_avail = ad7192_read_avail,
+>  	.attrs = &ad7192_attribute_group,
+>  	.validate_trigger = ad_sd_validate_trigger,
+>  };
+> @@ -591,6 +584,7 @@ static const struct iio_info ad7195_info = {
+>  	.read_raw = ad7192_read_raw,
+>  	.write_raw = ad7192_write_raw,
+>  	.write_raw_get_fmt = ad7192_write_raw_get_fmt,
+> +	.read_avail = ad7192_read_avail,
+>  	.attrs = &ad7195_attribute_group,
+>  	.validate_trigger = ad_sd_validate_trigger,
+>  };
+> @@ -625,6 +619,42 @@ static const struct iio_chan_spec ad7193_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(14),
+>  };
+>  
+> +static int ad7192_channels_config(struct iio_dev *indio_dev)
+> +{
+> +	struct ad7192_state *st = iio_priv(indio_dev);
+> +	const struct iio_chan_spec *channels;
+> +	struct iio_chan_spec *chan;
+> +	int i;
+> +
+> +	switch (st->devid) {
+> +	case ID_AD7193:
+> +		channels = ad7193_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad7193_channels);
+> +		break;
+> +	default:
+> +		channels = ad7192_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
+> +		break;
+> +	}
+> +
+> +	chan = devm_kcalloc(indio_dev->dev.parent, indio_dev->num_channels,
+> +			    sizeof(*chan), GFP_KERNEL);
+> +	if (!chan)
+> +		return -ENOMEM;
+> +
+> +	indio_dev->channels = chan;
+> +
+> +	for (i = 0; i < indio_dev->num_channels; i++) {
+> +		*chan = channels[i];
+> +		if (chan->type != IIO_TEMP)
+> +			chan->info_mask_shared_by_type_available |=
+> +				BIT(IIO_CHAN_INFO_SCALE);
+> +		chan++;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+>  static int ad7192_probe(struct spi_device *spi)
+>  {
+>  	const struct ad7192_platform_data *pdata = dev_get_platdata(&spi->dev);
+> @@ -687,16 +717,9 @@ static int ad7192_probe(struct spi_device *spi)
+>  	indio_dev->name = spi_get_device_id(spi)->name;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> -	switch (st->devid) {
+> -	case ID_AD7193:
+> -		indio_dev->channels = ad7193_channels;
+> -		indio_dev->num_channels = ARRAY_SIZE(ad7193_channels);
+> -		break;
+> -	default:
+> -		indio_dev->channels = ad7192_channels;
+> -		indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
+> -		break;
+> -	}
+> +	ret = ad7192_channels_config(indio_dev);
+> +	if (ret < 0)
+> +		goto error_disable_dvdd;
+>  
+>  	if (st->devid == ID_AD7195)
+>  		indio_dev->info = &ad7195_info;
 
