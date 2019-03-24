@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25566C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:41:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74A23C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 14:56:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D9B31222D6
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 12:41:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3ECC1222C8
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 14:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553431310;
-	bh=/bx/xq5WecKtE5kx7fM8MrdOKvn/UgVI75BPjnbSiKA=;
+	s=default; t=1553439385;
+	bh=PQJlMhXx19zgnuvUPgl3Tj6OKjYdEbKrT1DRDTlEb4w=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=WyUmQlxJEX5jgItoBzed7moFhguwojgLs2pgs65ZJX9wlF/HBmIpUzVOiWel5hD/7
-	 C2FZmnj5py/5jbUs72a24/LedqgODY1v6q/JJdGvL7oB6e19y1X10df7a0Qi2rVS34
-	 GSbOg8O5bfJHIsYV2P3MzagmY5fwfaUpuR68eZzQ=
+	b=r9wu85lrS5UdVqwv+J1kHE6Rowke7U1y7ykZYAH4GHZqe9yokHgJMDjRpCLvbFYyD
+	 J+pVGbDli7vOutnos6SdqaqP8ajsXGQwd+JfrP4Ka4eNHV9/Mrbm0f81IM9UDOLpxx
+	 8N7IoKcT0qDHF65EtFRKQKZv8TWLcPx8GOr3VOFg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726889AbfCXMlu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 08:41:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52416 "EHLO mail.kernel.org"
+        id S1726743AbfCXO4Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 10:56:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52076 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726160AbfCXMlu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 24 Mar 2019 08:41:50 -0400
+        id S1726603AbfCXO4Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Mar 2019 10:56:24 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 81F17222D0;
-        Sun, 24 Mar 2019 12:41:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6C5521906;
+        Sun, 24 Mar 2019 14:56:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553431309;
-        bh=/bx/xq5WecKtE5kx7fM8MrdOKvn/UgVI75BPjnbSiKA=;
+        s=default; t=1553439383;
+        bh=PQJlMhXx19zgnuvUPgl3Tj6OKjYdEbKrT1DRDTlEb4w=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZnHy/Uifugz7m0HqwVCT/WENuI71kNypdceLxTp1A5cyEmMVmmB0XFdgRdsjm4Vfw
-         EuyW8K36VK0oysTwkJzyzuKwiBZihbpPcWPPEqKxGoXfHuDvSojX+H0IwzpmdoEgEe
-         TtVR4vt82U0O4orkHV8BlMY2qatV2foLoepl8z3s=
-Date:   Sun, 24 Mar 2019 12:41:43 +0000
+        b=keIji2J6jBhN3ZMGyT/qcLJsJ4tx+pXApBiZ8DVZ9l3QH3lpxpDEaU9UGA/YMpgzl
+         Lcv2PwJvr58b2g8C2k4QOlSrcPHMNlLE9m9J0m6OXN9a//jwwMCLyXcpV5vj1L5nZi
+         rIUxRILY+Wk7MWgNy3J9Bi+hrDW3nl8BhrMC8LDw=
+Date:   Sun, 24 Mar 2019 14:56:18 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Cristian Sicilia <sicilia.cristian@gmail.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -47,13 +47,12 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 4/5] staging: iio: adc: Adding temp var to improve
- readability
-Message-ID: <20190324124143.72c950f4@archlinux>
-In-Reply-To: <82dd56df8d410ec91061ef51c2653345d7e30aa2.1553366098.git.sicilia.cristian@gmail.com>
+Subject: Re: [PATCH v2 5/5] staging: iio: adc: Remove CamelCase notation
+Message-ID: <20190324145618.5df31a70@archlinux>
+In-Reply-To: <e1a9e28d72babe4781c577c68e6508e01367943f.1553366098.git.sicilia.cristian@gmail.com>
 References: <cover.1553335775.git.sicilia.cristian@gmail.com>
         <cover.1553366098.git.sicilia.cristian@gmail.com>
-        <82dd56df8d410ec91061ef51c2653345d7e30aa2.1553366098.git.sicilia.cristian@gmail.com>
+        <e1a9e28d72babe4781c577c68e6508e01367943f.1553366098.git.sicilia.cristian@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -63,96 +62,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 23 Mar 2019 20:21:45 +0100
+On Sat, 23 Mar 2019 20:21:49 +0100
 Cristian Sicilia <sicilia.cristian@gmail.com> wrote:
 
-> Creating a temporary variable to improve readability
+> Fix CamelCase naming.
 > 
 > Signed-off-by: Cristian Sicilia <sicilia.cristian@gmail.com>
+Applied.
 
-Indeed makes it a little more readable, so fair enough.
-
-Applied
+Note that I added the part number to the titles of all these patches
+so that people can readily see what they are actually changing.
+Directory isn't very helpful when there can potentially be many 10s
+of drivers in there (not true in this case, but still more than 1!)
 
 Thanks,
 
 Jonathan
 
+
 > ---
->  drivers/staging/iio/adc/ad7280a.c | 55 ++++++++++++++++++---------------------
->  1 file changed, 25 insertions(+), 30 deletions(-)
+>  drivers/staging/iio/adc/ad7280a.c | 11 +++++------
+>  1 file changed, 5 insertions(+), 6 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index d81a5bd..5d848aa 100644
+> index 5d848aa..c02454c 100644
 > --- a/drivers/staging/iio/adc/ad7280a.c
 > +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -784,43 +784,38 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
->  	for (i = 0; i < st->scan_cnt; i++) {
->  		if (((channels[i] >> 23) & 0xF) <= AD7280A_CELL_VOLTAGE_6) {
->  			if (((channels[i] >> 11) & 0xFFF) >=
-> -				st->cell_threshhigh)
-> -				iio_push_event(indio_dev,
-> -					       IIO_EVENT_CODE(IIO_VOLTAGE,
-> -							1,
-> -							0,
-> -							IIO_EV_DIR_RISING,
-> -							IIO_EV_TYPE_THRESH,
-> -							0, 0, 0),
-> +			    st->cell_threshhigh) {
-> +				u64 tmp = IIO_EVENT_CODE(IIO_VOLTAGE, 1, 0,
-> +							 IIO_EV_DIR_RISING,
-> +							 IIO_EV_TYPE_THRESH,
-> +							 0, 0, 0);
-> +				iio_push_event(indio_dev, tmp,
->  					       iio_get_time_ns(indio_dev));
-> -			else if (((channels[i] >> 11) & 0xFFF) <=
-> -				st->cell_threshlow)
-> -				iio_push_event(indio_dev,
-> -					       IIO_EVENT_CODE(IIO_VOLTAGE,
-> -							1,
-> -							0,
-> -							IIO_EV_DIR_FALLING,
-> -							IIO_EV_TYPE_THRESH,
-> -							0, 0, 0),
-> +			} else if (((channels[i] >> 11) & 0xFFF) <=
-> +				   st->cell_threshlow) {
-> +				u64 tmp = IIO_EVENT_CODE(IIO_VOLTAGE, 1, 0,
-> +							 IIO_EV_DIR_FALLING,
-> +							 IIO_EV_TYPE_THRESH,
-> +							 0, 0, 0);
-> +				iio_push_event(indio_dev, tmp,
->  					       iio_get_time_ns(indio_dev));
-> +			}
->  		} else {
-> -			if (((channels[i] >> 11) & 0xFFF) >= st->aux_threshhigh)
-> -				iio_push_event(indio_dev,
-> -					       IIO_UNMOD_EVENT_CODE(
-> -							IIO_TEMP,
-> -							0,
-> +			if (((channels[i] >> 11) & 0xFFF) >=
-> +			    st->aux_threshhigh) {
-> +				u64 tmp = IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
->  							IIO_EV_TYPE_THRESH,
-> -							IIO_EV_DIR_RISING),
-> +							IIO_EV_DIR_RISING);
-> +				iio_push_event(indio_dev, tmp,
->  					       iio_get_time_ns(indio_dev));
-> -			else if (((channels[i] >> 11) & 0xFFF) <=
-> -				st->aux_threshlow)
-> -				iio_push_event(indio_dev,
-> -					       IIO_UNMOD_EVENT_CODE(
-> -							IIO_TEMP,
-> -							0,
-> +			} else if (((channels[i] >> 11) & 0xFFF) <=
-> +				st->aux_threshlow) {
-> +				u64 tmp = IIO_UNMOD_EVENT_CODE(IIO_TEMP, 0,
->  							IIO_EV_TYPE_THRESH,
-> -							IIO_EV_DIR_FALLING),
-> +							IIO_EV_DIR_FALLING);
-> +				iio_push_event(indio_dev, tmp,
->  					       iio_get_time_ns(indio_dev));
-> +			}
->  		}
->  	}
+> @@ -917,8 +917,8 @@ static int ad7280_probe(struct spi_device *spi)
+>  	const struct ad7280_platform_data *pdata = dev_get_platdata(&spi->dev);
+>  	struct ad7280_state *st;
+>  	int ret;
+> -	const unsigned short tACQ_ns[4] = {465, 1010, 1460, 1890};
+> -	const unsigned short nAVG[4] = {1, 2, 4, 8};
+> +	const unsigned short t_acq_ns[4] = {465, 1010, 1460, 1890};
+> +	const unsigned short n_avg[4] = {1, 2, 4, 8};
+>  	struct iio_dev *indio_dev;
 >  
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> @@ -966,10 +966,9 @@ static int ad7280_probe(struct spi_device *spi)
+>  	 */
+>  
+>  	st->readback_delay_us =
+> -		((tACQ_ns[pdata->acquisition_time & 0x3] + 695) *
+> -		(AD7280A_NUM_CH * nAVG[pdata->conversion_averaging & 0x3]))
+> -		- tACQ_ns[pdata->acquisition_time & 0x3] +
+> -		st->slave_num * 250;
+> +		((t_acq_ns[pdata->acquisition_time & 0x3] + 695) *
+> +		 (AD7280A_NUM_CH * n_avg[pdata->conversion_averaging & 0x3])) -
+> +		t_acq_ns[pdata->acquisition_time & 0x3] + st->slave_num * 250;
+>  
+>  	/* Convert to usecs */
+>  	st->readback_delay_us = DIV_ROUND_UP(st->readback_delay_us, 1000);
 
