@@ -2,36 +2,54 @@ Return-Path: <SRS0=NPK8=R3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DD82C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:20:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 64E6BC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:27:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4724820811
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:20:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C4E220700
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Mar 2019 15:27:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1553441257;
+	bh=78Lv0vG8xWZ2J06Yt+iHM5Ufj+d+gA9U2JoTpxDcE3Y=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=IG4H3n2GB+uvflqv1Qf5schKIbJ05+SddCbrlZwalwPzAVCUlR8VzRhj8Vg9egtAq
+	 F8okrrWtSNXsjgYzbsw/xP17HtWI2Fvv8b7d9lO+OtLLIn8Fxw50GHkhqvgn805Ga4
+	 vT50wzSSeDF3bQEfa5Hle9xJnp1azLrmtmtHsV5o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727211AbfCXPUS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Mar 2019 11:20:18 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:38164 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728808AbfCXPUS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Mar 2019 11:20:18 -0400
+        id S1727728AbfCXP1c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Mar 2019 11:27:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59060 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726317AbfCXP1b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 24 Mar 2019 11:27:31 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 8381F9E7727;
-        Sun, 24 Mar 2019 15:20:15 +0000 (GMT)
-Date:   Sun, 24 Mar 2019 15:20:12 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc:     linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH 5/5] iio: imu: adis16400: move adis16400.h into
- adis16400.c
-Message-ID: <20190324152012.628218cd@archlinux>
-In-Reply-To: <20190322204442.4035-5-ardeleanalex@gmail.com>
-References: <20190322204442.4035-1-ardeleanalex@gmail.com>
-        <20190322204442.4035-5-ardeleanalex@gmail.com>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6681120700;
+        Sun, 24 Mar 2019 15:27:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1553441250;
+        bh=78Lv0vG8xWZ2J06Yt+iHM5Ufj+d+gA9U2JoTpxDcE3Y=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Kenu0w6vZPIqYRoOmaw34mFonyETC7pJE40r6mKjDAkcGbY1NARQpPUi68o99kH1N
+         R6cP3eBh5RcPzAmALiikDk9Rzi2OkKl892sRHie6VO/5TEe0iDTXNYVUJh5ouplYmp
+         J0Mu+Wc1PscbHtOvDr+j9CgHz1sRAmuklBuUCJ9Q=
+Date:   Sun, 24 Mar 2019 15:27:25 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Artur Rojek <contact@artur-rojek.eu>
+Cc:     Sebastian Reichel <sre@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH v2 1/4] iio: inkern: API for reading available iio
+ channel attribute values
+Message-ID: <20190324152725.35fed317@archlinux>
+In-Reply-To: <20190323172809.14407-1-contact@artur-rojek.eu>
+References: <20190323172809.14407-1-contact@artur-rojek.eu>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,417 +59,82 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Mar 2019 22:44:42 +0200
-Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
+On Sat, 23 Mar 2019 18:28:06 +0100
+Artur Rojek <contact@artur-rojek.eu> wrote:
 
-> From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> Extend the inkern API with a function for reading available
+> attribute values of iio channels.
 > 
-> Final part of the re-organization. Move the `adis16400.h` into
-> `adis16400.c` since it no longer needs to be shared among other files.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+If this goes through a route other than IIO (otherwise
+I'll just add a signed-off-by...)
 
-Thanks,
-
-Jonathan
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 > ---
->  drivers/iio/imu/adis16400.c | 176 +++++++++++++++++++++++++++++++-
->  drivers/iio/imu/adis16400.h | 197 ------------------------------------
->  2 files changed, 175 insertions(+), 198 deletions(-)
->  delete mode 100644 drivers/iio/imu/adis16400.h
 > 
-> diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
-> index 265c0a46597f..aef9c4d5edb8 100644
-> --- a/drivers/iio/imu/adis16400.c
-> +++ b/drivers/iio/imu/adis16400.c
-> @@ -32,8 +32,182 @@
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/imu/adis.h>
+> Changes:
+> 
+> v2: no change
+> 
+>  drivers/iio/inkern.c         | 20 ++++++++++++++++++++
+>  include/linux/iio/consumer.h | 14 ++++++++++++++
+>  2 files changed, 34 insertions(+)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index 06ca3f7fcc44..f19dbde3c945 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -733,6 +733,26 @@ static int iio_channel_read_avail(struct iio_channel *chan,
+>  						 vals, type, length, info);
+>  }
+>  
+> +int iio_read_avail_channel_attribute(struct iio_channel *chan,
+> +				     const int **vals, int *type, int *length,
+> +				     enum iio_chan_info_enum attribute)
+> +{
+> +	int ret;
 > +
-> +#define ADIS16400_STARTUP_DELAY	290 /* ms */
-> +#define ADIS16400_MTEST_DELAY 90 /* ms */
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (!chan->indio_dev->info) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
 > +
-> +#define ADIS16400_FLASH_CNT  0x00 /* Flash memory write count */
-> +#define ADIS16400_SUPPLY_OUT 0x02 /* Power supply measurement */
-> +#define ADIS16400_XGYRO_OUT 0x04 /* X-axis gyroscope output */
-> +#define ADIS16400_YGYRO_OUT 0x06 /* Y-axis gyroscope output */
-> +#define ADIS16400_ZGYRO_OUT 0x08 /* Z-axis gyroscope output */
-> +#define ADIS16400_XACCL_OUT 0x0A /* X-axis accelerometer output */
-> +#define ADIS16400_YACCL_OUT 0x0C /* Y-axis accelerometer output */
-> +#define ADIS16400_ZACCL_OUT 0x0E /* Z-axis accelerometer output */
-> +#define ADIS16400_XMAGN_OUT 0x10 /* X-axis magnetometer measurement */
-> +#define ADIS16400_YMAGN_OUT 0x12 /* Y-axis magnetometer measurement */
-> +#define ADIS16400_ZMAGN_OUT 0x14 /* Z-axis magnetometer measurement */
-> +#define ADIS16400_TEMP_OUT  0x16 /* Temperature output */
-> +#define ADIS16400_AUX_ADC   0x18 /* Auxiliary ADC measurement */
+> +	ret = iio_channel_read_avail(chan, vals, type, length, attribute);
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
 > +
-> +#define ADIS16350_XTEMP_OUT 0x10 /* X-axis gyroscope temperature measurement */
-> +#define ADIS16350_YTEMP_OUT 0x12 /* Y-axis gyroscope temperature measurement */
-> +#define ADIS16350_ZTEMP_OUT 0x14 /* Z-axis gyroscope temperature measurement */
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_read_avail_channel_attribute);
 > +
-> +#define ADIS16300_PITCH_OUT 0x12 /* X axis inclinometer output measurement */
-> +#define ADIS16300_ROLL_OUT  0x14 /* Y axis inclinometer output measurement */
-> +#define ADIS16300_AUX_ADC   0x16 /* Auxiliary ADC measurement */
-> +
-> +#define ADIS16448_BARO_OUT	0x16 /* Barometric pressure output */
-> +#define ADIS16448_TEMP_OUT  0x18 /* Temperature output */
-> +
-> +/* Calibration parameters */
-> +#define ADIS16400_XGYRO_OFF 0x1A /* X-axis gyroscope bias offset factor */
-> +#define ADIS16400_YGYRO_OFF 0x1C /* Y-axis gyroscope bias offset factor */
-> +#define ADIS16400_ZGYRO_OFF 0x1E /* Z-axis gyroscope bias offset factor */
-> +#define ADIS16400_XACCL_OFF 0x20 /* X-axis acceleration bias offset factor */
-> +#define ADIS16400_YACCL_OFF 0x22 /* Y-axis acceleration bias offset factor */
-> +#define ADIS16400_ZACCL_OFF 0x24 /* Z-axis acceleration bias offset factor */
-> +#define ADIS16400_XMAGN_HIF 0x26 /* X-axis magnetometer, hard-iron factor */
-> +#define ADIS16400_YMAGN_HIF 0x28 /* Y-axis magnetometer, hard-iron factor */
-> +#define ADIS16400_ZMAGN_HIF 0x2A /* Z-axis magnetometer, hard-iron factor */
-> +#define ADIS16400_XMAGN_SIF 0x2C /* X-axis magnetometer, soft-iron factor */
-> +#define ADIS16400_YMAGN_SIF 0x2E /* Y-axis magnetometer, soft-iron factor */
-> +#define ADIS16400_ZMAGN_SIF 0x30 /* Z-axis magnetometer, soft-iron factor */
-> +
-> +#define ADIS16400_GPIO_CTRL 0x32 /* Auxiliary digital input/output control */
-> +#define ADIS16400_MSC_CTRL  0x34 /* Miscellaneous control */
-> +#define ADIS16400_SMPL_PRD  0x36 /* Internal sample period (rate) control */
-> +#define ADIS16400_SENS_AVG  0x38 /* Dynamic range and digital filter control */
-> +#define ADIS16400_SLP_CNT   0x3A /* Sleep mode control */
-> +#define ADIS16400_DIAG_STAT 0x3C /* System status */
-> +
-> +/* Alarm functions */
-> +#define ADIS16400_GLOB_CMD  0x3E /* System command */
-> +#define ADIS16400_ALM_MAG1  0x40 /* Alarm 1 amplitude threshold */
-> +#define ADIS16400_ALM_MAG2  0x42 /* Alarm 2 amplitude threshold */
-> +#define ADIS16400_ALM_SMPL1 0x44 /* Alarm 1 sample size */
-> +#define ADIS16400_ALM_SMPL2 0x46 /* Alarm 2 sample size */
-> +#define ADIS16400_ALM_CTRL  0x48 /* Alarm control */
-> +#define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
-> +
-> +#define ADIS16334_LOT_ID1   0x52 /* Lot identification code 1 */
-> +#define ADIS16334_LOT_ID2   0x54 /* Lot identification code 2 */
-> +#define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
-> +#define ADIS16334_SERIAL_NUMBER 0x58 /* Serial number, lot specific */
-> +
-> +#define ADIS16400_ERROR_ACTIVE			(1<<14)
-> +#define ADIS16400_NEW_DATA			(1<<14)
-> +
-> +/* MSC_CTRL */
-> +#define ADIS16400_MSC_CTRL_MEM_TEST		(1<<11)
-> +#define ADIS16400_MSC_CTRL_INT_SELF_TEST	(1<<10)
-> +#define ADIS16400_MSC_CTRL_NEG_SELF_TEST	(1<<9)
-> +#define ADIS16400_MSC_CTRL_POS_SELF_TEST	(1<<8)
-> +#define ADIS16400_MSC_CTRL_GYRO_BIAS		(1<<7)
-> +#define ADIS16400_MSC_CTRL_ACCL_ALIGN		(1<<6)
-> +#define ADIS16400_MSC_CTRL_DATA_RDY_EN		(1<<2)
-> +#define ADIS16400_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
-> +#define ADIS16400_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
-> +
-> +/* SMPL_PRD */
-> +#define ADIS16400_SMPL_PRD_TIME_BASE	(1<<7)
-> +#define ADIS16400_SMPL_PRD_DIV_MASK	0x7F
-> +
-> +/* DIAG_STAT */
-> +#define ADIS16400_DIAG_STAT_ZACCL_FAIL	15
-> +#define ADIS16400_DIAG_STAT_YACCL_FAIL	14
-> +#define ADIS16400_DIAG_STAT_XACCL_FAIL	13
-> +#define ADIS16400_DIAG_STAT_XGYRO_FAIL	12
-> +#define ADIS16400_DIAG_STAT_YGYRO_FAIL	11
-> +#define ADIS16400_DIAG_STAT_ZGYRO_FAIL	10
-> +#define ADIS16400_DIAG_STAT_ALARM2	9
-> +#define ADIS16400_DIAG_STAT_ALARM1	8
-> +#define ADIS16400_DIAG_STAT_FLASH_CHK	6
-> +#define ADIS16400_DIAG_STAT_SELF_TEST	5
-> +#define ADIS16400_DIAG_STAT_OVERFLOW	4
-> +#define ADIS16400_DIAG_STAT_SPI_FAIL	3
-> +#define ADIS16400_DIAG_STAT_FLASH_UPT	2
-> +#define ADIS16400_DIAG_STAT_POWER_HIGH	1
-> +#define ADIS16400_DIAG_STAT_POWER_LOW	0
-> +
-> +/* GLOB_CMD */
-> +#define ADIS16400_GLOB_CMD_SW_RESET	(1<<7)
-> +#define ADIS16400_GLOB_CMD_P_AUTO_NULL	(1<<4)
-> +#define ADIS16400_GLOB_CMD_FLASH_UPD	(1<<3)
-> +#define ADIS16400_GLOB_CMD_DAC_LATCH	(1<<2)
-> +#define ADIS16400_GLOB_CMD_FAC_CALIB	(1<<1)
-> +#define ADIS16400_GLOB_CMD_AUTO_NULL	(1<<0)
-> +
-> +/* SLP_CNT */
-> +#define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
-> +
-> +#define ADIS16334_RATE_DIV_SHIFT 8
-> +#define ADIS16334_RATE_INT_CLK BIT(0)
-> +
-> +#define ADIS16400_SPI_SLOW	(u32)(300 * 1000)
-> +#define ADIS16400_SPI_BURST	(u32)(1000 * 1000)
-> +#define ADIS16400_SPI_FAST	(u32)(2000 * 1000)
-> +
-> +#define ADIS16400_HAS_PROD_ID		BIT(0)
-> +#define ADIS16400_NO_BURST		BIT(1)
-> +#define ADIS16400_HAS_SLOW_MODE		BIT(2)
-> +#define ADIS16400_HAS_SERIAL_NUMBER	BIT(3)
-> +#define ADIS16400_BURST_DIAG_STAT	BIT(4)
-> +
-> +struct adis16400_state;
-> +
-> +struct adis16400_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	const int num_channels;
-> +	const long flags;
-> +	unsigned int gyro_scale_micro;
-> +	unsigned int accel_scale_micro;
-> +	int temp_scale_nano;
-> +	int temp_offset;
-> +	int (*set_freq)(struct adis16400_state *st, unsigned int freq);
-> +	int (*get_freq)(struct adis16400_state *st);
-> +};
-> +
+>  int iio_read_avail_channel_raw(struct iio_channel *chan,
+>  			       const int **vals, int *length)
+>  {
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 9887f4f8e2a8..b2d34831ed7c 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -290,6 +290,20 @@ int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+>  int iio_read_avail_channel_raw(struct iio_channel *chan,
+>  			       const int **vals, int *length);
+>  
 > +/**
-> + * struct adis16400_state - device instance specific data
-> + * @variant:	chip variant info
-> + * @filt_int:	integer part of requested filter frequency
-> + * @adis:	adis device
-> + **/
-> +struct adis16400_state {
-> +	struct adis16400_chip_info	*variant;
-> +	int				filt_int;
-> +
-> +	struct adis adis;
-> +	unsigned long avail_scan_mask[2];
-> +};
->  
-> -#include "adis16400.h"
-> +/* At the moment triggers are only used for ring buffer
-> + * filling. This may change!
+> + * iio_read_avail_channel_attribute() - read available channel attribute values
+> + * @chan:		The channel being queried.
+> + * @vals:		Available values read back.
+> + * @type:		Type of values read back.
+> + * @length:		Number of entries in vals.
+> + * @attribute:		info attribute to be read back.
+> + *
+> + * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
 > + */
+> +int iio_read_avail_channel_attribute(struct iio_channel *chan,
+> +				     const int **vals, int *type, int *length,
+> +				     enum iio_chan_info_enum attribute);
 > +
-> +enum {
-> +	ADIS16400_SCAN_SUPPLY,
-> +	ADIS16400_SCAN_GYRO_X,
-> +	ADIS16400_SCAN_GYRO_Y,
-> +	ADIS16400_SCAN_GYRO_Z,
-> +	ADIS16400_SCAN_ACC_X,
-> +	ADIS16400_SCAN_ACC_Y,
-> +	ADIS16400_SCAN_ACC_Z,
-> +	ADIS16400_SCAN_MAGN_X,
-> +	ADIS16400_SCAN_MAGN_Y,
-> +	ADIS16400_SCAN_MAGN_Z,
-> +	ADIS16400_SCAN_BARO,
-> +	ADIS16350_SCAN_TEMP_X,
-> +	ADIS16350_SCAN_TEMP_Y,
-> +	ADIS16350_SCAN_TEMP_Z,
-> +	ADIS16300_SCAN_INCLI_X,
-> +	ADIS16300_SCAN_INCLI_Y,
-> +	ADIS16400_SCAN_ADC,
-> +	ADIS16400_SCAN_TIMESTAMP,
-> +};
->  
->  #ifdef CONFIG_DEBUG_FS
->  
-> diff --git a/drivers/iio/imu/adis16400.h b/drivers/iio/imu/adis16400.h
-> deleted file mode 100644
-> index 7e2e0dbaa2e1..000000000000
-> --- a/drivers/iio/imu/adis16400.h
-> +++ /dev/null
-> @@ -1,197 +0,0 @@
-> -/*
-> - * adis16400.h	support Analog Devices ADIS16400
-> - *		3d 18g accelerometers,
-> - *		3d gyroscopes,
-> - *		3d 2.5gauss magnetometers via SPI
-> - *
-> - * Copyright (c) 2009 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
-> - * Copyright (c) 2007 Jonathan Cameron <jic23@kernel.org>
-> - *
-> - * Loosely based upon lis3l02dq.h
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License version 2 as
-> - * published by the Free Software Foundation.
-> - */
-> -
-> -#ifndef SPI_ADIS16400_H_
-> -#define SPI_ADIS16400_H_
-> -
-> -#include <linux/iio/imu/adis.h>
-> -
-> -#define ADIS16400_STARTUP_DELAY	290 /* ms */
-> -#define ADIS16400_MTEST_DELAY 90 /* ms */
-> -
-> -#define ADIS16400_FLASH_CNT  0x00 /* Flash memory write count */
-> -#define ADIS16400_SUPPLY_OUT 0x02 /* Power supply measurement */
-> -#define ADIS16400_XGYRO_OUT 0x04 /* X-axis gyroscope output */
-> -#define ADIS16400_YGYRO_OUT 0x06 /* Y-axis gyroscope output */
-> -#define ADIS16400_ZGYRO_OUT 0x08 /* Z-axis gyroscope output */
-> -#define ADIS16400_XACCL_OUT 0x0A /* X-axis accelerometer output */
-> -#define ADIS16400_YACCL_OUT 0x0C /* Y-axis accelerometer output */
-> -#define ADIS16400_ZACCL_OUT 0x0E /* Z-axis accelerometer output */
-> -#define ADIS16400_XMAGN_OUT 0x10 /* X-axis magnetometer measurement */
-> -#define ADIS16400_YMAGN_OUT 0x12 /* Y-axis magnetometer measurement */
-> -#define ADIS16400_ZMAGN_OUT 0x14 /* Z-axis magnetometer measurement */
-> -#define ADIS16400_TEMP_OUT  0x16 /* Temperature output */
-> -#define ADIS16400_AUX_ADC   0x18 /* Auxiliary ADC measurement */
-> -
-> -#define ADIS16350_XTEMP_OUT 0x10 /* X-axis gyroscope temperature measurement */
-> -#define ADIS16350_YTEMP_OUT 0x12 /* Y-axis gyroscope temperature measurement */
-> -#define ADIS16350_ZTEMP_OUT 0x14 /* Z-axis gyroscope temperature measurement */
-> -
-> -#define ADIS16300_PITCH_OUT 0x12 /* X axis inclinometer output measurement */
-> -#define ADIS16300_ROLL_OUT  0x14 /* Y axis inclinometer output measurement */
-> -#define ADIS16300_AUX_ADC   0x16 /* Auxiliary ADC measurement */
-> -
-> -#define ADIS16448_BARO_OUT	0x16 /* Barometric pressure output */
-> -#define ADIS16448_TEMP_OUT  0x18 /* Temperature output */
-> -
-> -/* Calibration parameters */
-> -#define ADIS16400_XGYRO_OFF 0x1A /* X-axis gyroscope bias offset factor */
-> -#define ADIS16400_YGYRO_OFF 0x1C /* Y-axis gyroscope bias offset factor */
-> -#define ADIS16400_ZGYRO_OFF 0x1E /* Z-axis gyroscope bias offset factor */
-> -#define ADIS16400_XACCL_OFF 0x20 /* X-axis acceleration bias offset factor */
-> -#define ADIS16400_YACCL_OFF 0x22 /* Y-axis acceleration bias offset factor */
-> -#define ADIS16400_ZACCL_OFF 0x24 /* Z-axis acceleration bias offset factor */
-> -#define ADIS16400_XMAGN_HIF 0x26 /* X-axis magnetometer, hard-iron factor */
-> -#define ADIS16400_YMAGN_HIF 0x28 /* Y-axis magnetometer, hard-iron factor */
-> -#define ADIS16400_ZMAGN_HIF 0x2A /* Z-axis magnetometer, hard-iron factor */
-> -#define ADIS16400_XMAGN_SIF 0x2C /* X-axis magnetometer, soft-iron factor */
-> -#define ADIS16400_YMAGN_SIF 0x2E /* Y-axis magnetometer, soft-iron factor */
-> -#define ADIS16400_ZMAGN_SIF 0x30 /* Z-axis magnetometer, soft-iron factor */
-> -
-> -#define ADIS16400_GPIO_CTRL 0x32 /* Auxiliary digital input/output control */
-> -#define ADIS16400_MSC_CTRL  0x34 /* Miscellaneous control */
-> -#define ADIS16400_SMPL_PRD  0x36 /* Internal sample period (rate) control */
-> -#define ADIS16400_SENS_AVG  0x38 /* Dynamic range and digital filter control */
-> -#define ADIS16400_SLP_CNT   0x3A /* Sleep mode control */
-> -#define ADIS16400_DIAG_STAT 0x3C /* System status */
-> -
-> -/* Alarm functions */
-> -#define ADIS16400_GLOB_CMD  0x3E /* System command */
-> -#define ADIS16400_ALM_MAG1  0x40 /* Alarm 1 amplitude threshold */
-> -#define ADIS16400_ALM_MAG2  0x42 /* Alarm 2 amplitude threshold */
-> -#define ADIS16400_ALM_SMPL1 0x44 /* Alarm 1 sample size */
-> -#define ADIS16400_ALM_SMPL2 0x46 /* Alarm 2 sample size */
-> -#define ADIS16400_ALM_CTRL  0x48 /* Alarm control */
-> -#define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
-> -
-> -#define ADIS16334_LOT_ID1   0x52 /* Lot identification code 1 */
-> -#define ADIS16334_LOT_ID2   0x54 /* Lot identification code 2 */
-> -#define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
-> -#define ADIS16334_SERIAL_NUMBER 0x58 /* Serial number, lot specific */
-> -
-> -#define ADIS16400_ERROR_ACTIVE			(1<<14)
-> -#define ADIS16400_NEW_DATA			(1<<14)
-> -
-> -/* MSC_CTRL */
-> -#define ADIS16400_MSC_CTRL_MEM_TEST		(1<<11)
-> -#define ADIS16400_MSC_CTRL_INT_SELF_TEST	(1<<10)
-> -#define ADIS16400_MSC_CTRL_NEG_SELF_TEST	(1<<9)
-> -#define ADIS16400_MSC_CTRL_POS_SELF_TEST	(1<<8)
-> -#define ADIS16400_MSC_CTRL_GYRO_BIAS		(1<<7)
-> -#define ADIS16400_MSC_CTRL_ACCL_ALIGN		(1<<6)
-> -#define ADIS16400_MSC_CTRL_DATA_RDY_EN		(1<<2)
-> -#define ADIS16400_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
-> -#define ADIS16400_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
-> -
-> -/* SMPL_PRD */
-> -#define ADIS16400_SMPL_PRD_TIME_BASE	(1<<7)
-> -#define ADIS16400_SMPL_PRD_DIV_MASK	0x7F
-> -
-> -/* DIAG_STAT */
-> -#define ADIS16400_DIAG_STAT_ZACCL_FAIL	15
-> -#define ADIS16400_DIAG_STAT_YACCL_FAIL	14
-> -#define ADIS16400_DIAG_STAT_XACCL_FAIL	13
-> -#define ADIS16400_DIAG_STAT_XGYRO_FAIL	12
-> -#define ADIS16400_DIAG_STAT_YGYRO_FAIL	11
-> -#define ADIS16400_DIAG_STAT_ZGYRO_FAIL	10
-> -#define ADIS16400_DIAG_STAT_ALARM2	9
-> -#define ADIS16400_DIAG_STAT_ALARM1	8
-> -#define ADIS16400_DIAG_STAT_FLASH_CHK	6
-> -#define ADIS16400_DIAG_STAT_SELF_TEST	5
-> -#define ADIS16400_DIAG_STAT_OVERFLOW	4
-> -#define ADIS16400_DIAG_STAT_SPI_FAIL	3
-> -#define ADIS16400_DIAG_STAT_FLASH_UPT	2
-> -#define ADIS16400_DIAG_STAT_POWER_HIGH	1
-> -#define ADIS16400_DIAG_STAT_POWER_LOW	0
-> -
-> -/* GLOB_CMD */
-> -#define ADIS16400_GLOB_CMD_SW_RESET	(1<<7)
-> -#define ADIS16400_GLOB_CMD_P_AUTO_NULL	(1<<4)
-> -#define ADIS16400_GLOB_CMD_FLASH_UPD	(1<<3)
-> -#define ADIS16400_GLOB_CMD_DAC_LATCH	(1<<2)
-> -#define ADIS16400_GLOB_CMD_FAC_CALIB	(1<<1)
-> -#define ADIS16400_GLOB_CMD_AUTO_NULL	(1<<0)
-> -
-> -/* SLP_CNT */
-> -#define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
-> -
-> -#define ADIS16334_RATE_DIV_SHIFT 8
-> -#define ADIS16334_RATE_INT_CLK BIT(0)
-> -
-> -#define ADIS16400_SPI_SLOW	(u32)(300 * 1000)
-> -#define ADIS16400_SPI_BURST	(u32)(1000 * 1000)
-> -#define ADIS16400_SPI_FAST	(u32)(2000 * 1000)
-> -
-> -#define ADIS16400_HAS_PROD_ID		BIT(0)
-> -#define ADIS16400_NO_BURST		BIT(1)
-> -#define ADIS16400_HAS_SLOW_MODE		BIT(2)
-> -#define ADIS16400_HAS_SERIAL_NUMBER	BIT(3)
-> -#define ADIS16400_BURST_DIAG_STAT	BIT(4)
-> -
-> -struct adis16400_state;
-> -
-> -struct adis16400_chip_info {
-> -	const struct iio_chan_spec *channels;
-> -	const int num_channels;
-> -	const long flags;
-> -	unsigned int gyro_scale_micro;
-> -	unsigned int accel_scale_micro;
-> -	int temp_scale_nano;
-> -	int temp_offset;
-> -	int (*set_freq)(struct adis16400_state *st, unsigned int freq);
-> -	int (*get_freq)(struct adis16400_state *st);
-> -};
-> -
-> -/**
-> - * struct adis16400_state - device instance specific data
-> - * @variant:	chip variant info
-> - * @filt_int:	integer part of requested filter frequency
-> - * @adis:	adis device
-> - **/
-> -struct adis16400_state {
-> -	struct adis16400_chip_info	*variant;
-> -	int				filt_int;
-> -
-> -	struct adis adis;
-> -	unsigned long avail_scan_mask[2];
-> -};
-> -
-> -/* At the moment triggers are only used for ring buffer
-> - * filling. This may change!
-> - */
-> -
-> -enum {
-> -	ADIS16400_SCAN_SUPPLY,
-> -	ADIS16400_SCAN_GYRO_X,
-> -	ADIS16400_SCAN_GYRO_Y,
-> -	ADIS16400_SCAN_GYRO_Z,
-> -	ADIS16400_SCAN_ACC_X,
-> -	ADIS16400_SCAN_ACC_Y,
-> -	ADIS16400_SCAN_ACC_Z,
-> -	ADIS16400_SCAN_MAGN_X,
-> -	ADIS16400_SCAN_MAGN_Y,
-> -	ADIS16400_SCAN_MAGN_Z,
-> -	ADIS16400_SCAN_BARO,
-> -	ADIS16350_SCAN_TEMP_X,
-> -	ADIS16350_SCAN_TEMP_Y,
-> -	ADIS16350_SCAN_TEMP_Z,
-> -	ADIS16300_SCAN_INCLI_X,
-> -	ADIS16300_SCAN_INCLI_Y,
-> -	ADIS16400_SCAN_ADC,
-> -	ADIS16400_SCAN_TIMESTAMP,
-> -};
-> -
-> -#endif /* SPI_ADIS16400_H_ */
+>  /**
+>   * iio_get_channel_type() - get the type of a channel
+>   * @channel:		The channel being queried.
 
