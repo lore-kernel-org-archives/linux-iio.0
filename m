@@ -4,196 +4,163 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 744DAC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 13:02:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F62C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 14:25:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4CFD020830
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 13:02:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE89C2084D
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 14:25:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731214AbfCYNCa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Mar 2019 09:02:30 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:46941 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1731076AbfCYNCa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Mar 2019 09:02:30 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2PD1WWR029054;
-        Mon, 25 Mar 2019 14:02:06 +0100
+        id S1728991AbfCYOZG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Mar 2019 10:25:06 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:14221 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726194AbfCYOZG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Mar 2019 10:25:06 -0400
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x2PEL0C4019417;
+        Mon, 25 Mar 2019 15:24:20 +0100
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2rddhabsqw-1
+        by mx07-00178001.pphosted.com with ESMTP id 2rddhbbr65-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 25 Mar 2019 14:02:06 +0100
+        Mon, 25 Mar 2019 15:24:20 +0100
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B0CBB38;
-        Mon, 25 Mar 2019 13:02:05 +0000 (GMT)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6A4AC31;
+        Mon, 25 Mar 2019 14:24:19 +0000 (GMT)
 Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8A04A5779;
-        Mon, 25 Mar 2019 13:02:05 +0000 (GMT)
-Received: from localhost (10.75.127.48) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 25 Mar 2019 14:02:05
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3C6CAA493;
+        Mon, 25 Mar 2019 14:24:19 +0000 (GMT)
+Received: from localhost (10.75.127.45) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 25 Mar 2019 15:24:18
  +0100
 From:   Fabrice Gasnier <fabrice.gasnier@st.com>
 To:     <jic23@kernel.org>
-CC:     <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <fabrice.gasnier@st.com>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [PATCH v2] iio: core: fix a possible circular locking dependency
-Date:   Mon, 25 Mar 2019 14:01:23 +0100
-Message-ID: <1553518883-27972-1-git-send-email-fabrice.gasnier@st.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
+        <linux-iio@vger.kernel.org>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <linux-stm32@st-md-mailman.stormreply.com>,
+        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
+Subject: [PATCH] iio: adc: stm32-dfsdm: improve sampling frequency accuracy
+Date:   Mon, 25 Mar 2019 15:24:01 +0100
+Message-ID: <1553523841-16315-1-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG8NODE1.st.com (10.75.127.22) To SFHDAG5NODE3.st.com
+X-Originating-IP: [10.75.127.45]
+X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG5NODE3.st.com
  (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-25_08:,,
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-03-25_09:,,
  signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This fixes a possible circular locking dependency detected warning seen
-with:
-- CONFIG_PROVE_LOCKING=y
-- consumer/provider IIO devices (ex: "voltage-divider" consumer of "adc")
-
-When using the IIO consumer interface, e.g. iio_channel_get(), the consumer
-device will likely call iio_read_channel_raw() or similar that rely on
-'info_exist_lock' mutex.
-
-typically:
-...
-	mutex_lock(&chan->indio_dev->info_exist_lock);
-	if (chan->indio_dev->info == NULL) {
-		ret = -ENODEV;
-		goto err_unlock;
-	}
-	ret = do_some_ops()
-err_unlock:
-	mutex_unlock(&chan->indio_dev->info_exist_lock);
-	return ret;
-...
-
-Same mutex is also hold in iio_device_unregister().
-
-The following deadlock warning happens when:
-- the consumer device has called an API like iio_read_channel_raw()
-  at least once.
-- the consumer driver is unregistered, removed (unbind from sysfs)
-
-======================================================
-WARNING: possible circular locking dependency detected
-4.19.24 #577 Not tainted
-------------------------------------------------------
-sh/372 is trying to acquire lock:
-(kn->count#30){++++}, at: kernfs_remove_by_name_ns+0x3c/0x84
-
-but task is already holding lock:
-(&dev->info_exist_lock){+.+.}, at: iio_device_unregister+0x18/0x60
-
-which lock already depends on the new lock.
-
-the existing dependency chain (in reverse order) is:
-
--> #1 (&dev->info_exist_lock){+.+.}:
-       __mutex_lock+0x70/0xa3c
-       mutex_lock_nested+0x1c/0x24
-       iio_read_channel_raw+0x1c/0x60
-       iio_read_channel_info+0xa8/0xb0
-       dev_attr_show+0x1c/0x48
-       sysfs_kf_seq_show+0x84/0xec
-       seq_read+0x154/0x528
-       __vfs_read+0x2c/0x15c
-       vfs_read+0x8c/0x110
-       ksys_read+0x4c/0xac
-       ret_fast_syscall+0x0/0x28
-       0xbedefb60
-
--> #0 (kn->count#30){++++}:
-       lock_acquire+0xd8/0x268
-       __kernfs_remove+0x288/0x374
-       kernfs_remove_by_name_ns+0x3c/0x84
-       remove_files+0x34/0x78
-       sysfs_remove_group+0x40/0x9c
-       sysfs_remove_groups+0x24/0x34
-       device_remove_attrs+0x38/0x64
-       device_del+0x11c/0x360
-       cdev_device_del+0x14/0x2c
-       iio_device_unregister+0x24/0x60
-       release_nodes+0x1bc/0x200
-       device_release_driver_internal+0x1a0/0x230
-       unbind_store+0x80/0x130
-       kernfs_fop_write+0x100/0x1e4
-       __vfs_write+0x2c/0x160
-       vfs_write+0xa4/0x17c
-       ksys_write+0x4c/0xac
-       ret_fast_syscall+0x0/0x28
-       0xbe906840
-
-other info that might help us debug this:
-
- Possible unsafe locking scenario:
-
-       CPU0                    CPU1
-       ----                    ----
-  lock(&dev->info_exist_lock);
-                               lock(kn->count#30);
-                               lock(&dev->info_exist_lock);
-  lock(kn->count#30);
-
- *** DEADLOCK ***
-...
-
-cdev_device_del() can be called without holding the lock. It should be safe
-as info_exist_lock prevents kernelspace consumers to use the exported
-routines during/after provider removal. cdev_device_del() is for userspace.
-
-Help to reproduce:
-See example: Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
-sysv {
-	compatible = "voltage-divider";
-	io-channels = <&adc 0>;
-	output-ohms = <22>;
-	full-ohms = <222>;
-};
-
-First, go to iio:deviceX for the "voltage-divider", do one read:
-$ cd /sys/bus/iio/devices/iio:deviceX
-$ cat in_voltage0_raw
-
-Then, unbind the consumer driver. It triggers above deadlock warning.
-$ cd /sys/bus/platform/drivers/iio-rescale/
-$ echo sysv > unbind
+The sample frequency is driven using the oversampling ratio depending
+on the SPI bus frequency.
+Currently, oversampling ratio is computed by an entire division:
+- spi_freq / sample_freq. This may result in inaccurate value.
+Using DIV_ROUND_CLOSEST improves resulting sample frequency, which is
+useful for audio that requests fixed rates (such as: 8, 16 or 32 kHz).
+BTW, introduce new routine to re-factor sample frequency setting, and
+move frequency accuracy message from warning to debug level.
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-Changes in v2:
-- call cdev_device_del() without holding the lock, as proposed by Jonathan
-  without reordering the unregister routine.
----
- drivers/iio/industrialio-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 56 +++++++++++++++++++++------------------
+ 1 file changed, 30 insertions(+), 26 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4700fd5..9c4d921 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1743,10 +1743,10 @@ EXPORT_SYMBOL(__iio_device_register);
-  **/
- void iio_device_unregister(struct iio_dev *indio_dev)
- {
--	mutex_lock(&indio_dev->info_exist_lock);
--
- 	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index 531ca7e..051561c 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -558,13 +558,38 @@ static ssize_t dfsdm_adc_audio_get_spiclk(struct iio_dev *indio_dev,
+ 	return snprintf(buf, PAGE_SIZE, "%d\n", adc->spi_freq);
+ }
  
-+	mutex_lock(&indio_dev->info_exist_lock);
++static int dfsdm_adc_set_samp_freq(struct iio_dev *indio_dev,
++				   unsigned int sample_freq,
++				   unsigned int spi_freq)
++{
++	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
++	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
++	unsigned int oversamp;
++	int ret;
 +
- 	iio_device_unregister_debugfs(indio_dev);
++	oversamp = DIV_ROUND_CLOSEST(spi_freq, sample_freq);
++	if (spi_freq % sample_freq)
++		dev_dbg(&indio_dev->dev,
++			"Rate not accurate. requested (%u), actual (%u)\n",
++			sample_freq, spi_freq / oversamp);
++
++	ret = stm32_dfsdm_set_osrs(fl, 0, oversamp);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "No filter parameters that match!\n");
++		return ret;
++	}
++	adc->sample_freq = spi_freq / oversamp;
++	adc->oversamp = oversamp;
++
++	return 0;
++}
++
+ static ssize_t dfsdm_adc_audio_set_spiclk(struct iio_dev *indio_dev,
+ 					  uintptr_t priv,
+ 					  const struct iio_chan_spec *chan,
+ 					  const char *buf, size_t len)
+ {
+ 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+-	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
+ 	struct stm32_dfsdm_channel *ch = &adc->dfsdm->ch_list[chan->channel];
+ 	unsigned int sample_freq = adc->sample_freq;
+ 	unsigned int spi_freq;
+@@ -583,17 +608,9 @@ static ssize_t dfsdm_adc_audio_set_spiclk(struct iio_dev *indio_dev,
+ 		return -EINVAL;
  
- 	iio_disable_all_buffers(indio_dev);
+ 	if (sample_freq) {
+-		if (spi_freq % sample_freq)
+-			dev_warn(&indio_dev->dev,
+-				 "Sampling rate not accurate (%d)\n",
+-				 spi_freq / (spi_freq / sample_freq));
+-
+-		ret = stm32_dfsdm_set_osrs(fl, 0, (spi_freq / sample_freq));
+-		if (ret < 0) {
+-			dev_err(&indio_dev->dev,
+-				"No filter parameters that match!\n");
++		ret = dfsdm_adc_set_samp_freq(indio_dev, sample_freq, spi_freq);
++		if (ret < 0)
+ 			return ret;
+-		}
+ 	}
+ 	adc->spi_freq = spi_freq;
+ 
+@@ -1068,22 +1085,9 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+ 			spi_freq = adc->spi_freq;
+ 		}
+ 
+-		if (spi_freq % val)
+-			dev_warn(&indio_dev->dev,
+-				 "Sampling rate not accurate (%d)\n",
+-				 spi_freq / (spi_freq / val));
+-
+-		ret = stm32_dfsdm_set_osrs(fl, 0, (spi_freq / val));
+-		if (ret < 0) {
+-			dev_err(&indio_dev->dev,
+-				"Not able to find parameter that match!\n");
+-			iio_device_release_direct_mode(indio_dev);
+-			return ret;
+-		}
+-		adc->sample_freq = val;
++		ret = dfsdm_adc_set_samp_freq(indio_dev, val, spi_freq);
+ 		iio_device_release_direct_mode(indio_dev);
+-
+-		return 0;
++		return ret;
+ 	}
+ 
+ 	return -EINVAL;
 -- 
 2.7.4
 
