@@ -2,121 +2,91 @@ Return-Path: <SRS0=gXrz=R4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FF1CC43381
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 16:21:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A74C43381
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 21:24:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 26FC820828
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 16:21:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D2E7A20848
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Mar 2019 21:24:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729571AbfCYQUv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Mar 2019 12:20:51 -0400
-Received: from mga09.intel.com ([134.134.136.24]:11863 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726743AbfCYQUv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 25 Mar 2019 12:20:51 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 25 Mar 2019 09:20:49 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,269,1549958400"; 
-   d="scan'208";a="155016042"
-Received: from spandruv-desk.jf.intel.com ([10.54.75.31])
-  by fmsmga002.fm.intel.com with ESMTP; 25 Mar 2019 09:20:49 -0700
-Message-ID: <000d6a3a402461974a1ab4e3186173da1c47c118.camel@linux.intel.com>
-Subject: Re: [PATCH 1/1] hid: hid-sensor-custom: simplify getting
- .driver_data
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Date:   Mon, 25 Mar 2019 09:20:48 -0700
-In-Reply-To: <20190319163638.31003-1-wsa+renesas@sang-engineering.com>
-References: <20190319163638.31003-1-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1729626AbfCYVYj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Mar 2019 17:24:39 -0400
+Received: from smtprelay0102.hostedemail.com ([216.40.44.102]:41400 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1729569AbfCYVYj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Mar 2019 17:24:39 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 2104F182CF668;
+        Mon, 25 Mar 2019 21:24:38 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: cave03_b38e118dc05e
+X-Filterd-Recvd-Size: 2566
+Received: from joe-laptop.perches.com (unknown [47.151.153.53])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Mon, 25 Mar 2019 21:24:36 +0000 (UTC)
+From:   Joe Perches <joe@perches.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     Stefan Popa <stefan.popa@analog.com>, linux-iio@vger.kernel.org,
+        Rob Herring <robh@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Bad file pattern in MAINTAINERS section 'ANALOG DEVICES INC AD7606 DRIVER'
+Date:   Mon, 25 Mar 2019 14:24:35 -0700
+Message-Id: <20190325212435.25587-1-joe@perches.com>
+X-Mailer: git-send-email 2.15.0
+In-Reply-To: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
+References: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 2019-03-19 at 17:36 +0100, Wolfram Sang wrote:
-> We should get 'driver_data' from 'struct device' directly. Going via
-> platform_device is an unneeded step back and forth.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+A file pattern line in this section of the MAINTAINERS file in linux-next
+does not have a match in the linux source files.
 
-> ---
-> 
-> Build tested only. buildbot is happy.
-> 
->  drivers/hid/hid-sensor-custom.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
-> sensor-custom.c
-> index bb012bc032e0..462e653a7bbb 100644
-> --- a/drivers/hid/hid-sensor-custom.c
-> +++ b/drivers/hid/hid-sensor-custom.c
-> @@ -157,8 +157,7 @@ static int usage_id_cmp(const void *p1, const
-> void *p2)
->  static ssize_t enable_sensor_show(struct device *dev,
->  				  struct device_attribute *attr, char
-> *buf)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct hid_sensor_custom *sensor_inst =
-> platform_get_drvdata(pdev);
-> +	struct hid_sensor_custom *sensor_inst = dev_get_drvdata(dev);
->  
->  	return sprintf(buf, "%d\n", sensor_inst->enable);
->  }
-> @@ -237,8 +236,7 @@ static ssize_t enable_sensor_store(struct device
-> *dev,
->  				   struct device_attribute *attr,
->  				   const char *buf, size_t count)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct hid_sensor_custom *sensor_inst =
-> platform_get_drvdata(pdev);
-> +	struct hid_sensor_custom *sensor_inst = dev_get_drvdata(dev);
->  	int value;
->  	int ret = -EINVAL;
->  
-> @@ -283,8 +281,7 @@ static const struct attribute_group
-> enable_sensor_attr_group = {
->  static ssize_t show_value(struct device *dev, struct
-> device_attribute *attr,
->  			  char *buf)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct hid_sensor_custom *sensor_inst =
-> platform_get_drvdata(pdev);
-> +	struct hid_sensor_custom *sensor_inst = dev_get_drvdata(dev);
->  	struct hid_sensor_hub_attribute_info *attribute;
->  	int index, usage, field_index;
->  	char name[HID_CUSTOM_NAME_LENGTH];
-> @@ -392,8 +389,7 @@ static ssize_t show_value(struct device *dev,
-> struct device_attribute *attr,
->  static ssize_t store_value(struct device *dev, struct
-> device_attribute *attr,
->  			   const char *buf, size_t count)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct hid_sensor_custom *sensor_inst =
-> platform_get_drvdata(pdev);
-> +	struct hid_sensor_custom *sensor_inst = dev_get_drvdata(dev);
->  	int index, field_index, usage;
->  	char name[HID_CUSTOM_NAME_LENGTH];
->  	int value;
+This could occur because a matching filename was never added, was deleted
+or renamed in some other commit.
 
+The commits that added and if found renamed or removed the file pattern
+are shown below.
+
+Please fix this defect appropriately.
+
+1: ---------------------------------------------------------------------------
+
+linux-next MAINTAINERS section:
+
+	865	ANALOG DEVICES INC AD7606 DRIVER
+	866	M:	Stefan Popa <stefan.popa@analog.com>
+	867	L:	linux-iio@vger.kernel.org
+	868	W:	http://ez.analog.com/community/linux-device-drivers
+	869	S:	Supported
+	870	F:	drivers/iio/adc/ad7606.c
+-->	871	F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
+
+2: ---------------------------------------------------------------------------
+
+The most recent commit that added or modified file pattern 'Documentation/devicetree/bindings/iio/adc/ad7606.txt':
+
+commit 6e33a125df66664a09cd518a2e1dd63b4ccddef8
+Author: Stefan Popa <stefan.popa@analog.com>
+Date:   Mon Dec 17 14:23:40 2018 +0200
+
+    dt-bindings: iio: adc: Add docs for AD7606 ADC
+    
+    Document support for AD7606 Analog to Digital Converter.
+    
+    Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+    Reviewed-by: Rob Herring <robh@kernel.org>
+    Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+
+ .../devicetree/bindings/iio/adc/adi,ad7606.txt     | 65 ++++++++++++++++++++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 66 insertions(+)
+
+3: ---------------------------------------------------------------------------
+
+No commit with file pattern 'Documentation/devicetree/bindings/iio/adc/ad7606.txt' was found
