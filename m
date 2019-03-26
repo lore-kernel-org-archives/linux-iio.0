@@ -2,170 +2,170 @@ Return-Path: <SRS0=TPgR=R5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC9E6C43381
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 13:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04AB0C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 13:40:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AFE4220857
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 13:40:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C04BB2075C
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 13:40:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="nzi8Uuq7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731495AbfCZNkI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Mar 2019 09:40:08 -0400
-Received: from mout.kundenserver.de ([212.227.126.134]:57287 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726241AbfCZNkI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2019 09:40:08 -0400
-Received: from localhost ([89.247.163.190]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1M72Xn-1h30rq0kgx-008Ymi; Tue, 26 Mar 2019 14:39:41 +0100
-Date:   Tue, 26 Mar 2019 14:39:40 +0100
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] devantech-srf04.yaml: transform DT binding to YAML
-Message-ID: <20190326133938.oitfjxlx2kou26lm@arbad>
+        id S1731643AbfCZNkK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Mar 2019 09:40:10 -0400
+Received: from mail-eopbgr690078.outbound.protection.outlook.com ([40.107.69.78]:17630
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726241AbfCZNkJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 Mar 2019 09:40:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=M+Rm8OHG3XmTy4WrrggSiDufkpLGK2TtgUpwvp4rMPA=;
+ b=nzi8Uuq7FIKSzjHJCtNsvYhTExSITfwqqSI0fRyzG7hkTzFiA16fyjZayzCGPcFmusRmmS+/k05ojQs5kzEQw7YXbKnx5LyvAjqLunpZKf4SDXVOddYJg/Y9kH3oRc7EaveesktO1gDzqh9HyZSV4/8jDtKbIZ005vzKkK7EIh4=
+Received: from DM6PR03CA0024.namprd03.prod.outlook.com (2603:10b6:5:40::37) by
+ CO2PR03MB2262.namprd03.prod.outlook.com (2603:10b6:102:a::15) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1709.14; Tue, 26 Mar 2019 13:40:07 +0000
+Received: from BL2NAM02FT049.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::207) by DM6PR03CA0024.outlook.office365.com
+ (2603:10b6:5:40::37) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1730.16 via Frontend
+ Transport; Tue, 26 Mar 2019 13:40:06 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT049.mail.protection.outlook.com (10.152.77.118) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1730.9
+ via Frontend Transport; Tue, 26 Mar 2019 13:40:06 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x2QDe60J017969
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 26 Mar 2019 06:40:06 -0700
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Tue, 26 Mar 2019
+ 09:40:05 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH V2] iio: frequency: ad9523: Fix typo in ad9523_platform_data
+Date:   Tue, 26 Mar 2019 15:40:03 +0200
+Message-ID: <20190326134003.18371-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:VIRtsjp4cKiHmZ3IdhI3AQ/qbZJX2+xnU/4zQ40LD5Sz8CH49t7
- 7q0Ot1mBjhD/AR/ox8j0hlLf+Nv3UTyNGpgjPWowvlE+EVXRrVKTFkGBbCHiUqOiDyWIG/R
- dNqaaeVWF/43IY0bkTvgM3OfTYZc3VSObW0eTHVA2iCq06pSdGNqjpXPtzbCRpZQkFSI304
- rGGCN22NNw2TxkiBavMVw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:JR4WOPX3r+w=:J/C4eyngMV0QgPKvUKvXMm
- C2g0tGET114KzZc1G9i36VqFoRp50cfldaFk+tK6S7avSNA/JNbv7HuLwWvc6objW0pCdLIpT
- t7+WumdyDM084E519KnBpmEK5E7L0vPxgZQjDiap+LinlWiJBsLpeyAy6jJoyB78BYmD8mEqG
- VTsbb7PUDFPgVii2MoYiq9V5mmcvLqhCsK7BN5X2qnS9eBHbBjHpbCpkFZ5TgmT/M/mnv4Sji
- JxRDKMYYi3ECCYFzM4xOoIJNjhA23nQjTxpKEO5We+c4OoXOHYfrfVzY+C6Dl3Y/JTon9S61r
- kNsDLeeX/Wo+DUuZa6U7n8qHN/aDZXYMbXcaj7vW+o/1JElBe6CWdF//seSXSTQ8axH/ttdGc
- TXZ9JWLLL+WImv24bAZ1iEp/pTsdw39CS+41E/36UFU82J5NymX/cTqe7iijB7Lamu4kDJV9W
- otetVndW2f+hTRBe33Z8wrwgo9a04Q4diFX3CzaVVfv288Xo/X0avAI4JMQCMl5s0EbE+leNo
- eir105SzUwrTpOp7XOmzP+aZJgeSh5HCLJXCVuj5qGsPghCLEioy2QUHHjaKP91V+/SMC/ZB6
- uKLtlO0rrC18EY70r2m1S49AYiYCzDQ4swQ79+DiKkwPneVrT+DKs7Odd3J5zBsWYhCsAbr2+
- gDRp+VsCL6ddyvkpd0Bx49K2cu2lpS6T38nYlTTmEMDgYQJzWIwMOCDwnCHjB08MbIHsFXUbG
- C4eFNjrSd8L7OxsA1A7rIUmPck1xlWLBzTQl8A==
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(346002)(376002)(39860400002)(396003)(2980300002)(54534003)(199004)(189003)(48376002)(6916009)(305945005)(7636002)(8936002)(50226002)(44832011)(2351001)(8676002)(246002)(50466002)(53416004)(106466001)(107886003)(36756003)(51416003)(356004)(4326008)(7696005)(77096007)(426003)(47776003)(476003)(2906002)(26005)(1076003)(186003)(316002)(16586007)(106002)(478600001)(54906003)(336012)(86362001)(5660300002)(486006)(2616005)(126002);DIR:OUT;SFP:1101;SCL:1;SRVR:CO2PR03MB2262;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8266988c-151f-4052-b0e0-08d6b1f08edc
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600127)(711020)(4605104)(4709054)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:CO2PR03MB2262;
+X-MS-TrafficTypeDiagnostic: CO2PR03MB2262:
+X-Microsoft-Antispam-PRVS: <CO2PR03MB2262B89865CED0269341412DF95F0@CO2PR03MB2262.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 09888BC01D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: KfcQ7ZjHQwanLQU8XFWPBWD/i1DuBV/NpSHKhVmkCW4obLP1AuaK7/mvWmk8UvA9PZaobqGQopq3+xQihBVgHSyIoyskRuvE1vesIvoLDesvfbIazqjlb9qmmk2h4sBxSrVao1fSkJe/k4KzZrEFcqOT/SZ0SgOR6iphmBlMnvBfkCbeLwNID1eDuJ+EX877uQhh5RsUzHPnUvJdM/QHzi4HuTgzsDTsSa5Ql8tvWhdp1lDrj6hHq9FfkoPt9pSFpCg9u9VzOQItFj8cMnBtOf1w0Ug76sQWNKBmXkBgDuwzT2UMPzhzzEJzJhkRFDg8EHKG2OH6XyU8qkwrluo+1phZmCPAnqxWV/rta9+MzCVEBrZi83u6zri0PiMPAZ7fsq/CGV0nmt0MD2rlBRqp3rBxVn8IW4UJaInpR6EKxjA=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2019 13:40:06.5558
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8266988c-151f-4052-b0e0-08d6b1f08edc
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO2PR03MB2262
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-devantech-srf04.yaml: yaml devicetree binding for iio ultrasonic
-proximity driver of devantech srf04
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-use devantech-srf04.txt, transform binding into yaml and remove the
-outdated DT documentation
+Replace diff_{m1,m2} with div_{m1,m2} since they are dividers and not a
+differential settings.
 
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../bindings/iio/proximity/devantech-srf04.txt     | 28 ----------
- .../bindings/iio/proximity/devantech-srf04.yaml    | 59 ++++++++++++++++++++++
- 2 files changed, 59 insertions(+), 28 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt b/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
-deleted file mode 100644
-index d4dc7a227e2e..000000000000
---- a/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
-+++ /dev/null
-@@ -1,28 +0,0 @@
--* Devantech SRF04 ultrasonic range finder
--  Bit-banging driver using two GPIOs
--
--Required properties:
-- - compatible:	Should be "devantech,srf04"
--
-- - trig-gpios:	Definition of the GPIO for the triggering (output)
--		This GPIO is set for about 10 us by the driver to tell the
--		device it should initiate the measurement cycle.
--
-- - echo-gpios:	Definition of the GPIO for the echo (input)
--		This GPIO is set by the device as soon as an ultrasonic
--		burst is sent out and reset when the first echo is
--		received.
--		Thus this GPIO is set while the ultrasonic waves are doing
--		one round trip.
--		It needs to be an GPIO which is able to deliver an
--		interrupt because the time between two interrupts is
--		measured in the driver.
--		See Documentation/devicetree/bindings/gpio/gpio.txt for
--		information on how to specify a consumer gpio.
--
--Example:
--srf04@0 {
--	compatible = "devantech,srf04";
--	trig-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
--	echo-gpios = <&gpio2  6 GPIO_ACTIVE_HIGH>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.yaml b/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.yaml
-new file mode 100644
-index 000000000000..e7aab785c97d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/devantech-srf04.yaml
-@@ -0,0 +1,59 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/devantech-srf04.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Devantech SRF04 ultrasonic range finder
-+
-+maintainers:
-+  - Andreas Klinger <ak@it-klinger.de>
-+
-+description: |
-+  Bit-banging driver using two GPIOs:
-+  - trigger-gpio is raised by the driver to start sending out an ultrasonic
-+    burst
-+  - echo-gpio is held high by the sensor after sending ultrasonic burst
-+    until it is received once again
-+
-+  Specifications about the driver can be found at:
-+  http://www.robot-electronics.co.uk/htm/srf04tech.htm
-+
-+properties:
-+  compatible:
-+    items:
-+      - const: devantech,srf04
-+
-+  trig-gpios:
-+    description:
-+      Definition of the GPIO for the triggering (output) This GPIO is set
-+      for about 10 us by the driver to tell the device it should initiate
-+      the measurement cycle.
-+    maxItems: 1
-+
-+  echo-gpios:
-+    description:
-+      Definition of the GPIO for the echo (input)
-+      This GPIO is set by the device as soon as an ultrasonic burst is sent
-+      out and reset when the first echo is received.
-+      Thus this GPIO is set while the ultrasonic waves are doing one round
-+      trip.
-+      It needs to be an GPIO which is able to deliver an interrupt because
-+      the time between two interrupts is measured in the driver.
-+      See Documentation/devicetree/bindings/gpio/gpio.txt for information
-+      on how to specify a consumer gpio.
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - trig-gpios
-+  - echo-gpios
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    proximity {
-+        compatible = "devantech,srf04";
-+        trig-gpios = <&gpio1 15 GPIO_ACTIVE_HIGH>;
-+        echo-gpios = <&gpio2  6 GPIO_ACTIVE_HIGH>;
-+    };
+Changelog v1->v2:
+* added `frequency:` to prefix for consistency
+
+ drivers/iio/frequency/ad9523.c       | 16 ++++++++--------
+ include/linux/iio/frequency/ad9523.h |  8 ++++----
+ 2 files changed, 12 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index 3f9be69499ec..9b9eee27176c 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -872,22 +872,22 @@ static int ad9523_setup(struct iio_dev *indio_dev)
+ 		return ret;
+ 
+ 	ret = ad9523_write(indio_dev, AD9523_PLL2_VCO_DIVIDER,
+-		AD9523_PLL2_VCO_DIV_M1(pdata->pll2_vco_diff_m1) |
+-		AD9523_PLL2_VCO_DIV_M2(pdata->pll2_vco_diff_m2) |
+-		AD_IFE(pll2_vco_diff_m1, 0,
++		AD9523_PLL2_VCO_DIV_M1(pdata->pll2_vco_div_m1) |
++		AD9523_PLL2_VCO_DIV_M2(pdata->pll2_vco_div_m2) |
++		AD_IFE(pll2_vco_div_m1, 0,
+ 		       AD9523_PLL2_VCO_DIV_M1_PWR_DOWN_EN) |
+-		AD_IFE(pll2_vco_diff_m2, 0,
++		AD_IFE(pll2_vco_div_m2, 0,
+ 		       AD9523_PLL2_VCO_DIV_M2_PWR_DOWN_EN));
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (pdata->pll2_vco_diff_m1)
++	if (pdata->pll2_vco_div_m1)
+ 		st->vco_out_freq[AD9523_VCO1] =
+-			st->vco_freq / pdata->pll2_vco_diff_m1;
++			st->vco_freq / pdata->pll2_vco_div_m1;
+ 
+-	if (pdata->pll2_vco_diff_m2)
++	if (pdata->pll2_vco_div_m2)
+ 		st->vco_out_freq[AD9523_VCO2] =
+-			st->vco_freq / pdata->pll2_vco_diff_m2;
++			st->vco_freq / pdata->pll2_vco_div_m2;
+ 
+ 	st->vco_out_freq[AD9523_VCXO] = pdata->vcxo_freq;
+ 
+diff --git a/include/linux/iio/frequency/ad9523.h b/include/linux/iio/frequency/ad9523.h
+index 12ce3ee427fd..621b93c0bcf9 100644
+--- a/include/linux/iio/frequency/ad9523.h
++++ b/include/linux/iio/frequency/ad9523.h
+@@ -129,8 +129,8 @@ enum cpole1_capacitor {
+  * @pll2_ndiv_b_cnt: PLL2 Feedback N-divider, B Counter, range 0..63.
+  * @pll2_freq_doubler_en: PLL2 frequency doubler enable.
+  * @pll2_r2_div: PLL2 R2 divider, range 0..31.
+- * @pll2_vco_diff_m1: VCO1 divider, range 3..5.
+- * @pll2_vco_diff_m2: VCO2 divider, range 3..5.
++ * @pll2_vco_div_m1: VCO1 divider, range 3..5.
++ * @pll2_vco_div_m2: VCO2 divider, range 3..5.
+  * @rpole2: PLL2 loop filter Rpole resistor value.
+  * @rzero: PLL2 loop filter Rzero resistor value.
+  * @cpole1: PLL2 loop filter Cpole capacitor value.
+@@ -176,8 +176,8 @@ struct ad9523_platform_data {
+ 	unsigned char			pll2_ndiv_b_cnt;
+ 	bool				pll2_freq_doubler_en;
+ 	unsigned char			pll2_r2_div;
+-	unsigned char			pll2_vco_diff_m1; /* 3..5 */
+-	unsigned char			pll2_vco_diff_m2; /* 3..5 */
++	unsigned char			pll2_vco_div_m1; /* 3..5 */
++	unsigned char			pll2_vco_div_m2; /* 3..5 */
+ 
+ 	/* Loop Filter PLL2 */
+ 	enum rpole2_resistor		rpole2;
 -- 
-2.11.0
+2.17.1
+
