@@ -2,109 +2,123 @@ Return-Path: <SRS0=TPgR=R5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98EA3C43381
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:17:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66230C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 11:00:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6941320863
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:17:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A2C22084B
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 11:00:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="P9ZAveC3"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="nviiNkcS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731267AbfCZKRX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Mar 2019 06:17:23 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:50570 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726248AbfCZKRW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2019 06:17:22 -0400
-Received: by mail-wm1-f68.google.com with SMTP id z11so12050812wmi.0
-        for <linux-iio@vger.kernel.org>; Tue, 26 Mar 2019 03:17:21 -0700 (PDT)
+        id S1725948AbfCZLAJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Mar 2019 07:00:09 -0400
+Received: from mail-eopbgr690057.outbound.protection.outlook.com ([40.107.69.57]:28060
+        "EHLO NAM04-CO1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725776AbfCZLAJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 Mar 2019 07:00:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fylf7pTOJC8ppYoSWOQNUlj74ePm38xqTj3FfXozA2w=;
-        b=P9ZAveC3HcU+GRwveIhtJfwnaNrvMsjAEX0iSbNmrsepR3IlZa1a26ofUEAAmIuuY5
-         NfP3b5w4GNbxXULggMHem9GBJTuqtE4tHuo+7whWBHIBZDRHteyKiYDXDTfUvtF7SdpX
-         NCIwKUiLwK1BVsxFQEM8Io9ZvJRolVJ+nRHZ3wchvVODM1hqCQZUTDj+9ZEslKEhogxb
-         vcL8Ub+HYuvqobIalyYRAxWhbMO+H+OQTVjZVanZ94sdBmoNNvPd9RzA2ATRYF2T2Nzr
-         toSmlQUD25d7FOLLNnLmT4/ftOZAkBcd+ydkVf9rTQkN8pFUGB+pVEBBNWltt9vC2tsh
-         5RJQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fylf7pTOJC8ppYoSWOQNUlj74ePm38xqTj3FfXozA2w=;
-        b=AiJi8NOc0JsFZcxRHHMWg3jxn8sJBhy3GI71Ef7pZ266veSYrjA9E3/2ea+ioc+n2F
-         0OF8ZZDdD3IPKX/RwNZPEzxCR9Sdf2IGmR7HB/93CiwJnR6ulj4DjvrGVqkxvYRMy9C1
-         sVEzDDzTe2h0z+h6boWXY3Ukwg6u3Or7WVm+NNdcWpx2pJBJDlmF+5SUxEmMEuJHJZn0
-         0j5RXN++vY3d20QqCbuj75eThT77DhjlDv9mTGZWyWoNL05c2aApKgqnIiAsStmm1BBI
-         GJzMEYCffJwCaYNj3uG2F71jgijS3xctDyJC5CIWS44lfcLUSvXKUM6+/jcpQizBNGNY
-         RzLA==
-X-Gm-Message-State: APjAAAV87ppfx8/Lzaq7VyVzQK/iKajzprXFR1vtT5ZLTZMk0+CSHZy2
-        dA2f8fVo1D8DLcfBweYXVE/npA==
-X-Google-Smtp-Source: APXvYqwlQPYyKaGSKwQOVKbDDwxvE1TqpXZeIVwMmELCLcHNhSVgBMlKkdwRquijHqnpHoOGeiIVnA==
-X-Received: by 2002:a1c:2d0e:: with SMTP id t14mr7227725wmt.33.1553595440833;
-        Tue, 26 Mar 2019 03:17:20 -0700 (PDT)
-Received: from arch-late.local (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
-        by smtp.gmail.com with ESMTPSA id j1sm22281024wme.4.2019.03.26.03.17.19
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 26 Mar 2019 03:17:20 -0700 (PDT)
-From:   Rui Miguel Silva <rui.silva@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Rui Miguel Silva <rui.silva@linaro.org>
-Subject: [PATCH v5 6/6] MAINTAINERS: add entry for fxas21002c gyro driver
-Date:   Tue, 26 Mar 2019 10:16:51 +0000
-Message-Id: <20190326101651.25056-7-rui.silva@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190326101651.25056-1-rui.silva@linaro.org>
-References: <20190326101651.25056-1-rui.silva@linaro.org>
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0ky0e4sonZr7HmYYqoY6/1ukkyUoR2/qreWOxohL1FE=;
+ b=nviiNkcSodTtVFldEig3YHUPbK+M27k7Gqq7qHb7WmQ+w0+C4P43Ceg/AIxNUbN8EgvXGJSZgBqgmkRsAHKw+O0LEwJGzCdiLRtkx64Li9HpyFA0DDKEQCwVjEW47Dr5N3oC/6+XwirGa8Wn38RGIx8uDTRaRZaKYHIC5Zdx0Yc=
+Received: from BN6PR03CA0087.namprd03.prod.outlook.com (2603:10b6:405:6f::25)
+ by CY4PR03MB3127.namprd03.prod.outlook.com (2603:10b6:910:53::28) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1730.18; Tue, 26 Mar
+ 2019 11:00:05 +0000
+Received: from SN1NAM02FT007.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::205) by BN6PR03CA0087.outlook.office365.com
+ (2603:10b6:405:6f::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1730.18 via Frontend
+ Transport; Tue, 26 Mar 2019 11:00:04 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.57)
+ smtp.mailfrom=analog.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ SN1NAM02FT007.mail.protection.outlook.com (10.152.72.88) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1730.9
+ via Frontend Transport; Tue, 26 Mar 2019 11:00:04 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x2QB03Lu032243
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 26 Mar 2019 04:00:03 -0700
+Received: from linux.ad.analog.com (10.32.224.122) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Tue, 26 Mar 2019 07:00:02 -0400
+From:   Stefan Popa <stefan.popa@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <davem@davemloft.net>,
+        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
+        <robh@kernel.org>, <joe@perches.com>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>
+Subject: [PATCH v2] MAINTAINERS: Fix the link to ad7606 dt-bindings
+Date:   Tue, 26 Mar 2019 12:59:52 +0200
+Message-ID: <1553597992-31693-1-git-send-email-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(39860400002)(136003)(346002)(376002)(2980300002)(199004)(189003)(246002)(51416003)(7696005)(305945005)(14444005)(5660300002)(26005)(4326008)(8676002)(7636002)(36756003)(486006)(186003)(106466001)(47776003)(966005)(6306002)(107886003)(50226002)(77096007)(476003)(8936002)(126002)(2616005)(426003)(336012)(44832011)(6666004)(356004)(478600001)(4744005)(72206003)(2906002)(16586007)(2351001)(106002)(54906003)(50466002)(6916009)(48376002)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB3127;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d9409487-2e87-4cf0-7480-08d6b1da3387
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600127)(711020)(4605104)(4709054)(2017052603328)(7153060);SRVR:CY4PR03MB3127;
+X-MS-TrafficTypeDiagnostic: CY4PR03MB3127:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <CY4PR03MB3127F6773CD8E3C78BDA7D589D5F0@CY4PR03MB3127.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 09888BC01D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: /fF0gCe8XfjfT9OgTeNx6muGXuhEhJy2rCi4HnGnCY2z3GeLrFFTVI5nrcBpEaHhPCuZz5V4NL/33R1BIcT+u45RCyhePtKjQIq/ZM6sFjtEdDGDPXoeoudzKHW/1F6J26cAY+v8Sb5PjqyFxx+hy2voFnI6oPWyhXhf+2WMULx3P6jtYWCSaUYIQZK+1ZAb5u57RxeI1ZmtyDf8DUAE0t1T0MMtN+oNZsU/hD5GPfOpIegkLu7aS5Dln5q0DFrKlA4Tj7O87ijFqRBMtBRwopY+EQfhnvpwQk7DizWWdktY/D6Yj55KisApdlbIZ37ulMor4pCoxeYNyA7vQ8jeQ8JTsShY7qgC/TnYvCffYb9RJtTwQZ8TvntF2VEGerGt5+BJwhNHJJIv7DhoV4ZEq/nfbIP47edvq2SzRy0meSA=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2019 11:00:04.1062
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d9409487-2e87-4cf0-7480-08d6b1da3387
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB3127
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add me as maintainer of the nxp fxas21002c gyroscope driver.
+The devicetree bindings documentation for ad7606 should also include
+the vendor prefix: ad7606.txt -> adi,ad7606.txt
 
-Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
+Fixes: 6e33a125df66 ("dt-bindings: iio: adc: Add docs for AD7606 ADC")
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Changes in v2:
+	- Added Fixes tag
+
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/MAINTAINERS b/MAINTAINERS
-index e17ebf70b548..2748e406889c 100644
+index ff2c2f2..4f81cdc 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -11107,6 +11107,16 @@ F:	Documentation/ABI/stable/sysfs-bus-nvmem
- F:	include/linux/nvmem-consumer.h
- F:	include/linux/nvmem-provider.h
+@@ -860,7 +860,7 @@ L:	linux-iio@vger.kernel.org
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/iio/adc/ad7606.c
+-F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
  
-+NXP FXAS21002C DRIVER
-+M:	Rui Miguel Silva <rmfrfs@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/gyroscope/fxas21002c.txt
-+F:	drivers/iio/gyro/fxas21002c_core.c
-+F:	drivers/iio/gyro/fxas21002c.h
-+F:	drivers/iio/gyro/fxas21002c_i2c.c
-+F:	drivers/iio/gyro/fxas21002c_spi.c
-+
- NXP SGTL5000 DRIVER
- M:	Fabio Estevam <festevam@gmail.com>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
+ ANALOG DEVICES INC AD7768-1 DRIVER
+ M:	Stefan Popa <stefan.popa@analog.com>
 -- 
-2.21.0
+2.7.4
 
