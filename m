@@ -2,117 +2,191 @@ Return-Path: <SRS0=TPgR=R5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4383CC43381
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:15:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8430C43381
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:17:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0931020856
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:15:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 754E220863
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:17:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="cPC9bU9i"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="RzAp6Esx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726307AbfCZKPW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Mar 2019 06:15:22 -0400
-Received: from mail-eopbgr820074.outbound.protection.outlook.com ([40.107.82.74]:10624
-        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726302AbfCZKPW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 26 Mar 2019 06:15:22 -0400
+        id S1727203AbfCZKRG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Mar 2019 06:17:06 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35020 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726553AbfCZKRG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2019 06:17:06 -0400
+Received: by mail-wr1-f68.google.com with SMTP id w1so13652786wrp.2
+        for <linux-iio@vger.kernel.org>; Tue, 26 Mar 2019 03:17:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=J2iwUTOOQ9y0NzvntoObphi6OLDUNjH9/dS3RVNr/Dg=;
- b=cPC9bU9ipZcVpUlhv6rFbzvUtVoIefTRphMqO+CKwG2FF0BqtxnnDpUbUbkMxoRGP2AGSYQqsB9TIN6n9xDoIECgFySpyIhNIP/U0eJKEWDDbI+2rPJeZ1zm5ZEVCvoea0HdNcKQyHh/ze3V6eYMr0WVaZWBdkzGhDiZFy+ZSBs=
-Received: from BL0PR03CA0023.namprd03.prod.outlook.com (20.177.146.100) by
- BN3PR03MB2258.namprd03.prod.outlook.com (10.167.4.147) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.1730.18; Tue, 26 Mar 2019 10:15:19 +0000
-Received: from CY1NAM02FT035.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::205) by BL0PR03CA0023.outlook.office365.com
- (2603:10b6:208:2d::36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1730.16 via Frontend
- Transport; Tue, 26 Mar 2019 10:15:19 +0000
-Authentication-Results: spf=pass (sender IP is 137.71.25.57)
- smtp.mailfrom=analog.com; davemloft.net; dkim=none (message not signed)
- header.d=none;davemloft.net; dmarc=bestguesspass action=none
- header.from=analog.com;
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- CY1NAM02FT035.mail.protection.outlook.com (10.152.75.186) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1750.11
- via Frontend Transport; Tue, 26 Mar 2019 10:15:18 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x2QAFGud021904
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Tue, 26 Mar 2019 03:15:16 -0700
-Received: from linux.ad.analog.com (10.32.224.122) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Tue, 26 Mar 2019 06:15:16 -0400
-From:   Stefan Popa <stefan.popa@analog.com>
-To:     <jic23@kernel.org>
-CC:     <Michael.Hennerich@analog.com>, <davem@davemloft.net>,
-        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
-        <robh@kernel.org>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        Stefan Popa <stefan.popa@analog.com>
-Subject: [PATCH] MAINTAINERS: Fix the link to ad7606 dt-bindings
-Date:   Tue, 26 Mar 2019 12:14:57 +0200
-Message-ID: <1553595297-30806-1-git-send-email-stefan.popa@analog.com>
-X-Mailer: git-send-email 2.7.4
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FvjQ0KaN17fm8d4sliqWx6H9mLiak7bj4iGfsi7kTDk=;
+        b=RzAp6EsxzQga1DAPb5dbmZ1XK7BkGS461hptV8r2MFW1JE+mto7YfCStisTZ9Rla+5
+         kRnoMTpc8sOKoKSg4rNEJTTRLL69+eRqP278C43LwvcE7EabJ0QuEJdX+s1bvUf6g0kH
+         5xJIokKZzJbnrgu3zGLfAxi9vONduuh4cs1bDKysCGUlM2Q1x7Z89kAr2dT3H4SHKv22
+         xjLmK4NoEi7uVyhGBJeHvGkG8/QMDvvI1Hcq/HyBkvY2RC078TrGQZZpj+lsF6pHfVN0
+         +oAKzAr4bHrEuLKSjtoGJKcfvi4ITouPJaczGF6RvqKXrHnAMRPyNe55lMwERWVXGCH5
+         zLgw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FvjQ0KaN17fm8d4sliqWx6H9mLiak7bj4iGfsi7kTDk=;
+        b=ICg+RHh5m4I08jm+OWvWAGtf12/cwL8Hc8mhYgVsKM/o8zLjkV9qASQDvQvGTVEQ+h
+         nxZSkX4DSzyVYO1Sfn4HXLZqJs77fd99tAjMH7FzpIRctd5x9l6woQ/X7BYcrQjK0Fg/
+         d7gRYDm0I2jkemLZlkd8Vzfmldjj4R/Vu5R6MQczD0FAmfDGuJDZG5vIIPPtjgopaP7C
+         WZiPdLr4c8jV8qYS98w50d5QXFoREi/rqagUQgABe0ZlcSP0uodoj9S2O34lpITM6zkk
+         K61v66A6qbIXqsEX6kC7yDZDuTD3oiPuOZncsOHD/mvSjnBeDVQq0AEivciDQEqGIujs
+         V5wg==
+X-Gm-Message-State: APjAAAW08O4lruwR8Rw11OfSyY+HmwHtnfbc5k8loZuKm06+KqeYupdw
+        OLG07M27DSlUJD2Ws60muS4uQA==
+X-Google-Smtp-Source: APXvYqxVV6Js5raGLvyZqV6+snpSzgLewhB1aQiZ6l8LT3Q/QDYOhQKYXVTcfr6oyb33Xubp/SPrDw==
+X-Received: by 2002:adf:ed8a:: with SMTP id c10mr1976780wro.40.1553595424046;
+        Tue, 26 Mar 2019 03:17:04 -0700 (PDT)
+Received: from arch-late.local (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
+        by smtp.gmail.com with ESMTPSA id j1sm22281024wme.4.2019.03.26.03.17.01
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 26 Mar 2019 03:17:03 -0700 (PDT)
+From:   Rui Miguel Silva <rui.silva@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <fabio.estevam@nxp.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Rui Miguel Silva <rui.silva@linaro.org>
+Subject: [PATCH v5 0/6] iio: gyro: add fxas21002c driver
+Date:   Tue, 26 Mar 2019 10:16:45 +0000
+Message-Id: <20190326101651.25056-1-rui.silva@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(136003)(376002)(39860400002)(396003)(2980300002)(189003)(199004)(16586007)(8936002)(2906002)(47776003)(14444005)(51416003)(2351001)(106466001)(44832011)(106002)(126002)(426003)(2616005)(6306002)(476003)(336012)(48376002)(7696005)(54906003)(36756003)(316002)(77096007)(50466002)(26005)(8676002)(4744005)(966005)(72206003)(478600001)(6916009)(246002)(186003)(486006)(305945005)(4326008)(107886003)(7636002)(6666004)(356004)(50226002)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN3PR03MB2258;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5fd758f9-2b86-4f91-266e-08d6b1d3f2b1
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600127)(711020)(4605104)(4709054)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:BN3PR03MB2258;
-X-MS-TrafficTypeDiagnostic: BN3PR03MB2258:
-X-MS-Exchange-PUrlCount: 1
-X-Microsoft-Antispam-PRVS: <BN3PR03MB225867D50B78E6A62885C1EE9D5F0@BN3PR03MB2258.namprd03.prod.outlook.com>
-X-Forefront-PRVS: 09888BC01D
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: Khbreyg7BqltEMOIW7QPh1i8KeV/1HRsb3kB7asuFlEyBV2R/Ml5QwEYEnUa7z5UZuaXSGrQvd8KPeBTMKrV/C1ami8ac1ck/sfTUNM8m/A5+qezoDDY9O+K/IG6mKui0ozA4rWP6lM0stKFfL81yiAMmjus46PWZi2XKe+i/wzFG3M4GOHuKdKjniN3vBrhnePYwzduURgPFhk/dw9dnpVjE5BMwaDNIHO/3RBWjzb0A8KsVMmhhSd9Ei3MmYplT2cr4trh/T/cI7FYBjTJE0lmydz3u4yQF9frzuUD9RS7RPOsp8ynT8nE6IQ6bSQ+a64zgM10DT6d07o+3JSdwdVAu1+V9+l9z+4PajVjh5h2qQ6yZb92ArHl97OACEKv+msil13j8RTnHMGErso0ofsQ3gwvrtXvnnKZO7e0mjo=
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2019 10:15:18.1981
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5fd758f9-2b86-4f91-266e-08d6b1d3f2b1
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR03MB2258
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The devicetree bindings documentation for ad7606 should also include
-the vendor prefix: ad7606.txt -> adi,ad7606.txt
+Hi,
+This series introduce a NXP fxas21002c tri axis gyroscope driver [0]
+It add a core implementaiton plus an i2c and spi.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+This device can be found in the warp7 board [1], where it was tested.
+
 ---
- MAINTAINERS | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Cheers,
+   Rui
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index ff2c2f2..4f81cdc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -860,7 +860,7 @@ L:	linux-iio@vger.kernel.org
- W:	http://ez.analog.com/community/linux-device-drivers
- S:	Supported
- F:	drivers/iio/adc/ad7606.c
--F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
-+F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
- 
- ANALOG DEVICES INC AD7768-1 DRIVER
- M:	Stefan Popa <stefan.popa@analog.com>
+v4->v5:
+Jonathan Cameron:
+  - remove init ret
+  - change handle of iio register, buffer and trigger in probe and
+   remove (I think this is what you mean, Jonathan)
+
+v3->v4:
+Tomasz Duszynski:
+  - mention irq flags in bindings
+  - add reference to drive-open-drain in bindings
+  - fix headers files
+  - drop comas in of_device_id sentinel
+  - drop of_match_ptr
+  - use probe_new
+
+Jonathan Cameron:
+  - disable vdd regulator in case of vddio fail
+  - use devm_add_action_or_reset
+  - simpler functions returns
+  - remove noisy dev_info
+  - remove EAGAIN from runtime_suspend
+
+v2->v3:
+Jonathan Cameron:
+  - cacheline aligned (DMA safe buffer)
+     Great presentation [2] and links in the presentation, thanks
+  - global renaming, including filenames, fxas2100x->fxas21002c
+  - provide spi info in dts bidings
+  - Remove SPI_MASTER in Kconfig i2c patch and move it to right patch
+  - remove extra blank line in comment
+  - add break range_value_from_fs after found
+  - in range_value_from_fs use local variable
+  - remove mode check at mode_set
+  - combine two if statements in mode_set
+  - in scale_get return 0 and let caller to set IIO_VAL_FRACTIONAL
+  - remove dev_err from vdd_io regulator get
+  - handle regulator error path
+  - devm_add_action
+  - check unwind order
+  - simplify data in _suspend and alike
+  - disable regulators at suspend
+  - error handling at _resume
+  - return -EAGAIN at runtime_resume
+
+Rob Herring:
+   - Set label as gyroscope
+
+- add interrupt to bindings
+- add entry to maintainers
+
+
+v1->v2:
+Peter Meerwal-Stadler:
+  - changed (c) to current year
+  - add regmap include file in .h
+  - fix comments s/cuttof/cutoff/
+  - add more info in mutex comment
+  - check value in range_fs_from_value
+  - ret not checked in range_value_from_fs
+  - move mode to enum type
+  - remove line between value get and validation of value in all file
+  - pre-write, regmap_field_write, post_write refactoring
+  - check val2 and val == 0 in write raw
+  - check in_anglvel_scale: 7.8125?
+  - trigger_handler: 2 => sizeof(s16)
+  - check buffer size
+  - print %02% to output chip id
+  - remove !! as state is bool
+  - trigger probe return devm_iio_trigger_register
+  - remove error msg in case of devm_iio_device_register
+Fabio Estebam:
+  - rename FXAS2100X to FXAS21002
+  - change compatible nxp,fxas2100x to the exact support
+  - add VDD and VDDIO regulators in bindings and driver
+
+[0]: https://www.nxp.com/docs/en/data-sheet/FXAS21002.pdf
+[1]: https://www.element14.com/community/community/designcenter/single-board-computers/warp7/overview
+[2]: https://events.linuxfoundation.org/wp-content/uploads/2017/12/20181023-Wolfram-Sang-ELCE18-safe_dma_buffers.pdf
+
+Rui Miguel Silva (6):
+  iio: gyro: add DT bindings to fxas21002c
+  iio: gyro: add core driver for fxas21002c
+  iio: gyro: fxas21002c: add i2c driver
+  iio: gyro: fxas21002c: add spi driver
+  ARM: dts: imx7s-warp: add fxas21002c gyroscope
+  MAINTAINERS: add entry for fxas21002c gyro driver
+
+ .../bindings/iio/gyroscope/nxp,fxas21002c.txt |   31 +
+ MAINTAINERS                                   |   10 +
+ arch/arm/boot/dts/imx7s-warp.dts              |    7 +
+ drivers/iio/gyro/Kconfig                      |   22 +
+ drivers/iio/gyro/Makefile                     |    3 +
+ drivers/iio/gyro/fxas21002c.h                 |  151 +++
+ drivers/iio/gyro/fxas21002c_core.c            | 1006 +++++++++++++++++
+ drivers/iio/gyro/fxas21002c_i2c.c             |   69 ++
+ drivers/iio/gyro/fxas21002c_spi.c             |   70 ++
+ 9 files changed, 1369 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/nxp,fxas21002c.txt
+ create mode 100644 drivers/iio/gyro/fxas21002c.h
+ create mode 100644 drivers/iio/gyro/fxas21002c_core.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_i2c.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_spi.c
+
 -- 
-2.7.4
+2.21.0
 
