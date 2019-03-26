@@ -2,257 +2,117 @@ Return-Path: <SRS0=TPgR=R5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40BDBC4360F
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 09:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4383CC43381
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:15:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 067F420830
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 09:05:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0931020856
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Mar 2019 10:15:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=skydio.com header.i=@skydio.com header.b="HiEFseJd"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="cPC9bU9i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730481AbfCZJFT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Mar 2019 05:05:19 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:42430 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725535AbfCZJFS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Mar 2019 05:05:18 -0400
-Received: by mail-pl1-f195.google.com with SMTP id cv12so1332946plb.9
-        for <linux-iio@vger.kernel.org>; Tue, 26 Mar 2019 02:05:18 -0700 (PDT)
+        id S1726307AbfCZKPW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Mar 2019 06:15:22 -0400
+Received: from mail-eopbgr820074.outbound.protection.outlook.com ([40.107.82.74]:10624
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726302AbfCZKPW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 Mar 2019 06:15:22 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=skydio.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Kyc1zizkwKohgx4A7VcnL5Bai7KVRGtlYwLkDvfw2+w=;
-        b=HiEFseJdu6tZwOcQMo7As9lRqt4BF0bGV269rpNS5vduOyJa1GsJHBRS64W2wZ6Wmm
-         Co2Da3QmJJncoQWmM2VKRRXWAjlHyPPc+gA5Jm+AN2I8B4Fwf7iC/9GKI7QRitP+4YXa
-         4nI1FiL4/eDgz4RG3D+QBhDZYLxv6b+cClHJq0HJmpZIDLy4/hMDou+wtmXlY0o8fQrI
-         egT8/rDkHeQLBMWszO4HTnOxME8VIo1QoqJBdgiwjKbHXu2nRx1ORmTRKSHjCjcGL+U9
-         BF3VBanU19CUYx56afU7lMq3KUZq3fhSHVnrlGvKRd6ju1TkZvY+A6Jjc8xLtUTIRNIo
-         ONSQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Kyc1zizkwKohgx4A7VcnL5Bai7KVRGtlYwLkDvfw2+w=;
-        b=Zn8Rn4Os6/iXi6uUg0slrfjJ512CPtS7gxObp7greoKY2YidbEDd5b673lzdy2sQ1K
-         254QKSP4RzzBF1rnDSzt4BQ9S0QnLt5to3qO/UtGdMxX4UPlepzHldP/bmtxz2M+DENG
-         DEtDClpkS2QXpE3qIFkv7jZJC1gWhia7LSkcWuoG8XCWUX+aLv+QZ63QPGNzI8tf8s83
-         1rfnsdx0UMtDd6/306YjnBy7ae5aApakTYTwPGJxMstxdfiLwL7RPGMAFceq/1cwFxB/
-         beBpQaUkyU/9gv+oqutxjD4Pb0kJUdsTHlIjOJYCZwVyo6bNMW6yh0TkD1MtSrVEP3tz
-         GG9w==
-X-Gm-Message-State: APjAAAXT09chYaOfGjxSSbuODAiNfAqywat1gpeiRQfPIkg/RhlHy+NW
-        LwTADQdZErefW89H0vb89u6Kow==
-X-Google-Smtp-Source: APXvYqxXfE9j3i0vkOIOZMi4IxmbIt0HTxaNLBxy/Eg7yqBYY8rV6cZjVBFELKuK1yRkticbIbh4+w==
-X-Received: by 2002:a17:902:bb0c:: with SMTP id l12mr30412854pls.108.1553591117930;
-        Tue, 26 Mar 2019 02:05:17 -0700 (PDT)
-Received: from stevemo-laptop.localdomain ([2601:646:c601:9a31:6c4c:9a9b:7596:e32f])
-        by smtp.gmail.com with ESMTPSA id v188sm9935467pgb.7.2019.03.26.02.05.15
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 26 Mar 2019 02:05:16 -0700 (PDT)
-From:   stevemo@skydio.com
-To:     gaireg@gaireg.de
-Cc:     Steve Moskovchenko <stevemo@skydio.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Martin Kelly <mkelly@xevo.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Brian Masney <masneyb@onstation.org>,
-        Rob Herring <robh@kernel.org>,
-        Douglas Fischer <fischerdouglasc@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: imu: mpu6050: Fix FIFO layout for ICM20602
-Date:   Tue, 26 Mar 2019 02:01:45 -0700
-Message-Id: <20190326090238.23651-1-stevemo@skydio.com>
-X-Mailer: git-send-email 2.21.0
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=J2iwUTOOQ9y0NzvntoObphi6OLDUNjH9/dS3RVNr/Dg=;
+ b=cPC9bU9ipZcVpUlhv6rFbzvUtVoIefTRphMqO+CKwG2FF0BqtxnnDpUbUbkMxoRGP2AGSYQqsB9TIN6n9xDoIECgFySpyIhNIP/U0eJKEWDDbI+2rPJeZ1zm5ZEVCvoea0HdNcKQyHh/ze3V6eYMr0WVaZWBdkzGhDiZFy+ZSBs=
+Received: from BL0PR03CA0023.namprd03.prod.outlook.com (20.177.146.100) by
+ BN3PR03MB2258.namprd03.prod.outlook.com (10.167.4.147) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1730.18; Tue, 26 Mar 2019 10:15:19 +0000
+Received: from CY1NAM02FT035.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::205) by BL0PR03CA0023.outlook.office365.com
+ (2603:10b6:208:2d::36) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1730.16 via Frontend
+ Transport; Tue, 26 Mar 2019 10:15:19 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.57)
+ smtp.mailfrom=analog.com; davemloft.net; dkim=none (message not signed)
+ header.d=none;davemloft.net; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT035.mail.protection.outlook.com (10.152.75.186) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1750.11
+ via Frontend Transport; Tue, 26 Mar 2019 10:15:18 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x2QAFGud021904
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 26 Mar 2019 03:15:16 -0700
+Received: from linux.ad.analog.com (10.32.224.122) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Tue, 26 Mar 2019 06:15:16 -0400
+From:   Stefan Popa <stefan.popa@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <davem@davemloft.net>,
+        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
+        <robh@kernel.org>, <joe@perches.com>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        Stefan Popa <stefan.popa@analog.com>
+Subject: [PATCH] MAINTAINERS: Fix the link to ad7606 dt-bindings
+Date:   Tue, 26 Mar 2019 12:14:57 +0200
+Message-ID: <1553595297-30806-1-git-send-email-stefan.popa@analog.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(136003)(376002)(39860400002)(396003)(2980300002)(189003)(199004)(16586007)(8936002)(2906002)(47776003)(14444005)(51416003)(2351001)(106466001)(44832011)(106002)(126002)(426003)(2616005)(6306002)(476003)(336012)(48376002)(7696005)(54906003)(36756003)(316002)(77096007)(50466002)(26005)(8676002)(4744005)(966005)(72206003)(478600001)(6916009)(246002)(186003)(486006)(305945005)(4326008)(107886003)(7636002)(6666004)(356004)(50226002)(5660300002);DIR:OUT;SFP:1101;SCL:1;SRVR:BN3PR03MB2258;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5fd758f9-2b86-4f91-266e-08d6b1d3f2b1
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600127)(711020)(4605104)(4709054)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7153060);SRVR:BN3PR03MB2258;
+X-MS-TrafficTypeDiagnostic: BN3PR03MB2258:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <BN3PR03MB225867D50B78E6A62885C1EE9D5F0@BN3PR03MB2258.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 09888BC01D
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: Khbreyg7BqltEMOIW7QPh1i8KeV/1HRsb3kB7asuFlEyBV2R/Ml5QwEYEnUa7z5UZuaXSGrQvd8KPeBTMKrV/C1ami8ac1ck/sfTUNM8m/A5+qezoDDY9O+K/IG6mKui0ozA4rWP6lM0stKFfL81yiAMmjus46PWZi2XKe+i/wzFG3M4GOHuKdKjniN3vBrhnePYwzduURgPFhk/dw9dnpVjE5BMwaDNIHO/3RBWjzb0A8KsVMmhhSd9Ei3MmYplT2cr4trh/T/cI7FYBjTJE0lmydz3u4yQF9frzuUD9RS7RPOsp8ynT8nE6IQ6bSQ+a64zgM10DT6d07o+3JSdwdVAu1+V9+l9z+4PajVjh5h2qQ6yZb92ArHl97OACEKv+msil13j8RTnHMGErso0ofsQ3gwvrtXvnnKZO7e0mjo=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 Mar 2019 10:15:18.1981
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5fd758f9-2b86-4f91-266e-08d6b1d3f2b1
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN3PR03MB2258
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Steve Moskovchenko <stevemo@skydio.com>
+The devicetree bindings documentation for ad7606 should also include
+the vendor prefix: ad7606.txt -> adi,ad7606.txt
 
-The MPU6050 driver has recently gained support for the
-ICM20602 IMU, which is very similar to MPU6xxx. However,
-the ICM20602's Gyro data specifically includes temperature
-readings, which were not present on MPU6xxx parts. As a
-result, the driver will under-read the ICM20602's FIFO
-register, causing the same (partial) sample to be returned
-for all reads, until the FIFO overflows.
-
-Fix this by adding a table of scan elements speciically for
-the ICM20602, which takes the extra temperature data into
-consideration.
-
-While we're at it, fix the temperature offset and scaling
-on ICM20602, since it uses different scale/offset constants
-than the rest of the MPU6xxx devices.
-
-Signed-off-by: Steve Moskovchenko <stevemo@skydio.com>
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++++++++++--
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 20 +++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c |  8 +++-
- 3 files changed, 67 insertions(+), 7 deletions(-)
+ MAINTAINERS | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 650de0fefb7b..fedd3f2b0135 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -471,7 +471,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		case IIO_TEMP:
- 			*val = 0;
--			*val2 = INV_MPU6050_TEMP_SCALE;
-+			if (st->chip_type == INV_ICM20602)
-+				*val2 = INV_ICM20602_TEMP_SCALE;
-+			else
-+				*val2 = INV_MPU6050_TEMP_SCALE;
+diff --git a/MAINTAINERS b/MAINTAINERS
+index ff2c2f2..4f81cdc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -860,7 +860,7 @@ L:	linux-iio@vger.kernel.org
+ W:	http://ez.analog.com/community/linux-device-drivers
+ S:	Supported
+ F:	drivers/iio/adc/ad7606.c
+-F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
  
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		default:
-@@ -480,7 +483,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_OFFSET:
- 		switch (chan->type) {
- 		case IIO_TEMP:
--			*val = INV_MPU6050_TEMP_OFFSET;
-+			if (st->chip_type == INV_ICM20602)
-+				*val = INV_ICM20602_TEMP_OFFSET;
-+			else
-+				*val = INV_MPU6050_TEMP_OFFSET;
- 
- 			return IIO_VAL_INT;
- 		default:
-@@ -845,6 +851,32 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
- 	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_SCAN_ACCL_Z),
- };
- 
-+static const struct iio_chan_spec inv_icm20602_channels[] = {
-+	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP),
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
-+				| BIT(IIO_CHAN_INFO_OFFSET)
-+				| BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = INV_ICM20602_SCAN_GYRO_TEMP,
-+		.scan_type = {
-+				.sign = 's',
-+				.realbits = 16,
-+				.storagebits = 16,
-+				.shift = 0,
-+				.endianness = IIO_BE,
-+			     },
-+	},
-+
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_ICM20602_SCAN_GYRO_X),
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Y, INV_ICM20602_SCAN_GYRO_Y),
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Z, INV_ICM20602_SCAN_GYRO_Z),
-+
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Y, INV_ICM20602_SCAN_ACCL_Y),
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_X, INV_ICM20602_SCAN_ACCL_X),
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_ICM20602_SCAN_ACCL_Z),
-+};
-+
- /*
-  * The user can choose any frequency between INV_MPU6050_MIN_FIFO_RATE and
-  * INV_MPU6050_MAX_FIFO_RATE, but only these frequencies are matched by the
-@@ -1100,8 +1132,14 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
- 		indio_dev->name = name;
- 	else
- 		indio_dev->name = dev_name(dev);
--	indio_dev->channels = inv_mpu_channels;
--	indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
-+
-+	if (chip_type == INV_ICM20602) {
-+		indio_dev->channels = inv_icm20602_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(inv_icm20602_channels);
-+	} else {
-+		indio_dev->channels = inv_mpu_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
-+	}
- 
- 	indio_dev->info = &mpu_info;
- 	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 325afd9f5f61..eb04391feaa8 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -208,6 +208,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_BYTES_PER_3AXIS_SENSOR   6
- #define INV_MPU6050_FIFO_COUNT_BYTE          2
- 
-+/* ICM20602 gyro data includes temperature */
-+#define INV_ICM20602_BYTES_PER_GYRO_SENSOR   8
-+
- /* mpu6500 registers */
- #define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
- #define INV_MPU6500_REG_ACCEL_OFFSET        0x77
-@@ -229,6 +232,9 @@ struct inv_mpu6050_state {
- #define INV_MPU6050_GYRO_CONFIG_FSR_SHIFT    3
- #define INV_MPU6050_ACCL_CONFIG_FSR_SHIFT    3
- 
-+#define INV_ICM20602_TEMP_OFFSET	     8170
-+#define INV_ICM20602_TEMP_SCALE		     3060
-+
- /* 6 + 6 round up and plus 8 */
- #define INV_MPU6050_OUTPUT_DATA_SIZE         24
- 
-@@ -270,7 +276,7 @@ struct inv_mpu6050_state {
- #define INV_ICM20608_WHOAMI_VALUE		0xAF
- #define INV_ICM20602_WHOAMI_VALUE		0x12
- 
--/* scan element definition */
-+/* scan element definition for generic MPU6xxx devices */
- enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_ACCL_X,
- 	INV_MPU6050_SCAN_ACCL_Y,
-@@ -281,6 +287,18 @@ enum inv_mpu6050_scan {
- 	INV_MPU6050_SCAN_TIMESTAMP,
- };
- 
-+/* scan element definition for ICM20602, which includes gyro temp */
-+enum inv_icm20602_scan {
-+	INV_ICM20602_SCAN_ACCL_X,
-+	INV_ICM20602_SCAN_ACCL_Y,
-+	INV_ICM20602_SCAN_ACCL_Z,
-+	INV_ICM20602_SCAN_GYRO_TEMP,
-+	INV_ICM20602_SCAN_GYRO_X,
-+	INV_ICM20602_SCAN_GYRO_Y,
-+	INV_ICM20602_SCAN_GYRO_Z,
-+	INV_ICM20602_SCAN_TIMESTAMP,
-+};
-+
- enum inv_mpu6050_filter_e {
- 	INV_MPU6050_FILTER_256HZ_NOLPF2 = 0,
- 	INV_MPU6050_FILTER_188HZ,
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index 548e042f7b5b..20828d6a13f9 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -204,8 +204,12 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 	if (st->chip_config.accl_fifo_enable)
- 		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
- 
--	if (st->chip_config.gyro_fifo_enable)
--		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
-+	if (st->chip_config.gyro_fifo_enable) {
-+		if (st->chip_type == INV_ICM20602)
-+			bytes_per_datum += INV_ICM20602_BYTES_PER_GYRO_SENSOR;
-+		else
-+			bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
-+	}
- 
- 	/*
- 	 * read fifo_count register to know how many bytes are inside the FIFO
+ ANALOG DEVICES INC AD7768-1 DRIVER
+ M:	Stefan Popa <stefan.popa@analog.com>
 -- 
-2.20.1
+2.7.4
 
