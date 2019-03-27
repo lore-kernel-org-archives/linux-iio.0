@@ -7,58 +7,50 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F0CC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6439C4360F
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:13:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 947AD206C0
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:10:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A882F2064A
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:13:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553713849;
-	bh=uXnjpxAhJ0NJevHTQ+WLhA3oWQsyO/F5W2zTP3iwFJw=;
+	s=default; t=1553714004;
+	bh=QzJu+uoj2DxHCLNDHgzJX/nP9Zt+E+kuEFRMRQcqnN0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Fin3HOkbhO947NRKhQkgKyBWd4Rq1wGZaambZHNdHX/IKY7+4qA0bGgVsOCOYd01S
-	 fQDa1Jr75t+CyJyJs969sb9uSpIKveMvrJHgBS7tDPSMYxclGIg+u7HrSvuTH4HB8S
-	 pTYQH1TmVB45PhwQCWKSN+xc0keONnMdJLMHV5Dc=
+	b=YGMD3y/P2dgvWY78S5UvK1s8HamG4/hUNbQ0mvPoVTUV4UbcziwwxuSQRF+XrNkI5
+	 TCKBiowbqVteu8waHUPxdKwxWFhuC7KUfiIDJ8Huuo/JhRDk8lLTlcvVs5syWBfVDl
+	 cxya5T49OpOt6HpyulWtih49Z5DElMObYtYki9tY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388384AbfC0SKx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Mar 2019 14:10:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53034 "EHLO mail.kernel.org"
+        id S2388763AbfC0SKP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Mar 2019 14:10:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388363AbfC0SKw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 27 Mar 2019 14:10:52 -0400
+        id S2388326AbfC0SKK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 27 Mar 2019 14:10:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 715792177E;
-        Wed, 27 Mar 2019 18:10:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 53EB521738;
+        Wed, 27 Mar 2019 18:10:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553710251;
-        bh=uXnjpxAhJ0NJevHTQ+WLhA3oWQsyO/F5W2zTP3iwFJw=;
+        s=default; t=1553710209;
+        bh=QzJu+uoj2DxHCLNDHgzJX/nP9Zt+E+kuEFRMRQcqnN0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FMJnXPy0fVcYTvrH3DCuhlczdxlgqAyjnvpriz+TOwQmNoi58Anv1Lt01Et05OrDg
-         HWVsVDTENo4UoOsmGUXAEiHds9r2aQaKzvQC5CenwrrBZVu0L0iTYbo7bmuAXhlNmY
-         m4w5knp2fiqYBXb8Cges5dwxOAF4PY2/Ty757vdQ=
+        b=vGyf8DVGHvUjnDSEZhmUZbS2O+H/YfBa1LMyRTIwHo+cZuwHe8d9LxVFoCNQs68Xx
+         igrMdnuJrZ9SK6ca9wRVFoyp694J1Qg/X1pJKn64WjUcuJlOR+poITU2N6vKhue9NN
+         6XK+uO8T9JEIhixGDsrtWZuGNn1O42CjYR7UOiJE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Joe Perches <joe@perches.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Andy Gross <andy.gross@linaro.org>,
-        David Brown <david.brown@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Sasha Levin <sashal@kernel.org>, linux-arm-msm@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 018/192] iio: adc: fix warning in Qualcomm PM8xxx HK/XOADC driver
-Date:   Wed, 27 Mar 2019 14:07:30 -0400
-Message-Id: <20190327181025.13507-18-sashal@kernel.org>
+Cc:     Jeremy Fertic <jeremyfertic@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.0 253/262] staging: iio: adt7316: fix dac_bits assignment
+Date:   Wed, 27 Mar 2019 14:01:48 -0400
+Message-Id: <20190327180158.10245-253-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190327181025.13507-1-sashal@kernel.org>
-References: <20190327181025.13507-1-sashal@kernel.org>
+In-Reply-To: <20190327180158.10245-1-sashal@kernel.org>
+References: <20190327180158.10245-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -66,76 +58,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Linus Torvalds <torvalds@linux-foundation.org>
+From: Jeremy Fertic <jeremyfertic@gmail.com>
 
-[ Upstream commit e0f0ae838a25464179d37f355d763f9ec139fc15 ]
+[ Upstream commit e9de475723de5bf207a5b7b88bdca863393e42c8 ]
 
-The pm8xxx_get_channel() implementation is unclear, and causes gcc to
-suddenly generate odd warnings.  The trigger for the warning (at least
-for me) was the entirely unrelated commit 79a4e91d1bb2 ("device.h: Add
-__cold to dev_<level> logging functions"), which apparently changes gcc
-code generation in the caller function enough to cause this:
+The value of dac_bits is used in adt7316_show_DAC() and adt7316_store_DAC(),
+and it should be either 8, 10, or 12 bits depending on the device in use. The
+driver currently only assigns a value to dac_bits in
+adt7316_store_da_high_resolution(). The purpose of the dac high resolution
+option is not to change dac resolution for normal operation. Instead, it
+is specific to an optional feature where one or two of the four dacs can
+be set to output voltage proportional to temperature. If the user chooses
+to set dac a and/or dac b to output voltage proportional to temperature,
+the da_high_resolution attribute can optionally be enabled to use 10 bit
+resolution rather than the default 8 bits. This is only available on the
+10 and 12 bit dac devices. If the user attempts to read or write dacs a
+or b under these settings, the driver's current behaviour is to return an
+error. Dacs c and d continue to operate normally under these conditions.
+With the above in mind, remove the dac_bits assignments from this function
+since the value of dac_bits as used in the driver is not dependent on this
+dac high resolution option.
 
-  drivers/iio/adc/qcom-pm8xxx-xoadc.c: In function ‘pm8xxx_xoadc_probe’:
-  drivers/iio/adc/qcom-pm8xxx-xoadc.c:633:8: warning: ‘ch’ may be used uninitialized in this function [-Wmaybe-uninitialized]
-    ret = pm8xxx_read_channel_rsv(adc, ch, AMUX_RSV4,
-          ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-             &read_nomux_rsv4, true);
-             ~~~~~~~~~~~~~~~~~~~~~~~
-  drivers/iio/adc/qcom-pm8xxx-xoadc.c:426:27: note: ‘ch’ was declared here
-    struct pm8xxx_chan_info *ch;
-                             ^~
+Since the dac_bits assignments discussed above are currently the only ones
+in this driver, the default value of dac_bits is 0. This results in incorrect
+calculations when the dacs are read or written in adt7316_show_DAC() and
+adt7316_store_DAC(). To correct this, assign a value to dac_bits in
+adt7316_probe() to ensure correct operation as soon as the device is
+registered and available to userspace.
 
-because gcc for some reason then isn't able to see that the termination
-condition for the "for( )" loop in that function is also the condition
-for returning NULL.
-
-So it's not _actually_ uninitialized, but the function is admittedly
-just unnecessarily oddly written.
-
-Simplify and clarify the function, making gcc also see that it always
-returns a valid initialized value.
-
-Cc: Joe Perches <joe@perches.com>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Andy Gross <andy.gross@linaro.org>
-Cc: David Brown <david.brown@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+Fixes: 35f6b6b86ede ("staging: iio: new ADT7316/7/8 and ADT7516/7/9 driver")
+Signed-off-by: Jeremy Fertic <jeremyfertic@gmail.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/qcom-pm8xxx-xoadc.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+ drivers/staging/iio/addac/adt7316.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index b093ecddf1a8..54db848f0bcd 100644
---- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-+++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-@@ -423,18 +423,14 @@ static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
- static struct pm8xxx_chan_info *
- pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
- {
--	struct pm8xxx_chan_info *ch;
- 	int i;
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index dc93e85808e0..7839d869d25d 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -651,17 +651,10 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
+ 	u8 config3;
+ 	int ret;
  
- 	for (i = 0; i < adc->nchans; i++) {
--		ch = &adc->chans[i];
-+		struct pm8xxx_chan_info *ch = &adc->chans[i];
- 		if (ch->hwchan->amux_channel == chan)
--			break;
-+			return ch;
- 	}
--	if (i == adc->nchans)
--		return NULL;
+-	chip->dac_bits = 8;
 -
--	return ch;
-+	return NULL;
- }
+-	if (buf[0] == '1') {
++	if (buf[0] == '1')
+ 		config3 = chip->config3 | ADT7316_DA_HIGH_RESOLUTION;
+-		if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
+-			chip->dac_bits = 12;
+-		else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
+-			chip->dac_bits = 10;
+-	} else {
++	else
+ 		config3 = chip->config3 & (~ADT7316_DA_HIGH_RESOLUTION);
+-	}
  
- static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
+ 	ret = chip->bus.write(chip->bus.client, ADT7316_CONFIG3, config3);
+ 	if (ret)
+@@ -2123,6 +2116,13 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
+ 	else
+ 		return -ENODEV;
+ 
++	if (chip->id == ID_ADT7316 || chip->id == ID_ADT7516)
++		chip->dac_bits = 12;
++	else if (chip->id == ID_ADT7317 || chip->id == ID_ADT7517)
++		chip->dac_bits = 10;
++	else
++		chip->dac_bits = 8;
++
+ 	chip->ldac_pin = devm_gpiod_get_optional(dev, "adi,ldac", GPIOD_OUT_LOW);
+ 	if (IS_ERR(chip->ldac_pin)) {
+ 		ret = PTR_ERR(chip->ldac_pin);
 -- 
 2.19.1
 
