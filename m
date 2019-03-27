@@ -6,68 +6,81 @@ X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C19E1C43381
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 13:06:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E26D7C43381
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 13:13:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 91B262146F
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 13:06:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B29CB20700
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 13:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553692011;
-	bh=E0liOdubiccWd4jUYz0WTmCqryO/xUq9WkYiL2KxGn8=;
-	h=Date:From:To:cc:Subject:In-Reply-To:References:List-ID:From;
-	b=I/cgi2mUKq/yq9M+DZZudu1W2IfgLvTWkHMw55HUCpDTpZiInvuZYzA0Jlh8kXNYr
-	 Hgryw6l3jzxMDLUZP4n2tzOL1Fz7W0O4FJEalSCgkhC7aXM6a0MKEnpEvNgUHUa4VD
-	 je/UDP64nJtRsZ52NZy5fCxSwyc7dxABBSF9dE3c=
+	s=default; t=1553692415;
+	bh=ldyO8hXl6NzVcqV0X1ccrFDZLQrtwPRyFbaP5VC0zIY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=N3vihHXEFBVESOqDhXBfS5POH6oWLX4h59WQRL+jLKBX3V6od0O/nY/bXPRVUIW6u
+	 PzG1WnTU0K3BTvT+0VTDpqig37H710sfvJYtr94Ese9Ch/3zGSbZcqGjhyB311XE0m
+	 LGjGOpRyBF0rY+S12U2Hr3BB8Qer0hA8rbw4v1z8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728141AbfC0NGq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Mar 2019 09:06:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33932 "EHLO mail.kernel.org"
+        id S1729546AbfC0NNa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Mar 2019 09:13:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728101AbfC0NGp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 27 Mar 2019 09:06:45 -0400
-Received: from pobox.suse.cz (prg-ext-pat.suse.com [213.151.95.130])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728101AbfC0NN3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 27 Mar 2019 09:13:29 -0400
+Received: from mail-qt1-f181.google.com (mail-qt1-f181.google.com [209.85.160.181])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 962FF206DF;
-        Wed, 27 Mar 2019 13:06:43 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 15BA221773;
+        Wed, 27 Mar 2019 13:13:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553692005;
-        bh=E0liOdubiccWd4jUYz0WTmCqryO/xUq9WkYiL2KxGn8=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=nlVvXshvmp+ws/Vc/rfpiiU8mRYKkUZEsjH/q+xNtXsJvACaaYBH0wYPjfQp9w+og
-         P0c36kVZXNpQHkxo2HNFpBY8Bl0/OpqcCETnQJATFgMYUSLN0Vs4xSaeP8YS55ABu2
-         1ZM2qH8rQ99OBwB/TWvfMpDJmHUTAZi4P2rDDf1M=
-Date:   Wed, 27 Mar 2019 14:06:40 +0100 (CET)
-From:   Jiri Kosina <jikos@kernel.org>
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>
-cc:     linux-kernel@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] hid: hid-sensor-custom: simplify getting
- .driver_data
-In-Reply-To: <20190319163638.31003-1-wsa+renesas@sang-engineering.com>
-Message-ID: <nycvar.YFH.7.76.1903271406260.19912@cbobk.fhfr.pm>
-References: <20190319163638.31003-1-wsa+renesas@sang-engineering.com>
-User-Agent: Alpine 2.21 (LSU 202 2017-01-01)
+        s=default; t=1553692409;
+        bh=ldyO8hXl6NzVcqV0X1ccrFDZLQrtwPRyFbaP5VC0zIY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=tvwsQFJTuDVfa0jegPO6stpVEPdegcd4DGBpNy01AP+MmfeXwG9taBFRCzQ2xwppB
+         dYWXqjcCAOOIBES4HAy/gHp0udoDplgKGiF7wxMMKQQEQ5M6VAbiM0IW6g+Wlfxc9q
+         GNSbnORYS3sEDElxYqJFwykSx6SCjNIM6kLhd3Rc=
+Received: by mail-qt1-f181.google.com with SMTP id d13so13999367qth.5;
+        Wed, 27 Mar 2019 06:13:29 -0700 (PDT)
+X-Gm-Message-State: APjAAAU2rETCSX6KsC8WKgaiUiWiGN3QyrkVv6r4aLCIsxm5pxgMRjJU
+        lPcxcWheIRwBEz2J7pScbKtQKkHhQYSkisZRwg==
+X-Google-Smtp-Source: APXvYqz8FVRPXTmPYEoUGBnOPU0JvMFcTskTfjhJQPvgWJY6PudZW1ULZBglipzA6zR6RS1csLuD+qXwHjzp3eo9BTI=
+X-Received: by 2002:ac8:7647:: with SMTP id i7mr29089899qtr.38.1553692408279;
+ Wed, 27 Mar 2019 06:13:28 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+References: <20190326133938.oitfjxlx2kou26lm@arbad>
+In-Reply-To: <20190326133938.oitfjxlx2kou26lm@arbad>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 27 Mar 2019 08:13:17 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqKV1Qy05oX9wm+Fz1HAkAEe4gE3whCNvafPfxsg6hgp8A@mail.gmail.com>
+Message-ID: <CAL_JsqKV1Qy05oX9wm+Fz1HAkAEe4gE3whCNvafPfxsg6hgp8A@mail.gmail.com>
+Subject: Re: [PATCH v2] devantech-srf04.yaml: transform DT binding to YAML
+To:     Andreas Klinger <ak@it-klinger.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 19 Mar 2019, Wolfram Sang wrote:
+On Tue, Mar 26, 2019 at 8:40 AM Andreas Klinger <ak@it-klinger.de> wrote:
+>
+> devantech-srf04.yaml: yaml devicetree binding for iio ultrasonic
+> proximity driver of devantech srf04
+>
+> use devantech-srf04.txt, transform binding into yaml and remove the
+> outdated DT documentation
+>
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> ---
+>  .../bindings/iio/proximity/devantech-srf04.txt     | 28 ----------
+>  .../bindings/iio/proximity/devantech-srf04.yaml    | 59 ++++++++++++++++++++++
+>  2 files changed, 59 insertions(+), 28 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.yaml
 
-> We should get 'driver_data' from 'struct device' directly. Going via
-> platform_device is an unneeded step back and forth.
-> 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
-
-Applied to for-5.2/sensor, thanks.
-
--- 
-Jiri Kosina
-SUSE Labs
-
+Reviewed-by: Rob Herring <robh@kernel.org>
