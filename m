@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F4B9C10F00
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 18:54:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C6F0CC43381
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:10:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D69EA205C9
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 18:54:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 947AD206C0
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Mar 2019 19:10:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553712888;
-	bh=b2ikpDpeay3tExbsMPs3TD/zOK3/zB0/RU5HZow+ANs=;
+	s=default; t=1553713849;
+	bh=uXnjpxAhJ0NJevHTQ+WLhA3oWQsyO/F5W2zTP3iwFJw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=yBPBJCJ6lGsGL/nLYeZpqXd5vTVaX9jL9qkp9pM3QZLulYJxaOEg5JN0LJCr4dwdG
-	 lv/nB7kiLiDYFWesN8Y9gI13ptG6QHlTTT9wFsz9Oo34BbVV0/Ne/JVROH4lAa/QbW
-	 2+3umrecHBu9nwS1DDXCbpmXL9P7kQPixTbIuwvI=
+	b=Fin3HOkbhO947NRKhQkgKyBWd4Rq1wGZaambZHNdHX/IKY7+4qA0bGgVsOCOYd01S
+	 fQDa1Jr75t+CyJyJs969sb9uSpIKveMvrJHgBS7tDPSMYxclGIg+u7HrSvuTH4HB8S
+	 pTYQH1TmVB45PhwQCWKSN+xc0keONnMdJLMHV5Dc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390147AbfC0SQx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Mar 2019 14:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32942 "EHLO mail.kernel.org"
+        id S2388384AbfC0SKx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Mar 2019 14:10:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53034 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390141AbfC0SQu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 27 Mar 2019 14:16:50 -0400
+        id S2388363AbfC0SKw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 27 Mar 2019 14:10:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2D893217F9;
-        Wed, 27 Mar 2019 18:16:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 715792177E;
+        Wed, 27 Mar 2019 18:10:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553710609;
-        bh=b2ikpDpeay3tExbsMPs3TD/zOK3/zB0/RU5HZow+ANs=;
+        s=default; t=1553710251;
+        bh=uXnjpxAhJ0NJevHTQ+WLhA3oWQsyO/F5W2zTP3iwFJw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aHuRd2CEkiIDEAAQEBGwWfYDJNuIPQ4ZRMv/AaqBB0tkD6DY7CfW0ZFwlzqLXAbue
-         FtqeC0AmH0eFLDrzYi560NQH2Xmm+Ik5+u8A06QNK16tAWZmoHjScj68aIVN1Va6hp
-         v+NYa0tYsMUDY2v89DoA+/VvgEmXRW3RKH4oncgg=
+        b=FMJnXPy0fVcYTvrH3DCuhlczdxlgqAyjnvpriz+TOwQmNoi58Anv1Lt01Et05OrDg
+         HWVsVDTENo4UoOsmGUXAEiHds9r2aQaKzvQC5CenwrrBZVu0L0iTYbo7bmuAXhlNmY
+         m4w5knp2fiqYBXb8Cges5dwxOAF4PY2/Ty757vdQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
@@ -51,12 +51,12 @@ Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Sasha Levin <sashal@kernel.org>, linux-arm-msm@vger.kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 013/123] iio: adc: fix warning in Qualcomm PM8xxx HK/XOADC driver
-Date:   Wed, 27 Mar 2019 14:14:37 -0400
-Message-Id: <20190327181628.15899-13-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 018/192] iio: adc: fix warning in Qualcomm PM8xxx HK/XOADC driver
+Date:   Wed, 27 Mar 2019 14:07:30 -0400
+Message-Id: <20190327181025.13507-18-sashal@kernel.org>
 X-Mailer: git-send-email 2.19.1
-In-Reply-To: <20190327181628.15899-1-sashal@kernel.org>
-References: <20190327181628.15899-1-sashal@kernel.org>
+In-Reply-To: <20190327181025.13507-1-sashal@kernel.org>
+References: <20190327181025.13507-1-sashal@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 X-Patchwork-Hint: Ignore
@@ -111,7 +111,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 3 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
-index cea8f1fb444a..7e8da418a7b7 100644
+index b093ecddf1a8..54db848f0bcd 100644
 --- a/drivers/iio/adc/qcom-pm8xxx-xoadc.c
 +++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
 @@ -423,18 +423,14 @@ static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
