@@ -2,131 +2,84 @@ Return-Path: <SRS0=6xQ+=R7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28027C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 17:51:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB6AC43381
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 17:53:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EA49020823
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 17:51:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE4D420811
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 17:53:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553795498;
-	bh=NHUtwjRIFTvBhyozLmJJJws+hL5MUUljHuFRyyHy30E=;
+	s=default; t=1553795611;
+	bh=IYxxt8vFvde6RSMt1zx7D1ssvSP58/f9aizVnEpb9Cs=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=TYCJlY3tYaC2/1bccf029f86f7UaTO9rP0zhxPVvAQveqBUT6Oto4EHZYcDdT41Sp
-	 gVD+20TmUj/n2Oav8adGG5VZzNyhOe4Nrgz7KKuzKtVqbsFLFz2s/cBDSojx08eaMf
-	 ukZFsccmC+HhHAdI1XssmbyicysQtcIJjnTqrUB4=
+	b=OAV5WJGRpTqFaWxBj94EQUiP0mZI7vEO+qrGN2KyYUv/j2Uap/UYJWxQiqe7yCgqI
+	 n9UGBVAkzO/EqNuItpkSBG0d/eO5EHYAqM4VDe6JhPh1o+6VljglbdhXsRyzx9H8bn
+	 w5syV1PHco3CMihypEUPrnrt5BcGoBWKuuA5xFD0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726311AbfC1Rvh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Mar 2019 13:51:37 -0400
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:37503 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726029AbfC1Rvh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2019 13:51:37 -0400
-Received: by mail-ot1-f67.google.com with SMTP id c16so19176427otn.4;
-        Thu, 28 Mar 2019 10:51:36 -0700 (PDT)
+        id S1726200AbfC1Rxb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Mar 2019 13:53:31 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:34094 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725816AbfC1Rxb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2019 13:53:31 -0400
+Received: by mail-ot1-f66.google.com with SMTP id k21so17816474otf.1;
+        Thu, 28 Mar 2019 10:53:30 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6nr15hFnrNU7DCIEqf1JuRuMjrJ40wiGfDteWVuhoY4=;
-        b=i97DyXYoNVgmhc2Hrxz7beYTpigz8e9ZCJABnXxT9YBQlZH8XaH44QiuipeOO47avo
-         HrdZ/JzKwTqSA0VXWe1dxBVTSEsKWKN67taUrC9xSPcG3kRnTHbSFVnSFdh9Shd784e9
-         aVTZz3jNGbraQ8w41rTRlk+aB65uAGyy0dlAIihLtUbtXKq+PG0pXXz8pjDT7BcpXjbO
-         sZEvE4KiJBln7Hj4LU/h3lUpH4zu8I9vqttJ6mN1yV1tyQsSPp8wUK2STrcSTdEKkHtX
-         ZjMWKvRQ+Eqwlxp40a/TfQApnlcduQhCMXO/MzGogG6+aY+T3qvACMmzNOM7q4z96uRX
-         81RA==
-X-Gm-Message-State: APjAAAXuXOXPLN2dxPSA7vVdS1K1r/esC0hRaBLRvb4LCNwN/zFaRuPx
-        1P0cbsMc/Ry0h/Umu2+5+w==
-X-Google-Smtp-Source: APXvYqzlwaeVmj5o9+QiNXlXr2/9CvnmCdP/yNsjqZrjyhvCmOzwbxSN0qtb1bZM0iyyKgKfFyhFtQ==
-X-Received: by 2002:a05:6830:2009:: with SMTP id e9mr6518039otp.142.1553795496390;
-        Thu, 28 Mar 2019 10:51:36 -0700 (PDT)
+        bh=Y0MH5RxWTzI66An3YJe7SRKxOobpt0IpUHE5VLv1BOM=;
+        b=PR3kScBo135E6SWcVnb/m7TZnVvx3eOTY9xvJul8IzD8z2rL5+d6VBcB046R/ssUHA
+         MA57RL6OAUEddwMcewk7a01sAuv/1k8Pimi4bTnqzS41TR+QhWjNR/lTS+YzGkOTXJxy
+         qtVCTeyoWtcoW5sC8lKJkARKKH8RqhwH+2vG5x/D2rtFFsfaloeK7iaqMKM+6AL4zjcd
+         5LQrhQaHQs9Eybv6gHSpn643YuRiZbMTMnqbcJv9dLUU229Lny8UGCseMIEtcb7dp3O6
+         Fz6zK8rlLjq3dSlkiNaiNOCe0QbgX0E+m1+K2R/5rKGmEOUijFAAdQT4YI+4HCImaUfk
+         Oa+w==
+X-Gm-Message-State: APjAAAXtwxVS1xFz9F684BjsaIe4ALkW9xEGcno5x9Ys35h7zv9VrxP6
+        9H7J/KlT8LGQUnoRR5GZ2A==
+X-Google-Smtp-Source: APXvYqx/lhtxNFIZabAeBFr6cX1gAK85qC02J7wbQogY19gqcFUK4/wQGthph7wTSUZMN2aIck17nA==
+X-Received: by 2002:a9d:6ad1:: with SMTP id m17mr30474484otq.108.1553795609971;
+        Thu, 28 Mar 2019 10:53:29 -0700 (PDT)
 Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id o83sm8838149oif.33.2019.03.28.10.51.35
+        by smtp.gmail.com with ESMTPSA id h8sm1733221oti.64.2019.03.28.10.53.28
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 28 Mar 2019 10:51:35 -0700 (PDT)
-Date:   Thu, 28 Mar 2019 12:51:35 -0500
+        Thu, 28 Mar 2019 10:53:29 -0700 (PDT)
+Date:   Thu, 28 Mar 2019 12:53:28 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Andreas Klinger <ak@it-klinger.de>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        jic23@kernel.org, mark.rutland@arm.com, afaerber@suse.de,
-        arnd@arndb.de, davem@davemloft.net, gregkh@linuxfoundation.org,
-        johan@kernel.org, khilman@baylibre.com, knaack.h@gmx.de,
-        lars@metafoo.de, linux-kernel@vger.kernel.org,
-        martin.blumenstingl@googlemail.com, mchehab+samsung@kernel.org,
-        m.othacehe@gmail.com, nicolas.ferre@microchip.com,
-        pmeerw@pmeerw.net, songqiang1304521@gmail.com, treding@nvidia.com,
-        techsupport@maxbotix.com
-Subject: Re: [PATCH v3 2/4] dt-bindings: maxbotix,mb1232: Add MaxBotix i2c
- ultrasonic rangers
-Message-ID: <20190328175134.GA15033@bogus>
-References: <20190317203526.4pcwo4gdrrng44v7@arbad>
+To:     "Angus Ainslie (Purism)" <angus@akkea.ca>
+Cc:     jic23@kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>,
+        Tomas Novotny <tomas@novotny.cz>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 3/5] dt-bindings: iio: light: add vcnl4000 devicetree
+ bindings
+Message-ID: <20190328175328.GA19947@bogus>
+References: <20190321154047.23236-1-angus@akkea.ca>
+ <20190321154047.23236-4-angus@akkea.ca>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190317203526.4pcwo4gdrrng44v7@arbad>
+In-Reply-To: <20190321154047.23236-4-angus@akkea.ca>
 User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 17, 2019 at 09:35:27PM +0100, Andreas Klinger wrote:
-> Add doc for dt binding maxbotix,mb1232. This binding is for MaxBotix
-> I2CXL-MaxSonar ultrasonic rangers which share a common i2c interface.
+On Thu, 21 Mar 2019 08:40:45 -0700, "Angus Ainslie (Purism)" wrote:
+> Document the vishay VCNL4000 devicetree bindings.
 > 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> Signed-off-by: Angus Ainslie (Purism) <angus@akkea.ca>
 > ---
->  .../bindings/iio/proximity/maxbotix,mb1232.txt     | 31 ++++++++++++++++++++++
->  1 file changed, 31 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
+>  .../bindings/iio/light/vcnl4000.txt           | 22 +++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
-> new file mode 100644
-> index 000000000000..0e9df87eca1d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
-> @@ -0,0 +1,31 @@
-> +* MaxBotix I2CXL-MaxSonar ultrasonic distance sensor of type  mb1202,
-> +  mb1212, mb1222, mb1232, mb1242, mb7040 or mb7137 using the i2c interface
-> +  for ranging
-> +
-> +Required properties:
-> + - compatible:		"maxbotix,mb1202",
-> +			"maxbotix,mb1212",
-> +			"maxbotix,mb1222",
-> +			"maxbotix,mb1232",
-> +			"maxbotix,mb1242",
-> +			"maxbotix,mb7040" or
-> +			"maxbotix,mb7137"
-> +
-> + - reg:			i2c address of the device, see also i2c/i2c.txt
-> +
-> +Optional properties:
-> + - interrupt-parent:	Interrupt controller to use
-
-Don't need this as it is implied and could be in the parent.
-
-Otherwise,
 
 Reviewed-by: Rob Herring <robh@kernel.org>
-
-> +
-> + - interrupts:		Interrupt used to announce the preceding reading
-> +			request has finished and that data is available.
-> +			If no interrupt is specified the device driver
-> +			falls back to wait a fixed amount of time until
-> +			data can be retrieved.
-> +
-> +Example:
-> +proximity@70 {
-> +	compatible = "maxbotix,mb1232";
-> +	reg = <0x70>;
-> +	interrupt-parent = <&gpio2>;
-> +	interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
-> +};
-> -- 
-> 2.11.0
