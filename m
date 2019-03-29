@@ -1,144 +1,299 @@
-Return-Path: <SRS0=6xQ+=R7=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Xjfk=SA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 683C0C43381
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 18:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24609C10F05
+	for <linux-iio@archiver.kernel.org>; Fri, 29 Mar 2019 08:41:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3E0AD2173C
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Mar 2019 18:38:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553798325;
-	bh=eR32QZ2WtNp93/AOs/PXLYuM8TVJxmH6h+0GLECIZWY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=mSsLsQ5jp6JwEFHiw/0wn/JPLeNTLlnhQqJM+y9CAkr0TyK0oQBDe9c9IvxhH3vxl
-	 EwfQU9Um+mFBLGP/wgLuzhc/Phv0hUXocTgKAhPUtXhy6tgpU5GxD6ByuYnlsQe4jo
-	 OGKzbrv3UjrnyG0KISW/od0USRCKfyhPjt9sACIk=
+	by mail.kernel.org (Postfix) with ESMTP id DCDEF2082F
+	for <linux-iio@archiver.kernel.org>; Fri, 29 Mar 2019 08:41:47 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="hQ9OZ42n"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726210AbfC1Sio (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Mar 2019 14:38:44 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:44082 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726156AbfC1Sio (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Mar 2019 14:38:44 -0400
-Received: by mail-oi1-f196.google.com with SMTP id i21so16584379oib.11;
-        Thu, 28 Mar 2019 11:38:44 -0700 (PDT)
+        id S1729108AbfC2Ilq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 29 Mar 2019 04:41:46 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:39813 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729112AbfC2Ilp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2019 04:41:45 -0400
+Received: by mail-io1-f67.google.com with SMTP id e13so1093832ioq.6
+        for <linux-iio@vger.kernel.org>; Fri, 29 Mar 2019 01:41:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:in-reply-to:references:mime-version:date:message-id:subject:to
+         :cc;
+        bh=33/iwvmusHwTcv8hJGDuna/lJR/QTV2FqkWq92RB02c=;
+        b=hQ9OZ42nT/oB8RIkiB6hZG/T5pQii9xW0J7sXIgC8e2p2aXTQH0CH7JsvSuqJKlLTX
+         vMENqfrQqYah7YIrgYlPd3J3QsxwPoytQNXmvvmW8b8Bff4UtgUGlLRcbi+hxGHXcgpg
+         VJhvh59agRfoS7FXF8hv31EofivR+FMjPHBY8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CqbjMfLF5yty5z0sWtkYupJ+LsMShcu40O3GKLLil0k=;
-        b=fyERlPFGOFZqU82B2z5B7e4aIARt5V6A19DERNmXbqlCSvDRdKIySSyChUq4pzA/zQ
-         AkhtQj1R0UtsjoAsjWy6bTAOC233RH4HWYDnUpnutjzczuM1418IF7WS7P+YGG65lK01
-         E+zPswg35JISoJ/YrACrtL2evmpZvnTrAC0RVk1Y9vOGtCl/LlV/RMsqEoZcR+ZuNgFX
-         fzbM6WAPtwOdwY6ab+RrGwbR1EBsPcGhQwNCrFDm+y3jyRNC/tIFKefJpze2ZG09Eh5l
-         cj/DpvvfxZ1hqQmTC3Id/RDqOTYOsEZyt+7R4uIuhsXAxq/Akd1fTXCWGFiGDkapFao6
-         zPWA==
-X-Gm-Message-State: APjAAAUjlbW9QYHSAveB6BiCNSaKx0oh1J7GrHdFUof19qAM/A+yrjNm
-        +q0u57s+tiyuwGVsq8/VCQ==
-X-Google-Smtp-Source: APXvYqw8OQeTIDAN8XvE7tbypYPit/cLN8EQv3uIhGjZUFSbW5W8gAvZDtLpbiVX1PrKNGpdrPUN2Q==
-X-Received: by 2002:aca:eb93:: with SMTP id j141mr1006726oih.178.1553798323660;
-        Thu, 28 Mar 2019 11:38:43 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id s185sm9938851oif.30.2019.03.28.11.38.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 28 Mar 2019 11:38:42 -0700 (PDT)
-Date:   Thu, 28 Mar 2019 13:38:42 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com>
-Cc:     jic23@kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/2] dt-bindings: iio: Add bindings for TI TLA202x ADCs
-Message-ID: <20190328183842.GA9079@bogus>
-References: <1553608583-29006-1-git-send-email-ibtsam.haq.0x01@gmail.com>
- <1553608583-29006-2-git-send-email-ibtsam.haq.0x01@gmail.com>
+        h=x-gm-message-state:from:in-reply-to:references:mime-version:date
+         :message-id:subject:to:cc;
+        bh=33/iwvmusHwTcv8hJGDuna/lJR/QTV2FqkWq92RB02c=;
+        b=tRNvtv7zynH6UJ7wrUwNB/5Dad4YEihUdzMVwW5XE6OWDoBU/YW24R/qngAvoN5r6X
+         KSYFyVy/G0ZV1zLb53E8zxmQELXgCVi7rFSB71FmaEe3/jYdVC820VON03WCh+ErS0TV
+         jwuzPhfxUebG7yTr1gy5rdeRpRoeI7wYEx6vjuz1le8CKiUsy1f3YW9YK5/3G9XoMmxY
+         I4xeCM3vcW2ANrJyxTQ2Q7NgmUkynlGfvrbBHn4L6SYgOLZYcZUTl615mrFs4eMUTxZK
+         UUtSKfAM0wDLrzu918cgk26KqSjvHakXPL9aRszHm9vukpTujPLVaL78Y5qtRH7bs0p3
+         GtFw==
+X-Gm-Message-State: APjAAAWDpOoIlRbdyCB5j8opvwOLaJGlHfa93yPpSrU716tqGcrnMFu0
+        ivbd5gEYdR72ohKES8iEo28UeWYiNEdwVJJfU22BWg==
+X-Google-Smtp-Source: APXvYqzLHzpGnkrt/QSM06yw01zzT8MeDgw2MiP78wV3G/9f83HYGx/gy66sLSskgQLQE7iP/zJ4EjLdSlmxXKuOXnM=
+X-Received: by 2002:a5d:8b42:: with SMTP id c2mr24234376iot.192.1553848903962;
+ Fri, 29 Mar 2019 01:41:43 -0700 (PDT)
+Received: from 764776645087 named unknown by gmailapi.google.com with
+ HTTPREST; Fri, 29 Mar 2019 01:41:43 -0700
+From:   Gwendal Grignou <gwendal@chromium.org>
+X-Mailer: git-send-email 2.21.0.392.gf8f6787159e-goog
+In-Reply-To: <20190311082405.GB4731@dell>
+References: <20190311082405.GB4731@dell>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1553608583-29006-2-git-send-email-ibtsam.haq.0x01@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Date:   Fri, 29 Mar 2019 01:41:43 -0700
+Message-ID: <CAPUE2usOdzbHN7NN=Vg8FWE1kR2ayPYxV8qy05eB+bZgG6wD3w@mail.gmail.com>
+Subject: [PATCH v4 2/2] iio: cros_ec: Add lid angle driver
+To:     enric.balletbo@collabora.com, bleung@chromium.org,
+        groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Mar 26, 2019 at 02:56:20PM +0100, Ibtsam Ul-Haq wrote:
-> This adds devicetree bindings for TI TLA202x ADCs.
-> 
-> Signed-off-by: Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com>
-> ---
->  .../devicetree/bindings/iio/adc/ti-tla2024.txt     | 45 ++++++++++++++++++++++
->  1 file changed, 45 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-tla2024.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-tla2024.txt b/Documentation/devicetree/bindings/iio/adc/ti-tla2024.txt
-> new file mode 100644
-> index 0000000..a4934df
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti-tla2024.txt
-> @@ -0,0 +1,45 @@
-> +Texas Instruments' TLA2021/TLA2022/TLA2024 12-bit ADC driver
-> +
-> +Required properties:
-> +
-> +- compatible: should be one of:
-> +  "ti,tla2024"
-> +  "ti,tla2022"
-> +  "ti,tla2021"
-> +
-> +- reg: should contain the I2C Address of the device
-> +
-> +Required subnodes:
-> +
-> +The ADC channels are configured as subnodes of the ADC.
-> +The channels can be single-ended or differential, the input pins are
-> +also set in the subnode.
-> +
-> +Possible channels in TLA2024:
-> +  single: <0>, <1>, <2>, <3>
-> +  differential: <0 1>, <0 3>, <1 3>, <2 3>
-> +
-> +In TLA2021/TLA2022 only the differential channel <0 1> is allowed.
-> +
-> +Example:
-> +
-> +tla2024_0: adc0@49 {
+Add a IIO driver that reports the angle between the lid and the base for
+ChromeOS convertible device.
 
-adc@49
+Tested on eve with ToT EC firmware.
+Check driver is loaded and lid angle is correct.
 
-> +	compatible = "ti,tla2024";
-> +	reg = <0x49>;
-> +
-> +	v0@0 {
+Change-Id: I3506be4a1405f108eebe6c1d3a3dbe975ca00519
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ drivers/iio/common/cros_ec_sensors/Kconfig    |   9 ++
+ drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
+ .../cros_ec_sensors/cros_ec_lid_angle.c       | 138 ++++++++++++++++++
+ drivers/mfd/cros_ec_dev.c                     |  15 +-
+ 4 files changed, 160 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
 
-Unit-address without 'reg' is not valid.
+diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig
+b/drivers/iio/common/cros_ec_sensors/Kconfig
+index 135f6825903f..aacc2ab9c34f 100644
+--- a/drivers/iio/common/cros_ec_sensors/Kconfig
++++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+@@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
+ 	  Accelerometers, Gyroscope and Magnetometer that are
+ 	  presented by the ChromeOS EC Sensor hub.
+ 	  Creates an IIO device for each functions.
++
++config IIO_CROS_EC_SENSORS_LID_ANGLE
++	tristate "ChromeOS EC Sensor for lid angle"
++	depends on IIO_CROS_EC_SENSORS_CORE
++	help
++	  Module to report the angle between lid and base for some
++	  convertible devices.
++	  This module is loaded when the EC can calculate the angle between the base
++	  and the lid.
+diff --git a/drivers/iio/common/cros_ec_sensors/Makefile
+b/drivers/iio/common/cros_ec_sensors/Makefile
+index ec716ff2a775..a35ee232ac07 100644
+--- a/drivers/iio/common/cros_ec_sensors/Makefile
++++ b/drivers/iio/common/cros_ec_sensors/Makefile
+@@ -4,3 +4,4 @@
 
-> +		single-channel = <0>;
+ obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+ obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
++obj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+new file mode 100644
+index 000000000000..92be07d7fa36
+--- /dev/null
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+@@ -0,0 +1,138 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
++ *
++ * Copyright 2018 Google, Inc
++ *
++ * This driver uses the cros-ec interface to communicate with the Chrome OS
++ * EC about counter sensors. Counters are presented through
++ * iio sysfs.
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/common/cros_ec_sensors_core.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/kernel.h>
++#include <linux/mfd/cros_ec.h>
++#include <linux/mfd/cros_ec_commands.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#define DRV_NAME "cros-ec-lid-angle"
++
++/*
++ * One channel for the lid angle, the other for timestamp.
++ */
++static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
++	{
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.scan_type.realbits = CROS_EC_SENSOR_BITS,
++		.scan_type.storagebits = CROS_EC_SENSOR_BITS,
++		.scan_type.sign = 'u',
++		.type = IIO_ANGL
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1)
++};
++
++/* State data for ec_sensors iio driver. */
++struct cros_ec_lid_angle_state {
++	/* Shared by all sensors */
++	struct cros_ec_sensors_core_state core;
++};
++
++static int cros_ec_sensors_read_lid_angle(struct iio_dev *indio_dev,
++					  unsigned long scan_mask, s16 *data)
++{
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	int ret;
++
++	st->param.cmd = MOTIONSENSE_CMD_LID_ANGLE;
++	ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->lid_angle));
++	if (ret) {
++		dev_warn(&indio_dev->dev, "Unable to read lid angle\n");
++		return ret;
++	}
++
++	*data = st->resp->lid_angle.value;
++	return 0;
++}
++
++static int cros_ec_lid_angle_read(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    int *val, int *val2, long mask)
++{
++	struct cros_ec_lid_angle_state *st = iio_priv(indio_dev);
++	s16 data;
++	int ret;
++
++	mutex_lock(&st->core.cmd_lock);
++	ret = cros_ec_sensors_read_lid_angle(indio_dev, 1, &data);
++	if (ret)
++		return ret;
++	*val = data;
++	mutex_unlock(&st->core.cmd_lock);
++	return IIO_VAL_INT;
++}
++
++static const struct iio_info cros_ec_lid_angle_info = {
++	.read_raw = &cros_ec_lid_angle_read,
++};
++
++static int cros_ec_lid_angle_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct cros_ec_lid_angle_state *state;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
++	if (ret)
++		return ret;
++
++	indio_dev->info = &cros_ec_lid_angle_info;
++	state = iio_priv(indio_dev);
++	indio_dev->channels = cros_ec_lid_angle_channels;
++	indio_dev->num_channels = ARRAY_SIZE(cros_ec_lid_angle_channels);
++
++	state->core.read_ec_sensors_data = cros_ec_sensors_read_lid_angle;
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++			cros_ec_sensors_capture, NULL);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct platform_device_id cros_ec_lid_angle_ids[] = {
++	{
++		.name = DRV_NAME,
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
++
++static struct platform_driver cros_ec_lid_angle_platform_driver = {
++	.driver = {
++		.name	= DRV_NAME,
++		.pm	= &cros_ec_sensors_pm_ops,
++	},
++	.probe		= cros_ec_lid_angle_probe,
++	.id_table	= cros_ec_lid_angle_ids,
++};
++module_platform_driver(cros_ec_lid_angle_platform_driver);
++
++MODULE_DESCRIPTION("ChromeOS EC driver for reporting convertible lid angle.");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
+index d275deaecb12..11b5b2fd1f33 100644
+--- a/drivers/mfd/cros_ec_dev.c
++++ b/drivers/mfd/cros_ec_dev.c
+@@ -297,13 +297,17 @@ static void cros_ec_sensors_register(struct
+cros_ec_dev *ec)
 
-Look at the common adc binding or adi,ad7124.txt for how to do 
-multi-channel with differential channels.
+ 	resp = (struct ec_response_motion_sense *)msg->data;
+ 	sensor_num = resp->dump.sensor_count;
+-	/* Allocate 1 extra sensors in FIFO are needed */
+-	sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
++	/*
++	 * Allocate extra sensors if lid angle sensor or FIFO are needed.
++	 */
++#define NUM_EXTRA_SENSORS 2
++	sensor_cells = kcalloc(sensor_num + NUM_EXTRA_SENSORS,
++			       sizeof(struct mfd_cell),
+ 			       GFP_KERNEL);
+ 	if (sensor_cells == NULL)
+ 		goto error;
 
-> +	};
-> +
-> +	v1@1 {
-> +		single-channel = <1>;
-> +	};
-> +
-> +	v23@2 {
-> +		diff-channels = <2 3>;
-> +	};
-> +
-> +	v01@3 {
-> +		diff-channels = <0 1>;
-> +	};
-> +};
-> -- 
-> 2.7.4
-> 
+-	sensor_platforms = kcalloc(sensor_num + 1,
++	sensor_platforms = kcalloc(sensor_num,
+ 				   sizeof(struct cros_ec_sensor_platform),
+ 				   GFP_KERNEL);
+ 	if (sensor_platforms == NULL)
+@@ -363,6 +367,11 @@ static void cros_ec_sensors_register(struct
+cros_ec_dev *ec)
+ 		sensor_cells[id].name = "cros-ec-ring";
+ 		id++;
+ 	}
++	if (cros_ec_check_features(ec,
++				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
++		sensor_cells[id].name = "cros-ec-lid-angle";
++		id++;
++	}
+
+ 	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
+ 			      NULL, 0, NULL);
+-- 
+2.21.0.360.g471c308f928-goog
