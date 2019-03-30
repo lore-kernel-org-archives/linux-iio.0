@@ -6,50 +6,54 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3890C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:38:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 150D6C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:42:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B7038218D0
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:38:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D7A3A218D0
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:42:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553963936;
-	bh=eIwMCkte6gzrexpzbDmGnJryf0Ol6UdikR4cKIE0MJU=;
+	s=default; t=1553964141;
+	bh=nPy2ifQ54x7DxDr4UyLBeesbBInz8JwCwrDLuvli8PU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wVmLM5gV0FabxtCsejThcI6ZQSwA4bDOR4N5qm7QlEfLvWUXvyOlHtvIvU9ZX0Ehp
-	 Sb7KhK3vxsoHRLgI3U/0ljTTaGsMhyIXbG7/JlcJ2zwaOAStLouvyJJx2071P47F9t
-	 OdpEBg5h6i+rWYvTkBsXYcfrxfMFNCmW3i0xfuqQ=
+	b=Tzu/B7cUZTIII6Ht8Kv+7Zy/5pmTl9NZUWeQ9XzgnE7EH9cd0GOSaQDo5Jm8mgHnQ
+	 AcrhS1+gOlDL0CGQr464QlBfQItTYOfMI5ZBxhvjLUoZehnSu2l7ecmItgb9y1FxoC
+	 /iQkTGB2fLBRLNx8vqE4313Z95kbXftRYfniWLRw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730488AbfC3Qi4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Mar 2019 12:38:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41536 "EHLO mail.kernel.org"
+        id S1730203AbfC3QmV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 12:42:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730395AbfC3Qiz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Mar 2019 12:38:55 -0400
+        id S1730395AbfC3QmV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Mar 2019 12:42:21 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 76168218CD;
-        Sat, 30 Mar 2019 16:38:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 19C81218A3;
+        Sat, 30 Mar 2019 16:42:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553963934;
-        bh=eIwMCkte6gzrexpzbDmGnJryf0Ol6UdikR4cKIE0MJU=;
+        s=default; t=1553964140;
+        bh=nPy2ifQ54x7DxDr4UyLBeesbBInz8JwCwrDLuvli8PU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qciOQFvxrE9mrBf5PdGnIIzY4A6Rlzha2Zkwhk9gKCcYL+KNE5hvGDQIblrSowdK2
-         vpFkspMnxosmM1fLqQr4wWtzsYrvgtlxOW2cOuX9elEalPlikVnstl0qzZqrmmKc5j
-         sS/wiWKgEJlGfi0o1fHO3Jma2hz231lz1m5x3r7g=
-Date:   Sat, 30 Mar 2019 16:38:49 +0000
+        b=T6NcWWrQ1Ld2sitoib3ajAabRFERyNnd0lAg0WSaoBxyBrW+D8h6/MnCrYUPMJZ9/
+         kmIsy/N1a81lwl33JGcID5WuDuP1aVPYgQtCMhYGOqw9CWIYt+MpVYeah2bSd5/NRY
+         6YRxERpdnsMapB1RfOvyk9nbRNPbE8Dvwoh4/hnw=
+Date:   Sat, 30 Mar 2019 16:42:14 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: Re: [PATCH] iio: adc: stm32: fix sleep inside atomic section when
- using DMA
-Message-ID: <20190330163849.0b2db557@archlinux>
-In-Reply-To: <1553604244-10922-1-git-send-email-fabrice.gasnier@st.com>
-References: <1553604244-10922-1-git-send-email-fabrice.gasnier@st.com>
+To:     Patrick Havelange <patrick.havelange@essensium.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>,
+        Matt Weber <matthew.weber@rockwellcollins.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v7 1/3] dt-bindings: iio/temperature: Add thermocouple
+ types (and doc)
+Message-ID: <20190330164214.3189ca54@archlinux>
+In-Reply-To: <20190326111842.12399-1-patrick.havelange@essensium.com>
+References: <20190326111842.12399-1-patrick.havelange@essensium.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,164 +63,72 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 26 Mar 2019 13:44:04 +0100
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+On Tue, 26 Mar 2019 12:18:40 +0100
+Patrick Havelange <patrick.havelange@essensium.com> wrote:
 
-> Enabling CONFIG_DEBUG_ATOMIC_SLEEP=y triggers this BUG message:
-> BUG: sleeping function called from invalid context at kernel/irq/chip.c...
+> This patch introduces common thermocouple types used by various
+> temperature sensors. Also a brief documentation explaining this
+> "thermocouple-type" property.
 > 
-> Call stack is as follows:
-> - __might_sleep
-> - handle_nested_irq          <-- Expects threaded irq
-> - iio_trigger_poll_chained
-> - stm32_adc_dma_buffer_done
-> - vchan_complete
-> - tasklet_action_common
-> - tasklet_action
-> - __do_softirq               <-- DMA completion raises a tasklet
-> - irq_exit
-> - __handle_domain_irq        <-- DMA IRQ
-> - gic_handle_irq
-> 
-> IIO expects threaded interrupt context when calling:
-> - iio_trigger_poll_chained()
-> Or it expects interrupt context when calling:
-> - iio_trigger_poll()
-> 
-> This patch triggers an IRQ upon stm32_adc_dma_buffer_done() DMA callback
-> call, so the IIO trigger poll API gets called from IRQ context.
-> 
-> Fixes: 2763ea0585c9 ("iio: adc: stm32: add optional dma support")
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+You have addressed all of Rob's feedback I think, so I'll not pester
+Rob for any follow up (always welcome of course if he wants to give it!)
 
-An irq_work is a very heavy weight solution.
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-Perhaps we need a iio_trigger_poll* that can be called from a tasklet?
-Or indeed a generic irq function that can be.
-
-Hmm.  This isn't actually a 'real' trigger (I think) anyway as it's
-only ever calling it's own irq thread.  In this case we could just
-bypass and call that function directly.
-
-Sometimes the trigger infrastructure of IIO is just not suited to
-how a particular device works!
-
-We need to maintain the trigger infrastructure for it's ability to
-select the trigger, but not necessarily push the data through it.
-
-So I think it would be safe to just call the block for dma_chan
-being set in _adc_trigger_handler directly. 
-
-If you take this approach, make sure there are comments saying why.
-I don't want people to cut and paste it into new driver unless they
-understand the reasoning!
-
-We have had drivers do this in the past, though I can't find one
-right now (am335x used to do this for example, but got reworked
-to suport the touchscreen at the same time and this path went
-away).
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/Kconfig     |  1 +
->  drivers/iio/adc/stm32-adc.c | 32 ++++++++++++++++++++++++++++++--
->  2 files changed, 31 insertions(+), 2 deletions(-)
+> Changes v7
+>  - Merge header and doc in same patch
+>  - Doc:add it's a single cell entry
+>  - Doc:removed non complete example
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 76db6e5..059407a 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -775,6 +775,7 @@ config STM32_ADC_CORE
->  	select MFD_STM32_TIMERS
->  	select IIO_STM32_TIMER_TRIGGER
->  	select IIO_TRIGGERED_BUFFER
-> +	select IRQ_WORK
->  	help
->  	  Select this option to enable the core driver for STMicroelectronics
->  	  STM32 analog-to-digital converter (ADC).
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index 205e169..1aa3189 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -20,6 +20,7 @@
->  #include <linux/interrupt.h>
->  #include <linux/io.h>
->  #include <linux/iopoll.h>
-> +#include <linux/irq_work.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/pm_runtime.h>
-> @@ -297,6 +298,7 @@ struct stm32_adc_cfg {
->   * @smpr_val:		sampling time settings (e.g. smpr1 / smpr2)
->   * @cal:		optional calibration data on some devices
->   * @chan_name:		channel name array
-> + * @work:		irq work used to call trigger poll routine
->   */
->  struct stm32_adc {
->  	struct stm32_adc_common	*common;
-> @@ -320,6 +322,7 @@ struct stm32_adc {
->  	u32			smpr_val[2];
->  	struct stm32_adc_calib	cal;
->  	char			chan_name[STM32_ADC_CH_MAX][STM32_ADC_CH_SZ];
-> +	struct irq_work		work;
->  };
->  
->  struct stm32_adc_diff_channel {
-> @@ -1473,11 +1476,32 @@ static unsigned int stm32_adc_dma_residue(struct stm32_adc *adc)
->  	return 0;
->  }
->  
-> +static void stm32_adc_dma_irq_work(struct irq_work *work)
-> +{
-> +	struct stm32_adc *adc = container_of(work, struct stm32_adc, work);
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
+> Changes v6
+>  - Add this file
+> ---
+>  .../iio/temperature/temperature-bindings.txt     |  7 +++++++
+>  .../dt-bindings/iio/temperature/thermocouple.h   | 16 ++++++++++++++++
+>  2 files changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+>  create mode 100644 include/dt-bindings/iio/temperature/thermocouple.h
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt b/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+> new file mode 100644
+> index 000000000000..8f339cab74ae
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/temperature-bindings.txt
+> @@ -0,0 +1,7 @@
+> +If the temperature sensor device can be configured to use some specific
+> +thermocouple type, you can use the defined types provided in the file
+> +"include/dt-bindings/iio/temperature/thermocouple.h".
 > +
-> +	/*
-> +	 * iio_trigger_poll calls generic_handle_irq(). So, it requires hard
-> +	 * irq context, and cannot be called directly from dma callback,
-> +	 * dma cb has to schedule this work instead.
-> +	 */
-> +	iio_trigger_poll(indio_dev->trig);
-> +}
+> +Property:
+> +thermocouple-type:	A single cell representing the type of the thermocouple
+> +			used by the device.
+> diff --git a/include/dt-bindings/iio/temperature/thermocouple.h b/include/dt-bindings/iio/temperature/thermocouple.h
+> new file mode 100644
+> index 000000000000..ce037f5238ac
+> --- /dev/null
+> +++ b/include/dt-bindings/iio/temperature/thermocouple.h
+> @@ -0,0 +1,16 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
 > +
->  static void stm32_adc_dma_buffer_done(void *data)
->  {
->  	struct iio_dev *indio_dev = data;
-> +	struct stm32_adc *adc = iio_priv(indio_dev);
->  
-> -	iio_trigger_poll_chained(indio_dev->trig);
-> +	/*
-> +	 * Invoques iio_trigger_poll() from hard irq context: We can't
-> +	 * call iio_trigger_poll() nor iio_trigger_poll_chained()
-> +	 * directly from DMA callback (under tasklet e.g. softirq).
-> +	 * They require respectively HW IRQ and threaded IRQ context
-> +	 * as it might sleep.
-> +	 */
-> +	irq_work_queue(&adc->work);
->  }
->  
->  static int stm32_adc_dma_start(struct iio_dev *indio_dev)
-> @@ -1585,8 +1609,10 @@ static void __stm32_adc_buffer_predisable(struct iio_dev *indio_dev)
->  	if (!adc->dma_chan)
->  		stm32_adc_conv_irq_disable(adc);
->  
-> -	if (adc->dma_chan)
-> +	if (adc->dma_chan) {
->  		dmaengine_terminate_all(adc->dma_chan);
-> +		irq_work_sync(&adc->work);
-> +	}
->  
->  	if (stm32_adc_set_trig(indio_dev, NULL))
->  		dev_err(&indio_dev->dev, "Can't clear trigger\n");
-> @@ -1872,6 +1898,8 @@ static int stm32_adc_dma_request(struct iio_dev *indio_dev)
->  	if (ret)
->  		goto err_free;
->  
-> +	init_irq_work(&adc->work, stm32_adc_dma_irq_work);
+> +#ifndef _DT_BINDINGS_TEMPERATURE_THERMOCOUPLE_H
+> +#define _DT_BINDINGS_TEMPERATURE_THERMOCOUPLE_H
 > +
->  	return 0;
->  
->  err_free:
+> +
+> +#define THERMOCOUPLE_TYPE_B	0x00
+> +#define THERMOCOUPLE_TYPE_E	0x01
+> +#define THERMOCOUPLE_TYPE_J	0x02
+> +#define THERMOCOUPLE_TYPE_K	0x03
+> +#define THERMOCOUPLE_TYPE_N	0x04
+> +#define THERMOCOUPLE_TYPE_R	0x05
+> +#define THERMOCOUPLE_TYPE_S	0x06
+> +#define THERMOCOUPLE_TYPE_T	0x07
+> +
+> +#endif /* _DT_BINDINGS_TEMPERATURE_THERMOCOUPLE_H */
 
