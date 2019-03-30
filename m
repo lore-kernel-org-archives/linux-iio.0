@@ -2,59 +2,55 @@ Return-Path: <SRS0=wc2U=SB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD38C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:29:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D492C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:36:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D446D218A3
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:29:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 455FE218A3
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:36:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553970572;
-	bh=Hf07yBfKV+VMAzF72oJijpYa3GZZ9YA60WKOdiJ2cdQ=;
+	s=default; t=1553970977;
+	bh=ycL/FmvTFv31dFiOYMFqKEzYgUmDeDoDHFggDEipugA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=WlJ5o/Hpra1GJwCvozoh3SqJBEgC6RyuPYEC/SDEhUragf4YdhLZP5wvWxLejEXZe
-	 QlfNbspnSeqrBQP7PwvjGikDIwewzF4RP/8H3SfBebGj4pbK/x8sD2fRMZ2gGNzvFz
-	 CD8/vEvWP+aunpDskKwmfESvV29x+EamZQxDDAII=
+	b=GzOdwFfrYHU0Hr/Ip1opAGINnJpVz9BSbFmmi1rzxKdfhD6CX+JwAVzonn9zur2MN
+	 Yxu+yfiHgVHayGXdynkVKG4ZuRtzP1AWpO1afR4rMYAAoqY7/+kbwbLte0k/SNmS3m
+	 IFK08TELZxDqx0zhSza7Khg4xMmYo5TMyMasGYLw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730638AbfC3S3b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Mar 2019 14:29:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57462 "EHLO mail.kernel.org"
+        id S1730725AbfC3SgL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 14:36:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33714 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730203AbfC3S3b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Mar 2019 14:29:31 -0400
+        id S1730619AbfC3SgL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Mar 2019 14:36:11 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A50222082C;
-        Sat, 30 Mar 2019 18:29:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9BABA2082C;
+        Sat, 30 Mar 2019 18:36:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553970569;
-        bh=Hf07yBfKV+VMAzF72oJijpYa3GZZ9YA60WKOdiJ2cdQ=;
+        s=default; t=1553970970;
+        bh=ycL/FmvTFv31dFiOYMFqKEzYgUmDeDoDHFggDEipugA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=p/V0y1zOwnyq6vfmiNL6M5PGczu53Rg2KQgGKUHst9gvWHMEtvM/Kw+kNAU/t8oFh
-         ti5SLCZp2ZjueAb3lEow6N4JM4VOvv7HF52qqxCa5Ep00nu9lVyZZB9L16YWHPmR/D
-         hodx9vmK3KgMM88gWc8pPbM3FNx05GC32HKybngI=
-Date:   Sat, 30 Mar 2019 18:29:23 +0000
+        b=zlt/v5ibXSjFpchuLpB73RkXRco8CF92/sIL6QbT2ofzA/AJdgv3oMRGQvEFy5cDk
+         MU95b5/5ztMeH/NUYMwkKnv6QYgzkl3Aj+HkACges0vyjlxKGorp/nLeMp/Wh+boiC
+         nomLtUrWDlLaEOIXJDAs7htf5HyKUqOZf4NX+iDQ=
+Date:   Sat, 30 Mar 2019 18:36:03 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     stevemo@skydio.com
-Cc:     gaireg@gaireg.de, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Martin Kelly <mkelly@xevo.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Brian Masney <masneyb@onstation.org>,
-        Rob Herring <robh@kernel.org>,
-        Douglas Fischer <fischerdouglasc@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Randolph =?UTF-8?B?TWFhw59lbg==?= <gaireg@gaireg.de>
-Subject: Re: [PATCH] iio: imu: mpu6050: Fix FIFO layout for ICM20602
-Message-ID: <20190330182923.549949d5@archlinux>
-In-Reply-To: <20190326090238.23651-1-stevemo@skydio.com>
-References: <20190326090238.23651-1-stevemo@skydio.com>
+To:     Shinji Kanematsu <kanematsu.shinji@socionext.com>
+Cc:     robh+dt@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        masami.hiramatsu@linaro.org, jaswinder.singh@linaro.org,
+        orito.takao@socionext.com, sugaya.taichi@socionext.com,
+        kasai.kazuhiro@socionext.com,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: Re: [PATCH 0/2] Add Updown Counter support for Milbeaut M10V SoC
+Message-ID: <20190330183603.55886d4f@archlinux>
+In-Reply-To: <1553581954-13487-1-git-send-email-kanematsu.shinji@socionext.com>
+References: <1553581954-13487-1-git-send-email-kanematsu.shinji@socionext.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,194 +60,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 26 Mar 2019 02:01:45 -0700
-stevemo@skydio.com wrote:
-+CC Randolph, who I think introduced the support.
+On Tue, 26 Mar 2019 15:32:34 +0900
+Shinji Kanematsu <kanematsu.shinji@socionext.com> wrote:
 
-> From: Steve Moskovchenko <stevemo@skydio.com>
+> This is a series of patch which adds Updown Counter support on
+> Milbeaut M10V SoC.
 > 
-> The MPU6050 driver has recently gained support for the
-> ICM20602 IMU, which is very similar to MPU6xxx. However,
-> the ICM20602's Gyro data specifically includes temperature
-> readings, which were not present on MPU6xxx parts. As a
-> result, the driver will under-read the ICM20602's FIFO
-> register, causing the same (partial) sample to be returned
-> for all reads, until the FIFO overflows.
-> 
-> Fix this by adding a table of scan elements speciically for
-> the ICM20602, which takes the extra temperature data into
-> consideration.
-> 
-> While we're at it, fix the temperature offset and scaling
-> on ICM20602, since it uses different scale/offset constants
-> than the rest of the MPU6xxx devices.
-> 
-> Signed-off-by: Steve Moskovchenko <stevemo@skydio.com>
-Hi Steve
+> The Updown Counter counts input pulse signal from external quadrature encoder.
+> It also has input pulse signal counter function.
+Hi Shinji,
 
-This all looks sensible to me.  Ideally should have had a fixes tag.
+Are you aware of the counter subsystem that has been proposed (and
+as far as I am concerned is ready to be merged)?
 
-If no one shouts in the next few days I'll pick this up and add one.
-Give me a poke if I seem to have forgotten it in a week or so.
+https://patchwork.kernel.org/project/linux-iio/list/?series=147
+(I think that's the latest version posted)..
+William, perhaps you could give an update?
+
+(bad luck, you are getting popular ;)
+
+I'll take a quick review as it stands, as some issues may carry over.
+I appreciate that it's always unfortunate to try to upstream stuff at the
+same time as a new framework is being developed / upstreamed, but I don't
+intend to take any additional counter drivers into IIO.  We just
+end up having to maintain old interfaces in more and more drivers.
 
 Thanks,
 
 Jonathan
 
-
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++++++++++--
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 20 +++++++++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c |  8 +++-
->  3 files changed, 67 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 650de0fefb7b..fedd3f2b0135 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -471,7 +471,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		case IIO_TEMP:
->  			*val = 0;
-> -			*val2 = INV_MPU6050_TEMP_SCALE;
-> +			if (st->chip_type == INV_ICM20602)
-> +				*val2 = INV_ICM20602_TEMP_SCALE;
-> +			else
-> +				*val2 = INV_MPU6050_TEMP_SCALE;
->  
->  			return IIO_VAL_INT_PLUS_MICRO;
->  		default:
-> @@ -480,7 +483,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_OFFSET:
->  		switch (chan->type) {
->  		case IIO_TEMP:
-> -			*val = INV_MPU6050_TEMP_OFFSET;
-> +			if (st->chip_type == INV_ICM20602)
-> +				*val = INV_ICM20602_TEMP_OFFSET;
-> +			else
-> +				*val = INV_MPU6050_TEMP_OFFSET;
->  
->  			return IIO_VAL_INT;
->  		default:
-> @@ -845,6 +851,32 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
->  	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_SCAN_ACCL_Z),
->  };
->  
-> +static const struct iio_chan_spec inv_icm20602_channels[] = {
-> +	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP),
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
-> +				| BIT(IIO_CHAN_INFO_OFFSET)
-> +				| BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = INV_ICM20602_SCAN_GYRO_TEMP,
-> +		.scan_type = {
-> +				.sign = 's',
-> +				.realbits = 16,
-> +				.storagebits = 16,
-> +				.shift = 0,
-> +				.endianness = IIO_BE,
-> +			     },
-> +	},
-> +
-> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_ICM20602_SCAN_GYRO_X),
-> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Y, INV_ICM20602_SCAN_GYRO_Y),
-> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Z, INV_ICM20602_SCAN_GYRO_Z),
-> +
-> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Y, INV_ICM20602_SCAN_ACCL_Y),
-> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_X, INV_ICM20602_SCAN_ACCL_X),
-> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_ICM20602_SCAN_ACCL_Z),
-> +};
-> +
->  /*
->   * The user can choose any frequency between INV_MPU6050_MIN_FIFO_RATE and
->   * INV_MPU6050_MAX_FIFO_RATE, but only these frequencies are matched by the
-> @@ -1100,8 +1132,14 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
->  		indio_dev->name = name;
->  	else
->  		indio_dev->name = dev_name(dev);
-> -	indio_dev->channels = inv_mpu_channels;
-> -	indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
-> +
-> +	if (chip_type == INV_ICM20602) {
-> +		indio_dev->channels = inv_icm20602_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(inv_icm20602_channels);
-> +	} else {
-> +		indio_dev->channels = inv_mpu_channels;
-> +		indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
-> +	}
->  
->  	indio_dev->info = &mpu_info;
->  	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index 325afd9f5f61..eb04391feaa8 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -208,6 +208,9 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_BYTES_PER_3AXIS_SENSOR   6
->  #define INV_MPU6050_FIFO_COUNT_BYTE          2
->  
-> +/* ICM20602 gyro data includes temperature */
-> +#define INV_ICM20602_BYTES_PER_GYRO_SENSOR   8
-> +
->  /* mpu6500 registers */
->  #define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
->  #define INV_MPU6500_REG_ACCEL_OFFSET        0x77
-> @@ -229,6 +232,9 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_GYRO_CONFIG_FSR_SHIFT    3
->  #define INV_MPU6050_ACCL_CONFIG_FSR_SHIFT    3
->  
-> +#define INV_ICM20602_TEMP_OFFSET	     8170
-> +#define INV_ICM20602_TEMP_SCALE		     3060
-> +
->  /* 6 + 6 round up and plus 8 */
->  #define INV_MPU6050_OUTPUT_DATA_SIZE         24
->  
-> @@ -270,7 +276,7 @@ struct inv_mpu6050_state {
->  #define INV_ICM20608_WHOAMI_VALUE		0xAF
->  #define INV_ICM20602_WHOAMI_VALUE		0x12
->  
-> -/* scan element definition */
-> +/* scan element definition for generic MPU6xxx devices */
->  enum inv_mpu6050_scan {
->  	INV_MPU6050_SCAN_ACCL_X,
->  	INV_MPU6050_SCAN_ACCL_Y,
-> @@ -281,6 +287,18 @@ enum inv_mpu6050_scan {
->  	INV_MPU6050_SCAN_TIMESTAMP,
->  };
->  
-> +/* scan element definition for ICM20602, which includes gyro temp */
-> +enum inv_icm20602_scan {
-> +	INV_ICM20602_SCAN_ACCL_X,
-> +	INV_ICM20602_SCAN_ACCL_Y,
-> +	INV_ICM20602_SCAN_ACCL_Z,
-> +	INV_ICM20602_SCAN_GYRO_TEMP,
-> +	INV_ICM20602_SCAN_GYRO_X,
-> +	INV_ICM20602_SCAN_GYRO_Y,
-> +	INV_ICM20602_SCAN_GYRO_Z,
-> +	INV_ICM20602_SCAN_TIMESTAMP,
-> +};
-> +
->  enum inv_mpu6050_filter_e {
->  	INV_MPU6050_FILTER_256HZ_NOLPF2 = 0,
->  	INV_MPU6050_FILTER_188HZ,
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> index 548e042f7b5b..20828d6a13f9 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-> @@ -204,8 +204,12 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
->  	if (st->chip_config.accl_fifo_enable)
->  		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
->  
-> -	if (st->chip_config.gyro_fifo_enable)
-> -		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
-> +	if (st->chip_config.gyro_fifo_enable) {
-> +		if (st->chip_type == INV_ICM20602)
-> +			bytes_per_datum += INV_ICM20602_BYTES_PER_GYRO_SENSOR;
-> +		else
-> +			bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
-> +	}
->  
->  	/*
->  	 * read fifo_count register to know how many bytes are inside the FIFO
+> Shinji Kanematsu (2):
+>   dt-bindings: iio: counter: Add Milbeaut Updown Counter
+>   iio: counter: Add support for Milbeaut Updown Counter
+> 
+>  .../bindings/iio/counter/milbeaut-updown_cnt.txt   |  22 ++
+>  drivers/iio/counter/Kconfig                        |  12 +
+>  drivers/iio/counter/Makefile                       |   1 +
+>  drivers/iio/counter/milbeaut-updown.h              |  38 ++
+>  drivers/iio/counter/milbeaut-updown_cnt.c          | 385 +++++++++++++++++++++
+>  5 files changed, 458 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
+>  create mode 100644 drivers/iio/counter/milbeaut-updown.h
+>  create mode 100644 drivers/iio/counter/milbeaut-updown_cnt.c
+> 
 
