@@ -1,135 +1,146 @@
-Return-Path: <SRS0=Xjfk=SA=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=wc2U=SB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_PASS,USER_IN_DEF_DKIM_WL autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6871FC43381
-	for <linux-iio@archiver.kernel.org>; Fri, 29 Mar 2019 23:38:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51967C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 14:43:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 37ABD2173C
-	for <linux-iio@archiver.kernel.org>; Fri, 29 Mar 2019 23:38:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="nY8WajU8"
+	by mail.kernel.org (Postfix) with ESMTP id 19CDD218D8
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 14:43:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1553957025;
+	bh=wp9S2ftnE76F5P4cBeAOxHCls5MzvF7w/Gz9WPjdNg4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=OkBrTa7lIAR9y2aK++bb7R118q0Xrxu/mXmLpKTJeBS+8w9p9SXEtPnd5mfO2cJqj
+	 Pc2fO5FJ5qGNOnPItph8Kf3owgUn2CLQRNOFihPjvzcp22bh8m8fInfuX7Qh5CNJLK
+	 aK/g1u1CsSjl1llcviyjpHiQV0ag7GnchWF+MZ5s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730193AbfC2Xil (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 29 Mar 2019 19:38:41 -0400
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:42703 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730129AbfC2Xik (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Mar 2019 19:38:40 -0400
-Received: by mail-yw1-f66.google.com with SMTP id e76so1280393ywa.9
-        for <linux-iio@vger.kernel.org>; Fri, 29 Mar 2019 16:38:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=google.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Nnb+XafWAfVJKrtndiqrDclyjb/IXt0OS6W78ORcL2A=;
-        b=nY8WajU8pkkwTnMD8LB4tCEhJK8DkLrd6equEWp/Z8XEl+7K/xoMGti7j0FNHard5+
-         ibnxfKGpFEdg56y8XekMkUkxQVItgRZYQtOIBoKob1yP2OosGGoVPplwM/LyU+274GMj
-         fj9ERu5dt7KxuTJwl2sKD96vIqN8GodL+Ilb98tjBFHzrR3lY9ES1gkIX9k8WQk/dkIM
-         v6hIJyWbsR5l0DyJFpFWswclCs9yHJFMb9gyNRQMpptRpWgyD2EMJiXhIh5HXVUHSiki
-         I8XxfW5GMXFgA6wHcUlukOdoGDo0ihnN45STmBs6kV3hKZF3C8arcM6bBcIPGi9m+Kaj
-         K/6g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Nnb+XafWAfVJKrtndiqrDclyjb/IXt0OS6W78ORcL2A=;
-        b=gffFURq6DiWXKB1XR4luqMcZWLlI+Tnanq1fxV3/NZUmEwTVV5SHASTcP5DT1G2z+K
-         iOYXUwTQHo6M0PpwYSgyLv029Mx54Flt8QoRmjgilQxaeFiiAzNiXmICDM0kPSgALu7k
-         3yxcWMquqq/7bX2JRzmuttW/3LUWpVuBa01QLYMn7SnpPdqwLh4WIrK2wizZI1RPM1jr
-         xuDWExkTvuq/3iu0ZOxORFxBQNzC1Ioq3WfmUufJn58VuRd57WdtGhJsMfWQy6Odngms
-         EOfErDzKkZnjBssHeYnAdY+Jo5VXXgjg/2GEwiHYwiYUjEwOr/IQvypJj18rg2F8Iffz
-         jvOA==
-X-Gm-Message-State: APjAAAVNvACqUhBDHR/o97C9GaKhfDhaSnXFkZ2TxiaALo+YSNjSjRid
-        gE1wLK6n0iAPoM8lgtvRXe9FpCKHMgH61UtAfsL03Q==
-X-Google-Smtp-Source: APXvYqwFESLtmgIfyHZ3sOQOYxP91zRwUR2WKFmi5qJPWcSCcLDZ/yZWVSyYqe46cmamYO17aRyIX1PgYlyAeZt4F2Y=
-X-Received: by 2002:a81:3d17:: with SMTP id k23mr43729341ywa.266.1553902719933;
- Fri, 29 Mar 2019 16:38:39 -0700 (PDT)
-MIME-Version: 1.0
-References: <CAPUE2uskDvefZbt5Ydz8Eu3+Aavu+AzPY5WuAYj0ziYP373oRA@mail.gmail.com>
- <CAPUE2uu5SyVevcWbxc7B6Tf1jTOCmYBgfWsgZJBDLC4xf=rQ_A@mail.gmail.com>
- <CABXOdTfZNKEEC6a5-L9-cajvavXSk9jSMPU1-YdSYDgFYSjyiw@mail.gmail.com> <CAPUE2ut3vNioD-CbmZUqF5Pa3Y8KhBYu+N_SVEEJ5tOsJL6BLA@mail.gmail.com>
-In-Reply-To: <CAPUE2ut3vNioD-CbmZUqF5Pa3Y8KhBYu+N_SVEEJ5tOsJL6BLA@mail.gmail.com>
-From:   Guenter Roeck <groeck@google.com>
-Date:   Fri, 29 Mar 2019 16:38:28 -0700
-Message-ID: <CABXOdTfyj7Fi6HxEbsTSRjymhB73=_UNkHeKS2a-GhGHa7PvcQ@mail.gmail.com>
-Subject: Re: [PATCH v5] iio: cros_ec: Add lid angle driver
+        id S1730849AbfC3Ono (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 10:43:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53054 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730415AbfC3Ono (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Mar 2019 10:43:44 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 14357218A3;
+        Sat, 30 Mar 2019 14:43:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1553957022;
+        bh=wp9S2ftnE76F5P4cBeAOxHCls5MzvF7w/Gz9WPjdNg4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q9aDCRxYEj552/6eEXZjZDem0cUKHZV5oRBZTRkDbZuVftxPWWmFTlxzZ8PjqtlS3
+         1H+Za4N0JqZsRvvPPuJPs48m+lxdGeP9nObkfks7GODmMqG+sIYpbN/UuWwDA/KrSY
+         kD0yxQ42uLu24d5EmOhXEqB2aiG8yJMZwOwWsoI8=
+Date:   Sat, 30 Mar 2019 14:43:36 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
 To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     enric.balletbo@collabora.com, bleung@chromium.org,
+        groeck@chromium.org, lee.jones@linaro.org, broonie@kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH 3/3] mfd: cros: Update EC to use BIT() and merge
+Message-ID: <20190330144336.5fd8b9a0@archlinux>
+In-Reply-To: <CAPUE2uuh2TvUiQCuG7KzQ=GD5Gm3C5ZbfZ42J0__H2R6yD1j9Q@mail.gmail.com>
+References: <CAPUE2uti=fketJ4vJw34et_y9L_gsEUwXNDdjg0sG8Z27ir1Hg@mail.gmail.com>
+        <20190329175628.31481-1-gwendal@chromium.org>
+        <CAPUE2uuh2TvUiQCuG7KzQ=GD5Gm3C5ZbfZ42J0__H2R6yD1j9Q@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Mar 29, 2019 at 3:37 PM Gwendal Grignou <gwendal@chromium.org> wrote:
->
-> On Fri, Mar 29, 2019 at 1:17 PM Guenter Roeck <groeck@google.com> wrote:
-> >
-> > On Fri, Mar 29, 2019 at 1:08 PM Gwendal Grignou <gwendal@chromium.org> wrote:
-> > >
-> > > Add a IIO driver that reports the angle between the lid and the base for
-> > > ChromeOS convertible device.
-> ...
-> > > --- a/drivers/mfd/cros_ec_dev.c
-> > > +++ b/drivers/mfd/cros_ec_dev.c
-> > > @@ -297,13 +297,15 @@ static void cros_ec_sensors_register(struct
-> > > cros_ec_dev *ec)
-> > >
-> > >         resp = (struct ec_response_motion_sense *)msg->data;
-> > >         sensor_num = resp->dump.sensor_count;
-> > > -       /* Allocate 1 extra sensors in FIFO are needed */
-> > > -       sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
-> > > +       /*
-> > > +        * Allocate 2 extra sensors if lid angle sensor and/or FIFO are needed.
-> > > +        */
-> > > +       sensor_cells = kcalloc(sensor_num + 2, sizeof(struct mfd_cell),
-> > >                                GFP_KERNEL);
-> > >         if (sensor_cells == NULL)
-> > >                 goto error;
-> > >
-> > > -       sensor_platforms = kcalloc(sensor_num + 1,
-> > > +       sensor_platforms = kcalloc(sensor_num,
-> >
-> > I still don't understand why the "+ 1" is no longer needed. It seems
-> > to me that it would have to change to "+ 2".
-> "+1" was never needed to begin with FIFO device will never use a
-> struct cros_ec_sensor_platform. I mentioned it earlier:
-> https://www.spinics.net/lists/linux-iio/msg43157.html
->
-Ah yes, now I see. Thanks, and sorry for the noise.
+On Fri, 29 Mar 2019 10:56:37 -0700
+Gwendal Grignou <gwendal@chromium.org> wrote:
 
-Guenter
+What is "and merge" referring to in the title?
 
-> Gwendal.
-> >
-> > Guenter
-> >
-> > >                                    sizeof(struct cros_ec_sensor_platform),
-> > >                                    GFP_KERNEL);
-> > >         if (sensor_platforms == NULL)
-> > > @@ -363,6 +365,11 @@ static void cros_ec_sensors_register(struct
-> > > cros_ec_dev *ec)
-> > >                 sensor_cells[id].name = "cros-ec-ring";
-> > >                 id++;
-> > >         }
-> > > +       if (cros_ec_check_features(ec,
-> > > +                               EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
-> > > +               sensor_cells[id].name = "cros-ec-lid-angle";
-> > > +               id++;
-> > > +       }
-> > >
-> > >         ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
-> > >                               NULL, 0, NULL);
-> > > --
-> > > 2.21.0.360.g471c308f928-goog
+> Instead of using 1 << ..., use BIT() cleaner and safer.
+> Fix minor fixes since major cros_ec_commands.h cleanup was uploaded.
+> 
+> TEST=compile.
+
+Personally I'd prefer this is a a couple of patches as several
+different changes going on.
+
+A few minor comments below.
+
+> 
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> ---
+>  include/linux/mfd/cros_ec_commands.h | 268 ++++++++++++++-------------
+>  1 file changed, 143 insertions(+), 125 deletions(-)
+> 
+> diff --git a/include/linux/mfd/cros_ec_commands.h
+> b/include/linux/mfd/cros_ec_commands.h
+> index ea25e1644d23..5c4764e3db6f 100644
+> --- a/include/linux/mfd/cros_ec_commands.h
+> +++ b/include/linux/mfd/cros_ec_commands.h
+> @@ -46,7 +46,7 @@ extern "C"{
+>  #define EC_PROTO_VERSION          0x00000002
+...
+> 
+>  /**
+>   * struct ec_response_get_protocol_info - Response to the get protocol info.
+> @@ -1347,12 +1347,12 @@ enum ec_feature_code {
+>  	EC_FEATURE_AUDIO_CODEC = 38,
+>  	/* EC Supports SCP. */
+>  	EC_FEATURE_SCP = 39,
+> -	/* The MCU is Intel Integrated Sensor Hub */
+> +	/* The MCU is an Integrated Sensor Hub */
+
+Unrelated from the other changes so I'd like to see it in a separate
+patch.
+
+>  	EC_FEATURE_ISH = 40,
+>  };
+...
+>  enum ec_led_colors {
+>  	EC_LED_COLOR_RED = 0,
+> @@ -2438,6 +2438,7 @@ enum motionsensor_chip {
+>  	MOTIONSENSE_CHIP_LIS2DE = 15,
+>  	MOTIONSENSE_CHIP_LIS2MDL = 16,
+>  	MOTIONSENSE_CHIP_LSM6DS3 = 17,
+> +	MOTIONSENSE_CHIP_LSM6DSO = 18,
+
+Why is this here?
+
+>  	MOTIONSENSE_CHIP_MAX,
+>  };
+> 
+...
+> 
+>  enum mkbp_config_valid {
+Bit odd that this was an enum in the first place..
+
+I checked and it doesn't seem that the type is used anywhere,
+so I would just make this set of defines.
+
+> -	EC_MKBP_VALID_SCAN_PERIOD		= 1 << 0,
+> -	EC_MKBP_VALID_POLL_TIMEOUT		= 1 << 1,
+> -	EC_MKBP_VALID_MIN_POST_SCAN_DELAY	= 1 << 3,
+> -	EC_MKBP_VALID_OUTPUT_SETTLE		= 1 << 4,
+> -	EC_MKBP_VALID_DEBOUNCE_DOWN		= 1 << 5,
+> -	EC_MKBP_VALID_DEBOUNCE_UP		= 1 << 6,
+> -	EC_MKBP_VALID_FIFO_MAX_DEPTH		= 1 << 7,
+> +	EC_MKBP_VALID_SCAN_PERIOD		= BIT(0),
+> +	EC_MKBP_VALID_POLL_TIMEOUT		= BIT(1),
+> +	EC_MKBP_VALID_MIN_POST_SCAN_DELAY	= BIT(3),
+> +	EC_MKBP_VALID_OUTPUT_SETTLE		= BIT(4),
+> +	EC_MKBP_VALID_DEBOUNCE_DOWN		= BIT(5),
+> +	EC_MKBP_VALID_DEBOUNCE_UP		= BIT(6),
+> +	EC_MKBP_VALID_FIFO_MAX_DEPTH		= BIT(7),
+>  };
+> 
+...
+
+
