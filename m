@@ -4,50 +4,57 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A921CC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 17:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BD38C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:29:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 76506218D8
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 17:56:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D446D218A3
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 18:29:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553968572;
-	bh=4yr/hBFGcmKSZ0eYDV1mQjICKnix+bkiI+rTtu9Pxi4=;
+	s=default; t=1553970572;
+	bh=Hf07yBfKV+VMAzF72oJijpYa3GZZ9YA60WKOdiJ2cdQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=kqnORecnH/OxJN2kmJ95Uau2AXq8ve+QWrvA6VW0CJUzB026z+rzzLsILyln2GQwo
-	 RObepBj/GfYZvIgK6QcfQ2gkehPMjXXbfRkMbx6SHBYQ1R5GbxY7G1puOA8acTTX0Z
-	 6W9yOj7JSU0U2UKnsjLYp2gYjOeGZhJZ5vQGZScE=
+	b=WlJ5o/Hpra1GJwCvozoh3SqJBEgC6RyuPYEC/SDEhUragf4YdhLZP5wvWxLejEXZe
+	 QlfNbspnSeqrBQP7PwvjGikDIwewzF4RP/8H3SfBebGj4pbK/x8sD2fRMZ2gGNzvFz
+	 CD8/vEvWP+aunpDskKwmfESvV29x+EamZQxDDAII=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730589AbfC3R4M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Mar 2019 13:56:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44544 "EHLO mail.kernel.org"
+        id S1730638AbfC3S3b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 14:29:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57462 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730497AbfC3R4L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Mar 2019 13:56:11 -0400
+        id S1730203AbfC3S3b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Mar 2019 14:29:31 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 13CBA2075E;
-        Sat, 30 Mar 2019 17:56:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A50222082C;
+        Sat, 30 Mar 2019 18:29:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553968571;
-        bh=4yr/hBFGcmKSZ0eYDV1mQjICKnix+bkiI+rTtu9Pxi4=;
+        s=default; t=1553970569;
+        bh=Hf07yBfKV+VMAzF72oJijpYa3GZZ9YA60WKOdiJ2cdQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=krprgiSkuDCNiF84K93QkMAMLnXiW7BoVY7o2thQryqWZq5+atSP/DI7GEwMgV84J
-         4x6rtN4pOk9gRQXb9P0vhkNo9WfVn6UjX9TlFu/cF2Ek2+zqJmEC1le8v8TppIICF1
-         SQ1m7XE/sN6zd2xBelQrvOHGgFbr7sA2Mt9sLKAU=
-Date:   Sat, 30 Mar 2019 17:56:05 +0000
+        b=p/V0y1zOwnyq6vfmiNL6M5PGczu53Rg2KQgGKUHst9gvWHMEtvM/Kw+kNAU/t8oFh
+         ti5SLCZp2ZjueAb3lEow6N4JM4VOvv7HF52qqxCa5Ep00nu9lVyZZB9L16YWHPmR/D
+         hodx9vmK3KgMM88gWc8pPbM3FNx05GC32HKybngI=
+Date:   Sat, 30 Mar 2019 18:29:23 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Stefan Popa <stefan.popa@analog.com>
-Cc:     <Michael.Hennerich@analog.com>, <davem@davemloft.net>,
-        <mchehab+samsung@kernel.org>, <gregkh@linuxfoundation.org>,
-        <robh@kernel.org>, <joe@perches.com>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v2] MAINTAINERS: Fix the link to ad7606 dt-bindings
-Message-ID: <20190330175605.328742d9@archlinux>
-In-Reply-To: <1553597992-31693-1-git-send-email-stefan.popa@analog.com>
-References: <1553597992-31693-1-git-send-email-stefan.popa@analog.com>
+To:     stevemo@skydio.com
+Cc:     gaireg@gaireg.de, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Martin Kelly <mkelly@xevo.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Brian Masney <masneyb@onstation.org>,
+        Rob Herring <robh@kernel.org>,
+        Douglas Fischer <fischerdouglasc@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Randolph =?UTF-8?B?TWFhw59lbg==?= <gaireg@gaireg.de>
+Subject: Re: [PATCH] iio: imu: mpu6050: Fix FIFO layout for ICM20602
+Message-ID: <20190330182923.549949d5@archlinux>
+In-Reply-To: <20190326090238.23651-1-stevemo@skydio.com>
+References: <20190326090238.23651-1-stevemo@skydio.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,39 +64,194 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 26 Mar 2019 12:59:52 +0200
-Stefan Popa <stefan.popa@analog.com> wrote:
+On Tue, 26 Mar 2019 02:01:45 -0700
+stevemo@skydio.com wrote:
++CC Randolph, who I think introduced the support.
 
-> The devicetree bindings documentation for ad7606 should also include
-> the vendor prefix: ad7606.txt -> adi,ad7606.txt
+> From: Steve Moskovchenko <stevemo@skydio.com>
 > 
-> Fixes: 6e33a125df66 ("dt-bindings: iio: adc: Add docs for AD7606 ADC")
-> Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+> The MPU6050 driver has recently gained support for the
+> ICM20602 IMU, which is very similar to MPU6xxx. However,
+> the ICM20602's Gyro data specifically includes temperature
+> readings, which were not present on MPU6xxx parts. As a
+> result, the driver will under-read the ICM20602's FIFO
+> register, causing the same (partial) sample to be returned
+> for all reads, until the FIFO overflows.
+> 
+> Fix this by adding a table of scan elements speciically for
+> the ICM20602, which takes the extra temperature data into
+> consideration.
+> 
+> While we're at it, fix the temperature offset and scaling
+> on ICM20602, since it uses different scale/offset constants
+> than the rest of the MPU6xxx devices.
+> 
+> Signed-off-by: Steve Moskovchenko <stevemo@skydio.com>
+Hi Steve
+
+This all looks sensible to me.  Ideally should have had a fixes tag.
+
+If no one shouts in the next few days I'll pick this up and add one.
+Give me a poke if I seem to have forgotten it in a week or so.
 
 Thanks,
 
 Jonathan
 
+
 > ---
-> Changes in v2:
-> 	- Added Fixes tag
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++++++++++--
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 20 +++++++++-
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c |  8 +++-
+>  3 files changed, 67 insertions(+), 7 deletions(-)
 > 
->  MAINTAINERS | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index ff2c2f2..4f81cdc 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -860,7 +860,7 @@ L:	linux-iio@vger.kernel.org
->  W:	http://ez.analog.com/community/linux-device-drivers
->  S:	Supported
->  F:	drivers/iio/adc/ad7606.c
-> -F:	Documentation/devicetree/bindings/iio/adc/ad7606.txt
-> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.txt
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> index 650de0fefb7b..fedd3f2b0135 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+> @@ -471,7 +471,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		case IIO_TEMP:
+>  			*val = 0;
+> -			*val2 = INV_MPU6050_TEMP_SCALE;
+> +			if (st->chip_type == INV_ICM20602)
+> +				*val2 = INV_ICM20602_TEMP_SCALE;
+> +			else
+> +				*val2 = INV_MPU6050_TEMP_SCALE;
 >  
->  ANALOG DEVICES INC AD7768-1 DRIVER
->  M:	Stefan Popa <stefan.popa@analog.com>
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		default:
+> @@ -480,7 +483,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_OFFSET:
+>  		switch (chan->type) {
+>  		case IIO_TEMP:
+> -			*val = INV_MPU6050_TEMP_OFFSET;
+> +			if (st->chip_type == INV_ICM20602)
+> +				*val = INV_ICM20602_TEMP_OFFSET;
+> +			else
+> +				*val = INV_MPU6050_TEMP_OFFSET;
+>  
+>  			return IIO_VAL_INT;
+>  		default:
+> @@ -845,6 +851,32 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
+>  	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_SCAN_ACCL_Z),
+>  };
+>  
+> +static const struct iio_chan_spec inv_icm20602_channels[] = {
+> +	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP),
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+> +				| BIT(IIO_CHAN_INFO_OFFSET)
+> +				| BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = INV_ICM20602_SCAN_GYRO_TEMP,
+> +		.scan_type = {
+> +				.sign = 's',
+> +				.realbits = 16,
+> +				.storagebits = 16,
+> +				.shift = 0,
+> +				.endianness = IIO_BE,
+> +			     },
+> +	},
+> +
+> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_ICM20602_SCAN_GYRO_X),
+> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Y, INV_ICM20602_SCAN_GYRO_Y),
+> +	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Z, INV_ICM20602_SCAN_GYRO_Z),
+> +
+> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Y, INV_ICM20602_SCAN_ACCL_Y),
+> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_X, INV_ICM20602_SCAN_ACCL_X),
+> +	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_ICM20602_SCAN_ACCL_Z),
+> +};
+> +
+>  /*
+>   * The user can choose any frequency between INV_MPU6050_MIN_FIFO_RATE and
+>   * INV_MPU6050_MAX_FIFO_RATE, but only these frequencies are matched by the
+> @@ -1100,8 +1132,14 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+>  		indio_dev->name = name;
+>  	else
+>  		indio_dev->name = dev_name(dev);
+> -	indio_dev->channels = inv_mpu_channels;
+> -	indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
+> +
+> +	if (chip_type == INV_ICM20602) {
+> +		indio_dev->channels = inv_icm20602_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(inv_icm20602_channels);
+> +	} else {
+> +		indio_dev->channels = inv_mpu_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
+> +	}
+>  
+>  	indio_dev->info = &mpu_info;
+>  	indio_dev->modes = INDIO_BUFFER_TRIGGERED;
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> index 325afd9f5f61..eb04391feaa8 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+> @@ -208,6 +208,9 @@ struct inv_mpu6050_state {
+>  #define INV_MPU6050_BYTES_PER_3AXIS_SENSOR   6
+>  #define INV_MPU6050_FIFO_COUNT_BYTE          2
+>  
+> +/* ICM20602 gyro data includes temperature */
+> +#define INV_ICM20602_BYTES_PER_GYRO_SENSOR   8
+> +
+>  /* mpu6500 registers */
+>  #define INV_MPU6500_REG_ACCEL_CONFIG_2      0x1D
+>  #define INV_MPU6500_REG_ACCEL_OFFSET        0x77
+> @@ -229,6 +232,9 @@ struct inv_mpu6050_state {
+>  #define INV_MPU6050_GYRO_CONFIG_FSR_SHIFT    3
+>  #define INV_MPU6050_ACCL_CONFIG_FSR_SHIFT    3
+>  
+> +#define INV_ICM20602_TEMP_OFFSET	     8170
+> +#define INV_ICM20602_TEMP_SCALE		     3060
+> +
+>  /* 6 + 6 round up and plus 8 */
+>  #define INV_MPU6050_OUTPUT_DATA_SIZE         24
+>  
+> @@ -270,7 +276,7 @@ struct inv_mpu6050_state {
+>  #define INV_ICM20608_WHOAMI_VALUE		0xAF
+>  #define INV_ICM20602_WHOAMI_VALUE		0x12
+>  
+> -/* scan element definition */
+> +/* scan element definition for generic MPU6xxx devices */
+>  enum inv_mpu6050_scan {
+>  	INV_MPU6050_SCAN_ACCL_X,
+>  	INV_MPU6050_SCAN_ACCL_Y,
+> @@ -281,6 +287,18 @@ enum inv_mpu6050_scan {
+>  	INV_MPU6050_SCAN_TIMESTAMP,
+>  };
+>  
+> +/* scan element definition for ICM20602, which includes gyro temp */
+> +enum inv_icm20602_scan {
+> +	INV_ICM20602_SCAN_ACCL_X,
+> +	INV_ICM20602_SCAN_ACCL_Y,
+> +	INV_ICM20602_SCAN_ACCL_Z,
+> +	INV_ICM20602_SCAN_GYRO_TEMP,
+> +	INV_ICM20602_SCAN_GYRO_X,
+> +	INV_ICM20602_SCAN_GYRO_Y,
+> +	INV_ICM20602_SCAN_GYRO_Z,
+> +	INV_ICM20602_SCAN_TIMESTAMP,
+> +};
+> +
+>  enum inv_mpu6050_filter_e {
+>  	INV_MPU6050_FILTER_256HZ_NOLPF2 = 0,
+>  	INV_MPU6050_FILTER_188HZ,
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> index 548e042f7b5b..20828d6a13f9 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> @@ -204,8 +204,12 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+>  	if (st->chip_config.accl_fifo_enable)
+>  		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
+>  
+> -	if (st->chip_config.gyro_fifo_enable)
+> -		bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
+> +	if (st->chip_config.gyro_fifo_enable) {
+> +		if (st->chip_type == INV_ICM20602)
+> +			bytes_per_datum += INV_ICM20602_BYTES_PER_GYRO_SENSOR;
+> +		else
+> +			bytes_per_datum += INV_MPU6050_BYTES_PER_3AXIS_SENSOR;
+> +	}
+>  
+>  	/*
+>  	 * read fifo_count register to know how many bytes are inside the FIFO
 
