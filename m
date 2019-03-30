@@ -2,52 +2,34 @@ Return-Path: <SRS0=wc2U=SB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF93EC43381
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7ACF5C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:04:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 86DE3218A6
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:00:37 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553961637;
-	bh=eT+IBxxuOtf5odYnaiRCWGUJ10aMgQxd0IfF30H/gkk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=qmDyHweT2ENzfxtL2g3lbnmnB1+4DkEAoyj0+KJwFnOa37krl+VkM2clK4c5BWLCx
-	 pvqZka0LGuSAdIaj43H7OrYsJD6zWCVp2280lX/Neb/zcwzb64NH3TtooRWhWw5nF7
-	 4mijjTFZI9nRXFVshNKutk/8zgMJbzIZREbrxW8o=
+	by mail.kernel.org (Postfix) with ESMTP id 4AF142082C
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 16:04:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730558AbfC3QAh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Mar 2019 12:00:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33248 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730532AbfC3QAh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Mar 2019 12:00:37 -0400
+        id S1730597AbfC3QEF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 12:04:05 -0400
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:42394 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730537AbfC3QEF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Mar 2019 12:04:05 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 681D7218A3;
-        Sat, 30 Mar 2019 16:00:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553961635;
-        bh=eT+IBxxuOtf5odYnaiRCWGUJ10aMgQxd0IfF30H/gkk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sZNNC2XDb3akTl3J/S8WXmYKjKfBE+tK1/Y464ImTEMSOVRvaZqnKbrVEyg/LETw0
-         YseEMq0Hotg7+qq7HziOekNYFzshUB9jtGEPT7GZk4tOrNMBHVLz1cdrjZ83H19efC
-         k68D4XOvxfmYjZ50loBmKLV3z4QhwGIXbao9rUeM=
-Date:   Sat, 30 Mar 2019 16:00:30 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/2] iio: Add driver for TLA202x ADCs
-Message-ID: <20190330160030.347e4f6e@archlinux>
-In-Reply-To: <1553608583-29006-1-git-send-email-ibtsam.haq.0x01@gmail.com>
-References: <1553608583-29006-1-git-send-email-ibtsam.haq.0x01@gmail.com>
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 1A7969E6A81;
+        Sat, 30 Mar 2019 16:04:02 +0000 (GMT)
+Date:   Sat, 30 Mar 2019 16:04:00 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH V2] iio: frequency: ad9523: Fix typo in
+ ad9523_platform_data
+Message-ID: <20190330160400.5c70ec5e@archlinux>
+In-Reply-To: <20190326134003.18371-1-alexandru.ardelean@analog.com>
+References: <20190326134003.18371-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,559 +39,97 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 26 Mar 2019 14:56:19 +0100
-Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com> wrote:
+On Tue, 26 Mar 2019 15:40:03 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> Basic driver for Texas Instruments TLA202x series ADCs. Input
-> channels are configurable from the device tree. Input scaling
-> is supported. Trigger buffer support is not yet implemented.
+> From: Lars-Peter Clausen <lars@metafoo.de>
 > 
-> Signed-off-by: Ibtsam Ul-Haq <ibtsam.haq.0x01@gmail.com>
-Down to the nitpicks on this version so should be good for a v4.
+> Replace diff_{m1,m2} with div_{m1,m2} since they are dividers and not a
+> differential settings.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Also probably some minor tweaks needed due to the discussion around
-the dt binding.
+Applied to the togreg branch of iio.git and pushed out as testing
+for no particular reason.
+
+Note that it would be helpful if, when you post a new version of a
+patch despite (I think) no replies to the previous, that you also
+reply to that thread to say there is a v2.  Sometimes I run forwards
+through my emails and would have applied that before seeing this.
+
+Thanks,
 
 Jonathan
 
 > ---
-> Changes in v3:
-> - Added locking when setting SCALE
-> - Removed deep-indented goto in read_raw
-> - Other minor points mentioned in v2 review
-> ---
-> Changes in v2:
-> - changed commit message
-> - Added mutex to protect channel selection
-> - Removed redundant mutex around i2c transfers
-> - Removed PROCESSED channel output
-> - Added SCALE info
-> - Removed Continuous Mode since continuous read not supported
-> - Removed SAMP_FREQ info since continuous read not supported
-> ---
-> ---
->  drivers/iio/adc/Kconfig      |  11 ++
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ti-tla2024.c | 460 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 472 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-tla2024.c
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 5762565..8c214c8 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -816,6 +816,17 @@ config TI_AM335X_ADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called ti_am335x_adc.
+> Changelog v1->v2:
+> * added `frequency:` to prefix for consistency
+> 
+>  drivers/iio/frequency/ad9523.c       | 16 ++++++++--------
+>  include/linux/iio/frequency/ad9523.h |  8 ++++----
+>  2 files changed, 12 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+> index 3f9be69499ec..9b9eee27176c 100644
+> --- a/drivers/iio/frequency/ad9523.c
+> +++ b/drivers/iio/frequency/ad9523.c
+> @@ -872,22 +872,22 @@ static int ad9523_setup(struct iio_dev *indio_dev)
+>  		return ret;
 >  
-> +config TI_TLA2024
-> +	tristate "Texas Instruments TLA2024/TLA2022/TLA2021 ADC driver"
-> +	depends on OF
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for Texas Instruments TLA2024,
-> +	  TLA2022 or TLA2021 I2C Analog to Digital Converters.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ti-tla2024.
-> +
->  config TI_TLC4541
->  	tristate "Texas Instruments TLC4541 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 9874e05..819f35b 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -75,6 +75,7 @@ obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
->  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
-> +obj-$(CONFIG_TI_TLA2024) += ti-tla2024.o
->  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
->  obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
->  obj-$(CONFIG_VF610_ADC) += vf610_adc.o
-> diff --git a/drivers/iio/adc/ti-tla2024.c b/drivers/iio/adc/ti-tla2024.c
-> new file mode 100644
-> index 0000000..f0eed4a
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-tla2024.c
-> @@ -0,0 +1,460 @@
-> +/* SPDX-License-Identifier: GPL-2.0
-> + *
-> + * Texas Instruments TLA2021/TLA2022/TLA2024 12-bit ADC driver
-> + *
-> + * Copyright (C) 2019 Koninklijke Philips N.V.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +
-> +#define TLA2024_DATA 0x00
-> +#define TLA2024_DATA_RES_MASK GENMASK(15, 4)
-> +#define TLA2024_DATA_RES_SHIFT 4
-> +
-> +#define TLA2024_CONF 0x01
-> +#define TLA2024_CONF_OS_MASK BIT(15)
-> +#define TLA2024_CONF_OS_SHIFT 15
-> +#define TLA2024_CONF_MUX_MASK GENMASK(14, 12)
-> +#define TLA2024_CONF_MUX_SHIFT 12
-> +#define TLA2024_CONF_PGA_MASK GENMASK(11, 9)
-> +#define TLA2024_CONF_PGA_SHIFT 9
-> +#define TLA2024_CONF_MODE_MASK BIT(8)
-> +#define TLA2024_CONF_MODE_SHIFT 8
-> +#define TLA2024_CONF_DR_MASK GENMASK(7, 5)
-> +#define TLA2024_CONF_DR_SHIFT 5
-> +
-> +#define TLA2024_CONV_RETRY 10
-> +
-> +struct tla202x_model {
-> +	unsigned int mux_available;
-> +	unsigned int pga_available;
-> +};
-> +
-> +struct tla2024 {
-> +	struct i2c_client *i2c;
-> +	struct tla202x_model *model;
-> +	struct mutex lock;
-> +	u8 used_mux_channels;
-> +};
-> +
-> +struct tla2024_channel {
-> +	int ainp;
-> +	int ainn;
-> +	const char *datasheet_name;
-> +	bool differential;
-> +};
-> +
-> +static const struct tla2024_channel tla2024_all_channels[] = {
-> +	{0, 1, "AIN0-AIN1", 1},
-> +	{0, 3, "AIN0-AIN3", 1},
-> +	{1, 3, "AIN1-AIN3", 1},
-> +	{2, 3, "AIN2-AIN3", 1},
-> +	{0, -1, "AIN0", 0},
-> +	{1, -1, "AIN1", 0},
-> +	{2, -1, "AIN2", 0},
-> +	{3, -1, "AIN3", 0},
-> +};
-> +
-> +static int tla2024_find_chan_idx(u32 ainp_in, u32 ainn_in, u16 *idx)
-> +{
-> +	u16 i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(tla2024_all_channels); i++) {
-> +		if ((tla2024_all_channels[i].ainp == ainp_in) &&
-> +		    (tla2024_all_channels[i].ainn == ainn_in)) {
-> +			*idx = i;
-> +			return 0;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +#define TLA202x_MODEL(_mux, _pga)		\
-> +	{					\
-> +		.mux_available = (_mux),	\
-> +		.pga_available = (_pga),	\
-> +	}
-> +
-> +enum tla2024_model_id {
-> +	TLA2021 = 0,
-> +	TLA2022 = 1,
-> +	TLA2024 = 2,
-> +};
-> +
-> +static struct tla202x_model tla202x_models[] = {
-> +	[TLA2021] = TLA202x_MODEL(0, 0),
-> +	[TLA2022] = TLA202x_MODEL(0, 1),
-> +	[TLA2024] = TLA202x_MODEL(1, 1),
-> +};
-> +
-> +static const int tla2024_scale[] = { /* scale, int plus micro */
-> +	3, 0, 2, 0, 1, 0, 0, 500000, 0, 250000, 0, 125000 };
-> +
-> +static int tla2024_get(struct tla2024 *priv, u8 addr, u16 mask,
-> +		       u16 shift, u16 *val)
-> +{
-> +	int ret;
-> +	u16 data;
-> +
-> +	ret = i2c_smbus_read_word_swapped(priv->i2c, addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data = ret;
-> +	*val = (mask & data) >> shift;
-> +
-> +	return 0;
-> +}
-> +
-> +static int tla2024_set(struct tla2024 *priv, u8 addr, u16 mask,
-> +		       u16 shift, u16 val)
-> +{
-> +	int ret;
-> +	u16 data;
-> +
-> +	ret = i2c_smbus_read_word_swapped(priv->i2c, addr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data = ret;
-> +	data &= ~mask;
-> +	data |= mask & (val << shift);
-> +
-> +	ret = i2c_smbus_write_word_swapped(priv->i2c, addr, data);
-> +
-> +	return ret;
-> +}
-> +
-> +static int tla2024_read_avail(struct iio_dev *idev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +
-> +		*length = ARRAY_SIZE(tla2024_scale);
-> +		*vals = tla2024_scale;
-> +
-> +		*type = IIO_VAL_INT_PLUS_MICRO;
-> +		return IIO_AVAIL_LIST;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int tla2024_of_find_chan(struct tla2024 *priv, struct device_node *ch)
-> +{
-> +	u16 chan_idx = 0;
-> +	u32 ainp, ainn;
-> +	int ret;
-> +
-> +	ret = of_property_read_u32_index(ch, "single-channel", 0, &ainp);
-> +	if (ret) {
-> +		ret = of_property_read_u32_index(ch,
-> +						 "diff-channels", 0, &ainp);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = of_property_read_u32_index(ch,
-> +						 "diff-channels", 1, &ainn);
-> +		if (ret)
-> +			return ret;
-> +
-> +	} else {
-> +		ainn = UINT_MAX;
-> +	}
-> +
-> +	ret = tla2024_find_chan_idx(ainp, ainn, &chan_idx);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* if model doesn"t have mux then only channel 0 is allowed */
-> +	if (!priv->model->mux_available && chan_idx)
-> +		return -EINVAL;
-> +
-> +	/* if already used */
-> +	if ((priv->used_mux_channels) & (1 << chan_idx))
-> +		return -EINVAL;
-> +
-> +	return chan_idx;
-> +}
-> +
-> +static int tla2024_init_chan(struct iio_dev *idev, struct device_node *node,
-> +			     struct iio_chan_spec *chan)
-> +{
-> +	struct tla2024 *priv = iio_priv(idev);
-> +	u16 chan_idx;
-> +	int ret;
-> +
-> +	ret = tla2024_of_find_chan(priv, node);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	chan_idx = ret;
-> +	priv->used_mux_channels |= BIT(chan_idx);
-> +	chan->type = IIO_VOLTAGE;
-> +	chan->channel = tla2024_all_channels[chan_idx].ainp;
-> +	chan->channel2 = tla2024_all_channels[chan_idx].ainn;
-> +	chan->differential = tla2024_all_channels[chan_idx].differential;
-> +	chan->datasheet_name = tla2024_all_channels[chan_idx].datasheet_name;
-> +	chan->indexed = 1;
-> +	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> +	chan->info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE);
-> +	chan->info_mask_shared_by_all_available = BIT(IIO_CHAN_INFO_SCALE);
-> +
-> +	return 0;
-> +}
-> +
-> +static int tla2024_wait(struct tla2024 *priv)
-> +{
-> +	int ret;
-> +	unsigned int retry = TLA2024_CONV_RETRY;
-> +	u16 status;
-> +
-> +	do {
-> +		if (!--retry)
-> +			return -EIO;
-> +		ret = tla2024_get(priv, TLA2024_CONF, TLA2024_CONF_OS_MASK,
-> +				  TLA2024_CONF_OS_SHIFT, &status);
-> +		if (ret < 0)
-> +			return ret;
-
-> +		if (!status)
-> +			usleep_range(25, 1000);
-> +	} while (!status);
-> +
-> +	return ret;
-
-return 0; It can't be anything else and get here (I think!)
-
-> +}
-> +
-> +static int tla2024_singleshot_conv(struct tla2024 *priv,
-> +				   struct iio_chan_spec const *chan, int *val)
-> +{
-> +	int ret;
-> +	u32 ainp = chan->channel;
-> +	u32 ainn = chan->channel2;
-
-Are these local variables worthwhile as value only used in one place?
-
-> +	u16 chan_id, data;
-> +	s16 tmp;
-> +
-> +	ret = tla2024_set(priv, TLA2024_CONF, TLA2024_CONF_MODE_MASK,
-> +			  TLA2024_CONF_MODE_SHIFT, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = tla2024_find_chan_idx(ainp, ainn, &chan_id);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = tla2024_set(priv, TLA2024_CONF, TLA2024_CONF_MUX_MASK,
-> +			  TLA2024_CONF_MUX_SHIFT, chan_id);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = tla2024_set(priv, TLA2024_CONF, TLA2024_CONF_OS_MASK,
-> +			  TLA2024_CONF_OS_SHIFT, 1);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = tla2024_wait(priv);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = tla2024_get(priv, TLA2024_DATA, TLA2024_DATA_RES_MASK,
-> +			  TLA2024_DATA_RES_SHIFT, &data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	tmp = (s16)(data << TLA2024_DATA_RES_SHIFT);
-> +	*val = tmp >> TLA2024_DATA_RES_SHIFT;
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int tla2024_set_scale(struct tla2024 *priv, int val, int val2)
-> +{
-> +	int i;
-> +
-> +	if (!(priv->model->pga_available))
-> +		return -EINVAL; /* scale can't be changed if no pga */
-> +
-> +	for (i = 0; i < ARRAY_SIZE(tla2024_scale); i = i + 2) {
-> +		if ((tla2024_scale[i] == val) &&
-> +		    (tla2024_scale[i + 1] == val2))
-> +			break;
-> +	}
-> +
-> +	if (i == ARRAY_SIZE(tla2024_scale))
-> +		return -EINVAL;
-> +
-> +	return tla2024_set(priv, TLA2024_CONF, TLA2024_CONF_PGA_MASK,
-> +			   TLA2024_CONF_PGA_SHIFT, i >> 1);
-> +}
-> +
-> +static int tla2024_get_scale(struct tla2024 *priv, int *val, int *val2)
-> +{
-> +	u16 data;
-> +	int ret;
-> +
-> +	if (!(priv->model->pga_available)) {
-> +		*val = 1; /* Scale always 1 mV when no PGA */
-> +		return IIO_VAL_INT;
-> +	}
-> +	ret = tla2024_get(priv, TLA2024_CONF, TLA2024_CONF_PGA_MASK,
-> +			  TLA2024_CONF_PGA_SHIFT, &data);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* gain for the 3bit pga values 6 and 7 is same as at 5 */
-> +	if (data >= (ARRAY_SIZE(tla2024_scale) >> 1))
-> +		data = (ARRAY_SIZE(tla2024_scale) >> 1) - 1;
-> +
-> +	*val = tla2024_scale[data << 1];
-> +	*val2 = tla2024_scale[(data << 1) + 1];
-
-When doing indexes like this it's probably more readable to just use * 2
-rather than the shift.  The compiler should figure it out anyway.
-Also / 2 is fine when can be evaluated at compile time as above.
-
-> +	return IIO_VAL_INT_PLUS_MICRO;
-> +}
-> +
-> +static int tla2024_read_raw(struct iio_dev *idev,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct tla2024 *priv = iio_priv(idev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&priv->lock);
-> +		ret = tla2024_singleshot_conv(priv, channel, val);
-> +		mutex_unlock(&priv->lock);
-> +		return ret;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		return tla2024_get_scale(priv, val, val2);
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int tla2024_write_raw(struct iio_dev *idev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	struct tla2024 *priv = iio_priv(idev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		mutex_lock(&priv->lock);
-> +		ret = tla2024_set_scale(priv, val, val2);
-> +		mutex_unlock(&priv->lock);
-> +		return ret;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-
-The ordering of functions in here seems a little strange. I would
-bring this together with the individual channel init code above
-and not have it between the callbacks and the definition of the
-struct iio_info below.
-
-> +static int tla2024_of_chan_init(struct iio_dev *idev)
-> +{
-> +	struct device_node *node = idev->dev.of_node;
-> +	struct device_node *child;
-> +	struct iio_chan_spec *channels;
-> +	int ret, i, num_channels;
-> +
-> +	num_channels = of_get_available_child_count(node);
-> +	if (!num_channels) {
-> +		dev_err(&idev->dev, "no channels configured\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	channels = devm_kcalloc(&idev->dev, num_channels,
-> +				sizeof(struct iio_chan_spec), GFP_KERNEL);
-> +	if (!channels)
-> +		return -ENOMEM;
-> +
-> +	i = 0;
-> +	for_each_available_child_of_node(node, child) {
-> +		ret = tla2024_init_chan(idev, child, &channels[i]);
-> +		if (ret) {
-> +			of_node_put(child);
-> +			return ret;
-> +		}
-> +		i++;
-> +	}
-> +
-> +	idev->channels = channels;
-> +	idev->num_channels = num_channels;
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info tla2024_info = {
-> +	.read_raw = tla2024_read_raw,
-> +	.write_raw = tla2024_write_raw,
-> +	.read_avail = tla2024_read_avail,
-> +};
-> +
-> +static int tla2024_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *iio;
-> +	struct tla2024 *priv;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter,
-> +				     I2C_FUNC_SMBUS_WORD_DATA))
-> +		return -EOPNOTSUPP;
-> +
-> +	iio = devm_iio_device_alloc(&client->dev, sizeof(*priv));
-> +	if (!iio)
-> +		return -ENOMEM;
-> +
-> +	priv = iio_priv(iio);
-> +	priv->i2c = client;
-> +	priv->model = &tla202x_models[id->driver_data];
-> +	mutex_init(&priv->lock);
-> +
-> +	iio->dev.parent = &client->dev;
-> +	iio->dev.of_node = client->dev.of_node;
-> +	iio->name = client->name;
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->info = &tla2024_info;
-> +
-> +	ret = tla2024_of_chan_init(iio);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(&client->dev, iio);
-> +}
-> +
-> +static const struct i2c_device_id tla2024_id[] = {
-> +	{ "tla2024", TLA2024 },
-> +	{ "tla2022", TLA2022 },
-> +	{ "tla2021", TLA2021 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, tla2024_id);
-> +
-> +static const struct of_device_id tla2024_of_match[] = {
-> +	{ .compatible = "ti,tla2024" },
-> +	{ .compatible = "ti,tla2022" },
-> +	{ .compatible = "ti,tla2021" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, tla2024_of_match);
-> +
-> +static struct i2c_driver tla2024_driver = {
-> +	.driver = {
-> +		.name = "tla2024",
-> +		.of_match_table = of_match_ptr(tla2024_of_match),
-> +	},
-> +	.probe = tla2024_probe,
-> +	.id_table = tla2024_id,
-> +};
-> +module_i2c_driver(tla2024_driver);
-> +
-> +MODULE_AUTHOR("Ibtsam Haq <ibtsam.haq@philips.com>");
-> +MODULE_DESCRIPTION("Texas Instruments TLA2021/TLA2022/TLA2024 ADC driver");
-> +MODULE_LICENSE("GPL v2");
+>  	ret = ad9523_write(indio_dev, AD9523_PLL2_VCO_DIVIDER,
+> -		AD9523_PLL2_VCO_DIV_M1(pdata->pll2_vco_diff_m1) |
+> -		AD9523_PLL2_VCO_DIV_M2(pdata->pll2_vco_diff_m2) |
+> -		AD_IFE(pll2_vco_diff_m1, 0,
+> +		AD9523_PLL2_VCO_DIV_M1(pdata->pll2_vco_div_m1) |
+> +		AD9523_PLL2_VCO_DIV_M2(pdata->pll2_vco_div_m2) |
+> +		AD_IFE(pll2_vco_div_m1, 0,
+>  		       AD9523_PLL2_VCO_DIV_M1_PWR_DOWN_EN) |
+> -		AD_IFE(pll2_vco_diff_m2, 0,
+> +		AD_IFE(pll2_vco_div_m2, 0,
+>  		       AD9523_PLL2_VCO_DIV_M2_PWR_DOWN_EN));
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	if (pdata->pll2_vco_diff_m1)
+> +	if (pdata->pll2_vco_div_m1)
+>  		st->vco_out_freq[AD9523_VCO1] =
+> -			st->vco_freq / pdata->pll2_vco_diff_m1;
+> +			st->vco_freq / pdata->pll2_vco_div_m1;
+>  
+> -	if (pdata->pll2_vco_diff_m2)
+> +	if (pdata->pll2_vco_div_m2)
+>  		st->vco_out_freq[AD9523_VCO2] =
+> -			st->vco_freq / pdata->pll2_vco_diff_m2;
+> +			st->vco_freq / pdata->pll2_vco_div_m2;
+>  
+>  	st->vco_out_freq[AD9523_VCXO] = pdata->vcxo_freq;
+>  
+> diff --git a/include/linux/iio/frequency/ad9523.h b/include/linux/iio/frequency/ad9523.h
+> index 12ce3ee427fd..621b93c0bcf9 100644
+> --- a/include/linux/iio/frequency/ad9523.h
+> +++ b/include/linux/iio/frequency/ad9523.h
+> @@ -129,8 +129,8 @@ enum cpole1_capacitor {
+>   * @pll2_ndiv_b_cnt: PLL2 Feedback N-divider, B Counter, range 0..63.
+>   * @pll2_freq_doubler_en: PLL2 frequency doubler enable.
+>   * @pll2_r2_div: PLL2 R2 divider, range 0..31.
+> - * @pll2_vco_diff_m1: VCO1 divider, range 3..5.
+> - * @pll2_vco_diff_m2: VCO2 divider, range 3..5.
+> + * @pll2_vco_div_m1: VCO1 divider, range 3..5.
+> + * @pll2_vco_div_m2: VCO2 divider, range 3..5.
+>   * @rpole2: PLL2 loop filter Rpole resistor value.
+>   * @rzero: PLL2 loop filter Rzero resistor value.
+>   * @cpole1: PLL2 loop filter Cpole capacitor value.
+> @@ -176,8 +176,8 @@ struct ad9523_platform_data {
+>  	unsigned char			pll2_ndiv_b_cnt;
+>  	bool				pll2_freq_doubler_en;
+>  	unsigned char			pll2_r2_div;
+> -	unsigned char			pll2_vco_diff_m1; /* 3..5 */
+> -	unsigned char			pll2_vco_diff_m2; /* 3..5 */
+> +	unsigned char			pll2_vco_div_m1; /* 3..5 */
+> +	unsigned char			pll2_vco_div_m2; /* 3..5 */
+>  
+>  	/* Loop Filter PLL2 */
+>  	enum rpole2_resistor		rpole2;
 
