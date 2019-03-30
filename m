@@ -6,50 +6,47 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51967C43381
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 14:43:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826E6C43381
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 15:04:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 19CDD218D8
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 14:43:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B506218A6
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Mar 2019 15:04:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1553957025;
-	bh=wp9S2ftnE76F5P4cBeAOxHCls5MzvF7w/Gz9WPjdNg4=;
+	s=default; t=1553958271;
+	bh=y2icFHnZrG7tTz605p17LuzuWCt3LgKIsNrojbcOd54=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=OkBrTa7lIAR9y2aK++bb7R118q0Xrxu/mXmLpKTJeBS+8w9p9SXEtPnd5mfO2cJqj
-	 Pc2fO5FJ5qGNOnPItph8Kf3owgUn2CLQRNOFihPjvzcp22bh8m8fInfuX7Qh5CNJLK
-	 aK/g1u1CsSjl1llcviyjpHiQV0ag7GnchWF+MZ5s=
+	b=frGOhqhMjg7/XxFR12GGHlqwHkffCi36Wqr5/qOFe11QbHHMYhKNyeGd9iIp0wZIK
+	 6oCgmYlOaV+zZlpQHt5OXPkcw40br9M+3R/ZvIu3oURRSSwcWgzhQlE50yVjDUe67V
+	 mcNJXpCtR2bBg5+oH/VT0wQLc9LztbNHeuGdM5Nw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730849AbfC3Ono (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Mar 2019 10:43:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53054 "EHLO mail.kernel.org"
+        id S1730532AbfC3PEa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Mar 2019 11:04:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730415AbfC3Ono (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Mar 2019 10:43:44 -0400
+        id S1730531AbfC3PEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Mar 2019 11:04:30 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 14357218A3;
-        Sat, 30 Mar 2019 14:43:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C1706218A3;
+        Sat, 30 Mar 2019 15:04:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1553957022;
-        bh=wp9S2ftnE76F5P4cBeAOxHCls5MzvF7w/Gz9WPjdNg4=;
+        s=default; t=1553958270;
+        bh=y2icFHnZrG7tTz605p17LuzuWCt3LgKIsNrojbcOd54=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=q9aDCRxYEj552/6eEXZjZDem0cUKHZV5oRBZTRkDbZuVftxPWWmFTlxzZ8PjqtlS3
-         1H+Za4N0JqZsRvvPPuJPs48m+lxdGeP9nObkfks7GODmMqG+sIYpbN/UuWwDA/KrSY
-         kD0yxQ42uLu24d5EmOhXEqB2aiG8yJMZwOwWsoI8=
-Date:   Sat, 30 Mar 2019 14:43:36 +0000
+        b=SLOWaKWF4vVJyxabw+o5b0rRlFUIYs+dhSfcNAooNA9v150xoSsRHYeWLKib/h07n
+         Y3gDOryIj0+nuAFDyJwMcMvKOsZJ0paIUVH/C67OgdCUbhaq2ZoKsqBsCJ2kwr92Jo
+         h9e5fr40sgmzKz4SWhXw8WlwoiqnY5HQLdbVJaeA=
+Date:   Sat, 30 Mar 2019 15:04:23 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     enric.balletbo@collabora.com, bleung@chromium.org,
-        groeck@chromium.org, lee.jones@linaro.org, broonie@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 3/3] mfd: cros: Update EC to use BIT() and merge
-Message-ID: <20190330144336.5fd8b9a0@archlinux>
-In-Reply-To: <CAPUE2uuh2TvUiQCuG7KzQ=GD5Gm3C5ZbfZ42J0__H2R6yD1j9Q@mail.gmail.com>
-References: <CAPUE2uti=fketJ4vJw34et_y9L_gsEUwXNDdjg0sG8Z27ir1Hg@mail.gmail.com>
-        <20190329175628.31481-1-gwendal@chromium.org>
-        <CAPUE2uuh2TvUiQCuG7KzQ=GD5Gm3C5ZbfZ42J0__H2R6yD1j9Q@mail.gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v1] iio: Make possible to include driver.h first
+Message-ID: <20190330150423.538d2476@archlinux>
+In-Reply-To: <20190326134700.24800-1-andriy.shevchenko@linux.intel.com>
+References: <20190326134700.24800-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,88 +56,36 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 29 Mar 2019 10:56:37 -0700
-Gwendal Grignou <gwendal@chromium.org> wrote:
+On Tue, 26 Mar 2019 15:47:00 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-What is "and merge" referring to in the title?
-
-> Instead of using 1 << ..., use BIT() cleaner and safer.
-> Fix minor fixes since major cros_ec_commands.h cleanup was uploaded.
+> If we put headers alphabetically sorted in the IIO driver,
+> the compilation will abort because of unknown type to handle.
 > 
-> TEST=compile.
-
-Personally I'd prefer this is a a couple of patches as several
-different changes going on.
-
-A few minor comments below.
-
+> Simple add a forward declaration of opaque struct iio_dev.
 > 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied, 
+
+Thanks,
+
+Jonathan
+
 > ---
->  include/linux/mfd/cros_ec_commands.h | 268 ++++++++++++++-------------
->  1 file changed, 143 insertions(+), 125 deletions(-)
+>  include/linux/iio/driver.h | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/include/linux/mfd/cros_ec_commands.h
-> b/include/linux/mfd/cros_ec_commands.h
-> index ea25e1644d23..5c4764e3db6f 100644
-> --- a/include/linux/mfd/cros_ec_commands.h
-> +++ b/include/linux/mfd/cros_ec_commands.h
-> @@ -46,7 +46,7 @@ extern "C"{
->  #define EC_PROTO_VERSION          0x00000002
-...
-> 
+> diff --git a/include/linux/iio/driver.h b/include/linux/iio/driver.h
+> index 7dfb10ee2669..f54a7bcdefe3 100644
+> --- a/include/linux/iio/driver.h
+> +++ b/include/linux/iio/driver.h
+> @@ -11,6 +11,7 @@
+>  #ifndef _IIO_INKERN_H_
+>  #define _IIO_INKERN_H_
+>  
+> +struct iio_dev;
+>  struct iio_map;
+>  
 >  /**
->   * struct ec_response_get_protocol_info - Response to the get protocol info.
-> @@ -1347,12 +1347,12 @@ enum ec_feature_code {
->  	EC_FEATURE_AUDIO_CODEC = 38,
->  	/* EC Supports SCP. */
->  	EC_FEATURE_SCP = 39,
-> -	/* The MCU is Intel Integrated Sensor Hub */
-> +	/* The MCU is an Integrated Sensor Hub */
-
-Unrelated from the other changes so I'd like to see it in a separate
-patch.
-
->  	EC_FEATURE_ISH = 40,
->  };
-...
->  enum ec_led_colors {
->  	EC_LED_COLOR_RED = 0,
-> @@ -2438,6 +2438,7 @@ enum motionsensor_chip {
->  	MOTIONSENSE_CHIP_LIS2DE = 15,
->  	MOTIONSENSE_CHIP_LIS2MDL = 16,
->  	MOTIONSENSE_CHIP_LSM6DS3 = 17,
-> +	MOTIONSENSE_CHIP_LSM6DSO = 18,
-
-Why is this here?
-
->  	MOTIONSENSE_CHIP_MAX,
->  };
-> 
-...
-> 
->  enum mkbp_config_valid {
-Bit odd that this was an enum in the first place..
-
-I checked and it doesn't seem that the type is used anywhere,
-so I would just make this set of defines.
-
-> -	EC_MKBP_VALID_SCAN_PERIOD		= 1 << 0,
-> -	EC_MKBP_VALID_POLL_TIMEOUT		= 1 << 1,
-> -	EC_MKBP_VALID_MIN_POST_SCAN_DELAY	= 1 << 3,
-> -	EC_MKBP_VALID_OUTPUT_SETTLE		= 1 << 4,
-> -	EC_MKBP_VALID_DEBOUNCE_DOWN		= 1 << 5,
-> -	EC_MKBP_VALID_DEBOUNCE_UP		= 1 << 6,
-> -	EC_MKBP_VALID_FIFO_MAX_DEPTH		= 1 << 7,
-> +	EC_MKBP_VALID_SCAN_PERIOD		= BIT(0),
-> +	EC_MKBP_VALID_POLL_TIMEOUT		= BIT(1),
-> +	EC_MKBP_VALID_MIN_POST_SCAN_DELAY	= BIT(3),
-> +	EC_MKBP_VALID_OUTPUT_SETTLE		= BIT(4),
-> +	EC_MKBP_VALID_DEBOUNCE_DOWN		= BIT(5),
-> +	EC_MKBP_VALID_DEBOUNCE_UP		= BIT(6),
-> +	EC_MKBP_VALID_FIFO_MAX_DEPTH		= BIT(7),
->  };
-> 
-...
-
 
