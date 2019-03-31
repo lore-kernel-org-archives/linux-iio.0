@@ -2,463 +2,349 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6785AC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:04:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF38CC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:09:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C4CC20700
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:04:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554026647;
-	bh=v1rlFX1bD8p6R7krMflQEWhK3ImKzZkOt7GbuWsGxEQ=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=J/0ILv3siSukZzWKnKrrKXFCw4bGqkwowtMhjXhM0yLhZxLapx+DUS2/YRWPOlpQ5
-	 9knWX0UUzfhljlUq0f47wNErSRUMHoJpt2oPwbXS97fo6/GRDD8FlKksZByhO0QMI1
-	 Pyu8BxfrPovDGHQbuyeaLqJEIiCZvFn1YG5mNAUU=
+	by mail.kernel.org (Postfix) with ESMTP id 8AD902070B
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:09:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="NjmfhWIK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726674AbfCaKEG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 06:04:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34298 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726619AbfCaKEG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 31 Mar 2019 06:04:06 -0400
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5EA0D206BA;
-        Sun, 31 Mar 2019 10:04:02 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1554026644;
-        bh=v1rlFX1bD8p6R7krMflQEWhK3ImKzZkOt7GbuWsGxEQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mE0aMILM8dGf/+/nSGdVicPYADjYkcGDKasAszUh7k3dzTJSOcGd+byDrytChJ2NF
-         k1m19XMEeFT+XNdG5NCIybHwpr9aR2Ie9XnffCEEhkvFaYVdTWr9aASWiaYCOQb8rf
-         TFm9vEHbrYZjcZ5OBz00XUkx4M2Cvaw5MnvaaPVs=
-Date:   Sun, 31 Mar 2019 11:03:58 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
-Subject: Re: [PATCH] iio: adc: stm32-dfsdm: add PM support
-Message-ID: <20190331110358.04b59b09@archlinux>
-In-Reply-To: <1553525368-23419-1-git-send-email-fabrice.gasnier@st.com>
-References: <1553525368-23419-1-git-send-email-fabrice.gasnier@st.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1726864AbfCaKJb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 06:09:31 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:36446 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726779AbfCaKJa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 06:09:30 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1554026966;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=aLjO2t/gBZkxh9pyeSaOZPfkmZfzAKZeUxkFcDAO4dM=;
+        b=NjmfhWIKRb02FL9HbYBsYWW+PgKzTNpw796isgbOhbcw8CerzUEc159KfmM8HGNldc
+        CoJmKNW5wmu4j980Uyom+glyZuV/fW/i98qqStHqv7mhXrkFnGcPp9qujlNistr2BHQd
+        ytPcdjkpOJ0ibrBkjO2PtooyRjYUWy2AIJI/DRUNtQvR3fbFpS3vlXgaUbTQ3027Jgn6
+        06hxWqkk+a8syEbGFqMu7f24WvZnUcbrY7PPAV2HHIOoDX9wwFecEetVy+CfrJFHsBuO
+        XRz4o8jJcIqRq9xCn6FhTY8XuIIJXjH3o508WBI8G9V3m7W92fUYEgw/SMpQnOfLiidi
+        eorA==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NMGHPrrwDCpQsE="
+X-RZG-CLASS-ID: mo00
+Received: from imac.fritz.box
+        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
+        with ESMTPSA id K07648v2VA9OX20
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Sun, 31 Mar 2019 12:09:24 +0200 (CEST)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [RFC 0/4] iio-input-bridge so that accelerometers which only have an iio driver can still present evdev input events
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <890047F6-E288-41F0-A8D0-B91CC5A3A0A4@goldelico.com>
+Date:   Sun, 31 Mar 2019 12:09:09 +0200
+Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
+        kernel@pyra-handheld.com, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, Eric Piel <eric.piel@tremplin-utc.net>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <A08729FE-09C9-46F5-BC25-01082450F5CE@goldelico.com>
+References: <cover.1552941573.git.hns@goldelico.com> <20190324182920.66242add@archlinux> <890047F6-E288-41F0-A8D0-B91CC5A3A0A4@goldelico.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+X-Mailer: Apple Mail (2.3124)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 25 Mar 2019 15:49:28 +0100
-Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+Hi all,
+I'll send a single v2 patch in some minutes.
 
-> Add PM and runtime PM support to STM32 DFSDM drivers:
-> - stm32-dfsdm-core: manage clocks.
-> - stm32-dfsdm-adc: restore channels configuration upon resume. Also stop
->   restart everything in case of buffer mode.
-> 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-I'll confess that power management code always gives me a headache, but
-I 'think' this looks right.
+Changes compared to this v1:
+* add linux-input list and maintainers for discussion
+* use input-polldev
+* allocate one mapping record for each iio device instead of trying to =
+manage that in some array
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+> Am 28.03.2019 um 18:42 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
+>=20
+> Hi Jonathan,
+>=20
+>> Am 24.03.2019 um 19:29 schrieb Jonathan Cameron <jic23@kernel.org>:
+>>=20
+>> On Mon, 18 Mar 2019 21:39:30 +0100
+>> "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+>>=20
+>> =09
+>>> Some user spaces (e.g. some Android) use /dev/input/event* for =
+handling the 3D
+>>> position of the device with respect to the center of gravity =
+(earth). This can
+>>> be used for gaming input, rotation of screens etc.
+>>>=20
+>>> This should be the standard because this interface is an abstraction =
+of how
+>>> this data is acquired from sensor chips. Sensor chips may be =
+connected through
+>>> different interfaces and in different positions. They may also have =
+different
+>>> parameters. And, if a chip is replaced by a different one, the =
+values reported
+>>> by the device position interface should remain the same.
+>>>=20
+>>> But nowadays, new accelerometer chips usually just get iio drivers =
+and rarely
+>>> an evdev input driver.
+>>>=20
+>>> Therefore we need something like a protocol stack: input device vs. =
+raw data.
+>>> It can be seen as a similar layering like TCP/IP vs. bare Ethernet. =
+Or keyboard
+>>> input events vs. raw gpio or raw USB access.
+>>>=20
+>>> This patch set bridges the gap between raw iio data and the input =
+device abstraction
+>>> so that accelerometer measurements can also be presented as X/Y/Z =
+accelerometer
+>>> channels (INPUT_PROP_ACCELEROMETER) through /dev/input/event*.
+>>>=20
+>> Hi,
+>>=20
+>> I've kind of run out of time today and want to give this a detailed =
+look.
+>=20
+> No problem, please take the time it needs.
+>=20
+>>=20
+>> In the meantime a few initial comments.
+>>=20
+>> 1. Resend the whole series cc'ing the linux-input list and =
+maintainer.
+>=20
+> Ok!
 
-Thanks,
+Done.
 
-Jonathan
+>=20
+>> 2. In the vast majority of devices the interrupt pin is connected for =
+an
+>>  accelerometer. and they support data ready signals.  My gut feeling =
+is
+>>  that should be the preferred mode.
+>=20
+> Mine too, and the commit message 1/4 describes this by=20
+>=20
+> "If it runs, the driver polls the device(s) once every 100 ms. A mode =
+where the
+> iio device defines the update rate is not implemented and for further =
+study."
+>=20
+> But I didn't manage to get this correctly set up for in-kernel iio on =
+demand
+> (start/stop when a process does an open/close - it was simpler to =
+start/stop
+> polling).
+>=20
+> Here I am lacking some understanding of details of the subsystems and =
+their
+> capabilities.
+>=20
+> Therefore I focussed on the polling case to leave the interrupt driven =
+case
+> for later improvements. Also, since 100ms doesn't seem to be a big =
+resource
+> burden.
+>=20
+> I am also not sure if we really want to process every fidget detected =
+by the
+> raw sensor to the input subsystem. This could require more resources =
+than
+> polling with 100ms distance.
 
-> ---
->  drivers/iio/adc/stm32-dfsdm-adc.c  |  75 +++++++++++++++--
->  drivers/iio/adc/stm32-dfsdm-core.c | 163 +++++++++++++++++++++++++++++++------
->  2 files changed, 206 insertions(+), 32 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-> index 531ca7e..a599097 100644
-> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
-> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-> @@ -851,24 +851,18 @@ static int stm32_dfsdm_update_scan_mode(struct iio_dev *indio_dev,
->  	return 0;
->  }
->  
-> -static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
-> +static int __stm32_dfsdm_postenable(struct iio_dev *indio_dev)
->  {
->  	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
->  	int ret;
->  
-> -	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-> -		ret = iio_triggered_buffer_postenable(indio_dev);
-> -		if (ret < 0)
-> -			return ret;
-> -	}
-> -
->  	/* Reset adc buffer index */
->  	adc->bufi = 0;
->  
->  	if (adc->hwc) {
->  		ret = iio_hw_consumer_enable(adc->hwc);
->  		if (ret < 0)
-> -			goto err_predisable;
-> +			return ret;
->  	}
->  
->  	ret = stm32_dfsdm_start_dfsdm(adc->dfsdm);
-> @@ -896,6 +890,26 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
->  err_stop_hwc:
->  	if (adc->hwc)
->  		iio_hw_consumer_disable(adc->hwc);
-> +
-> +	return ret;
-> +}
-> +
-> +static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
-> +{
-> +	int ret;
-> +
-> +	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-> +		ret = iio_triggered_buffer_postenable(indio_dev);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	ret = __stm32_dfsdm_postenable(indio_dev);
-> +	if (ret < 0)
-> +		goto err_predisable;
-> +
-> +	return 0;
-> +
->  err_predisable:
->  	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
->  		iio_triggered_buffer_predisable(indio_dev);
-> @@ -903,7 +917,7 @@ static int stm32_dfsdm_postenable(struct iio_dev *indio_dev)
->  	return ret;
->  }
->  
-> -static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
-> +static void __stm32_dfsdm_predisable(struct iio_dev *indio_dev)
->  {
->  	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
->  
-> @@ -915,6 +929,11 @@ static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
->  
->  	if (adc->hwc)
->  		iio_hw_consumer_disable(adc->hwc);
-> +}
-> +
-> +static int stm32_dfsdm_predisable(struct iio_dev *indio_dev)
-> +{
-> +	__stm32_dfsdm_predisable(indio_dev);
->  
->  	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
->  		iio_triggered_buffer_predisable(indio_dev);
-> @@ -1492,10 +1511,48 @@ static int stm32_dfsdm_adc_remove(struct platform_device *pdev)
->  	return 0;
->  }
->  
-> +static int __maybe_unused stm32_dfsdm_adc_suspend(struct device *dev)
-> +{
-> +	struct stm32_dfsdm_adc *adc = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		__stm32_dfsdm_predisable(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused stm32_dfsdm_adc_resume(struct device *dev)
-> +{
-> +	struct stm32_dfsdm_adc *adc = dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
-> +	const struct iio_chan_spec *chan;
-> +	struct stm32_dfsdm_channel *ch;
-> +	int i, ret;
-> +
-> +	/* restore channels configuration */
-> +	for (i = 0; i < indio_dev->num_channels; i++) {
-> +		chan = indio_dev->channels + i;
-> +		ch = &adc->dfsdm->ch_list[chan->channel];
-> +		ret = stm32_dfsdm_chan_configure(adc->dfsdm, ch);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	if (iio_buffer_enabled(indio_dev))
-> +		__stm32_dfsdm_postenable(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(stm32_dfsdm_adc_pm_ops,
-> +			 stm32_dfsdm_adc_suspend, stm32_dfsdm_adc_resume);
-> +
->  static struct platform_driver stm32_dfsdm_adc_driver = {
->  	.driver = {
->  		.name = "stm32-dfsdm-adc",
->  		.of_match_table = stm32_dfsdm_adc_match,
-> +		.pm = &stm32_dfsdm_adc_pm_ops,
->  	},
->  	.probe = stm32_dfsdm_adc_probe,
->  	.remove = stm32_dfsdm_adc_remove,
-> diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
-> index 472b809..0a4d374 100644
-> --- a/drivers/iio/adc/stm32-dfsdm-core.c
-> +++ b/drivers/iio/adc/stm32-dfsdm-core.c
-> @@ -12,6 +12,8 @@
->  #include <linux/interrupt.h>
->  #include <linux/module.h>
->  #include <linux/of_device.h>
-> +#include <linux/pinctrl/consumer.h>
-> +#include <linux/pm_runtime.h>
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
->  
-> @@ -90,6 +92,36 @@ struct dfsdm_priv {
->  	struct clk *aclk; /* audio clock */
->  };
->  
-> +static inline struct dfsdm_priv *to_stm32_dfsdm_priv(struct stm32_dfsdm *dfsdm)
-> +{
-> +	return container_of(dfsdm, struct dfsdm_priv, dfsdm);
-> +}
-> +
-> +static int stm32_dfsdm_clk_prepare_enable(struct stm32_dfsdm *dfsdm)
-> +{
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
-> +	int ret;
-> +
-> +	ret = clk_prepare_enable(priv->clk);
-> +	if (ret || !priv->aclk)
-> +		return ret;
-> +
-> +	ret = clk_prepare_enable(priv->aclk);
-> +	if (ret)
-> +		clk_disable_unprepare(priv->clk);
-> +
-> +	return ret;
-> +}
-> +
-> +static void stm32_dfsdm_clk_disable_unprepare(struct stm32_dfsdm *dfsdm)
-> +{
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
-> +
-> +	if (priv->aclk)
-> +		clk_disable_unprepare(priv->aclk);
-> +	clk_disable_unprepare(priv->clk);
-> +}
-> +
->  /**
->   * stm32_dfsdm_start_dfsdm - start global dfsdm interface.
->   *
-> @@ -98,24 +130,17 @@ struct dfsdm_priv {
->   */
->  int stm32_dfsdm_start_dfsdm(struct stm32_dfsdm *dfsdm)
->  {
-> -	struct dfsdm_priv *priv = container_of(dfsdm, struct dfsdm_priv, dfsdm);
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
->  	struct device *dev = &priv->pdev->dev;
->  	unsigned int clk_div = priv->spi_clk_out_div, clk_src;
->  	int ret;
->  
->  	if (atomic_inc_return(&priv->n_active_ch) == 1) {
-> -		ret = clk_prepare_enable(priv->clk);
-> +		ret = pm_runtime_get_sync(dev);
->  		if (ret < 0) {
-> -			dev_err(dev, "Failed to start clock\n");
-> +			pm_runtime_put_noidle(dev);
->  			goto error_ret;
->  		}
-> -		if (priv->aclk) {
-> -			ret = clk_prepare_enable(priv->aclk);
-> -			if (ret < 0) {
-> -				dev_err(dev, "Failed to start audio clock\n");
-> -				goto disable_clk;
-> -			}
-> -		}
->  
->  		/* select clock source, e.g. 0 for "dfsdm" or 1 for "audio" */
->  		clk_src = priv->aclk ? 1 : 0;
-> @@ -123,21 +148,21 @@ int stm32_dfsdm_start_dfsdm(struct stm32_dfsdm *dfsdm)
->  					 DFSDM_CHCFGR1_CKOUTSRC_MASK,
->  					 DFSDM_CHCFGR1_CKOUTSRC(clk_src));
->  		if (ret < 0)
-> -			goto disable_aclk;
-> +			goto pm_put;
->  
->  		/* Output the SPI CLKOUT (if clk_div == 0 clock if OFF) */
->  		ret = regmap_update_bits(dfsdm->regmap, DFSDM_CHCFGR1(0),
->  					 DFSDM_CHCFGR1_CKOUTDIV_MASK,
->  					 DFSDM_CHCFGR1_CKOUTDIV(clk_div));
->  		if (ret < 0)
-> -			goto disable_aclk;
-> +			goto pm_put;
->  
->  		/* Global enable of DFSDM interface */
->  		ret = regmap_update_bits(dfsdm->regmap, DFSDM_CHCFGR1(0),
->  					 DFSDM_CHCFGR1_DFSDMEN_MASK,
->  					 DFSDM_CHCFGR1_DFSDMEN(1));
->  		if (ret < 0)
-> -			goto disable_aclk;
-> +			goto pm_put;
->  	}
->  
->  	dev_dbg(dev, "%s: n_active_ch %d\n", __func__,
-> @@ -145,11 +170,8 @@ int stm32_dfsdm_start_dfsdm(struct stm32_dfsdm *dfsdm)
->  
->  	return 0;
->  
-> -disable_aclk:
-> -	clk_disable_unprepare(priv->aclk);
-> -disable_clk:
-> -	clk_disable_unprepare(priv->clk);
-> -
-> +pm_put:
-> +	pm_runtime_put_sync(dev);
->  error_ret:
->  	atomic_dec(&priv->n_active_ch);
->  
-> @@ -165,7 +187,7 @@ EXPORT_SYMBOL_GPL(stm32_dfsdm_start_dfsdm);
->   */
->  int stm32_dfsdm_stop_dfsdm(struct stm32_dfsdm *dfsdm)
->  {
-> -	struct dfsdm_priv *priv = container_of(dfsdm, struct dfsdm_priv, dfsdm);
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
->  	int ret;
->  
->  	if (atomic_dec_and_test(&priv->n_active_ch)) {
-> @@ -183,9 +205,7 @@ int stm32_dfsdm_stop_dfsdm(struct stm32_dfsdm *dfsdm)
->  		if (ret < 0)
->  			return ret;
->  
-> -		clk_disable_unprepare(priv->clk);
-> -		if (priv->aclk)
-> -			clk_disable_unprepare(priv->aclk);
-> +		pm_runtime_put_sync(&priv->pdev->dev);
->  	}
->  	dev_dbg(&priv->pdev->dev, "%s: n_active_ch %d\n", __func__,
->  		atomic_read(&priv->n_active_ch));
-> @@ -325,14 +345,111 @@ static int stm32_dfsdm_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, dfsdm);
->  
-> -	return devm_of_platform_populate(&pdev->dev);
-> +	ret = stm32_dfsdm_clk_prepare_enable(dfsdm);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to start clock\n");
-> +		return ret;
-> +	}
-> +
-> +	pm_runtime_get_noresume(&pdev->dev);
-> +	pm_runtime_set_active(&pdev->dev);
-> +	pm_runtime_enable(&pdev->dev);
-> +
-> +	ret = of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-> +	if (ret)
-> +		goto pm_put;
-> +
-> +	pm_runtime_put(&pdev->dev);
-> +
-> +	return 0;
-> +
-> +pm_put:
-> +	pm_runtime_disable(&pdev->dev);
-> +	pm_runtime_set_suspended(&pdev->dev);
-> +	pm_runtime_put_noidle(&pdev->dev);
-> +	stm32_dfsdm_clk_disable_unprepare(dfsdm);
-> +
-> +	return ret;
-> +}
-> +
-> +static int stm32_dfsdm_core_remove(struct platform_device *pdev)
-> +{
-> +	struct stm32_dfsdm *dfsdm = platform_get_drvdata(pdev);
-> +
-> +	pm_runtime_get_sync(&pdev->dev);
-> +	of_platform_depopulate(&pdev->dev);
-> +	pm_runtime_disable(&pdev->dev);
-> +	pm_runtime_set_suspended(&pdev->dev);
-> +	pm_runtime_put_noidle(&pdev->dev);
-> +	stm32_dfsdm_clk_disable_unprepare(dfsdm);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused stm32_dfsdm_core_suspend(struct device *dev)
-> +{
-> +	struct stm32_dfsdm *dfsdm = dev_get_drvdata(dev);
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
-> +	int ret;
-> +
-> +	ret = pm_runtime_force_suspend(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Balance devm_regmap_init_mmio_clk() clk_prepare() */
-> +	clk_unprepare(priv->clk);
-> +
-> +	return pinctrl_pm_select_sleep_state(dev);
-> +}
-> +
-> +static int __maybe_unused stm32_dfsdm_core_resume(struct device *dev)
-> +{
-> +	struct stm32_dfsdm *dfsdm = dev_get_drvdata(dev);
-> +	struct dfsdm_priv *priv = to_stm32_dfsdm_priv(dfsdm);
-> +	int ret;
-> +
-> +	ret = pinctrl_pm_select_default_state(dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = clk_prepare(priv->clk);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return pm_runtime_force_resume(dev);
->  }
->  
-> +static int __maybe_unused stm32_dfsdm_core_runtime_suspend(struct device *dev)
-> +{
-> +	struct stm32_dfsdm *dfsdm = dev_get_drvdata(dev);
-> +
-> +	stm32_dfsdm_clk_disable_unprepare(dfsdm);
-> +
-> +	return 0;
-> +}
-> +
-> +static int __maybe_unused stm32_dfsdm_core_runtime_resume(struct device *dev)
-> +{
-> +	struct stm32_dfsdm *dfsdm = dev_get_drvdata(dev);
-> +
-> +	return stm32_dfsdm_clk_prepare_enable(dfsdm);
-> +}
-> +
-> +static const struct dev_pm_ops stm32_dfsdm_core_pm_ops = {
-> +	SET_SYSTEM_SLEEP_PM_OPS(stm32_dfsdm_core_suspend,
-> +				stm32_dfsdm_core_resume)
-> +	SET_RUNTIME_PM_OPS(stm32_dfsdm_core_runtime_suspend,
-> +			   stm32_dfsdm_core_runtime_resume,
-> +			   NULL)
-> +};
-> +
->  static struct platform_driver stm32_dfsdm_driver = {
->  	.probe = stm32_dfsdm_probe,
-> +	.remove = stm32_dfsdm_core_remove,
->  	.driver = {
->  		.name = "stm32-dfsdm",
->  		.of_match_table = stm32_dfsdm_of_match,
-> +		.pm = &stm32_dfsdm_core_pm_ops,
->  	},
->  };
->  
+Because this is a quite fundamental design decision (do we call =
+input_register_device
+or input_register_polled_device?) and the above expressed concern about =
+noise
+triggering more input events than user-space may want to see, I have =
+stayed
+with low-speed polling for the time being.
+
+>=20
+>> It was for that use case that we originally
+>>  put all the demux and multiple buffer code in IIO. The original =
+series for
+>>  that actually had an input bridge.
+>> =
+https://lore.kernel.org/linux-iio/1351679431-7963-5-git-send-email-jic23@k=
+ernel.org/
+>=20
+> Oh, nice! I wasn't aware of that. If I had known, we might have based =
+our
+> code on it.
+>=20
+> It seems to be a good blueprint to understand how to set up the =
+callbacks.
+>=20
+> What I do not understand is where the "iio map" comes from in your =
+approach.
+>=20
+> =46rom device tree? That would IMHO be against the rule that DTS =
+should describe
+> hardware but bridging data to a different user-space interface is not =
+related
+> to hardware description.
+>=20
+> So our approach does not need a specific mapping.
+>=20
+>>=20
+>> 3. It's going to be a hard sell to have it 'always' map an =
+accelerometer in IIO
+>>  to an input device when configured.  There are lots of other =
+accelerometer use
+>>  cases where this would be crazy.  In the repost, give some comentary =
+perhaps on
+>>  the following options:
+>>  a) Explicit binding - like the iio-hwmon bridge.
+>>  b) A userspace bridge (I even wrote one of those years ago using =
+uevent)
+>>  c) Some sort of userspace triggered way of creating these on demand.
+>=20
+> Basically, if you have one of these many other use cases, one can just =
+keep this
+> bridge unconfigured. Then, it does not eat up memory or code space or =
+processor
+> cycles.
+>=20
+> Its only use case is to map iio accelerometers to input devices which =
+are
+> really used as input devices, i.e. gaming, device orientation etc. =
+Other use
+> cases (e.g. industrial sensor grid data aggregator) should not =
+consider this as
+> an alternative interface and use e.g. libiio of course.
+>=20
+> Those (handheld) devices in mind usually have only a single =
+accelerometer chip, but
+> there are exceptions like the GTA04 and the Pyra which can have two of =
+them (with
+> different precision, mounting orientation and functions). Maybe there =
+are some
+> devices with more than two. So these iio devices should be reported =
+separately
+> but the data (X,Y,Z) should mainly agree on input device level.
+>=20
+> In the two-sensor case, our proposed driver simply creates two =
+distinct /dev/input/event
+> files which can be given fixed file names by udev instead of inventing =
+a new trigger
+> to create these on demand. IMHO it should not be handled differently =
+from plugging in
+> multiple mice or joysticks or other gaming devices to USB.
+>=20
+> And, this driver converts "raw" accelerometer data into a higher =
+abstraction level
+> input event in a way that user-space becomes independent of the =
+specific chip set
+> and its orientation. This is like hiding different flash hardware =
+interfaces
+> by MTD or file systems. All the hardware details are hidden and =
+shielded. Or it
+> is like mapping gpios or alternatively an i2c scanner chio into =
+standardized key codes.
+>=20
+> Finally, there is no polling (in this polling setup) if no process =
+opens the input device.
+> So the only waste of 'always' mapping 'all' accelerometers but not =
+using them are some
+> data structure allocations in the kernel and duration of probe().
+>=20
+>> 4. Input has polled modes. Don't reinvent them.
+>=20
+> Haven't heard of, but that is what a RFC is good for.
+>=20
+> Anyways, if we use iio interrupts we don't need it, because the =
+information flow
+> should go from the chip to the iio driver to the input bridge to the =
+input subsystem
+> and only then notify user space (wake up the process running a select =
+on the event
+> device file).
+>=20
+> Now, there is something I have learned from studying your comment and =
+struct input_dev.
+>=20
+> Although I did not find polled modes, I can simplify our approach =
+significantly
+> since we do not have to count open/close ourselves and define a mutex =
+for that.
+>=20
+> This is already done by the input_dev. So I should improve this part =
+of our patches
+> before resending to input list. Thanks for inpsiring this.
+
+I finally found it. It is an input-polldev wrapper.
+
+I have reworked the driver in polling mode to use that now. It has =
+simplified the
+code a lot.
+
+Thanks again!
+
+Nikolaus
+
+>=20
+>> 5. The patch break up is very very random.  Just have one patch :)
+>=20
+> Well, it tries to have small pieces in a specific order that you can =
+bisect and
+> do not run into compile problems (e.g. adding Makefile before code).
+>=20
+> But I can squash it. Seems to make sense since it is not really useful =
+to know
+> which of these pieces breaks other things. It can only be the driver
+> and bisect will still pin-point it.
+>=20
+>>=20
+>> Anyhow, I'll take a look in detail but may be a little while.
+>=20
+> No reason to hurry. We can wait.
+
+>=20
+>>=20
+>> Thanks,
+>>=20
+>> Jonathan
+>=20
+> Thanks and BR,
+> Nikolaus
+>=20
+>>=20
+>>=20
+>>>=20
+>>> H. Nikolaus Schaller (4):
+>>> iio: input-bridge: optionally bridge iio acceleometers to create a
+>>>   /dev/input
+>>> iio: input-bridge: add iio-input-bridge to Makefile
+>>> iio: input-bridge: add IIO_INPUT_BRIDGE kernel config option
+>>> iio: input-bridge: make the iio-input-bridge driver called by =
+iio-core
+>>>=20
+>>> drivers/iio/Kconfig                    |   7 +
+>>> drivers/iio/Makefile                   |   1 +
+>>> drivers/iio/industrialio-core.c        |  12 +
+>>> drivers/iio/industrialio-inputbridge.c | 420 =
++++++++++++++++++++++++++
+>>> drivers/iio/industrialio-inputbridge.h |  28 ++
+>>> 5 files changed, 468 insertions(+)
+>>> create mode 100644 drivers/iio/industrialio-inputbridge.c
+>>> create mode 100644 drivers/iio/industrialio-inputbridge.h
+>>>=20
+>>=20
+>=20
 
