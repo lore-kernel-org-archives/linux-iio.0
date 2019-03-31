@@ -2,117 +2,81 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B02D0C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3286AC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:44:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7C36C20882
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:42:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBC8120850
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:44:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554014534;
-	bh=mDJxvrejQskEh4+YaAcJuC+1k3IT4RJhEg+a+6xwLnU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=s7OJaBBV2oisFKWlNu7y1InYY9NA46lIQktzPbgk3XLqOXCJblZB4msp2IuwFstxq
-	 xApewvitckixuuIjVeBBfmZFXo6Uisnq811zCnOR9ObMl03h3DFryCzge61R0N4696
-	 5yVZDjRm53fgZvP4FMt2vVJ7DppseG4fY9LtKrio=
+	s=default; t=1554014673;
+	bh=2SAUjQbpVOWY1VoWkBzeM9WdFRnNpKTxbQDlHdJbcJQ=;
+	h=Date:From:Subject:References:In-Reply-To:Cc:Cc:To:List-ID:From;
+	b=eh/sSC0qIV565k6pbYuw1FkSANku4M0OzsiKkaY5ididYbEYB+5NEqkebbfK2N8mt
+	 zFfe0+G6pDCycaI3jShb6fDjC8Gf8LwmNt84AG27IaExSq+43O/VCfkk9QN9NapAZ1
+	 +fz/CLXkzxq+4ml/gNrlKEOGo41pjE7wxHWJi1lI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731382AbfCaGmI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 02:42:08 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:33442 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731371AbfCaGmH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 02:42:07 -0400
-Received: by mail-pf1-f195.google.com with SMTP id i19so2990005pfd.0;
-        Sat, 30 Mar 2019 23:42:07 -0700 (PDT)
+        id S1726747AbfCaGko (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 02:40:44 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:33797 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726668AbfCaGko (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 02:40:44 -0400
+Received: by mail-pg1-f196.google.com with SMTP id v12so3173108pgq.1;
+        Sat, 30 Mar 2019 23:40:43 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=zgWlWhNebV4DAis4oYThAM+4V5ib2u6j9U07JrmMSZQ=;
-        b=rEEN7xj0PYWRR2UWEqmQ9AvNQRQpeRC6pXsQvXB1Z9IGnWixcYzqhBN2LWZSZ6fgLe
-         oSzpX4s1r1mC/rUsSmmm19rak+fqNO7096QmG62llyK1fIrbdosUiz5EpksSStR09uxR
-         liM6hPKsdgDuhSQxiPZrPuNxupiLrcXOOcmS2KrIFho5Fsq0Ef4KZLhBHP6gqiYXyJDF
-         vVqR8FMbhVswpRqTUdXQBs9bwWQAzt9KgryEVkscExsdZoZmKNDWAXqP0h2svK1LPVyi
-         EH+2NrawFe4mIuNq2E+8pMvJZXo/4IoBdEXJlgWsH6XVcHDT6Nq5zqr9epyOg6+3vmu5
-         FaWg==
-X-Gm-Message-State: APjAAAVO1QqmLFHqbb/1wjcPmxgnkGFk4y3S24Fjj9WEBTmEcCBzPOcy
-        ERjP0uuVPHkXTHb16342wA==
-X-Google-Smtp-Source: APXvYqwrnZY/ZPBJLbDeb8J+pMauGOF8476+x1xC/ThJIOQhcOUCG6I/0CibhrbwLYk77SV7OeluBQ==
-X-Received: by 2002:a63:c605:: with SMTP id w5mr16749080pgg.355.1554014526923;
-        Sat, 30 Mar 2019 23:42:06 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:subject:references
+         :in-reply-to:cc:cc:to;
+        bh=xZTMUV5RCmijUMDZ0Ud0T7Ku5dtiOSk5cu61BHT3sas=;
+        b=HH5Gd8Q+eC11mJAoStcmJd/nEGGynW8vg/vn0gGeklc8oGjU234kCykI0aeSbXEzgu
+         F9JTml1mm4AmeHE6u6KNRr5didMdY6FORngbzoXCpbsAPmf+SpJw8gF6IRbNfux5UDR7
+         N7D4JwpnKX3wQ4ZIFkUsjlapoc/k5GE0Qi56bv71p/JV8UAEHaXHkaFI7HVZbJNTUvJs
+         xP8lD4lT+K/cbZaMBmwaH2mME4NFtfCm4yGng8jJiTFjwVK/5KNRQqbUh8Nicz1QcCEy
+         8bTFYaErvPC1a/eSNCZuXZYxV1q/bTwf2uDPe3ApmRKn+pb8uufkF2HQmd5hNeHf0c0E
+         VW2A==
+X-Gm-Message-State: APjAAAUFoD3dKa9YuG0aYlliTrx5s3fBDR5klUtHfEsWZax+nhdjaXyU
+        I2Ha/3gp51lxOawaZ/HeV/GC7AJBZA==
+X-Google-Smtp-Source: APXvYqzvZF9IH+1Ea6A+T6u55/jLckxgGFhoKOAW2e/UXImIkYRkpmlP7injVXDXLqJZZFj35X+D6A==
+X-Received: by 2002:a63:c34a:: with SMTP id e10mr54266510pgd.194.1554014443052;
+        Sat, 30 Mar 2019 23:40:43 -0700 (PDT)
 Received: from localhost ([210.160.217.68])
-        by smtp.gmail.com with ESMTPSA id a129sm19398038pfa.152.2019.03.30.23.42.05
+        by smtp.gmail.com with ESMTPSA id e4sm5266886pgd.32.2019.03.30.23.40.42
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 30 Mar 2019 23:42:06 -0700 (PDT)
-Date:   Sun, 31 Mar 2019 01:42:04 -0500
+        Sat, 30 Mar 2019 23:40:42 -0700 (PDT)
+Message-ID: <5ca060ea.1c69fb81.4ef19.df63@mx.google.com>
+Date:   Sun, 31 Mar 2019 01:40:40 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Shinji Kanematsu <kanematsu.shinji@socionext.com>
-Cc:     jic23@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        masami.hiramatsu@linaro.org, jaswinder.singh@linaro.org,
-        orito.takao@socionext.com, sugaya.taichi@socionext.com,
-        kasai.kazuhiro@socionext.com
-Subject: Re: [PATCH 1/2] dt-bindings: iio: counter: Add Milbeaut Updown
- Counter
-Message-ID: <20190331015228.GA27625@bogus>
-References: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
-X-Mutt-References: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
+Subject: Re: [PATCH 2/2] dt-bindings: iio: add Bosch BMG160 gyroscope sensor
+References: <cover.1552922054.git.hns@goldelico.com> <1664da2e7a9cb687eece1f27501d275219bcc4ed.1552922054.git.hns@goldelico.com>
+In-Reply-To: <1664da2e7a9cb687eece1f27501d275219bcc4ed.1552922054.git.hns@goldelico.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
+        kernel@pyra-handheld.com
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Mar 26, 2019 at 03:33:09PM +0900, Shinji Kanematsu wrote:
-> Add documentation for Milbeaut Updown Counter device
-> quadrature encoder and counter binding.
+On Mon, 18 Mar 2019 16:14:15 +0100, "H. Nikolaus Schaller" wrote:
+> Define bindings for "bosch,bmg160" and "bosch,bmi055_gyro".
 > 
-> Signed-off-by: Shinji Kanematsu <kanematsu.shinji@socionext.com>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 > ---
->  .../bindings/iio/counter/milbeaut-updown_cnt.txt   | 22 ++++++++++++++++++++++
->  1 file changed, 22 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
+>  .../bindings/iio/gyroscope/bmg160.txt         | 20 +++++++++++++++++++
+>  1 file changed, 20 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt b/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
-> new file mode 100644
-> index 0000000..6771567
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
-> @@ -0,0 +1,22 @@
-> +SOCIONEXT Milbeaut Updown counter
-> +
-> +Required properties:
-> +- compatible:       Must be "socionext,milbeaut-updown-counter".
-> +- reg:              Offset and length of the device's register set.
-> +- clocks:           Phandle to the clock used by the Updown counter module.
-> +- clock-names:      Must be "mux".
-> +- interrupts:       SPI number of the device's set.
-> +- cms_type:         connected_device
-> +                     1: updown button  (updown counter mode)
-> +                     2: rotary encoder (phase difference counter mode)
 
-We should have a common property for describing what's attached. 
-IIRC, just had a similar binding recently.
-
-> +
-> +Example:
-> +
-> +	updown0: updown@1e002000 {
-> +		compatible = "socionext,milbeaut-updown-counter";
-> +		reg = <0x1e002000 0x20>;
-> +		clocks = <&clk 4>;
-> +		clock-names = "mux";
-> +		interrupts = <0 104 0x4>;
-> +		cms_type = <1>;
-> +	};
-> -- 
-> 1.9.1
-> 
+Reviewed-by: Rob Herring <robh@kernel.org>
 
