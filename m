@@ -2,59 +2,56 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A6DC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:34:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF75C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 11:05:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B1BE12146F
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 10:34:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1B5A020870
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 11:05:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554028455;
-	bh=KZX3B3kqeXK6KbRjww4PZdoyu8VKsKIUpdaksSUN2uQ=;
+	s=default; t=1554030353;
+	bh=V2gjzo5qisFRUiXcNybqVoNr8zk87r0pPbf3OaQnyY4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=G9G/U0DrNfc5JYP8ANmWcKd1Dmc0llCCNp5AITNQLXCGioed3DyqKRuuZ3cvIKmVY
-	 H2hYZTKQXOIrycuZrxFbwSuHyvugQZ2W2xMbAcMtjcM/ajB6y+wkdPXdVrnRxU90+z
-	 FZO54xy6XcTaYtiZV2qt6BTq3njrsj0Hy6m8yonU=
+	b=dP20hBt5BhA28/AMMbFSaqNmgeCRmN8z7bK7JO5OZr0ftjkwwpR7CJAL8UBqcDpB2
+	 mk6mFC2y8E/9HuBvMdKeXx+jfKwNV/ZGsFps/MzUpWch5wF6VGJuuQoMzK2wlU/0K7
+	 3Me6IUqzDRRrHh9BX3uPYUOut/+FDcpDVImFKyJk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbfCaKeP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 06:34:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52460 "EHLO mail.kernel.org"
+        id S1726863AbfCaLFw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 07:05:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59652 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726989AbfCaKeP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 31 Mar 2019 06:34:15 -0400
+        id S1726819AbfCaLFw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 31 Mar 2019 07:05:52 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56B7020872;
-        Sun, 31 Mar 2019 10:34:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2A9BE2085A;
+        Sun, 31 Mar 2019 11:05:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1554028454;
-        bh=KZX3B3kqeXK6KbRjww4PZdoyu8VKsKIUpdaksSUN2uQ=;
+        s=default; t=1554030350;
+        bh=V2gjzo5qisFRUiXcNybqVoNr8zk87r0pPbf3OaQnyY4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vv+wv09SBFJh9fcnlPikRTgm/oRK9ROG4APtAS4notSU5BfvlocretPiDSu2wFBIR
-         X/mhyDhAaKYdqRa1PdFWbtxComJ18LknqTJ4S0FJI1liqXOLQbJRv+YYthZ9Zc7hYF
-         Gdfuq+jT4x59iDrUVn9afe07m5c5400jVdWSdD5M=
-Date:   Sun, 31 Mar 2019 11:34:07 +0100
+        b=r4mBrtgNXO413qI9GG7m9O2AushiAx+CsbRem6pLDqfinegYsOMKoG54bWlAhYDtM
+         PX9Mu/Gei4ovAZs6UYxJqVeLl7lbogx/HfvkFs/H56Uc2weWVR4NgIeirxTDzVUOPW
+         d7hguOiLmBdCzpvMTUQhy5FvF8t0AHD2v8C5heNQ=
+Date:   Sun, 31 Mar 2019 12:05:45 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andreas Klinger <ak@it-klinger.de>, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, mark.rutland@arm.com, afaerber@suse.de,
-        arnd@arndb.de, davem@davemloft.net, gregkh@linuxfoundation.org,
-        johan@kernel.org, khilman@baylibre.com, knaack.h@gmx.de,
-        lars@metafoo.de, linux-kernel@vger.kernel.org,
-        martin.blumenstingl@googlemail.com, mchehab+samsung@kernel.org,
-        m.othacehe@gmail.com, nicolas.ferre@microchip.com,
-        pmeerw@pmeerw.net, songqiang1304521@gmail.com, treding@nvidia.com,
-        techsupport@maxbotix.com
-Subject: Re: [PATCH v3 2/4] dt-bindings: maxbotix,mb1232: Add MaxBotix i2c
- ultrasonic rangers
-Message-ID: <20190331113407.5df5f41d@archlinux>
-In-Reply-To: <20190328175134.GA15033@bogus>
-References: <20190317203526.4pcwo4gdrrng44v7@arbad>
-        <20190328175134.GA15033@bogus>
+To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc:     letux-kernel@openphoenux.org, kernel@pyra-handheld.com,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [RFC 0/4] iio-input-bridge so that accelerometers which only
+ have an iio driver can still present evdev input events
+Message-ID: <20190331120545.78192269@archlinux>
+In-Reply-To: <890047F6-E288-41F0-A8D0-B91CC5A3A0A4@goldelico.com>
+References: <cover.1552941573.git.hns@goldelico.com>
+        <20190324182920.66242add@archlinux>
+        <890047F6-E288-41F0-A8D0-B91CC5A3A0A4@goldelico.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,69 +61,269 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 28 Mar 2019 12:51:35 -0500
-Rob Herring <robh@kernel.org> wrote:
+On Thu, 28 Mar 2019 18:42:44 +0100
+"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 
-> On Sun, Mar 17, 2019 at 09:35:27PM +0100, Andreas Klinger wrote:
-> > Add doc for dt binding maxbotix,mb1232. This binding is for MaxBotix
-> > I2CXL-MaxSonar ultrasonic rangers which share a common i2c interface.
+> Hi Jonathan,
+> 
+> > Am 24.03.2019 um 19:29 schrieb Jonathan Cameron <jic23@kernel.org>:
 > > 
-> > Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> > ---
-> >  .../bindings/iio/proximity/maxbotix,mb1232.txt     | 31 ++++++++++++++++++++++
-> >  1 file changed, 31 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
+> > On Mon, 18 Mar 2019 21:39:30 +0100
+> > "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
 > > 
-> > diff --git a/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
-> > new file mode 100644
-> > index 000000000000..0e9df87eca1d
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.txt
-> > @@ -0,0 +1,31 @@
-> > +* MaxBotix I2CXL-MaxSonar ultrasonic distance sensor of type  mb1202,
-> > +  mb1212, mb1222, mb1232, mb1242, mb7040 or mb7137 using the i2c interface
-> > +  for ranging
-> > +
-> > +Required properties:
-> > + - compatible:		"maxbotix,mb1202",
-> > +			"maxbotix,mb1212",
-> > +			"maxbotix,mb1222",
-> > +			"maxbotix,mb1232",
-> > +			"maxbotix,mb1242",
-> > +			"maxbotix,mb7040" or
-> > +			"maxbotix,mb7137"
-> > +
-> > + - reg:			i2c address of the device, see also i2c/i2c.txt
-> > +
-> > +Optional properties:
-> > + - interrupt-parent:	Interrupt controller to use  
+> > 	  
+> >> Some user spaces (e.g. some Android) use /dev/input/event* for handling the 3D
+> >> position of the device with respect to the center of gravity (earth). This can
+> >> be used for gaming input, rotation of screens etc.
+> >> 
+> >> This should be the standard because this interface is an abstraction of how
+> >> this data is acquired from sensor chips. Sensor chips may be connected through
+> >> different interfaces and in different positions. They may also have different
+> >> parameters. And, if a chip is replaced by a different one, the values reported
+> >> by the device position interface should remain the same.
+> >> 
+> >> But nowadays, new accelerometer chips usually just get iio drivers and rarely
+> >> an evdev input driver.
+> >> 
+> >> Therefore we need something like a protocol stack: input device vs. raw data.
+> >> It can be seen as a similar layering like TCP/IP vs. bare Ethernet. Or keyboard
+> >> input events vs. raw gpio or raw USB access.
+> >> 
+> >> This patch set bridges the gap between raw iio data and the input device abstraction
+> >> so that accelerometer measurements can also be presented as X/Y/Z accelerometer
+> >> channels (INPUT_PROP_ACCELEROMETER) through /dev/input/event*.
+> >>   
+> > Hi,
+> > 
+> > I've kind of run out of time today and want to give this a detailed look.  
 > 
-> Don't need this as it is implied and could be in the parent.
+> No problem, please take the time it needs.
 > 
-> Otherwise,
+> > 
+> > In the meantime a few initial comments.
+> > 
+> > 1. Resend the whole series cc'ing the linux-input list and maintainer.  
 > 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-I tidied that up.
+> Ok!
+> 
+> > 2. In the vast majority of devices the interrupt pin is connected for an
+> >   accelerometer. and they support data ready signals.  My gut feeling is
+> >   that should be the preferred mode.  
+> 
+> Mine too, and the commit message 1/4 describes this by 
+> 
+> "If it runs, the driver polls the device(s) once every 100 ms. A mode where the
+> iio device defines the update rate is not implemented and for further study."
 
-Thanks,
+Absolutely, I saw that, just wanted to encourage this avenue ;) It's particularly
+good if we have a controllable frequency device and can have it self clock
+at a rather that makes sense for human input.  Also lets the gamers run at
+2kHz if they really want to ;)
+
+> 
+> But I didn't manage to get this correctly set up for in-kernel iio on demand
+> (start/stop when a process does an open/close - it was simpler to start/stop
+> polling).
+> 
+> Here I am lacking some understanding of details of the subsystems and their
+> capabilities.
+> 
+> Therefore I focussed on the polling case to leave the interrupt driven case
+> for later improvements. Also, since 100ms doesn't seem to be a big resource
+> burden.
+
+One thing the IIO consumer interfaces have always lacked is nice fallback
+between the buffered / interrupt mode and polled read_raw modes.  In theory
+if should be possible to elegantly assume that we have a self clocking sensor
+but if it doesn't actually support that, fall back to polling and still have
+it come out of the buffered interface.  The snag has always been that we
+currently end up adding, non-trivial, code to the IIO drivers to support
+buffered modes and we don't want to put that burden on all drivers.
+
+> 
+> I am also not sure if we really want to process every fidget detected by the
+> raw sensor to the input subsystem. This could require more resources than
+> polling with 100ms distance.
+
+Agreed. Thankfully most such sensors also have frequency controls so we
+can normally get to a sensible level.  Input gets to do all the filtering
+etc beyond that.
+
+> 
+> >  It was for that use case that we originally
+> >   put all the demux and multiple buffer code in IIO. The original series for
+> >   that actually had an input bridge.
+> > https://lore.kernel.org/linux-iio/1351679431-7963-5-git-send-email-jic23@kernel.org/  
+> 
+> Oh, nice! I wasn't aware of that. If I had known, we might have based our
+> code on it.
+
+You probably noticed in the comments, it was never finished!  The problem is that
+all my boards are headless so I never cared ;)  Good to have someone looking
+at this problem who does.
+
+> 
+> It seems to be a good blueprint to understand how to set up the callbacks.
+> 
+> What I do not understand is where the "iio map" comes from in your approach.
+> 
+> From device tree? That would IMHO be against the rule that DTS should describe
+> hardware but bridging data to a different user-space interface is not related
+> to hardware description.
+
+This has long been an 'argument' on what exactly makes up hardware description.
+The problem is that usecases really are hardware description.  There has to
+be some means fo knowing what the thing is for, to dictate what software
+support we supply.  Whether that is in userspace or kernel or as you have
+done is assumed "if plausible" is an open question.
+
+Back when this was originally proposed, there weren't clear rules on this in
+DT.  It's hard to argue this is any different from hwmon, though Mark in
+particular really dislikes the iio-hwmon interface.  It has the problem that
+no one has ever come up with a better one.  Only potential option is to create
+abstract devices to represent the fact a given ADC channel is used for
+measuring a 'board voltage' or something like that.  They provide no useful
+meaning that is actually different from putting them in the iio-hwmon bindings.
+
+The same is kind of true here with the reality being we need to know what
+the 'driver' of the acceleration is.  
+
+Could have a binding for 'human' vs 'bridge' vs 'car' :)
+
+> 
+> So our approach does not need a specific mapping.
+> 
+> > 
+> > 3. It's going to be a hard sell to have it 'always' map an accelerometer in IIO
+> >   to an input device when configured.  There are lots of other accelerometer use
+> >   cases where this would be crazy.  In the repost, give some comentary perhaps on
+> >   the following options:
+> >   a) Explicit binding - like the iio-hwmon bridge.
+> >   b) A userspace bridge (I even wrote one of those years ago using uevent)
+> >   c) Some sort of userspace triggered way of creating these on demand.  
+> 
+> Basically, if you have one of these many other use cases, one can just keep this
+> bridge unconfigured. Then, it does not eat up memory or code space or processor
+> cycles.
+
+That's a non starter.   Lots of people aren't going to tune their kernel to
+'unconfigure' some support because they want to turn a feature off.  Take
+a raspberry pi for instance. If it has an accelerometer, the question of whether
+anyone wants to use it is down to whether there is a screen attached or not.
+
+> 
+> Its only use case is to map iio accelerometers to input devices which are
+> really used as input devices, i.e. gaming, device orientation etc. Other use
+> cases (e.g. industrial sensor grid data aggregator) should not consider this as
+> an alternative interface and use e.g. libiio of course.
+> 
+> Those (handheld) devices in mind usually have only a single accelerometer chip, but
+> there are exceptions like the GTA04 and the Pyra which can have two of them (with
+> different precision, mounting orientation and functions). Maybe there are some
+> devices with more than two. So these iio devices should be reported separately
+> but the data (X,Y,Z) should mainly agree on input device level.
+
+There are lots of two sensor cases where the sensors don't agree, mainly because
+they are connected by a hinge (screen and keyboard on laptops for example).
+Doesn't matter really though.
+
+> 
+> In the two-sensor case, our proposed driver simply creates two distinct /dev/input/event
+> files which can be given fixed file names by udev instead of inventing a new trigger
+> to create these on demand. IMHO it should not be handled differently from plugging in
+> multiple mice or joysticks or other gaming devices to USB.
+
+Alternative UDEV can pick up on a new IIO device and poke an interface to register
+an input device from it.  We've talked about allowing iio_maps to be instantiated
+via configfs and it may be that is the modern choice for how to do this.
+
+> 
+> And, this driver converts "raw" accelerometer data into a higher abstraction level
+> input event in a way that user-space becomes independent of the specific chip set
+> and its orientation. This is like hiding different flash hardware interfaces
+> by MTD or file systems. All the hardware details are hidden and shielded. Or it
+> is like mapping gpios or alternatively an i2c scanner chio into standardized key codes.
+> 
+> Finally, there is no polling (in this polling setup) if no process opens the input device.
+> So the only waste of 'always' mapping 'all' accelerometers but not using them are some
+> data structure allocations in the kernel and duration of probe().
+Sure, it's not a heavy burden - but it is conceptually dubious to register an
+interface because 'it might' be wanted.  I'd like Dmitry and the input lists
+view on this (plus others in IIO!)
+
+> 
+> > 4. Input has polled modes. Don't reinvent them.  
+> 
+> Haven't heard of, but that is what a RFC is good for.
+> 
+> Anyways, if we use iio interrupts we don't need it, because the information flow
+> should go from the chip to the iio driver to the input bridge to the input subsystem
+> and only then notify user space (wake up the process running a select on the event
+> device file).
+> 
+> Now, there is something I have learned from studying your comment and struct input_dev.
+> 
+> Although I did not find polled modes, I can simplify our approach significantly
+> since we do not have to count open/close ourselves and define a mutex for that.
+> 
+> This is already done by the input_dev. So I should improve this part of our patches
+> before resending to input list. Thanks for inpsiring this.
+> 
+I see from the next mail you found the polled code.  Dmitry would have kicked back
+on that if you hadn't (we have had this a few times before ;)
+
+> > 5. The patch break up is very very random.  Just have one patch :)  
+> 
+> Well, it tries to have small pieces in a specific order that you can bisect and
+> do not run into compile problems (e.g. adding Makefile before code).
+> 
+> But I can squash it. Seems to make sense since it is not really useful to know
+> which of these pieces breaks other things. It can only be the driver
+> and bisect will still pin-point it.
+
+Quite. It's really one new function so keeping it in one patch is fine.
+
+Patch break up of large new changes is always an interesting one.  Sometimes
+it's much easier to review a 2000 line patch than 5 smaller ones, but
+conversely a 2000 line patch doesn't always fit into lunch time ;)
+> 
+> > 
+> > Anyhow, I'll take a look in detail but may be a little while.  
+> 
+> No reason to hurry. We can wait.
+> 
+> > 
+> > Thanks,
+> > 
+> > Jonathan  
+> 
+> Thanks and BR,
+> Nikolaus
+Great to have this 'hole' filled at last. I've been moaning about it for
+years but never actually got interested enough to do it myself!
 
 Jonathan
 
 > 
-> > +
-> > + - interrupts:		Interrupt used to announce the preceding reading
-> > +			request has finished and that data is available.
-> > +			If no interrupt is specified the device driver
-> > +			falls back to wait a fixed amount of time until
-> > +			data can be retrieved.
-> > +
-> > +Example:
-> > +proximity@70 {
-> > +	compatible = "maxbotix,mb1232";
-> > +	reg = <0x70>;
-> > +	interrupt-parent = <&gpio2>;
-> > +	interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
-> > +};
-> > -- 
-> > 2.11.0  
+> > 
+> >   
+> >> 
+> >> H. Nikolaus Schaller (4):
+> >>  iio: input-bridge: optionally bridge iio acceleometers to create a
+> >>    /dev/input
+> >>  iio: input-bridge: add iio-input-bridge to Makefile
+> >>  iio: input-bridge: add IIO_INPUT_BRIDGE kernel config option
+> >>  iio: input-bridge: make the iio-input-bridge driver called by iio-core
+> >> 
+> >> drivers/iio/Kconfig                    |   7 +
+> >> drivers/iio/Makefile                   |   1 +
+> >> drivers/iio/industrialio-core.c        |  12 +
+> >> drivers/iio/industrialio-inputbridge.c | 420 +++++++++++++++++++++++++
+> >> drivers/iio/industrialio-inputbridge.h |  28 ++
+> >> 5 files changed, 468 insertions(+)
+> >> create mode 100644 drivers/iio/industrialio-inputbridge.c
+> >> create mode 100644 drivers/iio/industrialio-inputbridge.h
+> >>   
+> >   
+> 
 
