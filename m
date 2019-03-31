@@ -2,180 +2,117 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9761C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 16:48:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2C33C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 19:15:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8BE1F20856
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 16:48:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6E49E20870
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 19:15:30 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=laposte.net header.i=@laposte.net header.b="HQqAVYnN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731240AbfCaQsY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 12:48:24 -0400
-Received: from mout.kundenserver.de ([212.227.126.131]:47837 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731231AbfCaQsY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 12:48:24 -0400
-Received: from localhost ([46.183.103.17]) by mrelayeu.kundenserver.de
- (mreue010 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1My2pz-1h1MKf3SZD-00zVQB; Sun, 31 Mar 2019 18:47:59 +0200
-Date:   Sun, 31 Mar 2019 18:47:56 +0200
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        masneyb@onstation.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] bmp085.yaml: transform DT documentation of iio sensor into
- YAML
-Message-ID: <20190331164753.xifw6kkiwdg4xpzo@arbad>
+        id S1731326AbfCaTP3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 15:15:29 -0400
+Received: from smtpoutz26.laposte.net ([194.117.213.101]:46562 "EHLO
+        smtp.laposte.net" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1725987AbfCaTP3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 15:15:29 -0400
+X-Greylist: delayed 1247 seconds by postgrey-1.27 at vger.kernel.org; Sun, 31 Mar 2019 15:15:27 EDT
+Received: from smtp.laposte.net (localhost [127.0.0.1])
+        by lpn-prd-vrout014 (Postfix) with ESMTP id 7EC67160018
+        for <linux-iio@vger.kernel.org>; Sun, 31 Mar 2019 20:54:38 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=laposte.net; s=mail0;
+        t=1554058478; bh=3ObRabcrAxzcPUSt8FNEMa78if3MPuasUhfnOdvrkKk=;
+        h=From:To:Cc:Subject:Date;
+        b=HQqAVYnN4OGn65Fb/O3lcEWhOddr5jmrv2Wssyemngzg/1JXft2xHu5F9LeufVmxV
+         tb2miBdDfxwJ/EO1zAsQm6/gnKW6cbGCKaFkA5Vy+M4tU9N6NRMnwRlojiNMbNj7K5
+         j5en0rv97ypZiF2wqdeFsseNRAA+HgsMCd7wsAyByz55ILHlanF/fb+vgOgD2owIsl
+         rRIOubTT0r5jgAb/+FJSdQb1p/YOLDI48Eu1AgVFg9f8DmTYcD7grzHRgB3ej7hV43
+         j3o9SslyuGdFRv/+hyeuNcFbdiks06foIsdr4m1wslpZVDeTJjQLQ4kUZxKuana5g0
+         Jm12aEuc5L8uA==
+Received: from smtp.laposte.net (localhost [127.0.0.1])
+        by lpn-prd-vrout014 (Postfix) with ESMTP id 710A3160034
+        for <linux-iio@vger.kernel.org>; Sun, 31 Mar 2019 20:54:38 +0200 (CEST)
+Received: from lpn-prd-vrin004 (lpn-prd-vrin004.laposte [10.128.63.5])
+        by lpn-prd-vrout014 (Postfix) with ESMTP id 6B1DD160018
+        for <linux-iio@vger.kernel.org>; Sun, 31 Mar 2019 20:54:38 +0200 (CEST)
+Received: from lpn-prd-vrin004 (localhost [127.0.0.1])
+        by lpn-prd-vrin004 (Postfix) with ESMTP id 5A239728E1B
+        for <linux-iio@vger.kernel.org>; Sun, 31 Mar 2019 20:54:38 +0200 (CEST)
+Received: from romuald.bergerie (rqp06-1-88-178-86-202.fbx.proxad.net [88.178.86.202])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by lpn-prd-vrin004 (Postfix) with ESMTPSA id F3084728EEC;
+        Sun, 31 Mar 2019 20:54:37 +0200 (CEST)
+Received: from radicelle.bergerie (radicelle.bergerie [192.168.124.12])
+        by romuald.bergerie (Postfix) with ESMTPS id 2035D2E25AFB;
+        Sun, 31 Mar 2019 20:54:37 +0200 (CEST)
+Received: from vincent by radicelle.bergerie with local (Exim 4.92)
+        (envelope-from <vincent@radicelle.bergerie>)
+        id 1hAfbI-0005i8-VN; Sun, 31 Mar 2019 20:54:36 +0200
+From:   =?UTF-8?q?Vincent=20Stehl=C3=A9?= <vincent.stehle@laposte.net>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Vincent=20Stehl=C3=A9?= <vincent.stehle@laposte.net>,
+        Dan Murphy <dmurphy@ti.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH] iio: adc: ads124: avoid buffer overflow
+Date:   Sun, 31 Mar 2019 20:54:23 +0200
+Message-Id: <20190331185423.11749-1-vincent.stehle@laposte.net>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:o5hHlLfo4Vhe5StMsrjxDDrbkijgYfhiSS5BdSANv6Nehq72DTo
- pM0SOxCeDRAIAbDipMHo2oIhHgPeDKsIhdj8vbHJob2oS0B/IwHAjNMJUjjMV7UD3JWudEr
- wxQiYYgBbpDgWq+UsXsBQvYfipRbiW2oUZuMu+xEw6Mtnvd3/uWxHZfBjYmM1bu5WRpuXRO
- i+vUMdbVyoWMfEgtt4Y4g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:hxXyqtuNJ3E=:xCegxalvBYAtEB6NrDeq5I
- WTl+2wljvqYUE08zBqFiY1mKMaQWIbrBzDH+88KQzyhl1OZX6uPhwuwEekoy+woCEvfLujyJd
- 5dyvEBk8A3DwEVQzoXvkV6diCbvxT77biycbT1wcsu5ohgrvc1pdGL0PkuGq3jZSc1KRH7Lhb
- xT1QgK0yxbpiFfm13x70hFqAl3ZtU+fXZyPPoLZ48YyObMP+ZXmqx696CkTTtIOfRVWaw7225
- IA91uOLOS0z534ZKbAyaiL0pYmc79BJk3xK5kU4rDwDyzL5eBlcKd2ztm2JNOCQpjN617hxur
- Dfc9AaK+GY00pGpS1y4Tp79g0JuIsdgFTI/s7TU6pcHu7Oznz33BLhkZGl4sKYvURIBh7C/6/
- /RlWgHhfkskPX1k340zJKi08Xd7hh7hdOAe2CarbC6MAJvjkCzsdfTJWZJZYfZHfnesaXv5JV
- EqwQjNgCwfLu5jpqPFwycJ3Mpsq3o3lDwQ9xKaYjW5KY3+0hDvGa0Dxu2VljQ072z91PXHARw
- DgvwVL5fuO7uBOJTQSGbEeqpeQd3PcBMknomtQNpFGHi/5VY+0HTPEDk5CXaCLBcZKg9HG2Kd
- QKBkB1NtL7UcoKMVM5ate447hzZxwDqZYFpA194H9Vvtaxuhhq1vBlpbU3DHc+vusoDxYosnr
- DAyvKNiq92wwyW7zZLvEwbWUMRpwLPjgOzME2WYr7WKppafShkRakFB8wNs9F7X7CpON9orOk
- BLCNpp5q1DGTIM1Pz4W0veomuJcPa21U3guimTjEukp1ElwKiJd1QHJ5ElE=
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-VR-FullState: 0
+X-VR-Score: -100
+X-VR-Cause-1: gggruggvucftvghtrhhoucdtuddrgedutddrledvgddufeduucetufdoteggodetrfdotffvucfrrhho
+X-VR-Cause-2: fhhilhgvmecunfetrffquffvgfenuceurghilhhouhhtmecuhedttdenucesvcftvggtihhpihgvnhht
+X-VR-Cause-3: shculddquddttddmnecujfgurhephffvufffkffogggtgfesthekredtredtjeenucfhrhhomhepgghi
+X-VR-Cause-4: nhgtvghnthcuufhtvghhlhoruceovhhinhgtvghnthdrshhtvghhlhgvsehlrghpohhsthgvrdhnvght
+X-VR-Cause-5: qeenucfkphepkeekrddujeekrdekiedrvddtvdenucfrrghrrghmpehmohguvgepshhmthhpohhuthdp
+X-VR-Cause-6: ihhnvghtpeekkedrudejkedrkeeirddvtddvpdhhvghloheprhhomhhurghlugdrsggvrhhgvghrihgv
+X-VR-Cause-7: pdhmrghilhhfrhhomhepvhhinhgtvghnthdrshhtvghhlhgvsehlrghpohhsthgvrdhnvghtpdhrtghp
+X-VR-Cause-8: thhtoheplfhonhgrthhhrghnrdevrghmvghrohhnsehhuhgrfigvihdrtghomhdprhgtphhtthhopehv
+X-VR-Cause-9: ihhntggvnhhtrdhsthgvhhhlvgeslhgrphhoshhtvgdrnhgvthdprhgtphhtthhopegumhhurhhphhih
+X-VR-Cause-10: sehtihdrtghomhdprhgtphhtthhopehlihhnuhigqdhiihhosehvghgvrhdrkhgvrhhnvghlrdhorhhg
+X-VR-Cause-11: pdhrtghpthhtoheplhhinhhugidqkhgvrhhnvghlsehvghgvrhdrkhgvrhhnvghlrdhorhhgnecuvehl
+X-VR-Cause-12: uhhsthgvrhfuihiivgeptd
+X-VR-AvState: No
+X-VR-State: 0
+X-VR-State: 0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-use bmp085.txt and change it into yaml format
+When initializing the priv->data array starting from index 1, there is one
+less element to consider than when initializing the full array.
 
-fix links to datasheets in replaced documentation
-
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Fixes: e717f8c6dfec8f76 ("iio: adc: Add the TI ads124s08 ADC code")
+Signed-off-by: Vincent Stehlé <vincent.stehle@laposte.net>
+Cc: Dan Murphy <dmurphy@ti.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../devicetree/bindings/iio/pressure/bmp085.txt    | 27 --------
- .../devicetree/bindings/iio/pressure/bmp085.yaml   | 71 ++++++++++++++++++++++
- 2 files changed, 71 insertions(+), 27 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.txt
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
+ drivers/iio/adc/ti-ads124s08.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-deleted file mode 100644
-index 61c72e63c584..000000000000
---- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
-+++ /dev/null
-@@ -1,27 +0,0 @@
--BMP085/BMP18x/BMP28x digital pressure sensors
--
--Required properties:
--- compatible: must be one of:
--  "bosch,bmp085"
--  "bosch,bmp180"
--  "bosch,bmp280"
--  "bosch,bme280"
--
--Optional properties:
--- interrupts: interrupt mapping for IRQ
--- reset-gpios: a GPIO line handling reset of the sensor: as the line is
--  active low, it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
--- vddd-supply: digital voltage regulator (see regulator/regulator.txt)
--- vdda-supply: analog voltage regulator (see regulator/regulator.txt)
--
--Example:
--
--pressure@77 {
--	compatible = "bosch,bmp085";
--	reg = <0x77>;
--	interrupt-parent = <&gpio0>;
--	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
--	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
--	vddd-supply = <&foo>;
--	vdda-supply = <&bar>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
-new file mode 100644
-index 000000000000..884f889c1ca5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
-@@ -0,0 +1,71 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/pressure/bmp085.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: BMP085/BMP180/BMP280/BME280 pressure iio sensors
-+
-+maintainers:
-+  - Andreas Klinger <ak@it-klinger.de>
-+
-+description: |
-+  Pressure, temperature and humidity iio sensors with i2c and spi interfaces
-+
-+  Specifications about the sensor can be found at:
-+    https://www.bosch-sensortec.com/bst/products/all_products/bmp180
-+    https://www.bosch-sensortec.com/bst/products/all_products/bmp280
-+    https://www.bosch-sensortec.com/bst/products/all_products/bme280
-+
-+properties:
-+  compatible:
-+    oneOf:
-+      - items:
-+        - enum:
-+          - bosch,bmp085
-+          - bosch,bmp180
-+          - bosch,bmp280
-+          - bosch,bme280
-+
-+  vddd-supply:
-+    description:
-+      digital voltage regulator (see regulator/regulator.txt)
-+    maxItems: 1
-+
-+  vdda-supply:
-+    description:
-+      analog voltage regulator (see regulator/regulator.txt)
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description:
-+      A GPIO line handling reset of the sensor. As the line is active low,
-+      it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      interrupt mapping for IRQ (BMP085 only)
-+
-+required:
-+  - compatible
-+  - vddd-supply
-+  - vdda-supply
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c0 {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      pressure@77 {
-+          compatible = "bosch,bmp085";
-+          reg = <0x77>;
-+          interrupt-parent = <&gpio0>;
-+          interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+          reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
-+          vddd-supply = <&foo>;
-+          vdda-supply = <&bar>;
-+      };
-+    };
+diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
+index 53f17e4f2f230..552c2be8d87ad 100644
+--- a/drivers/iio/adc/ti-ads124s08.c
++++ b/drivers/iio/adc/ti-ads124s08.c
+@@ -202,7 +202,7 @@ static int ads124s_read(struct iio_dev *indio_dev, unsigned int chan)
+ 	};
+ 
+ 	priv->data[0] = ADS124S08_CMD_RDATA;
+-	memset(&priv->data[1], ADS124S08_CMD_NOP, sizeof(priv->data));
++	memset(&priv->data[1], ADS124S08_CMD_NOP, sizeof(priv->data) - 1);
+ 
+ 	ret = spi_sync_transfer(priv->spi, t, ARRAY_SIZE(t));
+ 	if (ret < 0)
 -- 
-2.11.0
+2.20.1
+
