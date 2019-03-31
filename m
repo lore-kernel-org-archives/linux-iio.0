@@ -2,81 +2,133 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3286AC43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625FAC43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 09:29:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EBC8120850
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:44:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23B8B20989
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 09:29:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554014673;
-	bh=2SAUjQbpVOWY1VoWkBzeM9WdFRnNpKTxbQDlHdJbcJQ=;
-	h=Date:From:Subject:References:In-Reply-To:Cc:Cc:To:List-ID:From;
-	b=eh/sSC0qIV565k6pbYuw1FkSANku4M0OzsiKkaY5ididYbEYB+5NEqkebbfK2N8mt
-	 zFfe0+G6pDCycaI3jShb6fDjC8Gf8LwmNt84AG27IaExSq+43O/VCfkk9QN9NapAZ1
-	 +fz/CLXkzxq+4ml/gNrlKEOGo41pjE7wxHWJi1lI=
+	s=default; t=1554024598;
+	bh=zhhun6mQ82gwyWR4UdaJuqLb1UL/DUD2L9k6gira5bc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=v5qU26N2dFw1GamiwOH/QFY5sUxNOhbCUt593mvGl4zb0C0ZjCVtDzJvjh9se8hK8
+	 mlG3FG9nqaV2TBbvI4/DLSlXUulOovQbHspPV8HzGSHSBFR1chlp80zlFd6ia9adGs
+	 wlzvJ8VvdFbajQKSg+WbyHKKUbkJratPIeoRV0tg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726747AbfCaGko (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 02:40:44 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:33797 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726668AbfCaGko (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 02:40:44 -0400
-Received: by mail-pg1-f196.google.com with SMTP id v12so3173108pgq.1;
-        Sat, 30 Mar 2019 23:40:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:subject:references
-         :in-reply-to:cc:cc:to;
-        bh=xZTMUV5RCmijUMDZ0Ud0T7Ku5dtiOSk5cu61BHT3sas=;
-        b=HH5Gd8Q+eC11mJAoStcmJd/nEGGynW8vg/vn0gGeklc8oGjU234kCykI0aeSbXEzgu
-         F9JTml1mm4AmeHE6u6KNRr5didMdY6FORngbzoXCpbsAPmf+SpJw8gF6IRbNfux5UDR7
-         N7D4JwpnKX3wQ4ZIFkUsjlapoc/k5GE0Qi56bv71p/JV8UAEHaXHkaFI7HVZbJNTUvJs
-         xP8lD4lT+K/cbZaMBmwaH2mME4NFtfCm4yGng8jJiTFjwVK/5KNRQqbUh8Nicz1QcCEy
-         8bTFYaErvPC1a/eSNCZuXZYxV1q/bTwf2uDPe3ApmRKn+pb8uufkF2HQmd5hNeHf0c0E
-         VW2A==
-X-Gm-Message-State: APjAAAUFoD3dKa9YuG0aYlliTrx5s3fBDR5klUtHfEsWZax+nhdjaXyU
-        I2Ha/3gp51lxOawaZ/HeV/GC7AJBZA==
-X-Google-Smtp-Source: APXvYqzvZF9IH+1Ea6A+T6u55/jLckxgGFhoKOAW2e/UXImIkYRkpmlP7injVXDXLqJZZFj35X+D6A==
-X-Received: by 2002:a63:c34a:: with SMTP id e10mr54266510pgd.194.1554014443052;
-        Sat, 30 Mar 2019 23:40:43 -0700 (PDT)
-Received: from localhost ([210.160.217.68])
-        by smtp.gmail.com with ESMTPSA id e4sm5266886pgd.32.2019.03.30.23.40.42
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 30 Mar 2019 23:40:42 -0700 (PDT)
-Message-ID: <5ca060ea.1c69fb81.4ef19.df63@mx.google.com>
-Date:   Sun, 31 Mar 2019 01:40:40 -0500
-From:   Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/2] dt-bindings: iio: add Bosch BMG160 gyroscope sensor
-References: <cover.1552922054.git.hns@goldelico.com> <1664da2e7a9cb687eece1f27501d275219bcc4ed.1552922054.git.hns@goldelico.com>
-In-Reply-To: <1664da2e7a9cb687eece1f27501d275219bcc4ed.1552922054.git.hns@goldelico.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        id S1726690AbfCaJ35 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 05:29:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50958 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726734AbfCaJ35 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 31 Mar 2019 05:29:57 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C230206DD;
+        Sun, 31 Mar 2019 09:29:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1554024596;
+        bh=zhhun6mQ82gwyWR4UdaJuqLb1UL/DUD2L9k6gira5bc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=2LvkKnyhWaKjCI7r7gtdqnHvHPnkMAfyR6q+7ILTRyDzkyki95+4+tY6geoU0ozog
+         +rG8uzkUarFko4bNKUupArbBlxUzW/+AniljUdIUpqWWKRivycTvERxGNl2Q4MEgig
+         rBjAbzlouDYvUjE41qH5vRmups/DZo1Wmh5Io4Ec=
+Date:   Sun, 31 Mar 2019 10:29:47 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cristian Sicilia <sicilia.cristian@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 1/5] staging: iio: adc: ad7280a: Tab alignment
+Message-ID: <20190331102947.5fdffbb9@archlinux>
+In-Reply-To: <cc87225c83ca9d0aa18598d3f3519965bbc14764.1553447138.git.sicilia.cristian@gmail.com>
+References: <cover.1553366098.git.sicilia.cristian@gmail.com>
+        <cover.1553447138.git.sicilia.cristian@gmail.com>
+        <cc87225c83ca9d0aa18598d3f3519965bbc14764.1553447138.git.sicilia.cristian@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Mar 2019 16:14:15 +0100, "H. Nikolaus Schaller" wrote:
-> Define bindings for "bosch,bmg160" and "bosch,bmi055_gyro".
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  .../bindings/iio/gyroscope/bmg160.txt         | 20 +++++++++++++++++++
->  1 file changed, 20 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/bmg160.txt
-> 
+On Sun, 24 Mar 2019 18:23:09 +0100
+Cristian Sicilia <sicilia.cristian@gmail.com> wrote:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+> Aligned some parameters.
+> 
+> Signed-off-by: Cristian Sicilia <sicilia.cristian@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/staging/iio/adc/ad7280a.c | 36 ++++++++++++++++++------------------
+>  1 file changed, 18 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> index d9df126..571535d 100644
+> --- a/drivers/staging/iio/adc/ad7280a.c
+> +++ b/drivers/staging/iio/adc/ad7280a.c
+> @@ -830,30 +830,30 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  }
+>  
+>  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
+> -		in_voltage-voltage_thresh_low_value,
+> -		0644,
+> -		ad7280_read_channel_config,
+> -		ad7280_write_channel_config,
+> -		AD7280A_CELL_UNDERVOLTAGE);
+> +			     in_voltage-voltage_thresh_low_value,
+> +			     0644,
+> +			     ad7280_read_channel_config,
+> +			     ad7280_write_channel_config,
+> +			     AD7280A_CELL_UNDERVOLTAGE);
+>  
+>  static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
+> -		in_voltage-voltage_thresh_high_value,
+> -		0644,
+> -		ad7280_read_channel_config,
+> -		ad7280_write_channel_config,
+> -		AD7280A_CELL_OVERVOLTAGE);
+> +			     in_voltage-voltage_thresh_high_value,
+> +			     0644,
+> +			     ad7280_read_channel_config,
+> +			     ad7280_write_channel_config,
+> +			     AD7280A_CELL_OVERVOLTAGE);
+>  
+>  static IIO_DEVICE_ATTR(in_temp_thresh_low_value,
+> -		0644,
+> -		ad7280_read_channel_config,
+> -		ad7280_write_channel_config,
+> -		AD7280A_AUX_ADC_UNDERVOLTAGE);
+> +		       0644,
+> +		       ad7280_read_channel_config,
+> +		       ad7280_write_channel_config,
+> +		       AD7280A_AUX_ADC_UNDERVOLTAGE);
+>  
+>  static IIO_DEVICE_ATTR(in_temp_thresh_high_value,
+> -		0644,
+> -		ad7280_read_channel_config,
+> -		ad7280_write_channel_config,
+> -		AD7280A_AUX_ADC_OVERVOLTAGE);
+> +		       0644,
+> +		       ad7280_read_channel_config,
+> +		       ad7280_write_channel_config,
+> +		       AD7280A_AUX_ADC_OVERVOLTAGE);
+>  
+>  static struct attribute *ad7280_event_attributes[] = {
+>  	&iio_dev_attr_in_thresh_low_value.dev_attr.attr,
 
