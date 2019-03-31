@@ -2,82 +2,117 @@ Return-Path: <SRS0=bx8B=SC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57AA3C43381
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B02D0C43381
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:42:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 221A1218E2
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:41:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C36C20882
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Mar 2019 06:42:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554014489;
-	bh=DMe+IxpvIzTS6byr2ZlLglatCO+evbuYPB7F6daDJbg=;
-	h=Date:From:Subject:References:In-Reply-To:Cc:Cc:To:List-ID:From;
-	b=DAHYyIkYA34IDqtwUdz1pk7FqvH3sXvPGom3wzk6j0RmDt8yML5EGuKK6NwudVfWg
-	 ZZPVgXQGP2ybpldmGJOR+n8Ca9IMh44NEh5adV7Y4e8IGl21EN9CXDSP3ASwGOesw0
-	 XDJsdIswRu1PK9IMWk6SQneDaCICzjI3YjTmND8Y=
+	s=default; t=1554014534;
+	bh=mDJxvrejQskEh4+YaAcJuC+1k3IT4RJhEg+a+6xwLnU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=s7OJaBBV2oisFKWlNu7y1InYY9NA46lIQktzPbgk3XLqOXCJblZB4msp2IuwFstxq
+	 xApewvitckixuuIjVeBBfmZFXo6Uisnq811zCnOR9ObMl03h3DFryCzge61R0N4696
+	 5yVZDjRm53fgZvP4FMt2vVJ7DppseG4fY9LtKrio=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731151AbfCaGl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Mar 2019 02:41:27 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:33826 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731100AbfCaGl0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 02:41:26 -0400
-Received: by mail-pg1-f194.google.com with SMTP id v12so3173510pgq.1;
-        Sat, 30 Mar 2019 23:41:26 -0700 (PDT)
+        id S1731382AbfCaGmI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Mar 2019 02:42:08 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:33442 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731371AbfCaGmH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Mar 2019 02:42:07 -0400
+Received: by mail-pf1-f195.google.com with SMTP id i19so2990005pfd.0;
+        Sat, 30 Mar 2019 23:42:07 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:subject:references
-         :in-reply-to:cc:cc:to;
-        bh=j63nunoHhh8HAW0A0lb4wXYNoSwqxmxBZXYn6pHV3LM=;
-        b=QmOBe4Lf3CWVQ3FcjPukk6IjMDbNxmPax9vuUwkTqJczgzEZOPfNYAwWvpOVlXBua2
-         B954X3Ed3sm+Ud68Ve19ZwRU2o8WFZvQD0CyoKqUJcTGvCzUAX4S/Axoqzs5KmTVTMaX
-         aZPYzuRoDqwTvDb7QB7XCLj0i6zpDhE/PNyiz1hSC4riGbTAU/dss9a7DGVwlRFB5OJ5
-         5uNOvVNN20/lvwvpbm1AAg0qZW92EfCCQeYUJ9e19ZdMrLOOfl7ijcZ3en5ZTUTEE7rF
-         JcFi5nNsGg58VUExmooEwi40s1UkhC6oDtMzT9izSILM8M3BPQxK6HnSGoIaQn4Qa0Pe
-         wiuA==
-X-Gm-Message-State: APjAAAWpI+RIQAB4mzJdsa9e2skbXlNqk6jaWtiUhVpoIfe6FyiCbcR0
-        WLM5kR3E1zdubPUgJgc1Bg==
-X-Google-Smtp-Source: APXvYqwSOumzKdXXT3GdNqNKQueJzdRfUOamOSFDE/iTXFibkn+1K+1CQDUBVCBa0jIbZ6/EfdOWiA==
-X-Received: by 2002:aa7:93a5:: with SMTP id x5mr39055044pff.234.1554014485921;
-        Sat, 30 Mar 2019 23:41:25 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=zgWlWhNebV4DAis4oYThAM+4V5ib2u6j9U07JrmMSZQ=;
+        b=rEEN7xj0PYWRR2UWEqmQ9AvNQRQpeRC6pXsQvXB1Z9IGnWixcYzqhBN2LWZSZ6fgLe
+         oSzpX4s1r1mC/rUsSmmm19rak+fqNO7096QmG62llyK1fIrbdosUiz5EpksSStR09uxR
+         liM6hPKsdgDuhSQxiPZrPuNxupiLrcXOOcmS2KrIFho5Fsq0Ef4KZLhBHP6gqiYXyJDF
+         vVqR8FMbhVswpRqTUdXQBs9bwWQAzt9KgryEVkscExsdZoZmKNDWAXqP0h2svK1LPVyi
+         EH+2NrawFe4mIuNq2E+8pMvJZXo/4IoBdEXJlgWsH6XVcHDT6Nq5zqr9epyOg6+3vmu5
+         FaWg==
+X-Gm-Message-State: APjAAAVO1QqmLFHqbb/1wjcPmxgnkGFk4y3S24Fjj9WEBTmEcCBzPOcy
+        ERjP0uuVPHkXTHb16342wA==
+X-Google-Smtp-Source: APXvYqwrnZY/ZPBJLbDeb8J+pMauGOF8476+x1xC/ThJIOQhcOUCG6I/0CibhrbwLYk77SV7OeluBQ==
+X-Received: by 2002:a63:c605:: with SMTP id w5mr16749080pgg.355.1554014526923;
+        Sat, 30 Mar 2019 23:42:06 -0700 (PDT)
 Received: from localhost ([210.160.217.68])
-        by smtp.gmail.com with ESMTPSA id l184sm3959669pfc.98.2019.03.30.23.41.25
+        by smtp.gmail.com with ESMTPSA id a129sm19398038pfa.152.2019.03.30.23.42.05
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 30 Mar 2019 23:41:25 -0700 (PDT)
-Message-ID: <5ca06115.1c69fb81.d5b56.b0de@mx.google.com>
-Date:   Sun, 31 Mar 2019 01:41:23 -0500
+        Sat, 30 Mar 2019 23:42:06 -0700 (PDT)
+Date:   Sun, 31 Mar 2019 01:42:04 -0500
 From:   Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: Add bindings for TI ADS8344 A/DC chips
-References: <20190322111108.19383-1-gregory.clement@bootlin.com> <20190322111108.19383-2-gregory.clement@bootlin.com>
-In-Reply-To: <20190322111108.19383-2-gregory.clement@bootlin.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Cc:     devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-To:     Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Shinji Kanematsu <kanematsu.shinji@socionext.com>
+Cc:     jic23@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        masami.hiramatsu@linaro.org, jaswinder.singh@linaro.org,
+        orito.takao@socionext.com, sugaya.taichi@socionext.com,
+        kasai.kazuhiro@socionext.com
+Subject: Re: [PATCH 1/2] dt-bindings: iio: counter: Add Milbeaut Updown
+ Counter
+Message-ID: <20190331015228.GA27625@bogus>
+References: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
+X-Mutt-References: <1553581989-13525-1-git-send-email-kanematsu.shinji@socionext.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Mar 2019 12:11:07 +0100, Gregory CLEMENT wrote:
-> This adds device tree bindings for the TI ADS8344 A/DC chips.
+On Tue, Mar 26, 2019 at 03:33:09PM +0900, Shinji Kanematsu wrote:
+> Add documentation for Milbeaut Updown Counter device
+> quadrature encoder and counter binding.
 > 
-> Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+> Signed-off-by: Shinji Kanematsu <kanematsu.shinji@socionext.com>
 > ---
->  .../bindings/iio/adc/ti-ads8344.txt           | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8344.txt
+>  .../bindings/iio/counter/milbeaut-updown_cnt.txt   | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt b/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
+> new file mode 100644
+> index 0000000..6771567
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/counter/milbeaut-updown_cnt.txt
+> @@ -0,0 +1,22 @@
+> +SOCIONEXT Milbeaut Updown counter
+> +
+> +Required properties:
+> +- compatible:       Must be "socionext,milbeaut-updown-counter".
+> +- reg:              Offset and length of the device's register set.
+> +- clocks:           Phandle to the clock used by the Updown counter module.
+> +- clock-names:      Must be "mux".
+> +- interrupts:       SPI number of the device's set.
+> +- cms_type:         connected_device
+> +                     1: updown button  (updown counter mode)
+> +                     2: rotary encoder (phase difference counter mode)
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+We should have a common property for describing what's attached. 
+IIRC, just had a similar binding recently.
+
+> +
+> +Example:
+> +
+> +	updown0: updown@1e002000 {
+> +		compatible = "socionext,milbeaut-updown-counter";
+> +		reg = <0x1e002000 0x20>;
+> +		clocks = <&clk 4>;
+> +		clock-names = "mux";
+> +		interrupts = <0 104 0x4>;
+> +		cms_type = <1>;
+> +	};
+> -- 
+> 1.9.1
+> 
 
