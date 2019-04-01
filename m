@@ -6,166 +6,175 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_NEOMUTT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08F0CC10F05
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:45:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FDE9C10F05
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:47:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D6F4F20830
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:45:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2B83B20830
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:47:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387753AbfDAReV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Apr 2019 13:34:21 -0400
-Received: from mout.kundenserver.de ([212.227.126.135]:58647 "EHLO
+        id S1733169AbfDARcL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Apr 2019 13:32:11 -0400
+Received: from mout.kundenserver.de ([212.227.126.133]:37919 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387752AbfDAReV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Apr 2019 13:34:21 -0400
+        with ESMTP id S1733164AbfDARcL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Apr 2019 13:32:11 -0400
 Received: from localhost ([88.128.82.80]) by mrelayeu.kundenserver.de
- (mreue012 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1MKuGD-1hW70Y3ITN-00LIAd; Mon, 01 Apr 2019 19:33:55 +0200
-Date:   Mon, 1 Apr 2019 19:33:54 +0200
+ (mreue009 [212.227.15.167]) with ESMTPSA (Nemesis) id
+ 1MFsdD-1h9gHm1VFf-00HPJQ; Mon, 01 Apr 2019 19:31:45 +0200
+Date:   Mon, 1 Apr 2019 19:31:44 +0200
 From:   Andreas Klinger <ak@it-klinger.de>
 To:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
 Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] avia-hx711.yaml: transform DT binding to YAML
-Message-ID: <20190401173353.g4k5vb6flsfgtaaj@arbad>
+        masneyb@onstation.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] bmp085.yaml: transform DT documentation of iio sensor
+ into YAML
+Message-ID: <20190401173142.cunj5iwz2ox454qx@arbad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:odTq/USEkEGP+Q1Tk6oBoKZrDHxcjAUBqDGKmMtL/ZZmclkQb7Q
- UA2F9DKUvL9hV4Hw6xhw1uXRDOQpAeFFieuvyHOS/LkNkbc28eSZBoBnSlj86xuth6VLJcg
- rmCt87awnZxfTY65+10kePM0Gg5wQ5/hmmCvyp6gOzcbGKTjjGumo4+kMDSQGHTnOMFauJO
- QTqln3vwtfAY0GfHQe6XA==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:6ASsM5JBLSA=:ukXYP21DobAT5m2PkBv1ev
- TtOF7BXYcslJ5IscOfiHohWp5km2N7NcAdSZXcECXebDGBvoZ6/qULKvIk1J/qMTLhwGJzn31
- iKfGtTFq5xb2Nrnxzb9GW9YYQJJ/3SLNeojDkfyDSkp/k4BgnHdIQIOO3f4yErB6w8LFyFOzw
- sV8dnJJxALAsXj76E8Lp7N1Pz5HU4pjFkJTn4PIjGKkzWX3JO3pke20Ovnqa/IzEI5I2c+QhT
- hvmvVC5rt7Vs0qIX9w3y/NLOzc9KsYtKL1yfIbbmG8BKpcsdW6MJuB7a95Ky2PkhTKi1SOUeG
- YF4V+VFCbQn/2YkaGeRiT6MpVOl8f688WZeGQ1LJZh8xAMYGHIHDqzmIYIicFAXFdZxQi2Gj5
- 8V/hxhBgu5TJaNett00yZK1qebC26OtkIYIcGJ4pt9+zQqKSvJ99wsNcgB5JIOU/mJAo5K3jH
- t6Jyoyt8dnRne3Uzeo5jEnjanaGkCngiYwtRJs13nid+u4jXjxVYJuPLxoqKWj+L24G/TGaot
- rM3mEX4duxhxvSH7nfziwWS7OjrTqf8IgtfDpBl0D8Tnj2YJEy1IWvLNykcihSHzCdagESqiA
- 4DAb4zVJhYqAUSqzbEkmhc6/itdUsj8G3yo8UIJIJcVO26ddy8Gqt3TwhvxnLwr6OxbEstndM
- 82MP61/UNwFmAp0/OKM0daYjYF/P2hb8INb9MlIdcABKGft2X6JU+byCB/0InSfkwqVXvWvLv
- SqXTszW082Nf8x75ExyE9Nxb+qgZn0It/ZXWQw==
+X-Provags-ID: V03:K1:pvuH7a1rABTg+UcpM29SaGBhBzWTUniAVX3J0NWk4KDHOji2emU
+ zuPaCxl6tvndrwGP8tQh0Z50rqLzMEMQdzlY9C1j9y+ykVq+UtqB/7AGuC/GzbNOD+UH96v
+ EKerkKl+3VxDSwEVBg5+Oq2NChoiMgL8p9YMOczR+2NPmxKKhkQ/9nTBbgmaAYGUzyYy0h0
+ kV1dZN28cXFFXjElvtAww==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:sWwWGXihVE8=:LLm4vyhY7o0ihTONyD48v6
+ anBckATTRSSS/HbLXDcCE+eKLJgzhHW4S8+mblHbM6sp0Ivsz28fxU3aCUaBTMdhPNy12XusV
+ +mSGqIGfBemEjpHw2lfrGfya2+ubLQh/byWJTTTAwysvlvy4qOwtt5SCrqjDeuRgzHeHK4xzU
+ SPRvmkmpcf8ruW+IQHFZWG6q7ufXY15WcPRte+DxoC2hYgfWsH+xYmfxK6MOVAwYjx9JRgHic
+ 0EnUIHaEKTO8n8Ak6VSQaYCgb71WNEHCuprTsOrq0UghcejPzyUUGoV8/sxT/zUrnbOd6EIvq
+ UbqDms5iKysY2g77d4vw41moAGtrH23IbOWDN3IKepGjD5A5oY+37Ag2XuOCMqSpKgiCVry9d
+ QEbw3Xuy5az1pcWiW1X4nz//SfFz7WEuEEb5Z42o74HlyKm4rpYs2TOkgOShL0Z08YO1/M7Kz
+ lELGjoZHyMMjpWLEVnStFXeJIcvYvKyrW63C1wza15117IPO+PkwS44+VPBgoioRImuJdzo1S
+ A2El8rFrYfwbpn5njA+l2i0Cw7b+vq4mHRm01rxGGe1f0cxPhjNkbuGk2U6aGGodSQs+OZB/z
+ yuBZP6xPohc1Ku/DbgmNemaDPU0s2TfPm+w94sSjCFPgXnBHqCyrGYVoiY8mJ4095jf5MKBko
+ uPqpYrUQNCUqQ1UXjButkecFplfQo01BLacVocryv182fbGHFR3d6iMDyraiklNb5s4gcZz12
+ doj8UdPqdpf7r3QtObMZ61pfehGva4drbIn8Vg==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-replace avia-hx711.txt by avia-hx711.yaml as yaml devicetree
-documentation for avia hx711 iio adc sensor
+use bmp085.txt and change it into yaml format
+
+fix links to datasheets in replaced documentation
 
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
- .../devicetree/bindings/iio/adc/avia-hx711.txt     | 24 --------
- .../devicetree/bindings/iio/adc/avia-hx711.yaml    | 66 ++++++++++++++++++++++
- 2 files changed, 66 insertions(+), 24 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+ .../devicetree/bindings/iio/pressure/bmp085.txt    | 27 ---------
+ .../devicetree/bindings/iio/pressure/bmp085.yaml   | 70 ++++++++++++++++++++++
+ 2 files changed, 70 insertions(+), 27 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt b/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
 deleted file mode 100644
-index 7222328a3d0d..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+index 61c72e63c584..000000000000
+--- a/Documentation/devicetree/bindings/iio/pressure/bmp085.txt
 +++ /dev/null
-@@ -1,24 +0,0 @@
--* AVIA HX711 ADC chip for weight cells
--  Bit-banging driver
+@@ -1,27 +0,0 @@
+-BMP085/BMP18x/BMP28x digital pressure sensors
 -
 -Required properties:
-- - compatible:	Should be "avia,hx711"
-- - sck-gpios:	Definition of the GPIO for the clock
-- - dout-gpios:	Definition of the GPIO for data-out
--		See Documentation/devicetree/bindings/gpio/gpio.txt
-- - avdd-supply:	Definition of the regulator used as analog supply
+-- compatible: must be one of:
+-  "bosch,bmp085"
+-  "bosch,bmp180"
+-  "bosch,bmp280"
+-  "bosch,bme280"
 -
 -Optional properties:
-- - clock-frequency:	Frequency of PD_SCK in Hz
--			Minimum value allowed is 10 kHz because of maximum
--			high time of 50 microseconds.
+-- interrupts: interrupt mapping for IRQ
+-- reset-gpios: a GPIO line handling reset of the sensor: as the line is
+-  active low, it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
+-- vddd-supply: digital voltage regulator (see regulator/regulator.txt)
+-- vdda-supply: analog voltage regulator (see regulator/regulator.txt)
 -
 -Example:
--weight {
--	compatible = "avia,hx711";
--	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
--	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
--	avdd-suppy = <&avdd>;
--	clock-frequency = <100000>;
--};
 -
-diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+-pressure@77 {
+-	compatible = "bosch,bmp085";
+-	reg = <0x77>;
+-	interrupt-parent = <&gpio0>;
+-	interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+-	reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
+-	vddd-supply = <&foo>;
+-	vdda-supply = <&bar>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
 new file mode 100644
-index 000000000000..8a4100ceeaf2
+index 000000000000..c6721a7e8938
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
-@@ -0,0 +1,66 @@
++++ b/Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
+@@ -0,0 +1,70 @@
 +# SPDX-License-Identifier: GPL-2.0
 +%YAML 1.2
 +---
-+$id: "http://devicetree.org/schemas/iio/adc/avia-hx711.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++$id: http://devicetree.org/schemas/iio/pressure/bmp085.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: AVIA HX711 ADC chip for weight cells
++title: BMP085/BMP180/BMP280/BME280 pressure iio sensors
 +
 +maintainers:
 +  - Andreas Klinger <ak@it-klinger.de>
 +
 +description: |
-+  Bit-banging driver using two GPIOs:
-+  - sck-gpio gives a clock to the sensor with 24 cycles for data retrieval
-+    and up to 3 cycles for selection of the input channel and gain for the
-+    next measurement
-+  - dout-gpio is the sensor data the sensor responds to the clock
++  Pressure, temperature and humidity iio sensors with i2c and spi interfaces
 +
-+  Specifications about the driver can be found at:
-+  http://www.aviaic.com/ENProducts.aspx
++  Specifications about the sensor can be found at:
++    https://www.bosch-sensortec.com/bst/products/all_products/bmp180
++    https://www.bosch-sensortec.com/bst/products/all_products/bmp280
++    https://www.bosch-sensortec.com/bst/products/all_products/bme280
 +
 +properties:
 +  compatible:
 +    enum:
-+      - avia,hx711
++      - bosch,bmp085
++      - bosch,bmp180
++      - bosch,bmp280
++      - bosch,bme280
 +
-+  sck-gpios:
++  vddd-supply:
 +    description:
-+      Definition of the GPIO for the clock (output). In the datasheet it is
-+      named PD_SCK
++      digital voltage regulator (see regulator/regulator.txt)
 +    maxItems: 1
 +
-+  dout-gpios:
++  vdda-supply:
 +    description:
-+      Definition of the GPIO for the data-out sent by the sensor in
-+      response to the clock (input).
-+      See Documentation/devicetree/bindings/gpio/gpio.txt for information
-+      on how to specify a consumer gpio.
++      analog voltage regulator (see regulator/regulator.txt)
 +    maxItems: 1
 +
-+  avdd-supply:
++  reset-gpios:
 +    description:
-+      Definition of the regulator used as analog supply
++      A GPIO line handling reset of the sensor. As the line is active low,
++      it should be marked GPIO_ACTIVE_LOW (see gpio/gpio.txt)
 +    maxItems: 1
 +
-+  clock-frequency:
-+    minimum: 20000
-+    maximum: 2500000
-+    default: 400000
++  interrupts:
++    description:
++      interrupt mapping for IRQ (BMP085 only)
++    maxItems: 1
 +
 +required:
 +  - compatible
-+  - sck-gpios
-+  - dout-gpios
-+  - avdd-supply
++  - vddd-supply
++  - vdda-supply
 +
 +examples:
 +  - |
 +    #include <dt-bindings/gpio/gpio.h>
-+    weight {
-+        compatible = "avia,hx711";
-+        sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
-+        dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
-+        avdd-suppy = <&avdd>;
-+        clock-frequency = <100000>;
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c0 {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      pressure@77 {
++          compatible = "bosch,bmp085";
++          reg = <0x77>;
++          interrupt-parent = <&gpio0>;
++          interrupts = <25 IRQ_TYPE_EDGE_RISING>;
++          reset-gpios = <&gpio0 26 GPIO_ACTIVE_LOW>;
++          vddd-supply = <&foo>;
++          vdda-supply = <&bar>;
++      };
 +    };
 -- 
 2.11.0
