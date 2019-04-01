@@ -2,103 +2,97 @@ Return-Path: <SRS0=cU5P=SD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_MUTT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 302EBC43381
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 16:13:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97214C43381
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:40:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EF30720880
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 16:13:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 64D5D20857
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Apr 2019 17:40:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1554140408;
+	bh=/cTtIzKsgKH9Lv5D8HtQaNIPxy25tgffh8eLvB+G6Gk=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=TDoveFFYx3NHYgEvTQDfIDvtjGM1rcQHzgEAXjPnJe8QMOnpQLz2ZIWwAA+1BKOt/
+	 /WiOG5Z/ZE0A6OorPq3tdUj1dZgGGf6Dx506LqMb66i+cYHqjeM52b08W/t1KTn8pL
+	 uRMd6c81aL3ZFHuE8Yyf4B2hBNHTVVViPQCb6ApE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727403AbfDAQNW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Apr 2019 12:13:22 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:5649 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727190AbfDAQNW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Apr 2019 12:13:22 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [10.3.19.207])
-        by Forcepoint Email with ESMTP id 1B79FED198CD8D75EBAA;
-        Tue,  2 Apr 2019 00:13:19 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.408.0; Tue, 2 Apr 2019
- 00:13:15 +0800
-Date:   Mon, 1 Apr 2019 17:13:04 +0100
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-CC:     <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        <linux-kernel@vger.kernel.org>, <kernel-usp@googlegroups.com>
-Subject: Re: Work on iio: stating: frequency: ad9832
-Message-ID: <20190401171304.00005954@huawei.com>
-In-Reply-To: <20190401142529.xgkqmndinctiro3l@smtp.gmail.com>
-References: <20190401142529.xgkqmndinctiro3l@smtp.gmail.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1733203AbfDARkB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Apr 2019 13:40:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53952 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729869AbfDARkB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Apr 2019 13:40:01 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7ED1420896;
+        Mon,  1 Apr 2019 17:40:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1554140401;
+        bh=/cTtIzKsgKH9Lv5D8HtQaNIPxy25tgffh8eLvB+G6Gk=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=hszOxf7rjDekmhvCwiCLs1zYoiA+N2awyg0RFMH+/bQLm5FAeUEFPsVqHTTMZy4zP
+         C/rgZ5dAP2FTTzWucrkJGzSdWtaVWL2EtdNNquxXdJPxdR9HgiDY7a1SdjKOEk0xMJ
+         1XTeqVzNOgqu3zFCw/GvgvFNDunennOFNKZRjsG0=
+Date:   Mon, 1 Apr 2019 19:13:55 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Mukesh Ojha <mojha@codeaurora.org>
+Cc:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, stefan.popa@analog.com,
+        jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: Re: [PATCH 2/4] staging: iio: ad9832: add SPDX identifier
+Message-ID: <20190401171355.GA19716@kroah.com>
+References: <20190401143724.mcn73jhdtq3zp3nk@smtp.gmail.com>
+ <ac167cc8-4236-2e15-d5f2-fa222d95da49@codeaurora.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <ac167cc8-4236-2e15-d5f2-fa222d95da49@codeaurora.org>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 1 Apr 2019 11:25:29 -0300
-Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
-
-> Hello,
+On Mon, Apr 01, 2019 at 08:36:50PM +0530, Mukesh Ojha wrote:
 > 
-> I was looking for some work on staging: iio: ad9832 and made some
-> observations while reading the driver.
+> On 4/1/2019 8:07 PM, Marcelo Schmitt wrote:
+> > Add SPDX identifier of GPL-2.0 for the ad9832 driver.
+> > 
+> > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> > ---
+> >   drivers/staging/iio/frequency/ad9832.c | 3 +--
+> >   1 file changed, 1 insertion(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> > index 50a583020072..d8d4a7936275 100644
+> > --- a/drivers/staging/iio/frequency/ad9832.c
+> > +++ b/drivers/staging/iio/frequency/ad9832.c
+> > @@ -1,9 +1,8 @@
+> > +// SPDX-License-Identifier: GPL-2.0
 > 
-> Apparently it had no devicetree documentation so I tried to elaborate
-> one. 
-> It uses a platform_data variable to load external clock
-> frequency (I tried to make it use linux's clock framework).
-Good.
-
-> Some device attributes don't seem to be standardized on
-> Documentation/ABI/testing/sysfs-bus-iio and there's no specific ABI
-> for ad9832 nearby nor at staging/iio/Documentation. So maybe those
-> missing ABI could be documented.
-Beware. It's an old driver, so it may be that we actually want to change
-it's ABI rather than documenting what is there (I have haven't looked!)
-
-> The device has to set some internal registers to operate correctly,
-> AD9832_FREQXHM and AD9832_PHASEXH, would it be feasible to set iio
-> chanels for this?
-
-What are they?  If they correspond to output channels in some sensible
-way then maybe...
-
-> I couldn't understand why checkpatch.pl gave errors on IIO_DEV_ATTR_*
-> macros. To me they seem to have no problem.
-> Also it has that platform_data to be moved to include/linux/iio. Is
-> there any special reason for it not being there already? Which are
-> the criterions a platform_data need to satisfy to be put there?
-A driver moving out of staging shouldn't have platform data. It needs
-to be converted over to more modern mechanisms.   We don't have a problem
-supporting platform data for devices that have old school device files
-already in tree, but that shouldn't be the case for a driver in staging.
-
-Hence we can clean it up and move forward with just DT bindings.
+> FYI
 > 
-> I'm sending a patchset with some things I've already done.
-Cool. I'll look at those later in the week if no one beats me to them.
-
+> Use C notations here as per https://lkml.org/lkml/2019/2/13/570.
 > 
-> Is there something else that could be done in this device driver?
-> Please, tell if I've forgotten something.
-
-I'll take a look, but it may be a little while before I do.
-Hopefully someone else gets there first!
-
-Jonathan
-
+> <https://lkml.org/lkml/2019/2/13/570>
 > 
-> Any advice is welcome.
-> Thanks,
-> 
-> Marcelo
+> Once you fix it then you can take mine
+> Reviewed-by: Mukesh Ojha <mojha@codeaurora.org>
 
+Did you read the documentation about how to put a proper SPDX line in
+the kernel documentation?  For .c files, you have to use "//", not "/* */"
 
+Please read:
+	Documentation/process/license-rules.rst
+and see the section "Style" for all of the details.
+
+thanks,
+
+greg k-h
