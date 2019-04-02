@@ -2,135 +2,140 @@ Return-Path: <SRS0=0Ig8=SE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17637C10F00
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Apr 2019 06:33:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DC31FC43381
+	for <linux-iio@archiver.kernel.org>; Tue,  2 Apr 2019 06:33:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D8D8D206B7
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Apr 2019 06:33:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AB13A206B7
+	for <linux-iio@archiver.kernel.org>; Tue,  2 Apr 2019 06:33:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fhk+UoUS"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jhy/sN7o"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729147AbfDBGdL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 2 Apr 2019 02:33:11 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:45378 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726074AbfDBGdL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Apr 2019 02:33:11 -0400
-Received: by mail-pl1-f195.google.com with SMTP id bf11so5713658plb.12;
-        Mon, 01 Apr 2019 23:33:11 -0700 (PDT)
+        id S1729104AbfDBGdr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 2 Apr 2019 02:33:47 -0400
+Received: from mail-ot1-f66.google.com ([209.85.210.66]:41959 "EHLO
+        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728359AbfDBGdr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Apr 2019 02:33:47 -0400
+Received: by mail-ot1-f66.google.com with SMTP id 64so10969338otb.8;
+        Mon, 01 Apr 2019 23:33:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/SViyYrS1FftN56nFj/LUBMdZmL6citnsb/V8UFB/zw=;
-        b=fhk+UoUSzOrDtXSxqqb3QYerakbuvYA/XLrrnRu2go7f0rY0KK4Eq1j0EjG7l9mctI
-         MPxxWV45JWRPcRASmeIznO0nXcm03KnfzZIlpzxUQXbf7l16Hd6RPPb8fFP9ikw+FlYm
-         zuVVSEVUzzyy52gVcfrI7d9qL5FBr/mp2ww+ig67ad/9j4RzixtxIoB20uGkiMK1pgRd
-         p5O/1phRXB9Gmr64ZC26q8zE7rMt9QcfbIVZL5oZ+LbdGKR4b7y+9le3b6mdTmYKLEns
-         6bpNwg2lE1x01CDTK9Ok/tirWTdKP02Et/Ym+o8xHkCN5xWXYmITdCHZmtUSyZqXVfwS
-         D6EA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=RbJvII5M5WDG0lLg4HKMyigUDKa+R7h5q87O1vts0fs=;
+        b=Jhy/sN7oecMRA9dYqjhI61v3rAubjD4j8SasUSx6bX6RmnOWmdui+b53kEoRmq0tMy
+         YP99gb1Kd24s4sdtkuJ6MiycXeDJQ9wtbtO3RuLfDZ1HLlBaPwanAWndWtTiLC47aQPx
+         BaoPMtrESKO2R5xlkprMv/OuMjc6F/49A+cDGR1TADe80FtWlbCYVJpA+GKWDDq3Gd6Z
+         3FYeiG1/AEKVubGGpY3ShITo7qqynlHjatUtpksCrWVKUCdyUWa0m7y6TdmQ1SAdHmgs
+         b79KDLYkoUBAcLl2/ZBL4lME1OaNb8gGVBTRYJhRj3U3dGmy1SzTWAzphsP+LLBrBOzl
+         +rgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/SViyYrS1FftN56nFj/LUBMdZmL6citnsb/V8UFB/zw=;
-        b=coTkH6GuDFQA7xXpi2RGuSs/vvrx8icMi6fLi0qqwB/diL+jNNe4WOCy14sZw6rL0i
-         SC1CrDql0ArUKi2odrM66/ZsrJhUHQp+Ymfk6X2Uk1FnzWW63Gc72QlJE8+xzTbxXy1x
-         KidJ6dKXnYcht8ROgh23LawDP59XHxPAk70jGeXKZB7f5jAcZEkHwxtUYYsv8A9nfZbD
-         82rwn45YqTzChVYObAvYvywCQsQLwIHDYiRqapcObgpvWDixugs17Fp7QAVy/rve2Uvk
-         S1ZMrElL4ItnTpM+J3QY91+J9yFmiQ5/KuZf8B8dFL3AQ+9QRZXC58d+fcOpzo6g+p+y
-         8zSQ==
-X-Gm-Message-State: APjAAAV4M8S/9lI2VecivH/QHj3QACtxsKhCHdqs6P9x5eKD0HXmz6us
-        WtBxkSaAxxQSTrLoaInJxos=
-X-Google-Smtp-Source: APXvYqx+LDaXvVGOMIPeO233vrs3m+tOzvhaXEMY4h32Y28CavB8ya4LXqA/dRJssrqtXHZkbEdfaw==
-X-Received: by 2002:a17:902:2a29:: with SMTP id i38mr70041345plb.22.1554186790652;
-        Mon, 01 Apr 2019 23:33:10 -0700 (PDT)
-Received: from localhost.localdomain ([2001:268:c0a5:4ce0:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id a17sm19327289pfj.123.2019.04.01.23.33.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 01 Apr 2019 23:33:10 -0700 (PDT)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     jic23@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
-        benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com,
-        robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org,
-        leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de,
-        thierry.reding@gmail.com, esben@haabendal.dk,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        patrick.havelange@essensium.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 18/18] LS1021A: dtsi: add ftm quad decoder entries
-Date:   Tue,  2 Apr 2019 15:30:53 +0900
-Message-Id: <58aec84fb201e7ba2e24ff51f8fd1b4261d6b895.1554184734.git.vilhelm.gray@gmail.com>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1554184734.git.vilhelm.gray@gmail.com>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=RbJvII5M5WDG0lLg4HKMyigUDKa+R7h5q87O1vts0fs=;
+        b=gnQWRfFi/CO76lXrCTXUANW4XY5rgHoHtBNgVkZLRjuWvfB/MnchfkzUfl/UZYcHCF
+         72UbqpsbeW/1iIisAyel9GtaGfFd3nhJeZLqM95bTbGojTDJ8BnaWb6ODCQe4CtT02ID
+         vPV0xsRZF2d487OOnaiWinOQUfl1ZKsemcVrvwe1KKe214RcnpswM8+Mqver89qlVsWo
+         u23j4R7CioZYK3fPwpyFmwh3YMa0LlVqJiomQKUdLJmi8qAnzIrPLNBdjMTU64P/plsd
+         xKBjOoos6f417UUzX958fultFJby2l1DYa+GZt08vVdF7UpcTp9scwLQCr8WuoOrqcwm
+         wAaw==
+X-Gm-Message-State: APjAAAXgOKypbj/gubu0FJcNp4R1jm190iXv/4J0eXJluENPoAKHUiOg
+        mOn5Dr0o53a6rAKqMWzn9ZWhGkhZxO1nEA9G05Y=
+X-Google-Smtp-Source: APXvYqwn+lRx0txPRMYnfo5symiScyDMA6mOgHmgxEqC/L7isq/dhQCIaPXaEiGjdptbR6ImuALeto4BnyEs2b07lZM=
+X-Received: by 2002:a9d:63d5:: with SMTP id e21mr28769508otl.288.1554186826243;
+ Mon, 01 Apr 2019 23:33:46 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190401143807.xlz32drk367ogcxh@smtp.gmail.com>
+In-Reply-To: <20190401143807.xlz32drk367ogcxh@smtp.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Tue, 2 Apr 2019 09:33:34 +0300
+Message-ID: <CA+U=Dsq2hAo4DrQOnyVxgqov=UZ8Ch1WmzSrwkMj0zOMLNVFog@mail.gmail.com>
+Subject: Re: [PATCH 4/4] staging: iio: ad9832: add devicetree documentation
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Cc:     lars@metafoo.de,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        stefan.popa@analog.com, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>,
+        kernel-usp@googlegroups.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Patrick Havelange <patrick.havelange@essensium.com>
+On Mon, Apr 1, 2019 at 5:38 PM Marcelo Schmitt
+<marcelo.schmitt1@gmail.com> wrote:
+>
+> Add a devicetree documentation for the ad9832 direct digital
+> synthesizer, waveform generator.
+>
+> Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> ---
+>  .../bindings/iio/frequency/ad9832.txt         | 26 +++++++++++++++++++
+>  1 file changed, 26 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/ad9832.txt
+>
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/ad9832.txt b/Documentation/devicetree/bindings/iio/frequency/ad9832.txt
+> new file mode 100644
+> index 000000000000..6a35fdff5a48
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/ad9832.txt
+> @@ -0,0 +1,26 @@
+> +Analog Devices AD9832 Direct Digital Synthesizer, Waveform Generator
+> +
+> +Data sheet:
+> +https://www.analog.com/media/en/technical-documentation/data-sheets/AD9832.pdf
+> +
+> +Required properties:
+> +       - compatible : Must be "adi,ad9832"
+> +       - reg : SPI chip select number for the device
+> +       - spi-max-frequency = Max SPI frequency to use (< 25000000)
+> +       - clocks : The clock reference for the DDS output
+> +       - clock-names : Must be "mclk"
 
-Add the 4 Quadrature counters for this board.
+It's always a good idea to reference other base dt docs.
+For SPI you could:
 
-Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- arch/arm/boot/dts/ls1021a.dtsi | 28 ++++++++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
+```
+For more information on SPI properties, please consult
+     Documentation/devicetree/bindings/spi/spi-bus.txt
+```
 
-diff --git a/arch/arm/boot/dts/ls1021a.dtsi b/arch/arm/boot/dts/ls1021a.dtsi
-index ed0941292172..0168fb62590a 100644
---- a/arch/arm/boot/dts/ls1021a.dtsi
-+++ b/arch/arm/boot/dts/ls1021a.dtsi
-@@ -433,6 +433,34 @@
- 			status = "disabled";
- 		};
- 
-+		counter0: counter@29d0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29d0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter1: counter@29e0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29e0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter2: counter@29f0000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x29f0000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
-+		counter3: counter@2a00000 {
-+			compatible = "fsl,ftm-quaddec";
-+			reg = <0x0 0x2a00000 0x0 0x10000>;
-+			big-endian;
-+			status = "disabled";
-+		};
-+
- 		gpio0: gpio@2300000 {
- 			compatible = "fsl,ls1021a-gpio", "fsl,qoriq-gpio";
- 			reg = <0x0 0x2300000 0x0 0x10000>;
--- 
-2.21.0
+For clock:
+```
+For more information on clock bindings properties, please consult
+     Documentation/devicetree/bindings/clock/clock-bindings.txt
+```
 
+For regulator:
+```
+For more information on regulator bindings properties, please consult
+     Documentation/devicetree/bindings/regulator/regulator.txt
+```
+
+> +
+> +Optional properties:
+> +       - avdd-supply:  Definition of the regulator used as analog supply
+> +       - dvdd-supply : Definition of the regulator used as digital supply
+> +
+> +Example:
+> +       adi9832-dds@0 {
+> +               compatible = "adi,ad9832";
+> +               reg = <0>;
+> +               spi-max-frequency = <25000000>;
+> +               clocks = <&ad9832_mclk>;
+> +               clock-names = "mclk";
+> +               avdd-suppy = <&avdd>;
+> +               dvdd-suppy = <&dvdd>;
+> +       };
+> --
+> 2.20.1
+>
