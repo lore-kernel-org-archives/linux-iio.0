@@ -2,117 +2,131 @@ Return-Path: <SRS0=2YCt=SF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-12.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24134C4360F
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 07:04:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B80FCC4360F
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 09:10:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E841621473
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 07:04:15 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hC5Y7EMy"
+	by mail.kernel.org (Postfix) with ESMTP id 93871206B8
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 09:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728786AbfDCHEK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Apr 2019 03:04:10 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:43548 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728701AbfDCHDt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 03:03:49 -0400
-Received: by mail-pg1-f194.google.com with SMTP id z9so7823106pgu.10;
-        Wed, 03 Apr 2019 00:03:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=m0Yltnmqgxph/eGeJ34Ce62Zgj1P8Kis8u3YVkRijyY=;
-        b=hC5Y7EMy9VWhxlyShK6uB4W3PKqXn7DkXMGj8qzITxSM1agmgfKfmf2qIeAbtP9aCl
-         S6EE11zm0OgZWURMX3uUqrOuEYFtGgZz+lwZ3ECoFdFZ1r9ibY6GbKzWqFyek6fth2Q1
-         UtoaWlDH2VkG5Clxd8t6jZlpV0zo/q63vSXF2T5ve5XwnfJyZdBow4Xxdey41iF7quuN
-         CRRka00/cgaSawJX6IERwpqasZlsjsKmuU5VwvUMNuz7MBrQeL9F071lgTVTfte8SRO0
-         OHaHCq8o9V30EiMIYSiYyq3CAYLDPigSnsaTjPO23Ejsp+zXs2pfVNBPRMIQM3JfO0fl
-         eZ0g==
+        id S1726155AbfDCJKx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Apr 2019 05:10:53 -0400
+Received: from mail-ed1-f66.google.com ([209.85.208.66]:42446 "EHLO
+        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbfDCJKx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 05:10:53 -0400
+Received: by mail-ed1-f66.google.com with SMTP id x61so14170608edc.9
+        for <linux-iio@vger.kernel.org>; Wed, 03 Apr 2019 02:10:52 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=m0Yltnmqgxph/eGeJ34Ce62Zgj1P8Kis8u3YVkRijyY=;
-        b=LxR7TOsVoYqIfVfUMLNAacWHz+xE2OF0tZcCtadwzoAcU/nS5skrys2E9fhyBr1a4J
-         h6ES8kxUQ5iylqVKcX22/yHbbrHZ+ONU7EpqQ6W+LS2FVtTSWF0bTqcX8LDTnbDm/2WY
-         95/feGKKSwbfrfjxjWnE7JZBglmg+tywojwyg5ihW9DMXPY+SdMV8jxyyn4bb3CTOeWx
-         oRrqfCjBFD32RSl4HoscOYpuVzF5cT+hLDGXtImm0xSmuoTpzARP/Ki6AcB+q+VkqAjj
-         kpwkZjixeznp/ml9SqQaNkSISwGXzKJrQt3ZdiA4dHb6OkyI1b6Y/Y4og0FpE3JniGPN
-         0C1g==
-X-Gm-Message-State: APjAAAVRzHlMZk+19SbVlMTNzhhM9y1/efik24v1UbJEoCsw1Eflg7od
-        PcTkaj1iv4qv5nyf/IC+g1sEEmH9
-X-Google-Smtp-Source: APXvYqwEBURyZYDon/koDwEhab+CF3h84IKy97fUy24tqt9WnON6QUwyjZub8tMz/McbSJ2I1QGWXA==
-X-Received: by 2002:a62:58c7:: with SMTP id m190mr73357796pfb.4.1554275028199;
-        Wed, 03 Apr 2019 00:03:48 -0700 (PDT)
-Received: from squirtle.lan (c-24-22-235-96.hsd1.wa.comcast.net. [24.22.235.96])
-        by smtp.gmail.com with ESMTPSA id e22sm20602750pfi.126.2019.04.03.00.03.46
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 03 Apr 2019 00:03:47 -0700 (PDT)
-From:   Andrey Smirnov <andrew.smirnov@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=4HTh0QlprI/1gUI5iisXQZRq97dzpssTQCwcM79z+aM=;
+        b=nj8m3ik7JJWO5r4I6cS0koXwgPO0yB/8/f2qZSOLoIz4SNHTPXnqlnA+ZGYvkEReGs
+         Zm/44NC3xk4hPzPIPYg/zKBIHgmL1FAvISmMRa4KVg3mpvYQSKeaxV+Df45LfqyXjD1Y
+         fwjofdYhd2vPiGZZoh5iO6MXQVMz2LiXTBVecFiciphThqrlYgV+PNCVxrY5XIFKON9s
+         UmI0sKg6CIqX5sigesigdFQVerf7dmqGGrFkNw7XiAE06EbR6jT1X8ECRlwmqHCP2cd6
+         rz/+gseyX7mquKXA83M7eUy00a5Q2sTULeGycMmhZwdqGJSm8Yc5agdDNsYNiHrqDW3M
+         vmiw==
+X-Gm-Message-State: APjAAAV9TgTmoJWAJzi9/6q5VrbqEisQ24A7XzyP03S44Oyf8vWlBWrM
+        eooAMG0zaauzlteCGGR9rrVxXA==
+X-Google-Smtp-Source: APXvYqyACpFmITg8EvoarcnAAuIN5wM26LTVuXu23a06nlTHZlLTirpcME0z6EoUDrnGoK1sC6Jtag==
+X-Received: by 2002:a50:ad23:: with SMTP id y32mr42649768edc.90.1554282651621;
+        Wed, 03 Apr 2019 02:10:51 -0700 (PDT)
+Received: from shalem.localdomain (84-106-84-65.cable.dynamic.v4.ziggo.nl. [84.106.84.65])
+        by smtp.gmail.com with ESMTPSA id r23sm1781322eja.71.2019.04.03.02.10.50
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 03 Apr 2019 02:10:50 -0700 (PDT)
+Subject: Re: [PATCH] iio: accel: add missing sensor for some 2-in-1 based
+ ultrabooks
+To:     =?UTF-8?Q?Lu=c3=ads_Ferreira?= <luis@aurorafoss.org>,
+        jic23@kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 3/6] iio: imx7d_adc: Use devm_iio_device_register()
-Date:   Wed,  3 Apr 2019 00:03:22 -0700
-Message-Id: <20190403070325.1077-4-andrew.smirnov@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190403070325.1077-1-andrew.smirnov@gmail.com>
-References: <20190403070325.1077-1-andrew.smirnov@gmail.com>
+        Stephan Gerhold <stephan@gerhold.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <20190402160433.15810-1-luis@aurorafoss.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <55a52a4e-01d1-2f4c-25e3-0047537bef86@redhat.com>
+Date:   Wed, 3 Apr 2019 11:10:49 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
+In-Reply-To: <20190402160433.15810-1-luis@aurorafoss.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use devm_iio_device_register() and drop explicit call to
-iio_device_unregister().
+Hi,
 
-Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Chris Healy <cphealy@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
----
- drivers/iio/adc/imx7d_adc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+On 02-04-19 18:04, Luís Ferreira wrote:
+> Some ultrabooks, like Teclast F6 Pro, use KIOX010A sensor on display
+> and KIOX020A sensor on keyboard base, to detect tablet mode or screen
+> orientation.
 
-diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-index 72cfe9834bcb..9a46838ec7cf 100644
---- a/drivers/iio/adc/imx7d_adc.c
-+++ b/drivers/iio/adc/imx7d_adc.c
-@@ -517,7 +517,7 @@ static int imx7d_adc_probe(struct platform_device *pdev)
- 	imx7d_adc_feature_config(info);
- 	imx7d_adc_hw_init(info);
- 
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(dev, indio_dev);
- 	if (ret) {
- 		imx7d_adc_power_down(info);
- 		dev_err(&pdev->dev, "Couldn't register the device.\n");
-@@ -539,8 +539,6 @@ static int imx7d_adc_remove(struct platform_device *pdev)
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct imx7d_adc *info = iio_priv(indio_dev);
- 
--	iio_device_unregister(indio_dev);
--
- 	imx7d_adc_power_down(info);
- 
- 	clk_disable_unprepare(info->clk);
--- 
-2.20.1
+I deliberately left out the KIOX020A id for now, because currently
+userspace cannot really deal with having 2 sensors.
 
+See:
+https://github.com/systemd/systemd/issues/6557
+https://github.com/hadess/iio-sensor-proxy/issues/166
+
+Basically we need to come up with a convention to (optionally) indicate
+the sensors location with a udev attribute set by:
+/lib/udev/hwdb.d/60-sensor.hwdb
+
+And then patch iio-sensor-proxy to consume that attribute and ignore
+the one which has e.g. ACCEL_LOCATION=keyboard in its udev properties
+
+Ignoring would be a first step, maybe later it can do something useful
+with it, see e.g. :  https://github.com/alesguzik/linux_detect_tablet_mode
+
+IMHO we really should minimally get code in place for iio-sensor-proxy
+to ignore the keyboard accelerometer before merging this patch.
+
+I realize that having the code in place will not magically get it on
+all users machines, but I believe this is the minimum which needs to
+happen before we push this out and potentially breaks people screen
+rotation.
+
+I've had working on this on my TODO list for a long long time now,
+but -ENOTIME. If you have some time to work on this then that would
+be great.
+
+Regards,
+
+Hans
+
+
+
+
+> 
+> Signed-off-by: Luís Ferreira <luis@aurorafoss.org>
+> ---
+>   drivers/iio/accel/kxcjk-1013.c | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index 7096e577b23f..9a5e445facc1 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1492,6 +1492,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+>   	{"KIOX0009", KXTJ21009},
+>   	{"KIOX000A", KXCJ91008},
+>   	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
+> +	{"KIOX020A", KXCJ91008},
+>   	{"KXTJ1009", KXTJ21009},
+>   	{"KXJ2109",  KXTJ21009},
+>   	{"SMO8500",  KXCJ91008},
+> 
