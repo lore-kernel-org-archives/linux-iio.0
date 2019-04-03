@@ -2,76 +2,76 @@ Return-Path: <SRS0=2YCt=SF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FAD9C4360F
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 13:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25760C4360F
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 15:04:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4703D2084C
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 13:31:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554298294;
-	bh=APsVE2HNM1yvN30VdtPTZSwbP5F1EvMqlD6Jj3TMZvc=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=SoF7Z38HlLOYSwpBFznHzzQ75JOhXRBVQX0rDB4s9WQ+pLv3VOsyDMUAaIc+/Yb+D
-	 OK1ZMoIN7aw4mQyfbvztl2FaTNBRnBlrkjo5REryg6WYIWGbsBRdL0hEVxCVykxHjD
-	 51EKaHP70VXFhennphmbyIAjodELMqiJtbZmPHTI=
+	by mail.kernel.org (Postfix) with ESMTP id E540B20651
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 15:04:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726184AbfDCNbd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Apr 2019 09:31:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43582 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726097AbfDCNbd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 3 Apr 2019 09:31:33 -0400
-Received: from localhost (217-101-180-136.cable.dynamic.v4.ziggo.nl [217.101.180.136])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A8BFA2075E;
-        Wed,  3 Apr 2019 13:31:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1554298293;
-        bh=APsVE2HNM1yvN30VdtPTZSwbP5F1EvMqlD6Jj3TMZvc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Is7u/VGEar2BwA1zV8Ct359ueRijOFpXhP3O9hkazTLkkuvkVSRLuTYS7Hg5oY90U
-         tTUvZKgOJ+dw4+MhvGccfyZ7Xlj5omEDLjIwaPc7oJudBnTgTP5oHCs1MGkEULujtl
-         9FkE6JuhCLKEliSrwxFfLReYHGSS80twmvdXL6LY=
-Date:   Wed, 3 Apr 2019 15:00:10 +0200
-From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To:     Nicholas Mc Guire <hofrat@osadl.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, devel@driverdev.osuosl.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        id S1726404AbfDCPEB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Apr 2019 11:04:01 -0400
+Received: from relmlor2.renesas.com ([210.160.252.172]:51527 "EHLO
+        relmlie6.idc.renesas.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726315AbfDCPEB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 11:04:01 -0400
+X-IronPort-AV: E=Sophos;i="5.60,304,1549897200"; 
+   d="scan'208";a="11947467"
+Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
+  by relmlie6.idc.renesas.com with ESMTP; 04 Apr 2019 00:03:58 +0900
+Received: from fabrizio-dev.ree.adwin.renesas.com (unknown [10.226.36.196])
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id 43BD94196AB1;
+        Thu,  4 Apr 2019 00:03:55 +0900 (JST)
+From:   Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Fabrizio Castro <fabrizio.castro@bp.renesas.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 1/2] staging:iio:accel:adis16203: add SPDX license
- identifier tag
-Message-ID: <20190403130010.GA3660@kroah.com>
-References: <1554284489-5023-1-git-send-email-hofrat@osadl.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1554284489-5023-1-git-send-email-hofrat@osadl.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Tomer Maimon <tmaimon77@gmail.com>,
+        Ricardo Ribalda Delgado <ricardo@ribalda.com>,
+        Stefan Agner <stefan@agner.ch>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Geert Uytterhoeven <geert@linux-m68k.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: Fix MAX9611 spacing
+Date:   Wed,  3 Apr 2019 16:03:51 +0100
+Message-Id: <1554303831-26582-1-git-send-email-fabrizio.castro@bp.renesas.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Apr 03, 2019 at 11:41:28AM +0200, Nicholas Mc Guire wrote:
-> Pop in the SPDX tag as the license is clearly indicated
-> as GPL V2 or later this should also be indicated with a SPDX license
-> identifier tag.
-> 
-> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+Between "config" and "MAX9611" there is a tab, replace it
+with a space.
 
-I sent patches yesterday to fix up all of drivers/staging/ for all spdx
-issues so as to keep people from accidentally getting this wrong.  That
-patch is now in my tree and will show up in linux-next tomorrow.
+Signed-off-by: Fabrizio Castro <fabrizio.castro@bp.renesas.com>
+---
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Sorry,
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 76db6e5..cc7c621 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -541,7 +541,7 @@ config MAX1363
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called max1363.
+ 
+-config	MAX9611
++config MAX9611
+ 	tristate "Maxim max9611/max9612 ADC driver"
+ 	depends on I2C
+ 	help
+-- 
+2.7.4
 
-greg k-h
