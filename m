@@ -8,53 +8,53 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D24C10F06
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 24134C4360F
 	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 07:04:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4683E21473
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 07:04:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E841621473
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 07:04:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dDXQ6bpk"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hC5Y7EMy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728696AbfDCHDs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Apr 2019 03:03:48 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:32773 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728673AbfDCHDs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 03:03:48 -0400
-Received: by mail-pg1-f193.google.com with SMTP id k19so1161895pgh.0;
-        Wed, 03 Apr 2019 00:03:47 -0700 (PDT)
+        id S1728786AbfDCHEK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Apr 2019 03:04:10 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:43548 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728701AbfDCHDt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 03:03:49 -0400
+Received: by mail-pg1-f194.google.com with SMTP id z9so7823106pgu.10;
+        Wed, 03 Apr 2019 00:03:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ieKsljjbAwxH7pp36Hh7KqVH3DSOT/7yn21e/IKxtsE=;
-        b=dDXQ6bpk+vYp8r5atlPowmb6yR6GJt2vk6U3g6ZnMXwcgOuwkojPTGBoQ3QhtLYrNw
-         djNB0E3+2ZLEnB+j3GE1koUCfCP0SmWwQwoSmTXok4z5H6+gAlrhKdWpax7vxb+p7QyM
-         xkBLzpBvET25UA3KmTW/x0Pxlr10GZ+UcmgYuUQHzPDjIj5F7PsORGI69EzzsX9C9L8w
-         72Z5zBorvo9TaZ2Fovr1b2UE2d8+gI2Yo0oUjtzPpXF/Xy/DitYYeY/ywWGvkQRNPAmv
-         oFO3yaJeOjYdaPn28jZKs7CzonYqd6UZde+nEbrAWkgPfl9eCr7bQi/oFHorZVv4GnsB
-         O3zw==
+        bh=m0Yltnmqgxph/eGeJ34Ce62Zgj1P8Kis8u3YVkRijyY=;
+        b=hC5Y7EMy9VWhxlyShK6uB4W3PKqXn7DkXMGj8qzITxSM1agmgfKfmf2qIeAbtP9aCl
+         S6EE11zm0OgZWURMX3uUqrOuEYFtGgZz+lwZ3ECoFdFZ1r9ibY6GbKzWqFyek6fth2Q1
+         UtoaWlDH2VkG5Clxd8t6jZlpV0zo/q63vSXF2T5ve5XwnfJyZdBow4Xxdey41iF7quuN
+         CRRka00/cgaSawJX6IERwpqasZlsjsKmuU5VwvUMNuz7MBrQeL9F071lgTVTfte8SRO0
+         OHaHCq8o9V30EiMIYSiYyq3CAYLDPigSnsaTjPO23Ejsp+zXs2pfVNBPRMIQM3JfO0fl
+         eZ0g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ieKsljjbAwxH7pp36Hh7KqVH3DSOT/7yn21e/IKxtsE=;
-        b=IBntC+rzqfrtj5ZNtJ7yd566EuiiigbZWwUo0fo3SqjJLhbflkdxWh5UvpiaGU7Ovi
-         C38OLhsiGik4G/RLzn9RY9rmIRhnjOn+iG+ZJu1ultIlkNVirxjts1OBQXOWV7Zz0q2u
-         8mO5m1cZnC4g0fiU5QXw40y9DVegT6V9QECOS5oexabkja41DfF9s3dgq0ZFXqP2mv+O
-         I0OSscVlYNpugHD0xYAnvm7SzUVboY6csSpQlU5ug82YQEiU7OqcEgIk3hL7nxJErYmC
-         /2zbWTjz4OubiZkWeFik79+Eoa+uBb2d5GpJ2nNDia76Eb7NP7OSy2JS4Db3NBcD9bNN
-         uPXg==
-X-Gm-Message-State: APjAAAUuXApGRVi5/LfKERYzPZQy/mVOvCBdMXm+XEGGjJzmqOdAgbeV
-        1xMrhdAyftLMpI+UUzfRldwNsZNz
-X-Google-Smtp-Source: APXvYqwQ5dbWC8206Z15fTqxar5kaagIiLLQeQLYNzCwSS1x+Vtx/KQAAGvn8xtR50A+kBzHVmGYlQ==
-X-Received: by 2002:a63:c242:: with SMTP id l2mr71202531pgg.138.1554275026954;
-        Wed, 03 Apr 2019 00:03:46 -0700 (PDT)
+        bh=m0Yltnmqgxph/eGeJ34Ce62Zgj1P8Kis8u3YVkRijyY=;
+        b=LxR7TOsVoYqIfVfUMLNAacWHz+xE2OF0tZcCtadwzoAcU/nS5skrys2E9fhyBr1a4J
+         h6ES8kxUQ5iylqVKcX22/yHbbrHZ+ONU7EpqQ6W+LS2FVtTSWF0bTqcX8LDTnbDm/2WY
+         95/feGKKSwbfrfjxjWnE7JZBglmg+tywojwyg5ihW9DMXPY+SdMV8jxyyn4bb3CTOeWx
+         oRrqfCjBFD32RSl4HoscOYpuVzF5cT+hLDGXtImm0xSmuoTpzARP/Ki6AcB+q+VkqAjj
+         kpwkZjixeznp/ml9SqQaNkSISwGXzKJrQt3ZdiA4dHb6OkyI1b6Y/Y4og0FpE3JniGPN
+         0C1g==
+X-Gm-Message-State: APjAAAVRzHlMZk+19SbVlMTNzhhM9y1/efik24v1UbJEoCsw1Eflg7od
+        PcTkaj1iv4qv5nyf/IC+g1sEEmH9
+X-Google-Smtp-Source: APXvYqwEBURyZYDon/koDwEhab+CF3h84IKy97fUy24tqt9WnON6QUwyjZub8tMz/McbSJ2I1QGWXA==
+X-Received: by 2002:a62:58c7:: with SMTP id m190mr73357796pfb.4.1554275028199;
+        Wed, 03 Apr 2019 00:03:48 -0700 (PDT)
 Received: from squirtle.lan (c-24-22-235-96.hsd1.wa.comcast.net. [24.22.235.96])
-        by smtp.gmail.com with ESMTPSA id e22sm20602750pfi.126.2019.04.03.00.03.45
+        by smtp.gmail.com with ESMTPSA id e22sm20602750pfi.126.2019.04.03.00.03.46
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 03 Apr 2019 00:03:46 -0700 (PDT)
+        Wed, 03 Apr 2019 00:03:47 -0700 (PDT)
 From:   Andrey Smirnov <andrew.smirnov@gmail.com>
 To:     linux-iio@vger.kernel.org
 Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
@@ -63,9 +63,9 @@ Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/6] iio: imx7d_adc: Replace pr_err with dev_err
-Date:   Wed,  3 Apr 2019 00:03:21 -0700
-Message-Id: <20190403070325.1077-3-andrew.smirnov@gmail.com>
+Subject: [PATCH 3/6] iio: imx7d_adc: Use devm_iio_device_register()
+Date:   Wed,  3 Apr 2019 00:03:22 -0700
+Message-Id: <20190403070325.1077-4-andrew.smirnov@gmail.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190403070325.1077-1-andrew.smirnov@gmail.com>
 References: <20190403070325.1077-1-andrew.smirnov@gmail.com>
@@ -76,8 +76,8 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Replace combination of pr_err()/dev_name() with an equivalent call for
-dev_err().
+Use devm_iio_device_register() and drop explicit call to
+iio_device_unregister().
 
 Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
@@ -88,25 +88,31 @@ Cc: Chris Healy <cphealy@gmail.com>
 Cc: linux-iio@vger.kernel.org
 Cc: linux-kernel@vger.kernel.org
 ---
- drivers/iio/adc/imx7d_adc.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/adc/imx7d_adc.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-index 3bbd657409d5..72cfe9834bcb 100644
+index 72cfe9834bcb..9a46838ec7cf 100644
 --- a/drivers/iio/adc/imx7d_adc.c
 +++ b/drivers/iio/adc/imx7d_adc.c
-@@ -388,8 +388,9 @@ static irqreturn_t imx7d_adc_isr(int irq, void *dev_id)
- 	 * timeout flags.
- 	 */
- 	if (status & IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT) {
--		pr_err("%s: ADC got conversion time out interrupt: 0x%08x\n",
--			dev_name(info->dev), status);
-+		dev_err(info->dev,
-+			"ADC got conversion time out interrupt: 0x%08x\n",
-+			status);
- 		status &= ~IMX7D_REG_ADC_INT_STATUS_CHANNEL_CONV_TIME_OUT;
- 		writel(status, info->regs + IMX7D_REG_ADC_INT_STATUS);
- 	}
+@@ -517,7 +517,7 @@ static int imx7d_adc_probe(struct platform_device *pdev)
+ 	imx7d_adc_feature_config(info);
+ 	imx7d_adc_hw_init(info);
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret) {
+ 		imx7d_adc_power_down(info);
+ 		dev_err(&pdev->dev, "Couldn't register the device.\n");
+@@ -539,8 +539,6 @@ static int imx7d_adc_remove(struct platform_device *pdev)
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct imx7d_adc *info = iio_priv(indio_dev);
+ 
+-	iio_device_unregister(indio_dev);
+-
+ 	imx7d_adc_power_down(info);
+ 
+ 	clk_disable_unprepare(info->clk);
 -- 
 2.20.1
 
