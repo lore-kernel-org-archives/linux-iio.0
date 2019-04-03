@@ -2,131 +2,71 @@ Return-Path: <SRS0=2YCt=SF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B80FCC4360F
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 09:10:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7AF90C4360F
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 10:21:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 93871206B8
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 09:10:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53EC22148E
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 10:21:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726155AbfDCJKx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Apr 2019 05:10:53 -0400
-Received: from mail-ed1-f66.google.com ([209.85.208.66]:42446 "EHLO
-        mail-ed1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725857AbfDCJKx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 05:10:53 -0400
-Received: by mail-ed1-f66.google.com with SMTP id x61so14170608edc.9
-        for <linux-iio@vger.kernel.org>; Wed, 03 Apr 2019 02:10:52 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=4HTh0QlprI/1gUI5iisXQZRq97dzpssTQCwcM79z+aM=;
-        b=nj8m3ik7JJWO5r4I6cS0koXwgPO0yB/8/f2qZSOLoIz4SNHTPXnqlnA+ZGYvkEReGs
-         Zm/44NC3xk4hPzPIPYg/zKBIHgmL1FAvISmMRa4KVg3mpvYQSKeaxV+Df45LfqyXjD1Y
-         fwjofdYhd2vPiGZZoh5iO6MXQVMz2LiXTBVecFiciphThqrlYgV+PNCVxrY5XIFKON9s
-         UmI0sKg6CIqX5sigesigdFQVerf7dmqGGrFkNw7XiAE06EbR6jT1X8ECRlwmqHCP2cd6
-         rz/+gseyX7mquKXA83M7eUy00a5Q2sTULeGycMmhZwdqGJSm8Yc5agdDNsYNiHrqDW3M
-         vmiw==
-X-Gm-Message-State: APjAAAV9TgTmoJWAJzi9/6q5VrbqEisQ24A7XzyP03S44Oyf8vWlBWrM
-        eooAMG0zaauzlteCGGR9rrVxXA==
-X-Google-Smtp-Source: APXvYqyACpFmITg8EvoarcnAAuIN5wM26LTVuXu23a06nlTHZlLTirpcME0z6EoUDrnGoK1sC6Jtag==
-X-Received: by 2002:a50:ad23:: with SMTP id y32mr42649768edc.90.1554282651621;
-        Wed, 03 Apr 2019 02:10:51 -0700 (PDT)
-Received: from shalem.localdomain (84-106-84-65.cable.dynamic.v4.ziggo.nl. [84.106.84.65])
-        by smtp.gmail.com with ESMTPSA id r23sm1781322eja.71.2019.04.03.02.10.50
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Apr 2019 02:10:50 -0700 (PDT)
-Subject: Re: [PATCH] iio: accel: add missing sensor for some 2-in-1 based
- ultrabooks
-To:     =?UTF-8?Q?Lu=c3=ads_Ferreira?= <luis@aurorafoss.org>,
-        jic23@kernel.org
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        id S1726486AbfDCKVB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Apr 2019 06:21:01 -0400
+Received: from www.osadl.org ([62.245.132.105]:47369 "EHLO www.osadl.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725963AbfDCKVB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 3 Apr 2019 06:21:01 -0400
+X-Greylist: delayed 2020 seconds by postgrey-1.27 at vger.kernel.org; Wed, 03 Apr 2019 06:21:01 EDT
+Received: from debian01.hofrr.at (178.115.242.59.static.drei.at [178.115.242.59])
+        by www.osadl.org (8.13.8/8.13.8/OSADL-2007092901) with ESMTP id x339kfBr026880;
+        Wed, 3 Apr 2019 11:46:41 +0200
+From:   Nicholas Mc Guire <hofrat@osadl.org>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <20190402160433.15810-1-luis@aurorafoss.org>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <55a52a4e-01d1-2f4c-25e3-0047537bef86@redhat.com>
-Date:   Wed, 3 Apr 2019 11:10:49 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190402160433.15810-1-luis@aurorafoss.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Nicholas Mc Guire <hofrat@osadl.org>
+Subject: [PATCH 1/2] staging:iio:accel:adis16203: add SPDX license identifier tag
+Date:   Wed,  3 Apr 2019 11:41:28 +0200
+Message-Id: <1554284489-5023-1-git-send-email-hofrat@osadl.org>
+X-Mailer: git-send-email 2.1.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Pop in the SPDX tag as the license is clearly indicated
+as GPL V2 or later this should also be indicated with a SPDX license
+identifier tag.
 
-On 02-04-19 18:04, Luís Ferreira wrote:
-> Some ultrabooks, like Teclast F6 Pro, use KIOX010A sensor on display
-> and KIOX020A sensor on keyboard base, to detect tablet mode or screen
-> orientation.
+Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
+---
 
-I deliberately left out the KIOX020A id for now, because currently
-userspace cannot really deal with having 2 sensors.
+chackpatch.pl was warning:
+WARNING: Missing or malformed SPDX-License-Identifier tag in line 1
 
-See:
-https://github.com/systemd/systemd/issues/6557
-https://github.com/hadess/iio-sensor-proxy/issues/166
+Patch was compile tested with: X86_64_defconfig + SPI=y, IIO=m
+STAGING=y, ADIS16203=m
 
-Basically we need to come up with a convention to (optionally) indicate
-the sensors location with a udev attribute set by:
-/lib/udev/hwdb.d/60-sensor.hwdb
+Patch is against 5.1-rc3 (localversion-next is next-20190403)
 
-And then patch iio-sensor-proxy to consume that attribute and ignore
-the one which has e.g. ACCEL_LOCATION=keyboard in its udev properties
+ drivers/staging/iio/accel/adis16203.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Ignoring would be a first step, maybe later it can do something useful
-with it, see e.g. :  https://github.com/alesguzik/linux_detect_tablet_mode
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index 5cc96c80..cf9d41a 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -1,3 +1,4 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
+ /*
+  * ADIS16203 Programmable 360 Degrees Inclinometer
+  *
+-- 
+2.1.4
 
-IMHO we really should minimally get code in place for iio-sensor-proxy
-to ignore the keyboard accelerometer before merging this patch.
-
-I realize that having the code in place will not magically get it on
-all users machines, but I believe this is the minimum which needs to
-happen before we push this out and potentially breaks people screen
-rotation.
-
-I've had working on this on my TODO list for a long long time now,
-but -ENOTIME. If you have some time to work on this then that would
-be great.
-
-Regards,
-
-Hans
-
-
-
-
-> 
-> Signed-off-by: Luís Ferreira <luis@aurorafoss.org>
-> ---
->   drivers/iio/accel/kxcjk-1013.c | 1 +
->   1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-> index 7096e577b23f..9a5e445facc1 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -1492,6 +1492,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
->   	{"KIOX0009", KXTJ21009},
->   	{"KIOX000A", KXCJ91008},
->   	{"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
-> +	{"KIOX020A", KXCJ91008},
->   	{"KXTJ1009", KXTJ21009},
->   	{"KXJ2109",  KXTJ21009},
->   	{"SMO8500",  KXCJ91008},
-> 
