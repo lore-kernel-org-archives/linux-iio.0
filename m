@@ -1,108 +1,95 @@
-Return-Path: <SRS0=2YCt=SF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=W9FC=SG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 661C2C4360F
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 20:45:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEA2C4360F
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 06:29:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C6E52084B
-	for <linux-iio@archiver.kernel.org>; Wed,  3 Apr 2019 20:45:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9150320855
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 06:29:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RZdnyAbZ"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="fTgcRVc1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726167AbfDCUpQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Apr 2019 16:45:16 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:36045 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726144AbfDCUpQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Apr 2019 16:45:16 -0400
-Received: by mail-qt1-f193.google.com with SMTP id s15so702512qtn.3;
-        Wed, 03 Apr 2019 13:45:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4plFhU/Zqm1lqkeMfe6JXmo9VfvB6FCCzNZE6pU1PLM=;
-        b=RZdnyAbZAe72wW1u3aA0oNToW7AA59ns5xNeWjpmsonQqA8bwlPOEfRplx50mdhXGn
-         GJTAsah4ir8S2SkVEOazY2/kNgUd3jHTALG+PkkZX8O4ivExlYbtS1lidbPnH5I3XsPL
-         LMZuH43xs5zN5w6Jy4lzcMhG2WSe8SGezsJYj2zczs2NGAev1YtZ7OBicuioJHo+xDjo
-         CoAQY21DzuemKNLQCTL0wEQGljkBItO3QGMkejrOcjvKSRdfSI3WnZJf/x+KoN8cePul
-         NSkABzOODdZaFjo/Mm+YbN6vSQqckr6Lc8HkjK3GZbiXS4egsGwWAX/BDuAOqA+1bu5+
-         qTiw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4plFhU/Zqm1lqkeMfe6JXmo9VfvB6FCCzNZE6pU1PLM=;
-        b=WV7BNhKQ7l9HtMzLxgvnG2YXuybHaXyO8oU+ace9/8l4h5M1W89M8N6vO2KfouiOVw
-         nCTjBw1wdt/Na1hrYwPeDMllrtDfMNeK2bO3PQAds0QwW2RU54W93hV4Tglv6kySb0+Z
-         4byY8N0v/sNSWNDnv2y4Rr9QrmoVNUSBVId8Q/vSQz1FOGQ3PDscMi6vEygcxIcHlEP5
-         zKw74Em971MVL4mOsPyHQoD722HwuOHi/cIms6Q/N5la7j0cJEhmYqp9jSp23q1Yode+
-         uUs0V8a7cMXWovVFTcV+aTT/LpctM2wUSGjQ/+HZhHXbuKlEk2QMPN+YlrKzzhX1PQtj
-         Uu9Q==
-X-Gm-Message-State: APjAAAVjiYepVvNfpBqR6bN/b+oUEszajcX9sTouZ3hIdx3tuKt0qXl0
-        qmmpNk6E25fwfaVc3ORSUv4=
-X-Google-Smtp-Source: APXvYqxi7qwM1qJhpgRBCPF8OaODWX32KhU6/r0sNZS1PbNMhJySFh43tMrPBxpaAAaUYNDWiV7tag==
-X-Received: by 2002:aed:356e:: with SMTP id b43mr2012818qte.161.1554324315856;
-        Wed, 03 Apr 2019 13:45:15 -0700 (PDT)
-Received: from localhost.localdomain ([2804:14c:32:a2b6::2])
-        by smtp.gmail.com with ESMTPSA id d21sm11673184qtc.91.2019.04.03.13.45.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 03 Apr 2019 13:45:15 -0700 (PDT)
-From:   Lucas Oshiro <lucasseikioshiro@gmail.com>
-To:     lars@metafoo.de, Michael.Hennerich@analog.com,
-        stefan.popa@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH] staging: iio: cdc: ad7746: Replace bitshift by BIT
-Date:   Wed,  3 Apr 2019 17:45:02 -0300
-Message-Id: <20190403204502.28917-1-lucasseikioshiro@gmail.com>
-X-Mailer: git-send-email 2.21.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1726204AbfDDG3S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 4 Apr 2019 02:29:18 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.167]:24376 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726031AbfDDG3S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Apr 2019 02:29:18 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1554359354;
+        s=strato-dkim-0002; d=goldelico.com;
+        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=TWOuqIAYnWnAAX/SrCaBGBo5LU8X1ZuLAepkUJVZeVc=;
+        b=fTgcRVc1FFfcNqblZt+cYLw+OeksNQ+TkUBpe4kYUOupq7WTOAi3dP3eh4i13olhdK
+        mu5jTqUkcdMSSE2SLiamRzeQyCGzEV5caBOv+0UbUV1wFe31V6QkCwYvOoWaZ8JaJNWz
+        dRZd1v7Wvsr5ykh4LbYgp77ov+4/RYbHRDTfZXO5Kap6wzM9Xqu9IaMkmVkpMzvjHmAR
+        HcR6Oj3n7xwY2Nyml38bRjoBAWRMPoZZyb2ALPJG3feKUdQB5po08efwoSNcS4LyjQa8
+        MtnN8xcHAgGXH/0mpim8/fLW++gDJEnWNrh6HdR5nXI08ICYnlVEPvrwSGCX3h4uApd3
+        ocUQ==
+X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NMGHPrtwDOsr48="
+X-RZG-CLASS-ID: mo00
+Received: from mbp-13-nikolaus.fritz.box
+        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
+        with ESMTPSA id K07648v346TArbI
+        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Thu, 4 Apr 2019 08:29:10 +0200 (CEST)
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v2 00/10] iio mount matrix - revitalize missing bindings documentation and provide code for bmc150, bmg160, bma180, itg3200, hmc584x
+From:   "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20190303153201.440ac325@archlinux>
+Date:   Thu, 4 Apr 2019 08:29:12 +0200
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Martin Kelly <mkelly@xevo.com>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Brian Masney <masneyb@onstation.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Discussions about the Letux Kernel 
+        <letux-kernel@openphoenux.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Transfer-Encoding: quoted-printable
+Message-Id: <3A50A918-61AB-4710-B9DA-DF041A898944@goldelico.com>
+References: <cover.1550768574.git.hns@goldelico.com> <CAHp75VeMTd32S+bTgU2f1AS-NB67iuM+erT8qNJgPS7O0E1Cjg@mail.gmail.com> <20190303153201.440ac325@archlinux>
+To:     Jonathan Cameron <jic23@kernel.org>
+X-Mailer: Apple Mail (2.3124)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Replace bitshifts on lines 54, 56 and 78 of ad7746.c.
+Hi Jonathan,
 
-Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
----
- drivers/staging/iio/cdc/ad7746.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Am 03.03.2019 um 16:32 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> Thanks to Linus and Andy for reviews.
+> I've picked up all but they documentation patch.  I think
+> it is 'very nearly there', but would like a few really minor
+> tweaks.  Seemed silly to stall the other patches on that though!
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 0eb28fea876e..ea48b14cee72 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -51,9 +51,9 @@
- #define AD7746_CAPSETUP_CACHOP		BIT(0)
- 
- /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
--#define AD7746_VTSETUP_VTEN		(1 << 7)
-+#define AD7746_VTSETUP_VTEN		BIT(7)
- #define AD7746_VTSETUP_VTMD_INT_TEMP	(0 << 5)
--#define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
-+#define AD7746_VTSETUP_VTMD_EXT_TEMP	BIT(5)
- #define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
- #define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
- #define AD7746_VTSETUP_EXTREF		BIT(4)
-@@ -75,7 +75,7 @@
- #define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
- #define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
- #define AD7746_CONF_MODE_IDLE		(0 << 0)
--#define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
-+#define AD7746_CONF_MODE_CONT_CONV	BIT(0)
- #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
- #define AD7746_CONF_MODE_PWRDN		(3 << 0)
- #define AD7746_CONF_MODE_OFFS_CAL	(5 << 0)
--- 
-2.21.0
+Seems they have stalled elsewhere since they did not yet arrive in =
+linux-next.
+
+The documentation patch is still on my todo list and will need a little =
+more time
+but that should not block the others.
+
+BR and thanks,
+Nikolaus
 
