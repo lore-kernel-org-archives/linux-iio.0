@@ -2,117 +2,165 @@ Return-Path: <SRS0=W9FC=SG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D82C4360F
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 06:41:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DADAC4360F
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 08:02:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EBF7720855
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 06:41:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E84E420855
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 08:02:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="u3rggirp"
+	dkim=pass (1024-bit key) header.d=nxp.com header.i=@nxp.com header.b="SAZzNCu0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726942AbfDDGlg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 4 Apr 2019 02:41:36 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:39663 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725904AbfDDGlg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Apr 2019 02:41:36 -0400
-Received: by mail-ot1-f66.google.com with SMTP id f10so1341490otb.6;
-        Wed, 03 Apr 2019 23:41:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J3o3hk6OVGvyTuD006lhhVSPuAvQZCtMla/eC+dyNEc=;
-        b=u3rggirpZx4SYJfUDWxhPjiAYjpGsAA4c01aQ3oXdURfjfpuk2J4cjPJSyTgqgLutX
-         F6lUX+3tMGXgxZaqWBcrwPJRwVJg56qfCZjM/4ofQFMyXACOND2dS4GOaQKRob8+fqGe
-         n7UlolNHGIsKr6SFXxk29V0JyZz0wM/HsURbhW37X3vf+GAQnRvjHqxytiH0fU5sHp6O
-         3ROMiERyf/bQTBKMSg3ClYA6/lKePamSYmH218+TBchbsY+X+i2EhkOT/MBW6i1A/5XM
-         QGgwAQZpZ8YaSqkzmpty1bTLb+j9Ao0WK0SvdYFo8kA5S1LQqxq+Y4ZNd9uUuIi4x29R
-         JL5A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J3o3hk6OVGvyTuD006lhhVSPuAvQZCtMla/eC+dyNEc=;
-        b=f72Yb1tT3Ll+bCOxnEIhfePIdspxifZMKbIfqEdUUGcjX0IQVyVR+tJwxqn8J/M4zq
-         s0qDs/mBj8dVDdHD1n+DsJcLwWZa17EMxwiL83CjRR+43OgRErgcXt5itGRyUdc1A3X6
-         aADvg+an4OZ/krc+FXrvo7byic5OHs2O6R2OblNV0O/SiDlePfvADytzH9QlH9jTc3Qb
-         RbCoKgoE7xvKKNPmj4xoD18WT31VLOSY8fkbMsJ2WN31qOYMX6wtBKrNPvQS7KBM/smS
-         zG0+WyDCVxL/LIJs1mkZS4ZOxV35KrJbYennZobOvQ+xxYsI2mZcUIUt4TTkrHlg1+2F
-         OiLg==
-X-Gm-Message-State: APjAAAWpdNj7kjSUsXww4zOPhd6dk6jWqnzdCRYS2gljf7rHO3RjjlLC
-        EyDmX9r3idTBHVHpLKepxGd3VatRrhN8FUzK9cpXkGKK
-X-Google-Smtp-Source: APXvYqy5GdrEL7QuSGpt08SxOeW9RNLquDzFWn5848TAl8OBDnq6Ks1c+uXjfgOJ4ExLZG8TctTytKtTeh2DVXh95bo=
-X-Received: by 2002:a9d:5f06:: with SMTP id f6mr2995772oti.18.1554360095632;
- Wed, 03 Apr 2019 23:41:35 -0700 (PDT)
+        id S1726711AbfDDICJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 4 Apr 2019 04:02:09 -0400
+Received: from mail-eopbgr20085.outbound.protection.outlook.com ([40.107.2.85]:47078
+        "EHLO EUR02-VE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726204AbfDDICJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 4 Apr 2019 04:02:09 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=nxp.com; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=348CXBVtmou65d21vBrF/WcaMPEjMuawVro6sIs0r4A=;
+ b=SAZzNCu0N1Ia85yhDSuPzwJ/Le+ZZni/C9U0E4RsaMBV5Xv839nFTb8nnyyi/NRApDdZhcvhgqJmySNJnO2r0xo4lnESNsQtVRm9cvQ4YeRnweZyDOutFC+ntC6+bfakpL6sxLijbxu77zP0VXz3f5Zz80IlDXK3GH1+mYjDKjw=
+Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com (52.134.72.18) by
+ DB3PR0402MB3818.eurprd04.prod.outlook.com (52.134.71.29) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.1750.20; Thu, 4 Apr 2019 08:02:05 +0000
+Received: from DB3PR0402MB3916.eurprd04.prod.outlook.com
+ ([fe80::e8ca:4f6b:e43:c170]) by DB3PR0402MB3916.eurprd04.prod.outlook.com
+ ([fe80::e8ca:4f6b:e43:c170%3]) with mapi id 15.20.1771.016; Thu, 4 Apr 2019
+ 08:02:05 +0000
+From:   Anson Huang <anson.huang@nxp.com>
+To:     "jic23@kernel.org" <jic23@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        Leonard Crestez <leonard.crestez@nxp.com>,
+        "gustavo@embeddedor.com" <gustavo@embeddedor.com>,
+        "martink@posteo.de" <martink@posteo.de>,
+        "rtresidd@electromag.com.au" <rtresidd@electromag.com.au>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+CC:     dl-linux-imx <linux-imx@nxp.com>
+Subject: [PATCH] iio: accell: mma8452: free iio trigger pointer when cleanup
+Thread-Topic: [PATCH] iio: accell: mma8452: free iio trigger pointer when
+ cleanup
+Thread-Index: AQHU6ryxEHCPaiVeL06acUetPMat+Q==
+Date:   Thu, 4 Apr 2019 08:02:05 +0000
+Message-ID: <1554364635-19653-1-git-send-email-Anson.Huang@nxp.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.7.4
+x-clientproxiedby: HK0PR04CA0003.apcprd04.prod.outlook.com
+ (2603:1096:203:36::15) To DB3PR0402MB3916.eurprd04.prod.outlook.com
+ (2603:10a6:8:10::18)
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=anson.huang@nxp.com; 
+x-ms-exchange-messagesentrepresentingtype: 1
+x-originating-ip: [119.31.174.66]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 25e4b445-2eb8-4244-d64f-08d6b8d3d391
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600139)(711020)(4605104)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DB3PR0402MB3818;
+x-ms-traffictypediagnostic: DB3PR0402MB3818:
+x-microsoft-antispam-prvs: <DB3PR0402MB3818D2E0F11A84369BB293E7F5500@DB3PR0402MB3818.eurprd04.prod.outlook.com>
+x-forefront-prvs: 0997523C40
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(396003)(39860400002)(346002)(136003)(366004)(376002)(189003)(199004)(7736002)(99286004)(25786009)(86362001)(14454004)(6512007)(6436002)(52116002)(186003)(4326008)(71190400001)(110136005)(6506007)(97736004)(316002)(71200400001)(478600001)(6486002)(5660300002)(486006)(26005)(102836004)(476003)(386003)(2616005)(8676002)(2501003)(14444005)(81166006)(256004)(305945005)(6116002)(3846002)(8936002)(2201001)(66066001)(106356001)(68736007)(2906002)(45080400002)(53936002)(36756003)(105586002)(50226002)(81156014)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:DB3PR0402MB3818;H:DB3PR0402MB3916.eurprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: nxp.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: E4pNxvUM9S3VN5aa7PVMq1QyhMscPB5AGcCNNBm+s10vf1iCuOK9byIErp5s+UVxWnD/Bxh6Kbr+oWcs6qETU7bjjzPYbuwuzYvNvw4EDM/po3cmZ74nmxwN2DZu7JIuInhFrwwNObuAU37RBOnQGFdeSpuoYHGZ59MXFhcw4gfuyE9uRejMFLZ+26cly6Vqk+JwKy3+RWmvkq2uzrVpRlQ1NV+5Ygs1glzF4udpjBGzXBYULc21AMAVA2HuXC6u2UVYw0EjgyLzi83SKlw0MdgStGeN6n6UALs7hcMpJRmYsBzo89qAJIdOqhEpozl8EqIljn80WvBA7V1NVQOdSyL/u9SDvKc1f3LvFrHl4SRY2Aj8gSAoFwZ4ou+B3+HLHy29UocGRlsGGTFlYGjWMvSqMFq4Zpn1vh3PNydGtj0=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20190403204502.28917-1-lucasseikioshiro@gmail.com>
-In-Reply-To: <20190403204502.28917-1-lucasseikioshiro@gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Thu, 4 Apr 2019 09:41:24 +0300
-Message-ID: <CA+U=DsoYcNA4JUiFrLWWdDO+CmMWBy15x4WVEUTp803HT5EzUg@mail.gmail.com>
-Subject: Re: [PATCH] staging: iio: cdc: ad7746: Replace bitshift by BIT
-To:     Lucas Oshiro <lucasseikioshiro@gmail.com>
-Cc:     lars@metafoo.de,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        stefan.popa@analog.com, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, LKML <linux-kernel@vger.kernel.org>,
-        kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: nxp.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 25e4b445-2eb8-4244-d64f-08d6b8d3d391
+X-MS-Exchange-CrossTenant-originalarrivaltime: 04 Apr 2019 08:02:05.2448
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 686ea1d3-bc2b-4c6f-a92c-d99c5c301635
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB3PR0402MB3818
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Apr 3, 2019 at 11:46 PM Lucas Oshiro <lucasseikioshiro@gmail.com> wrote:
->
-> Replace bitshifts on lines 54, 56 and 78 of ad7746.c.
->
+When mma8452 is built as module, once it is insmod and rmmod, below
+kernel dump will show out, the root cause is module being put twice
+if iio trigger pointer is NOT NULL, this patch frees iio trigger
+pointer after iio trigger is unregistered to avoid below kernel
+dump:
 
-Hey,
-This is only partially done.
-If doing conversions to BIT(x) macro, I would say to do them for all cases.
+------------[ cut here ]------------
+WARNING: CPU: 3 PID: 270 at kernel/module.c:1145 module_put+0xd0/0x188
+Modules linked in: mma8452(-)
+CPU: 3 PID: 270 Comm: rmmod Not tainted 5.1.0-rc3-next-20190403-00022-g5ede=
+0c9-dirty #1596
+Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[<c011272c>] (unwind_backtrace) from [<c010d094>] (show_stack+0x10/0x14)
+[<c010d094>] (show_stack) from [<c0bdc160>] (dump_stack+0xd8/0x10c)
+[<c0bdc160>] (dump_stack) from [<c01275d8>] (__warn+0xf8/0x124)
+[<c01275d8>] (__warn) from [<c0127714>] (warn_slowpath_null+0x3c/0x48)
+[<c0127714>] (warn_slowpath_null) from [<c01ca4d0>] (module_put+0xd0/0x188)
+[<c01ca4d0>] (module_put) from [<c08a5bb4>] (iio_device_unregister_trigger_=
+consumer+0x18/0x24)
+[<c08a5bb4>] (iio_device_unregister_trigger_consumer) from [<c08a0ab4>] (ii=
+o_dev_release+0x20/0)
+[<c08a0ab4>] (iio_dev_release) from [<c065c0e8>] (device_release+0x24/0x8c)
+[<c065c0e8>] (device_release) from [<c0be1810>] (kobject_put+0x74/0xd4)
+[<c0be1810>] (kobject_put) from [<c0664dc0>] (release_nodes+0x16c/0x1f0)
+[<c0664dc0>] (release_nodes) from [<c0661b80>] (device_release_driver_inter=
+nal+0xec/0x1a0)
+[<c0661b80>] (device_release_driver_internal) from [<c0661c90>] (driver_det=
+ach+0x44/0x80)
+[<c0661c90>] (driver_detach) from [<c066096c>] (bus_remove_driver+0x4c/0xa0=
+)
+[<c066096c>] (bus_remove_driver) from [<c01cc1a4>] (sys_delete_module+0x130=
+/0x1dc)
+[<c01cc1a4>] (sys_delete_module) from [<c0101000>] (ret_fast_syscall+0x0/0x=
+28)
+Exception stack(0xe8d87fa8 to 0xe8d87ff0)
+7fa0:                   0001ffc0 38616d6d be87bbf0 00000880 00000000 be87be=
+98
+7fc0: 0001ffc0 38616d6d 00323534 00000081 000a9744 be87bf81 000a9790 000000=
+00
+7fe0: be87bbe8 be87bbd8 0001fe18 b6e381a0
+irq event stamp: 4017
+hardirqs last  enabled at (4035): [<c0188a0c>] console_unlock+0x400/0x630
+hardirqs last disabled at (4052): [<c018868c>] console_unlock+0x80/0x630
+softirqs last  enabled at (4050): [<c0102698>] __do_softirq+0x458/0x554
+softirqs last disabled at (4069): [<c012ed6c>] irq_exit+0x130/0x180
+---[ end trace a7ba8f1823b1e073 ]---
 
-Thanks
-Alex
+Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
+---
+ drivers/iio/accel/mma8452.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-> Signed-off-by: Lucas Oshiro <lucasseikioshiro@gmail.com>
-> ---
->  drivers/staging/iio/cdc/ad7746.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index 0eb28fea876e..ea48b14cee72 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -51,9 +51,9 @@
->  #define AD7746_CAPSETUP_CACHOP         BIT(0)
->
->  /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
-> -#define AD7746_VTSETUP_VTEN            (1 << 7)
-> +#define AD7746_VTSETUP_VTEN            BIT(7)
->  #define AD7746_VTSETUP_VTMD_INT_TEMP   (0 << 5)
-> -#define AD7746_VTSETUP_VTMD_EXT_TEMP   (1 << 5)
-> +#define AD7746_VTSETUP_VTMD_EXT_TEMP   BIT(5)
->  #define AD7746_VTSETUP_VTMD_VDD_MON    (2 << 5)
->  #define AD7746_VTSETUP_VTMD_EXT_VIN    (3 << 5)
->  #define AD7746_VTSETUP_EXTREF          BIT(4)
-> @@ -75,7 +75,7 @@
->  #define AD7746_CONF_VTFS_MASK          GENMASK(7, 6)
->  #define AD7746_CONF_CAPFS_MASK         GENMASK(5, 3)
->  #define AD7746_CONF_MODE_IDLE          (0 << 0)
-> -#define AD7746_CONF_MODE_CONT_CONV     (1 << 0)
-> +#define AD7746_CONF_MODE_CONT_CONV     BIT(0)
->  #define AD7746_CONF_MODE_SINGLE_CONV   (2 << 0)
->  #define AD7746_CONF_MODE_PWRDN         (3 << 0)
->  #define AD7746_CONF_MODE_OFFS_CAL      (5 << 0)
-> --
-> 2.21.0
->
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 3027811..6b18177 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -1475,8 +1475,10 @@ static int mma8452_trigger_setup(struct iio_dev *ind=
+io_dev)
+=20
+ static void mma8452_trigger_cleanup(struct iio_dev *indio_dev)
+ {
+-	if (indio_dev->trig)
++	if (indio_dev->trig) {
+ 		iio_trigger_unregister(indio_dev->trig);
++		indio_dev->trig =3D NULL;
++	}
+ }
+=20
+ static int mma8452_reset(struct i2c_client *client)
+--=20
+2.7.4
+
