@@ -4,64 +4,64 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE7E0C4360F
-	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:35:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DADB9C10F00
+	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:35:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9F1F721855
-	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:35:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A61A521855
+	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:35:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="LEhEgFjx"
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="X1Pu3Mke"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730554AbfDEJfJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 5 Apr 2019 05:35:09 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:54569 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730501AbfDEJe5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Apr 2019 05:34:57 -0400
-Received: by mail-wm1-f65.google.com with SMTP id c1so5926806wml.4
-        for <linux-iio@vger.kernel.org>; Fri, 05 Apr 2019 02:34:55 -0700 (PDT)
+        id S1730512AbfDEJe4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 5 Apr 2019 05:34:56 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:37426 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730467AbfDEJez (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Apr 2019 05:34:55 -0400
+Received: by mail-wm1-f66.google.com with SMTP id v14so6409801wmf.2
+        for <linux-iio@vger.kernel.org>; Fri, 05 Apr 2019 02:34:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=baylibre-com.20150623.gappssmtp.com; s=20150623;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=ot7R4QQLGeHfNAz7vr6go3wsbBhXv9hbHqFpcoxW/Ms=;
-        b=LEhEgFjxLvkvCxZxAsqX/2NFdHWcYbLvP02jo9H5B3/9YjwY1M2wCndnyPJpiM++Jz
-         mD9+zohLsps1hefZ3F4//5nMgE24Z6TZfUSx4uAdtEOdALqOI80NxkzNc1qaS06VXMkv
-         TLXVAKZD5n2fRTgTNAt/jtF/i0hGityNkTp06T4Vbywhu3R3QD8nXco/Pem+ip4qd6nA
-         wY64LdNAWMeRihrRMbNs3SKjrp7k6g/UjmlKR73PTUPHXErGfKgB7buJrGn799mTiRjn
-         ReTIGAenvni3Mi83jUMy64hGh98HZF1YzM+XNrRkMgADCVtlq3TOe03v4DowDCmOd709
-         gAoA==
+        bh=sFg9IaMybZg87mNCTA2W2IHIRutwglsZx75wyHfcxvg=;
+        b=X1Pu3MkeJmSVn5Uzn3EqWX49UnrSpE4m6Kv1GHAdk57ZtGfE32ETQk859T39W9/cyX
+         F8y3MCpHV/3Z1xm/tCl/yDkkhpWi24m8tP2T89VKpm/eSX5zpuzbGHm7cAQrGj4+Ho/e
+         j7UFFtRZ+tNxP1aaFTWNfggrXCOJdM3tiee4qDmzdPpTzxJCCBzkIx4d3Fqr14cLuPVx
+         OzUr6Pp2PmMk8FKvie7psfnUjy7G/+mnNi8/mmk+KRA78cNk4Y2dP78wcygxnA0xOBgs
+         whchgxea0yBr4KqwZy1YmE8YkToAWvaMGPQd4kVVu9itb2Q3Ynga6F/hC19qcmqqG442
+         Hzkw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=ot7R4QQLGeHfNAz7vr6go3wsbBhXv9hbHqFpcoxW/Ms=;
-        b=kEoDDK3/+NrqJvz+B1ZINfX5W/fiplcV22oxWB3ptAdHSMDP6sb1kwkWwHvx0hd4hX
-         9KmXN/oXkVJMg+h8XOrmt4TTV40X8nIHegg6OMzbi9ginevQj/fUT8m20HKpi7IkFbpO
-         KqwBCMMIReRS3f4dscGq7YjdMWOYZq/kqDSaf+Ox2M2XKkWyyNJD+WK5mPC+cqjIyWRj
-         TJllRRNKsohtKrmst6/ta/YS+26J2/zfCAEQYQ6wRmzJQ7SqgU+u3A5M9LdVN8vyzWJD
-         7PyfSu72AnSwIoIJ7RNW/slu8zabDWApx9M+FKoWduFl8lIpzbU5S8CoVs3W7c//lW79
-         CSyA==
-X-Gm-Message-State: APjAAAVwzlqFpFlYMVU+IznDths1psGYn3SnVDn8AvGlD4FIEhCLtl8R
-        OorXBMmrHW7hGH5MMr2FB1Y++g==
-X-Google-Smtp-Source: APXvYqxIOKP+poQeBr8GFahvuylKI6yxFSov0b9kxyWDoUR6zt0mzQwGW7iyCRMlMPJarQWE11x21Q==
-X-Received: by 2002:a7b:c408:: with SMTP id k8mr7378186wmi.69.1554456895339;
-        Fri, 05 Apr 2019 02:34:55 -0700 (PDT)
+        bh=sFg9IaMybZg87mNCTA2W2IHIRutwglsZx75wyHfcxvg=;
+        b=j8Y8kHfFIHLPjU3TgRsazo1hkzJYITsu01+uLpCCRUWttaDUVxeY1Ai8HGZP+IFQ30
+         VSIjWmKY6a9aQ+3X5lu9IvplRh/RT5PJ6BoHkzK6+/ZhdjeEE/1Gyd4flb7OIO4Uv0Lf
+         G2XPBZg68YTmmY8F5aVAX11lOei9LDGfzlMKYzhNixOeTljKSYCMdf4dNXY3MJCpb8M6
+         1KNtGIrvbpCDOoOCpnxCXjshuHyVPkjfhhf4NgBjbQM/dyhaDp1ct/H7d6RzFGxmGvNG
+         ACVlnW70zsRZG7iAB895aCM8k0AOrMP1EwgZSx0e12BfE3VFkVcxHgH/knFwp/FW3x5k
+         Jl4A==
+X-Gm-Message-State: APjAAAUNpCTOMqwfvGKFKa4gKf7Qsflzy+dxce1Uz31Pih6jLV1W2zWp
+        TDd6x8jilc3kOkCYxB82oqq5uw==
+X-Google-Smtp-Source: APXvYqyab+2cwyBOIa0dwK24OotGY7eykkMEkpi06jQa2St+oPz6kvtVeXrKrDd4hWE2i7sb/U7Umw==
+X-Received: by 2002:a1c:2d45:: with SMTP id t66mr7297226wmt.106.1554456893907;
+        Fri, 05 Apr 2019 02:34:53 -0700 (PDT)
 Received: from localhost.localdomain ([51.15.160.169])
-        by smtp.googlemail.com with ESMTPSA id t15sm1954128wmt.2.2019.04.05.02.34.54
+        by smtp.googlemail.com with ESMTPSA id t15sm1954128wmt.2.2019.04.05.02.34.53
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 05 Apr 2019 02:34:54 -0700 (PDT)
+        Fri, 05 Apr 2019 02:34:53 -0700 (PDT)
 From:   Alexandre Mergnat <amergnat@baylibre.com>
 To:     robh+dt@kernel.org, mark.rutland@arm.com, jic23@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         baylibre-upstreaming@groups.io,
         Alexandre Mergnat <amergnat@baylibre.com>
-Subject: [PATCH 2/3] dt-bindings: iio: ot: Add docs pat9125
-Date:   Fri,  5 Apr 2019 09:34:29 +0000
-Message-Id: <1554456870-8104-3-git-send-email-amergnat@baylibre.com>
+Subject: [PATCH 1/3] dt-bindings: Add pixart vendor
+Date:   Fri,  5 Apr 2019 09:34:28 +0000
+Message-Id: <1554456870-8104-2-git-send-email-amergnat@baylibre.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1554456870-8104-1-git-send-email-amergnat@baylibre.com>
 References: <1554456870-8104-1-git-send-email-amergnat@baylibre.com>
@@ -70,39 +70,26 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the optical tracker PAT9125 and
-"ot" directory for Optical Tracker chip.
+PixArt Imaging Inc. is expertized in CMOS image sensors (CIS),
+capacitive touch controllers and related imaging application development.
 
 Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
 ---
- Documentation/devicetree/bindings/iio/ot/pat9125.txt | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/ot/pat9125.txt
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/ot/pat9125.txt b/Documentation/devicetree/bindings/iio/ot/pat9125.txt
-new file mode 100644
-index 0000000..2ffacaa
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/ot/pat9125.txt
-@@ -0,0 +1,18 @@
-+PixArt Imaging PAT9125 Optical Tracking Miniature Chip device driver
-+
-+Required properties:
-+	- compatible: must be "pixart,pat9125"
-+	- reg: i2c address where to find the device
-+	- interrupts : the sole interrupt generated by the device
-+
-+	Refer to interrupt-controller/interrupts.txt for generic
-+	interrupt client node bindings.
-+
-+Example:
-+
-+pat9125@75 {
-+	compatible = "pixart,pat9125";
-+	reg = <0x75>;
-+	interrupt-parent = <&gpio3>;
-+	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-+};
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 8162b0e..dbd8893 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -313,6 +313,7 @@ phicomm PHICOMM Co., Ltd.
+ phytec	PHYTEC Messtechnik GmbH
+ picochip	Picochip Ltd
+ pine64	Pine64
++pixart	PixArt Imaging Inc.
+ pixcir  PIXCIR MICROELECTRONICS Co., Ltd
+ plantower Plantower Co., Ltd
+ plathome	Plat'Home Co., Ltd.
 -- 
 2.7.4
 
