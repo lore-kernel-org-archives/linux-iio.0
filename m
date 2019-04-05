@@ -1,70 +1,110 @@
-Return-Path: <SRS0=W9FC=SG=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=FeK4=SH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC14C4360F
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 20:35:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F33C4C4360F
+	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:34:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6D89C205C9
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Apr 2019 20:35:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554410117;
-	bh=XMKhqpKYQIgnxT9teDcHr2ghX/jS09rkD2ZgG8F2sWI=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=LnIYu6DH0fT6jhyVgV5Tx79q59X8zfpqb3BFSzWt/ZWr5gz4tQrFtxxvHLQJFd3F4
-	 9LTshFN3j/ivBpiDWrnGDk4iFQnmkSWHre6m53wkwAzx9sKRrDQhWSKB8VZwQrou3h
-	 dycsaNOv62bGz8x3BSGr9M5+/3fSxai/Pf7RPvMY=
+	by mail.kernel.org (Postfix) with ESMTP id C2987217D4
+	for <linux-iio@archiver.kernel.org>; Fri,  5 Apr 2019 09:34:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="r/ZjpvBY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729989AbfDDUfQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 4 Apr 2019 16:35:16 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44048 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729400AbfDDUfQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 4 Apr 2019 16:35:16 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AE1AC205C9;
-        Thu,  4 Apr 2019 20:35:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1554410116;
-        bh=XMKhqpKYQIgnxT9teDcHr2ghX/jS09rkD2ZgG8F2sWI=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=a7S15pmd5QW+rDEwC/tHhoFuuh3M8pWW87kZ/DOxAZSimzn5d0c4YbGHpavQLVute
-         DaphyDbTQC0NuQm9oO7Epx+FDB6R9eiWLKgEdlwQGkKST0xqA2fGFj8GD7R3ZxfcoG
-         b4cGVhdEM6dYwsIYcg/kHwdpi4YWJb9NRPWzYG0o=
-Date:   Thu, 4 Apr 2019 22:33:48 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL V2] First round of new device support, cleanups and fixes
- for IIO in the 5.2 cycle.
-Message-ID: <20190404203348.GA13409@kroah.com>
-References: <20190404205720.66804920@archlinux>
+        id S1730024AbfDEJex (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 5 Apr 2019 05:34:53 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:34288 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729820AbfDEJex (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Apr 2019 05:34:53 -0400
+Received: by mail-wm1-f66.google.com with SMTP id r186so9281612wmf.1
+        for <linux-iio@vger.kernel.org>; Fri, 05 Apr 2019 02:34:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fz9EPEHZSbLtHDD5+rIBQCaRRRyRpD3y58aszM7OC1M=;
+        b=r/ZjpvBYAraw906oRFPytsbCsFtLER7NWdhTE/lL4LsI81FinGC3U4WChCLSbo+zCJ
+         MVTplNBgCEZICA+TAlfuLdAXq26XRQkTANF4uhTgluM6+2MIfEZsRBa/lIJPb2iRUZMN
+         EH3XSizxWy2RLGhjB13PAEtgF1AzFFuOY9d8proPEk5eTIPhOg1Rc3OO4DRDah3zAqNU
+         IiMvv1C5FVILFeMX7vpDGu1zixJnT/WIs7Qe0zzU4J/HqB0ZfJ1FBXtigMYiHImi1Ion
+         +WMIyMg5kcgsbbzM3TBELEItGQn8mEIO6B5yLwOPRrgKLmU0WfuJQ0zY7pN73jcqCaIq
+         FPLg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Fz9EPEHZSbLtHDD5+rIBQCaRRRyRpD3y58aszM7OC1M=;
+        b=CRIzWJ7Ueymw0nftZuFGEHtq9VQ1STFF/lMGHWkTKOKU9rjXkQ4qXoUs/0mkub7JP/
+         B5HeOa9h5sIS5y34PF2dgOV4jven5m0U36Y2NvEvm7QkTEh4gfWPFrECjePKJW+//vzy
+         ILsqVmvH/81vNfc09RRl4sB0evpjXrqmlgmqGJlstO0HcP/OOjgAAMW1ksVeREuZMyA9
+         nC6Qhas5f+Xbb6WUcchBkEXrnmtKXRUxjwBXyV40RmZc/B+jcBzHfv4YF6Jn0BHQZ7TF
+         BsvSVfH8OljPcLHSIJzHXR26TuoLwwJZNALMPWTftWxLNE4Od/ejuTQrTdhsg7GKw3/Q
+         ElHg==
+X-Gm-Message-State: APjAAAXrtOOWLBN/kQxiHg6Wp6o5/nYIkQbrCkRXSHvmgSx+CJoItm0x
+        FTyZ/+BaCLzYWLpmvmPycVcdCw==
+X-Google-Smtp-Source: APXvYqz46289NmUfhiaVvoLkz5/puBjns4wtGK/R7y5t8anUa9l49SbrJo0UxzOkvnQxLFrG4rIFuA==
+X-Received: by 2002:a1c:7d42:: with SMTP id y63mr7268106wmc.113.1554456891982;
+        Fri, 05 Apr 2019 02:34:51 -0700 (PDT)
+Received: from localhost.localdomain ([51.15.160.169])
+        by smtp.googlemail.com with ESMTPSA id t15sm1954128wmt.2.2019.04.05.02.34.50
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Fri, 05 Apr 2019 02:34:51 -0700 (PDT)
+From:   Alexandre Mergnat <amergnat@baylibre.com>
+To:     robh+dt@kernel.org, mark.rutland@arm.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        baylibre-upstreaming@groups.io,
+        Alexandre Mergnat <amergnat@baylibre.com>
+Subject: [PATCH 0/3] Add PAT6125 optical tracker driver
+Date:   Fri,  5 Apr 2019 09:34:27 +0000
+Message-Id: <1554456870-8104-1-git-send-email-amergnat@baylibre.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190404205720.66804920@archlinux>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Apr 04, 2019 at 08:57:20PM +0100, Jonathan Cameron wrote:
-> The following changes since commit b397f82585c3101dcf92642dd359891e66d00c55:
-> 
->   Merge 5.1-rc3 into staging-next (2019-04-01 07:49:24 +0200)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.2a-2
+PixArt Imaging PAT6125 is a miniature low power optical navigation chip using
+LASER light source enabling digital surface tracking.
 
-Looks good, now pulled and pushed out.
+This device driver use IIO API to provide ponctual and/or buffered data.
+The data is the delta value between two position traveled, depend on
+CPI (Counts Per Inch) resolution setting chosen. The retrived data is
+composed by two values, delta on the X and Y axis.
 
-greg k-h
+Unfortunately, the device doesn't support "on-the-fly" configuration.
+
+This patchset :
+- Update vendor prefix
+- Add the bindings for this device
+- Add the device driver
+- Add directory for optical tracker devices
+
+Alexandre Mergnat (3):
+  dt-bindings: Add pixart vendor
+  dt-bindings: iio: ot: Add docs pat9125
+  iio: Add PAT9125 optical tracker sensor
+
+ .../devicetree/bindings/iio/ot/pat9125.txt         |  18 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/ot/Kconfig                             |  16 +
+ drivers/iio/ot/Makefile                            |   6 +
+ drivers/iio/ot/pat9125.c                           | 407 +++++++++++++++++++++
+ 7 files changed, 450 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/ot/pat9125.txt
+ create mode 100644 drivers/iio/ot/Kconfig
+ create mode 100644 drivers/iio/ot/Makefile
+ create mode 100644 drivers/iio/ot/pat9125.c
+
+-- 
+2.7.4
+
