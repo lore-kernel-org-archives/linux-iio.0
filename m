@@ -2,97 +2,140 @@ Return-Path: <SRS0=7Ar9=SK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B403C282CE
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Apr 2019 08:38:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CBBFC282CE
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Apr 2019 09:38:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EF78F20880
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Apr 2019 08:38:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="hs5Q0nyf"
+	by mail.kernel.org (Postfix) with ESMTP id 55674213F2
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Apr 2019 09:38:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1554716310;
+	bh=oLj+mpVfYrMAKVzT100KDOGJ3d3S70Ze+nV+TsWJcxM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=n6gnOG9KkJmNr5PhoKqZFNN3ccTar4QjYX5YjQ+eZiJ8u3Yd4kMClhgDMgD8VzTIp
+	 4xqa+VaiKk/oJiRjqF5/CcZd0o0MSWyNBg4AX05jHPrDe+gRUpuwXJv6FiNGo7iyis
+	 H7qHY2W9bvkq2eK8CIM1C7GnGfVbe8e/1L3kMPCw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726189AbfDHIiO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Apr 2019 04:38:14 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:50516 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726012AbfDHIiO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Apr 2019 04:38:14 -0400
-Received: by mail-it1-f195.google.com with SMTP id q14so19435592itk.0
-        for <linux-iio@vger.kernel.org>; Mon, 08 Apr 2019 01:38:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uu6uH0llopAiCFUJ3W/PV5mf18F/NWjQXr1OpuE7v7A=;
-        b=hs5Q0nyfCCjpvWrKn/1jYOq5pX+rI168RDPMWBdCeM+xLm0Jvyr1f3pBdSAZ0h72Ra
-         ozfxX48ahoYCuu4nSCicT2jwpI/w9aijUBj4dG/9xcPRqXM7tPOBgRNakXTAdIvmfJe/
-         chTbhoiY7WodHREjHnCqB7zT6GcOLAB90eillOILt8tjrHtApvF/DL3fHOVObMKxezK4
-         itcdQv0Ec4bzoIle76bxfKCQnyI9loTHAnsCM90VnHakx5gue0pEsJf1CGM9Ou9jJebi
-         XyFhLhgOs5OLux+aozFo82ccdYZXRE6CBbnPiwhCVhKF8TFDn4eRZthPZ1Znmd7F/M2f
-         zz+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uu6uH0llopAiCFUJ3W/PV5mf18F/NWjQXr1OpuE7v7A=;
-        b=gMmTda6eIPwKqKTvBwzDHdteDrowPBsSOAyKr4tcUztjFNYvkwoToPjwK/VQqHldFQ
-         pCGqg0WY9ihegiAqvzXKwjnvGN2vPvlj2FsJ2O7mgZhLTEKAR3EMqJZsTWR2L3M7yv/3
-         Yb6T7N/otLlPnvOHH3ozGuhvFoEU1s9OuNXfiGouDJYyUviPqRPaQItBIJewZEjysyxY
-         yQKqScYmlqW5BZhQFQEgNgJpqMBiz7OZxMlrFu6Kns18ggW6e13HCK/0ZQbH8od+qBop
-         OGjSiWYdCn5lGEh6AIxBCXzr4XA3Rm4Du/l5k9bWdXLTsP3J/NAbATMQKw0VaB55+9AZ
-         7l2Q==
-X-Gm-Message-State: APjAAAUX1ScuKQiBlqGwxO3uVKMrbA6Z2+CGpe9DyYS0IH3W5PwgsROU
-        RhKgmPucHMPiSxUrmEpgbvYKXov8aLNtDxmSuOZdCg==
-X-Google-Smtp-Source: APXvYqxdSTHlKaV5tkliH6Z/3644pXXdN/hb8T1AQKPVPcbf+60tYk9aOneKf/LxGEDLfVliQrYl4czYaOf5SnYwlp4=
-X-Received: by 2002:a24:7c9:: with SMTP id f192mr1080820itf.97.1554712693205;
- Mon, 08 Apr 2019 01:38:13 -0700 (PDT)
+        id S1726383AbfDHJia (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Apr 2019 05:38:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35602 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726240AbfDHJi3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 8 Apr 2019 05:38:29 -0400
+Received: from earth.universe (dyndsl-037-138-087-101.ewe-ip-backbone.de [37.138.87.101])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72A5120880;
+        Mon,  8 Apr 2019 09:38:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1554716308;
+        bh=oLj+mpVfYrMAKVzT100KDOGJ3d3S70Ze+nV+TsWJcxM=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=sJTL5FvqkzJtA8kNPhmF3T1ag21WUT1NXgRgQH/Dn+E+pxvdZCxTWrJzg7ep1k9oS
+         CEBjrZhwDmwxOCMnPm+R9V1pNFoeCE2qV671rrzH0zObL60yra4hMNbBZxxTTNbJRK
+         vQg4M8LUyyzMRjWETQ2Fedg1G2bvUiywIBoBsSX4=
+Received: by earth.universe (Postfix, from userid 1000)
+        id 312AA3C08D4; Mon,  8 Apr 2019 11:38:24 +0200 (CEST)
+Date:   Mon, 8 Apr 2019 11:38:24 +0200
+From:   Sebastian Reichel <sre@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Artur Rojek <contact@artur-rojek.eu>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/4] power: supply: add Ingenic JZ47xx battery driver.
+Message-ID: <20190408093824.yzpd7mve6df7lpka@earth.universe>
+References: <20190323172809.14407-1-contact@artur-rojek.eu>
+ <20190323172809.14407-4-contact@artur-rojek.eu>
+ <20190324153137.04857cdf@archlinux>
+ <20190407165234.is66vmnjfc35jnho@earth.universe>
+ <1554664077.4322.0@crapouillou.net>
 MIME-Version: 1.0
-References: <20190406194528.qx2tvrriuymb6xnq@smtp.gmail.com>
-In-Reply-To: <20190406194528.qx2tvrriuymb6xnq@smtp.gmail.com>
-From:   Crt Mori <cmo@melexis.com>
-Date:   Mon, 8 Apr 2019 10:37:37 +0200
-Message-ID: <CAKv63us7p3AC6UQfGYj14ZXOPa6R0pEAcJOTqzgRy6ZJGwKqnw@mail.gmail.com>
-Subject: Re: RFC on IIO AD7292 driver GSoC proposal
-To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc:     dragos.bogdan@analog.com, michael.hennerich@analog.com,
-        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
-        Linux Iio <linux-iio@vger.kernel.org>,
-        kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="kxv5ige2aqijufid"
+Content-Disposition: inline
+In-Reply-To: <1554664077.4322.0@crapouillou.net>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 6 Apr 2019 at 21:45, Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
->
-> Hello.
->
-> My name is Marcelo Schmitt, I'm a computer science student learning
-> how to contribute to the Linux Kernel in the IIO subsystem. I was told
-> by a friend that Google was encouraging people who contribute to open
-> source projects through the GSoC program and that there was a project
-> for developing a new IIO driver. I intend to continue contributing to
-> IIO and, if possible, engage in this GSoC project. As suggested by
-> GSoC organization, I shared a draft proposal for the project here
-> https://docs.google.com/document/d/1vOegyoC5b90jwLe1PBz4IbKGXaXMozi-RldS5OAZz4Y.
-> It would be really great if anyone could comment on it.
-> Sorry for sending it so close to dead line date.
->
 
-Hello,
-Nice read. I am a bit wondering why you have Arduino mentioned for
-couple of tests - I am assuming because its easier to write raw SPI
-with Arduino than what is described in Documentation/spi/spidev ?
-What you have in week 26 (Develop initial documentation), you will
-probably need to send with the first patches of week 23 and 24.
+--kxv5ige2aqijufid
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Best regards,
-Crt
+Hi Paul,
 
-> Thanks in advance,
->
-> Marcelo
+On Sun, Apr 07, 2019 at 09:07:57PM +0200, Paul Cercueil wrote:
+> Hi Sebastian,
+>=20
+> Le dim. 7 avril 2019 =E0 18:52, Sebastian Reichel <sre@kernel.org> a =E9c=
+rit :
+> > Hi,
+> >=20
+> > On Sun, Mar 24, 2019 at 03:31:37PM +0000, Jonathan Cameron wrote:
+> > >  On Sat, 23 Mar 2019 18:28:09 +0100
+> > >  Artur Rojek <contact@artur-rojek.eu> wrote:
+> > >=20
+> > >  > Add a driver for battery present on Ingenic JZ47xx SoCs.
+> > >  >
+> > >  > Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> > >  The IIO parts look fine to me.
+> > >  Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >=20
+> > >  Sebastian, assuming you are happy with this version,
+> >=20
+> > The driver itself looks ok. I'm a bit unhappy, that we already have
+> > jz4740-battery. This driver is much cleaner, but does not yet seem
+> > to be ready to replace it. Artur Rojek what are your plans regarding
+> > to the existing driver? Is there currently work going on migrating
+> > JZ47xx to DT?
+>=20
+> Why do you think it's not ready? Feature-wise, it has everything we
+> need to replace jz4740-battery, which will be trashed as soon as the
+> LB60 board code is updated to use the new driver.
+
+jz4740-battery has a few features not provided by your driver.
+For example the gpio providing the charging status. Assuming
+you plan to trash the old driver soon:
+
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
+
+> We are working on porting the JZ47xx code to devicetree, yes. The
+> ultimate goal is to completely get rid of
+> arch/mips/jz4740/board-qi_lb60.c and arch/mips/jz4740/platform.c.
+
+Ok, sounds good.
+
+-- Sebastian
+
+--kxv5ige2aqijufid
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlyrFowACgkQ2O7X88g7
++pqAVw/+NKyxFp5GIWuXBnG+OV0ezhW5bAYrBsST5OtDqg8x4aACWv6BjwNwLQJN
+TREW2Rda/Jqyy0fxhwUDdcGJ0deWMqWbFi0+OPQXBZ4Xd8kpTLjs1uwcHRag8mkN
+Sre9c6FIsCytrd73CYFgJjz7PMmB4FBaRr/Z7qhWhdgTh66i+m+Ql5GjVI0sl2nL
+m9fxTCpJgh7zmVuLepEosq7YgwrOTP8ZZaMCJSD/Bo8ejDIW9ox9IMjbdUFEqWC1
+sxzpDvBhZT6rcvuwVx57/F0XtGIcsJEMruB3YFKCOS5XJhk7GExs1c1zos9xBap6
+N0WBllMu4PhLpZphW/7zWWDxeco/whNupy682YPh3r9hg7u5npCfaxu9z+h5Kp53
+YCW/dClq8WId9IG1nxI2Pl4M7pXiieiMR3ms9Bq/VMLYRLT08QWRopsA2QVZ/dyt
+wle6YdFZtgvt+yFfKNOHF0ogmhApuA4J01PP9T65KAEcV4RDH3ZgLNlZuEZeYFCq
+YcKPp5e2dQGv66qqRNnMPLyhUAOY3s6UG8YCSkSGtRZZjZheb/nqHaw/w7CjitrR
+JbDcw+iBLeoDxgYRLSQKGFpkvxSt1x8rd8xBHKmVailT/9IAUgrejm0CL+MS3fZm
+te+QRKM+DvDMGvKXnuF6WjTqw6yTNngyd/aM2yQQ4XQ604fXBNo=
+=/UP4
+-----END PGP SIGNATURE-----
+
+--kxv5ige2aqijufid--
