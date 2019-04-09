@@ -2,59 +2,60 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70469C10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 04:56:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2B1C10F0E
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 05:06:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3BAEC20833
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 04:56:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 792FB2084F
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 05:06:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Culiuvlb"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jzdOPlu/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725998AbfDIE4l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 00:56:41 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37100 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725550AbfDIE4l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 00:56:41 -0400
-Received: by mail-pg1-f195.google.com with SMTP id e6so8577714pgc.4;
-        Mon, 08 Apr 2019 21:56:41 -0700 (PDT)
+        id S1726572AbfDIFGI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 01:06:08 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:44700 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbfDIFGH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 01:06:07 -0400
+Received: by mail-pf1-f196.google.com with SMTP id y13so8950292pfm.11;
+        Mon, 08 Apr 2019 22:06:07 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=fSbzNkjsSwkHQttu+TEGQLmXcM0+AN4d0v8/VJDirT0=;
-        b=Culiuvlbppghdx3mpcnmXq4pzQXD5BxfSCgJKFEUMLy2pfANurqs3aMveGuAU+//Sd
-         C+HkR2TId1a65C+Bo6ktfpH6qtezABxMeWdi3IU4yxdHOMX7CRbwtNVqVQtGFydqlqY7
-         J4tA52veE1Z4EaI+8fPOA13dAMVMWacUydP6vlOr0ZFcaDJgDFjZQYFNCevaLZ6D62A/
-         tA3Ifbn7eRJHLljSTd4MnV015V0Y+o5bLCLfTqzo4ObooBELVzIPxaTivrRIsWe3PSQu
-         29mm7qT0SQn+xhx4bh4fKQ48FF7Z9PTbrFcfy9kHalvV2kkQOxpVOSB1se0uqwyjeovy
-         lNQQ==
+        bh=mPzuYWAD9n3E7cK9DQsoS+9to3SIkl5lmMig0KfgMSY=;
+        b=jzdOPlu/x8auCMomI1PhvJbl6f2twqu5f+3vfkvAV+xE4cSTD4MEdJHxBxcS6yZqq7
+         Wi39SerktOeg2gpodvg1AttXtj/Agsk4ZqT+ll/DmXRCFXA3Rjxv4W5JXcJX12w2wN76
+         dRlAvbUeYZEdvLSCT/Uss7a0WGfW2BKtrXLgXRvC3oSExXDC5J5XOfEY7Bmkeaqldqo5
+         ofQJMLjd1hvJFdB8CUbFyyIJY+r2saK636byggJ7IyW27rDUZrXVU6SyMCAhmEBOTAxA
+         KKZ9ZFWfs5Cuc9geuO38yzWGzY7Wi5VVNgI6n1sfPWfNRYKsiEibfk9xWlxOtSOlTpg3
+         qikQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=fSbzNkjsSwkHQttu+TEGQLmXcM0+AN4d0v8/VJDirT0=;
-        b=uci5mu2fvUufliuqobiWXh3FpXXPGRlwMl5aTikXqQY8Lem9erOFWd35UdNozcNkxl
-         Fa1VUAr6DPt9znLTUZ9t76aCO2qehwRtJsbEOY6aPKH8vt5N0+bWZakw+6oCGo0GiQST
-         d3Ki79jJFbmdGOdhrNJLNLV2rbLx24Vrc3A0YsL98+SKjw3+RHjH1RoKdJGn/EjL/BiC
-         Mv5b/CCosO0dTQ0+KRe9YAEw0fRXCGiDjhazeCrFhiutdZqVqrbU+dBwJn5qrYvLmswm
-         JOTAWj7GKhp00LUHFgK7Kgjxav6mUO5c0e+kdvQVT/BjpL2M9yojmuuws7xl1xa0xWOx
-         xJmg==
-X-Gm-Message-State: APjAAAU2lmA/PIMst0FZWAfliPCKPd76dCtzw7M3l6fs4rBDRRjASBtJ
-        o5zWezuKDm2jmoEWTXo2UbI=
-X-Google-Smtp-Source: APXvYqzVtYQ7/TWepFOzztOXYsTBLeJbErgA6c9WPKnHOmXfWudaRv0t8mDaEzmknLvq8tWARXeHxg==
-X-Received: by 2002:a63:195e:: with SMTP id 30mr32256554pgz.312.1554785800471;
-        Mon, 08 Apr 2019 21:56:40 -0700 (PDT)
+        bh=mPzuYWAD9n3E7cK9DQsoS+9to3SIkl5lmMig0KfgMSY=;
+        b=XLB0dxROcSnRoYQGx3uK4gSXmI/qWzSPmNitZmDHSnTslBbcw0lxFaxtgV4I31RoBt
+         UboBIJjtTq6Ukg8b3vDLjwb/cEXU6y4rgZjOsbAD0uvWGgA1UkIsxRG0C7p0Nlu6Ihza
+         JnEquF4qzWT0pd3wU5LUwYfZGoaIorsJP9FMFl06jaz97M6WPHwlRLjc9CHyOMG67Feq
+         AjQDGKmQM5mi9D5xg+X97EY9hJ0Mze0wT5UxiizaqhE0XRsJSS+wvYB5KoYvQOf0T/Pw
+         ARLO//dFGVzTidtAXrpURF9Sr1S2GVJOrTKEOU76WOM0IBoXFeqTf5r9cnaQAJdOjL0w
+         8XIA==
+X-Gm-Message-State: APjAAAVTqVJxkRC5VW2gBgbFeQoMzsm47WzT1eTKGq3FB1M9OcSXMvl0
+        JAOiWo2s/Qn6TfyH7GW08pc=
+X-Google-Smtp-Source: APXvYqxpbmL0psDw+R51UHqyQpUsOO53H3NyesVqG9HDMScxBNzwN2DcZVBVbnl14am4Y2jDppOgXw==
+X-Received: by 2002:a65:6212:: with SMTP id d18mr30672141pgv.162.1554786366700;
+        Mon, 08 Apr 2019 22:06:06 -0700 (PDT)
 Received: from icarus ([2001:268:c1c0:11e:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id c189sm48847177pfg.24.2019.04.08.21.56.29
+        by smtp.gmail.com with ESMTPSA id j19sm15751431pfr.155.2019.04.08.22.05.57
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 08 Apr 2019 21:56:39 -0700 (PDT)
-Date:   Tue, 9 Apr 2019 13:57:28 +0900
+        Mon, 08 Apr 2019 22:06:05 -0700 (PDT)
+Date:   Tue, 9 Apr 2019 14:07:08 +0900
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     Pavel Machek <pavel@ucw.cz>
 Cc:     gregkh@linuxfoundation.org, jic23@kernel.org,
@@ -68,73 +69,136 @@ Cc:     gregkh@linuxfoundation.org, jic23@kernel.org,
         linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
         patrick.havelange@essensium.com,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v10 01/18] counter: Introduce the Generic Counter
- interface
-Message-ID: <20190409045728.GA2842@icarus>
+Subject: Re: [PATCH v10 02/18] counter: Documentation: Add Generic Counter
+ sysfs documentation
+Message-ID: <20190409050708.GB2842@icarus>
 References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <ad3a8c427a911848373eae1c08e89353ffb6cb6d.1554184734.git.vilhelm.gray@gmail.com>
- <20190408215515.GA27592@amd>
+ <bd8362f23b99af938c7bced2104eca29888253b3.1554184734.git.vilhelm.gray@gmail.com>
+ <20190408215531.GB27592@amd>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
 Content-Disposition: inline
-In-Reply-To: <20190408215515.GA27592@amd>
+In-Reply-To: <20190408215531.GB27592@amd>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 08, 2019 at 11:55:15PM +0200, Pavel Machek wrote:
-> Hi!
-> 
-> > +const char *const counter_count_direction_str[2] = {
-> > +	[COUNTER_COUNT_DIRECTION_FORWARD] = "forward",
-> > +	[COUNTER_COUNT_DIRECTION_BACKWARD] = "backward"
-> > +};
-> > +EXPORT_SYMBOL_GPL(counter_count_direction_str);
+On Mon, Apr 08, 2019 at 11:55:31PM +0200, Pavel Machek wrote:
+> On Tue 2019-04-02 15:30:37, William Breathitt Gray wrote:
+> > This patch adds standard documentation for the userspace sysfs
+> > attributes of the Generic Counter interface.
+> > 
+> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-counter | 230 ++++++++++++++++++++
+> >  MAINTAINERS                                 |   1 +
+> >  2 files changed, 231 insertions(+)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
+> > new file mode 100644
+> > index 000000000000..566bd99fe0a5
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-counter
+> > @@ -0,0 +1,230 @@
+> > +What:		/sys/bus/counter/devices/counterX/countY/count
+> > +KernelVersion:	5.2
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Count data of Count Y represented as a string.
 > > +
-> > +const char *const counter_count_mode_str[4] = {
-> > +	[COUNTER_COUNT_MODE_NORMAL] = "normal",
-> > +	[COUNTER_COUNT_MODE_RANGE_LIMIT] = "range limit",
-> > +	[COUNTER_COUNT_MODE_NON_RECYCLE] = "non-recycle",
-> > +	[COUNTER_COUNT_MODE_MODULO_N] = "modulo-n"
-> > +};
-> > +EXPORT_SYMBOL_GPL(counter_count_mode_str);
+> > +What:		/sys/bus/counter/devices/counterX/countY/ceiling
+> > +KernelVersion:	5.2
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Count value ceiling for Count Y. This is the upper limit for the
+> > +		respective counter.
+> > +
+> > +What:		/sys/bus/counter/devices/counterX/countY/floor
+> > +KernelVersion:	5.2
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Count value floor for Count Y. This is the lower limit for the
+> > +		respective counter.
+> > +
+> > +What:		/sys/bus/counter/devices/counterX/countY/count_mode
+> > +KernelVersion:	5.2
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Count mode for channel Y. The ceiling and floor values for
+> > +		Count Y are used by the count mode where required. The following
+> > +		count modes are available:
+> > +
+> > +		normal:
+> > +			Counting is continuous in either direction.
+> > +
+> > +		range limit:
+> > +			An upper or lower limit is set, mimicking limit switches
+> > +			in the mechanical counterpart. The upper limit is set to
+> > +			the Count Y ceiling value, while the lower limit is set
+> > +			to the Count Y floor value. The counter freezes at
+> > +			count = ceiling when counting up, and at count = floor
+> > +			when counting down. At either of these limits, the
+> > +			counting is resumed only when the count direction is
+> > +			reversed.
+> > +
+> > +		non-recycle:
+> > +			The counter is disabled whenever a counter overflow or
+> > +			underflow takes place. The counter is re-enabled when a
+> > +			new count value is loaded to the counter via a preset
+> > +			operation or direct write.
+> > +
+> > +		modulo-n:
+> > +			A count value boundary is set between the Count Y floor
+> > +			value and the Count Y ceiling value. The counter is
+> > +			reset to the Count Y floor value at count = ceiling when
+> > +			counting up, while the counter is set to the Count Y
+> > +			ceiling value at count = floor when counting down; the
+> > +			counter does not freeze at the boundary points, but
+> > +			counts continuously throughout.
+> > +
+> > +What:		/sys/bus/counter/devices/counterX/countY/count_mode_available
+> > +What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
+> > +What:		/sys/bus/counter/devices/counterX/countY/function_available
+> > +What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
+> > +KernelVersion:	5.2
+> > +Contact:	linux-iio@vger.kernel.org
+> > +Description:
+> > +		Discrete set of available values for the respective Count Y
+> > +		configuration are listed in this file. Values are delimited by
+> > +		newline characters.
 > 
-> Dunno. Exporting const tables saying "forward" and "backward". Can we
-> ... somehow make it work without need to export this?
+> Elsewhere in sysfs we do space-separated:
 > 
+> pavel@amd:~$ cat /sys/power/state
+> freeze mem disk
+> 
+> And we use [] to mark current selection:
+> 
+> pavel@amd:~$ cat /sys/class/leds/tpacpi\:\:thinkvantage/trigger
+> [none] bluetooth-power rfkill-any rfkill-none kbd-scrolllock
+> kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock
+> kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock
+> kbd-ctrlrlock AC-online BAT0-charging-or-full BAT0-charging BAT0-full
+> BAT0-charging-blink-full-solid rfkill0 phy0rx phy0tx phy0assoc
+> phy0radio phy0tpt mmc0 timer heartbeat audio-mute audio-micmute
+> rfkill1
+> 
+> Note this only works if you have less than PAGE_SIZE of entries... and
+> will never have more.
+> 
+> 									Pavel
 > -- 
 > (english) http://www.livejournal.com/~pavelmachek
 > (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
 
-Right now there are only have 4 counter devices supported in this
-patchset, but it is expected that support for a greater variety of
-devices will be added. For these future cases, new count directions will
-be added to match their functionality.
-
-For example, suppose support for a rotary encoder device is added. These
-type of devices do not move forward/backward but rather rotate. In these
-cases, the following count directions may be added:
-
-    [COUNTER_COUNT_DIRECTION_CLOCKWISE] = "clockwise",
-    [COUNTER_COUNT_DIRECTION_COUNTERCLOCKWISE] = "counterclockwise"
-
-Or as another example, suppose support for a two-axis precision
-positioning table is added. These devices support positioning in a
-cartesian coordinate system. In these cases, spatial direction may serve
-as useful count directions:
-
-    [COUNTER_COUNT_DIRECTION_NORTH] = "north",
-    [COUNTER_COUNT_DIRECTION_NORTHEAST] = "northeast",
-    [COUNTER_COUNT_DIRECTION_EAST] = "east",
-    [COUNTER_COUNT_DIRECTION_SOUTHEAST] = "southeast",
-    [COUNTER_COUNT_DIRECTION_SOUTH] = "south",
-    [COUNTER_COUNT_DIRECTION_SOUTHWEST] = "southwest",
-    [COUNTER_COUNT_DIRECTION_WEST] = "west",
-    [COUNTER_COUNT_DIRECTION_NORTHWEST] = "northwest"
-
-A const table is conveinent in these scenarios because support for new
-count directions may be easily added by simple entry into the table.
+Marking the current selection with [] or similar does seem useful. But
+delimiting by space does seem to cause confusion in cases where the
+values also include spaces (e.g. "quadrature x1 a"). I see that in these
+cases a "-" is used in place of a space, but that wouldn't work very
+well when values can also contain hyphens (e.g. "pulse-direction").
 
 William Breathitt Gray
