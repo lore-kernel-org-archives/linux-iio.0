@@ -2,124 +2,110 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3C52C10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:28:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FEF3C10F0E
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 13:29:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 825C02084F
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:28:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2646321874
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 13:29:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pRARLky1"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="gxnGbicq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfDIM2O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 08:28:14 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:35142 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726001AbfDIM2N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 08:28:13 -0400
-Received: by mail-ot1-f68.google.com with SMTP id m10so15360659otp.2
-        for <linux-iio@vger.kernel.org>; Tue, 09 Apr 2019 05:28:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ODsuCt+XNJgIpdJS3hGeiBg25ma3+VEpVyOMJ9tzpqI=;
-        b=pRARLky1bEVO1wkrbgwOrJyraPmoeQEnvmlxzmDo+gbyeTK2oCkN61rU8l1rnld0Wx
-         09+geASsTDHki9MsLxSEwzmQG0VouNDgH9y3MYWoWIJrEpxAUfkmYqds0x1ky57HkwXy
-         nEDX4iAvtJ2HkPWqEy6d0aXzIoWmocnHvGYVXTpWZGV+EMY01ugxSXVUiQmfeGsgYavR
-         xXIqoHxOzMPyWvRSGrWb9j85oiONU5ZepzAzVzG3EiVBQzEZjUWhqg/nDSH2tXTmKiw7
-         KI70u9lelXoimPGMnody7Br+tYW8hqfp0tDoD4T/FpgJif91nynEyW0v+6oE4m56r5Tq
-         DUxQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ODsuCt+XNJgIpdJS3hGeiBg25ma3+VEpVyOMJ9tzpqI=;
-        b=f3nlWYKGyR4dRTEm/Gl4S/vcQGATBtOUoJ0bOPzDIE7XZsaO5zw+D4vrRSZThJ4AEV
-         QBL48AxZf5fBYP+ztzDShc3Rx+sh2IcRaLyQiCzSS8cwjJqeMufUGe4f9RX/HKGwzrLo
-         gCOnYQlRYct8tcuE2uTrq8VwUzTuoUth9v6rQMgPetSNURKVrXiL5uv3O5rkIbUNuttQ
-         4DTnKxiqVEwmT1X28aQr4u/15UIRAqmql2CvowNbKAQBGJBEU2/dZZCYDXnv9IjAJh87
-         VWSYCDZzQ5gQgjyLyNbCAsv9i8qU4qkMh88PrXPWfc7oduoFnAgxsfyIn2XmPC5SdFtb
-         bduw==
-X-Gm-Message-State: APjAAAXdWH98G57NUETPrjmB46aGBJlfEmKF8ESh0cY+HfpsYgYbX0op
-        LJHzzMzGyTFTv97BJbQ79XoPDpA63tAceCWT9BM=
-X-Google-Smtp-Source: APXvYqzHjeIljjdnhPW1j1y0hfrovdJFfX/327LPJ81x1JW4ZoWR6jv/SRKxlr/8cvEHoCrDME+A0OpYxSYJiAWC6bg=
-X-Received: by 2002:a9d:12e9:: with SMTP id g96mr23371943otg.5.1554812892855;
- Tue, 09 Apr 2019 05:28:12 -0700 (PDT)
+        id S1727136AbfDIN3t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 09:29:49 -0400
+Received: from vern.gendns.com ([98.142.107.122]:47250 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726772AbfDIN3t (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 9 Apr 2019 09:29:49 -0400
+X-Greylist: delayed 1001 seconds by postgrey-1.27 at vger.kernel.org; Tue, 09 Apr 2019 09:29:48 EDT
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=XWViNH1Wxw9uYqCVZQz/ft4Cplusn+KMz/3xhiiHXMY=; b=gxnGbicq2ll7/v2m+YTmEGhEQM
+        Ter0pWlqbGSOz5XMmxVWe5lboZfAn7EIv7TWYDAqMjlXqXVCRRYr9kg9xgecdK9K4+mUQK4vtvvGV
+        AtD5lwRL2I19cvAh/r+JYzTJL2qNwCuNqP59r8QJBwBZaZ2VsdvyODJEyVi5laIvuBFMGCIcUGeE8
+        SKYQSTHIMVaSCkElu/OH5Th9JpzuXe1WF3GSWAt/1/mVCiFZ43YV7ke6YOdsP56ohL6ZaKhQEUyym
+        alehLdG37gR83zxezdc93ps0/NJAoWNIyb6YU86ZNgAfBN1uw7ZpAGf7i7kANrVaThSn2YJTiN3lw
+        nFzLMdMA==;
+Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:50018 helo=[192.168.0.134])
+        by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+        (Exim 4.91)
+        (envelope-from <david@lechnology.com>)
+        id 1hDqYf-0002Gd-Bw; Tue, 09 Apr 2019 09:13:01 -0400
+Subject: Re: [PATCH v10 02/18] counter: Documentation: Add Generic Counter
+ sysfs documentation
+To:     Pavel Machek <pavel@ucw.cz>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     gregkh@linuxfoundation.org, jic23@kernel.org,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org,
+        robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org,
+        leoyang.li@nxp.com, daniel.lezcano@linaro.org, tglx@linutronix.de,
+        thierry.reding@gmail.com, esben@haabendal.dk,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        patrick.havelange@essensium.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+ <bd8362f23b99af938c7bced2104eca29888253b3.1554184734.git.vilhelm.gray@gmail.com>
+ <20190408215531.GB27592@amd>
+From:   David Lechner <david@lechnology.com>
+Message-ID: <d7a44b77-a8e5-d4fa-9a11-96cdde862b4c@lechnology.com>
+Date:   Tue, 9 Apr 2019 08:12:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190406194528.qx2tvrriuymb6xnq@smtp.gmail.com>
- <CA+U=DsokFDLC+kO61iErM12xp6ZBteYyfhrFKxexRzuumiFDqg@mail.gmail.com> <20190409121655.qptymigvkitgo3iv@smtp.gmail.com>
-In-Reply-To: <20190409121655.qptymigvkitgo3iv@smtp.gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Tue, 9 Apr 2019 15:28:01 +0300
-Message-ID: <CA+U=DspEug7s6q6Lt_He2vth3nC0+jSzwbeeS06puU3vNNqmaw@mail.gmail.com>
-Subject: Re: RFC on IIO AD7292 driver GSoC proposal
-To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Cc:     dragos.bogdan@analog.com,
-        "Hennerich, Michael" <michael.hennerich@analog.com>,
-        stefan.popa@analog.com,
-        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
-        linux-iio@vger.kernel.org, kernel-usp@googlegroups.com
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190408215531.GB27592@amd>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Apr 9, 2019 at 3:17 PM Marcelo Schmitt
-<marcelo.schmitt1@gmail.com> wrote:
->
-> On 04/08, Alexandru Ardelean wrote:
-> > On Sat, Apr 6, 2019 at 10:46 PM Marcelo Schmitt
-> > <marcelo.schmitt1@gmail.com> wrote:
-> > >
-> > > Hello.
-> > >
-> > > My name is Marcelo Schmitt, I'm a computer science student learning
-> > > how to contribute to the Linux Kernel in the IIO subsystem. I was told
-> > > by a friend that Google was encouraging people who contribute to open
-> > > source projects through the GSoC program and that there was a project
-> > > for developing a new IIO driver. I intend to continue contributing to
-> > > IIO and, if possible, engage in this GSoC project. As suggested by
-> > > GSoC organization, I shared a draft proposal for the project here
-> > > https://docs.google.com/document/d/1vOegyoC5b90jwLe1PBz4IbKGXaXMozi-RldS5OAZz4Y.
-> > > It would be really great if anyone could comment on it.
-> > > Sorry for sending it so close to dead line date.
-> > >
-> >
-> > Overall doc looks good.
-> > One note about the steps: ideally the AD7292 driver should not be put
-> > into staging, it's a new driver.
-> > Hence there is no reason to have a "move out-of-staging" step.
-> >
-> > The current IIO drivers in staging are there, because initially the
-> > IIO framework was done in staging, and some drivers were not updated
-> > because of time/priorities.
->
-> Thanks Alexandru.
-> OK, understood. But where one should commit code for a driver in
-> development as will be the case for AD7292? iio main tree will
-> probably not be a good idea. Does any development branch exists?
-> testing2, compiletest?
+On 4/8/19 4:55 PM, Pavel Machek wrote:
+> 
+> pavel@amd:~$ cat /sys/power/state
+> freeze mem disk
+> 
+> And we use [] to mark current selection:
 
-I guess I'm not very familiar with how GSoC works.
-I guess work can be done in any public place.
-And then the final parts can be submitted to the IIO list as standard.
+I know this is used elsewhere, but I don't think it is a good pattern
+to copy. Parsing it from user-space is annoying. Also it breaks the
+sysfs rule of "one item per file" since it tells us two things - the
+list of possible values _and_ the current active value.
 
-Regarding the DT bindings, I'm afraid you will have to make them in YAML format.
-Just be aware of this.
+> 
+> pavel@amd:~$ cat /sys/class/leds/tpacpi\:\:thinkvantage/trigger
+> [none] bluetooth-power rfkill-any rfkill-none kbd-scrolllock
+> kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock
+> kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock
+> kbd-ctrlrlock AC-online BAT0-charging-or-full BAT0-charging BAT0-full
+> BAT0-charging-blink-full-solid rfkill0 phy0rx phy0tx phy0assoc
+> phy0radio phy0tpt mmc0 timer heartbeat audio-mute audio-micmute
+> rfkill1
+> 
+> Note this only works if you have less than PAGE_SIZE of entries... and
+> will never have more.
+> 
+> 									Pavel
+> 
 
-This is a recent change to DT bindings.
-I'm also trying out this new YAML thingi [for personal curiosity].
-They don't look too difficult, but they are a bit weird. But I've
-always found YAML a bit weird.
-
->
-> >
-> > > Thanks in advance,
-> > >
-> > > Marcelo
