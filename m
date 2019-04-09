@@ -2,203 +2,192 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2B1C10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 05:06:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5ED8AC282DA
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 07:59:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 792FB2084F
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 05:06:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 16C4C20663
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 07:59:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="jzdOPlu/"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="ISqDx2Ez"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726572AbfDIFGI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 01:06:08 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:44700 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725781AbfDIFGH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 01:06:07 -0400
-Received: by mail-pf1-f196.google.com with SMTP id y13so8950292pfm.11;
-        Mon, 08 Apr 2019 22:06:07 -0700 (PDT)
+        id S1726396AbfDIH7H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 03:59:07 -0400
+Received: from mail-eopbgr780051.outbound.protection.outlook.com ([40.107.78.51]:53682
+        "EHLO NAM03-BY2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726461AbfDIH7H (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 9 Apr 2019 03:59:07 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=mPzuYWAD9n3E7cK9DQsoS+9to3SIkl5lmMig0KfgMSY=;
-        b=jzdOPlu/x8auCMomI1PhvJbl6f2twqu5f+3vfkvAV+xE4cSTD4MEdJHxBxcS6yZqq7
-         Wi39SerktOeg2gpodvg1AttXtj/Agsk4ZqT+ll/DmXRCFXA3Rjxv4W5JXcJX12w2wN76
-         dRlAvbUeYZEdvLSCT/Uss7a0WGfW2BKtrXLgXRvC3oSExXDC5J5XOfEY7Bmkeaqldqo5
-         ofQJMLjd1hvJFdB8CUbFyyIJY+r2saK636byggJ7IyW27rDUZrXVU6SyMCAhmEBOTAxA
-         KKZ9ZFWfs5Cuc9geuO38yzWGzY7Wi5VVNgI6n1sfPWfNRYKsiEibfk9xWlxOtSOlTpg3
-         qikQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=mPzuYWAD9n3E7cK9DQsoS+9to3SIkl5lmMig0KfgMSY=;
-        b=XLB0dxROcSnRoYQGx3uK4gSXmI/qWzSPmNitZmDHSnTslBbcw0lxFaxtgV4I31RoBt
-         UboBIJjtTq6Ukg8b3vDLjwb/cEXU6y4rgZjOsbAD0uvWGgA1UkIsxRG0C7p0Nlu6Ihza
-         JnEquF4qzWT0pd3wU5LUwYfZGoaIorsJP9FMFl06jaz97M6WPHwlRLjc9CHyOMG67Feq
-         AjQDGKmQM5mi9D5xg+X97EY9hJ0Mze0wT5UxiizaqhE0XRsJSS+wvYB5KoYvQOf0T/Pw
-         ARLO//dFGVzTidtAXrpURF9Sr1S2GVJOrTKEOU76WOM0IBoXFeqTf5r9cnaQAJdOjL0w
-         8XIA==
-X-Gm-Message-State: APjAAAVTqVJxkRC5VW2gBgbFeQoMzsm47WzT1eTKGq3FB1M9OcSXMvl0
-        JAOiWo2s/Qn6TfyH7GW08pc=
-X-Google-Smtp-Source: APXvYqxpbmL0psDw+R51UHqyQpUsOO53H3NyesVqG9HDMScxBNzwN2DcZVBVbnl14am4Y2jDppOgXw==
-X-Received: by 2002:a65:6212:: with SMTP id d18mr30672141pgv.162.1554786366700;
-        Mon, 08 Apr 2019 22:06:06 -0700 (PDT)
-Received: from icarus ([2001:268:c1c0:11e:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id j19sm15751431pfr.155.2019.04.08.22.05.57
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 08 Apr 2019 22:06:05 -0700 (PDT)
-Date:   Tue, 9 Apr 2019 14:07:08 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Pavel Machek <pavel@ucw.cz>
-Cc:     gregkh@linuxfoundation.org, jic23@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org,
-        david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        patrick.havelange@essensium.com,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v10 02/18] counter: Documentation: Add Generic Counter
- sysfs documentation
-Message-ID: <20190409050708.GB2842@icarus>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <bd8362f23b99af938c7bced2104eca29888253b3.1554184734.git.vilhelm.gray@gmail.com>
- <20190408215531.GB27592@amd>
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=hr50iTtcxCeD1YdkzubNF6EDU4r/O/Pt959+5Ai0Khk=;
+ b=ISqDx2Ez7urTI1d/6TBeQJWDvPS2LrNbTEiu8Hh22zIz5K97xVF5Oj/g4c83j/7jh1T0eHJdYSZz3UI3JOvFG7Z65spgVoIjpQUIWBkAesSDohuBd4mpRa28BnSASJFeJH83jxzOMrQArgOW8R8tZnaA/oOviVZVB1icFmFVRyo=
+Received: from BN6PR03CA0063.namprd03.prod.outlook.com (2603:10b6:404:4c::25)
+ by BY2PR03MB556.namprd03.prod.outlook.com (2a01:111:e400:2c3a::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1771.21; Tue, 9 Apr
+ 2019 07:58:25 +0000
+Received: from BL2NAM02FT053.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::200) by BN6PR03CA0063.outlook.office365.com
+ (2603:10b6:404:4c::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1771.16 via Frontend
+ Transport; Tue, 9 Apr 2019 07:58:24 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT053.mail.protection.outlook.com (10.152.76.225) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1771.16
+ via Frontend Transport; Tue, 9 Apr 2019 07:58:24 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x397wOQV012755
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 9 Apr 2019 00:58:24 -0700
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Tue, 9 Apr 2019
+ 03:58:24 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: ad_sigma_delta: Don't put SPI transfer buffer on the stack
+Date:   Tue, 9 Apr 2019 10:58:21 +0300
+Message-ID: <20190409075821.26104-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20190408215531.GB27592@amd>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(396003)(346002)(136003)(2980300002)(199004)(189003)(1076003)(50226002)(7636002)(54906003)(16586007)(6916009)(316002)(2351001)(77096007)(426003)(53416004)(7696005)(106466001)(26005)(36756003)(305945005)(8676002)(336012)(106002)(8936002)(356004)(6666004)(51416003)(478600001)(246002)(50466002)(2616005)(2906002)(86362001)(126002)(14444005)(107886003)(5660300002)(47776003)(4326008)(476003)(44832011)(48376002)(186003)(486006);DIR:OUT;SFP:1101;SCL:1;SRVR:BY2PR03MB556;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 88777307-cfe9-4aa8-b3f5-08d6bcc124a2
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600139)(711020)(4605104)(4709054)(2017052603328);SRVR:BY2PR03MB556;
+X-MS-TrafficTypeDiagnostic: BY2PR03MB556:
+X-Microsoft-Antispam-PRVS: <BY2PR03MB5568C6B7F3161D1F841551DF92D0@BY2PR03MB556.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 000227DA0C
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 0IJxmlCMFQsvda5upOfKQl+/LhXMTv5wC0r5ikax3TOM2/HS5l/Of2f//MLNiBYhrdwe/7psSh2ecscTMrU6OApuBLglzQfepefgYxrBjY/7djGdHop4FF4NtSZmlxSJXCVzmLPVFhiAGxzW8DwI8GrS5R3aj+2U54RDmdgvXU/O8j8HxranniMS0a2rci6m2NuqqiaSyquP1bcpHpByd2duAuz8ogbvVFJ9VJQSBbNHb833agprs7FaBFpzxlXHcT2VM8bVbU8QWM/3jfGjwgyMwnT97nUJ4gL+PEuqjDz0DbaFcCLIGvi62B+Qd91XLPCz+rBqz10XUeuA0PuyZE0uccesc1FmAQtSgTwqCMoXlhmh0084mfmPwzjXwaK0IMld55rurvpOokWyfLraRpD4RwsixGY8QGEXvXwA7ZI=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Apr 2019 07:58:24.7915
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 88777307-cfe9-4aa8-b3f5-08d6bcc124a2
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY2PR03MB556
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 08, 2019 at 11:55:31PM +0200, Pavel Machek wrote:
-> On Tue 2019-04-02 15:30:37, William Breathitt Gray wrote:
-> > This patch adds standard documentation for the userspace sysfs
-> > attributes of the Generic Counter interface.
-> > 
-> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> > ---
-> >  Documentation/ABI/testing/sysfs-bus-counter | 230 ++++++++++++++++++++
-> >  MAINTAINERS                                 |   1 +
-> >  2 files changed, 231 insertions(+)
-> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-counter
-> > 
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-> > new file mode 100644
-> > index 000000000000..566bd99fe0a5
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-bus-counter
-> > @@ -0,0 +1,230 @@
-> > +What:		/sys/bus/counter/devices/counterX/countY/count
-> > +KernelVersion:	5.2
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Count data of Count Y represented as a string.
-> > +
-> > +What:		/sys/bus/counter/devices/counterX/countY/ceiling
-> > +KernelVersion:	5.2
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Count value ceiling for Count Y. This is the upper limit for the
-> > +		respective counter.
-> > +
-> > +What:		/sys/bus/counter/devices/counterX/countY/floor
-> > +KernelVersion:	5.2
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Count value floor for Count Y. This is the lower limit for the
-> > +		respective counter.
-> > +
-> > +What:		/sys/bus/counter/devices/counterX/countY/count_mode
-> > +KernelVersion:	5.2
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Count mode for channel Y. The ceiling and floor values for
-> > +		Count Y are used by the count mode where required. The following
-> > +		count modes are available:
-> > +
-> > +		normal:
-> > +			Counting is continuous in either direction.
-> > +
-> > +		range limit:
-> > +			An upper or lower limit is set, mimicking limit switches
-> > +			in the mechanical counterpart. The upper limit is set to
-> > +			the Count Y ceiling value, while the lower limit is set
-> > +			to the Count Y floor value. The counter freezes at
-> > +			count = ceiling when counting up, and at count = floor
-> > +			when counting down. At either of these limits, the
-> > +			counting is resumed only when the count direction is
-> > +			reversed.
-> > +
-> > +		non-recycle:
-> > +			The counter is disabled whenever a counter overflow or
-> > +			underflow takes place. The counter is re-enabled when a
-> > +			new count value is loaded to the counter via a preset
-> > +			operation or direct write.
-> > +
-> > +		modulo-n:
-> > +			A count value boundary is set between the Count Y floor
-> > +			value and the Count Y ceiling value. The counter is
-> > +			reset to the Count Y floor value at count = ceiling when
-> > +			counting up, while the counter is set to the Count Y
-> > +			ceiling value at count = floor when counting down; the
-> > +			counter does not freeze at the boundary points, but
-> > +			counts continuously throughout.
-> > +
-> > +What:		/sys/bus/counter/devices/counterX/countY/count_mode_available
-> > +What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
-> > +What:		/sys/bus/counter/devices/counterX/countY/function_available
-> > +What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
-> > +KernelVersion:	5.2
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		Discrete set of available values for the respective Count Y
-> > +		configuration are listed in this file. Values are delimited by
-> > +		newline characters.
-> 
-> Elsewhere in sysfs we do space-separated:
-> 
-> pavel@amd:~$ cat /sys/power/state
-> freeze mem disk
-> 
-> And we use [] to mark current selection:
-> 
-> pavel@amd:~$ cat /sys/class/leds/tpacpi\:\:thinkvantage/trigger
-> [none] bluetooth-power rfkill-any rfkill-none kbd-scrolllock
-> kbd-numlock kbd-capslock kbd-kanalock kbd-shiftlock kbd-altgrlock
-> kbd-ctrllock kbd-altlock kbd-shiftllock kbd-shiftrlock kbd-ctrlllock
-> kbd-ctrlrlock AC-online BAT0-charging-or-full BAT0-charging BAT0-full
-> BAT0-charging-blink-full-solid rfkill0 phy0rx phy0tx phy0assoc
-> phy0radio phy0tpt mmc0 timer heartbeat audio-mute audio-micmute
-> rfkill1
-> 
-> Note this only works if you have less than PAGE_SIZE of entries... and
-> will never have more.
-> 
-> 									Pavel
-> -- 
-> (english) http://www.livejournal.com/~pavelmachek
-> (cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-Marking the current selection with [] or similar does seem useful. But
-delimiting by space does seem to cause confusion in cases where the
-values also include spaces (e.g. "quadrature x1 a"). I see that in these
-cases a "-" is used in place of a space, but that wouldn't work very
-well when values can also contain hyphens (e.g. "pulse-direction").
+Use a heap allocated memory for the SPI transfer buffer. Using stack memory
+will not work on some architectures when using DMA.
 
-William Breathitt Gray
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+
+Note: this doesn't need a stable/fixes tag. It's more of an enhancement.
+
+ drivers/iio/adc/ad_sigma_delta.c       | 22 +++++++++++-----------
+ include/linux/iio/adc/ad_sigma_delta.h |  3 ++-
+ 2 files changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index af6cbc683214..02d9049b9218 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -58,7 +58,7 @@ EXPORT_SYMBOL_GPL(ad_sd_set_comm);
+ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
+ 	unsigned int size, unsigned int val)
+ {
+-	uint8_t *data = sigma_delta->data;
++	uint8_t *data = sigma_delta->reg_data;
+ 	struct spi_transfer t = {
+ 		.tx_buf		= data,
+ 		.len		= size + 1,
+@@ -102,7 +102,7 @@ EXPORT_SYMBOL_GPL(ad_sd_write_reg);
+ static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
+ 	unsigned int reg, unsigned int size, uint8_t *val)
+ {
+-	uint8_t *data = sigma_delta->data;
++	uint8_t *data = sigma_delta->reg_data;
+ 	int ret;
+ 	struct spi_transfer t[] = {
+ 		{
+@@ -148,24 +148,24 @@ int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
+ {
+ 	int ret;
+ 
+-	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
++	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->reg_data);
+ 	if (ret < 0)
+ 		goto out;
+ 
+ 	switch (size) {
+ 	case 4:
+-		*val = get_unaligned_be32(sigma_delta->data);
++		*val = get_unaligned_be32(sigma_delta->reg_data);
+ 		break;
+ 	case 3:
+-		*val = (sigma_delta->data[0] << 16) |
+-			(sigma_delta->data[1] << 8) |
+-			sigma_delta->data[2];
++		*val = (sigma_delta->reg_data[0] << 16) |
++			(sigma_delta->reg_data[1] << 8) |
++			sigma_delta->reg_data[2];
+ 		break;
+ 	case 2:
+-		*val = get_unaligned_be16(sigma_delta->data);
++		*val = get_unaligned_be16(sigma_delta->reg_data);
+ 		break;
+ 	case 1:
+-		*val = sigma_delta->data[0];
++		*val = sigma_delta->reg_data[0];
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -403,12 +403,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	uint8_t *data = sigma_delta->buf_data;
+ 	unsigned int reg_size;
+ 	unsigned int data_reg;
+-	uint8_t data[16];
+ 	int ret;
+ 
+-	memset(data, 0x00, 16);
++	memset(sigma_delta->buf_data, 0x00, sizeof(sigma_delta->buf_data));
+ 
+ 	reg_size = indio_dev->channels[0].scan_type.realbits +
+ 			indio_dev->channels[0].scan_type.shift;
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 6e9fb1932dde..fb77b2ebe498 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -79,7 +79,8 @@ struct ad_sigma_delta {
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	uint8_t				data[4] ____cacheline_aligned;
++	uint8_t				reg_data[4] ____cacheline_aligned;
++	uint8_t				buf_data[16];
+ };
+ 
+ static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+-- 
+2.17.1
+
