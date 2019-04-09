@@ -2,125 +2,115 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=0.4 required=3.0 tests=BIGNUM_EMAILS,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2429C10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:00:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6657AC10F0E
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:08:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BB7E720833
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:00:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3539A20880
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:08:13 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="Wlg+irDf"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pPrRYB9J"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727349AbfDIMAN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 08:00:13 -0400
-Received: from userp2120.oracle.com ([156.151.31.85]:46340 "EHLO
-        userp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727318AbfDIMAM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 08:00:12 -0400
-Received: from pps.filterd (userp2120.oracle.com [127.0.0.1])
-        by userp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x39BwWAl178895;
-        Tue, 9 Apr 2019 12:00:10 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2018-07-02;
- bh=dWsp8wr1LZdHD+qc3mOxFHahiPMkDmB70nCqCRURoQU=;
- b=Wlg+irDfFRXvmBgx38/YORF8FyQtTlmIzIW80CAmFVSI2hvZPpuVqzsFzW5MlsEwkLk7
- ZRTqbvV04NVG21T/l4VQ5wjqS6B+AZokdVyXhLLT+L6RJtV1c7LflfZ0IISQtHB1Zzf/
- koqjiAR6FaH5gS8FZ1xJ2OuRSxuzqAkQyhnQTt7eoEKTBXZ/xoF6qI7xU60Hnd92V2Cn
- /RKar4BIzK/xkKCVJjbNCDWQ63evs+ralAd947o1JrKgUXdvLfBEy4dVB8EuibqAT0Zi
- Yaeu0gQ8m0lYrwOtxYmVt2Bg8ScJ1T3u1JcpbC0Tqw5ZInPXxaKWJJAWFZUB+Tz+DALr NA== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by userp2120.oracle.com with ESMTP id 2rpmrq4cgr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 09 Apr 2019 12:00:09 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x39BwSK8033009;
-        Tue, 9 Apr 2019 12:00:09 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2rph7shgjt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 09 Apr 2019 12:00:08 +0000
-Received: from abhmp0012.oracle.com (abhmp0012.oracle.com [141.146.116.18])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x39C06M9029370;
-        Tue, 9 Apr 2019 12:00:07 GMT
-Received: from kadam (/197.157.0.24)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Tue, 09 Apr 2019 05:00:06 -0700
-Date:   Tue, 9 Apr 2019 14:59:55 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     paresh.chaudhary@rockwellcollins.com
-Cc:     linux-iio@vger.kernel.org
-Subject: [bug report] iio:temperature: Add MAX31856 thermocouple support
-Message-ID: <20190409115955.GA16862@kadam>
+        id S1726388AbfDIMIM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 08:08:12 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37985 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726387AbfDIMIM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 08:08:12 -0400
+Received: by mail-qt1-f194.google.com with SMTP id d13so19362826qth.5
+        for <linux-iio@vger.kernel.org>; Tue, 09 Apr 2019 05:08:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=8Cgo1GqwT7HsP5ByHisJ/90ukPfmYbR5JKcQkWzjvLw=;
+        b=pPrRYB9JTMW+epFqJiBI6hKTSQa8A2USxhxwVulKa2XKSttQZdUpkoJk9Cku21JxhZ
+         Ca66qYHQHoXia8yUpRTo+7EboS2M5MarOQcJ8ww/SFZhmUfLl9Qq98bZITX2xCR0yE5X
+         YiWcy/c01pYdFuonUbrzlr0UH5QPheDMlrpAN3A7Ch4k5pl2gownlrGUX646os4iMZkV
+         6aJPS0TwNGFuyvKRiv8b3jL/p813IYwAgvlbSA01tsTB7ATTR4ME7j9pq3ZG/VVaexCa
+         Bd2GjtjHuGP08p+elVKhRwYGHLzWA2D743KkiWYx6vaicRChjxN3FEtr/clpL+GfngQQ
+         CCpQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=8Cgo1GqwT7HsP5ByHisJ/90ukPfmYbR5JKcQkWzjvLw=;
+        b=aYZEbqWk7JiU9Zv7GXvIVrMkpvxtojUZGdy3z2BLJqXgkNaZRayT6Zvf+ByPZy/BEY
+         5smNZN5BjvfzmWvYofGpn7d12g4c63XG8sJ6vRFjl6AhDhKopwIP2pC6mTHzylr2d08r
+         WrwJtpehNH38wvvDqN4ZZIn8tXlt7JanUThh00qWcQzMBrQnJxjmt7OrYGF9thg7I+Of
+         +GRNEC0U0j5SjTpNUVPvsE6dL+bFKPJcdwJ/Y1QneuLIjP5YDsegWLgoOBJZ641iQvsl
+         Hp6K1yz9UeKroCa01LV8YqnTfYgK1Y3K78Xn67IyH6vzKd0hl9vn9z4OYXGtYhEmU9dn
+         W+YA==
+X-Gm-Message-State: APjAAAUB7wOfExjJL8bRuG1tQNfiKzGFdEi5l+jHilmUlI02geOqwjJC
+        SWYvOF2dDoTJRmaSTmDFypTsP0oz2KI=
+X-Google-Smtp-Source: APXvYqyL2OMbMYP720xycny+CWpo63KWbCJfR1H7ZRpqhOqsk3XBLPNHB82UuT8PjCplz2WP2+0riQ==
+X-Received: by 2002:ac8:3855:: with SMTP id r21mr29579883qtb.264.1554811691674;
+        Tue, 09 Apr 2019 05:08:11 -0700 (PDT)
+Received: from smtp.gmail.com ([143.107.45.1])
+        by smtp.gmail.com with ESMTPSA id j93sm20588484qtd.82.2019.04.09.05.08.09
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Tue, 09 Apr 2019 05:08:11 -0700 (PDT)
+Date:   Tue, 9 Apr 2019 09:08:07 -0300
+From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+To:     Crt Mori <cmo@melexis.com>
+Cc:     dragos.bogdan@analog.com, michael.hennerich@analog.com,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        Linux Iio <linux-iio@vger.kernel.org>,
+        kernel-usp@googlegroups.com
+Subject: Re: RFC on IIO AD7292 driver GSoC proposal
+Message-ID: <20190409120807.pevfhpdzfuifayi3@smtp.gmail.com>
+References: <20190406194528.qx2tvrriuymb6xnq@smtp.gmail.com>
+ <CAKv63us7p3AC6UQfGYj14ZXOPa6R0pEAcJOTqzgRy6ZJGwKqnw@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9221 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1810050000 definitions=main-1904090078
-X-Proofpoint-Virus-Version: vendor=nai engine=5900 definitions=9221 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1904090078
+In-Reply-To: <CAKv63us7p3AC6UQfGYj14ZXOPa6R0pEAcJOTqzgRy6ZJGwKqnw@mail.gmail.com>
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Paresh Chaudhary,
+Hi,
 
-The patch fb55a51310d1: "iio:temperature: Add MAX31856 thermocouple
-support" from Mar 26, 2019, leads to the following static checker
-warning:
+On 04/08, Crt Mori wrote:
+> On Sat, 6 Apr 2019 at 21:45, Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+> >
+> > Hello.
+> >
+> > My name is Marcelo Schmitt, I'm a computer science student learning
+> > how to contribute to the Linux Kernel in the IIO subsystem. I was told
+> > by a friend that Google was encouraging people who contribute to open
+> > source projects through the GSoC program and that there was a project
+> > for developing a new IIO driver. I intend to continue contributing to
+> > IIO and, if possible, engage in this GSoC project. As suggested by
+> > GSoC organization, I shared a draft proposal for the project here
+> > https://docs.google.com/document/d/1vOegyoC5b90jwLe1PBz4IbKGXaXMozi-RldS5OAZz4Y.
+> > It would be really great if anyone could comment on it.
+> > Sorry for sending it so close to dead line date.
+> >
+> 
+> Hello,
+> Nice read. I am a bit wondering why you have Arduino mentioned for
+> couple of tests - I am assuming because its easier to write raw SPI
+> with Arduino than what is described in Documentation/spi/spidev ?
+> What you have in week 26 (Develop initial documentation), you will
+> probably need to send with the first patches of week 23 and 24.
 
-	drivers/iio/temperature/max31856.c:215 max31856_read_raw()
-	error: uninitialized symbol 'ret'.
+Thanks Mori.
+You're right, I'll probably have to start defining ABI when defining
+device's external attributes for temperature. Devicetree will probably
+be worth carring for after setting voltage regulator for the device.
+Changed proposal accordingly.
 
-drivers/iio/temperature/max31856.c
-    185 static int max31856_read_raw(struct iio_dev *indio_dev,
-    186 			     struct iio_chan_spec const *chan,
-    187 			     int *val, int *val2, long mask)
-    188 {
-    189 	struct max31856_data *data = iio_priv(indio_dev);
-    190 	int ret;
-    191 
-    192 	switch (mask) {
-    193 	case IIO_CHAN_INFO_RAW:
-    194 		ret = max31856_thermocouple_read(data, chan, val);
-    195 		if (ret)
-    196 			return ret;
-    197 		return IIO_VAL_INT;
-    198 	case IIO_CHAN_INFO_SCALE:
-    199 		switch (chan->channel2) {
-    200 		case IIO_MOD_TEMP_AMBIENT:
-    201 			/* Cold junction Temp. Data resolution is 0.015625 */
-    202 			*val = 15;
-    203 			*val2 = 625000; /* 1000 * 0.015625 */
-    204 			ret = IIO_VAL_INT_PLUS_MICRO;
-    205 			break;
-    206 		default:
-    207 			/* Thermocouple Temp. Data resolution is 0.0078125 */
-    208 			*val = 7;
-    209 			*val2 = 812500; /* 1000 * 0.0078125) */
-    210 			return IIO_VAL_INT_PLUS_MICRO;
-    211 		}
-    212 		break;
-
-Smatch thinks mask can also IIO_CHAN_INFO_PROCESSED, IIO_CHAN_INFO_OFFSET,
-and IIO_CHAN_INFO_AVERAGE_RAW.  It often gets these function pointer
-calls a be merged together though.
-
-    213 	}
-    214 
---> 215 	return ret;
-    216 }
-
-regards,
-dan carpenter
+> 
+> Best regards,
+> Crt
+> 
+> > Thanks in advance,
+> >
+> > Marcelo
