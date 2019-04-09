@@ -7,78 +7,78 @@ X-Spam-Status: No, score=-2.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6657AC10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:08:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 832D2C10F0E
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:17:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3539A20880
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:08:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 520C720857
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 12:17:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pPrRYB9J"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sQfiJ8rV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726388AbfDIMIM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 08:08:12 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:37985 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726387AbfDIMIM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 08:08:12 -0400
-Received: by mail-qt1-f194.google.com with SMTP id d13so19362826qth.5
-        for <linux-iio@vger.kernel.org>; Tue, 09 Apr 2019 05:08:12 -0700 (PDT)
+        id S1726535AbfDIMRB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 08:17:01 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:43646 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726001AbfDIMRA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 08:17:00 -0400
+Received: by mail-qt1-f195.google.com with SMTP id v32so19334098qtc.10
+        for <linux-iio@vger.kernel.org>; Tue, 09 Apr 2019 05:17:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=8Cgo1GqwT7HsP5ByHisJ/90ukPfmYbR5JKcQkWzjvLw=;
-        b=pPrRYB9JTMW+epFqJiBI6hKTSQa8A2USxhxwVulKa2XKSttQZdUpkoJk9Cku21JxhZ
-         Ca66qYHQHoXia8yUpRTo+7EboS2M5MarOQcJ8ww/SFZhmUfLl9Qq98bZITX2xCR0yE5X
-         YiWcy/c01pYdFuonUbrzlr0UH5QPheDMlrpAN3A7Ch4k5pl2gownlrGUX646os4iMZkV
-         6aJPS0TwNGFuyvKRiv8b3jL/p813IYwAgvlbSA01tsTB7ATTR4ME7j9pq3ZG/VVaexCa
-         Bd2GjtjHuGP08p+elVKhRwYGHLzWA2D743KkiWYx6vaicRChjxN3FEtr/clpL+GfngQQ
-         CCpQ==
+        bh=692vbIpumhmbollLVtl9AZHe2OEmvy2J1znZtDfs5Zg=;
+        b=sQfiJ8rVGETdbU9ewDejue10Fg7gHo/UrsgrDugqE5Ej7LHYAPLsO3rbpT75onXP3d
+         ewEs6OWCWMB+D5nz8wQEG0futf7IsYwENRaEhQuUc2kpi40sFiUeFCS1p7jRNBT26VMm
+         jgaWbBxRuhaIeAWuGBQrkwyhZ0smUDhMVZ+4vhby89vUegz2JkDMjyNilXEveAFhr+Bu
+         pmTvoljUNzP9DVAiTvKpPIcK2dt3pc+fAw6J/ois4uHvNpmj+N3A7ZOTNOJqVAqrBEvP
+         3M/NqdTg12MHWPKM4Ur6PLryr2REE0b3pNwj0f8vCcjQ9E3T+lLUzeEPNJcyjHUO2mTe
+         eedg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=8Cgo1GqwT7HsP5ByHisJ/90ukPfmYbR5JKcQkWzjvLw=;
-        b=aYZEbqWk7JiU9Zv7GXvIVrMkpvxtojUZGdy3z2BLJqXgkNaZRayT6Zvf+ByPZy/BEY
-         5smNZN5BjvfzmWvYofGpn7d12g4c63XG8sJ6vRFjl6AhDhKopwIP2pC6mTHzylr2d08r
-         WrwJtpehNH38wvvDqN4ZZIn8tXlt7JanUThh00qWcQzMBrQnJxjmt7OrYGF9thg7I+Of
-         +GRNEC0U0j5SjTpNUVPvsE6dL+bFKPJcdwJ/Y1QneuLIjP5YDsegWLgoOBJZ641iQvsl
-         Hp6K1yz9UeKroCa01LV8YqnTfYgK1Y3K78Xn67IyH6vzKd0hl9vn9z4OYXGtYhEmU9dn
-         W+YA==
-X-Gm-Message-State: APjAAAUB7wOfExjJL8bRuG1tQNfiKzGFdEi5l+jHilmUlI02geOqwjJC
-        SWYvOF2dDoTJRmaSTmDFypTsP0oz2KI=
-X-Google-Smtp-Source: APXvYqyL2OMbMYP720xycny+CWpo63KWbCJfR1H7ZRpqhOqsk3XBLPNHB82UuT8PjCplz2WP2+0riQ==
-X-Received: by 2002:ac8:3855:: with SMTP id r21mr29579883qtb.264.1554811691674;
-        Tue, 09 Apr 2019 05:08:11 -0700 (PDT)
+        bh=692vbIpumhmbollLVtl9AZHe2OEmvy2J1znZtDfs5Zg=;
+        b=m24XsZStJzDkCo/51fzSmJ+PvJY6FnfpatQTLTX3N/ATFCxOuQkfILHgE5WHqSOSiX
+         tjf+KP97IGbEeWELBoi4Ifwiil8T+j4oo9KdQKwug1vVCC7AvgaOzf5tvg98HTaPsOBp
+         9DtVdQTYckN10sYmMpRnw2wB7ugEbSZTcKEnOK1KFpCX+06XmkzAWuNT+/tr4FTkfpEp
+         RnDlcE9LPjV+Nl9C+tF1WpcZ0lJ0fBZoi6yqM+w6+dAf0GwMlMuU+agJwgB69qPS+jx/
+         p6wHEj3YlKr+DbLR2FpAfnoBPQRaQ1vKxulM1TLKkmKq6ZZVuSfwZVTloW3ntPskp+ix
+         9cCQ==
+X-Gm-Message-State: APjAAAV/obWzPU+8wSa9FJXMA7VuxyW66+21afiAnhBmFAn0rjC7HpwI
+        VHCKLwoVLYgll/a67qWMzElJJF4cgKE=
+X-Google-Smtp-Source: APXvYqzngJYETIeWket2Z3PStJpxr/FUhsNbmmDOXnmi9tMyNSOk8rsVzyPsTzlaad0THXbKCHb6mw==
+X-Received: by 2002:ac8:1acf:: with SMTP id h15mr29000988qtk.85.1554812219745;
+        Tue, 09 Apr 2019 05:16:59 -0700 (PDT)
 Received: from smtp.gmail.com ([143.107.45.1])
-        by smtp.gmail.com with ESMTPSA id j93sm20588484qtd.82.2019.04.09.05.08.09
+        by smtp.gmail.com with ESMTPSA id l59sm19619989qte.6.2019.04.09.05.16.57
         (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Tue, 09 Apr 2019 05:08:11 -0700 (PDT)
-Date:   Tue, 9 Apr 2019 09:08:07 -0300
+        Tue, 09 Apr 2019 05:16:59 -0700 (PDT)
+Date:   Tue, 9 Apr 2019 09:16:55 -0300
 From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To:     Crt Mori <cmo@melexis.com>
-Cc:     dragos.bogdan@analog.com, michael.hennerich@analog.com,
-        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
-        Linux Iio <linux-iio@vger.kernel.org>,
-        kernel-usp@googlegroups.com
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     dragos.bogdan@analog.com,
+        "Hennerich, Michael" <michael.hennerich@analog.com>,
+        stefan.popa@analog.com,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        linux-iio@vger.kernel.org, kernel-usp@googlegroups.com
 Subject: Re: RFC on IIO AD7292 driver GSoC proposal
-Message-ID: <20190409120807.pevfhpdzfuifayi3@smtp.gmail.com>
+Message-ID: <20190409121655.qptymigvkitgo3iv@smtp.gmail.com>
 References: <20190406194528.qx2tvrriuymb6xnq@smtp.gmail.com>
- <CAKv63us7p3AC6UQfGYj14ZXOPa6R0pEAcJOTqzgRy6ZJGwKqnw@mail.gmail.com>
+ <CA+U=DsokFDLC+kO61iErM12xp6ZBteYyfhrFKxexRzuumiFDqg@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAKv63us7p3AC6UQfGYj14ZXOPa6R0pEAcJOTqzgRy6ZJGwKqnw@mail.gmail.com>
+In-Reply-To: <CA+U=DsokFDLC+kO61iErM12xp6ZBteYyfhrFKxexRzuumiFDqg@mail.gmail.com>
 User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-
-On 04/08, Crt Mori wrote:
-> On Sat, 6 Apr 2019 at 21:45, Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+On 04/08, Alexandru Ardelean wrote:
+> On Sat, Apr 6, 2019 at 10:46 PM Marcelo Schmitt
+> <marcelo.schmitt1@gmail.com> wrote:
 > >
 > > Hello.
 > >
@@ -94,22 +94,21 @@ On 04/08, Crt Mori wrote:
 > > Sorry for sending it so close to dead line date.
 > >
 > 
-> Hello,
-> Nice read. I am a bit wondering why you have Arduino mentioned for
-> couple of tests - I am assuming because its easier to write raw SPI
-> with Arduino than what is described in Documentation/spi/spidev ?
-> What you have in week 26 (Develop initial documentation), you will
-> probably need to send with the first patches of week 23 and 24.
-
-Thanks Mori.
-You're right, I'll probably have to start defining ABI when defining
-device's external attributes for temperature. Devicetree will probably
-be worth carring for after setting voltage regulator for the device.
-Changed proposal accordingly.
-
+> Overall doc looks good.
+> One note about the steps: ideally the AD7292 driver should not be put
+> into staging, it's a new driver.
+> Hence there is no reason to have a "move out-of-staging" step.
 > 
-> Best regards,
-> Crt
+> The current IIO drivers in staging are there, because initially the
+> IIO framework was done in staging, and some drivers were not updated
+> because of time/priorities.
+
+Thanks Alexandru.
+OK, understood. But where one should commit code for a driver in
+development as will be the case for AD7292? iio main tree will
+probably not be a good idea. Does any development branch exists?
+testing2, compiletest?
+
 > 
 > > Thanks in advance,
 > >
