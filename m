@@ -2,159 +2,84 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 074D4C282DA
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 20:49:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039ABC10F0E
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 21:08:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C7F5F2084B
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 20:49:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C3C9120857
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 21:08:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1554842959;
-	bh=FwDMFmDqewGsVF2FKu5++eNP6qDvIUT+0OjWLS+oYVU=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=n9lvl9NFOOBDa8SNipRrQpUaEXUTey6JiRov4Qf2tBg5cM+ZAATb51rLUK0pz/O+8
-	 rTRBfiTZAvYG7LhX0k9pVZqZg7Zql1WLgjRVFq3jHRwRpJNLbaiU4NNqbjhOxvNNTP
-	 nDMi2VI9hSIeQljkDPoi9iN58Q+k+Fv03B+nvjug=
+	s=default; t=1554844100;
+	bh=flW+ZTk0MyIVVSAiGBmqj0p+5/Po7g05SxaCK9SbD9I=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=gEpYHdlMetteI+M7F07+RCORrhJ+dsZz3T9iksx6Cd0r7pLF4T4vbPNdbFHCQDlZT
+	 mJG8/GQL86FRjtH6YWhbzCcUFIW/NCGnO+xAMskZP1JMDmVtbRN53gDPf7SjJZTcW9
+	 367xB8EAtb6EwjigWWEIpjtqR6fz7N/oWtc9Zmx4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726595AbfDIUtT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 16:49:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57894 "EHLO mail.kernel.org"
+        id S1726479AbfDIVIP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 17:08:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726337AbfDIUtT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 9 Apr 2019 16:49:19 -0400
-Received: from localhost.localdomain (unknown [151.66.24.114])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726333AbfDIVIP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 9 Apr 2019 17:08:15 -0400
+Received: from mail-qt1-f173.google.com (mail-qt1-f173.google.com [209.85.160.173])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C472A2084B;
-        Tue,  9 Apr 2019 20:49:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 48F222133D;
+        Tue,  9 Apr 2019 21:08:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1554842957;
-        bh=FwDMFmDqewGsVF2FKu5++eNP6qDvIUT+0OjWLS+oYVU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yCQNYEm5i60izBz4ovc5OVhV4XxD0ONBzh2Ord3ofvg+62neTp2fPeMu24XNNz3G/
-         iDd2yWed06h+729Am26waFl9WxVV8m2dLLqK/u/vb4sBlTJNdCRQw+bY5hoiMmTjwE
-         cWq2wsHC2eX5T0dOQf0bKBrF0PCLwoavL2x1ccRM=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH] iio: imu: st_lsm6dsx: inline per-sensor data
-Date:   Tue,  9 Apr 2019 22:49:09 +0200
-Message-Id: <7a9445dce569870c70e4fabb1a4fcd8fb35a460e.1554842769.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1554842769.git.lorenzo@kernel.org>
-References: <cover.1554842769.git.lorenzo@kernel.org>
+        s=default; t=1554844094;
+        bh=flW+ZTk0MyIVVSAiGBmqj0p+5/Po7g05SxaCK9SbD9I=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=QE9aiUHWcVD2+9Kyu/CJmISh/61X+hEYjQKdbjDsmkRs95/9VjoX+T361TYr3LzJU
+         zW3PHizaeA7LUSnkwFaJ4IOugRbaUhX4QMaxxqfEw/1iLRUv70yyR2j5sOP7KFKh2E
+         U6uPpATCCQGxtuL0logKCFnjrPxXGN1XnPHBPjxw=
+Received: by mail-qt1-f173.google.com with SMTP id v32so359052qtc.10;
+        Tue, 09 Apr 2019 14:08:14 -0700 (PDT)
+X-Gm-Message-State: APjAAAUeko8a0wsAuVhPe3RsjcGMdaAUMxfwVZy6cAHr0mx4aml14SWo
+        Z9VCD0xXD7pyPLocm2xYQgksgN7fKmRH30ewVw==
+X-Google-Smtp-Source: APXvYqx6oXyHWP5WaLWnBs9dwdvRncxZHXoixJyQpHhfUodkxhCSJQeB2r5eT5LH4P5kygohscAE3OxMpa3yMvdHsok=
+X-Received: by 2002:a0c:c950:: with SMTP id v16mr32214458qvj.204.1554844093544;
+ Tue, 09 Apr 2019 14:08:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190409191054.va6y2l5lyhyoo5p4@arbad>
+In-Reply-To: <20190409191054.va6y2l5lyhyoo5p4@arbad>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Tue, 9 Apr 2019 16:08:02 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+k+JDsm=3cX6UeRCyD4k1YnWxbkoYm49GMO5mOgsGoqg@mail.gmail.com>
+Message-ID: <CAL_Jsq+k+JDsm=3cX6UeRCyD4k1YnWxbkoYm49GMO5mOgsGoqg@mail.gmail.com>
+Subject: Re: [PATCH 2/3] devantech-srf04.yaml: add Maxbotix ultrasonic iio
+ proximity sensors
+To:     Andreas Klinger <ak@it-klinger.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Mathieu Othacehe <m.othacehe@gmail.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As it has been already done for other st sensors in 'commit 9049531c91b4
-("iio: accel: st_accel: inline per-sensor data")', get rid of some
-defines and just open code the values into the appropriate struct
-elements since the semantic meaning is inherent in the name of the
-C99-addressable fields and there is no reason to duplicate the code
+On Tue, Apr 9, 2019 at 2:11 PM Andreas Klinger <ak@it-klinger.de> wrote:
+>
+> add compatibles for Maxbotix ultrasonic iio sensor types to yaml
+> documentation
+>
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> ---
+>  .../bindings/iio/proximity/devantech-srf04.yaml    | 25 ++++++++++++++--------
+>  1 file changed, 16 insertions(+), 9 deletions(-)
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 50 +++++++-------------
- 1 file changed, 16 insertions(+), 34 deletions(-)
+In the future, 'dt-bindings: iio: ...' for the subject please.
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 04124cc277dd..cf82c9049945 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -62,37 +62,19 @@
- #define ST_LSM6DSX_REG_INT2_ON_INT1_ADDR	0x13
- #define ST_LSM6DSX_REG_INT2_ON_INT1_MASK	BIT(5)
- 
--#define ST_LSM6DSX_REG_ACC_ODR_ADDR		0x10
--#define ST_LSM6DSX_REG_ACC_ODR_MASK		GENMASK(7, 4)
--#define ST_LSM6DSX_REG_ACC_FS_ADDR		0x10
--#define ST_LSM6DSX_REG_ACC_FS_MASK		GENMASK(3, 2)
- #define ST_LSM6DSX_REG_ACC_OUT_X_L_ADDR		0x28
- #define ST_LSM6DSX_REG_ACC_OUT_Y_L_ADDR		0x2a
- #define ST_LSM6DSX_REG_ACC_OUT_Z_L_ADDR		0x2c
- 
--#define ST_LSM6DSX_REG_GYRO_ODR_ADDR		0x11
--#define ST_LSM6DSX_REG_GYRO_ODR_MASK		GENMASK(7, 4)
--#define ST_LSM6DSX_REG_GYRO_FS_ADDR		0x11
--#define ST_LSM6DSX_REG_GYRO_FS_MASK		GENMASK(3, 2)
- #define ST_LSM6DSX_REG_GYRO_OUT_X_L_ADDR	0x22
- #define ST_LSM6DSX_REG_GYRO_OUT_Y_L_ADDR	0x24
- #define ST_LSM6DSX_REG_GYRO_OUT_Z_L_ADDR	0x26
- 
--#define ST_LSM6DSX_ACC_FS_2G_GAIN		IIO_G_TO_M_S_2(61)
--#define ST_LSM6DSX_ACC_FS_4G_GAIN		IIO_G_TO_M_S_2(122)
--#define ST_LSM6DSX_ACC_FS_8G_GAIN		IIO_G_TO_M_S_2(244)
--#define ST_LSM6DSX_ACC_FS_16G_GAIN		IIO_G_TO_M_S_2(488)
--
--#define ST_LSM6DSX_GYRO_FS_245_GAIN		IIO_DEGREE_TO_RAD(8750)
--#define ST_LSM6DSX_GYRO_FS_500_GAIN		IIO_DEGREE_TO_RAD(17500)
--#define ST_LSM6DSX_GYRO_FS_1000_GAIN		IIO_DEGREE_TO_RAD(35000)
--#define ST_LSM6DSX_GYRO_FS_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
--
- static const struct st_lsm6dsx_odr_table_entry st_lsm6dsx_odr_table[] = {
- 	[ST_LSM6DSX_ID_ACC] = {
- 		.reg = {
--			.addr = ST_LSM6DSX_REG_ACC_ODR_ADDR,
--			.mask = ST_LSM6DSX_REG_ACC_ODR_MASK,
-+			.addr = 0x10,
-+			.mask = GENMASK(7, 4),
- 		},
- 		.odr_avl[0] = {  13, 0x01 },
- 		.odr_avl[1] = {  26, 0x02 },
-@@ -103,8 +85,8 @@ static const struct st_lsm6dsx_odr_table_entry st_lsm6dsx_odr_table[] = {
- 	},
- 	[ST_LSM6DSX_ID_GYRO] = {
- 		.reg = {
--			.addr = ST_LSM6DSX_REG_GYRO_ODR_ADDR,
--			.mask = ST_LSM6DSX_REG_GYRO_ODR_MASK,
-+			.addr = 0x11,
-+			.mask = GENMASK(7, 4),
- 		},
- 		.odr_avl[0] = {  13, 0x01 },
- 		.odr_avl[1] = {  26, 0x02 },
-@@ -118,23 +100,23 @@ static const struct st_lsm6dsx_odr_table_entry st_lsm6dsx_odr_table[] = {
- static const struct st_lsm6dsx_fs_table_entry st_lsm6dsx_fs_table[] = {
- 	[ST_LSM6DSX_ID_ACC] = {
- 		.reg = {
--			.addr = ST_LSM6DSX_REG_ACC_FS_ADDR,
--			.mask = ST_LSM6DSX_REG_ACC_FS_MASK,
-+			.addr = 0x10,
-+			.mask = GENMASK(3, 2),
- 		},
--		.fs_avl[0] = {  ST_LSM6DSX_ACC_FS_2G_GAIN, 0x0 },
--		.fs_avl[1] = {  ST_LSM6DSX_ACC_FS_4G_GAIN, 0x2 },
--		.fs_avl[2] = {  ST_LSM6DSX_ACC_FS_8G_GAIN, 0x3 },
--		.fs_avl[3] = { ST_LSM6DSX_ACC_FS_16G_GAIN, 0x1 },
-+		.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
-+		.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
-+		.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
-+		.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
- 	},
- 	[ST_LSM6DSX_ID_GYRO] = {
- 		.reg = {
--			.addr = ST_LSM6DSX_REG_GYRO_FS_ADDR,
--			.mask = ST_LSM6DSX_REG_GYRO_FS_MASK,
-+			.addr = 0x11,
-+			.mask = GENMASK(3, 2),
- 		},
--		.fs_avl[0] = {  ST_LSM6DSX_GYRO_FS_245_GAIN, 0x0 },
--		.fs_avl[1] = {  ST_LSM6DSX_GYRO_FS_500_GAIN, 0x1 },
--		.fs_avl[2] = { ST_LSM6DSX_GYRO_FS_1000_GAIN, 0x2 },
--		.fs_avl[3] = { ST_LSM6DSX_GYRO_FS_2000_GAIN, 0x3 },
-+		.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
-+		.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
-+		.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
-+		.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
- 	}
- };
- 
--- 
-2.20.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
