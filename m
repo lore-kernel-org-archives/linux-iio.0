@@ -2,96 +2,79 @@ Return-Path: <SRS0=DYZA=SL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3813FC10F0E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 15:39:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9305BC282CE
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 19:10:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0C39920883
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 15:39:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 684222084F
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Apr 2019 19:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726559AbfDIPjr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Apr 2019 11:39:47 -0400
-Received: from mga18.intel.com ([134.134.136.126]:56593 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726372AbfDIPjr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 9 Apr 2019 11:39:47 -0400
-X-Amp-Result: UNSCANNABLE
-X-Amp-File-Uploaded: False
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga106.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 09 Apr 2019 08:39:46 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,329,1549958400"; 
-   d="scan'208";a="141357461"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.86])
-  by fmsmga007.fm.intel.com with ESMTP; 09 Apr 2019 08:39:44 -0700
-Received: from andy by smile with local (Exim 4.92)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1hDsqc-0004q6-Us; Tue, 09 Apr 2019 18:39:42 +0300
-Date:   Tue, 9 Apr 2019 18:39:42 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jonathan.cameron@huawei.com>
-Cc:     Stephen Rothwell <sfr@canb.auug.org.au>, Greg KH <greg@kroah.com>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: linux-next: manual merge of the staging tree with the
- staging.current tree
-Message-ID: <20190409153942.GW9224@smile.fi.intel.com>
-References: <20190408130212.0a41f2a8@canb.auug.org.au>
- <20190408091458.00004e48@huawei.com>
- <20190408100121.GH9224@smile.fi.intel.com>
- <20190408111439.000049bc@huawei.com>
- <20190408103437.GK9224@smile.fi.intel.com>
- <20190408130151.0000278a@huawei.com>
+        id S1726777AbfDITKR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Apr 2019 15:10:17 -0400
+Received: from mout.kundenserver.de ([217.72.192.73]:50973 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726529AbfDITKR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Apr 2019 15:10:17 -0400
+Received: from localhost ([2.171.41.193]) by mrelayeu.kundenserver.de
+ (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N0o3X-1gzili0fHJ-00wq1T; Tue, 09 Apr 2019 21:09:55 +0200
+Date:   Tue, 9 Apr 2019 21:09:53 +0200
+From:   Andreas Klinger <ak@it-klinger.de>
+To:     jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        songqiang1304521@gmail.com, robh@kernel.org, m.othacehe@gmail.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH 0/3] add Maxbotix ultrasonic iio sensors with gpio bitbanging
+Message-ID: <20190409190952.ctgf6mbx47nwvfs5@arbad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190408130151.0000278a@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
-User-Agent: Mutt/1.10.1 (2018-07-13)
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-Provags-ID: V03:K1:oLDrv2vUe65wSNNOj+WAnoBAZfWXRM/9VxVaT2QQiXaXAQkl2SF
+ HNgoODS4Faml75nd2WY1wOyxVfpPFmDKf33gMpUrgIOz9f4LR3rUpKq9tJUWzxKlVflEoO7
+ qtYOgQTyiZb2jjXPcjBFEDhjnVBuc9QfxtnVoPBBNAlXeMrECZ317aVV1JmmthiUi9sT4iK
+ 8EUT7BMo+WY2J7sHuAyQQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:iCWDEXaU3v8=:cZSlNIy1ZBeuxkq7Vf/LyL
+ Rj49oZmWABpYWJcSfCq8Ky7PDeMHR+EXBMMs6bS+TUgIG9xfFOeOKKrlWHr2nazL7t3+AsPOQ
+ 6cRWnTFsTlLdSZ2oB9JbqlqWamdUhBgfX7cTBbc70M3rfj4/8heIMcFCdY4XCVSJ8Wsn7tiv7
+ OTggZGM1JgXgPYRGyV1ZZzzsKVJgZ7wSVSM3ocn1PqsuUbE6WwAXyp2w36NgT2hx1DYx8Rcsx
+ 4cz1rg1igWpnIO3HhDaStGZaia892/n5MsVca9zkKFk2+63HtNKkPGnn5vU/iJ3ZH/bESOyej
+ lDaekDYU1o4KIzz/3xu+rq4nUClZRTrBwVD1nJWl2lZjxIwQsh07F3Lr45Hb4VW4PaNsiPtHk
+ LhmIgGAvVgmoctTZSoOGVTzF5tKE1AMM4cSDEDBEAnm/34qukW7VcNwrx1CGqqWBZOad7qpIE
+ HPEMSQN8Hls8JiHaOWgl33FvkEf0LGQvXGdi4Pd9U941X/arikBOmncGlCW3xvHfK1tEDRMMG
+ SVSf4mylD8SKs24zvrRGEEMOq8QacnLVzlmQal0hff1tuBIPe3BimDhHTkg/1ncGDUILwrN/G
+ wordfefZMq7b8RcbYLsE7lC3nclJqE9mLgqPPZTBKVq8rUH5Yfo3FQacoosfqL8wHr/KcUVaM
+ CkGPtduTzTJpR3hMfGIZq30sqWmG6aZT3clQwKD+ZhZmbFV3bwnrbzq8U9rGthqdGUUFG8dnR
+ /sGnEpGTs8DJDXtzVKdzPoV1du8tvQuufHnfRA==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 08, 2019 at 01:01:51PM +0100, Jonathan Cameron wrote:
-> On Mon, 8 Apr 2019 13:34:37 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> > On Mon, Apr 08, 2019 at 11:14:39AM +0100, Jonathan Cameron wrote:
-> > > On Mon, 8 Apr 2019 13:01:21 +0300
-> > > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
-> > > > On Mon, Apr 08, 2019 at 09:14:58AM +0100, Jonathan Cameron wrote:  
-> > > > > On Mon, 8 Apr 2019 13:02:12 +1000
-> > > > > Stephen Rothwell <sfr@canb.auug.org.au> wrote:  
+This patch series adds support for Maxbotix ultrasonic iio sensors with
+gpio bitbanging protocol.
 
-> > > > > That is the correct resolution.    
-> > > > 
-> > > > I think it still misses the following fix:  
-> > 
-> > > Is that actually a problem given it's copied over from buffer->scan_mask just after allocation?
-> > > The two masks are the same length so I don't think we have a problem with this one.
-> > > Am I missing something?  
-> > 
-> > Hmm... I didn't get why the commit 20ea39ef9f2f fixes anything.
-> > 
-> Good point.  I'm don't think it ever did.  
-> 
-> Alex, any thoughts?
+These sensors are quite similiar to the existing srf04. This is why the
+existing one was changed to support a driver specific configuration
+containing the differences between the different types.
 
-I have a thought that it might be possible that somewhere code is still broken,
-i.e. accessing bitmap behind the size (for example, iterating by unsigned long
-without bitmap size being aligned to size of unsigned long).
+This patch series needs the formerly submitted 
+"[PATCH v2] devantech-srf04.yaml: transform DT binding to YAML" 
+because it relies on the yaml documentation of devantech-srf04.yaml
 
-If this is a case, the mentioned patch has a symptomatic healing and not fixing
-a root cause.
+Andreas Klinger (3):
+  srf04.c: add maxbotix ultrasonic sensors
+  devantech-srf04.yaml: add Maxbotix ultrasonic iio proximity sensors
+  Kconfig: change configuration of srf04 ultrasonic iio sensor
+
+ .../bindings/iio/proximity/devantech-srf04.yaml    | 25 +++++++++-----
+ drivers/iio/proximity/Kconfig                      | 11 +++++--
+ drivers/iio/proximity/srf04.c                      | 38 +++++++++++++++++-----
+ 3 files changed, 54 insertions(+), 20 deletions(-)
 
 -- 
-With Best Regards,
-Andy Shevchenko
-
-
+2.11.0
