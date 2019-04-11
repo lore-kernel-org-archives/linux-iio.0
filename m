@@ -2,98 +2,141 @@ Return-Path: <SRS0=YN3l=SN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CB85C10F13
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 13:43:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDE3C10F13
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 16:40:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C1AC2133D
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 13:43:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C64820693
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 16:40:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="M9SrL7yF"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xcvXOgMW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726599AbfDKNnq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 11 Apr 2019 09:43:46 -0400
-Received: from mail-lf1-f68.google.com ([209.85.167.68]:45156 "EHLO
-        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726145AbfDKNnq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Apr 2019 09:43:46 -0400
-Received: by mail-lf1-f68.google.com with SMTP id t11so249405lfl.12
-        for <linux-iio@vger.kernel.org>; Thu, 11 Apr 2019 06:43:45 -0700 (PDT)
+        id S1726844AbfDKQkl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 11 Apr 2019 12:40:41 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37327 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726800AbfDKQkl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Apr 2019 12:40:41 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w10so8242613wrm.4
+        for <linux-iio@vger.kernel.org>; Thu, 11 Apr 2019 09:40:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=qiz8phefZFmKlnnYWEqdA3Wt/jQaZnTjvp73GqMgfKY=;
-        b=M9SrL7yFslmZUI4Tccz9uheIZfcTjlZztvIyTrABlTLFWOVFrvc4s3gvWjdo3GcKwy
-         CeUxqtiUpIBbbxL5U5N/XARGnFc8VYH5hE8SQ28BZTgP/1ChyBBk/I9kzeFnIiHnymNr
-         +JTGZgHheFk5ZFZouYTAG5D10iLhC22adgVB8OeXm1B+/NkNGzyl8E0BFsdMqLq2MTsH
-         +JlaA34juZX64dlNZcj60r5fOwiNdTb9yzxSa5j9Je3DC/U3ko8TW/PBumQygvgkTSMf
-         bLgRNBt7URw816SHA23yHsWH5GFqtbROCQE5xaBNdfGRfZhJ8+6Sky1mn+ajxxivRhk0
-         6uPw==
+        h=subject:to:references:from:message-id:date:user-agent:mime-version
+         :in-reply-to:content-language:content-transfer-encoding;
+        bh=OEsAGu5FY2oqAqolGl6W2+S5SjflU5nYh0bRo2ivrKo=;
+        b=xcvXOgMWMmGIZQyJfVYL9B4/04simq4Tb1B0B4HZf/38fKoJwnbfwJEUDd+5aqyZGF
+         vn91/46j//qhcGZ2IKGkqLz0HfA8pxCQXL7EFeTVIia9ftVGSNhbUnGW/lvhuPi/mKhH
+         s8NyT0er5Qqc0uv6lSfavsHwZTrAO452YO+S9a2d4sWitqWXqKtxbnkALPyX3vERuf33
+         tAV6l7reP6hpnXydad3erl4EA5r8ioRKdZvqrdHW/Hceyica7+Nccpr5Bg8MSOSlKR/u
+         YT/8IyV/Rk5roYSQsuTxN6SxNsflUD+L3eSClvbVnONHI1s8LpmeDRTA904mFlb/YxNr
+         +e1A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=qiz8phefZFmKlnnYWEqdA3Wt/jQaZnTjvp73GqMgfKY=;
-        b=MOoze79oDDgju73uQ6ETQX8t3pNFF1b1FQYYp/f4lfzWVbDw4gLqnNsOQCXLQo3R5b
-         fqGLB8biYJC47IHjKCiiH63ptiJF69x6MGrZfQ3BvoGu5Q3TR+Zb0Q0qRq9iBXDbQktE
-         Gxs8Rj2e3Yl7v2EY067ieF1YQtduRm8wI+AhRJPf5lVtObQLTdow3rDtp4EUPR3Lrhlm
-         4+z9U/6NuT0+VNTgBCkBPfJ0xY/zYP7gZ59BlqmbtX6nfcb39A+Xu/o3sVkTqHEC1a2D
-         3c1PMTxJwbjpBbWuVVVL8kbgOx2powVL+kamEKllptAlfkVE/dx4g3VjgKQDM+ceQkX/
-         OTUA==
-X-Gm-Message-State: APjAAAU7Ur9RjxztAPkZ57beNWXPUA3d3bCSSZFeA0DnZBZ4MS5Wjstd
-        km/2DuguLDqac5QZ6mBhQs9/7D2L9aOi0szcuWzGYQ==
-X-Google-Smtp-Source: APXvYqySdIp78o4cr4EheD8Nr1G4qzkbNkoUdbVJfMJGF8BbHBcjay2euwFrsAYUldePTdrJfO0E/keZETXmOVjiXfk=
-X-Received: by 2002:ac2:546c:: with SMTP id e12mr15610628lfn.121.1554990224289;
- Thu, 11 Apr 2019 06:43:44 -0700 (PDT)
+        h=x-gm-message-state:subject:to:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=OEsAGu5FY2oqAqolGl6W2+S5SjflU5nYh0bRo2ivrKo=;
+        b=XhTD1shd/ovpwLCXi6v3T12wMXFm6TFyJO4C2zDcgAt+h/9ex5Ph4cExh2ZcfuhVtU
+         PqUU6Jf9eAg1luwnP7fVBQrd6S1b/KVXGGRm1e1UHZ6WQdvA2OXFE9DCYZE8ffwTT676
+         aMGaGctBxRTHgQJofXhwV1OkRRpgYJndtOB2SZ+38PMQD6Ie9wQtt7yUO6DusEew5lo9
+         BpbYL6y9I1IBYC5MFrJR7K58uF/GDlpT/RovO6b+/JPo1JLLinDF01xNUfDg2j3+/x0J
+         zraAvwFNGEeA7jcAgxoxyF5uqBGE3Z/2q3hCvaA/wwdFxRVGGmTfLx6YucanZvIhydtP
+         xFMA==
+X-Gm-Message-State: APjAAAViJldKLd3695fQ3KddshrPptq4bDZtZNtLScnnG2P1i+PbE4nV
+        BS8+ovTuw47gkVbO748S0hRs9Q==
+X-Google-Smtp-Source: APXvYqy8kvXe8sp3uA6Vjd553WaEmvQqpcGB+IAUBjUEJ9mcsPgTvGgr+zWr257iifWdaeU9GNuWCQ==
+X-Received: by 2002:adf:edcf:: with SMTP id v15mr7867744wro.20.1555000839751;
+        Thu, 11 Apr 2019 09:40:39 -0700 (PDT)
+Received: from [192.168.8.100] (195.118.130.77.rev.sfr.net. [77.130.118.195])
+        by smtp.googlemail.com with ESMTPSA id g84sm9684634wmf.25.2019.04.11.09.40.37
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 11 Apr 2019 09:40:38 -0700 (PDT)
+Subject: Re: [PATCH v2 3/7] drivers/clocksource: timer-fsl-ftm: use common
+ header for FlexTimer #defines
+To:     Patrick Havelange <patrick.havelange@essensium.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Esben Haabendal <esben@haabendal.dk>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        Jonathan Cameron <jic23@kernel.org>
+References: <20190306111208.7454-1-patrick.havelange@essensium.com>
+ <20190306111208.7454-4-patrick.havelange@essensium.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <ba80affb-0d9d-8248-f995-788105394bb3@linaro.org>
+Date:   Thu, 11 Apr 2019 18:40:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
 MIME-Version: 1.0
-References: <20190410084558.35160-1-yuehaibing@huawei.com>
-In-Reply-To: <20190410084558.35160-1-yuehaibing@huawei.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 11 Apr 2019 15:43:32 +0200
-Message-ID: <CACRpkdZw6SMOgWgTsQC=XYs5qni8xz+1HzOLcPCWgwrH59umpQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: ti-ads7950: Fix build error without CONFIG_GPIOLIB
-To:     Yue Haibing <yuehaibing@huawei.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Mark Brown <broonie@kernel.org>,
-        Justin Chen <justinpopo6@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <20190306111208.7454-4-patrick.havelange@essensium.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Apr 10, 2019 at 10:47 AM Yue Haibing <yuehaibing@huawei.com> wrote:
+On 06/03/2019 12:12, Patrick Havelange wrote:
+> Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
+> this file.
+> Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
+> 
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
 
-> From: YueHaibing <yuehaibing@huawei.com>
->
-> When building with CONFIG_GPIOLIB is not set
-> gcc warns this:
->
-> drivers/iio/adc/ti-ads7950.c:75:19: error: field chip has incomplete type
->   struct gpio_chip chip;
->                    ^~~~
-> drivers/iio/adc/ti-ads7950.c: In function ti_ads7950_set:
-> drivers/iio/adc/ti-ads7950.c:409:32: error: implicit declaration of function gpiochip_get_data; did you mean acpi_get_data? [-Werror=implicit-function-declaration]
->   struct ti_ads7950_state *st = gpiochip_get_data(chip);
->                                 ^~~~~~~~~~~~~~~~~
->                                 acpi_get_data
->
-> Reported-by: Hulk Robot <hulkci@huawei.com>
-> Fixes: c97dce792dc8 ("iio: adc: ti-ads7950: add GPIO support")
-> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> Changes v2
+>      - None
+> ---
+>  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
+> index 846d18daf893..e1c34b2f53a5 100644
+> --- a/drivers/clocksource/timer-fsl-ftm.c
+> +++ b/drivers/clocksource/timer-fsl-ftm.c
+> @@ -19,20 +19,9 @@
+>  #include <linux/of_irq.h>
+>  #include <linux/sched_clock.h>
+>  #include <linux/slab.h>
+> +#include <linux/fsl/ftm.h>
+>  
+> -#define FTM_SC		0x00
+> -#define FTM_SC_CLK_SHIFT	3
+> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_PS_MASK	0x7
+> -#define FTM_SC_TOIE	BIT(6)
+> -#define FTM_SC_TOF	BIT(7)
+> -
+> -#define FTM_CNT		0x04
+> -#define FTM_MOD		0x08
+> -#define FTM_CNTIN	0x4C
+> -
+> -#define FTM_PS_MAX	7
+> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
+>  
+>  struct ftm_clock_device {
+>  	void __iomem *clksrc_base;
+> 
 
-Yours,
-Linus Walleij
+
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
+
