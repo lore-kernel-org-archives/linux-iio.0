@@ -1,142 +1,104 @@
-Return-Path: <SRS0=YN3l=SN=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=K6jb=SO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABDE3C10F13
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 16:40:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F782C10F0E
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 09:15:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7C64820693
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Apr 2019 16:40:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="xcvXOgMW"
+	by mail.kernel.org (Postfix) with ESMTP id 33DC02084D
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 09:15:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726844AbfDKQkl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 11 Apr 2019 12:40:41 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:37327 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726800AbfDKQkl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Apr 2019 12:40:41 -0400
-Received: by mail-wr1-f66.google.com with SMTP id w10so8242613wrm.4
-        for <linux-iio@vger.kernel.org>; Thu, 11 Apr 2019 09:40:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:references:from:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=OEsAGu5FY2oqAqolGl6W2+S5SjflU5nYh0bRo2ivrKo=;
-        b=xcvXOgMWMmGIZQyJfVYL9B4/04simq4Tb1B0B4HZf/38fKoJwnbfwJEUDd+5aqyZGF
-         vn91/46j//qhcGZ2IKGkqLz0HfA8pxCQXL7EFeTVIia9ftVGSNhbUnGW/lvhuPi/mKhH
-         s8NyT0er5Qqc0uv6lSfavsHwZTrAO452YO+S9a2d4sWitqWXqKtxbnkALPyX3vERuf33
-         tAV6l7reP6hpnXydad3erl4EA5r8ioRKdZvqrdHW/Hceyica7+Nccpr5Bg8MSOSlKR/u
-         YT/8IyV/Rk5roYSQsuTxN6SxNsflUD+L3eSClvbVnONHI1s8LpmeDRTA904mFlb/YxNr
-         +e1A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=OEsAGu5FY2oqAqolGl6W2+S5SjflU5nYh0bRo2ivrKo=;
-        b=XhTD1shd/ovpwLCXi6v3T12wMXFm6TFyJO4C2zDcgAt+h/9ex5Ph4cExh2ZcfuhVtU
-         PqUU6Jf9eAg1luwnP7fVBQrd6S1b/KVXGGRm1e1UHZ6WQdvA2OXFE9DCYZE8ffwTT676
-         aMGaGctBxRTHgQJofXhwV1OkRRpgYJndtOB2SZ+38PMQD6Ie9wQtt7yUO6DusEew5lo9
-         BpbYL6y9I1IBYC5MFrJR7K58uF/GDlpT/RovO6b+/JPo1JLLinDF01xNUfDg2j3+/x0J
-         zraAvwFNGEeA7jcAgxoxyF5uqBGE3Z/2q3hCvaA/wwdFxRVGGmTfLx6YucanZvIhydtP
-         xFMA==
-X-Gm-Message-State: APjAAAViJldKLd3695fQ3KddshrPptq4bDZtZNtLScnnG2P1i+PbE4nV
-        BS8+ovTuw47gkVbO748S0hRs9Q==
-X-Google-Smtp-Source: APXvYqy8kvXe8sp3uA6Vjd553WaEmvQqpcGB+IAUBjUEJ9mcsPgTvGgr+zWr257iifWdaeU9GNuWCQ==
-X-Received: by 2002:adf:edcf:: with SMTP id v15mr7867744wro.20.1555000839751;
-        Thu, 11 Apr 2019 09:40:39 -0700 (PDT)
-Received: from [192.168.8.100] (195.118.130.77.rev.sfr.net. [77.130.118.195])
-        by smtp.googlemail.com with ESMTPSA id g84sm9684634wmf.25.2019.04.11.09.40.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 11 Apr 2019 09:40:38 -0700 (PDT)
-Subject: Re: [PATCH v2 3/7] drivers/clocksource: timer-fsl-ftm: use common
- header for FlexTimer #defines
-To:     Patrick Havelange <patrick.havelange@essensium.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Shawn Guo <shawnguo@kernel.org>, Li Yang <leoyang.li@nxp.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Esben Haabendal <esben@haabendal.dk>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        Jonathan Cameron <jic23@kernel.org>
-References: <20190306111208.7454-1-patrick.havelange@essensium.com>
- <20190306111208.7454-4-patrick.havelange@essensium.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <ba80affb-0d9d-8248-f995-788105394bb3@linaro.org>
-Date:   Thu, 11 Apr 2019 18:40:37 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S1726798AbfDLJPr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Apr 2019 05:15:47 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:44881 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725973AbfDLJPr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Apr 2019 05:15:47 -0400
+X-Originating-IP: 87.231.134.186
+Received: from localhost (87-231-134-186.rev.numericable.fr [87.231.134.186])
+        (Authenticated sender: gregory.clement@bootlin.com)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 2B340C0005;
+        Fri, 12 Apr 2019 09:15:44 +0000 (UTC)
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>
+Subject: [PATCH v3 0/2] Add support for the TI ADS8344 A/DC chips
+Date:   Fri, 12 Apr 2019 11:15:35 +0200
+Message-Id: <20190412091537.14657-1-gregory.clement@bootlin.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-In-Reply-To: <20190306111208.7454-4-patrick.havelange@essensium.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 06/03/2019 12:12, Patrick Havelange wrote:
-> Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
-> this file.
-> Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
-> 
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+Hello,
 
-Acked-by: Daniel Lezcano <daniel.lezcano@linaro.org>
+this is the third version of a small series adding the support for
+the Texas Instruments ADS8344 ADC chip. This chip has a 16-bit
+8-Channel ADC and is access directly through SPI.
 
-> ---
-> Changes v2
->      - None
-> ---
->  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
->  1 file changed, 2 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
-> index 846d18daf893..e1c34b2f53a5 100644
-> --- a/drivers/clocksource/timer-fsl-ftm.c
-> +++ b/drivers/clocksource/timer-fsl-ftm.c
-> @@ -19,20 +19,9 @@
->  #include <linux/of_irq.h>
->  #include <linux/sched_clock.h>
->  #include <linux/slab.h>
-> +#include <linux/fsl/ftm.h>
->  
-> -#define FTM_SC		0x00
-> -#define FTM_SC_CLK_SHIFT	3
-> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_PS_MASK	0x7
-> -#define FTM_SC_TOIE	BIT(6)
-> -#define FTM_SC_TOF	BIT(7)
-> -
-> -#define FTM_CNT		0x04
-> -#define FTM_MOD		0x08
-> -#define FTM_CNTIN	0x4C
-> -
-> -#define FTM_PS_MAX	7
-> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
->  
->  struct ftm_clock_device {
->  	void __iomem *clksrc_base;
-> 
+I finally took time to address the last comments on the second
+version.
 
+Thanks!
+
+Gregory
+
+Changelog:
+
+v2->v3:
+
+ - Add the reviewed-by tag from Rob on the binding
+
+ - Fix the license inconsistency
+
+ - Add a comment about the spinlock based on the exhaustive explanation
+   given by Jonathan
+ 
+
+v1->v2:
+
+ - Remove the mention to the #io-channel-cells in the first patch, as
+   there is no consumer.
+
+ - Remove scan_index and scan_type, they are not used.
+
+ - Use defines for building the command and remove the comment.
+
+ - Remove the goto and the label in the probe() function as the label
+   was only use once.
+
+ - Remove the "#ifdef CONFIG_OF", the driver already depends on OF.
+
+ - Don't use of_match_ptr and rename ads8344_dt_id to ads8344_of_match.
+
+
+Gregory CLEMENT (2):
+  dt-bindings: iio: adc: Add bindings for TI ADS8344 A/DC chips
+  iio: adc: Add driver for the TI ADS8344 A/DC chips
+
+ .../bindings/iio/adc/ti-ads8344.txt           |  19 ++
+ drivers/iio/adc/Kconfig                       |  10 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/ti-ads8344.c                  | 204 ++++++++++++++++++
+ 4 files changed, 234 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8344.txt
+ create mode 100644 drivers/iio/adc/ti-ads8344.c
 
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+2.20.1
 
