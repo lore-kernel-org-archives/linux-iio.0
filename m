@@ -2,44 +2,71 @@ Return-Path: <SRS0=K6jb=SO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4195C10F14
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 09:15:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FA11C10F0E
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 16:49:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9215F2084D
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 09:15:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 09E5C20850
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 16:49:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XpKJpdRg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727214AbfDLJPw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Apr 2019 05:15:52 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:33061 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725973AbfDLJPw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Apr 2019 05:15:52 -0400
-X-Originating-IP: 87.231.134.186
-Received: from localhost (87-231-134-186.rev.numericable.fr [87.231.134.186])
-        (Authenticated sender: gregory.clement@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 38586C0002;
-        Fri, 12 Apr 2019 09:15:48 +0000 (UTC)
-From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+        id S1726890AbfDLQtM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Apr 2019 12:49:12 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:42551 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726870AbfDLQtM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Apr 2019 12:49:12 -0400
+Received: by mail-wr1-f66.google.com with SMTP id g3so12770545wrx.9
+        for <linux-iio@vger.kernel.org>; Fri, 12 Apr 2019 09:49:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NW4FHJVuyv1Xdt22HkzBW3/8jlCrIvjwbnytFoVpbYo=;
+        b=XpKJpdRgl2XvbJ43WmgOUIVmWSibL4ujbmWZjwqLg+EgcJtVJRJz8g5gGtaCk9k9L7
+         2u4jMmEfx3QC0iDmy3EZaq4+0hfXJnIeGCSmwADCKtU4HBIfKoSM5xs4s4LfMP8gAiph
+         TQ6XTp4gmiWHw8wHMikjQkgaA2zvFi0/yjM2VJJ/BcRwyUHiA4HYWzOpMLSJCHRAfJQs
+         jA9IN+TqTqUe2ZM8y3LKUX5BRzrA9QKWUE+qVwSlqv/eHlpm6cgL9PHKQg5oPW8DgCcn
+         HXP++ulCmZAaz9+ZW8qe7JSuFEo1U6A+DPpIJh8E+qZ7RQaC4VVqXFUpp2tIchxtbVfB
+         Ky/g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=NW4FHJVuyv1Xdt22HkzBW3/8jlCrIvjwbnytFoVpbYo=;
+        b=IBAQshbcoLGFlcCg2PJ3gEMKxJ08t5dkqZvmrEAW6oR55RTmuZRevhQKsal4eEkmAD
+         pzVH7SzDlgBgoU9pT7Tkeky0imoVPbK9ZuoroPd99hndNQ0nu0iCdds8PwGoico7pQ10
+         J/xyOv3mn1hcqm0bppeo8/xFfpNTjqI225BhIPNdJtnbCeh05HHJsC0DZ546VPxgkJdr
+         az0IQD4jAKTzT6S2KKt/HzNmh/zIcddZ67bM1MGe6FWHcoxaOuCJGo4ONETzxuppWiE9
+         jNreu5Vay58PHxr3FQqlI/FGBN3C9pr9iz5NymCgu3wV2GDwtq0HdTght8w5UD/n4/cv
+         ANoA==
+X-Gm-Message-State: APjAAAXj8clENJBhnB2QTTN0VMwfqqKsIhPLc3oSMWZtavKiwoOiPz5r
+        EdU+zcd6JzHXHDPu9MYye+Hzow==
+X-Google-Smtp-Source: APXvYqzhYuIIid6UtQT8LCZMnbmg5SR/DMIOMddc/0HFE4HAHS4IW3QZ+NDeh4IkyQJWpHqlgFy/Gw==
+X-Received: by 2002:adf:dd0f:: with SMTP id a15mr477245wrm.221.1555087750068;
+        Fri, 12 Apr 2019 09:49:10 -0700 (PDT)
+Received: from arch-late.local (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
+        by smtp.gmail.com with ESMTPSA id h10sm73863141wrs.27.2019.04.12.09.49.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 12 Apr 2019 09:49:09 -0700 (PDT)
+From:   Rui Miguel Silva <rui.silva@linaro.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>
-Subject: [PATCH v3 2/2] iio: adc: Add driver for the TI ADS8344 A/DC chips
-Date:   Fri, 12 Apr 2019 11:15:37 +0200
-Message-Id: <20190412091537.14657-3-gregory.clement@bootlin.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190412091537.14657-1-gregory.clement@bootlin.com>
-References: <20190412091537.14657-1-gregory.clement@bootlin.com>
+        Shawn Guo <shawnguo@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Fabio Estevam <fabio.estevam@nxp.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Rui Miguel Silva <rui.silva@linaro.org>
+Subject: [PATCH v6 0/6] iio: gyro: add core driver for fxas21002c
+Date:   Fri, 12 Apr 2019 17:48:55 +0100
+Message-Id: <20190412164901.2321-1-rui.silva@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -47,260 +74,127 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds support for the Texas Instruments ADS8344 ADC chip. This chip
-has a 16-bit 8-Channel ADC and is access directly through SPI.
+Hi,
+This series introduce a NXP fxas21002c tri axis gyroscope driver [0]
+It add a core implementaiton plus an i2c and spi.
 
-Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+This device can be found in the warp7 board [1], where it was tested.
+
 ---
- drivers/iio/adc/Kconfig      |  10 ++
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-ads8344.c | 204 +++++++++++++++++++++++++++++++++++
- 3 files changed, 215 insertions(+)
- create mode 100644 drivers/iio/adc/ti-ads8344.c
+Cheers,
+   Rui
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 76db6e5cc296..447d3a871746 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -967,6 +967,16 @@ config TI_ADS7950
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ti-ads7950.
- 
-+config TI_ADS8344
-+	tristate "Texas Instruments ADS8344"
-+	depends on SPI && OF
-+	help
-+	  If you say yes here you get support for Texas Instruments ADS8344
-+	  ADC chips
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-ads8344.
-+
- config TI_ADS8688
- 	tristate "Texas Instruments ADS8688"
- 	depends on SPI && OF
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 6fcebd167524..1f3ae934111d 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -87,6 +87,7 @@ obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
- obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
- obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
- obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
-+obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
- obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
- obj-$(CONFIG_TI_ADS124S08) += ti-ads124s08.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
-diff --git a/drivers/iio/adc/ti-ads8344.c b/drivers/iio/adc/ti-ads8344.c
-new file mode 100644
-index 000000000000..e1649e237edc
---- /dev/null
-+++ b/drivers/iio/adc/ti-ads8344.c
-@@ -0,0 +1,204 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * ADS8344 16-bit 8-Channel ADC driver
-+ *
-+ * Author: Gregory CLEMENT <gregory.clement@bootlin.com>
-+ *
-+ * Datasheet: http://www.ti.com/lit/ds/symlink/ads8344.pdf
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+
-+#define ADS8344_START BIT(7)
-+#define ADS8344_SINGLE_END BIT(2)
-+#define ADS8344_CHANNEL(channel) ((channel) << 4)
-+#define ADS8344_CLOCK_INTERNAL 0x2 /* PD1 = 1 and PD0 = 0 */
-+
-+struct ads8344 {
-+	struct spi_device *spi;
-+	struct regulator *reg;
-+	/*
-+	 * Lock protecting access to adc->tx_buff and rx_buff,
-+	 * especially from concurrent read on sysfs file.
-+	 */
-+	struct mutex lock;
-+
-+	u8 tx_buf ____cacheline_aligned;
-+	u16 rx_buf;
-+};
-+
-+#define ADS8344_VOLTAGE_CHANNEL(chan, si)				\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = chan,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	}
-+
-+#define ADS8344_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (chan1),					\
-+		.channel2 = (chan2),					\
-+		.differential = 1,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	}
-+
-+static const struct iio_chan_spec ads8344_channels[] = {
-+	ADS8344_VOLTAGE_CHANNEL(0, 0),
-+	ADS8344_VOLTAGE_CHANNEL(1, 4),
-+	ADS8344_VOLTAGE_CHANNEL(2, 1),
-+	ADS8344_VOLTAGE_CHANNEL(3, 5),
-+	ADS8344_VOLTAGE_CHANNEL(4, 2),
-+	ADS8344_VOLTAGE_CHANNEL(5, 6),
-+	ADS8344_VOLTAGE_CHANNEL(6, 3),
-+	ADS8344_VOLTAGE_CHANNEL(7, 7),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(2, 3, 9),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(4, 5, 10),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(6, 7, 11),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(1, 0, 12),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(3, 2, 13),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(5, 4, 14),
-+	ADS8344_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
-+};
-+
-+static int ads8344_adc_conversion(struct ads8344 *adc, int channel,
-+				  bool differential)
-+{
-+	struct spi_device *spi = adc->spi;
-+	int ret;
-+
-+	adc->tx_buf = ADS8344_START;
-+	if (!differential)
-+		adc->tx_buf |= ADS8344_SINGLE_END;
-+	adc->tx_buf |= ADS8344_CHANNEL(channel);
-+	adc->tx_buf |= ADS8344_CLOCK_INTERNAL;
-+
-+	ret = spi_write(spi, &adc->tx_buf, 1);
-+	if (ret)
-+		return ret;
-+
-+	udelay(9);
-+
-+	ret = spi_read(spi, &adc->rx_buf, 2);
-+	if (ret)
-+		return ret;
-+
-+	return adc->rx_buf;
-+}
-+
-+static int ads8344_read_raw(struct iio_dev *iio,
-+			    struct iio_chan_spec const *channel, int *value,
-+			    int *shift, long mask)
-+{
-+	struct ads8344 *adc = iio_priv(iio);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&adc->lock);
-+		*value = ads8344_adc_conversion(adc, channel->scan_index,
-+						channel->differential);
-+		mutex_unlock(&adc->lock);
-+		if (*value < 0)
-+			return *value;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*value = regulator_get_voltage(adc->reg);
-+		if (*value < 0)
-+			return *value;
-+
-+		/* convert regulator output voltage to mV */
-+		*value /= 1000;
-+		*shift = 16;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info ads8344_info = {
-+	.read_raw = ads8344_read_raw,
-+};
-+
-+static int ads8344_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct ads8344 *adc;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(indio_dev);
-+	adc->spi = spi;
-+	mutex_init(&adc->lock);
-+
-+	indio_dev->name = dev_name(&spi->dev);
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->dev.of_node = spi->dev.of_node;
-+	indio_dev->info = &ads8344_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = ads8344_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ads8344_channels);
-+
-+	adc->reg = devm_regulator_get(&spi->dev, "vref");
-+	if (IS_ERR(adc->reg))
-+		return PTR_ERR(adc->reg);
-+
-+	ret = regulator_enable(adc->reg);
-+	if (ret)
-+		return ret;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		regulator_disable(adc->reg);
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int ads8344_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ads8344 *adc = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	regulator_disable(adc->reg);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id ads8344_of_match[] = {
-+	{ .compatible = "ti,ads8344", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ads8344_dt_ids);
-+
-+static struct spi_driver ads8344_driver = {
-+	.driver = {
-+		.name = "ads8344",
-+		.of_match_table = ads8344_of_match,
-+	},
-+	.probe = ads8344_probe,
-+	.remove = ads8344_remove,
-+};
-+module_spi_driver(ads8344_driver);
-+
-+MODULE_AUTHOR("Gregory CLEMENT <gregory.clement@bootlin.com>");
-+MODULE_DESCRIPTION("ADS8344 driver");
-+MODULE_LICENSE("GPL");
+v5->v6:
+Jonathan Cameron:
+  -  restore devm_ to some init calls
+  -  remove blank line in .h header
+  -  fix lock in trigger handler
+  - use _chained
+
+Rob Herring:
+  - add reviewed by tag: 
+
+v4->v5:
+Jonathan Cameron:
+  - remove init ret
+  - change handle of iio register, buffer and trigger in probe and
+   remove (I think this is what you mean, Jonathan)
+
+v3->v4:
+Tomasz Duszynski:
+  - mention irq flags in bindings
+  - add reference to drive-open-drain in bindings
+  - fix headers files
+  - drop comas in of_device_id sentinel
+  - drop of_match_ptr
+  - use probe_new
+
+Jonathan Cameron:
+  - disable vdd regulator in case of vddio fail
+  - use devm_add_action_or_reset
+  - simpler functions returns
+  - remove noisy dev_info
+  - remove EAGAIN from runtime_suspend
+
+v2->v3:
+Jonathan Cameron:
+  - cacheline aligned (DMA safe buffer)
+     Great presentation [2] and links in the presentation, thanks
+  - global renaming, including filenames, fxas2100x->fxas21002c
+  - provide spi info in dts bidings
+  - Remove SPI_MASTER in Kconfig i2c patch and move it to right patch
+  - remove extra blank line in comment
+  - add break range_value_from_fs after found
+  - in range_value_from_fs use local variable
+  - remove mode check at mode_set
+  - combine two if statements in mode_set
+  - in scale_get return 0 and let caller to set IIO_VAL_FRACTIONAL
+  - remove dev_err from vdd_io regulator get
+  - handle regulator error path
+  - devm_add_action
+  - check unwind order
+  - simplify data in _suspend and alike
+  - disable regulators at suspend
+  - error handling at _resume
+  - return -EAGAIN at runtime_resume
+
+Rob Herring:
+   - Set label as gyroscope
+
+- add interrupt to bindings
+- add entry to maintainers
+
+
+v1->v2:
+Peter Meerwal-Stadler:
+  - changed (c) to current year
+  - add regmap include file in .h
+  - fix comments s/cuttof/cutoff/
+  - add more info in mutex comment
+  - check value in range_fs_from_value
+  - ret not checked in range_value_from_fs
+  - move mode to enum type
+  - remove line between value get and validation of value in all file
+  - pre-write, regmap_field_write, post_write refactoring
+  - check val2 and val == 0 in write raw
+  - check in_anglvel_scale: 7.8125?
+  - trigger_handler: 2 => sizeof(s16)
+  - check buffer size
+  - print %02% to output chip id
+  - remove !! as state is bool
+  - trigger probe return devm_iio_trigger_register
+  - remove error msg in case of devm_iio_device_register
+Fabio Estebam:
+  - rename FXAS2100X to FXAS21002
+  - change compatible nxp,fxas2100x to the exact support
+  - add VDD and VDDIO regulators in bindings and driver
+
+
+
+Rui Miguel Silva (6):
+  iio: gyro: add DT bindings to fxas21002c
+  iio: gyro: add core driver for fxas21002c
+  iio: gyro: fxas21002c: add i2c driver
+  iio: gyro: fxas21002c: add spi driver
+  ARM: dts: imx7s-warp: add fxas21002c gyroscope
+  MAINTAINERS: add entry for fxas21002c gyro driver
+
+ .../bindings/iio/gyroscope/nxp,fxas21002c.txt |   31 +
+ MAINTAINERS                                   |   10 +
+ arch/arm/boot/dts/imx7s-warp.dts              |    7 +
+ drivers/iio/gyro/Kconfig                      |   22 +
+ drivers/iio/gyro/Makefile                     |    3 +
+ drivers/iio/gyro/fxas21002c.h                 |  150 +++
+ drivers/iio/gyro/fxas21002c_core.c            | 1006 +++++++++++++++++
+ drivers/iio/gyro/fxas21002c_i2c.c             |   69 ++
+ drivers/iio/gyro/fxas21002c_spi.c             |   70 ++
+ 9 files changed, 1368 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/nxp,fxas21002c.txt
+ create mode 100644 drivers/iio/gyro/fxas21002c.h
+ create mode 100644 drivers/iio/gyro/fxas21002c_core.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_i2c.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_spi.c
+
 -- 
-2.20.1
+2.21.0
 
