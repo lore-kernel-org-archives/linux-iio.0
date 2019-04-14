@@ -6,47 +6,52 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58C0CC10F13
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:36:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1B3C10F13
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:40:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 209DF20896
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:36:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A93E6218D3
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555245383;
-	bh=hoKNX3mwYFGYp7zuYhzjQGSaPTG3IvUFRwJCUc1BOrE=;
+	s=default; t=1555245619;
+	bh=tCV3b4ZByZO/xhPF62beKrEJU83J2Ez5Ldnyf8BQSdI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=pvk0J5NWpMKMeKQekjMazGGI7mhrf4xIJ48XGEOQoHyo5q/draAx19iTTpxqOMjbG
-	 AdmzW6NUKtO+bTChy3JPVujvfdrMO0+39rZTKAGPD6ifGyDZyK5NR8BE1SHSLH1NaX
-	 J9q+P9JUmVTFulTI42ZlsulMg4jyLJvVpmWIdhtA=
+	b=ZAT7ea4nQl8jjRaZHkd7sltFNAPzA1HQywQdWupnSDoxlCdnUCsTIDMfsB6Vt1C9P
+	 2ajhfT/DV5H8wOJPo370K9pmv9hla+jqmB3GBZQ3lYT25DMNjhNTsydG5U2F+ggIm9
+	 gu1D5kv2pE5jJBueEJLBJYKqRzhlGXc2APWh6Vrw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726354AbfDNMgW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Apr 2019 08:36:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51458 "EHLO mail.kernel.org"
+        id S1726147AbfDNMkT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Apr 2019 08:40:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53386 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725807AbfDNMgV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Apr 2019 08:36:21 -0400
+        id S1725829AbfDNMkT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Apr 2019 08:40:19 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2EA0F20896;
-        Sun, 14 Apr 2019 12:36:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C967C20896;
+        Sun, 14 Apr 2019 12:40:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555245380;
-        bh=hoKNX3mwYFGYp7zuYhzjQGSaPTG3IvUFRwJCUc1BOrE=;
+        s=default; t=1555245618;
+        bh=tCV3b4ZByZO/xhPF62beKrEJU83J2Ez5Ldnyf8BQSdI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=U4a9Hex0g0Hf+gpkmEA7xwIKGxhGrRnE6OE9ftXJLu6ZNK5p7xuYlG4T/khcAlG9l
-         B7w05cwmvCUjIHaCx52rDoxuRXugOQvLRX7Hls5RqzliY54hIeaiyH0UNKOuEh3qZv
-         gS1yd6ESz7KpvizPYa2Xzl/0IjJMyFjvxJP54hlo=
-Date:   Sun, 14 Apr 2019 13:36:15 +0100
+        b=jV+LEupoOQR4msAIf+qe2qdK6VaRKyUsR37eF25zx0s6El8Q/JEee3y9hbl1kLUIh
+         ysiArRwRkgCvXHetwH+m/Wc/RrLXsK5Ff5/1PwXiYSa+UO/q5Avk3hqhetKdTTNR3T
+         wSGfHQNN3i5XMMPw0nxqTwFRC9AW5dt9663cnk5U=
+Date:   Sun, 14 Apr 2019 13:40:13 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     hongyan.song@intel.com
-Cc:     jikos@kernel.org, linux-iio@vger.kernel.org,
-        linux-input@vger.kernel.org, srinivas.pandruvada@intel.com
-Subject: Re: [PATCH] drivers: iio: Add more data field for iio driver
- hysteresis parsing
-Message-ID: <20190414133615.56be4eb1@archlinux>
-In-Reply-To: <1554773465-21882-1-git-send-email-hongyan.song@intel.com>
-References: <1554773465-21882-1-git-send-email-hongyan.song@intel.com>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: Re: [PATCH -next] iio: imu: st_lsm6dsx: remove set but not used
+ variables 'acc_sensor' and 'gyro_sensor'
+Message-ID: <20190414134013.257d58ac@archlinux>
+In-Reply-To: <20190409082448.GA26320@localhost.localdomain>
+References: <20190409021217.155327-1-yuehaibing@huawei.com>
+        <20190409082448.GA26320@localhost.localdomain>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,122 +61,59 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue,  9 Apr 2019 09:31:04 +0800
-hongyan.song@intel.com wrote:
+On Tue, 9 Apr 2019 10:24:49 +0200
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-> From: Song Hongyan <hongyan.song@intel.com>
+> > Fixes gcc '-Wunused-but-set-variable' warning:
+> > 
+> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c: In function 'st_lsm6dsx_read_tagged_fifo':
+> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:520:41: warning:
+> >  variable 'gyro_sensor' set but not used [-Wunused-but-set-variable]
+> > 
+> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:520:28: warning:
+> >  variable 'acc_sensor' set but not used [-Wunused-but-set-variable]
+> > 
+> > They are not used since commit 14c7c6e1a860 ("iio: imu: st_lsm6dsx: add
+> > st_lsm6dsx_push_tagged_data routine")
+> > 
+> > Signed-off-by: YueHaibing <yuehaibing@huawei.com>  
 > 
-> Add more data field support for als, incli_3d, rotation, press
-> hysteresis parsing. In some implementation may uses them as sensitivity
-> modifier, without this change hysteresis may not be able to read and
-> write.
-> 
-> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-Thanks for the patch. I'll be honest I'm lost in these descriptors
-sometimes!
+> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-Srinivas, could you give some input on this one?
-
-I will note however, that from a quick look we tend to air these
-queries with dev_dbg entries.  We should be consistent with these new ones
-as well.
-
-Thanks,
+thanks,
 
 Jonathan
-> ---
->  drivers/iio/light/hid-sensor-als.c            | 8 ++++++++
->  drivers/iio/orientation/hid-sensor-incl-3d.c  | 8 ++++++++
->  drivers/iio/orientation/hid-sensor-rotation.c | 7 +++++++
->  drivers/iio/pressure/hid-sensor-press.c       | 8 ++++++++
->  include/linux/hid-sensor-ids.h                | 1 +
->  5 files changed, 32 insertions(+)
+
 > 
-> diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-> index 94f3325..bb19178 100644
-> --- a/drivers/iio/light/hid-sensor-als.c
-> +++ b/drivers/iio/light/hid-sensor-als.c
-> @@ -271,6 +271,14 @@ static int als_parse_report(struct platform_device *pdev,
->  			st->common_attributes.sensitivity.index,
->  			st->common_attributes.sensitivity.report_id);
->  	}
-> +	if (st->common_attributes.sensitivity.index < 0) {
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT |
-> +			HID_USAGE_SENSOR_LIGHT_ILLUM,
-> +			&st->common_attributes.sensitivity);
-> +	}
-> +
->  	return ret;
->  }
->  
-> diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> index bdc5e45..7da1e3f 100644
-> --- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-> +++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> @@ -305,6 +305,14 @@ static int incl_3d_parse_report(struct platform_device *pdev,
->  			st->common_attributes.sensitivity.index,
->  			st->common_attributes.sensitivity.report_id);
->  	}
-> +	if (st->common_attributes.sensitivity.index < 0) {
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_ORIENT_TILT,
-> +			&st->common_attributes.sensitivity);
-> +	}
-> +
->  	return ret;
->  }
->  
-> diff --git a/drivers/iio/orientation/hid-sensor-rotation.c b/drivers/iio/orientation/hid-sensor-rotation.c
-> index a69db20..201e320 100644
-> --- a/drivers/iio/orientation/hid-sensor-rotation.c
-> +++ b/drivers/iio/orientation/hid-sensor-rotation.c
-> @@ -229,6 +229,13 @@ static int dev_rot_parse_report(struct platform_device *pdev,
->  			st->common_attributes.sensitivity.index,
->  			st->common_attributes.sensitivity.report_id);
->  	}
-> +	if (st->common_attributes.sensitivity.index < 0) {
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_ORIENT_QUATERNION,
-> +			&st->common_attributes.sensitivity);
-> +	}
->  
->  	return 0;
->  }
-> diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
-> index d7b1c00..bf5d2ac 100644
-> --- a/drivers/iio/pressure/hid-sensor-press.c
-> +++ b/drivers/iio/pressure/hid-sensor-press.c
-> @@ -250,6 +250,14 @@ static int press_parse_report(struct platform_device *pdev,
->  			st->common_attributes.sensitivity.index,
->  			st->common_attributes.sensitivity.report_id);
->  	}
-> +	if (st->common_attributes.sensitivity.index < 0) {
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE,
-> +			&st->common_attributes.sensitivity);
-> +	}
-> +
->  	return ret;
->  }
->  
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index 76033e0..a875b9be 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -158,6 +158,7 @@
->  /* Per data field properties */
->  #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
->  #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
-> +#define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT            0xE000
->  
->  /* Power state enumerations */
->  #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM	0x200850
+> > ---
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 4 ----
+> >  1 file changed, 4 deletions(-)
+> > 
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > index 2da8c5ff699a..bd08711d5b75 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > @@ -517,7 +517,6 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+> >  {
+> >  	u16 pattern_len = hw->sip * ST_LSM6DSX_TAGGED_SAMPLE_SIZE;
+> >  	u16 fifo_len, fifo_diff_mask;
+> > -	struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor;
+> >  	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE], tag;
+> >  	bool reset_ts = false;
+> >  	int i, err, read_len;
+> > @@ -539,9 +538,6 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+> >  	if (!fifo_len)
+> >  		return 0;
+> >  
+> > -	acc_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
+> > -	gyro_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_GYRO]);
+> > -
+> >  	for (read_len = 0; read_len < fifo_len; read_len += pattern_len) {
+> >  		err = st_lsm6dsx_read_block(hw,
+> >  					    ST_LSM6DSX_REG_FIFO_OUT_TAG_ADDR,
+> > 
+> > 
+> >   
 
