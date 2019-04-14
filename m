@@ -1,110 +1,117 @@
-Return-Path: <SRS0=K6jb=SO=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=A0tK=SQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27283C10F14
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 16:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F367EC10F11
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 01:04:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E9AF321872
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Apr 2019 16:49:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE98D2084D
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 01:04:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="QVcNr5Pz"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LKICTP/3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbfDLQtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Apr 2019 12:49:25 -0400
-Received: from mail-wr1-f65.google.com ([209.85.221.65]:40179 "EHLO
-        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726950AbfDLQtZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Apr 2019 12:49:25 -0400
-Received: by mail-wr1-f65.google.com with SMTP id h4so12791912wre.7
-        for <linux-iio@vger.kernel.org>; Fri, 12 Apr 2019 09:49:24 -0700 (PDT)
+        id S1727079AbfDNBEV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 13 Apr 2019 21:04:21 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:54534 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726964AbfDNBEU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 Apr 2019 21:04:20 -0400
+Received: by mail-it1-f193.google.com with SMTP id a190so5159332ite.4;
+        Sat, 13 Apr 2019 18:04:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UHf2VKgcNk4uBXiSKu/iHQi0CPZ+DDpgbvoraVKsNl4=;
-        b=QVcNr5Pz5nopH/ls1cFeKJFo9ClTDGnpEpcMSyTJ2qLnboHtfPyfRR34jQx3WarzEA
-         x2JXwhDWIhBiKh0Y5dMr5ktr6mzgXAY3Hq9Tt8WQWbwyK8L8JSGBrVxplDtKrOrtywcC
-         0F8wsQnBxEoe4IcJMdPXGp77DlaVm/FWY27pE0MY9UF0ZylKWVVdRnXWzMDX8nQAj1PJ
-         HzuJMjsWrtK6JKqiEm5UNKLGqtDDznolnFT3QRGwcIfgFiboLLOwazY5/8sQZG1DbGmU
-         qd4s8pMTWGt4/NYokS8nPOwEFSiShp94pXCktJ5NLCS9t7MoJhwvg7eXX/PymSx68Zeh
-         yCJw==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=TthJUdUqLVX4DpWSa0y1JjAzPtP4dPzxlxe7/SaEmIc=;
+        b=LKICTP/38wl/Sp/1TYzEd7nP71dXLQ3IflknZ/B12pQHCRI8TTkY7vkFAz7GhJItiz
+         k+ag1IkK1g0eRtAq9F47xpJqwOxrx/Ma3LfUtRj1V3M0V0JwmkcHMlZghOitdh8a4KhD
+         z/KWO4D2lmuQqUdMQEDGbBhGRXpJ2Q4m39goXeOt2afAqKe+ZuJO6uQmxVoR/NrYmlaG
+         wRA25yj4U/dR5xZXBVw9Jt74BlNvS5M3L4hnDlQSCUrMMv8193nhQP/CJ521uLHVWOF+
+         7tUlSt/M8lXDWFS7p7Y0pvgxzTe2e8pHX7FdKcv1tQzFbEbCuOeAqZpz/NgZ8gzrAgr3
+         +iUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UHf2VKgcNk4uBXiSKu/iHQi0CPZ+DDpgbvoraVKsNl4=;
-        b=WzOsnO4jY3fdoGm4W57ChH6JwIXWM3k/JcIg0Zt9NhhCSRJ/siWmRvQ+Rk0xO6XuvY
-         7f7fZ3vfP9uI4VJoabGARxjY+7GmuAqocnGAGEATzsSoN8SVL5WE/AgU/4a2YceTsukB
-         qiBhhRPqeaSsQ+ptEE/zLeZZdjYPyAFQBi5SOixjgyJAu5IagRWWXpUrgvldYyVPvyeu
-         W2y02Y9LZMWMAWSmBsVQrE1UcrF8FtKSjBOFqh5iVyP3N/3NE7N+K3k9FSZc09ZKfuVm
-         sGDYYa9KxlxqIlvwU3RT39yBHlFXrlzvMdW3OYt+MSWhQZiHNKJAVqvXpgAcQcDGUCD3
-         O5tg==
-X-Gm-Message-State: APjAAAUfUoMtUXMlOm7YXjVmHEV3fxYHGVkpaJjtfimJLdhdgacXx2Os
-        HzrnO/ye3xMEZA1CaoM75MPuTw==
-X-Google-Smtp-Source: APXvYqzwYMjvpvbZr8VPXC5BjmTo78QqdayeDkIUUMOowQ2p1AKcSgK2W4mmoQZMYOElgL9dyRLWyQ==
-X-Received: by 2002:a5d:494c:: with SMTP id r12mr1708780wrs.250.1555087763667;
-        Fri, 12 Apr 2019 09:49:23 -0700 (PDT)
-Received: from arch-late.local (a109-49-46-234.cpe.netcabo.pt. [109.49.46.234])
-        by smtp.gmail.com with ESMTPSA id h10sm73863141wrs.27.2019.04.12.09.49.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Fri, 12 Apr 2019 09:49:23 -0700 (PDT)
-From:   Rui Miguel Silva <rui.silva@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=TthJUdUqLVX4DpWSa0y1JjAzPtP4dPzxlxe7/SaEmIc=;
+        b=Gw4e/1A677mMMsf5v6JRrXHGFk+IoBueUuKM7gEJTNTi29k7dsA732sdYCvOYV5VOw
+         LXQMuCA7THX8Ub+n2fL7y5Kbt6f3fimWsIfF/nDR124rgtQvUz9qOjIp+Y/Gm4TQq4MJ
+         lmCMYAX9PC2jhr7OhDvXdZydXe7uhvyvXoZ8Bt/d27/wgq8EONRnR4h/l1MSI8ebHn0w
+         nU/2Gmf3W/a7Vr0Fvr7rChwRZU/qdjnwVLMlBsZgsk7ug8akqLWkDcDO0OeAvDzCKwYb
+         7Ukftqc9dmaXP00LcucMpopnjPb45EskCw2fLmFaArSyGzeeI7cf8c9uPqArjc292xNC
+         ByIw==
+X-Gm-Message-State: APjAAAXFnzMR+QuH+DsqdnOX74O9arSCI1lLmOu791ic1UJnq2tul+W1
+        ans2EGI615TQs3KKrVU/GFJFxhMC9Mei4r/i6wI=
+X-Google-Smtp-Source: APXvYqzp685M9zKbP1qSVCXG3/eF5NXoS7N5dn3LGRQOSk7mAN/wmu+Tssi0N3i6b5ZUw5T3MP9WrAceZqqCcqz/8H4=
+X-Received: by 2002:a24:9a86:: with SMTP id l128mr18553221ite.126.1555203859770;
+ Sat, 13 Apr 2019 18:04:19 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190403070325.1077-1-andrew.smirnov@gmail.com>
+ <20190403070325.1077-4-andrew.smirnov@gmail.com> <20190407120735.6fe78a5b@archlinux>
+In-Reply-To: <20190407120735.6fe78a5b@archlinux>
+From:   Andrey Smirnov <andrew.smirnov@gmail.com>
+Date:   Sat, 13 Apr 2019 18:04:08 -0700
+Message-ID: <CAHQ1cqEWCib3tOFAEy_iGj2RkM1VdLx78EPR_V2BPm_TmUjXbA@mail.gmail.com>
+Subject: Re: [PATCH 3/6] iio: imx7d_adc: Use devm_iio_device_register()
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Rui Miguel Silva <rui.silva@linaro.org>
-Subject: [PATCH v6 6/6] MAINTAINERS: add entry for fxas21002c gyro driver
-Date:   Fri, 12 Apr 2019 17:49:01 +0100
-Message-Id: <20190412164901.2321-7-rui.silva@linaro.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <20190412164901.2321-1-rui.silva@linaro.org>
-References: <20190412164901.2321-1-rui.silva@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Chris Healy <cphealy@gmail.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add me as maintainer of the nxp fxas21002c gyroscope driver.
+On Sun, Apr 7, 2019 at 4:07 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Wed,  3 Apr 2019 00:03:22 -0700
+> Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
+>
+> > Use devm_iio_device_register() and drop explicit call to
+> > iio_device_unregister().
+> >
+> > Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> > Cc: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Hartmut Knaack <knaack.h@gmx.de>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> > Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> > Cc: Chris Healy <cphealy@gmail.com>
+> > Cc: linux-iio@vger.kernel.org
+> > Cc: linux-kernel@vger.kernel.org
+> No to this one.  The thing to think about is the resulting order
+> of the unwinding that happens in remove.
+>
+> Do take a look at the code flow, but in short what happens is:
+>
+> 1. driver.remove()
+> 2. Devm release functions run in the opposite order to they were
+>    called during setup.
+>
+> The upshot of the change you just made here is that we turn the power
+> off to the device before we remove the userspace interfaces, giving
+> potentially interesting failures..
+>
+> There are two options to avoid this:
+>
+> 1. Make everything use devm_ calls (often using devm_add_action_or_reset
+> for the ones that don't have their own versions).
+>
+> 2. Stop using devm managed functions at the first non devm_ call that needs
+> unwinding.  From that point onwards in probe / remove you have to do everything
+> manually.
+>
 
-Signed-off-by: Rui Miguel Silva <rui.silva@linaro.org>
----
- MAINTAINERS | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+Yeah, missed the ordering proble, sorry about that. I'll re-order
+changes such that this conversion happens last to avoid said problem
+in v2.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3671fdea5010..f770f5124f4e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11117,6 +11117,16 @@ F:	Documentation/ABI/stable/sysfs-bus-nvmem
- F:	include/linux/nvmem-consumer.h
- F:	include/linux/nvmem-provider.h
- 
-+NXP FXAS21002C DRIVER
-+M:	Rui Miguel Silva <rmfrfs@gmail.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/gyroscope/fxas21002c.txt
-+F:	drivers/iio/gyro/fxas21002c_core.c
-+F:	drivers/iio/gyro/fxas21002c.h
-+F:	drivers/iio/gyro/fxas21002c_i2c.c
-+F:	drivers/iio/gyro/fxas21002c_spi.c
-+
- NXP SGTL5000 DRIVER
- M:	Fabio Estevam <festevam@gmail.com>
- L:	alsa-devel@alsa-project.org (moderated for non-subscribers)
--- 
-2.21.0
-
+Thanks,
+Andrey Smirnov
