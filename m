@@ -2,58 +2,59 @@ Return-Path: <SRS0=A0tK=SQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BA56C10F13
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 18:35:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3894C10F13
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 18:35:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 712B12075B
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 18:35:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 99ADB2075B
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 18:35:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="M3umnvAy"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="meioH2Jj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbfDNSfL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Apr 2019 14:35:11 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:40724 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726262AbfDNSfL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Apr 2019 14:35:11 -0400
-Received: by mail-pg1-f194.google.com with SMTP id d31so7482230pgl.7;
-        Sun, 14 Apr 2019 11:35:11 -0700 (PDT)
+        id S1726262AbfDNSfU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Apr 2019 14:35:20 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:41752 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbfDNSfU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Apr 2019 14:35:20 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 188so7464472pfd.8;
+        Sun, 14 Apr 2019 11:35:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vr9Yxy09dcI79rLRMP6LFducxJaWKK+SNjuB6UlLuzI=;
-        b=M3umnvAymjfsRX3ZodG4nkg4h8Z98VEFMNwXpDVaSo8a4kNhRFdf7FDJ7KHvlvo4E1
-         13uBAAfmsLdxiTO9kDzwseA0neyoOCly2gjs0+2sOon8VKQZOsil9HFHHTvhkunPcuxg
-         U+2ftFjOeAnJP+mzlJOJCygUWQCQ6oPeiDiXu+5x8BHo3AN2P3frNG00apof9C78OULY
-         27/wEktviO1Z/0pVz7iP42E8145TQo54fijUzX75a5dz5fxGcPgTzHENecwf8x68Blz2
-         Kup6QGLD1f+0NuOyLluj7lfJqjkA7SJK/uanr693P6GAKNpqTqNVIDQz5QwKq0Q+py8D
-         gNaQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TGTzF41L1VgnLfWEU9BbyLh73JFOItO3TYxOuE7zO4Y=;
+        b=meioH2JjyGHt80eChzF+p+P7m8tCQgkztWLt5ZThSW27PUv9JpcUtE33KDUT+52Lb2
+         5I18f7P9RoW41jzFQZZo49zc/GiCv251Wm73HfUWudFFhhllpnJhZeX7ysMFkVLkLklE
+         Jxb6wXkLreQq4A5MnZdtGcYuSzJRHvgrRTRE7JSxsUll7C9moR4u0rMfuNL+5KzN/63m
+         sbxpLt3uZdXp11kAEKyLiQpGT+beHFHAMdgzYvBLpXSSLtVpv9wNuPKs6s320oPz3RGW
+         Cr/usyQP2W3odcLYn9JJRYCesZhZeSSL/+pG8TtLET7kl/Qm56wfAHf4BSep8vjBcEzd
+         Co0Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Vr9Yxy09dcI79rLRMP6LFducxJaWKK+SNjuB6UlLuzI=;
-        b=jCNJF395sk67O0TqwZhF1zcvvwBzr+7zSfRVSpq0rqGC8hsyQMlLX1wXwShzwsLeeD
-         KdYWsd0bn7Al5UqmANINCJxFLgpRMWDHkIJOtdceExuJxUQ43mxl+uCF/x4f/N8l+7Mz
-         oGjpKytYG69Ls5RETV/o7aojWoLi654zWwa+HxlxdUPKY2t3O2gxX/Wnhvs1BTezES0v
-         JjDZSJBpuwEDao/R/oVMKhLm3MruZR1+f+biI896+VUQQB43VpLhzANViLIS0Jf+ME/D
-         dEuGhuJ2qIjCqQ0MyQJzfmYazA9bjs8QuoYmS1M9+EhBXVlFNDk6NqNI3U3oTDdiz8LO
-         tHVw==
-X-Gm-Message-State: APjAAAXsETA09vRquJs4JvUHr9YipxHZ8Ff6bSriR4P/OyN7LgScl8cJ
-        WVwBCq3a/ps44cREOsEdkDPzchMR
-X-Google-Smtp-Source: APXvYqz0XqRuErm7f9n8JBvG+SjAhjmzNH9lSMrnIWoN86s6RzkykNw19hIi0Brx20vlMr73coXjKw==
-X-Received: by 2002:a62:1318:: with SMTP id b24mr69771631pfj.201.1555266910684;
-        Sun, 14 Apr 2019 11:35:10 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TGTzF41L1VgnLfWEU9BbyLh73JFOItO3TYxOuE7zO4Y=;
+        b=r4/7Tr04bTj0pOhfnuFsecDnJx2KZzTng8uyyfAfF5iFa2ta8eXVIp74JuQ4Zl8Q/6
+         dVSZ4N3LIl2+5UMQxInEIeBZPJ7LjxO4XP1SCawjxeuWcKsKoEy0GnLpIjEe3b8+s96e
+         /DUdyrvP/dDGvcYDkHjABsoBD1dzNhakSe/lHqkvW7qJ4roimaRwJzaAAdUylBrE9Wed
+         aBHe/4rcWUjkGBBUDIj0PauXYdaYGBKiq13rAPFPQrjJeYwH46HWgFs9jbe4KiajXc1k
+         b/aDBVgVhfADXAFqMyuKJ8ZE0rqYRKtxjsEIGJsrBD6V8b6gEEia5OO+wK+OysXMHB8M
+         VuYw==
+X-Gm-Message-State: APjAAAV7H4lt3qe+gCsvHVfmX4EI+PJZ4TLR/OemO0FR3NoxJmVIWSG3
+        8+v5SlLGwzLuGGd0uRzncMao+4sH
+X-Google-Smtp-Source: APXvYqypkd/WRM6BTzIcUnDKsxXexNa9dZOegJ0e76bapHsle7ZrjwjrRrlREo4M0witSBKMN5lfqw==
+X-Received: by 2002:aa7:9296:: with SMTP id j22mr71868918pfa.140.1555266918863;
+        Sun, 14 Apr 2019 11:35:18 -0700 (PDT)
 Received: from squirtle.lan (c-24-22-235-96.hsd1.wa.comcast.net. [24.22.235.96])
-        by smtp.gmail.com with ESMTPSA id p7sm83791758pfp.70.2019.04.14.11.35.09
+        by smtp.gmail.com with ESMTPSA id p7sm83791758pfp.70.2019.04.14.11.35.17
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 14 Apr 2019 11:35:09 -0700 (PDT)
+        Sun, 14 Apr 2019 11:35:17 -0700 (PDT)
 From:   Andrey Smirnov <andrew.smirnov@gmail.com>
 To:     linux-iio@vger.kernel.org
 Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
@@ -62,10 +63,12 @@ Cc:     Andrey Smirnov <andrew.smirnov@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 0/6] i.MX7D ADC improvements
-Date:   Sun, 14 Apr 2019 11:34:58 -0700
-Message-Id: <20190414183504.23286-1-andrew.smirnov@gmail.com>
+Subject: [PATCH v2 6/6] iio: imx7d_adc: Use devm_iio_device_register()
+Date:   Sun, 14 Apr 2019 11:35:04 -0700
+Message-Id: <20190414183504.23286-7-andrew.smirnov@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190414183504.23286-1-andrew.smirnov@gmail.com>
+References: <20190414183504.23286-1-andrew.smirnov@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -73,39 +76,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Everyone:
+Use devm_iio_device_register() and drop imx7d_adc_remove().
 
-This series is a number of small improvements I made to i.MX7D ADC
-driver. Hopefully each patch is self-explanatory.
+Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Chris Healy <cphealy@gmail.com>
+Cc: linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+---
+ drivers/iio/adc/imx7d_adc.c | 13 +------------
+ 1 file changed, 1 insertion(+), 12 deletions(-)
 
-Feedback is welcome!
-
-Thanks,
-Andrey Smirnov
-
-Changes [v1]:
-
-    - Renamed imx7d_adc_resume() to imx7d_adc_enable()
-    
-    - Renamed imx7d_adc_suspend() to imx7d_adc_disable()
-
-    - Reordered the series to have "iio: imx7d_adc: Use
-      devm_iio_device_register()" as the last patch to avoid
-      concurrency problems during removal
-
-[v1] lore.kernel.org/lkml/20190403070325.1077-1-andrew.smirnov@gmail.com
-
-Andrey Smirnov (6):
-  iio: imx7d_adc: Add local struct device pointer in imx7d_adc_probe()
-  iio: imx7d_adc: Replace pr_err with dev_err
-  iio: imx7d_adc: Use devm_platform_ioremap_resource()
-  iio: imx7d_adc: Simplify imx7d_adc_probe() with imx7d_adc_resume()
-  iio: imx7d_adc: Simplify imx7d_adc_remove() with imx7d_adc_suspend()
-  iio: imx7d_adc: Use devm_iio_device_register()
-
- drivers/iio/adc/imx7d_adc.c | 175 +++++++++++++++---------------------
- 1 file changed, 74 insertions(+), 101 deletions(-)
-
+diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
+index c5b0dc7d0e49..958a34dd88ac 100644
+--- a/drivers/iio/adc/imx7d_adc.c
++++ b/drivers/iio/adc/imx7d_adc.c
+@@ -554,7 +554,7 @@ static int imx7d_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "Couldn't register the device.\n");
+ 		return ret;
+@@ -563,21 +563,10 @@ static int imx7d_adc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static int imx7d_adc_remove(struct platform_device *pdev)
+-{
+-	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+-
+-	iio_device_unregister(indio_dev);
+-
+-	return 0;
+-}
+-
+-
+ static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_disable, imx7d_adc_enable);
+ 
+ static struct platform_driver imx7d_adc_driver = {
+ 	.probe		= imx7d_adc_probe,
+-	.remove		= imx7d_adc_remove,
+ 	.driver		= {
+ 		.name	= "imx7d_adc",
+ 		.of_match_table = imx7d_adc_match,
 -- 
 2.20.1
 
