@@ -2,34 +2,33 @@ Return-Path: <SRS0=A0tK=SQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.1 required=3.0 tests=BIGNUM_EMAILS,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28C0CC10F13
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:45:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2DAF9C10F13
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:47:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E54C82084E
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:45:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EDA9E2084E
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Apr 2019 12:47:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725827AbfDNMpu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Apr 2019 08:45:50 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:46382 "EHLO
+        id S1725807AbfDNMr3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Apr 2019 08:47:29 -0400
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:46392 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725805AbfDNMpu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Apr 2019 08:45:50 -0400
+        with ESMTP id S1725805AbfDNMr3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Apr 2019 08:47:29 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id CB2F89E6A65;
-        Sun, 14 Apr 2019 13:45:47 +0100 (BST)
-Date:   Sun, 14 Apr 2019 13:45:46 +0100
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 888AC9E6A65;
+        Sun, 14 Apr 2019 13:47:27 +0100 (BST)
+Date:   Sun, 14 Apr 2019 13:47:24 +0100
 From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH] iio: ad_sigma_delta: Don't put SPI transfer buffer on
- the stack
-Message-ID: <20190414134546.1e9a3907@archlinux>
-In-Reply-To: <20190409075821.26104-1-alexandru.ardelean@analog.com>
-References: <20190409075821.26104-1-alexandru.ardelean@analog.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
+Cc:     paresh.chaudhary@rockwellcollins.com, linux-iio@vger.kernel.org
+Subject: Re: [bug report] iio:temperature: Add MAX31856 thermocouple support
+Message-ID: <20190414134724.59c1a359@archlinux>
+In-Reply-To: <20190409115955.GA16862@kadam>
+References: <20190409115955.GA16862@kadam>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -39,118 +38,63 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 9 Apr 2019 10:58:21 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Tue, 9 Apr 2019 14:59:55 +0300
+Dan Carpenter <dan.carpenter@oracle.com> wrote:
 
-> From: Lars-Peter Clausen <lars@metafoo.de>
+> Hello Paresh Chaudhary,
 > 
-> Use a heap allocated memory for the SPI transfer buffer. Using stack memory
-> will not work on some architectures when using DMA.
+> The patch fb55a51310d1: "iio:temperature: Add MAX31856 thermocouple
+> support" from Mar 26, 2019, leads to the following static checker
+> warning:
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Yikes, surprised this one snuck in here.
-> ---
+> 	drivers/iio/temperature/max31856.c:215 max31856_read_raw()
+> 	error: uninitialized symbol 'ret'.
 > 
-> Note: this doesn't need a stable/fixes tag. It's more of an enhancement.
+> drivers/iio/temperature/max31856.c
+>     185 static int max31856_read_raw(struct iio_dev *indio_dev,
+>     186 			     struct iio_chan_spec const *chan,
+>     187 			     int *val, int *val2, long mask)
+>     188 {
+>     189 	struct max31856_data *data = iio_priv(indio_dev);
+>     190 	int ret;
+>     191 
+>     192 	switch (mask) {
+>     193 	case IIO_CHAN_INFO_RAW:
+>     194 		ret = max31856_thermocouple_read(data, chan, val);
+>     195 		if (ret)
+>     196 			return ret;
+>     197 		return IIO_VAL_INT;
+>     198 	case IIO_CHAN_INFO_SCALE:
+>     199 		switch (chan->channel2) {
+>     200 		case IIO_MOD_TEMP_AMBIENT:
+>     201 			/* Cold junction Temp. Data resolution is 0.015625 */
+>     202 			*val = 15;
+>     203 			*val2 = 625000; /* 1000 * 0.015625 */
+>     204 			ret = IIO_VAL_INT_PLUS_MICRO;
+>     205 			break;
+>     206 		default:
+>     207 			/* Thermocouple Temp. Data resolution is 0.0078125 */
+>     208 			*val = 7;
+>     209 			*val2 = 812500; /* 1000 * 0.0078125) */
+>     210 			return IIO_VAL_INT_PLUS_MICRO;
+>     211 		}
+>     212 		break;
+> 
+> Smatch thinks mask can also IIO_CHAN_INFO_PROCESSED, IIO_CHAN_INFO_OFFSET,
+> and IIO_CHAN_INFO_AVERAGE_RAW.  It often gets these function pointer
+> calls a be merged together though.
+> 
+>     213 	}
+>     214 
+> --> 215 	return ret;  
+>     216 }
+> 
+> regards,
+> dan carpenter
+Colin sent out a fix for this which does what is being suggested here.
+I'll apply that.
 
-Talk me through this...  Right now I think this is a bug that is going
-to cause random and extremely hard to debug problems.  I've had these
-in the past and they are really really nasty as it's random stack corruption.
-The nasty is not the fact it's on the stack, but the fact that it isn't
-in it's own cacheline.
-
-So my inclination is this definitely needs stable and fixes tag.
-What am I missing?
+Thanks,
 
 Jonathan
-
-> 
->  drivers/iio/adc/ad_sigma_delta.c       | 22 +++++++++++-----------
->  include/linux/iio/adc/ad_sigma_delta.h |  3 ++-
->  2 files changed, 13 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-> index af6cbc683214..02d9049b9218 100644
-> --- a/drivers/iio/adc/ad_sigma_delta.c
-> +++ b/drivers/iio/adc/ad_sigma_delta.c
-> @@ -58,7 +58,7 @@ EXPORT_SYMBOL_GPL(ad_sd_set_comm);
->  int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
->  	unsigned int size, unsigned int val)
->  {
-> -	uint8_t *data = sigma_delta->data;
-> +	uint8_t *data = sigma_delta->reg_data;
->  	struct spi_transfer t = {
->  		.tx_buf		= data,
->  		.len		= size + 1,
-> @@ -102,7 +102,7 @@ EXPORT_SYMBOL_GPL(ad_sd_write_reg);
->  static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
->  	unsigned int reg, unsigned int size, uint8_t *val)
->  {
-> -	uint8_t *data = sigma_delta->data;
-> +	uint8_t *data = sigma_delta->reg_data;
->  	int ret;
->  	struct spi_transfer t[] = {
->  		{
-> @@ -148,24 +148,24 @@ int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
->  {
->  	int ret;
->  
-> -	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
-> +	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->reg_data);
->  	if (ret < 0)
->  		goto out;
->  
->  	switch (size) {
->  	case 4:
-> -		*val = get_unaligned_be32(sigma_delta->data);
-> +		*val = get_unaligned_be32(sigma_delta->reg_data);
->  		break;
->  	case 3:
-> -		*val = (sigma_delta->data[0] << 16) |
-> -			(sigma_delta->data[1] << 8) |
-> -			sigma_delta->data[2];
-> +		*val = (sigma_delta->reg_data[0] << 16) |
-> +			(sigma_delta->reg_data[1] << 8) |
-> +			sigma_delta->reg_data[2];
->  		break;
->  	case 2:
-> -		*val = get_unaligned_be16(sigma_delta->data);
-> +		*val = get_unaligned_be16(sigma_delta->reg_data);
->  		break;
->  	case 1:
-> -		*val = sigma_delta->data[0];
-> +		*val = sigma_delta->reg_data[0];
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -403,12 +403,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
-> +	uint8_t *data = sigma_delta->buf_data;
->  	unsigned int reg_size;
->  	unsigned int data_reg;
-> -	uint8_t data[16];
->  	int ret;
->  
-> -	memset(data, 0x00, 16);
-> +	memset(sigma_delta->buf_data, 0x00, sizeof(sigma_delta->buf_data));
->  
->  	reg_size = indio_dev->channels[0].scan_type.realbits +
->  			indio_dev->channels[0].scan_type.shift;
-> diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-> index 6e9fb1932dde..fb77b2ebe498 100644
-> --- a/include/linux/iio/adc/ad_sigma_delta.h
-> +++ b/include/linux/iio/adc/ad_sigma_delta.h
-> @@ -79,7 +79,8 @@ struct ad_sigma_delta {
->  	 * DMA (thus cache coherency maintenance) requires the
->  	 * transfer buffers to live in their own cache lines.
->  	 */
-> -	uint8_t				data[4] ____cacheline_aligned;
-> +	uint8_t				reg_data[4] ____cacheline_aligned;
-> +	uint8_t				buf_data[16];
->  };
->  
->  static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
 
