@@ -2,135 +2,105 @@ Return-Path: <SRS0=ZeA0=SR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78626C10F0E
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 13:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EDB9C10F0E
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 15:40:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 45D3720693
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 13:14:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0D642075B
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 15:40:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="SZ99pled"
+	dkim=pass (1024-bit key) header.d=aurorafoss.org header.i=@aurorafoss.org header.b="IbtcebVB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727129AbfDONOA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Apr 2019 09:14:00 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:34929 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726095AbfDONOA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Apr 2019 09:14:00 -0400
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x3FDD03K016272;
-        Mon, 15 Apr 2019 15:13:45 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=pVfFlkSPFP7dS9+W0jKtlwvszZ1b6U8ZRRT6weF36T8=;
- b=SZ99pled915rPvUgPw4f/vfqrTZBfEeCTHTr1TrOHHMGH0nd2XRiSf1lIZJzH/2QpIc2
- CzzBlw4vV52zU9hRGmawCSElOxF5G+rGad2pAbp+Y4fOyrlillYVv1Cqx3rXkDJQWwPL
- mh+tQmLyj2TbCBPMfj93OSa6EVy721l/T4dqnLRwJtLE8pUVkgUCIVm8ZNM2Md8RTlwL
- r0dvmj2w1oXeCghlVuoCUUnVdYT8pr46UEheDzshR8KovdmHdjsPx9ylbB1MAm+iYmRl
- TqVynr1cgcQFme26L211MQS6nee3bFPEWFAT4G/Sr+hohKmewzrGrECLRxh7p7yhASRS cA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2ru5hu2b6r-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Mon, 15 Apr 2019 15:13:45 +0200
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1E6D734;
-        Mon, 15 Apr 2019 13:13:45 +0000 (GMT)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DD0572557;
-        Mon, 15 Apr 2019 13:13:44 +0000 (GMT)
-Received: from [10.48.0.167] (10.75.127.46) by SFHDAG5NODE3.st.com
- (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1347.2; Mon, 15 Apr
- 2019 15:13:44 +0200
-Subject: Re: linux-next: Tree for Apr 8 (iio/adc/)
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-CC:     Stephen Rothwell <sfr@canb.auug.org.au>,
-        Linux Next Mailing List <linux-next@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-References: <20190408154140.515139e3@canb.auug.org.au>
- <47db3c7b-eb05-c4cd-ed03-f03e6754d5f8@infradead.org>
- <20190414133059.4e25a574@archlinux>
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <b28b147f-0f42-3829-ff5a-aeb9ad0cc249@st.com>
-Date:   Mon, 15 Apr 2019 15:13:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <20190414133059.4e25a574@archlinux>
+        id S1726522AbfDOPkl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Apr 2019 11:40:41 -0400
+Received: from out.migadu.com ([91.121.223.63]:56394 "EHLO out.migadu.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726094AbfDOPkl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 15 Apr 2019 11:40:41 -0400
+Received: (Migadu outbound); Mon, 15 Apr 2019 15:40:37 +0000
+Authentication-Results: out.migadu.com; auth=pass (plain)
+Received: from _ (out.migadu.com [188.165.195.186])
+        by out.migadu.com (Haraka/2.8.16) with ESMTPSA id E7C06CC5-2E44-4A7C-9EB8-DBA9074BE38C.1
+        envelope-from <luis@aurorafoss.org> (authenticated bits=0)
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 verify=FAIL);
+        Mon, 15 Apr 2019 15:40:37 +0000
+Mime-Version: 1.0
+Date:   Mon, 15 Apr 2019 15:40:37 +0000
 Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.46]
-X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-04-15_05:,,
- signatures=0
+Content-Transfer-Encoding: quoted-printable
+Message-ID: <c34e15ec4be9d783c7134491639eb176@_>
+X-Mailer: RainLoop/1.10.5.192
+From:   luis@aurorafoss.org
+Subject: Re: [PATCH] iio: accel: add missing sensor for some 2-in-1 based
+ ultrabooks
+To:     "Hans de Goede" <hdegoede@redhat.com>
+Cc:     jic23@kernel.org, "Hartmut Knaack" <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        "Stephan Gerhold" <stephan@gerhold.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "open list" <linux-kernel@vger.kernel.org>
+In-Reply-To: <c2f3c22c-d491-17e7-ede7-54f9df11e064@redhat.com>
+References: <c2f3c22c-d491-17e7-ede7-54f9df11e064@redhat.com>
+ <20190402160433.15810-1-luis@aurorafoss.org>
+ <55a52a4e-01d1-2f4c-25e3-0047537bef86@redhat.com>
+ <CAPyOxm8DyFjRxeL9QFHGW084cg5vhsKrwqGFy5rp8MEEZ3AHEQ@mail.gmail.com>
+DKIM-Signature: v=1;a=rsa-sha256;bh=/RjNgl2Ea8j213BPdIq2fXDGQ4ZJbhtpDV8l2X8ltJM=;c=relaxed/simple;d=aurorafoss.org;h=from:subject:date:to;s=default;b=IbtcebVB0aKkLJfDaJAE0nLxkpHb0+40VkHrW7i+WuppFbD7w3BWksTy12BqfKK4mRy7qOO7sbnBJ7my2EpC+iufbSO0r4CAIYaggZB58sIJGgevXHLETWrtdcyszcL90vYSjfR2RQLGJqMhhexk0JNBWQmPnpsVoiX+FZULWAg=
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 4/14/19 2:30 PM, Jonathan Cameron wrote:
-> On Mon, 8 Apr 2019 09:09:37 -0700
-> Randy Dunlap <rdunlap@infradead.org> wrote:
-> 
->> On 4/7/19 10:41 PM, Stephen Rothwell wrote:
->>> Hi all,
->>>
->>> Changes since 20190405:
->>>   
->>
->> on i386 or x86_64:
->>
->> modular:
->> ERROR: "is_stm32_timer_trigger" [drivers/iio/adc/stm32-dfsdm-adc.ko] undefined!
->>
->> or builtin:
->> ld: drivers/iio/adc/stm32-dfsdm-adc.o: in function `stm32_dfsdm_postenable':
->> stm32-dfsdm-adc.c:(.text+0x878): undefined reference to `is_stm32_timer_trigger'
->>
->>
->> Full i386 randconfig file is attached.
->>
-> Thanks Randy.
-> 
-> So two possible fixes for this one.  We can do what is done for the
-> stm32-adc driver and select IIO_STM_TIMER_TRIGGER or we can add a stub
-> for this function in the header to make it return false if that
-> driver isn't built.
-> 
-> I personally favour the stub option but would like Fabrice to say what
-> makes more sense.
-> 
-> So Fabrice, which of the above? If you are busy and don't get back
-> in the next day or two, I'll add the stub.
-
-Hi Jonathan, Randy,
-
-I've posted 3 patches:
-- One to fix the current issue, with the stub option [1]. This makes
-sense as the STM32 DFSDM can use timer and/or lptimer. I think I'll post
-another patch later to remove the select in STM32_ADC config (no longer
-needed then... But it's not the subject here, right ?).
-- Two other patches to fix other warning/build issues I've seen while
-working on the stub option. See [2]:
-
-[1] https://lkml.org/lkml/2019/4/15/223
-[2] https://lkml.org/lkml/2019/4/15/437
-
-Sorry for the inconvenience, I should have seen this earlier.
-
-Thanks,
-Best Regards,
-Fabrice
-
-> 
-> Thanks,
-> 
-> Jonathan
-> 
+April 6, 2019 10:36 AM, "Hans de Goede" <hdegoede@redhat.com> wrote:=0A=
+=0AHi,=0A=0A> Yes that seems the best way forward with this.=0A> =0A> Not=
+e I think "base" is better then "keyboard" for the sensor which=0A> is in=
+ the base/keyboard. But neither is perfect, so go which whatever=0A> you =
+prefer.=0A=0AReference to:=0A- https://github.com/hadess/iio-sensor-proxy=
+/pull/262=0A- https://github.com/systemd/systemd/pull/12322=0A=0ARegards,=
+=0ALu=C3=ADs=0A=0A> Hi,=0A> =0A> On 06-04-19 01:01, Lu=C3=ADs Ferreira wr=
+ote:=0A> =0A>> Hi,=0A>> Basically we need to come up with a convention to=
+ (optionally) indicate=0A> =0A> the sensors location with a udev attribut=
+e set by:=0A> /lib/udev/hwdb.d/60-sensor.hwdb=0A>> So should we start add=
+ing `ACCEL_LOCATION=3Ddisplay` and=0A>> `ACCEL_LOCATION=3Dkeyboard` attri=
+butes to that file and patch=0A>> iio-sensor-proxy to ignore the keyboard=
+ ones as a first step ?=0A> =0A> Yes that seems the best way forward with=
+ this.=0A> =0A> Note I think "base" is better then "keyboard" for the sen=
+sor which=0A> is in the base/keyboard. But neither is perfect, so go whic=
+h whatever=0A> you prefer.=0A> =0A> Thanks & Regards,=0A> =0A> Hans=0A> =
+=0A>> On Wed, 3 Apr 2019 at 10:10, Hans de Goede <hdegoede@redhat.com> wr=
+ote:=0A> =0A> Hi,=0A> =0A> On 02-04-19 18:04, Lu=C3=ADs Ferreira wrote:=
+=0A>> Some ultrabooks, like Teclast F6 Pro, use KIOX010A sensor on displa=
+y=0A>> and KIOX020A sensor on keyboard base, to detect tablet mode or scr=
+een=0A>> orientation.=0A> =0A> I deliberately left out the KIOX020A id fo=
+r now, because currently=0A> userspace cannot really deal with having 2 s=
+ensors.=0A> =0A> See:=0A> https://github.com/systemd/systemd/issues/6557=
+=0A> https://github.com/hadess/iio-sensor-proxy/issues/166=0A> =0A> Basic=
+ally we need to come up with a convention to (optionally) indicate=0A> th=
+e sensors location with a udev attribute set by:=0A> /lib/udev/hwdb.d/60-=
+sensor.hwdb=0A> =0A> And then patch iio-sensor-proxy to consume that attr=
+ibute and ignore=0A> the one which has e.g. ACCEL_LOCATION=3Dkeyboard in =
+its udev properties=0A> =0A> Ignoring would be a first step, maybe later =
+it can do something useful=0A> with it, see e.g. : https://github.com/ale=
+sguzik/linux_detect_tablet_mode=0A> =0A> IMHO we really should minimally =
+get code in place for iio-sensor-proxy=0A> to ignore the keyboard acceler=
+ometer before merging this patch.=0A> =0A> I realize that having the code=
+ in place will not magically get it on=0A> all users machines, but I beli=
+eve this is the minimum which needs to=0A> happen before we push this out=
+ and potentially breaks people screen=0A> rotation.=0A> =0A> I've had wor=
+king on this on my TODO list for a long long time now,=0A> but -ENOTIME. =
+If you have some time to work on this then that would=0A> be great.=0A> =
+=0A> Regards,=0A> =0A> Hans=0A>> Signed-off-by: Lu=C3=ADs Ferreira <luis@=
+aurorafoss.org>=0A>> ---=0A>> drivers/iio/accel/kxcjk-1013.c | 1 +=0A>> 1=
+ file changed, 1 insertion(+)=0A>> =0A>> diff --git a/drivers/iio/accel/k=
+xcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c=0A>> index 7096e577b23f..9a5=
+e445facc1 100644=0A>> --- a/drivers/iio/accel/kxcjk-1013.c=0A>> +++ b/dri=
+vers/iio/accel/kxcjk-1013.c=0A>> @@ -1492,6 +1492,7 @@ static const struc=
+t acpi_device_id kx_acpi_match[] =3D {=0A>> {"KIOX0009", KXTJ21009},=0A>>=
+ {"KIOX000A", KXCJ91008},=0A>> {"KIOX010A", KXCJ91008}, /* KXCJ91008 insi=
+de the display of a 2-in-1 */=0A>> + {"KIOX020A", KXCJ91008},=0A>> {"KXTJ=
+1009", KXTJ21009},=0A>> {"KXJ2109", KXTJ21009},=0A>> {"SMO8500", KXCJ9100=
+8},
