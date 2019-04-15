@@ -2,106 +2,221 @@ Return-Path: <SRS0=ZeA0=SR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	USER_AGENT_NEOMUTT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17A50C10F12
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:10:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2D10C10F0E
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:18:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D8CB02075B
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555366207;
-	bh=SYglmHg+X3HSahatRhPiR/hVA/Qahb7EHBkSkK8sy0w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=rCDLvq3DhjOpnYgYT+lsLNQGPQyo799qP9e+ll44l8whyh2T6BVO4avX3wIGfwRNn
-	 QNk65azUk9DIRbVrO1HDcUmjx5Mn2NVE2i+NZxi3A0/UAhYrv/9MJgQ8xIIILxmfs6
-	 JrajXZWihKupw8Uf4yL4I8/T5CMg+MkoJviBSGPI=
+	by mail.kernel.org (Postfix) with ESMTP id 9AC6E20854
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:18:03 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RV4F8TY+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727186AbfDOWKC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Apr 2019 18:10:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44272 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726085AbfDOWKC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 15 Apr 2019 18:10:02 -0400
-Received: from earth.universe (unknown [185.62.205.103])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 184642075B;
-        Mon, 15 Apr 2019 22:10:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555366201;
-        bh=SYglmHg+X3HSahatRhPiR/hVA/Qahb7EHBkSkK8sy0w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=vRF3CzTC3826y0wRld/Um4W20GK0LPrGa35vM+2k8zIF5DY5HlwfJbjnj0bGNLn2r
-         jBLFtjAEar2K9JvtYubNYnBoCwkAIZrY3udkIcX49aLZLPKEOLyEYjERI9zGoR5Yuz
-         EBTmF8FaIgPjm5vNk4Rjsp4TfpCgpQaFMGMkAAy0=
-Received: by earth.universe (Postfix, from userid 1000)
-        id A55203C08D5; Tue, 16 Apr 2019 00:09:58 +0200 (CEST)
-Date:   Tue, 16 Apr 2019 00:09:58 +0200
-From:   Sebastian Reichel <sre@kernel.org>
-To:     Artur Rojek <contact@artur-rojek.eu>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-pm@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH v2 4/4] power: supply: add Ingenic JZ47xx battery driver.
-Message-ID: <20190415220958.d3hr6ymwoy43npjw@earth.universe>
-References: <20190323172809.14407-1-contact@artur-rojek.eu>
- <20190323172809.14407-4-contact@artur-rojek.eu>
+        id S1727186AbfDOWSD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Apr 2019 18:18:03 -0400
+Received: from mail-yw1-f67.google.com ([209.85.161.67]:34771 "EHLO
+        mail-yw1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725786AbfDOWSC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Apr 2019 18:18:02 -0400
+Received: by mail-yw1-f67.google.com with SMTP id x129so6616452ywc.1
+        for <linux-iio@vger.kernel.org>; Mon, 15 Apr 2019 15:18:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=KsVNSmLrpdepymBy/9IERbdG/BVuPWrYSmVZnRBfrkI=;
+        b=RV4F8TY+iryxWOE3DU7Y3Z0HVXW3qr/HroFR1vJIrrxo6O9e9Jj89G5/iYazNyx36W
+         UVZn1GWFN7WeMyI3CZwqWcAw3FgZYL5cvml0TB7ArrPIF1+uW7zwMHDDoHMGzOv9+0tO
+         KUV+yzD/2oAOBik2i8dC3dYhlVvfuFEFA4XmCZkniuaSco3FgKTRFtjToSRM56tK+9+l
+         d6yCHrqqyUMuIQLypXECq4MB4WSoOLj4yVxKYqPUyEHgYy9YlMOcATYlizTtyxETCNuC
+         Qok5QPs5PTBVrAUhoU7fyEm2L7DoKlmx5PLt3cAnUAHV9ITTrdOe203srXNbNjcJc9XT
+         4fPA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=KsVNSmLrpdepymBy/9IERbdG/BVuPWrYSmVZnRBfrkI=;
+        b=KIYA0MdSZDzCV+GZXWxekzO8QfRmeMITetl+57DUo6xy1Ed6qJQ2o5zbsCAq99jvNT
+         SHx4YFmN50wq95TyvMYbznm6MvQbjn86+AQfV/i+3JgYgDm8l3Ul0ypeX5vJG3zc308n
+         Ag+1pR6sp+jmpPI2VFDjxdDngYXB0S+6Om8z6qWWCAPmZFHetB4euVl21d1+bXvOPABl
+         0HjAzCu1SzgRGGBUPfp7yj9HI3yfM7yf+BaXtKoHqUnPTtEwJyzFB4K062F41RhN1En2
+         AGmyjvabbtYbxCBiesLkgEvEjf626kEJNsgCGupIhLMAYCDyLp08FYyjagvs4INkBsQj
+         VYRA==
+X-Gm-Message-State: APjAAAXTLyuLigcEyegUURK9pXdrgIkQhqZK04dM4BudaSR0KEZ5ZU/s
+        OlUqeQBRXvqJ0k+5TUhPtNi+ovpYYGP4c4/uzfw=
+X-Google-Smtp-Source: APXvYqwdE4Zjqwqv/VgwDHv+G7RPX8Od41EX/7acrXUCFkwzYpcOZM5xSi2RE9uGrJkIaXgoKR6n9t5/1b3GT2hXOlI=
+X-Received: by 2002:a81:5f88:: with SMTP id t130mr63436408ywb.453.1555366681385;
+ Mon, 15 Apr 2019 15:18:01 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rw2r4of4bpn34oof"
-Content-Disposition: inline
-In-Reply-To: <20190323172809.14407-4-contact@artur-rojek.eu>
-User-Agent: NeoMutt/20180716
+References: <cover.1555354268.git.vitor.soares@synopsys.com> <302f8296299d6cd25b3689f5eca1c510a3290db3.1555354268.git.vitor.soares@synopsys.com>
+In-Reply-To: <302f8296299d6cd25b3689f5eca1c510a3290db3.1555354268.git.vitor.soares@synopsys.com>
+From:   Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Date:   Tue, 16 Apr 2019 00:17:50 +0200
+Message-ID: <CAA2SeNLpVpvsfjBUg2d2A+aV4RCYP5VSogDBcNZPDm7jSkZgCQ@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: imu: st_lsm6dsx: Add i3c basic support
+To:     Vitor Soares <vitor.soares@synopsys.com>
+Cc:     linux-iio@vger.kernel.org, linux-i3c@lists.infradead.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>, bbrezillon@kernel.org,
+        rafael@kernel.org, gregkh@linuxfoundation.org, broonie@kernel.org,
+        joao.pinto@synopsys.com
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+>
+> For today the st_lsm6dsx driver support lsm6dso sensor only in
+> spi and i2c mode.
+>
+> The lsm6dso is also i3c capable so lets give i3c support to it.
+>
 
---rw2r4of4bpn34oof
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Hi Vitor,
 
-Hi,
+thx, this is very cool :)
+Just a couple of nit inline
 
-On Sat, Mar 23, 2019 at 06:28:09PM +0100, Artur Rojek wrote:
-> Add a driver for battery present on Ingenic JZ47xx SoCs.
->=20
-> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+Regards,
+Lorenzo
 
-I just applied the patch, but it results in the following warning:
+> Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
+> ---
+>  drivers/iio/imu/st_lsm6dsx/Kconfig          |  8 +++-
+>  drivers/iio/imu/st_lsm6dsx/Makefile         |  1 +
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 67 +++++++++++++++++++++++++++++
+>  3 files changed, 75 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+>
+> diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
+> index 094fd00..1ab9bbf 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
+> +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
+> @@ -1,11 +1,12 @@
+>
+>  config IIO_ST_LSM6DSX
+>         tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors"
+> -       depends on (I2C || SPI)
+> +       depends on (I2C || SPI || I3C)
+>         select IIO_BUFFER
+>         select IIO_KFIFO_BUF
+>         select IIO_ST_LSM6DSX_I2C if (I2C)
+>         select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
+> +       select IIO_ST_LSM6DSX_I3C if (I3C)
+>         help
+>           Say yes here to build support for STMicroelectronics LSM6DSx imu
+>           sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
+> @@ -23,3 +24,8 @@ config IIO_ST_LSM6DSX_SPI
+>         tristate
+>         depends on IIO_ST_LSM6DSX
+>         select REGMAP_SPI
+> +
+> +config IIO_ST_LSM6DSX_I3C
+> +       tristate
+> +       depends on IIO_ST_LSM6DSX
+> +       select REGMAP_I3C
+> diff --git a/drivers/iio/imu/st_lsm6dsx/Makefile b/drivers/iio/imu/st_lsm6dsx/Makefile
+> index e5f733c..c676965 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/Makefile
+> +++ b/drivers/iio/imu/st_lsm6dsx/Makefile
+> @@ -4,3 +4,4 @@ st_lsm6dsx-y := st_lsm6dsx_core.o st_lsm6dsx_buffer.o \
+>  obj-$(CONFIG_IIO_ST_LSM6DSX) += st_lsm6dsx.o
+>  obj-$(CONFIG_IIO_ST_LSM6DSX_I2C) += st_lsm6dsx_i2c.o
+>  obj-$(CONFIG_IIO_ST_LSM6DSX_SPI) += st_lsm6dsx_spi.o
+> +obj-$(CONFIG_IIO_ST_LSM6DSX_I3C) += st_lsm6dsx_i3c.o
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> new file mode 100644
+> index 0000000..2df5e70
+> --- /dev/null
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> @@ -0,0 +1,67 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
+> + *
+> + * Author: Vitor Soares <vitor.soares@synopsys.com>
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/i3c/device.h>
+> +#include <linux/i3c/master.h>
+> +#include <linux/slab.h>
+> +#include <linux/of.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "st_lsm6dsx.h"
+> +
+> +#define NAME_SIZE      32
+> +
+> +struct st_lsm6dsx_i3c_data {
+> +       char name[NAME_SIZE];
+> +       enum st_lsm6dsx_hw_id id;
+> +};
+> +
+> +static const struct st_lsm6dsx_i3c_data hw_data[] = {
+> +       { ST_LSM6DSO_DEV_NAME, ST_LSM6DSO_ID },
+> +};
+> +
+> +static const struct regmap_config st_lsm6dsx_i3c_regmap_config = {
+> +       .reg_bits = 8,
+> +       .val_bits = 8,
+> +};
+> +
+> +static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
+> +{
+> +       const struct i3c_device_id *id = i3c_get_device_id(i3cdev);
+> +       const struct st_lsm6dsx_i3c_data *hw_data = id->data;
+> +       struct regmap *regmap;
+> +
+> +       regmap = devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
+> +       if (IS_ERR(regmap)) {
+> +               dev_err(&i3cdev->dev, "Failed to register i3c regmap %d\n",
+> +                       (int)PTR_ERR(regmap));
+> +               return PTR_ERR(regmap);
+> +       }
+> +
+> +       return st_lsm6dsx_probe(&i3cdev->dev, 0, hw_data->id,
+> +                               hw_data->name, regmap);
 
-WARNING: modpost: missing MODULE_LICENSE() in drivers/power/supply/ingenic-=
-battery.o
+In order to support the hw FIFO, I guess you are planning to support
+interrupts/IBI here
 
-Please add MODULE_LICENSE & Co and send a v4 of patch 4/4.
+> +}
+> +
 
--- Sebastian
+please remove 'new line' here
 
---rw2r4of4bpn34oof
-Content-Type: application/pgp-signature; name="signature.asc"
+> +
+> +static const struct i3c_device_id st_lsm6dsx_i3c_ids[] = {
+> +       I3C_DEVICE(0x0104, 0x006C, &hw_data[0]),
+> +       { /* sentinel */ },
+> +};
+> +MODULE_DEVICE_TABLE(i3c, st_lsm6dsx_i3c_ids);
+> +
+> +static struct i3c_driver st_lsm6dsx_driver = {
+> +       .driver.name = "st_lsm6dsx_i3c",
+> +       .probe = st_lsm6dsx_i3c_probe,
+> +       .id_table = st_lsm6dsx_i3c_ids,
+> +};
+> +module_i3c_driver(st_lsm6dsx_driver);
+> +
+> +MODULE_AUTHOR("Vitor Soares <vitor.soares@synopsys.com>");
+> +MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx i3c driver");
+> +MODULE_LICENSE("GPL v2");
+> +
+> --
+> 2.7.4
+>
 
------BEGIN PGP SIGNATURE-----
 
-iQIzBAEBCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAly1ASsACgkQ2O7X88g7
-+pqTVA/+Ik4sVPteTU4wCrybHl8pxCnajSRMODXGm3MxbBSs6vpI4wr5/aqD3P5Z
-iWMburw6eg3YZOk5kK9awGkykioyZ4MGlfTURZyKo7QKMPbEruY1RUTnJRBtZ9d6
-oV8HxzzuiZlY9pN0Szlw8UYK7aZOKR5CqtTzL3HHsZR+mHTLFZG+W5tQdALQzs/6
-GS+V3d48s5o+JVYnZePwFe4b6Qi9cs57f/JFJ6hOnpIdKQzEh1xxbw/6axMaIZBh
-nzlh2pdJT0bN/uPOYztunaGefrkht7YH+SCYttAr6Valxa7UJIccYwhggTAtCwFK
-UAYDyZVPuhp3i9vBMBeNRIdCoxwqoHUsdffpRrIMlJvxa2Jkvff4dAfcoVtzgJpq
-VzbOfRsquhVxlCiOScO5cc9WK+qAifoy7Q+yo8uZ5Y+oniMx72zueeOvG6Kv+idL
-jDbMvSxqVv7QdqSv/fA/7X9cjeu90548YvBRB0dkKh9fvNfaD2myGeW6VKl2/m6T
-c7OSOaUS0HAD/hfDIaZaJX72fK7cVGNJ7bF8dMPv57Y7oBoH6r4eaLvIdxAv3xnH
-kGR6ZGZ1KB0LNxYH/lblosuo5N3lVFSToXsluvhfpjQHbNKtXXZhDJTKSvA0nUu5
-yLItgAQ4Qfsc3k30zoQinBbADuD5ibptP9KM/6BPaeCnp7lSKqA=
-=S6TG
------END PGP SIGNATURE-----
-
---rw2r4of4bpn34oof--
+-- 
+UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
+unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
+umount; make clean; sleep
