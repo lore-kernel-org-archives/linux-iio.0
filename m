@@ -2,600 +2,136 @@ Return-Path: <SRS0=ZeA0=SR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_NEOMUTT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63437C282DA
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 21:05:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83B77C10F0E
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:09:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 121FD206B6
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 21:05:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 48F092075B
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Apr 2019 22:09:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="necQdaVW"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JfrdfcsZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727214AbfDOVFq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Apr 2019 17:05:46 -0400
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:16770 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726319AbfDOVFp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Apr 2019 17:05:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1555362338;
-        s=strato-dkim-0002; d=goldelico.com;
-        h=Message-Id:Date:Subject:Cc:To:From:X-RZG-CLASS-ID:X-RZG-AUTH:From:
-        Subject:Sender;
-        bh=pL5XDIvwHX4X9bn2Hjy1JeToQkvGk60lY4Ln+hW/BkY=;
-        b=necQdaVWRN2HVZM8B4CgYP7Qo9nD/axQFGi9s3y6Md2aNVk8bFFYdIybCxaIjBJfRY
-        lC8pVODjxQf9akf4xhlSjrY8M62Jb491/+JEu7Gw0xYatAMosfnFCwg9C/wZVObatiHT
-        dgcJIXBEAZFSJdSWGRkC2kzB1gEps6vzc/DJwPSmer/1O+33RbgvLg5MT2Iv5CY8MLMc
-        wZNX54HcXmmw3Iia6oLbv/4LW6VEiA1C18py60Gom0NbmmboeF7N5OEsgsGY2dNq7qwZ
-        /xJlKk+yJKP5ZK0ypjTLMzoI/lZO5VP1NELNIh15PdC1pxAkwv8xXDRycXPDk+xJroSs
-        l+Qg==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1mfYzBGHXH5Hd8HaiCa"
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
-        with ESMTPSA id j04dc1v3FL5DYBl
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Mon, 15 Apr 2019 23:05:13 +0200 (CEST)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc:     Eric Piel <eric.piel@tremplin-utc.net>,
-        linux-input@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [RFC v3] iio: input-bridge: optionally bridge iio acceleometers to create a /dev/input interface
-Date:   Mon, 15 Apr 2019 23:05:13 +0200
-Message-Id: <d52cf9ee5944c90c69f6e74a46d844cef51e487e.1555362312.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.19.1
+        id S1726621AbfDOWJx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Apr 2019 18:09:53 -0400
+Received: from mail-yw1-f48.google.com ([209.85.161.48]:39364 "EHLO
+        mail-yw1-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725804AbfDOWJx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Apr 2019 18:09:53 -0400
+Received: by mail-yw1-f48.google.com with SMTP id z9so6603302ywd.6
+        for <linux-iio@vger.kernel.org>; Mon, 15 Apr 2019 15:09:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:date:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding:user-agent;
+        bh=xYXyVu2UGm5NVJcQBRrpwZ4kFezE3zeC/S6QAAEC6Ag=;
+        b=JfrdfcsZiA6qkEVSUoGPXfo5MUuD5TMb3eVQ+KCYkgXFQ54HnwoMr302jH0l9q2Rp1
+         oRJ/lRcKhbPgZdJvZyj3QYFlF3AvFMCkAeFbB88QiPzlSYGa9p+O89WM6Iiqlw3UbBpA
+         ODap6ySeqwJBs+UcNy+LXC5ewwr/5M0IGrwd5oXkzHWkiU9OQqHVWEqkP19S/IznpEPe
+         Y5XNcKyYi8L12XdauuKgKWPn+mWYFHTRb5Gh3vVvVGwHvFqKQGRWEUXKhTcUK7iYXNw4
+         L0KcIA+5g5K4hsDdr+apBoYNRuMHdh5XhxgumJf3JnILbddaS23/LwUTJGl5nzBQ4A5V
+         yQTA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:date:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding:user-agent;
+        bh=xYXyVu2UGm5NVJcQBRrpwZ4kFezE3zeC/S6QAAEC6Ag=;
+        b=bg8xwHfE025SsGiMtIrj8sj9NZu4cWgNOrTNFAVeH+psILinp8nodCO3HTJFe22P1H
+         uVMKja2G4lcpoYb0jIh+o01bksUW6HsXDxrING48JjDtSSj3WE3n0ltykG9RT9C+CU1Y
+         JxO8MT6klW9DozghyosZcPbsX4Cw6FXiay18oalI4Sy9qQcmfirF/LGQvj8/Q370DAB0
+         BcJbBUSJkPQv8C+UrKp3lHgasKn8kXbgNMWF7BLEi5ZHqEQRfZEZO+WOCWf2KODi0YH6
+         geuIM+eS+WDPA3Nx2aRTH18pTld3EjRIsDOC0Iqe57CvLI3OF85m3tU6DbjcvEpxTlKJ
+         Fj4w==
+X-Gm-Message-State: APjAAAWpiUvjhg+nC5x6vN6RM+DbQNslwmuovqUU79zrVWcTSE7R4JZ0
+        KjC1q5IiNAdDMrsqm8lPhl8=
+X-Google-Smtp-Source: APXvYqwen3zNPo6+/BCNKjGDzfwTCeUi7r7+A11bH4q4pqBaqKMVLeDZaMuxDZOunU6qj6/qQtrfNw==
+X-Received: by 2002:a81:4fcb:: with SMTP id d194mr62211680ywb.171.1555366192560;
+        Mon, 15 Apr 2019 15:09:52 -0700 (PDT)
+Received: from renatolg ([186.220.23.67])
+        by smtp.gmail.com with ESMTPSA id m5sm22433146ywm.67.2019.04.15.15.09.50
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 15 Apr 2019 15:09:52 -0700 (PDT)
+From:   Renato Lui Geh <renatogeh@gmail.com>
+X-Google-Original-From: Renato Lui Geh <renatogeh@renatolg>
+Date:   Mon, 15 Apr 2019 19:09:48 -0300
+To:     jic23@kernel.org, Michael.Hennerich@analog.com,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        dragos.bogdan@analog.com
+Cc:     linux-iio@vger.kernel.org, kernel-usp@googlegroups.com
+Subject: IIO on KernelDevDay
+Message-ID: <20190415220946.wev5gjdh6dn6hmot@renatolg>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+User-Agent: NeoMutt/20180716
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some user spaces (e.g. some Android devices) use /dev/input/event* for handling
-the 3D position of the device with respect to the center of gravity (earth).
-This can be used for gaming input, auto-rotation of screens etc.
+Hi Jonathan,
 
-This interface should be the standard for such use cases because it is an abstraction
-of how orientation data is acquired from sensor chips. Sensor chips may be connected
-through different interfaces and in different positions. They may also have different
-parameters. And, if a chip is replaced by a different one, the values reported by
-the device position interface should remain the same, provided the device tree reflects
-the changed chip.
+(CC-ing linux-iio in case others would like to comment. :)
 
-This did initially lead to input accelerometer drivers like drivers/input/misc/bma150.c
-or drivers/misc/lis3lv02d/
+So some history to begin with. Since late last year, we've
+been attempting to build a tradition of kernel contribution
+amongst students here at the computer science department of
+the University of São Paulo (USP). We made it "official" and
+created a student group made out of graduate and
+undergraduate students: FLUSP [1].
 
-But nowadays, new accelerometer chips mostly get iio drivers and rarely input drivers.
+We started small, but as you probably know, managed to get
+almost three drivers moved out of staging! We've been quite
+excited with what we've achieved so far and decided to open
+up our small group to the whole University.
 
-Therefore we need something like a protocol stack which bridges raw data and input devices.
-It can be seen as a similar layering like TCP/IP vs. bare Ethernet. Or keyboard
-input events vs. raw gpio or raw USB access.
+Since then we've managed to get some new people involved and
+some of their patches sent out. Recently we have received
+quite a big influx of students interested in contributing to
+the kernel, and so we wanted to do something big. We came up
+with this idea for a KernelDevDay [2], in which we get a
+bunch of us in a room and spend the whole day sending out
+patches to a specific subsystem.
 
-This patch bridges the gap between raw iio data and the input device abstraction
-so that accelerometer measurements can additionally be presented as X/Y/Z accelerometer
-channels (INPUT_PROP_ACCELEROMETER) through /dev/input/event*.
+We were thinking of going with the IIO for this debut
+version, as that's the one we've most experience with. We
+intend on working on 5 or more specific drivers (depending
+on the number of attendees), and our objective is to move
+them out of staging. This event would happen on May 18
+(that's a Saturday), with several patches sent throughout
+the day.
 
-There are no special requirements or changes needed for an iio driver.
+We know that your review window is on weekends, and that
+this might mean a high volume of patches on that day, so we
+wanted to let you know of all this beforehand and give you
+the time to send any suggestions or comments on all this.
+Like if maybe you'd want us to specifically tag our patches
+for a later batch review, and not have to deal with them all
+at once; or have us send large patchsets as opposed to small
+or individual patches so as to not spam you.
 
-There is no need to define a mapping (e.g. in device tree).
+We are also aware of several problems that might turn up.
+Like that our patches might not be accepted or reviewed on
+the same day, which might result in a bottleneck. We plan on
+working on multiple drivers at the same time to solve this
+issue. We also plan on having an internal review to avoid
+wasting your time with minor reviews. We also know that
+you're not the only one reviewing drivers (and we obviously
+don't expect you to review everything on the same day!), and
+that the event being on a Saturday might be troublesome, but
+I think what we really want is to just help out the IIO any
+way we can. :)
 
-This driver simply collects the first 3 accelerometer channels as X, Y and Z.
-If only 1 or 2 channels are available, they are used for X and Y only. Additional
-channels are ignored.
+Anyway, we'd really love to have your opinion on this.
+Sorry for the high content email.
 
-Scaling is done automatically so that 1g is represented by value 256 and
-range is assumed to be -511 .. +511 which gives a reasonable precision as an
-input device.
+Looking forward to hearing from you,
+Thanks,
+Renato
 
-If a mount-matrix is provided by the iio driver, it is also taken into account
-so that the input event automatically gets the correct orientation with respect
-to the device.
-
-If this extension is not configured into the kernel it takes no resources (except
-source code).
-
-If it is configured, but there is no accelerometer, there is only a tiny penalty
-for scanning for accelerometer channels once during probe of each iio device.
-
-If it runs, the driver polls the device(s) once every 100 ms. A mode where the
-iio device defines the update rate is not implemented and for further study.
-
-If there is no user-space client, polling is not running.
-
-The driver is capable to handle multiple iio accelerometers and they are
-presented by unique /dev/input/event* files. The iio chip name is used to define
-the input device name so that it can be identified (e.g. by udev rules or evtest).
-
-Here is some example what you can expect from the driver (device:
-arch/arm/boot/dts/omap3-gta04a5.dts):
-
-root@letux:~# dmesg|fgrep iio
-[    6.324584] input: iio-bridge: bmc150_accel as /devices/platform/68000000.ocp/48072000.i2c/i2c-1/1-0010/iio:device1/input/input5
-[    6.516632] input: iio-bridge: bno055 as /devices/platform/68000000.ocp/48072000.i2c/i2c-1/1-0029/iio:device3/input/input7
-root@letux:~# evtest /dev/input/event5 | head -19
-Input driver version is 1.0.1
-Input device ID: bus 0x0 vendor 0x0 product 0x0 version 0x0
-Input device name: "iio-bridge: bmc150_accel"
-Supported events:
-  Event type 0 (EV_SYN)
-  Event type 3 (EV_ABS)
-    Event code 0 (ABS_X)
-      Value      8
-      Min     -511
-      Max      511
-    Event code 1 (ABS_Y)
-      Value    -44
-      Min     -511
-      Max      511
-    Event code 2 (ABS_Z)
-      Value   -265
-      Min     -511
-      Max      511
-Properties:
-root@letux:~# evtest /dev/input/event7 | head -19
-Input driver version is 1.0.1
-Input device ID: bus 0x0 vendor 0x0 product 0x0 version 0x0
-Input device name: "iio-bridge: bno055"
-Supported events:
-  Event type 0 (EV_SYN)
-  Event type 3 (EV_ABS)
-    Event code 0 (ABS_X)
-      Value     -6
-      Min     -511
-      Max      511
-    Event code 1 (ABS_Y)
-      Value     17
-      Min     -511
-      Max      511
-    Event code 2 (ABS_Z)
-      Value   -250
-      Min     -511
-      Max      511
-Properties:
-root@letux:~# 
-
-Although the sensor chips are mounted with different axis orientation,
-the application of the mount matrix provides equivalent (despite noise
-and precision) information on device orientation.
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-
----
-V1: initial RFC version
-V2:
-  - rework based on comments by Jonathan Cameron
-  - mainly: use input_polldev instead of using own polling timer
-  - no need for checking number of open()/close()
-  - no need for locks (already handled by input framework)
-V3:
-  - use new iio_dev->input_mapping instead of mis-using iio_dev->private
-  - removed some spurious printk from debugging
-  - collect channels first and then register them all in one step
-  - fix issue with unsigned int type propagation in atofix()
-  - simplify code for handling negative numbers
-  - fix sequence in unregister
----
- drivers/iio/Kconfig                    |   8 +
- drivers/iio/Makefile                   |   1 +
- drivers/iio/industrialio-core.c        |  12 ++
- drivers/iio/industrialio-inputbridge.c | 270 +++++++++++++++++++++++++
- drivers/iio/industrialio-inputbridge.h |  28 +++
- include/linux/iio/iio.h                |   4 +
- 6 files changed, 323 insertions(+)
- create mode 100644 drivers/iio/industrialio-inputbridge.c
- create mode 100644 drivers/iio/industrialio-inputbridge.h
-
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index d08aeb41cd07..2f0295da6ebc 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -68,6 +68,14 @@ config IIO_TRIGGERED_EVENT
- 	help
- 	  Provides helper functions for setting up triggered events.
- 
-+config IIO_INPUT_BRIDGE
-+	depends on INPUT
-+	bool "Enable accelerometer bridge to input driver"
-+	help
-+	  Provides a /dev/input/event* device for accelerometers
-+	  to use as a 3D input device, e.g. for gaming or auto-rotation
-+	  of screen contents.
-+
- source "drivers/iio/accel/Kconfig"
- source "drivers/iio/adc/Kconfig"
- source "drivers/iio/afe/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index cb5993251381..d695e5a27da5 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_IIO) += industrialio.o
- industrialio-y := industrialio-core.o industrialio-event.o inkern.o
- industrialio-$(CONFIG_IIO_BUFFER) += industrialio-buffer.o
- industrialio-$(CONFIG_IIO_TRIGGER) += industrialio-trigger.o
-+industrialio-$(CONFIG_IIO_INPUT_BRIDGE) += industrialio-inputbridge.o
- 
- obj-$(CONFIG_IIO_CONFIGFS) += industrialio-configfs.o
- obj-$(CONFIG_IIO_SW_DEVICE) += industrialio-sw-device.o
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 4700fd5d8c90..81f412b41a78 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -29,6 +29,7 @@
- #include <linux/iio/iio.h>
- #include "iio_core.h"
- #include "iio_core_trigger.h"
-+#include "industrialio-inputbridge.h"
- #include <linux/iio/sysfs.h>
- #include <linux/iio/events.h>
- #include <linux/iio/buffer.h>
-@@ -1723,6 +1724,15 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 	if (ret < 0)
- 		goto error_unreg_eventset;
- 
-+	ret = iio_device_register_inputbridge(indio_dev);
-+	if (ret) {
-+		dev_err(indio_dev->dev.parent,
-+			"Failed to register as input driver\n");
-+		device_del(&indio_dev->dev);
-+
-+		return ret;
-+	}
-+
- 	return 0;
- 
- error_unreg_eventset:
-@@ -1745,6 +1755,8 @@ void iio_device_unregister(struct iio_dev *indio_dev)
- {
- 	mutex_lock(&indio_dev->info_exist_lock);
- 
-+	iio_device_unregister_inputbridge(indio_dev);
-+
- 	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
- 
- 	iio_device_unregister_debugfs(indio_dev);
-diff --git a/drivers/iio/industrialio-inputbridge.c b/drivers/iio/industrialio-inputbridge.c
-new file mode 100644
-index 000000000000..592d5ee91a30
---- /dev/null
-+++ b/drivers/iio/industrialio-inputbridge.c
-@@ -0,0 +1,270 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * The Industrial I/O core, bridge to input devices
-+ *
-+ * Copyright (c) 2016-2019 Golden Delicious Computers GmbH&Co. KG
-+ */
-+
-+#include <linux/iio/consumer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/types.h>
-+#include <linux/input.h>
-+#include <linux/input-polldev.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+
-+#include "industrialio-inputbridge.h"
-+
-+/* currently, only polling is implemented */
-+#define POLLING_MSEC	100
-+
-+struct iio_input_map {
-+	struct input_polled_dev *poll_dev;	/* the input device */
-+	struct iio_channel channels[3];		/* x, y, z channels */
-+	struct matrix {
-+		int mxx, myx, mzx;	/* fixed point mount-matrix */
-+		int mxy, myy, mzy;
-+		int mxz, myz, mzz;
-+	} matrix;
-+};
-+
-+static inline struct iio_input_map *to_iio_input_map(
-+		struct iio_channel *channel)
-+{
-+	return (struct iio_input_map *) channel->data;
-+}
-+
-+/* minimum and maximum range we want to report */
-+#define ABSMAX_ACC_VAL		(512 - 1)
-+#define ABSMIN_ACC_VAL		-(ABSMAX_ACC_VAL)
-+
-+/* scale processed iio values so that 1g maps to ABSMAX_ACC_VAL / 2 */
-+#define SCALE			((100 * ABSMAX_ACC_VAL) / (2 * 981))
-+
-+/*
-+ * convert float string to scaled fixed point format, e.g.
-+ *   1		-> 1000		(value passed as unit)
-+ *   1.23	-> 1230
-+ *   0.1234	->  123
-+ *   -.01234	->  -12
-+ */
-+
-+static int32_t atofix(const char *str, uint32_t unit)
-+{
-+	int32_t mantissa = 0;
-+	bool decimal = false;
-+	int divisor = 1;
-+
-+	if (*str == '-')
-+		divisor = -1, str++;
-+	while (*str && abs(divisor) < unit) {
-+		if (*str >= '0' && *str <= '9') {
-+			mantissa = 10 * mantissa + (*str - '0');
-+			if (decimal)
-+				divisor *= 10;
-+		} else if (*str == '.')
-+			decimal = true;
-+		else
-+			return 0;	/* error */
-+		str++;
-+	}
-+
-+	return (mantissa * (int32_t) unit) / divisor;
-+}
-+
-+static void iio_apply_matrix(struct matrix *m, int *in, int *out, int unit)
-+{
-+	/* apply mount matrix */
-+	out[0] = (m->mxx * in[0] + m->myx * in[1] + m->mzx * in[2]) / unit;
-+	out[1] = (m->mxy * in[0] + m->myy * in[1] + m->mzy * in[2]) / unit;
-+	out[2] = (m->mxz * in[0] + m->myz * in[1] + m->mzz * in[2]) / unit;
-+}
-+
-+#define FIXED_POINT_UNIT	1000	/* seems reasonable for accelerometer input */
-+
-+static void iio_accel_poll(struct input_polled_dev *dev)
-+{
-+	struct iio_input_map *map = dev->private;
-+	struct input_dev *input = dev->input;
-+
-+	int values[3];		/* values while processing */
-+	int aligned_values[3];	/* mount matrix applied */
-+
-+	int cindex = 0;
-+
-+	while (cindex < ARRAY_SIZE(values)) {
-+		struct iio_channel *channel =
-+			&map->channels[cindex];
-+		int val;
-+		int ret;
-+
-+		if (!channel) {
-+			values[cindex] = 0;
-+			continue;
-+		}
-+
-+		ret = iio_read_channel_raw(channel, &val);
-+
-+		if (ret < 0) {
-+			pr_err("%s(): channel read error %d\n",
-+				__func__, cindex);
-+			return;
-+		}
-+
-+		ret = iio_convert_raw_to_processed(channel, val,
-+				 &values[cindex], SCALE);
-+
-+		if (ret < 0) {
-+			pr_err("%s(): channel processing error\n",
-+				__func__);
-+			return;
-+		}
-+
-+		cindex++;
-+	}
-+
-+	iio_apply_matrix(&map->matrix, values, aligned_values, FIXED_POINT_UNIT);
-+
-+	input_report_abs(input, ABS_X, aligned_values[0]);
-+	input_report_abs(input, ABS_Y, aligned_values[1]);
-+	input_report_abs(input, ABS_Z, aligned_values[2]);
-+	input_sync(input);
-+}
-+
-+static int iio_input_register_accel_channels(struct iio_dev *indio_dev,
-+		 const struct iio_chan_spec *chan[], int num_channels)
-+{ /* we found some accelerometer channel */
-+	int ret;
-+	int cindex;
-+	struct input_polled_dev *poll_dev;
-+	struct iio_input_map *map = indio_dev->input_mapping;
-+	const struct iio_chan_spec_ext_info *ext_info;
-+
-+	if (unlikely(map))
-+		return -EINVAL;	/* already registered */
-+
-+	if (num_channels < 1)
-+		return 0;	/* silently ignore */
-+
-+	map = devm_kzalloc(&indio_dev->dev, sizeof(struct iio_input_map), GFP_KERNEL);
-+	if (!map)
-+		return -ENOMEM;
-+
-+	indio_dev->input_mapping = map;
-+
-+	poll_dev = devm_input_allocate_polled_device(&indio_dev->dev);
-+	if (!poll_dev)
-+		return -ENOMEM;
-+
-+	poll_dev->private = map;
-+	poll_dev->poll = iio_accel_poll;
-+	poll_dev->poll_interval = POLLING_MSEC;
-+
-+	poll_dev->input->name = kasprintf(GFP_KERNEL, "iio-bridge: %s",
-+						    indio_dev->name);
-+	poll_dev->input->phys = kasprintf(GFP_KERNEL, "iio:device%d",
-+						    indio_dev->id);
-+
-+// do we need something like this?
-+//	poll_dev->input->id.bustype = BUS_IIO;
-+//	poll_dev->input->id.vendor = 0x0001;
-+//	poll_dev->input->id.product = 0x0001;
-+//	poll_dev->input->id.version = 0x0001;
-+
-+	set_bit(INPUT_PROP_ACCELEROMETER, poll_dev->input->propbit);
-+	poll_dev->input->evbit[0] = BIT_MASK(EV_ABS);
-+	input_alloc_absinfo(poll_dev->input);
-+	input_set_abs_params(poll_dev->input, ABS_X, ABSMIN_ACC_VAL,
-+				ABSMAX_ACC_VAL, 0, 0);
-+	input_set_abs_params(poll_dev->input, ABS_Y, ABSMIN_ACC_VAL,
-+				ABSMAX_ACC_VAL, 0, 0);
-+	input_set_abs_params(poll_dev->input, ABS_Z, ABSMIN_ACC_VAL,
-+				ABSMAX_ACC_VAL, 0, 0);
-+
-+	map->poll_dev = poll_dev;
-+
-+	ret = input_register_polled_device(poll_dev);
-+
-+	if (ret < 0) {
-+		kfree(poll_dev->input->name);
-+		kfree(poll_dev->input->phys);
-+		return ret;
-+	}
-+
-+	/* assume all channels of a device share the same matrix */
-+
-+	ext_info = chan[0]->ext_info;
-+	while (ext_info && ext_info->name) {
-+		if (strcmp(ext_info->name, "mount_matrix") == 0)
-+			break;	/* found */
-+		ext_info++;
-+		}
-+
-+	if (ext_info && ext_info->name) {
-+		uintptr_t priv = ext_info->private;
-+		const struct iio_mount_matrix *mtx;
-+
-+		mtx = ((iio_get_mount_matrix_t *) priv)(indio_dev,
-+							chan[0]);
-+
-+		map->matrix.mxx = atofix(mtx->rotation[0], FIXED_POINT_UNIT);
-+		map->matrix.myx = atofix(mtx->rotation[1], FIXED_POINT_UNIT);
-+		map->matrix.mzx = atofix(mtx->rotation[2], FIXED_POINT_UNIT);
-+		map->matrix.mxy = atofix(mtx->rotation[3], FIXED_POINT_UNIT);
-+		map->matrix.myy = atofix(mtx->rotation[4], FIXED_POINT_UNIT);
-+		map->matrix.mzy = atofix(mtx->rotation[5], FIXED_POINT_UNIT);
-+		map->matrix.mxz = atofix(mtx->rotation[6], FIXED_POINT_UNIT);
-+		map->matrix.myz = atofix(mtx->rotation[7], FIXED_POINT_UNIT);
-+		map->matrix.mzz = atofix(mtx->rotation[8], FIXED_POINT_UNIT);
-+	} else {
-+		map->matrix.mxx = FIXED_POINT_UNIT;
-+		map->matrix.myx = 0;
-+		map->matrix.mzx = 0;
-+		map->matrix.mxy = 0;
-+		map->matrix.myy = FIXED_POINT_UNIT;
-+		map->matrix.mzy = 0;
-+		map->matrix.mxz = 0;
-+		map->matrix.myz = 0;
-+		map->matrix.mzz = FIXED_POINT_UNIT;
-+	}
-+
-+	for (cindex = 0; cindex < ARRAY_SIZE(map->channels); cindex++) {
-+		if (cindex < num_channels)
-+			map->channels[cindex].channel = chan[cindex];
-+		map->channels[cindex].indio_dev = indio_dev;
-+		map->channels[cindex].data = map;
-+	}
-+
-+	return 0;
-+}
-+
-+int iio_device_register_inputbridge(struct iio_dev *indio_dev)
-+{
-+	int cindex;
-+	int num_channels = 0;
-+	const struct iio_chan_spec *channels[3];
-+
-+	for (cindex = 0; cindex < indio_dev->num_channels; cindex++) {
-+		const struct iio_chan_spec *chan =
-+				&indio_dev->channels[cindex];
-+
-+		if (chan->type == IIO_ACCEL && num_channels < ARRAY_SIZE(channels))
-+			channels[num_channels++] = chan;
-+	}
-+
-+	return iio_input_register_accel_channels(indio_dev, channels, num_channels);
-+}
-+
-+void iio_device_unregister_inputbridge(struct iio_dev *indio_dev)
-+{
-+	struct iio_input_map *map = iio_device_get_drvdata(indio_dev);
-+	struct input_dev *input = map->poll_dev->input;
-+
-+	input_unregister_polled_device(map->poll_dev);
-+	kfree(input->name);
-+	kfree(input->phys);
-+}
-+
-+MODULE_AUTHOR("H. Nikolaus Schaller <hns@goldelico.com>");
-+MODULE_DESCRIPTION("Bridge to present Industrial I/O accelerometers as properly oriented Input devices");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/industrialio-inputbridge.h b/drivers/iio/industrialio-inputbridge.h
-new file mode 100644
-index 000000000000..1363b10ab3f7
---- /dev/null
-+++ b/drivers/iio/industrialio-inputbridge.h
-@@ -0,0 +1,28 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * The Industrial I/O core, bridge to input devices
-+ *
-+ * Copyright (c) 2016-2019 Golden Delicious Computers GmbH&Co. KG
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#if defined(CONFIG_IIO_INPUT_BRIDGE)
-+
-+extern int iio_device_register_inputbridge(struct iio_dev *indio_dev);
-+extern void iio_device_unregister_inputbridge(struct iio_dev *indio_dev);
-+
-+#else
-+
-+static inline int iio_device_register_inputbridge(struct iio_dev *indio_dev)
-+{
-+	return 0;
-+}
-+
-+static inline void iio_device_unregister_inputbridge(struct iio_dev *indio_dev)
-+{
-+}
-+
-+#endif
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index a74cb177dc6f..a4d2f11384e9 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -524,6 +524,7 @@ struct iio_buffer_setup_ops {
-  * @flags:		[INTERN] file ops related flags including busy flag.
-  * @debugfs_dentry:	[INTERN] device specific debugfs dentry.
-  * @cached_reg_addr:	[INTERN] cached register address for debugfs reads.
-+ * @input_mapping:	[INTERN] mapping for input device
-  */
- struct iio_dev {
- 	int				id;
-@@ -570,6 +571,9 @@ struct iio_dev {
- 	struct dentry			*debugfs_dentry;
- 	unsigned			cached_reg_addr;
- #endif
-+#if defined(CONFIG_IIO_INPUT_BRIDGE)
-+	void				*input_mapping;
-+#endif
- };
- 
- const struct iio_chan_spec
--- 
-2.19.1
-
+[1] - https://flusp.ime.usp.br/
+[2] - https://flusp.ime.usp.br/events/2019/04/01/kerneldevday_en/
