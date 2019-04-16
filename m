@@ -6,45 +6,45 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 390D3C10F13
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 14:41:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B72EC10F13
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 14:48:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E6EC320693
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 14:41:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF05E20693
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 14:48:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="mY6ohycQ"
+	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="Wl2jj6um"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726037AbfDPOl6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Apr 2019 10:41:58 -0400
-Received: from us01smtprelay-2.synopsys.com ([198.182.47.9]:59484 "EHLO
+        id S1726753AbfDPOsh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Apr 2019 10:48:37 -0400
+Received: from us01smtprelay-2.synopsys.com ([198.182.47.9]:59720 "EHLO
         smtprelay.synopsys.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725796AbfDPOl6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 10:41:58 -0400
-Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        with ESMTP id S1726641AbfDPOsg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 10:48:36 -0400
+Received: from mailhost.synopsys.com (dc8-mailhost2.synopsys.com [10.13.135.210])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay.synopsys.com (Postfix) with ESMTPS id F091924E0AF7;
-        Tue, 16 Apr 2019 07:41:56 -0700 (PDT)
+        by smtprelay.synopsys.com (Postfix) with ESMTPS id 57D3024E2140;
+        Tue, 16 Apr 2019 07:48:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1555425717; bh=Mj2KYnT4wlRC5r8lnNcWpsLPIcNxiWsbVnWdATMOHA4=;
+        t=1555426116; bh=D3yDYgE9nkI0VAfOP49ZeJQZXPSpona/6v/OY+Y2fUs=;
         h=From:To:CC:Subject:Date:References:In-Reply-To:From;
-        b=mY6ohycQhmg9iijkpmPqGLSlLpYEhSM8FGzJiXY6fT2dsCoLXQMnKyz4FbO1sBLn4
-         +9sScwgReWOw0F6W0grOyuQeTPri/P9FLcefkaqkhsnRkhzzX+rfNRWlb86lkNMfDy
-         Bm29ajAu5EJ9abczZrFi60Rpn3VEZcjvSoQKBLEjOLfw8thHq1xbVgNbWjK/TVWMWI
-         r2goeS/W9hL6EH/GUxXz1o4UrbdeCKyNd4Fwg+bXGdMRnC+YAAuOmrIlt+Xdyz/8vU
-         Lsp/5JEnXdoJQI4KOtV8S+ddsDZI+X3v1G3V0sZWJTjYac2UHwMs93kIIcm04bjv+t
-         UYQf+4MiK5clA==
-Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        b=Wl2jj6umaYnm4Y7vzgFpO5U3v0ntAE41tS/o5wFTdOsPWgDtO/+I9O/Wnm5DiNpQT
+         Ginqi/BFOpOtzN/JjOLVqHdZ7zHcnVIoFvZ6nbnMowRDt3BDrccG3bdo1E0r77SnLe
+         o66rOVmtaYCMzopVppBQM2uF35GsxPTWamvK8dUjhQy9nTlVAPqW0qveF3Rt2rezRj
+         aAPp6cIfio6vqnbTrgmugxKLFAkjcx3DSWor1EDwqVwc8/+3qeP/ovembnyRXqjL+B
+         K9NfnJSuZJ7WhmeYu8ikuuXNq1YZaUVM3Yeb7pQi0PaJ8w9K9LWprY7eThs9M8Kgua
+         METAfEyu2J3hA==
+Received: from us01wehtc1.internal.synopsys.com (us01wehtc1-vip.internal.synopsys.com [10.12.239.236])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailhost.synopsys.com (Postfix) with ESMTPS id B438AA0079;
-        Tue, 16 Apr 2019 14:41:53 +0000 (UTC)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 5F725A023A;
+        Tue, 16 Apr 2019 14:48:29 +0000 (UTC)
 Received: from DE02WEHTCB.internal.synopsys.com (10.225.19.94) by
- US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
- (TLS) id 14.3.408.0; Tue, 16 Apr 2019 07:41:53 -0700
+ us01wehtc1.internal.synopsys.com (10.12.239.231) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Tue, 16 Apr 2019 07:48:29 -0700
 Received: from DE02WEMBXB.internal.synopsys.com ([fe80::95ce:118a:8321:a099])
  by DE02WEHTCB.internal.synopsys.com ([::1]) with mapi id 14.03.0415.000; Tue,
- 16 Apr 2019 16:41:51 +0200
+ 16 Apr 2019 16:48:26 +0200
 From:   Vitor Soares <vitor.soares@synopsys.com>
 To:     Boris Brezillon <boris.brezillon@collabora.com>,
         Vitor Soares <vitor.soares@synopsys.com>
@@ -61,27 +61,27 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
         "broonie@kernel.org" <broonie@kernel.org>,
         "joao.pinto@synopsys.com" <joao.pinto@synopsys.com>
-Subject: RE: [PATCH 1/3] remap: Add I3C bus support
-Thread-Topic: [PATCH 1/3] remap: Add I3C bus support
-Thread-Index: AQHU88A1Iwl3j+G7wk6IBdZcVvxAIqY+LqaAgACruZA=
-Date:   Tue, 16 Apr 2019 14:41:50 +0000
-Message-ID: <13D59CF9CEBAF94592A12E8AE55501350A615995@DE02WEMBXB.internal.synopsys.com>
+Subject: RE: [PATCH 2/3] i3c: Add i3c_get_device_id helper
+Thread-Topic: [PATCH 2/3] i3c: Add i3c_get_device_id helper
+Thread-Index: AQHU88A5tZAS2U8h5UGt/7MTI0gtHaY+L16AgACuToA=
+Date:   Tue, 16 Apr 2019 14:48:26 +0000
+Message-ID: <13D59CF9CEBAF94592A12E8AE55501350A6159AD@DE02WEMBXB.internal.synopsys.com>
 References: <cover.1555354268.git.vitor.soares@synopsys.com>
-        <c38e3cb9e8524af58c995a9cf1f79ddba69b47b4.1555354268.git.vitor.soares@synopsys.com>
- <20190416081551.6f21bc38@collabora.com>
-In-Reply-To: <20190416081551.6f21bc38@collabora.com>
+        <33ba7e13816fcece0a2f7ec917c18807359c16c7.1555354268.git.vitor.soares@synopsys.com>
+ <20190416081825.2d17b771@collabora.com>
+In-Reply-To: <20190416081825.2d17b771@collabora.com>
 Accept-Language: en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
 X-MS-TNEF-Correlator: 
 x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcc29hcmVzXGFw?=
  =?us-ascii?Q?cGRhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
- =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYzFhMmVmOTctNjA1NS0xMWU5LTgyM2EtZDQ4MWQ3?=
- =?us-ascii?Q?ODUxODBmXGFtZS10ZXN0XGMxYTJlZjk4LTYwNTUtMTFlOS04MjNhLWQ0ODFk?=
- =?us-ascii?Q?Nzg1MTgwZmJvZHkudHh0IiBzej0iNjUwMSIgdD0iMTMxOTk4OTkzMDg4MTA5?=
- =?us-ascii?Q?ODI0IiBoPSJ1VmM1TUx0WmlSbFN4enpKeHlreUJ2ZHdhR289IiBpZD0iIiBi?=
- =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFCUUpBQUFB?=
- =?us-ascii?Q?M2JtRll2VFVBWFRvRVkrcjR5NzdkT2dSajZ2akx2c09BQUFBQUFBQUFBQUFB?=
+ =?us-ascii?Q?OWUzNWJcbXNnc1xtc2ctYWVhZWJjMTItNjA1Ni0xMWU5LTgyM2EtZDQ4MWQ3?=
+ =?us-ascii?Q?ODUxODBmXGFtZS10ZXN0XGFlYWViYzEzLTYwNTYtMTFlOS04MjNhLWQ0ODFk?=
+ =?us-ascii?Q?Nzg1MTgwZmJvZHkudHh0IiBzej0iMjE5OCIgdD0iMTMxOTk4OTk3MDQ1NjUw?=
+ =?us-ascii?Q?NzMwIiBoPSJ1eVIrUmtZWU14cVlIWDV6ZmY2bE1vTU0wOVE9IiBpZD0iIiBi?=
+ =?us-ascii?Q?bD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQUFCUUpBQUFx?=
+ =?us-ascii?Q?SloxeFkvVFVBUkttNUVRME1BTTBFcWJrUkRRd0F6UU9BQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?QUFBQUFBQUFBQUFBSEFBQUFDa0NBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
  =?us-ascii?Q?RUFBUUFCQUFBQVZ6ZGhHZ0FBQUFBQUFBQUFBQUFBQUo0QUFBQm1BR2tBYmdC?=
  =?us-ascii?Q?aEFHNEFZd0JsQUY4QWNBQnNBR0VBYmdCdUFHa0FiZ0JuQUY4QWR3QmhBSFFB?=
@@ -162,193 +162,69 @@ X-Mailing-List: linux-iio@vger.kernel.org
 Hi Boris,
 
 From: Boris Brezillon <boris.brezillon@collabora.com>
-Date: Tue, Apr 16, 2019 at 07:15:51
+Date: Tue, Apr 16, 2019 at 07:18:25
 
-> Typo in the subject: s/remap/regmap/
->=20
-> On Mon, 15 Apr 2019 21:19:39 +0200
+> On Mon, 15 Apr 2019 21:19:40 +0200
 > Vitor Soares <vitor.soares@synopsys.com> wrote:
 >=20
-> > Add basic support for I3C bus.
-> > This is a simple implementation that only give support
-> > for Read and Write commands.
+> > This helper return the i3c_device_id structure in order the client
+> > have access to the driver data.
 > >=20
 > > Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
 > > ---
-> >  drivers/base/regmap/Kconfig      |  6 +++-
-> >  drivers/base/regmap/Makefile     |  1 +
-> >  drivers/base/regmap/regmap-i3c.c | 62 ++++++++++++++++++++++++++++++++=
-++++++++
-> >  include/linux/regmap.h           | 20 +++++++++++++
-> >  4 files changed, 88 insertions(+), 1 deletion(-)
-> >  create mode 100644 drivers/base/regmap/regmap-i3c.c
+> >  drivers/i3c/device.c       | 8 ++++++++
+> >  include/linux/i3c/device.h | 1 +
+> >  2 files changed, 9 insertions(+)
 > >=20
-> > diff --git a/drivers/base/regmap/Kconfig b/drivers/base/regmap/Kconfig
-> > index 6ad5ef4..c8bbf53 100644
-> > --- a/drivers/base/regmap/Kconfig
-> > +++ b/drivers/base/regmap/Kconfig
-> > @@ -4,7 +4,7 @@
-> >  # subsystems should select the appropriate symbols.
+> > diff --git a/drivers/i3c/device.c b/drivers/i3c/device.c
+> > index 472be99..8ab8e4c 100644
+> > --- a/drivers/i3c/device.c
+> > +++ b/drivers/i3c/device.c
+> > @@ -235,6 +235,14 @@ struct i3c_device *dev_to_i3cdev(struct device *de=
+v)
+> >  }
+> >  EXPORT_SYMBOL_GPL(dev_to_i3cdev);
 > > =20
-> >  config REGMAP
-> > -	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_W1 ||=
- REGMAP_AC97 || REGMAP_MMIO || REGMAP_IRQ)
-> > +	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_W1 ||=
- REGMAP_AC97 || REGMAP_MMIO || REGMAP_IRQ || REGMAP_I3C)
-> >  	select IRQ_DOMAIN if REGMAP_IRQ
-> >  	bool
+> > +const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cde=
+v)
+> > +{
+> > +	const struct i3c_driver *i3cdrv =3D drv_to_i3cdrv(i3cdev->dev.driver)=
+;
+> > +
+> > +	return i3cdrv->id_table;
+> > +}
+> > +EXPORT_SYMBOL_GPL(i3c_get_device_id);
+>=20
+> I think what you want is i3c_device_match_id().=20
+
+I want the i3c_device_id struct of an i3c_device. What is the name that=20
+you suggest?
+
+>Just move the function
+> to drivers/i3c/device.c, export it and define its prototype in
+> include/i3c/device.h.
+
+You are right, this should go for the device side.
+
+>=20
+> > +
+> >  /**
+> >   * i3c_driver_register_with_owner() - register an I3C device driver
+> >   *
+> > diff --git a/include/linux/i3c/device.h b/include/linux/i3c/device.h
+> > index 7ee7e30..ee48886 100644
+> > --- a/include/linux/i3c/device.h
+> > +++ b/include/linux/i3c/device.h
+> > @@ -211,6 +211,7 @@ static inline struct i3c_driver *drv_to_i3cdrv(stru=
+ct device_driver *drv)
 > > =20
-> > @@ -49,3 +49,7 @@ config REGMAP_SOUNDWIRE
-> >  config REGMAP_SCCB
-> >  	tristate
-> >  	depends on I2C
-> > +
-> > +config REGMAP_I3C
-> > +	tristate
-> > +	depends on I3C
-> > diff --git a/drivers/base/regmap/Makefile b/drivers/base/regmap/Makefil=
-e
-> > index f5b4e88..ff6c7d8 100644
-> > --- a/drivers/base/regmap/Makefile
-> > +++ b/drivers/base/regmap/Makefile
-> > @@ -16,3 +16,4 @@ obj-$(CONFIG_REGMAP_IRQ) +=3D regmap-irq.o
-> >  obj-$(CONFIG_REGMAP_W1) +=3D regmap-w1.o
-> >  obj-$(CONFIG_REGMAP_SOUNDWIRE) +=3D regmap-sdw.o
-> >  obj-$(CONFIG_REGMAP_SCCB) +=3D regmap-sccb.o
-> > +obj-$(CONFIG_REGMAP_I3C) +=3D regmap-i3c.o
-> > diff --git a/drivers/base/regmap/regmap-i3c.c b/drivers/base/regmap/reg=
-map-i3c.c
-> > new file mode 100644
-> > index 0000000..565997b
-> > --- /dev/null
-> > +++ b/drivers/base/regmap/regmap-i3c.c
-> > @@ -0,0 +1,62 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
-> > + *
-> > + * Author: Vitor Soares <vitor.soares@synopsys.com>
-> > + */
-> > +
-> > +#include <linux/regmap.h>
-> > +#include <linux/i3c/device.h>
-> > +#include <linux/i3c/master.h>
-> > +#include <linux/module.h>
-> > +
-> > +static int regmap_i3c_write(void *context, const void *data, size_t co=
-unt)
-> > +{
-> > +	struct device *dev =3D context;
-> > +	struct i3c_device *i3c =3D dev_to_i3cdev(dev);
-> > +	struct i3c_priv_xfer xfers[] =3D {
-> > +		{
-> > +			.rnw =3D false,
-> > +			.len =3D count,
-> > +			.data.out =3D data,
-> > +		},
-> > +	};
-> > +
-> > +	return i3c_device_do_priv_xfers(i3c, xfers, 1);
-> > +}
-> > +
-> > +static int regmap_i3c_read(void *context,
-> > +			   const void *reg, size_t reg_size,
-> > +			   void *val, size_t val_size)
-> > +{
-> > +	struct device *dev =3D context;
-> > +	struct i3c_device *i3c =3D dev_to_i3cdev(dev);
-> > +	struct i3c_priv_xfer xfers[2];
-> > +
-> > +	xfers[0].rnw =3D false;
-> > +	xfers[0].len =3D reg_size;
-> > +	xfers[0].data.out =3D reg;
-> > +
-> > +	xfers[1].rnw =3D true;
-> > +	xfers[1].len =3D val_size;
-> > +	xfers[1].data.in =3D val;
-> > +
-> > +	return i3c_device_do_priv_xfers(i3c, xfers, 2);
-> > +}
-> > +
-> > +static struct regmap_bus regmap_i3c =3D {
-> > +	.write =3D regmap_i3c_write,
-> > +	.read =3D regmap_i3c_read,
-> > +};
-> > +
-> > +struct regmap *__devm_regmap_init_i3c(struct i3c_device *i3c,
-> > +				      const struct regmap_config *config,
-> > +				      struct lock_class_key *lock_key,
-> > +				      const char *lock_name)
-> > +{
-> > +	return __devm_regmap_init(&i3c->dev, &regmap_i3c, &i3c->dev, config,
-> > +				  lock_key, lock_name);
-> > +}
-> > +EXPORT_SYMBOL_GPL(__devm_regmap_init_i3c);
-> > +
-> > +MODULE_LICENSE("GPL");
-> > diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-> > index daeec7d..f65984d 100644
-> > --- a/include/linux/regmap.h
-> > +++ b/include/linux/regmap.h
-> > @@ -25,6 +25,7 @@ struct module;
-> >  struct clk;
-> >  struct device;
-> >  struct i2c_client;
-> > +struct i3c_device;
-> >  struct irq_domain;
-> >  struct slim_device;
-> >  struct spi_device;
-> > @@ -624,6 +625,10 @@ struct regmap *__devm_regmap_init_slimbus(struct s=
-lim_device *slimbus,
-> >  				 const struct regmap_config *config,
-> >  				 struct lock_class_key *lock_key,
-> >  				 const char *lock_name);
-> > +struct regmap *__devm_regmap_init_i3c(struct i3c_device *i3c,
-> > +				 const struct regmap_config *config,
-> > +				 struct lock_class_key *lock_key,
-> > +				 const char *lock_name);
-> >  /*
-> >   * Wrapper for regmap_init macros to include a unique lockdep key and =
-name
-> >   * for each call. No-op if CONFIG_LOCKDEP is not set.
-> > @@ -982,6 +987,21 @@ bool regmap_ac97_default_volatile(struct device *d=
-ev, unsigned int reg);
-> >  #define devm_regmap_init_slimbus(slimbus, config)			\
-> >  	__regmap_lockdep_wrapper(__devm_regmap_init_slimbus, #config,	\
-> >  				slimbus, config)
-> > +
-> > +/**
-> > + * devm_regmap_init_i3c() - Initialise managed register map
->=20
-> Maybe we should have a more specific name here, as some might want to
-> access registers using HDR modes (devm_regmap_init_i3c_sdr()?)
-
-That make sense if the device with HDR capability is able to do=20
-everything in HDR mode and I'm not sure about that.
-I would like to wait for a couple of commercial devices before that=20
-change.
-
->=20
->=20
-> > + *
-> > + * @i3c: Device that will be interacted with
-> > + * @config: Configuration for register map
-> > + *
-> > + * The return value will be an ERR_PTR() on error or a valid pointer
-> > + * to a struct regmap.  The regmap will be automatically freed by the
-> > + * device management code.
-> > + */
-> > +#define devm_regmap_init_i3c(i3c, config)				\
-> > +	__regmap_lockdep_wrapper(__devm_regmap_init_i3c, #config,	\
-> > +				i3c, config)
-> > +
-> >  int regmap_mmio_attach_clk(struct regmap *map, struct clk *clk);
-> >  void regmap_mmio_detach_clk(struct regmap *map);
-> >  void regmap_exit(struct regmap *map);
-
-
-Thanks for your feedback.
+> >  struct device *i3cdev_to_dev(struct i3c_device *i3cdev);
+> >  struct i3c_device *dev_to_i3cdev(struct device *dev);
+> > +const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cde=
+v);
+> > =20
+> >  static inline void i3cdev_set_drvdata(struct i3c_device *i3cdev,
+> >  				      void *data)
 
 Best regards,
 Vitor Soares
-
