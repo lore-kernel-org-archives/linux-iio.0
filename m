@@ -2,217 +2,200 @@ Return-Path: <SRS0=o58m=SS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F25ACC10F13
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 08:05:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B863C10F13
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 08:20:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BE7B0206BA
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 08:05:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FF0120821
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 08:20:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="HpRjNcDi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727638AbfDPIFq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Apr 2019 04:05:46 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:48630 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbfDPIFq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 04:05:46 -0400
-Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: bbrezillon)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id E02F127F05B;
-        Tue, 16 Apr 2019 09:05:43 +0100 (BST)
-Date:   Tue, 16 Apr 2019 10:05:40 +0200
-From:   Boris Brezillon <boris.brezillon@collabora.com>
-To:     Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Cc:     Vitor Soares <vitor.soares@synopsys.com>,
-        linux-iio@vger.kernel.org, linux-i3c@lists.infradead.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>, bbrezillon@kernel.org,
-        rafael@kernel.org, gregkh@linuxfoundation.org, broonie@kernel.org,
-        joao.pinto@synopsys.com
-Subject: Re: [PATCH 3/3] iio: imu: st_lsm6dsx: Add i3c basic support
-Message-ID: <20190416100540.7adf1fe5@collabora.com>
-In-Reply-To: <CAA2SeNJ1cTxAp6+5Q4Z5L4VFBfA3U4e11_Obpk8muD1Vh3v52A@mail.gmail.com>
-References: <cover.1555354268.git.vitor.soares@synopsys.com>
-        <302f8296299d6cd25b3689f5eca1c510a3290db3.1555354268.git.vitor.soares@synopsys.com>
-        <20190416082539.2f12b38f@collabora.com>
-        <CAA2SeNJ1cTxAp6+5Q4Z5L4VFBfA3U4e11_Obpk8muD1Vh3v52A@mail.gmail.com>
-Organization: Collabora
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+        id S1726605AbfDPIUQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Apr 2019 04:20:16 -0400
+Received: from mail-eopbgr680055.outbound.protection.outlook.com ([40.107.68.55]:65429
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726346AbfDPIUP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 16 Apr 2019 04:20:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bBcmsWdYozlHNHAKG6RY+YfubBIiWB4oH73ZdMVsak4=;
+ b=HpRjNcDidER/0IOAwmpmS56Q69zg6Ivxfmxh3WfdxXP9bc3Mdgkr1Hpl7KCG4yqsPf3W1LzqJhcd4Goo2AUOMna1r/b9yiuNkP2VJxXDh7YIcmKtIgdsBb50bRcn014jhnffC5MkgiH0KiAKVhB4BnryNeXfvXIQqkEkq1RyaDc=
+Received: from CY4PR03CA0017.namprd03.prod.outlook.com (2603:10b6:903:33::27)
+ by BL2PR03MB548.namprd03.prod.outlook.com (2a01:111:e400:c26::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1792.19; Tue, 16 Apr
+ 2019 08:19:33 +0000
+Received: from CY1NAM02FT005.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::203) by CY4PR03CA0017.outlook.office365.com
+ (2603:10b6:903:33::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1792.15 via Frontend
+ Transport; Tue, 16 Apr 2019 08:19:32 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.57)
+ smtp.mailfrom=analog.com; vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT005.mail.protection.outlook.com (10.152.74.117) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1771.16
+ via Frontend Transport; Tue, 16 Apr 2019 08:19:32 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x3G8JVJo000998
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 16 Apr 2019 01:19:31 -0700
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Tue, 16 Apr 2019
+ 04:19:30 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH V2] iio: ad_sigma_delta: Don't put SPI transfer buffer on the stack
+Date:   Tue, 16 Apr 2019 11:19:16 +0300
+Message-ID: <20190416081916.26287-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190409075821.26104-1-alexandru.ardelean@analog.com>
+References: <20190409075821.26104-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(346002)(396003)(136003)(2980300002)(189003)(199004)(54534003)(2906002)(54906003)(7696005)(478600001)(47776003)(50226002)(8936002)(50466002)(6666004)(8676002)(48376002)(106002)(14444005)(16586007)(336012)(53416004)(51416003)(356004)(246002)(7636002)(305945005)(86362001)(107886003)(44832011)(486006)(316002)(2616005)(11346002)(186003)(126002)(106466001)(2351001)(26005)(76176011)(426003)(1076003)(5660300002)(6916009)(4326008)(446003)(77096007)(36756003)(476003);DIR:OUT;SFP:1101;SCL:1;SRVR:BL2PR03MB548;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 5e5ff5cb-85a2-4852-002d-08d6c2444119
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600140)(711020)(4605104)(4709054)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:BL2PR03MB548;
+X-MS-TrafficTypeDiagnostic: BL2PR03MB548:
+X-Microsoft-Antispam-PRVS: <BL2PR03MB5480A8C220024707E20D7E1F9240@BL2PR03MB548.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 000947967F
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: knsJRZoz50GaA8a2LmzZD8PwPGOIC0FF+wnGC2WZ3PBG3gEbzwtWKsDKZPMA0jr7H7QQwYk/aOQAjZp2pK/x2eqvw+VT/Jzey/l5rhGgjHdZ9yrlQOYRVSt/OiMQfpiBKMpHc+M8HYhFCQ7Cd8/ynlGbViSkPaa+660z/8vglT4LbMyqWYhoQsda40f2tKxZ7pPUqjUXcPXokcb/1vee0C51fIGr86FzlJw1v0fNLXHkLpI0it0DUI1Pnme3PcuwuQtRE6/MC9VWRc5sCu1I0JNQ2Q5/h3EiqRShwFWRPsOAzOKBDjoEUu0CmoO8jJ2hM6GFiwm7QSgZIuR8448MLRiakwpxeUUF9RWOhqmMAWkcXHl1gAl9sWg5dnMBvzqtyRB/eMVEtEA8WzRAJPc/+o4CCCrC4J0A97y/c97Y2uc=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 16 Apr 2019 08:19:32.2383
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5e5ff5cb-85a2-4852-002d-08d6c2444119
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL2PR03MB548
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 16 Apr 2019 09:58:33 +0200
-Lorenzo Bianconi <lorenzo.bianconi83@gmail.com> wrote:
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-> >
-> > On Mon, 15 Apr 2019 21:19:41 +0200
-> > Vitor Soares <vitor.soares@synopsys.com> wrote:
-> >  
-> > > For today the st_lsm6dsx driver support lsm6dso sensor only in
-> > > spi and i2c mode.
-> > >
-> > > The lsm6dso is also i3c capable so lets give i3c support to it.
-> > >
-> > > Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
-> > > ---
-> > >  drivers/iio/imu/st_lsm6dsx/Kconfig          |  8 +++-
-> > >  drivers/iio/imu/st_lsm6dsx/Makefile         |  1 +
-> > >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 67 +++++++++++++++++++++++++++++
-> > >  3 files changed, 75 insertions(+), 1 deletion(-)
-> > >  create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> > >
-> > > diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> > > index 094fd00..1ab9bbf 100644
-> > > --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
-> > > +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> > > @@ -1,11 +1,12 @@
-> > >
-> > >  config IIO_ST_LSM6DSX
-> > >       tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors"
-> > > -     depends on (I2C || SPI)
-> > > +     depends on (I2C || SPI || I3C)
-> > >       select IIO_BUFFER
-> > >       select IIO_KFIFO_BUF
-> > >       select IIO_ST_LSM6DSX_I2C if (I2C)
-> > >       select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
-> > > +     select IIO_ST_LSM6DSX_I3C if (I3C)
-> > >       help
-> > >         Say yes here to build support for STMicroelectronics LSM6DSx imu
-> > >         sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
-> > > @@ -23,3 +24,8 @@ config IIO_ST_LSM6DSX_SPI
-> > >       tristate
-> > >       depends on IIO_ST_LSM6DSX
-> > >       select REGMAP_SPI
-> > > +
-> > > +config IIO_ST_LSM6DSX_I3C
-> > > +     tristate
-> > > +     depends on IIO_ST_LSM6DSX
-> > > +     select REGMAP_I3C
-> > > diff --git a/drivers/iio/imu/st_lsm6dsx/Makefile b/drivers/iio/imu/st_lsm6dsx/Makefile
-> > > index e5f733c..c676965 100644
-> > > --- a/drivers/iio/imu/st_lsm6dsx/Makefile
-> > > +++ b/drivers/iio/imu/st_lsm6dsx/Makefile
-> > > @@ -4,3 +4,4 @@ st_lsm6dsx-y := st_lsm6dsx_core.o st_lsm6dsx_buffer.o \
-> > >  obj-$(CONFIG_IIO_ST_LSM6DSX) += st_lsm6dsx.o
-> > >  obj-$(CONFIG_IIO_ST_LSM6DSX_I2C) += st_lsm6dsx_i2c.o
-> > >  obj-$(CONFIG_IIO_ST_LSM6DSX_SPI) += st_lsm6dsx_spi.o
-> > > +obj-$(CONFIG_IIO_ST_LSM6DSX_I3C) += st_lsm6dsx_i3c.o
-> > > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> > > new file mode 100644
-> > > index 0000000..2df5e70
-> > > --- /dev/null
-> > > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> > > @@ -0,0 +1,67 @@
-> > > +// SPDX-License-Identifier: GPL-2.0
-> > > +/*
-> > > + * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
-> > > + *
-> > > + * Author: Vitor Soares <vitor.soares@synopsys.com>
-> > > + */
-> > > +
-> > > +#include <linux/kernel.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/i3c/device.h>
-> > > +#include <linux/i3c/master.h>
-> > > +#include <linux/slab.h>
-> > > +#include <linux/of.h>
-> > > +#include <linux/regmap.h>
-> > > +
-> > > +#include "st_lsm6dsx.h"
-> > > +
-> > > +#define NAME_SIZE    32
-> > > +
-> > > +struct st_lsm6dsx_i3c_data {
-> > > +     char name[NAME_SIZE];  
-> >
-> >         const char *name;
-> >  
-> > > +     enum st_lsm6dsx_hw_id id;
-> > > +};
-> > > +
-> > > +static const struct st_lsm6dsx_i3c_data hw_data[] = {  
-> >
-> > No need to make it an array, and it should probably be named
-> > st_lsm6dso_data not hw_data.  
-> 
-> I guess it will be used even for future devices so I would prefer to
-> make it an array with a 'general' name
+Use a heap allocated memory for the SPI transfer buffer. Using stack memory
+will not work on some architectures when using DMA.
 
-I find it more error-prone to reference an array with an opaque index
-number than reference an instance with a name that clearly reflects
-what HW it describes (see the I3C_DEVICE() entry at the end of the
-driver), but okay.
+This also avoids potential stack corruption, as it makes sure that the
+buffer is in it's own cacheline and (obviously) not on the stack.
 
-> 
-> Regards,
-> Lorenzo
-> 
-> >  
-> > > +     { ST_LSM6DSO_DEV_NAME, ST_LSM6DSO_ID },
-> > > +};
-> > > +
-> > > +static const struct regmap_config st_lsm6dsx_i3c_regmap_config = {
-> > > +     .reg_bits = 8,
-> > > +     .val_bits = 8,
-> > > +};
-> > > +
-> > > +static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
-> > > +{
-> > > +     const struct i3c_device_id *id = i3c_get_device_id(i3cdev);  
-> >
-> >                                          i3c_device_match_id(i3cdev,
-> >                                                              st_lsm6dsx_i3c_ids);
-> >  
-> > > +     const struct st_lsm6dsx_i3c_data *hw_data = id->data;
-> > > +     struct regmap *regmap;
-> > > +
-> > > +     regmap = devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
-> > > +     if (IS_ERR(regmap)) {
-> > > +             dev_err(&i3cdev->dev, "Failed to register i3c regmap %d\n",
-> > > +                     (int)PTR_ERR(regmap));
-> > > +             return PTR_ERR(regmap);
-> > > +     }
-> > > +
-> > > +     return st_lsm6dsx_probe(&i3cdev->dev, 0, hw_data->id,
-> > > +                             hw_data->name, regmap);
-> > > +}
-> > > +
-> > > +
-> > > +static const struct i3c_device_id st_lsm6dsx_i3c_ids[] = {
-> > > +     I3C_DEVICE(0x0104, 0x006C, &hw_data[0]),
-> > > +     { /* sentinel */ },
-> > > +};
-> > > +MODULE_DEVICE_TABLE(i3c, st_lsm6dsx_i3c_ids);
-> > > +
-> > > +static struct i3c_driver st_lsm6dsx_driver = {
-> > > +     .driver.name = "st_lsm6dsx_i3c",
-> > > +     .probe = st_lsm6dsx_i3c_probe,
-> > > +     .id_table = st_lsm6dsx_i3c_ids,  
-> >
-> > You should probably set the pm_ops here (st_lsm6dsx_pm_ops).
-> >  
-> > > +};
-> > > +module_i3c_driver(st_lsm6dsx_driver);
-> > > +
-> > > +MODULE_AUTHOR("Vitor Soares <vitor.soares@synopsys.com>");
-> > > +MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx i3c driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > +  
-> >
-> > You can remove this blank line.
-> >  
-> 
-> 
+Fixes: af3008485ea03 ("iio:adc: Add common code for ADI Sigma Delta devices")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+Changelog v1 -> v2:
+* added ____cacheline_aligned to `buf_data`
+* extended comment about cacheline
+* added fixes tag
+
+ drivers/iio/adc/ad_sigma_delta.c       | 22 +++++++++++-----------
+ include/linux/iio/adc/ad_sigma_delta.h |  3 ++-
+ 2 files changed, 13 insertions(+), 12 deletions(-)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index af6cbc683214..02d9049b9218 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -58,7 +58,7 @@ EXPORT_SYMBOL_GPL(ad_sd_set_comm);
+ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
+ 	unsigned int size, unsigned int val)
+ {
+-	uint8_t *data = sigma_delta->data;
++	uint8_t *data = sigma_delta->reg_data;
+ 	struct spi_transfer t = {
+ 		.tx_buf		= data,
+ 		.len		= size + 1,
+@@ -102,7 +102,7 @@ EXPORT_SYMBOL_GPL(ad_sd_write_reg);
+ static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
+ 	unsigned int reg, unsigned int size, uint8_t *val)
+ {
+-	uint8_t *data = sigma_delta->data;
++	uint8_t *data = sigma_delta->reg_data;
+ 	int ret;
+ 	struct spi_transfer t[] = {
+ 		{
+@@ -148,24 +148,24 @@ int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
+ {
+ 	int ret;
+ 
+-	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
++	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->reg_data);
+ 	if (ret < 0)
+ 		goto out;
+ 
+ 	switch (size) {
+ 	case 4:
+-		*val = get_unaligned_be32(sigma_delta->data);
++		*val = get_unaligned_be32(sigma_delta->reg_data);
+ 		break;
+ 	case 3:
+-		*val = (sigma_delta->data[0] << 16) |
+-			(sigma_delta->data[1] << 8) |
+-			sigma_delta->data[2];
++		*val = (sigma_delta->reg_data[0] << 16) |
++			(sigma_delta->reg_data[1] << 8) |
++			sigma_delta->reg_data[2];
+ 		break;
+ 	case 2:
+-		*val = get_unaligned_be16(sigma_delta->data);
++		*val = get_unaligned_be16(sigma_delta->reg_data);
+ 		break;
+ 	case 1:
+-		*val = sigma_delta->data[0];
++		*val = sigma_delta->reg_data[0];
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -403,12 +403,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	uint8_t *data = sigma_delta->buf_data;
+ 	unsigned int reg_size;
+ 	unsigned int data_reg;
+-	uint8_t data[16];
+ 	int ret;
+ 
+-	memset(data, 0x00, 16);
++	memset(sigma_delta->buf_data, 0x00, sizeof(sigma_delta->buf_data));
+ 
+ 	reg_size = indio_dev->channels[0].scan_type.realbits +
+ 			indio_dev->channels[0].scan_type.shift;
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 6e9fb1932dde..d95216ce8a94 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -79,7 +79,8 @@ struct ad_sigma_delta {
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+-	uint8_t				data[4] ____cacheline_aligned;
++	uint8_t				reg_data[4] ____cacheline_aligned;
++	uint8_t				buf_data[16] ____cacheline_aligned;
+ };
+ 
+ static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+-- 
+2.17.1
 
