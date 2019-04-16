@@ -2,301 +2,252 @@ Return-Path: <SRS0=o58m=SS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F5AC10F13
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 19:34:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46A35C282DA
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 20:22:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 80844206BA
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 19:34:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=goldelico.com header.i=@goldelico.com header.b="eFBrPRw3"
+	by mail.kernel.org (Postfix) with ESMTP id 1656520663
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 20:22:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729072AbfDPTeR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Apr 2019 15:34:17 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:32549 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726860AbfDPTeR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 15:34:17 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1555443250;
-        s=strato-dkim-0002; d=goldelico.com;
-        h=To:References:Message-Id:Cc:Date:In-Reply-To:From:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=M7EdJiDTEkfj562k6hqu0RD6IoPp+y9i1vhxR3af4K0=;
-        b=eFBrPRw3rqAyl1vtq0UUEAYUu7Pc4pBQVwYl9pktzR5qiGCqIjy7oGiFfRtIrrnp2/
-        F0ezXqlPmXe5JC5Dw0QJOk/NwvbtG7dzeSqbSJrpEhnO0v32zzWR9IJKpo59Vi1RhTWi
-        iQY2PiXqNRP0bgTrEcDEZkVK95KpTI7Mg9j9BQjT31eUCoTHRhev/HgCbMAkBtYRF//X
-        CLYXO4qdtaTm5xVavpRwkvWV3ERmuvgvcJXugkJaTCzG3xg8aouk47Zokp05vLTcgKiC
-        cVRCBVxB5c+oY1RDuqSbZCbUhsmaqoadPTPeXwqo+HqhBl4p8UqnYh26mx4+0JGX+YSm
-        EDwA==
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMgPgp8VKxflSZ1P34KBj7wpz8NMGH/vswDCqEi8="
-X-RZG-CLASS-ID: mo00
-Received: from imac.fritz.box
-        by smtp.strato.de (RZmta 44.18 DYNA|AUTH)
-        with ESMTPSA id j04dc1v3GJXcdgj
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
-        (Client did not present a certificate);
-        Tue, 16 Apr 2019 21:33:38 +0200 (CEST)
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [RFC v3] iio: input-bridge: optionally bridge iio acceleometers to create a /dev/input interface
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <0189da8d91652dd3ecf729b03029ab9db5a24f99.camel@hadess.net>
-Date:   Tue, 16 Apr 2019 21:33:38 +0200
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        linux-input@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Transfer-Encoding: quoted-printable
-Message-Id: <AA2B43FE-E196-4FEC-B4C5-897D0F44A76F@goldelico.com>
-References: <d52cf9ee5944c90c69f6e74a46d844cef51e487e.1555362312.git.hns@goldelico.com> <0189da8d91652dd3ecf729b03029ab9db5a24f99.camel@hadess.net>
-To:     Bastien Nocera <hadess@hadess.net>
-X-Mailer: Apple Mail (2.3124)
+        id S1730624AbfDPUVl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Apr 2019 16:21:41 -0400
+Received: from mout.kundenserver.de ([212.227.126.134]:48463 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730022AbfDPUVj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 16:21:39 -0400
+Received: from threadripper.lan ([149.172.19.189]) by mrelayeu.kundenserver.de
+ (mreue012 [212.227.15.129]) with ESMTPA (Nemesis) id
+ 1MK5BG-1hYhwa1x9y-00LYy0; Tue, 16 Apr 2019 22:20:34 +0200
+From:   Arnd Bergmann <arnd@arndb.de>
+To:     Alexander Viro <viro@zeniv.linux.org.uk>
+Cc:     linux-fsdevel@vger.kernel.org, y2038@lists.linaro.org,
+        linux-kernel@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Karsten Keil <isdn@linux-pingi.de>,
+        "James E.J. Bottomley" <jejb@linux.ibm.com>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        Marcel Holtmann <marcel@holtmann.org>, netdev@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-integrity@vger.kernel.org,
+        qat-linux@intel.com, linux-crypto@vger.kernel.org,
+        linux-media@vger.kernel.org, dri-devel@lists.freedesktop.org,
+        linux1394-devel@lists.sourceforge.net,
+        amd-gfx@lists.freedesktop.org, linux-input@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-ide@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        linux-mtd@lists.infradead.org, linux-ppp@vger.kernel.org,
+        linux-nvme@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-s390@vger.kernel.org, sparclinux@vger.kernel.org,
+        linux-scsi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, ceph-devel@vger.kernel.org,
+        linux-bluetooth@vger.kernel.org, linux-wireless@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: [PATCH v3 00/26] compat_ioctl: cleanups
+Date:   Tue, 16 Apr 2019 22:19:38 +0200
+Message-Id: <20190416202013.4034148-1-arnd@arndb.de>
+X-Mailer: git-send-email 2.20.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:mvmRBVqmcY1mhupTDI+zdTPTOsWPDzdt5BCk66I7Xg6IdvERZEQ
+ hRpELhbiULHqPfrFcKxAriH7V1lp/edkgqwfhvhGT7toE1JGZlBQqZQbzlO+eWCP2ER4sRI
+ in0P9PUn+JskXwI/0DeODFTzggwqBwkA2RyOC6uS1Bny6OQqf072778J9AqViE858nJkb+Q
+ eFCv7b9/d64u+uVjuBSrw==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:4YXF1UI2n5Q=:2lrB6KN7HwAQtli1cWDOA1
+ ltGxgBmWd8Fqoc71LQ8VzLwWLaNvj+CW12qPzYpO1l8AZdyrYZyP0N4PsQEdUAbJF5uuHUksh
+ n1DDxCihVRi61gQcMVsrO1pG1YPKFaPQzVTeaYOpxWoNb8K7HJ6r7ksA8P1//8F3tGpjLIpsr
+ 2uGXhdguNTKZ6RC0DDjnP6sKO4k4wGK3n2+VH2IapXNqay1Rnxy7n/3KNpwoEzu7pus3KhjDx
+ trDD0YdU4bzJfV+eAUb2FrbQXzjNf2xES3GuI7loJs5iR+V11xnIRGXgjJCR0qspPApVJfBmX
+ neVC6QfvFYilQE6IOSF/4bAOsLC5A4r2kszz8FpAuwQjmxBVdxeXF7FMMjiFg8BnAKBbvAC1T
+ xhQmG9hQmHoOtQ/Yr6HU7Tfy/zeLAVW4SVL/VydRuFf8DXue+RdSJDb3hpccGIeb63LIO0G1v
+ e4XgL55OxAPj4vXQqm4d1WoYV+utT6+JgILxp13ecCuEqq3MqpBOPkc8XNWr+Ry55jDDjAt8C
+ aP7iHyI2Tqmu7o1RFZ5HsozgGiVuoCefRN8AJnp/570z1fB0aVB4uY6jaGNmZfRjyOtrb1EjF
+ HD/vjiujlkTbHo3Fk9GP+W2YVhzzod6JubIkdRkIipbXVKbSLHv0aXWv5TVkWWJriq1edvctS
+ KJqDn2/1AHnjJ2I6pcNw1jOdZrwlt0opNSNamI11DM7UpEi4Woh+mGm9U1Ei44E6M0mpM6Xnl
+ pi7O5Ccuju0WtClcha6vz7mVFLqKwYrWB1kFcA==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Bastien,
+Hi Al,
 
-> Am 16.04.2019 um 18:04 schrieb Bastien Nocera <hadess@hadess.net>:
->=20
-> Having written a "bridge" myself (I called it a "proxy"[1]), I have a
-> few comments.
->=20
-> [1]: https://github.com/hadess/iio-sensor-proxy
+It took me way longer than I had hoped to revisit this series, see
+https://lore.kernel.org/lkml/20180912150142.157913-1-arnd@arndb.de/
+for the previously posted version.
 
-Nice work!
+I've come to the point where all conversion handlers and most
+COMPATIBLE_IOCTL() entries are gone from this file, but for
+now, this series only has the parts that have either been reviewed
+previously, or that are simple enough to include.
 
->=20
-> Let's start with the easy ones ;) there's a typo in the subject line.
->=20
-> The subject line also says "optionally" but there doesn't seem to be
-> any ways to disable the feature if it's shipped by the kernel used.
+The main missing piece is the SG_IO/SG_GET_REQUEST_TABLE conversion.
+I'll post the patches I made for that later, as they need more
+testing and review from the scsi maintainers.
 
-Well, the "optionally" refers to that this can be completely disabled
-by a Kconfig option. Maybe it is the wrong wording for this and should
-be changed.
+I hope you can still take these for the coming merge window, unless
+new problems come up.
 
->=20
-> On Mon, 2019-04-15 at 23:05 +0200, H. Nikolaus Schaller wrote:
->> Some user spaces (e.g. some Android devices) use /dev/input/event*
->> for handling
->> the 3D position of the device with respect to the center of gravity
->> (earth).
->> This can be used for gaming input, auto-rotation of screens etc.
->>=20
->> This interface should be the standard for such use cases because it
->> is an abstraction
->> of how orientation data is acquired from sensor chips. Sensor chips
->> may be connected
->> through different interfaces and in different positions. They may
->> also have different
->> parameters. And, if a chip is replaced by a different one, the values
->> reported by
->> the device position interface should remain the same, provided the
->> device tree reflects
->> the changed chip.
->=20
-> I don't understand this section of the commit message. The IIO drivers
-> are already that abstraction interface, no?
+      Arnd
 
-IIO is also some abstraction but a different one than input =
-accelerometers.
+Arnd Bergmann (26):
+  compat_ioctl: pppoe: fix PPPOEIOCSFWD handling
+  compat_ioctl: move simple ppp command handling into driver
+  compat_ioctl: avoid unused function warning for do_ioctl
+  compat_ioctl: move PPPIOCSCOMPRESS32 to ppp-generic.c
+  compat_ioctl: move PPPIOCSPASS32/PPPIOCSACTIVE32 to ppp_generic.c
+  compat_ioctl: handle PPPIOCGIDLE for 64-bit time_t
+  compat_ioctl: move rtc handling into rtc-dev.c
+  compat_ioctl: add compat_ptr_ioctl()
+  compat_ioctl: move drivers to compat_ptr_ioctl
+  compat_ioctl: use correct compat_ptr() translation in drivers
+  ceph: fix compat_ioctl for ceph_dir_operations
+  compat_ioctl: move more drivers to compat_ptr_ioctl
+  compat_ioctl: move tape handling into drivers
+  compat_ioctl: move ATYFB_CLK handling to atyfb driver
+  compat_ioctl: move isdn/capi ioctl translation into driver
+  compat_ioctl: move rfcomm handlers into driver
+  compat_ioctl: move hci_sock handlers into driver
+  compat_ioctl: remove HCIUART handling
+  compat_ioctl: remove HIDIO translation
+  compat_ioctl: remove translation for sound ioctls
+  compat_ioctl: remove IGNORE_IOCTL()
+  compat_ioctl: remove /dev/random commands
+  compat_ioctl: remove joystick ioctl translation
+  compat_ioctl: remove PCI ioctl translation
+  compat_ioctl: remove /dev/raw ioctl translation
+  compat_ioctl: remove last RAID handling code
 
-IIO reports physical measurement data in some standardized way reporting =
-value,
-scale, units, type of measurement. But this has no inherent purpose.
+ Documentation/networking/ppp_generic.txt    |   2 +
+ arch/um/drivers/hostaudio_kern.c            |   1 +
+ drivers/android/binder.c                    |   2 +-
+ drivers/char/ppdev.c                        |  12 +-
+ drivers/char/random.c                       |   1 +
+ drivers/char/tpm/tpm_vtpm_proxy.c           |  12 +-
+ drivers/crypto/qat/qat_common/adf_ctl_drv.c |   2 +-
+ drivers/dma-buf/dma-buf.c                   |   4 +-
+ drivers/dma-buf/sw_sync.c                   |   2 +-
+ drivers/dma-buf/sync_file.c                 |   2 +-
+ drivers/firewire/core-cdev.c                |  12 +-
+ drivers/gpu/drm/amd/amdkfd/kfd_chardev.c    |   2 +-
+ drivers/hid/hidraw.c                        |   4 +-
+ drivers/hid/usbhid/hiddev.c                 |  11 +-
+ drivers/hwtracing/stm/core.c                |  12 +-
+ drivers/ide/ide-tape.c                      |  31 +-
+ drivers/iio/industrialio-core.c             |   2 +-
+ drivers/infiniband/core/uverbs_main.c       |   4 +-
+ drivers/isdn/capi/capi.c                    |  31 +
+ drivers/isdn/i4l/isdn_ppp.c                 |  14 +-
+ drivers/media/rc/lirc_dev.c                 |   4 +-
+ drivers/mfd/cros_ec_dev.c                   |   4 +-
+ drivers/misc/cxl/flash.c                    |   8 +-
+ drivers/misc/genwqe/card_dev.c              |  23 +-
+ drivers/misc/mei/main.c                     |  22 +-
+ drivers/misc/vmw_vmci/vmci_host.c           |   2 +-
+ drivers/mtd/ubi/cdev.c                      |  36 +-
+ drivers/net/ppp/ppp_generic.c               |  99 +++-
+ drivers/net/ppp/pppoe.c                     |   7 +
+ drivers/net/ppp/pptp.c                      |   3 +
+ drivers/net/tap.c                           |  12 +-
+ drivers/nvdimm/bus.c                        |   4 +-
+ drivers/nvme/host/core.c                    |   2 +-
+ drivers/pci/switch/switchtec.c              |   2 +-
+ drivers/platform/x86/wmi.c                  |   2 +-
+ drivers/rpmsg/rpmsg_char.c                  |   4 +-
+ drivers/rtc/dev.c                           |  13 +-
+ drivers/rtc/rtc-vr41xx.c                    |  10 +
+ drivers/s390/char/tape_char.c               |  41 +-
+ drivers/sbus/char/display7seg.c             |   2 +-
+ drivers/sbus/char/envctrl.c                 |   4 +-
+ drivers/scsi/3w-xxxx.c                      |   4 +-
+ drivers/scsi/cxlflash/main.c                |   2 +-
+ drivers/scsi/esas2r/esas2r_main.c           |   2 +-
+ drivers/scsi/megaraid/megaraid_mm.c         |  28 +-
+ drivers/scsi/osst.c                         |  34 +-
+ drivers/scsi/pmcraid.c                      |   4 +-
+ drivers/scsi/st.c                           |  35 +-
+ drivers/staging/android/ion/ion.c           |   4 +-
+ drivers/staging/pi433/pi433_if.c            |  12 +-
+ drivers/staging/vme/devices/vme_user.c      |   2 +-
+ drivers/tee/tee_core.c                      |   2 +-
+ drivers/usb/class/cdc-wdm.c                 |   2 +-
+ drivers/usb/class/usbtmc.c                  |   4 +-
+ drivers/usb/core/devio.c                    |  16 +-
+ drivers/usb/gadget/function/f_fs.c          |  12 +-
+ drivers/vfio/vfio.c                         |  39 +-
+ drivers/vhost/net.c                         |  12 +-
+ drivers/vhost/scsi.c                        |  12 +-
+ drivers/vhost/test.c                        |  12 +-
+ drivers/vhost/vsock.c                       |  12 +-
+ drivers/video/fbdev/aty/atyfb_base.c        |  12 +-
+ drivers/virt/fsl_hypervisor.c               |   2 +-
+ fs/btrfs/super.c                            |   2 +-
+ fs/ceph/dir.c                               |   1 +
+ fs/ceph/file.c                              |   2 +-
+ fs/compat_ioctl.c                           | 602 +-------------------
+ fs/fat/file.c                               |  13 +-
+ fs/fuse/dev.c                               |   2 +-
+ fs/notify/fanotify/fanotify_user.c          |   2 +-
+ fs/userfaultfd.c                            |   2 +-
+ include/linux/fs.h                          |   7 +
+ include/linux/if_pppox.h                    |   2 +
+ include/linux/mtio.h                        |  58 ++
+ include/uapi/linux/ppp-ioctl.h              |   2 +
+ include/uapi/linux/ppp_defs.h               |  14 +
+ net/bluetooth/hci_sock.c                    |  21 +-
+ net/bluetooth/rfcomm/sock.c                 |  14 +-
+ net/l2tp/l2tp_ppp.c                         |   3 +
+ net/rfkill/core.c                           |   2 +-
+ sound/core/oss/pcm_oss.c                    |   4 +
+ sound/oss/dmasound/dmasound_core.c          |   2 +
+ 82 files changed, 452 insertions(+), 1034 deletions(-)
+ create mode 100644 include/linux/mtio.h
 
-Accelerator input events are something different. They report the =
-orientation
-of a handheld device in space relative to center of earth. They may be =
-implemented
-through iio drivers but do not need to.
+-- 
+2.20.0
 
-You will find several non-iio accelerometer drivers in =
-drivers/input/misc and
-elsewhere.
-
->=20
->> This did initially lead to input accelerometer drivers like
->> drivers/input/misc/bma150.c
->> or drivers/misc/lis3lv02d/
->>=20
->> But nowadays, new accelerometer chips mostly get iio drivers and
->> rarely input drivers.
->>=20
->> Therefore we need something like a protocol stack which bridges raw
->> data and input devices.
->> It can be seen as a similar layering like TCP/IP vs. bare Ethernet.
->> Or keyboard
->> input events vs. raw gpio or raw USB access.
->=20
-> This can be done in user-space, reading the data from the IIO driver,
-> and using uinput to feed it back. Why is doing this at the kernel =
-level
-> better?
-
-Well, I'd estimate that >80% of the current kernel could be done in =
-user-space
-(but not at the same speed/quality).
-
-E.g. TCP could most likely be done by directly accessing the Ethernet =
-layer and
-providing other processes access through named pipes instead of sockets.
-
-But usually a user-space daemon feeding things back into the kernel is =
-slower
-(because it is scheduled differently) and needs more resources for =
-running the
-process and IPC and is less protected against hickups and deadlocks.
-
-Two more aspects come to my mind from reading your project page:
-
-a) "It requires libgudev and systemd"
-b) "Note that a number of kernel bugs will prevent it from working =
-correctly"
-
-a) this makes quite significant assumptions about the user-space while a =
-kernel
-   driver can be kept independent of this
-b) if it is in-kernel it will be kept in sync with kernel changes and =
-such bugs
-   are less likely
-
->=20
->> This patch bridges the gap between raw iio data and the input device
->> abstraction
->> so that accelerometer measurements can additionally be presented as
->> X/Y/Z accelerometer
->> channels (INPUT_PROP_ACCELEROMETER) through /dev/input/event*.
->>=20
->> There are no special requirements or changes needed for an iio
->> driver.
->=20
-> The user-space daemon I wrote supports both IIO drivers and input
-> drivers for accelerometers. How do I know from user-space whether a
-> device is proxied or not?
-
-Since my proposal does not stop direct iio access, I assume that your
-daemon will simply continue to work as is.
-
->=20
->> There is no need to define a mapping (e.g. in device tree).
->>=20
->> This driver simply collects the first 3 accelerometer channels as X,
->> Y and Z.
->> If only 1 or 2 channels are available, they are used for X and Y
->> only. Additional
->> channels are ignored.
->=20
-> In what cases are 2 dimensional accelerometers used?
-
-I don't know. This is just a description that there will be a graceful
-behavior, if some accelerometer has less or more than 3 channels. So
-the driver will segfault or panic the kernel...
-
->=20
->> Scaling is done automatically so that 1g is represented by value 256
->> and
->> range is assumed to be -511 .. +511 which gives a reasonable
->> precision as an
->> input device.
->>=20
->> If a mount-matrix is provided by the iio driver, it is also taken
->> into account
->> so that the input event automatically gets the correct orientation
->> with respect
->> to the device.
->>=20
->> If this extension is not configured into the kernel it takes no
->> resources (except
->> source code).
->>=20
->> If it is configured, but there is no accelerometer, there is only a
->> tiny penalty
->> for scanning for accelerometer channels once during probe of each iio
->> device.
->>=20
->> If it runs, the driver polls the device(s) once every 100 ms. A mode
->> where the
->> iio device defines the update rate is not implemented and for further
->> study.
->>=20
->> If there is no user-space client, polling is not running.
->=20
-> Is the bridge going to modify the IIO device's settings behind other
-> possible consumer's backs, such as threshold values, and triggers?
-
-No. The bridge only transforms values.
-
-For other parameters it takes what the iio device has been initialized =
-to
-Or if they are changed dynamically through the iio API, it uses new =
-parameters.
-
->=20
->> The driver is capable to handle multiple iio accelerometers and they
->> are
->> presented by unique /dev/input/event* files. The iio chip name is
->> used to define
->> the input device name so that it can be identified (e.g. by udev
->> rules or evtest).
->=20
-> As you can probably guess, I'm not overly enthusiastic about this =
-piece
-> of code. If it had existed 5 years ago, I probably wouldn't have
-> written iio-sensor-proxy, but then somebody else would have had to for
-> the rest of the IIO sensors that can be consumed.
-
-I have looked into your work and get the impression that my proposal is
-not contradicting your work.
-
-You still need mechanisms to rotate e.g. the display if the device is
-rotated. This is not done by this kernel code.
-
-This is a similar situation that a keyboard driver reports key event
-codes but does not draw glyphs.
-
-The bridge provides a different (and well established) higher-level API
-for accelerometers than iio.
-
-So you may check if it simplifies your code by using this higher-layer =
-interface
-(input event). =46rom my rough check it appears to me that you can for =
-example
-remove the mount-matrix handling from your code because it would be done =
-by
-this bridge.
-
-> To me, this bridge has all the drawbacks of a simple user-space
-> implementation using uinput, without much of the benefits of being an
-> exclusive user of the IIO accelerometers, such as being able to change
-> the update rate, or using triggers depending on the usage.
->=20
-> What am I missing? Why shouldn't this live in user-space?
-
-That's a pretty biased question...
-
-It's a matter of philosophy whether you want a microkernel + user-space =
-daemons
-or a kernel that prebakes many things to make user-space daemons easier =
-or
-even superfluous.
-
-In the other extreme you could even get rid of iio and directly access =
-the
-sensors through /dev/i2c from user-space daemon.
-
-So I can't give you a technical answer for that and since I am not a
-maintainer I can't answer it at all.
-
-BR and thanks,
-Nikolaus
-
+Cc: "David S. Miller" <davem@davemloft.net>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: Karsten Keil <isdn@linux-pingi.de>
+Cc: "James E.J. Bottomley" <jejb@linux.ibm.com>
+Cc: "Martin K. Petersen" <martin.petersen@oracle.com>
+Cc: Marcel Holtmann <marcel@holtmann.org>
+Cc: netdev@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Cc: devel@driverdev.osuosl.org
+Cc: linux-integrity@vger.kernel.org
+Cc: qat-linux@intel.com
+Cc: linux-crypto@vger.kernel.org
+Cc: linux-media@vger.kernel.org
+Cc: dri-devel@lists.freedesktop.org
+Cc: linux1394-devel@lists.sourceforge.net
+Cc: amd-gfx@lists.freedesktop.org
+Cc: linux-input@vger.kernel.org
+Cc: linux-usb@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-ide@vger.kernel.org
+Cc: linux-iio@vger.kernel.org
+Cc: linux-rdma@vger.kernel.org
+Cc: linuxppc-dev@lists.ozlabs.org
+Cc: linux-mtd@lists.infradead.org
+Cc: linux-ppp@vger.kernel.org
+Cc: linux-nvme@lists.infradead.org
+Cc: platform-driver-x86@vger.kernel.org
+Cc: linux-remoteproc@vger.kernel.org
+Cc: linux-rtc@vger.kernel.org
+Cc: linux-s390@vger.kernel.org
+Cc: sparclinux@vger.kernel.org
+Cc: linux-scsi@vger.kernel.org
+Cc: linux-fbdev@vger.kernel.org
+Cc: linux-btrfs@vger.kernel.org
+Cc: ceph-devel@vger.kernel.org
+Cc: linux-fsdevel@vger.kernel.org
+Cc: linux-bluetooth@vger.kernel.org
+Cc: linux-wireless@vger.kernel.org
+Cc: alsa-devel@alsa-project.org
+Cc: y2038@lists.linaro.org
