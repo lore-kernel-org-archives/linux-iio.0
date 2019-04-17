@@ -1,98 +1,181 @@
-Return-Path: <SRS0=o58m=SS=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=A5Qb=ST=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-12.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9FF8C10F13
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 23:49:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0F4CC282DA
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Apr 2019 15:08:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A595920880
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Apr 2019 23:49:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PODkFOlE"
+	by mail.kernel.org (Postfix) with ESMTP id 81FF5205F4
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Apr 2019 15:08:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730997AbfDPXtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Apr 2019 19:49:32 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:36014 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730888AbfDPXtc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Apr 2019 19:49:32 -0400
-Received: by mail-pf1-f195.google.com with SMTP id z5so11174996pfn.3
-        for <linux-iio@vger.kernel.org>; Tue, 16 Apr 2019 16:49:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id;
-        bh=3M4/HoeJn7RNDbgaruRvsbC8Cdn0pROv2vGhlyKRaIE=;
-        b=PODkFOlEUt3dQC718Q9k72NahTdCZ02gCKlLWaF6gFHblJG0tee819YGf7shJxIKR5
-         xeKAWOYVLlxqpo8qhC0Jn6W+lwqpY6Ow7ehhxxpLI2A0cIB79t4BrxNCypqZR4c1+hK8
-         zfHsIKIjRxOYNSm64WzLDzXuIGA9zDUNgNuPKoefk1hsFqnOhxoD5njPZr5y4RJIpXa2
-         54XQ1JtSF0EZEIGre4ExiwESA9ddUEJMvlTdIdpl8qkM7nzFqSlbmPFx4C8PlY0eEaPm
-         NV4l1zALrL6rS9UxV281A8WCOev+fjPUIpMPwVqrYWq44YhkZBhElIxRPpTs84mTGYix
-         terQ==
+        id S1730463AbfDQPIh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Apr 2019 11:08:37 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:41802 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729356AbfDQPIh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 Apr 2019 11:08:37 -0400
+Received: by mail-ed1-f68.google.com with SMTP id g6so17329848edc.8
+        for <linux-iio@vger.kernel.org>; Wed, 17 Apr 2019 08:08:36 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=3M4/HoeJn7RNDbgaruRvsbC8Cdn0pROv2vGhlyKRaIE=;
-        b=jtfvJ06NCezTQlBSEg4nPls+VLfPfaXYRTHO8c2rvmJKk9iEkmdqwtT7qu/RRQ6TDL
-         hbmORRXjt3PAovWmGTJ/3NzoZHi/oUdm2pkxfy4xm+kRZ5H+3/zEEYPPUnFgy2c8YNLQ
-         RTPy8z1cX5BOh0Avbk45xsrBeM1xeM/RIO/BkW2eB07lC7qZRvS5+KjmwaHiz049SnyB
-         PzHkeLwGgMG+muV++cxKy81yu9UDB4MNQbcNSeKp+3A9y2ZPDs5W6NLM/R/iqY8uN2ba
-         NoRJPhk8C2WBwrQm1a+GyvgQhgaVNc7WBq5XgI8II1FaxbCxVqLyTndOUBPVZacdYWsv
-         RhXw==
-X-Gm-Message-State: APjAAAXG7sWITmG6VVqku072pCQWl5+A93qJaxqwazu/VPCVlLlqjDOp
-        nul84OVWWOA6mBTS0jNTCTzTnw==
-X-Google-Smtp-Source: APXvYqyEdQpyvckB+opTG4clt2LM9TFIFAEKE52alZSqqWZjInDhwpQo2dl7VyuDp1bu3Rh3PJ4rxw==
-X-Received: by 2002:a62:6842:: with SMTP id d63mr87739354pfc.9.1555458570856;
-        Tue, 16 Apr 2019 16:49:30 -0700 (PDT)
-Received: from localhost.localdomain (104-188-17-28.lightspeed.sndgca.sbcglobal.net. [104.188.17.28])
-        by smtp.gmail.com with ESMTPSA id g10sm39427998pgq.54.2019.04.16.16.49.29
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 16 Apr 2019 16:49:30 -0700 (PDT)
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=9soMoojXcPj0LOnamcpj15uFD6H7U1rvlRy66ACWxFw=;
+        b=QLklXV0gXenfpffnV/pLgii/wfcnYp+F67kRLLcDJQB0jQ/LqUt5zea3cEZ/lN99Q0
+         HFEAQ/mzE9CjY5nwTd/e6lmm2UoB5tHADId6k+kBgAC8Y4aDVMGBm5wreQgL+niUAtAB
+         R5g+y+3yh0+NDneVKJHQJ9dxHikqJ7yYhTbBz+qKkf/leeBfRS8Ej4qWRnyFdGi1yP0q
+         NOW4oxHcQRWrIvb3cPMztZ70wejsQbiCl+NWE+o10ewSaRbont94TmYdxTOwJKJZcq1T
+         DY4ZQ+6pjL7ZVCooTl+b4xE6v6BbEWmD24BnCOeOKRNRJRdnB8zgsfNzvw7bGiCbGy/L
+         Laqg==
+X-Gm-Message-State: APjAAAVtPwY7cMr6DjP/x3S3KkPrHeZt9RiIt+/6lu4vYxRgQzsn7rrq
+        7QjSyEm3y0hh02RRoWM1mxx6P7IA7K8=
+X-Google-Smtp-Source: APXvYqy67XVyf/HeNZFtJqRxH4Cmirc+ybQTbBZQqRVZ6giaDyTLYGRVL9Jbe4qpTNgwATKyd6tq/A==
+X-Received: by 2002:a50:8822:: with SMTP id b31mr21925093edb.53.1555513715845;
+        Wed, 17 Apr 2019 08:08:35 -0700 (PDT)
+Received: from shalem.localdomain (84-106-84-65.cable.dynamic.v4.ziggo.nl. [84.106.84.65])
+        by smtp.gmail.com with ESMTPSA id g55sm7611edb.12.2019.04.17.08.08.34
+        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
+        Wed, 17 Apr 2019 08:08:34 -0700 (PDT)
+Subject: Re: [PATCH] iio: accel: add missing sensor for some 2-in-1 based
+ ultrabooks
+To:     luis@aurorafoss.org
+Cc:     jic23@kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Andy Gross <andy.gross@linaro.org>,
-        David Brown <david.brown@linaro.org>,
-        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Subject: [PATCH] iio: adc: qcom-spmi-adc5: Fix of-based module autoloading
-Date:   Tue, 16 Apr 2019 16:49:27 -0700
-Message-Id: <20190416234927.8888-1-bjorn.andersson@linaro.org>
-X-Mailer: git-send-email 2.18.0
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+References: <c2f3c22c-d491-17e7-ede7-54f9df11e064@redhat.com>
+ <20190402160433.15810-1-luis@aurorafoss.org>
+ <55a52a4e-01d1-2f4c-25e3-0047537bef86@redhat.com>
+ <CAPyOxm8DyFjRxeL9QFHGW084cg5vhsKrwqGFy5rp8MEEZ3AHEQ@mail.gmail.com>
+ <c34e15ec4be9d783c7134491639eb176@_>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <9d8458a1-fc47-0727-4dc8-1d1eb185886d@redhat.com>
+Date:   Wed, 17 Apr 2019 17:08:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <c34e15ec4be9d783c7134491639eb176@_>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The of_device_id table needs to be registered as module alias in order
-for automatic module loading to pick the kernel module based on the
-DeviceTree compatible. So add MODULE_DEVICE_TABLE() to make this happen.
+Hi,
 
-Fixes: e13d757279bb ("iio: adc: Add QCOM SPMI PMIC5 ADC driver")
-Cc: stable@vger.kernel.org
-Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
----
- drivers/iio/adc/qcom-spmi-adc5.c | 1 +
- 1 file changed, 1 insertion(+)
+On 15-04-19 17:40, luis@aurorafoss.org wrote:
+> April 6, 2019 10:36 AM, "Hans de Goede" <hdegoede@redhat.com> wrote:
+> 
+> Hi,
+> 
+>> Yes that seems the best way forward with this.
+>>
+>> Note I think "base" is better then "keyboard" for the sensor which
+>> is in the base/keyboard. But neither is perfect, so go which whatever
+>> you prefer.
+> 
+> Reference to:
+> - https://github.com/hadess/iio-sensor-proxy/pull/262 > - https://github.com/systemd/systemd/pull/12322
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-index 6a866cc187f7..21fdcde77883 100644
---- a/drivers/iio/adc/qcom-spmi-adc5.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5.c
-@@ -664,6 +664,7 @@ static const struct of_device_id adc5_match_table[] = {
- 	},
- 	{ }
- };
-+MODULE_DEVICE_TABLE(of, adc5_match_table);
- 
- static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
- {
--- 
-2.18.0
+Thank you for your work on this, I see that Bastien has
+already reviewed the iio-sensor-proxy changes.
 
+I've just added one small remark to the systemd changes,
+except for that small remark the systemd changes look good to me.
+
+Regards,
+
+Hams
+
+
+
+
+>> On 06-04-19 01:01, Luís Ferreira wrote:
+>>
+>>> Hi,
+>>> Basically we need to come up with a convention to (optionally) indicate
+>>
+>> the sensors location with a udev attribute set by:
+>> /lib/udev/hwdb.d/60-sensor.hwdb
+>>> So should we start adding `ACCEL_LOCATION=display` and
+>>> `ACCEL_LOCATION=keyboard` attributes to that file and patch
+>>> iio-sensor-proxy to ignore the keyboard ones as a first step ?
+>>
+>> Yes that seems the best way forward with this.
+>>
+>> Note I think "base" is better then "keyboard" for the sensor which
+>> is in the base/keyboard. But neither is perfect, so go which whatever
+>> you prefer.
+>>
+>> Thanks & Regards,
+>>
+>> Hans
+>>
+>>> On Wed, 3 Apr 2019 at 10:10, Hans de Goede <hdegoede@redhat.com> wrote:
+>>
+>> Hi,
+>>
+>> On 02-04-19 18:04, Luís Ferreira wrote:
+>>> Some ultrabooks, like Teclast F6 Pro, use KIOX010A sensor on display
+>>> and KIOX020A sensor on keyboard base, to detect tablet mode or screen
+>>> orientation.
+>>
+>> I deliberately left out the KIOX020A id for now, because currently
+>> userspace cannot really deal with having 2 sensors.
+>>
+>> See:
+>> https://github.com/systemd/systemd/issues/6557
+>> https://github.com/hadess/iio-sensor-proxy/issues/166
+>>
+>> Basically we need to come up with a convention to (optionally) indicate
+>> the sensors location with a udev attribute set by:
+>> /lib/udev/hwdb.d/60-sensor.hwdb
+>>
+>> And then patch iio-sensor-proxy to consume that attribute and ignore
+>> the one which has e.g. ACCEL_LOCATION=keyboard in its udev properties
+>>
+>> Ignoring would be a first step, maybe later it can do something useful
+>> with it, see e.g. : https://github.com/alesguzik/linux_detect_tablet_mode
+>>
+>> IMHO we really should minimally get code in place for iio-sensor-proxy
+>> to ignore the keyboard accelerometer before merging this patch.
+>>
+>> I realize that having the code in place will not magically get it on
+>> all users machines, but I believe this is the minimum which needs to
+>> happen before we push this out and potentially breaks people screen
+>> rotation.
+>>
+>> I've had working on this on my TODO list for a long long time now,
+>> but -ENOTIME. If you have some time to work on this then that would
+>> be great.
+>>
+>> Regards,
+>>
+>> Hans
+>>> Signed-off-by: Luís Ferreira <luis@aurorafoss.org>
+>>> ---
+>>> drivers/iio/accel/kxcjk-1013.c | 1 +
+>>> 1 file changed, 1 insertion(+)
+>>>
+>>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+>>> index 7096e577b23f..9a5e445facc1 100644
+>>> --- a/drivers/iio/accel/kxcjk-1013.c
+>>> +++ b/drivers/iio/accel/kxcjk-1013.c
+>>> @@ -1492,6 +1492,7 @@ static const struct acpi_device_id kx_acpi_match[] = {
+>>> {"KIOX0009", KXTJ21009},
+>>> {"KIOX000A", KXCJ91008},
+>>> {"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 */
+>>> + {"KIOX020A", KXCJ91008},
+>>> {"KXTJ1009", KXTJ21009},
+>>> {"KXJ2109", KXTJ21009},
+>>> {"SMO8500", KXCJ91008},
