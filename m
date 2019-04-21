@@ -1,107 +1,339 @@
-Return-Path: <SRS0=2VwP=SV=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=LYAQ=SX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44021C282DA
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Apr 2019 19:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06604C10F14
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Apr 2019 17:20:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0D82B20449
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Apr 2019 19:49:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aWvn93Zk"
+	by mail.kernel.org (Postfix) with ESMTP id BC7402080D
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Apr 2019 17:20:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726109AbfDSTtS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Apr 2019 15:49:18 -0400
-Received: from mail-lj1-f194.google.com ([209.85.208.194]:33546 "EHLO
-        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725839AbfDSTtQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Apr 2019 15:49:16 -0400
-Received: by mail-lj1-f194.google.com with SMTP id f23so5478222ljc.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Apr 2019 12:49:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=ZOcIlmLX3dga3jTDS2BWmUruJ92jKqSe7euCMBLjCRU=;
-        b=aWvn93ZkgDGPEdmb+I28dgJGEg9Hy6rj2Y5m7T81ynPg3AY10JXm0MbivTQNnqMH49
-         czsH0I9RJADGadilAqmg+NvlqomRYkui7SKAFB75cm5QPOLRei4t5Md92z7wqZP6/4CX
-         Im7xuKx+fa/W6o4ItWkCf2f9D/QxoXeAVdqW6eCLjtEQiJawPHqH7r6dpmjNxhvTEjTg
-         tNyD1U9+cZafmG8hki7Zkf6XxLt1meDs1c0C7c8HNCBLTODeQ8o4Yhh4u4NKCT3ik8lW
-         0+9t65io14Bz6Hpx5kSP/Co317BncjyU4ZI98M5RqPHIl+wCLxhR5Gbz/hCfr8XtaZp9
-         vnbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=ZOcIlmLX3dga3jTDS2BWmUruJ92jKqSe7euCMBLjCRU=;
-        b=RCB9gGf2YI+ht+d0Pk3vNueGyZJLFo1T1lWgefkTlDZpzwIjCLp4cGuopKGHuW5z3Q
-         AzoIZuDqqvQx40WyTWE9L+EpsZIEQ2X2aGK1AwOuJmusjchI2M+CMkgkzYvQAaCsHnyJ
-         EbWfOGV/TMxOfmJTV+/xV6yWYUB/9ZjjF6LoavdXDqmj7P+6gmqgMwtIex1CFxGrCuie
-         j8uykLx/k4FYoBRybQNMmq67IzFHylBfmSawFmWa518NPqR+nIL4pyMRXkdPfv01QtVE
-         TsezyJ5OvDKyPQBbtJWiIzO0bNLIDLlqZRyHBrZx0tXmDkHKETZHm2LQdwfPD8zENxA0
-         K/rg==
-X-Gm-Message-State: APjAAAXb2LjpZKyOLDQgKZtUXc7lXvVksRguPh55kdG0njEFuOiZWDR2
-        vrUcdjX8Uz0KG7Yju0yoxPEJBRhZ58p1vA==
-X-Google-Smtp-Source: APXvYqxfOZxLV/zvPjJ3HDv+Qm8aEBXwsIVVcaDkDDDIErHgHKDRZiXaoKtL3ULYH98YlsfKbR1Dsw==
-X-Received: by 2002:a2e:9a0f:: with SMTP id o15mr1594542lji.130.1555663022982;
-        Fri, 19 Apr 2019 01:37:02 -0700 (PDT)
-Received: from localhost.localdomain (93-96-157.netrun.cytanet.com.cy. [93.109.96.157])
-        by smtp.gmail.com with ESMTPSA id q23sm876477ljj.44.2019.04.19.01.37.00
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Fri, 19 Apr 2019 01:37:01 -0700 (PDT)
-From:   Mohan Kumar <mohankumar718@gmail.com>
-To:     jic23@kernel.org
-Cc:     knaack.h@gmx.de, lars@metafoo.de, linus.walleij@linaro.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] drivers: iio: accel: Switch hardcoded function name with a reference to __func__ making the code more maintainable
-Date:   Fri, 19 Apr 2019 11:36:51 +0300
-Message-Id: <1555663011-8401-1-git-send-email-mohankumar718@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726786AbfDURUN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 21 Apr 2019 13:20:13 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:34971 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726645AbfDURUN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Apr 2019 13:20:13 -0400
+X-Originating-IP: 93.23.249.69
+Received: from localhost (69.249.23.93.rev.sfr.net [93.23.249.69])
+        (Authenticated sender: gregory.clement@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 6E13420004;
+        Sun, 21 Apr 2019 17:20:03 +0000 (UTC)
+From:   Gregory CLEMENT <gregory.clement@bootlin.com>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: Re: [PATCH v3 2/2] iio: adc: Add driver for the TI ADS8344 A/DC chips
+In-Reply-To: <20190414145524.1fe459c6@archlinux>
+References: <20190412091537.14657-1-gregory.clement@bootlin.com> <20190412091537.14657-3-gregory.clement@bootlin.com> <20190414145152.3d5da272@archlinux> <20190414145524.1fe459c6@archlinux>
+Date:   Sun, 21 Apr 2019 19:19:57 +0200
+Message-ID: <87bm0z8ede.fsf@FE-laptop>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-It fixes the following checkpatch.pl warning:
+Hi Jonathan,
 
-WARNING: Prefer using '"%s...", __func__' to using function's name, in a
-string
+> On Sun, 14 Apr 2019 14:51:52 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>> On Fri, 12 Apr 2019 11:15:37 +0200
+>> Gregory CLEMENT <gregory.clement@bootlin.com> wrote:
+>> 
+>> > This adds support for the Texas Instruments ADS8344 ADC chip. This chip
+>> > has a 16-bit 8-Channel ADC and is access directly through SPI.
+>> > 
+>> > Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>  
+>> Applied to the togreg branch of iio.git and pushed out as testing
+>> for the autobuilders to play with it.
+> I spoke too soon. See below.
+>
+> Fixed up.
 
-Signed-off-by: Mohan Kumar <mohankumar718@gmail.com>
----
- drivers/iio/accel/bmc150-accel-core.c | 2 +-
- drivers/iio/accel/kxcjk-1013.c        | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+Thanks, I don't know how I missed it...
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index b4e2d9b..44d7c49 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -394,7 +394,7 @@ static int bmc150_accel_set_power_state(struct bmc150_accel_data *data, bool on)
- 
- 	if (ret < 0) {
- 		dev_err(dev,
--			"Failed: bmc150_accel_set_power_state for %d\n", on);
-+			"Failed: %s for %d\n", __func__, on);
- 		if (on)
- 			pm_runtime_put_noidle(dev);
- 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index a5c9d3d..cbcf3ee0 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -451,7 +451,7 @@ static int kxcjk1013_set_power_state(struct kxcjk1013_data *data, bool on)
- 	}
- 	if (ret < 0) {
- 		dev_err(&data->client->dev,
--			"Failed: kxcjk1013_set_power_state for %d\n", on);
-+			"Failed: %s for %d\n", __func__, on);
- 		if (on)
- 			pm_runtime_put_noidle(&data->client->dev);
- 		return ret;
+Do you confirmed that, this series is OK for 5.2 and you don't expect
+any more change from my side?
+
+Gregory
+
+>
+> Jonathan
+>
+>> 
+>> Thanks,
+>> 
+>> Jonathan
+>> 
+>> > ---
+>> >  drivers/iio/adc/Kconfig      |  10 ++
+>> >  drivers/iio/adc/Makefile     |   1 +
+>> >  drivers/iio/adc/ti-ads8344.c | 204 +++++++++++++++++++++++++++++++++++
+>> >  3 files changed, 215 insertions(+)
+>> >  create mode 100644 drivers/iio/adc/ti-ads8344.c
+>> > 
+>> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> > index 76db6e5cc296..447d3a871746 100644
+>> > --- a/drivers/iio/adc/Kconfig
+>> > +++ b/drivers/iio/adc/Kconfig
+>> > @@ -967,6 +967,16 @@ config TI_ADS7950
+>> >  	  To compile this driver as a module, choose M here: the
+>> >  	  module will be called ti-ads7950.
+>> >  
+>> > +config TI_ADS8344
+>> > +	tristate "Texas Instruments ADS8344"
+>> > +	depends on SPI && OF
+>> > +	help
+>> > +	  If you say yes here you get support for Texas Instruments ADS8344
+>> > +	  ADC chips
+>> > +
+>> > +	  This driver can also be built as a module. If so, the module will be
+>> > +	  called ti-ads8344.
+>> > +
+>> >  config TI_ADS8688
+>> >  	tristate "Texas Instruments ADS8688"
+>> >  	depends on SPI && OF
+>> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> > index 6fcebd167524..1f3ae934111d 100644
+>> > --- a/drivers/iio/adc/Makefile
+>> > +++ b/drivers/iio/adc/Makefile
+>> > @@ -87,6 +87,7 @@ obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>> >  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
+>> >  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>> >  obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
+>> > +obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
+>> >  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>> >  obj-$(CONFIG_TI_ADS124S08) += ti-ads124s08.o
+>> >  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>> > diff --git a/drivers/iio/adc/ti-ads8344.c b/drivers/iio/adc/ti-ads8344.c
+>> > new file mode 100644
+>> > index 000000000000..e1649e237edc
+>> > --- /dev/null
+>> > +++ b/drivers/iio/adc/ti-ads8344.c
+>> > @@ -0,0 +1,204 @@
+>> > +// SPDX-License-Identifier: GPL-2.0+
+>> > +/*
+>> > + * ADS8344 16-bit 8-Channel ADC driver
+>> > + *
+>> > + * Author: Gregory CLEMENT <gregory.clement@bootlin.com>
+>> > + *
+>> > + * Datasheet: http://www.ti.com/lit/ds/symlink/ads8344.pdf
+>> > + */
+>> > +
+>> > +#include <linux/delay.h>
+>> > +#include <linux/iio/buffer.h>
+>> > +#include <linux/iio/iio.h>
+>> > +#include <linux/module.h>
+>> > +#include <linux/regulator/consumer.h>
+>> > +#include <linux/spi/spi.h>
+>> > +
+>> > +#define ADS8344_START BIT(7)
+>> > +#define ADS8344_SINGLE_END BIT(2)
+>> > +#define ADS8344_CHANNEL(channel) ((channel) << 4)
+>> > +#define ADS8344_CLOCK_INTERNAL 0x2 /* PD1 = 1 and PD0 = 0 */
+>> > +
+>> > +struct ads8344 {
+>> > +	struct spi_device *spi;
+>> > +	struct regulator *reg;
+>> > +	/*
+>> > +	 * Lock protecting access to adc->tx_buff and rx_buff,
+>> > +	 * especially from concurrent read on sysfs file.
+>> > +	 */
+>> > +	struct mutex lock;
+>> > +
+>> > +	u8 tx_buf ____cacheline_aligned;
+>> > +	u16 rx_buf;
+>> > +};
+>> > +
+>> > +#define ADS8344_VOLTAGE_CHANNEL(chan, si)				\
+>> > +	{								\
+>> > +		.type = IIO_VOLTAGE,					\
+>> > +		.indexed = 1,						\
+>> > +		.channel = chan,					\
+>> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>> > +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> > +	}
+>> > +
+>> > +#define ADS8344_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
+>> > +	{								\
+>> > +		.type = IIO_VOLTAGE,					\
+>> > +		.indexed = 1,						\
+>> > +		.channel = (chan1),					\
+>> > +		.channel2 = (chan2),					\
+>> > +		.differential = 1,					\
+>> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>> > +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> > +	}
+>> > +
+>> > +static const struct iio_chan_spec ads8344_channels[] = {
+>> > +	ADS8344_VOLTAGE_CHANNEL(0, 0),
+>> > +	ADS8344_VOLTAGE_CHANNEL(1, 4),
+>> > +	ADS8344_VOLTAGE_CHANNEL(2, 1),
+>> > +	ADS8344_VOLTAGE_CHANNEL(3, 5),
+>> > +	ADS8344_VOLTAGE_CHANNEL(4, 2),
+>> > +	ADS8344_VOLTAGE_CHANNEL(5, 6),
+>> > +	ADS8344_VOLTAGE_CHANNEL(6, 3),
+>> > +	ADS8344_VOLTAGE_CHANNEL(7, 7),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(2, 3, 9),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(4, 5, 10),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(6, 7, 11),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(1, 0, 12),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(3, 2, 13),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(5, 4, 14),
+>> > +	ADS8344_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
+>> > +};
+>> > +
+>> > +static int ads8344_adc_conversion(struct ads8344 *adc, int channel,
+>> > +				  bool differential)
+>> > +{
+>> > +	struct spi_device *spi = adc->spi;
+>> > +	int ret;
+>> > +
+>> > +	adc->tx_buf = ADS8344_START;
+>> > +	if (!differential)
+>> > +		adc->tx_buf |= ADS8344_SINGLE_END;
+>> > +	adc->tx_buf |= ADS8344_CHANNEL(channel);
+>> > +	adc->tx_buf |= ADS8344_CLOCK_INTERNAL;
+>> > +
+>> > +	ret = spi_write(spi, &adc->tx_buf, 1);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	udelay(9);
+>> > +
+>> > +	ret = spi_read(spi, &adc->rx_buf, 2);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	return adc->rx_buf;
+>> > +}
+>> > +
+>> > +static int ads8344_read_raw(struct iio_dev *iio,
+>> > +			    struct iio_chan_spec const *channel, int *value,
+>> > +			    int *shift, long mask)
+>> > +{
+>> > +	struct ads8344 *adc = iio_priv(iio);
+>> > +
+>> > +	switch (mask) {
+>> > +	case IIO_CHAN_INFO_RAW:
+>> > +		mutex_lock(&adc->lock);
+>> > +		*value = ads8344_adc_conversion(adc, channel->scan_index,
+>> > +						channel->differential);
+>> > +		mutex_unlock(&adc->lock);
+>> > +		if (*value < 0)
+>> > +			return *value;
+>> > +
+>> > +		return IIO_VAL_INT;
+>> > +	case IIO_CHAN_INFO_SCALE:
+>> > +		*value = regulator_get_voltage(adc->reg);
+>> > +		if (*value < 0)
+>> > +			return *value;
+>> > +
+>> > +		/* convert regulator output voltage to mV */
+>> > +		*value /= 1000;
+>> > +		*shift = 16;
+>> > +
+>> > +		return IIO_VAL_FRACTIONAL_LOG2;
+>> > +	default:
+>> > +		return -EINVAL;
+>> > +	}
+>> > +}
+>> > +
+>> > +static const struct iio_info ads8344_info = {
+>> > +	.read_raw = ads8344_read_raw,
+>> > +};
+>> > +
+>> > +static int ads8344_probe(struct spi_device *spi)
+>> > +{
+>> > +	struct iio_dev *indio_dev;
+>> > +	struct ads8344 *adc;
+>> > +	int ret;
+>> > +
+>> > +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+>> > +	if (!indio_dev)
+>> > +		return -ENOMEM;
+>> > +
+>> > +	adc = iio_priv(indio_dev);
+>> > +	adc->spi = spi;
+>> > +	mutex_init(&adc->lock);
+>> > +
+>> > +	indio_dev->name = dev_name(&spi->dev);
+>> > +	indio_dev->dev.parent = &spi->dev;
+>> > +	indio_dev->dev.of_node = spi->dev.of_node;
+>> > +	indio_dev->info = &ads8344_info;
+>> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> > +	indio_dev->channels = ads8344_channels;
+>> > +	indio_dev->num_channels = ARRAY_SIZE(ads8344_channels);
+>> > +
+>> > +	adc->reg = devm_regulator_get(&spi->dev, "vref");
+>> > +	if (IS_ERR(adc->reg))
+>> > +		return PTR_ERR(adc->reg);
+>> > +
+>> > +	ret = regulator_enable(adc->reg);
+>> > +	if (ret)
+>> > +		return ret;
+>> > +
+>> > +	spi_set_drvdata(spi, indio_dev);
+>> > +
+>> > +	ret = iio_device_register(indio_dev);
+>> > +	if (ret) {
+>> > +		regulator_disable(adc->reg);
+>> > +		return ret;
+>> > +	}
+>> > +
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static int ads8344_remove(struct spi_device *spi)
+>> > +{
+>> > +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> > +	struct ads8344 *adc = iio_priv(indio_dev);
+>> > +
+>> > +	iio_device_unregister(indio_dev);
+>> > +	regulator_disable(adc->reg);
+>> > +
+>> > +	return 0;
+>> > +}
+>> > +
+>> > +static const struct of_device_id ads8344_of_match[] = {
+>> > +	{ .compatible = "ti,ads8344", },
+>> > +	{}
+>> > +};
+>> > +MODULE_DEVICE_TABLE(of, ads8344_dt_ids);
+> no such variable... fixed as ads8344_of_match.
+>
+>> > +
+>> > +static struct spi_driver ads8344_driver = {
+>> > +	.driver = {
+>> > +		.name = "ads8344",
+>> > +		.of_match_table = ads8344_of_match,
+>> > +	},
+>> > +	.probe = ads8344_probe,
+>> > +	.remove = ads8344_remove,
+>> > +};
+>> > +module_spi_driver(ads8344_driver);
+>> > +
+>> > +MODULE_AUTHOR("Gregory CLEMENT <gregory.clement@bootlin.com>");
+>> > +MODULE_DESCRIPTION("ADS8344 driver");
+>> > +MODULE_LICENSE("GPL");  
+>> 
+>
+
 -- 
-2.7.4
-
+Gregory Clement, Bootlin
+Embedded Linux and Kernel engineering
+http://bootlin.com
