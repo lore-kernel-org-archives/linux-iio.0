@@ -2,99 +2,91 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BEC2FC282E1
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 09:45:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0451DC10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:02:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 77E5D20857
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 09:45:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF6CD20874
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:02:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555926329;
-	bh=HkRaglHQToLd5+Y09kTvOtcXq6Ba9PeyskQdeapyE68=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=nGctx20Y7CCVoevJ2QmYa/DLzS5c2PjcWDvtqWX7pqsPgBFRyJmQlnQSLBT+/14a5
-	 1lYSPnTtDxajjrxJ+nOldOKIErwHmPctFKRYxYz8ag74+ighRgFUWB6FGaCRwOqcWf
-	 g5wZYifeDOvYfo9jrTXMoOAqQ5+dOjm5LuAf07OA=
+	s=default; t=1555927355;
+	bh=ENgcRb2S3oPn/EmyUnQ4K4/nqUOWI0KzvobKKNq7CJw=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=h7DFSajPI10gqv5U4adItFpbDTuzp3o7Y3nnu7NBv9L2sIpd1R8VuYArnLu56RYUm
+	 6dB1abjzZQGV99bA6e3st04aA6rRlyi3giEp7jzuVQvaIhWFbsOBgkOx+yUfl907Bg
+	 3EQ0O2VlcE69ifc9TPFlD6E69jkgUIaHxyoqz/Qg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725895AbfDVJp3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 05:45:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51392 "EHLO mail.kernel.org"
+        id S1726393AbfDVKCf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 06:02:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34446 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725817AbfDVJp2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 05:45:28 -0400
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1725817AbfDVKCf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 06:02:35 -0400
+Received: from localhost.localdomain (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B83EC2075A;
-        Mon, 22 Apr 2019 09:45:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C68B720811;
+        Mon, 22 Apr 2019 10:02:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555926328;
-        bh=HkRaglHQToLd5+Y09kTvOtcXq6Ba9PeyskQdeapyE68=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FxtSjqKU6OjGU2ZrB0ciQ/u9zNWDHhaF1vMIkx+BL/kCzCyS47ZcL/azuaN8xhxQ1
-         awCzGDflLgGdmL4AlkSzBQZzFdic6yoUpDW8tUXcYFBFMU9wLxcGFzJaM5bjAWR5wJ
-         YpGwVePqfOrH+2cG/mkwAl+FgLJNCthtsqX7fMRg=
-Date:   Mon, 22 Apr 2019 10:45:23 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Mohan Kumar <mohankumar718@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [RESEND PATCH] drivers/iio/gyro/mpu3050-core.c: This patch fix
- the following checkpatch warning.
-Message-ID: <20190422104523.4bfca4ad@archlinux>
-In-Reply-To: <CACRpkdY5cX=aP9nNwWeUd0Nx33MS0QJDnLKzbajADRsKCUVbOA@mail.gmail.com>
-References: <1555257218-3830-1-git-send-email-mohankumar718@gmail.com>
-        <CACRpkdY5cX=aP9nNwWeUd0Nx33MS0QJDnLKzbajADRsKCUVbOA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        s=default; t=1555927354;
+        bh=ENgcRb2S3oPn/EmyUnQ4K4/nqUOWI0KzvobKKNq7CJw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fU9WBk+ygjDFoq/uhoO48Q3n1cXDjvNOjkVjeEO6SA8Hi/khSgMfs4tXYbzf/4Lxe
+         qq1BgeHDFJnu/2aW70VTHQOow8cgtsm7V5lAFsfp4TwOuB9ijH5OL5Q2IbjSUU5hO+
+         kJhOC/zLZAlvdgGAlVHIuhpPQBuwFnKNtp+tauvY=
+From:   jic23@kernel.org
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] iio:gyro:mp3050 Suppress 'false' sparse warning about endian assigment.
+Date:   Mon, 22 Apr 2019 11:00:30 +0100
+Message-Id: <20190422100030.10561-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 16 Apr 2019 13:50:18 +0200
-Linus Walleij <linus.walleij@linaro.org> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> On Sun, Apr 14, 2019 at 5:53 PM Mohan Kumar <mohankumar718@gmail.com> wrote:
-> 
-> > As per Documentation/timers/timers-howto.txt Msleep < 20ms can sleep for
-> > up to 20ms. so use usleep_range.
-> >
-> > Signed-off-by: Mohan Kumar <mohankumar718@gmail.com>  
-> 
-> All right, should work as fine.
-> Acked-by: Linus Walleij <linus.walleij@linaro.org>
-Thanks and applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+In this particular case the value being assigned is 0xAAAA so
+is not effected by the endian choice.
 
-Whilst we are here, there is a 'false' warning that we should clear up at
-somepoint (from sparse)
+It's easy to suppress so we might as well do so to make it easier
+to spot real warnings.
+
+Warning is:
 
 CHECK   drivers/iio/gyro/mpu3050-core.c
 drivers/iio/gyro/mpu3050-core.c:544:48: warning: incorrect type in assignment (different base types)
 drivers/iio/gyro/mpu3050-core.c:544:48:    expected restricted __be16 <noident>
 drivers/iio/gyro/mpu3050-core.c:544:48:    got int
 
-Line in question is setting the __be16 value to 0xAAAA where endian choice has
-no effect.  I'll send out the trivial 'fix' in a minute.  Give the compiler
-can sort it out at build time it should make no actual difference.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/gyro/mpu3050-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Usual arguments apply for why we bother to suppress 'false' build warnings
-like this...
-
-Anyhow patch shortly.
-
-Jonathan
-
-
-
-> 
-> Yours,
-> Linus Walleij
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index 496ed4c99ce9..9aacaca145e4 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -541,7 +541,7 @@ static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
+ 				toread = bytes_per_datum;
+ 				offset = 1;
+ 				/* Put in some dummy value */
+-				fifo_values[0] = 0xAAAA;
++				fifo_values[0] = cpu_to_be16(0xAAAA);
+ 			}
+ 
+ 			ret = regmap_bulk_read(mpu3050->map,
+-- 
+2.21.0
 
