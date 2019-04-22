@@ -2,91 +2,224 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0451DC10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:02:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3612AC10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:07:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BF6CD20874
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:02:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF34A20874
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:07:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555927355;
-	bh=ENgcRb2S3oPn/EmyUnQ4K4/nqUOWI0KzvobKKNq7CJw=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=h7DFSajPI10gqv5U4adItFpbDTuzp3o7Y3nnu7NBv9L2sIpd1R8VuYArnLu56RYUm
-	 6dB1abjzZQGV99bA6e3st04aA6rRlyi3giEp7jzuVQvaIhWFbsOBgkOx+yUfl907Bg
-	 3EQ0O2VlcE69ifc9TPFlD6E69jkgUIaHxyoqz/Qg=
+	s=default; t=1555927645;
+	bh=/AV+Mxje0oRJQeqThuiq5IDa8PyTLtiGs8z22ZaWdrM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=kG3qeqDLl1mG7aMHfNcNgLDzv5TLW8fes5qOXTia45dXgQV+Xj+UvR6uqfGRz/haB
+	 /qYkGLx5tTkxG49BIT8dZlxU//OYT0fwrSLPj2D83nOWzOPV7MsNpz1nu0qyuH/zvU
+	 C6um4j8DTUH9uO9ElMRwTbcG7CtkjyhAMh+uhR84=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726393AbfDVKCf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 06:02:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34446 "EHLO mail.kernel.org"
+        id S1726132AbfDVKHY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 06:07:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725817AbfDVKCf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 06:02:35 -0400
-Received: from localhost.localdomain (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1725817AbfDVKHY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 06:07:24 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C68B720811;
-        Mon, 22 Apr 2019 10:02:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2EE9020811;
+        Mon, 22 Apr 2019 10:07:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555927354;
-        bh=ENgcRb2S3oPn/EmyUnQ4K4/nqUOWI0KzvobKKNq7CJw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=fU9WBk+ygjDFoq/uhoO48Q3n1cXDjvNOjkVjeEO6SA8Hi/khSgMfs4tXYbzf/4Lxe
-         qq1BgeHDFJnu/2aW70VTHQOow8cgtsm7V5lAFsfp4TwOuB9ijH5OL5Q2IbjSUU5hO+
-         kJhOC/zLZAlvdgGAlVHIuhpPQBuwFnKNtp+tauvY=
-From:   jic23@kernel.org
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] iio:gyro:mp3050 Suppress 'false' sparse warning about endian assigment.
-Date:   Mon, 22 Apr 2019 11:00:30 +0100
-Message-Id: <20190422100030.10561-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.21.0
+        s=default; t=1555927642;
+        bh=/AV+Mxje0oRJQeqThuiq5IDa8PyTLtiGs8z22ZaWdrM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=PKtq7dHs2vi1JC9hdNVHWIGZvrf/GyqM0TkWFS9cODf4isrd/Yi8N+0rlP3JTN7NJ
+         bN5X++c1s6xxpxbVccrwdWSc5f9w2trxm6nX4EIS19YTEA3R0Li+eLmQOF9yJ59jaH
+         loTqH81ULpvY3++ooZIcahExVunaZZvjfWOfPeYU=
+Date:   Mon, 22 Apr 2019 11:07:17 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andrey Smirnov <andrew.smirnov@gmail.com>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/6] iio: imx7d_adc: Simplify imx7d_adc_probe() with
+ imx7d_adc_resume()
+Message-ID: <20190422110717.3f2247c3@archlinux>
+In-Reply-To: <20190414183504.23286-5-andrew.smirnov@gmail.com>
+References: <20190414183504.23286-1-andrew.smirnov@gmail.com>
+        <20190414183504.23286-5-andrew.smirnov@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Sun, 14 Apr 2019 11:35:02 -0700
+Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
 
-In this particular case the value being assigned is 0xAAAA so
-is not effected by the endian choice.
+> Initialization sequence performed in imx7d_adc_resume() is exactly the
+> same as the one being done in imx7d_adc_probe(). Make use of the
+> former in the latter to avoid code duplication. Rename
+> imx7d_adc_resume() to imx7d_adc_enable() for clarity while at it.
+> 
+> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Chris Healy <cphealy@gmail.com>
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-kernel@vger.kernel.org
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
-It's easy to suppress so we might as well do so to make it easier
-to spot real warnings.
+Thanks,
 
-Warning is:
+Jonathan
 
-CHECK   drivers/iio/gyro/mpu3050-core.c
-drivers/iio/gyro/mpu3050-core.c:544:48: warning: incorrect type in assignment (different base types)
-drivers/iio/gyro/mpu3050-core.c:544:48:    expected restricted __be16 <noident>
-drivers/iio/gyro/mpu3050-core.c:544:48:    got int
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/gyro/mpu3050-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 496ed4c99ce9..9aacaca145e4 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -541,7 +541,7 @@ static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
- 				toread = bytes_per_datum;
- 				offset = 1;
- 				/* Put in some dummy value */
--				fifo_values[0] = 0xAAAA;
-+				fifo_values[0] = cpu_to_be16(0xAAAA);
- 			}
- 
- 			ret = regmap_bulk_read(mpu3050->map,
--- 
-2.21.0
+> ---
+>  drivers/iio/adc/imx7d_adc.c | 88 +++++++++++++++----------------------
+>  1 file changed, 36 insertions(+), 52 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
+> index 147ee8575ad0..0922ee08546b 100644
+> --- a/drivers/iio/adc/imx7d_adc.c
+> +++ b/drivers/iio/adc/imx7d_adc.c
+> @@ -434,6 +434,33 @@ static void imx7d_adc_power_down(struct imx7d_adc *info)
+>  	writel(adc_cfg, info->regs + IMX7D_REG_ADC_ADC_CFG);
+>  }
+>  
+> +static int imx7d_adc_enable(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct imx7d_adc *info = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = regulator_enable(info->vref);
+> +	if (ret) {
+> +		dev_err(info->dev,
+> +			"Can't enable adc reference top voltage, err = %d\n",
+> +			ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = clk_prepare_enable(info->clk);
+> +	if (ret) {
+> +		dev_err(info->dev,
+> +			"Could not prepare or enable clock.\n");
+> +		regulator_disable(info->vref);
+> +		return ret;
+> +	}
+> +
+> +	imx7d_adc_hw_init(info);
+> +
+> +	return 0;
+> +}
+> +
+>  static int imx7d_adc_probe(struct platform_device *pdev)
+>  {
+>  	struct imx7d_adc *info;
+> @@ -479,14 +506,6 @@ static int imx7d_adc_probe(struct platform_device *pdev)
+>  		return ret;
+>  	}
+>  
+> -	ret = regulator_enable(info->vref);
+> -	if (ret) {
+> -		dev_err(dev,
+> -			"Can't enable adc reference top voltage, err = %d\n",
+> -			ret);
+> -		return ret;
+> -	}
+> -
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+>  	init_completion(&info->completion);
+> @@ -498,38 +517,30 @@ static int imx7d_adc_probe(struct platform_device *pdev)
+>  	indio_dev->channels = imx7d_adc_iio_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(imx7d_adc_iio_channels);
+>  
+> -	ret = clk_prepare_enable(info->clk);
+> -	if (ret) {
+> -		dev_err(dev, "Could not prepare or enable the clock.\n");
+> -		goto error_adc_clk_enable;
+> -	}
+> -
+>  	ret = devm_request_irq(dev, irq,
+>  			       imx7d_adc_isr, 0,
+>  			       dev_name(dev), info);
+>  	if (ret < 0) {
+>  		dev_err(dev, "Failed requesting irq, irq = %d\n", irq);
+> -		goto error_iio_device_register;
+> +		return ret;
+>  	}
+>  
+>  	imx7d_adc_feature_config(info);
+> -	imx7d_adc_hw_init(info);
+> +
+> +	ret = imx7d_adc_enable(&indio_dev->dev);
+> +	if (ret)
+> +		return ret;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret) {
+>  		imx7d_adc_power_down(info);
+> +		clk_disable_unprepare(info->clk);
+> +		regulator_disable(info->vref);
+>  		dev_err(&pdev->dev, "Couldn't register the device.\n");
+> -		goto error_iio_device_register;
+> +		return ret;
+>  	}
+>  
+>  	return 0;
+> -
+> -error_iio_device_register:
+> -	clk_disable_unprepare(info->clk);
+> -error_adc_clk_enable:
+> -	regulator_disable(info->vref);
+> -
+> -	return ret;
+>  }
+>  
+>  static int imx7d_adc_remove(struct platform_device *pdev)
+> @@ -560,34 +571,7 @@ static int __maybe_unused imx7d_adc_suspend(struct device *dev)
+>  	return 0;
+>  }
+>  
+> -static int __maybe_unused imx7d_adc_resume(struct device *dev)
+> -{
+> -	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> -	struct imx7d_adc *info = iio_priv(indio_dev);
+> -	int ret;
+> -
+> -	ret = regulator_enable(info->vref);
+> -	if (ret) {
+> -		dev_err(info->dev,
+> -			"Can't enable adc reference top voltage, err = %d\n",
+> -			ret);
+> -		return ret;
+> -	}
+> -
+> -	ret = clk_prepare_enable(info->clk);
+> -	if (ret) {
+> -		dev_err(info->dev,
+> -			"Could not prepare or enable clock.\n");
+> -		regulator_disable(info->vref);
+> -		return ret;
+> -	}
+> -
+> -	imx7d_adc_hw_init(info);
+> -
+> -	return 0;
+> -}
+> -
+> -static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend, imx7d_adc_resume);
+> +static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_suspend, imx7d_adc_enable);
+>  
+>  static struct platform_driver imx7d_adc_driver = {
+>  	.probe		= imx7d_adc_probe,
 
