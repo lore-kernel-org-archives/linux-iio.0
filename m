@@ -2,814 +2,171 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFCDC282E4
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 03:20:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6E1BC282E3
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:33:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1E02B2147C
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 03:20:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9A80C20656
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:33:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="eA2ooJPo"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="cScyQXF2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726407AbfDVDUE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 21 Apr 2019 23:20:04 -0400
-Received: from chill.innovation.ch ([216.218.245.220]:49782 "EHLO
-        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726583AbfDVDUE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Apr 2019 23:20:04 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by chill.innovation.ch (Postfix) with ESMTP id 32B56640155;
-        Sun, 21 Apr 2019 20:13:01 -0700 (PDT)
-X-Virus-Scanned: amavisd-new at 
-Received: from chill.innovation.ch ([127.0.0.1])
-        by localhost (chill.innovation.ch [127.0.0.1]) (amavisd-new, port 10024)
-        with LMTP id x9wsRGzzCOZ4; Sun, 21 Apr 2019 20:12:58 -0700 (PDT)
-From:   =?UTF-8?q?Ronald=20Tschal=C3=A4r?= <ronald@innovation.ch>
-DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch B73E0640145
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
-        s=default; t=1555902778;
-        bh=3KZpxM/X+bkoIFDwLLWG+Nz6Of7jL3JN85zQyKFLWgw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eA2ooJPoh8yOSwToFJW7cJkxkh522oSYekKWTGRNTkSLdD2K2fvG1emOXj/3brECr
-         KgbBD4AmxkGyWRsy1wzRGgaRQRJjhEdEyYXRU02y2mHhJIssjZ0diFp+EH4glhAS6D
-         rJKWLOiUCIZfFWc/0abQfO5HB0czPshMmsbeFyH93JyNvU9TeKrwo2spwNuCSUMVZ7
-         Qh3kofbS+iOVWj33WuvxfAJR3nmFYrG0VnsijQsCf/EF/fW3bLmQXZvinm2IK/0jSB
-         ykXGItjimSoFV+fSc8rdoS2W0Dp9bRm4P9lozKi+v9F2mltGWRi9u5JZA3EQ4XUohB
-         s3kwF3QxzGt8A==
-To:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>
-Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 3/3] iio: light: apple-ib-als: Add driver for ALS on iBridge chip.
-Date:   Sun, 21 Apr 2019 20:12:51 -0700
-Message-Id: <20190422031251.11968-4-ronald@innovation.ch>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190422031251.11968-1-ronald@innovation.ch>
-References: <20190422031251.11968-1-ronald@innovation.ch>
+        id S1726943AbfDVIdG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 04:33:06 -0400
+Received: from mail-eopbgr680084.outbound.protection.outlook.com ([40.107.68.84]:21745
+        "EHLO NAM04-BN3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726305AbfDVIdG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 04:33:06 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=VvvsQMCjsasU5tAUu8hT/EiBUDeUN01UFrU/q/KvUxU=;
+ b=cScyQXF2Esfd8gSg3Gz9WAaI8ZkUwIEq9ivxM9pZYPx1rRJtK5Sf405GrO7BuVkWYwJTz4VvcTb3dtWqIraRRM+JP+zes+4f9/ZryLZP9gABpwsraZicf1ChslILNNFlthhWvw4moovWqo/VcSE0Ac4MIilY9laH6Ug52q3epLQ=
+Received: from MWHPR03CA0032.namprd03.prod.outlook.com (2603:10b6:301:3b::21)
+ by BL2PR03MB548.namprd03.prod.outlook.com (2a01:111:e400:c26::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1813.16; Mon, 22 Apr
+ 2019 08:33:02 +0000
+Received: from BL2NAM02FT064.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::206) by MWHPR03CA0032.outlook.office365.com
+ (2603:10b6:301:3b::21) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1813.11 via Frontend
+ Transport; Mon, 22 Apr 2019 08:33:02 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT064.mail.protection.outlook.com (10.152.77.119) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1771.16
+ via Frontend Transport; Mon, 22 Apr 2019 08:33:01 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x3M8X1Zw020948
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 22 Apr 2019 01:33:01 -0700
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 22 Apr 2019
+ 04:33:00 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <andriy.shevchenko@linux.intel.com>,
+        <namhyung@kernel.org>, <mingo@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/2] lib: add __sysfs_match_string_with_gaps() helper
+Date:   Mon, 22 Apr 2019 11:32:56 +0300
+Message-ID: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(39860400002)(346002)(396003)(136003)(2980300002)(199004)(189003)(356004)(6666004)(48376002)(51416003)(7696005)(246002)(478600001)(305945005)(8676002)(70586007)(70206006)(50226002)(7636002)(107886003)(1076003)(16586007)(47776003)(316002)(50466002)(8936002)(110136005)(106002)(54906003)(186003)(36756003)(336012)(53416004)(126002)(476003)(77096007)(2616005)(426003)(26005)(86362001)(44832011)(5660300002)(2906002)(486006)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:BL2PR03MB548;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: cad51cb2-bc30-4e5a-fdf2-08d6c6fd21f1
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4709054)(2017052603328);SRVR:BL2PR03MB548;
+X-MS-TrafficTypeDiagnostic: BL2PR03MB548:
+X-Microsoft-Antispam-PRVS: <BL2PR03MB54822C44E8B26400ECC311CF9220@BL2PR03MB548.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 00159D1518
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 2Nt9MsowzA0qnSeNuvjNsQC0Gx1trYK547g8sG1ug5Bcwpd+nBLgoWBgJoyc0lvfvYExVp8XFSGcGv44Y3cijyFR2Fi2UGW8oQIxHNtxUy1L85x50l2TigwAU3iZzFlsO8KpfDOoic+nHIz8yImxzoFr0E+OxvCfQzpJ7fsH344Bdqd5SZ2wPdpsQ3ZmUPW5OAn6xth/aTE0/zvvhSES9QtSiEVFvO9iuwOviaEHJ0hb5L6HCzOUWJLEW79BD5giXMx6FxmfURjCOMSpjCz7t4EITeDjuh1vwZsHF4S/vJT7pj9hYickS0PNFUNiF54GiJ5Qnc6RT+B2ZZIVVKUVx4odfwn9xs2UhsBygx7pabTd7OR6Kp0c6gy56Q+aDsv6j2bnnZxhLaLuVcEQq5EcZliC2u5b5g4hERIucJiLeJo=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2019 08:33:01.7035
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: cad51cb2-bc30-4e5a-fdf2-08d6c6fd21f1
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BL2PR03MB548
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2016/2017 MacBook Pro's with a Touch Bar the ALS is attached to,
-and exposed via the iBridge device. This provides the driver for that
-sensor.
+This helper is similar to __sysfs_match_string() with the exception that it
+ignores NULL elements within the array.
+It takes an extra parameter (called `gaps`) which when true will ignore
+the NULL elements. When false, this function behaves exactly like
+`__sysfs_match_string()`.
 
-Signed-off-by: Ronald Tschalär <ronald@innovation.ch>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/light/Kconfig        |  12 +
- drivers/iio/light/Makefile       |   1 +
- drivers/iio/light/apple-ib-als.c | 694 +++++++++++++++++++++++++++++++
- 3 files changed, 707 insertions(+)
- create mode 100644 drivers/iio/light/apple-ib-als.c
+ include/linux/string.h |  9 ++++++++-
+ lib/string.c           | 14 ++++++++++----
+ 2 files changed, 18 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 36f458433480..49159fab1c0e 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -64,6 +64,18 @@ config APDS9960
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called apds9960
+diff --git a/include/linux/string.h b/include/linux/string.h
+index 7927b875f80c..30595ed483dc 100644
+--- a/include/linux/string.h
++++ b/include/linux/string.h
+@@ -189,7 +189,14 @@ static inline int strtobool(const char *s, bool *res)
+ }
  
-+config APPLE_IBRIDGE_ALS
-+	tristate "Apple iBridge ambient light sensor"
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	depends on MFD_APPLE_IBRIDGE
-+	help
-+	  Say Y here to build the driver for the Apple iBridge ALS
-+	  sensor.
+ int match_string(const char * const *array, size_t n, const char *string);
+-int __sysfs_match_string(const char * const *array, size_t n, const char *s);
++int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
++				   const char *str, bool gaps);
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called apple-ib-als.
-+
- config BH1750
- 	tristate "ROHM BH1750 ambient light sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index 286bf3975372..144d918917f7 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -9,6 +9,7 @@ obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
- obj-$(CONFIG_AL3320A)		+= al3320a.o
- obj-$(CONFIG_APDS9300)		+= apds9300.o
- obj-$(CONFIG_APDS9960)		+= apds9960.o
-+obj-$(CONFIG_APPLE_IBRIDGE_ALS)	+= apple-ib-als.o
- obj-$(CONFIG_BH1750)		+= bh1750.o
- obj-$(CONFIG_BH1780)		+= bh1780.o
- obj-$(CONFIG_CM32181)		+= cm32181.o
-diff --git a/drivers/iio/light/apple-ib-als.c b/drivers/iio/light/apple-ib-als.c
-new file mode 100644
-index 000000000000..1718fcbe304f
---- /dev/null
-+++ b/drivers/iio/light/apple-ib-als.c
-@@ -0,0 +1,694 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Apple Ambient Light Sensor Driver
-+ *
-+ * Copyright (c) 2017-2018 Ronald Tschalär
-+ */
-+
-+/*
-+ * MacBookPro models with an iBridge chip (13,[23] and 14,[23]) have an
-+ * ambient light sensor that is exposed via one of the USB interfaces on
-+ * the iBridge as a standard HID light sensor. However, we cannot use the
-+ * existing hid-sensor-als driver, for two reasons:
-+ *
-+ * 1. The hid-sensor-als driver is part of the hid-sensor-hub which in turn
-+ *    is a hid driver, but you can't have more than one hid driver per hid
-+ *    device, which is a problem because the touch bar also needs to
-+ *    register as a driver for this hid device.
-+ *
-+ * 2. While the hid-sensors-als driver stores sensor readings received via
-+ *    interrupt in an iio buffer, reads on the sysfs
-+ *    .../iio:deviceX/in_illuminance_YYY attribute result in a get of the
-+ *    feature report; however, in the case of this sensor here the
-+ *    illuminance field of that report is always 0. Instead, the input
-+ *    report needs to be requested.
-+ */
-+
-+#define dev_fmt(fmt) "als: " fmt
-+
-+#include <linux/device.h>
-+#include <linux/hid.h>
-+#include <linux/hid-sensor-ids.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/mfd/apple-ibridge.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#define APPLEALS_DYN_SENS		0	/* our dynamic sensitivity */
-+#define APPLEALS_DEF_CHANGE_SENS	APPLEALS_DYN_SENS
-+
-+struct appleals_device {
-+	struct appleib_device	*ib_dev;
-+	struct device		*log_dev;
-+	struct hid_device	*hid_dev;
-+	struct hid_report	*cfg_report;
-+	struct hid_field	*illum_field;
-+	struct iio_dev		*iio_dev;
-+	struct iio_trigger	*iio_trig;
-+	int			cur_sensitivity;
-+	int			cur_hysteresis;
-+	bool			events_enabled;
-+};
-+
-+static struct hid_driver appleals_hid_driver;
-+
-+/*
-+ * This is a primitive way to get a relative sensitivity, one where we get
-+ * notified when the value changes by a certain percentage rather than some
-+ * absolute value. MacOS somehow manages to configure the sensor to work this
-+ * way (with a 15% relative sensitivity), but I haven't been able to figure
-+ * out how so far. So until we do, this provides a less-than-perfect
-+ * simulation.
-+ *
-+ * When the brightness value is within one of the ranges, the sensitivity is
-+ * set to that range's sensitivity. But in order to reduce flapping when the
-+ * brightness is right on the border between two ranges, the ranges overlap
-+ * somewhat (by at least one sensitivity), and sensitivity is only changed if
-+ * the value leaves the current sensitivity's range.
-+ *
-+ * The values chosen for the map are somewhat arbitrary: a compromise of not
-+ * too many ranges (and hence changing the sensitivity) but not too small or
-+ * large of a percentage of the min and max values in the range (currently
-+ * from 7.5% to 30%, i.e. within a factor of 2 of 15%), as well as just plain
-+ * "this feels reasonable to me".
-+ */
-+struct appleals_sensitivity_map {
-+	int	sensitivity;
-+	int	illum_low;
-+	int	illum_high;
-+};
-+
-+static struct appleals_sensitivity_map appleals_sensitivity_map[] = {
-+	{   1,    0,   14 },
-+	{   3,   10,   40 },
-+	{   9,   30,  120 },
-+	{  27,   90,  360 },
-+	{  81,  270, 1080 },
-+	{ 243,  810, 3240 },
-+	{ 729, 2430, 9720 },
-+};
-+
-+static int appleals_compute_sensitivity(int cur_illum, int cur_sens)
++static inline int __sysfs_match_string(const char * const *array, size_t n,
++				       const char *str)
 +{
-+	struct appleals_sensitivity_map *entry;
-+	int i;
-+
-+	/* see if we're still in current range */
-+	for (i = 0; i < ARRAY_SIZE(appleals_sensitivity_map); i++) {
-+		entry = &appleals_sensitivity_map[i];
-+
-+		if (entry->sensitivity == cur_sens &&
-+		    entry->illum_low <= cur_illum &&
-+		    entry->illum_high >= cur_illum)
-+			return cur_sens;
-+		else if (entry->sensitivity > cur_sens)
-+			break;
-+	}
-+
-+	/* not in current range, so find new sensitivity */
-+	for (i = 0; i < ARRAY_SIZE(appleals_sensitivity_map); i++) {
-+		entry = &appleals_sensitivity_map[i];
-+
-+		if (entry->illum_low <= cur_illum &&
-+		    entry->illum_high >= cur_illum)
-+			return entry->sensitivity;
-+	}
-+
-+	/* hmm, not in table, so assume we are above highest range */
-+	i = ARRAY_SIZE(appleals_sensitivity_map) - 1;
-+	return appleals_sensitivity_map[i].sensitivity;
++	return __sysfs_match_string_with_gaps(array, n, str, false);
 +}
-+
-+static int appleals_get_field_value_for_usage(struct hid_field *field,
-+					      unsigned int usage)
-+{
-+	int u;
-+
-+	if (!field)
-+		return -1;
-+
-+	for (u = 0; u < field->maxusage; u++) {
-+		if (field->usage[u].hid == usage)
-+			return u + field->logical_minimum;
-+	}
-+
-+	return -1;
-+}
-+
-+static __s32 appleals_get_field_value(struct appleals_device *als_dev,
-+				      struct hid_field *field)
-+{
-+	hid_hw_request(als_dev->hid_dev, field->report, HID_REQ_GET_REPORT);
-+	hid_hw_wait(als_dev->hid_dev);
-+
-+	return field->value[0];
-+}
-+
-+static void appleals_set_field_value(struct appleals_device *als_dev,
-+				     struct hid_field *field, __s32 value)
-+{
-+	hid_set_field(field, 0, value);
-+	hid_hw_request(als_dev->hid_dev, field->report, HID_REQ_SET_REPORT);
-+}
-+
-+static int appleals_get_config(struct appleals_device *als_dev,
-+			       unsigned int field_usage, __s32 *value)
-+{
-+	struct hid_field *field;
-+
-+	field = appleib_find_report_field(als_dev->cfg_report, field_usage);
-+	if (!field)
-+		return -EINVAL;
-+
-+	*value = appleals_get_field_value(als_dev, field);
-+
-+	return 0;
-+}
-+
-+static int appleals_set_config(struct appleals_device *als_dev,
-+			       unsigned int field_usage, __s32 value)
-+{
-+	struct hid_field *field;
-+
-+	field = appleib_find_report_field(als_dev->cfg_report, field_usage);
-+	if (!field)
-+		return -EINVAL;
-+
-+	appleals_set_field_value(als_dev, field, value);
-+
-+	return 0;
-+}
-+
-+static int appleals_set_enum_config(struct appleals_device *als_dev,
-+				    unsigned int field_usage,
-+				    unsigned int value_usage)
-+{
-+	struct hid_field *field;
-+	int value;
-+
-+	field = appleib_find_report_field(als_dev->cfg_report, field_usage);
-+	if (!field)
-+		return -EINVAL;
-+
-+	value = appleals_get_field_value_for_usage(field, value_usage);
-+
-+	appleals_set_field_value(als_dev, field, value);
-+
-+	return 0;
-+}
-+
-+static void appleals_update_dyn_sensitivity(struct appleals_device *als_dev,
-+					    __s32 value)
-+{
-+	int new_sens;
-+	int rc;
-+
-+	new_sens = appleals_compute_sensitivity(value,
-+						als_dev->cur_sensitivity);
-+	if (new_sens != als_dev->cur_sensitivity) {
-+		rc = appleals_set_config(als_dev,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM |
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS,
-+			new_sens);
-+		if (!rc)
-+			als_dev->cur_sensitivity = new_sens;
-+	}
-+}
-+
-+static void appleals_push_new_value(struct appleals_device *als_dev,
-+				    __s32 value)
-+{
-+	__s32 buf[2] = { value, value };
-+
-+	iio_push_to_buffers(als_dev->iio_dev, buf);
-+
-+	if (als_dev->cur_hysteresis == APPLEALS_DYN_SENS)
-+		appleals_update_dyn_sensitivity(als_dev, value);
-+}
-+
-+static int appleals_hid_event(struct hid_device *hdev, struct hid_field *field,
-+			      struct hid_usage *usage, __s32 value)
-+{
-+	struct appleals_device *als_dev =
-+		appleib_get_drvdata(hid_get_drvdata(hdev),
-+				    &appleals_hid_driver);
-+	int rc = 0;
-+
-+	if ((usage->hid & HID_USAGE_PAGE) != HID_UP_SENSOR)
-+		return 0;
-+
-+	if (usage->hid == HID_USAGE_SENSOR_LIGHT_ILLUM) {
-+		appleals_push_new_value(als_dev, value);
-+		rc = 1;
-+	}
-+
-+	return rc;
-+}
-+
-+static int appleals_enable_events(struct iio_trigger *trig, bool enable)
-+{
-+	struct appleals_device *als_dev = iio_trigger_get_drvdata(trig);
-+	int value;
-+
-+	/* set the sensor's reporting state */
-+	appleals_set_enum_config(als_dev, HID_USAGE_SENSOR_PROP_REPORT_STATE,
-+		enable ? HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM :
-+			 HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM);
-+	als_dev->events_enabled = enable;
-+
-+	/* if the sensor was enabled, push an initial value */
-+	if (enable) {
-+		value = appleals_get_field_value(als_dev, als_dev->illum_field);
-+		appleals_push_new_value(als_dev, value);
-+	}
-+
-+	return 0;
-+}
-+
-+static int appleals_read_raw(struct iio_dev *iio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct appleals_device *als_dev =
-+				*(struct appleals_device **)iio_priv(iio_dev);
-+	__s32 value;
-+	int rc;
-+
-+	*val = 0;
-+	*val2 = 0;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		*val = appleals_get_field_value(als_dev, als_dev->illum_field);
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		rc = appleals_get_config(als_dev,
-+					 HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
-+					 &value);
-+		if (rc)
-+			return rc;
-+
-+		/* interval is in ms; val is in HZ, val2 in µHZ */
-+		value = 1000000000 / value;
-+		*val = value / 1000000;
-+		*val2 = value - (*val * 1000000);
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		if (als_dev->cur_hysteresis == APPLEALS_DYN_SENS) {
-+			*val = als_dev->cur_hysteresis;
-+			return IIO_VAL_INT;
+ 
+ /**
+  * sysfs_match_string - matches given string in an array
+diff --git a/lib/string.c b/lib/string.c
+index 38e4ca08e757..8ddac3cd292a 100644
+--- a/lib/string.c
++++ b/lib/string.c
+@@ -659,30 +659,36 @@ int match_string(const char * const *array, size_t n, const char *string)
+ EXPORT_SYMBOL(match_string);
+ 
+ /**
+- * __sysfs_match_string - matches given string in an array
++ * __sysfs_match_string_with_gaps - matches string in array ignoring NULLs
+  * @array: array of strings
+  * @n: number of strings in the array or -1 for NULL terminated arrays
+  * @str: string to match with
++ * @gaps: boolean to ignore NULL elements within the array
+  *
+  * Returns index of @str in the @array or -EINVAL, just like match_string().
+  * Uses sysfs_streq instead of strcmp for matching.
++ * Ignores NULL pointers within the @array if @gaps is true.
+  */
+-int __sysfs_match_string(const char * const *array, size_t n, const char *str)
++int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
++				   const char *str, bool gaps)
+ {
+ 	const char *item;
+ 	int index;
+ 
+ 	for (index = 0; index < n; index++) {
+ 		item = array[index];
+-		if (!item)
++		if (!item) {
++			if (gaps)
++				continue;
+ 			break;
 +		}
-+
-+		rc = appleals_get_config(als_dev,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM |
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS,
-+			val);
-+		if (!rc) {
-+			als_dev->cur_sensitivity = *val;
-+			als_dev->cur_hysteresis = *val;
-+		}
-+		return rc ? rc : IIO_VAL_INT;
-+
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int appleals_write_raw(struct iio_dev *iio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	struct appleals_device *als_dev =
-+				*(struct appleals_device **)iio_priv(iio_dev);
-+	__s32 illum;
-+	int rc;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		rc = appleals_set_config(als_dev,
-+					 HID_USAGE_SENSOR_PROP_REPORT_INTERVAL,
-+					 1000000000 / (val * 1000000 + val2));
-+		break;
-+
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		if (val == APPLEALS_DYN_SENS) {
-+			if (als_dev->cur_hysteresis != APPLEALS_DYN_SENS) {
-+				als_dev->cur_hysteresis = val;
-+				illum = appleals_get_field_value(als_dev,
-+							als_dev->illum_field);
-+				appleals_update_dyn_sensitivity(als_dev, illum);
-+			}
-+			rc = 0;
-+			break;
-+		}
-+
-+		rc = appleals_set_config(als_dev,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM |
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS,
-+			val);
-+		if (!rc) {
-+			als_dev->cur_sensitivity = val;
-+			als_dev->cur_hysteresis = val;
-+		}
-+		break;
-+
-+	default:
-+		rc = -EINVAL;
-+	}
-+
-+	return rc;
-+}
-+
-+static const struct iio_chan_spec appleals_channels[] = {
-+	{
-+		.type = IIO_INTENSITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_LIGHT_BOTH,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+			BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 32,
-+			.storagebits = 32,
-+		},
-+		.scan_index = 0,
-+	},
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+			BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 32,
-+			.storagebits = 32,
-+		},
-+		.scan_index = 1,
-+	}
-+};
-+
-+static const struct iio_trigger_ops appleals_trigger_ops = {
-+	.set_trigger_state = &appleals_enable_events,
-+};
-+
-+static const struct iio_info appleals_info = {
-+	.read_raw = &appleals_read_raw,
-+	.write_raw = &appleals_write_raw,
-+};
-+
-+static void appleals_config_sensor(struct appleals_device *als_dev,
-+				   bool events_enabled, int sensitivity)
-+{
-+	struct hid_field *field;
-+	__s32 val;
-+
-+	/*
-+	 * We're (often) in a probe here, so need to enable input processing
-+	 * in that case, but only in that case.
-+	 */
-+	if (appleib_in_hid_probe(als_dev->ib_dev))
-+		hid_device_io_start(als_dev->hid_dev);
-+
-+	/* power on the sensor */
-+	field = appleib_find_report_field(als_dev->cfg_report,
-+					  HID_USAGE_SENSOR_PROY_POWER_STATE);
-+	val = appleals_get_field_value_for_usage(field,
-+			HID_USAGE_SENSOR_PROP_POWER_STATE_D0_FULL_POWER_ENUM);
-+	hid_set_field(field, 0, val);
-+
-+	/* configure reporting of change events */
-+	field = appleib_find_report_field(als_dev->cfg_report,
-+					  HID_USAGE_SENSOR_PROP_REPORT_STATE);
-+	val = appleals_get_field_value_for_usage(field,
-+		events_enabled ?
-+			HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM :
-+			HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM);
-+	hid_set_field(field, 0, val);
-+
-+	/* report change events asap */
-+	field = appleib_find_report_field(als_dev->cfg_report,
-+					 HID_USAGE_SENSOR_PROP_REPORT_INTERVAL);
-+	hid_set_field(field, 0, field->logical_minimum);
-+
-+	/*
-+	 * Set initial change sensitivity; if dynamic, enabling trigger will set
-+	 * it instead.
-+	 */
-+	if (sensitivity != APPLEALS_DYN_SENS) {
-+		field = appleib_find_report_field(als_dev->cfg_report,
-+			HID_USAGE_SENSOR_LIGHT_ILLUM |
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS);
-+
-+		hid_set_field(field, 0, sensitivity);
-+	}
-+
-+	/* write the new config to the sensor */
-+	hid_hw_request(als_dev->hid_dev, als_dev->cfg_report,
-+		       HID_REQ_SET_REPORT);
-+
-+	if (appleib_in_hid_probe(als_dev->ib_dev))
-+		hid_device_io_stop(als_dev->hid_dev);
-+};
-+
-+static int appleals_config_iio(struct appleals_device *als_dev)
-+{
-+	struct iio_dev *iio_dev;
-+	struct iio_trigger *iio_trig;
-+	int rc;
-+
-+	/* create and register iio device */
-+	iio_dev = iio_device_alloc(sizeof(als_dev));
-+	if (!iio_dev)
-+		return -ENOMEM;
-+
-+	*(struct appleals_device **)iio_priv(iio_dev) = als_dev;
-+
-+	iio_dev->channels = appleals_channels;
-+	iio_dev->num_channels = ARRAY_SIZE(appleals_channels);
-+	iio_dev->dev.parent = &als_dev->hid_dev->dev;
-+	iio_dev->info = &appleals_info;
-+	iio_dev->name = "als";
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	rc = iio_triggered_buffer_setup(iio_dev, &iio_pollfunc_store_time, NULL,
-+					NULL);
-+	if (rc) {
-+		dev_err(als_dev->log_dev, "failed to set up iio triggers: %d\n",
-+			rc);
-+		goto free_iio_dev;
-+	}
-+
-+	iio_trig = iio_trigger_alloc("%s-dev%d", iio_dev->name, iio_dev->id);
-+	if (!iio_trig) {
-+		rc = -ENOMEM;
-+		goto clean_trig_buf;
-+	}
-+
-+	iio_trig->dev.parent = &als_dev->hid_dev->dev;
-+	iio_trig->ops = &appleals_trigger_ops;
-+	iio_trigger_set_drvdata(iio_trig, als_dev);
-+
-+	rc = iio_trigger_register(iio_trig);
-+	if (rc) {
-+		dev_err(als_dev->log_dev, "failed to register iio trigger: %d\n",
-+			rc);
-+		goto free_iio_trig;
-+	}
-+
-+	als_dev->iio_trig = iio_trig;
-+
-+	rc = iio_device_register(iio_dev);
-+	if (rc) {
-+		dev_err(als_dev->log_dev, "failed to register iio device: %d\n",
-+			rc);
-+		goto unreg_iio_trig;
-+	}
-+
-+	als_dev->iio_dev = iio_dev;
-+
-+	return 0;
-+
-+unreg_iio_trig:
-+	iio_trigger_unregister(iio_trig);
-+free_iio_trig:
-+	iio_trigger_free(iio_trig);
-+	als_dev->iio_trig = NULL;
-+clean_trig_buf:
-+	iio_triggered_buffer_cleanup(iio_dev);
-+free_iio_dev:
-+	iio_device_free(iio_dev);
-+
-+	return rc;
-+}
-+
-+static int appleals_probe(struct hid_device *hdev,
-+			  const struct hid_device_id *id)
-+{
-+	struct appleals_device *als_dev =
-+		appleib_get_drvdata(hid_get_drvdata(hdev),
-+				    &appleals_hid_driver);
-+	struct hid_field *state_field;
-+	struct hid_field *illum_field;
-+	int rc;
-+
-+	/* find als fields and reports */
-+	state_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-+					    HID_USAGE_SENSOR_PROP_REPORT_STATE);
-+	illum_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-+					     HID_USAGE_SENSOR_LIGHT_ILLUM);
-+	if (!state_field || !illum_field)
-+		return -ENODEV;
-+
-+	if (als_dev->hid_dev) {
-+		dev_warn(als_dev->log_dev,
-+			 "Found duplicate ambient light sensor - ignoring\n");
-+		return -EBUSY;
-+	}
-+
-+	dev_info(als_dev->log_dev, "Found ambient light sensor\n");
-+
-+	/* initialize device */
-+	als_dev->hid_dev = hdev;
-+	als_dev->cfg_report = state_field->report;
-+	als_dev->illum_field = illum_field;
-+
-+	als_dev->cur_hysteresis = APPLEALS_DEF_CHANGE_SENS;
-+	als_dev->cur_sensitivity = APPLEALS_DEF_CHANGE_SENS;
-+	appleals_config_sensor(als_dev, false, als_dev->cur_sensitivity);
-+
-+	rc = appleals_config_iio(als_dev);
-+	if (rc)
-+		return rc;
-+
-+	return 0;
-+}
-+
-+static void appleals_remove(struct hid_device *hdev)
-+{
-+	struct appleals_device *als_dev =
-+		appleib_get_drvdata(hid_get_drvdata(hdev),
-+				    &appleals_hid_driver);
-+
-+	if (als_dev->iio_dev) {
-+		iio_device_unregister(als_dev->iio_dev);
-+
-+		iio_trigger_unregister(als_dev->iio_trig);
-+		iio_trigger_free(als_dev->iio_trig);
-+		als_dev->iio_trig = NULL;
-+
-+		iio_triggered_buffer_cleanup(als_dev->iio_dev);
-+		iio_device_free(als_dev->iio_dev);
-+		als_dev->iio_dev = NULL;
-+	}
-+
-+	als_dev->hid_dev = NULL;
-+}
-+
-+#ifdef CONFIG_PM
-+static int appleals_reset_resume(struct hid_device *hdev)
-+{
-+	struct appleals_device *als_dev =
-+		appleib_get_drvdata(hid_get_drvdata(hdev),
-+				    &appleals_hid_driver);
-+
-+	appleals_config_sensor(als_dev, als_dev->events_enabled,
-+			       als_dev->cur_sensitivity);
-+
-+	return 0;
-+}
-+#endif
-+
-+static struct hid_driver appleals_hid_driver = {
-+	.name = "apple-ib-als",
-+	.probe = appleals_probe,
-+	.remove = appleals_remove,
-+	.event = appleals_hid_event,
-+#ifdef CONFIG_PM
-+	.reset_resume = appleals_reset_resume,
-+#endif
-+};
-+
-+static int appleals_platform_probe(struct platform_device *pdev)
-+{
-+	struct appleib_platform_data *pdata = pdev->dev.platform_data;
-+	struct appleib_device *ib_dev = pdata->ib_dev;
-+	struct appleals_device *als_dev;
-+	int rc;
-+
-+	als_dev = kzalloc(sizeof(*als_dev), GFP_KERNEL);
-+	if (!als_dev)
-+		return -ENOMEM;
-+
-+	als_dev->ib_dev = ib_dev;
-+	als_dev->log_dev = pdata->log_dev;
-+
-+	rc = appleib_register_hid_driver(ib_dev, &appleals_hid_driver, als_dev);
-+	if (rc) {
-+		dev_err(als_dev->log_dev, "Error registering hid driver: %d\n",
-+			rc);
-+		goto error;
-+	}
-+
-+	platform_set_drvdata(pdev, als_dev);
-+
-+	return 0;
-+
-+error:
-+	kfree(als_dev);
-+	return rc;
-+}
-+
-+static int appleals_platform_remove(struct platform_device *pdev)
-+{
-+	struct appleib_platform_data *pdata = pdev->dev.platform_data;
-+	struct appleib_device *ib_dev = pdata->ib_dev;
-+	struct appleals_device *als_dev = platform_get_drvdata(pdev);
-+	int rc;
-+
-+	rc = appleib_unregister_hid_driver(ib_dev, &appleals_hid_driver);
-+	if (rc) {
-+		dev_err(als_dev->log_dev,
-+			"Error unregistering hid driver: %d\n", rc);
-+		goto error;
-+	}
-+
-+	kfree(als_dev);
-+
-+	return 0;
-+
-+error:
-+	return rc;
-+}
-+
-+static const struct platform_device_id appleals_platform_ids[] = {
-+	{ .name = PLAT_NAME_IB_ALS },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(platform, appleals_platform_ids);
-+
-+static struct platform_driver appleals_platform_driver = {
-+	.id_table = appleals_platform_ids,
-+	.driver = {
-+		.name	= "apple-ib-als",
-+	},
-+	.probe = appleals_platform_probe,
-+	.remove = appleals_platform_remove,
-+};
-+
-+module_platform_driver(appleals_platform_driver);
-+
-+MODULE_AUTHOR("Ronald Tschalär");
-+MODULE_DESCRIPTION("Apple iBridge ALS driver");
-+MODULE_LICENSE("GPL v2");
+ 		if (sysfs_streq(item, str))
+ 			return index;
+ 	}
+ 
+ 	return -EINVAL;
+ }
+-EXPORT_SYMBOL(__sysfs_match_string);
++EXPORT_SYMBOL(__sysfs_match_string_with_gaps);
+ 
+ #ifndef __HAVE_ARCH_MEMSET
+ /**
 -- 
-2.20.1
+2.17.1
 
