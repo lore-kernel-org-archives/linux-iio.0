@@ -2,294 +2,195 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B126C10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 13:34:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D807C10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:03:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E79EC2064A
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 13:34:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555940067;
-	bh=VGoPb688KGqyWXGa/v3afwGoTDPZSxoYf5qeq2+7xU0=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=XjbdextYFc610+INyDkMWvQeEm93ckzKs5YKMOcV1tNhu6NQS+YMPI3RX7M7tFsWr
-	 WxawpuWW+DAxdfsZ2TNb1yaHVWNILtkNb4IxHvc534wbEyzBvF04hzrheLtRl/kPbt
-	 v8kZYgo005kXCK427rYmFM3t/iINAG3gi5Gm6px0=
+	by mail.kernel.org (Postfix) with ESMTP id 51A9B20656
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:03:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="Kt86HJCE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbfDVNeM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 09:34:12 -0400
-Received: from bombadil.infradead.org ([198.137.202.133]:37566 "EHLO
-        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727514AbfDVN2T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Apr 2019 09:28:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
-        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=chQseRVUcs1PrOUelscVQ4BrUhO7B+KwTQKv4ZvvUVA=; b=r+7uz5vse5efZXPfSRA6Svf6Ox
-        e1zZFeWY8Vb/Ylu826w+CF3XYh/771feEklJ5oSJ4Qr8OxUu+WnWi/MGgWv+dQIZYbgidgXwvW5Uz
-        fI8XzCoxFwH7nfmUFt7bytBX06l0XrteRWPME+wLnFAPm/ogbupw8aAlSCaqPa+6G7D0htYRoQmRW
-        jFSPLeNmzaRt7Rk3dJzrXXAzt3pZ+/t0S9cO1StrTdilZ0EAZbQQntmY93b2cV7VcLDfw7GX3lwtN
-        C/IVDG88PnL8kzOjmmfA75Ee2IVOw/7YtuDLTrN6o25Grz0MWxtgGUEgnpH2Aj/ImP3TpuHG57dHp
-        5rD+o0Hw==;
-Received: from 179.176.125.229.dynamic.adsl.gvt.net.br ([179.176.125.229] helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.90_1 #2 (Red Hat Linux))
-        id 1hIYzZ-0005Hf-Jt; Mon, 22 Apr 2019 13:28:17 +0000
-Received: from mchehab by bombadil.infradead.org with local (Exim 4.92)
-        (envelope-from <mchehab@bombadil.infradead.org>)
-        id 1hIYzU-0005oX-9e; Mon, 22 Apr 2019 10:28:12 -0300
-From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Mauro Carvalho Chehab <mchehab@infradead.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v2 63/79] docs: iio: convert to ReST
-Date:   Mon, 22 Apr 2019 10:27:52 -0300
-Message-Id: <41bbbddf74ffb1e557ac6c924dac5054d6650950.1555938376.git.mchehab+samsung@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <cover.1555938375.git.mchehab+samsung@kernel.org>
-References: <cover.1555938375.git.mchehab+samsung@kernel.org>
+        id S1726260AbfDVODH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 10:03:07 -0400
+Received: from mail-eopbgr730066.outbound.protection.outlook.com ([40.107.73.66]:61952
+        "EHLO NAM05-DM3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726098AbfDVODH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 10:03:07 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector1-analog-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=knVIJrlGGft75g/EsGWmyWuAzxfNdO2qsqfUogVbHiY=;
+ b=Kt86HJCEmWWlScTcs9oWvMng3KY3QYA4uzjRFaGbeLuWe4S7enLIULL6rjlf0CkcW8hm4/rOJiovakcV4JiBNWbsfdZSD5Rk0hiqfKqdU9rz987JH+P4mqxxlv64+xfQBagJEgsZiLL14jTC4+qJlW6qYBaElp1IGDEAyfTbiWw=
+Received: from MWHPR03CA0017.namprd03.prod.outlook.com (2603:10b6:300:117::27)
+ by BY2PR03MB555.namprd03.prod.outlook.com (2a01:111:e400:2c37::27) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.1813.11; Mon, 22 Apr
+ 2019 14:03:01 +0000
+Received: from BL2NAM02FT050.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::206) by MWHPR03CA0017.outlook.office365.com
+ (2603:10b6:300:117::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.1813.12 via Frontend
+ Transport; Mon, 22 Apr 2019 14:03:01 +0000
+Authentication-Results: spf=pass (sender IP is 137.71.25.55)
+ smtp.mailfrom=analog.com; linuxfoundation.org; dkim=none (message not signed)
+ header.d=none;linuxfoundation.org; dmarc=bestguesspass action=none
+ header.from=analog.com;
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT050.mail.protection.outlook.com (10.152.77.101) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1771.16
+ via Frontend Transport; Mon, 22 Apr 2019 14:03:00 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x3ME3069012105
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 22 Apr 2019 07:03:00 -0700
+Received: from saturn.analog.com (10.50.1.244) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server id 14.3.408.0; Mon, 22 Apr 2019
+ 10:03:00 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <gregkh@linuxfoundation.org>, <andriy.shevchenko@linux.intel.com>,
+        <namhyung@kernel.org>, <mingo@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/2][V2] lib: add __sysfs_match_string_with_gaps() helper
+Date:   Mon, 22 Apr 2019 17:02:51 +0300
+Message-ID: <20190422140251.8960-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+References: <20190422083257.21805-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(376002)(39860400002)(396003)(136003)(2980300002)(189003)(199004)(186003)(44832011)(5660300002)(336012)(446003)(26005)(77096007)(426003)(11346002)(486006)(7696005)(2616005)(476003)(126002)(2906002)(356004)(107886003)(8676002)(54906003)(76176011)(51416003)(86362001)(6666004)(70206006)(1076003)(8936002)(70586007)(4326008)(246002)(50226002)(48376002)(305945005)(50466002)(53416004)(7636002)(36756003)(47776003)(16586007)(316002)(110136005)(106002)(478600001);DIR:OUT;SFP:1101;SCL:1;SRVR:BY2PR03MB555;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 1f97b123-e087-4b70-6432-08d6c72b3b34
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600141)(711020)(4605104)(4709054)(2017052603328);SRVR:BY2PR03MB555;
+X-MS-TrafficTypeDiagnostic: BY2PR03MB555:
+X-Microsoft-Antispam-PRVS: <BY2PR03MB555F9F82028F1C324588229F9220@BY2PR03MB555.namprd03.prod.outlook.com>
+X-Forefront-PRVS: 00159D1518
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: 6DHKTiVoXA1TDRT0baxXZINfqjbZvVyRv813T6nB5RPE1rUOEINEoLxZOca9yW63cRUsNeRxORgBuDzdyY1/fVkxMOEX3ZvbkAARre356FN/RGUKXtZzj53Xe5ZAweWgtjN4lkEtIQLpR1Rgh/XpAh3sQ06xGsbvPilArcwJfIo18BISPJYaB33+MCyb5LyEK60hI9o98Nsbd7PjbQpCkSdB9gpDSRRUuKiiackBv5Wc1aCmgBRxLGJP0lSpPfJD4Rl7GQBh2OZivVu6CyB7J3v4ZagG8O4aGm8GHhddOZID/3S78qVYCD02kaxicwqG1ZytYeyIaKUuF/lU+LIo80N52OtqwIAODWwU2sWiPYuYZAhBgypw+rso5O2WaJHm5upJzxjJhh5v8qp37XC5wlTjObl+/0oFwvasR9d1i80=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Apr 2019 14:03:00.9343
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 1f97b123-e087-4b70-6432-08d6c72b3b34
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY2PR03MB555
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Rename the iio documentation files to ReST, add an
-index for them and adjust in order to produce a nice html
-output via the Sphinx build system.
+This helper is similar to __sysfs_match_string() with the exception that it
+ignores NULL elements within the array.
+It takes an extra parameter (called `gaps`) which when true will ignore
+the NULL elements. When false, this function behaves exactly like
+`__sysfs_match_string()`.
 
-At its new index.rst, let's add a :orphan: while this is not linked to
-the main index.rst file, in order to avoid build warnings.
-
-Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../iio/{ep93xx_adc.txt => ep93xx_adc.rst}    | 15 +++++-
- .../{iio_configfs.txt => iio_configfs.rst}    | 52 +++++++++++--------
- Documentation/iio/index.rst                   | 12 +++++
- drivers/iio/Kconfig                           |  2 +-
- 4 files changed, 56 insertions(+), 25 deletions(-)
- rename Documentation/iio/{ep93xx_adc.txt => ep93xx_adc.rst} (71%)
- rename Documentation/iio/{iio_configfs.txt => iio_configfs.rst} (73%)
- create mode 100644 Documentation/iio/index.rst
+ include/linux/string.h |  2 ++
+ lib/string.c           | 48 ++++++++++++++++++++++++++++++++----------
+ 2 files changed, 39 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.rst
-similarity index 71%
-rename from Documentation/iio/ep93xx_adc.txt
-rename to Documentation/iio/ep93xx_adc.rst
-index 23053e7817bd..4fd8dea3f6b8 100644
---- a/Documentation/iio/ep93xx_adc.txt
-+++ b/Documentation/iio/ep93xx_adc.rst
-@@ -1,12 +1,16 @@
--Cirrus Logic EP93xx ADC driver.
-+==============================
-+Cirrus Logic EP93xx ADC driver
-+==============================
+diff --git a/include/linux/string.h b/include/linux/string.h
+index 7927b875f80c..08e4a33b5f29 100644
+--- a/include/linux/string.h
++++ b/include/linux/string.h
+@@ -190,6 +190,8 @@ static inline int strtobool(const char *s, bool *res)
  
- 1. Overview
-+===========
+ int match_string(const char * const *array, size_t n, const char *string);
+ int __sysfs_match_string(const char * const *array, size_t n, const char *s);
++int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
++				   const char *str);
  
- The driver is intended to work on both low-end (EP9301, EP9302) devices with
- 5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
- touchscreen/ADC module.
+ /**
+  * sysfs_match_string - matches given string in an array
+diff --git a/lib/string.c b/lib/string.c
+index 38e4ca08e757..2ae3b7e5ff3d 100644
+--- a/lib/string.c
++++ b/lib/string.c
+@@ -658,32 +658,58 @@ int match_string(const char * const *array, size_t n, const char *string)
+ }
+ EXPORT_SYMBOL(match_string);
  
- 2. Channel numbering
-+====================
- 
- Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
- EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
-@@ -17,13 +21,20 @@ Assuming ep93xx_adc is IIO device0, you'd find the following entries under
- 
-   +-----------------+---------------+
-   | sysfs entry     | ball/pin name |
--  +-----------------+---------------+
-+  +=================+===============+
-   | in_voltage0_raw | YM            |
-+  +-----------------+---------------+
-   | in_voltage1_raw | SXP           |
-+  +-----------------+---------------+
-   | in_voltage2_raw | SXM           |
-+  +-----------------+---------------+
-   | in_voltage3_raw | SYP           |
-+  +-----------------+---------------+
-   | in_voltage4_raw | SYM           |
-+  +-----------------+---------------+
-   | in_voltage5_raw | XP            |
-+  +-----------------+---------------+
-   | in_voltage6_raw | XM            |
-+  +-----------------+---------------+
-   | in_voltage7_raw | YP            |
-   +-----------------+---------------+
-diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.rst
-similarity index 73%
-rename from Documentation/iio/iio_configfs.txt
-rename to Documentation/iio/iio_configfs.rst
-index 4e5f101837a8..ecbfdb3afef7 100644
---- a/Documentation/iio/iio_configfs.txt
-+++ b/Documentation/iio/iio_configfs.rst
-@@ -1,6 +1,9 @@
-+===============================
- Industrial IIO configfs support
-+===============================
- 
- 1. Overview
-+===========
- 
- Configfs is a filesystem-based manager of kernel objects. IIO uses some
- objects that could be easily configured using configfs (e.g.: devices,
-@@ -10,20 +13,22 @@ See Documentation/filesystems/configfs/configfs.txt for more information
- about how configfs works.
- 
- 2. Usage
-+========
- 
- In order to use configfs support in IIO we need to select it at compile
- time via CONFIG_IIO_CONFIGFS config option.
- 
--Then, mount the configfs filesystem (usually under /config directory):
-+Then, mount the configfs filesystem (usually under /config directory)::
- 
--$ mkdir /config
--$ mount -t configfs none /config
-+  $ mkdir /config
-+  $ mount -t configfs none /config
- 
- At this point, all default IIO groups will be created and can be accessed
- under /config/iio. Next chapters will describe available IIO configuration
- objects.
- 
- 3. Software triggers
-+====================
- 
- One of the IIO default configfs groups is the "triggers" group. It is
- automagically accessible when the configfs is mounted and can be found
-@@ -31,40 +36,40 @@ under /config/iio/triggers.
- 
- IIO software triggers implementation offers support for creating multiple
- trigger types. A new trigger type is usually implemented as a separate
--kernel module following the interface in include/linux/iio/sw_trigger.h:
-+kernel module following the interface in include/linux/iio/sw_trigger.h::
- 
--/*
-- * drivers/iio/trigger/iio-trig-sample.c
-- * sample kernel module implementing a new trigger type
+-/**
+- * __sysfs_match_string - matches given string in an array
+- * @array: array of strings
+- * @n: number of strings in the array or -1 for NULL terminated arrays
+- * @str: string to match with
+- *
+- * Returns index of @str in the @array or -EINVAL, just like match_string().
+- * Uses sysfs_streq instead of strcmp for matching.
 - */
--#include <linux/iio/sw_trigger.h>
-+  /*
-+   * drivers/iio/trigger/iio-trig-sample.c
-+   * sample kernel module implementing a new trigger type
-+   */
-+  #include <linux/iio/sw_trigger.h>
+-int __sysfs_match_string(const char * const *array, size_t n, const char *str)
++static int __sysfs_match_string_common(const char * const *array, size_t n,
++				       const char *str, bool gaps)
+ {
+ 	const char *item;
+ 	int index;
  
+ 	for (index = 0; index < n; index++) {
+ 		item = array[index];
+-		if (!item)
++		if (!item) {
++			if (gaps)
++				continue;
+ 			break;
++		}
+ 		if (sysfs_streq(item, str))
+ 			return index;
+ 	}
  
--static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
--{
-+  static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
-+  {
- 	/*
- 	 * This allocates and registers an IIO trigger plus other
- 	 * trigger type specific initialization.
- 	 */
--}
-+  }
- 
--static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
--{
-+  static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
-+  {
- 	/*
- 	 * This undoes the actions in iio_trig_sample_probe
- 	 */
--}
-+  }
- 
--static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
-+  static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
- 	.probe		= iio_trig_sample_probe,
- 	.remove		= iio_trig_sample_remove,
--};
-+  };
- 
--static struct iio_sw_trigger_type iio_trig_sample = {
-+  static struct iio_sw_trigger_type iio_trig_sample = {
- 	.name = "trig-sample",
- 	.owner = THIS_MODULE,
- 	.ops = &iio_trig_sample_ops,
--};
-+  };
- 
- module_iio_sw_trigger_driver(iio_trig_sample);
- 
-@@ -73,21 +78,24 @@ iio-trig-sample module will create 'trig-sample' trigger type directory
- /config/iio/triggers/trig-sample.
- 
- We support the following interrupt sources (trigger types):
+ 	return -EINVAL;
+ }
 +
- 	* hrtimer, uses high resolution timers as interrupt source
++/**
++ * __sysfs_match_string - matches given string in an array
++ * @array: array of strings
++ * @n: number of strings in the array or -1 for NULL terminated arrays
++ * @str: string to match with
++ *
++ * Returns index of @str in the @array or -EINVAL, just like match_string().
++ * Uses sysfs_streq instead of strcmp for matching.
++ */
++int __sysfs_match_string(const char * const *array, size_t n, const char *str)
++{
++	return __sysfs_match_string_common(array, n, str, false);
++}
+ EXPORT_SYMBOL(__sysfs_match_string);
  
- 3.1 Hrtimer triggers creation and destruction
-+---------------------------------------------
- 
- Loading iio-trig-hrtimer module will register hrtimer trigger types allowing
- users to create hrtimer triggers under /config/iio/triggers/hrtimer.
- 
--e.g:
-+e.g::
- 
--$ mkdir /config/iio/triggers/hrtimer/instance1
--$ rmdir /config/iio/triggers/hrtimer/instance1
-+  $ mkdir /config/iio/triggers/hrtimer/instance1
-+  $ rmdir /config/iio/triggers/hrtimer/instance1
- 
- Each trigger can have one or more attributes specific to the trigger type.
- 
- 3.2 "hrtimer" trigger types attributes
-+--------------------------------------
- 
- "hrtimer" trigger type doesn't have any configurable attribute from /config dir.
- It does introduce the sampling_frequency attribute to trigger directory.
-diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
-new file mode 100644
-index 000000000000..0593dca89a94
---- /dev/null
-+++ b/Documentation/iio/index.rst
-@@ -0,0 +1,12 @@
-+:orphan:
++/**
++ * __sysfs_match_string_with_gaps - matches string in array ignoring NULLs
++ * @array: array of strings
++ * @n: number of strings in the array or -1 for NULL terminated arrays
++ * @str: string to match with
++ *
++ * Returns index of @str in the @array or -EINVAL, just like match_string().
++ * Uses sysfs_streq instead of strcmp for matching.
++ * Ignores NULL entries within the @array.
++ */
++int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
++				   const char *str)
++{
++	return __sysfs_match_string_common(array, n, str, true);
++}
++EXPORT_SYMBOL(__sysfs_match_string_with_gaps);
 +
-+==============
-+Industrial I/O
-+==============
-+
-+.. toctree::
-+   :maxdepth: 1
-+
-+   iio_configfs
-+
-+   ep93xx_adc
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 014006d1cbb6..c1aa87db19ff 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -28,7 +28,7 @@ config IIO_CONFIGFS
- 	help
- 	  This allows configuring various IIO bits through configfs
- 	  (e.g. software triggers). For more info see
--	  Documentation/iio/iio_configfs.txt.
-+	  Documentation/iio/iio_configfs.rst.
- 
- config IIO_TRIGGER
- 	bool "Enable triggered sampling support"
+ #ifndef __HAVE_ARCH_MEMSET
+ /**
+  * memset - Fill a region of memory with the given value
 -- 
-2.20.1
+2.17.1
 
