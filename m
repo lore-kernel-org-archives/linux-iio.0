@@ -2,55 +2,35 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0172C10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:34:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A62F1C10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:37:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A691320874
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:34:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555929288;
-	bh=YNsexiBG78n5sLUZEj12x9nYdJWuV2dQ6xZ01xqKp6w=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=gxJoka/cbWZ+Ir6KV5yqXWP3Jj9MLjBs7sSjrrggHXUUj1EDh+MqIZ5OLbbjR6EEG
-	 VutVbf+jSOBCXVH4XakhKhJcpGJj73710+WFwzvq+EBVVFTge0IVeUiJddcQ7aHy3j
-	 pIUHBeyutJmX0cY3N+SZVAhwDzTmPepfwUho6tAA=
+	by mail.kernel.org (Postfix) with ESMTP id 7FE152075A
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:37:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726730AbfDVKes (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 06:34:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46236 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbfDVKer (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 06:34:47 -0400
+        id S1726132AbfDVKho (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 06:37:44 -0400
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:42718 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725895AbfDVKho (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Apr 2019 06:37:44 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6F6572075A;
-        Mon, 22 Apr 2019 10:34:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555929286;
-        bh=YNsexiBG78n5sLUZEj12x9nYdJWuV2dQ6xZ01xqKp6w=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=mOJDl9J7ag9QTGedD8fFgIpfdnhdzYHw+KRIAtGcyWsa0ZosXpXs1k8XgIvBiv4UY
-         9Rc1zcBjacLyQz+7srp4R9KQ/qxm71QVAg+bemnVabFHeflMdnteckAbIPND/N33Y9
-         GBT7h7KGEX8weHqucLv83WqrME7XkceSPO0nmZkQ=
-Date:   Mon, 22 Apr 2019 11:34:42 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andrey Smirnov <andrew.smirnov@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 1/6] iio: imx7d_adc: Add local struct device pointer
- in imx7d_adc_probe()
-Message-ID: <20190422113442.57645818@archlinux>
-In-Reply-To: <20190414183504.23286-2-andrew.smirnov@gmail.com>
-References: <20190414183504.23286-1-andrew.smirnov@gmail.com>
-        <20190414183504.23286-2-andrew.smirnov@gmail.com>
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 545E19E8C28;
+        Mon, 22 Apr 2019 11:37:42 +0100 (BST)
+Date:   Mon, 22 Apr 2019 11:37:40 +0100
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <gregkh@linuxfoundation.org>, <andriy.shevchenko@linux.intel.com>,
+        <namhyung@kernel.org>, <mingo@kernel.org>
+Subject: Re: [PATCH 1/2] lib: add __sysfs_match_string_with_gaps() helper
+Message-ID: <20190422113740.6ef66205@archlinux>
+In-Reply-To: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+References: <20190422083257.21805-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,129 +40,95 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 14 Apr 2019 11:34:59 -0700
-Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
+On Mon, 22 Apr 2019 11:32:56 +0300
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> Use a local "struct device *dev" in imx7d_adc_probe() for brevity. No
-> functional change intended.
+> This helper is similar to __sysfs_match_string() with the exception that it
+> ignores NULL elements within the array.
+> It takes an extra parameter (called `gaps`) which when true will ignore
+> the NULL elements. When false, this function behaves exactly like
+> `__sysfs_match_string()`.
 > 
-> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Chris Healy <cphealy@gmail.com>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-I applied some of these from V1.  Please be sure to only send updates
-of patches that were not applied.
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-Thanks
+Hi Alex,
+
+The existence of that gaps parameter does seem a little odd.
+Why not just have the exposed _gaps form wrap a version that
+takes that parameter and always set it to true?
+
+Otherwise looks good to me.
 
 Jonathan
 
 > ---
->  drivers/iio/adc/imx7d_adc.c | 37 ++++++++++++++++++-------------------
->  1 file changed, 18 insertions(+), 19 deletions(-)
+>  include/linux/string.h |  9 ++++++++-
+>  lib/string.c           | 14 ++++++++++----
+>  2 files changed, 18 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-> index ad6764fb2a23..3bbd657409d5 100644
-> --- a/drivers/iio/adc/imx7d_adc.c
-> +++ b/drivers/iio/adc/imx7d_adc.c
-> @@ -438,51 +438,51 @@ static int imx7d_adc_probe(struct platform_device *pdev)
->  	struct imx7d_adc *info;
->  	struct iio_dev *indio_dev;
->  	struct resource *mem;
-> +	struct device *dev = &pdev->dev;
->  	int irq;
->  	int ret;
+> diff --git a/include/linux/string.h b/include/linux/string.h
+> index 7927b875f80c..30595ed483dc 100644
+> --- a/include/linux/string.h
+> +++ b/include/linux/string.h
+> @@ -189,7 +189,14 @@ static inline int strtobool(const char *s, bool *res)
+>  }
 >  
-> -	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*info));
->  	if (!indio_dev) {
->  		dev_err(&pdev->dev, "Failed allocating iio device\n");
->  		return -ENOMEM;
+>  int match_string(const char * const *array, size_t n, const char *string);
+> -int __sysfs_match_string(const char * const *array, size_t n, const char *s);
+> +int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
+> +				   const char *str, bool gaps);
+> +
+> +static inline int __sysfs_match_string(const char * const *array, size_t n,
+> +				       const char *str)
+> +{
+> +	return __sysfs_match_string_with_gaps(array, n, str, false);
+> +}
+>  
+>  /**
+>   * sysfs_match_string - matches given string in an array
+> diff --git a/lib/string.c b/lib/string.c
+> index 38e4ca08e757..8ddac3cd292a 100644
+> --- a/lib/string.c
+> +++ b/lib/string.c
+> @@ -659,30 +659,36 @@ int match_string(const char * const *array, size_t n, const char *string)
+>  EXPORT_SYMBOL(match_string);
+>  
+>  /**
+> - * __sysfs_match_string - matches given string in an array
+> + * __sysfs_match_string_with_gaps - matches string in array ignoring NULLs
+>   * @array: array of strings
+>   * @n: number of strings in the array or -1 for NULL terminated arrays
+>   * @str: string to match with
+> + * @gaps: boolean to ignore NULL elements within the array
+>   *
+>   * Returns index of @str in the @array or -EINVAL, just like match_string().
+>   * Uses sysfs_streq instead of strcmp for matching.
+> + * Ignores NULL pointers within the @array if @gaps is true.
+>   */
+> -int __sysfs_match_string(const char * const *array, size_t n, const char *str)
+> +int __sysfs_match_string_with_gaps(const char * const *array, size_t n,
+> +				   const char *str, bool gaps)
+>  {
+>  	const char *item;
+>  	int index;
+>  
+>  	for (index = 0; index < n; index++) {
+>  		item = array[index];
+> -		if (!item)
+> +		if (!item) {
+> +			if (gaps)
+> +				continue;
+>  			break;
+> +		}
+>  		if (sysfs_streq(item, str))
+>  			return index;
 >  	}
 >  
->  	info = iio_priv(indio_dev);
-> -	info->dev = &pdev->dev;
-> +	info->dev = dev;
+>  	return -EINVAL;
+>  }
+> -EXPORT_SYMBOL(__sysfs_match_string);
+> +EXPORT_SYMBOL(__sysfs_match_string_with_gaps);
 >  
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> -	info->regs = devm_ioremap_resource(&pdev->dev, mem);
-> +	info->regs = devm_ioremap_resource(dev, mem);
->  	if (IS_ERR(info->regs)) {
->  		ret = PTR_ERR(info->regs);
-> -		dev_err(&pdev->dev,
-> -			"Failed to remap adc memory, err = %d\n", ret);
-> +		dev_err(dev, "Failed to remap adc memory, err = %d\n", ret);
->  		return ret;
->  	}
->  
->  	irq = platform_get_irq(pdev, 0);
->  	if (irq < 0) {
-> -		dev_err(&pdev->dev, "No irq resource?\n");
-> +		dev_err(dev, "No irq resource?\n");
->  		return irq;
->  	}
->  
-> -	info->clk = devm_clk_get(&pdev->dev, "adc");
-> +	info->clk = devm_clk_get(dev, "adc");
->  	if (IS_ERR(info->clk)) {
->  		ret = PTR_ERR(info->clk);
-> -		dev_err(&pdev->dev, "Failed getting clock, err = %d\n", ret);
-> +		dev_err(dev, "Failed getting clock, err = %d\n", ret);
->  		return ret;
->  	}
->  
-> -	info->vref = devm_regulator_get(&pdev->dev, "vref");
-> +	info->vref = devm_regulator_get(dev, "vref");
->  	if (IS_ERR(info->vref)) {
->  		ret = PTR_ERR(info->vref);
-> -		dev_err(&pdev->dev,
-> +		dev_err(dev,
->  			"Failed getting reference voltage, err = %d\n", ret);
->  		return ret;
->  	}
->  
->  	ret = regulator_enable(info->vref);
->  	if (ret) {
-> -		dev_err(&pdev->dev,
-> +		dev_err(dev,
->  			"Can't enable adc reference top voltage, err = %d\n",
->  			ret);
->  		return ret;
-> @@ -492,8 +492,8 @@ static int imx7d_adc_probe(struct platform_device *pdev)
->  
->  	init_completion(&info->completion);
->  
-> -	indio_dev->name = dev_name(&pdev->dev);
-> -	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = dev_name(dev);
-> +	indio_dev->dev.parent = dev;
->  	indio_dev->info = &imx7d_adc_iio_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->channels = imx7d_adc_iio_channels;
-> @@ -501,16 +501,15 @@ static int imx7d_adc_probe(struct platform_device *pdev)
->  
->  	ret = clk_prepare_enable(info->clk);
->  	if (ret) {
-> -		dev_err(&pdev->dev,
-> -			"Could not prepare or enable the clock.\n");
-> +		dev_err(dev, "Could not prepare or enable the clock.\n");
->  		goto error_adc_clk_enable;
->  	}
->  
-> -	ret = devm_request_irq(info->dev, irq,
-> -				imx7d_adc_isr, 0,
-> -				dev_name(&pdev->dev), info);
-> +	ret = devm_request_irq(dev, irq,
-> +			       imx7d_adc_isr, 0,
-> +			       dev_name(dev), info);
->  	if (ret < 0) {
-> -		dev_err(&pdev->dev, "Failed requesting irq, irq = %d\n", irq);
-> +		dev_err(dev, "Failed requesting irq, irq = %d\n", irq);
->  		goto error_iio_device_register;
->  	}
->  
+>  #ifndef __HAVE_ARCH_MEMSET
+>  /**
 
