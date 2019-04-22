@@ -6,49 +6,53 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8E0EC10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B75D1C10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:14:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A7BB20874
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:09:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 88ED720874
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:14:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555927792;
-	bh=Zm4kFyxaYpjA3xZUn9W7OaivDnOYv903zZ9QVmhEDOw=;
+	s=default; t=1555928091;
+	bh=2NDX7a/oF3+wR3ClQPwRoNDywtT9vPrseyn0WaUMBNU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=liWSlMYagPUUifQ8QpS0fPPSRve8r2W8UBsvSeJXawAtk9ZVJF6gk47c2gKcUUKMZ
-	 tuegKL7OQYRJQEaIH3qVXmNsRPqMqHQ4IQ2i95aBskeiWLyVpI7knT8tPeKdBlDred
-	 k12V4pNu+a4CyJt/dpfCAS/MaaQbXPshBf5f+c60=
+	b=n70IoJlR2IAiU+VKpwZhCcvC4dMIL3ZijK811v6GK2+2bEVWaBmAMA3RR0J3p9BTm
+	 yem7FEak4KD4JFTwKHcM+n5P7QOZZt0wMSSV+kdkbDvG8YKzzJUvTrBq34LE4UVx9k
+	 byRb2zkn+hk8Uy27qoqK3hUBervP9wPDAbkSCpW8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726098AbfDVKJw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 06:09:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37702 "EHLO mail.kernel.org"
+        id S1726280AbfDVKOv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 06:14:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbfDVKJv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 06:09:51 -0400
+        id S1726057AbfDVKOu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 06:14:50 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6CD9E20811;
-        Mon, 22 Apr 2019 10:09:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D991E206A3;
+        Mon, 22 Apr 2019 10:14:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555927791;
-        bh=Zm4kFyxaYpjA3xZUn9W7OaivDnOYv903zZ9QVmhEDOw=;
+        s=default; t=1555928090;
+        bh=2NDX7a/oF3+wR3ClQPwRoNDywtT9vPrseyn0WaUMBNU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=jK8NA6dO4acD2oqws+ZJa9zUBN7asRljKu/XcfPHZt7RzwMKJ0n/Nax/A+Npf4Wdl
-         cjDXa4ujaT/VwJn4EN3ORQaRy4bgeFVlQwsegyw0F/n8EO0MjIhZ8y3yZqakQe/SAn
-         oo8nllKdBvoj2Xfudsomff3YJ18UJHsprE9X5lC4=
-Date:   Mon, 22 Apr 2019 11:09:46 +0100
+        b=dCoieSXtx0F+k1B5dC08md6B13zWersEtpm2JUXIs3vidCrLdx/nCBcSS+xTShfsk
+         vp2HX83fo+0WUSVPFt/S6WRzGs/vNBYC0HxIR9NYEDMkG7vUO0crWcs12ujWbWOz9i
+         5leUsoKaQc9/63zLM/bZkEOEyhALZHyFBGQ0aw0E=
+Date:   Mon, 22 Apr 2019 11:14:43 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andrey Smirnov <andrew.smirnov@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Chris Healy <cphealy@gmail.com>, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 6/6] iio: imx7d_adc: Use devm_iio_device_register()
-Message-ID: <20190422110946.4b1fb234@archlinux>
-In-Reply-To: <20190414183504.23286-7-andrew.smirnov@gmail.com>
-References: <20190414183504.23286-1-andrew.smirnov@gmail.com>
-        <20190414183504.23286-7-andrew.smirnov@gmail.com>
+To:     Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc:     <rdunlap@infradead.org>, <sfr@canb.auug.org.au>,
+        <benjamin.gaignard@linaro.org>, <linux-next@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <linux-iio@vger.kernel.org>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
+Subject: Re: [PATCH] iio: trigger: stm32-timer: fix build issue when
+ disabled
+Message-ID: <20190422111443.276572ff@archlinux>
+In-Reply-To: <1555321642-482-1-git-send-email-fabrice.gasnier@st.com>
+References: <1555321642-482-1-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,63 +62,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 14 Apr 2019 11:35:04 -0700
-Andrey Smirnov <andrew.smirnov@gmail.com> wrote:
+On Mon, 15 Apr 2019 11:47:22 +0200
+Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
 
-> Use devm_iio_device_register() and drop imx7d_adc_remove().
+> This fixes a build issue when CONFIG_IIO_STM32_TIMER_TRIGGER isn't set but
+> used in stm32-dfsdm-adc driver (e.g. CONFIG_STM32_DFSDM_ADC is set):
+> ERROR: "is_stm32_timer_trigger" [drivers/iio/adc/stm32-dfsdm-adc.ko]
+> undefined!
 > 
-> Signed-off-by: Andrey Smirnov <andrew.smirnov@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Chris Healy <cphealy@gmail.com>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
+> There are two possible options to fix this issue:
+> - select IIO_STM32_TIMER_TRIGGER along with CONFIG_STM32_DFSDM_ADC.
+>   This is what's being done currently for CONFIG_STM32_ADC.
+> - stub "is_stm32_timer_trigger" function
+> 
+> Choice is made to stub this function as suggested in [1]. This is also
+> inspired by similar "is_stm32_lptim_trigger" function (see [2]) in
+> include/linux/iio/timer/stm32-lptim-trigger.h
+> 
+> [1]
+> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1977377.html
+> [2] https://lkml.org/lkml/2017/9/10/124
+> 
+> Fixes: 11646e81d775 ("iio: adc: stm32-dfsdm: add support for buffer modes")
+> 
+> Reported-by: Randy Dunlap <rdunlap@infradead.org>
+> Fix-suggested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Hmm. That feels a bit more complex than I was anticipating but fair enough,
+it seems to cover the combinations.
+
 Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to poke at it.
+for the autobuilders to have another poke at it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/imx7d_adc.c | 13 +------------
->  1 file changed, 1 insertion(+), 12 deletions(-)
+>  include/linux/iio/timer/stm32-timer-trigger.h | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-> index c5b0dc7d0e49..958a34dd88ac 100644
-> --- a/drivers/iio/adc/imx7d_adc.c
-> +++ b/drivers/iio/adc/imx7d_adc.c
-> @@ -554,7 +554,7 @@ static int imx7d_adc_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
+> diff --git a/include/linux/iio/timer/stm32-timer-trigger.h b/include/linux/iio/timer/stm32-timer-trigger.h
+> index d68add8..cbb7c7a 100644
+> --- a/include/linux/iio/timer/stm32-timer-trigger.h
+> +++ b/include/linux/iio/timer/stm32-timer-trigger.h
+> @@ -73,6 +73,15 @@
 >  
-> -	ret = iio_device_register(indio_dev);
-> +	ret = devm_iio_device_register(dev, indio_dev);
->  	if (ret) {
->  		dev_err(&pdev->dev, "Couldn't register the device.\n");
->  		return ret;
-> @@ -563,21 +563,10 @@ static int imx7d_adc_probe(struct platform_device *pdev)
->  	return 0;
->  }
+>  #define TIM17_OC1	"tim17_oc1"
 >  
-> -static int imx7d_adc_remove(struct platform_device *pdev)
-> -{
-> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +#if IS_REACHABLE(CONFIG_IIO_STM32_TIMER_TRIGGER)
+>  bool is_stm32_timer_trigger(struct iio_trigger *trig);
 > -
-> -	iio_device_unregister(indio_dev);
-> -
-> -	return 0;
-> -}
-> -
-> -
->  static SIMPLE_DEV_PM_OPS(imx7d_adc_pm_ops, imx7d_adc_disable, imx7d_adc_enable);
->  
->  static struct platform_driver imx7d_adc_driver = {
->  	.probe		= imx7d_adc_probe,
-> -	.remove		= imx7d_adc_remove,
->  	.driver		= {
->  		.name	= "imx7d_adc",
->  		.of_match_table = imx7d_adc_match,
+> +#else
+> +static inline bool is_stm32_timer_trigger(struct iio_trigger *trig)
+> +{
+> +#if IS_ENABLED(CONFIG_IIO_STM32_TIMER_TRIGGER)
+> +	pr_warn_once("stm32-timer-trigger not linked in\n");
+> +#endif
+> +	return false;
+> +}
+> +#endif
+>  #endif
 
