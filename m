@@ -2,354 +2,297 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E894C10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:21:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A381FC10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:25:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1459E20693
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:21:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6202B20859
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 14:25:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1555943123;
+	bh=5nSfIPuXhIxZMd1/sE6RfjUEMUkXFM2u7bt6cz3MRq0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=L6jKHRP9IWi1Z/x8aMHC/x0WOEiRAjR+InOt1sZHX6JMW90TKJLglMeDMrpJeOL6p
+	 QgYpR8hjqZtBKPy7SmJprZwqJfndUDABwkfO36x1ZcChNyJceEJ8hb9a4sXwOYuPyu
+	 q3GHYqvJAIz1lvfdJXr87PT9zOrdkTf/BgkziB2c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727450AbfDVOVV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 10:21:21 -0400
-Received: from mga12.intel.com ([192.55.52.136]:48547 "EHLO mga12.intel.com"
+        id S1727286AbfDVOZX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 10:25:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726421AbfDVOVV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 10:21:21 -0400
-X-Amp-Result: UNKNOWN
-X-Amp-Original-Verdict: FILE UNKNOWN
-X-Amp-File-Uploaded: False
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 22 Apr 2019 07:21:20 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.60,382,1549958400"; 
-   d="p7s'?scan'208";a="152886091"
-Received: from orsmsx104.amr.corp.intel.com ([10.22.225.131])
-  by orsmga002.jf.intel.com with ESMTP; 22 Apr 2019 07:21:19 -0700
-Received: from orsmsx109.amr.corp.intel.com ([169.254.11.52]) by
- ORSMSX104.amr.corp.intel.com ([169.254.4.183]) with mapi id 14.03.0415.000;
- Mon, 22 Apr 2019 07:21:18 -0700
-From:   "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To:     "jic23@kernel.org" <jic23@kernel.org>
-CC:     "jikos@kernel.org" <jikos@kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] drivers: iio: Add more data field for iio driver
- hysteresis parsing
-Thread-Topic: [PATCH] drivers: iio: Add more data field for iio driver
- hysteresis parsing
-Thread-Index: AQHU7nIwleYiOdt1pUS6nEYUQUpzvaY8FcGAgAJqWoCACeldAIAAXEcA
-Date:   Mon, 22 Apr 2019 14:21:18 +0000
-Message-ID: <95d950d24b9b0fef1e6d2259fb41413c9eafcd23.camel@intel.com>
-References: <1554773465-21882-1-git-send-email-hongyan.song@intel.com>
-         <20190414133615.56be4eb1@archlinux>
-         <d5085421bb3305d896930192b99c5bf84260e5c1.camel@intel.com>
-         <20190422095100.59ce99af@archlinux>
-In-Reply-To: <20190422095100.59ce99af@archlinux>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: yes
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.251.7.130]
-Content-Type: multipart/signed; micalg=sha-1;
-        protocol="application/x-pkcs7-signature"; boundary="=-eKdLQaepsJiqzM9dpilo"
+        id S1726098AbfDVOZW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 10:25:22 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1670320693;
+        Mon, 22 Apr 2019 14:25:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1555943120;
+        bh=5nSfIPuXhIxZMd1/sE6RfjUEMUkXFM2u7bt6cz3MRq0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=OSizqNjXJ2pWS0LXWyczDJZLCJc4mF05jog++sLRe4OG04ejGSm0g4R1nXDQUZTfT
+         vqq2A3/OqmRyGOrIbo0LWvnR/Se8uBy9NzOFCAHeExHQ1xI3u/y3ejuqum8w62iqrf
+         X4+evgY7oa2IbF4MVKmWkEdx5W8T7bhB2bUVzMPc=
+Date:   Mon, 22 Apr 2019 15:25:15 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Mauro Carvalho Chehab <mchehab@infradead.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 63/79] docs: iio: convert to ReST
+Message-ID: <20190422152515.403d0858@archlinux>
+In-Reply-To: <41bbbddf74ffb1e557ac6c924dac5054d6650950.1555938376.git.mchehab+samsung@kernel.org>
+References: <cover.1555938375.git.mchehab+samsung@kernel.org>
+        <41bbbddf74ffb1e557ac6c924dac5054d6650950.1555938376.git.mchehab+samsung@kernel.org>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
---=-eKdLQaepsJiqzM9dpilo
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+On Mon, 22 Apr 2019 10:27:52 -0300
+Mauro Carvalho Chehab <mchehab+samsung@kernel.org> wrote:
 
-On Mon, 2019-04-22 at 09:51 +0100, Jonathan Cameron wrote:
-> On Tue, 16 Apr 2019 01:29:28 +0000
-> "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com> wrote:
->=20
-> > On Sun, 2019-04-14 at 13:36 +0100, Jonathan Cameron wrote:
-> > > On Tue,  9 Apr 2019 09:31:04 +0800
-> > > hongyan.song@intel.com wrote:
-> > >  =20
-> > > > From: Song Hongyan <hongyan.song@intel.com>
-> > > >=20
-> > > > Add more data field support for als, incli_3d, rotation, press
-> > > > hysteresis parsing. In some implementation may uses them as
-> > > > sensitivity
-> > > > modifier, without this change hysteresis may not be able to
-> > > > read
-> > > > and
-> > > > write.
-> > > >=20
-> > > > Signed-off-by: Song Hongyan <hongyan.song@intel.com> =20
-> > >=20
-> > > Thanks for the patch. I'll be honest I'm lost in these
-> > > descriptors
-> > > sometimes!
-> > >=20
-> > > Srinivas, could you give some input on this one? =20
-> >=20
-> > I don't see we have defined hysteresis attribute in
-> > "Documentation/ABI/testing/sysfs-bus-iio" for non events.
-> > The current hysteresis is taken a absolute raw value in relation to
-> > the
-> > other axes in the same unit.
-> >=20
-> > But it is better if we add different hysteresis attributes for non
-> > absolute hysteresis.
-> >=20
-> > For example
-> > in_xxx_hysteresis_pct_range for "Modifier: Change Sensitivity
-> > Percent
-> > of Range" usage id: 310
-> > in_xxx_hysteresis_pct_relative for "Modifier: Change Sensitivity
-> > Percent Relative" usage id: 311
->=20
-> Hmm. This is indeed a corner we don't often hit.  Basically we are
-> looking
-> at a 'dead zone'.  For most IIO devices we don't do this as it is
-> removing information some usecases might want.  If people want to
-> do this on sensors, it's normally done using a motion detect type
-> event and then reading the sensor value to find out what the motion
-> was.
->=20
-> I'm not sure hysteresis is the right term to use here though.
-> We aren't dealing with offsets in a threshold depending on direction,
-> but rather at minimum change before reporting from the previous value
-> (in either direction).  Mind you I'm not quite sure what the right
-> term would be!  It may be that sensitivity is the term to use. In
-> some ways this is very like reducing the bit depth of the sensor,
-> which is what that term brings to mind for me.
-We can use=20
-in_xxx_sensitivity_pct_range
-in_xxx_sensitivity_pct_rel
-in_xxx_sensitivity_abs
+> Rename the iio documentation files to ReST, add an
+> index for them and adjust in order to produce a nice html
+> output via the Sphinx build system.
+> 
+> At its new index.rst, let's add a :orphan: while this is not linked to
+> the main index.rst file, in order to avoid build warnings.
+> 
+> Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Thanks Mauro,
 
-Thanks,
-Srinivas
+Looks good to me.
+At somepoint, we should figure out how to fit these elements into
+the main IIO docs, but this is a good intermediate step.
 
->=20
-> Thanks,
->=20
-> Jonathan
->=20
-> >=20
-> >=20
-> > Thanks,
-> > Srinivas
-> >=20
-> >=20
-> >=20
-> > >=20
-> > > I will note however, that from a quick look we tend to air these
-> > > queries with dev_dbg entries.  We should be consistent with these
-> > > new
-> > > ones
-> > > as well.attaributes
-> > >=20
-> > > Thanks,
-> > >=20
-> > > Jonathan =20
-> > > > ---
-> > > >  drivers/iio/light/hid-sensor-als.c            | 8 ++++++++
-> > > >  drivers/iio/orientation/hid-sensor-incl-3d.c  | 8 ++++++++
-> > > >  drivers/iio/orientation/hid-sensor-rotation.c | 7 +++++++
-> > > >  drivers/iio/pressure/hid-sensor-press.c       | 8 ++++++++
-> > > >  include/linux/hid-sensor-ids.h                | 1 +
-> > > >  5 files changed, 32 insertions(+)attaributes
-> > > >=20
-> > > > diff --git a/drivers/iio/light/hid-sensor-als.c
-> > > > b/drivers/iio/light/hid-sensor-als.c
-> > > > index 94f3325..bb19178 100644
-> > > > --- a/drivers/iio/light/hid-sensor-als.c
-> > > > +++ b/drivers/iio/light/hid-sensor-als.c
-> > > > @@ -271,6 +271,14 @@ static int als_parse_report(struct
-> > > > platform_device *pdev,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.index,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.report_id);
-> > > >  	}
-> > > > +	if (st->common_attributes.sensitivity.index < 0) {
-> > > > +		sensor_hub_input_get_attribute_info(hsdev,
-> > > > +			HID_FEATURE_REPORT, usage_id,
-> > > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSIT
-> > > > IVITY_RE
-> > > > L_PCT |
-> > > > +			HID_USAGE_SENSOR_LIGHT_ILLUM,
-> > > > +			&st->common_attributes.sensitivity);
-> > > > +	}
-> > > > +
-> > > >  	return ret;
-> > > >  }
-> > > > =20
-> > > > diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c
-> > > > b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> > > > index bdc5e45..7da1e3f 100644
-> > > > --- a/drivers/iio/orientation/hid-sensor-incl-3d.c
-> > > > +++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
-> > > > @@ -305,6 +305,14 @@ static int incl_3d_parse_report(struct
-> > > > platform_device *pdev,
-> > > >  			st-
-> > > > >commpcton_attributes.sensitivity.index,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.report_id);
-> > > >  	}
-> > > > +	if (st->common_attributes.sensitivity.index < 0) {
-> > > > +		sensor_hub_input_get_attribute_info(hsdev,
-> > > > +			HID_FEATURE_REPORT, usage_id,
-> > > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSIT
-> > > > IVITY_AB
-> > > > S |
-> > > > +			HID_USAGE_SENSOR_ORIENT_TILT,
-> > > > +			&st->common_attributes.sensitivity);
-> > > > +	}
-> > > > +
-> > > >  	return ret;
-> > > >  }
-> > > > =20
-> > > > diff --git a/drivers/iio/orientation/hid-sensor-rotation.c
-> > > > b/drivers/iio/orientation/hid-sensor-rotation.c
-> > > > index a69db20..201e320 100644
-> > > > --- a/drivers/iio/orientation/hid-sensor-rotation.c
-> > > > +++ b/drivers/iio/orientation/hid-sensor-rotation.c
-> > > > @@ -229,6 +229,13 @@ static int dev_rot_parse_report(struct
-> > > > platform_device *pdev,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.index,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.report_id);
-> > > >  	}
-> > > > +	if (st->common_attributes.sensitivity.index < 0) {
-> > > > +		sensor_hub_input_get_attribute_info(hsdev,
-> > > > +			HID_FEATURE_REPORT, usage_id,
-> > > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSIT
-> > > > IVITY_AB
-> > > > S |
-> > > > +			HID_USAGE_SENSOR_ORIENT_QUATERNION,
-> > > > +			&st->common_attributes.sensitivity);
-> > > > +	}
-> > > > =20
-> > > >  	return 0;
-> > > >  }
-> > > > diff --git a/drivers/iio/pressure/hid-sensor-press.c
-> > > > b/drivers/iio/pressure/hid-sensor-press.c
-> > > > index d7b1c00..bf5d2ac 10064pct4
-> > > > --- a/drivers/iio/pressure/hid-sensor-press.c
-> > > > +++ b/drivers/iio/pressure/hid-sensor-press.c
-> > > > @@ -250,6 +250,14 @@ static int press_parse_report(struct
-> > > > platform_device *pdev,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.index,
-> > > >  			st-
-> > > > >common_attributes.sensitivity.report_id);
-> > > >  	}
-> > > > +	if (st->common_attributes.sensitivity.index < 0) {
-> > > > +		sensor_hub_input_get_attribute_info(hsdev,
-> > > > +			HID_FEATURE_REPORT, usage_id,
-> > > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSIT
-> > > > IVITY_AB
-> > > > S |
-> > > > +			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE,
-> > > > +			&st->common_attributes.sensitivity);
-> > > > +	}
-> > > > +
-> > > >  	return ret;
-> > > >  }
-> > > > =20
-> > > > diff --git a/include/linux/hid-sensor-ids.h
-> > > > b/include/linux/hid-
-> > > > sensor-ids.h
-> > > > index 76033e0..a875b9be 100644
-> > > > --- a/include/linux/hid-sensor-ids.h
-> > > > +++ b/include/linux/hid-sensor-ids.h
-> > > > @@ -158,6 +158,7 @@
-> > > >  /* Per data field properties */
-> > > >  #define HID_USAGE_SENSOR_DATA_MOD_NONE			=09
-> > > > 	0x00
-> > > >  #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS=09
-> > > > =09
-> > > > 0x1000
-> > > > +#define
-> > > > HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT          =20
-> > > >  0xE
-> > > > 000
-> > > > =20
-> > > >  /* Power state enumerations */
-> > > >  #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM=09
-> > > > 0x20085
-> > > > 0 =20
-> > >=20
-> > >  =20
->=20
->=20
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  .../iio/{ep93xx_adc.txt => ep93xx_adc.rst}    | 15 +++++-
+>  .../{iio_configfs.txt => iio_configfs.rst}    | 52 +++++++++++--------
+>  Documentation/iio/index.rst                   | 12 +++++
+>  drivers/iio/Kconfig                           |  2 +-
+>  4 files changed, 56 insertions(+), 25 deletions(-)
+>  rename Documentation/iio/{ep93xx_adc.txt => ep93xx_adc.rst} (71%)
+>  rename Documentation/iio/{iio_configfs.txt => iio_configfs.rst} (73%)
+>  create mode 100644 Documentation/iio/index.rst
+> 
+> diff --git a/Documentation/iio/ep93xx_adc.txt b/Documentation/iio/ep93xx_adc.rst
+> similarity index 71%
+> rename from Documentation/iio/ep93xx_adc.txt
+> rename to Documentation/iio/ep93xx_adc.rst
+> index 23053e7817bd..4fd8dea3f6b8 100644
+> --- a/Documentation/iio/ep93xx_adc.txt
+> +++ b/Documentation/iio/ep93xx_adc.rst
+> @@ -1,12 +1,16 @@
+> -Cirrus Logic EP93xx ADC driver.
+> +==============================
+> +Cirrus Logic EP93xx ADC driver
+> +==============================
+>  
+>  1. Overview
+> +===========
+>  
+>  The driver is intended to work on both low-end (EP9301, EP9302) devices with
+>  5-channel ADC and high-end (EP9307, EP9312, EP9315) devices with 10-channel
+>  touchscreen/ADC module.
+>  
+>  2. Channel numbering
+> +====================
+>  
+>  Numbering scheme for channels 0..4 is defined in EP9301 and EP9302 datasheets.
+>  EP9307, EP9312 and EP9312 have 3 channels more (total 8), but the numbering is
+> @@ -17,13 +21,20 @@ Assuming ep93xx_adc is IIO device0, you'd find the following entries under
+>  
+>    +-----------------+---------------+
+>    | sysfs entry     | ball/pin name |
+> -  +-----------------+---------------+
+> +  +=================+===============+
+>    | in_voltage0_raw | YM            |
+> +  +-----------------+---------------+
+>    | in_voltage1_raw | SXP           |
+> +  +-----------------+---------------+
+>    | in_voltage2_raw | SXM           |
+> +  +-----------------+---------------+
+>    | in_voltage3_raw | SYP           |
+> +  +-----------------+---------------+
+>    | in_voltage4_raw | SYM           |
+> +  +-----------------+---------------+
+>    | in_voltage5_raw | XP            |
+> +  +-----------------+---------------+
+>    | in_voltage6_raw | XM            |
+> +  +-----------------+---------------+
+>    | in_voltage7_raw | YP            |
+>    +-----------------+---------------+
+> diff --git a/Documentation/iio/iio_configfs.txt b/Documentation/iio/iio_configfs.rst
+> similarity index 73%
+> rename from Documentation/iio/iio_configfs.txt
+> rename to Documentation/iio/iio_configfs.rst
+> index 4e5f101837a8..ecbfdb3afef7 100644
+> --- a/Documentation/iio/iio_configfs.txt
+> +++ b/Documentation/iio/iio_configfs.rst
+> @@ -1,6 +1,9 @@
+> +===============================
+>  Industrial IIO configfs support
+> +===============================
+>  
+>  1. Overview
+> +===========
+>  
+>  Configfs is a filesystem-based manager of kernel objects. IIO uses some
+>  objects that could be easily configured using configfs (e.g.: devices,
+> @@ -10,20 +13,22 @@ See Documentation/filesystems/configfs/configfs.txt for more information
+>  about how configfs works.
+>  
+>  2. Usage
+> +========
+>  
+>  In order to use configfs support in IIO we need to select it at compile
+>  time via CONFIG_IIO_CONFIGFS config option.
+>  
+> -Then, mount the configfs filesystem (usually under /config directory):
+> +Then, mount the configfs filesystem (usually under /config directory)::
+>  
+> -$ mkdir /config
+> -$ mount -t configfs none /config
+> +  $ mkdir /config
+> +  $ mount -t configfs none /config
+>  
+>  At this point, all default IIO groups will be created and can be accessed
+>  under /config/iio. Next chapters will describe available IIO configuration
+>  objects.
+>  
+>  3. Software triggers
+> +====================
+>  
+>  One of the IIO default configfs groups is the "triggers" group. It is
+>  automagically accessible when the configfs is mounted and can be found
+> @@ -31,40 +36,40 @@ under /config/iio/triggers.
+>  
+>  IIO software triggers implementation offers support for creating multiple
+>  trigger types. A new trigger type is usually implemented as a separate
+> -kernel module following the interface in include/linux/iio/sw_trigger.h:
+> +kernel module following the interface in include/linux/iio/sw_trigger.h::
+>  
+> -/*
+> - * drivers/iio/trigger/iio-trig-sample.c
+> - * sample kernel module implementing a new trigger type
+> - */
+> -#include <linux/iio/sw_trigger.h>
+> +  /*
+> +   * drivers/iio/trigger/iio-trig-sample.c
+> +   * sample kernel module implementing a new trigger type
+> +   */
+> +  #include <linux/iio/sw_trigger.h>
+>  
+>  
+> -static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
+> -{
+> +  static struct iio_sw_trigger *iio_trig_sample_probe(const char *name)
+> +  {
+>  	/*
+>  	 * This allocates and registers an IIO trigger plus other
+>  	 * trigger type specific initialization.
+>  	 */
+> -}
+> +  }
+>  
+> -static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
+> -{
+> +  static int iio_trig_hrtimer_remove(struct iio_sw_trigger *swt)
+> +  {
+>  	/*
+>  	 * This undoes the actions in iio_trig_sample_probe
+>  	 */
+> -}
+> +  }
+>  
+> -static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
+> +  static const struct iio_sw_trigger_ops iio_trig_sample_ops = {
+>  	.probe		= iio_trig_sample_probe,
+>  	.remove		= iio_trig_sample_remove,
+> -};
+> +  };
+>  
+> -static struct iio_sw_trigger_type iio_trig_sample = {
+> +  static struct iio_sw_trigger_type iio_trig_sample = {
+>  	.name = "trig-sample",
+>  	.owner = THIS_MODULE,
+>  	.ops = &iio_trig_sample_ops,
+> -};
+> +  };
+>  
+>  module_iio_sw_trigger_driver(iio_trig_sample);
+>  
+> @@ -73,21 +78,24 @@ iio-trig-sample module will create 'trig-sample' trigger type directory
+>  /config/iio/triggers/trig-sample.
+>  
+>  We support the following interrupt sources (trigger types):
+> +
+>  	* hrtimer, uses high resolution timers as interrupt source
+>  
+>  3.1 Hrtimer triggers creation and destruction
+> +---------------------------------------------
+>  
+>  Loading iio-trig-hrtimer module will register hrtimer trigger types allowing
+>  users to create hrtimer triggers under /config/iio/triggers/hrtimer.
+>  
+> -e.g:
+> +e.g::
+>  
+> -$ mkdir /config/iio/triggers/hrtimer/instance1
+> -$ rmdir /config/iio/triggers/hrtimer/instance1
+> +  $ mkdir /config/iio/triggers/hrtimer/instance1
+> +  $ rmdir /config/iio/triggers/hrtimer/instance1
+>  
+>  Each trigger can have one or more attributes specific to the trigger type.
+>  
+>  3.2 "hrtimer" trigger types attributes
+> +--------------------------------------
+>  
+>  "hrtimer" trigger type doesn't have any configurable attribute from /config dir.
+>  It does introduce the sampling_frequency attribute to trigger directory.
+> diff --git a/Documentation/iio/index.rst b/Documentation/iio/index.rst
+> new file mode 100644
+> index 000000000000..0593dca89a94
+> --- /dev/null
+> +++ b/Documentation/iio/index.rst
+> @@ -0,0 +1,12 @@
+> +:orphan:
+> +
+> +==============
+> +Industrial I/O
+> +==============
+> +
+> +.. toctree::
+> +   :maxdepth: 1
+> +
+> +   iio_configfs
+> +
+> +   ep93xx_adc
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 014006d1cbb6..c1aa87db19ff 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -28,7 +28,7 @@ config IIO_CONFIGFS
+>  	help
+>  	  This allows configuring various IIO bits through configfs
+>  	  (e.g. software triggers). For more info see
+> -	  Documentation/iio/iio_configfs.txt.
+> +	  Documentation/iio/iio_configfs.rst.
+>  
+>  config IIO_TRIGGER
+>  	bool "Enable triggered sampling support"
 
---=-eKdLQaepsJiqzM9dpilo
-Content-Type: application/x-pkcs7-signature; name="smime.p7s"
-Content-Disposition: attachment; filename="smime.p7s"
-Content-Transfer-Encoding: base64
-
-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
-n4IJlKBiiK7B8oFPhD7KEZOWboHrE2uHLEkIXpp852sG0oFkLLstEDK9Z46WS4Ni1yfGRE6jY79A
-DJOEZIX9AgMBAAGjggI9MIICOTAdBgNVHQ4EFgQUZ2w0kbL1uZEoQTmAiMqoAXL81L8wHwYDVR0j
-BBgwFoAU2kEjnFqPca9Xgz4g0+Nl2wzLC9swZQYDVR0fBF4wXDBaoFigVoZUaHR0cDovL3d3dy5p
-bnRlbC5jb20vcmVwb3NpdG9yeS9DUkwvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWlu
-ZyUyMENBJTIwNEIuY3JsMIGfBggrBgEFBQcBAQSBkjCBjzAiBggrBgEFBQcwAYYWaHR0cDovL29j
-c3AuaW50ZWwuY29tLzBpBggrBgEFBQcwAoZdaHR0cDovL3d3dy5pbnRlbC5jb20vcmVwb3NpdG9y
-eS9jZXJ0aWZpY2F0ZXMvSW50ZWwlMjBFeHRlcm5hbCUyMEJhc2ljJTIwSXNzdWluZyUyMENBJTIw
-NEIuY3J0MAsGA1UdDwQEAwIHgDA8BgkrBgEEAYI3FQcELzAtBiUrBgEEAYI3FQiGw4x1hJnlUYP9
-gSiFjp9TgpHACWeB3r05lfBDAgFkAgEJMB8GA1UdJQQYMBYGCCsGAQUFBwMEBgorBgEEAYI3CgMM
-MCkGCSsGAQQBgjcVCgQcMBowCgYIKwYBBQUHAwQwDAYKKwYBBAGCNwoDDDBXBgNVHREEUDBOoC0G
-CisGAQQBgjcUAgOgHwwdc3Jpbml2YXMucGFuZHJ1dmFkYUBpbnRlbC5jb22BHXNyaW5pdmFzLnBh
-bmRydXZhZGFAaW50ZWwuY29tMA0GCSqGSIb3DQEBBQUAA4IBAQAXirNmyawI/PJRnjPoqNcgSr8N
-8VXBvv8kwQidSNWKswBqo8ul8u+pkG7v8YjZUy1OJQUFXPvihht10Tb5O2xZ9hpIo4WFcRX2eg2Z
-t6koRJUB9ZDjEETG2j4EpcGmWIBrDBNZLZTLIYG5JzsS6mGCq42AKspSAJD00vwfL0KlCc4BVUvC
-64+q7etbf6c90n05KjfLfoUXBqwWLJCe3KPD20d/kbvesTzs2PVQxI7K1eL9n2rBoqBpcRY0ppkz
-FKjiTQ8IcwhyWQbzLfVIy5tNuyinhNBRv3COOMGoayaljijEPcEHLE63tA2OIao2Hz6GLRYzg0mT
-hCtsB4xSboPZMYICFzCCAhMCAQEwgZAweTELMAkGA1UEBhMCVVMxCzAJBgNVBAgTAkNBMRQwEgYD
-VQQHEwtTYW50YSBDbGFyYTEaMBgGA1UEChMRSW50ZWwgQ29ycG9yYXRpb24xKzApBgNVBAMTIklu
-dGVsIEV4dGVybmFsIEJhc2ljIElzc3VpbmcgQ0EgNEICEzMAAGknngjvas7THxUAAAAAaScwCQYF
-Kw4DAhoFAKBdMBgGCSqGSIb3DQEJAzELBgkqhkiG9w0BBwEwHAYJKoZIhvcNAQkFMQ8XDTE5MDQy
-MjE0MjExNlowIwYJKoZIhvcNAQkEMRYEFMZ1+tf3Cr8mMfWPobT1EMr6mBG8MA0GCSqGSIb3DQEB
-AQUABIIBAHPUZpEddZzXy1yg6Y9OdV9WsTfEhs0ZBz1mAdnqgJjg/chaQ/J0nil+hSCAFjyYkGTT
-MpoPe3TImvsaN0Wmu2qYyt9WcNXD5K/g+58O3xjFI9LSEJTV5OTJjD/kPZufBNrLkZZdInWzWQLM
-hAee324OBpWqZFpLXkQr1ToJg/FM0gfz/lxqOP9MSJpEWFOgB2i7mitkiyIIOB1a37szB1PBKG17
-nJ6U0FQwbOnEvDZ31l1LrzlsKal7cEERA3Sr2Zr999WBEdoEL6h66LQTLTmSESZ3Oi912jYjFJdR
-BUv2IcgHQ3z3PwdZlEm1v118fx4v0Gjtt/f0lYFZeNYUTIkAAAAAAAA=
-
-
---=-eKdLQaepsJiqzM9dpilo--
