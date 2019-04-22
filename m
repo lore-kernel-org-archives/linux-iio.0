@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B75D1C10F11
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53925C10F11
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:16:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 88ED720874
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:14:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 188CF20874
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 10:16:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555928091;
-	bh=2NDX7a/oF3+wR3ClQPwRoNDywtT9vPrseyn0WaUMBNU=;
+	s=default; t=1555928212;
+	bh=3TRFGMvJmSa/ZGijQzF5Eyf501z0S9bymkbnBQrSqUs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=n70IoJlR2IAiU+VKpwZhCcvC4dMIL3ZijK811v6GK2+2bEVWaBmAMA3RR0J3p9BTm
-	 yem7FEak4KD4JFTwKHcM+n5P7QOZZt0wMSSV+kdkbDvG8YKzzJUvTrBq34LE4UVx9k
-	 byRb2zkn+hk8Uy27qoqK3hUBervP9wPDAbkSCpW8=
+	b=GeantUTT2084AEipXxXw6N/6Rt2FSF0EeAUCDYxfrXfe5QDPMy7WB6DdTotCa0bVD
+	 rNkv3uA/fmb1QQ6Ih7b6vGLArUMrPdT3mMqQQhw4stMffB2xP/e217y4X4N7DJloRv
+	 jn/xGPGkub3/10h8tad8FvlOzFU136M4Xng75/Bg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726280AbfDVKOv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 06:14:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39718 "EHLO mail.kernel.org"
+        id S1726375AbfDVKQv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 06:16:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726057AbfDVKOu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 06:14:50 -0400
+        id S1726057AbfDVKQv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 06:16:51 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D991E206A3;
-        Mon, 22 Apr 2019 10:14:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3AF23206A3;
+        Mon, 22 Apr 2019 10:16:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555928090;
-        bh=2NDX7a/oF3+wR3ClQPwRoNDywtT9vPrseyn0WaUMBNU=;
+        s=default; t=1555928210;
+        bh=3TRFGMvJmSa/ZGijQzF5Eyf501z0S9bymkbnBQrSqUs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dCoieSXtx0F+k1B5dC08md6B13zWersEtpm2JUXIs3vidCrLdx/nCBcSS+xTShfsk
-         vp2HX83fo+0WUSVPFt/S6WRzGs/vNBYC0HxIR9NYEDMkG7vUO0crWcs12ujWbWOz9i
-         5leUsoKaQc9/63zLM/bZkEOEyhALZHyFBGQ0aw0E=
-Date:   Mon, 22 Apr 2019 11:14:43 +0100
+        b=DEMfSg12iVfykAD87dISJs+7YRgeHmOJPGgAQVxefp5CvJ8BfTGvCipmus7DuOaZl
+         w/dgiz3RSsUxWeo21LSqFHFZmG8glTSS5pAISRZMB2Or9GSqQZ+dgR3sdIAaUY5bff
+         TCfbenXSbTkbPW7L6jTbfJrXytBVoGyOYqMF1Fso=
+Date:   Mon, 22 Apr 2019 11:16:43 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Fabrice Gasnier <fabrice.gasnier@st.com>
 Cc:     <rdunlap@infradead.org>, <sfr@canb.auug.org.au>,
@@ -48,11 +48,12 @@ Cc:     <rdunlap@infradead.org>, <sfr@canb.auug.org.au>,
         <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <arnaud.pouliquen@st.com>, <olivier.moysan@st.com>
-Subject: Re: [PATCH] iio: trigger: stm32-timer: fix build issue when
- disabled
-Message-ID: <20190422111443.276572ff@archlinux>
-In-Reply-To: <1555321642-482-1-git-send-email-fabrice.gasnier@st.com>
-References: <1555321642-482-1-git-send-email-fabrice.gasnier@st.com>
+Subject: Re: [PATCH 1/2] iio: adc: stm32-dfsdm: fix unmet direct
+ dependencies detected
+Message-ID: <20190422111643.0270fba6@archlinux>
+In-Reply-To: <1555333251-4422-2-git-send-email-fabrice.gasnier@st.com>
+References: <1555333251-4422-1-git-send-email-fabrice.gasnier@st.com>
+        <1555333251-4422-2-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,65 +63,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 15 Apr 2019 11:47:22 +0200
+On Mon, 15 Apr 2019 15:00:50 +0200
 Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
 
-> This fixes a build issue when CONFIG_IIO_STM32_TIMER_TRIGGER isn't set but
-> used in stm32-dfsdm-adc driver (e.g. CONFIG_STM32_DFSDM_ADC is set):
-> ERROR: "is_stm32_timer_trigger" [drivers/iio/adc/stm32-dfsdm-adc.ko]
-> undefined!
+> This fixes unmet direct dependencies seen when CONFIG_STM32_DFSDM_ADC
+> is selected:
 > 
-> There are two possible options to fix this issue:
-> - select IIO_STM32_TIMER_TRIGGER along with CONFIG_STM32_DFSDM_ADC.
->   This is what's being done currently for CONFIG_STM32_ADC.
-> - stub "is_stm32_timer_trigger" function
+> WARNING: unmet direct dependencies detected for IIO_BUFFER_HW_CONSUMER
+>   Depends on [n]: IIO [=y] && IIO_BUFFER [=n]
+>   Selected by [y]:
+>   - STM32_DFSDM_ADC [=y] && IIO [=y] && (ARCH_STM32 [=y] && OF [=y] ||
+>     COMPILE_TEST [=n])
 > 
-> Choice is made to stub this function as suggested in [1]. This is also
-> inspired by similar "is_stm32_lptim_trigger" function (see [2]) in
-> include/linux/iio/timer/stm32-lptim-trigger.h
+> Fixes: e2e6771c6462 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
 > 
-> [1]
-> https://www.mail-archive.com/linux-kernel@vger.kernel.org/msg1977377.html
-> [2] https://lkml.org/lkml/2017/9/10/124
-> 
-> Fixes: 11646e81d775 ("iio: adc: stm32-dfsdm: add support for buffer modes")
-> 
-> Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> Fix-suggested-by: Jonathan Cameron <jic23@kernel.org>
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Hmm. That feels a bit more complex than I was anticipating but fair enough,
-it seems to cover the combinations.
+Hmm. I wonder how we never got this one from a rand config.
+Anyhow, give we are near the end of this cycle, I'll take this for
+the next merge window rather than rushing it through.
 
 Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to have another poke at it.
+for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  include/linux/iio/timer/stm32-timer-trigger.h | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
+>  drivers/iio/adc/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/include/linux/iio/timer/stm32-timer-trigger.h b/include/linux/iio/timer/stm32-timer-trigger.h
-> index d68add8..cbb7c7a 100644
-> --- a/include/linux/iio/timer/stm32-timer-trigger.h
-> +++ b/include/linux/iio/timer/stm32-timer-trigger.h
-> @@ -73,6 +73,15 @@
->  
->  #define TIM17_OC1	"tim17_oc1"
->  
-> +#if IS_REACHABLE(CONFIG_IIO_STM32_TIMER_TRIGGER)
->  bool is_stm32_timer_trigger(struct iio_trigger *trig);
-> -
-> +#else
-> +static inline bool is_stm32_timer_trigger(struct iio_trigger *trig)
-> +{
-> +#if IS_ENABLED(CONFIG_IIO_STM32_TIMER_TRIGGER)
-> +	pr_warn_once("stm32-timer-trigger not linked in\n");
-> +#endif
-> +	return false;
-> +}
-> +#endif
->  #endif
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 846c7ac..b1b2bde 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -821,6 +821,7 @@ config STM32_DFSDM_ADC
+>  	depends on (ARCH_STM32 && OF) || COMPILE_TEST
+>  	select STM32_DFSDM_CORE
+>  	select REGMAP_MMIO
+> +	select IIO_BUFFER
+>  	select IIO_BUFFER_HW_CONSUMER
+>  	help
+>  	  Select this option to support ADCSigma delta modulator for
 
