@@ -2,56 +2,55 @@ Return-Path: <SRS0=i5D1=SY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71017C282E1
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:42:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DD9C282E1
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:51:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2C57F213A2
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:42:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF6E120857
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Apr 2019 08:51:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1555922565;
-	bh=sAHdfNw0kG5WiL0P2VOR703hyYGefPqpaIWPueRnFhw=;
+	s=default; t=1555923066;
+	bh=uoIPXQZ39aqXDfcwgrnP434WXGGy7qcxx/EjBzIHMrE=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=TdWme70BldflP8pCiuxy4eD0zTpFry6OjErkfcvSTw2SWIT8mZXh0oMKAkHQ4kqcm
-	 rCCVDxU8M2IDXlMyNjdBR076Mpncd3mETx+n9YXkZCauJZvU7OdSxhE47v3gAToy5U
-	 yKPET+bUWblygKJrmp1q2k4lRwetLpm57vU1x/VA=
+	b=j9+pyfHamYGOkP+Vp8FSgMs9/GmUY36jB7MryF64NBQbS9zjnHW1zlMmxagvuKgB+
+	 yfNJMiqW/pcMd1EjGOkD4vBvN9Cg/CDxRCqOYlYNpSJ9UMQbqetwl4OQAJai+xkAQS
+	 oO6FAe/KGon8GCBeExc8bs+2ja1WzOHzy3iJRlVE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726801AbfDVImo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Apr 2019 04:42:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44628 "EHLO mail.kernel.org"
+        id S1726698AbfDVIvG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Apr 2019 04:51:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726434AbfDVImo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Apr 2019 04:42:44 -0400
+        id S1725914AbfDVIvG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Apr 2019 04:51:06 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BDC5820857;
-        Mon, 22 Apr 2019 08:42:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 865E720857;
+        Mon, 22 Apr 2019 08:51:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1555922563;
-        bh=sAHdfNw0kG5WiL0P2VOR703hyYGefPqpaIWPueRnFhw=;
+        s=default; t=1555923064;
+        bh=uoIPXQZ39aqXDfcwgrnP434WXGGy7qcxx/EjBzIHMrE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wUokD82fU4qM1c4ce/z1x8LDCQmVJZnFGIUobS5Trpfq4BV43Pnca4fWLS9lvPKt/
-         AT83y9InH+IhA4lHk1hZYsJ9mSis/dwuq/AmP753Eaje4iX2XoVSmmd8CqkrZY6zOR
-         1OF5DOQ6u/JLVD9t27Dm9MmMpOyI/JD47zZX7QdQ=
-Date:   Mon, 22 Apr 2019 09:42:36 +0100
+        b=XgGcRHSRxrfBwDTqvpLDcKIZFHEYEyxBxhDFQFclEMkKfZMIkWCgKqgIOfa3KbmQn
+         whSyreDQtbSq6qm8wqQ7BaCVmkefKyMgifP5G2XPFFq3t/yZzSQoZx/f4UferBOqBT
+         3APnmoJWXLjvnxyxPLgVOoO7Jq2ZXjj9gxZXgJ7k=
+Date:   Mon, 22 Apr 2019 09:51:00 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandre <amergnat@baylibre.com>
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, baylibre-upstreaming@groups.io,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        linux-input@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: Add PAT9125 optical tracker sensor
-Message-ID: <20190422094236.537e3a01@archlinux>
-In-Reply-To: <f8ffca5b-09a8-cad7-4561-bf1263388228@baylibre.com>
-References: <1554456870-8104-1-git-send-email-amergnat@baylibre.com>
-        <1554456870-8104-4-git-send-email-amergnat@baylibre.com>
-        <20190407112024.6297cbfa@archlinux>
-        <f8ffca5b-09a8-cad7-4561-bf1263388228@baylibre.com>
+To:     "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc:     "Song, Hongyan" <hongyan.song@intel.com>,
+        "jikos@kernel.org" <jikos@kernel.org>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] drivers: iio: Add more data field for iio driver
+ hysteresis parsing
+Message-ID: <20190422095100.59ce99af@archlinux>
+In-Reply-To: <d5085421bb3305d896930192b99c5bf84260e5c1.camel@intel.com>
+References: <1554773465-21882-1-git-send-email-hongyan.song@intel.com>
+        <20190414133615.56be4eb1@archlinux>
+        <d5085421bb3305d896930192b99c5bf84260e5c1.camel@intel.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,114 +60,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 16 Apr 2019 14:49:19 +0200
-Alexandre <amergnat@baylibre.com> wrote:
+On Tue, 16 Apr 2019 01:29:28 +0000
+"Pandruvada, Srinivas" <srinivas.pandruvada@intel.com> wrote:
 
-> Hello Jonathan,
+> On Sun, 2019-04-14 at 13:36 +0100, Jonathan Cameron wrote:
+> > On Tue,  9 Apr 2019 09:31:04 +0800
+> > hongyan.song@intel.com wrote:
+> >   
+> > > From: Song Hongyan <hongyan.song@intel.com>
+> > > 
+> > > Add more data field support for als, incli_3d, rotation, press
+> > > hysteresis parsing. In some implementation may uses them as
+> > > sensitivity
+> > > modifier, without this change hysteresis may not be able to read
+> > > and
+> > > write.
+> > > 
+> > > Signed-off-by: Song Hongyan <hongyan.song@intel.com>  
+> > 
+> > Thanks for the patch. I'll be honest I'm lost in these descriptors
+> > sometimes!
+> > 
+> > Srinivas, could you give some input on this one?  
+> I don't see we have defined hysteresis attribute in
+> "Documentation/ABI/testing/sysfs-bus-iio" for non events.
+> The current hysteresis is taken a absolute raw value in relation to the
+> other axes in the same unit.
 > 
-> On 4/7/19 12:20, Jonathan Cameron wrote:
-> > Hi Alexandre,
-> >
-> > So I have no problem with this as an IIO driver, but for devices that
-> > are somewhat 'on the edge' I always like to get a clear answer to the
-> > question: Why not input?
-> >
-> > I would also argue that, to actually be 'useful' we would typically need
-> > some representation of the 'mechanicals' that are providing the motion
-> > being measured.  Looking at the datasheet this includes, rotating shafts
-> > (side or end on), disk edges and flat surface tracking (mouse like).
-> >
-> > That's easy enough to do with the iio in kernel consumer interface. These
-> > are similar to when we handle analog electronic front ends.
-> >
-> > I you can, please describe what it is being used for in your application
-> > as that may give us somewhere to start!
-> >
-> > + CC Dmitry and linux-input.  
+> But it is better if we add different hysteresis attributes for non
+> absolute hysteresis.
 > 
-> I developed this driver to detect the board movement which can't be 
-> detected by accelerometer (very slow motion). I admit this use case can 
-> be handled by an input, and I'm agree with you, PAT9125 driver could be 
-> an input. But, like you said, this chip is able to track different kind 
-> of motion, and additionally have an interrupt GPIO, so using it like 
-> input limit the driver potential. This chip is designed to work in 
-> industrial measurement or embedded systems, and the IIO API match with 
-> these environments, so it's the best way to exploit the entire potential 
-> of this chip.
-> 
-> As I understand (from 
-> https://www.kernel.org/doc/html/v4.12/input/event-codes.html#mice ), 
-> mouse driver must report values when the device move. This feature 
-> souldn't be mandatory for an optical tracker driver, specially for cases 
-> where user prefers to use buffer or poll only when he need data.
-> 
-> > If 1 or 2, I would suggest that you provide absolute position to
-> > Linux.  So add the value to a software counter and provide that.
-> > 32 bits should be plenty of resolution for that.  
-> I can't provide absolute position, only relative. Do you mean using 
-> input driver to do that ? If not, how is built the position data?
+> For example
+> in_xxx_hysteresis_pct_range for "Modifier: Change Sensitivity Percent
+> of Range" usage id: 310
+> in_xxx_hysteresis_pct_relative for "Modifier: Change Sensitivity
+> Percent Relative" usage id: 311
 
-Sorry, I should have been clearer on this.
-I mean absolute relative to the start point.  So on startup you assume
-absolute position is 0 and go from there.  What I can't work out is
-if the device does internal tracking, or whether each time you read
-it effectively resets it's internal counters to 0 so the next measurement
-is relative to the previous one.
+Hmm. This is indeed a corner we don't often hit.  Basically we are looking
+at a 'dead zone'.  For most IIO devices we don't do this as it is
+removing information some usecases might want.  If people want to
+do this on sensors, it's normally done using a motion detect type
+event and then reading the sensor value to find out what the motion
+was.
 
-> 
-> > Silly question for you.  What happens if you set the delta values to 0?
-> > Do we get an interrupt which is effectively data ready?
-> > If we do, you might want to think about a scheme where that is an option.
-> > As things currently stand we have a confusing interface where changing this
-> > threshold effects the buffered data output.   That should only be the
-> > case if this interface is for a trigger, not an event.  
-> 
-> I'm not sure to understand your question. Is it possible to read delta_x 
-> and delta_y = 0 in special/corner case because internal value continue 
-> to be updated after toggled motion_detect pin (used for IRQ) until 
-> values registers are read and then motion_detect pin is released:
-> 
->   * Chip move (i.e. +2 on X axis and 0 on Y axis)
->   * Motion_detect IRQ trigger and internal reg value is updated (i.e.
->     delta_x = 2 and delta_y = 0.
->   * GPIO IRQ handled but read_value isn't executed yet (timing reason)
->   * Chip move back to it origin point (i.e. -2 on X axis and 0 on Y axis)
->   * Motion_detect IRQ still low because it hasn't been reset by read
->     value and internal reg value is updated (i.e. delta_x = 0 and
->     delta_y = 0)
->   * Read_value is executed, we get delta values = 0.
-Again, I was unclear.  Is it possible to set the device to interrupt
-every time it evaluates whether motion has occured? Not only when it
-concludes that there has been some motion.  That would allow the interrupt
-to be used as a signal that the device has taken a measurement (data
-ready signal in other sensors).
-
-> 
-> > If it is actually not possible to report the two channels separately
-> > then don't report them at all except via the buffered interface and
-> > set the available scan masks so that both are on.  
-> I found a way to keep the consistency between delta x and delta y 
-> (without losing data). The first part is to reset a value only when user 
-> read it (also when it's buffered). The second part is to add the new 
-> value to the old value. With these two mechanism, X and Y will always be 
-> consistent:
-> 
->   * as possible during a move.
->   * perfectly when move is finished.
-Ah. This adding old value to a new value point is what I was getting
-at (I think) with 'absolute' position above.
-
-In industrial control for example you have absolute position by using
-limit switches to set your baseline.  Measurement devices are then
-capable of either reporting relative position, which is the movement
-since the last reading was taken, or 'absolute' position which is
-referenced to some known point.  It was this form of absolute position
-that I was suggesting you use.  If you use such a system without a
-limit switch it is normally called unreference motion.  You can do
-it but then the 0 is where ever your device was at power on.
-For some systems it doesn't actually matter (conveyor belts for
-instance where the positions you care about are between things
-on the belt, not the position of the belt itself).
+I'm not sure hysteresis is the right term to use here though.
+We aren't dealing with offsets in a threshold depending on direction,
+but rather at minimum change before reporting from the previous value
+(in either direction).  Mind you I'm not quite sure what the right
+term would be!  It may be that sensitivity is the term to use. In
+some ways this is very like reducing the bit depth of the sensor,
+which is what that term brings to mind for me.
 
 Thanks,
 
@@ -176,8 +117,133 @@ Jonathan
 
 > 
 > 
-> Regards,
+> Thanks,
+> Srinivas
 > 
-> Alexandre
 > 
+> 
+> > 
+> > I will note however, that from a quick look we tend to air these
+> > queries with dev_dbg entries.  We should be consistent with these new
+> > ones
+> > as well.attaributes
+> > 
+> > Thanks,
+> > 
+> > Jonathan  
+> > > ---
+> > >  drivers/iio/light/hid-sensor-als.c            | 8 ++++++++
+> > >  drivers/iio/orientation/hid-sensor-incl-3d.c  | 8 ++++++++
+> > >  drivers/iio/orientation/hid-sensor-rotation.c | 7 +++++++
+> > >  drivers/iio/pressure/hid-sensor-press.c       | 8 ++++++++
+> > >  include/linux/hid-sensor-ids.h                | 1 +
+> > >  5 files changed, 32 insertions(+)attaributes
+> > > 
+> > > diff --git a/drivers/iio/light/hid-sensor-als.c
+> > > b/drivers/iio/light/hid-sensor-als.c
+> > > index 94f3325..bb19178 100644
+> > > --- a/drivers/iio/light/hid-sensor-als.c
+> > > +++ b/drivers/iio/light/hid-sensor-als.c
+> > > @@ -271,6 +271,14 @@ static int als_parse_report(struct
+> > > platform_device *pdev,
+> > >  			st->common_attributes.sensitivity.index,
+> > >  			st->common_attributes.sensitivity.report_id);
+> > >  	}
+> > > +	if (st->common_attributes.sensitivity.index < 0) {
+> > > +		sensor_hub_input_get_attribute_info(hsdev,
+> > > +			HID_FEATURE_REPORT, usage_id,
+> > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_RE
+> > > L_PCT |
+> > > +			HID_USAGE_SENSOR_LIGHT_ILLUM,
+> > > +			&st->common_attributes.sensitivity);
+> > > +	}
+> > > +
+> > >  	return ret;
+> > >  }
+> > >  
+> > > diff --git a/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > b/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > index bdc5e45..7da1e3f 100644
+> > > --- a/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > +++ b/drivers/iio/orientation/hid-sensor-incl-3d.c
+> > > @@ -305,6 +305,14 @@ static int incl_3d_parse_report(struct
+> > > platform_device *pdev,
+> > >  			st->commpcton_attributes.sensitivity.index,
+> > >  			st->common_attributes.sensitivity.report_id);
+> > >  	}
+> > > +	if (st->common_attributes.sensitivity.index < 0) {
+> > > +		sensor_hub_input_get_attribute_info(hsdev,
+> > > +			HID_FEATURE_REPORT, usage_id,
+> > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_AB
+> > > S |
+> > > +			HID_USAGE_SENSOR_ORIENT_TILT,
+> > > +			&st->common_attributes.sensitivity);
+> > > +	}
+> > > +
+> > >  	return ret;
+> > >  }
+> > >  
+> > > diff --git a/drivers/iio/orientation/hid-sensor-rotation.c
+> > > b/drivers/iio/orientation/hid-sensor-rotation.c
+> > > index a69db20..201e320 100644
+> > > --- a/drivers/iio/orientation/hid-sensor-rotation.c
+> > > +++ b/drivers/iio/orientation/hid-sensor-rotation.c
+> > > @@ -229,6 +229,13 @@ static int dev_rot_parse_report(struct
+> > > platform_device *pdev,
+> > >  			st->common_attributes.sensitivity.index,
+> > >  			st->common_attributes.sensitivity.report_id);
+> > >  	}
+> > > +	if (st->common_attributes.sensitivity.index < 0) {
+> > > +		sensor_hub_input_get_attribute_info(hsdev,
+> > > +			HID_FEATURE_REPORT, usage_id,
+> > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_AB
+> > > S |
+> > > +			HID_USAGE_SENSOR_ORIENT_QUATERNION,
+> > > +			&st->common_attributes.sensitivity);
+> > > +	}
+> > >  
+> > >  	return 0;
+> > >  }
+> > > diff --git a/drivers/iio/pressure/hid-sensor-press.c
+> > > b/drivers/iio/pressure/hid-sensor-press.c
+> > > index d7b1c00..bf5d2ac 10064pct4
+> > > --- a/drivers/iio/pressure/hid-sensor-press.c
+> > > +++ b/drivers/iio/pressure/hid-sensor-press.c
+> > > @@ -250,6 +250,14 @@ static int press_parse_report(struct
+> > > platform_device *pdev,
+> > >  			st->common_attributes.sensitivity.index,
+> > >  			st->common_attributes.sensitivity.report_id);
+> > >  	}
+> > > +	if (st->common_attributes.sensitivity.index < 0) {
+> > > +		sensor_hub_input_get_attribute_info(hsdev,
+> > > +			HID_FEATURE_REPORT, usage_id,
+> > > +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_AB
+> > > S |
+> > > +			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE,
+> > > +			&st->common_attributes.sensitivity);
+> > > +	}
+> > > +
+> > >  	return ret;
+> > >  }
+> > >  
+> > > diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-
+> > > sensor-ids.h
+> > > index 76033e0..a875b9be 100644
+> > > --- a/include/linux/hid-sensor-ids.h
+> > > +++ b/include/linux/hid-sensor-ids.h
+> > > @@ -158,6 +158,7 @@
+> > >  /* Per data field properties */
+> > >  #define HID_USAGE_SENSOR_DATA_MOD_NONE				
+> > > 	0x00
+> > >  #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		
+> > > 0x1000
+> > > +#define
+> > > HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT            0xE
+> > > 000
+> > >  
+> > >  /* Power state enumerations */
+> > >  #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM	0x20085
+> > > 0  
+> > 
+> >   
 
