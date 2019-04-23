@@ -2,286 +2,126 @@ Return-Path: <SRS0=ocBO=SZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8ECBC10F14
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 10:38:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12B63C10F14
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 10:40:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 87E9C2175B
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 10:38:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D59F021773
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 10:40:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="Uf0FgZk6"
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="IBBBruDT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727360AbfDWKi5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Apr 2019 06:38:57 -0400
-Received: from chill.innovation.ch ([216.218.245.220]:52808 "EHLO
-        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726443AbfDWKi4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 06:38:56 -0400
-Date:   Tue, 23 Apr 2019 03:38:55 -0700
-DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch 9BCE364011E
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
-        s=default; t=1556015935;
-        bh=d7xRO/KN7FvaGPgzvAwtJyRu2qLz0s6Oj6lPkNWMBrM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Uf0FgZk61OouxJqjMlusga3wP3jB2QFNZ+zlSmAHQeDj1NbDL4QkML1Y9jEvfLpLz
-         h5kIf2JdGwcEe7rjQn7ZPsRr312ga2rzzbVYIyh9rng7vI7KL7vR9Zhh+/eO2fBgrt
-         JKyNVT6XCYYYesRX0waluYem4kmsC30V3SMJdq0rpXs0eX9KgZqnKUPGBo1pqzNJOc
-         twZW+GsY6byQyda3nEE2fqsitU66N6kxyWhiwG+s5qxa5sV9Muli+LbAp/32VpGRQT
-         +azecNB/STGRr+yxypq6PzdJSeTfRePaeiBOvX48d/PJAp1Bbj6R/gDvS3t6rmGpqx
-         eH8L7gWKYk+Iw==
-From:   "Life is hard, and then you die" <ronald@innovation.ch>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 3/3] iio: light: apple-ib-als: Add driver for ALS on
- iBridge chip.
-Message-ID: <20190423103855.GB12528@innovation.ch>
-References: <20190422031251.11968-1-ronald@innovation.ch>
- <20190422031251.11968-4-ronald@innovation.ch>
- <alpine.DEB.2.21.1904221101420.964@vps.pmeerw.net>
- <20190422130138.336fb227@archlinux>
+        id S1727225AbfDWKk4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Apr 2019 06:40:56 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44030 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727180AbfDWKk4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 06:40:56 -0400
+Received: by mail-wr1-f65.google.com with SMTP id k17so19537165wrx.10
+        for <linux-iio@vger.kernel.org>; Tue, 23 Apr 2019 03:40:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=btTL9Src8OMHiBtJIGeS5dbzyMMa/WPeso/IDgSPv7Q=;
+        b=IBBBruDTaV2QUV09lzrP/sppkCNHJfChNXQQduOHBPduwO+bGelFjdjC2opy07gnt+
+         LgAFX9YucxAixu3ZWzEcRy3HAgJrJrRS/VYToHENXWKWBVhAmtu6yLpKPJozdXQvHz4S
+         kRJ3myAL/Xb1QcaUgTJ8JTAM1N8PiRkmUOziFLVelp7ZAob+kI7X561qEQ/BxXScqEX+
+         OmEUcyBQ1Sp0/zlnw1X8osytDv6sfKreV89dHrm0wnSmvIzpOZhozuFl0O4wyeA1wrYw
+         mzfL7FLrY9QfX8Qi3LmpLD6jZwuNM62j3am5xB3/bgS3TRpKDXU8rlAJftrDKJVIHsox
+         Ai8Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=btTL9Src8OMHiBtJIGeS5dbzyMMa/WPeso/IDgSPv7Q=;
+        b=aJwTJFDJF/ZF8RyU9FwecMPFY7p1SY6Q24npb2oLH6IefpGROlX7/kKHonew3r1Pj8
+         3Hxl4pgJrVgcWhffnmn3MYAQbvKyekAavQeW/Qf0i5Meg+kPplGKh1IcBy2poquj3i8U
+         hiq6wcdc3zyzgBULthhMqCFamoml1qbaYyvRyYGvsG/Q20CVrZbtG1O0su7GwHEDA7YH
+         95LoNgeyAIQ6Rs8fbl9Fvm9QUORMPGyPOEu9nsacwKMKfh7eJKNkqNTh2zDhaUakHhVp
+         QJnjXKCxmn1wDeJYtJTNrqqJdDKC50sfG2bAevNMBR0Znai2h3wwRhO0zDh9KWzuu5IO
+         6kUw==
+X-Gm-Message-State: APjAAAWuUg8NhsDtG9z83dCYU+d0OcFJSmzl/LzeN9nXY3RIPU5h8Aew
+        EWdLbj512zXFIZiWY4hx5u1Gvg==
+X-Google-Smtp-Source: APXvYqyYls1f85rWQ5VTem9Pji6VUfzQIQo2XWp6L/YMoLXfEkfRJOvgN3J4GF4mACN1GYUkrdiqcw==
+X-Received: by 2002:adf:e78e:: with SMTP id n14mr3904430wrm.21.1556016054381;
+        Tue, 23 Apr 2019 03:40:54 -0700 (PDT)
+Received: from localhost.localdomain ([51.15.160.169])
+        by smtp.googlemail.com with ESMTPSA id y5sm13329421wrw.23.2019.04.23.03.40.53
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Tue, 23 Apr 2019 03:40:53 -0700 (PDT)
+From:   Alexandre Mergnat <amergnat@baylibre.com>
+To:     robh+dt@kernel.org, mark.rutland@arm.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        baylibre-upstreaming@groups.io,
+        Alexandre Mergnat <amergnat@baylibre.com>
+Subject: [PATCH v2 0/3] Add PAT9125 optical tracker driver
+Date:   Tue, 23 Apr 2019 10:40:43 +0000
+Message-Id: <1556016046-31231-1-git-send-email-amergnat@baylibre.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190422130138.336fb227@archlinux>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+PixArt Imaging PAT9125 is a miniature low power optical navigation chip using
+LASER light source enabling digital surface tracking.
 
-  Hi Jonathan, Peter,
+This device driver use IIO API to provide ponctual and/or buffered data.
+The data is the delta value between two position traveled, depend on
+CPI (Counts Per Inch) resolution setting chosen. The retrived data is
+composed by two values, delta on the X and Y axis.
 
-On Mon, Apr 22, 2019 at 01:01:38PM +0100, Jonathan Cameron wrote:
-> On Mon, 22 Apr 2019 11:17:27 +0200 (CEST)
-> Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
-> 
-> > On Sun, 21 Apr 2019, Ronald Tschalär wrote:
-> > 
-> > > On 2016/2017 MacBook Pro's with a Touch Bar the ALS is attached to,
-> > > and exposed via the iBridge device. This provides the driver for that
-> > > sensor.  
-> > 
-> > some comments below inline
-> I'll 'nest' on Peter's review to avoid repetition.
-> 
-> A few additional comments inline.
+The devece support configuration through module parameter interface.
 
-Thank you both for your reviews. I've applied most of your
-suggestions, so I'm limiting my responses below to just those places
-where I need further clarification or can provide some answers.
+This patchset :
+- Update vendor prefix
+- Add the bindings for this device
+- Add the device driver
+- Add directory for optical tracker devices
 
-[snip]
-> > > +static int appleals_read_raw(struct iio_dev *iio_dev,
-> > > +			     struct iio_chan_spec const *chan,
-> > > +			     int *val, int *val2, long mask)
-> > > +{
-> > > +	struct appleals_device *als_dev =
-> > > +				*(struct appleals_device **)iio_priv(iio_dev);
-> > > +	__s32 value;
-> > > +	int rc;
-> > > +
-> > > +	*val = 0;
-> > > +	*val2 = 0;  
-> > 
-> > no need to set these here
-> > 
-> > > +
-> > > +	switch (mask) {
-> > > +	case IIO_CHAN_INFO_RAW:
-> > > +	case IIO_CHAN_INFO_PROCESSED:
-> > > +		*val = appleals_get_field_value(als_dev, als_dev->illum_field);
-> 
-> How can one read by both processed and raw?
+Change since v1:
+- Fix typo
+- Rename some defines / variables
+- Remove I2C client from driver structure
+- Change type of delta_x and delta_y from s16 to s32 to simplify signed operations
+- Add module parameter for axis resolution
+- Replace "IIO_MOD_X_AND_Y" by "IIO_MOD_X" and "IIO_MOD_Y"
+- Add sign extention macro
+- Improve read value algorithm to avoid data loss
+- Implement a trigger handler function which can work with any IIO trigger, independently of it own GPIO IRQ, to match with IIO requirement / behavior
+- Replace iio push event function by iio trigger poll in GPIO IRQ handler
+- Use triggered_buffer helpers to replace kfifo use, setup buffer, implement enable/disable setup buffer operations, IIO trigger allocation and reenable operations
+- Remove useless "goto"
+- Change GPIO IRQ handler from planified thread to IRQ thread
+- Change GPIO IRQ trigger from low level and one shot to falling edge
+- Add device unregister and buffer cleanup to driver remove function
 
-From my understanding, processed is a converted and normalized value
-of raw? But since the raw value is already in Lux the processed value
-is then the same. Furthermore, looking at userspace apps that read
-these values (e.g. iio-sensor-proxy, lightsd) they seem to be all over
-the map in terms of what sysfs entries they read:
-in_illuminance_input, in_intensity_both_raw, etc. So I figured
-providing both would provide maximal compatibility.
+Alexandre Mergnat (3):
+  dt-bindings: Add pixart vendor
+  dt-bindings: iio: ot: Add docs pat9125
+  iio: Add PAT9125 optical tracker sensor
 
-What then is currently the preferred approach here?
+ .../devicetree/bindings/iio/ot/pat9125.txt    |  18 +
+ .../devicetree/bindings/vendor-prefixes.txt   |   1 +
+ drivers/iio/Kconfig                           |   1 +
+ drivers/iio/Makefile                          |   1 +
+ drivers/iio/ot/Kconfig                        |  16 +
+ drivers/iio/ot/Makefile                       |   6 +
+ drivers/iio/ot/pat9125.c                      | 487 ++++++++++++++++++
+ 7 files changed, 530 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/ot/pat9125.txt
+ create mode 100644 drivers/iio/ot/Kconfig
+ create mode 100644 drivers/iio/ot/Makefile
+ create mode 100644 drivers/iio/ot/pat9125.c
 
-> > > +	case IIO_CHAN_INFO_HYSTERESIS:
-> > > +		if (val == APPLEALS_DYN_SENS) {
-> > > +			if (als_dev->cur_hysteresis != APPLEALS_DYN_SENS) {
-> > > +				als_dev->cur_hysteresis = val;
-> > > +				illum = appleals_get_field_value(als_dev,
-> > > +							als_dev->illum_field);
-> > > +				appleals_update_dyn_sensitivity(als_dev, illum);
-> 
-> There is some debate in another thread on whether dynamic sensitivity can be
-> mapped to hysteresis or not...
-
-Is that the "drivers: iio: Add more data field for iio driver
-hysteresis parsing" thread?
-
-In any case, I'm using the value 0 here to indicate that the
-pseudo-percent-relative change sensitivity should be used. Better
-suggestions certainly welcome.
-
-[snip]
-> > > +static const struct iio_chan_spec appleals_channels[] = {
-> > > +	{
-> > > +		.type = IIO_INTENSITY,
-> > > +		.modified = 1,
-> > > +		.channel2 = IIO_MOD_LIGHT_BOTH,
-> > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> > > +			BIT(IIO_CHAN_INFO_RAW),
-> Why return both processed and raw?  We don't generally allow that in IIO
-> (there are a few historical exceptions due to us getting it wrong the
-> first time).
-
-Ok. But which should be used then, especially in view of the fact that
-different user-space apps/daemons appear to use different values?
-
-[snip]
-> > > +static int appleals_config_iio(struct appleals_device *als_dev)
-[snip]
-> > > +	iio_dev = iio_device_alloc(sizeof(als_dev));  
-> > 
-> > how about using the devm_ variants?
-
-The problem is that there is no device with the proper lifetime here.
-In particular we can't use hid_device (the only struct device
-available here) because the instances of those can (and do) outlive
-the module. This is a consequence of the hid-driver demuxing: e.g.
-when this als module is unloaded, the hid_device is still in use by
-the touchbar driver, and if this als module is then loaded again it
-will get associated with that same hid_device again.
-
-[snip]
-> > > +	rc = iio_device_register(iio_dev);
-> > > +	if (rc) {
-> > > +		dev_err(als_dev->log_dev, "failed to register iio device: %d\n",
-> > > +			rc);
-> > > +		goto unreg_iio_trig;
-> > > +	}
-> > > +
-> > > +	als_dev->iio_dev = iio_dev;
-> 
-> I really don't like nest of pointers going on in here.  I haven't dug
-> down to check if any of them can be remove, but they are definitely
-> ugly to deal with.
-
-I'm not sure how this can be avoided: *iio_dev is allocated by
-iio_device_alloc(), and this is just storing that pointer in our data
-structure for this als device.
-
-[snip]
-> > > +static int appleals_probe(struct hid_device *hdev,
-> > > +			  const struct hid_device_id *id)
-> > > +{
-> > > +	struct appleals_device *als_dev =
-> > > +		appleib_get_drvdata(hid_get_drvdata(hdev),
-> > > +				    &appleals_hid_driver);
-> > > +	struct hid_field *state_field;
-> > > +	struct hid_field *illum_field;
-> > > +	int rc;
-> > > +
-> > > +	/* find als fields and reports */
-> > > +	state_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-> > > +					    HID_USAGE_SENSOR_PROP_REPORT_STATE);
-> > > +	illum_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-> > > +					     HID_USAGE_SENSOR_LIGHT_ILLUM);
-> > > +	if (!state_field || !illum_field)
-> > > +		return -ENODEV;
-> > > +
-> > > +	if (als_dev->hid_dev) {
-> > > +		dev_warn(als_dev->log_dev,
-> > > +			 "Found duplicate ambient light sensor - ignoring\n");
-> 
-> I'll bite.  So how can this actually happen?  What fundamentally breaks in
-> your model if there really are two?  Can you fix whatever that is so
-> as to drop this handling?
-
-This should indeed never happen - the check is just defensive
-programming, in case either some new device in some new model appears,
-or due to some bug somewhere.
-
-To actually handle this I'd need to split up appleals_device into a
-per iBridge-device part and a per ALS-device part, and allow multiple
-ALS-device parts. This is certainly doable, but seemed a bit overkill
-for something that is unlikely to ever be needed.
-
-[snip]
-> > > +static void appleals_remove(struct hid_device *hdev)
-> > > +{
-> > > +	struct appleals_device *als_dev =
-> > > +		appleib_get_drvdata(hid_get_drvdata(hdev),
-> > > +				    &appleals_hid_driver);
-> > > +  
-> > 
-> > could be a lot less if devm_ were used?
-
-Agreed, but see explanation above of why this can't be used.
-
-> > > +	if (als_dev->iio_dev) {
-> > > +		iio_device_unregister(als_dev->iio_dev);
-> > > +
-> > > +		iio_trigger_unregister(als_dev->iio_trig);
-> > > +		iio_trigger_free(als_dev->iio_trig);
-> > > +		als_dev->iio_trig = NULL;
-> 
-> I would be decidedly worried if you actually have any paths
-> where setting these to NULL do anything useful. By the time
-> we get here we should absolutely 'know' nothing will touch
-> these pointers.
-
-I guess I was being overly paranoid here. I've removed these now.
-
-> It is these that are blocking Peter's suggestion of using
-> devm to clean all of this up automatically for you.
-
-No, that is for a different reason - see above.
-
-[snip]
-> > > +static int appleals_platform_probe(struct platform_device *pdev)
-> > > +{
-> > > +	struct appleib_platform_data *pdata = pdev->dev.platform_data;
-> > > +	struct appleib_device *ib_dev = pdata->ib_dev;
-> > > +	struct appleals_device *als_dev;
-> > > +	int rc;
-> > > +
-> > > +	als_dev = kzalloc(sizeof(*als_dev), GFP_KERNEL);
-> > > +	if (!als_dev)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	als_dev->ib_dev = ib_dev;
-> > > +	als_dev->log_dev = pdata->log_dev;
-> > > +
-> > > +	rc = appleib_register_hid_driver(ib_dev, &appleals_hid_driver, als_dev);
-> 
-> Hmm. This is all a bit odd.  We register a platform device, to call it's driver
-> so that it can then register another driver?  I'll let Lee comment on that but
-> it does seem overly complex.
-
-"Normally" this call would be to hid_register_driver(). However, as I
-tried to explain in the cover letter and module comments, at least one
-of the hid_device's needs to be shared by both this als driver and the
-touchbar driver. But the linux device/driver architecture does not
-allow multiple drivers to be attached to a single device. Hence the
-mfd driver implements demuxing hid_driver that allows multiple
-hid_drivers to be registered for a single hid_device. And this is why
-we register our hid_driver with this demuxing driver here instead of
-directly via hid_register_driver().
-
-Does this make sense?
-
-
-  Cheers,
-
-  Ronald
+-- 
+2.17.1
 
