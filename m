@@ -7,53 +7,53 @@ X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F81C10F03
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 20:01:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F31F9C10F03
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 20:03:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2E92D217D9
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 20:01:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9C396217D9
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 20:03:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EOp/zL5d"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LtYRBCfJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbfDWUA7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Apr 2019 16:00:59 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:42716 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725945AbfDWUA7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 16:00:59 -0400
-Received: by mail-qt1-f194.google.com with SMTP id p20so17611121qtc.9;
-        Tue, 23 Apr 2019 13:00:58 -0700 (PDT)
+        id S1727159AbfDWUD5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Apr 2019 16:03:57 -0400
+Received: from mail-qt1-f193.google.com ([209.85.160.193]:45354 "EHLO
+        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726043AbfDWUD4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 16:03:56 -0400
+Received: by mail-qt1-f193.google.com with SMTP id b3so2746149qtc.12;
+        Tue, 23 Apr 2019 13:03:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=2+jYwIIJskvSchM6IUs57nY4JOMJB01rNSoAHmHrFf0=;
-        b=EOp/zL5dnW6Zb1A5e0NWvYRxjotxnuXKRglqtjg662/9nXVrwE0Kpf/7JOZQzHeqZZ
-         ARjY5nKL4KPwQvJiqi8o5K5/CA3LEPZIt+bHlVSDwscyzvV+A03luFWFLm5a0CToP9cv
-         2xD6L3e95j3ag/+mYnboYW7mrzjV+bFoJys8BcNJv8tdBLaX4Hs8ShrIDY0aOLpfK6OW
-         r6UGdSQ1ggjtIIA0BJ3yCfy8os8/Gcy/qy3AYeUZq2ABbRHvvXExO7y/nLUe9aBzdBjo
-         y3whXeKbztCu87NVbJIBxiG9ZQ7TL/GrJNuDcZ+PP517dUbGFIQ+AnNMv0/r8EaUVuZ0
-         N4Dw==
+        b=LtYRBCfJm+W/eiF6AHoCNJ/BPPmfE+hSIivtEm78Ta+cPsJffxw1K41OxKh5AWLkP8
+         /rJ7Znncm5GLzqOt1rNMu0AWzhGp7bZl9Tse6Lm9DT0pyMicKvCMMc9jT2BX57W7Ir0A
+         XCd+fJbCpaucxnH83YBUfvus4Xfb18ML2nZ4KW0RRaLSUCNXvaG9OizGiNzYg31DXaJV
+         qwl4C6KojqBn8X+BCswTJJhChBgvm999+Ce+dBqukEV5OD5yGn85Mua9oZmjyZDHbFE0
+         J0JJwkdigyBY8+4ZjRTnUuwTo4MRarpI3E+wUxhlDgkHrMi20UkMnNgZEC1PXJSdaTKf
+         rYtQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
         bh=2+jYwIIJskvSchM6IUs57nY4JOMJB01rNSoAHmHrFf0=;
-        b=Pd+0a/oI49dcCw/wT2duF3b+5NyXZeh3IbRVp3ZUIYgSQWrIx0aeGJ3ZyTOzGEdX7k
-         ranRo4dMWvnrzG+v7FaCUScXYosPxL46NVz//sqT27ya9Nk4JTWa/RdYKASLiQ1ud91a
-         xYz7P4ZdGvr+gin1wEOzCXioTpIRr79fMi/NLsjI6S1+sp1tX0UsPtRKS55p0/rdFb/K
-         DClJ5DsES+H9LroGS1s0m1BCH/Fh0dhDN/5SWnbotDuMZ5ei9DcJobbnOWq14Jol83vc
-         eWBa8mFh8uwZpCjnUvDrF0U5zJF4t1VhxV1ajuQ+rBqAgl1aV4lXq9VaSsZ01v5QpfX5
-         XV6Q==
-X-Gm-Message-State: APjAAAXT+sSle6qkXzPh59El77x2G4r6pO/m6xTZeDZRc79DyGkOfJJh
-        l757M4ch3YIHb7Tq/1g3lKw=
-X-Google-Smtp-Source: APXvYqzqtp+IF85pFG5XRyNNvcOcZ+W9kZmc1AjvEEerB6fXyfzM28tfvrIyRNc6SJqz9CvHZiKSvA==
-X-Received: by 2002:ac8:362e:: with SMTP id m43mr2919611qtb.339.1556049657509;
-        Tue, 23 Apr 2019 13:00:57 -0700 (PDT)
+        b=EMOPYTpQxU8WbQtphTQsRdgMsl5btDV06uSHGQ7Xk2t8ynBE+2Lybm9qAVW43lLmtb
+         E+z92md/PtOloNJrQYs83rGldmkHpfcWKp2wJKkDGPYhFsiyPeSOL785bhjSjxKsTs0g
+         he2ceMxRS7gQPORsKUWM6tlRkOS4QsL6RSUnm8Y+VF/1K8dIIJNAaSQhmilYVvXJ9uHg
+         QgFflJjoWKrMrYKjT5LkUZzbk8ZXdmEdL+rmfqVHE3sgN48mMtP7jRyi2meGch0IEnVq
+         kFh4ZnYUf7Wgr5puU4fNkJrvvJjXPaKGjDMpzUjRMZexqFE5CY0+UawZ4d6V+a79QZPO
+         15Yw==
+X-Gm-Message-State: APjAAAWDXq01K/Lwel/ZNh+1g4eJmrIZd9rPptE6o3JPlVKTaORziBUr
+        JgkZtLUqQu2tzeLyfZm04Qj/gV+ni/KGOg==
+X-Google-Smtp-Source: APXvYqw55bqCeqFlTVefcZUGWQiJ+bTFctY4SEEFcJTdGYhswuoWDYjmyaq2sstj8KWzUQbuHreQcg==
+X-Received: by 2002:ac8:524d:: with SMTP id y13mr18434189qtn.99.1556049834855;
+        Tue, 23 Apr 2019 13:03:54 -0700 (PDT)
 Received: from localhost.localdomain ([2804:431:d711:b269:459f:31c5:ff33:8175])
-        by smtp.gmail.com with ESMTPSA id 50sm5312161qtn.73.2019.04.23.13.00.55
+        by smtp.gmail.com with ESMTPSA id y64sm9374419qkd.71.2019.04.23.13.03.52
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Tue, 23 Apr 2019 13:00:57 -0700 (PDT)
+        Tue, 23 Apr 2019 13:03:54 -0700 (PDT)
 From:   =?UTF-8?q?Camylla=20Gon=C3=A7alves=20Cantanheide?= 
         <c.cantanheide@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
@@ -62,9 +62,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel-usp@googlegroups.com
-Subject: [PATCH] Wqiio: adc: ad7766: Change alignment to match paranthesis
-Date:   Tue, 23 Apr 2019 17:00:45 -0300
-Message-Id: <20190423200045.6992-1-c.cantanheide@gmail.com>
+Subject: [PATCH v2] iio: adc: ad7766: Change alignment to match paranthesis
+Date:   Tue, 23 Apr 2019 17:03:44 -0300
+Message-Id: <20190423200344.7183-1-c.cantanheide@gmail.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
