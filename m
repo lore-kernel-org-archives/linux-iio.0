@@ -2,98 +2,78 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E33C10F03
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 00:51:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C68EBC10F03
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 01:11:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DAB62218D2
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 00:51:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0E0D2148D
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 01:11:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728831AbfDXAvi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Apr 2019 20:51:38 -0400
-Received: from mailgw02.mediatek.com ([1.203.163.81]:60373 "EHLO
+        id S1728536AbfDXBLX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Apr 2019 21:11:23 -0400
+Received: from mailgw02.mediatek.com ([210.61.82.184]:50125 "EHLO
         mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728536AbfDXAvi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 20:51:38 -0400
-X-UUID: 2214224984e14755960ec97b15db1950-20190424
-X-UUID: 2214224984e14755960ec97b15db1950-20190424
-Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        with ESMTP id S1726840AbfDXBLW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 21:11:22 -0400
+X-UUID: 222f0c07db1444ad9b77637cef47a9cb-20190424
+X-UUID: 222f0c07db1444ad9b77637cef47a9cb-20190424
+Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by mailgw02.mediatek.com
         (envelope-from <zhiyong.tao@mediatek.com>)
-        (mailgw01.mediatek.com ESMTP with TLS)
-        with ESMTP id 1988789052; Wed, 24 Apr 2019 08:51:33 +0800
-Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
- (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 24 Apr
- 2019 08:51:32 +0800
-Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
- (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Wed, 24 Apr 2019 08:51:31 +0800
-Message-ID: <1556067091.21970.16.camel@mhfsdcap03>
-Subject: Re: [PATCH 1/2] dt-bindings: adc: mt8183: add binding document
+        (mhqrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 1747827543; Wed, 24 Apr 2019 09:11:17 +0800
+Received: from mtkcas09.mediatek.inc (172.21.101.178) by
+ mtkmbs02n1.mediatek.inc (172.21.101.77) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Wed, 24 Apr 2019 09:11:16 +0800
+Received: from localhost.localdomain (10.17.3.153) by mtkcas09.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Wed, 24 Apr 2019 09:11:15 +0800
 From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
-To:     Matthias Brugger <matthias.bgg@gmail.com>
-CC:     <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
+To:     <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
         <yingjoe.chen@mediatek.com>, <sean.wang@mediatek.com>,
         <erin.lo@mediatek.com>, <eddie.huang@mediatek.com>,
-        <s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
+        <matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Date:   Wed, 24 Apr 2019 08:51:31 +0800
-In-Reply-To: <4c7f244f-4111-9e28-5134-8f108b1dbafa@gmail.com>
-References: <20190422115417.16751-1-zhiyong.tao@mediatek.com>
-         <20190422115417.16751-2-zhiyong.tao@mediatek.com>
-         <4c7f244f-4111-9e28-5134-8f108b1dbafa@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
-Content-Transfer-Encoding: 7bit
+        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: [PATCH v2 1/2] dt-bindings: adc: mt8183: add binding document
+Date:   Wed, 24 Apr 2019 09:11:11 +0800
+Message-ID: <20190424011112.14283-2-zhiyong.tao@mediatek.com>
+X-Mailer: git-send-email 2.12.5
+In-Reply-To: <20190424011112.14283-1-zhiyong.tao@mediatek.com>
+References: <20190424011112.14283-1-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
+Content-Type: text/plain
 X-MTK:  N
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 2019-04-23 at 16:35 +0200, Matthias Brugger wrote:
-> 
-> On 22/04/2019 13:54, Zhiyong Tao wrote:
-> > The commit adds mt8183 compatible node in binding document.
-> > 
-> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > index 0df9befdaecc..05bc79d8483c 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > @@ -15,6 +15,7 @@ Required properties:
-> >      - "mediatek,mt2712-auxadc": For MT2712 family of SoCs
-> >      - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
-> >      - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
-> > +    - "mediatek,mt8183-auxadc": For MT8183 family of SoCs
-> >    - reg: Address range of the AUXADC unit.
-> >    - clocks: Should contain a clock specifier for each entry in clock-names
-> >    - clock-names: Should contain "main".
-> > 
-> 
-> You are missing the logic in the driver to bind against this compatible.
-> If there is nothing different from other SoCs then you could add a compatible
-> with a fallback, like:
-> 
-> "mediatek,mt8183-auxadc", "mediatek,mt7622-auxadc": For MT8183 family of SoCs
+The commit adds mt8183 compatible node in binding document.
 
-==> Thanks for your suggestion. In v2, we will add the comment here:
-- "mediatek,mt8183-auxadc", "mediatek,mt8173-auxadc": For MT8183 family
-of SoCs.
+Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+---
+ Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
-> Regards,
-> Matthias
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+index 0df9befdaecc..936a0b4666da 100644
+--- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+@@ -15,6 +15,7 @@ Required properties:
+     - "mediatek,mt2712-auxadc": For MT2712 family of SoCs
+     - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
+     - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
++    - "mediatek,mt8183-auxadc", "mediatek,mt8173-auxadc": For MT8183 family of SoCs
+   - reg: Address range of the AUXADC unit.
+   - clocks: Should contain a clock specifier for each entry in clock-names
+   - clock-names: Should contain "main".
+-- 
+2.12.5
 
