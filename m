@@ -2,175 +2,314 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E537EC10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 16:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48DDDC10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:13:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B27D3208E4
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 16:00:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07659218B0
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:13:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556121620;
-	bh=oji+Wi53ymhYmIKY89XzMnHdg2QBdDr51Mdt9eRMP7U=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=q8u9Dhtb2pFZVU+26P9TiLHOAui0LdhVgH1VVsbR/QwBD8yT9SObDfJ45r9B93vtw
-	 ZZg06WnG+b7tCSdD3ViIQ/QZw9d3IvdDT7dxkUD2i9ZAs2spb6+sCrrk74BY1jjugS
-	 G5VEIGP96D/MdPDFhcGxUjjuNU50j1qeQpvqE9EQ=
+	s=default; t=1556133205;
+	bh=Q7yKTIdFqDsiagOItbYFdwocuyo/gHt+f/LfswWZbm8=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=mu8084XY1jMRJl/lJhUTAMTlagQwfUAzeqaO04qPPXrc7JzE2z+FtD2N+c+OVEBMM
+	 KfrpegIgtvTAdZcxdPfOMpJyTmGm0X7DfbEbEd+bcxlVxOzPxUIpi/U+bnnMEO05Rn
+	 JgGO6+3SbpIuLZ6yGGqm4o5WDMZdxpydN09xA1Pw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730841AbfDXQAU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 12:00:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60692 "EHLO mail.kernel.org"
+        id S1727184AbfDXTNY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 15:13:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52360 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730620AbfDXQAU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Apr 2019 12:00:20 -0400
-Received: from mail-qt1-f180.google.com (mail-qt1-f180.google.com [209.85.160.180])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1726531AbfDXTNY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Apr 2019 15:13:24 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8993A21901;
-        Wed, 24 Apr 2019 16:00:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 62F2A205ED;
+        Wed, 24 Apr 2019 19:13:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556121618;
-        bh=oji+Wi53ymhYmIKY89XzMnHdg2QBdDr51Mdt9eRMP7U=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=1/GYxoe4iEmHpvXmeu4J05Ia+SqyPoduXCWSWhvMb3H2DvvlYi9aBZVLfmLrc8BMc
-         UHwC89RKmeKf+AQGysdw4S5ZHm9jUDAzss9qvstDrS5jnumt8PWxREPHnQiM4yV/yr
-         1WgdJRRRrT82ElJHjIh+p3ZnLfFQzrM98xD56Dwo=
-Received: by mail-qt1-f180.google.com with SMTP id c35so6133489qtk.3;
-        Wed, 24 Apr 2019 09:00:18 -0700 (PDT)
-X-Gm-Message-State: APjAAAVGYT34PF5on5pYU1qCjqV8wEsxczVNuJbYncwnUsf7jpMKmxR7
-        sHn6fE6XiDrLl4rPL+xZgiE/rF+dFhdH6hYXuQ==
-X-Google-Smtp-Source: APXvYqzz3osG5s1bPzRj3FVPlzRNHwzG9Beg4bg28IjqhlgMoKcA/Jl+yBhva+tq30i2MynaQsH9+vHLpJ+npxX8NF4=
-X-Received: by 2002:ac8:7647:: with SMTP id i7mr25685276qtr.38.1556121617776;
- Wed, 24 Apr 2019 09:00:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190424092238.6381-1-masneyb@onstation.org> <20190424092238.6381-2-masneyb@onstation.org>
-In-Reply-To: <20190424092238.6381-2-masneyb@onstation.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Wed, 24 Apr 2019 11:00:06 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKHVdL96DVwhTnh_8rwuCGrC3Q33AbKyfT+QwxbgfHtow@mail.gmail.com>
-Message-ID: <CAL_JsqKHVdL96DVwhTnh_8rwuCGrC3Q33AbKyfT+QwxbgfHtow@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: tsl2583: convert bindings to
- YAML format
-To:     Brian Masney <masneyb@onstation.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        s=default; t=1556133203;
+        bh=Q7yKTIdFqDsiagOItbYFdwocuyo/gHt+f/LfswWZbm8=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ui07t6+ZpR2oxz307PXO/xVs9ijjJL2de8hy5M7fV0Wp4pqA0ewSOkhOhlnVTTacJ
+         BUzqOVcOVpy8j9fHd+Rrhvuskq4QDYMzjiFDoGmUzuOb2y5nwPaugUwSGp2AUDdwMI
+         0bJk29G4NslOG4rM3cDZq+ILIOeLc+RCG423cTSI=
+Date:   Wed, 24 Apr 2019 20:13:17 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Life is hard, and then you die" <ronald@innovation.ch>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
+Message-ID: <20190424201317.2a472120@archlinux>
+In-Reply-To: <20190424104718.GA31301@innovation.ch>
+References: <20190422031251.11968-1-ronald@innovation.ch>
+        <20190422031251.11968-2-ronald@innovation.ch>
+        <20190422123426.2d0b4bdf@archlinux>
+        <20190424104718.GA31301@innovation.ch>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Apr 24, 2019 at 4:22 AM Brian Masney <masneyb@onstation.org> wrote:
->
-> Convert the tsl2583 device tree bindings to the new YAML format.
->
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-> ---
-> Changes since v1:
-> - Dropped description from reg and interrupts properties.
-> - Dropped $ref from vcc-supply property.
-> - Changed 'tsl2581@29' in example to 'als-sensor@29'
->
-> I can no longer find the data sheet for this device linked on AMS's
-> site. The datasheet is still on Digikey [1], however I didn't include it
-> in the binding document since I assume that we should only link to the
-> manufacturer's website.
-> https://media.digikey.com/pdf/Data%20Sheets/Austriamicrosystems%20PDFs/TSL2581,83.pdf
->
->  .../devicetree/bindings/iio/light/tsl2583.txt | 25 ----------
->  .../bindings/iio/light/tsl2583.yaml           | 46 +++++++++++++++++++
->  2 files changed, 46 insertions(+), 25 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.txt
->  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.yaml
->
-> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.txt b/Documentation/devicetree/bindings/iio/light/tsl2583.txt
-> deleted file mode 100644
-> index 059dffa1829a..000000000000
-> --- a/Documentation/devicetree/bindings/iio/light/tsl2583.txt
-> +++ /dev/null
-> @@ -1,25 +0,0 @@
-> -* TAOS TSL 2580/2581/2583 ALS sensor
-> -
-> -Required properties:
-> -
-> -  - compatible: Should be one of
-> -               "amstaos,tsl2580"
-> -               "amstaos,tsl2581"
-> -               "amstaos,tsl2583"
-> -  - reg: the I2C address of the device
-> -
-> -Optional properties:
-> -
-> -  - interrupts: the sole interrupt generated by the device
-> -
-> -  Refer to interrupt-controller/interrupts.txt for generic interrupt client
-> -  node bindings.
-> -
-> -  - vcc-supply: phandle to the regulator that provides power to the sensor.
-> -
-> -Example:
-> -
-> -tsl2581@29 {
-> -       compatible = "amstaos,tsl2581";
-> -       reg = <0x29>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.yaml b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
-> new file mode 100644
-> index 000000000000..6989a8a54c5c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
-> @@ -0,0 +1,46 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/light/tsl2583.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: AMS/TAOS Ambient Light Sensor (ALS)
-> +
-> +maintainers:
-> +  - Brian Masney <masneyb@onstation.org>
-> +
-> +description: |
-> +  Ambient light sensing with an i2c interface.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - amstaos,tsl2580
-> +      - amstaos,tsl2581
-> +      - amstaos,tsl2583
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vcc-supply:
-> +    description: Regulator that provides power to the sensor
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        als-sensor@29 {
+On Wed, 24 Apr 2019 03:47:18 -0700
+"Life is hard, and then you die" <ronald@innovation.ch> wrote:
 
-light-sensor@29
+>   Hi Jonathan,
+>=20
+> On Mon, Apr 22, 2019 at 12:34:26PM +0100, Jonathan Cameron wrote:
+> > On Sun, 21 Apr 2019 20:12:49 -0700
+> > Ronald Tschal=C3=A4r <ronald@innovation.ch> wrote:
+> >  =20
+> > > The iBridge device provides access to several devices, including:
+> > > - the Touch Bar
+> > > - the iSight webcam
+> > > - the light sensor
+> > > - the fingerprint sensor
+> > >=20
+> > > This driver provides the core support for managing the iBridge device
+> > > and the access to the underlying devices. In particular, since the
+> > > functionality for the touch bar and light sensor is exposed via USB H=
+ID
+> > > interfaces, and the same HID device is used for multiple functions, t=
+his
+> > > driver provides a multiplexing layer that allows multiple HID drivers=
+ to
+> > > be registered for a given HID device. This allows the touch bar and A=
+LS
+> > > driver to be separated out into their own modules.
+> > >=20
+> > > Signed-off-by: Ronald Tschal=C3=A4r <ronald@innovation.ch =20
+> > Hi Ronald,
+> >=20
+> > I've only taken a fairly superficial look at this.  A few global
+> > things to note though. =20
+>=20
+> Thanks for this review.
+>=20
+> > 1. Please either use kernel-doc style for function descriptions, or
+> >    do not.  Right now you are sort of half way there. =20
+>=20
+> Apologies, on re-reading the docs I realize what you mean here. Should
+> be fixed now (next rev).
+>=20
+> > 2. There is quite a complex nest of separate structures being allocated,
+> >    so think about whether they can be simplified.  In particular
+> >    use of container_of macros can allow a lot of forwards and backwards
+> >    pointers to be dropped if you embed the various structures directly.=
+ =20
+>=20
+> Done (see also below).
+>=20
+> [snip]
+> > > +#define	call_void_driver_func(drv_info, fn, ...)			\ =20
+> >=20
+> > This sort of macro may seem like a good idea because it saves a few lin=
+es
+> > of code.  However, that comes at the cost of readability, so just
+> > put the code inline.
+> >  =20
+> > > +	do {								\
+> > > +		if ((drv_info)->driver->fn)				\
+> > > +			(drv_info)->driver->fn(__VA_ARGS__);		\
+> > > +	} while (0)
+> > > +
+> > > +#define	call_driver_func(drv_info, fn, ret_type, ...)			\
+> > > +	({								\
+> > > +		ret_type rc =3D 0;					\
+> > > +									\
+> > > +		if ((drv_info)->driver->fn)				\
+> > > +			rc =3D (drv_info)->driver->fn(__VA_ARGS__);	\
+> > > +									\
+> > > +		rc;							\
+> > > +	}) =20
+>=20
+> Just to clarify, you're only talking about removing/inlining the
+> call_void_driver_func() macro, not the call_driver_func() macro,
+> right?
 
-With that,
+Both please. Neither adds much.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+>=20
+> [snip]
+> > > +static struct appleib_hid_dev_info *
+> > > +appleib_add_device(struct appleib_device *ib_dev, struct hid_device =
+*hdev,
+> > > +		   const struct hid_device_id *id)
+> > > +{
+> > > +	struct appleib_hid_dev_info *dev_info;
+> > > +	struct appleib_hid_drv_info *drv_info;
+> > > +
+> > > +	/* allocate device-info for this device */
+> > > +	dev_info =3D kzalloc(sizeof(*dev_info), GFP_KERNEL);
+> > > +	if (!dev_info)
+> > > +		return NULL;
+> > > +
+> > > +	INIT_LIST_HEAD(&dev_info->drivers);
+> > > +	dev_info->device =3D hdev;
+> > > +	dev_info->device_id =3D id;
+> > > +
+> > > +	/* notify all our sub drivers */
+> > > +	mutex_lock(&ib_dev->update_lock);
+> > > + =20
+> > This is interesting. I'd like to see a comment here on what
+> > this flag is going to do.  =20
+>=20
+> I'm not sure I follow: update_lock is simply a mutex protecting all
+> driver and device update (i.e. add/remove) functions. Are you
+> therefore looking for something like:
+
+That ended up in the wrong place...
+It was the in_hid_probe just after here that I was referring to.
+
+>=20
+> 	/* protect driver and device lists against concurrent updates */
+> 	mutex_lock(&ib_dev->update_lock);
+>=20
+> [snip]
+> > > +static int appleib_probe(struct acpi_device *acpi)
+> > > +{
+> > > +	struct appleib_device *ib_dev;
+> > > +	struct appleib_platform_data *pdata; =20
+> > Platform_data has a lot of historical meaning in Linux.
+> > Also you have things in here that are not platform related
+> > at all, such as the dev pointer.  Hence I would rename it
+> > as device_data or private or something like that. =20
+>=20
+> Ok. I guess I called in platform_data because it's stored in the mfd
+> cell's "platform_data" field. Anyway, changed it per your suggestion.
+>=20
+> > > +	int i;
+> > > +	int ret;
+> > > +
+> > > +	if (appleib_dev) =20
+> > This singleton bothers me a bit. I'm really not sure why it
+> > is necessary.  You can just put a pointer to this in
+> > the pdata for the subdevs and I think that covers most of your
+> > usecases.  It's generally a bad idea to limit things to one instance
+> > of a device unless that actually major simplifications.
+> > I'm not seeing them here. =20
+>=20
+> Yes, this one is quite ugly. appleib_dev is static so that
+> appleib_hid_probe() can find it. I could not find any other way to
+> pass the appleib_dev instance to that probe function.
+>=20
+> However, on looking at this again, I realized that hid_device_id has
+> a driver_data field which can be used for this; so if I added the
+> hid_driver and hid_device_id structs to the appleib_device (instead of
+> making them static like now) I could fill in the driver_data and avoid
+> this hack. This looks much cleaner.
+>=20
+> Thanks for pointing this uglyness out again.
+>=20
+> [snip]
+> > > +	if (!ib_dev->subdevs) {
+> > > +		ret =3D -ENOMEM;
+> > > +		goto free_dev;
+> > > +	}
+> > > +
+> > > +	pdata =3D kzalloc(sizeof(*pdata), GFP_KERNEL); =20
+> >=20
+> > Might as well embed this in ib_dev as well. =20
+>=20
+> Agreed.
+>=20
+> > That would let
+> > you used container_of to avoid having to carry the ib_dev pointer
+> > around in side pdata. =20
+>=20
+> I see. I guess my main reservation is that the functions exported to
+> the sub-drivers would now take a 'struct appleib_device_data *'
+> argument instead of a 'struct appleib_device *', which just seems a
+> bit unnatural. E.g.
+>=20
+>   int appleib_register_hid_driver(struct appleib_device_data *ib_ddata,
+>                                   struct hid_driver *driver, void *data);
+>=20
+> instead of (the current)
+>=20
+>   int appleib_register_hid_driver(struct appleib_device *ib_dev,
+>                                   struct hid_driver *driver, void *data)
+
+I'm not totally sure I can see why.  You can go from backwards and forwards
+from any of the pointers...
+
+>=20
+> [snip]
+> > > +	ret =3D mfd_add_devices(&acpi->dev, PLATFORM_DEVID_NONE,
+> > > +			      ib_dev->subdevs, ARRAY_SIZE(appleib_subdevs),
+> > > +			      NULL, 0, NULL);
+> > > +	if (ret) {
+> > > +		dev_err(LOG_DEV(ib_dev), "Error adding MFD devices: %d\n", ret);
+> > > +		goto free_pdata;
+> > > +	}
+> > > +
+> > > +	acpi->driver_data =3D ib_dev;
+> > > +	appleib_dev =3D ib_dev;
+> > > +
+> > > +	ret =3D hid_register_driver(&appleib_hid_driver);
+> > > +	if (ret) {
+> > > +		dev_err(LOG_DEV(ib_dev), "Error registering hid driver: %d\n",
+> > > +			ret);
+> > > +		goto rem_mfd_devs;
+> > > +	}
+> > > +
+> > > +	return 0;
+> > > +
+> > > +rem_mfd_devs:
+> > > +	mfd_remove_devices(&acpi->dev);
+> > > +free_pdata:
+> > > +	kfree(pdata);
+> > > +free_subdevs:
+> > > +	kfree(ib_dev->subdevs);
+> > > +free_dev:
+> > > +	appleib_dev =3D NULL;
+> > > +	acpi->driver_data =3D NULL; =20
+> > Why at this point?  It's not set to anything until much later in the
+> > probe flow. =20
+>=20
+> If the hid_register_driver() call fails, we get here after driver_data
+> has been assigned. However, looking at this again, acpi->driver_data
+> is only used by the remove, suspend, and resume callbacks, and those
+> will not be called until a successful return from probe; therefore I
+> can safely move the setting of driver_data to after the
+> hid_register_driver() call and avoid having to set it to NULL in the
+> error cleanup.
+>=20
+> > May be worth thinking about devm_ managed allocations
+> > to cleanup some of these allocations automatically and simplify
+> > the error handling. =20
+>=20
+> Good point, thanks.
+>=20
+> [snip]
+> > > +
+> > > +	rc =3D acpi_execute_simple_method(ib_dev->asoc_socw, NULL, 0);
+> > > +	if (ACPI_FAILURE(rc))
+> > > +		dev_warn(LOG_DEV(ib_dev), "SOCW(0) failed: %s\n", =20
+> >=20
+> > I can sort of see you might want to do the LOG_DEV for consistency
+> > but here I'm fairly sure it's just dev which might be clearer. =20
+>=20
+> Sorry, you mean rename the macro LOG_DEV() to just DEV()?
+No, just dev_warn(dev,....)
+
+It's the same one I think at this particular location.
+>=20
+>=20
+>   Cheers,
+>=20
+>   Ronald
+>=20
+
