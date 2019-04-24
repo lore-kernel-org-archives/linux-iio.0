@@ -1,130 +1,99 @@
-Return-Path: <SRS0=ocBO=SZ=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,UNPARSEABLE_RELAY,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1B0C10F03
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 21:42:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16E33C10F03
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 00:51:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4F484218D3
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Apr 2019 21:42:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kWqkMKGB"
+	by mail.kernel.org (Postfix) with ESMTP id DAB62218D2
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 00:51:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727189AbfDWVmd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Apr 2019 17:42:33 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:42688 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726342AbfDWVmd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 17:42:33 -0400
-Received: by mail-lf1-f67.google.com with SMTP id w23so12886547lfc.9;
-        Tue, 23 Apr 2019 14:42:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=xQeefpKrsCdhR8Xs6F2Qda/pkJ6VuhFW4m9YDLw8Nyc=;
-        b=kWqkMKGBjlPPZ6fmSXOi+1oWjAJ7kHz6lyaBM/7BY8iwqhhbH2xJHvOJ3dWldB4F34
-         EDtDUFFxqHSREoHWq+85X7QbEJ9wZzVffx12CDOxYHXRiPAj/9uqN7zuoMFaUIHMyrer
-         iulMsJIuroHmcJ+F41c8UEzsx8YtSfudGA24n1vFrsJCtcp59fVFuv06xZo6SihAndlp
-         352ny8youL0VnXlmTO/ieklQQ2WcK1GwcrIpB48bVt5ke5u7DwseW/9Ich428Ma7GkCR
-         C+CmDMbexL2/bAZHFM5C1WKhVHs3TqpLG2kBnbIOkDxIWrIqdWQOZZ5iX5SPn2IpG1GV
-         H4Gg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xQeefpKrsCdhR8Xs6F2Qda/pkJ6VuhFW4m9YDLw8Nyc=;
-        b=atpOR0RKroBOupx1gdVcAxnJpT/bzD3UV00vDlLaJmMv9i/Sh4uA3Ne7Xdig5MAkLT
-         Q8aqVvxHcwiMno6Hk0nK/OCDiznNEC+9LdLFMtj2JDBrzk4jOMtUSMdHmBVKYlLbsF74
-         gcmYNZDmRgz4Dg4ze8ckEvYkO7BlhyCdRoEtMxN9FdUnDqqyTiq96LrpDfyN/a5bVf+k
-         MABe7ffO9+XFtjlut/ZmnO/zmoE5Z3+rnmqglVWfsU/G++rvWPWUEAEpzxhjLT0X/gRE
-         /UxGijEDkoXdzeSKCBsnUJQqvklLDzAirLIXOgXOMWuF1kQ+I0YZwVfTy+PwGdvJGVg0
-         NwRQ==
-X-Gm-Message-State: APjAAAV0R5PSCQ4MByYRqPDIXvXVY4n8SijpfiVVzd4VhGQiCb/vHR4f
-        VgFlQI4XU9ozaldJsf07WXq38viOlR8=
-X-Google-Smtp-Source: APXvYqyHiauFodvIV3QlEIo4g6vXqaufbckuIo7GyepMO7F7S+cW8jHrqWaQhRgNtJi6zXxL+oav7g==
-X-Received: by 2002:ac2:54a9:: with SMTP id w9mr15065821lfk.125.1556055751453;
-        Tue, 23 Apr 2019 14:42:31 -0700 (PDT)
-Received: from localhost.localdomain (80-167-223-88-cable.dk.customer.tdc.net. [80.167.223.88])
-        by smtp.gmail.com with ESMTPSA id j9sm792244lji.35.2019.04.23.14.42.30
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Tue, 23 Apr 2019 14:42:31 -0700 (PDT)
-From:   Daniel Gomez <dagmcr@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Cc:     dagmcr@gmail.com, javier@dowhile0.org,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH v2] iio: temperature: maxim_thermocouple: declare missing of table
-Date:   Tue, 23 Apr 2019 23:42:18 +0200
-Message-Id: <1556055738-14838-1-git-send-email-dagmcr@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1728831AbfDXAvi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Apr 2019 20:51:38 -0400
+Received: from mailgw02.mediatek.com ([1.203.163.81]:60373 "EHLO
+        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1728536AbfDXAvi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Apr 2019 20:51:38 -0400
+X-UUID: 2214224984e14755960ec97b15db1950-20190424
+X-UUID: 2214224984e14755960ec97b15db1950-20190424
+Received: from mtkcas36.mediatek.inc [(172.27.4.253)] by mailgw02.mediatek.com
+        (envelope-from <zhiyong.tao@mediatek.com>)
+        (mailgw01.mediatek.com ESMTP with TLS)
+        with ESMTP id 1988789052; Wed, 24 Apr 2019 08:51:33 +0800
+Received: from MTKCAS32.mediatek.inc (172.27.4.184) by MTKMBS31N1.mediatek.inc
+ (172.27.4.69) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Wed, 24 Apr
+ 2019 08:51:32 +0800
+Received: from [10.17.3.153] (172.27.4.253) by MTKCAS32.mediatek.inc
+ (172.27.4.170) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Wed, 24 Apr 2019 08:51:31 +0800
+Message-ID: <1556067091.21970.16.camel@mhfsdcap03>
+Subject: Re: [PATCH 1/2] dt-bindings: adc: mt8183: add binding document
+From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
+To:     Matthias Brugger <matthias.bgg@gmail.com>
+CC:     <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
+        <yingjoe.chen@mediatek.com>, <sean.wang@mediatek.com>,
+        <erin.lo@mediatek.com>, <eddie.huang@mediatek.com>,
+        <s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Date:   Wed, 24 Apr 2019 08:51:31 +0800
+In-Reply-To: <4c7f244f-4111-9e28-5134-8f108b1dbafa@gmail.com>
+References: <20190422115417.16751-1-zhiyong.tao@mediatek.com>
+         <20190422115417.16751-2-zhiyong.tao@mediatek.com>
+         <4c7f244f-4111-9e28-5134-8f108b1dbafa@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
+Content-Transfer-Encoding: 7bit
+MIME-Version: 1.0
+X-MTK:  N
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing <of_device_id> table for SPI driver relying on SPI
-device match since compatible is in a DT binding or in a DTS.
+On Tue, 2019-04-23 at 16:35 +0200, Matthias Brugger wrote:
+> 
+> On 22/04/2019 13:54, Zhiyong Tao wrote:
+> > The commit adds mt8183 compatible node in binding document.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > ---
+> >  Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> > index 0df9befdaecc..05bc79d8483c 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> > +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> > @@ -15,6 +15,7 @@ Required properties:
+> >      - "mediatek,mt2712-auxadc": For MT2712 family of SoCs
+> >      - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
+> >      - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
+> > +    - "mediatek,mt8183-auxadc": For MT8183 family of SoCs
+> >    - reg: Address range of the AUXADC unit.
+> >    - clocks: Should contain a clock specifier for each entry in clock-names
+> >    - clock-names: Should contain "main".
+> > 
+> 
+> You are missing the logic in the driver to bind against this compatible.
+> If there is nothing different from other SoCs then you could add a compatible
+> with a fallback, like:
+> 
+> "mediatek,mt8183-auxadc", "mediatek,mt7622-auxadc": For MT8183 family of SoCs
 
-Before this patch:
-modinfo drivers/iio/temperature/maxim_thermocouple.ko | grep alias
-alias:          spi:max31855
-alias:          spi:max6675
+==> Thanks for your suggestion. In v2, we will add the comment here:
+- "mediatek,mt8183-auxadc", "mediatek,mt8173-auxadc": For MT8183 family
+of SoCs.
 
-After this patch:
-modinfo drivers/iio/temperature/maxim_thermocouple.ko | grep alias
-alias:          spi:max31855
-alias:          spi:max6675
-alias:          of:N*T*Cmaxim,max31855C*
-alias:          of:N*T*Cmaxim,max31855
-alias:          of:N*T*Cmaxim,max6675C*
-alias:          of:N*T*Cmaxim,max6675
+> 
+> Regards,
+> Matthias
 
-Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
-Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
----
- drivers/iio/temperature/maxim_thermocouple.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-index c31b963..c613a64 100644
---- a/drivers/iio/temperature/maxim_thermocouple.c
-+++ b/drivers/iio/temperature/maxim_thermocouple.c
-@@ -10,6 +10,8 @@
- #include <linux/init.h>
- #include <linux/mutex.h>
- #include <linux/err.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/spi/spi.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
-@@ -262,9 +264,17 @@ static const struct spi_device_id maxim_thermocouple_id[] = {
- };
- MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
- 
-+static const struct of_device_id maxim_thermocouple_of_match[] = {
-+        { .compatible = "maxim,max6675" },
-+        { .compatible = "maxim,max31855" },
-+        { },
-+};
-+MODULE_DEVICE_TABLE(of, maxim_thermocouple_of_match);
-+
- static struct spi_driver maxim_thermocouple_driver = {
- 	.driver = {
- 		.name	= MAXIM_THERMOCOUPLE_DRV_NAME,
-+		.of_match_table = maxim_thermocouple_of_match,
- 	},
- 	.probe		= maxim_thermocouple_probe,
- 	.remove		= maxim_thermocouple_remove,
--- 
-2.7.4
 
