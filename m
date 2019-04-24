@@ -2,225 +2,187 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2996FC10F03
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 01:34:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16EB1C10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 06:39:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E96F2218D2
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 01:34:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556069669;
-	bh=q0AR+xmHRqNIkXPP4AddehGqwV7G2543yzfYGghtAqw=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=F2+TRSggYeBaey3crbgqct77TwJSjjzAZLqthrIuX7FeCxOKdVTyV7P4J+km7YD98
-	 /9hmaaPoF8yK5neLxODhpuGTbT0oViMuNafU3Q+D6qRioZQDPnmDk+RZ3SNWZPneTV
-	 nRrO/DzQKkH9v+NabTrouQEqNaT1X05EYT2tXnZo=
+	by mail.kernel.org (Postfix) with ESMTP id D879A218D3
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 06:39:33 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Dye9EhS+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729413AbfDXBe2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Apr 2019 21:34:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44456 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729286AbfDXBe2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Apr 2019 21:34:28 -0400
-Received: from mail-qt1-f174.google.com (mail-qt1-f174.google.com [209.85.160.174])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AF810218D2;
-        Wed, 24 Apr 2019 01:34:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556069666;
-        bh=q0AR+xmHRqNIkXPP4AddehGqwV7G2543yzfYGghtAqw=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=Lif1nmu86A5TXzEbCS2u7dDSnpkbIo/rPgx97nyY2UjEpLHh+7lwmqBVGCiCEOhmQ
-         4KBL1XyrzHM1UiV9ni1N2FXyd7FxzlhtiyMJFCBGduVQfa6tIeeSplnrte5xSEYtGU
-         ruX+goByjLLgDafvwjJkGElEmlGUWFlFRocWB+QQ=
-Received: by mail-qt1-f174.google.com with SMTP id h16so8176354qtk.6;
-        Tue, 23 Apr 2019 18:34:26 -0700 (PDT)
-X-Gm-Message-State: APjAAAUGPuKM8LbZud4JTmcTz1QQlvd/8Zsfn6U05fak/p6exynS6r4y
-        xhv16V5qMa8bdlhJKf7sW9l7dlq82JqqOgKtRw==
-X-Google-Smtp-Source: APXvYqzlOkwUOSjmcmV0KLs1GFv/OS3wfwjWvI9nTiU5U02Uf8Q1prWXKd/DnscglndF4vpeDBhfC/fu4sTBbXeuIzA=
-X-Received: by 2002:a0c:d2f2:: with SMTP id x47mr23216877qvh.90.1556069665869;
- Tue, 23 Apr 2019 18:34:25 -0700 (PDT)
+        id S1729381AbfDXGjd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 02:39:33 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:40768 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726451AbfDXGjc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 02:39:32 -0400
+Received: by mail-ot1-f65.google.com with SMTP id t8so15148890otp.7
+        for <linux-iio@vger.kernel.org>; Tue, 23 Apr 2019 23:39:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jCQreI0a2VPQDRszljvMnnQwlFEX6l55b6Ti+c+BZts=;
+        b=Dye9EhS+hrgh2pu+1y91Bnd7WVVRNoG+DsH949ic27V3aua5C2hzQPxEKlguaDPzo8
+         KVGCGQ4/nIxjyLeRQ6yKj12lBcqQn+1d1HEJe1syAh+yepqg3po888AeUhhanwwgDyqF
+         g8sBAgB4yaHysr7Z0VZPUl73elMF/LObr1Of7w/R+zYrXyoxrjLwSrMeGz8l5IlWg0Og
+         c9akiYyMnMva0ug5ic87bjWiPpQNGyHL+VX6vv4FqPy5pRxZvb6ZBzfbSz2LkPRwNQ2J
+         LkA9UjSxT3nTHfL95vWGyEm3ooVpFfFq8MJnnqnFkz0f7l8Wom1wtkFSOnQ/sEzDPFnZ
+         vCHQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jCQreI0a2VPQDRszljvMnnQwlFEX6l55b6Ti+c+BZts=;
+        b=nclI9wL55DVaEaw4Yf1IJVTU3S4b0SE4DMXVVeaQ5Si6nZZEXlGMdfWl3Nmu1CTS3G
+         Tbju4AGULMsk33YiNxPj1h0IdzmXfQIpTjq8wUxBJYN3lve3DLHtVDYgf9uAmQly603o
+         X6jbs6sHVdNUkEQQKtb8HXn8StkuLvSVOKG2RkaFJG35pUOzF2YaNCARkAOkkb44WIln
+         nrFbyA1dW5EP1KRBSvzaWekpspf2DtkChfP//yQGq86RyGcN0mAcZZ3nWmc6g3YN76uz
+         TiVjmXkQ9j3S42UHnCYy+O71dDLCX4HDGxTQSGHzEz3Ai4wYpFZZtsV5kQzixRX00m77
+         WDDA==
+X-Gm-Message-State: APjAAAVDApKgClB9OZgm/8c4pUzClVep13ia9LDRea5TwoN3TaHVbsAn
+        eB2TwZuD33wtmVzcJVEj/SzKZangYVbsyfKyKW0=
+X-Google-Smtp-Source: APXvYqyj3cpIbUO5+zTr61BFqC4Td9YfFWo9VkvMxz8JJSh2wEfoh18lfzDwcCT+RS+oOhk3okd09t9wdLV9LwoqBSs=
+X-Received: by 2002:a9d:491a:: with SMTP id e26mr1266939otf.66.1556087972027;
+ Tue, 23 Apr 2019 23:39:32 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190416084552.1538-1-masneyb@onstation.org> <20190422135238.27b9892d@archlinux>
-In-Reply-To: <20190422135238.27b9892d@archlinux>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Tue, 23 Apr 2019 20:34:13 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqJo4jA=_dLJ7QJ-LOhSYrXDAcVN01119do0a+y4odpFng@mail.gmail.com>
-Message-ID: <CAL_JsqJo4jA=_dLJ7QJ-LOhSYrXDAcVN01119do0a+y4odpFng@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: tsl2772: convert bindings to YAML format
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Brian Masney <masneyb@onstation.org>,
+References: <1555959916-8207-1-git-send-email-dagmcr@gmail.com>
+ <CA+U=DspEySc2e6+O6bR41My0Sme0oCRH=c9Q16eHTVsJ0cRpvQ@mail.gmail.com> <CAPsT6h=CQV07V2S8j07ZzLKNuAbM0q9xOCqSqb4BrdXaKcjX6A@mail.gmail.com>
+In-Reply-To: <CAPsT6h=CQV07V2S8j07ZzLKNuAbM0q9xOCqSqb4BrdXaKcjX6A@mail.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Wed, 24 Apr 2019 09:39:20 +0300
+Message-ID: <CA+U=DspXd1VMOQ+qf_UYzru2E5VOZHa8Cksgeh+UAH-v4nQ8Uw@mail.gmail.com>
+Subject: Re: [PATCH] spi: AD accelerometer: declare missing of table
+To:     Daniel G <dagmcr@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, stefan.popa@analog.com,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        knaack.h@gmx.de, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org,
+        Javier Martinez Canillas <javier@dowhile0.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 22, 2019 at 7:52 AM Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, Apr 23, 2019 at 10:55 PM Daniel G <dagmcr@gmail.com> wrote:
 >
-> On Tue, 16 Apr 2019 04:45:51 -0400
-> Brian Masney <masneyb@onstation.org> wrote:
->
-> > Convert the tsl2772 device tree bindings to the new YAML format.
+> On Tue, Apr 23, 2019 at 9:58 AM Alexandru Ardelean
+> <ardeleanalex@gmail.com> wrote:
 > >
-> > Signed-off-by: Brian Masney <masneyb@onstation.org>
-> Hi Brian,
->
-> Good to see this.  I'm afraid it's all a bit new to me so what
-> I haven't yet understood is how prescriptive we should be.
-> For example, are the phandle references below needed or not?
->
-> So for a while yet I'm going to be relying on Rob and others
-> to review these and put me on the right track.
->
-> Jonathan
->
-> > ---
-> >  .../devicetree/bindings/iio/light/tsl2772.txt | 42 ---------
-> >  .../bindings/iio/light/tsl2772.yaml           | 85 +++++++++++++++++++
-> >  2 files changed, 85 insertions(+), 42 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
-> >  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.yaml
+> > On Mon, Apr 22, 2019 at 10:20 PM Daniel Gomez <dagmcr@gmail.com> wrote:
+> > >
+> > > Add missing <of_device_id> table for SPI driver relying on SPI
+> > > device match since compatible is in a DT binding or in a DTS.
+> > >
 > >
+> > Hey,
+> >
+> > The driver is under iio, so commit title should be something like:
+> >
+> > iio: accelerometer: adxl372: declare missing of table
+> > or
+> > iio: adxl372: declare missing of table
+> Okay! It makes sense so, I'll make the changes and send it back as v2.
+> I have sent other patches fixing the same issue under iio but with other
+> maintainers so, I will follow the same approach.
+> >
+> > > Before this patch:
+> > > modinfo drivers/iio/accel/adxl372_spi.ko | grep alias
+> > >
+> > > After this patch:
+> > > modinfo drivers/iio/accel/adxl372_spi.ko | grep alias
+> > > alias:          spi:adxl372
+> > > alias:          of:N*T*Cadi,adxl372C*
+> > > alias:          of:N*T*Cadi,adxl372
+> > >
+> > > Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
+> > > Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
+> > > ---
+> > >  drivers/iio/accel/adxl372_spi.c | 9 +++++++++
+> > >  1 file changed, 9 insertions(+)
+> > >
+> > > diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
+> > > index e14e655..af0624b 100644
+> > > --- a/drivers/iio/accel/adxl372_spi.c
+> > > +++ b/drivers/iio/accel/adxl372_spi.c
+> > > @@ -7,6 +7,8 @@
+> > >
+> > >  #include <linux/module.h>
+> > >  #include <linux/regmap.h>
+> > > +#include <linux/of.h>
+> > > +#include <linux/of_device.h>
+> > >  #include <linux/spi/spi.h>
+> > >
+> > >  #include "adxl372.h"
+> > > @@ -37,9 +39,16 @@ static const struct spi_device_id adxl372_spi_id[] = {
+> > >  };
+> > >  MODULE_DEVICE_TABLE(spi, adxl372_spi_id);
+> > >
+> > > +static const struct of_device_id adxl372_spi_of_match[] = {
+> >
+> > The `spi` part of the name is un-needed.
+> > So,
+> > adxl372_spi_of_match  ->  adxl372_of_match
+> > or
+> > adxl372_spi_of_match  ->  adxl372_of_table
+> >
+> >
+> > > +        { .compatible = "adi,adxl372" },
+> > > +        { },
+> > > +};
+> > > +MODULE_DEVICE_TABLE(of, adxl372_spi_of_match);
+> > > +
+> > >  static struct spi_driver adxl372_spi_driver = {
+> > >         .driver = {
+> > >                 .name = "adxl372_spi",
+> > > +               .of_match_table = of_match_ptr(adxl372_spi_of_match),
+> >
+> > I think the the `of_match_ptr()` is un-needed. It messes with some ACPI stuff.
+> >
+> > So, something like:
+> >     .of_match_table = adxl372_of_table,
+> > should be fine.
+> Okay, I'll remove it as well but I thought this macro was needed to check if DT
+> support is enabled but only if the driver can be compiled as a module.
+> So, what's the reason for being unneeded in this case?
 
-> > diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.yaml b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-> > new file mode 100644
-> > index 000000000000..b3ac182288d2
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-> > @@ -0,0 +1,85 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+There are 2 main mechanisms for configuring a device/board/computer [in Linux].
+One is ACPI (mostly driven by Intel & Microsoft) and the other one is
+DT (mostly driven by ARM).
+Ideally, a driver should work with both.
 
-Do you have the rights on the original file to add BSD license?
+I'm a bit vague on how ACPI uses this table/information.
+I did look through the ACPI code (drivers/acpi) but a lot of the fine
+details are unclear to me.
+There seems to be some code in there that can parse of_match_table.
 
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/light/tsl2772.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: AMS/TAOS Ambient Light Sensor (ALS) and Proximity Detector
-> > +
-> > +maintainers:
-> > +  - Brian Masney <masneyb@onstation.org>
-> > +
-> > +description: |
-> > +  Ambient light sensing and proximity detection with an i2c interface.
-> > +  https://ams.com/documents/20143/36005/TSL2772_DS000181_2-00.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - amstaos,tsl2571
-> > +      - amstaos,tsl2671
-> > +      - amstaos,tmd2671
-> > +      - amstaos,tsl2771
-> > +      - amstaos,tmd2771
-> > +      - amstaos,tsl2572
-> > +      - amstaos,tsl2672
-> > +      - amstaos,tmd2672
-> > +      - amstaos,tsl2772
-> > +      - amstaos,tmd2772
-> > +      - avago,apds9930
-> > +
-> > +  reg:
-> > +    description: The I2C address of the device
+In any case, I do remember however that this is some older comment
+from other reviews.
+i.e. (if possible) do not use of_match_ptr(), because ACPI won't work
 
-No need for description on common properties unless you have something
-unique to add.
+btw, a fun read about ACPI on ARM is:
+http://www.secretlab.ca/archives/151
 
-> > +    maxItems: 1
-> > +
-> > +  amstaos,proximity-diodes:
-> > +    description: Proximity diodes to enable
-> > +    allOf:
-> > +      - $ref: /schemas/types.yaml#/definitions/uint32-array
-> > +      - minItems: 1
-> > +        maxItems: 2
-> > +        items:
-> > +          minimum: 0
-> > +          maximum: 1
->
-> Do we need to represent that these can't be <1 0> ?
-> (specified in old docs)
-> We also have a tighter spec than the uint32-array format in types.yaml
-> as don't allow <0>, <1> under the current binding where only <0, 1> is
-> allowed.
+Thanks
+Alex
 
-The uint32-array definition is loose to avoid lots of warnings on
-common properties where we can't define the exact size. Over time we
-need to tighten up the dts syntax to be consistent (I have a dtc patch
-which can spew out lots of warnings to fix these).
-
-So this case is correct. '<0, 1>' means a single array with 2
-elements. '<0>, <1>' means 2 arrays each with a single element. There
-shouldn't be lots of occurrences.
-
-> > +
-> > +  interrupts:
-> > +    description: Interrupt generated by the device
-
-No need for description.
-
-> > +    maxItems: 1
-> > +
-> > +  led-max-microamp:
-> > +    description: Current for the proximity LED
-
-This device only has proximity LEDs, right?
-
-> > +    allOf:
-> > +      - $ref: /schemas/types.yaml#/definitions/uint32
-> > +      - enum: [13000, 25000, 50000, 100000]
-
-We should assume a common schema for 'led-max-microamp', so we just
-need the enum.
-
-> > +
-> > +  vdd-supply:
-> > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > +    description: Regulator that provides power to the sensor
-
-Same here for '*-supply'. So just the description is enough.
-
-> > +
-> > +  vddio-supply:
-> > +    $ref: /schemas/types.yaml#/definitions/phandle
-> > +    description: Regulator that provides power to the bus
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +
-> > +    i2c {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        tsl2772@39 {
-
-proximity-sensor@39
-
-> > +                compatible = "amstaos,tsl2772";
-> > +                reg = <0x39>;
-> > +                interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-> > +                vdd-supply = <&pm8941_l17>;
-> > +                vddio-supply = <&pm8941_lvs1>;
-> > +                amstaos,proximity-diodes = <0>;
-> > +                led-max-microamp = <100000>;
-> > +        };
-> > +    };
-> > +...
->
+> Thanks in advance!
+> >
+> > Rest looks good
+> >
+> > Thanks
+> > Alex
+> >
+> > >         },
+> > >         .probe = adxl372_spi_probe,
+> > >         .id_table = adxl372_spi_id,
+> > > --
+> > > 2.7.4
+> > >
