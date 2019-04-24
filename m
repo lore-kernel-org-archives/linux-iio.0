@@ -2,314 +2,271 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48DDDC10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C8CC10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:49:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 07659218B0
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:13:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0626E20674
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:49:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556133205;
-	bh=Q7yKTIdFqDsiagOItbYFdwocuyo/gHt+f/LfswWZbm8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=mu8084XY1jMRJl/lJhUTAMTlagQwfUAzeqaO04qPPXrc7JzE2z+FtD2N+c+OVEBMM
-	 KfrpegIgtvTAdZcxdPfOMpJyTmGm0X7DfbEbEd+bcxlVxOzPxUIpi/U+bnnMEO05Rn
-	 JgGO6+3SbpIuLZ6yGGqm4o5WDMZdxpydN09xA1Pw=
+	s=default; t=1556135383;
+	bh=2KMTxtYEJavYFnpOOYA/i6hDj2Bqnnvh8X6XoIIseQM=;
+	h=Date:From:To:Subject:List-ID:From;
+	b=q6hTklBpqxE/LkyaEvqumVB6OCgnIZThk0BLKWU05UxMiO4QbSGlU7tKtfnrmWrtA
+	 NrW8PIYgocgxqyLRvWDGJGyU4oauwIdxjt/WCbGxDeaDBrOGy9r5Epl7qtpQ3YF/xf
+	 FY4m7J0riUtZM8sVJg/xRFnXA22rZ0/ZVQnNzIsM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727184AbfDXTNY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 15:13:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52360 "EHLO mail.kernel.org"
+        id S1730739AbfDXTtm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 15:49:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38662 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726531AbfDXTNY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Apr 2019 15:13:24 -0400
+        id S1726157AbfDXTtl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Apr 2019 15:49:41 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62F2A205ED;
-        Wed, 24 Apr 2019 19:13:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3F52E20674;
+        Wed, 24 Apr 2019 19:49:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556133203;
-        bh=Q7yKTIdFqDsiagOItbYFdwocuyo/gHt+f/LfswWZbm8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ui07t6+ZpR2oxz307PXO/xVs9ijjJL2de8hy5M7fV0Wp4pqA0ewSOkhOhlnVTTacJ
-         BUzqOVcOVpy8j9fHd+Rrhvuskq4QDYMzjiFDoGmUzuOb2y5nwPaugUwSGp2AUDdwMI
-         0bJk29G4NslOG4rM3cDZq+ILIOeLc+RCG423cTSI=
-Date:   Wed, 24 Apr 2019 20:13:17 +0100
+        s=default; t=1556135380;
+        bh=2KMTxtYEJavYFnpOOYA/i6hDj2Bqnnvh8X6XoIIseQM=;
+        h=Date:From:To:Subject:From;
+        b=BWFAWr4/8Wy/P6avrXVg8RSUmPu4Uxnan+X3S7hEuAAT/IfMG7wBDiqAbSZke3cNh
+         QZE2yRb8+dOm3CxsXDA9jxqzoZWExdlsgE1s1qNFChAsJpoQq5RT36nZN6dKAF/WAo
+         YbuHn0i57n9ZTkNyTgmKqFnC0cncu1OkpeIwwdOw=
+Date:   Wed, 24 Apr 2019 20:49:31 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Life is hard, and then you die" <ronald@innovation.ch>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
-Message-ID: <20190424201317.2a472120@archlinux>
-In-Reply-To: <20190424104718.GA31301@innovation.ch>
-References: <20190422031251.11968-1-ronald@innovation.ch>
-        <20190422031251.11968-2-ronald@innovation.ch>
-        <20190422123426.2d0b4bdf@archlinux>
-        <20190424104718.GA31301@innovation.ch>
+To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] Second round of new device support etc for IIO in the 5.2
+ cycle.
+Message-ID: <20190424204931.04005591@archlinux>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 24 Apr 2019 03:47:18 -0700
-"Life is hard, and then you die" <ronald@innovation.ch> wrote:
+The following changes since commit 932f98922f6fca9f8c45274346b49058dd50d51a:
 
->   Hi Jonathan,
->=20
-> On Mon, Apr 22, 2019 at 12:34:26PM +0100, Jonathan Cameron wrote:
-> > On Sun, 21 Apr 2019 20:12:49 -0700
-> > Ronald Tschal=C3=A4r <ronald@innovation.ch> wrote:
-> >  =20
-> > > The iBridge device provides access to several devices, including:
-> > > - the Touch Bar
-> > > - the iSight webcam
-> > > - the light sensor
-> > > - the fingerprint sensor
-> > >=20
-> > > This driver provides the core support for managing the iBridge device
-> > > and the access to the underlying devices. In particular, since the
-> > > functionality for the touch bar and light sensor is exposed via USB H=
-ID
-> > > interfaces, and the same HID device is used for multiple functions, t=
-his
-> > > driver provides a multiplexing layer that allows multiple HID drivers=
- to
-> > > be registered for a given HID device. This allows the touch bar and A=
-LS
-> > > driver to be separated out into their own modules.
-> > >=20
-> > > Signed-off-by: Ronald Tschal=C3=A4r <ronald@innovation.ch =20
-> > Hi Ronald,
-> >=20
-> > I've only taken a fairly superficial look at this.  A few global
-> > things to note though. =20
->=20
-> Thanks for this review.
->=20
-> > 1. Please either use kernel-doc style for function descriptions, or
-> >    do not.  Right now you are sort of half way there. =20
->=20
-> Apologies, on re-reading the docs I realize what you mean here. Should
-> be fixed now (next rev).
->=20
-> > 2. There is quite a complex nest of separate structures being allocated,
-> >    so think about whether they can be simplified.  In particular
-> >    use of container_of macros can allow a lot of forwards and backwards
-> >    pointers to be dropped if you embed the various structures directly.=
- =20
->=20
-> Done (see also below).
->=20
-> [snip]
-> > > +#define	call_void_driver_func(drv_info, fn, ...)			\ =20
-> >=20
-> > This sort of macro may seem like a good idea because it saves a few lin=
-es
-> > of code.  However, that comes at the cost of readability, so just
-> > put the code inline.
-> >  =20
-> > > +	do {								\
-> > > +		if ((drv_info)->driver->fn)				\
-> > > +			(drv_info)->driver->fn(__VA_ARGS__);		\
-> > > +	} while (0)
-> > > +
-> > > +#define	call_driver_func(drv_info, fn, ret_type, ...)			\
-> > > +	({								\
-> > > +		ret_type rc =3D 0;					\
-> > > +									\
-> > > +		if ((drv_info)->driver->fn)				\
-> > > +			rc =3D (drv_info)->driver->fn(__VA_ARGS__);	\
-> > > +									\
-> > > +		rc;							\
-> > > +	}) =20
->=20
-> Just to clarify, you're only talking about removing/inlining the
-> call_void_driver_func() macro, not the call_driver_func() macro,
-> right?
+  Merge tag 'iio-for-5.2a-2' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2019-04-04 22:25:29 +0200)
 
-Both please. Neither adds much.
+are available in the Git repository at:
 
->=20
-> [snip]
-> > > +static struct appleib_hid_dev_info *
-> > > +appleib_add_device(struct appleib_device *ib_dev, struct hid_device =
-*hdev,
-> > > +		   const struct hid_device_id *id)
-> > > +{
-> > > +	struct appleib_hid_dev_info *dev_info;
-> > > +	struct appleib_hid_drv_info *drv_info;
-> > > +
-> > > +	/* allocate device-info for this device */
-> > > +	dev_info =3D kzalloc(sizeof(*dev_info), GFP_KERNEL);
-> > > +	if (!dev_info)
-> > > +		return NULL;
-> > > +
-> > > +	INIT_LIST_HEAD(&dev_info->drivers);
-> > > +	dev_info->device =3D hdev;
-> > > +	dev_info->device_id =3D id;
-> > > +
-> > > +	/* notify all our sub drivers */
-> > > +	mutex_lock(&ib_dev->update_lock);
-> > > + =20
-> > This is interesting. I'd like to see a comment here on what
-> > this flag is going to do.  =20
->=20
-> I'm not sure I follow: update_lock is simply a mutex protecting all
-> driver and device update (i.e. add/remove) functions. Are you
-> therefore looking for something like:
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.2b
 
-That ended up in the wrong place...
-It was the in_hid_probe just after here that I was referring to.
+for you to fetch changes up to 447ccb4e0834a9f9f0dd5643e421c7f1a1649e6a:
 
->=20
-> 	/* protect driver and device lists against concurrent updates */
-> 	mutex_lock(&ib_dev->update_lock);
->=20
-> [snip]
-> > > +static int appleib_probe(struct acpi_device *acpi)
-> > > +{
-> > > +	struct appleib_device *ib_dev;
-> > > +	struct appleib_platform_data *pdata; =20
-> > Platform_data has a lot of historical meaning in Linux.
-> > Also you have things in here that are not platform related
-> > at all, such as the dev pointer.  Hence I would rename it
-> > as device_data or private or something like that. =20
->=20
-> Ok. I guess I called in platform_data because it's stored in the mfd
-> cell's "platform_data" field. Anyway, changed it per your suggestion.
->=20
-> > > +	int i;
-> > > +	int ret;
-> > > +
-> > > +	if (appleib_dev) =20
-> > This singleton bothers me a bit. I'm really not sure why it
-> > is necessary.  You can just put a pointer to this in
-> > the pdata for the subdevs and I think that covers most of your
-> > usecases.  It's generally a bad idea to limit things to one instance
-> > of a device unless that actually major simplifications.
-> > I'm not seeing them here. =20
->=20
-> Yes, this one is quite ugly. appleib_dev is static so that
-> appleib_hid_probe() can find it. I could not find any other way to
-> pass the appleib_dev instance to that probe function.
->=20
-> However, on looking at this again, I realized that hid_device_id has
-> a driver_data field which can be used for this; so if I added the
-> hid_driver and hid_device_id structs to the appleib_device (instead of
-> making them static like now) I could fill in the driver_data and avoid
-> this hack. This looks much cleaner.
->=20
-> Thanks for pointing this uglyness out again.
->=20
-> [snip]
-> > > +	if (!ib_dev->subdevs) {
-> > > +		ret =3D -ENOMEM;
-> > > +		goto free_dev;
-> > > +	}
-> > > +
-> > > +	pdata =3D kzalloc(sizeof(*pdata), GFP_KERNEL); =20
-> >=20
-> > Might as well embed this in ib_dev as well. =20
->=20
-> Agreed.
->=20
-> > That would let
-> > you used container_of to avoid having to carry the ib_dev pointer
-> > around in side pdata. =20
->=20
-> I see. I guess my main reservation is that the functions exported to
-> the sub-drivers would now take a 'struct appleib_device_data *'
-> argument instead of a 'struct appleib_device *', which just seems a
-> bit unnatural. E.g.
->=20
->   int appleib_register_hid_driver(struct appleib_device_data *ib_ddata,
->                                   struct hid_driver *driver, void *data);
->=20
-> instead of (the current)
->=20
->   int appleib_register_hid_driver(struct appleib_device *ib_dev,
->                                   struct hid_driver *driver, void *data)
+  iio: adc: qcom-spmi-adc5: Fix of-based module autoloading (2019-04-22 11:51:29 +0100)
 
-I'm not totally sure I can see why.  You can go from backwards and forwards
-from any of the pointers...
+----------------------------------------------------------------
+Second set of IIO new device support, features and cleanup for the 5.2 cycle.
 
->=20
-> [snip]
-> > > +	ret =3D mfd_add_devices(&acpi->dev, PLATFORM_DEVID_NONE,
-> > > +			      ib_dev->subdevs, ARRAY_SIZE(appleib_subdevs),
-> > > +			      NULL, 0, NULL);
-> > > +	if (ret) {
-> > > +		dev_err(LOG_DEV(ib_dev), "Error adding MFD devices: %d\n", ret);
-> > > +		goto free_pdata;
-> > > +	}
-> > > +
-> > > +	acpi->driver_data =3D ib_dev;
-> > > +	appleib_dev =3D ib_dev;
-> > > +
-> > > +	ret =3D hid_register_driver(&appleib_hid_driver);
-> > > +	if (ret) {
-> > > +		dev_err(LOG_DEV(ib_dev), "Error registering hid driver: %d\n",
-> > > +			ret);
-> > > +		goto rem_mfd_devs;
-> > > +	}
-> > > +
-> > > +	return 0;
-> > > +
-> > > +rem_mfd_devs:
-> > > +	mfd_remove_devices(&acpi->dev);
-> > > +free_pdata:
-> > > +	kfree(pdata);
-> > > +free_subdevs:
-> > > +	kfree(ib_dev->subdevs);
-> > > +free_dev:
-> > > +	appleib_dev =3D NULL;
-> > > +	acpi->driver_data =3D NULL; =20
-> > Why at this point?  It's not set to anything until much later in the
-> > probe flow. =20
->=20
-> If the hid_register_driver() call fails, we get here after driver_data
-> has been assigned. However, looking at this again, acpi->driver_data
-> is only used by the remove, suspend, and resume callbacks, and those
-> will not be called until a successful return from probe; therefore I
-> can safely move the setting of driver_data to after the
-> hid_register_driver() call and avoid having to set it to NULL in the
-> error cleanup.
->=20
-> > May be worth thinking about devm_ managed allocations
-> > to cleanup some of these allocations automatically and simplify
-> > the error handling. =20
->=20
-> Good point, thanks.
->=20
-> [snip]
-> > > +
-> > > +	rc =3D acpi_execute_simple_method(ib_dev->asoc_socw, NULL, 0);
-> > > +	if (ACPI_FAILURE(rc))
-> > > +		dev_warn(LOG_DEV(ib_dev), "SOCW(0) failed: %s\n", =20
-> >=20
-> > I can sort of see you might want to do the LOG_DEV for consistency
-> > but here I'm fairly sure it's just dev which might be clearer. =20
->=20
-> Sorry, you mean rename the macro LOG_DEV() to just DEV()?
-No, just dev_warn(dev,....)
+New device suport
+* ad7606
+  - Support the AD7616 16 channel, 12bit ADC.
+* fxas21002c
+  - New driver for this gyroscope with I2C and SPI support.
+* lsm6dsx
+  - Support the lsm6dsr, new device information structure and dt bindings.
+* srf04
+  - Addition device IDs for mb1000, mb1010, mb1020, mb1030 and mb1040 +
+    support of different required trigger pulse lengths.
+* st-accel
+  - Support the ls2de12, new device info and dt bindings.
+* ti-ads8344
+  - New driver for this 8 channel, 16 bit SPI ADC.
 
-It's the same one I think at this particular location.
->=20
->=20
->   Cheers,
->=20
->   Ronald
->=20
+Binding conversions to yaml - we have started doing these in general for IIO.
+* avia-hx711
+* bmp085
 
+Cleanups and minor fixes / additions
+* ad5758
+  - Fixup for some changes between preproduction parts and final part.
+* ad7606
+  - Refactor handling of oversampling to make it easy to vary between
+    supported devices.
+* ad9832
+  - Organise includes.
+  - Clock framework to handle clocks.
+* ad9834
+  - Drop unnecessary parenthesis.
+* bmc150
+  - Use __func__ rather than hardcoding.
+* dummy_evgen.
+  - Fix a memleak on error in probe.
+* kxcjk1013
+  - Add KXCJ91008 ACPI ID as seen in the wild.
+  - Use __func__ rather than hardcoding.
+* imx7d
+  - Local dev variable to simplify code a bit.
+  - dev_err replaces pr_err to give more info.
+  - devm_platform_ioremap_resource for small reduction in boilerplate.
+  - Simplify probe and remove by sharing suspend / resume logic.
+  - Devm for iio_device_register as remove only contains the unregister.
+* lsm6dsx
+  - Remove a variable that was never read.
+  - Open code values where they are effectively described by what is assigned
+    to them rather than using uninformative defines.
+* max31856
+  - Avoid an unintialized ret variable in a path that can't actually occur
+    but is hard for a static checker to know.
+* max9611
+  - White space
+* mpu3050
+  - Reduce a sleep worst case by switching from msleep to usleep_range.
+* qcom-spmi-adc5
+  - Add MODULE_DEVICE_TABLE to assist autoloading of this as a module.
+* stm32-dfsdm
+  - Fix missing dependencies.
+* stm32-timer trigger
+  - Fix a build issue when disabled.
+* ti-ads7950
+  - Fix mising dependency on CONFIG_GPIOLIB.
+
+----------------------------------------------------------------
+Andreas Klinger (5):
+      avia-hx711.yaml: transform DT binding to YAML
+      bmp085.yaml: transform DT documentation of iio sensor into YAML
+      srf04.c: add maxbotix ultrasonic sensors
+      dt-bindings: iio: srf04: add Maxbotix ultrasonic iio proximity sensors
+      Kconfig: change configuration of srf04 ultrasonic iio sensor
+
+Andrey Smirnov (6):
+      iio: imx7d_adc: Add local struct device pointer in imx7d_adc_probe()
+      iio: imx7d_adc: Replace pr_err with dev_err
+      iio: imx7d_adc: Use devm_platform_ioremap_resource()
+      iio: imx7d_adc: Simplify imx7d_adc_probe() with imx7d_adc_resume()
+      iio: imx7d_adc: Simplify imx7d_adc_remove() with imx7d_adc_suspend()
+      iio: imx7d_adc: Use devm_iio_device_register()
+
+Beniamin Bia (2):
+      iio: adc: ad7616: Add support for AD7616 ADC
+      dt-bindings: iio: adc: Add AD7616 ADC documentation
+
+Bjorn Andersson (1):
+      iio: adc: qcom-spmi-adc5: Fix of-based module autoloading
+
+Colin Ian King (1):
+      iio: temperature: max31856: fix uninitialized error return
+
+Fabrice Gasnier (3):
+      iio: trigger: stm32-timer: fix build issue when disabled
+      iio: adc: stm32-dfsdm: fix unmet direct dependencies detected
+      iio: adc: stm32-dfsdm: fix triggered buffer build dependency
+
+Fabrizio Castro (1):
+      iio: adc: Fix MAX9611 spacing
+
+Gregory CLEMENT (2):
+      dt-bindings: iio: adc: Add bindings for TI ADS8344 A/DC chips
+      iio: adc: Add driver for the TI ADS8344 A/DC chips
+
+Lorenzo Bianconi (3):
+      iio: imu: st_lsm6dsx: add support to LSM6DSR
+      dt-bindings: iio: imu: st_lsm6dsx: add lsm6dsr device bindings
+      iio: imu: st_lsm6dsx: inline per-sensor data
+
+Marcelo Schmitt (2):
+      staging: iio: ad9832: organize includes
+      staging: iio: ad9832: use clock framework for clock reference
+
+Melissa Wen (1):
+      staging: iio: frequency: ad9834: Remove unnecessary parentheses
+
+Mircea Caprioru (1):
+      iio: dac: ad5758: Modifications for new revision
+
+Mohan Kumar (2):
+      drivers/iio/gyro/mpu3050-core.c: This patch fix the following checkpatch warning.
+      iio:accel:Switch hardcoded function name with a reference to __func__ making the code more maintainable
+
+Pan Bian (1):
+      iio: dummy_evgen: fix possible memleak in evgen init
+
+Robert Jones (2):
+      dt-bindings: iio: accel: add LIS2DE12 sensor device binding
+      iio: accel: add support to LIS2DE12
+
+Rui Miguel Silva (5):
+      iio: gyro: add DT bindings to fxas21002c
+      iio: gyro: add core driver for fxas21002c
+      iio: gyro: fxas21002c: add i2c driver
+      iio: gyro: fxas21002c: add spi driver
+      MAINTAINERS: add entry for fxas21002c gyro driver
+
+Stefan Popa (1):
+      iio: adc: ad7606: Move oversampling options in chip info and rework *_avail attributes
+
+Valentin Manea (1):
+      iio: accel: kxcjk1013: Add KIOX0008 ACPI Hardware-ID
+
+YueHaibing (2):
+      iio: imu: st_lsm6dsx: remove set but not used variables 'acc_sensor' and 'gyro_sensor'
+      iio: adc: ti-ads7950: Fix build error without CONFIG_GPIOLIB
+
+ .../devicetree/bindings/iio/adc/adi,ad7606.txt     |    1 +
+ .../devicetree/bindings/iio/adc/avia-hx711.txt     |   24 -
+ .../devicetree/bindings/iio/adc/avia-hx711.yaml    |   66 ++
+ .../devicetree/bindings/iio/adc/ti-ads8344.txt     |   19 +
+ .../bindings/iio/gyroscope/nxp,fxas21002c.txt      |   31 +
+ .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |    1 +
+ .../devicetree/bindings/iio/pressure/bmp085.txt    |   27 -
+ .../devicetree/bindings/iio/pressure/bmp085.yaml   |   70 ++
+ .../bindings/iio/proximity/devantech-srf04.yaml    |   25 +-
+ .../devicetree/bindings/iio/st-sensors.txt         |    1 +
+ MAINTAINERS                                        |   10 +
+ drivers/iio/accel/Kconfig                          |    2 +-
+ drivers/iio/accel/bmc150-accel-core.c              |    2 +-
+ drivers/iio/accel/kxcjk-1013.c                     |    3 +-
+ drivers/iio/accel/st_accel.h                       |    2 +
+ drivers/iio/accel/st_accel_core.c                  |   76 ++
+ drivers/iio/accel/st_accel_i2c.c                   |    5 +
+ drivers/iio/adc/Kconfig                            |   16 +-
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/ad7606.c                           |  120 ++-
+ drivers/iio/adc/ad7606.h                           |   25 +-
+ drivers/iio/adc/ad7606_spi.c                       |    2 +
+ drivers/iio/adc/imx7d_adc.c                        |  175 ++--
+ drivers/iio/adc/qcom-spmi-adc5.c                   |    1 +
+ drivers/iio/adc/ti-ads8344.c                       |  204 ++++
+ drivers/iio/dac/ad5758.c                           |   55 +-
+ drivers/iio/dummy/iio_dummy_evgen.c                |    5 +-
+ drivers/iio/gyro/Kconfig                           |   22 +
+ drivers/iio/gyro/Makefile                          |    3 +
+ drivers/iio/gyro/fxas21002c.h                      |  150 +++
+ drivers/iio/gyro/fxas21002c_core.c                 | 1004 ++++++++++++++++++++
+ drivers/iio/gyro/fxas21002c_i2c.c                  |   69 ++
+ drivers/iio/gyro/fxas21002c_spi.c                  |   70 ++
+ drivers/iio/gyro/mpu3050-core.c                    |    2 +-
+ drivers/iio/imu/st_lsm6dsx/Kconfig                 |    2 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            |    2 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c     |   12 +-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       |  117 ++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        |    5 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        |    5 +
+ drivers/iio/proximity/Kconfig                      |   11 +-
+ drivers/iio/proximity/srf04.c                      |   38 +-
+ drivers/iio/temperature/max31856.c                 |    3 +
+ drivers/staging/iio/frequency/ad9832.c             |   51 +-
+ drivers/staging/iio/frequency/ad9832.h             |    1 -
+ drivers/staging/iio/frequency/ad9834.c             |    2 +-
+ include/linux/iio/timer/stm32-timer-trigger.h      |   11 +-
+ 47 files changed, 2242 insertions(+), 307 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8344.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/nxp,fxas21002c.txt
+ delete mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
+ create mode 100644 drivers/iio/adc/ti-ads8344.c
+ create mode 100644 drivers/iio/gyro/fxas21002c.h
+ create mode 100644 drivers/iio/gyro/fxas21002c_core.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_i2c.c
+ create mode 100644 drivers/iio/gyro/fxas21002c_spi.c
