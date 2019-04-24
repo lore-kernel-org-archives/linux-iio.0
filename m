@@ -3,54 +3,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS autolearn=unavailable autolearn_force=no
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AD63C10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70201C10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:35:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3F5220811
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:27:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C22E218D2
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730009AbfDXM1m convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 08:27:42 -0400
-Received: from szxga07-in.huawei.com ([45.249.212.35]:51542 "EHLO huawei.com"
+        id S1730004AbfDXMfO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 08:35:14 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6688 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726880AbfDXM1m (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Apr 2019 08:27:42 -0400
-Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.58])
-        by Forcepoint Email with ESMTP id 03B073EC7201D982273E;
-        Wed, 24 Apr 2019 20:27:39 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS409-HUB.china.huawei.com
- (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Wed, 24 Apr 2019
- 20:27:36 +0800
-Date:   Wed, 24 Apr 2019 13:27:25 +0100
+        id S1726167AbfDXMfN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Apr 2019 08:35:13 -0400
+Received: from DGGEMS413-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id C9DDA6A2E55615EA1F56;
+        Wed, 24 Apr 2019 20:35:11 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS413-HUB.china.huawei.com
+ (10.3.19.213) with Microsoft SMTP Server id 14.3.439.0; Wed, 24 Apr 2019
+ 20:35:07 +0800
+Date:   Wed, 24 Apr 2019 13:34:55 +0100
 From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     "Life is hard, and then you die" <ronald@innovation.ch>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        <linux-input@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 3/3] iio: light: apple-ib-als: Add driver for ALS on
- iBridge chip.
-Message-ID: <20190424132725.00007633@huawei.com>
-In-Reply-To: <20190423103855.GB12528@innovation.ch>
-References: <20190422031251.11968-1-ronald@innovation.ch>
-        <20190422031251.11968-4-ronald@innovation.ch>
-        <alpine.DEB.2.21.1904221101420.964@vps.pmeerw.net>
-        <20190422130138.336fb227@archlinux>
-        <20190423103855.GB12528@innovation.ch>
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+CC:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "namhyung@kernel.org" <namhyung@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>
+Subject: Re: [PATCH 1/2] lib: add __sysfs_match_string_with_gaps() helper
+Message-ID: <20190424133455.00002909@huawei.com>
+In-Reply-To: <86ea407aaa891e50a3bdaf2c3653636a365076ee.camel@analog.com>
+References: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+        <20190422210606.GA8805@kroah.com>
+        <86ea407aaa891e50a3bdaf2c3653636a365076ee.camel@analog.com>
 Organization: Huawei
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
 X-Originating-IP: [10.202.226.61]
 X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
@@ -58,267 +52,116 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 23 Apr 2019 03:38:55 -0700
-"Life is hard, and then you die" <ronald@innovation.ch> wrote:
+On Tue, 23 Apr 2019 06:38:44 +0000
+"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
 
->   Hi Jonathan, Peter,
-> 
-> On Mon, Apr 22, 2019 at 01:01:38PM +0100, Jonathan Cameron wrote:
-> > On Mon, 22 Apr 2019 11:17:27 +0200 (CEST)
-> > Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+> On Mon, 2019-04-22 at 23:06 +0200, Greg KH wrote:
+> > 
+> > 
+> > On Mon, Apr 22, 2019 at 11:32:56AM +0300, Alexandru Ardelean wrote:  
+> > > This helper is similar to __sysfs_match_string() with the exception
+> > > that it
+> > > ignores NULL elements within the array.  
+> > 
+> > sysfs is "one value per file", why are you trying to write multiple
+> > things on a single line to a single sysfs file?
+> > 
+> > Is IIO really that messy?  :)
 > >   
-> > > On Sun, 21 Apr 2019, Ronald Tschalär wrote:
-> > >   
-> > > > On 2016/2017 MacBook Pro's with a Touch Bar the ALS is attached to,
-> > > > and exposed via the iBridge device. This provides the driver for that
-> > > > sensor.    
-> > > 
-> > > some comments below inline  
-> > I'll 'nest' on Peter's review to avoid repetition.
-> > 
-> > A few additional comments inline.  
 > 
-> Thank you both for your reviews. I've applied most of your
-> suggestions, so I'm limiting my responses below to just those places
-> where I need further clarification or can provide some answers.
+> Hmm, I don't think I understood the comment/question, or maybe I did not
+> formulate the comment properly.
 > 
-> [snip]
-> > > > +static int appleals_read_raw(struct iio_dev *iio_dev,
-> > > > +			     struct iio_chan_spec const *chan,
-> > > > +			     int *val, int *val2, long mask)
-> > > > +{
-> > > > +	struct appleals_device *als_dev =
-> > > > +				*(struct appleals_device **)iio_priv(iio_dev);
-> > > > +	__s32 value;
-> > > > +	int rc;
-> > > > +
-> > > > +	*val = 0;
-> > > > +	*val2 = 0;    
-> > > 
-> > > no need to set these here
-> > >   
-> > > > +
-> > > > +	switch (mask) {
-> > > > +	case IIO_CHAN_INFO_RAW:
-> > > > +	case IIO_CHAN_INFO_PROCESSED:
-> > > > +		*val = appleals_get_field_value(als_dev, als_dev->illum_field);  
-> > 
-> > How can one read by both processed and raw?  
+> Maybe Jonathan can pitch-in here if I'm saying something wrong.
 > 
-> From my understanding, processed is a converted and normalized value
-> of raw? But since the raw value is already in Lux the processed value
-> is then the same. Furthermore, looking at userspace apps that read
-> these values (e.g. iio-sensor-proxy, lightsd) they seem to be all over
-> the map in terms of what sysfs entries they read:
-> in_illuminance_input, in_intensity_both_raw, etc. So I figured
-> providing both would provide maximal compatibility.
-> 
-> What then is currently the preferred approach here?
-
-Just provide the processed value.  We may have to fix any userspace apps
-that aren't checking both.  For the raw version they should be applying the
-scale in userspace.
+> So, in IIO there is `struct iio_enum` which is essentially a sysfs wrapper
+> for exposing an "enum" type to userspace via sysfs (which takes only one
+> value). This iio_enum type is basically a string-to-int mapping.
 
 > 
-> > > > +	case IIO_CHAN_INFO_HYSTERESIS:
-> > > > +		if (val == APPLEALS_DYN_SENS) {
-> > > > +			if (als_dev->cur_hysteresis != APPLEALS_DYN_SENS) {
-> > > > +				als_dev->cur_hysteresis = val;
-> > > > +				illum = appleals_get_field_value(als_dev,
-> > > > +							als_dev->illum_field);
-> > > > +				appleals_update_dyn_sensitivity(als_dev, illum);  
-> > 
-> > There is some debate in another thread on whether dynamic sensitivity can be
-> > mapped to hysteresis or not...  
+> Some example in C:
 > 
-> Is that the "drivers: iio: Add more data field for iio driver
-> hysteresis parsing" thread?
+> enum {
+>     ENUM0,
+>     ENUM1,
+>     ENUM5 = 5,
+>     ENUM6,
+>     ENUM7
+> };
+> 
+> 
+> /* Notice the gaps in the elements */
+> static const char * const item_strings[] = {
+>         [ENUM0] = "mode0",
+>         [ENUM1] = "mode1",
+>         [ENUM5] = "mode5",
+>         [ENUM6] = "mode6", 
+>         [ENUM7] = "mode7",
+> };
+>                          
+> static const struct iio_enum iio_enum1 = {
+>         .items = item_strings,
+>         .num_items = ARRAY_SIZE(item_strings),
+>         .set = iio_enum1_set,
+>         .get = iio_enum1_get,
+> };
+> 
+> 
+> The signature of the iio_enum1_set / iio_enum1_get is below:
+> 
+> static int iio_enum1_set(struct iio_dev *indio_dev,
+>         const struct iio_chan_spec *chan, unsigned int val);
+> 
+> static int iio_enum1_get(struct iio_dev *indio_dev,
+>         const struct iio_chan_spec *chan)
+> 
+> 
+> IIO core resolves the string-to-int mapping.
+> It uses __sysfs_match_string() to do that, but it requires that the list of
+> strings (and C enums) be contiguous.
+> This change [and V2 of this patch] introduces a
+> __sysfs_match_string_with_gaps() helper that ignores gaps (represented as
+> NULLs).
+> 
+> For reference, __sysfs_match_string() returns -EINVAL on the first NULL in
+> the array of strings (regardless of the given array size).
+> 
+> __sysfs_match_string_with_gaps() is typically helpful when C enums refer to
+> bitfields, or have some equivalence in HW.
+> 
 
-That's the one.
+You have described it well.
+Perhaps the issue is in the naming? Or more description is needed for the original
+patch.
 
-> 
-> In any case, I'm using the value 0 here to indicate that the
-> pseudo-percent-relative change sensitivity should be used. Better
-> suggestions certainly welcome.
+It's worth highlighting that the current help text for
+__sysfs_match_string has a description that says:
 
-It seems we are converging on a new IIO_CHAN_INFO type for sensitivity.
+/**
+ * __sysfs_match_string - matches given string in an array
+ * @array: array of strings
+ * @n: number of strings in the array or -1 for NULL terminated arrays
+ * @str: string to match with
+ *
+ * Returns index of @str in the @array or -EINVAL, just like match_string().
+ * Uses sysfs_streq instead of strcmp for matching.
+ */
 
-> 
-> [snip]
-> > > > +static const struct iio_chan_spec appleals_channels[] = {
-> > > > +	{
-> > > > +		.type = IIO_INTENSITY,
-> > > > +		.modified = 1,
-> > > > +		.channel2 = IIO_MOD_LIGHT_BOTH,
-> > > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> > > > +			BIT(IIO_CHAN_INFO_RAW),  
-> > Why return both processed and raw?  We don't generally allow that in IIO
-> > (there are a few historical exceptions due to us getting it wrong the
-> > first time).  
-> 
-> Ok. But which should be used then, especially in view of the fact that
-> different user-space apps/daemons appear to use different values?
- forwards.
+so one could argue that if you pass a value of n which is not -1 the function
+should not assume that any NULL terminates the array...
 
-> 
-> [snip]
-> > > > +static int appleals_config_iio(struct appleals_device *als_dev)  
-> [snip]
-> > > > +	iio_dev = iio_device_alloc(sizeof(als_dev));    
-> > > 
-> > > how about using the devm_ variants?  
-> 
-> The problem is that there is no device with the proper lifetime here.
-> In particular we can't use hid_device (the only struct device
-> available here) because the instances of those can (and do) outlive
-> the module. This is a consequence of the hid-driver demuxing: e.g.
-> when this als module is unloaded, the hid_device is still in use by
-> the touchbar driver, and if this als module is then loaded again it
-> will get associated with that same hid_device again.
-Fair enough.
-
-> 
-> [snip]
-> > > > +	rc = iio_device_register(iio_dev);
-> > > > +	if (rc) {
-> > > > +		dev_err(als_dev->log_dev, "failed to register iio device: %d\n",
-> > > > +			rc);
-> > > > +		goto unreg_iio_trig;
-> > > > +	}
-> > > > +
-> > > > +	als_dev->iio_dev = iio_dev;  
-> > 
-> > I really don't like nest of pointers going on in here.  I haven't dug
-> > down to check if any of them can be remove, but they are definitely
-> > ugly to deal with.  
-> 
-> I'm not sure how this can be avoided: *iio_dev is allocated by
-> iio_device_alloc(), and this is just storing that pointer in our data
-> structure for this als device.
-
-You are probably correct.  Ugly will have to stay :(
-This tends to happen when we end up merging various different
-driver subsystems together like this.
-
-> 
-> [snip]
-> > > > +static int appleals_probe(struct hid_device *hdev,
-> > > > +			  const struct hid_device_id *id)
-> > > > +{
-> > > > +	struct appleals_device *als_dev =
-> > > > +		appleib_get_drvdata(hid_get_drvdata(hdev),
-> > > > +				    &appleals_hid_driver);
-> > > > +	struct hid_field *state_field;
-> > > > +	struct hid_field *illum_field;
-> > > > +	int rc;
-> > > > +
-> > > > +	/* find als fields and reports */
-> > > > +	state_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-> > > > +					    HID_USAGE_SENSOR_PROP_REPORT_STATE);
-> > > > +	illum_field = appleib_find_hid_field(hdev, HID_USAGE_SENSOR_ALS,
-> > > > +					     HID_USAGE_SENSOR_LIGHT_ILLUM);
-> > > > +	if (!state_field || !illum_field)
-> > > > +		return -ENODEV;
-> > > > +
-> > > > +	if (als_dev->hid_dev) {
-> > > > +		dev_warn(als_dev->log_dev,
-> > > > +			 "Found duplicate ambient light sensor - ignoring\n");  
-> > 
-> > I'll bite.  So how can this actually happen?  What fundamentally breaks in
-> > your model if there really are two?  Can you fix whatever that is so
-> > as to drop this handling?  
-> 
-> This should indeed never happen - the check is just defensive
-> programming, in case either some new device in some new model appears,
-> or due to some bug somewhere.
-> 
-> To actually handle this I'd need to split up appleals_device into a
-> per iBridge-device part and a per ALS-device part, and allow multiple
-> ALS-device parts. This is certainly doable, but seemed a bit overkill
-> for something that is unlikely to ever be needed.
-
-Fair enough I guess.
-
-> 
-> [snip]
-> > > > +static void appleals_remove(struct hid_device *hdev)
-> > > > +{
-> > > > +	struct appleals_device *als_dev =
-> > > > +		appleib_get_drvdata(hid_get_drvdata(hdev),
-> > > > +				    &appleals_hid_driver);
-> > > > +    
-> > > 
-> > > could be a lot less if devm_ were used?  
-> 
-> Agreed, but see explanation above of why this can't be used.
-> 
-> > > > +	if (als_dev->iio_dev) {
-> > > > +		iio_device_unregister(als_dev->iio_dev);
-> > > > +
-> > > > +		iio_trigger_unregister(als_dev->iio_trig);
-> > > > +		iio_trigger_free(als_dev->iio_trig);
-> > > > +		als_dev->iio_trig = NULL;  
-> > 
-> > I would be decidedly worried if you actually have any paths
-> > where setting these to NULL do anything useful. By the time
-> > we get here we should absolutely 'know' nothing will touch
-> > these pointers.  
-> 
-> I guess I was being overly paranoid here. I've removed these now.
-> 
-> > It is these that are blocking Peter's suggestion of using
-> > devm to clean all of this up automatically for you.  
-> 
-> No, that is for a different reason - see above.
-> 
-> [snip]
-> > > > +static int appleals_platform_probe(struct platform_device *pdev)
-> > > > +{
-> > > > +	struct appleib_platform_data *pdata = pdev->dev.platform_data;
-> > > > +	struct appleib_device *ib_dev = pdata->ib_dev;
-> > > > +	struct appleals_device *als_dev;
-> > > > +	int rc;
-> > > > +
-> > > > +	als_dev = kzalloc(sizeof(*als_dev), GFP_KERNEL);
-> > > > +	if (!als_dev)
-> > > > +		return -ENOMEM;
-> > > > +
-> > > > +	als_dev->ib_dev = ib_dev;
-> > > > +	als_dev->log_dev = pdata->log_dev;
-> > > > +
-> > > > +	rc = appleib_register_hid_driver(ib_dev, &appleals_hid_driver, als_dev);  
-> > 
-> > Hmm. This is all a bit odd.  We register a platform device, to call it's driver
-> > so that it can then register another driver?  I'll let Lee comment on that but
-> > it does seem overly complex.  
-> 
-> "Normally" this call would be to hid_register_driver().
-
-> However, as I
-> tried to explain in the cover letter and module comments, at least one
-> of the hid_device's needs to be shared by both this als driver and the
-> touchbar driver. But the linux device/driver architecture does not
-> allow multiple drivers to be attached to a single device. Hence the
-> mfd driver implements demuxing hid_driver that allows multiple
-> hid_drivers to be registered for a single hid_device. And this is why
-> we register our hid_driver with this demuxing driver here instead of
-> directly via hid_register_driver().
-
-I'd expect a probe to create a device managed by the driver.  The drive would normally
-be registered on module load, hence _init, rather than probe.
-
-I can't find any instances of hid_register_driver being called from a probe function.
+So basically this new function is implementing what I would have assumed
+__sysfs_match_string would do, but doesn't.
 
 Jonathan
 
 
+
+> Thanks
+> Alex
 > 
-> Does this make sense?
-> 
-> 
->   Cheers,
-> 
->   Ronald
-> 
+> > thanks,
+> > 
+> > greg k-h  
 
 
