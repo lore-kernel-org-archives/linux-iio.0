@@ -2,149 +2,285 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67222C10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8A2C10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 10:47:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2FAA320656
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:23:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6E25021773
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 10:47:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="jbAM7o/j"
+	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="S4IKo4iC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728257AbfDXJXm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 05:23:42 -0400
-Received: from mail-it1-f195.google.com ([209.85.166.195]:39593 "EHLO
-        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbfDXJXi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 05:23:38 -0400
-Received: by mail-it1-f195.google.com with SMTP id e13so5038060itk.4
-        for <linux-iio@vger.kernel.org>; Wed, 24 Apr 2019 02:23:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=DauuNczlRd9X8buzI4xdSHwEG9c8tCZ2JlYBlpW6XHM=;
-        b=jbAM7o/jMWtDNPN71AU7EcKbPEPfOvzM9x9Bwgv7w8iIv14glHWomJsz8FQzvaEwc7
-         CvsGTHmh+qRjyd1wKzANoPEBn9hztP6JCe9P2Js+h7/lvAPZm9HqnSCyuod2Ua+MRsAC
-         RDWyKmn2GX3U6zMdHdp3n1pPfaJxOlvME7dfE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=DauuNczlRd9X8buzI4xdSHwEG9c8tCZ2JlYBlpW6XHM=;
-        b=TCuVmkQ7cX/FOvllppR6tjRl/3Z7yWwdx8WXyNraRRAYpdMGkWvDELDWDhjhtf3/bv
-         sRWc9XJ208LzTQ2Cqugu8H4MAwBbc8M6jrU18H2VGlQ+HmPzIPYgpYBXaxXfHivj6YJ/
-         QOZ9SElqo2FDQsZz55BFjm7ndH3D/FxbO57tan0ggKVVKweHdsJ95aHDiPPScwvpua+y
-         J1gaU6pLyfKVlCevWO9+JqpztQlIMc4xIl+tAKjnek2MNEvDyCMMBIhsAGT9cptdS/KE
-         N0UnDVHIHbH6tqkcm89xbOZebVUSqyZCoNHQ3C6NxM52pEWyt+6+AGGBOMcR3fn0d+EL
-         CRPA==
-X-Gm-Message-State: APjAAAWapvbQD+ZEuTugT3j5T6xE6MbexDoUBXKSMhOXnXPk9FfYI1Ve
-        QLb+RKQoowxlfuJxyyrl3Z9LrIjcugFUweDPJdvt3Q==
-X-Google-Smtp-Source: APXvYqzjLJ8vwMexMemwHkt6YTrRa37njJ4Z0PN+iUwfptrXohQ0V4k1sNaTeSY+EZNeB+TY2tmG95/ocRHghGrfjtc=
-X-Received: by 2002:a05:660c:209:: with SMTP id y9mr6066409itj.31.1556097817751;
- Wed, 24 Apr 2019 02:23:37 -0700 (PDT)
-MIME-Version: 1.0
-References: <1555524925-15450-1-git-send-email-mohankumar718@gmail.com>
- <CAJCx=gmi6=uXbydpE2gY2x-XijtAd=bfufoJ+gbO1KU1n++g3Q@mail.gmail.com> <20190422114821.5955d4fa@archlinux>
-In-Reply-To: <20190422114821.5955d4fa@archlinux>
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-Date:   Wed, 24 Apr 2019 17:23:26 +0800
-Message-ID: <CAJCx=g=8WEAVxdhOQni1gd2D-mTbuc8kTa6nQhF3nQ9JfGDJKg@mail.gmail.com>
-Subject: Re: [PATCH] drivers: iio: proximity: This patch fix the following
- checkpatch warning.
+        id S1727527AbfDXKrU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 06:47:20 -0400
+Received: from chill.innovation.ch ([216.218.245.220]:41038 "EHLO
+        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726238AbfDXKrT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 06:47:19 -0400
+Date:   Wed, 24 Apr 2019 03:47:18 -0700
+DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch C32DB640133
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
+        s=default; t=1556102838;
+        bh=6BDXPJ2ZJFu8vDGvEWvUwhWSHyx64CfI8MFsQ3HJLqE=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=S4IKo4iCubUjt2y7hjPT0bMLacVFFGsjnsjkTlim0jhDycE7x2/EXbr0X5H4PWK00
+         0JFKsRy7DUeK4ObcDEJ70xDxNM1FgsnnyeXENWAI+x8kevq0U64EmfOT/Vx/TsE/mV
+         ASO2q4Bo84bu9uHCi4SfweFqh5bcXlnHg/9oKXpNaFldcadv9RcoLv0/o3/YtpoUWM
+         GaiKCYtFTH/yzecBsaF0W04fy3tZr6fA3S1btwidzt+7SW0q3dYbC5aXfUJCxhigN6
+         WA1zEQAKQWHih2dhUXBe1jnovX/XX6jYbt0U5h8Sebo/Ictx5dPXZTmYy3aSh3QrDE
+         aJqnEKYY7B0BQ==
+From:   "Life is hard, and then you die" <ronald@innovation.ch>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Mohan Kumar <mohankumar718@gmail.com>,
-        Andreas Klinger <ak@it-klinger.de>,
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
+Message-ID: <20190424104718.GA31301@innovation.ch>
+References: <20190422031251.11968-1-ronald@innovation.ch>
+ <20190422031251.11968-2-ronald@innovation.ch>
+ <20190422123426.2d0b4bdf@archlinux>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190422123426.2d0b4bdf@archlinux>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 22, 2019 at 6:48 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Thu, 18 Apr 2019 16:23:51 -0700
-> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
->
-> > See comments inline
-> >
-> > On Wed, Apr 17, 2019 at 11:15 AM Mohan Kumar <mohankumar718@gmail.com> wrote:
-> > >
-> > > As per Documentation/timers/timers-howto.txt Msleep < 20ms can sleep for
-> > > up to 20ms. so use usleep_range.
-> > >
-> > > Signed-off-by: Mohan Kumar <mohankumar718@gmail.com>
-> > > ---
-> > >  drivers/iio/proximity/mb1232.c | 2 +-
-> > >  drivers/iio/proximity/srf08.c  | 4 ++--
-> > >  2 files changed, 3 insertions(+), 3 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
-> > > index 166b3e6..74f7eae 100644
-> > > --- a/drivers/iio/proximity/mb1232.c
-> > > +++ b/drivers/iio/proximity/mb1232.c
-> > > @@ -81,7 +81,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
-> > >                 }
-> > >         } else {
-> > >                 /* use simple sleep if announce irq is not connected */
-> > > -               msleep(15);
-> > > +               usleep_range(15000, 20000);
-> >
-> > This is actually less than ideal.. because usleep_range uses the
-> > hrtimers which forces an interrupt.
-> >
-> > Unless you actually need to read between 15ms and 20ms it is best just
-> > to leave the msleep() as it is, and let it take a bit longer
-> > if required.
-> Good response.  Perhaps Mohan could follow up with a patch to add
-> a comment to this effect to save anyone else trying to 'fix' this
-> issue in future?
 
-Change of the warning message in the checkpatch.pl script you mean?
+  Hi Jonathan,
 
-- Matt
+On Mon, Apr 22, 2019 at 12:34:26PM +0100, Jonathan Cameron wrote:
+> On Sun, 21 Apr 2019 20:12:49 -0700
+> Ronald Tschalär <ronald@innovation.ch> wrote:
+> 
+> > The iBridge device provides access to several devices, including:
+> > - the Touch Bar
+> > - the iSight webcam
+> > - the light sensor
+> > - the fingerprint sensor
+> > 
+> > This driver provides the core support for managing the iBridge device
+> > and the access to the underlying devices. In particular, since the
+> > functionality for the touch bar and light sensor is exposed via USB HID
+> > interfaces, and the same HID device is used for multiple functions, this
+> > driver provides a multiplexing layer that allows multiple HID drivers to
+> > be registered for a given HID device. This allows the touch bar and ALS
+> > driver to be separated out into their own modules.
+> > 
+> > Signed-off-by: Ronald Tschalär <ronald@innovation.ch
+> Hi Ronald,
+> 
+> I've only taken a fairly superficial look at this.  A few global
+> things to note though.
 
->
-> Thanks,
->
-> Jonathan
-> >
-> > - Matt
-> >
-> > >         }
-> > >
-> > >         ret = i2c_master_recv(client, (char *)&buf, sizeof(buf));
-> > > diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
-> > > index f2bf783..605a582 100644
-> > > --- a/drivers/iio/proximity/srf08.c
-> > > +++ b/drivers/iio/proximity/srf08.c
-> > > @@ -150,7 +150,7 @@ static int srf08_read_ranging(struct srf08_data *data)
-> > >          * polling for not more than 20 ms should be enough
-> > >          */
-> > >         waittime = 1 + data->range_mm / 172;
-> > > -       msleep(waittime);
-> > > +       usleep_range(waittime * 1000, (waittime * 1000) + 2000);
-> > >         for (i = 0; i < 4; i++) {
-> > >                 ret = i2c_smbus_read_byte_data(data->client,
-> > >                                                 SRF08_READ_SW_REVISION);
-> > > @@ -158,7 +158,7 @@ static int srf08_read_ranging(struct srf08_data *data)
-> > >                 /* check if a valid version number is read */
-> > >                 if (ret < 255 && ret > 0)
-> > >                         break;
-> > > -               msleep(5);
-> > > +               usleep_range(5000, 15000);
-> > >         }
-> > >
-> > >         if (ret >= 255 || ret <= 0) {
-> > > --
-> > > 2.7.4
-> > >
->
+Thanks for this review.
+
+> 1. Please either use kernel-doc style for function descriptions, or
+>    do not.  Right now you are sort of half way there.
+
+Apologies, on re-reading the docs I realize what you mean here. Should
+be fixed now (next rev).
+
+> 2. There is quite a complex nest of separate structures being allocated,
+>    so think about whether they can be simplified.  In particular
+>    use of container_of macros can allow a lot of forwards and backwards
+>    pointers to be dropped if you embed the various structures directly.
+
+Done (see also below).
+
+[snip]
+> > +#define	call_void_driver_func(drv_info, fn, ...)			\
+> 
+> This sort of macro may seem like a good idea because it saves a few lines
+> of code.  However, that comes at the cost of readability, so just
+> put the code inline.
+> 
+> > +	do {								\
+> > +		if ((drv_info)->driver->fn)				\
+> > +			(drv_info)->driver->fn(__VA_ARGS__);		\
+> > +	} while (0)
+> > +
+> > +#define	call_driver_func(drv_info, fn, ret_type, ...)			\
+> > +	({								\
+> > +		ret_type rc = 0;					\
+> > +									\
+> > +		if ((drv_info)->driver->fn)				\
+> > +			rc = (drv_info)->driver->fn(__VA_ARGS__);	\
+> > +									\
+> > +		rc;							\
+> > +	})
+
+Just to clarify, you're only talking about removing/inlining the
+call_void_driver_func() macro, not the call_driver_func() macro,
+right?
+
+[snip]
+> > +static struct appleib_hid_dev_info *
+> > +appleib_add_device(struct appleib_device *ib_dev, struct hid_device *hdev,
+> > +		   const struct hid_device_id *id)
+> > +{
+> > +	struct appleib_hid_dev_info *dev_info;
+> > +	struct appleib_hid_drv_info *drv_info;
+> > +
+> > +	/* allocate device-info for this device */
+> > +	dev_info = kzalloc(sizeof(*dev_info), GFP_KERNEL);
+> > +	if (!dev_info)
+> > +		return NULL;
+> > +
+> > +	INIT_LIST_HEAD(&dev_info->drivers);
+> > +	dev_info->device = hdev;
+> > +	dev_info->device_id = id;
+> > +
+> > +	/* notify all our sub drivers */
+> > +	mutex_lock(&ib_dev->update_lock);
+> > +
+> This is interesting. I'd like to see a comment here on what
+> this flag is going to do. 
+
+I'm not sure I follow: update_lock is simply a mutex protecting all
+driver and device update (i.e. add/remove) functions. Are you
+therefore looking for something like:
+
+	/* protect driver and device lists against concurrent updates */
+	mutex_lock(&ib_dev->update_lock);
+
+[snip]
+> > +static int appleib_probe(struct acpi_device *acpi)
+> > +{
+> > +	struct appleib_device *ib_dev;
+> > +	struct appleib_platform_data *pdata;
+> Platform_data has a lot of historical meaning in Linux.
+> Also you have things in here that are not platform related
+> at all, such as the dev pointer.  Hence I would rename it
+> as device_data or private or something like that.
+
+Ok. I guess I called in platform_data because it's stored in the mfd
+cell's "platform_data" field. Anyway, changed it per your suggestion.
+
+> > +	int i;
+> > +	int ret;
+> > +
+> > +	if (appleib_dev)
+> This singleton bothers me a bit. I'm really not sure why it
+> is necessary.  You can just put a pointer to this in
+> the pdata for the subdevs and I think that covers most of your
+> usecases.  It's generally a bad idea to limit things to one instance
+> of a device unless that actually major simplifications.
+> I'm not seeing them here.
+
+Yes, this one is quite ugly. appleib_dev is static so that
+appleib_hid_probe() can find it. I could not find any other way to
+pass the appleib_dev instance to that probe function.
+
+However, on looking at this again, I realized that hid_device_id has
+a driver_data field which can be used for this; so if I added the
+hid_driver and hid_device_id structs to the appleib_device (instead of
+making them static like now) I could fill in the driver_data and avoid
+this hack. This looks much cleaner.
+
+Thanks for pointing this uglyness out again.
+
+[snip]
+> > +	if (!ib_dev->subdevs) {
+> > +		ret = -ENOMEM;
+> > +		goto free_dev;
+> > +	}
+> > +
+> > +	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
+> 
+> Might as well embed this in ib_dev as well.
+
+Agreed.
+
+> That would let
+> you used container_of to avoid having to carry the ib_dev pointer
+> around in side pdata.
+
+I see. I guess my main reservation is that the functions exported to
+the sub-drivers would now take a 'struct appleib_device_data *'
+argument instead of a 'struct appleib_device *', which just seems a
+bit unnatural. E.g.
+
+  int appleib_register_hid_driver(struct appleib_device_data *ib_ddata,
+                                  struct hid_driver *driver, void *data);
+
+instead of (the current)
+
+  int appleib_register_hid_driver(struct appleib_device *ib_dev,
+                                  struct hid_driver *driver, void *data);
+
+[snip]
+> > +	ret = mfd_add_devices(&acpi->dev, PLATFORM_DEVID_NONE,
+> > +			      ib_dev->subdevs, ARRAY_SIZE(appleib_subdevs),
+> > +			      NULL, 0, NULL);
+> > +	if (ret) {
+> > +		dev_err(LOG_DEV(ib_dev), "Error adding MFD devices: %d\n", ret);
+> > +		goto free_pdata;
+> > +	}
+> > +
+> > +	acpi->driver_data = ib_dev;
+> > +	appleib_dev = ib_dev;
+> > +
+> > +	ret = hid_register_driver(&appleib_hid_driver);
+> > +	if (ret) {
+> > +		dev_err(LOG_DEV(ib_dev), "Error registering hid driver: %d\n",
+> > +			ret);
+> > +		goto rem_mfd_devs;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +rem_mfd_devs:
+> > +	mfd_remove_devices(&acpi->dev);
+> > +free_pdata:
+> > +	kfree(pdata);
+> > +free_subdevs:
+> > +	kfree(ib_dev->subdevs);
+> > +free_dev:
+> > +	appleib_dev = NULL;
+> > +	acpi->driver_data = NULL;
+> Why at this point?  It's not set to anything until much later in the
+> probe flow.
+
+If the hid_register_driver() call fails, we get here after driver_data
+has been assigned. However, looking at this again, acpi->driver_data
+is only used by the remove, suspend, and resume callbacks, and those
+will not be called until a successful return from probe; therefore I
+can safely move the setting of driver_data to after the
+hid_register_driver() call and avoid having to set it to NULL in the
+error cleanup.
+
+> May be worth thinking about devm_ managed allocations
+> to cleanup some of these allocations automatically and simplify
+> the error handling.
+
+Good point, thanks.
+
+[snip]
+> > +
+> > +	rc = acpi_execute_simple_method(ib_dev->asoc_socw, NULL, 0);
+> > +	if (ACPI_FAILURE(rc))
+> > +		dev_warn(LOG_DEV(ib_dev), "SOCW(0) failed: %s\n",
+> 
+> I can sort of see you might want to do the LOG_DEV for consistency
+> but here I'm fairly sure it's just dev which might be clearer.
+
+Sorry, you mean rename the macro LOG_DEV() to just DEV()?
+
+
+  Cheers,
+
+  Ronald
+
