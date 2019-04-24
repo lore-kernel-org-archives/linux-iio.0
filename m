@@ -2,285 +2,209 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB8A2C10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 10:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DE3DC10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:10:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6E25021773
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 10:47:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="S4IKo4iC"
+	by mail.kernel.org (Postfix) with ESMTP id 2DA47218D3
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 12:10:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727527AbfDXKrU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 06:47:20 -0400
-Received: from chill.innovation.ch ([216.218.245.220]:41038 "EHLO
-        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726238AbfDXKrT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 06:47:19 -0400
-Date:   Wed, 24 Apr 2019 03:47:18 -0700
-DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch C32DB640133
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
-        s=default; t=1556102838;
-        bh=6BDXPJ2ZJFu8vDGvEWvUwhWSHyx64CfI8MFsQ3HJLqE=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=S4IKo4iCubUjt2y7hjPT0bMLacVFFGsjnsjkTlim0jhDycE7x2/EXbr0X5H4PWK00
-         0JFKsRy7DUeK4ObcDEJ70xDxNM1FgsnnyeXENWAI+x8kevq0U64EmfOT/Vx/TsE/mV
-         ASO2q4Bo84bu9uHCi4SfweFqh5bcXlnHg/9oKXpNaFldcadv9RcoLv0/o3/YtpoUWM
-         GaiKCYtFTH/yzecBsaF0W04fy3tZr6fA3S1btwidzt+7SW0q3dYbC5aXfUJCxhigN6
-         WA1zEQAKQWHih2dhUXBe1jnovX/XX6jYbt0U5h8Sebo/Ictx5dPXZTmYy3aSh3QrDE
-         aJqnEKYY7B0BQ==
-From:   "Life is hard, and then you die" <ronald@innovation.ch>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
-Message-ID: <20190424104718.GA31301@innovation.ch>
-References: <20190422031251.11968-1-ronald@innovation.ch>
- <20190422031251.11968-2-ronald@innovation.ch>
- <20190422123426.2d0b4bdf@archlinux>
+        id S1729005AbfDXMK0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 08:10:26 -0400
+Received: from szxga04-in.huawei.com ([45.249.212.190]:6687 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726322AbfDXMK0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Apr 2019 08:10:26 -0400
+Received: from DGGEMS409-HUB.china.huawei.com (unknown [172.30.72.59])
+        by Forcepoint Email with ESMTP id DC1344991EA71C4CC854;
+        Wed, 24 Apr 2019 20:10:23 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS409-HUB.china.huawei.com
+ (10.3.19.209) with Microsoft SMTP Server id 14.3.439.0; Wed, 24 Apr 2019
+ 20:10:22 +0800
+Date:   Wed, 24 Apr 2019 13:10:09 +0100
+From:   Jonathan Cameron <jonathan.cameron@huawei.com>
+To:     Alexandre <amergnat@baylibre.com>
+CC:     Jonathan Cameron <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <baylibre-upstreaming@groups.io>,
+        "Dmitry Torokhov" <dmitry.torokhov@gmail.com>,
+        <linux-input@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iio: Add PAT9125 optical tracker sensor
+Message-ID: <20190424131009.00000d36@huawei.com>
+In-Reply-To: <327a56e4-66d8-859c-7f35-458b533ac72f@baylibre.com>
+References: <1554456870-8104-1-git-send-email-amergnat@baylibre.com>
+        <1554456870-8104-4-git-send-email-amergnat@baylibre.com>
+        <20190407112024.6297cbfa@archlinux>
+        <f8ffca5b-09a8-cad7-4561-bf1263388228@baylibre.com>
+        <20190422094236.537e3a01@archlinux>
+        <327a56e4-66d8-859c-7f35-458b533ac72f@baylibre.com>
+Organization: Huawei
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20190422123426.2d0b4bdf@archlinux>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, 23 Apr 2019 10:57:40 +0200
+Alexandre <amergnat@baylibre.com> wrote:
 
-  Hi Jonathan,
+Hi Alexandre,
 
-On Mon, Apr 22, 2019 at 12:34:26PM +0100, Jonathan Cameron wrote:
-> On Sun, 21 Apr 2019 20:12:49 -0700
-> Ronald Tschalär <ronald@innovation.ch> wrote:
+> Hi Jonathan,
 > 
-> > The iBridge device provides access to several devices, including:
-> > - the Touch Bar
-> > - the iSight webcam
-> > - the light sensor
-> > - the fingerprint sensor
-> > 
-> > This driver provides the core support for managing the iBridge device
-> > and the access to the underlying devices. In particular, since the
-> > functionality for the touch bar and light sensor is exposed via USB HID
-> > interfaces, and the same HID device is used for multiple functions, this
-> > driver provides a multiplexing layer that allows multiple HID drivers to
-> > be registered for a given HID device. This allows the touch bar and ALS
-> > driver to be separated out into their own modules.
-> > 
-> > Signed-off-by: Ronald Tschalär <ronald@innovation.ch
-> Hi Ronald,
+> On 4/22/19 10:42, Jonathan Cameron wrote:
+> > On Tue, 16 Apr 2019 14:49:19 +0200
+> > Alexandre <amergnat@baylibre.com> wrote:
+> >  
+> >> Hello Jonathan,
+> >>
+> >> On 4/7/19 12:20, Jonathan Cameron wrote:  
+> >>> Hi Alexandre,
+> >>>
+> >>> So I have no problem with this as an IIO driver, but for devices that
+> >>> are somewhat 'on the edge' I always like to get a clear answer to the
+> >>> question: Why not input?
+> >>>
+> >>> I would also argue that, to actually be 'useful' we would typically need
+> >>> some representation of the 'mechanicals' that are providing the motion
+> >>> being measured.  Looking at the datasheet this includes, rotating shafts
+> >>> (side or end on), disk edges and flat surface tracking (mouse like).
+> >>>
+> >>> That's easy enough to do with the iio in kernel consumer interface. These
+> >>> are similar to when we handle analog electronic front ends.
+> >>>
+> >>> I you can, please describe what it is being used for in your application
+> >>> as that may give us somewhere to start!
+> >>>
+> >>> + CC Dmitry and linux-input.  
+> >> I developed this driver to detect the board movement which can't be
+> >> detected by accelerometer (very slow motion). I admit this use case can
+> >> be handled by an input, and I'm agree with you, PAT9125 driver could be
+> >> an input. But, like you said, this chip is able to track different kind
+> >> of motion, and additionally have an interrupt GPIO, so using it like
+> >> input limit the driver potential. This chip is designed to work in
+> >> industrial measurement or embedded systems, and the IIO API match with
+> >> these environments, so it's the best way to exploit the entire potential
+> >> of this chip.
+> >>
+> >> As I understand (from
+> >> https://www.kernel.org/doc/html/v4.12/input/event-codes.html#mice ),
+> >> mouse driver must report values when the device move. This feature
+> >> souldn't be mandatory for an optical tracker driver, specially for cases
+> >> where user prefers to use buffer or poll only when he need data.
+> >>  
+> >>> If 1 or 2, I would suggest that you provide absolute position to
+> >>> Linux.  So add the value to a software counter and provide that.
+> >>> 32 bits should be plenty of resolution for that.  
+> >> I can't provide absolute position, only relative. Do you mean using
+> >> input driver to do that ? If not, how is built the position data?  
+> > Sorry, I should have been clearer on this.
+> > I mean absolute relative to the start point.  So on startup you assume
+> > absolute position is 0 and go from there.  What I can't work out is
+> > if the device does internal tracking, or whether each time you read
+> > it effectively resets it's internal counters to 0 so the next measurement
+> > is relative to the previous one.  
+> Each time you read that reset internal counters to 0.
+> >>> Silly question for you.  What happens if you set the delta values to 0?
+> >>> Do we get an interrupt which is effectively data ready?
+> >>> If we do, you might want to think about a scheme where that is an option.
+> >>> As things currently stand we have a confusing interface where changing this
+> >>> threshold effects the buffered data output.   That should only be the
+> >>> case if this interface is for a trigger, not an event.  
+> >> I'm not sure to understand your question. Is it possible to read delta_x
+> >> and delta_y = 0 in special/corner case because internal value continue
+> >> to be updated after toggled motion_detect pin (used for IRQ) until
+> >> values registers are read and then motion_detect pin is released:
+> >>
+> >>    * Chip move (i.e. +2 on X axis and 0 on Y axis)
+> >>    * Motion_detect IRQ trigger and internal reg value is updated (i.e.
+> >>      delta_x = 2 and delta_y = 0.
+> >>    * GPIO IRQ handled but read_value isn't executed yet (timing reason)
+> >>    * Chip move back to it origin point (i.e. -2 on X axis and 0 on Y axis)
+> >>    * Motion_detect IRQ still low because it hasn't been reset by read
+> >>      value and internal reg value is updated (i.e. delta_x = 0 and
+> >>      delta_y = 0)
+> >>    * Read_value is executed, we get delta values = 0.  
+> > Again, I was unclear.  Is it possible to set the device to interrupt
+> > every time it evaluates whether motion has occured? Not only when it
+> > concludes that there has been some motion.  That would allow the interrupt
+> > to be used as a signal that the device has taken a measurement (data
+> > ready signal in other sensors).
+> >  
+> I don't know, the datasheet don't describe the role of each bit in 
+> registers and I don't found documentation which provide that. I had to 
+> do research on example code to retrieve some bits, but got nothing on 
+> motion detection pin configuration.
+
+That kind of rules out reporting this as a speed as we can't guarantee
+when the last read occurred. Oh well, was a bit optimistic!
+
 > 
-> I've only taken a fairly superficial look at this.  A few global
-> things to note though.
-
-Thanks for this review.
-
-> 1. Please either use kernel-doc style for function descriptions, or
->    do not.  Right now you are sort of half way there.
-
-Apologies, on re-reading the docs I realize what you mean here. Should
-be fixed now (next rev).
-
-> 2. There is quite a complex nest of separate structures being allocated,
->    so think about whether they can be simplified.  In particular
->    use of container_of macros can allow a lot of forwards and backwards
->    pointers to be dropped if you embed the various structures directly.
-
-Done (see also below).
-
-[snip]
-> > +#define	call_void_driver_func(drv_info, fn, ...)			\
+> >>> If it is actually not possible to report the two channels separately
+> >>> then don't report them at all except via the buffered interface and
+> >>> set the available scan masks so that both are on.  
+> >> I found a way to keep the consistency between delta x and delta y
+> >> (without losing data). The first part is to reset a value only when user
+> >> read it (also when it's buffered). The second part is to add the new
+> >> value to the old value. With these two mechanism, X and Y will always be
+> >> consistent:
+> >>
+> >>    * as possible during a move.
+> >>    * perfectly when move is finished.  
+> > Ah. This adding old value to a new value point is what I was getting
+> > at (I think) with 'absolute' position above.
+> >
+> > In industrial control for example you have absolute position by using
+> > limit switches to set your baseline.  Measurement devices are then
+> > capable of either reporting relative position, which is the movement
+> > since the last reading was taken, or 'absolute' position which is
+> > referenced to some known point.  It was this form of absolute position
+> > that I was suggesting you use.  If you use such a system without a
+> > limit switch it is normally called unreference motion.  You can do
+> > it but then the 0 is where ever your device was at power on.
+> > For some systems it doesn't actually matter (conveyor belts for
+> > instance where the positions you care about are between things
+> > on the belt, not the position of the belt itself).  
 > 
-> This sort of macro may seem like a good idea because it saves a few lines
-> of code.  However, that comes at the cost of readability, so just
-> put the code inline.
+> Ok, I decided to return delta between last read/buffering to stay closer 
+> to the hardware mechanism and still coherent with "IIO_CHAN_INFO_RAW". 
+> If user want absolute position, he can make an addition of all received 
+> value in user space, and that allow him to reset/replace the initial 
+> position when he want it.
+Hmm. Unfortunately this doesn't really map to the expectations of
+userspace in IIO.  This particular option is neither position nor speed,
+but rather a delta position.  For that we don't really have a current
+representation.  There is also not guarantee that you don't have multiple
+concurrent readers.  If that happens you will get a delta against something
+unknown.
+
+I think you need to do the addition in kernel to be able to provide
+userspace with something consistent.
+
+Jonathan
 > 
-> > +	do {								\
-> > +		if ((drv_info)->driver->fn)				\
-> > +			(drv_info)->driver->fn(__VA_ARGS__);		\
-> > +	} while (0)
-> > +
-> > +#define	call_driver_func(drv_info, fn, ret_type, ...)			\
-> > +	({								\
-> > +		ret_type rc = 0;					\
-> > +									\
-> > +		if ((drv_info)->driver->fn)				\
-> > +			rc = (drv_info)->driver->fn(__VA_ARGS__);	\
-> > +									\
-> > +		rc;							\
-> > +	})
-
-Just to clarify, you're only talking about removing/inlining the
-call_void_driver_func() macro, not the call_driver_func() macro,
-right?
-
-[snip]
-> > +static struct appleib_hid_dev_info *
-> > +appleib_add_device(struct appleib_device *ib_dev, struct hid_device *hdev,
-> > +		   const struct hid_device_id *id)
-> > +{
-> > +	struct appleib_hid_dev_info *dev_info;
-> > +	struct appleib_hid_drv_info *drv_info;
-> > +
-> > +	/* allocate device-info for this device */
-> > +	dev_info = kzalloc(sizeof(*dev_info), GFP_KERNEL);
-> > +	if (!dev_info)
-> > +		return NULL;
-> > +
-> > +	INIT_LIST_HEAD(&dev_info->drivers);
-> > +	dev_info->device = hdev;
-> > +	dev_info->device_id = id;
-> > +
-> > +	/* notify all our sub drivers */
-> > +	mutex_lock(&ib_dev->update_lock);
-> > +
-> This is interesting. I'd like to see a comment here on what
-> this flag is going to do. 
-
-I'm not sure I follow: update_lock is simply a mutex protecting all
-driver and device update (i.e. add/remove) functions. Are you
-therefore looking for something like:
-
-	/* protect driver and device lists against concurrent updates */
-	mutex_lock(&ib_dev->update_lock);
-
-[snip]
-> > +static int appleib_probe(struct acpi_device *acpi)
-> > +{
-> > +	struct appleib_device *ib_dev;
-> > +	struct appleib_platform_data *pdata;
-> Platform_data has a lot of historical meaning in Linux.
-> Also you have things in here that are not platform related
-> at all, such as the dev pointer.  Hence I would rename it
-> as device_data or private or something like that.
-
-Ok. I guess I called in platform_data because it's stored in the mfd
-cell's "platform_data" field. Anyway, changed it per your suggestion.
-
-> > +	int i;
-> > +	int ret;
-> > +
-> > +	if (appleib_dev)
-> This singleton bothers me a bit. I'm really not sure why it
-> is necessary.  You can just put a pointer to this in
-> the pdata for the subdevs and I think that covers most of your
-> usecases.  It's generally a bad idea to limit things to one instance
-> of a device unless that actually major simplifications.
-> I'm not seeing them here.
-
-Yes, this one is quite ugly. appleib_dev is static so that
-appleib_hid_probe() can find it. I could not find any other way to
-pass the appleib_dev instance to that probe function.
-
-However, on looking at this again, I realized that hid_device_id has
-a driver_data field which can be used for this; so if I added the
-hid_driver and hid_device_id structs to the appleib_device (instead of
-making them static like now) I could fill in the driver_data and avoid
-this hack. This looks much cleaner.
-
-Thanks for pointing this uglyness out again.
-
-[snip]
-> > +	if (!ib_dev->subdevs) {
-> > +		ret = -ENOMEM;
-> > +		goto free_dev;
-> > +	}
-> > +
-> > +	pdata = kzalloc(sizeof(*pdata), GFP_KERNEL);
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> >>
+> >> Regards,
+> >>
+> >> Alexandre
+> >>  
 > 
-> Might as well embed this in ib_dev as well.
-
-Agreed.
-
-> That would let
-> you used container_of to avoid having to carry the ib_dev pointer
-> around in side pdata.
-
-I see. I guess my main reservation is that the functions exported to
-the sub-drivers would now take a 'struct appleib_device_data *'
-argument instead of a 'struct appleib_device *', which just seems a
-bit unnatural. E.g.
-
-  int appleib_register_hid_driver(struct appleib_device_data *ib_ddata,
-                                  struct hid_driver *driver, void *data);
-
-instead of (the current)
-
-  int appleib_register_hid_driver(struct appleib_device *ib_dev,
-                                  struct hid_driver *driver, void *data);
-
-[snip]
-> > +	ret = mfd_add_devices(&acpi->dev, PLATFORM_DEVID_NONE,
-> > +			      ib_dev->subdevs, ARRAY_SIZE(appleib_subdevs),
-> > +			      NULL, 0, NULL);
-> > +	if (ret) {
-> > +		dev_err(LOG_DEV(ib_dev), "Error adding MFD devices: %d\n", ret);
-> > +		goto free_pdata;
-> > +	}
-> > +
-> > +	acpi->driver_data = ib_dev;
-> > +	appleib_dev = ib_dev;
-> > +
-> > +	ret = hid_register_driver(&appleib_hid_driver);
-> > +	if (ret) {
-> > +		dev_err(LOG_DEV(ib_dev), "Error registering hid driver: %d\n",
-> > +			ret);
-> > +		goto rem_mfd_devs;
-> > +	}
-> > +
-> > +	return 0;
-> > +
-> > +rem_mfd_devs:
-> > +	mfd_remove_devices(&acpi->dev);
-> > +free_pdata:
-> > +	kfree(pdata);
-> > +free_subdevs:
-> > +	kfree(ib_dev->subdevs);
-> > +free_dev:
-> > +	appleib_dev = NULL;
-> > +	acpi->driver_data = NULL;
-> Why at this point?  It's not set to anything until much later in the
-> probe flow.
-
-If the hid_register_driver() call fails, we get here after driver_data
-has been assigned. However, looking at this again, acpi->driver_data
-is only used by the remove, suspend, and resume callbacks, and those
-will not be called until a successful return from probe; therefore I
-can safely move the setting of driver_data to after the
-hid_register_driver() call and avoid having to set it to NULL in the
-error cleanup.
-
-> May be worth thinking about devm_ managed allocations
-> to cleanup some of these allocations automatically and simplify
-> the error handling.
-
-Good point, thanks.
-
-[snip]
-> > +
-> > +	rc = acpi_execute_simple_method(ib_dev->asoc_socw, NULL, 0);
-> > +	if (ACPI_FAILURE(rc))
-> > +		dev_warn(LOG_DEV(ib_dev), "SOCW(0) failed: %s\n",
+> Thanks for your comments,
 > 
-> I can sort of see you might want to do the LOG_DEV for consistency
-> but here I'm fairly sure it's just dev which might be clearer.
+> Alexandre
+> 
 
-Sorry, you mean rename the macro LOG_DEV() to just DEV()?
-
-
-  Cheers,
-
-  Ronald
 
