@@ -2,203 +2,149 @@ Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 851E2C10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67222C10F11
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:23:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 525C920656
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:22:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FAA320656
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 09:23:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="nNB7FerG"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="jbAM7o/j"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726921AbfDXJWq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 05:22:46 -0400
-Received: from onstation.org ([52.200.56.107]:38194 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726451AbfDXJWq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Apr 2019 05:22:46 -0400
-Received: from localhost.localdomain (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id B88913EE68;
-        Wed, 24 Apr 2019 09:22:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
-        s=default; t=1556097765;
-        bh=MriOHkE2SHiGikJJbiFQlSS7pHsZcIgtj9Evnmc1YqM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=nNB7FerGv5bh5/MAi3VXdzoQ/6V34g5iYldpN+uJ/71kfDyAJk5t/jmAcvU7pdaRB
-         +CwbbIlx+RprKQqoeVnP5KT+2kmbBVnyi2Whl/zhVufDBCZA+v+FKuhgtmtbjJCd6t
-         DSpXPhGgqIW5gc+rbA2ZLyAkbLO3a5hsRNgDOW3Q=
-From:   Brian Masney <masneyb@onstation.org>
-To:     jic23@kernel.org, robh+dt@kernel.org
-Cc:     lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 1/2] dt-bindings: iio: tsl2772: convert bindings to YAML format
-Date:   Wed, 24 Apr 2019 05:22:37 -0400
-Message-Id: <20190424092238.6381-1-masneyb@onstation.org>
-X-Mailer: git-send-email 2.20.1
+        id S1728257AbfDXJXm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 05:23:42 -0400
+Received: from mail-it1-f195.google.com ([209.85.166.195]:39593 "EHLO
+        mail-it1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726451AbfDXJXi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 05:23:38 -0400
+Received: by mail-it1-f195.google.com with SMTP id e13so5038060itk.4
+        for <linux-iio@vger.kernel.org>; Wed, 24 Apr 2019 02:23:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=DauuNczlRd9X8buzI4xdSHwEG9c8tCZ2JlYBlpW6XHM=;
+        b=jbAM7o/jMWtDNPN71AU7EcKbPEPfOvzM9x9Bwgv7w8iIv14glHWomJsz8FQzvaEwc7
+         CvsGTHmh+qRjyd1wKzANoPEBn9hztP6JCe9P2Js+h7/lvAPZm9HqnSCyuod2Ua+MRsAC
+         RDWyKmn2GX3U6zMdHdp3n1pPfaJxOlvME7dfE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=DauuNczlRd9X8buzI4xdSHwEG9c8tCZ2JlYBlpW6XHM=;
+        b=TCuVmkQ7cX/FOvllppR6tjRl/3Z7yWwdx8WXyNraRRAYpdMGkWvDELDWDhjhtf3/bv
+         sRWc9XJ208LzTQ2Cqugu8H4MAwBbc8M6jrU18H2VGlQ+HmPzIPYgpYBXaxXfHivj6YJ/
+         QOZ9SElqo2FDQsZz55BFjm7ndH3D/FxbO57tan0ggKVVKweHdsJ95aHDiPPScwvpua+y
+         J1gaU6pLyfKVlCevWO9+JqpztQlIMc4xIl+tAKjnek2MNEvDyCMMBIhsAGT9cptdS/KE
+         N0UnDVHIHbH6tqkcm89xbOZebVUSqyZCoNHQ3C6NxM52pEWyt+6+AGGBOMcR3fn0d+EL
+         CRPA==
+X-Gm-Message-State: APjAAAWapvbQD+ZEuTugT3j5T6xE6MbexDoUBXKSMhOXnXPk9FfYI1Ve
+        QLb+RKQoowxlfuJxyyrl3Z9LrIjcugFUweDPJdvt3Q==
+X-Google-Smtp-Source: APXvYqzjLJ8vwMexMemwHkt6YTrRa37njJ4Z0PN+iUwfptrXohQ0V4k1sNaTeSY+EZNeB+TY2tmG95/ocRHghGrfjtc=
+X-Received: by 2002:a05:660c:209:: with SMTP id y9mr6066409itj.31.1556097817751;
+ Wed, 24 Apr 2019 02:23:37 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1555524925-15450-1-git-send-email-mohankumar718@gmail.com>
+ <CAJCx=gmi6=uXbydpE2gY2x-XijtAd=bfufoJ+gbO1KU1n++g3Q@mail.gmail.com> <20190422114821.5955d4fa@archlinux>
+In-Reply-To: <20190422114821.5955d4fa@archlinux>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Wed, 24 Apr 2019 17:23:26 +0800
+Message-ID: <CAJCx=g=8WEAVxdhOQni1gd2D-mTbuc8kTa6nQhF3nQ9JfGDJKg@mail.gmail.com>
+Subject: Re: [PATCH] drivers: iio: proximity: This patch fix the following
+ checkpatch warning.
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Mohan Kumar <mohankumar718@gmail.com>,
+        Andreas Klinger <ak@it-klinger.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the tsl2772 device tree bindings to the new YAML format.
+On Mon, Apr 22, 2019 at 6:48 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Thu, 18 Apr 2019 16:23:51 -0700
+> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+>
+> > See comments inline
+> >
+> > On Wed, Apr 17, 2019 at 11:15 AM Mohan Kumar <mohankumar718@gmail.com> wrote:
+> > >
+> > > As per Documentation/timers/timers-howto.txt Msleep < 20ms can sleep for
+> > > up to 20ms. so use usleep_range.
+> > >
+> > > Signed-off-by: Mohan Kumar <mohankumar718@gmail.com>
+> > > ---
+> > >  drivers/iio/proximity/mb1232.c | 2 +-
+> > >  drivers/iio/proximity/srf08.c  | 4 ++--
+> > >  2 files changed, 3 insertions(+), 3 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
+> > > index 166b3e6..74f7eae 100644
+> > > --- a/drivers/iio/proximity/mb1232.c
+> > > +++ b/drivers/iio/proximity/mb1232.c
+> > > @@ -81,7 +81,7 @@ static s16 mb1232_read_distance(struct mb1232_data *data)
+> > >                 }
+> > >         } else {
+> > >                 /* use simple sleep if announce irq is not connected */
+> > > -               msleep(15);
+> > > +               usleep_range(15000, 20000);
+> >
+> > This is actually less than ideal.. because usleep_range uses the
+> > hrtimers which forces an interrupt.
+> >
+> > Unless you actually need to read between 15ms and 20ms it is best just
+> > to leave the msleep() as it is, and let it take a bit longer
+> > if required.
+> Good response.  Perhaps Mohan could follow up with a patch to add
+> a comment to this effect to save anyone else trying to 'fix' this
+> issue in future?
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
-Changes since v1:
-- Dropped description from reg and interrupts properties.
-- Dropped $ref from led-max-microamp, vdd-supply, and vddio-supply.
-- Changed 'tsl2772@39' in example to 'proximity-sensor@39'
+Change of the warning message in the checkpatch.pl script you mean?
 
- .../devicetree/bindings/iio/light/tsl2772.txt | 42 ----------
- .../bindings/iio/light/tsl2772.yaml           | 80 +++++++++++++++++++
- 2 files changed, 80 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.yaml
+- Matt
 
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.txt b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-deleted file mode 100644
-index 1c5e6f17a1df..000000000000
---- a/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--* AMS/TAOS ALS and proximity sensor
--
--Required properties:
--
--  - compatible: Should be one of
--		"amstaos,tsl2571"
--		"amstaos,tsl2671"
--		"amstaos,tmd2671"
--		"amstaos,tsl2771"
--		"amstaos,tmd2771"
--		"amstaos,tsl2572"
--		"amstaos,tsl2672"
--		"amstaos,tmd2672"
--		"amstaos,tsl2772"
--		"amstaos,tmd2772"
--		"avago,apds9930"
--  - reg: the I2C address of the device
--
--Optional properties:
--
--  - amstaos,proximity-diodes - proximity diodes to enable. <0>, <1>, or <0 1>
--                               are the only valid values.
--  - led-max-microamp - current for the proximity LED. Must be 100000, 50000,
--                       25000, or 13000.
--  - vdd-supply: phandle to the regulator that provides power to the sensor.
--  - vddio-supply: phandle to the regulator that provides power to the bus.
--  - interrupts: the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--tsl2772@39 {
--	compatible = "amstaos,tsl2772";
--	reg = <0x39>;
--	interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
--	vdd-supply = <&pm8941_l17>;
--	vddio-supply = <&pm8941_lvs1>;
--	amstaos,proximity-diodes = <0>;
--	led-max-microamp = <100000>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.yaml b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-new file mode 100644
-index 000000000000..2ebc8d727f09
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-@@ -0,0 +1,80 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/tsl2772.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AMS/TAOS Ambient Light Sensor (ALS) and Proximity Detector
-+
-+maintainers:
-+  - Brian Masney <masneyb@onstation.org>
-+
-+description: |
-+  Ambient light sensing and proximity detection with an i2c interface.
-+  https://ams.com/documents/20143/36005/TSL2772_DS000181_2-00.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - amstaos,tsl2571
-+      - amstaos,tsl2671
-+      - amstaos,tmd2671
-+      - amstaos,tsl2771
-+      - amstaos,tmd2771
-+      - amstaos,tsl2572
-+      - amstaos,tsl2672
-+      - amstaos,tmd2672
-+      - amstaos,tsl2772
-+      - amstaos,tmd2772
-+      - avago,apds9930
-+
-+  reg:
-+    maxItems: 1
-+
-+  amstaos,proximity-diodes:
-+    description: Proximity diodes to enable
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32-array
-+      - minItems: 1
-+        maxItems: 2
-+        items:
-+          minimum: 0
-+          maximum: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  led-max-microamp:
-+    description: Current for the proximity LED
-+    allOf:
-+      - enum: [13000, 25000, 50000, 100000]
-+
-+  vdd-supply:
-+    description: Regulator that provides power to the sensor
-+
-+  vddio-supply:
-+    description: Regulator that provides power to the bus
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        proximity-sensor@39 {
-+                compatible = "amstaos,tsl2772";
-+                reg = <0x39>;
-+                interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-+                vdd-supply = <&pm8941_l17>;
-+                vddio-supply = <&pm8941_lvs1>;
-+                amstaos,proximity-diodes = <0>;
-+                led-max-microamp = <100000>;
-+        };
-+    };
-+...
--- 
-2.20.1
-
+>
+> Thanks,
+>
+> Jonathan
+> >
+> > - Matt
+> >
+> > >         }
+> > >
+> > >         ret = i2c_master_recv(client, (char *)&buf, sizeof(buf));
+> > > diff --git a/drivers/iio/proximity/srf08.c b/drivers/iio/proximity/srf08.c
+> > > index f2bf783..605a582 100644
+> > > --- a/drivers/iio/proximity/srf08.c
+> > > +++ b/drivers/iio/proximity/srf08.c
+> > > @@ -150,7 +150,7 @@ static int srf08_read_ranging(struct srf08_data *data)
+> > >          * polling for not more than 20 ms should be enough
+> > >          */
+> > >         waittime = 1 + data->range_mm / 172;
+> > > -       msleep(waittime);
+> > > +       usleep_range(waittime * 1000, (waittime * 1000) + 2000);
+> > >         for (i = 0; i < 4; i++) {
+> > >                 ret = i2c_smbus_read_byte_data(data->client,
+> > >                                                 SRF08_READ_SW_REVISION);
+> > > @@ -158,7 +158,7 @@ static int srf08_read_ranging(struct srf08_data *data)
+> > >                 /* check if a valid version number is read */
+> > >                 if (ret < 255 && ret > 0)
+> > >                         break;
+> > > -               msleep(5);
+> > > +               usleep_range(5000, 15000);
+> > >         }
+> > >
+> > >         if (ret >= 255 || ret <= 0) {
+> > > --
+> > > 2.7.4
+> > >
+>
