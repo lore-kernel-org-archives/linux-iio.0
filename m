@@ -2,108 +2,140 @@ Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0286C43219
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:27:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1207C43219
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:41:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D649720675
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:27:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0815A206BF
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:41:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PteYC7nI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387983AbfDYV1O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 17:27:14 -0400
-Received: from s3.sipsolutions.net ([144.76.43.62]:40516 "EHLO
-        sipsolutions.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbfDYV1N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Apr 2019 17:27:13 -0400
-Received: by sipsolutions.net with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1hJlsJ-0000g8-4C; Thu, 25 Apr 2019 23:25:47 +0200
-Message-ID: <5511420228cb38d08a67c0f6a614b7671d7d23d4.camel@sipsolutions.net>
-Subject: Re: [PATCH v3 12/26] compat_ioctl: move more drivers to
- compat_ptr_ioctl
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Arnd Bergmann <arnd@arndb.de>, Al Viro <viro@zeniv.linux.org.uk>
-Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        y2038 Mailman List <y2038@lists.linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Sterba <dsterba@suse.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        driverdevel <devel@driverdev.osuosl.org>, qat-linux@intel.com,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-iio@vger.kernel.org, linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-nvdimm@lists.01.org, linux-nvme@lists.infradead.org,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        ceph-devel <ceph-devel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, Sean Young <sean@mess.org>
-Date:   Thu, 25 Apr 2019 23:25:43 +0200
-In-Reply-To: <CAK8P3a2HmiYQJ2FV2FgLiFsD8M9UKteC9Jetx7ja06PQVZWYfA@mail.gmail.com> (sfid-20190425_175600_668610_93FA972E)
-References: <20190416202013.4034148-1-arnd@arndb.de>
-         <20190416202701.127745-1-arnd@arndb.de> <20190425122153.450fc094@coco.lan>
-         <20190425153534.GS2217@ZenIV.linux.org.uk>
-         <CAK8P3a2HmiYQJ2FV2FgLiFsD8M9UKteC9Jetx7ja06PQVZWYfA@mail.gmail.com>
-         (sfid-20190425_175600_668610_93FA972E)
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.28.5 (3.28.5-2.fc28) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        id S1729784AbfDYVli (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Apr 2019 17:41:38 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:35098 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730628AbfDYVli (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Apr 2019 17:41:38 -0400
+Received: by mail-wr1-f67.google.com with SMTP id f7so1446744wrs.2
+        for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2019 14:41:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=2BbnDHSdmo9EsPssh4+cDnse2PF+EKLkrPxXRQPRv3U=;
+        b=PteYC7nIBAGD7LJdOjlhH4ErRzLpUucdh0PzJOri70keJcE7oe0VK7tGnyw1aiQsk4
+         0/feRsGlYVbxk7CwpvZE3ekPa8qnds9kBeQUapImzenbNioGaURUe5lF8ejlirbODlsy
+         lMLFZjIx8DtmPEtiQ7BA6Iy+PHNd7TetVLFcWvXsnfNdW0+6BEsCZ+juYgEhEbXByH3/
+         7hY0BoYvYXbboHWFluYE583WL8Tgzr5F4CRo4dYbYOr+w5RZ3Jqsm7UX9JTCP87U56+d
+         mwV7dHGb0eeGUQ11DYvQLw39RWRXQ7beN0IbZtSRTPIwmr/Oy39EH53q8liJOWada7sE
+         S7mA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=2BbnDHSdmo9EsPssh4+cDnse2PF+EKLkrPxXRQPRv3U=;
+        b=MycRQXvA1+eO4ETAvsTwwh+ljQa3GF4chQRe3GsrxAApn/RPYIMOC+A+HZYdiK1OL3
+         EK3XJc8i3/IwAPZ91fobNG0WJpmLIGafHVGHtx7YMpTFfr7dxbxMkSil4a5XHYC/O6FZ
+         R1WTPz4/uIWoM2mDctGaazC5KQozX777YdRd4VIVuZKNtUf4D843+tGl1hoF+ZcISxmv
+         8F+P+WBUARO0pkBH1Xeh8P5GbXNhmllxPOgk/tyqjIzM6rvkqcscKl508y+c8po9zAIk
+         Y8cs6i/eKb/ca6khJkT0T5K3ARGRyoXzfthV6yA50rzatUlSaP1FbpDcMqfcmXVBJXzJ
+         e6GQ==
+X-Gm-Message-State: APjAAAW4tO7wpa23Hpzax0mu4aJVHoP0wbgZEorhvJwBKL/R3VhX+j1X
+        Mb58srmZ/KGmzkQRjan/OwPIdw==
+X-Google-Smtp-Source: APXvYqz/NnZShgYYb2LoFn+nXFrxK9q4LhZMsDhREk9lrIWFfGYHfWkP8HiIoZIZPHJ9BIYQL7qRyg==
+X-Received: by 2002:adf:eb4c:: with SMTP id u12mr22325094wrn.235.1556228496305;
+        Thu, 25 Apr 2019 14:41:36 -0700 (PDT)
+Received: from [192.168.0.41] (sju31-1-78-210-255-2.fbx.proxad.net. [78.210.255.2])
+        by smtp.googlemail.com with ESMTPSA id d11sm10703499wrc.32.2019.04.25.14.41.34
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 25 Apr 2019 14:41:35 -0700 (PDT)
+Subject: Re: [PATCH v10 14/18] drivers/clocksource: timer-fsl-ftm: use common
+ header for FlexTimer #defines
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
+        gregkh@linuxfoundation.org
+Cc:     jic23@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
+        benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com,
+        robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org,
+        leoyang.li@nxp.com, tglx@linutronix.de, thierry.reding@gmail.com,
+        esben@haabendal.dk, linux-pwm@vger.kernel.org,
+        linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com
+References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+ <c82ce954006d9a228c7a6ebb0eabade48bd2c149.1554184734.git.vilhelm.gray@gmail.com>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <95ce444a-2f10-ec89-cb13-578349511f6b@linaro.org>
+Date:   Thu, 25 Apr 2019 23:41:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.6.1
+MIME-Version: 1.0
+In-Reply-To: <c82ce954006d9a228c7a6ebb0eabade48bd2c149.1554184734.git.vilhelm.gray@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 2019-04-25 at 17:55 +0200, Arnd Bergmann wrote:
-> On Thu, Apr 25, 2019 at 5:35 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> > 
-> > On Thu, Apr 25, 2019 at 12:21:53PM -0300, Mauro Carvalho Chehab wrote:
-> > 
-> > > If I understand your patch description well, using compat_ptr_ioctl
-> > > only works if the driver is not for s390, right?
-> > 
-> > No; s390 is where "oh, just set ->compat_ioctl same as ->unlocked_ioctl
-> > and be done with that; compat_ptr() is a no-op anyway" breaks.  IOW,
-> > s390 is the reason for having compat_ptr_ioctl() in the first place;
-> > that thing works on all biarch architectures, as long as all stuff
-> > handled by ->ioctl() takes pointer to arch-independent object as
-> > argument.  IOW,
-> >         argument ignored => OK
-> >         any arithmetical type => no go, compat_ptr() would bugger it
-> >         pointer to int => OK
-> >         pointer to string => OK
-> >         pointer to u64 => OK
-> >         pointer to struct {u64 addr; char s[11];} => OK
+On 02/04/2019 08:30, William Breathitt Gray wrote:
+> From: Patrick Havelange <patrick.havelange@essensium.com>
 > 
-> To be extra pedantic, the 'struct {u64 addr; char s[11];} '
-> case is also broken on x86, because sizeof (obj) is smaller
-> on i386, even though the location of the members are
-> the same. i.e. you can copy_from_user() this
+> Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
+> this file.
+> Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
+> 
+> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-Actually, you can't even do that because the struct might sit at the end
-of a page and then you'd erroneously fault in this case.
+Please, do pick my Acked-by from V2.
 
-We had this a while ago with struct ifreq, see commit 98406133dd and its
-parents.
+> ---
+>  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
+>  1 file changed, 2 insertions(+), 13 deletions(-)
+> 
+> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
+> index 846d18daf893..e1c34b2f53a5 100644
+> --- a/drivers/clocksource/timer-fsl-ftm.c
+> +++ b/drivers/clocksource/timer-fsl-ftm.c
+> @@ -19,20 +19,9 @@
+>  #include <linux/of_irq.h>
+>  #include <linux/sched_clock.h>
+>  #include <linux/slab.h>
+> +#include <linux/fsl/ftm.h>
+>  
+> -#define FTM_SC		0x00
+> -#define FTM_SC_CLK_SHIFT	3
+> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
+> -#define FTM_SC_PS_MASK	0x7
+> -#define FTM_SC_TOIE	BIT(6)
+> -#define FTM_SC_TOF	BIT(7)
+> -
+> -#define FTM_CNT		0x04
+> -#define FTM_MOD		0x08
+> -#define FTM_CNTIN	0x4C
+> -
+> -#define FTM_PS_MAX	7
+> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
+>  
+>  struct ftm_clock_device {
+>  	void __iomem *clksrc_base;
+> 
 
-johannes
+
+-- 
+ <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
+
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
 
