@@ -2,69 +2,209 @@ Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_PASS,USER_AGENT_MUTT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E94C10F03
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 09:10:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16747C282E1
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 09:39:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0727120878
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 09:10:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556183407;
-	bh=gGjc7pZtdjkA/AD1M5+O35Mg+Ighcvz2I+4wRaRtN1w=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=K84P+nkkG0FBkMLbY4OjvxNb/iG9XpgAdFag87gj3slTtNm+Rr1F8OUq+TCPZ0sY8
-	 t9CKcD415jZv9qannW4TVAMKYaIB6hL64JO8TEyTf2RCsZBJ7mKDrdcujHdkEAeLS/
-	 pPDmtL1z526Jh017QsEgJ8ng/2/YWAb/42EQnntM=
+	by mail.kernel.org (Postfix) with ESMTP id D1E262084F
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 09:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726013AbfDYJKG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 05:10:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43530 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725912AbfDYJKG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 25 Apr 2019 05:10:06 -0400
-Received: from localhost (62-193-50-229.as16211.net [62.193.50.229])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4960020878;
-        Thu, 25 Apr 2019 09:10:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556183405;
-        bh=gGjc7pZtdjkA/AD1M5+O35Mg+Ighcvz2I+4wRaRtN1w=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=1f4vlFW7vnnTyTQHWbVtgY+6e1mlsd8LP/LQZ+amIubVHZFkpVhzvjYFHUehR2qwe
-         zt71Cu4tXw7t34ITQH+dVhd2pC/be8kWVjtxmA22+SdDYo382HzjO5rZCGwqGvk/ep
-         EvV5ChavYqgCgjhoLoxPc0WJRR+wNFlMTZxGknRc=
-Date:   Thu, 25 Apr 2019 11:10:03 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] Second round of new device support etc for IIO in the 5.2
- cycle.
-Message-ID: <20190425091003.GA8238@kroah.com>
-References: <20190424204931.04005591@archlinux>
+        id S1728099AbfDYJjZ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Apr 2019 05:39:25 -0400
+Received: from mail-qt1-f196.google.com ([209.85.160.196]:39237 "EHLO
+        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727940AbfDYJjZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Apr 2019 05:39:25 -0400
+Received: by mail-qt1-f196.google.com with SMTP id h16so624627qtk.6
+        for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2019 02:39:24 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=WicqFYFpUiw+qNNhiHaf2HSIZJntSSUfbsdmPyw62lA=;
+        b=J1aiEkw7cquQLX2dQ5M1aqtav0+MycXy5kcB08ivGkMCPc00N+XZrCX74/LaaN047P
+         hrXrfs0ltfkdIe24mJwTE0Zud8e5wX7rBF90YEwkHZKnm86+TDw0mQOKO1eJFeaMBbOY
+         cCf8NwhTqm9X9j1um/isA1Rw7BtrOj5rL5rybUeNg0mTf0jaq4wYMgpqedrrIbjCMPI+
+         nL8NM+SheOnPyRIwFBxvlrKgkHFfsCGb9x4Aee0J1Ul6hPe18SJxktVSOAz2IpZNEuUO
+         BaTYVOULaaDjGBLYSRS2/vSmQTqkZDLyYUINgQ9sb2HimVus1GGeKD0qx78mA04yl/Xl
+         q0kw==
+X-Gm-Message-State: APjAAAWwh+FetrMz7eb5QXug8huB/Otp3WEDyplj4Y4tbJvDVLrGzfJc
+        762kZViNqlcr36CMVyHnE1T0nhRnChkAeCC1xTzK9Q==
+X-Google-Smtp-Source: APXvYqyeCJHNw6YxhEW/naPC5YHx5lCIWEQ4euI9lL+E93h7JoxQomKXYJvQsUX2/iq2Rpr+osJS6uo7iaYfwLwqzBE=
+X-Received: by 2002:a0c:8881:: with SMTP id 1mr2998874qvn.231.1556185163810;
+ Thu, 25 Apr 2019 02:39:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190424204931.04005591@archlinux>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+References: <20190422031251.11968-1-ronald@innovation.ch> <20190422031251.11968-2-ronald@innovation.ch>
+ <CAO-hwJLMZvBGheEtH_iU+mBtE4T3OsT6W+=1x-ewzGGP5Fxp4Q@mail.gmail.com> <20190425081948.GB31301@innovation.ch>
+In-Reply-To: <20190425081948.GB31301@innovation.ch>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 25 Apr 2019 11:39:12 +0200
+Message-ID: <CAO-hwJKcuptG6X7Y0jrQzyLUzZfsXoyWxMmk=v_aPxJh9iv4Gg@mail.gmail.com>
+Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
+To:     "Life is hard, and then you die" <ronald@innovation.ch>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        linux-iio@vger.kernel.org, lkml <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Apr 24, 2019 at 08:49:31PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 932f98922f6fca9f8c45274346b49058dd50d51a:
-> 
->   Merge tag 'iio-for-5.2a-2' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2019-04-04 22:25:29 +0200)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.2b
+On Thu, Apr 25, 2019 at 10:19 AM Life is hard, and then you die
+<ronald@innovation.ch> wrote:
+>
+>
+>   Hi Benjamin,
+>
+> Thank you for looking at this.
+>
+> On Wed, Apr 24, 2019 at 04:18:23PM +0200, Benjamin Tissoires wrote:
+> > On Mon, Apr 22, 2019 at 5:13 AM Ronald Tschalär <ronald@innovation.ch> wrote:
+> > >
+> > > The iBridge device provides access to several devices, including:
+> > > - the Touch Bar
+> > > - the iSight webcam
+> > > - the light sensor
+> > > - the fingerprint sensor
+> > >
+> > > This driver provides the core support for managing the iBridge device
+> > > and the access to the underlying devices. In particular, since the
+> > > functionality for the touch bar and light sensor is exposed via USB HID
+> > > interfaces, and the same HID device is used for multiple functions, this
+> > > driver provides a multiplexing layer that allows multiple HID drivers to
+> > > be registered for a given HID device. This allows the touch bar and ALS
+> > > driver to be separated out into their own modules.
+> >
+> > Sorry for coming late to the party, but IMO this series is far too
+> > complex for what you need.
+> >
+> > As I read this and the first comment of drivers/mfd/apple-ibridge.c,
+> > you need to have a HID driver that multiplex 2 other sub drivers
+> > through one USB communication.
+> > For that, you are using MFD, platform driver and you own sauce instead
+> > of creating a bus.
+>
+> Basically correct. To be a bit more precise, there are currently two
+> hid-devices and two drivers (touchbar and als) involved, with
+> connections as follows (pardon the ugly ascii art):
+>
+>   hdev1  ---  tb-drv
+>            /
+>           /
+>          /
+>   hdev2  ---  als-drv
+>
+> i.e. the touchbar driver talks to both hdev's, and hdev2's events
+> (reports) are processed by both drivers (though each handles different
+> reports).
+>
+> > So, how about we reuse entirely the HID subsystem which already
+> > provides the capability you need (assuming I am correct above).
+> > hid-logitech-dj already does the same kind of stuff and you could:
+> > - create drivers/hid/hid-ibridge.c that handles USB_ID_PRODUCT_IBRIDGE
+> > - hid-ibridge will then register itself to the hid subsystem with a
+> > call to hid_hw_start(hdev, HID_CONNECT_HIDRAW) and
+> > hid_device_io_start(hdev) to enable the events (so you don't create
+> > useless input nodes for it)
+> > - then you add your 2 new devices by calling hid_allocate_device() and
+> > then hid_add_device(). You can even create a new HID group
+> > APPLE_IBRIDGE and allocate 2 new PIDs for them to distinguish them
+> > from the actual USB device.
+> > - then you have 2 brand new HID devices you can create their driver as
+> > a regular ones.
+> >
+> > hid-ibridge.c would just need to behave like any other hid transport
+> > driver (see logi_dj_ll_driver in drivers/hid/hid-logitech-dj.c) and
+> > you can get rid of at least the MFD and the platform part of your
+> > drivers.
+> >
+> > Does it makes sense or am I missing something obvious in the middle?
+>
+> Yes, I think I understand, and I think this can work. Basically,
+> instead of demux'ing at the hid-driver level as I am doing now (i.e.
+> the iBridge hid-driver forwarding calls to the sub-hid-drivers), we
+> demux at the hid-device level (events forwarded from iBridge hdev to
+> all "virtual" sub-hdev's, and requests from sub-hdev's forwarded to
+> the original hdev via an iBridge ll_driver attached to the
+> sub-hdev's).
+>
+> So I would need to create 3 new "virtual" hid-devices (instances) as
+> follows:
+>
+>   hdev1  ---  vhdev1  ---  tb-drv
+>                         /
+>           --  vhdev2  --
+>          /
+>   hdev2  ---  vhdev3  ---  als-drv
+>
+> (vhdev1 is probably not strictly necessary, but makes things more
+> consistent).
 
-Pulled and pushed out, thanks.
+Oh, ok.
 
-greg k-h
+How about the following:
+
+hdev1 and hdev2 are merged together in hid-apple-ibridge.c, and then
+this driver creates 2 virtual hid drivers that are consistent
+
+like
+
+hdev1---ibridge-drv---vhdev1---tb-drv
+hdev2--/           \--vhdev2---als-drv
+>
+> > I have one other comment below.
+> >
+> > Note that I haven't read the whole series as I'd like to first get
+> > your feedback with my comment above.
+>
+> Agreed: let's first get the overall strategy stabilized (also so I
+> can avoid having to rewrite the code too many more times ;-) ).
+>
+> [snip]
+> > > +static __u8 *appleib_report_fixup(struct hid_device *hdev, __u8 *rdesc,
+> > > +                                 unsigned int *rsize)
+> > > +{
+> > > +       /* Some fields have a size of 64 bits, which according to HID 1.11
+> > > +        * Section 8.4 is not valid ("An item field cannot span more than 4
+> > > +        * bytes in a report"). Furthermore, hid_field_extract() complains
+> >
+> > this must have been fixed in 94a9992f7dbdfb28976b565af220e0c4a117144a
+> > which is part of v5.1, so not sure you actually need the report
+> > descriptor fixup at all.
+>
+> Wasn't aware of this change - thanks. Yes, with that the warning
+> message should be gone and this fixup can be avoided.
+>
+> One thing I find strange, though, is that while 94a9992f7dbd changes
+> the condition at which the warning is emitted, it still truncates the
+> value to 32 bits, albeit completely silently now for lengths between
+> 32 and 256 bits. I.e. I'm somewhat surprised that hid_field_extract()
+> (and __extract() ) weren't updated to actually return the full values
+> for longer fields. Either that, or the callers of hid_field_extract()
+> changed to read longer fields in 32 bit chunks.
+
+facepalm.
+
+Yep this commit is just hiding the dust under the carpet. Let's raise
+that and request a revert :/
+
+Cheers,
+Benjamin
+
+>
+>
+>   Cheers,
+>
+>   Ronald
+>
