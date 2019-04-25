@@ -2,110 +2,103 @@ Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7096AC43218
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 16:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2081DC43219
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:36:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DFBA12084F
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 16:42:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3D59920895
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:36:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1556220988;
+	bh=lu3Gl4kYfadce26fIqlSb6esx/qPxezHI7oRC8rsMAc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=agsE4zHB/hFR8KBt1dH3jkwsjRTKvHt2+T1js4JK1gGTMyx3b2caRunfEnvie50qt
+	 xWydCNCSgStN/MvbefTxQDwujcAp/XU/rrN8gK+2XTP4HBmOJgOMf/qoGNrxAg4JUX
+	 IR+tEzjPr17ysVFDq90TNLV1Yacn8Yeu8SmU8b80=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728503AbfDYQmr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 12:42:47 -0400
-Received: from zeniv.linux.org.uk ([195.92.253.2]:48282 "EHLO
-        ZenIV.linux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726116AbfDYQmq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Apr 2019 12:42:46 -0400
-Received: from viro by ZenIV.linux.org.uk with local (Exim 4.92 #3 (Red Hat Linux))
-        id 1hJhSF-0003K2-7F; Thu, 25 Apr 2019 16:42:35 +0000
-Date:   Thu, 25 Apr 2019 17:42:35 +0100
-From:   Al Viro <viro@zeniv.linux.org.uk>
-To:     Arnd Bergmann <arnd@arndb.de>
-Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        y2038 Mailman List <y2038@lists.linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Sterba <dsterba@suse.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        driverdevel <devel@driverdev.osuosl.org>, qat-linux@intel.com,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-iio@vger.kernel.org, linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-nvdimm@lists.01.org, linux-nvme@lists.infradead.org,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        ceph-devel <ceph-devel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, Sean Young <sean@mess.org>
-Subject: Re: [PATCH v3 12/26] compat_ioctl: move more drivers to
- compat_ptr_ioctl
-Message-ID: <20190425164235.GT2217@ZenIV.linux.org.uk>
-References: <20190416202013.4034148-1-arnd@arndb.de>
- <20190416202701.127745-1-arnd@arndb.de>
- <20190425122153.450fc094@coco.lan>
- <20190425153534.GS2217@ZenIV.linux.org.uk>
- <CAK8P3a2HmiYQJ2FV2FgLiFsD8M9UKteC9Jetx7ja06PQVZWYfA@mail.gmail.com>
+        id S1726766AbfDYTg1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Apr 2019 15:36:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33138 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725937AbfDYTg1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 25 Apr 2019 15:36:27 -0400
+Received: from localhost (62-193-50-229.as16211.net [62.193.50.229])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2C7FC20685;
+        Thu, 25 Apr 2019 19:36:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556220986;
+        bh=lu3Gl4kYfadce26fIqlSb6esx/qPxezHI7oRC8rsMAc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=nsvMmBVwxBQALsyT0vDAx3VN7HQHk3kAjRwyMKrdHkBOhK9SqqE3uxOKfhUqJa9hW
+         x6xVDtzRQ1VkRhGae2jwoRGeXYWyEWAExOIbx22QMP80CuKmhBfgNvE2RD85QIXQOg
+         G9+Q9mL/kt4jntljf5T1HFETWBNOGXHqgXDEaPi0=
+Date:   Thu, 25 Apr 2019 21:36:24 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org,
+        david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com,
+        shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org,
+        tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk,
+        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        patrick.havelange@essensium.com, linux-api@vger.kernel.org
+Subject: Re: [PATCH v10 00/18] Introduce the Counter subsystem
+Message-ID: <20190425193624.GA11240@kroah.com>
+References: <cover.1554184734.git.vilhelm.gray@gmail.com>
+ <20190407152550.451a7f63@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAK8P3a2HmiYQJ2FV2FgLiFsD8M9UKteC9Jetx7ja06PQVZWYfA@mail.gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20190407152550.451a7f63@archlinux>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Apr 25, 2019 at 05:55:23PM +0200, Arnd Bergmann wrote:
-> On Thu, Apr 25, 2019 at 5:35 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> >
-> > On Thu, Apr 25, 2019 at 12:21:53PM -0300, Mauro Carvalho Chehab wrote:
-> >
-> > > If I understand your patch description well, using compat_ptr_ioctl
-> > > only works if the driver is not for s390, right?
-> >
-> > No; s390 is where "oh, just set ->compat_ioctl same as ->unlocked_ioctl
-> > and be done with that; compat_ptr() is a no-op anyway" breaks.  IOW,
-> > s390 is the reason for having compat_ptr_ioctl() in the first place;
-> > that thing works on all biarch architectures, as long as all stuff
-> > handled by ->ioctl() takes pointer to arch-independent object as
-> > argument.  IOW,
-> >         argument ignored => OK
-> >         any arithmetical type => no go, compat_ptr() would bugger it
-> >         pointer to int => OK
-> >         pointer to string => OK
-> >         pointer to u64 => OK
-> >         pointer to struct {u64 addr; char s[11];} => OK
+On Sun, Apr 07, 2019 at 03:25:50PM +0100, Jonathan Cameron wrote:
+> On Tue,  2 Apr 2019 15:30:35 +0900
+> William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 > 
-> To be extra pedantic, the 'struct {u64 addr; char s[11];} '
-> case is also broken on x86, because sizeof (obj) is smaller
-> on i386, even though the location of the members are
-> the same. i.e. you can copy_from_user() this, but not
-> copy_to_user(), which overwrites 4 bytes after the end of
-> the 20-byte user structure.
+> > Changes in v10:
+> >   - Fix minor typographical errors in documentation
+> >   - Merge the FlexTimer Module Quadrature decoder counter driver patches
+> > 
+> > This revision is functionally identical to the last; changes in this
+> > version were made to fix minor typos in the documentation files and also
+> > to pull in the new FTM quadrature decoder counter driver.
+> > 
+> > The Generic Counter API has been and is still in a feature freeze until
+> > it is merged into the mainline. The following features will be
+> > investigated after the merge: interrupt support for counter devices, and
+> > a character device interface for low-latency applications.
+> 
+> Hi William / al,
+> 
+> So the question is how to move this forwards?  I'm happy with how it turned
+> out and the existing drivers we had in IIO are a lot cleaner under
+> the counter subsystem (other than the backwards compatibility for those that
+> ever existed in IIO).  For those  not following closely the situation is:
 
-D'oh!  FWIW, it might be worth putting into Documentation/ somewhere;
-basically, what is and what isn't biarch-neutral.
+I've now sucked this into my staging-testing branch and if 0-day is fine
+with it, I'll merge it to staging-next in a day or so.  This way you can
+build on it for any iio drivers that might be coming.
 
-Or arch-neutral, for that matter - it's very close.  The only real
-exception, IIRC, is an extra twist on m68k, where int behaves
-like x86 long long - its alignment is only half its size, so
-sizeof(struct {char c; int x;}) is 6, not 8 as everywhere
-else.  Irrelevant for biarch, thankfully (until somebody gets insane
-enough to implement 64bit coldfire, kernel port for it *and* biarch
-support for m68k binaries on that thing, that is)...
+I do have reservations about that one sysfs file that is multi-line, and
+I think it will come to bite you in the end over time, so I reserve the
+right to say "I told you so" when that happens...
+
+But, I don't have a better answer for it now, so don't really worry
+about it :)
+
+thanks,
+
+greg k-h
