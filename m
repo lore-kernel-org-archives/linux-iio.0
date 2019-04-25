@@ -1,272 +1,306 @@
-Return-Path: <SRS0=x61j=S2=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47C8CC10F11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0D06C10F11
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 00:29:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0626E20674
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Apr 2019 19:49:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556135383;
-	bh=2KMTxtYEJavYFnpOOYA/i6hDj2Bqnnvh8X6XoIIseQM=;
-	h=Date:From:To:Subject:List-ID:From;
-	b=q6hTklBpqxE/LkyaEvqumVB6OCgnIZThk0BLKWU05UxMiO4QbSGlU7tKtfnrmWrtA
-	 NrW8PIYgocgxqyLRvWDGJGyU4oauwIdxjt/WCbGxDeaDBrOGy9r5Epl7qtpQ3YF/xf
-	 FY4m7J0riUtZM8sVJg/xRFnXA22rZ0/ZVQnNzIsM=
+	by mail.kernel.org (Postfix) with ESMTP id B323F214C6
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 00:29:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bGoyVpOl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730739AbfDXTtm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Apr 2019 15:49:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38662 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726157AbfDXTtl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Apr 2019 15:49:41 -0400
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3F52E20674;
-        Wed, 24 Apr 2019 19:49:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556135380;
-        bh=2KMTxtYEJavYFnpOOYA/i6hDj2Bqnnvh8X6XoIIseQM=;
-        h=Date:From:To:Subject:From;
-        b=BWFAWr4/8Wy/P6avrXVg8RSUmPu4Uxnan+X3S7hEuAAT/IfMG7wBDiqAbSZke3cNh
-         QZE2yRb8+dOm3CxsXDA9jxqzoZWExdlsgE1s1qNFChAsJpoQq5RT36nZN6dKAF/WAo
-         YbuHn0i57n9ZTkNyTgmKqFnC0cncu1OkpeIwwdOw=
-Date:   Wed, 24 Apr 2019 20:49:31 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] Second round of new device support etc for IIO in the 5.2
- cycle.
-Message-ID: <20190424204931.04005591@archlinux>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1728652AbfDYA3n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Apr 2019 20:29:43 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:37176 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728645AbfDYA3n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Apr 2019 20:29:43 -0400
+Received: by mail-pg1-f194.google.com with SMTP id e6so10237455pgc.4
+        for <linux-iio@vger.kernel.org>; Wed, 24 Apr 2019 17:29:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rcI84pHRW+8Tht7r+GflYFVGp4HzNJotY+G7xlHsqCw=;
+        b=bGoyVpOl11u2chtwD3KBf4wntlXklaiNs9t790okTFlER6LTlyI0PSW6otI8ACWsIY
+         U2aKwgqLEU+UZvWCIecX3VFvBy0rcK5JEa4S2NgzYQMOOHs/1RpyOra34iHVoS892NjC
+         Uv6StFmU3re+NrjXM7bIUXlYJfa+F1GqTO46w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=rcI84pHRW+8Tht7r+GflYFVGp4HzNJotY+G7xlHsqCw=;
+        b=DmwwrUw44xcjh9G1TvHfOTRI1E2zVdA3wYOmzKD21Q+2jbtnUdO0aeuAyK+lI0oVR/
+         UVgB0CaPjz8EcP59/Dfr8qGElNPBCynX6Uuo96d1Wm3LWKj921rg0AvJ/IYWYhbjSh5I
+         409IEWz39ccuqAGEbRfmBJSh1W2x2+FUF61zgUY1Hus81pnCSWuSgF+wxUFneKOy5gXv
+         JN4r0GO1ZGhZcPEkk/xxpss84lR34i4p0zcUvRu94VL5I5JFvEZNIDebLrc+uGYXCxep
+         e4ySignq7e4Q0RjbGfNKzps9cp1+N6S0gCghabszpr2SpfpuwOdUcK5+VyfADpx/daV+
+         8DEw==
+X-Gm-Message-State: APjAAAVrRDw3E4hh3lRaO+j7ezmuortPNydwEuZMoeBmaZQ6OMp0g6TN
+        eY28UHnbG+dqbEOiyaeAlVZRmw==
+X-Google-Smtp-Source: APXvYqz/cHIQ9XsmeSuRCkZ4UktpRjZovlupPNbFluqBF3nFJBlVmd+L3FGoLqYTqYtKBD6x3qnvnQ==
+X-Received: by 2002:a65:6294:: with SMTP id f20mr33299697pgv.415.1556152182067;
+        Wed, 24 Apr 2019 17:29:42 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
+        by smtp.gmail.com with ESMTPSA id z20sm24322098pgf.70.2019.04.24.17.29.40
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Wed, 24 Apr 2019 17:29:41 -0700 (PDT)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     enric.balletbo@collabora.com, bleung@chromium.org,
+        groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH v6] iio: cros_ec: Add lid angle driver
+Date:   Wed, 24 Apr 2019 17:29:32 -0700
+Message-Id: <20190425002932.126740-1-gwendal@chromium.org>
+X-Mailer: git-send-email 2.21.0.593.g511ec345e18-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The following changes since commit 932f98922f6fca9f8c45274346b49058dd50d51a:
+Add a IIO driver that reports the angle between the lid and the base for
+ChromeOS convertible device.
 
-  Merge tag 'iio-for-5.2a-2' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2019-04-04 22:25:29 +0200)
+Tested on eve with ToT EC firmware.
+Check driver is loaded and lid angle is correct.
 
-are available in the Git repository at:
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+Changes in v6:
+- Fix lock held in an error path error.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.2b
+Changes in v5:
+- Remove unnecessary define.
+- v4 was the wrong patch file
 
-for you to fetch changes up to 447ccb4e0834a9f9f0dd5643e421c7f1a1649e6a:
+Changes in v3:
+- Use static channel array, simplify code because index is always 0.
 
-  iio: adc: qcom-spmi-adc5: Fix of-based module autoloading (2019-04-22 11:51:29 +0100)
+Changes in v2:
+- Fix license, remove driver_module field.
 
-----------------------------------------------------------------
-Second set of IIO new device support, features and cleanup for the 5.2 cycle.
+ drivers/iio/common/cros_ec_sensors/Kconfig    |   9 ++
+ drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
+ .../cros_ec_sensors/cros_ec_lid_angle.c       | 139 ++++++++++++++++++
+ drivers/mfd/cros_ec_dev.c                     |  13 +-
+ 4 files changed, 159 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
 
-New device suport
-* ad7606
-  - Support the AD7616 16 channel, 12bit ADC.
-* fxas21002c
-  - New driver for this gyroscope with I2C and SPI support.
-* lsm6dsx
-  - Support the lsm6dsr, new device information structure and dt bindings.
-* srf04
-  - Addition device IDs for mb1000, mb1010, mb1020, mb1030 and mb1040 +
-    support of different required trigger pulse lengths.
-* st-accel
-  - Support the ls2de12, new device info and dt bindings.
-* ti-ads8344
-  - New driver for this 8 channel, 16 bit SPI ADC.
+diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+index 135f6825903f..aacc2ab9c34f 100644
+--- a/drivers/iio/common/cros_ec_sensors/Kconfig
++++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+@@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
+ 	  Accelerometers, Gyroscope and Magnetometer that are
+ 	  presented by the ChromeOS EC Sensor hub.
+ 	  Creates an IIO device for each functions.
++
++config IIO_CROS_EC_SENSORS_LID_ANGLE
++	tristate "ChromeOS EC Sensor for lid angle"
++	depends on IIO_CROS_EC_SENSORS_CORE
++	help
++	  Module to report the angle between lid and base for some
++	  convertible devices.
++	  This module is loaded when the EC can calculate the angle between the base
++	  and the lid.
+diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+index ec716ff2a775..a35ee232ac07 100644
+--- a/drivers/iio/common/cros_ec_sensors/Makefile
++++ b/drivers/iio/common/cros_ec_sensors/Makefile
+@@ -4,3 +4,4 @@
+ 
+ obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+ obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
++obj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+new file mode 100644
+index 000000000000..876dfd176b0e
+--- /dev/null
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+@@ -0,0 +1,139 @@
++// SPDX-License-Identifier: GPL-2.0
++
++/*
++ * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
++ *
++ * Copyright 2018 Google, Inc
++ *
++ * This driver uses the cros-ec interface to communicate with the Chrome OS
++ * EC about counter sensors. Counters are presented through
++ * iio sysfs.
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/common/cros_ec_sensors_core.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/kernel.h>
++#include <linux/mfd/cros_ec.h>
++#include <linux/mfd/cros_ec_commands.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#define DRV_NAME "cros-ec-lid-angle"
++
++/*
++ * One channel for the lid angle, the other for timestamp.
++ */
++static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
++	{
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.scan_type.realbits = CROS_EC_SENSOR_BITS,
++		.scan_type.storagebits = CROS_EC_SENSOR_BITS,
++		.scan_type.sign = 'u',
++		.type = IIO_ANGL
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1)
++};
++
++/* State data for ec_sensors iio driver. */
++struct cros_ec_lid_angle_state {
++	/* Shared by all sensors */
++	struct cros_ec_sensors_core_state core;
++};
++
++static int cros_ec_sensors_read_lid_angle(struct iio_dev *indio_dev,
++					  unsigned long scan_mask, s16 *data)
++{
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	int ret;
++
++	st->param.cmd = MOTIONSENSE_CMD_LID_ANGLE;
++	ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->lid_angle));
++	if (ret) {
++		dev_warn(&indio_dev->dev, "Unable to read lid angle\n");
++		return ret;
++	}
++
++	*data = st->resp->lid_angle.value;
++	return 0;
++}
++
++static int cros_ec_lid_angle_read(struct iio_dev *indio_dev,
++				    struct iio_chan_spec const *chan,
++				    int *val, int *val2, long mask)
++{
++	struct cros_ec_lid_angle_state *st = iio_priv(indio_dev);
++	s16 data;
++	int ret;
++
++	mutex_lock(&st->core.cmd_lock);
++	ret = cros_ec_sensors_read_lid_angle(indio_dev, 1, &data);
++	if (ret == 0) {
++		*val = data;
++		ret = IIO_VAL_INT;
++	}
++	mutex_unlock(&st->core.cmd_lock);
++	return ret;
++}
++
++static const struct iio_info cros_ec_lid_angle_info = {
++	.read_raw = &cros_ec_lid_angle_read,
++};
++
++static int cros_ec_lid_angle_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct cros_ec_lid_angle_state *state;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
++	if (ret)
++		return ret;
++
++	indio_dev->info = &cros_ec_lid_angle_info;
++	state = iio_priv(indio_dev);
++	indio_dev->channels = cros_ec_lid_angle_channels;
++	indio_dev->num_channels = ARRAY_SIZE(cros_ec_lid_angle_channels);
++
++	state->core.read_ec_sensors_data = cros_ec_sensors_read_lid_angle;
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++			cros_ec_sensors_capture, NULL);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct platform_device_id cros_ec_lid_angle_ids[] = {
++	{
++		.name = DRV_NAME,
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
++
++static struct platform_driver cros_ec_lid_angle_platform_driver = {
++	.driver = {
++		.name	= DRV_NAME,
++		.pm	= &cros_ec_sensors_pm_ops,
++	},
++	.probe		= cros_ec_lid_angle_probe,
++	.id_table	= cros_ec_lid_angle_ids,
++};
++module_platform_driver(cros_ec_lid_angle_platform_driver);
++
++MODULE_DESCRIPTION("ChromeOS EC driver for reporting convertible lid angle.");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
+index a3b319913097..c410aa804698 100644
+--- a/drivers/mfd/cros_ec_dev.c
++++ b/drivers/mfd/cros_ec_dev.c
+@@ -297,13 +297,15 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
+ 
+ 	resp = (struct ec_response_motion_sense *)msg->data;
+ 	sensor_num = resp->dump.sensor_count;
+-	/* Allocate 1 extra sensors in FIFO are needed */
+-	sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
++	/*
++	 * Allocate 2 extra sensors if lid angle sensor and/or FIFO are needed.
++	 */
++	sensor_cells = kcalloc(sensor_num + 2, sizeof(struct mfd_cell),
+ 			       GFP_KERNEL);
+ 	if (sensor_cells == NULL)
+ 		goto error;
+ 
+-	sensor_platforms = kcalloc(sensor_num + 1,
++	sensor_platforms = kcalloc(sensor_num,
+ 				   sizeof(struct cros_ec_sensor_platform),
+ 				   GFP_KERNEL);
+ 	if (sensor_platforms == NULL)
+@@ -363,6 +365,11 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
+ 		sensor_cells[id].name = "cros-ec-ring";
+ 		id++;
+ 	}
++	if (cros_ec_check_features(ec,
++				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
++		sensor_cells[id].name = "cros-ec-lid-angle";
++		id++;
++	}
+ 
+ 	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
+ 			      NULL, 0, NULL);
+-- 
+2.21.0.593.g511ec345e18-goog
 
-Binding conversions to yaml - we have started doing these in general for IIO.
-* avia-hx711
-* bmp085
-
-Cleanups and minor fixes / additions
-* ad5758
-  - Fixup for some changes between preproduction parts and final part.
-* ad7606
-  - Refactor handling of oversampling to make it easy to vary between
-    supported devices.
-* ad9832
-  - Organise includes.
-  - Clock framework to handle clocks.
-* ad9834
-  - Drop unnecessary parenthesis.
-* bmc150
-  - Use __func__ rather than hardcoding.
-* dummy_evgen.
-  - Fix a memleak on error in probe.
-* kxcjk1013
-  - Add KXCJ91008 ACPI ID as seen in the wild.
-  - Use __func__ rather than hardcoding.
-* imx7d
-  - Local dev variable to simplify code a bit.
-  - dev_err replaces pr_err to give more info.
-  - devm_platform_ioremap_resource for small reduction in boilerplate.
-  - Simplify probe and remove by sharing suspend / resume logic.
-  - Devm for iio_device_register as remove only contains the unregister.
-* lsm6dsx
-  - Remove a variable that was never read.
-  - Open code values where they are effectively described by what is assigned
-    to them rather than using uninformative defines.
-* max31856
-  - Avoid an unintialized ret variable in a path that can't actually occur
-    but is hard for a static checker to know.
-* max9611
-  - White space
-* mpu3050
-  - Reduce a sleep worst case by switching from msleep to usleep_range.
-* qcom-spmi-adc5
-  - Add MODULE_DEVICE_TABLE to assist autoloading of this as a module.
-* stm32-dfsdm
-  - Fix missing dependencies.
-* stm32-timer trigger
-  - Fix a build issue when disabled.
-* ti-ads7950
-  - Fix mising dependency on CONFIG_GPIOLIB.
-
-----------------------------------------------------------------
-Andreas Klinger (5):
-      avia-hx711.yaml: transform DT binding to YAML
-      bmp085.yaml: transform DT documentation of iio sensor into YAML
-      srf04.c: add maxbotix ultrasonic sensors
-      dt-bindings: iio: srf04: add Maxbotix ultrasonic iio proximity sensors
-      Kconfig: change configuration of srf04 ultrasonic iio sensor
-
-Andrey Smirnov (6):
-      iio: imx7d_adc: Add local struct device pointer in imx7d_adc_probe()
-      iio: imx7d_adc: Replace pr_err with dev_err
-      iio: imx7d_adc: Use devm_platform_ioremap_resource()
-      iio: imx7d_adc: Simplify imx7d_adc_probe() with imx7d_adc_resume()
-      iio: imx7d_adc: Simplify imx7d_adc_remove() with imx7d_adc_suspend()
-      iio: imx7d_adc: Use devm_iio_device_register()
-
-Beniamin Bia (2):
-      iio: adc: ad7616: Add support for AD7616 ADC
-      dt-bindings: iio: adc: Add AD7616 ADC documentation
-
-Bjorn Andersson (1):
-      iio: adc: qcom-spmi-adc5: Fix of-based module autoloading
-
-Colin Ian King (1):
-      iio: temperature: max31856: fix uninitialized error return
-
-Fabrice Gasnier (3):
-      iio: trigger: stm32-timer: fix build issue when disabled
-      iio: adc: stm32-dfsdm: fix unmet direct dependencies detected
-      iio: adc: stm32-dfsdm: fix triggered buffer build dependency
-
-Fabrizio Castro (1):
-      iio: adc: Fix MAX9611 spacing
-
-Gregory CLEMENT (2):
-      dt-bindings: iio: adc: Add bindings for TI ADS8344 A/DC chips
-      iio: adc: Add driver for the TI ADS8344 A/DC chips
-
-Lorenzo Bianconi (3):
-      iio: imu: st_lsm6dsx: add support to LSM6DSR
-      dt-bindings: iio: imu: st_lsm6dsx: add lsm6dsr device bindings
-      iio: imu: st_lsm6dsx: inline per-sensor data
-
-Marcelo Schmitt (2):
-      staging: iio: ad9832: organize includes
-      staging: iio: ad9832: use clock framework for clock reference
-
-Melissa Wen (1):
-      staging: iio: frequency: ad9834: Remove unnecessary parentheses
-
-Mircea Caprioru (1):
-      iio: dac: ad5758: Modifications for new revision
-
-Mohan Kumar (2):
-      drivers/iio/gyro/mpu3050-core.c: This patch fix the following checkpatch warning.
-      iio:accel:Switch hardcoded function name with a reference to __func__ making the code more maintainable
-
-Pan Bian (1):
-      iio: dummy_evgen: fix possible memleak in evgen init
-
-Robert Jones (2):
-      dt-bindings: iio: accel: add LIS2DE12 sensor device binding
-      iio: accel: add support to LIS2DE12
-
-Rui Miguel Silva (5):
-      iio: gyro: add DT bindings to fxas21002c
-      iio: gyro: add core driver for fxas21002c
-      iio: gyro: fxas21002c: add i2c driver
-      iio: gyro: fxas21002c: add spi driver
-      MAINTAINERS: add entry for fxas21002c gyro driver
-
-Stefan Popa (1):
-      iio: adc: ad7606: Move oversampling options in chip info and rework *_avail attributes
-
-Valentin Manea (1):
-      iio: accel: kxcjk1013: Add KIOX0008 ACPI Hardware-ID
-
-YueHaibing (2):
-      iio: imu: st_lsm6dsx: remove set but not used variables 'acc_sensor' and 'gyro_sensor'
-      iio: adc: ti-ads7950: Fix build error without CONFIG_GPIOLIB
-
- .../devicetree/bindings/iio/adc/adi,ad7606.txt     |    1 +
- .../devicetree/bindings/iio/adc/avia-hx711.txt     |   24 -
- .../devicetree/bindings/iio/adc/avia-hx711.yaml    |   66 ++
- .../devicetree/bindings/iio/adc/ti-ads8344.txt     |   19 +
- .../bindings/iio/gyroscope/nxp,fxas21002c.txt      |   31 +
- .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |    1 +
- .../devicetree/bindings/iio/pressure/bmp085.txt    |   27 -
- .../devicetree/bindings/iio/pressure/bmp085.yaml   |   70 ++
- .../bindings/iio/proximity/devantech-srf04.yaml    |   25 +-
- .../devicetree/bindings/iio/st-sensors.txt         |    1 +
- MAINTAINERS                                        |   10 +
- drivers/iio/accel/Kconfig                          |    2 +-
- drivers/iio/accel/bmc150-accel-core.c              |    2 +-
- drivers/iio/accel/kxcjk-1013.c                     |    3 +-
- drivers/iio/accel/st_accel.h                       |    2 +
- drivers/iio/accel/st_accel_core.c                  |   76 ++
- drivers/iio/accel/st_accel_i2c.c                   |    5 +
- drivers/iio/adc/Kconfig                            |   16 +-
- drivers/iio/adc/Makefile                           |    1 +
- drivers/iio/adc/ad7606.c                           |  120 ++-
- drivers/iio/adc/ad7606.h                           |   25 +-
- drivers/iio/adc/ad7606_spi.c                       |    2 +
- drivers/iio/adc/imx7d_adc.c                        |  175 ++--
- drivers/iio/adc/qcom-spmi-adc5.c                   |    1 +
- drivers/iio/adc/ti-ads8344.c                       |  204 ++++
- drivers/iio/dac/ad5758.c                           |   55 +-
- drivers/iio/dummy/iio_dummy_evgen.c                |    5 +-
- drivers/iio/gyro/Kconfig                           |   22 +
- drivers/iio/gyro/Makefile                          |    3 +
- drivers/iio/gyro/fxas21002c.h                      |  150 +++
- drivers/iio/gyro/fxas21002c_core.c                 | 1004 ++++++++++++++++++++
- drivers/iio/gyro/fxas21002c_i2c.c                  |   69 ++
- drivers/iio/gyro/fxas21002c_spi.c                  |   70 ++
- drivers/iio/gyro/mpu3050-core.c                    |    2 +-
- drivers/iio/imu/st_lsm6dsx/Kconfig                 |    2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            |    2 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c     |   12 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       |  117 ++-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        |    5 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        |    5 +
- drivers/iio/proximity/Kconfig                      |   11 +-
- drivers/iio/proximity/srf04.c                      |   38 +-
- drivers/iio/temperature/max31856.c                 |    3 +
- drivers/staging/iio/frequency/ad9832.c             |   51 +-
- drivers/staging/iio/frequency/ad9832.h             |    1 -
- drivers/staging/iio/frequency/ad9834.c             |    2 +-
- include/linux/iio/timer/stm32-timer-trigger.h      |   11 +-
- 47 files changed, 2242 insertions(+), 307 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8344.txt
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/nxp,fxas21002c.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.txt
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/bmp085.yaml
- create mode 100644 drivers/iio/adc/ti-ads8344.c
- create mode 100644 drivers/iio/gyro/fxas21002c.h
- create mode 100644 drivers/iio/gyro/fxas21002c_core.c
- create mode 100644 drivers/iio/gyro/fxas21002c_i2c.c
- create mode 100644 drivers/iio/gyro/fxas21002c_spi.c
