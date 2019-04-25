@@ -2,140 +2,158 @@ Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1207C43219
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:41:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36A45C43219
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 23:03:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0815A206BF
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 21:41:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D9D02084F
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 23:03:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PteYC7nI"
+	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="hZiH+1Q/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729784AbfDYVli (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 17:41:38 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:35098 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730628AbfDYVli (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Apr 2019 17:41:38 -0400
-Received: by mail-wr1-f67.google.com with SMTP id f7so1446744wrs.2
-        for <linux-iio@vger.kernel.org>; Thu, 25 Apr 2019 14:41:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=2BbnDHSdmo9EsPssh4+cDnse2PF+EKLkrPxXRQPRv3U=;
-        b=PteYC7nIBAGD7LJdOjlhH4ErRzLpUucdh0PzJOri70keJcE7oe0VK7tGnyw1aiQsk4
-         0/feRsGlYVbxk7CwpvZE3ekPa8qnds9kBeQUapImzenbNioGaURUe5lF8ejlirbODlsy
-         lMLFZjIx8DtmPEtiQ7BA6Iy+PHNd7TetVLFcWvXsnfNdW0+6BEsCZ+juYgEhEbXByH3/
-         7hY0BoYvYXbboHWFluYE583WL8Tgzr5F4CRo4dYbYOr+w5RZ3Jqsm7UX9JTCP87U56+d
-         mwV7dHGb0eeGUQ11DYvQLw39RWRXQ7beN0IbZtSRTPIwmr/Oy39EH53q8liJOWada7sE
-         S7mA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=2BbnDHSdmo9EsPssh4+cDnse2PF+EKLkrPxXRQPRv3U=;
-        b=MycRQXvA1+eO4ETAvsTwwh+ljQa3GF4chQRe3GsrxAApn/RPYIMOC+A+HZYdiK1OL3
-         EK3XJc8i3/IwAPZ91fobNG0WJpmLIGafHVGHtx7YMpTFfr7dxbxMkSil4a5XHYC/O6FZ
-         R1WTPz4/uIWoM2mDctGaazC5KQozX777YdRd4VIVuZKNtUf4D843+tGl1hoF+ZcISxmv
-         8F+P+WBUARO0pkBH1Xeh8P5GbXNhmllxPOgk/tyqjIzM6rvkqcscKl508y+c8po9zAIk
-         Y8cs6i/eKb/ca6khJkT0T5K3ARGRyoXzfthV6yA50rzatUlSaP1FbpDcMqfcmXVBJXzJ
-         e6GQ==
-X-Gm-Message-State: APjAAAW4tO7wpa23Hpzax0mu4aJVHoP0wbgZEorhvJwBKL/R3VhX+j1X
-        Mb58srmZ/KGmzkQRjan/OwPIdw==
-X-Google-Smtp-Source: APXvYqz/NnZShgYYb2LoFn+nXFrxK9q4LhZMsDhREk9lrIWFfGYHfWkP8HiIoZIZPHJ9BIYQL7qRyg==
-X-Received: by 2002:adf:eb4c:: with SMTP id u12mr22325094wrn.235.1556228496305;
-        Thu, 25 Apr 2019 14:41:36 -0700 (PDT)
-Received: from [192.168.0.41] (sju31-1-78-210-255-2.fbx.proxad.net. [78.210.255.2])
-        by smtp.googlemail.com with ESMTPSA id d11sm10703499wrc.32.2019.04.25.14.41.34
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 25 Apr 2019 14:41:35 -0700 (PDT)
-Subject: Re: [PATCH v10 14/18] drivers/clocksource: timer-fsl-ftm: use common
- header for FlexTimer #defines
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        gregkh@linuxfoundation.org
-Cc:     jic23@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, fabrice.gasnier@st.com,
-        benjamin.gaignard@st.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, akpm@linux-foundation.org, david@lechnology.com,
-        robh+dt@kernel.org, mark.rutland@arm.com, shawnguo@kernel.org,
-        leoyang.li@nxp.com, tglx@linutronix.de, thierry.reding@gmail.com,
-        esben@haabendal.dk, linux-pwm@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org, patrick.havelange@essensium.com
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <c82ce954006d9a228c7a6ebb0eabade48bd2c149.1554184734.git.vilhelm.gray@gmail.com>
-From:   Daniel Lezcano <daniel.lezcano@linaro.org>
-Message-ID: <95ce444a-2f10-ec89-cb13-578349511f6b@linaro.org>
-Date:   Thu, 25 Apr 2019 23:41:34 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
+        id S2387753AbfDYXD2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Apr 2019 19:03:28 -0400
+Received: from onstation.org ([52.200.56.107]:46074 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387593AbfDYXD2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 25 Apr 2019 19:03:28 -0400
+Received: from localhost.localdomain (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: masneyb)
+        by onstation.org (Postfix) with ESMTPSA id F1AEB44712;
+        Thu, 25 Apr 2019 23:03:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
+        s=default; t=1556233407;
+        bh=l0hNYROoQZIuSkxXic67oWtBxfgpPJUOZ0tFtrlMkdc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=hZiH+1Q/f+OXg3CUxDTISlOwLQSs5CWR2NrMuxAf1LzwP9CnzQ1EQZApcVyVDjtxT
+         7m66HnSVM8lc/K+BcJ3Kpg+njtio9Ow+dUhwBO4txAfXgLtrWCso9c/72gjJ8NO16S
+         vP6bokPuIniF+rLRrMjOGtaQw+jcvvUsB2PhZ7wE=
+From:   Brian Masney <masneyb@onstation.org>
+To:     jic23@kernel.org, robh+dt@kernel.org
+Cc:     lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH v3 2/2] dt-bindings: iio: tsl2583: convert bindings to YAML format
+Date:   Thu, 25 Apr 2019 19:03:14 -0400
+Message-Id: <20190425230314.26000-2-masneyb@onstation.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190425230314.26000-1-masneyb@onstation.org>
+References: <20190425230314.26000-1-masneyb@onstation.org>
 MIME-Version: 1.0
-In-Reply-To: <c82ce954006d9a228c7a6ebb0eabade48bd2c149.1554184734.git.vilhelm.gray@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 02/04/2019 08:30, William Breathitt Gray wrote:
-> From: Patrick Havelange <patrick.havelange@essensium.com>
-> 
-> Common #defines have been moved to "linux/fsl/ftm.h". Thus making use of
-> this file.
-> Also FTM_SC_CLK_SHIFT has been renamed to FTM_SC_CLK_MASK_SHIFT.
-> 
-> Reviewed-by: Esben Haabendal <esben@haabendal.dk>
-> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Convert the tsl2583 device tree bindings to the new YAML format.
 
-Please, do pick my Acked-by from V2.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+---
+Changes since v2:
+- Changed 'als-sensor@29' in example to 'light-sensor@29'
 
-> ---
->  drivers/clocksource/timer-fsl-ftm.c | 15 ++-------------
->  1 file changed, 2 insertions(+), 13 deletions(-)
-> 
-> diff --git a/drivers/clocksource/timer-fsl-ftm.c b/drivers/clocksource/timer-fsl-ftm.c
-> index 846d18daf893..e1c34b2f53a5 100644
-> --- a/drivers/clocksource/timer-fsl-ftm.c
-> +++ b/drivers/clocksource/timer-fsl-ftm.c
-> @@ -19,20 +19,9 @@
->  #include <linux/of_irq.h>
->  #include <linux/sched_clock.h>
->  #include <linux/slab.h>
-> +#include <linux/fsl/ftm.h>
->  
-> -#define FTM_SC		0x00
-> -#define FTM_SC_CLK_SHIFT	3
-> -#define FTM_SC_CLK_MASK	(0x3 << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_SHIFT)
-> -#define FTM_SC_PS_MASK	0x7
-> -#define FTM_SC_TOIE	BIT(6)
-> -#define FTM_SC_TOF	BIT(7)
-> -
-> -#define FTM_CNT		0x04
-> -#define FTM_MOD		0x08
-> -#define FTM_CNTIN	0x4C
-> -
-> -#define FTM_PS_MAX	7
-> +#define FTM_SC_CLK(c)	((c) << FTM_SC_CLK_MASK_SHIFT)
->  
->  struct ftm_clock_device {
->  	void __iomem *clksrc_base;
-> 
+Changes since v1:
+- Dropped description from reg and interrupts properties.
+- Dropped $ref from vcc-supply property.
+- Changed 'tsl2581@29' in example to 'als-sensor@29'
 
+ .../devicetree/bindings/iio/light/tsl2583.txt | 25 ----------
+ .../bindings/iio/light/tsl2583.yaml           | 46 +++++++++++++++++++
+ 2 files changed, 46 insertions(+), 25 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.yaml
 
+diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.txt b/Documentation/devicetree/bindings/iio/light/tsl2583.txt
+deleted file mode 100644
+index 059dffa1829a..000000000000
+--- a/Documentation/devicetree/bindings/iio/light/tsl2583.txt
++++ /dev/null
+@@ -1,25 +0,0 @@
+-* TAOS TSL 2580/2581/2583 ALS sensor
+-
+-Required properties:
+-
+-  - compatible: Should be one of
+-		"amstaos,tsl2580"
+-		"amstaos,tsl2581"
+-		"amstaos,tsl2583"
+-  - reg: the I2C address of the device
+-
+-Optional properties:
+-
+-  - interrupts: the sole interrupt generated by the device
+-
+-  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+-  node bindings.
+-
+-  - vcc-supply: phandle to the regulator that provides power to the sensor.
+-
+-Example:
+-
+-tsl2581@29 {
+-	compatible = "amstaos,tsl2581";
+-	reg = <0x29>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.yaml b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+new file mode 100644
+index 000000000000..e86ef64ecf03
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+@@ -0,0 +1,46 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/tsl2583.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AMS/TAOS Ambient Light Sensor (ALS)
++
++maintainers:
++  - Brian Masney <masneyb@onstation.org>
++
++description: |
++  Ambient light sensing with an i2c interface.
++
++properties:
++  compatible:
++    enum:
++      - amstaos,tsl2580
++      - amstaos,tsl2581
++      - amstaos,tsl2583
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vcc-supply:
++    description: Regulator that provides power to the sensor
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        light-sensor@29 {
++                compatible = "amstaos,tsl2581";
++                reg = <0x29>;
++        };
++    };
++...
 -- 
- <http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
-
-Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
-<http://twitter.com/#!/linaroorg> Twitter |
-<http://www.linaro.org/linaro-blog/> Blog
+2.20.1
 
