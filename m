@@ -4,101 +4,170 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-2.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
-	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2081DC43219
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:36:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 063A8C43218
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:37:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3D59920895
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:36:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 25A2420891
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 19:37:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556220988;
-	bh=lu3Gl4kYfadce26fIqlSb6esx/qPxezHI7oRC8rsMAc=;
+	s=default; t=1556221062;
+	bh=eLBbZerBN+RtIKclkIQT8+nwAnfad2bIAyh2Cgl1kLw=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=agsE4zHB/hFR8KBt1dH3jkwsjRTKvHt2+T1js4JK1gGTMyx3b2caRunfEnvie50qt
-	 xWydCNCSgStN/MvbefTxQDwujcAp/XU/rrN8gK+2XTP4HBmOJgOMf/qoGNrxAg4JUX
-	 IR+tEzjPr17ysVFDq90TNLV1Yacn8Yeu8SmU8b80=
+	b=iHG4r8rPVsRrppQ3ycyqWp/tCJd85m4yJTOLi2HuDSEdvWXEeScopircGqbBqipvs
+	 37oP1HQnKuPXNhmvN1cbdy9mwxiIP2W4Sja/VUoyxK/M6ajLXNLDFIwwfIDlU9/YkC
+	 bRXaPzQEaGS3RZCGnWMWg2XjJ6Y1Qb3aiaOEosq8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbfDYTg1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 15:36:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33138 "EHLO mail.kernel.org"
+        id S1730444AbfDYThl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Apr 2019 15:37:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34170 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725937AbfDYTg1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 25 Apr 2019 15:36:27 -0400
+        id S1726125AbfDYThl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 25 Apr 2019 15:37:41 -0400
 Received: from localhost (62-193-50-229.as16211.net [62.193.50.229])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2C7FC20685;
-        Thu, 25 Apr 2019 19:36:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 80E7A205ED;
+        Thu, 25 Apr 2019 19:37:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556220986;
-        bh=lu3Gl4kYfadce26fIqlSb6esx/qPxezHI7oRC8rsMAc=;
+        s=default; t=1556221060;
+        bh=eLBbZerBN+RtIKclkIQT8+nwAnfad2bIAyh2Cgl1kLw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=nsvMmBVwxBQALsyT0vDAx3VN7HQHk3kAjRwyMKrdHkBOhK9SqqE3uxOKfhUqJa9hW
-         x6xVDtzRQ1VkRhGae2jwoRGeXYWyEWAExOIbx22QMP80CuKmhBfgNvE2RD85QIXQOg
-         G9+Q9mL/kt4jntljf5T1HFETWBNOGXHqgXDEaPi0=
-Date:   Thu, 25 Apr 2019 21:36:24 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        fabrice.gasnier@st.com, benjamin.gaignard@st.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, akpm@linux-foundation.org,
-        david@lechnology.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        shawnguo@kernel.org, leoyang.li@nxp.com, daniel.lezcano@linaro.org,
-        tglx@linutronix.de, thierry.reding@gmail.com, esben@haabendal.dk,
-        linux-pwm@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        patrick.havelange@essensium.com, linux-api@vger.kernel.org
-Subject: Re: [PATCH v10 00/18] Introduce the Counter subsystem
-Message-ID: <20190425193624.GA11240@kroah.com>
-References: <cover.1554184734.git.vilhelm.gray@gmail.com>
- <20190407152550.451a7f63@archlinux>
+        b=hPaXduYyPYy2td/tpBquPEdoB7FzMYcFd1Rk7m3uYK8qxDNS3M1ele83Xp8APoJVm
+         bT2njjjDiqjmyjw4kZanB8k08oZh5Rr4JF2fbpvyJDZkW+41eMTtyznP77StkJQ30q
+         B1gTbZ1AgO9Zogssk8POmb2gXsb6MRakp1F8RzC0=
+Date:   Thu, 25 Apr 2019 21:37:36 +0200
+From:   "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+To:     Jonathan Cameron <jonathan.cameron@huawei.com>
+Cc:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "namhyung@kernel.org" <namhyung@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>
+Subject: Re: [PATCH 1/2] lib: add __sysfs_match_string_with_gaps() helper
+Message-ID: <20190425193736.GA11458@kroah.com>
+References: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+ <20190422210606.GA8805@kroah.com>
+ <86ea407aaa891e50a3bdaf2c3653636a365076ee.camel@analog.com>
+ <20190424133455.00002909@huawei.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190407152550.451a7f63@archlinux>
+In-Reply-To: <20190424133455.00002909@huawei.com>
 User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Apr 07, 2019 at 03:25:50PM +0100, Jonathan Cameron wrote:
-> On Tue,  2 Apr 2019 15:30:35 +0900
-> William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+On Wed, Apr 24, 2019 at 01:34:55PM +0100, Jonathan Cameron wrote:
+> On Tue, 23 Apr 2019 06:38:44 +0000
+> "Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
 > 
-> > Changes in v10:
-> >   - Fix minor typographical errors in documentation
-> >   - Merge the FlexTimer Module Quadrature decoder counter driver patches
+> > On Mon, 2019-04-22 at 23:06 +0200, Greg KH wrote:
+> > > 
+> > > 
+> > > On Mon, Apr 22, 2019 at 11:32:56AM +0300, Alexandru Ardelean wrote:  
+> > > > This helper is similar to __sysfs_match_string() with the exception
+> > > > that it
+> > > > ignores NULL elements within the array.  
+> > > 
+> > > sysfs is "one value per file", why are you trying to write multiple
+> > > things on a single line to a single sysfs file?
+> > > 
+> > > Is IIO really that messy?  :)
+> > >   
 > > 
-> > This revision is functionally identical to the last; changes in this
-> > version were made to fix minor typos in the documentation files and also
-> > to pull in the new FTM quadrature decoder counter driver.
+> > Hmm, I don't think I understood the comment/question, or maybe I did not
+> > formulate the comment properly.
 > > 
-> > The Generic Counter API has been and is still in a feature freeze until
-> > it is merged into the mainline. The following features will be
-> > investigated after the merge: interrupt support for counter devices, and
-> > a character device interface for low-latency applications.
+> > Maybe Jonathan can pitch-in here if I'm saying something wrong.
+> > 
+> > So, in IIO there is `struct iio_enum` which is essentially a sysfs wrapper
+> > for exposing an "enum" type to userspace via sysfs (which takes only one
+> > value). This iio_enum type is basically a string-to-int mapping.
 > 
-> Hi William / al,
+> > 
+> > Some example in C:
+> > 
+> > enum {
+> >     ENUM0,
+> >     ENUM1,
+> >     ENUM5 = 5,
+> >     ENUM6,
+> >     ENUM7
+> > };
+> > 
+> > 
+> > /* Notice the gaps in the elements */
+> > static const char * const item_strings[] = {
+> >         [ENUM0] = "mode0",
+> >         [ENUM1] = "mode1",
+> >         [ENUM5] = "mode5",
+> >         [ENUM6] = "mode6", 
+> >         [ENUM7] = "mode7",
+> > };
+> >                          
+> > static const struct iio_enum iio_enum1 = {
+> >         .items = item_strings,
+> >         .num_items = ARRAY_SIZE(item_strings),
+> >         .set = iio_enum1_set,
+> >         .get = iio_enum1_get,
+> > };
+> > 
+> > 
+> > The signature of the iio_enum1_set / iio_enum1_get is below:
+> > 
+> > static int iio_enum1_set(struct iio_dev *indio_dev,
+> >         const struct iio_chan_spec *chan, unsigned int val);
+> > 
+> > static int iio_enum1_get(struct iio_dev *indio_dev,
+> >         const struct iio_chan_spec *chan)
+> > 
+> > 
+> > IIO core resolves the string-to-int mapping.
+> > It uses __sysfs_match_string() to do that, but it requires that the list of
+> > strings (and C enums) be contiguous.
+> > This change [and V2 of this patch] introduces a
+> > __sysfs_match_string_with_gaps() helper that ignores gaps (represented as
+> > NULLs).
+> > 
+> > For reference, __sysfs_match_string() returns -EINVAL on the first NULL in
+> > the array of strings (regardless of the given array size).
+> > 
+> > __sysfs_match_string_with_gaps() is typically helpful when C enums refer to
+> > bitfields, or have some equivalence in HW.
+> > 
 > 
-> So the question is how to move this forwards?  I'm happy with how it turned
-> out and the existing drivers we had in IIO are a lot cleaner under
-> the counter subsystem (other than the backwards compatibility for those that
-> ever existed in IIO).  For those  not following closely the situation is:
+> You have described it well.
+> Perhaps the issue is in the naming? Or more description is needed for the original
+> patch.
+> 
+> It's worth highlighting that the current help text for
+> __sysfs_match_string has a description that says:
+> 
+> /**
+>  * __sysfs_match_string - matches given string in an array
+>  * @array: array of strings
+>  * @n: number of strings in the array or -1 for NULL terminated arrays
+>  * @str: string to match with
+>  *
+>  * Returns index of @str in the @array or -EINVAL, just like match_string().
+>  * Uses sysfs_streq instead of strcmp for matching.
+>  */
+> 
+> so one could argue that if you pass a value of n which is not -1 the function
+> should not assume that any NULL terminates the array...
+> 
+> So basically this new function is implementing what I would have assumed
+> __sysfs_match_string would do, but doesn't.
 
-I've now sucked this into my staging-testing branch and if 0-day is fine
-with it, I'll merge it to staging-next in a day or so.  This way you can
-build on it for any iio drivers that might be coming.
+Ok, yeah, I'm confused, I also thought this is what the original
+function did.
 
-I do have reservations about that one sysfs file that is multi-line, and
-I think it will come to bite you in the end over time, so I reserve the
-right to say "I told you so" when that happens...
+Nevermind, no objection from me on this:
 
-But, I don't have a better answer for it now, so don't really worry
-about it :)
-
-thanks,
-
-greg k-h
+Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
