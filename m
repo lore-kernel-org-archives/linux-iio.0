@@ -2,121 +2,91 @@ Return-Path: <SRS0=1aeT=S4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08AC0C43219
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 11:39:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6035EC43219
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 13:20:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D23BC2077B
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 11:39:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2126B2077B
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 13:20:47 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1556284847;
+	bh=Usdh73OyzqyaAvhxEiYq9KnyIE9QuuHcvhxkvakjJWY=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=MR7WiFrZpefx5gouz2hSzaAlrM9FL94ytNUHhEpA/75n7H1u8XKFJNaPkg12e7wlT
+	 CakJpvirMoYhVgFAeUghoVkHrtXmPbMYOOlwY4V6GIOiVLYwgyGj6x1JCUxiPcKrk4
+	 AmI9PKrNpGoDSkrGlAUDlox+lsqJYcVTwhgYLZuo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725901AbfDZLjv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 26 Apr 2019 07:39:51 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:38696 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfDZLjv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Apr 2019 07:39:51 -0400
-Received: from laptop.home (unknown [IPv6:2a01:cb19:8ad6:900:42dd:dd1c:19ee:7c60])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726060AbfDZNUq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 26 Apr 2019 09:20:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52044 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726013AbfDZNUq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 26 Apr 2019 09:20:46 -0400
+Received: from mail-qt1-f177.google.com (mail-qt1-f177.google.com [209.85.160.177])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        (Authenticated sender: aragua)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id CE6D626117F;
-        Fri, 26 Apr 2019 12:39:48 +0100 (BST)
-From:   Fabien Lahoudere <fabien.lahoudere@collabora.com>
-Cc:     Gwendal Grignou <gwendal@chromium.org>,
-        Fabien Lahoudere <fabien.lahoudere@collabora.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/1] iio: cros_ec: add 'id' sysfs entry
-Date:   Fri, 26 Apr 2019 13:39:16 +0200
-Message-Id: <20190426113917.10282-1-fabien.lahoudere@collabora.com>
-X-Mailer: git-send-email 2.19.2
+        by mail.kernel.org (Postfix) with ESMTPSA id D599E2089E;
+        Fri, 26 Apr 2019 13:20:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1556284846;
+        bh=Usdh73OyzqyaAvhxEiYq9KnyIE9QuuHcvhxkvakjJWY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=Y4i93/Nrd0SxMr3ijKDhweqk1mELoJgIbq+knZRVUCG6S598WDw9zea4KJ30+JbxN
+         aQqgK3d+PZmCgWHDLqEI0GrU+ljm0NbXfYbkPpt21hkUN5JZG36cpbqpCJVJYvVFXH
+         3sprRi+kukGcX0zY1ite6wOdyrz1kBQX8yCTqO0A=
+Received: by mail-qt1-f177.google.com with SMTP id p20so3987061qtc.9;
+        Fri, 26 Apr 2019 06:20:45 -0700 (PDT)
+X-Gm-Message-State: APjAAAWgqBSuwL3CKYZUSDrYoakfWWlZwoCll5L1QJJUTrmps7G24qUP
+        q5fiPD/LRZs4u84CV1M605ZPlXfXN4qn8HoGrw==
+X-Google-Smtp-Source: APXvYqy4AT+iMRbc5d0BeMezlj6n/SgeHRSnPLtD3rwt+yklJhwA1spsMaA2bxFZjLg3n869iEItRIAogL3NQ/2Sjr4=
+X-Received: by 2002:ac8:2a51:: with SMTP id l17mr36321597qtl.76.1556284845110;
+ Fri, 26 Apr 2019 06:20:45 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+References: <20190425230314.26000-1-masneyb@onstation.org>
+In-Reply-To: <20190425230314.26000-1-masneyb@onstation.org>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Fri, 26 Apr 2019 08:20:34 -0500
+X-Gmail-Original-Message-ID: <CAL_JsqL0SQZSs8MmF6j1B_qfvCOcg9XMjUBUHFL+mnCk7xNB1A@mail.gmail.com>
+Message-ID: <CAL_JsqL0SQZSs8MmF6j1B_qfvCOcg9XMjUBUHFL+mnCk7xNB1A@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] dt-bindings: iio: tsl2772: convert bindings to
+ YAML format
+To:     Brian Masney <masneyb@onstation.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Gwendal Grignou <gwendal@chromium.org>
+On Thu, Apr 25, 2019 at 6:03 PM Brian Masney <masneyb@onstation.org> wrote:
+>
+> Convert the tsl2772 device tree bindings to the new YAML format.
+>
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> ---
+> Changes since v2:
+> - Remove allof from led-max-microamp. Split out enum list from [] to
+>   individual lines for consistency with the compatible attribute.
+> - Change 'proximity-sensor@39' in example to 'sensor@39'.
+>
+> Changes since v1:
+> - Dropped description from reg and interrupts properties.
+> - Dropped $ref from led-max-microamp, vdd-supply, and vddio-supply.
+> - Changed 'tsl2772@39' in example to 'proximity-sensor@39'
+>
+>  .../devicetree/bindings/iio/light/tsl2772.txt | 42 ----------
+>  .../bindings/iio/light/tsl2772.yaml           | 83 +++++++++++++++++++
+>  2 files changed, 83 insertions(+), 42 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.yaml
 
-This new sysfs entry is used to interpret ring buffer information,
-mainly by Android sensor HAL.
-It expand to all sensors, the documentation about 'id' we can found
-in Documentation/ABI/testing/sysfs-bus-iio-cros-ec.
-
-Also fix typo in docs, I replace 'Septembre' by 'September'.
-
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
----
- Documentation/ABI/testing/sysfs-bus-iio-cros-ec    | 10 +++++-----
- .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 14 ++++++++++++++
- 2 files changed, 19 insertions(+), 5 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-index 0e95c2ca105c..6158f831c761 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
-@@ -18,11 +18,11 @@ Description:
- 		values are 'base' and 'lid'.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/id
--Date:		Septembre 2017
-+Date:		September 2017
- KernelVersion:	4.14
- Contact:	linux-iio@vger.kernel.org
- Description:
--		This attribute is exposed by the CrOS EC legacy accelerometer
--		driver and represents the sensor ID as exposed by the EC. This
--		ID is used by the Android sensor service hardware abstraction
--		layer (sensor HAL) through the Android container on ChromeOS.
-+		This attribute is exposed by the CrOS EC sensors driver and
-+		represents the sensor ID as exposed by the EC. This ID is used
-+		by the Android sensor service hardware abstraction layer (sensor
-+		HAL) through the Android container on ChromeOS.
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index 719a0df5aeeb..130362ca421b 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -125,6 +125,15 @@ static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
- 	return ret ? ret : len;
- }
- 
-+static ssize_t cros_ec_sensors_id(struct iio_dev *indio_dev,
-+				  uintptr_t private,
-+				  const struct iio_chan_spec *chan, char *buf)
-+{
-+	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-+
-+	return snprintf(buf, PAGE_SIZE, "%d\n", st->param.info.sensor_num);
-+}
-+
- static ssize_t cros_ec_sensors_loc(struct iio_dev *indio_dev,
- 		uintptr_t private, const struct iio_chan_spec *chan,
- 		char *buf)
-@@ -140,6 +149,11 @@ const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[] = {
- 		.shared = IIO_SHARED_BY_ALL,
- 		.write = cros_ec_sensors_calibrate
- 	},
-+	{
-+		.name = "id",
-+		.shared = IIO_SHARED_BY_ALL,
-+		.read = cros_ec_sensors_id
-+	},
- 	{
- 		.name = "location",
- 		.shared = IIO_SHARED_BY_ALL,
--- 
-2.19.2
-
+Reviewed-by: Rob Herring <robh@kernel.org>
