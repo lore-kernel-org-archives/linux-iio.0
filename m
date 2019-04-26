@@ -2,129 +2,195 @@ Return-Path: <SRS0=1aeT=S4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DBAC43218
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 07:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6F92C43218
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 09:29:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6B3FE206E0
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 07:46:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B35E32077B
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 09:29:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CC9Q03V6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726169AbfDZHqc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 26 Apr 2019 03:46:32 -0400
-Received: from mail-qt1-f193.google.com ([209.85.160.193]:38494 "EHLO
-        mail-qt1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725944AbfDZHqc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Apr 2019 03:46:32 -0400
-Received: by mail-qt1-f193.google.com with SMTP id d13so3099026qth.5;
-        Fri, 26 Apr 2019 00:46:30 -0700 (PDT)
+        id S1726012AbfDZJ3Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 26 Apr 2019 05:29:25 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:34943 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725985AbfDZJ3Z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Apr 2019 05:29:25 -0400
+Received: by mail-oi1-f196.google.com with SMTP id w197so2427884oia.2;
+        Fri, 26 Apr 2019 02:29:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NsY5EmHdlAn0ywW1Ux75nexz4+HNB70NwRqQrN4RVkc=;
+        b=CC9Q03V659ZKJXXkQNMFm8zddbExPDGz8vaOVoLs52urDHhOeJABtt8xExwMRIrYwd
+         stf9ptfAa0GnFBPI7kC0vU9iOSI/GNzBg9shgp6i+w0rIBQjBglXlK2V0zzJuHpJHhv3
+         f/sFH4obG+SHjEaaDUu1OiOChjxZWGa3TLFMfbogQB1CEJA5S17+HJWU8MhETVg2KgTK
+         +kXyaH0OKxHOKZkfFTvekn7OFeU1cUuYFG/2dWrT92F7KlUWjh4v/d7XvW5343qNyabq
+         cZKotQ1lOHpcYC1EBHGHl1bBxBCvh2580axwfAYK0pd4YiPjRwXaCpHH/VIqaNM3B8nN
+         R/Dg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Ai+vP/B94Ve42WDYthMy68WDqGtKeGDhz8vwsuWoKYY=;
-        b=FG7fOj59wwyOPVaYrKZUOZkuiWAvC9akOixlTflJRlZBaD5Nk1Q5lt4sNCVKQ0Ymoj
-         52Mw/cEb5bga48QDfZ25/IosOd7f4DVtReblKt78Tddb6JbvCOKlsnW4ZPHxwbqCcDWl
-         AQM/p3uZiav0jkbogyOgR/4xxAbV+hxPuEvbksaoHrj3hkC5yYwUQGGxb0feSPNshzXf
-         S+dmruYGKTPfi7MC8NPxeUYIYDBmFZwedMocX20dgkFMvHU+dhbQkTwmaEk2O8qXcQ6g
-         uJAGfAJII+Qyt2ArmRK2SZ3h6YsW8oPqMVHZ/GGnoBbS0uiS7s2iVgur4G88lQugZgI8
-         33hw==
-X-Gm-Message-State: APjAAAVBrPBraidJkoagVa/Iqi808354m7O7uJIVMSDvP510mK1VadoD
-        QO8l3m/Yer2pZRboxgbgjpAGH2eZtedEhQ8mJXg=
-X-Google-Smtp-Source: APXvYqzr09tBTeb1FTaqfVBhYsMoMqeG81qMW2qxny43/8KyQQnSkk725v7OZs6m0g32Hp/ZRVlDu6HuZidDEo5Nyhc=
-X-Received: by 2002:ac8:276b:: with SMTP id h40mr35193967qth.319.1556264790155;
- Fri, 26 Apr 2019 00:46:30 -0700 (PDT)
+        bh=NsY5EmHdlAn0ywW1Ux75nexz4+HNB70NwRqQrN4RVkc=;
+        b=EfUXXY9q2jQP+HRNB5QOu27yRp+6Sbt+4AOjMMohh+k06khA5WpvhTER40GFWhADBU
+         wbc0fAqvQQSRzcd0cUcHnkX84U8yUW7MF2AxnUao/DBFgXP3d43QLTfV/Cz6WIUiugM7
+         a2HfYfV+dbRoUYnR5APtGtRmXXQJOqRctLf2xm/GwTkys02mofpR0xcEJ899a7p4VnmQ
+         cFj5Op6GQPizsUVo7ggPNwZ93k1A1ebQ4/oHwX1Uep1eVLrjxYEzLfDVlqW4R7ImIrcJ
+         GAV7/lCAW60ZtWqcUNNbuLWoDcbaXTdVAjxIBLq3ReXap55KXkFPn8UrUR/BfMCU4kqv
+         /KfQ==
+X-Gm-Message-State: APjAAAVuwnJKcKnaWCC0uVCCLyar94XLQDjLAosEyXKJMB/rmvNwpmt6
+        3J/cvE5g45xQckfaMsc9BbNLyEGdD1FAn8hbs5A=
+X-Google-Smtp-Source: APXvYqyQlyzvwqQN5JndAC+hYrtPWX4/7rbPQJud7RXC05dGSFjLiKCT+Pd/wlHZxI7Q+wAW9mKwHUT8YTlUMbkQ9Bg=
+X-Received: by 2002:aca:5bd7:: with SMTP id p206mr6372016oib.128.1556270963864;
+ Fri, 26 Apr 2019 02:29:23 -0700 (PDT)
 MIME-Version: 1.0
-References: <20190416202013.4034148-1-arnd@arndb.de> <20190416202701.127745-1-arnd@arndb.de>
- <20190425122153.450fc094@coco.lan> <20190425153534.GS2217@ZenIV.linux.org.uk>
- <CAK8P3a2HmiYQJ2FV2FgLiFsD8M9UKteC9Jetx7ja06PQVZWYfA@mail.gmail.com> <5511420228cb38d08a67c0f6a614b7671d7d23d4.camel@sipsolutions.net>
-In-Reply-To: <5511420228cb38d08a67c0f6a614b7671d7d23d4.camel@sipsolutions.net>
-From:   Arnd Bergmann <arnd@arndb.de>
-Date:   Fri, 26 Apr 2019 09:46:13 +0200
-Message-ID: <CAK8P3a3CzKLvpUiVV_k__kkaZ=wg2fqnFEzWYL9qNwBfxMKZ9w@mail.gmail.com>
-Subject: Re: [PATCH v3 12/26] compat_ioctl: move more drivers to compat_ptr_ioctl
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Al Viro <viro@zeniv.linux.org.uk>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        Linux FS-devel Mailing List <linux-fsdevel@vger.kernel.org>,
-        y2038 Mailman List <y2038@lists.linaro.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jason Gunthorpe <jgg@mellanox.com>,
-        Daniel Vetter <daniel.vetter@ffwll.ch>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        David Sterba <dsterba@suse.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        driverdevel <devel@driverdev.osuosl.org>, qat-linux@intel.com,
-        "open list:HARDWARE RANDOM NUMBER GENERATOR CORE" 
-        <linux-crypto@vger.kernel.org>,
-        Linux Media Mailing List <linux-media@vger.kernel.org>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        linaro-mm-sig@lists.linaro.org, amd-gfx@lists.freedesktop.org,
-        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
-        linux-iio@vger.kernel.org, linux-rdma <linux-rdma@vger.kernel.org>,
-        linux-nvdimm@lists.01.org, linux-nvme@lists.infradead.org,
-        linux-pci <linux-pci@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        linux-remoteproc@vger.kernel.org,
-        sparclinux <sparclinux@vger.kernel.org>,
-        linux-scsi <linux-scsi@vger.kernel.org>,
-        USB list <linux-usb@vger.kernel.org>,
-        linux-btrfs <linux-btrfs@vger.kernel.org>,
-        ceph-devel <ceph-devel@vger.kernel.org>,
-        linux-wireless <linux-wireless@vger.kernel.org>,
-        Networking <netdev@vger.kernel.org>, Sean Young <sean@mess.org>
+References: <20190422083257.21805-1-alexandru.ardelean@analog.com>
+ <20190422210606.GA8805@kroah.com> <86ea407aaa891e50a3bdaf2c3653636a365076ee.camel@analog.com>
+ <20190424133455.00002909@huawei.com> <20190425193736.GA11458@kroah.com>
+In-Reply-To: <20190425193736.GA11458@kroah.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Fri, 26 Apr 2019 12:29:11 +0300
+Message-ID: <CA+U=DsoyPQyNDX6CDx=xE73H9A=66BGKhTseEvZcZZPnpPAfQw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] lib: add __sysfs_match_string_with_gaps() helper
+To:     "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
+Cc:     Jonathan Cameron <jonathan.cameron@huawei.com>,
+        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "namhyung@kernel.org" <namhyung@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "mingo@kernel.org" <mingo@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Apr 25, 2019 at 11:25 PM Johannes Berg
-<johannes@sipsolutions.net> wrote:
-> On Thu, 2019-04-25 at 17:55 +0200, Arnd Bergmann wrote:
-> > On Thu, Apr 25, 2019 at 5:35 PM Al Viro <viro@zeniv.linux.org.uk> wrote:
-> > >
-> > > On Thu, Apr 25, 2019 at 12:21:53PM -0300, Mauro Carvalho Chehab wrote:
-> > >
-> > > > If I understand your patch description well, using compat_ptr_ioctl
-> > > > only works if the driver is not for s390, right?
-> > >
-> > > No; s390 is where "oh, just set ->compat_ioctl same as ->unlocked_ioctl
-> > > and be done with that; compat_ptr() is a no-op anyway" breaks.  IOW,
-> > > s390 is the reason for having compat_ptr_ioctl() in the first place;
-> > > that thing works on all biarch architectures, as long as all stuff
-> > > handled by ->ioctl() takes pointer to arch-independent object as
-> > > argument.  IOW,
-> > >         argument ignored => OK
-> > >         any arithmetical type => no go, compat_ptr() would bugger it
-> > >         pointer to int => OK
-> > >         pointer to string => OK
-> > >         pointer to u64 => OK
-> > >         pointer to struct {u64 addr; char s[11];} => OK
+On Thu, Apr 25, 2019 at 10:38 PM gregkh@linuxfoundation.org
+<gregkh@linuxfoundation.org> wrote:
+>
+> On Wed, Apr 24, 2019 at 01:34:55PM +0100, Jonathan Cameron wrote:
+> > On Tue, 23 Apr 2019 06:38:44 +0000
+> > "Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
 > >
-> > To be extra pedantic, the 'struct {u64 addr; char s[11];} '
-> > case is also broken on x86, because sizeof (obj) is smaller
-> > on i386, even though the location of the members are
-> > the same. i.e. you can copy_from_user() this
+> > > On Mon, 2019-04-22 at 23:06 +0200, Greg KH wrote:
+> > > >
+> > > >
+> > > > On Mon, Apr 22, 2019 at 11:32:56AM +0300, Alexandru Ardelean wrote:
+> > > > > This helper is similar to __sysfs_match_string() with the exception
+> > > > > that it
+> > > > > ignores NULL elements within the array.
+> > > >
+> > > > sysfs is "one value per file", why are you trying to write multiple
+> > > > things on a single line to a single sysfs file?
+> > > >
+> > > > Is IIO really that messy?  :)
+> > > >
+> > >
+> > > Hmm, I don't think I understood the comment/question, or maybe I did not
+> > > formulate the comment properly.
+> > >
+> > > Maybe Jonathan can pitch-in here if I'm saying something wrong.
+> > >
+> > > So, in IIO there is `struct iio_enum` which is essentially a sysfs wrapper
+> > > for exposing an "enum" type to userspace via sysfs (which takes only one
+> > > value). This iio_enum type is basically a string-to-int mapping.
+> >
+> > >
+> > > Some example in C:
+> > >
+> > > enum {
+> > >     ENUM0,
+> > >     ENUM1,
+> > >     ENUM5 = 5,
+> > >     ENUM6,
+> > >     ENUM7
+> > > };
+> > >
+> > >
+> > > /* Notice the gaps in the elements */
+> > > static const char * const item_strings[] = {
+> > >         [ENUM0] = "mode0",
+> > >         [ENUM1] = "mode1",
+> > >         [ENUM5] = "mode5",
+> > >         [ENUM6] = "mode6",
+> > >         [ENUM7] = "mode7",
+> > > };
+> > >
+> > > static const struct iio_enum iio_enum1 = {
+> > >         .items = item_strings,
+> > >         .num_items = ARRAY_SIZE(item_strings),
+> > >         .set = iio_enum1_set,
+> > >         .get = iio_enum1_get,
+> > > };
+> > >
+> > >
+> > > The signature of the iio_enum1_set / iio_enum1_get is below:
+> > >
+> > > static int iio_enum1_set(struct iio_dev *indio_dev,
+> > >         const struct iio_chan_spec *chan, unsigned int val);
+> > >
+> > > static int iio_enum1_get(struct iio_dev *indio_dev,
+> > >         const struct iio_chan_spec *chan)
+> > >
+> > >
+> > > IIO core resolves the string-to-int mapping.
+> > > It uses __sysfs_match_string() to do that, but it requires that the list of
+> > > strings (and C enums) be contiguous.
+> > > This change [and V2 of this patch] introduces a
+> > > __sysfs_match_string_with_gaps() helper that ignores gaps (represented as
+> > > NULLs).
+> > >
+> > > For reference, __sysfs_match_string() returns -EINVAL on the first NULL in
+> > > the array of strings (regardless of the given array size).
+> > >
+> > > __sysfs_match_string_with_gaps() is typically helpful when C enums refer to
+> > > bitfields, or have some equivalence in HW.
+> > >
+> >
+> > You have described it well.
+> > Perhaps the issue is in the naming? Or more description is needed for the original
+> > patch.
+> >
+> > It's worth highlighting that the current help text for
+> > __sysfs_match_string has a description that says:
+> >
+> > /**
+> >  * __sysfs_match_string - matches given string in an array
+> >  * @array: array of strings
+> >  * @n: number of strings in the array or -1 for NULL terminated arrays
+> >  * @str: string to match with
+> >  *
+> >  * Returns index of @str in the @array or -EINVAL, just like match_string().
+> >  * Uses sysfs_streq instead of strcmp for matching.
+> >  */
+> >
+> > so one could argue that if you pass a value of n which is not -1 the function
+> > should not assume that any NULL terminates the array...
+> >
+> > So basically this new function is implementing what I would have assumed
+> > __sysfs_match_string would do, but doesn't.
 >
-> Actually, you can't even do that because the struct might sit at the end
-> of a page and then you'd erroneously fault in this case.
+> Ok, yeah, I'm confused, I also thought this is what the original
+> function did.
 >
-> We had this a while ago with struct ifreq, see commit 98406133dd and its
-> parents.
+> Nevermind, no objection from me on this:
+>
+> Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 
-Yes, you are right. Very rare to hit with real-life code, but easily
-reproduced by intentionally hitting it and clearly a bug.
+Hmm, I actually did not give much thought to that -1.
+I'll check into this and see about a V3.
+It may make more sense to just fix the original
+`__sysfs_match_string()`, but I'll need to go through the users of
+this function and see.
 
-As the saying goes
-
-  | the difference between "always works" and "almost always works"
-  | is called data corruption
-
-here the difference is an -EFAULT.
-
-      Arnd
+Thanks
+Alex
