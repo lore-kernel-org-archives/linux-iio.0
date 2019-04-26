@@ -1,212 +1,107 @@
-Return-Path: <SRS0=ujoz=S3=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=1aeT=S4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,USER_AGENT_MUTT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E39C43219
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 23:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF11C43219
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 05:34:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B78C02084F
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Apr 2019 23:03:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1FC12206E0
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Apr 2019 05:34:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="lEciz4bm"
+	dkim=pass (2048-bit key) header.d=innovation.ch header.i=@innovation.ch header.b="Vux0eKI+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387645AbfDYXD1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Apr 2019 19:03:27 -0400
-Received: from onstation.org ([52.200.56.107]:46060 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387592AbfDYXD1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 25 Apr 2019 19:03:27 -0400
-Received: from localhost.localdomain (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id 4491444714;
-        Thu, 25 Apr 2019 23:03:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
-        s=default; t=1556233406;
-        bh=RgFbyflMp8oGJTUoEBdEskDGkD5k0Dj5LiGkAfBPlqg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=lEciz4bmnjdb2m/abCH2xwB7B4NRXoNG/HE3MGNWMrI0kmBguHZAH2js6NH47EM0V
-         Q68AvsEBfZLrdAuYG5ilUh6JthqlUhGET4pvnAWRZCxTOvbtDu4nY3zKTU5QCrRUEH
-         7p3G2hfgVZW1+Fu+zRihMqdJ1xNhYP14nKt3LcCk=
-From:   Brian Masney <masneyb@onstation.org>
-To:     jic23@kernel.org, robh+dt@kernel.org
-Cc:     lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v3 1/2] dt-bindings: iio: tsl2772: convert bindings to YAML format
-Date:   Thu, 25 Apr 2019 19:03:13 -0400
-Message-Id: <20190425230314.26000-1-masneyb@onstation.org>
-X-Mailer: git-send-email 2.20.1
+        id S1726553AbfDZFek (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 26 Apr 2019 01:34:40 -0400
+Received: from chill.innovation.ch ([216.218.245.220]:50284 "EHLO
+        chill.innovation.ch" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726005AbfDZFek (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Apr 2019 01:34:40 -0400
+Date:   Thu, 25 Apr 2019 22:34:39 -0700
+DKIM-Filter: OpenDKIM Filter v2.10.3 chill.innovation.ch 4DCFF640142
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=innovation.ch;
+        s=default; t=1556256879;
+        bh=cobPhl1hKyKroPkhRLtOEz8ZiJGlI0EKEoUw/ZGd1Rw=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Vux0eKI+54KYt6HMcOWLlMAK1kJUOn2WSVYl51Sapsf0ZMsNaIrFnVNJbYC0KH5Ug
+         D7wg3GGgyVXIaB7/bxAUY6G1+hkdSVAzNKunvEy0AD+kStDv291EVyU2jNmdYjBn5h
+         xsPDRBCxeQiTtPhm8vmEI+40YYxWV/NTT41eevx1/b6/m5UVAuVVAYoXI9D3XoXwF2
+         K5E9KP2i89A3BknRyUz6egBBBIu4Fns8ta1TrPr/AjXbwoegxbKeYedyOFOc37XqSd
+         9EFqCwLbvhEQX+b9uvaD5LKYxisa7zqQ6Z/GrYLl3OPwd/MzyqCSmeCPN1K0flObI+
+         loKEGEnP6zJfw==
+From:   "Life is hard, and then you die" <ronald@innovation.ch>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/3] mfd: apple-ibridge: Add Apple iBridge MFD driver.
+Message-ID: <20190426053439.GB31266@innovation.ch>
+References: <20190422031251.11968-1-ronald@innovation.ch>
+ <20190422031251.11968-2-ronald@innovation.ch>
+ <20190422123426.2d0b4bdf@archlinux>
+ <20190424104718.GA31301@innovation.ch>
+ <20190424201317.2a472120@archlinux>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20190424201317.2a472120@archlinux>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the tsl2772 device tree bindings to the new YAML format.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
-Changes since v2:
-- Remove allof from led-max-microamp. Split out enum list from [] to
-  individual lines for consistency with the compatible attribute.
-- Change 'proximity-sensor@39' in example to 'sensor@39'.
+  Hi Jonathan,
 
-Changes since v1:
-- Dropped description from reg and interrupts properties.
-- Dropped $ref from led-max-microamp, vdd-supply, and vddio-supply.
-- Changed 'tsl2772@39' in example to 'proximity-sensor@39'
+On Wed, Apr 24, 2019 at 08:13:17PM +0100, Jonathan Cameron wrote:
+> On Wed, 24 Apr 2019 03:47:18 -0700
+> "Life is hard, and then you die" <ronald@innovation.ch> wrote:
+> 
+> >   Hi Jonathan,
+> > 
+> > On Mon, Apr 22, 2019 at 12:34:26PM +0100, Jonathan Cameron wrote:
+> > > On Sun, 21 Apr 2019 20:12:49 -0700
+> > > Ronald Tschalär <ronald@innovation.ch> wrote:
+> > >   
+> > > > The iBridge device provides access to several devices, including:
+> > > > - the Touch Bar
+> > > > - the iSight webcam
+> > > > - the light sensor
+> > > > - the fingerprint sensor
+> > > > 
+> > > > This driver provides the core support for managing the iBridge device
+> > > > and the access to the underlying devices. In particular, since the
+> > > > functionality for the touch bar and light sensor is exposed via USB HID
+> > > > interfaces, and the same HID device is used for multiple functions, this
+> > > > driver provides a multiplexing layer that allows multiple HID drivers to
+> > > > be registered for a given HID device. This allows the touch bar and ALS
+> > > > driver to be separated out into their own modules.
+> > > > 
+> > > > Signed-off-by: Ronald Tschalär <ronald@innovation.ch  
+> > > Hi Ronald,
+> > > 
+> > > I've only taken a fairly superficial look at this.  A few global
+> > > things to note though.  
+> > 
+> > Thanks for this review.
+[snip]
 
- .../devicetree/bindings/iio/light/tsl2772.txt | 42 ----------
- .../bindings/iio/light/tsl2772.yaml           | 83 +++++++++++++++++++
- 2 files changed, 83 insertions(+), 42 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2772.yaml
+I've applied all your feedback in my tree, but it now looks like this
+module is going to be redone differently. I'll try to keep all your
+comments in mind during the rewrite, though, so they're not wasted.
 
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.txt b/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-deleted file mode 100644
-index 1c5e6f17a1df..000000000000
---- a/Documentation/devicetree/bindings/iio/light/tsl2772.txt
-+++ /dev/null
-@@ -1,42 +0,0 @@
--* AMS/TAOS ALS and proximity sensor
--
--Required properties:
--
--  - compatible: Should be one of
--		"amstaos,tsl2571"
--		"amstaos,tsl2671"
--		"amstaos,tmd2671"
--		"amstaos,tsl2771"
--		"amstaos,tmd2771"
--		"amstaos,tsl2572"
--		"amstaos,tsl2672"
--		"amstaos,tmd2672"
--		"amstaos,tsl2772"
--		"amstaos,tmd2772"
--		"avago,apds9930"
--  - reg: the I2C address of the device
--
--Optional properties:
--
--  - amstaos,proximity-diodes - proximity diodes to enable. <0>, <1>, or <0 1>
--                               are the only valid values.
--  - led-max-microamp - current for the proximity LED. Must be 100000, 50000,
--                       25000, or 13000.
--  - vdd-supply: phandle to the regulator that provides power to the sensor.
--  - vddio-supply: phandle to the regulator that provides power to the bus.
--  - interrupts: the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--tsl2772@39 {
--	compatible = "amstaos,tsl2772";
--	reg = <0x39>;
--	interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
--	vdd-supply = <&pm8941_l17>;
--	vddio-supply = <&pm8941_lvs1>;
--	amstaos,proximity-diodes = <0>;
--	led-max-microamp = <100000>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2772.yaml b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-new file mode 100644
-index 000000000000..ed2c3d5eadf5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/tsl2772.yaml
-@@ -0,0 +1,83 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/tsl2772.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AMS/TAOS Ambient Light Sensor (ALS) and Proximity Detector
-+
-+maintainers:
-+  - Brian Masney <masneyb@onstation.org>
-+
-+description: |
-+  Ambient light sensing and proximity detection with an i2c interface.
-+  https://ams.com/documents/20143/36005/TSL2772_DS000181_2-00.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - amstaos,tsl2571
-+      - amstaos,tsl2671
-+      - amstaos,tmd2671
-+      - amstaos,tsl2771
-+      - amstaos,tmd2771
-+      - amstaos,tsl2572
-+      - amstaos,tsl2672
-+      - amstaos,tmd2672
-+      - amstaos,tsl2772
-+      - amstaos,tmd2772
-+      - avago,apds9930
-+
-+  reg:
-+    maxItems: 1
-+
-+  amstaos,proximity-diodes:
-+    description: Proximity diodes to enable
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32-array
-+      - minItems: 1
-+        maxItems: 2
-+        items:
-+          minimum: 0
-+          maximum: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  led-max-microamp:
-+    description: Current for the proximity LED
-+    enum:
-+      - 13000
-+      - 25000
-+      - 50000
-+      - 100000
-+
-+  vdd-supply:
-+    description: Regulator that provides power to the sensor
-+
-+  vddio-supply:
-+    description: Regulator that provides power to the bus
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        sensor@39 {
-+                compatible = "amstaos,tsl2772";
-+                reg = <0x39>;
-+                interrupts-extended = <&msmgpio 61 IRQ_TYPE_EDGE_FALLING>;
-+                vdd-supply = <&pm8941_l17>;
-+                vddio-supply = <&pm8941_lvs1>;
-+                amstaos,proximity-diodes = <0>;
-+                led-max-microamp = <100000>;
-+        };
-+    };
-+...
--- 
-2.20.1
+
+  Cheers,
+
+  Ronald
 
