@@ -4,53 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D68F1C43218
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:59:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE34C43218
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 13:03:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A73CF208C2
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:59:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E2DF208C2
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 13:03:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556369953;
-	bh=SCMQ+UkQFCeEOlSoiyp8ynwOrB4RzkdmSZX/WHkprsE=;
+	s=default; t=1556370231;
+	bh=fdvNXF+mbSukBjCcHZUOhaoYLDsFYgos9tSZnL69ZG0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=pT6wc/BPPyfsx/Utt2QetsfippZlV6l22WB6P9CA+O4KMy75A3so+tADgRHMMFrDG
-	 rlruMEJQfpw2Sqw3VFdERjs2lTmewRH66H9xP/1oZWWoHJQIspUGSj+ns/OWFdpsD+
-	 reBAXqFepXE3A2MPjUQdqnzMnElIas8Hi/Nol02A=
+	b=p0wTbCYWWtU4/zBOek7ZLI2ysD71WDBVgGZ3sSJK51ryBIfdNNct6Taa4pVZ5R7Of
+	 I9xIoVtEMhbjtFKV4BoOK+EeyHmU5my7WYJvJBi/DEA65iHnJ8kI/l6jwSb4Ecx3lG
+	 Cn7ShuX4pitKN/grw6OIDaGYnocVKCfExJ4Xtx2k=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726442AbfD0M7N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 27 Apr 2019 08:59:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58186 "EHLO mail.kernel.org"
+        id S1726321AbfD0NDq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 27 Apr 2019 09:03:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726345AbfD0M7M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 27 Apr 2019 08:59:12 -0400
+        id S1726004AbfD0NDp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 27 Apr 2019 09:03:45 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 341312087C;
-        Sat, 27 Apr 2019 12:59:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A23A2087C;
+        Sat, 27 Apr 2019 13:03:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556369952;
-        bh=SCMQ+UkQFCeEOlSoiyp8ynwOrB4RzkdmSZX/WHkprsE=;
+        s=default; t=1556370225;
+        bh=fdvNXF+mbSukBjCcHZUOhaoYLDsFYgos9tSZnL69ZG0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=tOmLf8J/SQRk6PiMizBtZB/sNTgbv5YFKb57LtEtb5UaunXHd73BQ5rN0MiOQaPJX
-         IK6q9Tp7zAtQcwpHQG+iV8PjFmK5YVqUFz2p28IU5LvecuEEpGKgUT9RRb/6ApplQk
-         MPCoj1zr9PEujz58neuBO9V7KKp5l4k9TxH5b3Io=
-Date:   Sat, 27 Apr 2019 13:59:06 +0100
+        b=HPIZzh1t24BlFFQWBl9qIsbNFlCtxyyg8aNoOSTpSGay/TyUPcUgmk5UMeVmJauaK
+         9IfGicosdelTf2BQwk53OMvet5cnLzQWYSn1mnpuJo5PMMDwfM7CRINu5td/6m3XJ0
+         +jYJz/xRVJ/hQ8PvDfvLEAh2c4h1KHnJwBWZpExU=
+Date:   Sat, 27 Apr 2019 14:03:39 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Daniel Gomez <dagmcr@gmail.com>
-Cc:     Stefan Popa <stefan.popa@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org (open list:ANALOG DEVICES INC AD5758 DRIVER),
-        linux-kernel@vger.kernel.org (open list), javier@dowhile0.org
-Subject: Re: [PATCH v2] iio: dac: ad5758: declare missing of table
-Message-ID: <20190427135906.455c468b@archlinux>
-In-Reply-To: <1556055718-14782-1-git-send-email-dagmcr@gmail.com>
-References: <1556055718-14782-1-git-send-email-dagmcr@gmail.com>
+To:     Brian Masney <masneyb@onstation.org>
+Cc:     robh+dt@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
+        mark.rutland@arm.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v3 2/2] dt-bindings: iio: tsl2583: convert bindings to
+ YAML format
+Message-ID: <20190427140339.7fbfa1e9@archlinux>
+In-Reply-To: <20190425230314.26000-2-masneyb@onstation.org>
+References: <20190425230314.26000-1-masneyb@onstation.org>
+        <20190425230314.26000-2-masneyb@onstation.org>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,63 +59,116 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 23 Apr 2019 23:41:58 +0200
-Daniel Gomez <dagmcr@gmail.com> wrote:
+On Thu, 25 Apr 2019 19:03:14 -0400
+Brian Masney <masneyb@onstation.org> wrote:
 
-> Add missing <of_device_id> table for SPI driver relying on SPI
-> device match since compatible is in a DT binding or in a DTS.
+> Convert the tsl2583 device tree bindings to the new YAML format.
 > 
-> Before this patch:
-> modinfo drivers/iio/dac/ad5758.ko | grep alias
-> alias:          spi:ad5758
-> 
-> After this patch:
-> modinfo drivers/iio/dac/ad5758.ko | grep alias
-> alias:          spi:ad5758
-> alias:          of:N*T*Cadi,ad5758C*
-> alias:          of:N*T*Cadi,ad5758
-> 
-> Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
-> Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/dac/ad5758.c | 9 +++++++++
->  1 file changed, 9 insertions(+)
+> Changes since v2:
+> - Changed 'als-sensor@29' in example to 'light-sensor@29'
 > 
-> diff --git a/drivers/iio/dac/ad5758.c b/drivers/iio/dac/ad5758.c
-> index 2bdf1b0..e8eaa48 100644
-> --- a/drivers/iio/dac/ad5758.c
-> +++ b/drivers/iio/dac/ad5758.c
-> @@ -11,6 +11,8 @@
->  #include <linux/kernel.h>
->  #include <linux/module.h>
->  #include <linux/property.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/spi/spi.h>
->  #include <linux/gpio/consumer.h>
->  
-> @@ -904,9 +906,16 @@ static const struct spi_device_id ad5758_id[] = {
->  };
->  MODULE_DEVICE_TABLE(spi, ad5758_id);
->  
-> +static const struct of_device_id ad5758_of_match[] = {
-> +        { .compatible = "adi,ad5758" },
-> +        { },
-> +};
-> +MODULE_DEVICE_TABLE(of, ad5758_of_match);
+> Changes since v1:
+> - Dropped description from reg and interrupts properties.
+> - Dropped $ref from vcc-supply property.
+> - Changed 'tsl2581@29' in example to 'als-sensor@29'
+> 
+>  .../devicetree/bindings/iio/light/tsl2583.txt | 25 ----------
+>  .../bindings/iio/light/tsl2583.yaml           | 46 +++++++++++++++++++
+>  2 files changed, 46 insertions(+), 25 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.txt b/Documentation/devicetree/bindings/iio/light/tsl2583.txt
+> deleted file mode 100644
+> index 059dffa1829a..000000000000
+> --- a/Documentation/devicetree/bindings/iio/light/tsl2583.txt
+> +++ /dev/null
+> @@ -1,25 +0,0 @@
+> -* TAOS TSL 2580/2581/2583 ALS sensor
+> -
+> -Required properties:
+> -
+> -  - compatible: Should be one of
+> -		"amstaos,tsl2580"
+> -		"amstaos,tsl2581"
+> -		"amstaos,tsl2583"
+> -  - reg: the I2C address of the device
+> -
+> -Optional properties:
+> -
+> -  - interrupts: the sole interrupt generated by the device
+> -
+> -  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> -  node bindings.
+> -
+> -  - vcc-supply: phandle to the regulator that provides power to the sensor.
+> -
+> -Example:
+> -
+> -tsl2581@29 {
+> -	compatible = "amstaos,tsl2581";
+> -	reg = <0x29>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.yaml b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+> new file mode 100644
+> index 000000000000..e86ef64ecf03
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/tsl2583.yaml
+> @@ -0,0 +1,46 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/tsl2583.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  static struct spi_driver ad5758_driver = {
->  	.driver = {
->  		.name = KBUILD_MODNAME,
-> +		.of_match_table = ad5758_of_match,
->  	},
->  	.probe = ad5758_probe,
->  	.id_table = ad5758_id,
+> +title: AMS/TAOS Ambient Light Sensor (ALS)
+> +
+> +maintainers:
+> +  - Brian Masney <masneyb@onstation.org>
+> +
+> +description: |
+> +  Ambient light sensing with an i2c interface.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - amstaos,tsl2580
+> +      - amstaos,tsl2581
+> +      - amstaos,tsl2583
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  vcc-supply:
+> +    description: Regulator that provides power to the sensor
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        light-sensor@29 {
+> +                compatible = "amstaos,tsl2581";
+> +                reg = <0x29>;
+> +        };
+> +    };
+> +...
 
