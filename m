@@ -2,304 +2,169 @@ Return-Path: <SRS0=q5lh=S5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BF1C43218
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 13:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75CD3C43218
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 18:25:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9895D2087F
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 13:24:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3ED8D2087C
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 18:25:25 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="fgoWSiWR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbfD0NY1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 27 Apr 2019 09:24:27 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:42500 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726409AbfD0NY0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Apr 2019 09:24:26 -0400
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 9D0119E829D;
-        Sat, 27 Apr 2019 14:24:23 +0100 (BST)
-Date:   Sat, 27 Apr 2019 14:24:21 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     enric.balletbo@collabora.com, bleung@chromium.org,
-        groeck@chromium.org, lee.jones@linaro.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v6] iio: cros_ec: Add lid angle driver
-Message-ID: <20190427142421.6bd27cac@archlinux>
-In-Reply-To: <20190427142112.5630e664@archlinux>
-References: <20190425002932.126740-1-gwendal@chromium.org>
-        <20190427142112.5630e664@archlinux>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726081AbfD0SZY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 27 Apr 2019 14:25:24 -0400
+Received: from onstation.org ([52.200.56.107]:53464 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725942AbfD0SZY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 27 Apr 2019 14:25:24 -0400
+Received: from localhost.localdomain (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: masneyb)
+        by onstation.org (Postfix) with ESMTPSA id 4CCA03E93F;
+        Sat, 27 Apr 2019 18:25:22 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
+        s=default; t=1556389523;
+        bh=BWIBvQzUZK2Ol1QHN0Z+llq/hFlZfM3/sDYxGcaanFY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=fgoWSiWRg1oBcJ76/WV6s9Sl+L9YI4QZvkZHlYOIbddJ9DwW+SG4GJkP2DzqxB+Hk
+         SdYXGmBUdkLPPsOG5ucJhxBJqyHMor8liu1fKs967tXDPeS3SYcct9i2eqb1187buN
+         apgQKdSiWeH+f5OUoOpQcMyVPoFVlBTM+QheLwEA=
+From:   Brian Masney <masneyb@onstation.org>
+To:     jic23@kernel.org, robh+dt@kernel.org
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        mark.rutland@arm.com, anson.huang@nxp.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, ldewangan@nvidia.com, rklein@nvidia.com
+Subject: [PATCH] dt-bindings: iio: isl29018: convert bindings to YAML format
+Date:   Sat, 27 Apr 2019 14:23:59 -0400
+Message-Id: <20190427182359.27254-1-masneyb@onstation.org>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 27 Apr 2019 14:21:12 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Convert the isl29018 device tree bindings to the new YAML format.
 
-> On Wed, 24 Apr 2019 17:29:32 -0700
-> Gwendal Grignou <gwendal@chromium.org> wrote:
-> 
-> > Add a IIO driver that reports the angle between the lid and the base for
-> > ChromeOS convertible device.
-> > 
-> > Tested on eve with ToT EC firmware.
-> > Check driver is loaded and lid angle is correct.
-> > 
-> > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>  
-> I am a little curious... In what way is this a counter driver (comments
-> at the top of the main file)?
-> 
-> Anyhow, that's no reason not to apply it.  However, it has just missed
-> the coming merge window unless Linus makes 'it is delayed noises' tomorrow.
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
-Ah. Should have waited for my local build test to finish.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+I'm willing to be listed as the maintainer since this is one of the
+drivers that I moved out out of staging unless one of the original
+authors wants to be listed instead.
 
-I'm guessing this has a dependency I don't know about?
-MOTIONSENSE_CMD_LID_ANGLE isn't defined.
+I added the BSD-2-Clause to the new binding document. I wrote the
+original document and the only commit since then was from Rob in
+commit 791d3ef2e111 ("dt-bindings: remove 'interrupt-parent' from
+bindings")
 
-Jonathan
+ .../bindings/iio/light/isl29018.txt           | 27 ---------
+ .../bindings/iio/light/isl29018.yaml          | 56 +++++++++++++++++++
+ 2 files changed, 56 insertions(+), 27 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/light/isl29018.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isl29018.yaml
 
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> > Changes in v6:
-> > - Fix lock held in an error path error.
-> > 
-> > Changes in v5:
-> > - Remove unnecessary define.
-> > - v4 was the wrong patch file
-> > 
-> > Changes in v3:
-> > - Use static channel array, simplify code because index is always 0.
-> > 
-> > Changes in v2:
-> > - Fix license, remove driver_module field.
-> > 
-> >  drivers/iio/common/cros_ec_sensors/Kconfig    |   9 ++
-> >  drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
-> >  .../cros_ec_sensors/cros_ec_lid_angle.c       | 139 ++++++++++++++++++
-> >  drivers/mfd/cros_ec_dev.c                     |  13 +-
-> >  4 files changed, 159 insertions(+), 3 deletions(-)
-> >  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> > 
-> > diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> > index 135f6825903f..aacc2ab9c34f 100644
-> > --- a/drivers/iio/common/cros_ec_sensors/Kconfig
-> > +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> > @@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
-> >  	  Accelerometers, Gyroscope and Magnetometer that are
-> >  	  presented by the ChromeOS EC Sensor hub.
-> >  	  Creates an IIO device for each functions.
-> > +
-> > +config IIO_CROS_EC_SENSORS_LID_ANGLE
-> > +	tristate "ChromeOS EC Sensor for lid angle"
-> > +	depends on IIO_CROS_EC_SENSORS_CORE
-> > +	help
-> > +	  Module to report the angle between lid and base for some
-> > +	  convertible devices.
-> > +	  This module is loaded when the EC can calculate the angle between the base
-> > +	  and the lid.
-> > diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> > index ec716ff2a775..a35ee232ac07 100644
-> > --- a/drivers/iio/common/cros_ec_sensors/Makefile
-> > +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> > @@ -4,3 +4,4 @@
-> >  
-> >  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
-> >  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
-> > +obj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o
-> > diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> > new file mode 100644
-> > index 000000000000..876dfd176b0e
-> > --- /dev/null
-> > +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> > @@ -0,0 +1,139 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +
-> > +/*
-> > + * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
-> > + *
-> > + * Copyright 2018 Google, Inc
-> > + *
-> > + * This driver uses the cros-ec interface to communicate with the Chrome OS
-> > + * EC about counter sensors. Counters are presented through
-> > + * iio sysfs.
-> > + */
-> > +
-> > +#include <linux/delay.h>
-> > +#include <linux/device.h>
-> > +#include <linux/iio/buffer.h>
-> > +#include <linux/iio/common/cros_ec_sensors_core.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/kfifo_buf.h>
-> > +#include <linux/iio/trigger.h>
-> > +#include <linux/iio/triggered_buffer.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/mfd/cros_ec.h>
-> > +#include <linux/mfd/cros_ec_commands.h>
-> > +#include <linux/module.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/slab.h>
-> > +
-> > +#define DRV_NAME "cros-ec-lid-angle"
-> > +
-> > +/*
-> > + * One channel for the lid angle, the other for timestamp.
-> > + */
-> > +static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
-> > +	{
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > +		.scan_type.realbits = CROS_EC_SENSOR_BITS,
-> > +		.scan_type.storagebits = CROS_EC_SENSOR_BITS,
-> > +		.scan_type.sign = 'u',
-> > +		.type = IIO_ANGL
-> > +	},
-> > +	IIO_CHAN_SOFT_TIMESTAMP(1)
-> > +};
-> > +
-> > +/* State data for ec_sensors iio driver. */
-> > +struct cros_ec_lid_angle_state {
-> > +	/* Shared by all sensors */
-> > +	struct cros_ec_sensors_core_state core;
-> > +};
-> > +
-> > +static int cros_ec_sensors_read_lid_angle(struct iio_dev *indio_dev,
-> > +					  unsigned long scan_mask, s16 *data)
-> > +{
-> > +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	st->param.cmd = MOTIONSENSE_CMD_LID_ANGLE;
-> > +	ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->lid_angle));
-> > +	if (ret) {
-> > +		dev_warn(&indio_dev->dev, "Unable to read lid angle\n");
-> > +		return ret;
-> > +	}
-> > +
-> > +	*data = st->resp->lid_angle.value;
-> > +	return 0;
-> > +}
-> > +
-> > +static int cros_ec_lid_angle_read(struct iio_dev *indio_dev,
-> > +				    struct iio_chan_spec const *chan,
-> > +				    int *val, int *val2, long mask)
-> > +{
-> > +	struct cros_ec_lid_angle_state *st = iio_priv(indio_dev);
-> > +	s16 data;
-> > +	int ret;
-> > +
-> > +	mutex_lock(&st->core.cmd_lock);
-> > +	ret = cros_ec_sensors_read_lid_angle(indio_dev, 1, &data);
-> > +	if (ret == 0) {
-> > +		*val = data;
-> > +		ret = IIO_VAL_INT;
-> > +	}
-> > +	mutex_unlock(&st->core.cmd_lock);
-> > +	return ret;
-> > +}
-> > +
-> > +static const struct iio_info cros_ec_lid_angle_info = {
-> > +	.read_raw = &cros_ec_lid_angle_read,
-> > +};
-> > +
-> > +static int cros_ec_lid_angle_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct iio_dev *indio_dev;
-> > +	struct cros_ec_lid_angle_state *state;
-> > +	int ret;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	indio_dev->info = &cros_ec_lid_angle_info;
-> > +	state = iio_priv(indio_dev);
-> > +	indio_dev->channels = cros_ec_lid_angle_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(cros_ec_lid_angle_channels);
-> > +
-> > +	state->core.read_ec_sensors_data = cros_ec_sensors_read_lid_angle;
-> > +
-> > +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> > +			cros_ec_sensors_capture, NULL);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return devm_iio_device_register(dev, indio_dev);
-> > +}
-> > +
-> > +static const struct platform_device_id cros_ec_lid_angle_ids[] = {
-> > +	{
-> > +		.name = DRV_NAME,
-> > +	},
-> > +	{ /* sentinel */ }
-> > +};
-> > +MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
-> > +
-> > +static struct platform_driver cros_ec_lid_angle_platform_driver = {
-> > +	.driver = {
-> > +		.name	= DRV_NAME,
-> > +		.pm	= &cros_ec_sensors_pm_ops,
-> > +	},
-> > +	.probe		= cros_ec_lid_angle_probe,
-> > +	.id_table	= cros_ec_lid_angle_ids,
-> > +};
-> > +module_platform_driver(cros_ec_lid_angle_platform_driver);
-> > +
-> > +MODULE_DESCRIPTION("ChromeOS EC driver for reporting convertible lid angle.");
-> > +MODULE_LICENSE("GPL v2");
-> > diff --git a/drivers/mfd/cros_ec_dev.c b/drivers/mfd/cros_ec_dev.c
-> > index a3b319913097..c410aa804698 100644
-> > --- a/drivers/mfd/cros_ec_dev.c
-> > +++ b/drivers/mfd/cros_ec_dev.c
-> > @@ -297,13 +297,15 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
-> >  
-> >  	resp = (struct ec_response_motion_sense *)msg->data;
-> >  	sensor_num = resp->dump.sensor_count;
-> > -	/* Allocate 1 extra sensors in FIFO are needed */
-> > -	sensor_cells = kcalloc(sensor_num + 1, sizeof(struct mfd_cell),
-> > +	/*
-> > +	 * Allocate 2 extra sensors if lid angle sensor and/or FIFO are needed.
-> > +	 */
-> > +	sensor_cells = kcalloc(sensor_num + 2, sizeof(struct mfd_cell),
-> >  			       GFP_KERNEL);
-> >  	if (sensor_cells == NULL)
-> >  		goto error;
-> >  
-> > -	sensor_platforms = kcalloc(sensor_num + 1,
-> > +	sensor_platforms = kcalloc(sensor_num,
-> >  				   sizeof(struct cros_ec_sensor_platform),
-> >  				   GFP_KERNEL);
-> >  	if (sensor_platforms == NULL)
-> > @@ -363,6 +365,11 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
-> >  		sensor_cells[id].name = "cros-ec-ring";
-> >  		id++;
-> >  	}
-> > +	if (cros_ec_check_features(ec,
-> > +				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
-> > +		sensor_cells[id].name = "cros-ec-lid-angle";
-> > +		id++;
-> > +	}
-> >  
-> >  	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
-> >  			      NULL, 0, NULL);  
-> 
+diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.txt b/Documentation/devicetree/bindings/iio/light/isl29018.txt
+deleted file mode 100644
+index b9bbde3e13ed..000000000000
+--- a/Documentation/devicetree/bindings/iio/light/isl29018.txt
++++ /dev/null
+@@ -1,27 +0,0 @@
+-* ISL 29018/29023/29035 I2C ALS, Proximity, and Infrared sensor
+-
+-Required properties:
+-
+-  - compatible: Should be one of
+-		"isil,isl29018"
+-		"isil,isl29023"
+-		"isil,isl29035"
+-  - reg: the I2C address of the device
+-
+-Optional properties:
+-
+-  - interrupts: the sole interrupt generated by the device
+-
+-  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+-  node bindings.
+-
+-  - vcc-supply: phandle to the regulator that provides power to the sensor.
+-
+-Example:
+-
+-isl29018@44 {
+-	compatible = "isil,isl29018";
+-	reg = <0x44>;
+-	interrupt-parent = <&gpio>;
+-	interrupts = <TEGRA_GPIO(Z, 2) IRQ_TYPE_LEVEL_HIGH>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.yaml b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+new file mode 100644
+index 000000000000..cbb00be8f359
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/isl29018.yaml
+@@ -0,0 +1,56 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/isl29018.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: |
++  Intersil 29018/29023/29035 Ambient Light, Infrared Light, and Proximity Sensor
++
++maintainers:
++  - Brian Masney <masneyb@onstation.org>
++
++description: |
++  Ambient and infrared light sensing with proximity detection over an i2c
++  interface.
++
++  https://www.renesas.com/us/en/www/doc/datasheet/isl29018.pdf
++  https://www.renesas.com/us/en/www/doc/datasheet/isl29023.pdf
++  https://www.renesas.com/us/en/www/doc/datasheet/isl29035.pdf
++
++properties:
++  compatible:
++    enum:
++      - isil,isl29018
++      - isil,isl29023
++      - isil,isl29035
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  vcc-supply:
++    description: Regulator that provides power to the sensor
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        sensor@44 {
++                compatible = "isil,isl29018";
++                reg = <0x44>;
++                interrupts-extended = <&msmgpio 61 IRQ_TYPE_LEVEL_HIGH>;
++        };
++    };
++...
+-- 
+2.20.1
 
