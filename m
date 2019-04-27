@@ -6,51 +6,49 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10622C43219
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:55:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 093D4C43218
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:56:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D4EA2212F5
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:55:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE5552087C
+	for <linux-iio@archiver.kernel.org>; Sat, 27 Apr 2019 12:56:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1556369743;
-	bh=hVmyG+1AvKUQGM0TnO9YzO1iCH5meTQ6M6O8sm/zFp0=;
+	s=default; t=1556369814;
+	bh=Lz6otYx7mFcj2Y/1fzaDIfrFjPlmohwy1PTAiBZEAY0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=eKMWhzO4bvgoJBBn19pF9hnLL7JuBOE03elre6QSgrDjdJfbA3KnGJC/f29CqWPYF
-	 mcB13HULn/wj2EHfei2dTr+FcWidY0Lg5xBcvfgTo156yo/ssbOqwMZLJ8nEZrDMPd
-	 77Kbk9ziZxSvvcIcqHfXuCWF9CFm8ll72NbkRi4Q=
+	b=Xixej6Lr85xn+oHeTH6jQZLNEo2Y3VjyByGXdLeJY3c0ZTOTFfcHJKTYgpH/2z9R8
+	 tAkVBTB8sV9MC5rKWeClXcTLFeE1hg3JWdn6VqeSkOQ6IYfbmri+d3TeHqzH+hBHPo
+	 AZdHdhhwO5hyDFY5jK8uzhCSzn6K7l0wKqB5XlQo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726906AbfD0Mzm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 27 Apr 2019 08:55:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56794 "EHLO mail.kernel.org"
+        id S1727385AbfD0M4x (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 27 Apr 2019 08:56:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727620AbfD0Mzm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 27 Apr 2019 08:55:42 -0400
+        id S1726611AbfD0M4x (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 27 Apr 2019 08:56:53 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5052F208C2;
-        Sat, 27 Apr 2019 12:55:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D7A9B208C2;
+        Sat, 27 Apr 2019 12:56:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1556369741;
-        bh=hVmyG+1AvKUQGM0TnO9YzO1iCH5meTQ6M6O8sm/zFp0=;
+        s=default; t=1556369812;
+        bh=Lz6otYx7mFcj2Y/1fzaDIfrFjPlmohwy1PTAiBZEAY0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=aTHD60nk6dMIesU+YQJFMIsdD2QRFFzm7y3c7Bj9pWeQz0Px/r4kwo0rMrMQhdHDR
-         IO5rzgxNnqdybtmu01nqkf1BJzx9lg+uQ4F+M4uvViHWqYK00hMvdFORuQ5NBAwIVy
-         0Xwpea7BY01DKmdQ3NwbAqEggNV9R/DIxevkCfiI=
-Date:   Sat, 27 Apr 2019 13:55:35 +0100
+        b=Zvox9MptHNGUzMG/+YrVYCyroAup7JSzs8fSsrq+y2JRbixRwZg1xErIsvMXrD4pA
+         1D02TwnznPfUNEjgI7k+i0DXcASo6SMKnRs3VOcjGs2aJFoyz89j27XMue/cOcTbCp
+         OeSdamrDAI4903LZFbyNfqXkY4LTLAeTvrqFFzOU=
+Date:   Sat, 27 Apr 2019 13:56:45 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     Daniel Gomez <dagmcr@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
+To:     Daniel Gomez <dagmcr@gmail.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>, javier@dowhile0.org
-Subject: Re: [PATCH v2] iio: temperature: maxim_thermocouple: declare
- missing of table
-Message-ID: <20190427135535.46b3f7e9@archlinux>
-In-Reply-To: <CAJCx=gkykSjn7uf67s2_NqB+-FYWF_oA_PknB7LcX5QRD_mp9Q@mail.gmail.com>
-References: <1556055738-14838-1-git-send-email-dagmcr@gmail.com>
-        <CAJCx=gkykSjn7uf67s2_NqB+-FYWF_oA_PknB7LcX5QRD_mp9Q@mail.gmail.com>
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-kernel@vger.kernel.org (open list), javier@dowhile0.org
+Subject: Re: [PATCH v2] iio: accel: kxsd9: declare missing of table
+Message-ID: <20190427135645.53cb78f7@archlinux>
+In-Reply-To: <1556055659-14658-1-git-send-email-dagmcr@gmail.com>
+References: <1556055659-14658-1-git-send-email-dagmcr@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,77 +58,63 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 25 Apr 2019 09:35:07 +0800
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+On Tue, 23 Apr 2019 23:40:59 +0200
+Daniel Gomez <dagmcr@gmail.com> wrote:
 
-> On Wed, Apr 24, 2019 at 5:42 AM Daniel Gomez <dagmcr@gmail.com> wrote:
-> >
-> > Add missing <of_device_id> table for SPI driver relying on SPI
-> > device match since compatible is in a DT binding or in a DTS.
-> >
-> > Before this patch:
-> > modinfo drivers/iio/temperature/maxim_thermocouple.ko | grep alias
-> > alias:          spi:max31855
-> > alias:          spi:max6675
-> >
-> > After this patch:
-> > modinfo drivers/iio/temperature/maxim_thermocouple.ko | grep alias
-> > alias:          spi:max31855
-> > alias:          spi:max6675
-> > alias:          of:N*T*Cmaxim,max31855C*
-> > alias:          of:N*T*Cmaxim,max31855
-> > alias:          of:N*T*Cmaxim,max6675C*
-> > alias:          of:N*T*Cmaxim,max6675  
+> Add missing <of_device_id> table for SPI driver relying on SPI
+> device match since compatible is in a DT binding or in a DTS.
 > 
-> Heh oops I missed that somehow in initial development.
+> Before this patch:
+> modinfo drivers/iio/accel/kxsd9-spi.ko  | grep alias
+> alias:          spi:kxsd9
 > 
-> Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
-Applied to the togreg branch of iio.git.  Given timing this may have
-to wait for the next cycle to go upstream.
+> After this patch:
+> modinfo drivers/iio/accel/kxsd9-spi.ko  | grep alias
+> alias:          spi:kxsd9
+> alias:          of:N*T*Ckionix,kxsd9C*
+> alias:          of:N*T*Ckionix,kxsd9
+> 
+> Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
+> Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-Thanks.
+Thanks,
+
 Jonathan
 
+> ---
+>  drivers/iio/accel/kxsd9-spi.c | 9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> >
-> > Reported-by: Javier Martinez Canillas <javier@dowhile0.org>
-> > Signed-off-by: Daniel Gomez <dagmcr@gmail.com>
-> > ---
-> >  drivers/iio/temperature/maxim_thermocouple.c | 10 ++++++++++
-> >  1 file changed, 10 insertions(+)
-> >
-> > diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-> > index c31b963..c613a64 100644
-> > --- a/drivers/iio/temperature/maxim_thermocouple.c
-> > +++ b/drivers/iio/temperature/maxim_thermocouple.c
-> > @@ -10,6 +10,8 @@
-> >  #include <linux/init.h>
-> >  #include <linux/mutex.h>
-> >  #include <linux/err.h>
-> > +#include <linux/of.h>
-> > +#include <linux/of_device.h>
-> >  #include <linux/spi/spi.h>
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/trigger.h>
-> > @@ -262,9 +264,17 @@ static const struct spi_device_id maxim_thermocouple_id[] = {
-> >  };
-> >  MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
-> >
-> > +static const struct of_device_id maxim_thermocouple_of_match[] = {
-> > +        { .compatible = "maxim,max6675" },
-> > +        { .compatible = "maxim,max31855" },
-> > +        { },
-> > +};
-> > +MODULE_DEVICE_TABLE(of, maxim_thermocouple_of_match);
-> > +
-> >  static struct spi_driver maxim_thermocouple_driver = {
-> >         .driver = {
-> >                 .name   = MAXIM_THERMOCOUPLE_DRV_NAME,
-> > +               .of_match_table = maxim_thermocouple_of_match,
-> >         },
-> >         .probe          = maxim_thermocouple_probe,
-> >         .remove         = maxim_thermocouple_remove,
-> > --
-> > 2.7.4
-> >  
+> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
+> index b7d0078..3027917 100644
+> --- a/drivers/iio/accel/kxsd9-spi.c
+> +++ b/drivers/iio/accel/kxsd9-spi.c
+> @@ -1,5 +1,7 @@
+>  #include <linux/device.h>
+>  #include <linux/kernel.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/spi/spi.h>
+>  #include <linux/module.h>
+>  #include <linux/slab.h>
+> @@ -40,10 +42,17 @@ static const struct spi_device_id kxsd9_spi_id[] = {
+>  };
+>  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
+>  
+> +static const struct of_device_id kxsd9_of_match[] = {
+> +        { .compatible = "kionix,kxsd9" },
+> +        { },
+> +};
+> +MODULE_DEVICE_TABLE(of, kxsd9_of_match);
+> +
+>  static struct spi_driver kxsd9_spi_driver = {
+>  	.driver = {
+>  		.name = "kxsd9",
+>  		.pm = &kxsd9_dev_pm_ops,
+> +		.of_match_table = kxsd9_of_match,
+>  	},
+>  	.probe = kxsd9_spi_probe,
+>  	.remove = kxsd9_spi_remove,
 
