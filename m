@@ -6,22 +6,22 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5D0C43219
-	for <linux-iio@archiver.kernel.org>; Wed,  1 May 2019 21:17:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38108C04AA8
+	for <linux-iio@archiver.kernel.org>; Wed,  1 May 2019 21:17:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E3642054F
-	for <linux-iio@archiver.kernel.org>; Wed,  1 May 2019 21:17:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0719C2054F
+	for <linux-iio@archiver.kernel.org>; Wed,  1 May 2019 21:17:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726133AbfEAVRo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726115AbfEAVRo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 1 May 2019 17:17:44 -0400
-Received: from secvs01.rockwellcollins.com ([205.175.225.240]:64199 "EHLO
-        secvs01.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726115AbfEAVRo (ORCPT
+Received: from ch3vs03.rockwellcollins.com ([205.175.226.47]:10406 "EHLO
+        ch3vs03.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726088AbfEAVRo (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 1 May 2019 17:17:44 -0400
-Received: from ofwgwc03.rockwellcollins.com (HELO crulimr01.rockwellcollins.com) ([205.175.225.12])
-  by secvs01.rockwellcollins.com with ESMTP; 01 May 2019 16:17:43 -0500
+Received: from ofwch3n02.rockwellcollins.com (HELO crulimr01.rockwellcollins.com) ([205.175.226.14])
+  by ch3vs03.rockwellcollins.com with ESMTP; 01 May 2019 16:17:43 -0500
 X-Received: from righttwix.rockwellcollins.com (righttwix.rockwellcollins.com [192.168.141.218])
-        by crulimr01.rockwellcollins.com (Postfix) with ESMTP id 5DE286034B;
+        by crulimr01.rockwellcollins.com (Postfix) with ESMTP id 137776045D;
         Wed,  1 May 2019 16:17:43 -0500 (CDT)
 From:   Adam Michaelis <adam.michaelis@rockwellcollins.com>
 To:     linux-iio@vger.kernel.org
@@ -31,9 +31,9 @@ Cc:     lars@metafoo.de, michael.hennerich@analog.com, jic23@kernel.org,
         devicetree@vger.kernel.org, brandon.maier@rockwellcollins.com,
         clayton.shotwell@rockwellcollins.com,
         Adam Michaelis <adam.michaelis@rockwellcollins.com>
-Subject: [PATCH 4/6] dt-bindings: iio: ad7949: Add cfg-readback option
-Date:   Wed,  1 May 2019 16:17:01 -0500
-Message-Id: <1556745423-11368-4-git-send-email-adam.michaelis@rockwellcollins.com>
+Subject: [PATCH 2/6] dt-bindings: iio: ad7949: Add adi,reference-select
+Date:   Wed,  1 May 2019 16:16:59 -0500
+Message-Id: <1556745423-11368-2-git-send-email-adam.michaelis@rockwellcollins.com>
 X-Mailer: git-send-email 1.9.1
 In-Reply-To: <1556745423-11368-1-git-send-email-adam.michaelis@rockwellcollins.com>
 References: <1556745423-11368-1-git-send-email-adam.michaelis@rockwellcollins.com>
@@ -42,38 +42,50 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adding optional parameter to the ad7949 to indicate that the part should
-be configured to include the configuration register value used when
-acquiring the current sample value.
+Adding optional parameter to AD7949 to specify the source for the
+reference voltage signal. Default value is maintaned with option '6' to
+match previous version of driver.
 
 Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
 ---
- Documentation/devicetree/bindings/iio/adc/ad7949.txt | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ .../devicetree/bindings/iio/adc/ad7949.txt         | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/ad7949.txt b/Documentation/devicetree/bindings/iio/adc/ad7949.txt
-index 14ee9a2cb2a5..cd3572828243 100644
+index c7f5057356b1..14ee9a2cb2a5 100644
 --- a/Documentation/devicetree/bindings/iio/adc/ad7949.txt
 +++ b/Documentation/devicetree/bindings/iio/adc/ad7949.txt
-@@ -18,6 +18,8 @@ Optional properties:
-    7: External reference, temperature sensor disabled, buffer enabled
-  - vref-supply: The regulator supply for ADC reference voltage. Required
-  if external reference selected by 'adi,reference-select'.
-+ - adi,cfg-readback: If defined, set bit in configuration register to
-+ read-back the configuration used for the current sample value.
+@@ -6,11 +6,29 @@ Required properties:
+ 	* "adi,ad7682"
+ 	* "adi,ad7689"
+  - reg: spi chip select number for the device
+- - vref-supply: The regulator supply for ADC reference voltage
  
- Examples:
+-Example:
++Optional properties:
++ - adi,reference-select: Select the reference voltage source to use
++ when converting the input voltages. Valid values are:
++   0: Internal 2.5V reference; temperature sensor enabled
++   1: Internal 4.096V reference; temperature sensor enabled
++   2: External reference, temperature sensor enabled, no buffer
++   3: External reference, temperature sensor enabled, buffer enabled
++   6: External reference, temperature sensor disabled, no buffer
++   7: External reference, temperature sensor disabled, buffer enabled
++ - vref-supply: The regulator supply for ADC reference voltage. Required
++ if external reference selected by 'adi,reference-select'.
++
++Examples:
  adc@0 {
-@@ -32,3 +34,10 @@ adc@0 {
+ 	compatible = "adi,ad7949";
  	reg = <0>;
- 	adi,reference-select = <0>;
++	adi,reference-select = <2>;
+ 	vref-supply = <&vdd_supply>;
  };
 +
 +adc@0 {
 +	compatible = "adi,ad7949";
 +	reg = <0>;
-+	adi,reference-select = <1>;
-+	adi,cfg-readback;
++	adi,reference-select = <0>;
 +};
 -- 
 1.9.1
