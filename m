@@ -2,111 +2,105 @@ Return-Path: <SRS0=s3QM=TC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 813BFC43219
-	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 06:30:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 71672C43219
+	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 16:14:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4A69420873
-	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 06:30:58 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="W5Vi6C4P"
+	by mail.kernel.org (Postfix) with ESMTP id 4AE452089E
+	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 16:14:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725764AbfEBGa5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 May 2019 02:30:57 -0400
-Received: from mail-ed1-f68.google.com ([209.85.208.68]:41139 "EHLO
-        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726111AbfEBGa5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2019 02:30:57 -0400
-Received: by mail-ed1-f68.google.com with SMTP id m4so1075764edd.8
-        for <linux-iio@vger.kernel.org>; Wed, 01 May 2019 23:30:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=essensium-com.20150623.gappssmtp.com; s=20150623;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=XifxbheY5ZJMcIjK1Dcna4ZV4VxhYdswgXuoHoN07ds=;
-        b=W5Vi6C4PALXYi9bntNvSqVcq+/UxvMKNNQKeCYfXtVU7JKlp4CJa8ZE9p/ZyV0L1EI
-         u36NkKV0n2EyaAIsRxMZcAoIbmDNa22UuFVxhwHzZvGHNAkiBWTvXGfO1xMaStYTbiiO
-         1ygs9UiNA6h4aVrx7Qz2LABuy4WsmKnthewxz4Hbu7Ln9WOwfj0nhIYtJHlKunxBStgo
-         3PCf1wBDOfPzFxSjwdbac/75+Ve2gkcIvIGIOQkw7aUzbRIHEVtBprgompOg4L6J7wrO
-         jUsKrjkv+bVEQn6y+spUiwI5iLntSNZGNYmDicVjIg3Fe6fpxpunUk2JyV8ybu67oTac
-         3KNA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=XifxbheY5ZJMcIjK1Dcna4ZV4VxhYdswgXuoHoN07ds=;
-        b=TiRHZcR+OH/JPlSp45GQGI1BZ/ZOm5h9M6aPF7bxi7t4jC9cLUTGZ1ZSQOZXspbbnL
-         h794WClvT4Du1QXuIkrw50dv4yKmOUg9jDH3HzdeFss92cTDcBFa3dNzlIidVFwLAQ4w
-         rhuWFoIqxI+EertDyHF69OahpABE9j55Ro0HZiJAQF7EFIS+nUB+JrONsMYxYGcyj6cZ
-         LLEThuIRQ/ScZZI2I9hFtIorEisYp+1e+VI2vh/e54n3y73yTotHMcVnzWvj+2Wpv7hb
-         RCo/xbwdTk+EXt+skxxqOg8uZYa0M+hlb3sCqARbD6gY6DqOBGn6A+gycs/AIqlYEcK+
-         WBNw==
-X-Gm-Message-State: APjAAAXH4pEnFhkZ2MsHEJno/f7sweR3l4Xs+24a3tUYF5Qtu0HYjOv7
-        JLrPL/YQTx8GBsDOaBGxgFJtD23lJTM=
-X-Google-Smtp-Source: APXvYqzCXqzBmV7CbIi+qzTwlBRjN6AtrUKhicdLtIjZhkphBOm2hAcbWT7moAEIfqLspoDjt+YedQ==
-X-Received: by 2002:a50:8c03:: with SMTP id p3mr1271439edp.267.1556778655182;
-        Wed, 01 May 2019 23:30:55 -0700 (PDT)
-Received: from ?IPv6:2a02:a03f:4485:9200:4176:609:b67e:249a? ([2a02:a03f:4485:9200:4176:609:b67e:249a])
-        by smtp.gmail.com with ESMTPSA id b23sm4066266ede.75.2019.05.01.23.30.54
-        (version=TLS1_3 cipher=AEAD-AES128-GCM-SHA256 bits=128/128);
-        Wed, 01 May 2019 23:30:54 -0700 (PDT)
-Subject: Re: [PATCH 1/6] iio: ad7949: Support internal Vref
-To:     Adam Michaelis <adam.michaelis@rockwellcollins.com>,
-        linux-iio@vger.kernel.org
+        id S1726515AbfEBQOo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 May 2019 12:14:44 -0400
+Received: from ch3vs02.rockwellcollins.com ([205.175.226.29]:50354 "EHLO
+        ch3vs02.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726303AbfEBQOn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2019 12:14:43 -0400
+Received: from ofwch3n02.rockwellcollins.com (HELO ciulimr02.rockwellcollins.com) ([205.175.226.14])
+  by ch3vs02.rockwellcollins.com with ESMTP; 02 May 2019 11:14:43 -0500
+X-Received: from righttwix.rockwellcollins.com (righttwix.rockwellcollins.com [192.168.141.218])
+        by ciulimr02.rockwellcollins.com (Postfix) with ESMTP id 1755920079;
+        Thu,  2 May 2019 11:14:43 -0500 (CDT)
+From:   Adam Michaelis <adam.michaelis@rockwellcollins.com>
+To:     linux-iio@vger.kernel.org
 Cc:     lars@metafoo.de, michael.hennerich@analog.com, jic23@kernel.org,
         knaack.h@gmx.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, devicetree@vger.kernel.org,
-        brandon.maier@rockwellcollins.com,
-        clayton.shotwell@rockwellcollins.com
-References: <1556745423-11368-1-git-send-email-adam.michaelis@rockwellcollins.com>
-From:   Couret Charles-Antoine <charles-antoine.couret@essensium.com>
-Message-ID: <4f674e6a-2346-4ca3-4043-205e54473dbd@essensium.com>
-Date:   Thu, 2 May 2019 08:30:53 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.6.1
-MIME-Version: 1.0
-In-Reply-To: <1556745423-11368-1-git-send-email-adam.michaelis@rockwellcollins.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-GB
+        mark.rutland@arm.com, charles-antoine.couret@essensium.com,
+        devicetree@vger.kernel.org, brandon.maier@rockwellcollins.com,
+        clayton.shotwell@rockwellcollins.com,
+        Adam Michaelis <adam.michaelis@rockwellcollins.com>
+Subject: [PATCH v2 3/6] iio: ad7949: Support configuration read-back
+Date:   Thu,  2 May 2019 11:14:29 -0500
+Message-Id: <1556813672-49861-3-git-send-email-adam.michaelis@rockwellcollins.com>
+X-Mailer: git-send-email 1.9.1
+In-Reply-To: <1556813672-49861-1-git-send-email-adam.michaelis@rockwellcollins.com>
+References: <1556813672-49861-1-git-send-email-adam.michaelis@rockwellcollins.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-I read your patch series and it seems really good. Thank you for the 
-improvements. :)
-But I have one comment about it there:
+Adds device tree parameter to set the configuration read-back bit
+in the configuration register to tell the AD7949 to include the value of
+the configuration register at the time the current sample was acquired
+when reading from the part.
 
-Le 01/05/2019 à 23:16, Adam Michaelis a écrit :
-> @@ -223,10 +247,18 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
->   {
->   	int ret;
->   	int val;
-> +	u16 adc_config = 0;
->   
-> -	/* Sequencer disabled, CFG readback disabled, IN0 as default channel */
->   	ad7949_adc->current_channel = 0;
-> -	ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
-> +	ad7949_adc->cfg = 0;
-> +
-> +	adc_config = (0x3c << 8);
-> +	adc_config |= ((ad7949_adc->current_channel & 0x07) << 7);
-> +	adc_config |= (1 << 6);
-> +	adc_config |= (ad7949_adc->ref_sel << 3);
-> +	adc_config |= 1;
-> +
-> +	ret = ad7949_spi_write_cfg(ad7949_adc, adc_config, AD7949_MASK_TOTAL);
+Further work must be done to make read-back information available to
+consumer.
 
-That should be great to replace some _magic constants_ by a more 
-explicit name, shouldn't it? Especially (0x3c << 8) and (1 << 6 parts).
+Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
+---
+	V2: Add some defines to reduce use of magic numbers.
+---
+ drivers/iio/adc/ad7949.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-Regards,
-
-Charles-Antoine Couret
+diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
+index afc1361af5fb..7820e1097787 100644
+--- a/drivers/iio/adc/ad7949.c
++++ b/drivers/iio/adc/ad7949.c
+@@ -69,6 +69,7 @@ struct ad7949_adc_spec {
+  * @iio_dev: reference to iio structure
+  * @spi: reference to spi structure
+  * @ref_sel: selected reference voltage source
++ * @cfg_readback: whether reads will include configuration data
+  * @resolution: resolution of the chip
+  * @cfg: copy of the configuration register
+  * @current_channel: current channel in use
+@@ -80,6 +81,7 @@ struct ad7949_adc_chip {
+ 	struct iio_dev *indio_dev;
+ 	struct spi_device *spi;
+ 	enum ad7949_ref_sel ref_sel;
++	bool cfg_readback;
+ 	u8 resolution;
+ 	u16 cfg;
+ 	unsigned int current_channel;
+@@ -283,7 +285,11 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
+ 			AD7949_CFG_REF_SEL_MASK;
+ 	adc_config |= (AD7949_CFG_SEQ_DISABLED << AD7949_CFG_SEQ_SHIFT) &
+ 			AD7949_CFG_SEQ_MASK;
+-	adc_config |= AD7949_CFG_READBACK_DIS;
++
++	if (ad7949_adc->cfg_readback)
++		adc_config |= AD7949_CFG_READBACK_EN;
++	else
++		adc_config |= AD7949_CFG_READBACK_DIS;
+ 
+ 	ret = ad7949_spi_write_cfg(ad7949_adc,
+ 			adc_config,
+@@ -331,6 +337,10 @@ static int ad7949_spi_probe(struct spi_device *spi)
+ 	indio_dev->num_channels = spec->num_channels;
+ 	ad7949_adc->resolution = spec->resolution;
+ 
++	ad7949_adc->cfg_readback = of_property_read_bool(
++			ad7949_adc->indio_dev->dev.of_node,
++			"adi,cfg-readback");
++
+ 	ret = of_property_read_u32(ad7949_adc->indio_dev->dev.of_node,
+ 			"adi,reference-select",
+ 			&temp);
+-- 
+1.9.1
 
