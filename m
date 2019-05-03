@@ -1,303 +1,86 @@
-Return-Path: <SRS0=s3QM=TC=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=XVjk=TD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDCE2C43219
-	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 16:14:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5343DC43219
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 02:34:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BB57E20652
-	for <linux-iio@archiver.kernel.org>; Thu,  2 May 2019 16:14:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 199102070B
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 02:34:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=jms.id.au header.i=@jms.id.au header.b="eZXn/viY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726542AbfEBQOs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 May 2019 12:14:48 -0400
-Received: from secvs01.rockwellcollins.com ([205.175.225.240]:27143 "EHLO
-        secvs01.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726278AbfEBQOp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2019 12:14:45 -0400
-Received: from ofwgwc03.rockwellcollins.com (HELO ciulimr02.rockwellcollins.com) ([205.175.225.12])
-  by secvs01.rockwellcollins.com with ESMTP; 02 May 2019 11:14:42 -0500
-X-Received: from righttwix.rockwellcollins.com (righttwix.rockwellcollins.com [192.168.141.218])
-        by ciulimr02.rockwellcollins.com (Postfix) with ESMTP id 96C072007E;
-        Thu,  2 May 2019 11:14:42 -0500 (CDT)
-From:   Adam Michaelis <adam.michaelis@rockwellcollins.com>
-To:     linux-iio@vger.kernel.org
-Cc:     lars@metafoo.de, michael.hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, charles-antoine.couret@essensium.com,
-        devicetree@vger.kernel.org, brandon.maier@rockwellcollins.com,
-        clayton.shotwell@rockwellcollins.com,
-        Adam Michaelis <adam.michaelis@rockwellcollins.com>
-Subject: [PATCH v2 1/6] iio: ad7949: Support internal Vref
-Date:   Thu,  2 May 2019 11:14:27 -0500
-Message-Id: <1556813672-49861-1-git-send-email-adam.michaelis@rockwellcollins.com>
-X-Mailer: git-send-email 1.9.1
+        id S1726022AbfECCen (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 May 2019 22:34:43 -0400
+Received: from mail-qt1-f195.google.com ([209.85.160.195]:32867 "EHLO
+        mail-qt1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725995AbfECCen (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 May 2019 22:34:43 -0400
+Received: by mail-qt1-f195.google.com with SMTP id m32so2044119qtf.0;
+        Thu, 02 May 2019 19:34:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=jms.id.au; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IHmi9Ibu7jtHY7PtCBhSSAF4IhbreLBAN5F0ptEmt0Q=;
+        b=eZXn/viYgV0Bz0GiIC+p6VL57OA23zgu6ajWkL4MIXc6CGKKxuWsVv2tkoMcoJEnk/
+         bI3SezCbRAg29i67UKQt63yrFF6E74Or+ROiiYT7CrJGt3hjIgLYM2T6EPQ1VvtYXmwU
+         9Ll5yXUEoT/l8TvD7BhV6ur7X+1Ob0/QEA9wI=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IHmi9Ibu7jtHY7PtCBhSSAF4IhbreLBAN5F0ptEmt0Q=;
+        b=dCgDLiI1uMzZBIgyaEZQEmO/0nmU2l0/E9yJ5pLx7iBxfK5P0JvO2Kgyeoyjakambv
+         0ueZu5MB/XuuVB2wMiNNwcRORZXkOz1qlAnN29ARQlTp4pukc9axlh06YsRs8yWDyRoM
+         QNh8Tb5ZeG4oF14FYXUXqsECgcTin+P4WvAtBjCXhDOZSHEhJ4fsFhXXlDR3H88WdnoU
+         gUzTGosEtjfgmV0+mRBJMIytbUxCR/buqWXwOu3CwCQNxx5zk7jUfbceY9eC/gsCQJNP
+         oGtzxlBDRzgrSdxnHYv8sxR8uhRnwS8EpKLSO67LR7MRX4ceGIsRw73UbYW7YIfUcsvX
+         /djg==
+X-Gm-Message-State: APjAAAVJKJFLprchI4nPws9OXDMH73K/jeFf0rbXatvHfaUTHH7ePXb8
+        DSFb8tCx5yP6n7gba15fGyh5X3FnwEJc4n5Ai24=
+X-Google-Smtp-Source: APXvYqx5RxdF0dkmKrVJcM/FX5Hqq2lsUx2dPvDQpPCS0RCqtHLyQnKALRutFusuZJt3AyuF6JXPG1iWfe+c2Vj2JzM=
+X-Received: by 2002:a0c:ac83:: with SMTP id m3mr6157405qvc.85.1556850881888;
+ Thu, 02 May 2019 19:34:41 -0700 (PDT)
+MIME-Version: 1.0
+References: <1556721787-28500-1-git-send-email-eajames@linux.ibm.com>
+In-Reply-To: <1556721787-28500-1-git-send-email-eajames@linux.ibm.com>
+From:   Joel Stanley <joel@jms.id.au>
+Date:   Fri, 3 May 2019 02:34:30 +0000
+Message-ID: <CACPK8Xc2uwPwouto4Xg8fA0OAMJ3eP6kYjKcp9Bf4R90t1NdBg@mail.gmail.com>
+Subject: Re: [PATCH] iio: dps310: Add pressure sensing capability
+To:     Eddie James <eajames@linux.ibm.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adding configurable (via device tree) options to select either an external
-reference voltage (default, original implementation) or one of the two
-internal reference voltages provided by the AD7949 part family.
+Hi Eddie,
 
-Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
----
-	V2: Add some defines to reduce use of magic numbers.
----
- drivers/iio/adc/ad7949.c | 135 +++++++++++++++++++++++++++++++++++++----------
- 1 file changed, 108 insertions(+), 27 deletions(-)
+On Wed, 1 May 2019 at 14:43, Eddie James <eajames@linux.ibm.com> wrote:
+>
+> The DPS310 supports measurement of pressure, so support that in the
+> driver. Use background measurement like the temperature sensing and
+> default to lowest precision and lowest measurement rate.
 
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index ac0ffff6c5ae..afc1361af5fb 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -11,12 +11,27 @@
- #include <linux/module.h>
- #include <linux/regulator/consumer.h>
- #include <linux/spi/spi.h>
--
--#define AD7949_MASK_CHANNEL_SEL		GENMASK(9, 7)
--#define AD7949_MASK_TOTAL		GENMASK(13, 0)
--#define AD7949_OFFSET_CHANNEL_SEL	7
--#define AD7949_CFG_READ_BACK		0x1
--#define AD7949_CFG_REG_SIZE_BITS	14
-+#include <linux/of.h>
-+
-+#define AD7949_CFG_REG_SIZE_BITS           14
-+#define AD7949_CFG_MASK_TOTAL              GENMASK(13, 0)
-+#define AD7949_CFG_OVERWRITE_SHIFT         13
-+#define AD7949_CFG_CHAN_CFG_UNIPOLAR_GND   0x7
-+#define AD7949_CFG_CHAN_CFG_MASK           GENMASK(12, 10)
-+#define AD7949_CFG_CHAN_CFG_SHIFT          10
-+#define AD7949_CFG_CHAN_SEL_MASK           GENMASK(9, 7)
-+#define AD7949_CFG_CHAN_SEL_SHIFT          7
-+#define AD7949_CFG_BW_FULL                 1
-+#define AD7949_CFG_BW_SHIFT                6
-+#define AD7949_CFG_BW_MASK                 GENMASK(6, 6)
-+#define AD7949_CFG_REF_SEL_MASK            GENMASK(5, 3)
-+#define AD7949_CFG_REF_SEL_SHIFT           3
-+#define AD7949_CFG_SEQ_DISABLED            0x0
-+#define AD7949_CFG_SEQ_SHIFT               1
-+#define AD7949_CFG_SEQ_MASK                GENMASK(2, 1)
-+#define AD7949_CFG_READBACK_EN             0
-+#define AD7949_CFG_READBACK_DIS            1
-+#define AD7949_CFG_READBACK_MASK           GENMASK(0, 0)
- 
- enum {
- 	ID_AD7949 = 0,
-@@ -24,6 +39,18 @@ enum {
- 	ID_AD7689,
- };
- 
-+enum ad7949_ref_sel {
-+	AD7949_REF_2V5 = 0, /* 2.5V internal ref + temp sensor */
-+	AD7949_REF_4V0, /* 4.096V internal ref + temp sensor */
-+	AD7949_REF_EXT_TEMP, /* External ref + temp sensor, no buffer */
-+	AD7949_REF_EXT_TEMP_BUF, /* External ref + temp sensor + buffer */
-+	AD7949_REF_RSRV_4,
-+	AD7949_REF_RSRV_5,
-+	AD7949_REF_EXT, /* External ref, no temp, no buffer */
-+	AD7949_REF_EXT_BUF, /* External ref + buffer, no temp */
-+	AD7949_REF_MAX,
-+};
-+
- struct ad7949_adc_spec {
- 	u8 num_channels;
- 	u8 resolution;
-@@ -41,6 +68,7 @@ struct ad7949_adc_spec {
-  * @vref: regulator generating Vref
-  * @iio_dev: reference to iio structure
-  * @spi: reference to spi structure
-+ * @ref_sel: selected reference voltage source
-  * @resolution: resolution of the chip
-  * @cfg: copy of the configuration register
-  * @current_channel: current channel in use
-@@ -51,6 +79,7 @@ struct ad7949_adc_chip {
- 	struct regulator *vref;
- 	struct iio_dev *indio_dev;
- 	struct spi_device *spi;
-+	enum ad7949_ref_sel ref_sel;
- 	u8 resolution;
- 	u16 cfg;
- 	unsigned int current_channel;
-@@ -59,7 +88,7 @@ struct ad7949_adc_chip {
- 
- static bool ad7949_spi_cfg_is_read_back(struct ad7949_adc_chip *ad7949_adc)
- {
--	if (!(ad7949_adc->cfg & AD7949_CFG_READ_BACK))
-+	if (!(ad7949_adc->cfg & AD7949_CFG_READBACK_MASK))
- 		return true;
- 
- 	return false;
-@@ -91,7 +120,7 @@ static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
- 	};
- 
- 	ad7949_adc->cfg = (val & mask) | (ad7949_adc->cfg & ~mask);
--	ad7949_adc->buffer = ad7949_adc->cfg << shift;
-+	ad7949_adc->buffer = (ad7949_adc->cfg & AD7949_CFG_MASK_TOTAL) << shift;
- 	spi_message_init_with_transfers(&msg, tx, 1);
- 	ret = spi_sync(ad7949_adc->spi, &msg);
- 
-@@ -119,8 +148,8 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 	};
- 
- 	ret = ad7949_spi_write_cfg(ad7949_adc,
--				   channel << AD7949_OFFSET_CHANNEL_SEL,
--				   AD7949_MASK_CHANNEL_SEL);
-+				   channel << AD7949_CFG_CHAN_SEL_SHIFT,
-+				   AD7949_CFG_CHAN_SEL_MASK);
- 	if (ret)
- 		return ret;
- 
-@@ -187,11 +216,20 @@ static int ad7949_spi_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
--		ret = regulator_get_voltage(ad7949_adc->vref);
--		if (ret < 0)
--			return ret;
-+		if (ad7949_adc->vref) {
-+			ret = regulator_get_voltage(ad7949_adc->vref);
-+			if (ret < 0)
-+				return ret;
-+
-+			*val = ret / 5000;
-+		} else if (ad7949_adc->ref_sel == AD7949_REF_2V5) {
-+			*val = 2500;
-+		} else if (ad7949_adc->ref_sel == AD7949_REF_4V0) {
-+			*val = 4096;
-+		} else {
-+			return -EINVAL;
-+		}
- 
--		*val = ret / 5000;
- 		return IIO_VAL_INT;
- 	}
- 
-@@ -209,7 +247,7 @@ static int ad7949_spi_reg_access(struct iio_dev *indio_dev,
- 		*readval = ad7949_adc->cfg;
- 	else
- 		ret = ad7949_spi_write_cfg(ad7949_adc,
--			writeval & AD7949_MASK_TOTAL, AD7949_MASK_TOTAL);
-+			writeval & AD7949_CFG_MASK_TOTAL, AD7949_CFG_MASK_TOTAL);
- 
- 	return ret;
- }
-@@ -223,10 +261,33 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
- {
- 	int ret;
- 	int val;
-+	u16 adc_config = 0;
- 
--	/* Sequencer disabled, CFG readback disabled, IN0 as default channel */
- 	ad7949_adc->current_channel = 0;
--	ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
-+	ad7949_adc->cfg = 0;
-+
-+	/*
-+	 * 14-bit configuration register (pg 12 of AD7949 Datasheet):
-+	 * | 13  | 12 - 10 | 9 - 7 | 6  | 5 -3 | 2 - 1 | 0  |
-+	 * | CFG | INCC    | INx   | BW | REF  | SEQ   | RB |
-+	 */
-+	adc_config = 1 << AD7949_CFG_OVERWRITE_SHIFT;
-+	adc_config |=
-+		(AD7949_CFG_CHAN_CFG_UNIPOLAR_GND << AD7949_CFG_CHAN_CFG_SHIFT)
-+			& AD7949_CFG_CHAN_CFG_MASK;
-+	adc_config |= (ad7949_adc->current_channel << AD7949_CFG_CHAN_SEL_SHIFT)
-+			& AD7949_CFG_CHAN_SEL_MASK;
-+	adc_config |= (AD7949_CFG_BW_FULL << AD7949_CFG_BW_SHIFT) &
-+			AD7949_CFG_BW_MASK;
-+	adc_config |= (ad7949_adc->ref_sel << AD7949_CFG_REF_SEL_SHIFT) &
-+			AD7949_CFG_REF_SEL_MASK;
-+	adc_config |= (AD7949_CFG_SEQ_DISABLED << AD7949_CFG_SEQ_SHIFT) &
-+			AD7949_CFG_SEQ_MASK;
-+	adc_config |= AD7949_CFG_READBACK_DIS;
-+
-+	ret = ad7949_spi_write_cfg(ad7949_adc,
-+			adc_config,
-+			AD7949_CFG_MASK_TOTAL);
- 
- 	/*
- 	 * Do two dummy conversions to apply the first configuration setting.
-@@ -245,6 +306,7 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 	struct ad7949_adc_chip *ad7949_adc;
- 	struct iio_dev *indio_dev;
- 	int ret;
-+	u32 temp;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*ad7949_adc));
- 	if (!indio_dev) {
-@@ -263,21 +325,38 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 	ad7949_adc = iio_priv(indio_dev);
- 	ad7949_adc->indio_dev = indio_dev;
- 	ad7949_adc->spi = spi;
-+	ad7949_adc->vref = NULL;
- 
- 	spec = &ad7949_adc_spec[spi_get_device_id(spi)->driver_data];
- 	indio_dev->num_channels = spec->num_channels;
- 	ad7949_adc->resolution = spec->resolution;
- 
--	ad7949_adc->vref = devm_regulator_get(dev, "vref");
--	if (IS_ERR(ad7949_adc->vref)) {
--		dev_err(dev, "fail to request regulator\n");
--		return PTR_ERR(ad7949_adc->vref);
-+	ret = of_property_read_u32(ad7949_adc->indio_dev->dev.of_node,
-+			"adi,reference-select",
-+			&temp);
-+	if ((ret == 0) && (temp < AD7949_REF_MAX) &&
-+			(temp != AD7949_REF_RSRV_4) &&
-+			(temp != AD7949_REF_RSRV_5)) {
-+		ad7949_adc->ref_sel = (enum ad7949_ref_sel)temp;
-+	} else {
-+		ad7949_adc->ref_sel = AD7949_REF_EXT_BUF;
-+		dev_warn(dev, "using external Vref by default\n");
- 	}
- 
--	ret = regulator_enable(ad7949_adc->vref);
--	if (ret < 0) {
--		dev_err(dev, "fail to enable regulator\n");
--		return ret;
-+	/* Check whether using external Vref */
-+	if ((ad7949_adc->ref_sel != AD7949_REF_2V5) &&
-+			(ad7949_adc->ref_sel != AD7949_REF_4V0)) {
-+		ad7949_adc->vref = devm_regulator_get(dev, "vref");
-+		if (IS_ERR(ad7949_adc->vref)) {
-+			dev_err(dev, "fail to request regulator\n");
-+			return PTR_ERR(ad7949_adc->vref);
-+		}
-+
-+		ret = regulator_enable(ad7949_adc->vref);
-+		if (ret < 0) {
-+			dev_err(dev, "fail to enable regulator\n");
-+			return ret;
-+		}
- 	}
- 
- 	mutex_init(&ad7949_adc->lock);
-@@ -298,7 +377,8 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 
- err:
- 	mutex_destroy(&ad7949_adc->lock);
--	regulator_disable(ad7949_adc->vref);
-+	if (ad7949_adc->vref)
-+		regulator_disable(ad7949_adc->vref);
- 
- 	return ret;
- }
-@@ -310,7 +390,8 @@ static int ad7949_spi_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 	mutex_destroy(&ad7949_adc->lock);
--	regulator_disable(ad7949_adc->vref);
-+	if (ad7949_adc->vref)
-+		regulator_disable(ad7949_adc->vref);
- 
- 	return 0;
- }
--- 
-1.9.1
+Upstream didn't accept my patch as they wanted it to support pressure
+in addition to temperature first. I didn't ever get around to doing
+that.
 
+I suggest you send my original patch and device tree binding along
+with this one as a series.
+
+Cheers,
+
+Joel
