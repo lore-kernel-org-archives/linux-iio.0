@@ -8,52 +8,52 @@ X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C661AC43219
-	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B3C9C43219
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:29:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9A57A21479
-	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D504D21479
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:29:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="g73z3cy3"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HUBwzSUD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbfECH2f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 May 2019 03:28:35 -0400
-Received: from mail-pf1-f195.google.com ([209.85.210.195]:37767 "EHLO
-        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727044AbfECH2c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 May 2019 03:28:32 -0400
-Received: by mail-pf1-f195.google.com with SMTP id g3so2468451pfi.4;
-        Fri, 03 May 2019 00:28:32 -0700 (PDT)
+        id S1727006AbfECH22 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 May 2019 03:28:28 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:44200 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727004AbfECH21 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 May 2019 03:28:27 -0400
+Received: by mail-pg1-f194.google.com with SMTP id z16so2301601pgv.11;
+        Fri, 03 May 2019 00:28:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=gVZ2hqRXWtLcmOTx5ox6LNbjK3xqtyJ5f5GpEMyudKg=;
-        b=g73z3cy3M5ok9jIYuhXWrFWMx1XV6tg1I96a9U9izJ/ZS0IWD229f2w8WplFIuQ1QR
-         z2sE3omVPJOieDsXIilbDHaJGWfHRJXc7IXO6oqkUVAkyliKINFiJ/EDxuIMwRj+fDzP
-         vQyy6nPLc18A4IlRduGPKz7ckOUAyTMyzTgf7nhGwuxYzDcoOsPD4gtVuTTyt9sK5Up+
-         BCExGq0YQSE3V1KBUnH/EPE6w0kk6n14uhBps4LblIH6UJOfo8KaN6/poYqlHUhKi3ut
-         7xtfpZt4Zf6rClEiUyDiAU2bs8MVV5G6/85BgWR7fUoaPIcLvWZdOAucVHkkC5AWFquy
-         Tc9Q==
+        bh=QLNyKddzGBEfp0X3sV4+rgzmKK42NUUFMJfNDuQuMZg=;
+        b=HUBwzSUDq0jDdXV/2VzXw7i6CoA6g+3k9UoxZE+/peYTUL5RV/MWJwWTUZLI+JHg5a
+         5Kl3MkEyY6LOhvGBMsibYXdsnzwZG6Dg87r5DB4jPKH9mpV8RZbqt1Phi+nw2ZFDsvyZ
+         Vh8TJfGFzonSqQmdBHy7e2hPmG4Sv8ZhIpF6MjWAdm3oKKsAg+hnqi1orjTYhUK8UDv7
+         oImpuPBod/YgpaKNor5Pl9V+mLc4dEkdyw1kiYsj706wTXLU+2DDbV+6vK13kVpiNomy
+         CtPo/Tfi8ySWD6unN/7oqY98b1K0D6n8IHOCkat6tccm/9NoT/1dwjDh7ttlBtppF06z
+         bsCw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=gVZ2hqRXWtLcmOTx5ox6LNbjK3xqtyJ5f5GpEMyudKg=;
-        b=nCrSVoQUggjfMlCHdEQsYK8oCs9zUNOzw4tokheUzCnfj1aLCvgLeeyRWSbmu0Aojx
-         RBJoH20FHxBamiWFoC9cCrrRrQ+1alzjPQ23SG/mIaGuC7qVu15VT02DNcjibTdWnitV
-         S9dsQNpd9K9giTOrwugB5dnY6Qd3p57VoajZuFG/uO2Xo0c/hVJKYEsGNr9AVYinJ5dM
-         KbJn0YkPoPOaDNzGhdTMeAqUpOGkhvzDp4dYl8Ic74LVdPHRyiMuQ2Jncd/2IRQ86hnB
-         AVj4wnR8kWtUMQLx0tJQTn3yQ7mHibo6tm0dTE1QPdZUhNdnXhtdVaiiYVTA76kIJTzD
-         GDdQ==
-X-Gm-Message-State: APjAAAVltKFrZgYym3JSXMN1CIjbuWyAQ+e8CXPXi36BB8P7vly6rNYU
-        QXSow+ur6AZardxxey8oJts=
-X-Google-Smtp-Source: APXvYqxYc5VWDFUgbHShXTIGD8SRCAC8A5n0VEfy+lTVDjkOMeSveLaECAOjNbh8qqWfEAyLHZWVdQ==
-X-Received: by 2002:a62:4602:: with SMTP id t2mr8912629pfa.26.1556868511886;
-        Fri, 03 May 2019 00:28:31 -0700 (PDT)
+        bh=QLNyKddzGBEfp0X3sV4+rgzmKK42NUUFMJfNDuQuMZg=;
+        b=kBXSsqIxYd4ufuZkeMi/snzfL2oZ2tPXBVnMIrykjAnR4fCRZA3zmv9WbJQBFOgP4M
+         kbfmORHQ4ISSV66QpGBdJef4j0Zg1nwIw5IHCFIEEiVCKTYjLKNka9GptF7yX3U4V9uY
+         zW1F9K2taz888CvKhtGi1ZiVo1ZBIVf7AAQm3EjzUzuVzU/GPj66poNRu3P20hF3YXeF
+         YAak6Fjhj8py1hcKNnFUGhxafZj6IODp65HgilyLpt2bf816lWpXujH5n6gpt/VgTeKV
+         DRzPZjlwqfl+6yUL1OGRqkSncOdLxT2ezFlUBwU7aUklXcsHb1gIvVWJ3ynHn+B8v1XV
+         qoTg==
+X-Gm-Message-State: APjAAAVCkTPSz9ChIUhU0QCr856asVCMiM6yOJ9yI6iosvw4bjKpxMLt
+        zdL7L/ZJkTPzqIy/kPPJeIA=
+X-Google-Smtp-Source: APXvYqxstsfZoFavy9Cx50OVX7G6q9TfajFvKAS3Md5IR7ON1JQDSSu/k8UeT2nXNlUFGWl9cPi9qg==
+X-Received: by 2002:a65:6295:: with SMTP id f21mr8626731pgv.129.1556868506538;
+        Fri, 03 May 2019 00:28:26 -0700 (PDT)
 Received: from localhost (68.168.130.77.16clouds.com. [68.168.130.77])
-        by smtp.gmail.com with ESMTPSA id q5sm1877338pfb.51.2019.05.03.00.28.31
+        by smtp.gmail.com with ESMTPSA id i3sm1594564pgl.57.2019.05.03.00.28.25
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 May 2019 00:28:31 -0700 (PDT)
+        Fri, 03 May 2019 00:28:25 -0700 (PDT)
 From:   Yangtao Li <tiny.windzz@gmail.com>
 To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         maxime.ripard@bootlin.com, wens@csie.org, jic23@kernel.org,
@@ -61,9 +61,9 @@ To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 4/7] iio: adc: sun4i-gpadc-iio: support clocks and reset
-Date:   Fri,  3 May 2019 03:28:10 -0400
-Message-Id: <20190503072813.2719-5-tiny.windzz@gmail.com>
+Subject: [PATCH 2/7] iio: adc: sun4i-gpadc: introduce temp_data in gpadc_data
+Date:   Fri,  3 May 2019 03:28:08 -0400
+Message-Id: <20190503072813.2719-3-tiny.windzz@gmail.com>
 X-Mailer: git-send-email 2.17.0
 In-Reply-To: <20190503072813.2719-1-tiny.windzz@gmail.com>
 References: <20190503072813.2719-1-tiny.windzz@gmail.com>
@@ -72,94 +72,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-H6 has bus clock and a reset, so introduce something in
-gpadc_data/sun4i_gpadc_iio and adds the process of the
-clocks and resets.
+For some SOCs, the temperature data register start address may be
+different, so introduce temp_data in gpadc_data.
 
-This is pre-work for supprt it.
+Also modify read temperature to support multiple sensor.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/iio/adc/sun4i-gpadc-iio.c | 32 +++++++++++++++++++++++++++++--
- 1 file changed, 30 insertions(+), 2 deletions(-)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index de6b8556a549..f24eb76d65c0 100644
+index 844fd52bd22f..b41ec0d5964d 100644
 --- a/drivers/iio/adc/sun4i-gpadc-iio.c
 +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -22,6 +22,7 @@
-  * shutdown for not being used.
-  */
- 
-+#include <linux/clk.h>
- #include <linux/completion.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-@@ -31,6 +32,7 @@
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/regmap.h>
-+#include <linux/reset.h>
- #include <linux/thermal.h>
- #include <linux/delay.h>
- 
-@@ -52,6 +54,8 @@ static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
- struct sun4i_gpadc_iio;
- 
- struct gpadc_data {
-+	bool            has_bus_clk;
-+	bool            has_bus_rst;
- 	int		temp_offset;
- 	int		temp_scale;
- 	unsigned int	tp_mode_en;
-@@ -140,6 +144,8 @@ struct sun4i_gpadc_iio {
- 	struct mutex			mutex;
- 	struct sun4i_sensor_tzd         tzds[MAX_SENSOR_COUNT];
- 	struct device			*sensor_device;
-+	struct clk                      *bus_clk;
-+	struct reset_control            *reset;
+@@ -57,6 +57,7 @@ struct gpadc_data {
+ 	unsigned int	(*adc_chan_select)(unsigned int chan);
+ 	unsigned int	adc_chan_mask;
+ 	unsigned int    sensor_count;
++	unsigned int    temp_data_base;
  };
  
- #define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
-@@ -564,14 +570,36 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+ static const struct gpadc_data sun4i_gpadc_data = {
+@@ -67,6 +68,7 @@ static const struct gpadc_data sun4i_gpadc_data = {
+ 	.adc_chan_select = &sun4i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+ 	.sensor_count = 1,
++	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
+ };
  
--	info->regmap = devm_regmap_init_mmio(&pdev->dev, base,
--					     &sun4i_gpadc_regmap_config);
-+	if (info->data->has_bus_clk)
-+		info->regmap = devm_regmap_init_mmio_clk(&pdev->dev, "bus",
-+							 base,
-+						&sun4i_gpadc_regmap_config);
-+	else
-+		info->regmap = devm_regmap_init_mmio(&pdev->dev, base,
-+						&sun4i_gpadc_regmap_config);
-+
- 	if (IS_ERR(info->regmap)) {
- 		ret = PTR_ERR(info->regmap);
- 		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
- 		return ret;
- 	}
+ static const struct gpadc_data sun5i_gpadc_data = {
+@@ -77,6 +79,7 @@ static const struct gpadc_data sun5i_gpadc_data = {
+ 	.adc_chan_select = &sun4i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+ 	.sensor_count = 1,
++	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
+ };
  
-+	if (info->data->has_bus_rst) {
-+		info->reset = devm_reset_control_get(&pdev->dev, "bus");
-+		if (IS_ERR(info->reset)) {
-+			ret = PTR_ERR(info->reset);
-+			return ret;
-+		}
-+	}
-+
-+	if (info->data->has_bus_clk) {
-+		info->bus_clk = devm_clk_get(&pdev->dev, "bus");
-+		if (IS_ERR(info->bus_clk)) {
-+			ret = PTR_ERR(info->bus_clk);
-+			return ret;
-+		}
-+	}
-+
- 	if (IS_ENABLED(CONFIG_THERMAL_OF))
- 		info->sensor_device = &pdev->dev;
+ static const struct gpadc_data sun6i_gpadc_data = {
+@@ -87,6 +90,7 @@ static const struct gpadc_data sun6i_gpadc_data = {
+ 	.adc_chan_select = &sun6i_gpadc_chan_select,
+ 	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
+ 	.sensor_count = 1,
++	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
+ };
  
+ static const struct gpadc_data sun8i_a33_gpadc_data = {
+@@ -94,6 +98,7 @@ static const struct gpadc_data sun8i_a33_gpadc_data = {
+ 	.temp_scale = 162,
+ 	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
+ 	.sensor_count = 1,
++	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
+ };
+ 
+ struct sun4i_sensor_tzd {
+@@ -291,7 +296,8 @@ static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val,
+ 	if (info->no_irq) {
+ 		pm_runtime_get_sync(indio_dev->dev.parent);
+ 
+-		regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val);
++		regmap_read(info->regmap, info->data->temp_data_base +
++			    0x4 * sensor, val);
+ 
+ 		pm_runtime_mark_last_busy(indio_dev->dev.parent);
+ 		pm_runtime_put_autosuspend(indio_dev->dev.parent);
 -- 
 2.17.1
 
