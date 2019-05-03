@@ -2,58 +2,58 @@ Return-Path: <SRS0=XVjk=TD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE0CAC43219
-	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6B44C43219
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9B2822133F
-	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AA9E52133F
+	for <linux-iio@archiver.kernel.org>; Fri,  3 May 2019 07:28:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uqQ8gcq1"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="f0kMsjpx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfECH2b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 May 2019 03:28:31 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:41534 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727004AbfECH2a (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 May 2019 03:28:30 -0400
-Received: by mail-pf1-f193.google.com with SMTP id 188so2459423pfd.8;
-        Fri, 03 May 2019 00:28:29 -0700 (PDT)
+        id S1727118AbfECH2q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 May 2019 03:28:46 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:37355 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726961AbfECH2l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 May 2019 03:28:41 -0400
+Received: by mail-pg1-f193.google.com with SMTP id e6so2318895pgc.4;
+        Fri, 03 May 2019 00:28:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=whcenm+FX4qRQPz4bN0k/i1kY0g1Fng8zixTNhvTcc0=;
-        b=uqQ8gcq1579BJNvE9790OgzNmqf4HWV9M7gwyiq9lHH1omarfHr1jDi+g+jksPJRTH
-         H8p1NT3fu+z+GbSYqr+hhhDa1/f3ihBIoxKPQTk//no9j9Ulm/aQsZUfhFq5eG8DvAJB
-         i1Ye2+kQTkhgj5DWYza7dP8/XEyVbAVhnAtmtNIZOK5NG4ql9cyjrvjbiTFjE8sUPnGj
-         0L6QityL0jphNFqbOwjXQKeRwz3Zl+48b2qAaWnskTorLGa8//i4A6Jbq2L3Nhfaopbc
-         XEzgDjcLWPEoZKsHy7Ef0az4f53exQ5zIRIDpsZ3tVIPHDq/YNH+GOnPS0UGSJYb2T9H
-         SYtg==
+        bh=iV91r0hSgx47A83AU5LfJSSAdebNF8xkPCOvty2B81w=;
+        b=f0kMsjpx0hReZbqS9A/IXDD04OeHrLmjwND+PaKZnv0lNFwIvz1+8f/D0fcaBpcjIr
+         3THia+s7KlQAPC75y6kfAM5tFbhKhcK34VvYtG4SXXajH/prr3rBdObYEUimYeMrLHAM
+         W9stvHHEUJWhi/4TWXlJBqWsT9hZSZP2hS/A+mhwG5KMLY0Nh0oFW2fr+lFayywX4In0
+         iEQuIFu8AXL/SFXCBXSjZJiu/68s0Vcvab2mgf6lLgypQd+wNuiqu6e7aGeAz40vry7K
+         0QXiQC5eQDPBGYe90V+j2Vs6Ek4/nQiUNNjl0nkv+uApUE6juP602HM41dGAu2IDWZsd
+         3cWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=whcenm+FX4qRQPz4bN0k/i1kY0g1Fng8zixTNhvTcc0=;
-        b=l/CAHqVewDcKhfkZZmmIFurRLSbIRUEG/S+dVPelC0zsto/suwjsPwH7BtMRYkDzv6
-         elrAfN6YnR+foCZRRVr7rwbprhv0VKJYMC1HJ+Vi+jlyjJgJjK51YkJQFaHxTayWXGog
-         vil78f6EEKJ6rIcEbO91t8j9grpABh5KUQJlDWyu94Mu+tPUssFpgXATV0UZIgAyx4wZ
-         hcuGnZ8D9alFoKhQRhiHSxj4mox7j5ynO9GPORIgB0lyTDYYJTf3idO3th6QscpOUzKt
-         ZTNQS9VqA1Itj8pX/vmgmrg4D/xfhs0sDEaUbb0X3OPsNnB85iZC8jSAmSXaGhGQ0htK
-         t2bg==
-X-Gm-Message-State: APjAAAXRD5g2/qNoA1nM2Bo3oBxJjbKyoSdUvBG5vt6haHu9ply3ZTgS
-        vnWxoPv0VKohudC/ukyrWrg=
-X-Google-Smtp-Source: APXvYqxWSnuIybJbjilvsuTpxUl/E3mOx1lW2LrSkVylcN9LtF+lbeVXh1tDcp13jE2vVkAUHnpftQ==
-X-Received: by 2002:a63:5443:: with SMTP id e3mr8411067pgm.265.1556868509325;
-        Fri, 03 May 2019 00:28:29 -0700 (PDT)
+        bh=iV91r0hSgx47A83AU5LfJSSAdebNF8xkPCOvty2B81w=;
+        b=a5cln8kXhHIN0AaGE5AtBWG0poSpip+nGNHrhKjcxdTaXMPAATp5+98zaWaQY6RSqh
+         opX7mUzTQa4JhEA50H7WjgLAdefVUfPxOpmn9Dnc6pI8YE2olhBLRt4GgjW0TjMYQQ87
+         9n+xLhvj2Yb6L8pkM7lEMy93x9Vywfh9+zS/vC5ksMLhSQaCWepsLO969cyeKul5+84T
+         07os/Mx2X3f9Tjc1S6eRox2nJeOLisC4SbTevUz5jHNiV21EUZdZEEpabg4Lblv8hkYB
+         VY6BxvyLVcxhW5x/qAMwJRp2aqItBgFWEvgK4qBRkuvB88kRzk90LTemcEHsQ23p6/7B
+         nqog==
+X-Gm-Message-State: APjAAAU7kTRXGLGZBNC0V1y+/P1dx00BoAqaV7+fUUVc+u6JakIKLapz
+        ei7hgG5QMK1tmIYSuibh85k=
+X-Google-Smtp-Source: APXvYqx3mHSYhYaU9e7dYSrcNlJV0QAsUNqmUsZfT1vnGpilYcYIfUsnBG2kbbtSGDGI8szlCy5aNg==
+X-Received: by 2002:a63:534f:: with SMTP id t15mr8595106pgl.445.1556868521022;
+        Fri, 03 May 2019 00:28:41 -0700 (PDT)
 Received: from localhost (68.168.130.77.16clouds.com. [68.168.130.77])
-        by smtp.gmail.com with ESMTPSA id k65sm1744995pfj.141.2019.05.03.00.28.28
+        by smtp.gmail.com with ESMTPSA id c18sm2318243pfc.0.2019.05.03.00.28.40
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 03 May 2019 00:28:28 -0700 (PDT)
+        Fri, 03 May 2019 00:28:40 -0700 (PDT)
 From:   Yangtao Li <tiny.windzz@gmail.com>
 To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         maxime.ripard@bootlin.com, wens@csie.org, jic23@kernel.org,
@@ -61,9 +61,9 @@ To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
 Cc:     devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Yangtao Li <tiny.windzz@gmail.com>
-Subject: [PATCH 3/7] iio: adc: sun4i-gpadc: introduce gpadc_enable and gpadc_disable in gpadc_data
-Date:   Fri,  3 May 2019 03:28:09 -0400
-Message-Id: <20190503072813.2719-4-tiny.windzz@gmail.com>
+Subject: [PATCH 7/7] iio: adc: sun4i-gpadc-iio convert to SPDX license tags
+Date:   Fri,  3 May 2019 03:28:13 -0400
+Message-Id: <20190503072813.2719-8-tiny.windzz@gmail.com>
 X-Mailer: git-send-email 2.17.0
 In-Reply-To: <20190503072813.2719-1-tiny.windzz@gmail.com>
 References: <20190503072813.2719-1-tiny.windzz@gmail.com>
@@ -72,125 +72,30 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Different sensors may have different enable and disable functions, so
-introduce enable and disable in gpadc_data to support soc specific
-function.
+Updates license to use SPDX-License-Identifier.
 
 Signed-off-by: Yangtao Li <tiny.windzz@gmail.com>
 ---
- drivers/iio/adc/sun4i-gpadc-iio.c | 37 ++++++++++++++++++++++++++-----
- 1 file changed, 31 insertions(+), 6 deletions(-)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index b41ec0d5964d..de6b8556a549 100644
+index 9b6fc592f54c..cf2bf3ab3342 100644
 --- a/drivers/iio/adc/sun4i-gpadc-iio.c
 +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -49,6 +49,8 @@ static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
- 	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
- }
- 
-+struct sun4i_gpadc_iio;
-+
- struct gpadc_data {
- 	int		temp_offset;
- 	int		temp_scale;
-@@ -56,10 +58,15 @@ struct gpadc_data {
- 	unsigned int	tp_adc_select;
- 	unsigned int	(*adc_chan_select)(unsigned int chan);
- 	unsigned int	adc_chan_mask;
-+	int             (*gpadc_enable)(struct sun4i_gpadc_iio *info);
-+	int             (*gpadc_disable)(struct sun4i_gpadc_iio *info);
- 	unsigned int    sensor_count;
- 	unsigned int    temp_data_base;
- };
- 
-+static int sun4i_gpadc_disable(struct sun4i_gpadc_iio *info);
-+static int sun4i_gpadc_enable(struct sun4i_gpadc_iio *info);
-+
- static const struct gpadc_data sun4i_gpadc_data = {
- 	.temp_offset = -1932,
- 	.temp_scale = 133,
-@@ -67,6 +74,8 @@ static const struct gpadc_data sun4i_gpadc_data = {
- 	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
- 	.adc_chan_select = &sun4i_gpadc_chan_select,
- 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
-+	.gpadc_enable = sun4i_gpadc_enable,
-+	.gpadc_disable = sun4i_gpadc_disable,
- 	.sensor_count = 1,
- 	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
- };
-@@ -78,6 +87,8 @@ static const struct gpadc_data sun5i_gpadc_data = {
- 	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
- 	.adc_chan_select = &sun4i_gpadc_chan_select,
- 	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
-+	.gpadc_enable = sun4i_gpadc_enable,
-+	.gpadc_disable = sun4i_gpadc_disable,
- 	.sensor_count = 1,
- 	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
- };
-@@ -89,6 +100,8 @@ static const struct gpadc_data sun6i_gpadc_data = {
- 	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
- 	.adc_chan_select = &sun6i_gpadc_chan_select,
- 	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
-+	.gpadc_enable = sun4i_gpadc_enable,
-+	.gpadc_disable = sun4i_gpadc_disable,
- 	.sensor_count = 1,
- 	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
- };
-@@ -97,6 +110,8 @@ static const struct gpadc_data sun8i_a33_gpadc_data = {
- 	.temp_offset = -1662,
- 	.temp_scale = 162,
- 	.tp_mode_en = SUN8I_GPADC_CTRL1_CHOP_TEMP_EN,
-+	.gpadc_enable = sun4i_gpadc_enable,
-+	.gpadc_disable = sun4i_gpadc_disable,
- 	.sensor_count = 1,
- 	.temp_data_base = SUN4I_GPADC_TEMP_DATA,
- };
-@@ -402,10 +417,8 @@ static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
- 	return IRQ_HANDLED;
- }
- 
--static int sun4i_gpadc_runtime_suspend(struct device *dev)
-+static int sun4i_gpadc_disable(struct sun4i_gpadc_iio *info)
- {
--	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
--
- 	/* Disable the ADC on IP */
- 	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
- 	/* Disable temperature sensor on IP */
-@@ -414,10 +427,8 @@ static int sun4i_gpadc_runtime_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int sun4i_gpadc_runtime_resume(struct device *dev)
-+static int sun4i_gpadc_enable(struct sun4i_gpadc_iio *info)
- {
--	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
--
- 	/* clkin = 6MHz */
- 	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
- 		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
-@@ -435,6 +446,20 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
- 	return 0;
- }
- 
-+static int sun4i_gpadc_runtime_suspend(struct device *dev)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
-+
-+	return info->data->gpadc_disable(info);
-+}
-+
-+static int sun4i_gpadc_runtime_resume(struct device *dev)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
-+
-+	return info->data->gpadc_enable(info);
-+}
-+
- static int sun4i_gpadc_get_temp(void *data, int *temp)
- {
- 	struct sun4i_sensor_tzd *tzd = data;
+@@ -1,11 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0+
+ /* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
+  *
+  * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
+  *
+- * This program is free software; you can redistribute it and/or modify it under
+- * the terms of the GNU General Public License version 2 as published by the
+- * Free Software Foundation.
+- *
+  * The Allwinner SoCs all have an ADC that can also act as a touchscreen
+  * controller and a thermal sensor.
+  * The thermal sensor works only when the ADC acts as a touchscreen controller
 -- 
 2.17.1
 
