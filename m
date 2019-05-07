@@ -4,50 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7B34C04AAD
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EAC3C04AAD
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 06:01:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 81AFD2054F
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:54:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D501020675
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 06:01:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1557208472;
-	bh=RZD/a2cE2LfZoQN7QH14SlZNsSVhfHoBkmQDKGxT8+c=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=c7MGWwES7iHa/3hc7yXLwRxVqxeI1f1O2kwxpN12dhtFhTrZGCBpHlc7zsXHxVLeS
-	 JgaEJRBphVb13MVt6NOMBMlnZbfXRyqF/PF4WaXbJnzhI5YdIWUh1LZZ8SY2cROKMt
-	 fdqiNGsT322VKBn5I6n4tMtpcdGdkgYxJWc2KTEk=
+	s=default; t=1557208912;
+	bh=b6nEX9JyoFG3leregqh5qsp2VIYU9nfUcat7IvLJ+Ic=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=ht99LmCp562DzZuxxJQZWEISi4Uq75fZCpncI1JrShgBQsfXqYdOhEeD2Tb0tZMJr
+	 oSVrhnqGD0QIdaWUOKBXfTWfOhXAQO7ROBt4Pa9Uyx04WyjazeXGhuNNFyortcuRCM
+	 VhDVemqQP/ZiL1EIsxsHwEtJjN2fImqOIS9OR42I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728160AbfEGFi3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 May 2019 01:38:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58230 "EHLO mail.kernel.org"
+        id S1726767AbfEGGBq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 May 2019 02:01:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727897AbfEGFi2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 7 May 2019 01:38:28 -0400
+        id S1727407AbfEGFf7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 7 May 2019 01:35:59 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5BE2B205ED;
-        Tue,  7 May 2019 05:38:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 223CD20B7C;
+        Tue,  7 May 2019 05:35:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207508;
-        bh=RZD/a2cE2LfZoQN7QH14SlZNsSVhfHoBkmQDKGxT8+c=;
-        h=From:To:Cc:Subject:Date:From;
-        b=myxQtKNaoPJ/Rk0MzgORWqu/pGp+RV9/I1vQSLQuvVxPahrXJkg+EO5ky8gerEJzn
-         zc2gPAbrkw7Em4f0JGXNkwnenOFvPynNQ/BJty9ZMzHquM4f7MVFXppDyYNp0KODjX
-         5FEkAKdySnx1qw26l+DJ3Vf6OyBUd/u6YbeF9fHo=
+        s=default; t=1557207358;
+        bh=b6nEX9JyoFG3leregqh5qsp2VIYU9nfUcat7IvLJ+Ic=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=F92IoYb766qNEaLrlBicRomfGCN/iUS99IE6DpS74xsjyDizd+p3pEBZKviwtrbyy
+         WBVnKEBdHMyHDa2QKmP8gy297nv+2GL5Bx5HjF85U1S+3WMcHd04zZgoLdTF3BtOeD
+         68M+4y6cDrx441TyYeWwmjN19qCiclxElt9JoZYY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Sven Van Asbroeck <TheSven73@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/95] iio: adc: xilinx: fix potential use-after-free on remove
-Date:   Tue,  7 May 2019 01:36:50 -0400
-Message-Id: <20190507053826.31622-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 02/81] iio: adc: xilinx: fix potential use-after-free on probe
+Date:   Tue,  7 May 2019 01:34:33 -0400
+Message-Id: <20190507053554.30848-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190507053554.30848-1-sashal@kernel.org>
+References: <20190507053554.30848-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,36 +61,38 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
 
-[ Upstream commit 62039b6aef63380ba7a37c113bbaeee8a55c5342 ]
+[ Upstream commit 862e4644fd2d7df8998edc65e0963ea2f567bde9 ]
 
-When cancel_delayed_work() returns, the delayed work may still
-be running. This means that the core could potentially free
-the private structure (struct xadc) while the delayed work
-is still using it. This is a potential use-after-free.
+If probe errors out after request_irq(), its error path
+does not explicitly cancel the delayed work, which may
+have been scheduled by the interrupt handler.
 
-Fix by calling cancel_delayed_work_sync(), which waits for
-any residual work to finish before returning.
+This means the delayed work may still be running when
+the core frees the private structure (struct xadc).
+This is a potential use-after-free.
+
+Fix by inserting cancel_delayed_work_sync() in the probe
+error path.
 
 Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/xilinx-xadc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/xilinx-xadc-core.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 4a60497a1f19..e89711b30ae8 100644
+index 1960694e8007..15e1a103f37d 100644
 --- a/drivers/iio/adc/xilinx-xadc-core.c
 +++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1302,7 +1302,7 @@ static int xadc_remove(struct platform_device *pdev)
- 	}
- 	free_irq(irq, indio_dev);
- 	clk_disable_unprepare(xadc->clk);
--	cancel_delayed_work(&xadc->zynq_unmask_work);
-+	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
- 	kfree(xadc->data);
- 	kfree(indio_dev->channels);
+@@ -1290,6 +1290,7 @@ static int xadc_probe(struct platform_device *pdev)
  
+ err_free_irq:
+ 	free_irq(xadc->irq, indio_dev);
++	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+ err_clk_disable_unprepare:
+ 	clk_disable_unprepare(xadc->clk);
+ err_free_samplerate_trigger:
 -- 
 2.20.1
 
