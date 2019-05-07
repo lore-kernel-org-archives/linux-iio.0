@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3D3AC004C9
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 647E0C004C9
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:32:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 96B3D20C01
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:32:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3474620C01
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:32:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1557207162;
-	bh=b6nEX9JyoFG3leregqh5qsp2VIYU9nfUcat7IvLJ+Ic=;
+	s=default; t=1557207165;
+	bh=LtL9Lu69IYXxNadhHHE5MxBPom1bl3355HqXQ65dbeo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=DwIExehbEaMHOfwYiWR+dTDe6LkjLtEOQr4sJqBKkfpE10z1yfATtgK/TSm046zQH
-	 Nv4HX+UrGWsxdu/gnF5ebT/kRcjWPWe2gVDOoSYnfIQ/ON3etrn85DmE7GWtQuOxUC
-	 ei2XXCaVV4zKYzN0cJNe+0YdPvJ0N12MinxFySfo=
+	b=MFx9gd/jf8zm3X0wKuoabcST74HrfEokGxg3VgzTbxU6LV9X0+6vTcUF83pnSwozi
+	 YNmj+FE16TKsYTT1XC8Sk+PsoVTXIOJtSi4plgUuJ+se24QdJEvPO8PDcwAjwBfZ9D
+	 XhBAn0wYRFCjxeqJO9TyyZy+sBeMxMQDQSF393kQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726457AbfEGFcl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 May 2019 01:32:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52790 "EHLO mail.kernel.org"
+        id S1726497AbfEGFcn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 May 2019 01:32:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52816 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725843AbfEGFck (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 7 May 2019 01:32:40 -0400
+        id S1726487AbfEGFcm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 7 May 2019 01:32:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF8AD2087F;
-        Tue,  7 May 2019 05:32:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5273620B7C;
+        Tue,  7 May 2019 05:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207159;
-        bh=b6nEX9JyoFG3leregqh5qsp2VIYU9nfUcat7IvLJ+Ic=;
+        s=default; t=1557207162;
+        bh=LtL9Lu69IYXxNadhHHE5MxBPom1bl3355HqXQ65dbeo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/CihpTQ+rFW2/LEUlx5KAcRP7Gquj3fwAOxqmFCyxijsAMB7TSOzPcDVr7i2KzXR
-         N+tu/zvpZwgEB8urvFtu6GuD610FJAgNcIIMLjid1/b5xO+b+qDrIOc/wxyot77z74
-         jc8VMqhCKcwG9fRl7HGKIBvLROK34/lJlX5TGxPE=
+        b=LQxwEXrRDa9SNEea8OzaM7p90FwjqKvr1YaUVeDwy9xuRsuDs08rT1CwyGMjxSvQ3
+         BGjUBGpiH2fQXyEOrJr+9geISJsg3bpQNkYClaiZ2aSLLDzsXroG2ksedtTe2QQ5XU
+         gamx6OHRPpmx42VYy9CRYZ7HW0osP7WyV5yKH1BU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Sven Van Asbroeck <TheSven73@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.0 02/99] iio: adc: xilinx: fix potential use-after-free on probe
-Date:   Tue,  7 May 2019 01:30:56 -0400
-Message-Id: <20190507053235.29900-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.0 03/99] iio: adc: xilinx: prevent touching unclocked h/w on remove
+Date:   Tue,  7 May 2019 01:30:57 -0400
+Message-Id: <20190507053235.29900-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190507053235.29900-1-sashal@kernel.org>
 References: <20190507053235.29900-1-sashal@kernel.org>
@@ -61,38 +61,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Sven Van Asbroeck <thesven73@gmail.com>
 
-[ Upstream commit 862e4644fd2d7df8998edc65e0963ea2f567bde9 ]
+[ Upstream commit 2e4b88f73966adead360e47621df0183586fac32 ]
 
-If probe errors out after request_irq(), its error path
-does not explicitly cancel the delayed work, which may
-have been scheduled by the interrupt handler.
+In remove, the clock is disabled before canceling the
+delayed work. This means that the delayed work may be
+touching unclocked hardware.
 
-This means the delayed work may still be running when
-the core frees the private structure (struct xadc).
-This is a potential use-after-free.
-
-Fix by inserting cancel_delayed_work_sync() in the probe
-error path.
+Fix by disabling the clock after the delayed work is
+fully canceled. This is consistent with the probe error
+path order.
 
 Signed-off-by: Sven Van Asbroeck <TheSven73@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/xilinx-xadc-core.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/iio/adc/xilinx-xadc-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index 1960694e8007..15e1a103f37d 100644
+index 15e1a103f37d..1ae86e7359f7 100644
 --- a/drivers/iio/adc/xilinx-xadc-core.c
 +++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1290,6 +1290,7 @@ static int xadc_probe(struct platform_device *pdev)
- 
- err_free_irq:
+@@ -1320,8 +1320,8 @@ static int xadc_remove(struct platform_device *pdev)
+ 		iio_triggered_buffer_cleanup(indio_dev);
+ 	}
  	free_irq(xadc->irq, indio_dev);
-+	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
- err_clk_disable_unprepare:
- 	clk_disable_unprepare(xadc->clk);
- err_free_samplerate_trigger:
+-	clk_disable_unprepare(xadc->clk);
+ 	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
++	clk_disable_unprepare(xadc->clk);
+ 	kfree(xadc->data);
+ 	kfree(indio_dev->channels);
+ 
 -- 
 2.20.1
 
