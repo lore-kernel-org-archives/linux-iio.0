@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
-	T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	T_DKIMWL_WL_HIGH,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26CADC04AAB
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:43:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF2BC04AAB
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:45:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E399F20578
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:43:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 666C320578
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 05:45:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1557207838;
-	bh=ORIW/Z6sxOAMgncxRTcvupdrdp7O7IKVNDywnbsCAvU=;
+	s=default; t=1557207908;
+	bh=0esvBg3sZPHXqyPWKf8K32UkMNDTLhp2VPF6mDiGBRk=;
 	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=1qEey8zNuRRRhG02QfA2b2zJd4xcfaL+WzxYLpFuvgDjyyd0eN7OGCmngl+ieceRJ
-	 KyBxSIyIMCzxXi9MauXr+cGwnkBnzAfS3uPHuLSfoA6vK6BOvAf7sOvtOzpIqa3Nm0
-	 YHitLR0T+Z28uR7ViE2dwQWs3i4qNE5wNl0ASLVw=
+	b=juik6ggk7cyNu7sEJyBSMtMVn1bPvkUzzOyLqkuUVAvkN/IIG4tGsPtJ4ibqENP+J
+	 XKVOjtVCz5R/szlzqhzy/HaYRQTp73x39wpyF/WVv8H44Y2xDlpSgBUtlBv/UdMybT
+	 tvNuuDOSubfl8vE0+zI6yueajv3SDdRM+B5cm4Gw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729656AbfEGFmu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 May 2019 01:42:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33722 "EHLO mail.kernel.org"
+        id S1729516AbfEGFmV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 May 2019 01:42:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728734AbfEGFmu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 7 May 2019 01:42:50 -0400
+        id S1728964AbfEGFmU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 7 May 2019 01:42:20 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DDBBE20578;
-        Tue,  7 May 2019 05:42:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 59EF520578;
+        Tue,  7 May 2019 05:42:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557207769;
-        bh=ORIW/Z6sxOAMgncxRTcvupdrdp7O7IKVNDywnbsCAvU=;
+        s=default; t=1557207740;
+        bh=0esvBg3sZPHXqyPWKf8K32UkMNDTLhp2VPF6mDiGBRk=;
         h=From:To:Cc:Subject:Date:From;
-        b=HYMBgw5QwTCbjI/kLMcpIdGvz1EIBJZXkF1VWuMQLTpQeKJwLPd/flgbAIYO/fX/r
-         TJ37rWMErpvlnTsRE73t+PWUZaFA/Nl4AQvxxw5YREQ0sp9FuX1hjRlGnf8ceJ9dcD
-         aWLgry1qsiL25ReaDVg8/FcSYXkT6PZtj+Tc0Dm4=
+        b=do8xcuLo5ZtPfCPsVQHmLx8l9xcFYqbrMpZLQiUzO9E1naRmhqjmHwSAYZiGG/aap
+         KXOtl5Hxj6y1VHidonrmYcN6xm/L1Z+JyM4BzK6dwUNfyj+nq80Iq0yJP2ePp/N5Ux
+         /ea3x4by0Q5pLOqNawEPFjJNbf1vPTMtJeaaFKlA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Sven Van Asbroeck <thesven73@gmail.com>,
         Sven Van Asbroeck <TheSven73@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 3.18 01/10] iio: adc: xilinx: fix potential use-after-free on remove
-Date:   Tue,  7 May 2019 01:42:37 -0400
-Message-Id: <20190507054247.537-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 01/14] iio: adc: xilinx: fix potential use-after-free on remove
+Date:   Tue,  7 May 2019 01:42:03 -0400
+Message-Id: <20190507054218.340-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 X-stable: review
@@ -77,10 +77,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index a483747cdc9b..b520de11fc17 100644
+index 475c5a74f2d1..6398e86a272b 100644
 --- a/drivers/iio/adc/xilinx-xadc-core.c
 +++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1315,7 +1315,7 @@ static int xadc_remove(struct platform_device *pdev)
+@@ -1299,7 +1299,7 @@ static int xadc_remove(struct platform_device *pdev)
  	}
  	free_irq(irq, indio_dev);
  	clk_disable_unprepare(xadc->clk);
