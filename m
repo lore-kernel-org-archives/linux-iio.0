@@ -3,30 +3,30 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E5BC04AAD
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 14:36:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558D8C004C9
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 14:36:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4961D20989
-	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 14:36:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3386920989
+	for <linux-iio@archiver.kernel.org>; Tue,  7 May 2019 14:36:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726811AbfEGOg1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 May 2019 10:36:27 -0400
-Received: from mxout017.mail.hostpoint.ch ([217.26.49.177]:34234 "EHLO
-        mxout017.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726324AbfEGOg0 (ORCPT
+        id S1726793AbfEGOg0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 May 2019 10:36:26 -0400
+Received: from mxout012.mail.hostpoint.ch ([217.26.49.172]:63402 "EHLO
+        mxout012.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726674AbfEGOg0 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 7 May 2019 10:36:26 -0400
 Received: from [10.0.2.46] (helo=asmtp013.mail.hostpoint.ch)
-        by mxout017.mail.hostpoint.ch with esmtp (Exim 4.91 (FreeBSD))
+        by mxout012.mail.hostpoint.ch with esmtp (Exim 4.91 (FreeBSD))
         (envelope-from <dev@pschenker.ch>)
-        id 1hO1Cf-000DwF-Qc; Tue, 07 May 2019 16:36:21 +0200
+        id 1hO1Ce-000454-QD; Tue, 07 May 2019 16:36:20 +0200
 Received: from [46.140.72.82] (helo=philippe-pc.toradex.int)
         by asmtp013.mail.hostpoint.ch with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.91 (FreeBSD))
         (envelope-from <dev@pschenker.ch>)
-        id 1hO1Cf-0008oW-Jv; Tue, 07 May 2019 16:36:21 +0200
+        id 1hO1Ce-0008oW-Jv; Tue, 07 May 2019 16:36:20 +0200
 X-Authenticated-Sender-Id: dev@pschenker.ch
 From:   Philippe Schenker <dev@pschenker.ch>
 To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
@@ -43,9 +43,9 @@ Cc:     Marcel Ziswiler <marcel.ziswiler@toradex.com>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org
-Subject: [PATCH 3/5] iio: stmpe-adc: Enable all stmpe-adc interrupts just once
-Date:   Tue,  7 May 2019 16:36:13 +0200
-Message-Id: <20190507143615.28477-3-dev@pschenker.ch>
+Subject: [PATCH 2/5] iio: stmpe-adc: Reinit completion struct on begin conversion
+Date:   Tue,  7 May 2019 16:36:12 +0200
+Message-Id: <20190507143615.28477-2-dev@pschenker.ch>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <20190507143615.28477-1-dev@pschenker.ch>
 References: <20190507143615.28477-1-dev@pschenker.ch>
@@ -58,43 +58,42 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Philippe Schenker <philippe.schenker@toradex.com>
 
-This commit will enable the interrupts of all channels handled by this
-driver only once in the probe function.
+In some cases, the wait_completion got interrupted. This caused the
+error-handling to mutex_unlock the function. The before turned on
+interrupt then got called anyway. In the ISR then completion() was
+called causing wrong adc-values returned in a following adc-readout.
 
-This will improve performance because one byte less has to be written over
-i2c on each read out of the adc. On the fastest ADC mode this will improve
-read out speed by 15%.
+Reinitialise completion struct to make sure the counter is zero
+when beginning a new adc-conversion.
 
 Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
 ---
 
- drivers/iio/adc/stmpe-adc.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/adc/stmpe-adc.c | 4 ++++
+ 1 file changed, 4 insertions(+)
 
 diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index b3872eb37293..82b43e4522b6 100644
+index 9ec338ba3440..b3872eb37293 100644
 --- a/drivers/iio/adc/stmpe-adc.c
 +++ b/drivers/iio/adc/stmpe-adc.c
-@@ -74,9 +74,6 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- 		return -EINVAL;
- 	}
+@@ -65,6 +65,8 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
  
--	stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_EN,
--			STMPE_ADC_CH(info->channel));
--
- 	stmpe_reg_write(info->stmpe, STMPE_REG_ADC_CAPT,
- 			STMPE_ADC_CH(info->channel));
+ 	mutex_lock(&info->lock);
  
-@@ -336,6 +333,9 @@ static int stmpe_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_EN,
-+			~(norequest_mask & 0xFF));
++	reinit_completion(&info->completion);
 +
- 	return devm_iio_device_register(&pdev->dev, indio_dev);
- }
+ 	info->channel = (u8)chan->channel;
  
+ 	if (info->channel > STMPE_ADC_LAST_NR) {
+@@ -105,6 +107,8 @@ static int stmpe_read_temp(struct stmpe_adc *info,
+ 
+ 	mutex_lock(&info->lock);
+ 
++	reinit_completion(&info->completion);
++
+ 	info->channel = (u8)chan->channel;
+ 
+ 	if (info->channel != STMPE_TEMP_CHANNEL) {
 -- 
 2.21.0
 
