@@ -2,177 +2,187 @@ Return-Path: <SRS0=iK4y=TI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-10.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_PASS,
+	T_DKIMWL_WL_MED,URIBL_BLOCKED,USER_AGENT_MUTT,USER_IN_DEF_DKIM_WL
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AA16C04A6B
-	for <linux-iio@archiver.kernel.org>; Wed,  8 May 2019 19:36:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2730AC04A6B
+	for <linux-iio@archiver.kernel.org>; Wed,  8 May 2019 23:20:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 620E62089E
-	for <linux-iio@archiver.kernel.org>; Wed,  8 May 2019 19:36:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E3EDC2173B
+	for <linux-iio@archiver.kernel.org>; Wed,  8 May 2019 23:20:02 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=google.com header.i=@google.com header.b="VvhMfXaO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728134AbfEHTgF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 8 May 2019 15:36:05 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:58440 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728132AbfEHTgE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 May 2019 15:36:04 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x48JWNXW090564;
-        Wed, 8 May 2019 15:35:40 -0400
-Received: from ppma01dal.us.ibm.com (83.d6.3fa9.ip4.static.sl-reverse.com [169.63.214.131])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 2sc4j1tf7n-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 May 2019 15:35:39 -0400
-Received: from pps.filterd (ppma01dal.us.ibm.com [127.0.0.1])
-        by ppma01dal.us.ibm.com (8.16.0.27/8.16.0.27) with SMTP id x48Dc5DA029662;
-        Wed, 8 May 2019 13:39:49 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma01dal.us.ibm.com with ESMTP id 2s92c40b32-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 08 May 2019 13:39:49 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id x48JZbLb5767586
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 8 May 2019 19:35:37 GMT
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 79971136051;
-        Wed,  8 May 2019 19:35:37 +0000 (GMT)
-Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 038D513604F;
-        Wed,  8 May 2019 19:35:36 +0000 (GMT)
-Received: from talon7.ibm.com (unknown [9.41.179.222])
-        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed,  8 May 2019 19:35:36 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, joel@jms.id.au, pmeerw@pmeerw.net,
-        lars@metafoo.de, knaack.h@gmx.de, jic23@kernel.org,
-        Christopher Bostic <cbostic@linux.vnet.ibm.com>,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [PATCH v2 2/3] iio: dps310: Temperature measurement errata
-Date:   Wed,  8 May 2019 14:35:27 -0500
-Message-Id: <1557344128-690-3-git-send-email-eajames@linux.ibm.com>
-X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1557344128-690-1-git-send-email-eajames@linux.ibm.com>
-References: <1557344128-690-1-git-send-email-eajames@linux.ibm.com>
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-05-08_11:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1905080119
+        id S1727476AbfEHXUC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 May 2019 19:20:02 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38085 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726891AbfEHXUC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 May 2019 19:20:02 -0400
+Received: by mail-pf1-f193.google.com with SMTP id 10so235871pfo.5
+        for <linux-iio@vger.kernel.org>; Wed, 08 May 2019 16:20:01 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=google.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=zqe4t+t486G8cd+U/wB4LASYl9lt7sV86+xqjCXg3ho=;
+        b=VvhMfXaOZUp/wbwAB7BO94QOlnQMYhoMCM1HOiATE6hpK0n9Ci79cY9uE9ie7+Zr2w
+         hRSEtkMeRLuq9Lrd03ktR1Mft/qo1zQArSFEGmo4qxQHRqR8NZwVkKcs6AW5mrzJfpvp
+         C97E7uMkrn0CI+y0r7WL5fu86hF2UD/n631XVVpuFpZ+9V3zKV/O/+DtQRf90adqvJYC
+         rId9sW8etnmO8jQUIPR7L6ybatJQw6A/18F66WN3WliJmqg+R4YwmBPzleKXMHbqN2Hs
+         p2Y9IxeVGYy/czkaiTizrT5aMLzJ4hAuZkPA0coyAw7dy7OJ5BBydGjuw+Y6bwwJbtpp
+         JjSA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=zqe4t+t486G8cd+U/wB4LASYl9lt7sV86+xqjCXg3ho=;
+        b=i0zr+Ixfh0AcTM9LsvAcFqsc97PbgweWjFXH9URyyJ6SoptgtI33Ry2Y6zce9yFXTl
+         IKHoaEL19Gz3P+vS+Sf2c5xWUk8wHaT8lbfUErVMRC6EisK7sdcX7CYSjnD+yYlG6YQk
+         D8vrCL8HB/DEJDktAbenDhWCKj84sYOzRV02dIsvA7J2zrU6yneaXVPG5iozE6J3dn1A
+         rPQ7mgfYL5mAxl4rZH7m3XEcVga1Bvn3nUbxgol+XvLupJMbdHdd0hPKAplh6Ny3LfDe
+         IwcXEAuVP7dOc08Ap/xHda8pVmvKi3bSODtgYesOgwOvTZq4eQWUz00xFT+eFUwNm3WS
+         E7nQ==
+X-Gm-Message-State: APjAAAU5rYMFD+7b8C9TK+vbN+j9v1xSOKb/+Rqqy5OYw5xwKQGZsNjc
+        5+8pss/szQjoeecwQ2rK5FvkiQ==
+X-Google-Smtp-Source: APXvYqylCslQ4AXsRoEXwQnBh/Sno1seIsT1UKqTFUEurGVwoQWu4hQ7/dNzf23Xfcr/nyAsptGXuw==
+X-Received: by 2002:aa7:92c4:: with SMTP id k4mr229105pfa.183.1557357599968;
+        Wed, 08 May 2019 16:19:59 -0700 (PDT)
+Received: from google.com ([2620:15c:202:201:bc61:d85d:eb16:9036])
+        by smtp.gmail.com with ESMTPSA id d5sm297224pgb.33.2019.05.08.16.19.58
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 08 May 2019 16:19:58 -0700 (PDT)
+Date:   Wed, 8 May 2019 16:19:54 -0700
+From:   Benson Leung <bleung@google.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Gwendal Grignou <gwendal@chromium.org>,
+        enric.balletbo@collabora.com, bleung@chromium.org,
+        groeck@chromium.org, jic23@kernel.org, broonie@kernel.org,
+        cychiang@chromium.org, tiwai@suse.com, linux-iio@vger.kernel.org,
+        alsa-devel@alsa-project.org
+Subject: Re: [PATCH v2 00/30] Update cros_ec_commands.h
+Message-ID: <20190508231954.GA41543@google.com>
+References: <20190503220233.64546-1-gwendal@chromium.org>
+ <20190507094446.GD4529@dell>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="3V7upXqbjpZ4EhLz"
+Content-Disposition: inline
+In-Reply-To: <20190507094446.GD4529@dell>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Christopher Bostic <cbostic@linux.vnet.ibm.com>
 
-Add a manufacturer's suggested workaround to deal with early revisions
-of chip that don't indicate correct temperature. Readings can be in the
-~60C range when they should be in the ~20's.
+--3V7upXqbjpZ4EhLz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Signed-off-by: Christopher Bostic <cbostic@linux.vnet.ibm.com>
-Signed-off-by: Joel Stanley <joel@jms.id.au>
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
----
- drivers/iio/pressure/dps310.c | 51 ++++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+Hi Gwendal, Hi Lee,
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index 7afaa88..c42808e 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -221,6 +221,9 @@ static bool dps310_is_writeable_reg(struct device *dev, unsigned int reg)
- 	case DPS310_MEAS_CFG:
- 	case DPS310_CFG_REG:
- 	case DPS310_RESET:
-+	case 0x0e:
-+	case 0x0f:
-+	case 0x62:
- 		return true;
- 	default:
- 		return false;
-@@ -237,6 +240,7 @@ static bool dps310_is_volatile_reg(struct device *dev, unsigned int reg)
- 	case DPS310_TMP_B1:
- 	case DPS310_TMP_B2:
- 	case DPS310_MEAS_CFG:
-+	case 0x32:
- 		return true;
- 	default:
- 		return false;
-@@ -314,7 +318,7 @@ static int dps310_read_raw(struct iio_dev *iio,
- 	.writeable_reg = dps310_is_writeable_reg,
- 	.volatile_reg = dps310_is_volatile_reg,
- 	.cache_type = REGCACHE_RBTREE,
--	.max_register = 0x29,
-+	.max_register = 0x62,
- };
- 
- static const struct iio_info dps310_info = {
-@@ -322,6 +326,47 @@ static int dps310_read_raw(struct iio_dev *iio,
- 	.write_raw = dps310_write_raw,
- };
- 
-+/*
-+ * Some verions of chip will read temperatures in the ~60C range when
-+ * its actually ~20C. This is the manufacturer recommended workaround
-+ * to correct the issue.
-+ */
-+static int dps310_temp_workaround(struct dps310_data *data)
-+{
-+	int r, reg;
-+
-+	r = regmap_read(data->regmap, 0x32, &reg);
-+	if (r < 0)
-+		return r;
-+
-+	/*
-+	 * If bit 1 is set then the device is okay, and the workaround does not
-+	 * need to be applied
-+	 */
-+	if (reg & BIT(1))
-+		return 0;
-+
-+	r = regmap_write(data->regmap, 0x0e, 0xA5);
-+	if (r < 0)
-+		return r;
-+
-+	r = regmap_write(data->regmap, 0x0f, 0x96);
-+	if (r < 0)
-+		return r;
-+
-+	r = regmap_write(data->regmap, 0x62, 0x02);
-+	if (r < 0)
-+		return r;
-+
-+	r = regmap_write(data->regmap, 0x0e, 0x00);
-+	if (r < 0)
-+		return r;
-+
-+	r = regmap_write(data->regmap, 0x0f, 0x00);
-+
-+	return r;
-+}
-+
- static int dps310_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
-@@ -383,6 +428,10 @@ static int dps310_probe(struct i2c_client *client,
- 	if (r < 0)
- 		goto err;
- 
-+	r = dps310_temp_workaround(data);
-+	if (r < 0)
-+		return r;
-+
- 	r = devm_iio_device_register(&client->dev, iio);
- 	if (r)
- 		goto err;
--- 
-1.8.3.1
+On Tue, May 07, 2019 at 10:44:46AM +0100, Lee Jones wrote:
+> On Fri, 03 May 2019, Gwendal Grignou wrote:
+>=20
+> > The interface between CrosEC embedded controller and the host,
+> > described by cros_ec_commands.h, as diverged from what the embedded
+> > controller really support.
+> >=20
+> > The source of thruth is at
+> > https://chromium.googlesource.com/chromiumos/platform/ec/+/master/inclu=
+de/ec_commands.h
+> >=20
+> > That include file is converted to remove ACPI and Embedded only code.
+> >=20
+> > From now on, cros_ec_commands.h will be automatically generated from
+> > the file above, do not modify directly.
+> >=20
+> > Fell free to squash the commits below.
+> >=20
+> > Changes in v2:
+> > - Move I2S changes at the end of the patchset, squashed with change in
+> >   sound/soc/codecs/cros_ec_codec.c to match new interface.
+> > - Add Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> >=20
+> > Gwendal Grignou (30):
+> >   mfd: cros_ec: Update license term
+> >   mfd: cros_ec: Zero BUILD_ macro
+> >   mfd: cros_ec: set comments properly
+> >   mfd: cros_ec: add ec_align macros
+> >   mfd: cros_ec: Define commands as 4-digit UPPER CASE hex values
+> >   mfd: cros_ec: use BIT macro
+> >   mfd: cros_ec: Update ACPI interface definition
+> >   mfd: cros_ec: move HDMI CEC API definition
+> >   mfd: cros_ec: Remove zero-size structs
+> >   mfd: cros_ec: Add Flash V2 commands API
+> >   mfd: cros_ec: Add PWM_SET_DUTY API
+> >   mfd: cros_ec: Add lightbar v2 API
+> >   mfd: cros_ec: Expand hash API
+> >   mfd: cros_ec: Add EC transport protocol v4
+> >   mfd: cros_ec: Complete MEMS sensor API
+> >   mfd: cros_ec: Fix event processing API
+> >   mfd: cros_ec: Add fingerprint API
+> >   mfd: cros_ec: Fix temperature API
+> >   mfd: cros_ec: Complete Power and USB PD API
+> >   mfd: cros_ec: Add API for keyboard testing
+> >   mfd: cros_ec: Add Hibernate API
+> >   mfd: cros_ec: Add Smart Battery Firmware update API
+> >   mfd: cros_ec: Add I2C passthru protection API
+> >   mfd: cros_ec: Add API for EC-EC communication
+> >   mfd: cros_ec: Add API for Touchpad support
+> >   mfd: cros_ec: Add API for Fingerprint support
+> >   mfd: cros_ec: Add API for rwsig
+> >   mfd: cros_ec: Add SKU ID and Secure storage API
+> >   mfd: cros_ec: Add Management API entry points
+> >   mfd: cros_ec: Update I2S API
+> >=20
+> >  include/linux/mfd/cros_ec_commands.h | 3735 +++++++++++++++++++++-----
+> >  sound/soc/codecs/cros_ec_codec.c     |    8 +-
+> >  2 files changed, 2997 insertions(+), 746 deletions(-)
+>=20
+> Again, it would be good to get 1 or 2 more Chromium Acks, given the
+> extent of the changes.
 
+I've gone ahead and looked through all 30 of the changes here. It looks goo=
+d to me.
+
+Acked-By: Benson Leung <bleung@chromium.org>
+
+Thanks Gwendal.
+
+Benson
+
+--=20
+Benson Leung
+Staff Software Engineer
+Chrome OS Kernel
+Google Inc.
+bleung@google.com
+Chromium OS Project
+bleung@chromium.org
+
+--3V7upXqbjpZ4EhLz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIyBAABCgAdFiEE6gYDF28Li+nEiKLaHwn1ewov5lgFAlzTZBcACgkQHwn1ewov
+5lhjUA/3fA/KxWw5Iys7vvzAAJjcfVmJy+xWem/JAjKjAe0kVJIX/t6badYGOTsI
+KkdhoeXjrd+UDnhCQ3zAfRNz8UbAB0GFh1xOg7Tx9ooy2RiGHjcwyGvp1F+d9T9A
+9LWavFRzNj+NECuV91pdMHi1VN7UOYoQj8o7f/LMIdsv2dfjfT7/grsYj3q3cjzX
+gyi8a5QUb46vcmSSR+hh9KX/ymAjegSEPLWPBC7B237PHmdRSQ3W0C3M0V8ke7nB
+gNH+7T8p9/ZzEfVSVydNogTpNDRiXpdEG1PIk5eXbRIr3C3Kv25JR76k5Ljkf6U8
+zXdNMZUYFISYPqsqtp2YAbDrZh0Ok7M5I63Wf5SioUFI4bCEQUq0PZjM0//q3/RE
+8+walobqHB/+zCLHwh8hqEmy/67J6b6Cww+1pO7l2YUa3ohit6xYTSzs+kGZ3MJ5
+s0goLRIMvOvduBuRmW1JrJ57JQSypGL5idWnaX104t/1qHBllKs2w4O1jK1xx4tE
+2XvTf/h/8Oq1k4/BYsmI3Tg+beXZogpNEmoXwzxDxE8PNlJ2aEJmZhdcnzT0ZCM8
+fGutiblcNwe0JyceAgNrwhlTcVMIlu8tyyXLZBovccSMLBP3w/Fhw5bQbVN5YdRQ
+kxXbzvKM6IqwtoqtcWwkKfMahw3ViEpJm41VSrwU5Esz3Ryk0w==
+=O6+L
+-----END PGP SIGNATURE-----
+
+--3V7upXqbjpZ4EhLz--
