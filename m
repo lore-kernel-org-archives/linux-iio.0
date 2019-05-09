@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4E62C04AB3
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CCCC04AB1
+	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 94D15217F5
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F2970217D7
+	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="m2IdU+IH"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ikiqJjbl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727271AbfEIVO0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 May 2019 17:14:26 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:45585 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727265AbfEIVOZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 17:14:25 -0400
-Received: by mail-pf1-f193.google.com with SMTP id s11so1937648pfm.12
-        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 14:14:24 -0700 (PDT)
+        id S1727262AbfEIVOX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 May 2019 17:14:23 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:44627 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727255AbfEIVOW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 17:14:22 -0400
+Received: by mail-pg1-f196.google.com with SMTP id z16so1823875pgv.11
+        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 14:14:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=gqayeGuddjPe6w5qnR/QdiK5/I13mFiipbNcBcee+Lw=;
-        b=m2IdU+IH4JuKFYiT7q1VArEPfMhNxv2Ppoygv7EAYBnma3RgoVWsBBYafZirt8ZoCz
-         XAVNc6ZbKCwMESG17GkLsO2yq8KL7vAznd47LzsRyroc+kLXnZJi3lANdmkeGqp0T3+q
-         AeW5jhRvKHlzyR2Ib2qqWfAZjFYAGEAtucv9A=
+        bh=qjD70egNJa0bWRCM3mWm+Y3jFJFiZloqPeAQ9dZL65s=;
+        b=ikiqJjblS+fQtPXMsXiF4xrITMT4K7JPsjpUMPZ2qF3G7U9uJgPRuVTCWl6k2sbHQJ
+         BJ+XDDAbh/TBK52T7SHd9FYULFPSwNxOGfH4NrASleMhPo+VdhVPZZsPxajc7bsNdpzu
+         WKjiJ/dfum5eKOAMuRxnfHWGrNVDQpWSs3Bso=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=gqayeGuddjPe6w5qnR/QdiK5/I13mFiipbNcBcee+Lw=;
-        b=nfIak7zLsuiVSrRM4arlZRIczOPygASGoWL4FBq6WhlhYLoDFByPbt1dthWFHehgxz
-         4oEH/Ukn8/KT81P5etD62WQiipH/g6KCKTJkU2E64J1/cidKXVXR/UTUDJivEjgG1NAE
-         nMKr2X0uuP9SyOxyRhs3PHjWfwBPMRpYR83TtFYmAzofeUdRpUFWSe2M1MXOOAqcaDl6
-         N8G7Ejm67h+egtk1szuQQSNID4F18qsED2TYKAXx2qf5NmWOdD2syI55lTAx357THnt6
-         rW6LW2S+ju9M1jmkRAPeYCE9y1xm0qGRHm9NgTBN/2LOlcNHNoV3lVU2e2I3fC01m2bR
-         a3sQ==
-X-Gm-Message-State: APjAAAUNgTMeWCiJtUx8qHV90zUR4Zdvz0QVc5745xhqHxlPAaOC7aoo
-        3vG2MKGtv/ZwImaJf/D5UQXlMQ==
-X-Google-Smtp-Source: APXvYqyhfSfOht5AMuVjNtohzOfoZ0AoGJJnvZ6qhK+3yT4wzigSao1hfmWSVuEthiJ6HLDK/6sN6A==
-X-Received: by 2002:a63:2b0d:: with SMTP id r13mr8757947pgr.400.1557436464210;
-        Thu, 09 May 2019 14:14:24 -0700 (PDT)
+        bh=qjD70egNJa0bWRCM3mWm+Y3jFJFiZloqPeAQ9dZL65s=;
+        b=Zwl7IlrPCC7TThzM87sOHP8pONcXfSGTXJopqwF+apUUHuVSGtU67qkoHd2NXxN+zE
+         wVHWuUPmkU1gx1WUWivCdMe1bnA2AYmwwhdKAsxe9lgNs2LQfVbEqqOtF46YdCD/qPB0
+         Hvl3JjU9SmJ+WUBJy6yEoYkkIHPe7ClmMJeQ2E/F/QpkexfelS6ETiw+8DcY2XKhTtaJ
+         /L3MlgCdmyyzy+3tW3755ryBbV6pCJQWV3PvePSYVBwaesNBFpc/FE6EoND9s4q/P22H
+         FEiqycz1D8KkOedfymDmA833jo2rup1BsPY3b8VAGqXYjCD4eIz4jo5vIGTjcI163hKP
+         8AeQ==
+X-Gm-Message-State: APjAAAW/mou1SXC76Hsf4kJ42xMFb/+iw9ETaHef9GkEH/wZ87eN3EQD
+        aTqSvQn/3E2ULH3fTDfnyJRtQDsIoTE=
+X-Google-Smtp-Source: APXvYqw3LC+kAnV5JsjEZvQK+vrOXKMWUrM42DnEQLFc9wnBPmNZc0J12yJPGp2ytD5mN+2UzABKcQ==
+X-Received: by 2002:a63:b1d:: with SMTP id 29mr8622490pgl.103.1557436461199;
+        Thu, 09 May 2019 14:14:21 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id l9sm3282655pgq.48.2019.05.09.14.14.23
+        by smtp.gmail.com with ESMTPSA id k6sm227261pfi.86.2019.05.09.14.14.20
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 14:14:23 -0700 (PDT)
+        Thu, 09 May 2019 14:14:20 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     enric.balletbo@collabora.com, bleung@chromium.org,
         groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org,
@@ -58,9 +58,9 @@ To:     enric.balletbo@collabora.com, bleung@chromium.org,
 Cc:     linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 14/30] mfd: cros_ec: Add EC transport protocol v4
-Date:   Thu,  9 May 2019 14:13:37 -0700
-Message-Id: <20190509211353.213194-15-gwendal@chromium.org>
+Subject: [PATCH v3 12/30] mfd: cros_ec: Add lightbar v2 API
+Date:   Thu,  9 May 2019 14:13:35 -0700
+Message-Id: <20190509211353.213194-13-gwendal@chromium.org>
 X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
 In-Reply-To: <20190509211353.213194-1-gwendal@chromium.org>
 References: <20190509211353.213194-1-gwendal@chromium.org>
@@ -71,183 +71,212 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce a new transport procotol between EC and host.
+New API split commands, improve EC command latency.
 
 Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Acked-by: Benson Leung <bleung@chromium.org>
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
- include/linux/mfd/cros_ec_commands.h | 143 ++++++++++++++++++++++++++-
- 1 file changed, 141 insertions(+), 2 deletions(-)
+ include/linux/mfd/cros_ec_commands.h | 124 ++++++++++++++++++++++++++-
+ 1 file changed, 120 insertions(+), 4 deletions(-)
 
 diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 76943e64998a..40a8069a58e8 100644
+index 2b3a94a4f0f4..0ff1941288cf 100644
 --- a/include/linux/mfd/cros_ec_commands.h
 +++ b/include/linux/mfd/cros_ec_commands.h
-@@ -455,7 +455,10 @@
- #define EC_LPC_STATUS_BUSY_MASK \
- 	(EC_LPC_STATUS_FROM_HOST | EC_LPC_STATUS_PROCESSING)
+@@ -1658,7 +1658,10 @@ struct lightbar_params_v1 {
+ 	int32_t s3_sleep_for;
+ 	int32_t s3_ramp_up;
+ 	int32_t s3_ramp_down;
++	int32_t s5_ramp_up;
++	int32_t s5_ramp_down;
+ 	int32_t tap_tick_delay;
++	int32_t tap_gate_delay;
+ 	int32_t tap_display_time;
  
--/* Host command response codes */
-+/*
-+ * Host command response codes (16-bit).  Note that response codes should be
-+ * stored in a uint16_t rather than directly in a value of this type.
+ 	/* Tap-for-battery params */
+@@ -1686,11 +1689,82 @@ struct lightbar_params_v1 {
+ 	uint8_t s0_idx[2][LB_BATTERY_LEVELS];	/* AP is running */
+ 	uint8_t s3_idx[2][LB_BATTERY_LEVELS];	/* AP is sleeping */
+ 
++	/* s5: single color pulse on inhibited power-up */
++	uint8_t s5_idx;
++
+ 	/* Color palette */
+ 	struct rgb_s color[8];			/* 0-3 are Google colors */
+ } __ec_todo_packed;
+ 
+-/* Lightbar program */
++/* Lightbar command params v2
++ * crbug.com/467716
++ *
++ * lightbar_parms_v1 was too big for i2c, therefore in v2, we split them up by
++ * logical groups to make it more manageable ( < 120 bytes).
++ *
++ * NOTE: Each of these groups must be less than 120 bytes.
 + */
- enum ec_status {
- 	EC_RES_SUCCESS = 0,
- 	EC_RES_INVALID_COMMAND = 1,
-@@ -471,7 +474,13 @@ enum ec_status {
- 	EC_RES_OVERFLOW = 11,		/* Table / data overflow */
- 	EC_RES_INVALID_HEADER = 12,     /* Header contains invalid data */
- 	EC_RES_REQUEST_TRUNCATED = 13,  /* Didn't get the entire request */
--	EC_RES_RESPONSE_TOO_BIG = 14    /* Response was too big to handle */
-+	EC_RES_RESPONSE_TOO_BIG = 14,   /* Response was too big to handle */
-+	EC_RES_BUS_ERROR = 15,		/* Communications bus error */
-+	EC_RES_BUSY = 16,		/* Up but too busy.  Should retry */
-+	EC_RES_INVALID_HEADER_VERSION = 17,  /* Header version invalid */
-+	EC_RES_INVALID_HEADER_CRC = 18,      /* Header CRC invalid */
-+	EC_RES_INVALID_DATA_CRC = 19,        /* Data CRC invalid */
-+	EC_RES_DUP_UNAVAILABLE = 20,         /* Can't resend response */
++
++struct lightbar_params_v2_timing {
++	/* Timing */
++	int32_t google_ramp_up;
++	int32_t google_ramp_down;
++	int32_t s3s0_ramp_up;
++	int32_t s0_tick_delay[2];		/* AC=0/1 */
++	int32_t s0a_tick_delay[2];		/* AC=0/1 */
++	int32_t s0s3_ramp_down;
++	int32_t s3_sleep_for;
++	int32_t s3_ramp_up;
++	int32_t s3_ramp_down;
++	int32_t s5_ramp_up;
++	int32_t s5_ramp_down;
++	int32_t tap_tick_delay;
++	int32_t tap_gate_delay;
++	int32_t tap_display_time;
++} __ec_todo_packed;
++
++struct lightbar_params_v2_tap {
++	/* Tap-for-battery params */
++	uint8_t tap_pct_red;
++	uint8_t tap_pct_green;
++	uint8_t tap_seg_min_on;
++	uint8_t tap_seg_max_on;
++	uint8_t tap_seg_osc;
++	uint8_t tap_idx[3];
++} __ec_todo_packed;
++
++struct lightbar_params_v2_oscillation {
++	/* Oscillation */
++	uint8_t osc_min[2];			/* AC=0/1 */
++	uint8_t osc_max[2];			/* AC=0/1 */
++	uint8_t w_ofs[2];			/* AC=0/1 */
++} __ec_todo_packed;
++
++struct lightbar_params_v2_brightness {
++	/* Brightness limits based on the backlight and AC. */
++	uint8_t bright_bl_off_fixed[2];		/* AC=0/1 */
++	uint8_t bright_bl_on_min[2];		/* AC=0/1 */
++	uint8_t bright_bl_on_max[2];		/* AC=0/1 */
++} __ec_todo_packed;
++
++struct lightbar_params_v2_thresholds {
++	/* Battery level thresholds */
++	uint8_t battery_threshold[LB_BATTERY_LEVELS - 1];
++} __ec_todo_packed;
++
++struct lightbar_params_v2_colors {
++	/* Map [AC][battery_level] to color index */
++	uint8_t s0_idx[2][LB_BATTERY_LEVELS];	/* AP is running */
++	uint8_t s3_idx[2][LB_BATTERY_LEVELS];	/* AP is sleeping */
++
++	/* s5: single color pulse on inhibited power-up */
++	uint8_t s5_idx;
++
++	/* Color palette */
++	struct rgb_s color[8];			/* 0-3 are Google colors */
++} __ec_todo_packed;
++
++/* Lightbar program. */
+ #define EC_LB_PROG_LEN 192
+ struct lightbar_program {
+ 	uint8_t size;
+@@ -1704,7 +1778,10 @@ struct ec_params_lightbar {
+ 		 * The following commands have no args:
+ 		 *
+ 		 * dump, off, on, init, get_seq, get_params_v0, get_params_v1,
+-		 * version, get_brightness, get_demo, suspend, resume
++		 * version, get_brightness, get_demo, suspend, resume,
++		 * get_params_v2_timing, get_params_v2_tap, get_params_v2_osc,
++		 * get_params_v2_bright, get_params_v2_thlds,
++		 * get_params_v2_colors
+ 		 *
+ 		 * Don't use an empty struct, because C++ hates that.
+ 		 */
+@@ -1731,6 +1808,14 @@ struct ec_params_lightbar {
+ 
+ 		struct lightbar_params_v0 set_params_v0;
+ 		struct lightbar_params_v1 set_params_v1;
++
++		struct lightbar_params_v2_timing set_v2par_timing;
++		struct lightbar_params_v2_tap set_v2par_tap;
++		struct lightbar_params_v2_oscillation set_v2par_osc;
++		struct lightbar_params_v2_brightness set_v2par_bright;
++		struct lightbar_params_v2_thresholds set_v2par_thlds;
++		struct lightbar_params_v2_colors set_v2par_colors;
++
+ 		struct lightbar_program set_program;
+ 	};
+ } __ec_todo_packed;
+@@ -1752,6 +1837,14 @@ struct ec_response_lightbar {
+ 		struct lightbar_params_v0 get_params_v0;
+ 		struct lightbar_params_v1 get_params_v1;
+ 
++
++		struct lightbar_params_v2_timing get_params_v2_timing;
++		struct lightbar_params_v2_tap get_params_v2_tap;
++		struct lightbar_params_v2_oscillation get_params_v2_osc;
++		struct lightbar_params_v2_brightness get_params_v2_bright;
++		struct lightbar_params_v2_thresholds get_params_v2_thlds;
++		struct lightbar_params_v2_colors get_params_v2_colors;
++
+ 		struct __ec_todo_unpacked {
+ 			uint32_t num;
+ 			uint32_t flags;
+@@ -1764,9 +1857,11 @@ struct ec_response_lightbar {
+ 		/*
+ 		 * The following commands have no response:
+ 		 *
+-		 * off, on, init, set_brightness, seq, reg, set_rgb,
++		 * off, on, init, set_brightness, seq, reg, set_rgb, demo,
+ 		 * set_params_v0, set_params_v1, set_program,
+-		 * manual_suspend_ctrl, suspend, resume
++		 * manual_suspend_ctrl, suspend, resume, set_v2par_timing,
++		 * set_v2par_tap, set_v2par_osc, set_v2par_bright,
++		 * set_v2par_thlds, set_v2par_colors
+ 		 */
+ 	};
+ } __ec_todo_packed;
+@@ -1795,6 +1890,18 @@ enum lightbar_command {
+ 	LIGHTBAR_CMD_MANUAL_SUSPEND_CTRL = 19,
+ 	LIGHTBAR_CMD_SUSPEND = 20,
+ 	LIGHTBAR_CMD_RESUME = 21,
++	LIGHTBAR_CMD_GET_PARAMS_V2_TIMING = 22,
++	LIGHTBAR_CMD_SET_PARAMS_V2_TIMING = 23,
++	LIGHTBAR_CMD_GET_PARAMS_V2_TAP = 24,
++	LIGHTBAR_CMD_SET_PARAMS_V2_TAP = 25,
++	LIGHTBAR_CMD_GET_PARAMS_V2_OSCILLATION = 26,
++	LIGHTBAR_CMD_SET_PARAMS_V2_OSCILLATION = 27,
++	LIGHTBAR_CMD_GET_PARAMS_V2_BRIGHTNESS = 28,
++	LIGHTBAR_CMD_SET_PARAMS_V2_BRIGHTNESS = 29,
++	LIGHTBAR_CMD_GET_PARAMS_V2_THRESHOLDS = 30,
++	LIGHTBAR_CMD_SET_PARAMS_V2_THRESHOLDS = 31,
++	LIGHTBAR_CMD_GET_PARAMS_V2_COLORS = 32,
++	LIGHTBAR_CMD_SET_PARAMS_V2_COLORS = 33,
+ 	LIGHTBAR_NUM_CMDS
  };
  
- /*
-@@ -744,6 +753,136 @@ struct ec_host_response {
- 	uint16_t reserved;
- } __ec_align4;
+@@ -1813,6 +1920,14 @@ enum ec_led_id {
+ 	EC_LED_ID_POWER_LED,
+ 	/* LED on power adapter or its plug */
+ 	EC_LED_ID_ADAPTER_LED,
++	/* LED to indicate left side */
++	EC_LED_ID_LEFT_LED,
++	/* LED to indicate right side */
++	EC_LED_ID_RIGHT_LED,
++	/* LED to indicate recovery mode with HW_REINIT */
++	EC_LED_ID_RECOVERY_HW_REINIT_LED,
++	/* LED to indicate sysrq debug mode. */
++	EC_LED_ID_SYSRQ_DEBUG_LED,
  
-+/*****************************************************************************/
-+
-+/*
-+ * Host command protocol V4.
-+ *
-+ * Packets always start with a request or response header.  They are followed
-+ * by data_len bytes of data.  If the data_crc_present flag is set, the data
-+ * bytes are followed by a CRC-8 of that data, using using x^8 + x^2 + x + 1
-+ * polynomial.
-+ *
-+ * Host algorithm when sending a request q:
-+ *
-+ * 101) tries_left=(some value, e.g. 3);
-+ * 102) q.seq_num++
-+ * 103) q.seq_dup=0
-+ * 104) Calculate q.header_crc.
-+ * 105) Send request q to EC.
-+ * 106) Wait for response r.  Go to 201 if received or 301 if timeout.
-+ *
-+ * 201) If r.struct_version != 4, go to 301.
-+ * 202) If r.header_crc mismatches calculated CRC for r header, go to 301.
-+ * 203) If r.data_crc_present and r.data_crc mismatches, go to 301.
-+ * 204) If r.seq_num != q.seq_num, go to 301.
-+ * 205) If r.seq_dup == q.seq_dup, return success.
-+ * 207) If r.seq_dup == 1, go to 301.
-+ * 208) Return error.
-+ *
-+ * 301) If --tries_left <= 0, return error.
-+ * 302) If q.seq_dup == 1, go to 105.
-+ * 303) q.seq_dup = 1
-+ * 304) Go to 104.
-+ *
-+ * EC algorithm when receiving a request q.
-+ * EC has response buffer r, error buffer e.
-+ *
-+ * 101) If q.struct_version != 4, set e.result = EC_RES_INVALID_HEADER_VERSION
-+ *      and go to 301
-+ * 102) If q.header_crc mismatches calculated CRC, set e.result =
-+ *      EC_RES_INVALID_HEADER_CRC and go to 301
-+ * 103) If q.data_crc_present, calculate data CRC.  If that mismatches the CRC
-+ *      byte at the end of the packet, set e.result = EC_RES_INVALID_DATA_CRC
-+ *      and go to 301.
-+ * 104) If q.seq_dup == 0, go to 201.
-+ * 105) If q.seq_num != r.seq_num, go to 201.
-+ * 106) If q.seq_dup == r.seq_dup, go to 205, else go to 203.
-+ *
-+ * 201) Process request q into response r.
-+ * 202) r.seq_num = q.seq_num
-+ * 203) r.seq_dup = q.seq_dup
-+ * 204) Calculate r.header_crc
-+ * 205) If r.data_len > 0 and data is no longer available, set e.result =
-+ *      EC_RES_DUP_UNAVAILABLE and go to 301.
-+ * 206) Send response r.
-+ *
-+ * 301) e.seq_num = q.seq_num
-+ * 302) e.seq_dup = q.seq_dup
-+ * 303) Calculate e.header_crc.
-+ * 304) Send error response e.
-+ */
-+
-+/* Version 4 request from host */
-+struct ec_host_request4 {
-+	/*
-+	 * bits 0-3: struct_version: Structure version (=4)
-+	 * bit    4: is_response: Is response (=0)
-+	 * bits 5-6: seq_num: Sequence number
-+	 * bit    7: seq_dup: Sequence duplicate flag
-+	 */
-+	uint8_t fields0;
-+
-+	/*
-+	 * bits 0-4: command_version: Command version
-+	 * bits 5-6: Reserved (set 0, ignore on read)
-+	 * bit    7: data_crc_present: Is data CRC present after data
-+	 */
-+	uint8_t fields1;
-+
-+	/* Command code (EC_CMD_*) */
-+	uint16_t command;
-+
-+	/* Length of data which follows this header (not including data CRC) */
-+	uint16_t data_len;
-+
-+	/* Reserved (set 0, ignore on read) */
-+	uint8_t reserved;
-+
-+	/* CRC-8 of above fields, using x^8 + x^2 + x + 1 polynomial */
-+	uint8_t header_crc;
-+} __ec_align4;
-+
-+/* Version 4 response from EC */
-+struct ec_host_response4 {
-+	/*
-+	 * bits 0-3: struct_version: Structure version (=4)
-+	 * bit    4: is_response: Is response (=1)
-+	 * bits 5-6: seq_num: Sequence number
-+	 * bit    7: seq_dup: Sequence duplicate flag
-+	 */
-+	uint8_t fields0;
-+
-+	/*
-+	 * bits 0-6: Reserved (set 0, ignore on read)
-+	 * bit    7: data_crc_present: Is data CRC present after data
-+	 */
-+	uint8_t fields1;
-+
-+	/* Result code (EC_RES_*) */
-+	uint16_t result;
-+
-+	/* Length of data which follows this header (not including data CRC) */
-+	uint16_t data_len;
-+
-+	/* Reserved (set 0, ignore on read) */
-+	uint8_t reserved;
-+
-+	/* CRC-8 of above fields, using x^8 + x^2 + x + 1 polynomial */
-+	uint8_t header_crc;
-+} __ec_align4;
-+
-+/* Fields in fields0 byte */
-+#define EC_PACKET4_0_STRUCT_VERSION_MASK	0x0f
-+#define EC_PACKET4_0_IS_RESPONSE_MASK		0x10
-+#define EC_PACKET4_0_SEQ_NUM_SHIFT		5
-+#define EC_PACKET4_0_SEQ_NUM_MASK		0x60
-+#define EC_PACKET4_0_SEQ_DUP_MASK		0x80
-+
-+/* Fields in fields1 byte */
-+#define EC_PACKET4_1_COMMAND_VERSION_MASK	0x1f  /* (request only) */
-+#define EC_PACKET4_1_DATA_CRC_PRESENT_MASK	0x80
-+
- /*****************************************************************************/
- /*
-  * Notes on commands:
+ 	EC_LED_ID_COUNT
+ };
+@@ -1827,6 +1942,7 @@ enum ec_led_colors {
+ 	EC_LED_COLOR_BLUE,
+ 	EC_LED_COLOR_YELLOW,
+ 	EC_LED_COLOR_WHITE,
++	EC_LED_COLOR_AMBER,
+ 
+ 	EC_LED_COLOR_COUNT
+ };
 -- 
 2.21.0.1020.gf2820cf01a-goog
 
