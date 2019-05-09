@@ -2,55 +2,55 @@ Return-Path: <SRS0=J6KI=TJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-6.2 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,T_DKIMWL_WL_HIGH,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8825BC04AB1
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:14:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4BE3C04AB1
+	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:14:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5B11E21744
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:14:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B212B21744
+	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:14:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="cH+VBwgK"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="l9AwUPGM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727255AbfEIVOY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 May 2019 17:14:24 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:43927 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727258AbfEIVOX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 17:14:23 -0400
-Received: by mail-pf1-f193.google.com with SMTP id c6so1943106pfa.10
-        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 14:14:22 -0700 (PDT)
+        id S1727381AbfEIVOh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 May 2019 17:14:37 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:46117 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727341AbfEIVOg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 17:14:36 -0400
+Received: by mail-pf1-f195.google.com with SMTP id y11so1938114pfm.13
+        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 14:14:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=y0IPEAAZhLi1gys+2LirQge8UODqrAqbS/22Qm4bF1s=;
-        b=cH+VBwgKsOunqPxtWlu1VRhFgLfNjKBoEnzFUBNyyHA8/Q8GAPqkdWGZXT5t4vH9V2
-         G7V2bOhe0nuB+Dqyq7vpAWNVFoM6BhSlslYT1S/UqsnkcFDQjGsa+iOhjVOkVaVJsyBu
-         POIUoG2DRasIPlM2Ukm0TaLG42f5fSOJ30za0=
+        bh=IWgr+AhFO3OhKHAPV2m+8yh16a60wmBfWKOBXA4JWIU=;
+        b=l9AwUPGMjJlXTw3q/c4anvpEH7Apr8aszczxsz4koZlEjHGujT/XXlhrz3pf0+sgzP
+         dnAvEMxzsMC47BA4uHex5mnJOCBLJtL+VnX8D0Y0cQcuEDamqlpfp+YNaNNY8zeWE69c
+         jMjclChUoCUTXBkcR2S0aGhAvt5t3ntNQtaUk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=y0IPEAAZhLi1gys+2LirQge8UODqrAqbS/22Qm4bF1s=;
-        b=nmt8ztMo5VpuOcfOadbOfm9WjO1IGLDZy8em2BdOriOATPOncOY/MSVvmOyggXq9fI
-         1aNZu01nFjKVgHOsO6f/AMAfS5gbFVTx9vUqe0DoX9juqE5GayaypasuPyS35o/ZaJfy
-         22f9R1REpveVjAaZz4jeKERuKqoN0O54uw9PeB8WmJtSpNGXFiLY//auqF1lI0AqAwm/
-         4IHzAWCzlJwq1ntVniemG8JOryNjzkfxaCv6vRN8PlxAbZhnTFyJvkVTfbKik4Tcp1O5
-         WMQU5sfK04Wv0OtlcQK8wiOLqSkaCUdJhhKqTvuDRfTWC+ltxhdUwgsstjDAD1gVuP3K
-         t2kQ==
-X-Gm-Message-State: APjAAAXe/87+xxUQzgId5XOu8X77fNuVCdOutyQp+3SUl2CQ9hWz+FQw
-        zCJyfvwDZVqagAJ99AL5rBYkvw==
-X-Google-Smtp-Source: APXvYqyE6f1XisQgbEH3d5hrLdGWQVIy/zvCRIyERSNmqjO7MmtzNljBiI83zTxtJqG/PDRN7/ThIQ==
-X-Received: by 2002:a62:4c5:: with SMTP id 188mr8667284pfe.29.1557436462597;
-        Thu, 09 May 2019 14:14:22 -0700 (PDT)
+        bh=IWgr+AhFO3OhKHAPV2m+8yh16a60wmBfWKOBXA4JWIU=;
+        b=Cf2SDPD2LIn+WVxiU+ATzOi8fb7Yzl8382XN1jU3r1WTdu7jiGF71okXR3vP2WyqOX
+         wp6g8IbE3iSTI/E3zkksszuuaFF0NgOJDccCakjyCQI8VWGjIJlGcvTIT8eaqoj/tb00
+         JeyhdhVsj8uUTUk7eFUnjrnT1gFnlp0eW/EnQPNi337Mv5wSYV1kYrYJSSb9ytcC+1JU
+         Uxv5MX/AXC68cn7tgDb18caqAxGoG7YhSvP9rttDtLLvFkYmdL6rnVmF7IZZvdJ6jVUU
+         oK7IBV9mqzfwwWclkv561+7QEm9A2/78ijQz/LGExUafD4ID76ibQIEk8bxdkufPKB4U
+         AR9g==
+X-Gm-Message-State: APjAAAWRroC+KaYj5osSkvLbL3gaH8AVrdjFYcQoj0kS7T8eLTNTjJuZ
+        s6Qq+8RtF60QFD/1U+imI9TkfQ==
+X-Google-Smtp-Source: APXvYqxbARVqhKLstd3ckJiRL7/+p2xHa3sntQBgb11XMfj7kEkYjGDv7msVASirpXtae93+FNtnGw==
+X-Received: by 2002:a63:1460:: with SMTP id 32mr8650708pgu.319.1557436476179;
+        Thu, 09 May 2019 14:14:36 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id g2sm4443402pfd.134.2019.05.09.14.14.21
+        by smtp.gmail.com with ESMTPSA id a17sm4854335pff.82.2019.05.09.14.14.35
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 14:14:22 -0700 (PDT)
+        Thu, 09 May 2019 14:14:35 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     enric.balletbo@collabora.com, bleung@chromium.org,
         groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org,
@@ -58,9 +58,9 @@ To:     enric.balletbo@collabora.com, bleung@chromium.org,
 Cc:     linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 13/30] mfd: cros_ec: Expand hash API
-Date:   Thu,  9 May 2019 14:13:36 -0700
-Message-Id: <20190509211353.213194-14-gwendal@chromium.org>
+Subject: [PATCH v3 22/30] mfd: cros_ec: Add Smart Battery Firmware update API
+Date:   Thu,  9 May 2019 14:13:45 -0700
+Message-Id: <20190509211353.213194-23-gwendal@chromium.org>
 X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
 In-Reply-To: <20190509211353.213194-1-gwendal@chromium.org>
 References: <20190509211353.213194-1-gwendal@chromium.org>
@@ -71,37 +71,99 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Improve API to verify EC image signature.
+Add API to update battery firmware.
 
 Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Acked-by: Benson Leung <bleung@chromium.org>
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
- include/linux/mfd/cros_ec_commands.h | 11 +++++++++--
- 1 file changed, 9 insertions(+), 2 deletions(-)
+ include/linux/mfd/cros_ec_commands.h | 73 ++++++++++++++++++++++++++++
+ 1 file changed, 73 insertions(+)
 
 diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 0ff1941288cf..76943e64998a 100644
+index 7f98c6e63ad1..49ea905cfd18 100644
 --- a/include/linux/mfd/cros_ec_commands.h
 +++ b/include/linux/mfd/cros_ec_commands.h
-@@ -2018,8 +2018,15 @@ enum ec_vboot_hash_status {
-  * If one of these is specified, the EC will automatically update offset and
-  * size to the correct values for the specified image (RO or RW).
-  */
--#define EC_VBOOT_HASH_OFFSET_RO 0xfffffffe
--#define EC_VBOOT_HASH_OFFSET_RW 0xfffffffd
-+#define EC_VBOOT_HASH_OFFSET_RO		0xfffffffe
-+#define EC_VBOOT_HASH_OFFSET_ACTIVE	0xfffffffd
-+#define EC_VBOOT_HASH_OFFSET_UPDATE	0xfffffffc
+@@ -4243,6 +4243,79 @@ struct ec_response_battery_vendor_param {
+ 	uint32_t value;
+ } __ec_align4;
+ 
++/*****************************************************************************/
++/*
++ * Smart Battery Firmware Update Commands
++ */
++#define EC_CMD_SB_FW_UPDATE 0x00B5
++
++enum ec_sb_fw_update_subcmd {
++	EC_SB_FW_UPDATE_PREPARE  = 0x0,
++	EC_SB_FW_UPDATE_INFO     = 0x1, /*query sb info */
++	EC_SB_FW_UPDATE_BEGIN    = 0x2, /*check if protected */
++	EC_SB_FW_UPDATE_WRITE    = 0x3, /*check if protected */
++	EC_SB_FW_UPDATE_END      = 0x4,
++	EC_SB_FW_UPDATE_STATUS   = 0x5,
++	EC_SB_FW_UPDATE_PROTECT  = 0x6,
++	EC_SB_FW_UPDATE_MAX      = 0x7,
++};
++
++#define SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE 32
++#define SB_FW_UPDATE_CMD_STATUS_SIZE 2
++#define SB_FW_UPDATE_CMD_INFO_SIZE 8
++
++struct ec_sb_fw_update_header {
++	uint16_t subcmd;  /* enum ec_sb_fw_update_subcmd */
++	uint16_t fw_id;   /* firmware id */
++} __ec_align4;
++
++struct ec_params_sb_fw_update {
++	struct ec_sb_fw_update_header hdr;
++	union {
++		/* EC_SB_FW_UPDATE_PREPARE  = 0x0 */
++		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
++		/* EC_SB_FW_UPDATE_BEGIN    = 0x2 */
++		/* EC_SB_FW_UPDATE_END      = 0x4 */
++		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
++		/* EC_SB_FW_UPDATE_PROTECT  = 0x6 */
++		/* Those have no args */
++
++		/* EC_SB_FW_UPDATE_WRITE    = 0x3 */
++		struct __ec_align4 {
++			uint8_t  data[SB_FW_UPDATE_CMD_WRITE_BLOCK_SIZE];
++		} write;
++	};
++} __ec_align4;
++
++struct ec_response_sb_fw_update {
++	union {
++		/* EC_SB_FW_UPDATE_INFO     = 0x1 */
++		struct __ec_align1 {
++			uint8_t data[SB_FW_UPDATE_CMD_INFO_SIZE];
++		} info;
++
++		/* EC_SB_FW_UPDATE_STATUS   = 0x5 */
++		struct __ec_align1 {
++			uint8_t data[SB_FW_UPDATE_CMD_STATUS_SIZE];
++		} status;
++	};
++} __ec_align1;
 +
 +/*
-+ * 'RW' is vague if there are multiple RW images; we mean the active one,
-+ * so the old constant is deprecated.
++ * Entering Verified Boot Mode Command
++ * Default mode is VBOOT_MODE_NORMAL if EC did not receive this command.
++ * Valid Modes are: normal, developer, and recovery.
 + */
-+#define EC_VBOOT_HASH_OFFSET_RW EC_VBOOT_HASH_OFFSET_ACTIVE
- 
++#define EC_CMD_ENTERING_MODE 0x00B6
++
++struct ec_params_entering_mode {
++	int vboot_mode;
++} __ec_align4;
++
++#define VBOOT_MODE_NORMAL    0
++#define VBOOT_MODE_DEVELOPER 1
++#define VBOOT_MODE_RECOVERY  2
++
  /*****************************************************************************/
  /*
+  * HDMI CEC commands
 -- 
 2.21.0.1020.gf2820cf01a-goog
 
