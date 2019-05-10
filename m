@@ -1,120 +1,204 @@
-Return-Path: <SRS0=J6KI=TJ=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=s04x=TK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D258AC04AB3
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EF16C04AB1
+	for <linux-iio@archiver.kernel.org>; Fri, 10 May 2019 02:21:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9EE7B21744
-	for <linux-iio@archiver.kernel.org>; Thu,  9 May 2019 21:16:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C5DA32182B
+	for <linux-iio@archiver.kernel.org>; Fri, 10 May 2019 02:21:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="AUGxOu3D"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="umxrHH80"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727021AbfEIVOF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 May 2019 17:14:05 -0400
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:35082 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726682AbfEIVOE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 17:14:04 -0400
-Received: by mail-pf1-f196.google.com with SMTP id t87so1964915pfa.2
-        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 14:14:04 -0700 (PDT)
+        id S1726855AbfEJCVP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 May 2019 22:21:15 -0400
+Received: from mail-it1-f193.google.com ([209.85.166.193]:35446 "EHLO
+        mail-it1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726839AbfEJCVO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 May 2019 22:21:14 -0400
+Received: by mail-it1-f193.google.com with SMTP id u186so6741131ith.0
+        for <linux-iio@vger.kernel.org>; Thu, 09 May 2019 19:21:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=d/80tNNoqNchHETXJchLO/lOWqI7WgjPd5nso/co8eY=;
-        b=AUGxOu3DHNF8Z86pQz5bIBLujbaK2WibpbQN8fpI80OL1P03ICeh4AplsYpo0qFBRQ
-         r5uZOGgYhHqkAkBQk+TDLrEskDWUQKyqbOE1OL82v2vJPV8fy0aE9Fl+cumt3MStvrBm
-         Pr+Q2OMf5iZpkU1jtgjbGkbVs6J5r2IZzJJ5w=
+        d=konsulko.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4Tp3A1HqkaYqPPsTWL7+ahBUw9fqMa6q/M4oCRraR6I=;
+        b=umxrHH80RYhOBiTsV3B4M/Uxz4aTJ4aASrnbnYZ2YkvTegxriWRTYW+SIm+7Zsl+TF
+         mUe2veiyhK1Uc0+rjfEh1fqBxEAIzmiu0devtVTqPK5s2KBBzlhUCrWx2KRbgT+F9W4e
+         ivbhiGlUapMGm8J6hDw0Nk97aboVibHoboKvs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=d/80tNNoqNchHETXJchLO/lOWqI7WgjPd5nso/co8eY=;
-        b=Sz8IB7AKfvBDdxknAY47qgT1M89XbEnWe2NX4kTjYpLJWRgKdsn60BgWVkWzYTXI1P
-         ms4sBGrmy4fI66eapuE0TyHuYkrNKU3/ZFA8qMT+8aSH/Vhh+zh+ogQ68/1itZZyWhA4
-         KN8CV6dDky2qEB/KJMxBICkIL922mauo82H7Pbw/CIR5izpyrP+nNo/ReoxIZG2cHB6Y
-         UJuHFyls77vGzfP3V37AcAPPu+y27yFz76gxNFeu810S18k2QyGZQQ7DpjbqTgCLTw/Q
-         kJ+wq9AMRuanSSDJ7oVGh/OAzMDzVB315ZtjgjIbunull172Mf7z560hNs7Rta4CZsvw
-         04GA==
-X-Gm-Message-State: APjAAAVf3dUvLx8hQTPvzGhDcCwzG9696cWSvtjEnJylSOJfldehQQn3
-        l/B7Cr7A5sDhMarGsB1cD6RQvg==
-X-Google-Smtp-Source: APXvYqzyrCsBLpH98WnNvOPuqptMkqpqV1bnMw3nBAhqRCEzxFqDIvc2gG7qEY/DBoFVTYYkBzObvQ==
-X-Received: by 2002:a63:7c54:: with SMTP id l20mr5267168pgn.167.1557436444004;
-        Thu, 09 May 2019 14:14:04 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id l21sm5186810pff.40.2019.05.09.14.14.02
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Thu, 09 May 2019 14:14:03 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     enric.balletbo@collabora.com, bleung@chromium.org,
-        groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org,
-        broonie@kernel.org, cychiang@chromium.org, tiwai@suse.com
-Cc:     linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 01/30] mfd: cros_ec: Update license term
-Date:   Thu,  9 May 2019 14:13:24 -0700
-Message-Id: <20190509211353.213194-2-gwendal@chromium.org>
-X-Mailer: git-send-email 2.21.0.1020.gf2820cf01a-goog
-In-Reply-To: <20190509211353.213194-1-gwendal@chromium.org>
-References: <20190509211353.213194-1-gwendal@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4Tp3A1HqkaYqPPsTWL7+ahBUw9fqMa6q/M4oCRraR6I=;
+        b=tDAql2r/8TEiGx+g1ApVojUsAxQIFUWVJcE9Zk3T6qZEhsx9z9OsNU/LgBiqpw4B4z
+         10wJh8ae6rbX4T9ZE+Votxw0d55PaNZZaMRVyNN59sRmgOUQQp3T38Ty1dLzQr0Gq9DH
+         QUx/G4eKxLgvWsYSWZmWfuQkpzzVUftlbYNV9fO6AIMxnaUw18QOKsn6JjN26exx9OKG
+         6AqQimIyfrNBGjTJoOeopyXAo3t0f/fQyUeO5Dmr0+fygBH4nuXQdkboDzd1Kc2yp3YS
+         GSPJ8Ndhb2zOI/m8fPOC8VClmO/tSFT+aOYDt2dVgBKxrC08Po7ExPPiFsCM8azEKAUE
+         MDNg==
+X-Gm-Message-State: APjAAAWMkned60y5ay8TSIWFioFGEJbCU561HuayAmCD4x/ekvSg+PGC
+        L3jpX5vGW7obs4tPKxi5PqjGyczjpJrgckbJ6pzjZQ==
+X-Google-Smtp-Source: APXvYqxcmQLKLzTB/D743xQIshga/tSYISns0c8/zehIacxiLCb0Yfy8T0iBU5X5Fdf4Ep+YwUfwff/c08VbjwKhtNo=
+X-Received: by 2002:a24:c545:: with SMTP id f66mr5619946itg.114.1557454873514;
+ Thu, 09 May 2019 19:21:13 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <1557344128-690-1-git-send-email-eajames@linux.ibm.com>
+ <1557344128-690-3-git-send-email-eajames@linux.ibm.com> <CAJCx=gn0Yv+oP56HQQNm-9JbH2aoZuEQ-73b1grLTVNfbYsDsg@mail.gmail.com>
+ <5217daa3-4f43-0fce-5d1f-438f8c9e47bb@linux.vnet.ibm.com>
+In-Reply-To: <5217daa3-4f43-0fce-5d1f-438f8c9e47bb@linux.vnet.ibm.com>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Fri, 10 May 2019 10:21:02 +0800
+Message-ID: <CAJCx=gk3EwF_CTjVm=Ktx408iqcYUgZCSbZABXBSuGjfAjwXQw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/3] iio: dps310: Temperature measurement errata
+To:     Eddie James <eajames@linux.vnet.ibm.com>
+Cc:     Eddie James <eajames@linux.ibm.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>, joel@jms.id.au,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Christopher Bostic <cbostic@linux.vnet.ibm.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Update to SPDX-License-Identifier, GPL-2.0
+On Thu, May 9, 2019 at 11:17 PM Eddie James <eajames@linux.vnet.ibm.com> wrote:
+>
+>
+> On 5/8/19 10:09 PM, Matt Ranostay wrote:
+> > On Thu, May 9, 2019 at 3:36 AM Eddie James <eajames@linux.ibm.com> wrote:
+> >> From: Christopher Bostic <cbostic@linux.vnet.ibm.com>
+> >>
+> >> Add a manufacturer's suggested workaround to deal with early revisions
+> >> of chip that don't indicate correct temperature. Readings can be in the
+> >> ~60C range when they should be in the ~20's.
+> >>
+> >> Signed-off-by: Christopher Bostic <cbostic@linux.vnet.ibm.com>
+> >> Signed-off-by: Joel Stanley <joel@jms.id.au>
+> >> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> >> ---
+> >>   drivers/iio/pressure/dps310.c | 51 ++++++++++++++++++++++++++++++++++++++++++-
+> >>   1 file changed, 50 insertions(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+> >> index 7afaa88..c42808e 100644
+> >> --- a/drivers/iio/pressure/dps310.c
+> >> +++ b/drivers/iio/pressure/dps310.c
+> >> @@ -221,6 +221,9 @@ static bool dps310_is_writeable_reg(struct device *dev, unsigned int reg)
+> >>          case DPS310_MEAS_CFG:
+> >>          case DPS310_CFG_REG:
+> >>          case DPS310_RESET:
+> >> +       case 0x0e:
+> >> +       case 0x0f:
+> >> +       case 0x62:
+> > What is with the magic values? Are they not documented to what they
+> > are, and hence not defining enum values for them?
+> >
+> > - Matt
+>
+>
+> Thats correct. These don't show up in the data sheet so I left them as
+> raw values. Chris, do you know what the source for these values was?
 
-Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Acked-by: Benson Leung <bleung@chromium.org>
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- include/linux/mfd/cros_ec_commands.h | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+Please at least make a comment in the code stating as much.
 
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index dcec96f01879..48292d449921 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -1,25 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Host communication command constants for ChromeOS EC
-  *
-  * Copyright (C) 2012 Google, Inc
-  *
-- * This software is licensed under the terms of the GNU General Public
-- * License version 2, as published by the Free Software Foundation, and
-- * may be copied, distributed, and modified under those terms.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * The ChromeOS EC multi function device is used to mux all the requests
-- * to the EC device for its multiple features: keyboard controller,
-- * battery charging and regulator control, firmware update.
-- *
-- * NOTE: This file is copied verbatim from the ChromeOS EC Open Source
-- * project in an attempt to make future updates easy to make.
-+ * NOTE: This file is auto-generated from ChromeOS EC Open Source code from
-+ * https://chromium.googlesource.com/chromiumos/platform/ec/+/master/include/ec_commands.h
-  */
- 
-+/* Host communication command constants for Chrome EC */
-+
- #ifndef __CROS_EC_COMMANDS_H
- #define __CROS_EC_COMMANDS_H
- 
--- 
-2.21.0.1020.gf2820cf01a-goog
-
+- Matt
+>
+> Thanks,
+>
+> Eddie
+>
+>
+> >
+> >>                  return true;
+> >>          default:
+> >>                  return false;
+> >> @@ -237,6 +240,7 @@ static bool dps310_is_volatile_reg(struct device *dev, unsigned int reg)
+> >>          case DPS310_TMP_B1:
+> >>          case DPS310_TMP_B2:
+> >>          case DPS310_MEAS_CFG:
+> >> +       case 0x32:
+> >>                  return true;
+> >>          default:
+> >>                  return false;
+> >> @@ -314,7 +318,7 @@ static int dps310_read_raw(struct iio_dev *iio,
+> >>          .writeable_reg = dps310_is_writeable_reg,
+> >>          .volatile_reg = dps310_is_volatile_reg,
+> >>          .cache_type = REGCACHE_RBTREE,
+> >> -       .max_register = 0x29,
+> >> +       .max_register = 0x62,
+> >>   };
+> >>
+> >>   static const struct iio_info dps310_info = {
+> >> @@ -322,6 +326,47 @@ static int dps310_read_raw(struct iio_dev *iio,
+> >>          .write_raw = dps310_write_raw,
+> >>   };
+> >>
+> >> +/*
+> >> + * Some verions of chip will read temperatures in the ~60C range when
+> >> + * its actually ~20C. This is the manufacturer recommended workaround
+> >> + * to correct the issue.
+> >> + */
+> >> +static int dps310_temp_workaround(struct dps310_data *data)
+> >> +{
+> >> +       int r, reg;
+> >> +
+> >> +       r = regmap_read(data->regmap, 0x32, &reg);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >> +       /*
+> >> +        * If bit 1 is set then the device is okay, and the workaround does not
+> >> +        * need to be applied
+> >> +        */
+> >> +       if (reg & BIT(1))
+> >> +               return 0;
+> >> +
+> >> +       r = regmap_write(data->regmap, 0x0e, 0xA5);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >> +       r = regmap_write(data->regmap, 0x0f, 0x96);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >> +       r = regmap_write(data->regmap, 0x62, 0x02);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >> +       r = regmap_write(data->regmap, 0x0e, 0x00);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >> +       r = regmap_write(data->regmap, 0x0f, 0x00);
+> >> +
+> >> +       return r;
+> >> +}
+> >> +
+> >>   static int dps310_probe(struct i2c_client *client,
+> >>                          const struct i2c_device_id *id)
+> >>   {
+> >> @@ -383,6 +428,10 @@ static int dps310_probe(struct i2c_client *client,
+> >>          if (r < 0)
+> >>                  goto err;
+> >>
+> >> +       r = dps310_temp_workaround(data);
+> >> +       if (r < 0)
+> >> +               return r;
+> >> +
+> >>          r = devm_iio_device_register(&client->dev, iio);
+> >>          if (r)
+> >>                  goto err;
+> >> --
+> >> 1.8.3.1
+> >>
+>
