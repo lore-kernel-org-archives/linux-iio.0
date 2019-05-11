@@ -2,49 +2,53 @@ Return-Path: <SRS0=0vE5=TL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F85AC04AB1
-	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 11:44:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E921C04AB1
+	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 11:49:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 35E412173B
-	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 11:44:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 273BB2173B
+	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 11:49:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1557575063;
-	bh=MJR5ahSpUxEmKVrMcSMljJNXfuNHudskMOfEayiyHp8=;
+	s=default; t=1557575352;
+	bh=0bGRBAjOshAD95C4e1pSM8zt2quIj/Enze1DCLSbCQg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=t0gzIWjf8lkHvV1ICbtwcOAfQviNpgM0C5IiXff5SWELAXYRlPdxmQa7wzeVvXpPJ
-	 qUJnkSzjoGDmrb8IqFS2bRaxYrZIVdUP1IvfHROQFwPno51JBc5vkO2473COP7v3kd
-	 9EVg5Xdqy1Dw6pI5voFDrfvghGcpylzUWRT18Rs8=
+	b=lGqiysyEa1vXj9keCc2tp+JNhXrOpko6vEC8v9+wr6z5U8MzH7trHY6u5AVUuISh0
+	 PJhYvMCeX5zovQVmKUJMGp00tY9CIl7QnYlI7HLmRCo/9sQsBboEhVVkXVlBB1VUun
+	 NwPjPiEWh1TsrkrleFNs2LukAE8TXVV2iUnOB+kc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbfEKLoW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 11 May 2019 07:44:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35760 "EHLO mail.kernel.org"
+        id S1728552AbfEKLtL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 11 May 2019 07:49:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37474 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725861AbfEKLoW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 11 May 2019 07:44:22 -0400
+        id S1728526AbfEKLtL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 11 May 2019 07:49:11 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E70812146F;
-        Sat, 11 May 2019 11:44:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0B19C2146F;
+        Sat, 11 May 2019 11:49:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1557575061;
-        bh=MJR5ahSpUxEmKVrMcSMljJNXfuNHudskMOfEayiyHp8=;
+        s=default; t=1557575350;
+        bh=0bGRBAjOshAD95C4e1pSM8zt2quIj/Enze1DCLSbCQg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=oewwX8k9+PjdwOn12jMpcDGSb5520QQQk3AZ4D0ZAeN2prvzQ2BczCk8CDgryy6RA
-         7+x+4xcdwcDZiIt5diHd4KRWCtQcCVHbI4BhxhVQ7RO7WQnEJJ6VwIBEz6O9qSlQCh
-         Ir/BZ2c04iaGkuBn/stZN1lTUq+1o7NMpJCD0fXU=
-Date:   Sat, 11 May 2019 12:44:17 +0100
+        b=egYpDecqn9SOsfLFkpYLBblPdNLRD38lWcH0FThLOmE/f9BjIdVlQSwUlHwwh52w2
+         dE9NX7nMsBf4FhKQ0UE9eKmTBBRiqauxItM7czV2xU8NV4ibTxulK3sdMNG8xVFnG8
+         JwIBJ2MTAaD6Sd+XyuEE3aTgHFRWbXAgpOJsfLmQ=
+Date:   Sat, 11 May 2019 12:49:05 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Sean Nyekjaer <sean@geanix.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: adc: ti-ads8688: save values correct in buffer
-Message-ID: <20190511124417.1b5bbf23@archlinux>
-In-Reply-To: <20190507082304.11692-1-sean@geanix.com>
-References: <20190507082304.11692-1-sean@geanix.com>
+To:     Ruslan Babayev <ruslan@babayev.com>
+Cc:     Andrew Morton <akpm@linux-foundation.org>,
+        xe-linux-external@cisco.com, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: dac: ds4422/ds4424 fix chip verification
+Message-ID: <20190511124905.11d24e5b@archlinux>
+In-Reply-To: <20190505192438.2644-2-ruslan@babayev.com>
+References: <20190505192438.2644-2-ruslan@babayev.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -54,64 +58,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue,  7 May 2019 10:23:03 +0200
-Sean Nyekjaer <sean@geanix.com> wrote:
+On Sun,  5 May 2019 12:24:37 -0700
+Ruslan Babayev <ruslan@babayev.com> wrote:
 
-> Fill the read values in the buffer so we comply
-> with the given index values.
-Why?
+> The ds4424_get_value function takes channel number as it's 3rd
+> argument and translates it internally into I2C address using
+> DS4424_DAC_ADDR macro. The caller ds4424_verify_chip was passing an
+> already translated I2C address as its last argument.
+> 
+> Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
+> Cc: xe-linux-external@cisco.com
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-They are not supposed to always remain in the same place. If some channels
-are turned off then they will shift 'down'.  That has to happen in general
-to allow us to do more efficient packing when they happen to fit into a
-smaller power of 2 size.
-So if channels 0-3 (8 bits each) are enabled and timestamp, it should be
-
-0 1 2 3 X X X X Timestamp, 0 1 2 3 X X X X Timestamp..
-
-If no timestamp it should fall back to the packing
-0 1 2 3, 0 1 2 3
-
-If only channels 0, 1 and 3 we should get
-
-0 1 3 X, 0 1 3 X (padding to 32 bits)
-
-For only 0 and 3
-0 3, 0 3, 0 3
-
-For only 0
-0, 0, 0, 0, 0, 0 
+Thanks,
 
 Jonathan
 
-> 
-> Fixes: 2a86487786b5c ("iio: adc: ti-ads8688: add trigger and buffer support")
-> Signed-off-by: Sean Nyekjaer <sean@geanix.com>
 > ---
->  drivers/iio/adc/ti-ads8688.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
+>  drivers/iio/dac/ds4424.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-> index f9461070a74a..d9c354dbd7e4 100644
-> --- a/drivers/iio/adc/ti-ads8688.c
-> +++ b/drivers/iio/adc/ti-ads8688.c
-> @@ -387,13 +387,12 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	u16 buffer[ADS8688_MAX_CHANNELS + sizeof(s64)/sizeof(u16)];
-> -	int i, j = 0;
-> +	int bit;
+> diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+> index 2b3ba1a66fe8..ae9be792693b 100644
+> --- a/drivers/iio/dac/ds4424.c
+> +++ b/drivers/iio/dac/ds4424.c
+> @@ -166,7 +166,7 @@ static int ds4424_verify_chip(struct iio_dev *indio_dev)
+>  {
+>  	int ret, val;
 >  
-> -	for (i = 0; i < indio_dev->masklength; i++) {
-> -		if (!test_bit(i, indio_dev->active_scan_mask))
-> -			continue;
-> -		buffer[j] = ads8688_read(indio_dev, i);
-> -		j++;
-> +	memset(buffer, 0, sizeof(buffer));
-> +
-> +	for_each_set_bit(bit, indio_dev->active_scan_mask, indio_dev->masklength) {
-> +		buffer[bit] = ads8688_read(indio_dev, bit);
->  	}
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> -	ret = ds4424_get_value(indio_dev, &val, DS4424_DAC_ADDR(0));
+> +	ret = ds4424_get_value(indio_dev, &val, 0);
+>  	if (ret < 0)
+>  		dev_err(&indio_dev->dev,
+>  				"%s failed. ret: %d\n", __func__, ret);
 
