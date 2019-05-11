@@ -2,33 +2,61 @@ Return-Path: <SRS0=0vE5=TL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F286C04AB1
-	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 09:54:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 227EFC04AB1
+	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 09:58:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6F13E21479
-	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 09:54:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D39662173B
+	for <linux-iio@archiver.kernel.org>; Sat, 11 May 2019 09:58:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1557568700;
+	bh=w06xIIDrPLNrUYunIGSuFxnclJ9Ts8pgisvyPGIll0c=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=xpnPwE5ECOePGacmjFUu/h39ajR4thV54hLDGwKlSNRdnKecxHCdLS9Tx3+av0Of8
+	 1RyXC/IhHCn5TyADKp6ZrSjs27ViBjwppxQQZgUt7EtTXJOPNlPCNKNZDdWFTiVW7g
+	 eEZ9FE5p8IwdUvaCIct8JvXM9P8IqqHJ/wv22Zlk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728475AbfEKJyx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 11 May 2019 05:54:53 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:58070 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728465AbfEKJyx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 May 2019 05:54:53 -0400
+        id S1728450AbfEKJ6U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 11 May 2019 05:58:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51714 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726941AbfEKJ6U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 11 May 2019 05:58:20 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 717899E8F92;
-        Sat, 11 May 2019 10:54:52 +0100 (BST)
-Date:   Sat, 11 May 2019 10:54:50 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Angelo Compagnucci <angelo@amarulasolutions.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: mcp3422: fix of match table
-Message-ID: <20190511105450.544808d7@archlinux>
-In-Reply-To: <1557258335-9863-1-git-send-email-angelo@amarulasolutions.com>
-References: <1557258335-9863-1-git-send-email-angelo@amarulasolutions.com>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1620D21479;
+        Sat, 11 May 2019 09:58:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1557568699;
+        bh=w06xIIDrPLNrUYunIGSuFxnclJ9Ts8pgisvyPGIll0c=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=KpuAxiSrFCRO5aA7AgDmR6XNEY/HgQMzyfHQlLiLaqKhuXAve4OUfzRbsxkC9lgoo
+         u/KWxxXhC0NdI3bWI0AQ+Kfxm8DqpWmK0ppR3q+pBOeKkQK7DDyIvUC1u5+4tbpxef
+         pPvH/wpW2lxtd4V+kNlF6XUZ8GeqTyFZu7QD9EZA=
+Date:   Sat, 11 May 2019 10:58:12 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Philippe Schenker <dev@pschenker.ch>
+Cc:     linux-iio@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Marcel Ziswiler <marcel.ziswiler@toradex.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Max Krummenacher <max.krummenacher@toradex.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-kernel@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH 1/5] iio: stmpe-adc: Add compatible name
+Message-ID: <20190511105812.54f6d5f0@archlinux>
+In-Reply-To: <20190507143615.28477-1-dev@pschenker.ch>
+References: <20190507143615.28477-1-dev@pschenker.ch>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -38,42 +66,42 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue,  7 May 2019 21:45:35 +0200
-Angelo Compagnucci <angelo@amarulasolutions.com> wrote:
+On Tue,  7 May 2019 16:36:11 +0200
+Philippe Schenker <dev@pschenker.ch> wrote:
 
-> In order to support all the chip variants in dts, compatible should
-> explicitly list all the variants and not only the base one.
+> From: Philippe Schenker <philippe.schenker@toradex.com>
 > 
-> Signed-off-by: Angelo Compagnucci <angelo@amarulasolutions.com>
-These should have a manufacturer prefix.
-
-Note that the fallback path to the id_table will work anyway
-for these devices so whilst it is good to tidy this up there
-isn't any great urgency.
+> Add the compatible name to the driver so it gets loaded when the proper
+> node in DT is detected.
+> 
+> Signed-off-by: Philippe Schenker <philippe.schenker@toradex.com>
+Applied thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/mcp3422.c | 7 +++++++
->  1 file changed, 7 insertions(+)
 > 
-> diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
-> index 63de705..91d6be3 100644
-> --- a/drivers/iio/adc/mcp3422.c
-> +++ b/drivers/iio/adc/mcp3422.c
-> @@ -410,7 +410,14 @@ MODULE_DEVICE_TABLE(i2c, mcp3422_id);
->  
->  #ifdef CONFIG_OF
->  static const struct of_device_id mcp3422_of_match[] = {
-> +	{ .compatible = "mcp3421" },
->  	{ .compatible = "mcp3422" },
-> +	{ .compatible = "mcp3423" },
-> +	{ .compatible = "mcp3424" },
-> +	{ .compatible = "mcp3425" },
-> +	{ .compatible = "mcp3426" },
-> +	{ .compatible = "mcp3427" },
-> +	{ .compatible = "mcp3428" },
->  	{ }
+>  drivers/iio/adc/stmpe-adc.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
+> index 37f4b74a5d32..9ec338ba3440 100644
+> --- a/drivers/iio/adc/stmpe-adc.c
+> +++ b/drivers/iio/adc/stmpe-adc.c
+> @@ -354,9 +354,14 @@ static struct platform_driver stmpe_adc_driver = {
+>  		.pm	= &stmpe_adc_pm_ops,
+>  	},
 >  };
->  MODULE_DEVICE_TABLE(of, mcp3422_of_match);
+> -
+>  module_platform_driver(stmpe_adc_driver);
+>  
+> +static const struct of_device_id stmpe_adc_ids[] = {
+> +	{ .compatible = "st,stmpe-adc", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, stmpe_adc_ids);
+> +
+>  MODULE_AUTHOR("Stefan Agner <stefan.agner@toradex.com>");
+>  MODULE_DESCRIPTION("STMPEXXX ADC driver");
+>  MODULE_LICENSE("GPL v2");
 
