@@ -2,262 +2,149 @@ Return-Path: <SRS0=aqst=TN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9F2C04AB4
-	for <linux-iio@archiver.kernel.org>; Mon, 13 May 2019 14:53:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F7C6C04AA7
+	for <linux-iio@archiver.kernel.org>; Mon, 13 May 2019 17:25:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B1B632133F
-	for <linux-iio@archiver.kernel.org>; Mon, 13 May 2019 14:53:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0D792084A
+	for <linux-iio@archiver.kernel.org>; Mon, 13 May 2019 17:25:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1557768320;
+	bh=G9ZDQ0pq7E2jeMR/HvjaWEdYBVNcYdedZMTar4A/nvI=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=TF6rjNgZ3GwBZrlPxJirPipv23CntPJV/vixlVB65QVIJaiY9TmQ8t+VoAZU/g/LH
+	 Jwmrpu6rMGwTRTfiqPYNeKP/YrHhAX3qCmVvvViZuKQTLLl+mhq/gOU66JYTQPEnda
+	 Fab61oVXyQt/M4hsoDALhVvC1OAjsXPPaZ1VngDg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730959AbfEMOxx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 May 2019 10:53:53 -0400
-Received: from ch3vs02.rockwellcollins.com ([205.175.226.29]:24836 "EHLO
-        ch3vs02.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730958AbfEMOxw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 May 2019 10:53:52 -0400
-Received: from ofwch3n02.rockwellcollins.com (HELO ciulimr01.rockwellcollins.com) ([205.175.226.14])
-  by ch3vs02.rockwellcollins.com with ESMTP; 13 May 2019 09:53:52 -0500
-X-Received: from righttwix.rockwellcollins.com (righttwix.rockwellcollins.com [192.168.141.218])
-        by ciulimr01.rockwellcollins.com (Postfix) with ESMTP id 10189600E4;
-        Mon, 13 May 2019 09:53:52 -0500 (CDT)
-From:   Adam Michaelis <adam.michaelis@rockwellcollins.com>
-To:     linux-iio@vger.kernel.org
-Cc:     lars@metafoo.de, michael.hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com, charles-antoine.couret@essensium.com,
-        devicetree@vger.kernel.org, brandon.maier@rockwellcollins.com,
-        clayton.shotwell@rockwellcollins.com,
-        Adam Michaelis <adam.michaelis@rockwellcollins.com>
-Subject: [PATCH v3 4/5] iio: ad7949: Fix SPI interfacing for 14-bit messages
-Date:   Mon, 13 May 2019 09:53:04 -0500
-Message-Id: <1557759185-167857-4-git-send-email-adam.michaelis@rockwellcollins.com>
-X-Mailer: git-send-email 1.9.1
-In-Reply-To: <1557759185-167857-1-git-send-email-adam.michaelis@rockwellcollins.com>
-References: <1557759185-167857-1-git-send-email-adam.michaelis@rockwellcollins.com>
+        id S1726605AbfEMRZU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 May 2019 13:25:20 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:38902 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730184AbfEMRZU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 May 2019 13:25:20 -0400
+Received: by mail-oi1-f196.google.com with SMTP id u199so9957826oie.5;
+        Mon, 13 May 2019 10:25:19 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=d0iLbtZzmYoVAPbjQTYLL9twcU59loeNQIQfMnUhkqo=;
+        b=jkMD/vCP41ZPJwxochwBj3ilEHABK8bQTslIjQV77q5KT2PDcFt8Q44P07vKVEpsBh
+         08CUP+Fz28t7lJg7qOOKt7B5U/wb3FpDL6/V29tM4k0BgbpbhXcmeokxaotZx0at6tJD
+         69C94ZTrblS4bYOkWFO8Bs8IrACpMBXk0Hi3wEqJPUnkdxYu47wGK/LxnZPfyLxPlRQV
+         z/hRXMiZ5A59VwG1bbdqj1KXNg8Ft09LgnAotV5N/zrJFBgN6E27VSAR0G4JS10OqLpk
+         j+A5CQInlA8aIRNa2O9XfdLUHoDLzvMIrx4spYuFEz8TM1WAzigyVDqh6zSoDEuGw5eG
+         CdRw==
+X-Gm-Message-State: APjAAAX3rMQvGugBwkTdfwDIDS57nmcdBweETdVweHdw+uWU9Os5Cri/
+        Fa1O1n8aiJ0meTRudIxLSA==
+X-Google-Smtp-Source: APXvYqw6lh5d9lYMNWlfNBmVFNQ4Tdmmm6IISzTsWxcwNAQ5yJhaKXqyJCTgZjPekvsZEooxcbaP3w==
+X-Received: by 2002:aca:add3:: with SMTP id w202mr176421oie.126.1557768319223;
+        Mon, 13 May 2019 10:25:19 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id h64sm5358393oif.4.2019.05.13.10.25.18
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Mon, 13 May 2019 10:25:18 -0700 (PDT)
+Date:   Mon, 13 May 2019 12:25:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Subject: Re: [RFC][PATCH] dt-bindings: iio: accel: add adi,adxl345.yaml
+ binding
+Message-ID: <20190513172517.GA1637@bogus>
+References: <20190506114610.28083-1-alexandru.ardelean@analog.com>
+ <CAL_JsqL-jKM-qpawVoaLaqTpZhqNNFmgAOjv_azSwOU6zFS08g@mail.gmail.com>
+ <fdf60ff605e040ef24ae10c1e0b3b522de6ef9ab.camel@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fdf60ff605e040ef24ae10c1e0b3b522de6ef9ab.camel@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The AD7949 (but not the other two models supported by this driver) uses
-samples 14 bits wide. When attempting to communicate through certain SPI
-controllers that do not support word widths of 14, this fails. Adding
-logic to pack the 14-bit messages into the most-significant bits of a
-16-bit message or a 2-word 8-bit message for communication using more SPI
-bus controllers.
+On Mon, May 06, 2019 at 02:29:54PM +0000, Ardelean, Alexandru wrote:
+> On Mon, 2019-05-06 at 09:17 -0500, Rob Herring wrote:
+> > [External]
+> > 
+> > 
+> > On Mon, May 6, 2019 at 6:46 AM Alexandru Ardelean
+> > <alexandru.ardelean@analog.com> wrote:
+> > > 
+> > > This patch adds a YAML binding for the Analog Devices ADXL345 I2C/SPI
+> > > accelerometer.
+> > > 
+> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> > > ---
+> > > 
+> > > And now for the RFC part.
+> > > Normally, I would dig into source-code to try to figure this out, but
+> > > at
+> > > this point-in-time, I am low on time/energy to do this.
+> > > And maybe this helps trigger a discussion about this.
+> > > 
+> > > Apologies if this has been coverted on the devicetree mailing list, but
+> > > at least we'd get some coverage on the IIO list (with this).
+> > > 
+> > > The ADXL345 device (as others) supports both I2C & SPI interfaces.
+> > > 
+> > > Question1: do we write 2 YAML files, or 1 ? I was looking at Zephyr
+> > > (for
+> > > some ideas/reference) but it seems to me that the YAML DT binding
+> > > format is
+> > > different than this one ? They write 2 files for ADXL372 (1 for SPI, 1
+> > > for
+> > > I2C).
+> > > 
+> > > Question1-a: one thing is that SPI requires some props to be `required`
+> > > that would not be required for the I2C binding. This could be solved by
+> > > doing 2 files, but if doing 1 YAML file, is there a way to do
+> > > conditional
+> > > `required` ? i.e. property is required if `SPI` ? not sure how to check
+> > > for
+> > > SPI vs I2C, it would be interesting (at some point) to somehow enforce
+> > > SPI/I2C bindings correctness.
+> > 
+> > The challenge here is there's not really any way for the schema to
+> > know which bus it is. The only ways to know this are knowing all
+> > possible spi or i2c controller compatibles or using the parent node
+> > name (which hasn't been strictly enforced). In order to get this
+> > information available to the schema, we'd need to add the information
+> > to the node. We do this with '$nodename'. We could add a '$bus'
+> > property for example. The tools would have to understand different
+> > buses and things like I2C muxes complicate doing that.
+> > 
+> > Once you have something like $bus available, you could either have 2
+> > files with a custom 'select' that checks compatible and $bus or we
+> > could have 1 file using if/then/else keywords. However, we don't yet
+> > support if/then/else json-schema that was added in draft7, but that's
+> > being worked on by Maxime Ripard.
+> > 
+> > However, for this case, I'd just not worry about the issue. Really,
+> > spi-cpha and spi-cpol should not be required. If only 1 mode is
+> > supported, the driver can know that. IOW, it is implied by the
+> > compatible strings.
+> > 
+> > 
+> > > Question2: `make dt_binding_check` seems to generate only the first
+> > > example. Is this known behavior, or do I need to take something else
+> > > into
+> > > consideration ?
+> > 
+> > That's correct. I haven't figured out how to do a variable number of
+> > examples in kbuild.
+> 
+> Then, would it be fine to have multiple examples, and wait for this to pop-
+> in the YAML dt stuff at a later point in time ?
+> Or, just 1 example ?
 
-Only able to test with AD7949 part on Cadence SPI, but should support
-the 16-bit samples of the AD7682 and AD7689, as well.
+I've now fixed this by extracting each example into a sub-node in the 
+generated dts file, so multiple examples are fine now. The only 
+restriction is labels can't be repeated.
 
-Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
----
-	V2:
-	- Add some defines to reduce use of magic numbers.
-	V3:
-	- Use union for message buffer to keep messages word-aligned for
-	various word sizes.
-	- Calculate SPI bits-per-word once and use for logic throughout.
-	- Add logic to use SPI controller's bits-per-word field to make
-	the most use of the hardware's capabilities.
-	- Try to support SPI word widths of 16, 14, and 8 bits.
----
- drivers/iio/adc/ad7949.c | 115 +++++++++++++++++++++++++++++++++++------------
- 1 file changed, 87 insertions(+), 28 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index b648b1ab9559..d67033a008e5 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -78,10 +78,30 @@ struct ad7949_adc_chip {
- 	enum ad7949_ref_sel ref_sel;
- 	u8 resolution;
- 	u16 cfg;
-+	u8 bits_per_word;
- 	unsigned int current_channel;
--	u32 buffer ____cacheline_aligned;
-+	union {
-+		u32 buffer;
-+		u16 buf16[2];
-+		u8 buf8[4];
-+	} ____cacheline_aligned;
- };
- 
-+static void ad7949_set_bits_per_word(struct ad7949_adc_chip *ad7949_adc)
-+{
-+	/* Prefer messages that match the ADC's resolution */
-+	if (ad7949_adc->spi->controller->bits_per_word_mask &
-+			SPI_BPW_MASK(ad7949_adc->resolution))
-+		ad7949_adc->bits_per_word = ad7949_adc->resolution;
-+	/* Second choice is to pad 14-bit words to 16 */
-+	else if (ad7949_adc->spi->controller->bits_per_word_mask &
-+			SPI_BPW_MASK(16))
-+		ad7949_adc->bits_per_word = 16;
-+	/* Last resort, use 8-bit words */
-+	else
-+		ad7949_adc->bits_per_word = 8;
-+}
-+
- static bool ad7949_spi_cfg_is_read_back(struct ad7949_adc_chip *ad7949_adc)
- {
- 	if (!(ad7949_adc->cfg & AD7949_CFG_READBACK))
-@@ -90,39 +110,63 @@ static bool ad7949_spi_cfg_is_read_back(struct ad7949_adc_chip *ad7949_adc)
- 	return false;
- }
- 
--static int ad7949_spi_bits_per_word(struct ad7949_adc_chip *ad7949_adc)
-+static int ad7949_message_len(struct ad7949_adc_chip *ad7949_adc)
- {
--	int ret = ad7949_adc->resolution;
-+	int tx_len = 2;
- 
- 	if (ad7949_spi_cfg_is_read_back(ad7949_adc))
--		ret += AD7949_CFG_REG_SIZE_BITS;
-+		tx_len += 2;
- 
--	return ret;
-+	return tx_len;
- }
- 
- static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
- 				u16 mask)
- {
--	int ret;
--	int bits_per_word = ad7949_spi_bits_per_word(ad7949_adc);
--	int shift = bits_per_word - AD7949_CFG_REG_SIZE_BITS;
-+	int ret = 0;
-+	u16 tmp_cfg = 0;
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
- 			.tx_buf = &ad7949_adc->buffer,
--			.len = 4,
--			.bits_per_word = bits_per_word,
--		},
-+			.len = ad7949_message_len(ad7949_adc),
-+			.bits_per_word = ad7949_adc->bits_per_word,
-+		}
- 	};
- 
--	ad7949_adc->cfg = (val & mask) | (ad7949_adc->cfg & ~mask);
--	ad7949_adc->buffer = (ad7949_adc->cfg & AD7949_CFG_MASK_TOTAL) << shift;
-+	ad7949_adc->buffer = 0;
-+
-+	tmp_cfg = ((val & mask) | (ad7949_adc->cfg & ~mask)) &
-+		AD7949_CFG_MASK_TOTAL;
-+
-+	/* If no change, return */
-+	if (tmp_cfg == ad7949_adc->cfg)
-+		return 0;
-+
-+	ad7949_adc->cfg = tmp_cfg;
-+
-+	switch (ad7949_adc->bits_per_word) {
-+	case 16:
-+		ad7949_adc->buf16[0] = ad7949_adc->cfg << 2;
-+		break;
-+	case 14:
-+		ad7949_adc->buf16[0] = ad7949_adc->cfg;
-+		break;
-+	default: /* 8 */
-+		/* Pack 14-bit value into 2 bytes, MSB first */
-+		ad7949_adc->buf8[0] = FIELD_GET(GENMASK(13, 6), ad7949_adc->cfg);
-+		ad7949_adc->buf8[1] = FIELD_GET(GENMASK(5, 0), ad7949_adc->cfg);
-+		ad7949_adc->buf8[1] = ad7949_adc->buf8[1] << 2;
-+		break;
-+	}
-+
- 	spi_message_init_with_transfers(&msg, tx, 1);
-+
- 	ret = spi_sync(ad7949_adc->spi, &msg);
- 
- 	/*
--	 * This delay is to avoid a new request before the required time to
--	 * send a new command to the device
-+	 * This delay is to avoid a new request before the required
-+	 * time to send a new command to the device
- 	 */
- 	udelay(2);
- 
-@@ -149,17 +193,17 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 				   unsigned int channel)
- {
- 	int ret;
--	int bits_per_word = ad7949_spi_bits_per_word(ad7949_adc);
--	int mask = GENMASK(ad7949_adc->resolution, 0);
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
- 			.rx_buf = &ad7949_adc->buffer,
--			.len = 4,
--			.bits_per_word = bits_per_word,
--		},
-+			.len = ad7949_message_len(ad7949_adc),
-+			.bits_per_word = ad7949_adc->bits_per_word,
-+		}
- 	};
- 
-+	ad7949_adc->current_channel = channel;
-+
- 	ret = ad7949_spi_write_cfg(ad7949_adc,
- 				   FIELD_PREP(AD7949_CFG_CHAN_SEL, channel),
- 				   AD7949_CFG_CHAN_SEL);
-@@ -167,23 +211,37 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 		return ret;
- 
- 	ad7949_adc->buffer = 0;
-+
- 	spi_message_init_with_transfers(&msg, tx, 1);
-+
- 	ret = spi_sync(ad7949_adc->spi, &msg);
- 	if (ret)
- 		return ret;
- 
- 	/*
--	 * This delay is to avoid a new request before the required time to
--	 * send a new command to the device
-+	 * This delay is to avoid a new request before the required time
-+	 * to send a new command to the device.
- 	 */
- 	udelay(2);
- 
--	ad7949_adc->current_channel = channel;
--
--	if (ad7949_spi_cfg_is_read_back(ad7949_adc))
--		*val = (ad7949_adc->buffer >> AD7949_CFG_REG_SIZE_BITS) & mask;
--	else
--		*val = ad7949_adc->buffer & mask;
-+	switch (ad7949_adc->bits_per_word) {
-+	case 16:
-+		*val = ad7949_adc->buf16[0];
-+		/* Shift-out padding bits */
-+		if (ad7949_adc->resolution == 14)
-+			*val = *val >> 2;
-+		break;
-+	case 14:
-+		*val = ad7949_adc->buf16[0] & GENMASK(13, 0);
-+		break;
-+	default: /* 8 */
-+		/* Convert byte array to u16, MSB first */
-+		*val = (ad7949_adc->buf8[0] << 8) | ad7949_adc->buf8[1];
-+		/* Shift-out padding bits */
-+		if (ad7949_adc->resolution == 14)
-+			*val = *val >> 2;
-+		break;
-+	}
- 
- 	return 0;
- }
-@@ -334,6 +392,7 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 	spec = &ad7949_adc_spec[spi_get_device_id(spi)->driver_data];
- 	indio_dev->num_channels = spec->num_channels;
- 	ad7949_adc->resolution = spec->resolution;
-+	ad7949_set_bits_per_word(ad7949_adc);
- 
- 	ret = of_property_read_u32(ad7949_adc->indio_dev->dev.of_node,
- 			"adi,reference-select",
--- 
-1.9.1
-
+Rob
