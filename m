@@ -2,106 +2,144 @@ Return-Path: <SRS0=hvMU=TT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D0EEC04AB4
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20086C04AB4
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57A7A204EC
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E9A9B204EC
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1558286242;
-	bh=IU3z1lGeIXgWy+wPKVyg2cUICOUubab/isnFfeXG9XU=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=ylTXPJxRFanOq+fcS+278Fd7eVYBc2h4n/eq7IIfQN6RzgVxt1NfylTixanwPTyEw
-	 mcUq6tRvwcLWB17hptZ8c4fE/YOpdND0ohyhEHMMPvfavHbstsrGabmzCgF0SmaiIE
-	 p9/nmCtMw7DEdgD+LVcxW+nKkNWRYuMSLnmFXJUI=
+	s=default; t=1558286245;
+	bh=gmbAZO+BDOpBzqJYEGtOCuqP2GFL0t65d1w/4/mRNfc=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=PKx36sm4o7HqO8hYlBYVkwy1D76Ym5uUTwmDSKokPDreSHs1J6gCqMNxP9aYHQ9lW
+	 CKC8m7LJEMHheJyyl5DqXh4YIAsbhPgDiCyvZl2r73WY4nlOKTYElEmN+JNuuEz+Vo
+	 w45xlO1KAHI1WJuvUO1YoHIxh7hsLXzZQ/KXOV2U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727057AbfESRRW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726607AbfESRRW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 19 May 2019 13:17:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33020 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:33022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726607AbfESRRV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 May 2019 13:17:21 -0400
-Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        id S1727055AbfESRRW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 May 2019 13:17:22 -0400
+Received: from lore-desk-wlan.lan (unknown [151.66.17.19])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CE7D8217D9;
-        Sun, 19 May 2019 11:19:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 74CC721721;
+        Sun, 19 May 2019 08:58:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558264780;
-        bh=IU3z1lGeIXgWy+wPKVyg2cUICOUubab/isnFfeXG9XU=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=xkV07FOOaPmLt2IaWxZVVagvoCZ0zikunT4WzmMbDo9xzy15VXmHCEXzvGGdumDlz
-         vOMofUuC1QLHUW6W7N16CmDsGOH1H3tDlcbEGmJwD36d5D8gJevDWm/yvZ6/hfGkvB
-         9XoYoIAChIwFyKeIn97QB35zD1xgBY0jZ3zZnI7M=
-Date:   Sun, 19 May 2019 12:19:35 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?Sm/Do28=?= Seckler <joaoseckler@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad9832: Add device tree support
-Message-ID: <20190519121935.341fd173@archlinux>
-In-Reply-To: <20190518204825.4kh5qkqo2e5q2se6@smtp.gmail.com>
-References: <20190518204825.4kh5qkqo2e5q2se6@smtp.gmail.com>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        s=default; t=1558256318;
+        bh=gmbAZO+BDOpBzqJYEGtOCuqP2GFL0t65d1w/4/mRNfc=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=SBxNtntbNAjNBtOdARgC3DY1GbdiX+aLeO1Qh30LYsFa+PosIphbOVDuzILluFgNa
+         6rgDDBWOmBrCzeCozhbsqr7/ed2vl5cDUO+MgQFAZeDSmW2IWw2oOBNShAfOtXek7y
+         UaSgFIdblBfkqTSpBrfn9aqu+bRYt/p2q6ik1+Hg=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org
+Subject: [PATCH] iio: imu: st_lsm6dsx: fix PM support for st_lsm6dsx i2c controller
+Date:   Sun, 19 May 2019 10:58:23 +0200
+Message-Id: <a79978d7b8b9762954bf15cb205bada6dc66079a.1558256188.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <cover.1558256188.git.lorenzo@kernel.org>
+References: <cover.1558256188.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 18 May 2019 17:48:25 -0300
-Jo=C3=A3o Seckler <joaoseckler@gmail.com> wrote:
+Properly suspend/resume i2c slaves connected to st_lsm6dsx master
+controller if the CPU goes in suspended state
 
-> Add a of_device_id struct variable and subsequent call to
-> MODULE_DEVICE_TABLE macro to support device tree.
->=20
-> Signed-off-by: Jo=C3=A3o Seckler <joaoseckler@gmail.com>
-> Signed-off-by: Anderson Reis <andersonreisrosa@gmail.com>
-> Co-developed-by: Anderson Reis  <andersonreisrosa@gmail.com>
-> Signed-off-by: Andre Tadeu de Carvalho <andre.tadeu.de.carvalho@gmail.com>
-> Co-developed-by: Andre Tadeu de Carvalho <andre.tadeu.de.carvalho@gmail.c=
-om>
-Hi All,
+Fixes: c91c1c844ebd ("imu: st_lsm6dsx: add i2c embedded controller support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 25 +++++++++++++-------
+ 2 files changed, 19 insertions(+), 8 deletions(-)
 
-Missing the setting of the relevant entry in the spi_driver structure.
-Otherwise looks fine,
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/frequency/ad9832.c | 7 +++++++
->  1 file changed, 7 insertions(+)
->=20
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio=
-/frequency/ad9832.c
-> index 74308a2e72db..51e97c74c6b2 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -451,6 +451,13 @@ static int ad9832_remove(struct spi_device *spi)
->  	return 0;
->  }
-> =20
-> +static const struct of_device_id ad9832_of_match[] =3D {
-> +	{ .compatible =3D "adi,ad9832", },
-> +	{ .compatible =3D "adi,ad9835", },
-> +	{ /* sentinel */ },
-> +};
-> +MODULE_DEVICE_TABLE(of, ad9832_of_match);
-> +
->  static const struct spi_device_id ad9832_id[] =3D {
->  	{"ad9832", 0},
->  	{"ad9835", 0},
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 004a8a1a0027..6ef3577234a0 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -271,6 +271,7 @@ struct st_lsm6dsx_sensor {
+  * @conf_lock: Mutex to prevent concurrent FIFO configuration update.
+  * @page_lock: Mutex to prevent concurrent memory page configuration.
+  * @fifo_mode: FIFO operating mode supported by the device.
++ * @suspend_mask: Suspended sensor bitmask.
+  * @enable_mask: Enabled sensor bitmask.
+  * @ts_sip: Total number of timestamp samples in a given pattern.
+  * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
+@@ -288,6 +289,7 @@ struct st_lsm6dsx_hw {
+ 	struct mutex page_lock;
+ 
+ 	enum st_lsm6dsx_fifo_mode fifo_mode;
++	u8 suspend_mask;
+ 	u8 enable_mask;
+ 	u8 ts_sip;
+ 	u8 sip;
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index cf82c9049945..be5c87c8266d 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -1110,8 +1110,6 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
+ {
+ 	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
+ 	struct st_lsm6dsx_sensor *sensor;
+-	const struct st_lsm6dsx_reg *reg;
+-	unsigned int data;
+ 	int i, err = 0;
+ 
+ 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
+@@ -1122,12 +1120,16 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
+ 		if (!(hw->enable_mask & BIT(sensor->id)))
+ 			continue;
+ 
+-		reg = &st_lsm6dsx_odr_table[sensor->id].reg;
+-		data = ST_LSM6DSX_SHIFT_VAL(0, reg->mask);
+-		err = st_lsm6dsx_update_bits_locked(hw, reg->addr, reg->mask,
+-						    data);
++		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
++		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
++		    sensor->id == ST_LSM6DSX_ID_EXT2)
++			err = st_lsm6dsx_shub_set_enable(sensor, false);
++		else
++			err = st_lsm6dsx_sensor_set_enable(sensor, false);
+ 		if (err < 0)
+ 			return err;
++
++		hw->suspend_mask |= BIT(sensor->id);
+ 	}
+ 
+ 	if (hw->fifo_mode != ST_LSM6DSX_FIFO_BYPASS)
+@@ -1147,12 +1149,19 @@ static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
+ 			continue;
+ 
+ 		sensor = iio_priv(hw->iio_devs[i]);
+-		if (!(hw->enable_mask & BIT(sensor->id)))
++		if (!(hw->suspend_mask & BIT(sensor->id)))
+ 			continue;
+ 
+-		err = st_lsm6dsx_set_odr(sensor, sensor->odr);
++		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
++		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
++		    sensor->id == ST_LSM6DSX_ID_EXT2)
++			err = st_lsm6dsx_shub_set_enable(sensor, true);
++		else
++			err = st_lsm6dsx_sensor_set_enable(sensor, true);
+ 		if (err < 0)
+ 			return err;
++
++		hw->suspend_mask &= ~BIT(sensor->id);
+ 	}
+ 
+ 	if (hw->enable_mask)
+-- 
+2.21.0
 
