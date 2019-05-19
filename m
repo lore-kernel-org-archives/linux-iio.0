@@ -4,151 +4,142 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C0ABC04AB4
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC14CC04AB4
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:32:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 13659204EC
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:32:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C4973204EC
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:32:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1558287143;
-	bh=dGR6N7ZvzuuGo8eoxHjIzbtxefptEKX/vxuvQYCPVdk=;
+	s=default; t=1558287145;
+	bh=1zR31saxehPnsex0bI+S/uyzkj4IbV2AcviDgFyjyAY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Tp+a8cgjWuE0ryr+k/kH5uEFgBsl4fQ9iiOj1hefqPNN49jd5gO+nEKuTB7AMw5uL
-	 8G/pKdRa70jz1yTAOj3irw0BupHBGbQUxvauqMIaiybne2F5adkoittLjJnxN/+4gC
-	 0t79i+1FzHlKKYPnKxE2TyFvLtv0XG48u3HPLNq0=
+	b=rqCuwJ8uomG5jgFkMYlLBvOlTNjdymPvvtQ0x2aY1UeeA4dHlprbQGkjP3YdELSgp
+	 ibzNxtPLTAJ0uLqaBnqno3e0LzcmqxmUPW2+qu1B4BqQxIZOiAB911L9vQvWbAnEsT
+	 /UflBwwieD4eeevxA38ZxHbQ80dawtmFFBasmw0E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725769AbfESRcW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1727626AbfESRcW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 19 May 2019 13:32:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37308 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:37306 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727152AbfESRcW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727107AbfESRcW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 19 May 2019 13:32:22 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B8F882184E;
-        Sun, 19 May 2019 11:36:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9E78B214C6;
+        Sun, 19 May 2019 10:26:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558265810;
-        bh=dGR6N7ZvzuuGo8eoxHjIzbtxefptEKX/vxuvQYCPVdk=;
+        s=default; t=1558261606;
+        bh=1zR31saxehPnsex0bI+S/uyzkj4IbV2AcviDgFyjyAY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GRdleZAJ9gxdgTKz2jeJLdwCYju14otfLPfTyyv6sYThk3tFsx24QKJS1AjKgMEvy
-         fatbh0vzTjQl1WxU/9PxN554VZXbTLXN6lGyysMGuSTbwrquSalCLkbgmKq196wmiS
-         RBvurLKe1IBeZjgNreqpvvIm5l/p9VEIcGw4O1eE=
-Date:   Sun, 19 May 2019 12:36:46 +0100
+        b=QDQRfaND21P7wsMyDDuUyDGn8uC3Pd+MQ199hpzMvL0lcxzr920C+mKtU79wyWlil
+         9Xq2DQESYKE+4MAWJZVohn2oIWoMs7rMalAzuCPP6akKnwpMCa2bGWVTbW3GJ8i7Cz
+         Vck/q2rtdZDhVgBxcOZzXo4I8Yu0kAFxedvDCz3U=
+Date:   Sun, 19 May 2019 11:26:41 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: fix PM support for st_lsm6dsx i2c
- controller
-Message-ID: <20190519123646.3b05a0b5@archlinux>
-In-Reply-To: <a79978d7b8b9762954bf15cb205bada6dc66079a.1558256188.git.lorenzo@kernel.org>
-References: <cover.1558256188.git.lorenzo@kernel.org>
-        <a79978d7b8b9762954bf15cb205bada6dc66079a.1558256188.git.lorenzo@kernel.org>
+To:     =?UTF-8?B?QsOhcmJhcmE=?= Fernandes <barbara.fernandes@usp.br>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Wilson Sales <spoonm@spoonm.org>
+Subject: Re: [PATCH 2/2] staging: iio: cdc: ad7150: create macro for
+ capacitance channels
+Message-ID: <20190519112641.23f05287@archlinux>
+In-Reply-To: <20190518224136.16942-3-barbara.fernandes@usp.br>
+References: <20190518224136.16942-1-barbara.fernandes@usp.br>
+        <20190518224136.16942-3-barbara.fernandes@usp.br>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 19 May 2019 10:58:23 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Sat, 18 May 2019 19:41:36 -0300
+B=C3=A1rbara Fernandes <barbara.fernandes@usp.br> wrote:
 
-> Properly suspend/resume i2c slaves connected to st_lsm6dsx master
-> controller if the CPU goes in suspended state
-> 
-> Fixes: c91c1c844ebd ("imu: st_lsm6dsx: add i2c embedded controller support")
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+> Create macro for capacitance channels in order to remove the repeated
+> code and improve its readability.
+>=20
+> Signed-off-by: B=C3=A1rbara Fernandes <barbara.fernandes@usp.br>
+> Signed-off-by: Wilson Sales <spoonm@spoonm.org>
+> Co-developed-by: Wilson Sales <spoonm@spoonm.org>
+Not a totally clear cut case given there are only two instances, but
+I think, on balance that it is an improvement.
+
+As this isn't really connected to patch 1 in the series (or the fix
+going via the other tree) I'll apply this one now.  Please only
+send a new version of patch 1.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders (0-day etc) to see if they can find anything
+we have missed.
+
+Some time after those test results have come in, I'll push the tree
+out as togreg, and in a few weeks send a pull request to Greg to
+hopefully have it pulled into his tree which is part of Linux next
+and from which he will then send a pull request to Linus in the
+next merge window.
 
 Thanks,
 
 Jonathan
 
+
 > ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 25 +++++++++++++-------
->  2 files changed, 19 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index 004a8a1a0027..6ef3577234a0 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -271,6 +271,7 @@ struct st_lsm6dsx_sensor {
->   * @conf_lock: Mutex to prevent concurrent FIFO configuration update.
->   * @page_lock: Mutex to prevent concurrent memory page configuration.
->   * @fifo_mode: FIFO operating mode supported by the device.
-> + * @suspend_mask: Suspended sensor bitmask.
->   * @enable_mask: Enabled sensor bitmask.
->   * @ts_sip: Total number of timestamp samples in a given pattern.
->   * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
-> @@ -288,6 +289,7 @@ struct st_lsm6dsx_hw {
->  	struct mutex page_lock;
->  
->  	enum st_lsm6dsx_fifo_mode fifo_mode;
-> +	u8 suspend_mask;
->  	u8 enable_mask;
->  	u8 ts_sip;
->  	u8 sip;
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index cf82c9049945..be5c87c8266d 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -1110,8 +1110,6 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
->  {
->  	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
->  	struct st_lsm6dsx_sensor *sensor;
-> -	const struct st_lsm6dsx_reg *reg;
-> -	unsigned int data;
->  	int i, err = 0;
->  
->  	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-> @@ -1122,12 +1120,16 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
->  		if (!(hw->enable_mask & BIT(sensor->id)))
->  			continue;
->  
-> -		reg = &st_lsm6dsx_odr_table[sensor->id].reg;
-> -		data = ST_LSM6DSX_SHIFT_VAL(0, reg->mask);
-> -		err = st_lsm6dsx_update_bits_locked(hw, reg->addr, reg->mask,
-> -						    data);
-> +		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
-> +		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
-> +		    sensor->id == ST_LSM6DSX_ID_EXT2)
-> +			err = st_lsm6dsx_shub_set_enable(sensor, false);
-> +		else
-> +			err = st_lsm6dsx_sensor_set_enable(sensor, false);
->  		if (err < 0)
->  			return err;
+>  drivers/staging/iio/cdc/ad7150.c | 29 ++++++++++++-----------------
+>  1 file changed, 12 insertions(+), 17 deletions(-)
+>=20
+> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/a=
+d7150.c
+> index 072094227e1b..d8c43cabce25 100644
+> --- a/drivers/staging/iio/cdc/ad7150.c
+> +++ b/drivers/staging/iio/cdc/ad7150.c
+> @@ -468,24 +468,19 @@ static const struct iio_event_spec ad7150_events[] =
+=3D {
+>  	},
+>  };
+> =20
+> +#define AD7150_CAPACITANCE_CHAN(_chan)	{			\
+> +		.type =3D IIO_CAPACITANCE,			\
+> +		.indexed =3D 1,					\
+> +		.channel =3D _chan,				\
+> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |	\
+> +		BIT(IIO_CHAN_INFO_AVERAGE_RAW),			\
+> +		.event_spec =3D ad7150_events,			\
+> +		.num_event_specs =3D ARRAY_SIZE(ad7150_events),	\
+> +	}
 > +
-> +		hw->suspend_mask |= BIT(sensor->id);
->  	}
->  
->  	if (hw->fifo_mode != ST_LSM6DSX_FIFO_BYPASS)
-> @@ -1147,12 +1149,19 @@ static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
->  			continue;
->  
->  		sensor = iio_priv(hw->iio_devs[i]);
-> -		if (!(hw->enable_mask & BIT(sensor->id)))
-> +		if (!(hw->suspend_mask & BIT(sensor->id)))
->  			continue;
->  
-> -		err = st_lsm6dsx_set_odr(sensor, sensor->odr);
-> +		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
-> +		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
-> +		    sensor->id == ST_LSM6DSX_ID_EXT2)
-> +			err = st_lsm6dsx_shub_set_enable(sensor, true);
-> +		else
-> +			err = st_lsm6dsx_sensor_set_enable(sensor, true);
->  		if (err < 0)
->  			return err;
-> +
-> +		hw->suspend_mask &= ~BIT(sensor->id);
->  	}
->  
->  	if (hw->enable_mask)
+>  static const struct iio_chan_spec ad7150_channels[] =3D {
+> -	{
+> -		.type =3D IIO_CAPACITANCE,
+> -		.indexed =3D 1,
+> -		.channel =3D 0,
+> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
+> -		.event_spec =3D ad7150_events,
+> -		.num_event_specs =3D ARRAY_SIZE(ad7150_events),
+> -	}, {
+> -		.type =3D IIO_CAPACITANCE,
+> -		.indexed =3D 1,
+> -		.channel =3D 1,
+> -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> -		BIT(IIO_CHAN_INFO_AVERAGE_RAW),
+> -		.event_spec =3D ad7150_events,
+> -		.num_event_specs =3D ARRAY_SIZE(ad7150_events),
+> -	},
+> +	AD7150_CAPACITANCE_CHAN(0),
+> +	AD7150_CAPACITANCE_CHAN(1)
+>  };
+> =20
+>  /*
 
