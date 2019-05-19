@@ -6,53 +6,53 @@ X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B331C04AB4
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:37:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84FAEC04AB4
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:47:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 714ED20644
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:37:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BF5D20449
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1558287442;
-	bh=XzlTETSMrzArR830GrEOHizV3Tpk3ohasxsl/cG3kLo=;
+	s=default; t=1558288042;
+	bh=D7vV54mW1ZbMLbElOBW6ZJBZ/Fl6MX3yycwmL624yyg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=DHJMD7lkdvHfFG2kEVNqHAyAA8ghNfkv1iSXvKHh5VNfbBUhq8w71h9F4i49jXGsy
-	 EkkkBTyoC1Ce18jJjb3FQJ6RSbG+G53UWkfCgoSmiQIiWO7wYhJf0l0KBTiVE6WeoA
-	 7ciwXx1UiAn3hsoaozh5m+kBKnF9byKMdr/tT4zg=
+	b=oG0H0cy6yEZeTEuVvPBLjPe2+xp+UqCf7SSjugBuzLI1biFf4ROiDadHhUvjobJJh
+	 HcXiBfYzMZ02aM2QSUosQz8K1sVRadM91B1wc2brUPoi57mmMcYwjPm06cwU5GOhob
+	 4jACKxQmdvQgKClRBgW9UWg8BTuyFi+R1a6O66y8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726786AbfESRhW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 May 2019 13:37:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39214 "EHLO mail.kernel.org"
+        id S1727444AbfESRrW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 May 2019 13:47:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42876 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726472AbfESRhV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 May 2019 13:37:21 -0400
+        id S1726741AbfESRrV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 May 2019 13:47:21 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A0AE214D8;
-        Sun, 19 May 2019 10:29:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C9F14217D8;
+        Sun, 19 May 2019 11:12:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558261797;
-        bh=XzlTETSMrzArR830GrEOHizV3Tpk3ohasxsl/cG3kLo=;
+        s=default; t=1558264334;
+        bh=D7vV54mW1ZbMLbElOBW6ZJBZ/Fl6MX3yycwmL624yyg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HvjBcJ20xJPkYcnBZXtTexX3Q9oLp+na2+udcGibyOclGZLbFG+S8H1FXz3GXfioz
-         fnTjdd1L6Y2F18ct5mvA08pAi47sJ5rnZ9c+NYlnM+fRMj1Tsuh9hIQtxgKtnlT10y
-         YtkC1zvVFsgv2RmjxJmbjIbN4A4oKjRUrtPbzUss=
-Date:   Sun, 19 May 2019 11:29:52 +0100
+        b=ZkqwMO3FgTmFv69FrXPgZkjxdiur2yQ/jhav/Tq3PiVlcbsVj3ihIILET5UBX5LE1
+         GFF375/cdaKeSeAf91sByvBZ1jo0zsYnZJ33zIxCp6ez505nuGBJyOcUeDqLBuIEnm
+         kVLOYBNgqqJnL3JPG8z4w6m9ZmWl6B81VBzh309g=
+Date:   Sun, 19 May 2019 12:12:09 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Melissa Wen <melissa.srw@gmail.com>
+To:     Tallys Martins <tallysmartins@gmail.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Stefan Popa <stefan.popa@analog.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <21cnbao@gmail.com>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-usp@googlegroups.com
-Subject: Re: [PATCH] staging:iio:ad7150: fix threshold mode config bit
-Message-ID: <20190519112952.58142fb0@archlinux>
-In-Reply-To: <20190519010456.lwq7n2e6nkqa6niz@smtp.gmail.com>
-References: <20190519010456.lwq7n2e6nkqa6niz@smtp.gmail.com>
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.or, kernel-usp@googlegroups.com,
+        Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
+Subject: Re: [PATCH 1/2] staging: iio: ad2s1210: Destroy mutex at remove
+Message-ID: <20190519121209.71524d18@archlinux>
+In-Reply-To: <20190518221558.21799-1-tallysmartins@gmail.com>
+References: <20190518221558.21799-1-tallysmartins@gmail.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,82 +62,62 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 18 May 2019 22:04:56 -0300
-Melissa Wen <melissa.srw@gmail.com> wrote:
+On Sat, 18 May 2019 19:15:57 -0300
+Tallys Martins <tallysmartins@gmail.com> wrote:
 
-> According to the AD7150 configuration register description, bit 7 assumes
-> value 1 when the threshold mode is fixed and 0 when it is adaptive,
-> however, the operation that identifies this mode was considering the
-> opposite values.
+> Ensure the mutex will be destroyed on drive removal.
+> Also adds mutex comment description.
 > 
-> This patch renames the boolean variable to describe it correctly and
-> properly replaces it in the places where it is used.
-> 
-> Fixes: 531efd6aa0991 ("staging:iio:adc:ad7150: chan_spec conv + i2c_smbus commands + drop unused poweroff timeout control.")
-> Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+> Signed-off-by: Tallys Martins <tallysmartins@gmail.com>
+> Signed-off-by: Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
+> Co-developed-by: Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
+Hi.
 
-Looks good to me.  Applied to the fixes-togreg branch of iio.git pushed out as
-as testing-fixes for the autobuilders to see if they can find anything
-we have missed.
+This particular 'issue' is never a simple one.
+
+The destroy_mutex call is intended for lock debugging only,
+which is why there is devm_init_mutex or similar to allow for
+automatic unwinding. 
+
+It simple cleanup paths like this, it provides very little value
+and leads to a more complex unwind.
+
+It is for this reason that the vast majority of drivers simply
+don't bother.
+
+Hence, unless there is a good reason I'm missing I won't be
+introducing more of them.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/staging/iio/cdc/ad7150.c | 19 +++++++++++--------
->  1 file changed, 11 insertions(+), 8 deletions(-)
+>  drivers/staging/iio/resolver/ad2s1210.c | 4 +++-
+>  1 file changed, 3 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-> index dd7fcab8e19e..e075244c602b 100644
-> --- a/drivers/staging/iio/cdc/ad7150.c
-> +++ b/drivers/staging/iio/cdc/ad7150.c
-> @@ -5,6 +5,7 @@
->   * Copyright 2010-2011 Analog Devices Inc.
->   */
+> diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+> index b6be0bc202f5..b91cf57c5e57 100644
+> --- a/drivers/staging/iio/resolver/ad2s1210.c
+> +++ b/drivers/staging/iio/resolver/ad2s1210.c
+> @@ -86,7 +86,7 @@ static const struct ad2s1210_gpio gpios[] = {
+>  static const unsigned int ad2s1210_resolution_value[] = { 10, 12, 14, 16 };
 >  
-> +#include <linux/bitfield.h>
->  #include <linux/interrupt.h>
->  #include <linux/device.h>
->  #include <linux/kernel.h>
-> @@ -130,7 +131,7 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
+>  struct ad2s1210_state {
+> -	struct mutex lock;
+> +	struct mutex lock; /* lock to protect the state on r/w operations */
+>  	struct spi_device *sdev;
+>  	struct gpio_desc *gpios[5];
+>  	unsigned int fclkin;
+> @@ -689,8 +689,10 @@ static int ad2s1210_probe(struct spi_device *spi)
+>  static int ad2s1210_remove(struct spi_device *spi)
 >  {
->  	int ret;
->  	u8 threshtype;
-> -	bool adaptive;
-> +	bool thrfixed;
->  	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+>  	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct ad2s1210_state *ad2s1210_ad = iio_priv(indio_dev);
 >  
->  	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
-> @@ -138,21 +139,23 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
->  		return ret;
+>  	iio_device_unregister(indio_dev);
+> +	mutex_destroy(&ad2s1210_ad->lock);
 >  
->  	threshtype = (ret >> 5) & 0x03;
-> -	adaptive = !!(ret & 0x80);
-> +
-> +	/*check if threshold mode is fixed or adaptive*/
-> +	thrfixed = FIELD_GET(AD7150_CFG_FIX, ret);
->  
->  	switch (type) {
->  	case IIO_EV_TYPE_MAG_ADAPTIVE:
->  		if (dir == IIO_EV_DIR_RISING)
-> -			return adaptive && (threshtype == 0x1);
-> -		return adaptive && (threshtype == 0x0);
-> +			return !thrfixed && (threshtype == 0x1);
-> +		return !thrfixed && (threshtype == 0x0);
->  	case IIO_EV_TYPE_THRESH_ADAPTIVE:
->  		if (dir == IIO_EV_DIR_RISING)
-> -			return adaptive && (threshtype == 0x3);
-> -		return adaptive && (threshtype == 0x2);
-> +			return !thrfixed && (threshtype == 0x3);
-> +		return !thrfixed && (threshtype == 0x2);
->  	case IIO_EV_TYPE_THRESH:
->  		if (dir == IIO_EV_DIR_RISING)
-> -			return !adaptive && (threshtype == 0x1);
-> -		return !adaptive && (threshtype == 0x0);
-> +			return thrfixed && (threshtype == 0x1);
-> +		return thrfixed && (threshtype == 0x0);
->  	default:
->  		break;
->  	}
+>  	return 0;
+>  }
 
