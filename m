@@ -2,148 +2,231 @@ Return-Path: <SRS0=hvMU=TT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_NEOMUTT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12F69C04AAF
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 01:05:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA7EC04AB4
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 16:57:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CAA2620833
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 01:05:10 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pRUr/6Z6"
+	by mail.kernel.org (Postfix) with ESMTP id 746432082E
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 16:57:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1558285051;
+	bh=xIfjBwAnlTWBS0xxGQD5dBqlbiDtOuwak7rtI6d9ews=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=fKNpinhYfdMgtmX+yfprnPNkBTPCb5MxUgOUxV2sMWE0/pnL48ThGk9Op22IvUYHX
+	 ucTCzAIuIfi4jSR3Ah21Jc49VLIyfmvW4S4J2xWqKjmOT1EGXpAFDoDYcd2IghOtre
+	 Idb4r2jIezxAvyfXlJi4UyWJeYK7EbfesA6m14AI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbfESBFK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 May 2019 21:05:10 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:55193 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726790AbfESBFJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 May 2019 21:05:09 -0400
-Received: by mail-wm1-f65.google.com with SMTP id i3so9996783wml.4;
-        Sat, 18 May 2019 18:05:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=EQEfknT+Pvq496JYf3bTAv5KronZjseZKCaJZPgbjH0=;
-        b=pRUr/6Z6CuZgZtbgnrrOWcWxfnPOW69i939s1wdUmEar6q/feiA9XbLQlxHt3J9n7m
-         q39AhEelGr0lZVXGG6LlBBwjnQS2XHi419ZKgy/ySYKn2E4GihGe2UIlrJZngV36x8di
-         FfzUBvQuhGYCmk3XYDWedMeBbWXK1KuL3m6t+LTXTyBP+mUUMo5ddcYgHJMN0SOosfiF
-         RfaTIqHfVRP2x7ilKi62wfFIY26/cRZzIG55XENf4zL9WY59DI2sVR7hTXtYg3X0TJrt
-         Gj8yZmWSBSNE7PYbQhnNNbFvpeE7Zts5w1+O5xCeTbg6n8ojtMptXdz3lRB+yhCIy/CW
-         EFsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=EQEfknT+Pvq496JYf3bTAv5KronZjseZKCaJZPgbjH0=;
-        b=XIfKeE7DyY1TLJjq4x4vMWNG8xH6l8HU0b8mJFrYX3h3/UH6/YrwXfmM7azAUfFou+
-         Kgvhbo3TfeOwW0Ajzb+o2AtUpXyL+95Y4rqOzN5uXp3qaHDN0JRC/tZYMLfhLcKpWKBP
-         Fd532KbLEH/PLt+FjovLWxKZeYf3QkPot18PSiZnlQ/8058Ny3iWkNf8z7sugFSI1385
-         I/l7l65wtmJeT1KbuvU9gbBHpOZvZwJNkn6uO9bxYc7ABovVHXdsjOsCBNECgU0OgpY8
-         TlzDIv8K6ecwlfhTzljesXjBAxe2S2xFhkRZNg40sEsXSJcfQu0O44eQNVfAftYc43oF
-         X7Hw==
-X-Gm-Message-State: APjAAAUSlw7XTE55v7bnOPWTTzm+c7g7ko2KV/jnEMrAzlIjdPNkh0fm
-        n5ojL0jeCNDE10KbZddMMh4=
-X-Google-Smtp-Source: APXvYqyDyZ2OPbtG1vVkFrxQurfhlNIGM/0qiHcfFqPQZr9B1M1FERztOCTjLSZbuOaP8vskS+nTYQ==
-X-Received: by 2002:a1c:2104:: with SMTP id h4mr6868266wmh.146.1558227907595;
-        Sat, 18 May 2019 18:05:07 -0700 (PDT)
-Received: from smtp.gmail.com ([2001:818:dc0d:4d00:bee4:6ffd:a011:52a7])
-        by smtp.gmail.com with ESMTPSA id f2sm13553440wme.12.2019.05.18.18.05.05
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Sat, 18 May 2019 18:05:06 -0700 (PDT)
-Date:   Sat, 18 May 2019 22:04:56 -0300
-From:   Melissa Wen <melissa.srw@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Barry Song <21cnbao@gmail.com>
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: [PATCH] staging:iio:ad7150: fix threshold mode config bit
-Message-ID: <20190519010456.lwq7n2e6nkqa6niz@smtp.gmail.com>
+        id S1726040AbfESQ5W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 May 2019 12:57:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55166 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725769AbfESQ5W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 May 2019 12:57:22 -0400
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B90A22184C;
+        Sun, 19 May 2019 11:32:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558265534;
+        bh=xIfjBwAnlTWBS0xxGQD5dBqlbiDtOuwak7rtI6d9ews=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GPMTJt0OBU4YMg/nWSbx2+7UgvG3DnR4qCJII+CBIyI66geFnRx9GAkLjEYWAJ98v
+         dtRFiITp+iIsLVEhnO+T9MfoSz9mipx67cuXIQHAeV05mlu0Ky+HyNwFaYnCl/3xEA
+         kl6f+j19GOty2U876rxE1FXCZwbtDAwUSBDbOZCc=
+Date:   Sun, 19 May 2019 12:32:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Renato Lui Geh <renatogeh@gmail.com>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        stefan.popa@analog.com, alexandru.Ardelean@analog.com,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, kernel-usp@googlegroups.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: adc: add adi,ad7780.yaml binding
+Message-ID: <20190519123208.26c864ce@archlinux>
+In-Reply-To: <9992a318aec777b9b7788bb40d976aa89e5963fe.1558219042.git.renatogeh@gmail.com>
+References: <9992a318aec777b9b7788bb40d976aa89e5963fe.1558219042.git.renatogeh@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-According to the AD7150 configuration register description, bit 7 assumes
-value 1 when the threshold mode is fixed and 0 when it is adaptive,
-however, the operation that identifies this mode was considering the
-opposite values.
+On Sat, 18 May 2019 19:41:12 -0300
+Renato Lui Geh <renatogeh@gmail.com> wrote:
 
-This patch renames the boolean variable to describe it correctly and
-properly replaces it in the places where it is used.
+> This patch adds a YAML binding for the Analog Devices AD7780/1 and
+> AD7170/1 analog-to-digital converters.
+> 
+> Signed-off-by: Renato Lui Geh <renatogeh@gmail.com>
+One comment inline.  I'll also be needing an ack from Analog on this,
+preferably Michael's.
 
-Fixes: 531efd6aa0991 ("staging:iio:adc:ad7150: chan_spec conv + i2c_smbus commands + drop unused poweroff timeout control.")
-Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
----
- drivers/staging/iio/cdc/ad7150.c | 19 +++++++++++--------
- 1 file changed, 11 insertions(+), 8 deletions(-)
+Thanks,
 
-diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index dd7fcab8e19e..e075244c602b 100644
---- a/drivers/staging/iio/cdc/ad7150.c
-+++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -5,6 +5,7 @@
-  * Copyright 2010-2011 Analog Devices Inc.
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/interrupt.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
-@@ -130,7 +131,7 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
- {
- 	int ret;
- 	u8 threshtype;
--	bool adaptive;
-+	bool thrfixed;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 
- 	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
-@@ -138,21 +139,23 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
- 		return ret;
- 
- 	threshtype = (ret >> 5) & 0x03;
--	adaptive = !!(ret & 0x80);
-+
-+	/*check if threshold mode is fixed or adaptive*/
-+	thrfixed = FIELD_GET(AD7150_CFG_FIX, ret);
- 
- 	switch (type) {
- 	case IIO_EV_TYPE_MAG_ADAPTIVE:
- 		if (dir == IIO_EV_DIR_RISING)
--			return adaptive && (threshtype == 0x1);
--		return adaptive && (threshtype == 0x0);
-+			return !thrfixed && (threshtype == 0x1);
-+		return !thrfixed && (threshtype == 0x0);
- 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
- 		if (dir == IIO_EV_DIR_RISING)
--			return adaptive && (threshtype == 0x3);
--		return adaptive && (threshtype == 0x2);
-+			return !thrfixed && (threshtype == 0x3);
-+		return !thrfixed && (threshtype == 0x2);
- 	case IIO_EV_TYPE_THRESH:
- 		if (dir == IIO_EV_DIR_RISING)
--			return !adaptive && (threshtype == 0x1);
--		return !adaptive && (threshtype == 0x0);
-+			return thrfixed && (threshtype == 0x1);
-+		return thrfixed && (threshtype == 0x0);
- 	default:
- 		break;
- 	}
--- 
-2.20.1
+Jonathan
+> ---
+>  .../bindings/iio/adc/adi,ad7780.txt           | 48 -----------
+>  .../bindings/iio/adc/adi,ad7780.yaml          | 85 +++++++++++++++++++
+>  2 files changed, 85 insertions(+), 48 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
+> deleted file mode 100644
+> index 440e52555349..000000000000
+> --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7780.txt
+> +++ /dev/null
+> @@ -1,48 +0,0 @@
+> -* Analog Devices AD7170/AD7171/AD7780/AD7781
+> -
+> -Data sheets:
+> -
+> -- AD7170:
+> -	* https://www.analog.com/media/en/technical-documentation/data-sheets/AD7170.pdf
+> -- AD7171:
+> -	* https://www.analog.com/media/en/technical-documentation/data-sheets/AD7171.pdf
+> -- AD7780:
+> -	* https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
+> -- AD7781:
+> -	* https://www.analog.com/media/en/technical-documentation/data-sheets/AD7781.pdf
+> -
+> -Required properties:
+> -
+> -- compatible: should be one of
+> -	* "adi,ad7170"
+> -	* "adi,ad7171"
+> -	* "adi,ad7780"
+> -	* "adi,ad7781"
+> -- reg: spi chip select number for the device
+> -- vref-supply: the regulator supply for the ADC reference voltage
+> -
+> -Optional properties:
+> -
+> -- powerdown-gpios:  must be the device tree identifier of the PDRST pin. If
+> -		    specified, it will be asserted during driver probe. As the
+> -		    line is active high, it should be marked GPIO_ACTIVE_HIGH.
+> -- adi,gain-gpios:   must be the device tree identifier of the GAIN pin. Only for
+> -		    the ad778x chips. If specified, it will be asserted during
+> -		    driver probe. As the line is active low, it should be marked
+> -		    GPIO_ACTIVE_LOW.
+> -- adi,filter-gpios: must be the device tree identifier of the FILTER pin. Only
+> -		    for the ad778x chips. If specified, it will be asserted
+> -		    during driver probe. As the line is active low, it should be
+> -		    marked GPIO_ACTIVE_LOW.
+> -
+> -Example:
+> -
+> -adc@0 {
+> -	compatible =  "adi,ad7780";
+> -	reg =	      <0>;
+> -	vref-supply = <&vdd_supply>
+> -
+> -	powerdown-gpios  = <&gpio 12 GPIO_ACTIVE_HIGH>;
+> -	adi,gain-gpios   = <&gpio  5 GPIO_ACTIVE_LOW>;
+> -	adi,filter-gpios = <&gpio 15 GPIO_ACTIVE_LOW>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+> new file mode 100644
+> index 000000000000..931bc4f8ec04
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7780.yaml
+> @@ -0,0 +1,85 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,ad7780.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD7170/AD7171/AD7780/AD7781 analog to digital converters
+> +
+> +maintainers:
+> +  - Michael Hennerich <michael.hennerich@analog.com>
+> +
+> +description: |
+> +  The ad7780 is a sigma-delta analog to digital converter. This driver provides
+> +  reading voltage values and status bits from both the ad778x and ad717x series.
+> +  Its interface also allows writing on the FILTER and GAIN GPIO pins on the
+> +  ad778x.
+> +
+> +  Specifications on the converters can be found at:
+> +    AD7170:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7170.pdf
+> +    AD7171:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7171.pdf
+> +    AD7780:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/ad7780.pdf
+> +    AD7781:
+> +      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7781.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad7170
+> +      - adi,ad7171
+> +      - adi,ad7780
+> +      - adi,ad7781
+> +
+> +  reg:
+> +    description:
+> +      Chip select number for the device
+> +    maxItems: 1
+> +
+> +  vref-supply:
+> +    description:
+> +      The regulator supply for the ADC reference voltage
+> +    maxItems: 1
+> +
+> +  powerdown-gpios:
+> +    description:
+> +      Must be the device tree identifier of the PDRST pin. If
+> +      specified, it will be asserted during driver probe. As the
+> +      line is active high, it should be marked GPIO_ACTIVE_HIGH.
+> +    maxItems: 1
+> +
+> +  adi,gain-gpios:
+> +    description:
+> +      Must be the device tree identifier of the GAIN pin. Only for
+> +      the ad778x chips. If specified, it will be asserted during
+> +      driver probe. As the line is active low, it should be marked
+> +      GPIO_ACTIVE_LOW.
+> +    maxItems: 1
+> +
+> +  adi,filter-gpios:
+> +    description:
+> +      Must be the device tree identifier of the FILTER pin. Only
+> +      for the ad778x chips. If specified, it will be asserted
+> +      during driver probe. As the line is active low, it should be
+> +      marked GPIO_ACTIVE_LOW.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - vref-supply
+Is that actually true?  I'd imagine it'll use a stub regulator if
+it isn't supplied.
+
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    adc@0 {
+> +      compatible =  "adi,ad7780";
+> +      reg = <0>;
+> +      vref-supply = <&vdd_supply>;
+> +
+> +      powerdown-gpios  = <&gpio0 12 GPIO_ACTIVE_HIGH>;
+> +      adi,gain-gpios   = <&gpio1  5 GPIO_ACTIVE_LOW>;
+> +      adi,filter-gpios = <&gpio2 15 GPIO_ACTIVE_LOW>;
+> +    };
 
