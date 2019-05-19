@@ -2,57 +2,47 @@ Return-Path: <SRS0=hvMU=TT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-11.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98A6BC04AB4
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:52:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 625FCC04AB4
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 18:02:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6231E2053B
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:52:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D78A204FD
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 18:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1558288352;
-	bh=hpwbVfmn2fxc4zYpjdxBfzApp8qMJssloRB3VH4zxj4=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=af+P9/mKUMGwUHjO0Fb5DFGOb+PNY4XbGNOqkQCTQs0vs46nrLrrda9soM7hbizqJ
-	 2VI1dwZjyjTM0UaEo032bs+msiA+rksMGf9ax96YUYLvXSAtj2m5JnQ+CsXMvulhZx
-	 xKIQOyFD1gxbYYW/7sZzN1cXAYC7EyuFVYpux1d8=
+	s=default; t=1558288942;
+	bh=MH6yaW8P3uZYXI5QMYnL36st/AUkI/5A5wwVU55Yp/M=;
+	h=Date:From:To:Subject:List-ID:From;
+	b=WuUAO2Lda0+nqdxZL6wEQx3GDhpQ1uX53RvU3tB7yy95XYcSyCcYq6fPKMWBaAcaY
+	 uukpd5rLpOOgqeVef2ZEez8IVgca8EPJTSC9tdAFsxm+JUI+GcdUaR322CTPUf6JxH
+	 rtfH15TLCBJgwS7kwFa+IjqCjyYQw5tSNgOxDrxo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728531AbfESRwV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 May 2019 13:52:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44538 "EHLO mail.kernel.org"
+        id S1729488AbfESSCV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 May 2019 14:02:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725784AbfESRwV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 May 2019 13:52:21 -0400
+        id S1729314AbfESSCV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 May 2019 14:02:21 -0400
 Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1671A21734;
-        Sun, 19 May 2019 10:44:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 24E822082C;
+        Sun, 19 May 2019 08:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558262647;
-        bh=hpwbVfmn2fxc4zYpjdxBfzApp8qMJssloRB3VH4zxj4=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HcZRRlrOQijMKrZyA1qTt28Ejb7F7BqzkAs/QKXjwVJ06XeEIL5f4LgRLMLBLZ+Sx
-         pvSECfzmtq3JP1nSelueUiOlQzYJmpKMciv6P49U4jx252MSKR9uZN1W0o+z1hT981
-         WwOZ6rLU/SLcZKkq5HCn69jbmuUVTfRaA0FpH5ew=
-Date:   Sun, 19 May 2019 11:44:00 +0100
+        s=default; t=1558254841;
+        bh=MH6yaW8P3uZYXI5QMYnL36st/AUkI/5A5wwVU55Yp/M=;
+        h=Date:From:To:Subject:From;
+        b=Nojc7xRZ9uvV1CYQena1zCOHSw93jLKPGPZnE1ke418X6XxWj2m5U9Klayt/YNMhZ
+         zFhtBCRvYGLxTXaT1cSEMGqvsQZ4OgOxNmECJtGqKpse6AkahspVJnwMVkKxcCCC5w
+         vaTUF0dGBikfTuxceJLK2SiGdu9kATawCzOiPx2s=
+Date:   Sun, 19 May 2019 09:33:56 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?QsOhcmJhcmE=?= Fernandes <barbara.fernandes@usp.br>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Wilson Sales <spoonm@spoonm.org>
-Subject: Re: [RESEND PATCH] staging: iio: adt7316: create of_device_id array
-Message-ID: <20190519114400.5cc29c77@archlinux>
-In-Reply-To: <20190518224333.18067-1-barbara.fernandes@usp.br>
-References: <20190518224333.18067-1-barbara.fernandes@usp.br>
+To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] First set of IIO fixes for the 5.2 cycle.
+Message-ID: <20190519093356.4703119a@archlinux>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -62,55 +52,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 18 May 2019 19:43:33 -0300
-B=C3=A1rbara Fernandes <barbara.fernandes@usp.br> wrote:
+The following changes since commit 131ac62253dba79daf4a6d83ab12293d2b9863d3:
 
-> Create structure of type of_device_id in order to register all devices
-> the driver is able to manage.
->=20
-> Signed-off-by: B=C3=A1rbara Fernandes <barbara.fernandes@usp.br>
-> Signed-off-by: Wilson Sales <spoonm@spoonm.org>
-> Co-developed-by: Wilson Sales <spoonm@spoonm.org>
-Looks good to me.
+  staging: most: core: use device description as name (2019-04-02 20:23:07 =
++0200)
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+are available in the Git repository at:
 
-Thanks,
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixe=
+s-for-5.2a
 
-Jonathan
+for you to fetch changes up to e6d12298310fa1dc11f1d747e05b168016057fdd:
 
-> ---
->  drivers/staging/iio/addac/adt7316-spi.c | 13 +++++++++++++
->  1 file changed, 13 insertions(+)
->=20
-> diff --git a/drivers/staging/iio/addac/adt7316-spi.c b/drivers/staging/ii=
-o/addac/adt7316-spi.c
-> index 8294b9c1e3c2..9968775f1d23 100644
-> --- a/drivers/staging/iio/addac/adt7316-spi.c
-> +++ b/drivers/staging/iio/addac/adt7316-spi.c
-> @@ -127,9 +127,22 @@ static const struct spi_device_id adt7316_spi_id[] =
-=3D {
-> =20
->  MODULE_DEVICE_TABLE(spi, adt7316_spi_id);
-> =20
-> +static const struct of_device_id adt7316_of_spi_match[] =3D {
-> +	{ .compatible =3D "adi,adt7316" },
-> +	{ .compatible =3D "adi,adt7317" },
-> +	{ .compatible =3D "adi,adt7318" },
-> +	{ .compatible =3D "adi,adt7516" },
-> +	{ .compatible =3D "adi,adt7517" },
-> +	{ .compatible =3D "adi,adt7519" },
-> +	{ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, adt7316_of_spi_match);
-> +
->  static struct spi_driver adt7316_driver =3D {
->  	.driver =3D {
->  		.name =3D "adt7316",
-> +		.of_match_table =3D adt7316_of_spi_match,
->  		.pm =3D ADT7316_PM_OPS,
->  	},
->  	.probe =3D adt7316_spi_probe,
+  iio: adc: ti-ads8688: fix timestamp is not updated in buffer (2019-05-11 =
+12:50:18 +0100)
 
+----------------------------------------------------------------
+First set of IIO fixes for the 5.2 cycle.
+
+* ads124
+  - Avoid a buffer overrun when setting an array to 0.
+* ads8688
+  - Don't use the pollfunc timestamp as it isn't set and would be wrong
+    anyway for a device that does sampling on demand.
+* ds4422
+  - Fix masking on register used for chip verification. Wrong address
+    was being read.
+* mpu6050
+  - Fix the fifo layout for ICM20602 to avoid underreading and hence failure
+    to move on to the next record in the fifo.
+* NPCM ADC
+  - Make sure there is actually a valid regulator before reading its voltag=
+e.
+
+----------------------------------------------------------------
+Ruslan Babayev (1):
+      iio: dac: ds4422/ds4424 fix chip verification
+
+Sean Nyekjaer (1):
+      iio: adc: ti-ads8688: fix timestamp is not updated in buffer
+
+Steve Moskovchenko (1):
+      iio: imu: mpu6050: Fix FIFO layout for ICM20602
+
+Tomer Maimon (1):
+      iio: adc: modify NPCM ADC read reference voltage
+
+Vincent Stehl=C3=A9 (1):
+      iio: adc: ads124: avoid buffer overflow
+
+ drivers/iio/adc/npcm_adc.c                 |  2 +-
+ drivers/iio/adc/ti-ads124s08.c             |  2 +-
+ drivers/iio/adc/ti-ads8688.c               |  2 +-
+ drivers/iio/dac/ds4424.c                   |  2 +-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 46 ++++++++++++++++++++++++++=
++---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 20 ++++++++++++-
+ drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c |  3 ++
+ 7 files changed, 68 insertions(+), 9 deletions(-)
