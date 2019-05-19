@@ -2,144 +2,158 @@ Return-Path: <SRS0=hvMU=TT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20086C04AB4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BBFC072AD
 	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E9A9B204EC
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8B441204EC
+	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 17:17:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1558286245;
-	bh=gmbAZO+BDOpBzqJYEGtOCuqP2GFL0t65d1w/4/mRNfc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=PKx36sm4o7HqO8hYlBYVkwy1D76Ym5uUTwmDSKokPDreSHs1J6gCqMNxP9aYHQ9lW
-	 CKC8m7LJEMHheJyyl5DqXh4YIAsbhPgDiCyvZl2r73WY4nlOKTYElEmN+JNuuEz+Vo
-	 w45xlO1KAHI1WJuvUO1YoHIxh7hsLXzZQ/KXOV2U=
+	bh=kk7r638p7yvAE0YxJCe0oCbhN7riRAph/7kkz1bmEeM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=G5DB9nnRSlXU1zGoxbGL/1Nypmt522GfYAowyOgv1WXagFhFK0xzdItf7G7Cqq9r2
+	 7ARDan/asNSPuunh8YxRPwE4ngdjVR0il7A86yHmkbM0dktN5RbB8m9JPYkEIkbEqD
+	 NUdrwXDwqFPSOI1Okkqt5yO2qtZgXPH0j3jo+CYA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726607AbfESRRW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 May 2019 13:17:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33022 "EHLO mail.kernel.org"
+        id S1727055AbfESRRY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 May 2019 13:17:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33018 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727055AbfESRRW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726066AbfESRRW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 19 May 2019 13:17:22 -0400
-Received: from lore-desk-wlan.lan (unknown [151.66.17.19])
+Received: from archlinux (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 74CC721721;
-        Sun, 19 May 2019 08:58:37 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AA1F217F5;
+        Sun, 19 May 2019 11:17:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1558256318;
-        bh=gmbAZO+BDOpBzqJYEGtOCuqP2GFL0t65d1w/4/mRNfc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SBxNtntbNAjNBtOdARgC3DY1GbdiX+aLeO1Qh30LYsFa+PosIphbOVDuzILluFgNa
-         6rgDDBWOmBrCzeCozhbsqr7/ed2vl5cDUO+MgQFAZeDSmW2IWw2oOBNShAfOtXek7y
-         UaSgFIdblBfkqTSpBrfn9aqu+bRYt/p2q6ik1+Hg=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH] iio: imu: st_lsm6dsx: fix PM support for st_lsm6dsx i2c controller
-Date:   Sun, 19 May 2019 10:58:23 +0200
-Message-Id: <a79978d7b8b9762954bf15cb205bada6dc66079a.1558256188.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.21.0
-In-Reply-To: <cover.1558256188.git.lorenzo@kernel.org>
-References: <cover.1558256188.git.lorenzo@kernel.org>
+        s=default; t=1558264672;
+        bh=kk7r638p7yvAE0YxJCe0oCbhN7riRAph/7kkz1bmEeM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=0LSy+rgdh4FHVrxV9GcVitq8XOzwAwQYX9mTWsESHPD/nGK/savNTYKIY20exl5Ij
+         Ub6lO/d5LOPdn+uDhnNv5uoqglkfAZDJkrPGz1guXv8MSaiGvndddLB0+zIC6IxqfP
+         IDF6+FiHcWjEGB9uVJQ9hGTPosy2Tdnzz8+3hCMc=
+Date:   Sun, 19 May 2019 12:17:47 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tallys Martins <tallysmartins@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.or, kernel-usp@googlegroups.com,
+        Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
+Subject: Re: [PATCH 2/2] staging: iio: ad2s1210: Add devicetree yaml doc
+Message-ID: <20190519121747.0e7b5824@archlinux>
+In-Reply-To: <20190518221558.21799-2-tallysmartins@gmail.com>
+References: <20190518221558.21799-1-tallysmartins@gmail.com>
+        <20190518221558.21799-2-tallysmartins@gmail.com>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Properly suspend/resume i2c slaves connected to st_lsm6dsx master
-controller if the CPU goes in suspended state
+On Sat, 18 May 2019 19:15:58 -0300
+Tallys Martins <tallysmartins@gmail.com> wrote:
 
-Fixes: c91c1c844ebd ("imu: st_lsm6dsx: add i2c embedded controller support")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 25 +++++++++++++-------
- 2 files changed, 19 insertions(+), 8 deletions(-)
+> The driver currently has no devicetree documentation. This commit adds a
+> devicetree folder and documentation for it. Documentation must be moved
+> as well when the driver gets out of staging.
+> 
+> Signed-off-by: Tallys Martins <tallysmartins@gmail.com>
+> Signed-off-by: Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
+> Co-developed-by: Souza Guilherme <gdsdsilva@inf.ufpel.edu.br>
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 004a8a1a0027..6ef3577234a0 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -271,6 +271,7 @@ struct st_lsm6dsx_sensor {
-  * @conf_lock: Mutex to prevent concurrent FIFO configuration update.
-  * @page_lock: Mutex to prevent concurrent memory page configuration.
-  * @fifo_mode: FIFO operating mode supported by the device.
-+ * @suspend_mask: Suspended sensor bitmask.
-  * @enable_mask: Enabled sensor bitmask.
-  * @ts_sip: Total number of timestamp samples in a given pattern.
-  * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
-@@ -288,6 +289,7 @@ struct st_lsm6dsx_hw {
- 	struct mutex page_lock;
+Hi,
+
+There is no need for a direct relationship between a binding and a driver
+at all. As such, we normally don't take binding documents in staging.
+
+Just put it directly in it's final destination.  The driver can catch
+up with it later!
+
+I'm still not that comfortable with yaml (haven't gotten around
+to doing any conversions myself yet) so I'll be looking for additional
+review on these from others.
+
+A few comments inline.
+
+> ---
+>  .../Documentation/devicetree/ad2s1210.yaml    | 41 +++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+>  create mode 100644 drivers/staging/iio/Documentation/devicetree/ad2s1210.yaml
+> 
+> diff --git a/drivers/staging/iio/Documentation/devicetree/ad2s1210.yaml b/drivers/staging/iio/Documentation/devicetree/ad2s1210.yaml
+> new file mode 100644
+> index 000000000000..733aa07b4626
+> --- /dev/null
+> +++ b/drivers/staging/iio/Documentation/devicetree/ad2s1210.yaml
+> @@ -0,0 +1,41 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/iio/ad2s1210.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: |
+> +  Analog Devices Inc. AD2S1210 10-Bit to 16-Bit R/D Converters
+> +
+> +maintainers:
+> +  - Graff Yang <graff.yang@gmail.com>
+I would check that one with the Analog devices team.
+
+> +
+> +description: |
+> +  Analog Devices AD2S1210 Resolver to Digital SPI driver
+> +
+> +  https://www.analog.com/en/products/ad2s1210.html
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad2s1210
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clock-frequency:
+> +    minimum: 2000
+> +    maximum: 20000
+> +    default: 8192
+This doesn't look like a modern clock binding.
+If we are going to end up changing this, then we should probably delay
+having a binding doc until after that change is made.
+
+We often only do binding docs for drivers in staging just before moving
+them out so as to avoid this sort of issue.
  
- 	enum st_lsm6dsx_fifo_mode fifo_mode;
-+	u8 suspend_mask;
- 	u8 enable_mask;
- 	u8 ts_sip;
- 	u8 sip;
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index cf82c9049945..be5c87c8266d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -1110,8 +1110,6 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
- {
- 	struct st_lsm6dsx_hw *hw = dev_get_drvdata(dev);
- 	struct st_lsm6dsx_sensor *sensor;
--	const struct st_lsm6dsx_reg *reg;
--	unsigned int data;
- 	int i, err = 0;
- 
- 	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-@@ -1122,12 +1120,16 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
- 		if (!(hw->enable_mask & BIT(sensor->id)))
- 			continue;
- 
--		reg = &st_lsm6dsx_odr_table[sensor->id].reg;
--		data = ST_LSM6DSX_SHIFT_VAL(0, reg->mask);
--		err = st_lsm6dsx_update_bits_locked(hw, reg->addr, reg->mask,
--						    data);
-+		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
-+		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
-+		    sensor->id == ST_LSM6DSX_ID_EXT2)
-+			err = st_lsm6dsx_shub_set_enable(sensor, false);
-+		else
-+			err = st_lsm6dsx_sensor_set_enable(sensor, false);
- 		if (err < 0)
- 			return err;
-+
-+		hw->suspend_mask |= BIT(sensor->id);
- 	}
- 
- 	if (hw->fifo_mode != ST_LSM6DSX_FIFO_BYPASS)
-@@ -1147,12 +1149,19 @@ static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
- 			continue;
- 
- 		sensor = iio_priv(hw->iio_devs[i]);
--		if (!(hw->enable_mask & BIT(sensor->id)))
-+		if (!(hw->suspend_mask & BIT(sensor->id)))
- 			continue;
- 
--		err = st_lsm6dsx_set_odr(sensor, sensor->odr);
-+		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
-+		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
-+		    sensor->id == ST_LSM6DSX_ID_EXT2)
-+			err = st_lsm6dsx_shub_set_enable(sensor, true);
-+		else
-+			err = st_lsm6dsx_sensor_set_enable(sensor, true);
- 		if (err < 0)
- 			return err;
-+
-+		hw->suspend_mask &= ~BIT(sensor->id);
- 	}
- 
- 	if (hw->enable_mask)
--- 
-2.21.0
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +  resolver@0 {
+> +    compatible = "adi,ad2s1210";
+> +    reg = <0>;
+An example is probably more useful if it includes all the optional properties
+as well.
+> +  };
+> +...
+
+Thanks,
+
+Jonathan
 
