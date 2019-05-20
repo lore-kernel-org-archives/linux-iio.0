@@ -1,108 +1,117 @@
-Return-Path: <SRS0=hvMU=TT=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=+Kw+=TU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 49E12C04AB4
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 18:43:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9AFFC04AAF
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 06:03:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1744220578
-	for <linux-iio@archiver.kernel.org>; Sun, 19 May 2019 18:43:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QtBju1AY"
+	by mail.kernel.org (Postfix) with ESMTP id 86CAE20815
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 06:03:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728787AbfESSnl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 May 2019 14:43:41 -0400
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:45919 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726090AbfESSnl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 May 2019 14:43:41 -0400
-Received: by mail-pl1-f196.google.com with SMTP id a5so5626664pls.12;
-        Sun, 19 May 2019 11:43:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=6m7D+bu1zYRC0v/E1KNNwrtOsTcyu17DCNJXsbLJmfY=;
-        b=QtBju1AYMkQXi6pcqrAXtCcB3Sp/497azLfG5iatmvikg/hpypk2TcDmAtx+Z+4YPd
-         31H5wfz0LeIcfCoMVFRbwUIkU0WGIJeI8sNGvwcc4kvRYgSwSWie+IVyTdoHY/F164p0
-         sqEBBaNq7nb/LLo604WIIUp3qXVos2Eczj/1G7iaYgKX+7NAgxsP0PlZs34Q7XYlS0P4
-         8AX4izF6LRoahsmLnUKEyd+OCt3Fsi5Vpl4hKdMyOpO7D1sRNhh0ZLsViv4ArLO0Dzj5
-         GuUSkaOBeqg21lpGs+vH8rOeYE2+nTzdthBBFgg9gGFUu0ibmaK/zP9SWCN82qQWmvt/
-         wn2w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=6m7D+bu1zYRC0v/E1KNNwrtOsTcyu17DCNJXsbLJmfY=;
-        b=Mv+UiuoPkvYxTPDnl9BbCnqTtn0XqMsWCiTtYfjFr31IKxPj2M/dqaPHjoGG9/tNXG
-         bdU6y1ak4tNg2YzXiT/pshFHl9c0KdUt3rJQESgcGVgZalhSABP8t1MMVowpRJ+TjT4v
-         XBL42l6u9iXbqVmvKC86Bz2v8YeCh8q8q94H5npkCaFQvFR+1S9U8XY8FH4ZotQ2lXI2
-         fOCZ1nIEpTAn5EFbaVlbqG1a+I0hT9L7iRxAoKzc7diq7lypXcpu7IWYZIsRac6nCicD
-         hFBQ0WVqwG2jY7aVUv+4xqWyLRAkHnzZBgOuxd6l8ueQEAth70Ow1qzqXcvdqPV6YIp8
-         U6cQ==
-X-Gm-Message-State: APjAAAUeff62E/otr5mETwBX23s5rHOJ7eVP8H+MNHEIRicsRDfdy0L4
-        NyzO2UGxZpjEjCWiMvbAgk2TC1EPY+o=
-X-Google-Smtp-Source: APXvYqyyTPdDvkdqCQv7W9NIjj7S0OuOv4xAQVr7r+33dAZbQb0c67SZZjkt5X9wDpV3Cm2ip+y+hw==
-X-Received: by 2002:a17:902:b713:: with SMTP id d19mr7121413pls.123.1558240428936;
-        Sat, 18 May 2019 21:33:48 -0700 (PDT)
-Received: from icarus ([2001:268:c1c3:c593:c70:4af9:86e2:2])
-        by smtp.gmail.com with ESMTPSA id j12sm14569207pff.148.2019.05.18.21.33.45
-        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 18 May 2019 21:33:47 -0700 (PDT)
-Date:   Sun, 19 May 2019 13:33:30 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>,
-        Jonathan Corbet <corbet@lwn.net>
-Subject: Re: [PATCH -next] counter: fix Documentation build error due to
- incorrect source file name
-Message-ID: <20190519043313.GA20933@icarus>
-References: <b6475070-f336-1093-ff0f-6bc8d5fda35e@infradead.org>
+        id S1729692AbfETGDc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 May 2019 02:03:32 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:17279 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726196AbfETGDb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 May 2019 02:03:31 -0400
+X-UUID: 0b1af7105e2f48fd873b32133c84ed3c-20190520
+X-UUID: 0b1af7105e2f48fd873b32133c84ed3c-20190520
+Received: from mtkmrs01.mediatek.inc [(172.21.131.159)] by mailgw01.mediatek.com
+        (envelope-from <chun-hung.wu@mediatek.com>)
+        (mhqrelay.mediatek.com ESMTP with TLS)
+        with ESMTP id 450186333; Mon, 20 May 2019 14:03:26 +0800
+Received: from mtkcas09.mediatek.inc (172.21.101.178) by
+ mtkmbs08n1.mediatek.inc (172.21.101.55) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Mon, 20 May 2019 14:03:25 +0800
+Received: from [172.21.77.33] (172.21.77.33) by mtkcas09.mediatek.inc
+ (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
+ Transport; Mon, 20 May 2019 14:03:25 +0800
+Message-ID: <1558332205.11080.6.camel@mtkswgap22>
+Subject: Re: [PATCH 3/4] iio: adc: mediatek: SET_LATE_SYSTEM_SLEEP_PM_OPS
+ support
+From:   Chun-Hung Wu <chun-hung.wu@mediatek.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <wsd_upstream@mediatek.com>,
+        <peter.wang@mediatek.com>, <kuohong.wang@mediatek.com>,
+        <jg_poxu@mediatek.com>
+Date:   Mon, 20 May 2019 14:03:25 +0800
+In-Reply-To: <20190518113527.5210b0bf@archlinux>
+References: <1557994247-16739-1-git-send-email-chun-hung.wu@mediatek.com>
+         <1557994247-16739-4-git-send-email-chun-hung.wu@mediatek.com>
+         <20190518113527.5210b0bf@archlinux>
+Content-Type: text/plain; charset="UTF-8"
+X-Mailer: Evolution 3.2.3-0ubuntu6 
+Content-Transfer-Encoding: 7bit
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <b6475070-f336-1093-ff0f-6bc8d5fda35e@infradead.org>
-User-Agent: Mutt/1.11.4 (2019-03-13)
+X-MTK:  N
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, May 18, 2019 at 09:29:58PM -0700, Randy Dunlap wrote:
-> From: Randy Dunlap <rdunlap@infradead.org>
+Hi Jonathan:
+
+  Thanks for the prompt reply,
+
+On Sat, 2019-05-18 at 11:35 +0100, Jonathan Cameron wrote:
+> On Thu, 16 May 2019 16:10:46 +0800
+> Chun-Hung Wu <chun-hung.wu@mediatek.com> wrote:
 > 
-> Fix kernel-doc build error in Documentation/driver-api/generic-counter.rst
-> of incorrect source file name.
-> Fixes this warning and error:
+> >   Move suspend/resume to late_suspend and
+> > early_resume to gurantee users can use auxadc
+> guarantee
 > 
-> Error: Cannot open file ../drivers/counter/generic-counter.c
-> WARNING: kernel-doc '../scripts/kernel-doc -rst -enable-lineno -export ../drivers/counter/generic-counter.c' failed with return code 2
+will fix it in next version.
+> > driver at suspend/resume stage.
+> No problem with the patch content, but we need a reason why they may
+> want to do so?
+Our thermal drivers uses auxadc at suspend/resume stage.
+In order to avoid auxadc suspended prior to thermal driver,
+we move auxadc to late_suspend and early_resume.
+
+Thanks,
+Chun-Hung
 > 
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
-> Cc: linux-iio@vger.kernel.org
-> ---
->  Documentation/driver-api/generic-counter.rst |    2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> Thanks,
 > 
-> --- linux-next-20190517.orig/Documentation/driver-api/generic-counter.rst
-> +++ linux-next-20190517/Documentation/driver-api/generic-counter.rst
-> @@ -251,7 +251,7 @@ for defining a counter device.
->  .. kernel-doc:: include/linux/counter.h
->     :internal:
->  
-> -.. kernel-doc:: drivers/counter/generic-counter.c
-> +.. kernel-doc:: drivers/counter/counter.c
->     :export:
->  
->  Implementation
-> 
+> Jonathan
+> > 
+> > Signed-off-by: Chun-Hung Wu <chun-hung.wu@mediatek.com>
+> > ---
+> >  drivers/iio/adc/mt6577_auxadc.c | 7 ++++---
+> >  1 file changed, 4 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+> > index e1bdcc0..58d7cb2 100644
+> > --- a/drivers/iio/adc/mt6577_auxadc.c
+> > +++ b/drivers/iio/adc/mt6577_auxadc.c
+> > @@ -326,9 +326,10 @@ static int mt6577_auxadc_remove(struct platform_device *pdev)
+> >  	return 0;
+> >  }
+> >  
+> > -static SIMPLE_DEV_PM_OPS(mt6577_auxadc_pm_ops,
+> > -			 mt6577_auxadc_suspend,
+> > -			 mt6577_auxadc_resume);
+> > +static const struct dev_pm_ops mt6577_auxadc_pm_ops = {
+> > +	SET_LATE_SYSTEM_SLEEP_PM_OPS(mt6577_auxadc_suspend,
+> > +				     mt6577_auxadc_resume)
+> > +};
+> >  
+> >  static const struct of_device_id mt6577_auxadc_of_match[] = {
+> >  	{ .compatible = "mediatek,mt2701-auxadc", .data = &mt8173_compat},
 > 
 
-Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+
