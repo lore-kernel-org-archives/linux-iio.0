@@ -2,91 +2,101 @@ Return-Path: <SRS0=+Kw+=TU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E291DC04AAC
-	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 11:57:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECCD8C04AAC
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 14:02:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AC9E320815
-	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 11:57:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C284B216C4
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 14:02:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Rge68e5f"
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="G046+Nmo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730780AbfETL5U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 May 2019 07:57:20 -0400
-Received: from mail-ot1-f52.google.com ([209.85.210.52]:35128 "EHLO
-        mail-ot1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730679AbfETL5U (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 May 2019 07:57:20 -0400
-Received: by mail-ot1-f52.google.com with SMTP id n14so12710690otk.2
-        for <linux-iio@vger.kernel.org>; Mon, 20 May 2019 04:57:19 -0700 (PDT)
+        id S1732566AbfETOCd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 May 2019 10:02:33 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:42444 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730947AbfETOCd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 May 2019 10:02:33 -0400
+Received: by mail-wr1-f67.google.com with SMTP id l2so14752768wrb.9
+        for <linux-iio@vger.kernel.org>; Mon, 20 May 2019 07:02:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Bgb9Ew3pevEYqcSi2GXYSzmdFw8MXSkjiiYW1t/04RM=;
-        b=Rge68e5fGSXeh8KgGq/EnF4PbodqOxy7jOFmFVZLRDKF5r0CuTIviA7uabZCtR9npM
-         mcavM7a20moCB/7oc0wDy1luu+Ed4f+wccz0MnkAHk1TeTdnIEJkzF4IRwiFU3+yuyD/
-         VuS+cztVQcBXDpih7rqOa1TMEPILgWvqL4/ffoGCbBxnDavlBtX4x8REei6cSl0124Wk
-         cnEmN0T/moQ+Zmx2ZeGTjbfQkTL4o09wEM+1eMES36cGHWcqRghUIjpT5gdXHxxVB+tn
-         DDuqHTraF7WBJXMozXAludpGDHUbsirZGzJGnVzW5sSxUmdoBy/nMVFKnXlnseHLBKFj
-         dLfg==
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v8c/nNirEKJZwKIupGqiWC7ZFCXPvzpzRwKkeo1GtHI=;
+        b=G046+NmoXL7OmlgnOxpy2A8NXGg3BrTDxquqdqUum4Ygxt4MvSRKsevFEyp+7us3XH
+         fc4SPI5TljfQN8pVoQbCL0YXZIHTmu2XEgSxWGe6mB3B+pa/lf3M6nBFbRw1zey+uYD1
+         X9t6E3SM/X5+Q11kw9fhVUxKAeA1srEnEUSQuANAn58IWxJPrGoc0suA68x5scwwTKTh
+         I2vtdPfI0jNG6kq7z/53mlkT0hz5tX1kc8snw5EEqwftaqjiBOW5+JtIEVWkGaOI5+do
+         yRsBpNKsIkdSS2CWP5NXKmz5ozy32+/VobT83THj3Db3a1T4FVNWxEq0h4d9RMZIKTyb
+         sELg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Bgb9Ew3pevEYqcSi2GXYSzmdFw8MXSkjiiYW1t/04RM=;
-        b=BufODyaIlLXV72Pq1pxxajyvuw6aPztBpi2Nwgk8VCG1QR+Ub+XGndSYsUsMqhOKV2
-         p0WP+vHgWzN6/KxVLrTXoc2dYTqt6uEkeFN5wyDnbGm8HsHKakoP132P4FpOppmD1Xx/
-         HYzgSRoro4IkKy9QTRxfx0FRleJ4jwNmAHC4UCTZSNwzLw9h7OqWvYMA4P+oRmZLaRE8
-         XSSnFZkiiJqmUEM5FY39xavAtkBSGUzDpvrDp/PI5ZuGnGOsz7r19YmyWiOmdwOvZp2X
-         RwfuLUQSwF2Da/EIXD/xdvh4zJBpgzGvtsxORstIiDQ3jjo5jhFDv40ggWdHi+IGcls7
-         WzuQ==
-X-Gm-Message-State: APjAAAX86kjXQ7mPRwp295gRqvnKEPQfBtohNKUfN88GnXPSV4Q1C3cx
-        KSOpuw7BR9Xq10erlrKnGouF5lSejO9zYuNMJY8=
-X-Google-Smtp-Source: APXvYqyg0tLn7EZdSx4T+0dgkJu2sWQIeaxqq0sRwUcMh7euLXLDCuOwrUEir0l8RiYC5rHWOaZPG0oKCeOtzqrg6OM=
-X-Received: by 2002:a9d:68c5:: with SMTP id i5mr24876076oto.224.1558353439267;
- Mon, 20 May 2019 04:57:19 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=v8c/nNirEKJZwKIupGqiWC7ZFCXPvzpzRwKkeo1GtHI=;
+        b=Vgt2NaX3UFL6nSsgh2/pnnUVHYsoD4TyoC+uDsNI55ivRNpIVZZ7EVtYGbleAn4zHr
+         LQPV/laz9SAhkFDTkR6qLj4ghSsQPkV9qIF7D2Wh5aLKqXfvUb8pcngQ2roZrZU+D9j8
+         TefgFb0uTdfZMBbssHU1i6YBTQtyAGT1vn0O4JXFwEcw3chwt0QnlDFIaN9sCsMG2MDi
+         Lpg49G575KOatvb6XNN4fC7qwGLybLz6wsu/ASm3tiH7EWjqTacBAgNR1w2gezVbZQ//
+         /0PUHyq2eUX6hCjhnDo93vYjRbplqb8A9T9uVJkW/I4O4BpAMUJmjJu6eHr/u2SM+sJX
+         gfMA==
+X-Gm-Message-State: APjAAAVA7wp75flSbMBbo8ienk+rljeWELdSYpYZmH3nYUAWn7bmX9P4
+        TrSIC0qtyrykPbQnckzZ0rwAWw==
+X-Google-Smtp-Source: APXvYqwJ/Iyu7VnNKOAEfQFWmiIYCFgiEuV3TWfmUKry/H26rgf36s3aqukRIz7NFTNPiemoS3aFuQ==
+X-Received: by 2002:adf:f44b:: with SMTP id f11mr16249685wrp.128.1558360951634;
+        Mon, 20 May 2019 07:02:31 -0700 (PDT)
+Received: from bender.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id 67sm6650580wmd.38.2019.05.20.07.02.30
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Mon, 20 May 2019 07:02:31 -0700 (PDT)
+From:   Neil Armstrong <narmstrong@baylibre.com>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc:     martin.blumenstingl@googlemail.com, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: [PATCH] iio: adc: meson_saradc: update with SPDX Licence identifier
+Date:   Mon, 20 May 2019 16:02:28 +0200
+Message-Id: <20190520140228.29325-1-narmstrong@baylibre.com>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
-References: <CAMyZ8d4ya5VpgnQBS-8isgQP5RcoDbxyRGnxYWhjtL1b2RagwQ@mail.gmail.com>
-In-Reply-To: <CAMyZ8d4ya5VpgnQBS-8isgQP5RcoDbxyRGnxYWhjtL1b2RagwQ@mail.gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 20 May 2019 14:57:07 +0300
-Message-ID: <CA+U=DspSs3xnYwyT_JUgJiYLzWW=d+qOAwg_rryRq7upew_1JA@mail.gmail.com>
-Subject: Re: Question about ADIS162XX low voltage status bit
-To:     Pedro Sousa <pedroteosousa@gmail.com>
-Cc:     linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, May 18, 2019 at 11:51 PM Pedro Sousa <pedroteosousa@gmail.com> wrote:
->
-> Hi everyone,
->
-> I saw that all iio drivers ADIS162XX have a comment on the low voltage
-> status bit specifying 3.15V as a safe lower bound, but this value does
-> not match the ones in the datasheet, which are all lower. What is the
-> reason for this discrepancy?
+Signed-off-by: Neil Armstrong <narmstrong@baylibre.com>
+---
+ drivers/iio/adc/meson_saradc.c | 8 +-------
+ 1 file changed, 1 insertion(+), 7 deletions(-)
 
-Good find.
-You are correct. The values should be 2.975V in the driver.
-This is a bit hard-to-tell (why it happened to be 3.15 in the driver).
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 510d8b7ef3a0..e39d95734496 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -1,14 +1,8 @@
++// SPDX-License-Identifier: GPL-2.0+
+ /*
+  * Amlogic Meson Successive Approximation Register (SAR) A/D Converter
+  *
+  * Copyright (C) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * You should have received a copy of the GNU General Public License
+- * along with this program. If not, see <http://www.gnu.org/licenses/>.
+  */
+ 
+ #include <linux/bitfield.h>
+-- 
+2.21.0
 
-Sometimes, drivers are written before the part is released, and the
-specs sometimes change from Rev A to Rev E.
-Or the docs get corrected.
-Or, sometimes copies a base driver from somewhere else, and forgets to
-update things; no idea if that was the case here.
-
-In any case, feel free to send a patch to fix the driver.
-If not, we can send to fix them.
-
-Thanks
-Alex
