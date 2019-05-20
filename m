@@ -2,103 +2,69 @@ Return-Path: <SRS0=+Kw+=TU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_MUTT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C05C04AAF
-	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 06:47:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F34EC04AAF
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 07:16:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 40FA9206B6
-	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 06:47:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 331CE20851
+	for <linux-iio@archiver.kernel.org>; Mon, 20 May 2019 07:16:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1558336561;
+	bh=9BS42hHZHWqKiHZXdYax9/58MH3i4sUdcwR59yIZHBc=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=MlMfwB7r7X9O7UBtCl9uWSrAPlceM6+edURe7K9nv/QkX0MB1yPecIe6obvrbE3v4
+	 WcFGyR/i3HWhuVRJ7r46P6GRXID6IrlkBxxhgvoQ2niR8o0l7LhzIWwkwJSvabAbLN
+	 Onr8Gah3oCQ/++w+b1E2IWfVePAkbZ0zsBnQ59D8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729755AbfETGrc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 May 2019 02:47:32 -0400
-Received: from mailgw02.mediatek.com ([210.61.82.184]:27037 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1729657AbfETGrc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 May 2019 02:47:32 -0400
-X-UUID: 51613d8a8e634b58a4335f57e3397874-20190520
-X-UUID: 51613d8a8e634b58a4335f57e3397874-20190520
-Received: from mtkcas07.mediatek.inc [(172.21.101.84)] by mailgw02.mediatek.com
-        (envelope-from <chun-hung.wu@mediatek.com>)
-        (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 101237753; Mon, 20 May 2019 14:47:26 +0800
-Received: from MTKCAS06.mediatek.inc (172.21.101.30) by
- mtkmbs03n2.mediatek.inc (172.21.101.182) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Mon, 20 May 2019 14:47:24 +0800
-Received: from [172.21.77.33] (172.21.77.33) by MTKCAS06.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Mon, 20 May 2019 14:47:24 +0800
-Message-ID: <1558334844.13182.7.camel@mtkswgap22>
-Subject: Re: [PATCH 1/4] dt-bindings: iio: adc: mediatek: Add document for
- mt6765
-From:   Chun-Hung Wu <chun-hung.wu@mediatek.com>
+        id S1727878AbfETHQA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 May 2019 03:16:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48404 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726901AbfETHQA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 20 May 2019 03:16:00 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BDACB20859;
+        Mon, 20 May 2019 07:15:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1558336560;
+        bh=9BS42hHZHWqKiHZXdYax9/58MH3i4sUdcwR59yIZHBc=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=XoxO8qcAFwAKzvv+dCrAIB4edZbO6hW7Qsob35svyZ3t4ZyIV8zBl6BuON/XVEytP
+         Oltyoqz3bferyQCaWVqIxqMY1UqGU7eXKHV610McRjXnU8fVI3r4UWau0csFSGjiNp
+         HDaiP4ctXyV4QjBTr6xh7xh3N+/POIoW/Ns571sc=
+Date:   Mon, 20 May 2019 09:14:53 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <wsd_upstream@mediatek.com>,
-        <peter.wang@mediatek.com>, <kuohong.wang@mediatek.com>,
-        <jg_poxu@mediatek.com>
-Date:   Mon, 20 May 2019 14:47:24 +0800
-In-Reply-To: <20190518113356.1cf99a31@archlinux>
-References: <1557994247-16739-1-git-send-email-chun-hung.wu@mediatek.com>
-         <1557994247-16739-2-git-send-email-chun-hung.wu@mediatek.com>
-         <20190518113356.1cf99a31@archlinux>
-Content-Type: text/plain; charset="UTF-8"
-X-Mailer: Evolution 3.2.3-0ubuntu6 
-Content-Transfer-Encoding: 7bit
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PULL] First set of new device support, features and cleanups
+ for IIO in the 5.3 cycle.
+Message-ID: <20190520071453.GA31717@kroah.com>
+References: <20190519095700.5ffbb7b4@archlinux>
 MIME-Version: 1.0
-X-TM-SNTS-SMTP: 136E65FE89BA7E502B30A204F640972BA020EFA250DD3943DEB1B7A03C25AD6D2000:8
-X-MTK:  N
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190519095700.5ffbb7b4@archlinux>
+User-Agent: Mutt/1.11.4 (2019-03-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Sun, May 19, 2019 at 09:57:00AM +0100, Jonathan Cameron wrote:
+> The following changes since commit 575d927c426b83f5f8d5809f46de177cceffe40c:
+> 
+>   LS1021A: dtsi: add ftm quad decoder entries (2019-04-25 21:33:42 +0200)
+> 
+> are available in the Git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.3a
 
-On Sat, 2019-05-18 at 11:33 +0100, Jonathan Cameron wrote:
-> On Thu, 16 May 2019 16:10:44 +0800
-> Chun-Hung Wu <chun-hung.wu@mediatek.com> wrote:
-> 
-> > Add compatible node for mt6765 auxadc
-> > 
-> > Signed-off-by: Chun-Hung Wu <chun-hung.wu@mediatek.com>
-> Applied, but in numeric order.  There was also another clashing patch
-> that caused some fuzz.
-No problem, thanks!
+Pulled and pushed out, thanks.
 
-regards,
-Chun-Hung
-> 
-> thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > index 0df9bef..ab7efab 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> > @@ -15,6 +15,7 @@ Required properties:
-> >      - "mediatek,mt2712-auxadc": For MT2712 family of SoCs
-> >      - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
-> >      - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
-> > +    - "mediatek,mt6765-auxadc": For MT6765 family of SoCs
-> >    - reg: Address range of the AUXADC unit.
-> >    - clocks: Should contain a clock specifier for each entry in clock-names
-> >    - clock-names: Should contain "main".
-> 
-
-
+greg k-h
