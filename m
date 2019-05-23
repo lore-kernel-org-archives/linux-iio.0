@@ -2,197 +2,357 @@ Return-Path: <SRS0=aSsf=TX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75F77C282DD
-	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:11:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E88ACC282DD
+	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:12:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3F9CA20879
-	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:11:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE64120862
+	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:12:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=aurorafoss.org header.i=@aurorafoss.org header.b="qKz9x26S"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WLeMDIPH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729863AbfEWMLg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 May 2019 08:11:36 -0400
-Received: from out.migadu.com ([91.121.223.63]:55298 "EHLO out.migadu.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728309AbfEWMLg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 23 May 2019 08:11:36 -0400
-Received: (Migadu outbound); Thu, 23 May 2019 12:04:02 +0000
-Authentication-Results: out.migadu.com; auth=pass (plain)
-Received: from mail-oi1-f171.google.com (mail-oi1-f171.google.com [209.85.167.171])
-        by out.migadu.com (Haraka/2.8.16) with ESMTPSA id 62D1782A-3A83-4104-AD52-8CDAF3E8EFDE.1
-        envelope-from <luis@aurorafoss.org> (authenticated bits=0)
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 verify=FAIL);
-        Thu, 23 May 2019 12:04:02 +0000
-Received: by mail-oi1-f171.google.com with SMTP id 203so4120846oid.13;
-        Thu, 23 May 2019 05:04:01 -0700 (PDT)
-X-Gm-Message-State: APjAAAXivUop7Xpf4Dy/YUDqxqUNxdPcZPLV2rYZJ8woSHEXkJi/lMsc
-        ZkJVOWxkWmusvQlOiT3ATNYA639lwfxuquEqQj4=
-X-Google-Smtp-Source: APXvYqx9TJdgzx+SRsv86x3Pg6PgQ6XTQ2PTSIBmK/tCq/Q7sGUckZpCFugE7A+nvTBUZyUbWV5sH9EmdN5jhxjrmrM=
-X-Received: by 2002:aca:240d:: with SMTP id n13mr2388042oic.145.1558613040588;
- Thu, 23 May 2019 05:04:00 -0700 (PDT)
+        id S1729966AbfEWMM2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 May 2019 08:12:28 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:42441 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729361AbfEWMM2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2019 08:12:28 -0400
+Received: by mail-oi1-f193.google.com with SMTP id w9so4159339oic.9;
+        Thu, 23 May 2019 05:12:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=1f284By0ZOAN0/Q56/zBJTBvaP5qGClyXWqjHl7/edA=;
+        b=WLeMDIPH2z3dFMx0INgpQFxrmQJRb1KzLM2C3grnaYz5PIl7iH3wt5UMP6K19wjB0x
+         l3+igJBZMa4hlWmhYKK1E8zBEd9l61sfzEW6EmDXj7yKIGvkMnmwrnaSrX98+NmMaZqk
+         eBLw9/jKNBiuXpCzibPM8em/HOwpnWxswPd158gTWTfv5zGIzn+xtDf6Gv5uCKk6rXpR
+         O/OJd995mlIu62N4hLrYXMtHJivLsC3Ng62en3bsPpTKvwJ68DYanoSeDxq30bftc8sp
+         YuRQzpmatnf7qTZ8vzBd26dT0cTE5tlFIZ+noxwZ2yJeiBZBnO/+b3oMIdZnn5LXNqGy
+         gtlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=1f284By0ZOAN0/Q56/zBJTBvaP5qGClyXWqjHl7/edA=;
+        b=FkZe7qMi2WddFp8XY+43YpFL+1Zv5YacYpIf4FvvoBsZ8939h56DiwS6ZDl14VHrP5
+         12DQI73glE5+wKD6RikgcsS1C/NHEj5VfQrJd59oFfcwY2i2eiS4/f2q3xyJF3p1CuWh
+         tijoOchcNps++rt4T7tTIogG2tvnda0CVV9qf525tWrcBYfobcv215/GFx/2A965GOEV
+         B0E3erTxSB+Il1+fIKt6sY350SlknfSN2kLadttwdlFvo8lVu6LfWv8SXEoE80vkp1kv
+         FlImG+fffonE35BYHJ/a/NFk0+C0hrrMkrKPUFGi8ocZzKJBnzeFNKYMne5inGZheMFR
+         8/4Q==
+X-Gm-Message-State: APjAAAUpjYeft5AjakMD0NFYQ7OiVwTQv7pe3zbUf0kNJP9X7SsRUphR
+        QvK7ySKk5fDfcTQd0JtWrhQHagQycp/EFOSRzmA=
+X-Google-Smtp-Source: APXvYqybhEPBV1GQ7SpKeXuP07v2d0wcOcMC8E3PQIILYwYCkT1QqJIUy3LZdeubbs8DqZuSLlO77CnVANcJvhWMoWo=
+X-Received: by 2002:aca:db88:: with SMTP id s130mr2583992oig.159.1558613547055;
+ Thu, 23 May 2019 05:12:27 -0700 (PDT)
 MIME-Version: 1.0
-References: <c2f3c22c-d491-17e7-ede7-54f9df11e064@redhat.com>
- <20190402160433.15810-1-luis@aurorafoss.org> <55a52a4e-01d1-2f4c-25e3-0047537bef86@redhat.com>
- <CAPyOxm8DyFjRxeL9QFHGW084cg5vhsKrwqGFy5rp8MEEZ3AHEQ@mail.gmail.com>
- <c34e15ec4be9d783c7134491639eb176@_> <9d8458a1-fc47-0727-4dc8-1d1eb185886d@redhat.com>
-In-Reply-To: <9d8458a1-fc47-0727-4dc8-1d1eb185886d@redhat.com>
-From:   =?UTF-8?Q?Lu=C3=ADs_Ferreira?= <luis@aurorafoss.org>
-Date:   Thu, 23 May 2019 13:03:49 +0100
-X-Gmail-Original-Message-ID: <CAPyOxm9Q0Chq+TVjyK1eFWXCSJb0d-pttnEFVRB0Sw4QZnMM+Q@mail.gmail.com>
-Message-ID: <CAPyOxm9Q0Chq+TVjyK1eFWXCSJb0d-pttnEFVRB0Sw4QZnMM+Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: accel: add missing sensor for some 2-in-1 based ultrabooks
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     jic23@kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+References: <1557759185-167857-1-git-send-email-adam.michaelis@rockwellcollins.com>
+ <1557759185-167857-2-git-send-email-adam.michaelis@rockwellcollins.com>
+In-Reply-To: <1557759185-167857-2-git-send-email-adam.michaelis@rockwellcollins.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Thu, 23 May 2019 15:12:15 +0300
+Message-ID: <CA+U=DsoQRQJoWrP3shnDyRVUxcgYCpeiQtusFHWqVAeWRmwarQ@mail.gmail.com>
+Subject: Re: [PATCH v3 2/5] iio: ad7949: Support internal Vref
+To:     Adam Michaelis <adam.michaelis@rockwellcollins.com>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <michael.hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        charles-antoine.couret@essensium.com, devicetree@vger.kernel.org,
+        brandon.maier@rockwellcollins.com,
+        clayton.shotwell@rockwellcollins.com,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-DKIM-Signature: v=1;a=rsa-sha256;bh=QG2XsEKhdyNggSpbcBvp05DnITNX9W6WV+MXt8mStR8=;c=relaxed/simple;d=aurorafoss.org;h=from:subject:date:to;s=default;b=qKz9x26S6oYtXxLvi1XFna2EuynaZGJmO3Gj31bruSlY7XSJQMQ4IT0qYo3bUOKezVIqKX38nPRyDqqd3NoOJHsAGiIoTNx55lrcRb24M0IOdiL/8sAZ+tne54lUZ8TQhriKq78paaoDOmWdt91/rF9IF4PJrZTyePHwBzEI6k8=
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Hams,
+On Mon, May 13, 2019 at 7:16 PM Adam Michaelis
+<adam.michaelis@rockwellcollins.com> wrote:
+>
+> Adding configurable (via device tree) options to select one of the two
+> external reference voltages (REFIN as default, original implementation)
+> or one of the two internal reference voltages provided by the AD7949
+> part family.
+>
 
-https://github.com/systemd/systemd/pull/12322
-https://github.com/hadess/iio-sensor-proxy/pull/262
+I would run a ./scripts/checkpatch.pl on this patch (maybe also on the series).
+I would only complain about style-stuff (on this patch), but those
+would also get reported by checkpatch.
 
-As all the pull requests to systemd and iio-sensor-proxy has already
-been merged, I just need your review on this:
-https://github.com/systemd/systemd/pull/12449
-
-Then, I guess this patch is ready to go. Please let me know if theres any i=
-ssue.
-
-Regards,
-Luis
-
-
-On Wed, 17 Apr 2019 at 16:08, Hans de Goede <hdegoede@redhat.com> wrote:
+> Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
+> ---
+>         V2:
+>         - Add some defines to reduce use of magic numbers.
+>         V3:
+>         - Add bitfield.h macros throughout.
+>         - Re-think usage of device tree parameter to focus on the
+>         actual reference sources instead of the raw hardware
+>         configuration.
+> ---
+>  drivers/iio/adc/ad7949.c | 138 +++++++++++++++++++++++++++++++++++++----------
+>  1 file changed, 111 insertions(+), 27 deletions(-)
 >
-> Hi,
+> diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
+> index c7fe27aa2519..b648b1ab9559 100644
+> --- a/drivers/iio/adc/ad7949.c
+> +++ b/drivers/iio/adc/ad7949.c
+> @@ -11,12 +11,23 @@
+>  #include <linux/module.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/spi/spi.h>
+> -
+> -#define AD7949_MASK_CHANNEL_SEL                GENMASK(9, 7)
+> -#define AD7949_MASK_TOTAL              GENMASK(13, 0)
+> -#define AD7949_OFFSET_CHANNEL_SEL      7
+> -#define AD7949_CFG_READ_BACK           0x1
+> -#define AD7949_CFG_REG_SIZE_BITS       14
+> +#include <linux/of.h>
+> +#include <linux/bitfield.h>
+> +
+> +#define AD7949_CFG_REG_SIZE_BITS           14
+> +#define AD7949_CFG_MASK_TOTAL              GENMASK(13, 0)
+> +#define AD7949_CFG_APPLY                   BIT(13)
+> +#define AD7949_CFG_CHAN_CFG                GENMASK(12, 10)
+> +#define AD7949_CFG_CHAN_CFG_UNIPOLAR_GND   0x7
+> +#define AD7949_CFG_CHAN_SEL                GENMASK(9, 7)
+> +#define AD7949_CFG_BW                      BIT(6)
+> +#define AD7949_CFG_BW_FULL                 1
+> +#define AD7949_CFG_REF_SEL                 GENMASK(5, 3)
+> +#define AD7949_CFG_SEQ                     GENMASK(2, 1)
+> +#define AD7949_CFG_SEQ_DISABLED            0x0
+> +#define AD7949_CFG_READBACK                BIT(0)
+> +#define AD7949_CFG_READBACK_EN             0
+> +#define AD7949_CFG_READBACK_DIS            1
 >
-> On 15-04-19 17:40, luis@aurorafoss.org wrote:
-> > April 6, 2019 10:36 AM, "Hans de Goede" <hdegoede@redhat.com> wrote:
-> >
-> > Hi,
-> >
-> >> Yes that seems the best way forward with this.
-> >>
-> >> Note I think "base" is better then "keyboard" for the sensor which
-> >> is in the base/keyboard. But neither is perfect, so go which whatever
-> >> you prefer.
-> >
-> > Reference to:
-> > - https://github.com/hadess/iio-sensor-proxy/pull/262 > - https://githu=
-b.com/systemd/systemd/pull/12322
+>  enum {
+>         ID_AD7949 = 0,
+> @@ -24,6 +35,18 @@ enum {
+>         ID_AD7689,
+>  };
 >
-> Thank you for your work on this, I see that Bastien has
-> already reviewed the iio-sensor-proxy changes.
+> +enum ad7949_ref_sel {
+> +       AD7949_REF_2V5 = 0, /* 2.5V internal ref + temp sensor */
+> +       AD7949_REF_4V0, /* 4.096V internal ref + temp sensor */
+> +       AD7949_REF_EXT_TEMP, /* REF + temp sensor */
+> +       AD7949_REF_EXT_TEMP_BUF, /* REFIN + temp sensor */
+> +       AD7949_REF_RSRV_4,
+> +       AD7949_REF_RSRV_5,
+> +       AD7949_REF_EXT, /* REF, no temp */
+> +       AD7949_REF_EXT_BUF, /* REFIN, no temp */
+> +       AD7949_REF_MAX,
+> +};
+> +
+>  struct ad7949_adc_spec {
+>         u8 num_channels;
+>         u8 resolution;
+> @@ -41,6 +64,7 @@ struct ad7949_adc_spec {
+>   * @vref: regulator generating Vref
+>   * @iio_dev: reference to iio structure
+>   * @spi: reference to spi structure
+> + * @ref_sel: selected reference voltage source
+>   * @resolution: resolution of the chip
+>   * @cfg: copy of the configuration register
+>   * @current_channel: current channel in use
+> @@ -51,6 +75,7 @@ struct ad7949_adc_chip {
+>         struct regulator *vref;
+>         struct iio_dev *indio_dev;
+>         struct spi_device *spi;
+> +       enum ad7949_ref_sel ref_sel;
+>         u8 resolution;
+>         u16 cfg;
+>         unsigned int current_channel;
+> @@ -59,7 +84,7 @@ struct ad7949_adc_chip {
 >
-> I've just added one small remark to the systemd changes,
-> except for that small remark the systemd changes look good to me.
+>  static bool ad7949_spi_cfg_is_read_back(struct ad7949_adc_chip *ad7949_adc)
+>  {
+> -       if (!(ad7949_adc->cfg & AD7949_CFG_READ_BACK))
+> +       if (!(ad7949_adc->cfg & AD7949_CFG_READBACK))
+>                 return true;
 >
-> Regards,
+>         return false;
+> @@ -91,7 +116,7 @@ static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
+>         };
 >
-> Hams
+>         ad7949_adc->cfg = (val & mask) | (ad7949_adc->cfg & ~mask);
+> -       ad7949_adc->buffer = ad7949_adc->cfg << shift;
+> +       ad7949_adc->buffer = (ad7949_adc->cfg & AD7949_CFG_MASK_TOTAL) << shift;
+>         spi_message_init_with_transfers(&msg, tx, 1);
+>         ret = spi_sync(ad7949_adc->spi, &msg);
 >
+> @@ -136,8 +161,8 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
+>         };
 >
+>         ret = ad7949_spi_write_cfg(ad7949_adc,
+> -                                  channel << AD7949_OFFSET_CHANNEL_SEL,
+> -                                  AD7949_MASK_CHANNEL_SEL);
+> +                                  FIELD_PREP(AD7949_CFG_CHAN_SEL, channel),
+> +                                  AD7949_CFG_CHAN_SEL);
+>         if (ret)
+>                 return ret;
 >
+> @@ -204,11 +229,20 @@ static int ad7949_spi_read_raw(struct iio_dev *indio_dev,
+>                 return IIO_VAL_INT;
 >
-> >> On 06-04-19 01:01, Lu=C3=ADs Ferreira wrote:
-> >>
-> >>> Hi,
-> >>> Basically we need to come up with a convention to (optionally) indica=
-te
-> >>
-> >> the sensors location with a udev attribute set by:
-> >> /lib/udev/hwdb.d/60-sensor.hwdb
-> >>> So should we start adding `ACCEL_LOCATION=3Ddisplay` and
-> >>> `ACCEL_LOCATION=3Dkeyboard` attributes to that file and patch
-> >>> iio-sensor-proxy to ignore the keyboard ones as a first step ?
-> >>
-> >> Yes that seems the best way forward with this.
-> >>
-> >> Note I think "base" is better then "keyboard" for the sensor which
-> >> is in the base/keyboard. But neither is perfect, so go which whatever
-> >> you prefer.
-> >>
-> >> Thanks & Regards,
-> >>
-> >> Hans
-> >>
-> >>> On Wed, 3 Apr 2019 at 10:10, Hans de Goede <hdegoede@redhat.com> wrot=
-e:
-> >>
-> >> Hi,
-> >>
-> >> On 02-04-19 18:04, Lu=C3=ADs Ferreira wrote:
-> >>> Some ultrabooks, like Teclast F6 Pro, use KIOX010A sensor on display
-> >>> and KIOX020A sensor on keyboard base, to detect tablet mode or screen
-> >>> orientation.
-> >>
-> >> I deliberately left out the KIOX020A id for now, because currently
-> >> userspace cannot really deal with having 2 sensors.
-> >>
-> >> See:
-> >> https://github.com/systemd/systemd/issues/6557
-> >> https://github.com/hadess/iio-sensor-proxy/issues/166
-> >>
-> >> Basically we need to come up with a convention to (optionally) indicat=
-e
-> >> the sensors location with a udev attribute set by:
-> >> /lib/udev/hwdb.d/60-sensor.hwdb
-> >>
-> >> And then patch iio-sensor-proxy to consume that attribute and ignore
-> >> the one which has e.g. ACCEL_LOCATION=3Dkeyboard in its udev propertie=
-s
-> >>
-> >> Ignoring would be a first step, maybe later it can do something useful
-> >> with it, see e.g. : https://github.com/alesguzik/linux_detect_tablet_m=
-ode
-> >>
-> >> IMHO we really should minimally get code in place for iio-sensor-proxy
-> >> to ignore the keyboard accelerometer before merging this patch.
-> >>
-> >> I realize that having the code in place will not magically get it on
-> >> all users machines, but I believe this is the minimum which needs to
-> >> happen before we push this out and potentially breaks people screen
-> >> rotation.
-> >>
-> >> I've had working on this on my TODO list for a long long time now,
-> >> but -ENOTIME. If you have some time to work on this then that would
-> >> be great.
-> >>
-> >> Regards,
-> >>
-> >> Hans
-> >>> Signed-off-by: Lu=C3=ADs Ferreira <luis@aurorafoss.org>
-> >>> ---
-> >>> drivers/iio/accel/kxcjk-1013.c | 1 +
-> >>> 1 file changed, 1 insertion(+)
-> >>>
-> >>> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk=
--1013.c
-> >>> index 7096e577b23f..9a5e445facc1 100644
-> >>> --- a/drivers/iio/accel/kxcjk-1013.c
-> >>> +++ b/drivers/iio/accel/kxcjk-1013.c
-> >>> @@ -1492,6 +1492,7 @@ static const struct acpi_device_id kx_acpi_matc=
-h[] =3D {
-> >>> {"KIOX0009", KXTJ21009},
-> >>> {"KIOX000A", KXCJ91008},
-> >>> {"KIOX010A", KXCJ91008}, /* KXCJ91008 inside the display of a 2-in-1 =
-*/
-> >>> + {"KIOX020A", KXCJ91008},
-> >>> {"KXTJ1009", KXTJ21009},
-> >>> {"KXJ2109", KXTJ21009},
-> >>> {"SMO8500", KXCJ91008},
+>         case IIO_CHAN_INFO_SCALE:
+> -               ret = regulator_get_voltage(ad7949_adc->vref);
+> -               if (ret < 0)
+> -                       return ret;
+> +               if (ad7949_adc->vref) {
+> +                       ret = regulator_get_voltage(ad7949_adc->vref);
+> +                       if (ret < 0)
+> +                               return ret;
+> +
+> +                       *val = ret / 5000;
+> +               } else if (ad7949_adc->ref_sel == AD7949_REF_2V5) {
+> +                       *val = 2500;
+> +               } else if (ad7949_adc->ref_sel == AD7949_REF_4V0) {
+> +                       *val = 4096;
+> +               } else {
+> +                       return -EINVAL;
+> +               }
+>
+> -               *val = ret / 5000;
+>                 return IIO_VAL_INT;
+>         }
+>
+> @@ -226,7 +260,8 @@ static int ad7949_spi_reg_access(struct iio_dev *indio_dev,
+>                 *readval = ad7949_adc->cfg;
+>         else
+>                 ret = ad7949_spi_write_cfg(ad7949_adc,
+> -                       writeval & AD7949_MASK_TOTAL, AD7949_MASK_TOTAL);
+> +                       writeval & AD7949_CFG_MASK_TOTAL,
+> +                       AD7949_CFG_MASK_TOTAL);
+>
+>         return ret;
+>  }
+> @@ -240,10 +275,24 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
+>  {
+>         int ret;
+>         int val;
+> +       u16 adc_config = 0;
+>
+> -       /* Sequencer disabled, CFG readback disabled, IN0 as default channel */
+>         ad7949_adc->current_channel = 0;
+> -       ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
+> +       ad7949_adc->cfg = 0;
+> +
+> +       adc_config |= FIELD_PREP(AD7949_CFG_APPLY, 1);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_CHAN_CFG,
+> +                       AD7949_CFG_CHAN_CFG_UNIPOLAR_GND);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_CHAN_SEL,
+> +                       ad7949_adc->current_channel);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_BW, AD7949_CFG_BW_FULL);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_REF_SEL, ad7949_adc->ref_sel);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_SEQ, AD7949_CFG_SEQ_DISABLED);
+> +       adc_config |= FIELD_PREP(AD7949_CFG_READBACK, AD7949_CFG_READBACK_DIS);
+> +
+> +       ret = ad7949_spi_write_cfg(ad7949_adc,
+> +                       adc_config,
+> +                       AD7949_CFG_MASK_TOTAL);
+>
+>         /*
+>          * Do a dummy conversion to apply the first configuration setting.
+> @@ -261,6 +310,7 @@ static int ad7949_spi_probe(struct spi_device *spi)
+>         struct ad7949_adc_chip *ad7949_adc;
+>         struct iio_dev *indio_dev;
+>         int ret;
+> +       u32 temp;
+>
+>         indio_dev = devm_iio_device_alloc(dev, sizeof(*ad7949_adc));
+>         if (!indio_dev) {
+> @@ -279,21 +329,53 @@ static int ad7949_spi_probe(struct spi_device *spi)
+>         ad7949_adc = iio_priv(indio_dev);
+>         ad7949_adc->indio_dev = indio_dev;
+>         ad7949_adc->spi = spi;
+> +       ad7949_adc->vref = NULL;
+>
+>         spec = &ad7949_adc_spec[spi_get_device_id(spi)->driver_data];
+>         indio_dev->num_channels = spec->num_channels;
+>         ad7949_adc->resolution = spec->resolution;
+>
+> -       ad7949_adc->vref = devm_regulator_get(dev, "vref");
+> -       if (IS_ERR(ad7949_adc->vref)) {
+> -               dev_err(dev, "fail to request regulator\n");
+> -               return PTR_ERR(ad7949_adc->vref);
+> +       ret = of_property_read_u32(ad7949_adc->indio_dev->dev.of_node,
+> +                       "adi,reference-select",
+> +                       &temp);
+> +       if (ret == 0) {
+> +               switch (temp) {
+> +               case 0:
+> +                       ad7949_adc->ref_sel = AD7949_REF_2V5;
+> +                       break;
+> +               case 1:
+> +                       ad7949_adc->ref_sel = AD7949_REF_4V0;
+> +                       break;
+> +               case 2:
+> +                       ad7949_adc->ref_sel = AD7949_REF_EXT;
+> +                       break;
+> +               case 3:
+> +                       ad7949_adc->ref_sel = AD7949_REF_EXT_BUF;
+> +                       break;
+> +               default:
+> +                       ad7949_adc->ref_sel = AD7949_REF_EXT_BUF;
+> +                       dev_warn(dev,
+> +                               "unknown reference-select value, using REFIN external Vref (3) by default\n");
+> +               }
+> +       } else {
+> +               ad7949_adc->ref_sel = AD7949_REF_EXT_BUF;
+> +               dev_warn(dev, "using external Vref by default\n");
+>         }
+>
+> -       ret = regulator_enable(ad7949_adc->vref);
+> -       if (ret < 0) {
+> -               dev_err(dev, "fail to enable regulator\n");
+> -               return ret;
+> +       /* Check whether using external Vref */
+> +       if ((ad7949_adc->ref_sel != AD7949_REF_2V5) &&
+> +                       (ad7949_adc->ref_sel != AD7949_REF_4V0)) {
+> +               ad7949_adc->vref = devm_regulator_get(dev, "vref");
+> +               if (IS_ERR(ad7949_adc->vref)) {
+> +                       dev_err(dev, "fail to request regulator\n");
+> +                       return PTR_ERR(ad7949_adc->vref);
+> +               }
+> +
+> +               ret = regulator_enable(ad7949_adc->vref);
+> +               if (ret < 0) {
+> +                       dev_err(dev, "fail to enable regulator\n");
+> +                       return ret;
+> +               }
+>         }
+>
+>         mutex_init(&ad7949_adc->lock);
+> @@ -314,7 +396,8 @@ static int ad7949_spi_probe(struct spi_device *spi)
+>
+>  err:
+>         mutex_destroy(&ad7949_adc->lock);
+> -       regulator_disable(ad7949_adc->vref);
+> +       if (ad7949_adc->vref)
+> +               regulator_disable(ad7949_adc->vref);
+>
+>         return ret;
+>  }
+> @@ -326,7 +409,8 @@ static int ad7949_spi_remove(struct spi_device *spi)
+>
+>         iio_device_unregister(indio_dev);
+>         mutex_destroy(&ad7949_adc->lock);
+> -       regulator_disable(ad7949_adc->vref);
+> +       if (ad7949_adc->vref)
+> +               regulator_disable(ad7949_adc->vref);
+>
+>         return 0;
+>  }
+> --
+> 1.9.1
+>
