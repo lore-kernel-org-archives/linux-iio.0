@@ -2,173 +2,117 @@ Return-Path: <SRS0=aSsf=TX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33ABC282DD
-	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 11:47:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FC0EC282DD
+	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:07:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7606920851
-	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 11:47:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6CA5F20879
+	for <linux-iio@archiver.kernel.org>; Thu, 23 May 2019 12:07:50 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WNuGPSbG"
+	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="JmfgAnEO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730402AbfEWLrS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 May 2019 07:47:18 -0400
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:35848 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729949AbfEWLrR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2019 07:47:17 -0400
-Received: by mail-ot1-f68.google.com with SMTP id c3so5120687otr.3;
-        Thu, 23 May 2019 04:47:17 -0700 (PDT)
+        id S1729361AbfEWMHu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 May 2019 08:07:50 -0400
+Received: from mail-ed1-f68.google.com ([209.85.208.68]:38539 "EHLO
+        mail-ed1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728309AbfEWMHt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 May 2019 08:07:49 -0400
+Received: by mail-ed1-f68.google.com with SMTP id w11so8911668edl.5
+        for <linux-iio@vger.kernel.org>; Thu, 23 May 2019 05:07:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=rGBgzoOZoDnFHzdz7CD5+adtzMXvR/o9pLCWlsfPtRo=;
-        b=WNuGPSbGfgHm4nL9GFLVdZ+AkDfdime+NAnnisR9zQdInVswQBhM4PHfYCVFgaGQs3
-         OJtZGZWtWF8lPmF9fnAFcYpPaM7bgBKewrhAv1uuRgjbz6SVx7SKnxknARRjd1iflIly
-         pyjB9Tw3lH+0Q6mi7DFpR5dhWxb/bvUY6KVA3OHdT1MopwFnNY+40cFElU/tZoy5Osrn
-         DHpIla774HSf0o6Bjkikk/swO+TFK3YTzSmFfgcOgLfVxLSq9+c/Hu5fFfC3rpQ+6NzX
-         aXMuyzNjnzDy/ZWCPW/7d/1YmdXONlC6nBR78gI5X40s4enWa035aDGU3m5NziGnYR73
-         6FvA==
+        d=melexis.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VwpqBvUvQ7B6ZiyzTKltDeeKnuWuXceO5lficTnBOYw=;
+        b=JmfgAnEOcsfLJUDuWAJnzfm5g80apqdTiRbyy2RDNEWay6r84DLl3BsrbRgKbaUjl1
+         VwMQTxlAuecyrSlsj4nuL3WrVuiHaRzHoiOYZv/jR4z7QANtkad5Q3fNJIg/06eIt7KL
+         GLpgpIO8zXBAU63bAEYHV+w8ZzrejiCoPwNmih2CsXm5IImlGGiTtOs3tCw1FqcRnjPR
+         yrp4T6wN3xYf3JAXquagom6oBrmN/ZusXx59aoFhD1h9/wYD2z1uxI+81R5vWNlHwm1J
+         MIWl/NcJxlPOxiiJc3i/0OzUbtAazycqvB3dwOfPCgXKpWJWyDvXKDoSfVg2PjmEqMt+
+         1R8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=rGBgzoOZoDnFHzdz7CD5+adtzMXvR/o9pLCWlsfPtRo=;
-        b=tp8nL09lGXlYoTeC6tyNmUXfoeAEbvoqW8YG0zWIObq0RQnfnTBbTQ9nLhVQlkAMLl
-         Na/bWEi+eYi3mfukOh1vNuopiAjSsAAYT3c4Qb74QU579XrG4hrzcjNxBK26CflzaAfb
-         hfPXM5QmNZANlZ7ryUfSaAts3UNcG1jdg0i6xdB9Gt40JaQLf4oWvepPYA/TdQosR4E1
-         njtmkmI1vUaz+5FaaYm6By+F9zpV18u8ffo97/GjdRGo+jN1a/mhcsQ5PKiA0+gD9zO5
-         IJ8v3TBvcedgLJsI2aRGq1+wHYNKa8E6uBFbIZtBwdoWcQ5FxSCGTmuabA0azlIHBLyH
-         TQlA==
-X-Gm-Message-State: APjAAAUbXFm3zn8uBNjP7E57EcaqMOMNS8JUlEkKrBn2tJkYv+7r65nU
-        z1+MALwXpCDnIfH3lHQ2nStXtM7BPA7XS57j+HNgGMoEGTs=
-X-Google-Smtp-Source: APXvYqx20uLH85/82ftTJ7ioOCikdEVaNQ31qSpq+DNHXYYSXr+s/E6A8Pm+IfABj47y7f1UCs+eSKiOwNZwLgg0fe4=
-X-Received: by 2002:a9d:dca:: with SMTP id 68mr57493850ots.119.1558612036874;
- Thu, 23 May 2019 04:47:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=VwpqBvUvQ7B6ZiyzTKltDeeKnuWuXceO5lficTnBOYw=;
+        b=GIEDKdvHFqrQpUxppFGtNXpU9FQwSyoOS/r2VipBb19RT1w3I2tzzvWWqkfgeGt6lf
+         AqlsRPH7LlR+6OjThk0SufUhk/Jf/xDFBEGTa+ri1Hgt/lIX6Uz3mKblPPd0A7S3YM93
+         tbYTyGHB4RP1FdNyiQJjGfxezmEsETsuYUbdoRO2HO/G+RPrp3kjQCwHdaQpIf7/W1T3
+         n684AQV9i3lEQY+iwWfIIkY/rjdAU1CWG9kKL+YzfzHDdB/yAIIUas3K+3RwMTOhbudA
+         rzj1zekifAVVUNhmTHlK74boyP8ZC0lagHRfBFTgGXO4Y2Cm5fdKvqaD33Tc6VreMfhW
+         eRMw==
+X-Gm-Message-State: APjAAAVRbx92UgvmvzHhq5yQqBiQiPE7zhPuKyjo3fJW9SjQsfBH3Bzf
+        +vMKFsmDNEnpkTRZvh3RIVrSHw==
+X-Google-Smtp-Source: APXvYqwbvr5Bt8IStL4p9bP/5AI+y+unBkssZm7LM4G8l2RmaGpWYzPXDqDHurnxlmkURV5pZ6NPTg==
+X-Received: by 2002:a50:a4f7:: with SMTP id x52mr96800051edb.86.1558613268083;
+        Thu, 23 May 2019 05:07:48 -0700 (PDT)
+Received: from localhost.localdomain (ptr-4xajgywuohpvdjfehzo.18120a2.ip6.access.telenet.be. [2a02:1810:a421:dd00:b379:ebaf:d35f:7d94])
+        by smtp.gmail.com with ESMTPSA id x49sm7928408edm.25.2019.05.23.05.07.46
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Thu, 23 May 2019 05:07:47 -0700 (PDT)
+From:   Crt Mori <cmo@melexis.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Crt Mori <cmo@melexis.com>
+Subject: [PATCH] iio: temperature: mlx90632 Relax the compatibility check
+Date:   Thu, 23 May 2019 14:07:22 +0200
+Message-Id: <20190523120722.25848-1-cmo@melexis.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1557759185-167857-1-git-send-email-adam.michaelis@rockwellcollins.com>
-In-Reply-To: <1557759185-167857-1-git-send-email-adam.michaelis@rockwellcollins.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Thu, 23 May 2019 14:47:05 +0300
-Message-ID: <CA+U=DsoHuzt27CnwFK-2tdLhNMea1JttncdhZaBjRpfticgfEg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/5] iio: ad7949: Fix dummy read cycle placement
-To:     Adam Michaelis <adam.michaelis@rockwellcollins.com>
-Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <michael.hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        charles-antoine.couret@essensium.com, devicetree@vger.kernel.org,
-        brandon.maier@rockwellcollins.com,
-        clayton.shotwell@rockwellcollins.com,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, May 13, 2019 at 7:18 PM Adam Michaelis
-<adam.michaelis@rockwellcollins.com> wrote:
->
-> The AD7949 requires two conversion cycles following the first
-> configuration change, and one extra cycle following any other
-> configuration change (including changing the analog channel being
-> sampled). Therefore, adding a dummy read cycle when config is changed
-> and removing the extra cycle at initial configuration (the first dummy
-> cycle is now performed as part of applying the configuration change).
->
+Register EE_VERSION contains mixture of calibration information and DSP
+version. So far, because calibrations were definite, the driver
+compatibility depended on whole contents, but in the newer production
+process the calibration part changes. Because of that, value in EE_VERSION
+will be changed and to avoid that calibration value is same as DSP version
+the MSB in calibration part was fixed to 1.
+That means existing calibrations (medical and consumer) will now have
+hex values (bits 8 to 15) of 83 and 84 respectively. Driver compatibility
+should be based only on DSP version part of the EE_VERSION (bits 0 to 7)
+register.
 
-CC-ing my work email.
-And Stefan as well.
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/temperature/mlx90632.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-We'll have to try this driver & changes internally a bit.
-Hopefully we have a compatible device around the office.
-Since it wasn't written by us, we're also unsure about things just by
-looking at the code.
+diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
+index 2243e8057ffc..2d54d9cac61d 100644
+--- a/drivers/iio/temperature/mlx90632.c
++++ b/drivers/iio/temperature/mlx90632.c
+@@ -81,6 +81,8 @@
+ /* Magic constants */
+ #define MLX90632_ID_MEDICAL	0x0105 /* EEPROM DSPv5 Medical device id */
+ #define MLX90632_ID_CONSUMER	0x0205 /* EEPROM DSPv5 Consumer device id */
++#define MLX90632_DSP_VERSION	5 /* DSP version */
++#define MLX90632_DSP_MASK	GENMASK(7, 0) /* DSP version in EE_VERSION */
+ #define MLX90632_RESET_CMD	0x0006 /* Reset sensor (address or global) */
+ #define MLX90632_REF_12		12LL /**< ResCtrlRef value of Ch 1 or Ch 2 */
+ #define MLX90632_REF_3		12LL /**< ResCtrlRef value of Channel 3 */
+@@ -666,10 +668,13 @@ static int mlx90632_probe(struct i2c_client *client,
+ 	} else if (read == MLX90632_ID_CONSUMER) {
+ 		dev_dbg(&client->dev,
+ 			"Detected Consumer EEPROM calibration %x\n", read);
++	} else if ((read & MLX90632_DSP_MASK) == MLX90632_DSP_VERSION) {
++		dev_dbg(&client->dev,
++			"Detected Unknown EEPROM calibration %x\n", read);
+ 	} else {
+ 		dev_err(&client->dev,
+-			"Wrong DSP version %x (expected %x or %x)\n",
+-			read, MLX90632_DSPv5);
++			"Wrong DSP version %x (expected %x)\n",
++			read, MLX90632_DSP_VERSION);
+ 		return -EPROTONOSUPPORT;
+ 	}
+ 
+-- 
+2.20.1
 
-> Signed-off-by: Adam Michaelis <adam.michaelis@rockwellcollins.com>
-> ---
->         V2:
->         - Add some defines to reduce use of magic numbers.
->         V3:
->         - Switch back to using a u32 data buffer.
->         - Add-back the second dummy cycle on initialization.
->         - Move to first patch in series.
-> ---
->  drivers/iio/adc/ad7949.c | 20 ++++++++++++++++++--
->  1 file changed, 18 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-> index ac0ffff6c5ae..c7fe27aa2519 100644
-> --- a/drivers/iio/adc/ad7949.c
-> +++ b/drivers/iio/adc/ad7949.c
-> @@ -100,6 +100,23 @@ static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
->          * send a new command to the device
->          */
->         udelay(2);
-> +
-> +       /*
-> +        * Perform extra read cycle to allow configuration, acquisition,
-> +        * and conversion sequences to complete for new configuration.
-> +        */
-> +       ad7949_adc->buffer = 0;
-> +
-> +       spi_message_init_with_transfers(&msg, tx, 1);
-> +
-> +       ret = spi_sync(ad7949_adc->spi, &msg);
-> +
-> +       /*
-> +        * This delay is to avoid a new request before the required time
-> +        * to send a new command to the device.
-> +        */
-> +       udelay(2);
-> +
-
-Is this needed if the channel doesn't change ?
-If it isn't, maybe add a check in ad7949_spi_read_channel() to skip
-the call to ad7949_spi_write_cfg().
-
-We should also take performance into account when doing SPI
-transactions to the device, and if we can skip some of them, all the
-better.
-This change, introduces a performance penalty by doing this extra read + udelay.
-
->         return ret;
->  }
->
-> @@ -229,11 +246,10 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
->         ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
->
->         /*
-> -        * Do two dummy conversions to apply the first configuration setting.
-> +        * Do a dummy conversion to apply the first configuration setting.
->          * Required only after the start up of the device.
->          */
->         ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
-> -       ad7949_spi_read_channel(ad7949_adc, &val, ad7949_adc->current_channel);
-
-The datasheet mentions that 2 dummy conversions are needed on power-up / init.
-
-The way, this was done here was a bit easier to follow (or
-straightforward) with the datasheet.
-
-This isn't to say that this is bad, but if we need to do an extra SPI
-read (and skip the SPI write part), then I would just add an SPI read
-function, instead of moving it completely into ad7949_spi_write_cfg(),
-which would then compact things in ad7949_spi_read_channel().
-
->
->         return ret;
->  }
-> --
-> 1.9.1
->
