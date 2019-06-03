@@ -2,121 +2,104 @@ Return-Path: <SRS0=so4j=UC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 930DFC04AB5
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:37:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AAE0C04AB5
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 19:26:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6B39F273B2
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:37:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06DE826875
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 19:26:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="YsPyRLSk"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=z3ntu.xyz header.i=@z3ntu.xyz header.b="oLOzOFaN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbfFCShD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Jun 2019 14:37:03 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:37257 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726635AbfFCSeI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jun 2019 14:34:08 -0400
-Received: by mail-pg1-f195.google.com with SMTP id 20so8776238pgr.4
-        for <linux-iio@vger.kernel.org>; Mon, 03 Jun 2019 11:34:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QNrf8Jnz97UuIym8j3dBQYRGR049MkRgE0BVyZwE5HM=;
-        b=YsPyRLSkMm4zYPE51rbZbCHmfcIrNpbAXG1rR/QiOUreF79d1eERchC3FUKgTHziRO
-         +lfs8fLTApFM4EabtSExv7Y+OgtT2Fc1hfNfkcdo2nvvth5H+mwseymOcmLsjK5Lkb0C
-         C5vQMk3EDJU7oMVDG71D2fp/HhWIvgwfOuLRs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QNrf8Jnz97UuIym8j3dBQYRGR049MkRgE0BVyZwE5HM=;
-        b=Yfjyoip+OLaF23EscSjS1T/tzTN1bXl3HZDUhCuZM44Nyx3XnaE5l9IDFksF879fwL
-         0Cc4w87wkcSg3t/kKS5fYG8ih3SMPyVaOyV/JhjSOHF5Aw/VI70P+weXASPH8ucrEGUF
-         +0tc/J8rZGR9/Iy5eok9Egxki69Uf5za3VY5Xha5jBahdHCw6BDyEWTLWvXikTqr6AJR
-         tpnP7bwNUz1uJXom56iRmtiG+glRiOLxueqFVOt+6NpZ56TzQdDIeM10C1xubzwTrqwG
-         rRsqPwwz2piqSG9oYVwNiwsNNxo18/OCocU/PTLnAIvPyjxQLbH4ZLhKkc/FOZwAO0AF
-         KGaw==
-X-Gm-Message-State: APjAAAVSv6OfWfAOLQYnf/PikZKFT/kkgcecbAhy1hjtvYHOTpFXJdhq
-        +kvZjytwEl8XAVLzHjTGabWShQ==
-X-Google-Smtp-Source: APXvYqw6sXgo4NuVVy+bI0kBDsz/jNQ4q6SS66NHT9cYdkOFi8i45sJ9jIkrK4Pm4AbME7JEpHfjxw==
-X-Received: by 2002:a63:c104:: with SMTP id w4mr10115534pgf.125.1559586848333;
-        Mon, 03 Jun 2019 11:34:08 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id e6sm10590853pfi.42.2019.06.03.11.34.07
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 11:34:07 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     enric.balletbo@collabora.com, bleung@chromium.org,
-        groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org,
-        broonie@kernel.org, cychiang@chromium.org, tiwai@suse.com,
-        fabien.lahoudere@collabora.com
-Cc:     linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
-        linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [RESEND PATCH v3 01/30] mfd: cros_ec: Update license term
-Date:   Mon,  3 Jun 2019 11:33:32 -0700
-Message-Id: <20190603183401.151408-2-gwendal@chromium.org>
-X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
-In-Reply-To: <20190603183401.151408-1-gwendal@chromium.org>
-References: <20190603183401.151408-1-gwendal@chromium.org>
+        id S1726055AbfFCT0l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Jun 2019 15:26:41 -0400
+Received: from mail.z3ntu.xyz ([128.199.32.197]:55492 "EHLO mail.z3ntu.xyz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726049AbfFCT0l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 3 Jun 2019 15:26:41 -0400
+X-Greylist: delayed 342 seconds by postgrey-1.27 at vger.kernel.org; Mon, 03 Jun 2019 15:26:40 EDT
+Received: from localhost.localdomain (80-110-121-20.cgn.dynamic.surfer.at [80.110.121.20])
+        by mail.z3ntu.xyz (Postfix) with ESMTPSA id A794AC0101;
+        Mon,  3 Jun 2019 19:20:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple; d=z3ntu.xyz; s=z3ntu;
+        t=1559589657; bh=0ZOQ8oo0MRQTYnRxEe5Ztp+WG3N9bT3TzGBVaCY33eA=;
+        h=From:To:Cc:Subject:Date;
+        b=oLOzOFaNi+UanyTvl65bDSpLVo7pkbCsfAitG6cfQ5FTxlHTjQkzVkkKqON6CLvwq
+         sXkADZ31m7oqL24vC70ViNBeBPxoHVAWaVaX2G5HjVBhfYqb5086/pDuPccWawedy5
+         +WD6iAwcriLI7GLmSD0ogWd+/loG82HDl5kzh3nY=
+From:   Luca Weiss <luca@z3ntu.xyz>
+Cc:     Martijn Braam <martijn@brixit.nl>, Luca Weiss <luca@z3ntu.xyz>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-kernel@vger.kernel.org (open list)
+Subject: [PATCH] iio: light: stk3310: Add support for stk3335
+Date:   Mon,  3 Jun 2019 21:20:39 +0200
+Message-Id: <20190603192040.24101-1-luca@z3ntu.xyz>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Update to SPDX-License-Identifier, GPL-2.0
+From: Martijn Braam <martijn@brixit.nl>
 
-Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Acked-by: Benson Leung <bleung@chromium.org>
-Reviewed-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+The stk3335 light/proximity sensor is similar to the stk3310 and stk3311
+sensors and works with the stk3310 driver.
+
+Signed-off-by: Martijn Braam <martijn@brixit.nl>
+Signed-off-by: Luca Weiss <luca@z3ntu.xyz>
 ---
- include/linux/mfd/cros_ec_commands.h | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+ drivers/iio/light/stk3310.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index dcec96f01879..48292d449921 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -1,25 +1,15 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Host communication command constants for ChromeOS EC
-  *
-  * Copyright (C) 2012 Google, Inc
-  *
-- * This software is licensed under the terms of the GNU General Public
-- * License version 2, as published by the Free Software Foundation, and
-- * may be copied, distributed, and modified under those terms.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-- *
-- * The ChromeOS EC multi function device is used to mux all the requests
-- * to the EC device for its multiple features: keyboard controller,
-- * battery charging and regulator control, firmware update.
-- *
-- * NOTE: This file is copied verbatim from the ChromeOS EC Open Source
-- * project in an attempt to make future updates easy to make.
-+ * NOTE: This file is auto-generated from ChromeOS EC Open Source code from
-+ * https://chromium.googlesource.com/chromiumos/platform/ec/+/master/include/ec_commands.h
-  */
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 6e2a169da950..a25cc35f334e 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -40,6 +40,7 @@
  
-+/* Host communication command constants for Chrome EC */
-+
- #ifndef __CROS_EC_COMMANDS_H
- #define __CROS_EC_COMMANDS_H
+ #define STK3310_CHIP_ID_VAL			0x13
+ #define STK3311_CHIP_ID_VAL			0x1D
++#define STK3335_CHIP_ID_VAL			0x51
+ #define STK3310_PSINT_EN			0x01
+ #define STK3310_PS_MAX_VAL			0xFFFF
+ 
+@@ -454,7 +455,8 @@ static int stk3310_init(struct iio_dev *indio_dev)
+ 		return ret;
+ 
+ 	if (chipid != STK3310_CHIP_ID_VAL &&
+-	    chipid != STK3311_CHIP_ID_VAL) {
++	    chipid != STK3311_CHIP_ID_VAL &&
++	    chipid != STK3335_CHIP_ID_VAL) {
+ 		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
+ 		return -ENODEV;
+ 	}
+@@ -666,6 +668,7 @@ static SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend, stk3310_resume);
+ static const struct i2c_device_id stk3310_i2c_id[] = {
+ 	{"STK3310", 0},
+ 	{"STK3311", 0},
++	{"STK3335", 0},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
+@@ -673,6 +676,7 @@ MODULE_DEVICE_TABLE(i2c, stk3310_i2c_id);
+ static const struct acpi_device_id stk3310_acpi_id[] = {
+ 	{"STK3310", 0},
+ 	{"STK3311", 0},
++	{"STK3335", 0},
+ 	{}
+ };
  
 -- 
-2.21.0.1020.gf2820cf01a-goog
+2.21.0
 
