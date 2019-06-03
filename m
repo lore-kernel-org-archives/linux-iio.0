@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5526C282CE
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:34:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54AF9C04AB5
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:35:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B0A1C26E66
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:34:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D86426F5D
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Jun 2019 18:35:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PxfEqanv"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="TWnU/8Br"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727003AbfFCSes (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Jun 2019 14:34:48 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:44791 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726973AbfFCSer (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jun 2019 14:34:47 -0400
-Received: by mail-pg1-f193.google.com with SMTP id n2so8756821pgp.11
-        for <linux-iio@vger.kernel.org>; Mon, 03 Jun 2019 11:34:46 -0700 (PDT)
+        id S1727033AbfFCSex (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Jun 2019 14:34:53 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:38192 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727027AbfFCSex (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jun 2019 14:34:53 -0400
+Received: by mail-pf1-f196.google.com with SMTP id a186so10396668pfa.5
+        for <linux-iio@vger.kernel.org>; Mon, 03 Jun 2019 11:34:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=11H9eJ6PsDChSyARkFGWtgFkqyq4bAPSq9amltsDDFQ=;
-        b=PxfEqanv/PRY0M/VY4e1O9gn4s07yciX2RzwRkNeh2FKLAo974fldUJFmzbdHU2msY
-         K3lfwXtSqyTQ4zAiun8HPxjjxJrltz8yAHX07HNCkwUY0jfcMtNFSEFkGliOFj5oLdeF
-         P9dZuni3OAWZrcPdCd1G1IhAEd9Zk+/7Sbpw8=
+        bh=g2r2J9eRYoICMAO0Mml5Lob5ih4hOJifhd0ChBanih0=;
+        b=TWnU/8Br1NDLkxOhDVFWzxXEVZSNWP35rsSpFZ4kQG77SXjpQ2GPwqZBC93IYQvIhS
+         YFHi6RH81TFzmW/5VmqivXikdB7llOCHt6HovdBSpuVlJH8x+z8fR/NWFPmE7TbRN5yH
+         Ew033+rofC4o4/ZiVfeIOys56qQ1M9/G4+dXc=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=11H9eJ6PsDChSyARkFGWtgFkqyq4bAPSq9amltsDDFQ=;
-        b=PJI09qXs/rNSuqi9f2jvloo+xYV8qVdNO1jcN+HlLD9rfYcXbALntSVKPSdgHJX/lK
-         HH6rSE0/Xym5VQYQYzdduuPhDjB1pYXZpClw8ATYqmKpPo14GecC6FCMKFrgvWY/WlBA
-         sd+03J0kAhlvVC/JLM7RYHmyLEiSgn/nJgM4q9z/d29PtI0cHixV5Yvq6bP3/HENN3bc
-         BvUYVmaaH1OJ1NHmLTsaY1jo6n1/zWASDTqIhmzZpWSFwfOd0j2BO5pEiZT6flr+nZUH
-         HqJPweXD/7tP9+hB6547D0MZXHcAFdol/T9Rvt2t0uI9n/UxuqGuCZH8OMPr3SDBuz41
-         E72A==
-X-Gm-Message-State: APjAAAX/sUfeR2fij+N+qDQ9ttIW1gz6Hp20fIG2xeID1S9CObZT+dNq
-        raJ4+gJbcMQ2NrvezLOeNj/Ekw==
-X-Google-Smtp-Source: APXvYqwuAAvudQpkCNvX1FttFw+zwQdqr4m3Inozl8aJNBtybkzM7fS5SzEiIecujKL7X9T3XIFYuQ==
-X-Received: by 2002:a62:a508:: with SMTP id v8mr32386909pfm.87.1559586886463;
-        Mon, 03 Jun 2019 11:34:46 -0700 (PDT)
+        bh=g2r2J9eRYoICMAO0Mml5Lob5ih4hOJifhd0ChBanih0=;
+        b=X4evRFkUbvPR85uvSM+zb2626ezzwMXOwQxmioUacPTik3jw3tzpIuV3KJ2D8jYFZG
+         r3Rgx/Rhwplw5/Il5dxOZ6tbFYWwArYA+jbehJ+ilPRRlQ9uMyeV5hx4RCX14QYV42uD
+         /rQNjpWkMidurKe002IKwH3gPmaSgf8i49R3KhjPRWstNIxgjx4GDpmbiY/ytaLVbqBn
+         O/3XKpkIyET5XqBSYtxnN6osnVTojgftNr11h5xS7pSdVymKV5CoUuLX7CRE2bxm1cjJ
+         lSKi4xJQUIQY4b3GnrOD0mcAV+cyFhHvhD8hmngbp+SYtRf7UESmpa4XhafF7WKshC9e
+         D8fg==
+X-Gm-Message-State: APjAAAVV0a7joQQd1Q41zqmuJEyXHe7WaRHdG1SL6BHiz8XTRmXVX7Nx
+        yi1j40DOIpqY4FBGf07wkbUdyo/QIpvtXQ==
+X-Google-Smtp-Source: APXvYqxQsBEztjKiu8yRdElQCGG16y6F4IoOxNApWgpp02hor9oJUuCHu9DzJeUBik1rcQ4q9voEdA==
+X-Received: by 2002:aa7:8248:: with SMTP id e8mr33267234pfn.155.1559586892465;
+        Mon, 03 Jun 2019 11:34:52 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id 12sm5195115pfi.60.2019.06.03.11.34.45
+        by smtp.gmail.com with ESMTPSA id o126sm3191419pfb.134.2019.06.03.11.34.51
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 03 Jun 2019 11:34:45 -0700 (PDT)
+        Mon, 03 Jun 2019 11:34:51 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     enric.balletbo@collabora.com, bleung@chromium.org,
         groeck@chromium.org, lee.jones@linaro.org, jic23@kernel.org,
@@ -59,9 +59,9 @@ To:     enric.balletbo@collabora.com, bleung@chromium.org,
 Cc:     linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
         linux-kernel@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [RESEND PATCH v3 25/30] mfd: cros_ec: Add API for Touchpad support
-Date:   Mon,  3 Jun 2019 11:33:56 -0700
-Message-Id: <20190603183401.151408-26-gwendal@chromium.org>
+Subject: [RESEND PATCH v3 29/30] mfd: cros_ec: Add Management API entry points
+Date:   Mon,  3 Jun 2019 11:34:00 -0700
+Message-Id: <20190603183401.151408-30-gwendal@chromium.org>
 X-Mailer: git-send-email 2.22.0.rc1.311.g5d7573a151-goog
 In-Reply-To: <20190603183401.151408-1-gwendal@chromium.org>
 References: <20190603183401.151408-1-gwendal@chromium.org>
@@ -72,52 +72,140 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add API to control touchpad presented by Embedded Controller.
+Add commands for test and management.
+Add command space for future development.
 
 Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Acked-by: Benson Leung <bleung@chromium.org>
 Reviewed-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
- include/linux/mfd/cros_ec_commands.h | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
+ include/linux/mfd/cros_ec_commands.h | 113 +++++++++++++++++++++++++++
+ 1 file changed, 113 insertions(+)
 
 diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 52fd9bfafc7f..1d0311df44d3 100644
+index 860a76274334..fc8babce1576 100644
 --- a/include/linux/mfd/cros_ec_commands.h
 +++ b/include/linux/mfd/cros_ec_commands.h
-@@ -5043,6 +5043,32 @@ struct ec_response_pd_chip_info_v1 {
- 	};
- } __ec_align2;
+@@ -5176,6 +5176,119 @@ struct ec_params_set_cbi {
+ 	uint8_t data[];		/* For string and raw data */
+ } __ec_align1;
  
++/*
++ * Information about resets of the AP by the EC and the EC's own uptime.
++ */
++#define EC_CMD_GET_UPTIME_INFO 0x0121
++
++struct ec_response_uptime_info {
++	/*
++	 * Number of milliseconds since the last EC boot. Sysjump resets
++	 * typically do not restart the EC's time_since_boot epoch.
++	 *
++	 * WARNING: The EC's sense of time is much less accurate than the AP's
++	 * sense of time, in both phase and frequency.  This timebase is similar
++	 * to CLOCK_MONOTONIC_RAW, but with 1% or more frequency error.
++	 */
++	uint32_t time_since_ec_boot_ms;
++
++	/*
++	 * Number of times the AP was reset by the EC since the last EC boot.
++	 * Note that the AP may be held in reset by the EC during the initial
++	 * boot sequence, such that the very first AP boot may count as more
++	 * than one here.
++	 */
++	uint32_t ap_resets_since_ec_boot;
++
++	/*
++	 * The set of flags which describe the EC's most recent reset.  See
++	 * include/system.h RESET_FLAG_* for details.
++	 */
++	uint32_t ec_reset_flags;
++
++	/* Empty log entries have both the cause and timestamp set to zero. */
++	struct ap_reset_log_entry {
++		/*
++		 * See include/chipset.h: enum chipset_{reset,shutdown}_reason
++		 * for details.
++		 */
++		uint16_t reset_cause;
++
++		/* Reserved for protocol growth. */
++		uint16_t reserved;
++
++		/*
++		 * The time of the reset's assertion, in milliseconds since the
++		 * last EC boot, in the same epoch as time_since_ec_boot_ms.
++		 * Set to zero if the log entry is empty.
++		 */
++		uint32_t reset_time_ms;
++	} recent_ap_reset[4];
++} __ec_align4;
++
++/*
++ * Add entropy to the device secret (stored in the rollback region).
++ *
++ * Depending on the chip, the operation may take a long time (e.g. to erase
++ * flash), so the commands are asynchronous.
++ */
++#define EC_CMD_ADD_ENTROPY	0x0122
++
++enum add_entropy_action {
++	/* Add entropy to the current secret. */
++	ADD_ENTROPY_ASYNC = 0,
++	/*
++	 * Add entropy, and also make sure that the previous secret is erased.
++	 * (this can be implemented by adding entropy multiple times until
++	 * all rolback blocks have been overwritten).
++	 */
++	ADD_ENTROPY_RESET_ASYNC = 1,
++	/* Read back result from the previous operation. */
++	ADD_ENTROPY_GET_RESULT = 2,
++};
++
++struct ec_params_rollback_add_entropy {
++	uint8_t action;
++} __ec_align1;
++
++/*
++ * Perform a single read of a given ADC channel.
++ */
++#define EC_CMD_ADC_READ		0x0123
++
++struct ec_params_adc_read {
++	uint8_t adc_channel;
++} __ec_align1;
++
++struct ec_response_adc_read {
++	int32_t adc_value;
++} __ec_align4;
++
++/*
++ * Read back rollback info
++ */
++#define EC_CMD_ROLLBACK_INFO		0x0124
++
++struct ec_response_rollback_info {
++	int32_t id; /* Incrementing number to indicate which region to use. */
++	int32_t rollback_min_version;
++	int32_t rw_rollback_version;
++} __ec_align4;
++
++
++/* Issue AP reset */
++#define EC_CMD_AP_RESET 0x0125
++
 +/*****************************************************************************/
-+/* Touchpad MCU commands: range 0x0500-0x05FF */
++/* The command range 0x200-0x2FF is reserved for Rotor. */
 +
-+/* Perform touchpad self test */
-+#define EC_CMD_TP_SELF_TEST 0x0500
-+
-+/* Get number of frame types, and the size of each type */
-+#define EC_CMD_TP_FRAME_INFO 0x0501
-+
-+struct ec_response_tp_frame_info {
-+	uint32_t n_frames;
-+	uint32_t frame_sizes[0];
-+} __ec_align4;
-+
-+/* Create a snapshot of current frame readings */
-+#define EC_CMD_TP_FRAME_SNAPSHOT 0x0502
-+
-+/* Read the frame */
-+#define EC_CMD_TP_FRAME_GET 0x0503
-+
-+struct ec_params_tp_frame_get {
-+	uint32_t frame_index;
-+	uint32_t offset;
-+	uint32_t size;
-+} __ec_align4;
++/*****************************************************************************/
++/*
++ * Reserve a range of host commands for the CR51 firmware.
++ */
++#define EC_CMD_CR51_BASE 0x0300
++#define EC_CMD_CR51_LAST 0x03FF
 +
  /*****************************************************************************/
- /* EC-EC communication commands: range 0x0600-0x06FF */
+ /* Fingerprint MCU commands: range 0x0400-0x040x */
  
 -- 
 2.21.0.1020.gf2820cf01a-goog
