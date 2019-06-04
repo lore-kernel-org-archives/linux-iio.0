@@ -2,355 +2,114 @@ Return-Path: <SRS0=P1ch=UD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF09EC282CE
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Jun 2019 14:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76B23C282CE
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Jun 2019 14:47:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8BFB22473C
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Jun 2019 14:21:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 41E3224A80
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Jun 2019 14:47:22 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="iNBvPjb5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727169AbfFDOVm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 4 Jun 2019 10:21:42 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:42490 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727114AbfFDOVl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2019 10:21:41 -0400
-Received: from laptop-1.home (unknown [IPv6:2a01:cb19:8ad6:900:42dd:dd1c:19ee:7c60])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: aragua)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 3D43F2852B8;
-        Tue,  4 Jun 2019 15:21:39 +0100 (BST)
-Message-ID: <01250f19d907151a85673153fdce35d9472b1e07.camel@collabora.com>
-Subject: Re: [PATCH v2 2/3] iio: common: cros_ec_sensors: add sysfs
- attribute for frequencies
-From:   Fabien Lahoudere <fabien.lahoudere@collabora.com>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>, kernel@collabora.com,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Date:   Tue, 04 Jun 2019 16:21:37 +0200
-In-Reply-To: <CAPUE2usTOPA52AYzyY=Gupj55ynn=Gwmkjt_7MZC-UZ4KoeebQ@mail.gmail.com>
-References: <cover.1558601329.git.fabien.lahoudere@collabora.com>
-         <f1891f9da2e9362a4efebf0ebce487b9584d4f5a.1558601329.git.fabien.lahoudere@collabora.com>
-         <20190526184507.45c54053@archlinux>
-         <3af7925c5dad281774b6d12826770cbefb32ea09.camel@collabora.com>
-         <CAPUE2usTOPA52AYzyY=Gupj55ynn=Gwmkjt_7MZC-UZ4KoeebQ@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.30.2 (3.30.2-2.fc29) 
-Mime-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727879AbfFDOrV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 4 Jun 2019 10:47:21 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:36083 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727705AbfFDOrU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Jun 2019 10:47:20 -0400
+Received: by mail-wr1-f67.google.com with SMTP id n4so13104094wrs.3
+        for <linux-iio@vger.kernel.org>; Tue, 04 Jun 2019 07:47:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=bLDsai7BCDJ9/WAFUmOmDJ4D/4W6/bXgG+qdhNwcZhk=;
+        b=iNBvPjb5Qy21/12AvtkoRo4IHAm41Wg4Vk0nBhVKAQXzW/FfWktrlAJB1cx60YTjZN
+         pYT8vqd6X/6JxxL9Q2aDSrZhJTO8FGCMZjYSJ5YlrT0gcbOLrUoxbTCpOJhoo0WVj4uS
+         qaihsQHl5/DKak5ZC4VFsTKtIgy1bcly73SbJxXYkhpOuPjvu72uV4TFbFhLE4u3db1x
+         XBPLS2/aV/kZr/v/fqELn48ZEdCAlNPLQJ879P7p7ggyomOArRwgIWvmJZa1MtjT8tc2
+         kZ2WrTjGxBjbXU7Ioqw6JIRq/dfUL+mD1M9xuYkST96HZDAcr4mgLkbPuWKE5Xr5iIM5
+         KumQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=bLDsai7BCDJ9/WAFUmOmDJ4D/4W6/bXgG+qdhNwcZhk=;
+        b=MZc68nyMu/n/D0HLYmzIKZvwY1TAwbi1PX/pHaGxM5efLwuYQXthDQ+w2YcGHXXYNf
+         j3GnSKm1Fpjx5fQCZOA69vgQq3m7td9dicVYxyEdu8iQ+HuxJmy7zasIpUj14eLjCALP
+         Wn3XGGu+R77v9j3vNMWZlQC6MXWKCAwjqoT2Jv4+933w5wrNuH1KS/VEJyptvLfN8Usj
+         iI1eAxfy5xEfjph3SVo7tQsT0BNVClP/M9l6sXHK2YhnjNl+R8UkMP880wffnMjxUn0t
+         7m6U74unUkFMqaNlrRq/zFS7LnB/aQqf9oGN3ABNmmvYtLXYydZEoXr44KbGt3vyZHWs
+         qhrQ==
+X-Gm-Message-State: APjAAAWJedDZ1/MyX3afOBkqBeXCZ0+EHRV9fhEDLCuuECdyiFojs/vc
+        Rci9BudAeUnPzZnuztV6Ns0n9Q==
+X-Google-Smtp-Source: APXvYqw4x2gWBkZ94JwAp/u/xenQcH6trywYc6ypCThQKgduCn+6apBhkSU1BFXr5dezDKoFoQcCDw==
+X-Received: by 2002:a5d:62c9:: with SMTP id o9mr19704199wrv.186.1559659638823;
+        Tue, 04 Jun 2019 07:47:18 -0700 (PDT)
+Received: from glaroque-ThinkPad-T480.baylibre.local (lmontsouris-657-1-212-31.w90-63.abo.wanadoo.fr. [90.63.244.31])
+        by smtp.gmail.com with ESMTPSA id v184sm3649639wme.10.2019.06.04.07.47.17
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Tue, 04 Jun 2019 07:47:18 -0700 (PDT)
+From:   Guillaume La Roque <glaroque@baylibre.com>
+To:     jic23@kernel.org, khilman@baylibre.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/3] arm64: dts: meson: g12a: add temperature sensor node
+Date:   Tue,  4 Jun 2019 16:47:13 +0200
+Message-Id: <20190604144714.2009-3-glaroque@baylibre.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190604144714.2009-1-glaroque@baylibre.com>
+References: <20190604144714.2009-1-glaroque@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le mardi 28 mai 2019 à 04:04 -0700, Gwendal Grignou a écrit :
-> On Mon, May 27, 2019 at 2:55 AM Fabien Lahoudere
-> <fabien.lahoudere@collabora.com> wrote:
-> > Le dimanche 26 mai 2019 à 18:45 +0100, Jonathan Cameron a écrit :
-> > > On Thu, 23 May 2019 11:07:36 +0200
-> > > Fabien Lahoudere <fabien.lahoudere@collabora.com> wrote:
-> > > 
-> > > > In order to provide minimum and maximum frequencies for each
-> > > > sensors,
-> > > > we use a standard API (sampling_frequency_available) to provide
-> > > > them
-> > > > to userland.
-> > > > As cros_ec_sensors_core_init do not manage default attrs, we
-> > > > change
-> > > > the signature to let all kind of sensors to provide "struct
-> > > > iio_info"
-> > > > with their callback. This change impact drivers using that
-> > > > function.
-> > > > 
-> > > > Then cros_ec_* sensors provides frequencies range in sysfs like
-> > > > this:
-> > > > [min step max]
-> > > > 
-> > > > Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.com
-> > > > >
-> > > When I was pointing at the _available syntax I was meaning that
-> > > the ideal is to implement this using the associated callbacks
-> > > rather
-> > > than as a custom sysfs attribute.
-> > > 
-> > 
-> > Sorry, I misunderstood. Let me retry with that callback
-> > implemented.
-> > 
-> > > > ---
-> > > >  .../common/cros_ec_sensors/cros_ec_sensors.c  |  6 +--
-> > > >  .../cros_ec_sensors/cros_ec_sensors_core.c    | 38
-> > > > +++++++++++++++++++
-> > > >  drivers/iio/light/cros_ec_light_prox.c        |  6 +--
-> > > >  drivers/iio/pressure/cros_ec_baro.c           |  6 +--
-> > > >  .../linux/iio/common/cros_ec_sensors_core.h   |  4 +-
-> > > >  5 files changed, 50 insertions(+), 10 deletions(-)
-> > > > 
-> > > > diff --git
-> > > > a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> > > > b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> > > > index 17af4e0fd5f8..a0ecee15a6c8 100644
-> > > > --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> > > > +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> > > > @@ -172,7 +172,7 @@ static int cros_ec_sensors_write(struct
-> > > > iio_dev
-> > > > *indio_dev,
-> > > >     return ret;
-> > > >  }
-> > > > 
-> > > > -static const struct iio_info ec_sensors_info = {
-> > > > +static struct iio_info ec_sensors_info = {
-> > > >     .read_raw = &cros_ec_sensors_read,
-> > > >     .write_raw = &cros_ec_sensors_write,
-> > > >  };
-> > > > @@ -195,11 +195,11 @@ static int cros_ec_sensors_probe(struct
-> > > > platform_device *pdev)
-> > > >     if (!indio_dev)
-> > > >             return -ENOMEM;
-> > > > 
-> > > > -   ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> > > > +   ret = cros_ec_sensors_core_init(pdev, indio_dev,
-> > > > &ec_sensors_info,
-> > > > +                                   true);
-> > > >     if (ret)
-> > > >             return ret;
-> > > > 
-> > > > -   indio_dev->info = &ec_sensors_info;
-> > > >     state = iio_priv(indio_dev);
-> > > >     for (channel = state->channels, i = CROS_EC_SENSOR_X;
-> > > >          i < CROS_EC_SENSOR_MAX_AXIS; i++, channel++) {
-> > > > diff --git
-> > > > a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > index ac53ea32c1b1..08fb5d3dc7b5 100644
-> > > > --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > @@ -10,6 +10,7 @@
-> > > >  #include <linux/iio/buffer.h>
-> > > >  #include <linux/iio/common/cros_ec_sensors_core.h>
-> > > >  #include <linux/iio/iio.h>
-> > > > +#include <linux/iio/sysfs.h>
-> > > >  #include <linux/iio/kfifo_buf.h>
-> > > >  #include <linux/iio/trigger_consumer.h>
-> > > >  #include <linux/kernel.h>
-> > > > @@ -86,8 +87,42 @@ static int
-> > > > cros_ec_get_host_cmd_version_mask(struct cros_ec_device
-> > > > *ec_dev,
-> > > >     return ret;
-> > > >  }
-> > > > 
-> > > > +/**
-> > > > + * cros_ec_sensors_read_freq() - sysfs function to get
-> > > > available
-> > > > frequencies
-> > > > + * @dev: Device structure for this device.
-> > > > + * @attr: Description of the attribute.
-> > > > + * @buf: Incoming string
-> > > > + *
-> > > > + * The later modes are only relevant to the ring buffer - and
-> > > > depend on current
-> > > > + * mode. Note that data sheet gives rather wide tolerances for
-> > > > these so integer
-> > > > + * division will give good enough answer and not all chips
-> > > > have
-> > > > them specified
-> > > > + * at all.
-> > > > + **/
-> > > > +static ssize_t cros_ec_sensors_read_freq(struct device *dev,
-> > > > +                                    struct device_attribute
-> > > > *attr,
-> > > > +                                    char *buf)
-> > > > +{
-> > > > +   struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > > > +   struct cros_ec_sensors_core_state *state =
-> > > > iio_priv(indio_dev);
-> > > > +
-> > > > +   return snprintf(buf, PAGE_SIZE, "[%d 1 %d]\n", state-
-> > > > >min_freq,
-> > > > +                   state->max_freq);
-> Step to 1 [Hz?] is not right; EC uses the frequency the sensors
-> supports, rounded up by default.
-> Given EC is hiding the sensors it controls, it is not straight-
-> forward
-> to find the supported frequencies between min_freq and max_freq.
-> However, sensors mostly follow the following rules:
-> - "fast" sensors: accelerometer, gyroscope, magnetometer,  barometer:
-> Supported frequencies are: [ min_freq, max_freq >> n, max_freq >> (n
-> -
-> 1), ... max_freq >> 1, max_freq], where (min_freq >> n) > min_freq.
-> frequency are expressed in mHz resolution.
-> - "Slow" sensors: light, proximity:
-> Any frequencies between min_freq and max_freq are supported.
-> 
-> Note that frequency 0 is accepted, it puts the given sensor in
-> suspend mode.
-> 
-> Given that information, it would make sense to follow the existing
-> macro IIO_DEV_ATTR_SAMP_FREQ_AVAIL and report an array of
-> frequencies,
-> like bmc150_magn_show_samp_freq_avail does.
+Add two temperature sensor
+the first near CPU and GPU, second near DDR
 
-Thanks Gwendal.
-IIUC, it is wroing to give a range and better to give a set of value.
-Where can i find all available values for each sensors?
+Signed-off-by: Guillaume La Roque <glaroque@baylibre.com>
+---
+ arch/arm64/boot/dts/amlogic/meson-g12a.dtsi | 22 +++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-
-> 
-> Gwendal.
-> 
-> > > Whilst it is a bit more fiddly I would much prefer if this was
-> > > done
-> > > with
-> > > the info_mask_shared_by_all_available bit mask in the iio_dev and
-> > > providing
-> > > the read_avail callback.
-> > > 
-> > > The original reason to introduce this form was as part of trying
-> > > to
-> > > (far too slowly) kill off as much hand defined ABI as possible.
-> > > Ultimate aim is to make the IIO interface optional for cases
-> > > where
-> > > the channels are mostly being used by other consumer drivers
-> > > rather
-> > > than
-> > > being directly consumed by userspace.  To do that we need all of
-> > > these elements to be easily accessible from the consumer hooks.
-> > > 
-> > > 
-> > > 
-> > > > +}
-> > > > +
-> > > > +static
-> > > > IIO_DEV_ATTR_SAMP_FREQ_AVAIL(cros_ec_sensors_read_freq);
-> > > > +
-> > > > +static struct attribute *cros_ec_sensors_attributes[] = {
-> > > > +   &iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> > > > +   NULL,
-> > > > +};
-> > > > +
-> > > > +static const struct attribute_group
-> > > > cros_ec_sensors_attribute_group = {
-> > > > +   .attrs = cros_ec_sensors_attributes,
-> > > > +};
-> > > > +
-> > > >  int cros_ec_sensors_core_init(struct platform_device *pdev,
-> > > >                           struct iio_dev *indio_dev,
-> > > > +                         struct iio_info *info,
-> > > >                           bool physical_device)
-> > > >  {
-> > > >     struct device *dev = &pdev->dev;
-> > > > @@ -149,6 +184,9 @@ int cros_ec_sensors_core_init(struct
-> > > > platform_device *pdev,
-> > > >             }
-> > > >     }
-> > > > 
-> > > > +   info->attrs = &cros_ec_sensors_attribute_group;
-> > > > +   indio_dev->info = info;
-> > > > +
-> > > >     return 0;
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
-> > > > diff --git a/drivers/iio/light/cros_ec_light_prox.c
-> > > > b/drivers/iio/light/cros_ec_light_prox.c
-> > > > index 308ee6ff2e22..1772e339cf14 100644
-> > > > --- a/drivers/iio/light/cros_ec_light_prox.c
-> > > > +++ b/drivers/iio/light/cros_ec_light_prox.c
-> > > > @@ -161,7 +161,7 @@ static int cros_ec_light_prox_write(struct
-> > > > iio_dev *indio_dev,
-> > > >     return ret;
-> > > >  }
-> > > > 
-> > > > -static const struct iio_info cros_ec_light_prox_info = {
-> > > > +static struct iio_info cros_ec_light_prox_info = {
-> > > >     .read_raw = &cros_ec_light_prox_read,
-> > > >     .write_raw = &cros_ec_light_prox_write,
-> > > >  };
-> > > > @@ -184,11 +184,11 @@ static int
-> > > > cros_ec_light_prox_probe(struct
-> > > > platform_device *pdev)
-> > > >     if (!indio_dev)
-> > > >             return -ENOMEM;
-> > > > 
-> > > > -   ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> > > > +   ret = cros_ec_sensors_core_init(pdev, indio_dev,
-> > > > +                                   &cros_ec_light_prox_info,
-> > > > true);
-> > > >     if (ret)
-> > > >             return ret;
-> > > > 
-> > > > -   indio_dev->info = &cros_ec_light_prox_info;
-> > > >     state = iio_priv(indio_dev);
-> > > >     state->core.type = state->core.resp->info.type;
-> > > >     state->core.loc = state->core.resp->info.location;
-> > > > diff --git a/drivers/iio/pressure/cros_ec_baro.c
-> > > > b/drivers/iio/pressure/cros_ec_baro.c
-> > > > index 034ce98d6e97..cd3be0f16226 100644
-> > > > --- a/drivers/iio/pressure/cros_ec_baro.c
-> > > > +++ b/drivers/iio/pressure/cros_ec_baro.c
-> > > > @@ -107,7 +107,7 @@ static int cros_ec_baro_write(struct
-> > > > iio_dev
-> > > > *indio_dev,
-> > > >     return ret;
-> > > >  }
-> > > > 
-> > > > -static const struct iio_info cros_ec_baro_info = {
-> > > > +static struct iio_info cros_ec_baro_info = {
-> > > >     .read_raw = &cros_ec_baro_read,
-> > > >     .write_raw = &cros_ec_baro_write,
-> > > >  };
-> > > > @@ -130,11 +130,11 @@ static int cros_ec_baro_probe(struct
-> > > > platform_device *pdev)
-> > > >     if (!indio_dev)
-> > > >             return -ENOMEM;
-> > > > 
-> > > > -   ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> > > > +   ret = cros_ec_sensors_core_init(pdev, indio_dev,
-> > > > &cros_ec_baro_info,
-> > > > +                                   true);
-> > > >     if (ret)
-> > > >             return ret;
-> > > > 
-> > > > -   indio_dev->info = &cros_ec_baro_info;
-> > > >     state = iio_priv(indio_dev);
-> > > >     state->core.type = state->core.resp->info.type;
-> > > >     state->core.loc = state->core.resp->info.location;
-> > > > diff --git a/include/linux/iio/common/cros_ec_sensors_core.h
-> > > > b/include/linux/iio/common/cros_ec_sensors_core.h
-> > > > index 32fd08bbcf52..f170a72ac08d 100644
-> > > > --- a/include/linux/iio/common/cros_ec_sensors_core.h
-> > > > +++ b/include/linux/iio/common/cros_ec_sensors_core.h
-> > > > @@ -114,12 +114,14 @@ struct platform_device;
-> > > >   * cros_ec_sensors_core_init() - basic initialization of the
-> > > > core
-> > > > structure
-> > > >   * @pdev:          platform device created for the sensors
-> > > >   * @indio_dev:             iio device structure of the device
-> > > > + * @info:          iio info structure with read and write
-> > > > callback
-> > > >   * @physical_device:       true if the device refers to a
-> > > > physical
-> > > > device
-> > > >   *
-> > > >   * Return: 0 on success, -errno on failure.
-> > > >   */
-> > > >  int cros_ec_sensors_core_init(struct platform_device *pdev,
-> > > > -                         struct iio_dev *indio_dev, bool
-> > > > physical_device);
-> > > > +                         struct iio_dev *indio_dev, struct
-> > > > iio_info *info,
-> > > > +                         bool physical_device);
-> > > > 
-> > > >  /**
-> > > >   * cros_ec_sensors_capture() - the trigger handler function
+diff --git a/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi b/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
+index 840dab606110..37f17087bdb1 100644
+--- a/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
++++ b/arch/arm64/boot/dts/amlogic/meson-g12a.dtsi
+@@ -1360,6 +1360,28 @@
+ 				};
+ 			};
+ 
++			cpu_temp: temperature-sensor@34800 {
++				compatible = "amlogic,meson-g12a-cpu-tsensor",
++					     "amlogic,meson-g12a-tsensor";
++				reg = <0x0 0x34800 0x0 0x50>;
++				interrupts = <GIC_SPI 35 IRQ_TYPE_EDGE_RISING>;
++				clocks = <&clkc CLKID_TS>;
++				status = "okay";
++				#io-channel-cells = <1>;
++				amlogic,ao-secure = <&sec_AO>;
++			};
++
++			ddr_temp: temperature-sensor@34c00 {
++				compatible = "amlogic,meson-g12a-ddr-tsensor",
++					     "amlogic,meson-g12a-tsensor";
++				reg = <0x0 0x34c00 0x0 0x50>;
++				interrupts = <GIC_SPI 36 IRQ_TYPE_EDGE_RISING>;
++				clocks = <&clkc CLKID_TS>;
++				status = "okay";
++				#io-channel-cells = <1>;
++				amlogic,ao-secure = <&sec_AO>;
++			};
++
+ 			usb2_phy0: phy@36000 {
+ 				compatible = "amlogic,g12a-usb2-phy";
+ 				reg = <0x0 0x36000 0x0 0x2000>;
+-- 
+2.17.1
 
