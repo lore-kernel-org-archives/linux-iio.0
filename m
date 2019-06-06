@@ -2,127 +2,109 @@ Return-Path: <SRS0=HRfy=UF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FC8EC28D1E
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 11:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A3BDC04AB5
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:12:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3465C2070B
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 11:25:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3431520673
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:12:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PfJA17hV"
+	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="bwshtbRg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727166AbfFFLZx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Jun 2019 07:25:53 -0400
-Received: from mail-qt1-f194.google.com ([209.85.160.194]:45185 "EHLO
-        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726961AbfFFLZx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jun 2019 07:25:53 -0400
-Received: by mail-qt1-f194.google.com with SMTP id j19so2087590qtr.12;
-        Thu, 06 Jun 2019 04:25:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=5dNsy9b7wSo0PojyEFmG8hPYvRxvl4pE0j/UUGtnkT4=;
-        b=PfJA17hV5DxfAedjpGZ9hI2xgFiAXw5rZ2cDbI2LVufOOBGUWNCzM9PTOgW38P91bX
-         Hhd+Z1cV3gDc61Vn0HObvmU5cRH13KhcUe+YRqDR3SVM2MQWSfiKxZYRy/uhJEvdabg2
-         FPbzUW8FX8oKwH86dsxSySwjPkeDO08FFqXPNIDdceu7+Mzzxkp5gvMRebpB9fVHPUYB
-         Gt4Ur2wu4pxXwF3qTEGZh2VRlsOWpQtwFzWQiQsOmfvWlwMoC4X59eBPca9s69or1aNs
-         1wkM3xuSIZizUSxijaHtZgxJCcpqBm/Ec+EJzJFQPaWIhxqR8a13wrwkZrjTy74DXFaK
-         cT6Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=5dNsy9b7wSo0PojyEFmG8hPYvRxvl4pE0j/UUGtnkT4=;
-        b=IHQIU82yHMGm9OiELgWnemarEn1P1quLtC1lF0ciFphZFmpXchzqo6WhivlGztBO4A
-         Wo3MogH2gs696ziMxO7XEdRwogGwRtqDcYtbJPlGs/cKW+C7E7jdERjk91fTSW6JtZ+X
-         okMLs+w4uxZ785O1Mw1zUCfuuc7ZjX3pjp44gUS2cFx3SSK9dcL/zMG26z5CGX4n7GT/
-         uhgud0noVnULKH43pOyYR3/ymkko6Ox2k3m7b6D8H9n5ElduNnxufYeE+c/wz5IiTce1
-         LmycAE+YrzEyWp1Qa8Tjj1ttMoyhQNANlNEXvjNufdU9d7SJHDiK9RUEfKOvaDQZ8pF5
-         x5CA==
-X-Gm-Message-State: APjAAAXJPq3ZRZFrZR5a37SbzfYqlHqTwhIMHnm3SLkw67qnlvb/Sbc4
-        WVaNC3sqmwuEQbO+4FE/V4pvKhgCRdkwHxtGCu4=
-X-Google-Smtp-Source: APXvYqxI4DVrPMjWmEMhMewy/0MU4rt1SR7d41hBlwI1sK4buOiQ0PwUYfkjIRaPn7qU9VQJcA8j/66jTPavg7CNUJs=
-X-Received: by 2002:a0c:d163:: with SMTP id c32mr39262393qvh.139.1559820352349;
- Thu, 06 Jun 2019 04:25:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20190603183401.151408-1-gwendal@chromium.org> <20190604055908.GA4797@dell>
-In-Reply-To: <20190604055908.GA4797@dell>
-From:   Enric Balletbo Serra <eballetbo@gmail.com>
-Date:   Thu, 6 Jun 2019 13:25:40 +0200
-Message-ID: <CAFqH_51gMu81f=VFQaF4u9-tAWDMocGAwM_fOPT3Cctv6KWniw@mail.gmail.com>
-Subject: Re: [alsa-devel] [RESEND PATCH v3 00/30] Update cros_ec_commands.h
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Gwendal Grignou <gwendal@chromium.org>,
-        alsa-devel@alsa-project.org, linux-iio@vger.kernel.org,
-        fabien.lahoudere@collabora.com, Takashi Iwai <tiwai@suse.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Mark Brown <broonie@kernel.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Benson Leung <bleung@chromium.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Cheng-Yi Chiang <cychiang@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        id S1729182AbfFFPMM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Jun 2019 11:12:12 -0400
+Received: from dc8-smtprelay2.synopsys.com ([198.182.47.102]:40300 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728812AbfFFPML (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jun 2019 11:12:11 -0400
+Received: from mailhost.synopsys.com (unknown [10.225.0.210])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 9DBF9C0B59;
+        Thu,  6 Jun 2019 15:12:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1559833942; bh=+7+5ObOc7gxS4v0EaTYk0LsyMtKGB6jikkVK2HcAVnU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
+         References:From;
+        b=bwshtbRgM1A3pmPkIenFpKszEIHXHty90zKvVrCs9P8ZrOutl1tmnXQyCP5qNoMJ1
+         K12aDk3pPTLUOkygUkq9oYTgQZV7vnPt7P+L1cJ3+Maol3iKz3AEenl6WooXAM8Ist
+         GJlHzOnqKh69Dcc9iV9f5BbXQ5szeKp97e+ptvxp+TfMBM3P9qPfhLra8r+YgQILtY
+         elN5BSZGTc/XkkrjWg4nSil53usiI9rvovi08/5du6YOCrPvWjBGZ0Q9XykclDUkl2
+         WB8WZ3983Nx7EuJ1U/VDCsDFCb3NxV8bzatxYdI5tSMD+qodxvKbunoKdOsHfRF17w
+         LnnMO+NhWxIYw==
+Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id B34A3A022F;
+        Thu,  6 Jun 2019 15:12:08 +0000 (UTC)
+Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
+        by de02.synopsys.com (Postfix) with ESMTP id 98F4C3FED2;
+        Thu,  6 Jun 2019 17:12:08 +0200 (CEST)
+From:   Vitor Soares <Vitor.Soares@synopsys.com>
+To:     linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     broonie@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
+        bbrezillon@kernel.org, Joao.Pinto@synopsys.com,
+        lorenzo.bianconi83@gmail.com,
+        Vitor Soares <Vitor.Soares@synopsys.com>
+Subject: [PATCH v2 2/3] i3c: add i3c_get_device_id helper
+Date:   Thu,  6 Jun 2019 17:12:03 +0200
+Message-Id: <eaa9eb66df6b4c9b577aec46fd440b99d763a5a2.1559831663.git.vitor.soares@synopsys.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <cover.1559831663.git.vitor.soares@synopsys.com>
+References: <cover.1559831663.git.vitor.soares@synopsys.com>
+In-Reply-To: <cover.1559831663.git.vitor.soares@synopsys.com>
+References: <cover.1559831663.git.vitor.soares@synopsys.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Lee,
+This helper return the i3c_device_id structure in order the client
+have access to the driver data.
 
-Missatge de Lee Jones <lee.jones@linaro.org> del dia dt., 4 de juny
-2019 a les 8:00:
->
-> On Mon, 03 Jun 2019, Gwendal Grignou wrote:
->
-> > The interface between CrosEC embedded controller and the host,
-> > described by cros_ec_commands.h, as diverged from what the embedded
-> > controller really support.
-> >
-> > The source of thruth is at
-> > https://chromium.googlesource.com/chromiumos/platform/ec/+/master/inclu=
-de/ec_commands.h
-> >
-> > That include file is converted to remove ACPI and Embedded only code.
-> >
-> > From now on, cros_ec_commands.h will be automatically generated from
-> > the file above, do not modify directly.
-> >
-> > Fell free to squash the commits below.
-> >
-> > v3 resent: Add Fabien's ack.
->
-> Thanks for doing that.
->
-> In future, please ensure *-bys tags are in chronological order with
-> the first one either being a Suggested-by or your SoB.  Reviews, tests
-> etc usually come *after* first submission.
->
-> I've changed this for you this time, yes in all 30 patches!  :)
->
-> Anyway, all applied, thanks.
->
+Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
+---
+Changes in v2:
+  move this function to drivers/i3c/device.c
 
-Could you do an immutable branch with those? I've few patches that
-depends on those changes and probably I'll have more. Otherwise, I'll
-wait for those to land.
+ drivers/i3c/device.c       | 8 ++++++++
+ include/linux/i3c/device.h | 1 +
+ 2 files changed, 9 insertions(+)
 
-Thanks,
- Enric
+diff --git a/drivers/i3c/device.c b/drivers/i3c/device.c
+index 69cc040..a6d0796 100644
+--- a/drivers/i3c/device.c
++++ b/drivers/i3c/device.c
+@@ -200,6 +200,14 @@ struct i3c_device *dev_to_i3cdev(struct device *dev)
+ }
+ EXPORT_SYMBOL_GPL(dev_to_i3cdev);
+ 
++const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cdev)
++{
++	const struct i3c_driver *i3cdrv = drv_to_i3cdrv(i3cdev->dev.driver);
++
++	return i3cdrv->id_table;
++}
++EXPORT_SYMBOL_GPL(i3c_get_device_id);
++
+ /**
+  * i3c_driver_register_with_owner() - register an I3C device driver
+  *
+diff --git a/include/linux/i3c/device.h b/include/linux/i3c/device.h
+index 5ecb055..e0415e1 100644
+--- a/include/linux/i3c/device.h
++++ b/include/linux/i3c/device.h
+@@ -187,6 +187,7 @@ static inline struct i3c_driver *drv_to_i3cdrv(struct device_driver *drv)
+ 
+ struct device *i3cdev_to_dev(struct i3c_device *i3cdev);
+ struct i3c_device *dev_to_i3cdev(struct device *dev);
++const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cdev);
+ 
+ static inline void i3cdev_set_drvdata(struct i3c_device *i3cdev,
+ 				      void *data)
+-- 
+2.7.4
 
-> --
-> Lee Jones [=E6=9D=8E=E7=90=BC=E6=96=AF]
-> Linaro Services Technical Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
-> _______________________________________________
-> Alsa-devel mailing list
-> Alsa-devel@alsa-project.org
-> https://mailman.alsa-project.org/mailman/listinfo/alsa-devel
