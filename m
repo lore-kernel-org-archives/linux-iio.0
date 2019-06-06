@@ -2,88 +2,101 @@ Return-Path: <SRS0=HRfy=UF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14DD8C28EB4
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:12:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB43C04AB5
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:18:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D7DA720673
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:12:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="AZg1Yd1U"
+	by mail.kernel.org (Postfix) with ESMTP id 5CDA02083E
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 15:18:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729029AbfFFPMJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Jun 2019 11:12:09 -0400
-Received: from dc2-smtprelay2.synopsys.com ([198.182.61.142]:50650 "EHLO
-        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1727559AbfFFPMJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jun 2019 11:12:09 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        id S1729091AbfFFPSA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Jun 2019 11:18:00 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:58866 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729029AbfFFPSA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jun 2019 11:18:00 -0400
+Received: from localhost (unknown [IPv6:2a01:e0a:2c:6930:5cf4:84a1:2763:fe0d])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 0FA1CC0BA5;
-        Thu,  6 Jun 2019 15:11:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1559833908; bh=0xawz4OatXGzaBqtYj6nS/EfNnp/z+E5VwinuXJDtLQ=;
-        h=From:To:Cc:Subject:Date:From;
-        b=AZg1Yd1UvRb7GN5XhHpGuTWa45lSMBb5oho1rMamz+DMIBTzwL7++qDfU0zRK/ahA
-         GL9HjOsdNcdTlNAkVuCluuUghwxxrgmekwGebFyCrdpFFyyQJOWnWlFEqZwjSXxobr
-         mUh2O0o/TCY6YpLwj4d1ABhXEm58H6PjjJ27rDuUqPUAcu3mo10VKCLQ4mcLs44dNy
-         uPfDqNBjHAqLhdpiFcU4mV1ccs66S84iMhQtdaeeYUmh8CmhsnbM99oJgU4fqZ1l7K
-         LbM9q8e1/1+IFyl3At97an0TMptIBW+3AkKYmTP2gGdH3h0y9HG6uf3p4LB/tc1CWf
-         Ra6x0KQZRT2cg==
-Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id AF36DA0057;
-        Thu,  6 Jun 2019 15:12:06 +0000 (UTC)
-Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 9191D3FECC;
-        Thu,  6 Jun 2019 17:12:06 +0200 (CEST)
-From:   Vitor Soares <Vitor.Soares@synopsys.com>
-To:     linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org
-Cc:     broonie@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
+        (Authenticated sender: bbrezillon)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 31276260D74;
+        Thu,  6 Jun 2019 16:17:58 +0100 (BST)
+Date:   Thu, 6 Jun 2019 17:17:55 +0200
+From:   Boris Brezillon <boris.brezillon@collabora.com>
+To:     Vitor Soares <Vitor.Soares@synopsys.com>
+Cc:     linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-kernel@vger.kernel.org,
+        broonie@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
         bbrezillon@kernel.org, Joao.Pinto@synopsys.com,
-        lorenzo.bianconi83@gmail.com,
-        Vitor Soares <Vitor.Soares@synopsys.com>
-Subject: [PATCH v2 0/3] Add ST lsm6dso i3c support
-Date:   Thu,  6 Jun 2019 17:12:01 +0200
-Message-Id: <cover.1559831663.git.vitor.soares@synopsys.com>
-X-Mailer: git-send-email 2.7.4
+        lorenzo.bianconi83@gmail.com
+Subject: Re: [PATCH v2 2/3] i3c: add i3c_get_device_id helper
+Message-ID: <20190606171755.0feb8998@collabora.com>
+In-Reply-To: <eaa9eb66df6b4c9b577aec46fd440b99d763a5a2.1559831663.git.vitor.soares@synopsys.com>
+References: <cover.1559831663.git.vitor.soares@synopsys.com>
+        <eaa9eb66df6b4c9b577aec46fd440b99d763a5a2.1559831663.git.vitor.soares@synopsys.com>
+Organization: Collabora
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series add i3c support for STM LSM6DSO and LSM6DSR sensors.
+On Thu,  6 Jun 2019 17:12:03 +0200
+Vitor Soares <Vitor.Soares@synopsys.com> wrote:
 
-It is also introduced i3c support on regmap api. Due the lack of
-i3c devices HDR capables on the market the support for now is only for
-i3c sdr mode by using i3c_device_do_priv_xfers() method.
+> This helper return the i3c_device_id structure in order the client
+> have access to the driver data.
+> 
+> Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
+> ---
+> Changes in v2:
+>   move this function to drivers/i3c/device.c
+> 
+>  drivers/i3c/device.c       | 8 ++++++++
+>  include/linux/i3c/device.h | 1 +
+>  2 files changed, 9 insertions(+)
+> 
+> diff --git a/drivers/i3c/device.c b/drivers/i3c/device.c
+> index 69cc040..a6d0796 100644
+> --- a/drivers/i3c/device.c
+> +++ b/drivers/i3c/device.c
+> @@ -200,6 +200,14 @@ struct i3c_device *dev_to_i3cdev(struct device *dev)
+>  }
+>  EXPORT_SYMBOL_GPL(dev_to_i3cdev);
+>  
+> +const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cdev)
+> +{
+> +	const struct i3c_driver *i3cdrv = drv_to_i3cdrv(i3cdev->dev.driver);
+> +
+> +	return i3cdrv->id_table;
+> +}
+> +EXPORT_SYMBOL_GPL(i3c_get_device_id);
 
-Changes in v2:
-  Change i3c_get_device_id() to drivers/i3c/device.c
-  Add support for LSM6DSR
+That's not what I asked. I told you to expose i3c_device_match_id()
+which already exists and is in master.c. What you really want is to get
+the device_id entry that matches your device, not the first entry in
+the table...
 
-Vitor Soares (3):
-  regmap: add i3c bus support
-  i3c: Add i3c_get_device_id helper
-  iio: imu: st_lsm6dsx: add i3c basic support for LSM6DSO and LSM6DSR
-
- drivers/base/regmap/Kconfig                 |  6 ++-
- drivers/base/regmap/Makefile                |  1 +
- drivers/base/regmap/regmap-i3c.c            | 60 +++++++++++++++++++++++
- drivers/i3c/device.c                        |  8 +++
- drivers/iio/imu/st_lsm6dsx/Kconfig          |  8 ++-
- drivers/iio/imu/st_lsm6dsx/Makefile         |  1 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 76 +++++++++++++++++++++++++++++
- include/linux/i3c/device.h                  |  1 +
- include/linux/regmap.h                      | 20 ++++++++
- 9 files changed, 179 insertions(+), 2 deletions(-)
- create mode 100644 drivers/base/regmap/regmap-i3c.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-
--- 
-2.7.4
+> +
+>  /**
+>   * i3c_driver_register_with_owner() - register an I3C device driver
+>   *
+> diff --git a/include/linux/i3c/device.h b/include/linux/i3c/device.h
+> index 5ecb055..e0415e1 100644
+> --- a/include/linux/i3c/device.h
+> +++ b/include/linux/i3c/device.h
+> @@ -187,6 +187,7 @@ static inline struct i3c_driver *drv_to_i3cdrv(struct device_driver *drv)
+>  
+>  struct device *i3cdev_to_dev(struct i3c_device *i3cdev);
+>  struct i3c_device *dev_to_i3cdev(struct device *dev);
+> +const struct i3c_device_id *i3c_get_device_id(struct i3c_device *i3cdev);
+>  
+>  static inline void i3cdev_set_drvdata(struct i3c_device *i3cdev,
+>  				      void *data)
 
