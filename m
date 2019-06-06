@@ -8,60 +8,60 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DBB8DC28CC5
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 01:43:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4A33C28CC5
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 02:05:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B0A1E20717
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 01:43:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A80672083E
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jun 2019 02:05:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YqxDo9M7"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="mZpQljdG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbfFFBn0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Jun 2019 21:43:26 -0400
-Received: from mail-qt1-f196.google.com ([209.85.160.196]:41593 "EHLO
-        mail-qt1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726561AbfFFBn0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2019 21:43:26 -0400
-Received: by mail-qt1-f196.google.com with SMTP id s57so872571qte.8
-        for <linux-iio@vger.kernel.org>; Wed, 05 Jun 2019 18:43:25 -0700 (PDT)
+        id S1726581AbfFFCFs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Jun 2019 22:05:48 -0400
+Received: from mail-qt1-f194.google.com ([209.85.160.194]:37564 "EHLO
+        mail-qt1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726589AbfFFCFr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jun 2019 22:05:47 -0400
+Received: by mail-qt1-f194.google.com with SMTP id y57so945413qtk.4
+        for <linux-iio@vger.kernel.org>; Wed, 05 Jun 2019 19:05:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id;
-        bh=FiP6C8M+AnfQuXDwjbnSfrxZTIxdpkDsmXGsL6WmlFA=;
-        b=YqxDo9M7zIi2MI5N1bOycEo/mhWeJj5HUaTAq0XPadeItKQ395S0IDNMsfkiXfJqmK
-         W1BqK9gIjLg1rbdKNT0KoBgWc6rVhaowORpFH+LEp0SfsE2QV3IQbHalaUIKdvUw2cZD
-         TWS7DH8/s/uxLIsbD7+sIUv80/aFdmnOPT2LXCC+e+uIbKlCZP1qPWV73oEFrRb4JfCm
-         wEoitoPnQG0UdFvqZy+lK+bOOj/TKJ4FI2VaNvB1ir9HwD5i2jMjr8CSEwLuZ+o8XIky
-         vaEdiZfwLp5HtFQE4HVuCQ0J4KRK7LT21IlCRbYztX2ephnS6sGt3GKG0wXdmiwNJQU6
-         z//g==
+        bh=s7zz+DGVhGZOuKwqgru6qux8LX3G6f6pOL/orDBaNeA=;
+        b=mZpQljdGJfPhxL7V1ydW9yqeKDfhLmOTc6DyZ6UPD4Ty0rH4GEnfAeSraGWwwzsTn9
+         Z/ipawuWU2ovtq1D0s9KWvfAAzlJ7l6hAcXiHxOhmgi5HCD4Xrjvc3rbdBeSw1CyLOhl
+         /pwkk8s/6m0EANvSI/IPqArB0cO1muxh07xdc5VyF1OQZRk3cTyyFeIV/361qODc/m5K
+         loiApIoaTX/ajSxj/cVdidvIi+lYMvJFzIzLK2+63SsThf1CgFBczx1H624012aLu+ZD
+         eKpHM++xmU79FPFPrM5VtPzn5XPzeprfDsnt8zVaB+HE75ajfUl7rVCWWmuNDaVEGp8T
+         VZhw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=FiP6C8M+AnfQuXDwjbnSfrxZTIxdpkDsmXGsL6WmlFA=;
-        b=rEmcar8k+oJCefDBoLRDUFfk7A0RxGSJ+6Oi1JdrzMGqQ5bV0SHX2cn9PipCZ+XaUn
-         5zHRlxE9hukDT/kDN5NX9cR6G2yUnwdjAfDrzRiq/KBCx7KOdI6y+WLMN91HfHoKhwdy
-         cHgyFRfFWLS37MuPfSAJWxeDOaMbgTsh1yFK9i2oHvKixlf0GLxU1vLBGW+tSQE8TET9
-         tmcVWcYu/U16dgG3jCF6scWlczKlMlNU9r81Y+bXH57CJH2oL752q7IwtN3bfIMGiHzK
-         r8QhjkYqxQzQ0WC20PmWf0GWoRWoKy904xnGhJ33DnZYvsxwYqcw7T6IoDHYl6IM5wmy
-         xdMA==
-X-Gm-Message-State: APjAAAWD3l9EgbLN2fgsh4ldU0/JkegLmN/S0JUKJwe1Lu15OoWMWc1S
-        rdNhUIBsWgHPL++jXB6zK5w=
-X-Google-Smtp-Source: APXvYqzaGEdepNHjfYbwEQP5vNstVNj+mxP3oblEBeyG1DkIecVih+/e9+BlKOszBMyU3gO8HKPcng==
-X-Received: by 2002:ac8:30c4:: with SMTP id w4mr36580131qta.314.1559785405091;
-        Wed, 05 Jun 2019 18:43:25 -0700 (PDT)
+        bh=s7zz+DGVhGZOuKwqgru6qux8LX3G6f6pOL/orDBaNeA=;
+        b=pbiV6z14vBrivNlgTEOQA1wEwSzvJhBlv3Z+0kpvfceo4kUCvK+yoBDf8D7DPHspe4
+         XrC8MsPAPyVjmYe9/9nCqtt9YQk9bLsYQv/8t/AAxLk5FI10Cyu6GlhjospU+lDerpLL
+         vvcRtpiIcBeBk1xSQUnUIlzgkiq8XqnYBY77K8JzW2lXZH9fSObOz+BBRcpSpSHksLPo
+         fqu3YyTtF6cxiczImh5qvV8Vad9jmsNm1sa349xq1u5d6g7mt7rsHRqaV9fEj/fTHF0y
+         o5O6DFunhPrFLcQdXNMfm1Bzhqpq9QgauJyqBA6wMgPcNmS3VIb68WhHy2Io3gjkGfSY
+         EXpQ==
+X-Gm-Message-State: APjAAAUNSJVJzH90oebVEKIXmkOIvHgmHjyzxia2Ew+wJq0esrMgpVCh
+        UEbdsmU/yTueJCWThuncFSg=
+X-Google-Smtp-Source: APXvYqw4w2pejj8TPjeH6918oIprPCHDoJrHQOqrHBsMWcVbthTeLgjyk7p5yH2DTkEcn1cpZIRWuA==
+X-Received: by 2002:ac8:3345:: with SMTP id u5mr38644559qta.219.1559786746756;
+        Wed, 05 Jun 2019 19:05:46 -0700 (PDT)
 Received: from localhost.localdomain ([2804:14c:482:3c8:56cb:1049:60d2:137b])
-        by smtp.gmail.com with ESMTPSA id p64sm174041qkf.60.2019.06.05.18.43.21
+        by smtp.gmail.com with ESMTPSA id b66sm207532qkd.37.2019.06.05.19.05.43
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 05 Jun 2019 18:43:24 -0700 (PDT)
+        Wed, 05 Jun 2019 19:05:45 -0700 (PDT)
 From:   Fabio Estevam <festevam@gmail.com>
 To:     jic23@kernel.org
 Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
         rdunlap@infradead.org, linux-iio@vger.kernel.org,
         gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        Fabio Estevam <festevam@gmail.com>
-Subject: [PATCH] staging: iio: adt7316: Fix build errors when GPIOLIB is not set
-Date:   Wed,  5 Jun 2019 22:42:46 -0300
-Message-Id: <20190606014246.1850-1-festevam@gmail.com>
+        preid@electromag.com.au, Fabio Estevam <festevam@gmail.com>
+Subject: [PATCH v2] staging: iio: adt7316: Fix build errors when GPIOLIB is not set
+Date:   Wed,  5 Jun 2019 23:05:32 -0300
+Message-Id: <20190606020532.4864-1-festevam@gmail.com>
 X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -78,20 +78,27 @@ These functions are provided by the <linux/gpio/consumer.h>
 and <linux/irq.h> headers, so include them to fix these
 build errors.
 
+While at it, remove <linux/gpio.h> as this driver is a GPIO
+consumer and not a GPIO driver.
+
 Reported-by: Randy Dunlap <rdunlap@infradead.org>
 Signed-off-by: Fabio Estevam <festevam@gmail.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 2 ++
- 1 file changed, 2 insertions(+)
+Changes since v1:
+- Remove <linux/gpio.h> - Phil
+
+ drivers/staging/iio/addac/adt7316.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 37ce563cb0e1..5470a9c3f872 100644
+index 37ce563cb0e1..9cb3d0e42c38 100644
 --- a/drivers/staging/iio/addac/adt7316.c
 +++ b/drivers/staging/iio/addac/adt7316.c
-@@ -7,6 +7,8 @@
+@@ -6,7 +6,8 @@
+  */
  
  #include <linux/interrupt.h>
- #include <linux/gpio.h>
+-#include <linux/gpio.h>
 +#include <linux/gpio/consumer.h>
 +#include <linux/irq.h>
  #include <linux/workqueue.h>
