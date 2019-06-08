@@ -2,115 +2,91 @@ Return-Path: <SRS0=r/ex=UH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,T_DKIMWL_WL_HIGH autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,T_DKIMWL_WL_HIGH,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A23C468BC
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF88CC28CC5
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:55:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 63EC1216C4
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:55:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F9F421537
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:55:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1559994936;
-	bh=F6qhJyzp+hpUv2sORpYggFf/Ny8xu1gIsJ0ENP514b0=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=dtI2ZQPqeRdA24QPTeCVemsLzpVmVnlfnDY6HfiXc+bnFgTZCF9fX8rolu2rFqSGl
-	 WkMFMYCuomvjOV0poYVqqb38FE1w5ss6a/KVScCASkMCwCc/fAhD8/LzB7x5bbxOLq
-	 alLOEEDUJUi9V/p5Y/J8tP2BXksAJd2GZ2lh4OHA=
+	s=default; t=1559994940;
+	bh=GN9fj8h0Z1VPlEI5dkPyZ16IY3nf3XZ6iJ2EyzKJuC8=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=wNiveUZVBv6jIcS6xxxXKk/FkIXKz9AbTfCaijh8zWafCFzVrzna8HkBS3ChUmqLb
+	 yJdyiV24qnY4XTCSIEuylXKHk6VljRqWF7bT+iNEF7wBGFV6u0PD+E+QDNtmWUpnvm
+	 0cGLe2P/dTrH22zWaH9aGbAX5EIi41W2IsF44X/o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727720AbfFHLzf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Jun 2019 07:55:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42502 "EHLO mail.kernel.org"
+        id S1727742AbfFHLzj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Jun 2019 07:55:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56968 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727217AbfFHLzf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:55:35 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1727191AbfFHLj4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:39:56 -0400
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AA00C214AE;
-        Sat,  8 Jun 2019 11:55:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 559A6214DA;
+        Sat,  8 Jun 2019 11:39:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994934;
-        bh=F6qhJyzp+hpUv2sORpYggFf/Ny8xu1gIsJ0ENP514b0=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=09qiwXFGhaa0dUCKYNylcQjOmR+PZj6LLK6kzr2MTogPnwnqDJrPaCx8UDHx1Lwx5
-         anuhyP2nWsxCDj5938enn1xIWXRQNmwTkpx3rSeHz960Q2W2l/jrwTHVlsrTVfSgvL
-         0EKfyn+xGi2R6rlkcc/CCV9rThV12vyKN0KJ6yEU=
-Date:   Sat, 8 Jun 2019 12:55:29 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     Fabio Estevam <festevam@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        preid@electromag.com.au
-Subject: Re: [PATCH v2] staging: iio: adt7316: Fix build errors when GPIOLIB
- is not set
-Message-ID: <20190608125529.6aa5c0a7@archlinux>
-In-Reply-To: <7edb325e-9af8-8ae8-d26e-da75c0252284@infradead.org>
-References: <20190606020532.4864-1-festevam@gmail.com>
-        <7edb325e-9af8-8ae8-d26e-da75c0252284@infradead.org>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        s=default; t=1559993996;
+        bh=GN9fj8h0Z1VPlEI5dkPyZ16IY3nf3XZ6iJ2EyzKJuC8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HO/4WG+8c5/caVRyGJtm5bYWKRzo+iwk/5JQ5xRfQhJifPYlLN+d6dQcAgSIvDmK2
+         HdluHhM1pSYiOiQnc5NhVX2RzIN/UfzSoMB0MhLzJ+8PCfn6/jghLzSFZtheGnE6RA
+         EE36Vs3zaw84C9j5Kh94WpoSqcXO/nV8hTYZDEx4=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Sean Nyekjaer <sean@geanix.com>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.1 04/70] iio: adc: ti-ads8688: fix timestamp is not updated in buffer
+Date:   Sat,  8 Jun 2019 07:38:43 -0400
+Message-Id: <20190608113950.8033-4-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190608113950.8033-1-sashal@kernel.org>
+References: <20190608113950.8033-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 5 Jun 2019 20:24:09 -0700
-Randy Dunlap <rdunlap@infradead.org> wrote:
+From: Sean Nyekjaer <sean@geanix.com>
 
-> On 6/5/19 7:05 PM, Fabio Estevam wrote:
-> > On x86_64 when GPIOLIB is not set the following build errors
-> > are seen:
-> > 
-> > drivers/staging/iio/addac/adt7316.c:947:3: error: implicit declaration of function 'gpiod_set_value' [-Werror=implicit-function-declaration]
-> > drivers/staging/iio/addac/adt7316.c:1805:2: error: implicit declaration of function 'irqd_get_trigger_type' [-Werror=implicit-function-declaration]
-> > 
-> > These functions are provided by the <linux/gpio/consumer.h>
-> > and <linux/irq.h> headers, so include them to fix these
-> > build errors.
-> > 
-> > While at it, remove <linux/gpio.h> as this driver is a GPIO
-> > consumer and not a GPIO driver.
-> > 
-> > Reported-by: Randy Dunlap <rdunlap@infradead.org>
-> > Signed-off-by: Fabio Estevam <festevam@gmail.com>  
-> 
-> Acked-by: Randy Dunlap <rdunlap@infradead.org> # build-tested
-Applied to the fixes-togreg branch of iio.git.
+[ Upstream commit e6d12298310fa1dc11f1d747e05b168016057fdd ]
 
-thanks,
+When using the hrtimer iio trigger timestamp isn't updated.
+If we use iio_get_time_ns it is updated correctly.
 
-Jonathan
+Fixes: 2a86487786b5c ("iio: adc: ti-ads8688: add trigger and buffer support")
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/iio/adc/ti-ads8688.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> 
-> Thanks.
-> 
-> > ---
-> > Changes since v1:
-> > - Remove <linux/gpio.h> - Phil
-> > 
-> >  drivers/staging/iio/addac/adt7316.c | 3 ++-
-> >  1 file changed, 2 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> > index 37ce563cb0e1..9cb3d0e42c38 100644
-> > --- a/drivers/staging/iio/addac/adt7316.c
-> > +++ b/drivers/staging/iio/addac/adt7316.c
-> > @@ -6,7 +6,8 @@
-> >   */
-> >  
-> >  #include <linux/interrupt.h>
-> > -#include <linux/gpio.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/irq.h>
-> >  #include <linux/workqueue.h>
-> >  #include <linux/device.h>
-> >  #include <linux/kernel.h>
-> >   
-> 
-> 
+diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+index 8b4568edd5cb..7f16c77b99fb 100644
+--- a/drivers/iio/adc/ti-ads8688.c
++++ b/drivers/iio/adc/ti-ads8688.c
+@@ -397,7 +397,7 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
+ 	}
+ 
+ 	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+-			pf->timestamp);
++			iio_get_time_ns(indio_dev));
+ 
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 
+-- 
+2.20.1
 
