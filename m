@@ -7,48 +7,47 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_PASS,T_DKIMWL_WL_HIGH,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC4F7C468BC
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:42:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B41E1C28CC5
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:42:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7C62F214AF
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:42:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F613214AF
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Jun 2019 11:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1559994164;
-	bh=GN9fj8h0Z1VPlEI5dkPyZ16IY3nf3XZ6iJ2EyzKJuC8=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=UItsARwA/Xa0h2q1dHUPKKvGNJb+Gg+B8T/cLF/bjKxcmNSnCE8gokWK5fFyb3SmA
-	 JVH/EJqrLDqhYGSwox08zNxJ4DV578ENQp8BOYZCnAHl1DzAiMMa2nqOvHHSH1AYI7
-	 vpWXNYCyA8cbjI+PQxZnYdn/QVmQFQpdfUWXvtZk=
+	s=default; t=1559994179;
+	bh=9erjZsPr+3muEteXmFDk9IJ6Bob2nrx1jhDybrkdOHM=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=a6rTPadkthq1r0xcu5BbYPjpXipJgCdCpt8uj5NGfI/23AP7EzPFk6dMbN7ZT1gfF
+	 zNLI0uo0nQwzLadglsKjMAcmCobznxIzKiBXGo4haJNegKJ7ymUmdFMLI+sFn5AKVm
+	 oCY7YAfsndDQUBg0EKIddNZNkavbFtttzXfC6E+0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728505AbfFHLmj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Jun 2019 07:42:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59926 "EHLO mail.kernel.org"
+        id S1727835AbfFHLmg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Jun 2019 07:42:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59876 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727833AbfFHLmi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 8 Jun 2019 07:42:38 -0400
+        id S1727833AbfFHLmf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Jun 2019 07:42:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 11262214C6;
-        Sat,  8 Jun 2019 11:42:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E3580214AF;
+        Sat,  8 Jun 2019 11:42:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1559994157;
-        bh=GN9fj8h0Z1VPlEI5dkPyZ16IY3nf3XZ6iJ2EyzKJuC8=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=PCN6YQymNBO3NIiAVn5TOAq/ezmVn0bAfb6x13wv77csSEsdfczDhPuR9XztHiovb
-         ohku622jMgxSUfGZu8twtuBaFHyCyCmQyOsMKF9L9h4GuOUPEt8GMfrCbxcTy0Kq5/
-         3zBgrr/k8mIEYUc8Ps/gfqU63Y/Um/9DQ7DjaAp8=
+        s=default; t=1559994154;
+        bh=9erjZsPr+3muEteXmFDk9IJ6Bob2nrx1jhDybrkdOHM=;
+        h=From:To:Cc:Subject:Date:From;
+        b=E+Qd/EccmaS/aW15Fazra4NgelusknRboowoIZG5sCCmvfB10KRGRYEeKtEtROlot
+         imyhBVn0PwkFCrsKC1PWG3FXUsnSwztHMPW+pilywe6GskAl7fEXy+W5Gm8QeNVmN2
+         i0ejlRYkbEuJPoIYkiU2BLOeNmhslxnFpuuvcW8w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Nyekjaer <sean@geanix.com>, Stable@vger.kernel.org,
+Cc:     Ruslan Babayev <ruslan@babayev.com>, xe-linux-external@cisco.com,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 02/49] iio: adc: ti-ads8688: fix timestamp is not updated in buffer
-Date:   Sat,  8 Jun 2019 07:41:43 -0400
-Message-Id: <20190608114232.8731-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 01/49] iio: dac: ds4422/ds4424 fix chip verification
+Date:   Sat,  8 Jun 2019 07:41:42 -0400
+Message-Id: <20190608114232.8731-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190608114232.8731-1-sashal@kernel.org>
-References: <20190608114232.8731-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,35 +57,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Sean Nyekjaer <sean@geanix.com>
+From: Ruslan Babayev <ruslan@babayev.com>
 
-[ Upstream commit e6d12298310fa1dc11f1d747e05b168016057fdd ]
+[ Upstream commit 60f2208699ec08ff9fdf1f97639a661a92a18f1c ]
 
-When using the hrtimer iio trigger timestamp isn't updated.
-If we use iio_get_time_ns it is updated correctly.
+The ds4424_get_value function takes channel number as it's 3rd
+argument and translates it internally into I2C address using
+DS4424_DAC_ADDR macro. The caller ds4424_verify_chip was passing an
+already translated I2C address as its last argument.
 
-Fixes: 2a86487786b5c ("iio: adc: ti-ads8688: add trigger and buffer support")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Ruslan Babayev <ruslan@babayev.com>
+Cc: xe-linux-external@cisco.com
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ti-ads8688.c | 2 +-
+ drivers/iio/dac/ds4424.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index 8b4568edd5cb..7f16c77b99fb 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -397,7 +397,7 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
- 	}
+diff --git a/drivers/iio/dac/ds4424.c b/drivers/iio/dac/ds4424.c
+index 883a47562055..714a97f91319 100644
+--- a/drivers/iio/dac/ds4424.c
++++ b/drivers/iio/dac/ds4424.c
+@@ -166,7 +166,7 @@ static int ds4424_verify_chip(struct iio_dev *indio_dev)
+ {
+ 	int ret, val;
  
- 	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
--			pf->timestamp);
-+			iio_get_time_ns(indio_dev));
- 
- 	iio_trigger_notify_done(indio_dev->trig);
- 
+-	ret = ds4424_get_value(indio_dev, &val, DS4424_DAC_ADDR(0));
++	ret = ds4424_get_value(indio_dev, &val, 0);
+ 	if (ret < 0)
+ 		dev_err(&indio_dev->dev,
+ 				"%s failed. ret: %d\n", __func__, ret);
 -- 
 2.20.1
 
