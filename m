@@ -2,99 +2,107 @@ Return-Path: <SRS0=uqiF=UL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-13.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_MUTT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24C69C31E46
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 14:52:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7059C31E46
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 15:02:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EA09E20866
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 14:52:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 89465208CA
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 15:02:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="SV7v+oSl"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dU4aePDA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407175AbfFLOwo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Jun 2019 10:52:44 -0400
-Received: from mail-ed1-f65.google.com ([209.85.208.65]:39524 "EHLO
-        mail-ed1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2407091AbfFLOwo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2019 10:52:44 -0400
-Received: by mail-ed1-f65.google.com with SMTP id m10so26199637edv.6
-        for <linux-iio@vger.kernel.org>; Wed, 12 Jun 2019 07:52:43 -0700 (PDT)
+        id S2408294AbfFLPCm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Jun 2019 11:02:42 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34315 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407156AbfFLPCl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2019 11:02:41 -0400
+Received: by mail-pf1-f196.google.com with SMTP id c85so9842060pfc.1;
+        Wed, 12 Jun 2019 08:02:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=essensium-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1VcpZN6jk1/9bVC0qVaIXUbUOZgbUqMWmXO++ggzEl8=;
-        b=SV7v+oSlKP02RKrzvraJe/XObO6YGPhyRCJfQIZM/hN0vLPDPwy79s8HM4yqQA7uFl
-         4CGyBbgaYXEs+ouckzrrSxPxMmWrtC1rAWcNVIp5zXBJ1iwQU+EA9ZlBZfllUPdQeRXI
-         mGoQI/lNcJUPyK9y0shi1g1hCjmAIzA7lMOztTd5aOXCQySArEso+mWng4CgDC7Rd9nI
-         J6Du7cwS/HJSExCP4xlVsBAFQJPpr6R7J6tkvKdWjraOgN2Dm7cvG+fKq7PZ9jYmDPu9
-         uwhCmogKBFMz9M/ZF/ZGplvKN9bCzPkGXG4NUZUusQxFp6lw3XgltG4vWcrJGyAVpydJ
-         9R+A==
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=XkAts0mKents718nZX+TF7/yIJP6YEEMSouzOt2gH1c=;
+        b=dU4aePDAbdvzlu6ceSsWgf2GH8TpF805uOh0UU/45W1J9eg4hFCVJCIxn+W4/InrR6
+         LM/RnDkz39iHGzvgT1RTddR6HfI7KTQCD28xXOaJTuHwiCMmU9xzVmppPpSPMTjsx2RO
+         Nn/e6yMvmQcm1FuN1tRrgTuHR38DpDFDDipPCU9VUOWp7dVjnGmmQjgAsRd0RJrBHPuK
+         4dTK0TJzF409tMcx7mwt4hcaKltOV4H2eJZMz64aN9/N74nR9s+EoUE36JC1PAP+D8T9
+         bBAsoJ4gcZ+XKi0YU1lyrzLb2CYWJM9jPPwf1YRzACsbKQ8cx0MWvnqDjLWEyAAYTqKl
+         TPzQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1VcpZN6jk1/9bVC0qVaIXUbUOZgbUqMWmXO++ggzEl8=;
-        b=k0eTCfcdxGCWb4Xr0d8jpxhmGYpxmAMpeAyYkSKXoITMpAj9pWWyI9rByc5l6JGCWC
-         nwDoRtcdpm9mcKvB+dwyjMq+09MAjLvy7yh/kjskkcP9v6aTbCEicUi4quiC5eE0t+qu
-         kDJ4J013t0KvTV7LBsrUP9LfIB1xhlVALbyMJ1SeCL+KUIp8yFsoVe9Ds4Si8z/xSEUJ
-         6wFLQh8KTuP4pY0KF+0SPPytwf8SDqSf4874/B0em20EzC4m5YF3mv4zuSD8ZLm/C8aC
-         YCf7ARNJBJhbLjQr+K4fBJAesjPR87B/xNj0HGVg61jq1H0RvPuEldu5mUAt8xdUjvuE
-         LIqw==
-X-Gm-Message-State: APjAAAWsE0wOb00hqeKvnH2lO+cqSIGmBtsTwHVgJVnsu9dU+hfZJifV
-        7cGbsuGrcw0ACiYFhLc7F09N22gNzKA=
-X-Google-Smtp-Source: APXvYqzuvIXLNRoinQlWVrHS5zBEX1xZJq+QjAYHK9QzUA8loRvePk582eNBHyepokc80P+I8EHYhw==
-X-Received: by 2002:a17:906:7d4e:: with SMTP id l14mr22796555ejp.188.1560351162223;
-        Wed, 12 Jun 2019 07:52:42 -0700 (PDT)
-Received: from localhost.localdomain (ip-188-118-3-185.reverse.destiny.be. [188.118.3.185])
-        by smtp.gmail.com with ESMTPSA id h18sm26229ejt.5.2019.06.12.07.52.40
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 12 Jun 2019 07:52:41 -0700 (PDT)
-From:   Patrick Havelange <patrick.havelange@essensium.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH 1/1] MAINTAINERS: add counter/ftm-quaddec driver entry
-Date:   Wed, 12 Jun 2019 16:52:23 +0200
-Message-Id: <20190612145223.8402-1-patrick.havelange@essensium.com>
-X-Mailer: git-send-email 2.19.1
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=XkAts0mKents718nZX+TF7/yIJP6YEEMSouzOt2gH1c=;
+        b=ZLjUnl+GxefszHxAaL5UpQysqluSdDmw143YxkAhDD5AIymkLMcllnpoyd99ysVRLh
+         XPQt3P1ITW4cJmBMF3bc+4D/PaIEqmr4ra8kZIVcpLe1deGTbk8mPPQAl/CTvR3GCeDV
+         nQSOcXgi81jS+C37A5aj3VZiyC83H4ASc3P2gGd/ov2XYiHX5M3m1kRtjFOrIup1Ke4n
+         HjjafCQQO3AvYVM9VBTMzgSnWtFUiMCPZx/F5S1++lAvPTsXxdAdJZ8TVEbALIeAY5Uh
+         bRUNtsoBLLuv744LZFJHFRgn7BCCdp3oktNnY9sidrXn9dPiFKZo538zu8e4AebIWCOp
+         aApg==
+X-Gm-Message-State: APjAAAXMEZ965fN41d749vI+qKE6DM9+KW/TFxojsuPIbdYDNYrYTlU2
+        BbsoGnXB3Fu+QlNEhqk0E20=
+X-Google-Smtp-Source: APXvYqwh/XxRpRKOs6QNQBnIisN7zrwj1hD5OaZOwOUdujKJHqDi05WgjBvA6TP6+0PCpfzh65tJjg==
+X-Received: by 2002:aa7:9095:: with SMTP id i21mr81285227pfa.119.1560351761049;
+        Wed, 12 Jun 2019 08:02:41 -0700 (PDT)
+Received: from icarus ([2001:268:c1c1:781d:c70:4af9:86e2:2])
+        by smtp.gmail.com with ESMTPSA id g2sm16800565pgi.92.2019.06.12.08.02.38
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 12 Jun 2019 08:02:40 -0700 (PDT)
+Date:   Thu, 13 Jun 2019 00:02:21 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Patrick Havelange <patrick.havelange@essensium.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan.Cameron@huawei.com
+Subject: Re: [PATCH 1/1] MAINTAINERS: add counter/ftm-quaddec driver entry
+Message-ID: <20190612150221.GA6631@icarus>
+References: <20190612145223.8402-1-patrick.havelange@essensium.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20190612145223.8402-1-patrick.havelange@essensium.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adding myself as maintainer for this driver
+On Wed, Jun 12, 2019 at 04:52:23PM +0200, Patrick Havelange wrote:
+> Adding myself as maintainer for this driver
+> 
+> Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
+> ---
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 57f496cff999..6671854098d6 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6218,6 +6218,14 @@ M:	Philip Kelleher <pjk1939@linux.ibm.com>
+>  S:	Maintained
+>  F:	drivers/block/rsxx/
+>  
+> +FLEXTIMER FTM-QUADDEC DRIVER
+> +M:	Patrick Havelange <patrick.havelange@essensium.com>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/ABI/testing/sysfs-bus-counter-ftm-quadddec
+> +F:	Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+> +F:	drivers/counter/ftm-quaddec.c
+> +
+>  FLOPPY DRIVER
+>  M:	Jiri Kosina <jikos@kernel.org>
+>  T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jikos/floppy.git
+> -- 
+> 2.19.1
 
-Signed-off-by: Patrick Havelange <patrick.havelange@essensium.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Thank you, this should take care of those files.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 57f496cff999..6671854098d6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6218,6 +6218,14 @@ M:	Philip Kelleher <pjk1939@linux.ibm.com>
- S:	Maintained
- F:	drivers/block/rsxx/
- 
-+FLEXTIMER FTM-QUADDEC DRIVER
-+M:	Patrick Havelange <patrick.havelange@essensium.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-bus-counter-ftm-quadddec
-+F:	Documentation/devicetree/bindings/counter/ftm-quaddec.txt
-+F:	drivers/counter/ftm-quaddec.c
-+
- FLOPPY DRIVER
- M:	Jiri Kosina <jikos@kernel.org>
- T:	git git://git.kernel.org/pub/scm/linux/kernel/git/jikos/floppy.git
--- 
-2.19.1
-
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
