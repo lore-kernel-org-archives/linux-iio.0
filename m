@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1E6C31E46
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 07:25:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B80FC31E46
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 07:26:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D5C06208C2
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 07:25:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52F4620896
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Jun 2019 07:26:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="acMmyrCw"
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="MUnuUO/e"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731465AbfFLHZm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Jun 2019 03:25:42 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:3938 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729080AbfFLHZk (ORCPT
+        id S1731457AbfFLHZl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Jun 2019 03:25:41 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:27572 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1731309AbfFLHZk (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jun 2019 03:25:40 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5C7LXNM032480;
-        Wed, 12 Jun 2019 09:25:04 +0200
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5C7LR7t019818;
+        Wed, 12 Jun 2019 09:25:01 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
  : date : message-id : in-reply-to : references : mime-version :
  content-type; s=STMicroelectronics;
- bh=mscPIPZ3FaNG1fi5inSmP9H7jFv8oBUHJnCQ3UPmBlE=;
- b=acMmyrCwj6N46GmEph6JwKd35yXOV71CZZlDPjJ3TYyG1LfBriKSz6H3Xg4mT0QTNJIc
- apRV1Lq8OdtXeYqfkWxEb0HF8pMi5+OWtd+bQdEPw73+D9J/ni1zFRFdkDEpRiDebMcv
- O9Mfsqf6ut9ZcQ4w3iXhazPoTKSNjqFxHQSRPAaoApScRlWo/3yPL+oV0cfO6J8okujh
- sEivAA8CaZggmlbBfIBKOuenOH/yIvQAZBpfKPF6kCT9yJF+d6q4kmPSadddkKynUEHr
- joqgQCjfL2Rtz5LdK9DtnS6JP8bhipdawayoBuvgDipL1leC18zifKehN5GiZJkr1SV2 1w== 
+ bh=6qaOOTyHrNsrJS+2fQ2Aj0gbIenq5jh+c1GY5P/uHDE=;
+ b=MUnuUO/e+4Qbi+4GZnRij5KVKMn9YM7lSTx48TQMb8WuDgmFf2o8XBro8X4z0//5qzxx
+ aWt1I19eL0QkAxGe/6i4wFT62Ra/vtZO6M1FHFXEe9gXK9fnFwDmyvfMmPAHX9PorDiJ
+ pXwNCxa/AaV4YaycBUN8GfVUBcLK84DKHNH4ncL5lSEXXahfjd2ZkHlGhAnYx6FQ2hpc
+ N2Xr38gxFGDbA0E5YcBEFYTYQaqR6PP93elEW9fM9Ea13lR1Tr2l2f9RjTXyjgDycz5+
+ QCSADeMa5RgZiBODdEIr1fz9Weo4yd5+m4flS1VZHjqQa051MiD3KtLpGCRdcMbtQBCo YQ== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2t2f8bukdj-1
+        by mx08-00178001.pphosted.com with ESMTP id 2t2f8e3ks9-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 12 Jun 2019 09:25:04 +0200
+        Wed, 12 Jun 2019 09:25:01 +0200
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 798D63D;
-        Wed, 12 Jun 2019 07:25:03 +0000 (GMT)
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 5E28531;
+        Wed, 12 Jun 2019 07:25:00 +0000 (GMT)
 Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0C0C7164B;
-        Wed, 12 Jun 2019 07:25:03 +0000 (GMT)
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 32C6A164B;
+        Wed, 12 Jun 2019 07:25:00 +0000 (GMT)
 Received: from localhost (10.75.127.48) by SFHDAG5NODE3.st.com (10.75.127.15)
- with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 12 Jun 2019 09:25:02
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 12 Jun 2019 09:24:59
  +0200
 From:   Fabrice Gasnier <fabrice.gasnier@st.com>
 To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <alexandre.torgue@st.com>
@@ -55,16 +55,16 @@ CC:     <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
         <linux-stm32@st-md-mailman.stormreply.com>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH 3/3] ARM: dts: stm32: add ADC analog switches syscfg on stm32mp157c
-Date:   Wed, 12 Jun 2019 09:24:36 +0200
-Message-ID: <1560324276-681-4-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH 1/3] dt-bindings: iio: adc: stm32: add analog switches supply control
+Date:   Wed, 12 Jun 2019 09:24:34 +0200
+Message-ID: <1560324276-681-2-git-send-email-fabrice.gasnier@st.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1560324276-681-1-git-send-email-fabrice.gasnier@st.com>
 References: <1560324276-681-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.75.127.48]
-X-ClientProxiedBy: SFHDAG6NODE3.st.com (10.75.127.18) To SFHDAG5NODE3.st.com
+X-ClientProxiedBy: SFHDAG6NODE1.st.com (10.75.127.16) To SFHDAG5NODE3.st.com
  (10.75.127.15)
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-12_04:,,
  signatures=0
@@ -73,29 +73,35 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On stm32mp157c, the ADC inputs are multiplexed with analog switches which
-have reduced performances when their supply is below 2.7V (vdda by
-default).
-Add syscfg registers that can be used on stm32mp157c, to get full ADC
-analog performances.
+On stm32h7 and stm32mp1, the ADC inputs are multiplexed with analog
+switches which have reduced performances when their supply is below 2.7V
+(vdda by default).
+
+Add documentation for optional vdda-supply & vdd-supply that can be used
+to supply analog circuitry (controlled by syscfg bits).
 
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- arch/arm/boot/dts/stm32mp157c.dtsi | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
-index 2afeee6..64d71c9 100644
---- a/arch/arm/boot/dts/stm32mp157c.dtsi
-+++ b/arch/arm/boot/dts/stm32mp157c.dtsi
-@@ -856,6 +856,7 @@
- 			clocks = <&rcc ADC12>, <&rcc ADC12_K>;
- 			clock-names = "bus", "adc";
- 			interrupt-controller;
-+			st,syscfg = <&syscfg>;
- 			#interrupt-cells = <1>;
- 			#address-cells = <1>;
- 			#size-cells = <0>;
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+index 8346bcb..3af48b9 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+@@ -46,6 +46,12 @@ Required properties:
+ Optional properties:
+ - A pinctrl state named "default" for each ADC channel may be defined to set
+   inX ADC pins in mode of operation for analog input on external pin.
++- vdda-supply: Phandle to the vdda input voltage. It can be used to supply ADC
++  analog inputs switches on stm32h7 and stm32mp1.
++- vdd-supply: Phandle to the vdd input voltage. It can be used to supply ADC
++  analog inputs switches on stm32mp1.
++- st,syscfg: Phandle to system configuration controller. It can be used to
++  control the analog circuitry on stm32h7 and stm32mp1.
+ 
+ Contents of a stm32 adc child node:
+ -----------------------------------
 -- 
 2.7.4
 
