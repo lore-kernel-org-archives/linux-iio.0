@@ -2,121 +2,81 @@ Return-Path: <SRS0=E05V=UN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 527A4C31E4C
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Jun 2019 12:26:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B26C31E4B
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Jun 2019 15:29:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2AD5F21537
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Jun 2019 12:26:23 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="dcS/s597"
+	by mail.kernel.org (Postfix) with ESMTP id CDD392175B
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Jun 2019 15:29:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727589AbfFNM0W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Jun 2019 08:26:22 -0400
-Received: from first.geanix.com ([116.203.34.67]:45596 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727654AbfFNM0W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 14 Jun 2019 08:26:22 -0400
-Received: from zen.localdomain (unknown [85.184.140.241])
-        by first.geanix.com (Postfix) with ESMTPSA id 386DA15E9;
-        Fri, 14 Jun 2019 12:23:45 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1560515025; bh=ZbXkWGCLh91XHA0BMF8N+gtza/hzhzwamuIrdpJUYyo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=dcS/s5978gvV5uQ9xtVnzmNZtAUXNA7zA95RLnVic5g/DOWcl26eHLiRGrw8ryriE
-         ioAdNe6H/+0mqcVP5MELzeZpUJMMQjRs9UNwkDzT4uOctPJrv+R3ciezdefEJ5OkIz
-         FEQ/4mduqT5TCmnZh9K+yTJQZctEEJgQts5Y6YxxBfvdywd0IURnYsfyC74sHkLO3/
-         rcTkr7XvksM2kOI8Gfq2ncH40kFmEezzTamURJ3484CTUuovDbCBGO0nYnggpHv9Wd
-         F8p906o2TJlxMaA0uSy3k/kG5IkxE8gUxVvHcYuJFFDTb9jCWLvF1mEDt6hjYsVnHR
-         hmmKKProsKS/g==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     linux-iio@vger.kernel.org, jic23@kernel.org
-Cc:     Sean Nyekjaer <sean@geanix.com>, lorenzo.bianconi83@gmail.com,
-        denis.ciocca@st.com, martin@geanix.com
-Subject: [RFC PATCH 3/3] iio: imu: st_lsm6dsx: add wake on accelerometer threshold hook in sysfs
-Date:   Fri, 14 Jun 2019 14:26:04 +0200
-Message-Id: <20190614122604.52935-4-sean@geanix.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190614122604.52935-1-sean@geanix.com>
-References: <20190614122604.52935-1-sean@geanix.com>
+        id S1725789AbfFNP3J (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Jun 2019 11:29:09 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:35278 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725780AbfFNP3J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 14 Jun 2019 11:29:09 -0400
+Received: from DGGEMS408-HUB.china.huawei.com (unknown [172.30.72.58])
+        by Forcepoint Email with ESMTP id 7F5E2D672D3B51780036;
+        Fri, 14 Jun 2019 23:29:06 +0800 (CST)
+Received: from localhost (10.133.213.239) by DGGEMS408-HUB.china.huawei.com
+ (10.3.19.208) with Microsoft SMTP Server id 14.3.439.0; Fri, 14 Jun 2019
+ 23:28:57 +0800
+From:   YueHaibing <yuehaibing@huawei.com>
+To:     <gregkh@linuxfoundation.org>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
+        <jic23@kernel.org>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>
+CC:     <linux-kernel@vger.kernel.org>, <devel@driverdev.osuosl.org>,
+        <linux-iio@vger.kernel.org>, YueHaibing <yuehaibing@huawei.com>
+Subject: [PATCH] staging: iio: adt7316: Add missing include files
+Date:   Fri, 14 Jun 2019 23:28:46 +0800
+Message-ID: <20190614152846.28108-1-yuehaibing@huawei.com>
+X-Mailer: git-send-email 2.10.2.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.133.213.239]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds a wakeup threshold hook in sysfs, it enables us to
-change the threshold value on the run.
-For now this is the raw register value...
+Fix build error:
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+drivers/staging/iio/addac/adt7316.c: In function adt7316_store_update_DAC:
+drivers/staging/iio/addac/adt7316.c:949:3: error: implicit declaration of
+ function gpiod_set_value; did you mean gpio_set_value? [-Werror=implicit-function-declaration]
+   gpiod_set_value(chip->ldac_pin, 0);
+
+drivers/staging/iio/addac/adt7316.c: In function adt7316_setup_irq:
+drivers/staging/iio/addac/adt7316.c:1807:13: error: implicit declaration of
+ function irqd_get_trigger_type; did you mean devm_iio_trigger_free? [-Werror=implicit-function-declaration]
+  irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
+
+Reported-by: Hulk Robot <hulkci@huawei.com>
+Fixes: 7f6b6d553df7 ("Staging: iio: adt7316: Add all irq related code in adt7316_irq_setup()")
+Fixes: c63460c4298f ("Staging: iio: adt7316: Use device tree data to set ldac_pin")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 34 ++++++++++++++++++++
- 1 file changed, 34 insertions(+)
+ drivers/staging/iio/addac/adt7316.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 2c8ad7d65d2f..cbcd7920f05d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -657,12 +657,45 @@ static ssize_t st_lsm6dsx_sysfs_set_wakeup_enabled(struct device *dev,
- 	return len;
- }
+diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+index 37ce563..9d3d159 100644
+--- a/drivers/staging/iio/addac/adt7316.c
++++ b/drivers/staging/iio/addac/adt7316.c
+@@ -16,6 +16,8 @@
+ #include <linux/i2c.h>
+ #include <linux/rtc.h>
+ #include <linux/module.h>
++#include <linux/irq.h>
++#include <linux/gpio/consumer.h>
  
-+static ssize_t st_lsm6dsx_sysfs_get_wakeup_threshold(struct device *dev,
-+					    struct device_attribute *attr,
-+					    char *buf)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(dev));
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+
-+	return sprintf(buf, "%d\n", hw->wake_threshold);
-+}
-+
-+static ssize_t st_lsm6dsx_sysfs_set_wakeup_threshold(struct device *dev,
-+					    struct device_attribute *attr,
-+					    const char *buf, size_t len)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(dev));
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+	int threshold;
-+
-+	if (kstrtoint(buf, 0, &threshold))
-+		return -EINVAL;
-+
-+	if ((threshold < 0) || (threshold > 31))
-+		return -EINVAL;
-+
-+	if (!st_lsm6dsx_set_wake_threshold(hw, threshold))
-+		return len;
-+
-+	return -EINVAL;
-+}
-+
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_lsm6dsx_sysfs_sampling_frequency_avail);
- static IIO_DEVICE_ATTR(in_accel_scale_available, 0444,
- 		       st_lsm6dsx_sysfs_scale_avail, NULL, 0);
- static IIO_DEVICE_ATTR(wakeup_enabled, 0644,
- 		       st_lsm6dsx_sysfs_get_wakeup_enabled,
- 		       st_lsm6dsx_sysfs_set_wakeup_enabled, 0);
-+static IIO_DEVICE_ATTR(wakeup_threshold, 0644,
-+		       st_lsm6dsx_sysfs_get_wakeup_threshold,
-+		       st_lsm6dsx_sysfs_set_wakeup_threshold, 0);
- static IIO_DEVICE_ATTR(in_anglvel_scale_available, 0444,
- 		       st_lsm6dsx_sysfs_scale_avail, NULL, 0);
- 
-@@ -670,6 +703,7 @@ static struct attribute *st_lsm6dsx_acc_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
- 	&iio_dev_attr_wakeup_enabled.dev_attr.attr,
-+	&iio_dev_attr_wakeup_threshold.dev_attr.attr,
- 	NULL,
- };
- 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/events.h>
 -- 
-2.22.0
+2.7.4
+
 
