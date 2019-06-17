@@ -2,81 +2,92 @@ Return-Path: <SRS0=PgFC=UQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B1B6C31E5B
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 14:31:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A13C31E5B
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 16:21:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6A7052084D
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 14:31:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 002672084A
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 16:21:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="pyZwABOh"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726028AbfFQObA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Jun 2019 10:31:00 -0400
-Received: from andre.telenet-ops.be ([195.130.132.53]:54302 "EHLO
-        andre.telenet-ops.be" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725983AbfFQObA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2019 10:31:00 -0400
-Received: from ramsan ([84.194.111.163])
-        by andre.telenet-ops.be with bizsmtp
-        id RqWz200013XaVaC01qWzED; Mon, 17 Jun 2019 16:30:59 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1hcsew-0002HQ-VP; Mon, 17 Jun 2019 16:30:58 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1hcsew-00014s-TH; Mon, 17 Jun 2019 16:30:58 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH] Documentation: ABI: Add missing newline at end of file
-Date:   Mon, 17 Jun 2019 16:30:57 +0200
-Message-Id: <20190617143057.4096-1-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
+        id S1726631AbfFQQV5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Jun 2019 12:21:57 -0400
+Received: from merlin.infradead.org ([205.233.59.134]:35446 "EHLO
+        merlin.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbfFQQV5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2019 12:21:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:Date:Message-ID:Subject:From:Cc:To:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=I+3dZymZ36bDT+SYPOPtFYrTLqbyyrx6FBC7YcP64m4=; b=pyZwABOhiF03uQ7pO88KTepolG
+        gJfIgqubE3Xu7VCulG5ILy+0XOzm1hQ5rRiurXcbjmtXZsEGtuSCCZ7JU1m8lH/MiZa5KvSc8lCAG
+        Ka/rLuHfNZutgYB/mKm+BhrkD+zuJujVaiwFvoKSM8hBRAVgQfMpqUJ7Kqu9+e17IT4x3dNc8m2rX
+        tb7v90vmBb6JtltQhMzZuafvyWNaEQpBZvMsUH3XUas8nh7CaR4ullem0UdebRSItFmJ2BADFJA3v
+        LM0ZSY+bUGWhGS4xg4Ga4Gf3cIgJS1bUb903//initn9ID+heZhXn94u8tpFMLuidvLqnpTPuzdeN
+        +QqnFq7w==;
+Received: from static-50-53-52-16.bvtn.or.frontiernet.net ([50.53.52.16] helo=midway.dunlab)
+        by merlin.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hcuO7-0000qD-OH; Mon, 17 Jun 2019 16:21:44 +0000
+To:     LKML <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Kjeld Flarup <kfa@deif.com>,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Richard Weinberger <richard@nod.at>
+From:   Randy Dunlap <rdunlap@infradead.org>
+Subject: [PATCH] counter: fix ftm-quaddec build error on UML
+Message-ID: <e33254e5-3e8e-fc86-de72-b3dd2f6c310c@infradead.org>
+Date:   Mon, 17 Jun 2019 09:21:40 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.0
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-"git diff" says:
+From: Randy Dunlap <rdunlap@infradead.org>
 
-    \ No newline at end of file
+Fix build error on user-mode Linux, which does not set HAS_IOMEM,
+so devm_ioremap() is not available.  Fixes this build error:
 
-after modifying the files.
+ERROR: "devm_ioremap" [drivers/counter/ftm-quaddec.ko] undefined!
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Fixes: a3b9a99980d9 ("counter: add FlexTimer Module Quadrature decoder counter driver")
+
+Reported-by: Geert Uytterhoeven <geert@linux-m68k.org>
+Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+Cc: Kjeld Flarup <kfa@deif.com>
+Cc: Patrick Havelange <patrick.havelange@essensium.com>
+Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: linux-iio@vger.kernel.org
 ---
- Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32 | 2 +-
- Documentation/ABI/testing/sysfs-power                   | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+BTW, please fix these lines to have ending '>' characters:
+MODULE_AUTHOR("Kjeld Flarup <kfa@deif.com");
+MODULE_AUTHOR("Patrick Havelange <patrick.havelange@essensium.com");
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-index da9822309f0757bd..0e66ae9b0071e80b 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-dfsdm-adc-stm32
-@@ -13,4 +13,4 @@ Description:
- 			error on writing
- 		If DFSDM input is SPI Slave:
- 			Reading returns value previously set.
--			Writing value before starting conversions.
-\ No newline at end of file
-+			Writing value before starting conversions.
-diff --git a/Documentation/ABI/testing/sysfs-power b/Documentation/ABI/testing/sysfs-power
-index 18b7dc929234f625..3c51303550118474 100644
---- a/Documentation/ABI/testing/sysfs-power
-+++ b/Documentation/ABI/testing/sysfs-power
-@@ -300,4 +300,4 @@ Description:
- 		attempt.
+ drivers/counter/Kconfig |    1 +
+ 1 file changed, 1 insertion(+)
+
+--- lnx-52-rc5.orig/drivers/counter/Kconfig
++++ lnx-52-rc5/drivers/counter/Kconfig
+@@ -51,6 +51,7 @@ config STM32_LPTIMER_CNT
  
- 		Using this sysfs file will override any values that were
--		set using the kernel command line for disk offset.
-\ No newline at end of file
-+		set using the kernel command line for disk offset.
--- 
-2.17.1
+ config FTM_QUADDEC
+ 	tristate "Flex Timer Module Quadrature decoder driver"
++	depends on HAS_IOMEM
+ 	help
+ 	  Select this option to enable the Flex Timer Quadrature decoder
+ 	  driver.
+
 
