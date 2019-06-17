@@ -2,107 +2,115 @@ Return-Path: <SRS0=PgFC=UQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-5.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_MUTT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D22AC31E50
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 01:26:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FD1C31E44
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 08:41:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4EB302087F
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 01:26:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A5C8C2080A
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jun 2019 08:41:29 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="tpPU+h5+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727382AbfFQB0O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Jun 2019 21:26:14 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:18583 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727238AbfFQB0O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 16 Jun 2019 21:26:14 -0400
-Received: from DGGEMS412-HUB.china.huawei.com (unknown [172.30.72.59])
-        by Forcepoint Email with ESMTP id 3281799FBA00CC102677;
-        Mon, 17 Jun 2019 09:26:11 +0800 (CST)
-Received: from [127.0.0.1] (10.133.213.239) by DGGEMS412-HUB.china.huawei.com
- (10.3.19.212) with Microsoft SMTP Server id 14.3.439.0; Mon, 17 Jun 2019
- 09:26:05 +0800
-Subject: Re: [PATCH] staging: iio: adt7316: Add missing include files
+        id S1726977AbfFQIl3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Jun 2019 04:41:29 -0400
+Received: from aserp2120.oracle.com ([141.146.126.78]:33508 "EHLO
+        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725837AbfFQIl3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jun 2019 04:41:29 -0400
+Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
+        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5H8dG9s171166;
+        Mon, 17 Jun 2019 08:40:51 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2018-07-02;
+ bh=mtHQgsyMZPGWe/GtLM4GBjN4evtvLlkaFbbD9s9dYHc=;
+ b=tpPU+h5+tChKaBLVITUdWhziFfm/aZCQvxbIk6T1ZoreFkfteknyoZphPXRVsOWSnRHc
+ yT7fkuV2H3JGDzfx5Wqoe9CltzTt/8BQ4SS6AdavygyUnCqBmdP1RXDJmp4hTCqf2Oel
+ e0axr6p5JsEg88NvqWwaoMjsxJ+AkvlKry8VJTLEKSFXGHCAzv4CMuoO/GrIYyFd4BZM
+ Drj17BYZIYYQpWvQPAF++51ZTIJv3wb4wFpiCduHYxAICMGKR2/piciLbJJHJcqCdh3N
+ D6zpLun1X48U29YHR/7grjby/ZE6mfOMgjxlk4kgLP2hlk6j9gXieYTJaAftOrnGPnW3 OQ== 
+Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
+        by aserp2120.oracle.com with ESMTP id 2t4rmnw486-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jun 2019 08:40:50 +0000
+Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
+        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id x5H8eN7o165168;
+        Mon, 17 Jun 2019 08:40:50 GMT
+Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
+        by aserp3020.oracle.com with ESMTP id 2t5mgb7wt2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 17 Jun 2019 08:40:50 +0000
+Received: from abhmp0018.oracle.com (abhmp0018.oracle.com [141.146.116.24])
+        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id x5H8ehRn003768;
+        Mon, 17 Jun 2019 08:40:43 GMT
+Received: from kadam (/41.57.98.10)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Mon, 17 Jun 2019 01:40:43 -0700
+Date:   Mon, 17 Jun 2019 11:40:34 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-References: <20190614152846.28108-1-yuehaibing@huawei.com>
- <20190616141137.254a1291@archlinux>
-CC:     <gregkh@linuxfoundation.org>, <lars@metafoo.de>,
-        <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
-        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-kernel@vger.kernel.org>, <devel@driverdev.osuosl.org>,
-        <linux-iio@vger.kernel.org>
-From:   Yuehaibing <yuehaibing@huawei.com>
-Message-ID: <9732d7dc-a9a3-ee19-51fc-3aa8322423f3@huawei.com>
-Date:   Mon, 17 Jun 2019 09:26:04 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:45.0) Gecko/20100101
- Thunderbird/45.2.0
+Cc:     Melissa Wen <melissa.srw@gmail.com>, devel@driverdev.osuosl.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <21cnbao@gmail.com>, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>
+Subject: Re: [PATCH] staging: iio: ad7150: use ternary operating to ensure
+ 0/1 value
+Message-ID: <20190617084033.GG28859@kadam>
+References: <20190614165059.7bifufvhxofy6ybu@smtp.gmail.com>
+ <20190616111516.1af0d41b@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <20190616141137.254a1291@archlinux>
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190616111516.1af0d41b@archlinux>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9290 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1810050000 definitions=main-1906170081
+X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9290 signatures=668687
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
+ suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
+ lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1810050000
+ definitions=main-1906170082
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2019/6/16 21:11, Jonathan Cameron wrote:
-> On Fri, 14 Jun 2019 23:28:46 +0800
-> YueHaibing <yuehaibing@huawei.com> wrote:
+On Sun, Jun 16, 2019 at 11:15:16AM +0100, Jonathan Cameron wrote:
+> On Fri, 14 Jun 2019 13:50:59 -0300
+> Melissa Wen <melissa.srw@gmail.com> wrote:
 > 
->> Fix build error:
->>
->> drivers/staging/iio/addac/adt7316.c: In function adt7316_store_update_DAC:
->> drivers/staging/iio/addac/adt7316.c:949:3: error: implicit declaration of
->>  function gpiod_set_value; did you mean gpio_set_value? [-Werror=implicit-function-declaration]
->>    gpiod_set_value(chip->ldac_pin, 0);
->>
->> drivers/staging/iio/addac/adt7316.c: In function adt7316_setup_irq:
->> drivers/staging/iio/addac/adt7316.c:1807:13: error: implicit declaration of
->>  function irqd_get_trigger_type; did you mean devm_iio_trigger_free? [-Werror=implicit-function-declaration]
->>   irq_type = irqd_get_trigger_type(irq_get_irq_data(chip->bus.irq));
->>
->> Reported-by: Hulk Robot <hulkci@huawei.com>
->> Fixes: 7f6b6d553df7 ("Staging: iio: adt7316: Add all irq related code in adt7316_irq_setup()")
->> Fixes: c63460c4298f ("Staging: iio: adt7316: Use device tree data to set ldac_pin")
->> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
-> Hi yuehaibing,
+> > Remove idiom and use ternary operator for consistently trigger 0/1 value
+> > on variable declaration.
+> > 
+> > Signed-off-by: Melissa Wen <melissa.srw@gmail.com>
+> Hi Melissa,
 > 
-> You were second to send a fix for this. I've had it in my
-> fixes branch since last week, but not done a pull request quite yet.
-> I'll probably send it out later today.
+> In general I would consider this unnecessary churn as, whilst
+> it's no longer a favoured idiom, it is extremely common in the
+> kernel.
 
-Sorry, our robot report this again and I forgot this ...
+It's still my favourite...  Why wouldn't people like it?  It feels like
+last week I just saw someone send a bunch of:
 
-> 
-> https://patchwork.kernel.org/patch/10978301/
-> 
-> Thanks,
-> 
-> Jonathan
-> 
->> ---
->>  drivers/staging/iio/addac/adt7316.c | 2 ++
->>  1 file changed, 2 insertions(+)
->>
->> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
->> index 37ce563..9d3d159 100644
->> --- a/drivers/staging/iio/addac/adt7316.c
->> +++ b/drivers/staging/iio/addac/adt7316.c
->> @@ -16,6 +16,8 @@
->>  #include <linux/i2c.h>
->>  #include <linux/rtc.h>
->>  #include <linux/module.h>
->> +#include <linux/irq.h>
->> +#include <linux/gpio/consumer.h>
->>  
->>  #include <linux/iio/iio.h>
->>  #include <linux/iio/events.h>
-> 
-> 
-> .
-> 
+-	foo = (bar == baz) ? 1 : 0;
++	foo = (bar == baz);
+
+patches and I thought it was an improvement at the time...
+
+regards,
+dan carpenter
 
