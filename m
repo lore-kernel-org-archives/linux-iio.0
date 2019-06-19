@@ -2,412 +2,190 @@ Return-Path: <SRS0=LqLE=US=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67110C31E5F
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79A84C31E49
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 14:07:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2968120B1F
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="tlAqSjCO"
+	by mail.kernel.org (Postfix) with ESMTP id 5CC2520679
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 14:07:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731738AbfFSNE0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Jun 2019 09:04:26 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:63838 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727882AbfFSNE0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jun 2019 09:04:26 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5JCu1vq023624;
-        Wed, 19 Jun 2019 15:03:56 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : subject :
- date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=d7sGyUyVXBZreZ6CcBeax+9pcueTuZNghW6i/WrA9vs=;
- b=tlAqSjCOwLDGJtElz5Cez30MrbLy+kl1n+o1YvQ1VhM3B0LH0/b/pT0q2cTy1vBUXvll
- eMdeB6hlCdxMzDZwI/x8nIvmSBAn0TzshYTObd0PPC9g3vsJKVJaD/P6cDdFfQxVWDZb
- CPutcFuIht8qWEP83eDy5RyQpfjy1lSgcmJHvtFPOi3CiH2ak60CwXTRC/KceoccS2zT
- o9savlqchD0zo5eGlelRhffqXeC8m5SPLaYiiJTnnO0K9VyssMw7SbLFzPANQVd4GdXg
- XCgBcYJkhAj32xjWQY74GliJKGN3h28xBxUPMeNTl1dofLrL6UfQJ52nA4zR6xZGOvM9 sA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2t7813c0a1-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 19 Jun 2019 15:03:56 +0200
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E30B931;
-        Wed, 19 Jun 2019 13:03:55 +0000 (GMT)
-Received: from Webmail-eu.st.com (Safex1hubcas24.st.com [10.75.90.94])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id B42332831;
-        Wed, 19 Jun 2019 13:03:55 +0000 (GMT)
-Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by Safex1hubcas24.st.com
- (10.75.90.94) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun
- 2019 15:03:55 +0200
-Received: from localhost (10.201.23.16) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun 2019 15:03:55
- +0200
-From:   Olivier Moysan <olivier.moysan@st.com>
-To:     <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <benjamin.gaignard@st.com>,
-        <olivier.moysan@st.com>
-Subject: [PATCH 1/5] iio: adc: stm32-dfsdm: fix output resolution
-Date:   Wed, 19 Jun 2019 15:03:47 +0200
-Message-ID: <1560949431-22948-2-git-send-email-olivier.moysan@st.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1560949431-22948-1-git-send-email-olivier.moysan@st.com>
-References: <1560949431-22948-1-git-send-email-olivier.moysan@st.com>
+        id S1725893AbfFSOHH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 19 Jun 2019 10:07:07 -0400
+Received: from mga01.intel.com ([192.55.52.88]:24467 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728699AbfFSOHG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 19 Jun 2019 10:07:06 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 19 Jun 2019 07:07:06 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.63,392,1557212400"; 
+   d="scan'208";a="162222109"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 19 Jun 2019 07:07:04 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3BEEA177; Wed, 19 Jun 2019 17:07:03 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1] iio: hid-sensor-attributes: Convert to use int_pow()
+Date:   Wed, 19 Jun 2019 17:07:02 +0300
+Message-Id: <20190619140702.18506-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.201.23.16]
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-19_07:,,
- signatures=0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In buffered mode, output samples are shifted left
-unconditionally. This works for filter order 3,
-but this shift is not adapted for other filter orders.
-Compute required shift, left or right, and shift
-output data accordingly.
-Add also saturation management to avoid wrap-around
-when maximum positive sample is reached.
+Instead of linear approach to calculate power of 10, use generic int_pow()
+which does it better.
 
-Fixes: eca949800d2d ("IIO: ADC: add stm32 DFSDM support for PDM microphone")
-
-Signed-off-by: Olivier Moysan <olivier.moysan@st.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/adc/stm32-dfsdm-adc.c | 158 +++++++++++++++++++++++++++++---------
- drivers/iio/adc/stm32-dfsdm.h     |  24 ++++--
- 2 files changed, 142 insertions(+), 40 deletions(-)
+ .../hid-sensors/hid-sensor-attributes.c       | 53 ++++++++-----------
+ 1 file changed, 22 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
-index 588907cc3b6b..cb596f104919 100644
---- a/drivers/iio/adc/stm32-dfsdm-adc.c
-+++ b/drivers/iio/adc/stm32-dfsdm-adc.c
-@@ -39,9 +39,16 @@
- #define DFSDM_MAX_INT_OVERSAMPLING 256
- #define DFSDM_MAX_FL_OVERSAMPLING 1024
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index a8a3fe428d8d..b9dd19b34267 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -8,6 +8,7 @@
+ #include <linux/module.h>
+ #include <linux/interrupt.h>
+ #include <linux/irq.h>
++#include <linux/kernel.h>
+ #include <linux/slab.h>
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+@@ -68,16 +69,6 @@ static struct {
+ 	{HID_USAGE_SENSOR_HUMIDITY, 0, 1000, 0},
+ };
  
--/* Max sample resolutions */
--#define DFSDM_MAX_RES BIT(31)
--#define DFSDM_DATA_RES BIT(23)
-+/* Limit filter output resolution to 31 bits. (i.e. sample range is +/-2^30) */
-+#define DFSDM_DATA_MAX BIT(30)
-+/*
-+ * Data are output as two's complement data in a 24 bit field.
-+ * Data from filters are in the range +/-2^(n-1)
-+ * 2^(n-1) maximum positive value cannot be coded in 2's complement n bits
-+ * An extra bit is required to avoid wrap-around of the binary code for 2^(n-1)
-+ * So, the resolution of samples from filter is actually limited to 23 bits
-+ */
-+#define DFSDM_DATA_RES 24
- 
- /* Filter configuration */
- #define DFSDM_CR1_CFG_MASK (DFSDM_CR1_RCH_MASK | DFSDM_CR1_RCONT_MASK | \
-@@ -181,14 +188,15 @@ static int stm32_dfsdm_get_jextsel(struct iio_dev *indio_dev,
- 	return -EINVAL;
+-static int pow_10(unsigned power)
+-{
+-	int i;
+-	int ret = 1;
+-	for (i = 0; i < power; ++i)
+-		ret = ret * 10;
+-
+-	return ret;
+-}
+-
+ static void simple_div(int dividend, int divisor, int *whole,
+ 				int *micro_frac)
+ {
+@@ -96,14 +87,14 @@ static void simple_div(int dividend, int divisor, int *whole,
+ 			rem *= 10;
+ 			exp++;
+ 		}
+-		*micro_frac = (rem / divisor) * pow_10(6-exp);
++		*micro_frac = (rem / divisor) * int_pow(10, 6 - exp);
+ 	}
  }
  
--static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_filter *fl,
--				unsigned int fast, unsigned int oversamp)
-+static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
-+				    unsigned int fast, unsigned int oversamp)
+ static void split_micro_fraction(unsigned int no, int exp, int *val1, int *val2)
  {
- 	unsigned int i, d, fosr, iosr;
--	u64 res;
--	s64 delta;
-+	u64 res, max;
-+	int bits, shift;
- 	unsigned int m = 1;	/* multiplication factor */
- 	unsigned int p = fl->ford;	/* filter order (ford) */
-+	struct stm32_dfsdm_filter_osr *flo = &fl->flo;
+-	*val1 = no/pow_10(exp);
+-	*val2 = no%pow_10(exp) * pow_10(6-exp);
++	*val1 = no / int_pow(10, exp);
++	*val2 = no % int_pow(10, exp) * int_pow(10, 6 - exp);
+ }
  
- 	pr_debug("%s: Requested oversampling: %d\n",  __func__, oversamp);
- 	/*
-@@ -207,11 +215,9 @@ static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_filter *fl,
- 
- 	/*
- 	 * Look for filter and integrator oversampling ratios which allows
--	 * to reach 24 bits data output resolution.
--	 * Leave as soon as if exact resolution if reached.
--	 * Otherwise the higher resolution below 32 bits is kept.
-+	 * to maximize data output resolution.
- 	 */
--	fl->res = 0;
-+	flo->res = 0;
- 	for (fosr = 1; fosr <= DFSDM_MAX_FL_OVERSAMPLING; fosr++) {
- 		for (iosr = 1; iosr <= DFSDM_MAX_INT_OVERSAMPLING; iosr++) {
- 			if (fast)
-@@ -236,32 +242,68 @@ static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_filter *fl,
- 			res = fosr;
- 			for (i = p - 1; i > 0; i--) {
- 				res = res * (u64)fosr;
--				if (res > DFSDM_MAX_RES)
-+				if (res > DFSDM_DATA_MAX)
- 					break;
- 			}
--			if (res > DFSDM_MAX_RES)
-+			if (res > DFSDM_DATA_MAX)
- 				continue;
-+
- 			res = res * (u64)m * (u64)iosr;
--			if (res > DFSDM_MAX_RES)
-+			if (res > DFSDM_DATA_MAX)
- 				continue;
- 
--			delta = res - DFSDM_DATA_RES;
--
--			if (res >= fl->res) {
--				fl->res = res;
--				fl->fosr = fosr;
--				fl->iosr = iosr;
--				fl->fast = fast;
--				pr_debug("%s: fosr = %d, iosr = %d\n",
--					 __func__, fl->fosr, fl->iosr);
-+			if (res >= flo->res) {
-+				flo->res = res;
-+				flo->fosr = fosr;
-+				flo->iosr = iosr;
-+
-+				bits = fls(flo->res);
-+				/* 8 LBSs in data register contain chan info */
-+				max = flo->res << 8;
-+
-+				/* if resolution is not a power of two */
-+				if (flo->res > BIT(bits - 1))
-+					bits++;
-+				else
-+					max--;
-+
-+				shift = DFSDM_DATA_RES - bits;
-+				/*
-+				 * Compute right/left shift
-+				 * Right shift is performed by hardware
-+				 * when transferring samples to data register.
-+				 * Left shift is done by software on buffer
-+				 */
-+				if (shift > 0) {
-+					/* Resolution is lower than 24 bits */
-+					flo->rshift = 0;
-+					flo->lshift = shift;
-+				} else {
-+					/*
-+					 * If resolution is 24 bits or more,
-+					 * max positive value may be ambiguous
-+					 * (equal to max negative value as sign
-+					 * bit is dropped).
-+					 * Reduce resolution to 23 bits (rshift)
-+					 * to keep the sign on bit 23 and treat
-+					 * saturation before rescaling on 24
-+					 * bits (lshift).
-+					 */
-+					flo->rshift = 1 - shift;
-+					flo->lshift = 1;
-+					max >>= flo->rshift;
-+				}
-+				flo->max = (s32)max;
-+
-+				pr_debug("%s: fast %d, fosr %d, iosr %d, res 0x%llx/%d bits, rshift %d, lshift %d\n",
-+					 __func__, fast, flo->fosr, flo->iosr,
-+					 flo->res, bits, flo->rshift,
-+					 flo->lshift);
- 			}
--
--			if (!delta)
--				return 0;
- 		}
+ /*
+@@ -125,7 +116,7 @@ static void convert_from_vtf_format(u32 value, int size, int exp,
  	}
+ 	exp = hid_sensor_convert_exponent(exp);
+ 	if (exp >= 0) {
+-		*val1 = sign * value * pow_10(exp);
++		*val1 = sign * value * int_pow(10, exp);
+ 		*val2 = 0;
+ 	} else {
+ 		split_micro_fraction(value, -exp, val1, val2);
+@@ -145,10 +136,10 @@ static u32 convert_to_vtf_format(int size, int exp, int val1, int val2)
+ 		sign = -1;
+ 	exp = hid_sensor_convert_exponent(exp);
+ 	if (exp < 0) {
+-		value = abs(val1) * pow_10(-exp);
+-		value += abs(val2) / pow_10(6+exp);
++		value = abs(val1) * int_pow(10, -exp);
++		value += abs(val2) / int_pow(10, 6 + exp);
+ 	} else
+-		value = abs(val1) / pow_10(exp);
++		value = abs(val1) / int_pow(10, exp);
+ 	if (sign < 0)
+ 		value =  ((1LL << (size * 8)) - value);
  
--	if (!fl->res)
-+	if (!flo->res)
+@@ -211,12 +202,12 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 	if (val1 < 0 || val2 < 0)
  		return -EINVAL;
  
- 	return 0;
-@@ -384,6 +426,36 @@ static int stm32_dfsdm_filter_set_trig(struct stm32_dfsdm_adc *adc,
- 	return 0;
- }
+-	value = val1 * pow_10(6) + val2;
++	value = val1 * int_pow(10, 6) + val2;
+ 	if (value) {
+ 		if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
+-			value = pow_10(9)/value;
++			value = int_pow(10, 9) / value;
+ 		else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
+-			value = pow_10(6)/value;
++			value = int_pow(10, 6) / value;
+ 		else
+ 			value = 0;
+ 	}
+@@ -311,34 +302,34 @@ static void adjust_exponent_nano(int *val0, int *val1, int scale0,
+ 	int rem;
  
-+static int stm32_dfsdm_channels_configure(struct stm32_dfsdm_adc *adc,
-+					  unsigned int fl_id,
-+					  struct iio_trigger *trig)
-+{
-+	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
-+	struct regmap *regmap = adc->dfsdm->regmap;
-+	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[fl_id];
-+	struct stm32_dfsdm_filter_osr *flo = &fl->flo;
-+	const struct iio_chan_spec *chan;
-+	unsigned int bit;
-+	int ret;
-+
-+	if (!flo->res)
-+		return -EINVAL;
-+
-+	for_each_set_bit(bit, &adc->smask,
-+			 sizeof(adc->smask) * BITS_PER_BYTE) {
-+		chan = indio_dev->channels + bit;
-+
-+		ret = regmap_update_bits(regmap,
-+					 DFSDM_CHCFGR2(chan->channel),
-+					 DFSDM_CHCFGR2_DTRBS_MASK,
-+					 DFSDM_CHCFGR2_DTRBS(flo->rshift));
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return 0;
-+}
-+
- static int stm32_dfsdm_filter_configure(struct stm32_dfsdm_adc *adc,
- 					unsigned int fl_id,
- 					struct iio_trigger *trig)
-@@ -391,6 +463,7 @@ static int stm32_dfsdm_filter_configure(struct stm32_dfsdm_adc *adc,
- 	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
- 	struct regmap *regmap = adc->dfsdm->regmap;
- 	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[fl_id];
-+	struct stm32_dfsdm_filter_osr *flo = &fl->flo;
- 	u32 cr1;
- 	const struct iio_chan_spec *chan;
- 	unsigned int bit, jchg = 0;
-@@ -398,13 +471,13 @@ static int stm32_dfsdm_filter_configure(struct stm32_dfsdm_adc *adc,
- 
- 	/* Average integrator oversampling */
- 	ret = regmap_update_bits(regmap, DFSDM_FCR(fl_id), DFSDM_FCR_IOSR_MASK,
--				 DFSDM_FCR_IOSR(fl->iosr - 1));
-+				 DFSDM_FCR_IOSR(flo->iosr - 1));
- 	if (ret)
- 		return ret;
- 
- 	/* Filter order and Oversampling */
- 	ret = regmap_update_bits(regmap, DFSDM_FCR(fl_id), DFSDM_FCR_FOSR_MASK,
--				 DFSDM_FCR_FOSR(fl->fosr - 1));
-+				 DFSDM_FCR_FOSR(flo->fosr - 1));
- 	if (ret)
- 		return ret;
- 
-@@ -573,7 +646,7 @@ static int dfsdm_adc_set_samp_freq(struct iio_dev *indio_dev,
- 			"Rate not accurate. requested (%u), actual (%u)\n",
- 			sample_freq, spi_freq / oversamp);
- 
--	ret = stm32_dfsdm_set_osrs(fl, 0, oversamp);
-+	ret = stm32_dfsdm_compute_osrs(fl, 0, oversamp);
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev, "No filter parameters that match!\n");
- 		return ret;
-@@ -623,6 +696,10 @@ static int stm32_dfsdm_start_conv(struct stm32_dfsdm_adc *adc,
- 	struct regmap *regmap = adc->dfsdm->regmap;
- 	int ret;
- 
-+	ret = stm32_dfsdm_channels_configure(adc, adc->fl_id, trig);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = stm32_dfsdm_start_channel(adc);
- 	if (ret < 0)
- 		return ret;
-@@ -729,6 +806,8 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
- {
- 	struct iio_dev *indio_dev = data;
- 	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
-+	struct stm32_dfsdm_filter *fl = &adc->dfsdm->fl_list[adc->fl_id];
-+	struct stm32_dfsdm_filter_osr *flo = &fl->flo;
- 	int available = stm32_dfsdm_adc_dma_residue(adc);
- 	size_t old_pos;
- 
-@@ -751,10 +830,19 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
- 	old_pos = adc->bufi;
- 
- 	while (available >= indio_dev->scan_bytes) {
--		u32 *buffer = (u32 *)&adc->rx_buf[adc->bufi];
-+		s32 *buffer = (s32 *)&adc->rx_buf[adc->bufi];
- 
- 		/* Mask 8 LSB that contains the channel ID */
--		*buffer = (*buffer & 0xFFFFFF00) << 8;
-+		*buffer &= 0xFFFFFF00;
-+		/* Convert 2^(n-1) sample to 2^(n-1)-1 to avoid wrap-around */
-+		if (*buffer > flo->max)
-+			*buffer -= 1;
-+		/*
-+		 * Samples from filter are retrieved with 23 bits resolution
-+		 * or less. Shift left to align MSB on 24 bits.
-+		 */
-+		*buffer <<= flo->lshift;
-+
- 		available -= indio_dev->scan_bytes;
- 		adc->bufi += indio_dev->scan_bytes;
- 		if (adc->bufi >= adc->buf_sz) {
-@@ -1078,7 +1166,7 @@ static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
- 		ret = iio_device_claim_direct_mode(indio_dev);
- 		if (ret)
- 			return ret;
--		ret = stm32_dfsdm_set_osrs(fl, 0, val);
-+		ret = stm32_dfsdm_compute_osrs(fl, 0, val);
- 		if (!ret)
- 			adc->oversamp = val;
- 		iio_device_release_direct_mode(indio_dev);
-@@ -1327,8 +1415,8 @@ static int stm32_dfsdm_adc_init(struct iio_dev *indio_dev)
- 	int ret, chan_idx;
- 
- 	adc->oversamp = DFSDM_DEFAULT_OVERSAMPLING;
--	ret = stm32_dfsdm_set_osrs(&adc->dfsdm->fl_list[adc->fl_id], 0,
--				   adc->oversamp);
-+	ret = stm32_dfsdm_compute_osrs(&adc->dfsdm->fl_list[adc->fl_id], 0,
-+				       adc->oversamp);
- 	if (ret < 0)
- 		return ret;
- 
-diff --git a/drivers/iio/adc/stm32-dfsdm.h b/drivers/iio/adc/stm32-dfsdm.h
-index 8708394b0725..18b06ee6ed7b 100644
---- a/drivers/iio/adc/stm32-dfsdm.h
-+++ b/drivers/iio/adc/stm32-dfsdm.h
-@@ -243,19 +243,33 @@ enum stm32_dfsdm_sinc_order {
- };
- 
- /**
-- * struct stm32_dfsdm_filter - structure relative to stm32 FDSDM filter
-+ * struct stm32_dfsdm_filter_osr - DFSDM filter settings linked to oversampling
-  * @iosr: integrator oversampling
-  * @fosr: filter oversampling
-- * @ford: filter order
-+ * @rshift: output sample right shift (hardware shift)
-+ * @lshift: output sample left shift (software shift)
-  * @res: output sample resolution
-+ * @max: output sample maximum positive value
-+ */
-+struct stm32_dfsdm_filter_osr {
-+	unsigned int iosr;
-+	unsigned int fosr;
-+	unsigned int rshift;
-+	unsigned int lshift;
-+	u64 res;
-+	s32 max;
-+};
-+
-+/**
-+ * struct stm32_dfsdm_filter - structure relative to stm32 FDSDM filter
-+ * @ford: filter order
-+ * @flo: filter oversampling structure
-  * @sync_mode: filter synchronized with filter 0
-  * @fast: filter fast mode
-  */
- struct stm32_dfsdm_filter {
--	unsigned int iosr;
--	unsigned int fosr;
- 	enum stm32_dfsdm_sinc_order ford;
--	u64 res;
-+	struct stm32_dfsdm_filter_osr flo;
- 	unsigned int sync_mode;
- 	unsigned int fast;
- };
+ 	if (exp > 0) {
+-		*val0 = scale0 * pow_10(exp);
++		*val0 = scale0 * int_pow(10, exp);
+ 		res = 0;
+ 		if (exp > 9) {
+ 			*val1 = 0;
+ 			return;
+ 		}
+ 		for (i = 0; i < exp; ++i) {
+-			x = scale1 / pow_10(8 - i);
+-			res += (pow_10(exp - 1 - i) * x);
+-			scale1 = scale1 % pow_10(8 - i);
++			x = scale1 / int_pow(10, 8 - i);
++			res += int_pow(10, exp - 1 - i) * x;
++			scale1 = scale1 % int_pow(10, 8 - i);
+ 		}
+ 		*val0 += res;
+-		*val1 = scale1 * pow_10(exp);
++		*val1 = scale1 * int_pow(10, exp);
+ 	} else if (exp < 0) {
+ 		exp = abs(exp);
+ 		if (exp > 9) {
+ 			*val0 = *val1 = 0;
+ 			return;
+ 		}
+-		*val0 = scale0 / pow_10(exp);
+-		rem = scale0 % pow_10(exp);
++		*val0 = scale0 / int_pow(10, exp);
++		rem = scale0 % int_pow(10, exp);
+ 		res = 0;
+ 		for (i = 0; i < (9 - exp); ++i) {
+-			x = scale1 / pow_10(8 - i);
+-			res += (pow_10(8 - exp - i) * x);
+-			scale1 = scale1 % pow_10(8 - i);
++			x = scale1 / int_pow(10, 8 - i);
++			res += int_pow(10, 8 - exp - i) * x;
++			scale1 = scale1 % int_pow(10, 8 - i);
+ 		}
+-		*val1 = rem * pow_10(9 - exp) + res;
++		*val1 = rem * int_pow(10, 9 - exp) + res;
+ 	} else {
+ 		*val0 = scale0;
+ 		*val1 = scale1;
 -- 
-2.7.4
+2.20.1
 
