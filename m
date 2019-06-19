@@ -2,50 +2,52 @@ Return-Path: <SRS0=LqLE=US=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13856C31E49
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9694C31E49
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DC5BD20B1F
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9DD7B20B1F
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Jun 2019 13:04:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="hp7o3lBc"
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="gC2g+F4F"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731178AbfFSNEZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Jun 2019 09:04:25 -0400
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:17258 "EHLO
+        id S1727882AbfFSNE3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 19 Jun 2019 09:04:29 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:21868 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727076AbfFSNEZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jun 2019 09:04:25 -0400
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5JCuBsW030426;
-        Wed, 19 Jun 2019 15:03:55 +0200
+        by vger.kernel.org with ESMTP id S1727076AbfFSNE1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jun 2019 09:04:27 -0400
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5JCu4JD023632;
+        Wed, 19 Jun 2019 15:03:58 +0200
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : subject :
- date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=iujWyaLCp1yh3WAwepteDeXAm/rq9tWRC+STHY0lkfE=;
- b=hp7o3lBcKOgc5RGR6SJ+PIyrZXgOU7T3o+HX1UMkMyTpkK+ytnl+N3MRTjcFsyiJkQKO
- UGqugdp+C01wkx+1FrgEeSXg1q1Fj25vZcVRvMdY9gTU5K5cxlnFdUlWFyCImGjiLBPl
- etpHvNb6rVL9Kb+53EIFxmph9mxqF2gdFq37zySslBHvHzLdsWaJ5K8uQ4Hbk0M6ymly
- 4T4JAbZOc+Rk8iCwqtCFVYNJQAQcLZcoqxdrPqjB2zP2lJSrWXr5RhvL+yzKn/8Wd4tO
- 4HDiVf9YfYPeL+n7tOGhm1bnGDCVLqq9KXv77ykG8sBzghJ49AnFwz6aHsPG/RzvIIew aA== 
+ date : message-id : in-reply-to : references : mime-version :
+ content-type; s=STMicroelectronics;
+ bh=Snd2JSaEu7Z6XLdmFflA+YpQRWPbEmDirJH8rOIN+Hg=;
+ b=gC2g+F4FLTf8VKpowhrkPjLvh3D1Z8GAwMlQcrwkCJqInZztHxLKi7EiFOGIcoW/A0cL
+ 8qsClG8aWxwyaxd89UcdM43p0QwEZiFKeuAqzkvXm/7AX7654e6Oi3VztmklY/ptDJ+Z
+ ON680YGi/YAgsylciwmqJxfMhGQl+Zcujqu5qegb6YZNYEaJW9zSpAI00nCPkTc4WgVs
+ JjSH9/rKKd4mn3knLbjuJfJPNAHl9H6OYJYKQstqcgim0+rMWdMXFBrGcDnYmfDH60dh
+ yXu4eSrkGkzxLufxNpNl4FCKC1B1kzHH4X+XNHxz7QZivq5DI7HLCL+SwW583U7btRVG /A== 
 Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 2t781a3yxc-1
+        by mx07-00178001.pphosted.com with ESMTP id 2t7813c0a8-1
         (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
-        Wed, 19 Jun 2019 15:03:55 +0200
+        Wed, 19 Jun 2019 15:03:57 +0200
 Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3B49634;
-        Wed, 19 Jun 2019 13:03:54 +0000 (GMT)
-Received: from Webmail-eu.st.com (Safex1hubcas23.st.com [10.75.90.46])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 17F142831;
-        Wed, 19 Jun 2019 13:03:54 +0000 (GMT)
-Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by SAFEX1HUBCAS23.st.com
- (10.75.90.46) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun
- 2019 15:03:54 +0200
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 639B631;
+        Wed, 19 Jun 2019 13:03:57 +0000 (GMT)
+Received: from Webmail-eu.st.com (Safex1hubcas24.st.com [10.75.90.94])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 42B362831;
+        Wed, 19 Jun 2019 13:03:57 +0000 (GMT)
+Received: from SAFEX1HUBCAS21.st.com (10.75.90.45) by Safex1hubcas24.st.com
+ (10.75.90.94) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun
+ 2019 15:03:57 +0200
 Received: from localhost (10.201.23.16) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun 2019 15:03:53
+ with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 19 Jun 2019 15:03:56
  +0200
 From:   Olivier Moysan <olivier.moysan@st.com>
 To:     <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
@@ -56,10 +58,12 @@ To:     <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <benjamin.gaignard@st.com>,
         <olivier.moysan@st.com>
-Subject: [PATCH 0/5] iio: adc: stm32-dfsdm: fix and improve output data managementiio: adc: stm32-dfsdm: fix and improve output data management
-Date:   Wed, 19 Jun 2019 15:03:46 +0200
-Message-ID: <1560949431-22948-1-git-send-email-olivier.moysan@st.com>
+Subject: [PATCH 2/5] iio: adc: stm32-dfsdm: fix data type
+Date:   Wed, 19 Jun 2019 15:03:48 +0200
+Message-ID: <1560949431-22948-3-git-send-email-olivier.moysan@st.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1560949431-22948-1-git-send-email-olivier.moysan@st.com>
+References: <1560949431-22948-1-git-send-email-olivier.moysan@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [10.201.23.16]
@@ -70,25 +74,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch-set provides some fixes and improvements regarding output data format
-for STM32 DFSDM.
-- Fix output data resolution and saturation management in continuous mode
-- Fix data type
-- Apply same processing on data in continuous and triggered mode
-- Add fast mode support to get better resolution for output data
-- Add a comment about 16 bits data transfers
+Fix the data type as DFSDM raw output is complements 2,
+24bits left aligned in a 32-bit register.
+This change does not affect AUDIO path
+- Set data as signed for IIO (as for AUDIO)
+- Set 8 bit right shift for IIO.
+The 8 LSBs bits of data contains channel info and are masked.
 
-Olivier Moysan (5):
-  iio: adc: stm32-dfsdm: fix output resolution
-  iio: adc: stm32-dfsdm: fix data type
-  iio: adc: stm32-dfsdm: manage data resolution in trigger mode
-  iio: adc: stm32-dfsdm: add fast mode support
-  iio: adc: stm32-dfsdm: add comment for 16 bits record
+Fixes: e2e6771c6462 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
 
- drivers/iio/adc/stm32-dfsdm-adc.c | 233 +++++++++++++++++++++++++++++++-------
- drivers/iio/adc/stm32-dfsdm.h     |  24 +++-
- 2 files changed, 208 insertions(+), 49 deletions(-)
+Signed-off-by: Olivier Moysan <olivier.moysan@st.com>
+---
+ drivers/iio/adc/stm32-dfsdm-adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index cb596f104919..6b90a40882f2 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -1365,11 +1365,11 @@ static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
+ 					BIT(IIO_CHAN_INFO_SAMP_FREQ);
+ 
+ 	if (adc->dev_data->type == DFSDM_AUDIO) {
+-		ch->scan_type.sign = 's';
+ 		ch->ext_info = dfsdm_adc_audio_ext_info;
+ 	} else {
+-		ch->scan_type.sign = 'u';
++		ch->scan_type.shift = 8;
+ 	}
++	ch->scan_type.sign = 's';
+ 	ch->scan_type.realbits = 24;
+ 	ch->scan_type.storagebits = 32;
+ 
 -- 
 2.7.4
 
