@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F884C48BE7
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C55C43613
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:58:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 779F2215EA
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:58:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 830BA21537
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:58:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1561215486;
-	bh=DDFDTJyUWmOA0QtND0Vv3nf8XAl55ls9cPplia8c4kQ=;
+	s=default; t=1561215483;
+	bh=+zgqrw0ByGWaHhZpsJe8f0namex8Ygb1+BOHzEh3KXo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=x6OJ/TTVT4IsLmbR/elBkEjvE7YnFw7YnPDvbXw765nLxbyw9AimJv68mr2xt8geV
-	 TLqVd3R6Zn0x2hCUXlOsX20P6N5LoqkKBqnOX83Mscl7vLgzUJODdq/6cMuB0G48w0
-	 W1lG/WFPV7GRP7YHrsVwOcEI5OzV16PrO9JlCRuc=
+	b=EpgPELHTTk+cxlCrCOg2Q7UhywkJGBFLRdoebVcFJy+EUs2N3ZgE2PbIFFDMwC8PO
+	 p66ykLVBRZdIzfVkFWKD2Ui/9wsiNObi8m8Jo7cIbZltIW9EXk+4Gcl8cHvO5WpzSi
+	 +UXnQdmPpwLf77v219ZOFA1/kaowO2yU4sbmkkyY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726338AbfFVO6G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Jun 2019 10:58:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58414 "EHLO mail.kernel.org"
+        id S1726333AbfFVO6D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Jun 2019 10:58:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726276AbfFVO6G (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Jun 2019 10:58:06 -0400
+        id S1726276AbfFVO6D (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Jun 2019 10:58:03 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1553D21537;
-        Sat, 22 Jun 2019 14:58:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B3089208CA;
+        Sat, 22 Jun 2019 14:58:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561215485;
-        bh=DDFDTJyUWmOA0QtND0Vv3nf8XAl55ls9cPplia8c4kQ=;
+        s=default; t=1561215482;
+        bh=+zgqrw0ByGWaHhZpsJe8f0namex8Ygb1+BOHzEh3KXo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yHNAwLnod9OnwhkoW7/LAq1JSJu6Z7s8XxHCiDAUShWW/Y6H5ONIPphg9xtJYpP2X
-         Q+Qx/XaTDenl7XoL6ssQo0JxW3PX1TPdA+9s5EEAuUz8U0VjlgUyQxmdT34f5m5Lb/
-         g0fpOhtWpwqDcDPPY4CLS3ph9LWvvnBe7g/skR+I=
+        b=dDWKolDUhzGDP8Syg/sqGJetXuEvT4+h2FHphLqeWl7olmCEs1NbuXVjih3fsnAKb
+         LFEVDnO0buP4W8spRXppOVPBci2nQFyeozFkDtbQzUMZfLqWdISzMk8ifVQFpqZv9Y
+         0Uwemr5JAkJTX2qCSnF7K+6CNkmvODTapGRx+D88=
 From:   jic23@kernel.org
 To:     linux-iio@vger.kernel.org
 Cc:     Daniel Baluta <daniel.baluta@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Daniel Baluta <daniel.baluta@gmail.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 12/14] iio: trig-interrupt: SPDX headers. GPLv2
-Date:   Sat, 22 Jun 2019 15:55:14 +0100
-Message-Id: <20190622145516.3231-13-jic23@kernel.org>
+Subject: [PATCH 10/14] iio: triggered-buffer: SPDX + fix MODULE_LICENSE to GPLv2
+Date:   Sat, 22 Jun 2019 15:55:12 +0100
+Message-Id: <20190622145516.3231-11-jic23@kernel.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190622145516.3231-1-jic23@kernel.org>
 References: <20190622145516.3231-1-jic23@kernel.org>
@@ -60,21 +60,25 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
+The licensing was inconsistent for this module, so gone with
+the clearly stated header text which had no "or later"
+element.
+
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/trigger/iio-trig-interrupt.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ drivers/iio/buffer/industrialio-triggered-buffer.c | 9 +++------
+ 1 file changed, 3 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-index 171c4ed03543..04c38fad6a28 100644
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ b/drivers/iio/trigger/iio-trig-interrupt.c
-@@ -1,11 +1,8 @@
+diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
+index d3db1fce54d2..0c413012f8e1 100644
+--- a/drivers/iio/buffer/industrialio-triggered-buffer.c
++++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
+@@ -1,10 +1,7 @@
+- /*
 +// SPDX-License-Identifier: GPL-2.0
- /*
-  * Industrial I/O - generic interrupt based trigger support
-  *
-  * Copyright (c) 2008-2013 Jonathan Cameron
++/*
+  * Copyright (c) 2012 Analog Devices, Inc.
+  *  Author: Lars-Peter Clausen <lars@metafoo.de>
 - *
 - * This program is free software; you can redistribute it and/or modify it
 - * under the terms of the GNU General Public License version 2 as published by
@@ -82,6 +86,12 @@ index 171c4ed03543..04c38fad6a28 100644
   */
  
  #include <linux/kernel.h>
+@@ -142,4 +139,4 @@ EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_cleanup);
+ 
+ MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+ MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
+-MODULE_LICENSE("GPL");
++MODULE_LICENSE("GPL v2");
 -- 
 2.22.0
 
