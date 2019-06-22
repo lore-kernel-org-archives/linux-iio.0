@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-9.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BDFDC43613
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A95BC43613
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:57:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57A5C2089E
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:57:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 46184208C3
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Jun 2019 14:57:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1561215476;
-	bh=jsekFiH5uXWJl+OE0CYyg4F+9qQB9mAzShFEHGVUQaY=;
+	s=default; t=1561215478;
+	bh=lb3BkFhjUonYFKMNhQz7op9ASdv0NGP/5KvOd4vk5Rs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ToNRK+rPfHzrmYWUChYX3sB1OhSKi5B9EgXAXgQxc4N8OKE2Zhf0MnNfzax5wZCCz
-	 FR/yi1wl/w3DqDzwg0atfMxmjRwmynuTkeNCVvGIb5Gex5KGvX0moilNRNZbA/CiHf
-	 uScXm8L+5OEIjmMcclUwIDj8D+NDd0uZ/O0v0qcM=
+	b=IVwg7KSOPNQenaHtC08Wrg3JGHxbtfHlN4j5hJlNArHem9qR6rMn/eyjYs5jswvpz
+	 j8VWszW53JvvHGkoZ5BL3u5kbZnEUlLjJ2xgeX0GZg0MZ/ZZkfQIMv46jU1HLVhMRI
+	 QuQAgIsmf3Y6b/K18BetiICLzE+q++Gos1gH3nP4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726313AbfFVO54 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Jun 2019 10:57:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58258 "EHLO mail.kernel.org"
+        id S1726317AbfFVO56 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Jun 2019 10:57:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726276AbfFVO5z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Jun 2019 10:57:55 -0400
+        id S1726276AbfFVO55 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Jun 2019 10:57:57 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E758E2087F;
-        Sat, 22 Jun 2019 14:57:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 953232089C;
+        Sat, 22 Jun 2019 14:57:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1561215475;
-        bh=jsekFiH5uXWJl+OE0CYyg4F+9qQB9mAzShFEHGVUQaY=;
+        s=default; t=1561215476;
+        bh=lb3BkFhjUonYFKMNhQz7op9ASdv0NGP/5KvOd4vk5Rs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yy2IJYvr0CncgSPFqnRXouTjd1Gxiou9rax3UpEDaTqKMrFUlik7+Ni1GjAaoV640
-         stMPDHkNkydvpPLSQ/+AI0KBvpJyH/zFjeVeCy+MjnM1YqtIEUxiS5PAu5aPJazCw/
-         XBQ/pEP5vAs84BW8EsMfft2LGbNnlpYGJdMZ/zFw=
+        b=ouvpHVJbvVp/GP0msSE22pi+Y/ULULpSfjALiEaRKoAXqqQdF6nEQ2DJLMq7vdkj/
+         gOT6ScG8gQPYA3ln1CrXgRQk4gMVB+UTeV2c991t5OUuY/VbBZ14czYcg93qX9iNpv
+         6PXkazAUCKMHqEnUY3qSn2LPmRMjmuCLwbx/e+FE=
 From:   jic23@kernel.org
 To:     linux-iio@vger.kernel.org
 Cc:     Daniel Baluta <daniel.baluta@gmail.com>,
@@ -45,9 +45,9 @@ Cc:     Daniel Baluta <daniel.baluta@gmail.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 06/14] iio:buffer-dma: SPDX headers.
-Date:   Sat, 22 Jun 2019 15:55:08 +0100
-Message-Id: <20190622145516.3231-7-jic23@kernel.org>
+Subject: [PATCH 07/14] iio: buffer-cb: SPDX headers
+Date:   Sat, 22 Jun 2019 15:55:09 +0100
+Message-Id: <20190622145516.3231-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.22.0
 In-Reply-To: <20190622145516.3231-1-jic23@kernel.org>
 References: <20190622145516.3231-1-jic23@kernel.org>
@@ -60,42 +60,29 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-GPLv2 as clearly stated in prior headers.
+Another simple GPL v2 only.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/buffer/industrialio-buffer-dma.c | 3 +--
- include/linux/iio/buffer-dma.h               | 3 +--
- 2 files changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/buffer/industrialio-buffer-cb.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index b32bf57910ca..debe0f6c44fb 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -1,8 +1,7 @@
+diff --git a/drivers/iio/buffer/industrialio-buffer-cb.c b/drivers/iio/buffer/industrialio-buffer-cb.c
+index df21e7dbec40..1628ba36515c 100644
+--- a/drivers/iio/buffer/industrialio-buffer-cb.c
++++ b/drivers/iio/buffer/industrialio-buffer-cb.c
+@@ -1,8 +1,6 @@
+-/* The industrial I/O callback buffer
+- *
+- * This program is free software; you can redistribute it and/or modify it
+- * under the terms of the GNU General Public License version 2 as published by
+- * the Free Software Foundation.
 +// SPDX-License-Identifier: GPL-2.0
- /*
-  * Copyright 2013-2015 Analog Devices Inc.
-  *  Author: Lars-Peter Clausen <lars@metafoo.de>
-- *
-- * Licensed under the GPL-2.
++/*
++ * The industrial I/O callback buffer
   */
  
- #include <linux/slab.h>
-diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-index 67c75372b691..b0fa722d0ccf 100644
---- a/include/linux/iio/buffer-dma.h
-+++ b/include/linux/iio/buffer-dma.h
-@@ -1,8 +1,7 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
- /*
-  * Copyright 2013-2015 Analog Devices Inc.
-  *  Author: Lars-Peter Clausen <lars@metafoo.de>
-- *
-- * Licensed under the GPL-2.
-  */
- 
- #ifndef __INDUSTRIALIO_DMA_BUFFER_H__
+ #include <linux/kernel.h>
 -- 
 2.22.0
 
