@@ -1,557 +1,189 @@
-Return-Path: <SRS0=4qH2=UX=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=MVwr=UY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAB53C48BD3
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Jun 2019 22:53:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F6BFC48BD5
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 08:12:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8F99C20663
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Jun 2019 22:53:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15DE2214DA
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 08:12:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="CqNBmNyV"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="kVTCfact"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727287AbfFXWxY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Jun 2019 18:53:24 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:44194 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727256AbfFXWxY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Jun 2019 18:53:24 -0400
-Received: by mail-pf1-f193.google.com with SMTP id t16so8318465pfe.11
-        for <linux-iio@vger.kernel.org>; Mon, 24 Jun 2019 15:53:23 -0700 (PDT)
+        id S1728283AbfFYIMU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Jun 2019 04:12:20 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:31122 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726543AbfFYIMU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jun 2019 04:12:20 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5P87QuM009883;
+        Tue, 25 Jun 2019 04:11:58 -0400
+Received: from nam02-bl2-obe.outbound.protection.outlook.com (mail-bl2nam02lp2055.outbound.protection.outlook.com [104.47.38.55])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2tbc93rjtt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Jun 2019 04:11:57 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=iGx1AWu4rmrQWDH50RJ0s6DxyWEmaYOGLBKhhFp5Pr8=;
-        b=CqNBmNyV88Sb16ei6awYT7M4yippFvMz/FJhKQPyVQx62+vDmryA0mMMy7qh5ZFbU6
-         cfN9XtJj7nevgV6lWPIbNvmpj9NEb297IYtPcvepGP7QDg1kvV04TUJ0vnc4qEjyU84E
-         6o575WDy/P3KmY8j/bxk0vvNGTyf/Q0HOzH5Y=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=iGx1AWu4rmrQWDH50RJ0s6DxyWEmaYOGLBKhhFp5Pr8=;
-        b=jsndHrUxLl83s7y3xPlnxR+VogMdKNhg+KJbxpaHPDkKi5P2y+LuJABBIOVduasH3a
-         uR/bqe0dojipvgL61IKCOR6u0ZerBlsKv6niLrfnaPQgJ55R7G1kL800atr/iPqpEZLN
-         gNE6vXt1R40Bj87r3nA3elwmQYiI0abLtpQSBSk7S5HnNugsxuJUQI8OlYvYiF6aa3Gu
-         1kjs8BLO109zm0gG0YI11b8q5aoFoItVHwCcd0xFzBal2oZkcTvAnQOIIahRqwDyqcN3
-         2E4Jh5VhkDBOXXASTjG7dIk+1VK9kBaNQ1AlQdcWeXzNYz24lSKTJF3bxlvF3fnWBMg3
-         w7aQ==
-X-Gm-Message-State: APjAAAUiOq2JiA2pSLXscWEMBuUvCKPXyIkPHBn8UIXY3EGye+alac8q
-        Byho5NFaLa3aaKT24frY8qpJZA==
-X-Google-Smtp-Source: APXvYqwlHxzZcHeucfh61/YP3F1EOpLcFJMyRuBf6YlMPeN872YnFzh/H0NhiVq5BdLYHxsVrNgGqw==
-X-Received: by 2002:a17:90a:33c4:: with SMTP id n62mr28377998pjb.28.1561416802670;
-        Mon, 24 Jun 2019 15:53:22 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id a13sm11256226pgl.84.2019.06.24.15.53.21
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 24 Jun 2019 15:53:22 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, bleung@chromium.org,
-        enric.balletbo@collabora.com, groeck@chromium.org,
-        fabien.lahoudere@collabora.com, dianders@chromium.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 2/2] iio: cros_ec: Extend legacy support to ARM device
-Date:   Mon, 24 Jun 2019 15:53:12 -0700
-Message-Id: <20190624225312.131745-3-gwendal@chromium.org>
-X-Mailer: git-send-email 2.22.0.410.gd8fdbe21b5-goog
-In-Reply-To: <20190624225312.131745-1-gwendal@chromium.org>
-References: <20190624225312.131745-1-gwendal@chromium.org>
+ d=analog.onmicrosoft.com; s=selector1-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=judEWa2ta+8qO2zol744mriEt8xobc9w4g3TRjlCfDI=;
+ b=kVTCfactr0OG1dIKWlFKm8AId3qtHzLIQP++N5iflAkxvTaM0R07IS8oBAA/4kO8EaeFQlZCDAeWrCBR1/EGke5eb9XgycP3z15P0P0SBnHHXtwrm3d5ipmbM656xTgVr74i7si/NAG+kAadoa0JKdn2fn+QxQBCE4G/ogScWTw=
+Received: from CY1PR03CA0015.namprd03.prod.outlook.com (2603:10b6:600::25) by
+ CY4PR03MB3128.namprd03.prod.outlook.com (2603:10b6:910:53::29) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2008.16; Tue, 25 Jun 2019 08:11:55 +0000
+Received: from SN1NAM02FT021.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::206) by CY1PR03CA0015.outlook.office365.com
+ (2603:10b6:600::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.16 via Frontend
+ Transport; Tue, 25 Jun 2019 08:11:55 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ SN1NAM02FT021.mail.protection.outlook.com (10.152.72.144) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1987.11
+ via Frontend Transport; Tue, 25 Jun 2019 08:11:54 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x5P8BrH6022647
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 25 Jun 2019 01:11:53 -0700
+Received: from mircea-Latitude-E6540.ad.analog.com (10.48.65.115) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Tue, 25 Jun 2019 04:11:53 -0400
+From:   Mircea Caprioru <mircea.caprioru@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
+        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: [PATCHi V4 2/5] iio: adc: ad7124: Add buffered input support
+Date:   Tue, 25 Jun 2019 11:11:25 +0300
+Message-ID: <20190625081128.22190-2-mircea.caprioru@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190625081128.22190-1-mircea.caprioru@analog.com>
+References: <20190625081128.22190-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(376002)(346002)(136003)(39860400002)(2980300002)(54534003)(199004)(189003)(446003)(126002)(50466002)(54906003)(8936002)(476003)(26005)(478600001)(356004)(6916009)(2351001)(48376002)(16586007)(6666004)(36756003)(8676002)(5660300002)(44832011)(426003)(246002)(86362001)(486006)(11346002)(70586007)(2616005)(70206006)(47776003)(186003)(50226002)(72206003)(107886003)(316002)(77096007)(7696005)(2906002)(51416003)(106002)(1076003)(76176011)(4326008)(7636002)(305945005)(336012);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB3128;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: dc673aec-0f4a-44de-a64a-08d6f944c961
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:CY4PR03MB3128;
+X-MS-TrafficTypeDiagnostic: CY4PR03MB3128:
+X-Microsoft-Antispam-PRVS: <CY4PR03MB3128E6F9602E31BEC570190081E30@CY4PR03MB3128.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2657;
+X-Forefront-PRVS: 0079056367
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: zlBMdYabm3m5G7QtxNc/JeNXHnZWJPlhNtdmsfsznqDXyY0k/tlIU27kPq/i357AvqlRIQxEfT3IEzYr5uXblHIvg1Lynn99Jl+vRyIHl3fdLyYUJnhUpZCDaZ7tYoTz2ZudcSmdbPLYraXT8FRafPyx4wOPzZpc0gbClOqndhJ0IBsukm/9QCXorcSpGbsH86wnzm5EghUHpqIaXoMsSstOBJSNJfg33MtKJup2csiEcL4BiLrIUxd1UVGTDLycAChUjiHtLbyTRMUEYv8cJre/9WU8WlkL6YLzzYmh6FLJC/1FX+Fjrf+KjkM/MLlTvoPgGZzDzTaNZTzY4kal9KhpQ4jt2LEBwXMTZ43uOwWBXeuKmtSzYHdqlAmNnZiI42p44BNjRb/LjqZzqcHwCb+Lo14SNcL9zcOc6IBREK0=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2019 08:11:54.7923
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: dc673aec-0f4a-44de-a64a-08d6f944c961
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB3128
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-25_06:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=1 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=959 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1810050000 definitions=main-1906250067
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support to ARM based device, that lack LPC access code.
-Allow cros-ec-accel-legacy to use cros-ec-sensors-core, add specific
-command to capture sensor data.
+This patch adds the option to enable the buffered mode for positive and
+negative inputs. Each option can be enabled independently.
 
-On rk3288-veyron-minnie, check chrome detect tablet mode and rotates
-screen when in tablet mode.
+In buffered mode, the input channel feeds into a high impedance input stage
+of the buffer amplifier. Therefore, the input can tolerate significant
+source impedances and is tailored for direct connection to external
+resistive type sensors such as strain gages or RTDs.
 
-Check only a subset of the attributes are presented.
-
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 ---
- drivers/iio/accel/Kconfig                |   4 +-
- drivers/iio/accel/cros_ec_accel_legacy.c | 350 +++++------------------
- 2 files changed, 79 insertions(+), 275 deletions(-)
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 62a970a20219..7d0848f9ea45 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -201,9 +201,7 @@ config HID_SENSOR_ACCEL_3D
+Changelog v2:
+- nothing changed here
+
+Changelog v3:
+- nothing changed here
+
+Changelog v4:
+- nothing changed here
+
+ drivers/iio/adc/ad7124.c | 17 +++++++++++++++--
+ 1 file changed, 15 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 810234db9c0d..ab52c5e9ecb1 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -61,6 +61,8 @@
+ #define AD7124_CONFIG_REF_SEL(x)	FIELD_PREP(AD7124_CONFIG_REF_SEL_MSK, x)
+ #define AD7124_CONFIG_PGA_MSK		GENMASK(2, 0)
+ #define AD7124_CONFIG_PGA(x)		FIELD_PREP(AD7124_CONFIG_PGA_MSK, x)
++#define AD7124_CONFIG_IN_BUFF_MSK	GENMASK(7, 6)
++#define AD7124_CONFIG_IN_BUFF(x)	FIELD_PREP(AD7124_CONFIG_IN_BUFF_MSK, x)
  
- config IIO_CROS_EC_ACCEL_LEGACY
- 	tristate "ChromeOS EC Legacy Accelerometer Sensor"
--	select IIO_BUFFER
--	select IIO_TRIGGERED_BUFFER
--	select CROS_EC_LPC_REGISTER_DEVICE
-+	depends on IIO_CROS_EC_SENSORS_CORE
- 	help
- 	  Say yes here to get support for accelerometers on Chromebook using
- 	  legacy EC firmware.
-diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-index 46bb2e421bb9..575d7e4c685c 100644
---- a/drivers/iio/accel/cros_ec_accel_legacy.c
-+++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-@@ -5,13 +5,14 @@
-  * Copyright 2017 Google, Inc
-  *
-  * This driver uses the memory mapper cros-ec interface to communicate
-- * with the Chrome OS EC about accelerometer data.
-+ * with the Chrome OS EC about accelerometer data or older commands.
-  * Accelerometer access is presented through iio sysfs.
-  */
+ /* AD7124_FILTER_X */
+ #define AD7124_FILTER_FS_MSK		GENMASK(10, 0)
+@@ -108,6 +110,8 @@ struct ad7124_chip_info {
+ struct ad7124_channel_config {
+ 	enum ad7124_ref_sel refsel;
+ 	bool bipolar;
++	bool buf_positive;
++	bool buf_negative;
+ 	unsigned int ain;
+ 	unsigned int vref_mv;
+ 	unsigned int pga_bits;
+@@ -473,6 +477,11 @@ static int ad7124_of_parse_channel_config(struct iio_dev *indio_dev,
+ 		else
+ 			st->channel_config[channel].refsel = tmp;
  
- #include <linux/delay.h>
- #include <linux/device.h>
- #include <linux/iio/buffer.h>
-+#include <linux/iio/common/cros_ec_sensors_core.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/kfifo_buf.h>
- #include <linux/iio/trigger_consumer.h>
-@@ -25,160 +26,41 @@
- 
- #define DRV_NAME	"cros-ec-accel-legacy"
- 
-+#define CROS_EC_SENSOR_LEGACY_NUM 2
- /*
-  * Sensor scale hard coded at 10 bits per g, computed as:
-  * g / (2^10 - 1) = 0.009586168; with g = 9.80665 m.s^-2
-  */
- #define ACCEL_LEGACY_NSCALE 9586168
- 
--/* Indices for EC sensor values. */
--enum {
--	X,
--	Y,
--	Z,
--	MAX_AXIS,
--};
--
--/* State data for cros_ec_accel_legacy iio driver. */
--struct cros_ec_accel_legacy_state {
--	struct cros_ec_device *ec;
--
--	/*
--	 * Array holding data from a single capture. 2 bytes per channel
--	 * for the 3 channels plus the timestamp which is always last and
--	 * 8-bytes aligned.
--	 */
--	s16 capture_data[8];
--	s8 sign[MAX_AXIS];
--	u8 sensor_num;
--};
--
--static int ec_cmd_read_u8(struct cros_ec_device *ec, unsigned int offset,
--			  u8 *dest)
--{
--	return ec->cmd_readmem(ec, offset, 1, dest);
--}
--
--static int ec_cmd_read_u16(struct cros_ec_device *ec, unsigned int offset,
--			   u16 *dest)
--{
--	__le16 tmp;
--	int ret = ec->cmd_readmem(ec, offset, 2, &tmp);
--
--	*dest = le16_to_cpu(tmp);
--
--	return ret;
--}
--
--/**
-- * read_ec_until_not_busy() - Read from EC status byte until it reads not busy.
-- * @st: Pointer to state information for device.
-- *
-- * This function reads EC status until its busy bit gets cleared. It does not
-- * wait indefinitely and returns -EIO if the EC status is still busy after a
-- * few hundreds milliseconds.
-- *
-- * Return: 8-bit status if ok, -EIO on error
-- */
--static int read_ec_until_not_busy(struct cros_ec_accel_legacy_state *st)
--{
--	struct cros_ec_device *ec = st->ec;
--	u8 status;
--	int attempts = 0;
--
--	ec_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
--	while (status & EC_MEMMAP_ACC_STATUS_BUSY_BIT) {
--		/* Give up after enough attempts, return error. */
--		if (attempts++ >= 50)
--			return -EIO;
--
--		/* Small delay every so often. */
--		if (attempts % 5 == 0)
--			msleep(25);
--
--		ec_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
--	}
--
--	return status;
--}
--
--/**
-- * read_ec_accel_data_unsafe() - Read acceleration data from EC shared memory.
-- * @st:        Pointer to state information for device.
-- * @scan_mask: Bitmap of the sensor indices to scan.
-- * @data:      Location to store data.
-- *
-- * This is the unsafe function for reading the EC data. It does not guarantee
-- * that the EC will not modify the data as it is being read in.
-- */
--static void read_ec_accel_data_unsafe(struct cros_ec_accel_legacy_state *st,
--				      unsigned long scan_mask, s16 *data)
--{
--	int i = 0;
--	int num_enabled = bitmap_weight(&scan_mask, MAX_AXIS);
--
--	/* Read all sensors enabled in scan_mask. Each value is 2 bytes. */
--	while (num_enabled--) {
--		i = find_next_bit(&scan_mask, MAX_AXIS, i);
--		ec_cmd_read_u16(st->ec,
--				EC_MEMMAP_ACC_DATA +
--				sizeof(s16) *
--				(1 + i + st->sensor_num * MAX_AXIS),
--				data);
--		*data *= st->sign[i];
--		i++;
--		data++;
--	}
--}
--
--/**
-- * read_ec_accel_data() - Read acceleration data from EC shared memory.
-- * @st:        Pointer to state information for device.
-- * @scan_mask: Bitmap of the sensor indices to scan.
-- * @data:      Location to store data.
-- *
-- * This is the safe function for reading the EC data. It guarantees that
-- * the data sampled was not modified by the EC while being read.
-- *
-- * Return: 0 if ok, -ve on error
-- */
--static int read_ec_accel_data(struct cros_ec_accel_legacy_state *st,
--			      unsigned long scan_mask, s16 *data)
-+int cros_ec_accel_legacy_read_cmd(struct iio_dev *indio_dev,
-+				  unsigned long scan_mask, s16 *data)
- {
--	u8 samp_id = 0xff;
--	u8 status = 0;
-+	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
- 	int ret;
--	int attempts = 0;
-+	unsigned int i;
-+	u8 sensor_num;
- 
- 	/*
--	 * Continually read all data from EC until the status byte after
--	 * all reads reflects that the EC is not busy and the sample id
--	 * matches the sample id from before all reads. This guarantees
--	 * that data read in was not modified by the EC while reading.
-+	 * Read all sensor data through a command.
-+	 * Save sensor_num, it is assumed to stay.
- 	 */
--	while ((status & (EC_MEMMAP_ACC_STATUS_BUSY_BIT |
--			  EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK)) != samp_id) {
--		/* If we have tried to read too many times, return error. */
--		if (attempts++ >= 5)
--			return -EIO;
--
--		/* Read status byte until EC is not busy. */
--		ret = read_ec_until_not_busy(st);
--		if (ret < 0)
--			return ret;
--		status = ret;
--
--		/*
--		 * Store the current sample id so that we can compare to the
--		 * sample id after reading the data.
--		 */
--		samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
--
--		/* Read all EC data, format it, and store it into data. */
--		read_ec_accel_data_unsafe(st, scan_mask, data);
-+	sensor_num = st->param.info.sensor_num;
-+	st->param.cmd = MOTIONSENSE_CMD_DUMP;
-+	st->param.dump.max_sensor_count = CROS_EC_SENSOR_LEGACY_NUM;
-+	ret = cros_ec_motion_send_host_cmd(st,
-+			sizeof(st->resp->dump) + CROS_EC_SENSOR_LEGACY_NUM *
-+			sizeof(struct ec_response_motion_sensor_data));
-+	st->param.info.sensor_num = sensor_num;
-+	if (ret != 0) {
-+		dev_warn(&indio_dev->dev, "Unable to read sensor data\n");
-+		return ret;
-+	}
- 
--		/* Read status byte. */
--		ec_cmd_read_u8(st->ec, EC_MEMMAP_ACC_STATUS, &status);
-+	for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
-+		*data = st->resp->dump.sensor[sensor_num].data[i] *
-+			st->sign[i];
-+		data++;
- 	}
- 
- 	return 0;
-@@ -188,28 +70,39 @@ static int cros_ec_accel_legacy_read(struct iio_dev *indio_dev,
- 				     struct iio_chan_spec const *chan,
- 				     int *val, int *val2, long mask)
- {
--	struct cros_ec_accel_legacy_state *st = iio_priv(indio_dev);
-+	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
- 	s16 data = 0;
--	int ret = IIO_VAL_INT;
-+	int ret;
-+	int idx = chan->scan_index;
++		st->channel_config[channel].buf_positive =
++			of_property_read_bool(child, "adi,buffered-positive");
++		st->channel_config[channel].buf_negative =
++			of_property_read_bool(child, "adi,buffered-negative");
 +
-+	mutex_lock(&st->cmd_lock);
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		ret = read_ec_accel_data(st, (1 << chan->scan_index), &data);
--		if (ret)
--			return ret;
-+		ret = st->read_ec_sensors_data(indio_dev, 1 << idx, &data);
-+		if (ret < 0)
-+			break;
-+		ret = IIO_VAL_INT;
- 		*val = data;
--		return IIO_VAL_INT;
-+		break;
- 	case IIO_CHAN_INFO_SCALE:
-+		WARN_ON(st->type != MOTIONSENSE_TYPE_ACCEL);
- 		*val = 0;
- 		*val2 = ACCEL_LEGACY_NSCALE;
--		return IIO_VAL_INT_PLUS_NANO;
-+		ret = IIO_VAL_INT_PLUS_NANO;
-+		break;
- 	case IIO_CHAN_INFO_CALIBBIAS:
- 		/* Calibration not supported. */
- 		*val = 0;
- 		return IIO_VAL_INT;
- 	default:
--		return -EINVAL;
-+		ret = cros_ec_sensors_core_read(st, chan, val, val2,
-+				mask);
-+		break;
- 	}
-+	mutex_unlock(&st->cmd_lock);
-+
-+	return ret;
- }
- 
- static int cros_ec_accel_legacy_write(struct iio_dev *indio_dev,
-@@ -231,86 +124,14 @@ static const struct iio_info cros_ec_accel_legacy_info = {
- 	.write_raw = &cros_ec_accel_legacy_write,
- };
- 
--/**
-- * cros_ec_accel_legacy_capture() - The trigger handler function
-- * @irq: The interrupt number.
-- * @p:   Private data - always a pointer to the poll func.
-- *
-- * On a trigger event occurring, if the pollfunc is attached then this
-- * handler is called as a threaded interrupt (and hence may sleep). It
-- * is responsible for grabbing data from the device and pushing it into
-- * the associated buffer.
-- *
-- * Return: IRQ_HANDLED
-+/*
-+ * Present the channel using HTML5 standard:
-+ * need to invert X and Y and invert some lid axis.
-  */
--static irqreturn_t cros_ec_accel_legacy_capture(int irq, void *p)
--{
--	struct iio_poll_func *pf = p;
--	struct iio_dev *indio_dev = pf->indio_dev;
--	struct cros_ec_accel_legacy_state *st = iio_priv(indio_dev);
--
--	/* Clear capture data. */
--	memset(st->capture_data, 0, sizeof(st->capture_data));
--
--	/*
--	 * Read data based on which channels are enabled in scan mask. Note
--	 * that on a capture we are always reading the calibrated data.
--	 */
--	read_ec_accel_data(st, *indio_dev->active_scan_mask, st->capture_data);
--
--	iio_push_to_buffers_with_timestamp(indio_dev, (void *)st->capture_data,
--					   iio_get_time_ns(indio_dev));
--
--	/*
--	 * Tell the core we are done with this trigger and ready for the
--	 * next one.
--	 */
--	iio_trigger_notify_done(indio_dev->trig);
--
--	return IRQ_HANDLED;
--}
--
--static char *cros_ec_accel_legacy_loc_strings[] = {
--	[MOTIONSENSE_LOC_BASE] = "base",
--	[MOTIONSENSE_LOC_LID] = "lid",
--	[MOTIONSENSE_LOC_MAX] = "unknown",
--};
--
--static ssize_t cros_ec_accel_legacy_loc(struct iio_dev *indio_dev,
--					uintptr_t private,
--					const struct iio_chan_spec *chan,
--					char *buf)
--{
--	struct cros_ec_accel_legacy_state *st = iio_priv(indio_dev);
--
--	return sprintf(buf, "%s\n",
--		       cros_ec_accel_legacy_loc_strings[st->sensor_num +
--							MOTIONSENSE_LOC_BASE]);
--}
--
--static ssize_t cros_ec_accel_legacy_id(struct iio_dev *indio_dev,
--				       uintptr_t private,
--				       const struct iio_chan_spec *chan,
--				       char *buf)
--{
--	struct cros_ec_accel_legacy_state *st = iio_priv(indio_dev);
--
--	return sprintf(buf, "%d\n", st->sensor_num);
--}
--
--static const struct iio_chan_spec_ext_info cros_ec_accel_legacy_ext_info[] = {
--	{
--		.name = "id",
--		.shared = IIO_SHARED_BY_ALL,
--		.read = cros_ec_accel_legacy_id,
--	},
--	{
--		.name = "location",
--		.shared = IIO_SHARED_BY_ALL,
--		.read = cros_ec_accel_legacy_loc,
--	},
--	{ }
--};
-+#define CROS_EC_ACCEL_ROTATE_AXIS(_axis)				\
-+	((_axis) == CROS_EC_SENSOR_Z ? CROS_EC_SENSOR_Z :		\
-+	 ((_axis) == CROS_EC_SENSOR_X ? CROS_EC_SENSOR_Y :		\
-+	  CROS_EC_SENSOR_X))
- 
- #define CROS_EC_ACCEL_LEGACY_CHAN(_axis)				\
- 	{								\
-@@ -319,31 +140,30 @@ static const struct iio_chan_spec_ext_info cros_ec_accel_legacy_ext_info[] = {
- 		.modified = 1,					        \
- 		.info_mask_separate =					\
- 			BIT(IIO_CHAN_INFO_RAW) |			\
--			BIT(IIO_CHAN_INFO_SCALE) |			\
- 			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
- 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
--		.ext_info = cros_ec_accel_legacy_ext_info,		\
-+		.ext_info = cros_ec_sensors_ext_info,			\
- 		.scan_type = {						\
- 			.sign = 's',					\
--			.realbits = 16,					\
--			.storagebits = 16,				\
-+			.realbits = CROS_EC_SENSOR_BITS,		\
-+			.storagebits = CROS_EC_SENSOR_BITS,		\
- 		},							\
-+		.scan_index = CROS_EC_ACCEL_ROTATE_AXIS(_axis),		\
- 	}								\
- 
--static struct iio_chan_spec ec_accel_channels[] = {
--	CROS_EC_ACCEL_LEGACY_CHAN(X),
--	CROS_EC_ACCEL_LEGACY_CHAN(Y),
--	CROS_EC_ACCEL_LEGACY_CHAN(Z),
--	IIO_CHAN_SOFT_TIMESTAMP(MAX_AXIS)
-+static const struct iio_chan_spec cros_ec_accel_legacy_channels[] = {
-+		CROS_EC_ACCEL_LEGACY_CHAN(CROS_EC_SENSOR_X),
-+		CROS_EC_ACCEL_LEGACY_CHAN(CROS_EC_SENSOR_Y),
-+		CROS_EC_ACCEL_LEGACY_CHAN(CROS_EC_SENSOR_Z),
-+		IIO_CHAN_SOFT_TIMESTAMP(CROS_EC_SENSOR_MAX_AXIS)
- };
- 
- static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
+ 		*chan = ad7124_channel_template;
+ 		chan->address = channel;
+ 		chan->scan_index = channel;
+@@ -492,7 +501,7 @@ static int ad7124_of_parse_channel_config(struct iio_dev *indio_dev,
+ static int ad7124_setup(struct ad7124_state *st)
  {
- 	struct device *dev = &pdev->dev;
- 	struct cros_ec_dev *ec = dev_get_drvdata(dev->parent);
--	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
- 	struct iio_dev *indio_dev;
--	struct cros_ec_accel_legacy_state *state;
-+	struct cros_ec_sensors_core_state *state;
- 	int ret;
+ 	unsigned int val, fclk, power_mode;
+-	int i, ret;
++	int i, ret, tmp;
  
- 	if (!ec || !ec->ec_dev) {
-@@ -351,46 +171,32 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
- 		return -EINVAL;
- 	}
+ 	fclk = clk_get_rate(st->mclk);
+ 	if (!fclk)
+@@ -525,8 +534,12 @@ static int ad7124_setup(struct ad7124_state *st)
+ 		if (ret < 0)
+ 			return ret;
  
--	if (!ec->ec_dev->cmd_readmem) {
--		dev_warn(&pdev->dev, "EC does not support direct reads.\n");
--		return -EINVAL;
--	}
--
- 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
- 	if (!indio_dev)
- 		return -ENOMEM;
- 
--	platform_set_drvdata(pdev, indio_dev);
--	state = iio_priv(indio_dev);
--	state->ec = ec->ec_dev;
--	state->sensor_num = sensor_platform->sensor_num;
--
--	indio_dev->dev.parent = dev;
--	indio_dev->name = pdev->name;
--	indio_dev->channels = ec_accel_channels;
--	/*
--	 * Present the channel using HTML5 standard:
--	 * need to invert X and Y and invert some lid axis.
--	 */
--	ec_accel_channels[X].scan_index = Y;
--	ec_accel_channels[Y].scan_index = X;
--	ec_accel_channels[Z].scan_index = Z;
-+	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-+	if (ret)
-+		return ret;
- 
--	state->sign[Y] = 1;
-+	indio_dev->info = &cros_ec_accel_legacy_info;
-+	state = iio_priv(indio_dev);
- 
--	if (state->sensor_num == MOTIONSENSE_LOC_LID)
--		state->sign[X] = state->sign[Z] = -1;
-+	if (state->ec->cmd_readmem != NULL)
-+		state->read_ec_sensors_data = cros_ec_sensors_read_lpc;
- 	else
--		state->sign[X] = state->sign[Z] = 1;
--
--	indio_dev->num_channels = ARRAY_SIZE(ec_accel_channels);
--	indio_dev->dev.parent = &pdev->dev;
--	indio_dev->info = &cros_ec_accel_legacy_info;
--	indio_dev->modes = INDIO_DIRECT_MODE;
-+		state->read_ec_sensors_data = cros_ec_accel_legacy_read_cmd;
++		tmp = (st->channel_config[i].buf_positive << 1)  +
++			st->channel_config[i].buf_negative;
 +
-+	indio_dev->channels = cros_ec_accel_legacy_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(cros_ec_accel_legacy_channels);
-+	/* The lid sensor needs to be presented inverted. */
-+	if (state->loc == MOTIONSENSE_LOC_LID) {
-+		state->sign[CROS_EC_SENSOR_X] = -1;
-+		state->sign[CROS_EC_SENSOR_Z] = -1;
-+	}
- 
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
--					      cros_ec_accel_legacy_capture,
--					      NULL);
-+			cros_ec_sensors_capture, NULL);
- 	if (ret)
- 		return ret;
- 
+ 		val = AD7124_CONFIG_BIPOLAR(st->channel_config[i].bipolar) |
+-		      AD7124_CONFIG_REF_SEL(st->channel_config[i].refsel);
++		      AD7124_CONFIG_REF_SEL(st->channel_config[i].refsel) |
++		      AD7124_CONFIG_IN_BUFF(tmp);
+ 		ret = ad_sd_write_reg(&st->sd, AD7124_CONFIG(i), 2, val);
+ 		if (ret < 0)
+ 			return ret;
 -- 
-2.22.0.410.gd8fdbe21b5-goog
+2.17.1
 
