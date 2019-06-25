@@ -2,155 +2,320 @@ Return-Path: <SRS0=MVwr=UY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55EAC48BD4
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 13:14:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03BFBC48BD4
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 13:53:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B033C213F2
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 13:14:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="JuAfqcyj"
+	by mail.kernel.org (Postfix) with ESMTP id 91CE0213F2
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Jun 2019 13:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730543AbfFYNNx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Jun 2019 09:13:53 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:62532 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730244AbfFYNNx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jun 2019 09:13:53 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x5PDCrva013241;
-        Tue, 25 Jun 2019 09:13:51 -0400
-Received: from nam01-sn1-obe.outbound.protection.outlook.com (mail-sn1nam01lp2057.outbound.protection.outlook.com [104.47.32.57])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2t9e63gwjj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Tue, 25 Jun 2019 09:13:49 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=WqxVOQ23b92vtwOQ62heMw/w/JYj9Xy86e2UrYaD1xo=;
- b=JuAfqcyjVcfnsGyw/NpBLUzYSHT5EE2peIykCyG+DMbS2Np4RqW7YximS2r1iDt9+WJd8cMoweVufcEVnfUTLtTsYBZPm7ZHdt/ByjLAJetZpmlHeIqeJ3i1k2FaQcQkdrVkeRpvb9zW2rSIimpIJ8zC7xy5X46OTioon4SYjSI=
-Received: from DM6PR03CA0051.namprd03.prod.outlook.com (2603:10b6:5:100::28)
- by MWHSPR01MB320.namprd03.prod.outlook.com (2603:10b6:301:35::38) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.16; Tue, 25 Jun
- 2019 13:13:47 +0000
-Received: from SN1NAM02FT060.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::204) by DM6PR03CA0051.outlook.office365.com
- (2603:10b6:5:100::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2008.16 via Frontend
- Transport; Tue, 25 Jun 2019 13:13:47 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- SN1NAM02FT060.mail.protection.outlook.com (10.152.72.192) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.1987.11
- via Frontend Transport; Tue, 25 Jun 2019 13:13:47 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x5PDDk0V008727
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Tue, 25 Jun 2019 06:13:46 -0700
-Received: from saturn.ad.analog.com (10.48.65.145) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Tue, 25 Jun 2019 09:13:46 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/5] drivers: spi: core: Add optional stall delay between cs_change transfers
-Date:   Tue, 25 Jun 2019 16:13:25 +0300
-Message-ID: <20190625131328.11883-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190625131328.11883-1-alexandru.ardelean@analog.com>
-References: <20190625131328.11883-1-alexandru.ardelean@analog.com>
+        id S1726702AbfFYNxM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Jun 2019 09:53:12 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:57368 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726659AbfFYNxL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Jun 2019 09:53:11 -0400
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: eballetbo)
+        with ESMTPSA id 92F9C28A3E6
+Subject: Re: [PATCH v7 2/2] iio: cros_ec: Add lid angle driver
+To:     Jonathan Cameron <jonathan.cameron@huawei.com>,
+        Enric Balletbo Serra <eballetbo@gmail.com>
+Cc:     Gwendal Grignou <gwendal@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+References: <20190517233856.155793-1-gwendal@chromium.org>
+ <20190517233856.155793-3-gwendal@chromium.org>
+ <20190518105350.1a863bfd@archlinux>
+ <CAPUE2uvONxJN7MdUKU-tCx59kd+x+pbYqPH8fLKbSp4_cvSzJg@mail.gmail.com>
+ <CAFqH_53orAG1d3k11517_qP5fC=V1RR14yZHK6VUgcvS-2wgEg@mail.gmail.com>
+ <20190621163112.00005914@huawei.com>
+From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Message-ID: <d8881c53-8c84-edf4-1f43-d188ca00454d@collabora.com>
+Date:   Tue, 25 Jun 2019 15:53:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(346002)(396003)(39860400002)(376002)(2980300002)(199004)(189003)(51416003)(2201001)(186003)(76176011)(106002)(7696005)(54906003)(450100002)(336012)(14444005)(86362001)(48376002)(50466002)(305945005)(110136005)(5660300002)(77096007)(26005)(446003)(36756003)(8676002)(11346002)(356004)(316002)(476003)(4326008)(426003)(478600001)(2616005)(2906002)(1076003)(8936002)(6666004)(47776003)(70206006)(70586007)(2870700001)(107886003)(44832011)(50226002)(246002)(7636002)(486006)(126002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHSPR01MB320;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: cda07d7b-608c-4e16-8fd1-08d6f96ef514
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:MWHSPR01MB320;
-X-MS-TrafficTypeDiagnostic: MWHSPR01MB320:
-X-Microsoft-Antispam-PRVS: <MWHSPR01MB320A35D1E4FA67BBE456674F9E30@MWHSPR01MB320.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6790;
-X-Forefront-PRVS: 0079056367
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: LoFhiDjHDvGq+SyedsBj2y8L31/AhOQb/tpFHmXDpjzmQ0dHDOayT0wSEftzR+FmCHyYaIf4RNZ4UrtV8tHangmfVsY3eIO+NutdQ1RkWmFI/z7Xy9zAlthuhApEo7KjuW+4gYSRkOmY5p57cDu52nwvNDJqazuAzDTJrYcDb1dmSMhagmgcVVLTZKpzhbTvOILMU3W2MXA7kSZ6DWlP+Bf6pc79FYeYdz6nfQBWxCz46zYDHYy4x213PfsnrdXbeO4LzdUnXY5j8P3+gIZ8rrh+Ol2rLtYiTgAMjgH2CfADLb0ZhCU2ZBS4jyOdYKxSgm7PTU7R6NwWN0kZV8lDtE2F1SLNFwKQDVyO1jovrmwPyrY/jL5dT5BYQ1IE4AwJARzS2nQ122Y+CC1SUYSEMGPNylvXEiJnGTcEE1EmQY4=
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Jun 2019 13:13:47.0125
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: cda07d7b-608c-4e16-8fd1-08d6f96ef514
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHSPR01MB320
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-06-25_10:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1906250103
+In-Reply-To: <20190621163112.00005914@huawei.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-GB
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some devices like the ADIS16460 IMU require a stall period between
-transfers, i.e. between when the CS is de-asserted and re-asserted. The
-default value of 10us is not enough. This change makes the delay
-configurable for when the next CS change goes active.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/spi/spi.c       | 3 ++-
- include/linux/spi/spi.h | 3 +++
- 2 files changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 5e75944ad5d1..739de0118ee1 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -1163,7 +1163,8 @@ static int spi_transfer_one_message(struct spi_controller *ctlr,
- 				keep_cs = true;
- 			} else {
- 				spi_set_cs(msg->spi, false);
--				udelay(10);
-+				udelay(xfer->cs_change_stall_delay_us ?
-+				       xfer->cs_change_stall_delay_us : 10);
- 				spi_set_cs(msg->spi, true);
- 			}
- 		}
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 053abd22ad31..d23add3b4790 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -734,6 +734,8 @@ extern void spi_res_release(struct spi_controller *ctlr,
-  *      transfer. If 0 the default (from @spi_device) is used.
-  * @bits_per_word: select a bits_per_word other than the device default
-  *      for this transfer. If 0 the default (from @spi_device) is used.
-+ * @cs_change_stall_delay_us: microseconds to delay between cs_change
-+ * 	transfers.
-  * @cs_change: affects chipselect after this transfer completes
-  * @delay_usecs: microseconds to delay after this transfer before
-  *	(optionally) changing the chipselect status, then starting
-@@ -823,6 +825,7 @@ struct spi_transfer {
- #define	SPI_NBITS_QUAD		0x04 /* 4bits transfer */
- 	u8		bits_per_word;
- 	u8		word_delay_usecs;
-+	u8		cs_change_stall_delay_us;
- 	u16		delay_usecs;
- 	u32		speed_hz;
- 	u16		word_delay;
--- 
-2.20.1
+On 21/6/19 17:31, Jonathan Cameron wrote:
+> On Wed, 19 Jun 2019 22:49:04 +0200
+> Enric Balletbo Serra <eballetbo@gmail.com> wrote:
+> 
+>> Missatge de Gwendal Grignou <gwendal@chromium.org> del dia dv., 14 de
+>> juny 2019 a les 23:56:
+>>>
+>>> On Sat, May 18, 2019 at 2:53 AM Jonathan Cameron <jic23@kernel.org> wrote:  
+>>>>
+>>>> On Fri, 17 May 2019 16:38:56 -0700
+>>>> Gwendal Grignou <gwendal@chromium.org> wrote:
+>>>>  
+>>>>> Add a IIO driver that reports the angle between the lid and the base for
+>>>>> ChromeOS convertible device.
+>>>>>
+>>>>> Tested on eve with ToT EC firmware.
+>>>>> Check driver is loaded and lid angle is correct.
+>>>>>
+>>>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>  
+>>>> Hi Gwendal.
+>>>>
+>>>> Please do list dependencies in patches.  I think this one is still
+>>>> dependent on the larger set of MFD changes.
+>>>>
+>>>> For my reference
+>>>>
+>>>> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>>>>
+>>>> Please do poke if this seems to have gotten lost once the precursors
+>>>> are upstream.  
+>>> The large set of MFD changes for update cros_ec_commands.h has landed
+>>> in a immutable branch:
+>>> git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git branch
+>>> ib-mfd-cros-5.3.
+>>>  
+>>
+>> Jonathan, if you don't want to deal with the big patchset that this
+>> depends and the immutable branch, I can pick the patch and can go
+>> through the chrome-platform tree. I think it is unlikely have merge
+>> conflicts, as these patches only touch cros-ec iio parts and, anyway,
+>> I'll need to deal with the immutable branch because other patches also
+>> depends on the ib.
+> 
+> That would be great thanks.
+> 
 
+Ok, applied for 5.3 via chrome-platform tree
+
+Thanks,
+~ Enric
+
+> I'll almost always take the option that involves me doing less work ;)
+> 
+> Jonathan
+> 
+>>
+>> Thanks,
+>> ~ Enric
+>>
+>>> Thanks,
+>>> Gwendal.
+>>>
+>>>  
+>>>>
+>>>> Thanks,
+>>>>
+>>>> Jonathan
+>>>>  
+>>>>> ---
+>>>>> Changes in v7:
+>>>>> - Split patch in two: This is the IIO section.
+>>>>>
+>>>>> Changes in v6:
+>>>>> - Fix lock held in an error path error.
+>>>>>
+>>>>> Changes in v5:
+>>>>> - Remove unnecessary define.
+>>>>> - v4 was the wrong patch file
+>>>>>
+>>>>> Changes in v3:
+>>>>> - Use static channel array, simplify code because index is always 0.
+>>>>>
+>>>>> Changes in v2:
+>>>>> - Fix license, remove driver_module field.
+>>>>>
+>>>>>  drivers/iio/common/cros_ec_sensors/Kconfig    |   9 ++
+>>>>>  drivers/iio/common/cros_ec_sensors/Makefile   |   1 +
+>>>>>  .../cros_ec_sensors/cros_ec_lid_angle.c       | 139 ++++++++++++++++++
+>>>>>  3 files changed, 149 insertions(+)
+>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+>>>>>
+>>>>> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+>>>>> index 135f6825903f..aacc2ab9c34f 100644
+>>>>> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
+>>>>> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+>>>>> @@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
+>>>>>         Accelerometers, Gyroscope and Magnetometer that are
+>>>>>         presented by the ChromeOS EC Sensor hub.
+>>>>>         Creates an IIO device for each functions.
+>>>>> +
+>>>>> +config IIO_CROS_EC_SENSORS_LID_ANGLE
+>>>>> +     tristate "ChromeOS EC Sensor for lid angle"
+>>>>> +     depends on IIO_CROS_EC_SENSORS_CORE
+>>>>> +     help
+>>>>> +       Module to report the angle between lid and base for some
+>>>>> +       convertible devices.
+>>>>> +       This module is loaded when the EC can calculate the angle between the base
+>>>>> +       and the lid.
+>>>>> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+>>>>> index ec716ff2a775..a35ee232ac07 100644
+>>>>> --- a/drivers/iio/common/cros_ec_sensors/Makefile
+>>>>> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
+>>>>> @@ -4,3 +4,4 @@
+>>>>>
+>>>>>  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+>>>>>  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
+>>>>> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_LID_ANGLE) += cros_ec_lid_angle.o
+>>>>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+>>>>> new file mode 100644
+>>>>> index 000000000000..876dfd176b0e
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+>>>>> @@ -0,0 +1,139 @@
+>>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>>> +
+>>>>> +/*
+>>>>> + * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
+>>>>> + *
+>>>>> + * Copyright 2018 Google, Inc
+>>>>> + *
+>>>>> + * This driver uses the cros-ec interface to communicate with the Chrome OS
+>>>>> + * EC about counter sensors. Counters are presented through
+>>>>> + * iio sysfs.
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/delay.h>
+>>>>> +#include <linux/device.h>
+>>>>> +#include <linux/iio/buffer.h>
+>>>>> +#include <linux/iio/common/cros_ec_sensors_core.h>
+>>>>> +#include <linux/iio/iio.h>
+>>>>> +#include <linux/iio/kfifo_buf.h>
+>>>>> +#include <linux/iio/trigger.h>
+>>>>> +#include <linux/iio/triggered_buffer.h>
+>>>>> +#include <linux/iio/trigger_consumer.h>
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/mfd/cros_ec.h>
+>>>>> +#include <linux/mfd/cros_ec_commands.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/platform_device.h>
+>>>>> +#include <linux/slab.h>
+>>>>> +
+>>>>> +#define DRV_NAME "cros-ec-lid-angle"
+>>>>> +
+>>>>> +/*
+>>>>> + * One channel for the lid angle, the other for timestamp.
+>>>>> + */
+>>>>> +static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
+>>>>> +     {
+>>>>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>>>> +             .scan_type.realbits = CROS_EC_SENSOR_BITS,
+>>>>> +             .scan_type.storagebits = CROS_EC_SENSOR_BITS,
+>>>>> +             .scan_type.sign = 'u',
+>>>>> +             .type = IIO_ANGL
+>>>>> +     },
+>>>>> +     IIO_CHAN_SOFT_TIMESTAMP(1)
+>>>>> +};
+>>>>> +
+>>>>> +/* State data for ec_sensors iio driver. */
+>>>>> +struct cros_ec_lid_angle_state {
+>>>>> +     /* Shared by all sensors */
+>>>>> +     struct cros_ec_sensors_core_state core;
+>>>>> +};
+>>>>> +
+>>>>> +static int cros_ec_sensors_read_lid_angle(struct iio_dev *indio_dev,
+>>>>> +                                       unsigned long scan_mask, s16 *data)
+>>>>> +{
+>>>>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>>>>> +     int ret;
+>>>>> +
+>>>>> +     st->param.cmd = MOTIONSENSE_CMD_LID_ANGLE;
+>>>>> +     ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->lid_angle));
+>>>>> +     if (ret) {
+>>>>> +             dev_warn(&indio_dev->dev, "Unable to read lid angle\n");
+>>>>> +             return ret;
+>>>>> +     }
+>>>>> +
+>>>>> +     *data = st->resp->lid_angle.value;
+>>>>> +     return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int cros_ec_lid_angle_read(struct iio_dev *indio_dev,
+>>>>> +                                 struct iio_chan_spec const *chan,
+>>>>> +                                 int *val, int *val2, long mask)
+>>>>> +{
+>>>>> +     struct cros_ec_lid_angle_state *st = iio_priv(indio_dev);
+>>>>> +     s16 data;
+>>>>> +     int ret;
+>>>>> +
+>>>>> +     mutex_lock(&st->core.cmd_lock);
+>>>>> +     ret = cros_ec_sensors_read_lid_angle(indio_dev, 1, &data);
+>>>>> +     if (ret == 0) {
+>>>>> +             *val = data;
+>>>>> +             ret = IIO_VAL_INT;
+>>>>> +     }
+>>>>> +     mutex_unlock(&st->core.cmd_lock);
+>>>>> +     return ret;
+>>>>> +}
+>>>>> +
+>>>>> +static const struct iio_info cros_ec_lid_angle_info = {
+>>>>> +     .read_raw = &cros_ec_lid_angle_read,
+>>>>> +};
+>>>>> +
+>>>>> +static int cros_ec_lid_angle_probe(struct platform_device *pdev)
+>>>>> +{
+>>>>> +     struct device *dev = &pdev->dev;
+>>>>> +     struct iio_dev *indio_dev;
+>>>>> +     struct cros_ec_lid_angle_state *state;
+>>>>> +     int ret;
+>>>>> +
+>>>>> +     indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
+>>>>> +     if (!indio_dev)
+>>>>> +             return -ENOMEM;
+>>>>> +
+>>>>> +     ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
+>>>>> +     if (ret)
+>>>>> +             return ret;
+>>>>> +
+>>>>> +     indio_dev->info = &cros_ec_lid_angle_info;
+>>>>> +     state = iio_priv(indio_dev);
+>>>>> +     indio_dev->channels = cros_ec_lid_angle_channels;
+>>>>> +     indio_dev->num_channels = ARRAY_SIZE(cros_ec_lid_angle_channels);
+>>>>> +
+>>>>> +     state->core.read_ec_sensors_data = cros_ec_sensors_read_lid_angle;
+>>>>> +
+>>>>> +     ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+>>>>> +                     cros_ec_sensors_capture, NULL);
+>>>>> +     if (ret)
+>>>>> +             return ret;
+>>>>> +
+>>>>> +     return devm_iio_device_register(dev, indio_dev);
+>>>>> +}
+>>>>> +
+>>>>> +static const struct platform_device_id cros_ec_lid_angle_ids[] = {
+>>>>> +     {
+>>>>> +             .name = DRV_NAME,
+>>>>> +     },
+>>>>> +     { /* sentinel */ }
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
+>>>>> +
+>>>>> +static struct platform_driver cros_ec_lid_angle_platform_driver = {
+>>>>> +     .driver = {
+>>>>> +             .name   = DRV_NAME,
+>>>>> +             .pm     = &cros_ec_sensors_pm_ops,
+>>>>> +     },
+>>>>> +     .probe          = cros_ec_lid_angle_probe,
+>>>>> +     .id_table       = cros_ec_lid_angle_ids,
+>>>>> +};
+>>>>> +module_platform_driver(cros_ec_lid_angle_platform_driver);
+>>>>> +
+>>>>> +MODULE_DESCRIPTION("ChromeOS EC driver for reporting convertible lid angle.");
+>>>>> +MODULE_LICENSE("GPL v2");  
+>>>>  
+> 
+> 
