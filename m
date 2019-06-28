@@ -4,25 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00830C4646D
-	for <linux-iio@archiver.kernel.org>; Fri, 28 Jun 2019 22:10:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2907FC4321A
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Jun 2019 23:01:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D499D214AF
-	for <linux-iio@archiver.kernel.org>; Fri, 28 Jun 2019 22:10:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 06BCF2086D
+	for <linux-iio@archiver.kernel.org>; Fri, 28 Jun 2019 23:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726796AbfF1WKa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 28 Jun 2019 18:10:30 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:43695 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726537AbfF1WK3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Jun 2019 18:10:29 -0400
+        id S1726810AbfF1XBN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 28 Jun 2019 19:01:13 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:41084 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726708AbfF1XBM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Jun 2019 19:01:12 -0400
+Received: from relay5-d.mail.gandi.net (unknown [217.70.183.197])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 42AA43A556C;
+        Fri, 28 Jun 2019 21:42:02 +0000 (UTC)
+X-Originating-IP: 90.65.161.137
 Received: from localhost (lfbn-1-1545-137.w90-65.abo.wanadoo.fr [90.65.161.137])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 47A3B24000B;
-        Fri, 28 Jun 2019 22:10:10 +0000 (UTC)
-Date:   Sat, 29 Jun 2019 00:10:10 +0200
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 850E81C0007;
+        Fri, 28 Jun 2019 21:41:38 +0000 (UTC)
+Date:   Fri, 28 Jun 2019 23:41:38 +0200
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
@@ -55,63 +59,39 @@ Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
         linux-iio@vger.kernel.org, linux-rtc@vger.kernel.org
 Subject: Re: [PATCH 3/5] docs: i2c: convert to ReST and add to driver-api
  bookset
-Message-ID: <20190628221010.GV3692@piout.net>
+Message-ID: <20190628214138.GU3692@piout.net>
 References: <cover.1561756511.git.mchehab+samsung@kernel.org>
  <3997b54a2e73887b96ec665573f08ded78b71421.1561756511.git.mchehab+samsung@kernel.org>
- <20190628214138.GU3692@piout.net>
- <20190628185445.71eb824b@coco.lan>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20190628185445.71eb824b@coco.lan>
+In-Reply-To: <3997b54a2e73887b96ec665573f08ded78b71421.1561756511.git.mchehab+samsung@kernel.org>
 User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 28/06/2019 18:54:45-0300, Mauro Carvalho Chehab wrote:
-> Em Fri, 28 Jun 2019 23:41:38 +0200
-> Alexandre Belloni <alexandre.belloni@bootlin.com> escreveu:
-> 
-> > On 28/06/2019 18:23:14-0300, Mauro Carvalho Chehab wrote:
-> > > diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
-> > > index 225a8df1d4e9..1803f3cab39f 100644
-> > > --- a/drivers/rtc/rtc-ds1374.c
-> > > +++ b/drivers/rtc/rtc-ds1374.c
-> > > @@ -14,7 +14,7 @@
-> > >   */
-> > >  /*
-> > >   * It would be more efficient to use i2c msgs/i2c_transfer directly but, as
-> > > - * recommened in .../Documentation/i2c/writing-clients section
-> > > + * recommened in .../Documentation/i2c/writing-clients.rst section
-> > >   * "Sending and receiving", using SMBus level communication is preferred.
-> > >   */
-> > >    
-> > 
-> > Honestly, the whole comment could be removed. The current trend is to
-> > move everything to regmap anyway.
-> > 
-> > However, I'm fine with that change if you want to keep it that way (and
-> > probably scripted).
-> 
-> While the conversion was manually made, the renames were scripted,
-> and checked with:
-> 
-> 	./scripts/documentation-file-ref-check
-> 
-> Otherwise I would very likely fix the typo:
-> 
-> 	recommened -> recommended
-> 
-> :-)
-> 
-> I can certainly add new patch at this (before or after patch 3/5 - as you
-> prefer) in order to get rid of the comment, but I would avoid doing a
-> somewhat unrelated changes at the same documentation patch.
-> 
+On 28/06/2019 18:23:14-0300, Mauro Carvalho Chehab wrote:
+> diff --git a/drivers/rtc/rtc-ds1374.c b/drivers/rtc/rtc-ds1374.c
+> index 225a8df1d4e9..1803f3cab39f 100644
+> --- a/drivers/rtc/rtc-ds1374.c
+> +++ b/drivers/rtc/rtc-ds1374.c
+> @@ -14,7 +14,7 @@
+>   */
+>  /*
+>   * It would be more efficient to use i2c msgs/i2c_transfer directly but, as
+> - * recommened in .../Documentation/i2c/writing-clients section
+> + * recommened in .../Documentation/i2c/writing-clients.rst section
+>   * "Sending and receiving", using SMBus level communication is preferred.
+>   */
+>  
 
-I'm okay with that.
+Honestly, the whole comment could be removed. The current trend is to
+move everything to regmap anyway.
+
+However, I'm fine with that change if you want to keep it that way (and
+probably scripted).
 
 -- 
 Alexandre Belloni, Bootlin
