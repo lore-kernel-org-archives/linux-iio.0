@@ -1,130 +1,404 @@
-Return-Path: <SRS0=p3fm=U7=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Ws84=VA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBC55C06510
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Jul 2019 08:49:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1F52C0650E
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Jul 2019 10:09:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AECE620659
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Jul 2019 08:49:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A2F55218A3
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Jul 2019 10:09:02 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="sexKugZ5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727077AbfGBItw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 2 Jul 2019 04:49:52 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:55928 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725851AbfGBItw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Jul 2019 04:49:52 -0400
-Received: from laptop.home (unknown [IPv6:2a01:cb19:8ad6:900:8ae7:f3be:9ccd:d8f9])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: aragua)
-        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id AA6B728939D;
-        Tue,  2 Jul 2019 09:49:49 +0100 (BST)
-From:   Fabien Lahoudere <fabien.lahoudere@collabora.com>
-Cc:     gwendal@chromium.org, egranata@chromium.org, kernel@collabora.com,
-        Fabien Lahoudere <fabien.lahoudere@collabora.com>,
-        Nick Vaccaro <nvaccaro@chromium.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Guenter Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v4 1/1] iio: common: cros_ec_sensors: determine protocol version
-Date:   Tue,  2 Jul 2019 10:49:38 +0200
-Message-Id: <3fc3e1e606bc1e5478fca0888f9c005df6e52745.1562056868.git.fabien.lahoudere@collabora.com>
-X-Mailer: git-send-email 2.19.2
-In-Reply-To: <cover.1562056868.git.fabien.lahoudere@collabora.com>
-References: <cover.1562056868.git.fabien.lahoudere@collabora.com>
+        id S1727142AbfGCKJB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Jul 2019 06:09:01 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:22174 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726871AbfGCKJB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Jul 2019 06:09:01 -0400
+Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x63A7AcP000447;
+        Wed, 3 Jul 2019 12:08:30 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=STMicroelectronics;
+ bh=7ApidBu5k8wKKMQ/ewkUXikk4Z6XKDx56afGPAeUBoQ=;
+ b=sexKugZ562ZMmFfWBAPRhfz2cuUOvYt9rEBrXaryixYF8EM+LCMtp92vcTPBS8lu0bZd
+ mGL3L5MAOQmyWkOx8/kpmqiG1q3bG/fnBHq1Exz1iLdYsQDMyQJhXllU59HMxei173Ai
+ Mpwb6pUGu9vYWK5Dn23Hec63sf2FUCmBVeWEdp22XR4+hYEYPO0zOJb/LUPIgjzL95UY
+ SmQihoGSvl4kVwKSLS3YWGGztNpzwz1fV71gEe8orPCvZkV9Ui81Rz+ViUpwP+g9aUvu
+ 5KteqbD6gu5oTP4+Hvv/W9qC/g6MMoobgNe1mX/Prva7HMEj3dA0qAqitqK4a4o35+// 7Q== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2tdwrv2j5m-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 03 Jul 2019 12:08:29 +0200
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2B69334;
+        Wed,  3 Jul 2019 10:08:26 +0000 (GMT)
+Received: from Webmail-eu.st.com (Safex1hubcas21.st.com [10.75.90.44])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id ECC04267F;
+        Wed,  3 Jul 2019 10:08:25 +0000 (GMT)
+Received: from SAFEX1HUBCAS23.st.com (10.75.90.47) by SAFEX1HUBCAS21.st.com
+ (10.75.90.44) with Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 3 Jul 2019
+ 12:08:25 +0200
+Received: from localhost (10.48.0.167) by webmail-ga.st.com (10.75.90.48) with
+ Microsoft SMTP Server (TLS) id 14.3.439.0; Wed, 3 Jul 2019 12:08:25 +0200
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>, <alexandre.torgue@st.com>
+CC:     <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 2/3] iio: adc: stm32-adc: add analog switches supply control
+Date:   Wed, 3 Jul 2019 12:08:15 +0200
+Message-ID: <1562148496-26789-3-git-send-email-fabrice.gasnier@st.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1562148496-26789-1-git-send-email-fabrice.gasnier@st.com>
+References: <1562148496-26789-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain
+X-Originating-IP: [10.48.0.167]
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-03_03:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds a function to determine which version of the
-protocol is used to communicate with EC.
+On stm32h7 and stm32mp1, the ADC inputs are multiplexed with analog
+switches which have reduced performances when their supply is below 2.7V
+(vdda by default):
+- 3.3V embedded booster can be used, to get full ADC performances
+  (increases power consumption).
+- vdd supply can be selected if above 2.7V by setting ANASWVDD syscfg bit,
+  on STM32MP1 only.
 
-Signed-off-by: Fabien Lahoudere <fabien.lahoudere@collabora.com>
-Signed-off-by: Nick Vaccaro <nvaccaro@chromium.org>
-Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
-Tested-by: Gwendal Grignou <gwendal@chromium.org>
-Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Make this optional, since this is a trade-off between analog performance
+and power consumption.
+
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- .../cros_ec_sensors/cros_ec_sensors_core.c    | 36 ++++++++++++++++++-
- 1 file changed, 35 insertions(+), 1 deletion(-)
+Changes in v2:
+- Only enable vdd regulator when needed.
+- Rework vdda enabling since: "Add missing vdda-supply to STM32 ADC".
+- Booster has been added to the regulator framework. This helps also when
+  there are several ADC instances like on stm32h7 (e.g. ADC12 and ADC3), to
+  benefit from the use count.
+---
+ drivers/iio/adc/stm32-adc-core.c | 193 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 192 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index 130362ca421b..81111af8a167 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -25,6 +25,31 @@ static char *cros_ec_loc[] = {
- 	[MOTIONSENSE_LOC_MAX] = "unknown",
+diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
+index 1f7ce51..4299cef 100644
+--- a/drivers/iio/adc/stm32-adc-core.c
++++ b/drivers/iio/adc/stm32-adc-core.c
+@@ -14,9 +14,11 @@
+ #include <linux/irqchip/chained_irq.h>
+ #include <linux/irqdesc.h>
+ #include <linux/irqdomain.h>
++#include <linux/mfd/syscon.h>
+ #include <linux/module.h>
+ #include <linux/of_device.h>
+ #include <linux/pm_runtime.h>
++#include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
+ 
+@@ -51,6 +53,17 @@
+ 
+ #define STM32_ADC_CORE_SLEEP_DELAY_MS	2000
+ 
++/* SYSCFG registers */
++#define STM32MP1_SYSCFG_PMCSETR		0x04
++#define STM32MP1_SYSCFG_PMCCLRR		0x44
++
++/* SYSCFG bit fields */
++#define STM32MP1_SYSCFG_ANASWVDD_MASK	BIT(9)
++
++/* SYSCFG capability flags */
++#define HAS_VBOOSTER		BIT(0)
++#define HAS_ANASWVDD		BIT(1)
++
+ /**
+  * stm32_adc_common_regs - stm32 common registers, compatible dependent data
+  * @csr:	common status register offset
+@@ -74,11 +87,13 @@ struct stm32_adc_priv;
+  * @regs:	common registers for all instances
+  * @clk_sel:	clock selection routine
+  * @max_clk_rate_hz: maximum analog clock rate (Hz, from datasheet)
++ * @has_syscfg: SYSCFG capability flags
+  */
+ struct stm32_adc_priv_cfg {
+ 	const struct stm32_adc_common_regs *regs;
+ 	int (*clk_sel)(struct platform_device *, struct stm32_adc_priv *);
+ 	u32 max_clk_rate_hz;
++	unsigned int has_syscfg;
  };
  
-+static int cros_ec_get_host_cmd_version_mask(struct cros_ec_device *ec_dev,
-+					     u16 cmd_offset, u16 cmd, u32 *mask)
+ /**
+@@ -87,22 +102,32 @@ struct stm32_adc_priv_cfg {
+  * @domain:		irq domain reference
+  * @aclk:		clock reference for the analog circuitry
+  * @bclk:		bus clock common for all ADCs, depends on part used
++ * @booster:		booster supply reference
++ * @vdd:		vdd supply reference
+  * @vdda:		vdda analog supply reference
+  * @vref:		regulator reference
++ * @vdd_uv:		vdd supply voltage (microvolts)
++ * @vdda_uv:		vdda supply voltage (microvolts)
+  * @cfg:		compatible configuration data
+  * @common:		common data for all ADC instances
+  * @ccr_bak:		backup CCR in low power mode
++ * @syscfg:		reference to syscon, system control registers
+  */
+ struct stm32_adc_priv {
+ 	int				irq[STM32_ADC_MAX_ADCS];
+ 	struct irq_domain		*domain;
+ 	struct clk			*aclk;
+ 	struct clk			*bclk;
++	struct regulator		*booster;
++	struct regulator		*vdd;
+ 	struct regulator		*vdda;
+ 	struct regulator		*vref;
++	int				vdd_uv;
++	int				vdda_uv;
+ 	const struct stm32_adc_priv_cfg	*cfg;
+ 	struct stm32_adc_common		common;
+ 	u32				ccr_bak;
++	struct regmap			*syscfg;
+ };
+ 
+ static struct stm32_adc_priv *to_stm32_adc_priv(struct stm32_adc_common *com)
+@@ -390,6 +415,82 @@ static void stm32_adc_irq_remove(struct platform_device *pdev,
+ 	}
+ }
+ 
++static int stm32_adc_core_switches_supply_en(struct stm32_adc_priv *priv,
++					     struct device *dev)
 +{
 +	int ret;
-+	struct {
-+		struct cros_ec_command msg;
-+		union {
-+			struct ec_params_get_cmd_versions params;
-+			struct ec_response_get_cmd_versions resp;
-+		};
-+	} __packed buf = {
-+		.msg = {
-+			.command = EC_CMD_GET_CMD_VERSIONS + cmd_offset,
-+			.insize = sizeof(struct ec_response_get_cmd_versions),
-+			.outsize = sizeof(struct ec_params_get_cmd_versions)
-+			},
-+		.params = {.cmd = cmd}
-+	};
 +
-+	ret = cros_ec_cmd_xfer_status(ec_dev, &buf.msg);
-+	if (ret >= 0)
-+		*mask = buf.resp.version_mask;
-+	return ret;
++	/*
++	 * On STM32H7 and STM32MP1, the ADC inputs are multiplexed with analog
++	 * switches (via PCSEL) which have reduced performances when their
++	 * supply is below 2.7V (vdda by default):
++	 * - Voltage booster can be used, to get full ADC performances
++	 *   (increases power consumption).
++	 * - Vdd can be used to supply them, if above 2.7V (STM32MP1 only).
++	 *
++	 * Recommended settings for ANASWVDD and EN_BOOSTER:
++	 * - vdda < 2.7V but vdd > 2.7V: ANASWVDD = 1, EN_BOOSTER = 0 (stm32mp1)
++	 * - vdda < 2.7V and vdd < 2.7V: ANASWVDD = 0, EN_BOOSTER = 1
++	 * - vdda >= 2.7V:               ANASWVDD = 0, EN_BOOSTER = 0 (default)
++	 */
++	if (priv->vdda_uv < 2700000) {
++		if (priv->syscfg && priv->vdd_uv > 2700000) {
++			ret = regulator_enable(priv->vdd);
++			if (ret < 0) {
++				dev_err(dev, "vdd enable failed %d\n", ret);
++				return ret;
++			}
++
++			ret = regmap_write(priv->syscfg,
++					   STM32MP1_SYSCFG_PMCSETR,
++					   STM32MP1_SYSCFG_ANASWVDD_MASK);
++			if (ret < 0) {
++				regulator_disable(priv->vdd);
++				dev_err(dev, "vdd select failed, %d\n", ret);
++				return ret;
++			}
++			dev_dbg(dev, "analog switches supplied by vdd\n");
++
++			return 0;
++		}
++
++		if (priv->booster) {
++			/*
++			 * This is optional, as this is a trade-off between
++			 * analog performance and power consumption.
++			 */
++			ret = regulator_enable(priv->booster);
++			if (ret < 0) {
++				dev_err(dev, "booster enable failed %d\n", ret);
++				return ret;
++			}
++			dev_dbg(dev, "analog switches supplied by booster\n");
++
++			return 0;
++		}
++	}
++
++	/* Fallback using vdda (default), nothing to do */
++	dev_dbg(dev, "analog switches supplied by vdda (%d uV)\n",
++		priv->vdda_uv);
++
++	return 0;
 +}
 +
- int cros_ec_sensors_core_init(struct platform_device *pdev,
- 			      struct iio_dev *indio_dev,
- 			      bool physical_device)
-@@ -33,6 +58,8 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 	struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
- 	struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
- 	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
-+	u32 ver_mask;
-+	int ret;
++static void stm32_adc_core_switches_supply_dis(struct stm32_adc_priv *priv)
++{
++	if (priv->vdda_uv < 2700000) {
++		if (priv->syscfg && priv->vdd_uv > 2700000) {
++			regmap_write(priv->syscfg, STM32MP1_SYSCFG_PMCCLRR,
++				     STM32MP1_SYSCFG_ANASWVDD_MASK);
++			regulator_disable(priv->vdd);
++			return;
++		}
++		if (priv->booster)
++			regulator_disable(priv->booster);
++	}
++}
++
+ static int stm32_adc_core_hw_start(struct device *dev)
+ {
+ 	struct stm32_adc_common *common = dev_get_drvdata(dev);
+@@ -402,10 +503,21 @@ static int stm32_adc_core_hw_start(struct device *dev)
+ 		return ret;
+ 	}
  
- 	platform_set_drvdata(pdev, indio_dev);
- 
-@@ -47,8 +74,15 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 
- 	mutex_init(&state->cmd_lock);
- 
-+	ret = cros_ec_get_host_cmd_version_mask(state->ec,
-+						ec->cmd_offset,
-+						EC_CMD_MOTION_SENSE_CMD,
-+						&ver_mask);
++	ret = regulator_get_voltage(priv->vdda);
++	if (ret < 0) {
++		dev_err(dev, "vdda get voltage failed, %d\n", ret);
++		goto err_vdda_disable;
++	}
++	priv->vdda_uv = ret;
++
++	ret = stm32_adc_core_switches_supply_en(priv, dev);
 +	if (ret < 0)
++		goto err_vdda_disable;
++
+ 	ret = regulator_enable(priv->vref);
+ 	if (ret < 0) {
+ 		dev_err(dev, "vref enable failed\n");
+-		goto err_vdda_disable;
++		goto err_switches_dis;
+ 	}
+ 
+ 	if (priv->bclk) {
+@@ -433,6 +545,8 @@ static int stm32_adc_core_hw_start(struct device *dev)
+ 		clk_disable_unprepare(priv->bclk);
+ err_regulator_disable:
+ 	regulator_disable(priv->vref);
++err_switches_dis:
++	stm32_adc_core_switches_supply_dis(priv);
+ err_vdda_disable:
+ 	regulator_disable(priv->vdda);
+ 
+@@ -451,9 +565,80 @@ static void stm32_adc_core_hw_stop(struct device *dev)
+ 	if (priv->bclk)
+ 		clk_disable_unprepare(priv->bclk);
+ 	regulator_disable(priv->vref);
++	stm32_adc_core_switches_supply_dis(priv);
+ 	regulator_disable(priv->vdda);
+ }
+ 
++static int stm32_adc_core_switches_probe(struct device *dev,
++					 struct stm32_adc_priv *priv)
++{
++	struct device_node *np = dev->of_node;
++	int ret;
++
++	/* Analog switches supply can be controlled by syscfg (optional) */
++	priv->syscfg = syscon_regmap_lookup_by_phandle(np, "st,syscfg");
++	if (IS_ERR(priv->syscfg)) {
++		ret = PTR_ERR(priv->syscfg);
++		if (ret != -ENODEV) {
++			if (ret != -EPROBE_DEFER)
++				dev_err(dev, "Can't probe syscfg: %d\n", ret);
++			return ret;
++		}
++		priv->syscfg = NULL;
++	}
++
++	/* Booster can be used to supply analog switches (optional) */
++	if (priv->cfg->has_syscfg & HAS_VBOOSTER &&
++	    of_property_read_bool(np, "booster-supply")) {
++		priv->booster = devm_regulator_get_optional(dev, "booster");
++		if (IS_ERR(priv->booster)) {
++			ret = PTR_ERR(priv->booster);
++			if (ret != -ENODEV) {
++				if (ret != -EPROBE_DEFER)
++					dev_err(dev, "can't get booster %d\n",
++						ret);
++				return ret;
++			}
++			priv->booster = NULL;
++		}
++	}
++
++	/* Vdd can be used to supply analog switches (optional) */
++	if (priv->cfg->has_syscfg & HAS_ANASWVDD &&
++	    of_property_read_bool(np, "vdd-supply")) {
++		priv->vdd = devm_regulator_get_optional(dev, "vdd");
++		if (IS_ERR(priv->vdd)) {
++			ret = PTR_ERR(priv->vdd);
++			if (ret != -ENODEV) {
++				if (ret != -EPROBE_DEFER)
++					dev_err(dev, "can't get vdd %d\n", ret);
++				return ret;
++			}
++			priv->vdd = NULL;
++		}
++	}
++
++	if (priv->vdd) {
++		ret = regulator_enable(priv->vdd);
++		if (ret < 0) {
++			dev_err(dev, "vdd enable failed %d\n", ret);
++			return ret;
++		}
++
++		ret = regulator_get_voltage(priv->vdd);
++		if (ret < 0) {
++			dev_err(dev, "vdd get voltage failed %d\n", ret);
++			regulator_disable(priv->vdd);
++			return ret;
++		}
++		priv->vdd_uv = ret;
++
++		regulator_disable(priv->vdd);
++	}
++
++	return 0;
++}
++
+ static int stm32_adc_probe(struct platform_device *pdev)
+ {
+ 	struct stm32_adc_priv *priv;
+@@ -514,6 +699,10 @@ static int stm32_adc_probe(struct platform_device *pdev)
+ 		priv->bclk = NULL;
+ 	}
+ 
++	ret = stm32_adc_core_switches_probe(dev, priv);
++	if (ret)
 +		return ret;
 +
- 	/* Set up the host command structure. */
--	state->msg->version = 2;
-+	state->msg->version = fls(ver_mask) - 1;
- 	state->msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
- 	state->msg->outsize = sizeof(struct ec_params_motion_sense);
+ 	pm_runtime_get_noresume(dev);
+ 	pm_runtime_set_active(dev);
+ 	pm_runtime_set_autosuspend_delay(dev, STM32_ADC_CORE_SLEEP_DELAY_MS);
+@@ -611,12 +800,14 @@ static const struct stm32_adc_priv_cfg stm32h7_adc_priv_cfg = {
+ 	.regs = &stm32h7_adc_common_regs,
+ 	.clk_sel = stm32h7_adc_clk_sel,
+ 	.max_clk_rate_hz = 36000000,
++	.has_syscfg = HAS_VBOOSTER,
+ };
  
+ static const struct stm32_adc_priv_cfg stm32mp1_adc_priv_cfg = {
+ 	.regs = &stm32h7_adc_common_regs,
+ 	.clk_sel = stm32h7_adc_clk_sel,
+ 	.max_clk_rate_hz = 40000000,
++	.has_syscfg = HAS_VBOOSTER | HAS_ANASWVDD,
+ };
+ 
+ static const struct of_device_id stm32_adc_of_match[] = {
 -- 
-2.19.2
+2.7.4
 
