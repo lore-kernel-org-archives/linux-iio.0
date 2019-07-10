@@ -2,176 +2,200 @@ Return-Path: <SRS0=O9aZ=VH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01813C74A35
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 19:22:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1DF5C74A35
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 19:44:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C9C4E20844
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 19:22:43 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EMt12crl"
+	by mail.kernel.org (Postfix) with ESMTP id C494720645
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 19:44:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1562787853;
+	bh=KQ9dpBUN+zkkfv1JhBanSAaY9RnA/Nj1iA945a/BcG4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=zAz915/aLc/d2JMYQI4ycn7EzANCfUiqFtg3M4gOlfVRDeSIdOM7AFw0pvsTzyvt4
+	 srTIdvWsDfbkZ+/GYiXgofHG8UVKcbDUa1LLGpcYeW2PK0I2ZxWjKOqff0Vi+axRyW
+	 NFVZDcKwQ/6As4c87qpi2gOhIoLxfFHNm19Ef4kQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728183AbfGJTWd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Jul 2019 15:22:33 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:43709 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727923AbfGJTWb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2019 15:22:31 -0400
-Received: by mail-lf1-f65.google.com with SMTP id c19so2380267lfm.10;
-        Wed, 10 Jul 2019 12:22:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vIIZp+Q37HH0NVHz5A4ofMD82GD7Zo8OOifoKPsJ8KQ=;
-        b=EMt12crlTJiCbnpidDiQaZPcrWb31ws/nhoO+1BCbl/GA35w725rSk42Rcn+8pAw+U
-         zVWuQxgDUvsrk+xQcEcB5gcf8UO2LPpvoz0YP6diL4gCmxHZ4lIS6gc0Dr6IQ+N57UvG
-         TYr8nRJwQ3xL3jZcRwWHd+Kqr0EFz7jCJZinu+SN7+DK35HFZRwcS2qrVZhF9MHNRjX4
-         wHLqg55n8fN7KkoR4MjNslcLLwdEk+d8k0pgG/2YEJDjiOiG5/V/bhjimmEY+gHXtHQ2
-         oEK3SJ25feC/oGWG3hJdq7tbt6SQHuXzsWQT8PUVJib1+4LgIlZAr3pghQF0g95AhmOp
-         jTig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vIIZp+Q37HH0NVHz5A4ofMD82GD7Zo8OOifoKPsJ8KQ=;
-        b=PcKTSOdSSh7Jl2x6kNFZ+/+g6+HnTGeUonBGhIGOUFFZPrYxgUSuw9JmLOvHKKxiFX
-         7b0I4gaAUynAsZfqEsloYKkp7ofamxAfZ95pvCfwjiorBSW56Mh2ND13n1orzzTkR4eH
-         8IBAgHZ/vq2HCn2L4UPw43gP7B9q2rQiCIQTG51WgBhUjCyQ2T526WLcHcWvUhOnytC3
-         tjgnH2t/uOoWz7/A40IHBCDXZgEJCuKQ0wSWQ8mP3OzqJh2P83QOrzCwyemf27HnrlRs
-         OHh/a0oJRttDEtP9emuCov2cu2SQaJx2lg2Pz7xrTyKWF/oxaj3quusxdzGpVzpM4SIq
-         oqXQ==
-X-Gm-Message-State: APjAAAWTEpdmoRGWxh1bJ/3CpTM7mZwOXXY/uS4SfVqb1xjtPQF9A1bE
-        wYbawDCqx0V6C9oKt90nZZVyw1pL6Qw=
-X-Google-Smtp-Source: APXvYqzkpEG2wG7Eoyjn3xgZFBTpgSO2gHYbBcmoBXSjDZ7XikNGbe+sgEnTpGo9IKXuSb3C8syKOg==
-X-Received: by 2002:a19:5f58:: with SMTP id a24mr649526lfj.111.1562786549312;
-        Wed, 10 Jul 2019 12:22:29 -0700 (PDT)
-Received: from arch.lan (89-70-29-67.dynamic.chello.pl. [89.70.29.67])
-        by smtp.gmail.com with ESMTPSA id a70sm603515ljf.57.2019.07.10.12.22.28
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Wed, 10 Jul 2019 12:22:28 -0700 (PDT)
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        jic23@kernel.org, robh+dt@kernel.org,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH 1/2] dt-bindings: iio: chemical: pms7003: convert bindings to yaml
-Date:   Wed, 10 Jul 2019 21:21:54 +0200
-Message-Id: <20190710192155.11489-2-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.22.0
-In-Reply-To: <20190710192155.11489-1-tduszyns@gmail.com>
-References: <20190710192155.11489-1-tduszyns@gmail.com>
+        id S1725956AbfGJToN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Jul 2019 15:44:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34258 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727846AbfGJToN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 10 Jul 2019 15:44:13 -0400
+Received: from lore-desk-wlan.lan (unknown [151.66.63.253])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A935B2087F;
+        Wed, 10 Jul 2019 19:44:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1562787851;
+        bh=KQ9dpBUN+zkkfv1JhBanSAaY9RnA/Nj1iA945a/BcG4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=kReqj31G3gpMk681VjGLc1NjF9uqTpJjvf0QCoIrZoZDaNnJQFvnXCyd55XD6o+V0
+         lRRx0x34f5Twyj3QftyZd4pE5y+5PjinXtI+Q6oAr2v5xtHnvkWR2dAR0dLcYJnvW3
+         zztPHQohMHqeZ0hcBfXylERq3kaM/KD+OnV/gGfw=
+Date:   Wed, 10 Jul 2019 21:44:05 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     Vitor Soares <Vitor.Soares@synopsys.com>
+Cc:     linux-iio@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-kernel@vger.kernel.org, broonie@kernel.org,
+        gregkh@linuxfoundation.org, rafael@kernel.org,
+        bbrezillon@knernel.org, Joao.Pinto@synopsys.com
+Subject: Re: [PATCH v3 3/3] iio: imu: st_lsm6dsx: add i3c basic support for
+ LSM6DSO and LSM6DSR
+Message-ID: <20190710194405.GA10520@lore-desk-wlan.lan>
+References: <cover.1562767521.git.vitor.soares@synopsys.com>
+ <73955529ae0c31f428221abb88031ab3b4165659.1562767521.git.vitor.soares@synopsys.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="45Z9DzgjV8m4Oswq"
+Content-Disposition: inline
+In-Reply-To: <73955529ae0c31f428221abb88031ab3b4165659.1562767521.git.vitor.soares@synopsys.com>
+User-Agent: Mutt/1.12.0 (2019-05-25)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert existing device tree bindings to yaml.
 
-Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
----
- .../iio/chemical/plantower,pms7003.txt        | 26 ----------
- .../iio/chemical/plantower,pms7003.yaml       | 51 +++++++++++++++++++
- 2 files changed, 51 insertions(+), 26 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
+--45Z9DzgjV8m4Oswq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-deleted file mode 100644
-index c52ea2126eaa..000000000000
---- a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--* Plantower PMS7003 particulate matter sensor
--
--Required properties:
--- compatible: must one of:
--   "plantower,pms1003"
--   "plantower,pms3003"
--   "plantower,pms5003"
--   "plantower,pms6003"
--   "plantower,pms7003"
--   "plantower,pmsa003"
--- vcc-supply: phandle to the regulator that provides power to the sensor
--
--Optional properties:
--- plantower,set-gpios: phandle to the GPIO connected to the SET line
--- reset-gpios: phandle to the GPIO connected to the RESET line
--
--Refer to serial/slave-device.txt for generic serial attached device bindings.
--
--Example:
--
--&uart0 {
--	air-pollution-sensor {
--		compatible = "plantower,pms7003";
--		vcc-supply = <&reg_vcc5v0>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
-new file mode 100644
-index 000000000000..a551d3101f93
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/plantower,pms7003.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/chemical/plantower,pms7003.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Plantower PMS7003 air pollution sensor
-+
-+maintainers:
-+  - Tomasz Duszynski <tduszyns@gmail.com>
-+
-+description: |
-+  Air pollution sensor capable of measuring mass concentration of dust
-+  particles.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - plantower,pms1003
-+      - plantower,pms3003
-+      - plantower,pms5003
-+      - plantower,pms6003
-+      - plantower,pms7003
-+      - plantower,pmsa003
-+
-+  vcc-supply:
-+    description: regulator that provides power to the sensor
-+    maxItems: 1
-+
-+  plantower,set-gpios:
-+    description: GPIO connected to the SET line
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description: GPIO connected to the RESET line
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - vcc-supply
-+
-+examples:
-+  - |
-+    serial {
-+      air-pollution-sensor {
-+        compatible = "plantower,pms7003";
-+        vcc-supply = <&reg_vcc5v0>;
-+      };
-+    };
-+
-+...
--- 
-2.22.0
+> For today the st_lsm6dsx driver support LSM6DSO and LSM6DSR sensor only in
+> spi and i2c mode.
+>=20
+> The LSM6DSO and LSM6DSR are also i3c capable so lets give i3c support to
+> them.
 
+Hi Vitor,
+
+just few comments inline.
+
+Regards,
+Lorenzo
+
+>=20
+> Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
+> Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> ---
+> Changes in v3:
+>   Remove unnecessary st_lsm6dsx_i3c_data table used to hold device name
+>   Use st_lsm6dsx_probe new form
+>=20
+> Changes in v2:
+>   Add support for LSM6DSR
+>   Set pm_ops to st_lsm6dsx_pm_ops
+>=20
+>  drivers/iio/imu/st_lsm6dsx/Kconfig          |  8 +++-
+>  drivers/iio/imu/st_lsm6dsx/Makefile         |  1 +
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 61 +++++++++++++++++++++++=
+++++++
+>  3 files changed, 69 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+>=20
+
+[...]
+
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/im=
+u/st_lsm6dsx/st_lsm6dsx_i3c.c
+> new file mode 100644
+> index 0000000..f683754
+> --- /dev/null
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+> @@ -0,0 +1,61 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
+> + *
+> + * Author: Vitor Soares <vitor.soares@synopsys.com>
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/i3c/device.h>
+> +#include <linux/i3c/master.h>
+> +#include <linux/slab.h>
+> +#include <linux/of.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "st_lsm6dsx.h"
+> +
+> +static const struct i3c_device_id st_lsm6dsx_i3c_ids[];
+> +
+
+why do we need this? I guess you can just move st_lsm6dsx_i3c_ids definitio=
+n here
+
+> +static const struct regmap_config st_lsm6dsx_i3c_regmap_config =3D {
+> +	.reg_bits =3D 8,
+> +	.val_bits =3D 8,
+> +};
+> +
+> +static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
+> +{
+> +	const struct i3c_device_id *id =3D i3c_device_match_id(i3cdev,
+> +							    st_lsm6dsx_i3c_ids);
+
+i3c_device_match_id can theoretically fail so is it better to check
+return value here? (maybe I am too paranoid :))
+
+> +	struct regmap *regmap;
+> +	int hw_id =3D (int)id->data;
+
+I guess we do not need this since we use it just in st_lsm6dsx_probe(),
+we can just do:
+
+return st_lsm6dsx_probe(&i3cdev->dev, 0, (int)id->data, regmap);
+> +
+> +	regmap =3D devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&i3cdev->dev, "Failed to register i3c regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	return st_lsm6dsx_probe(&i3cdev->dev, 0, hw_id, regmap);
+> +}
+> +
+> +static const struct i3c_device_id st_lsm6dsx_i3c_ids[] =3D {
+> +	I3C_DEVICE(0x0104, 0x006C, (void *)ST_LSM6DSO_ID),
+> +	I3C_DEVICE(0x0104, 0x006B, (void *)ST_LSM6DSR_ID),
+> +	{ /* sentinel */ },
+> +};
+> +MODULE_DEVICE_TABLE(i3c, st_lsm6dsx_i3c_ids);
+> +
+> +static struct i3c_driver st_lsm6dsx_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "st_lsm6dsx_i3c",
+> +		.pm =3D &st_lsm6dsx_pm_ops,
+> +	},
+> +	.probe =3D st_lsm6dsx_i3c_probe,
+> +	.id_table =3D st_lsm6dsx_i3c_ids,
+> +};
+> +module_i3c_driver(st_lsm6dsx_driver);
+> +
+> +MODULE_AUTHOR("Vitor Soares <vitor.soares@synopsys.com>");
+> +MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx i3c driver");
+> +MODULE_LICENSE("GPL v2");
+> --=20
+> 2.7.4
+>=20
+
+--45Z9DzgjV8m4Oswq
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXSZAAgAKCRA6cBh0uS2t
+rEdhAP9qPkBeOryzKC0RGfqKR+Qp8cZ9cqsNUGpjjM+aDt3PkgD/Z4fhMOTocnhw
+qCQjPYrnX4PkPS1JmbrgxP6WO3svsgs=
+=KFKC
+-----END PGP SIGNATURE-----
+
+--45Z9DzgjV8m4Oswq--
