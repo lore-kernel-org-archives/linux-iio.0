@@ -2,123 +2,83 @@ Return-Path: <SRS0=O9aZ=VH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC4EFC73C7C
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 09:44:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B8D6C74A21
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 13:53:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 903962084B
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 09:44:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=armlinux.org.uk header.i=@armlinux.org.uk header.b="SuuW/7NN"
+	by mail.kernel.org (Postfix) with ESMTP id 2024520838
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Jul 2019 13:53:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1562766782;
+	bh=zrEXgU06V3HSBHWapw594JuvhYnamH5a5R6f/0YmUgQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=fqu8SWYoqlSwn0ibppPpKaFGk33IuNxKxafNB+jEw3TAfF7hHfi2O+HMH/letLClX
+	 tQUn+VtLmDJILLCUhuKLh1bnCdbYM3yrFNWhYKrbC/o3vKbdyyuh92PMryWgixB5b9
+	 yGqCNvKxQCg2BiMsq31jlwS9Sf9qVo+jZnq/KqJI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726276AbfGJJoG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Jul 2019 05:44:06 -0400
-Received: from pandora.armlinux.org.uk ([78.32.30.218]:45042 "EHLO
-        pandora.armlinux.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726097AbfGJJoF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2019 05:44:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=armlinux.org.uk; s=pandora-2019; h=Sender:In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Reply-To:
-        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=j/WSDXca8rXK9NsDZMmI4ZGVD5lmMYmQNn9cX+c1P0c=; b=SuuW/7NN1z53N126yQd0mfU0n
-        ntWsBeL22jFfrqe6UV7yYYjaWAb/mGvo82v/VpffWPeHAXC8qvHdMVqjvTeqQYorTqKjPyjcVkd0Y
-        ehhidoReYAcrBOGYvK5hg+mxgyuD5Njr2SLIjID07Kvs0w8adz+Czb2UlD+NlXUjcnJQShORaFQ6X
-        Xl3J1vYZGJzoNp6wHmHn8OimwqiNyO9IG6bSDFpjxItLMpKnIWdEU05QuowI2tkahamV/uty376Ez
-        mf5JMQomwfeTQc+3SQ9pZj0NiYOkjfuIR3hSKUK/aQunmlQ7Q5KSFX7XpTfFzFgMc9EjJ+4N1wSfg
-        nEpyIjNkA==;
-Received: from shell.armlinux.org.uk ([2001:4d48:ad52:3201:5054:ff:fe00:4ec]:59340)
-        by pandora.armlinux.org.uk with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.90_1)
-        (envelope-from <linux@armlinux.org.uk>)
-        id 1hl98c-0005tt-RN; Wed, 10 Jul 2019 10:43:47 +0100
-Received: from linux by shell.armlinux.org.uk with local (Exim 4.89)
-        (envelope-from <linux@shell.armlinux.org.uk>)
-        id 1hl98T-0003nw-5z; Wed, 10 Jul 2019 10:43:37 +0100
-Date:   Wed, 10 Jul 2019 10:43:37 +0100
-From:   Russell King - ARM Linux admin <linux@armlinux.org.uk>
-To:     Johannes Berg <johannes@sipsolutions.net>
-Cc:     Joe Perches <joe@perches.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Patrick Venture <venture@google.com>,
-        Nancy Yuen <yuenn@google.com>,
-        Benjamin Fair <benjaminfair@google.com>,
-        Andrew Jeffery <andrew@aj.id.au>, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-wireless@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        alsa-devel@alsa-project.org, linux-mmc@vger.kernel.org,
-        dri-devel@lists.freedesktop.org
-Subject: Re: [PATCH 00/12] treewide: Fix GENMASK misuses
-Message-ID: <20190710094337.wf2lftxzfjq2etro@shell.armlinux.org.uk>
-References: <cover.1562734889.git.joe@perches.com>
- <5fa1fa6998332642c49e2d5209193ffe2713f333.camel@sipsolutions.net>
+        id S1727552AbfGJNw5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Jul 2019 09:52:57 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:43701 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727528AbfGJNw5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Jul 2019 09:52:57 -0400
+Received: by mail-io1-f65.google.com with SMTP id k20so4804151ios.10;
+        Wed, 10 Jul 2019 06:52:57 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=+sQ8qUL2tXP29Ld9BiqDZ7FWck10MSCLGC0VK5gjO5o=;
+        b=OGRJ729e3uwGg1HUiBT0+dGy96bM36n5pRuYYxH2yhJeV7TSCicNx3+8DRgcbVu+4L
+         abUTYZu0/A1pxy+s9Osp1TCV68vvCizol+Z4R9kSyljxGPbwPgxKr2xhfqb5WwICRkVy
+         1/sDMD0Ho72o+RuzYbYk2QiJgw7vhvt5XshoB4laA1mTC6e7gTuHwJMxP7LtCjStdAPK
+         ehjkWsvsdQC9eh0xtBUR60YGi/9T63enysEU2Gvqha2FT2FC9kbPG72dgXcbjc5GBraT
+         We59+VZA1CKb8Nh1acbbcaex1KKhMOXDpMapuqlLWur5MJuzZjeW4BWO5aNS03YsQjuK
+         aJag==
+X-Gm-Message-State: APjAAAUY8KhEykvweGT5NJLhaB6NH9BCce2mV/VfOmIWeZ8k3CWaqLvf
+        5MYb//TZyK3j3BZn1BfUCg==
+X-Google-Smtp-Source: APXvYqzRTXXDXm5+lNWb2TKj4hTvtu33GlKZXAbnlGua/pqd3BhOV1uRDSTpKXcaYpwC4fb6DQDIjw==
+X-Received: by 2002:a5e:d611:: with SMTP id w17mr12659726iom.63.1562766776311;
+        Wed, 10 Jul 2019 06:52:56 -0700 (PDT)
+Received: from localhost ([64.188.179.251])
+        by smtp.gmail.com with ESMTPSA id c17sm1663390ioo.82.2019.07.10.06.52.55
+        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
+        Wed, 10 Jul 2019 06:52:55 -0700 (PDT)
+Date:   Wed, 10 Jul 2019 07:52:54 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Artur Rojek <contact@artur-rojek.eu>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maarten ter Huurne <maarten@treewalker.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Artur Rojek <contact@artur-rojek.eu>
+Subject: Re: [PATCH 1/4] dt-bindings: iio/adc: Add a compatible string for
+ JZ4770 SoC ADC
+Message-ID: <20190710135254.GA30741@bogus>
+References: <20190623184732.5492-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <5fa1fa6998332642c49e2d5209193ffe2713f333.camel@sipsolutions.net>
-User-Agent: NeoMutt/20170113 (1.7.2)
+In-Reply-To: <20190623184732.5492-1-contact@artur-rojek.eu>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jul 10, 2019 at 11:17:31AM +0200, Johannes Berg wrote:
-> On Tue, 2019-07-09 at 22:04 -0700, Joe Perches wrote:
-> > These GENMASK uses are inverted argument order and the
-> > actual masks produced are incorrect.  Fix them.
-> > 
-> > Add checkpatch tests to help avoid more misuses too.
-> > 
-> > Joe Perches (12):
-> >   checkpatch: Add GENMASK tests
+On Sun, 23 Jun 2019 20:47:29 +0200, Artur Rojek wrote:
+> Add a compatible string for the ADC controller present on
+> Ingenic JZ4770 SoC.
 > 
-> IMHO this doesn't make a lot of sense as a checkpatch test - just throw
-> in a BUILD_BUG_ON()?
+> Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-My personal take on this is that GENMASK() is really not useful, it's
-just pure obfuscation and leads to exactly these kinds of mistakes.
-
-Yes, I fully understand the argument that you can just specify the
-start and end bits, and it _in theory_ makes the code more readable.
-
-However, the problem is when writing code.  GENMASK(a, b).  Is a the
-starting bit or ending bit?  Is b the number of bits?  It's confusing
-and causes mistakes resulting in incorrect code.  A BUILD_BUG_ON()
-can catch some of the cases, but not all of them.
-
-For example:
-
-	GENMASK(6, 2)
-
-would satisify the requirement that a > b, so a BUILD_BUG_ON() will
-not trigger, but was the author meaning 0x3c or 0xc0?
-
-Personally, I've decided I am _not_ going to use GENMASK() in my code
-because I struggle to get the macro arguments correct - I'm _much_
-happier, and it is way more reliable for me to write the mask in hex
-notation.
-
-I think this is where use of a ternary operator would come in use.  The
-normal way of writing a number of bits tends to be "a:b", so if GENMASK
-took something like GENMASK(6:2), then I'd have less issue with it,
-because it's argument is then in a familiar notation.
-
-Yes, I'm sure that someone will point out that the GENMASK arguments
-are just in the same order, but that doesn't prevent _me_ frequently
-getting it wrong - and that's the point.  The macro seems to me to
-cause more problems than it solves.
-
--- 
-RMK's Patch system: https://www.armlinux.org.uk/developer/patches/
-FTTC broadband for 0.8mile line in suburbia: sync at 12.1Mbps down 622kbps up
-According to speedtest.net: 11.9Mbps down 500kbps up
+Reviewed-by: Rob Herring <robh@kernel.org>
