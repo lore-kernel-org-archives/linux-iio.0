@@ -7,40 +7,40 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F852C742B3
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B2B3C742B9
 	for <linux-iio@archiver.kernel.org>; Fri, 12 Jul 2019 11:53:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F39CD2083B
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Jul 2019 11:53:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 34EB12083B
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Jul 2019 11:53:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="JNsH0Rvl"
+	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="VDT08Tjn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbfGLLxg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1727025AbfGLLxg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 12 Jul 2019 07:53:36 -0400
-Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:57474 "EHLO
+Received: from smtprelay-out1.synopsys.com ([198.182.47.102]:57462 "EHLO
         smtprelay-out1.synopsys.com" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726867AbfGLLxg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2019 07:53:36 -0400
-Received: from mailhost.synopsys.com (mdc-mailhost2.synopsys.com [10.225.0.210])
+        by vger.kernel.org with ESMTP id S1726266AbfGLLxf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2019 07:53:35 -0400
+Received: from mailhost.synopsys.com (mdc-mailhost1.synopsys.com [10.225.0.209])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 2E32BC29C5;
-        Fri, 12 Jul 2019 11:53:35 +0000 (UTC)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id C472FC29C3;
+        Fri, 12 Jul 2019 11:53:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
-        t=1562932415; bh=2+9KBguyPdQ3tQ3958h9WzUSh/G7QD7dsIotfUq1+Ws=;
+        t=1562932415; bh=pX6+srmcqljtGLIDX/tJ43DrJ4jEro9DaSq1hNafCT0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:In-Reply-To:
          References:From;
-        b=JNsH0Rvlzrnkv1QiHB3h3s5u5j6rk9ZQ+R2352pkLP8YslC3dnw7D9PnMyI8Jyqzd
-         Q3VHfjFBtGREc645RzOFSbNbC6fBb6LBYKL7vzhizz0kFzwL1HE1/6qkv3F6wkJPD5
-         wuDbGRaNx/QESw7d7T9O3I59SGyoEmrcQvhuePmN2oY7mYFQrM9inn6nYOQs/TSEBv
-         X+aofIXhzoTS+r6rtifLIxCcJkYrActIDcUFsJWuTruF7uVSgbslRXxLxVwQcdRei2
-         WysnDgocfbZdxMN7rS44PV4igxFHntNHS1G3mvTk4g85hXBltp4BUU6vNkiXsJROqt
-         8q+iKA3WHqtGg==
-Received: from de02.synopsys.com (de02.internal.synopsys.com [10.225.17.21])
-        by mailhost.synopsys.com (Postfix) with ESMTP id 4ABD2A005E;
+        b=VDT08TjnDVIqirJLpwD2Iahy9WrpLUKU/QDhkVyNmKHEojlbMtrLkUdkNbQoQ9UG2
+         FJPrR8pAnixQa/v2BWmo1fhXjDsCW/bXVTm2RQq22YZX9e10YX7749Z3eBd0QklswB
+         MnaLdf1TBqLdd99gvNFxMpwbJMN3GG0bsGvBnrA7jO+968DJ3/ScalfjrmkncK2HOU
+         vlVLXLWtruQCVfzmZ3olysc73dlUbBk9H76uiEWGaVNP/O9vcnH/bbQmahvLvqdfOU
+         LFlvpieAOKBvt3yruZFpBP2boCq9+SLlOfFU6GVZox4qPO5+dnKuKD566Ild6E4qJK
+         qxPY/Jc4jUqwg==
+Received: from de02.synopsys.com (germany.internal.synopsys.com [10.225.17.21])
+        by mailhost.synopsys.com (Postfix) with ESMTP id 6972EA0064;
         Fri, 12 Jul 2019 11:53:33 +0000 (UTC)
 Received: from de02dwia024.internal.synopsys.com (de02dwia024.internal.synopsys.com [10.225.19.81])
-        by de02.synopsys.com (Postfix) with ESMTP id 228D33E586;
+        by de02.synopsys.com (Postfix) with ESMTP id 4EE1A3E58C;
         Fri, 12 Jul 2019 13:53:33 +0200 (CEST)
 From:   Vitor Soares <Vitor.Soares@synopsys.com>
 To:     linux-iio@vger.kernel.org, linux-i3c@lists.infradead.org,
@@ -48,9 +48,9 @@ To:     linux-iio@vger.kernel.org, linux-i3c@lists.infradead.org,
 Cc:     lorenzo@kernel.org, gregkh@linuxfoundation.org, rafael@kernel.org,
         bbrezillon@kernel.org, Joao.Pinto@synopsys.com,
         Vitor Soares <Vitor.Soares@synopsys.com>
-Subject: [PATCH v4 1/3] regmap: add i3c bus support
-Date:   Fri, 12 Jul 2019 13:53:28 +0200
-Message-Id: <7deb1300474b68ebb6fc3ecb02577e4f657250a5.1562931742.git.vitor.soares@synopsys.com>
+Subject: [PATCH v4 3/3] iio: imu: st_lsm6dsx: add i3c basic support for LSM6DSO and LSM6DSR
+Date:   Fri, 12 Jul 2019 13:53:30 +0200
+Message-Id: <f239834a6b8bd179094cdc19a3ac5ecaf807cee3.1562931742.git.vitor.soares@synopsys.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <cover.1562931742.git.vitor.soares@synopsys.com>
 References: <cover.1562931742.git.vitor.soares@synopsys.com>
@@ -61,160 +61,132 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add basic support for i3c bus.
-This is a simple implementation that only give support
-for SDR Read and Write commands.
+For today the st_lsm6dsx driver support LSM6DSO and LSM6DSR sensor only in
+spi and i2c mode.
+
+The LSM6DSO and LSM6DSR are also i3c capable so lets give i3c support to
+them.
 
 Signed-off-by: Vitor Soares <vitor.soares@synopsys.com>
+Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/base/regmap/Kconfig      |  6 +++-
- drivers/base/regmap/Makefile     |  1 +
- drivers/base/regmap/regmap-i3c.c | 60 ++++++++++++++++++++++++++++++++++++++++
- include/linux/regmap.h           | 20 ++++++++++++++
- 4 files changed, 86 insertions(+), 1 deletion(-)
- create mode 100644 drivers/base/regmap/regmap-i3c.c
+Changes in v4:
+  Remove hw_id variable
 
-diff --git a/drivers/base/regmap/Kconfig b/drivers/base/regmap/Kconfig
-index 6ad5ef4..c8bbf53 100644
---- a/drivers/base/regmap/Kconfig
-+++ b/drivers/base/regmap/Kconfig
-@@ -4,7 +4,7 @@
- # subsystems should select the appropriate symbols.
+Changes in v3:
+  Remove unnecessary st_lsm6dsx_i3c_data table used to hold device name
+  Use st_lsm6dsx_probe new form
+
+Changes in v2:
+  Add support for LSM6DSR
+  Set pm_ops to st_lsm6dsx_pm_ops
+
+ drivers/iio/imu/st_lsm6dsx/Kconfig          |  8 +++-
+ drivers/iio/imu/st_lsm6dsx/Makefile         |  1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 58 +++++++++++++++++++++++++++++
+ 3 files changed, 66 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
+index 9e59297..6b5a73c 100644
+--- a/drivers/iio/imu/st_lsm6dsx/Kconfig
++++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
+@@ -1,11 +1,12 @@
  
- config REGMAP
--	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_W1 || REGMAP_AC97 || REGMAP_MMIO || REGMAP_IRQ)
-+	default y if (REGMAP_I2C || REGMAP_SPI || REGMAP_SPMI || REGMAP_W1 || REGMAP_AC97 || REGMAP_MMIO || REGMAP_IRQ || REGMAP_I3C)
- 	select IRQ_DOMAIN if REGMAP_IRQ
- 	bool
- 
-@@ -49,3 +49,7 @@ config REGMAP_SOUNDWIRE
- config REGMAP_SCCB
+ config IIO_ST_LSM6DSX
+ 	tristate "ST_LSM6DSx driver for STM 6-axis IMU MEMS sensors"
+-	depends on (I2C || SPI)
++	depends on (I2C || SPI || I3C)
+ 	select IIO_BUFFER
+ 	select IIO_KFIFO_BUF
+ 	select IIO_ST_LSM6DSX_I2C if (I2C)
+ 	select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
++	select IIO_ST_LSM6DSX_I3C if (I3C)
+ 	help
+ 	  Say yes here to build support for STMicroelectronics LSM6DSx imu
+ 	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
+@@ -23,3 +24,8 @@ config IIO_ST_LSM6DSX_SPI
  	tristate
- 	depends on I2C
+ 	depends on IIO_ST_LSM6DSX
+ 	select REGMAP_SPI
 +
-+config REGMAP_I3C
++config IIO_ST_LSM6DSX_I3C
 +	tristate
-+	depends on I3C
-diff --git a/drivers/base/regmap/Makefile b/drivers/base/regmap/Makefile
-index f5b4e88..ff6c7d8 100644
---- a/drivers/base/regmap/Makefile
-+++ b/drivers/base/regmap/Makefile
-@@ -16,3 +16,4 @@ obj-$(CONFIG_REGMAP_IRQ) += regmap-irq.o
- obj-$(CONFIG_REGMAP_W1) += regmap-w1.o
- obj-$(CONFIG_REGMAP_SOUNDWIRE) += regmap-sdw.o
- obj-$(CONFIG_REGMAP_SCCB) += regmap-sccb.o
-+obj-$(CONFIG_REGMAP_I3C) += regmap-i3c.o
-diff --git a/drivers/base/regmap/regmap-i3c.c b/drivers/base/regmap/regmap-i3c.c
++	depends on IIO_ST_LSM6DSX
++	select REGMAP_I3C
+diff --git a/drivers/iio/imu/st_lsm6dsx/Makefile b/drivers/iio/imu/st_lsm6dsx/Makefile
+index e5f733c..c676965 100644
+--- a/drivers/iio/imu/st_lsm6dsx/Makefile
++++ b/drivers/iio/imu/st_lsm6dsx/Makefile
+@@ -4,3 +4,4 @@ st_lsm6dsx-y := st_lsm6dsx_core.o st_lsm6dsx_buffer.o \
+ obj-$(CONFIG_IIO_ST_LSM6DSX) += st_lsm6dsx.o
+ obj-$(CONFIG_IIO_ST_LSM6DSX_I2C) += st_lsm6dsx_i2c.o
+ obj-$(CONFIG_IIO_ST_LSM6DSX_SPI) += st_lsm6dsx_spi.o
++obj-$(CONFIG_IIO_ST_LSM6DSX_I3C) += st_lsm6dsx_i3c.o
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
 new file mode 100644
-index 0000000..1578fb5
+index 0000000..2e89524
 --- /dev/null
-+++ b/drivers/base/regmap/regmap-i3c.c
-@@ -0,0 +1,60 @@
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
+@@ -0,0 +1,58 @@
 +// SPDX-License-Identifier: GPL-2.0
-+// Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
++/*
++ * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
++ *
++ * Author: Vitor Soares <vitor.soares@synopsys.com>
++ */
 +
-+#include <linux/regmap.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
 +#include <linux/i3c/device.h>
 +#include <linux/i3c/master.h>
-+#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/of.h>
++#include <linux/regmap.h>
 +
-+static int regmap_i3c_write(void *context, const void *data, size_t count)
-+{
-+	struct device *dev = context;
-+	struct i3c_device *i3c = dev_to_i3cdev(dev);
-+	struct i3c_priv_xfer xfers[] = {
-+		{
-+			.rnw = false,
-+			.len = count,
-+			.data.out = data,
-+		},
-+	};
++#include "st_lsm6dsx.h"
 +
-+	return i3c_device_do_priv_xfers(i3c, xfers, 1);
-+}
++static const struct i3c_device_id st_lsm6dsx_i3c_ids[] = {
++	I3C_DEVICE(0x0104, 0x006C, (void *)ST_LSM6DSO_ID),
++	I3C_DEVICE(0x0104, 0x006B, (void *)ST_LSM6DSR_ID),
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(i3c, st_lsm6dsx_i3c_ids);
 +
-+static int regmap_i3c_read(void *context,
-+			   const void *reg, size_t reg_size,
-+			   void *val, size_t val_size)
-+{
-+	struct device *dev = context;
-+	struct i3c_device *i3c = dev_to_i3cdev(dev);
-+	struct i3c_priv_xfer xfers[2];
-+
-+	xfers[0].rnw = false;
-+	xfers[0].len = reg_size;
-+	xfers[0].data.out = reg;
-+
-+	xfers[1].rnw = true;
-+	xfers[1].len = val_size;
-+	xfers[1].data.in = val;
-+
-+	return i3c_device_do_priv_xfers(i3c, xfers, 2);
-+}
-+
-+static struct regmap_bus regmap_i3c = {
-+	.write = regmap_i3c_write,
-+	.read = regmap_i3c_read,
++static const struct regmap_config st_lsm6dsx_i3c_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
 +};
 +
-+struct regmap *__devm_regmap_init_i3c(struct i3c_device *i3c,
-+				      const struct regmap_config *config,
-+				      struct lock_class_key *lock_key,
-+				      const char *lock_name)
++static int st_lsm6dsx_i3c_probe(struct i3c_device *i3cdev)
 +{
-+	return __devm_regmap_init(&i3c->dev, &regmap_i3c, &i3c->dev, config,
-+				  lock_key, lock_name);
++	const struct i3c_device_id *id = i3c_device_match_id(i3cdev,
++							    st_lsm6dsx_i3c_ids);
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_i3c(i3cdev, &st_lsm6dsx_i3c_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&i3cdev->dev, "Failed to register i3c regmap %d\n",
++			(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++
++	return st_lsm6dsx_probe(&i3cdev->dev, 0, (int)id->data, regmap);
 +}
-+EXPORT_SYMBOL_GPL(__devm_regmap_init_i3c);
++
++static struct i3c_driver st_lsm6dsx_driver = {
++	.driver = {
++		.name = "st_lsm6dsx_i3c",
++		.pm = &st_lsm6dsx_pm_ops,
++	},
++	.probe = st_lsm6dsx_i3c_probe,
++	.id_table = st_lsm6dsx_i3c_ids,
++};
++module_i3c_driver(st_lsm6dsx_driver);
 +
 +MODULE_AUTHOR("Vitor Soares <vitor.soares@synopsys.com>");
-+MODULE_DESCRIPTION("Regmap I3C Module");
++MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx i3c driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-index daeec7d..f65984d 100644
---- a/include/linux/regmap.h
-+++ b/include/linux/regmap.h
-@@ -25,6 +25,7 @@ struct module;
- struct clk;
- struct device;
- struct i2c_client;
-+struct i3c_device;
- struct irq_domain;
- struct slim_device;
- struct spi_device;
-@@ -624,6 +625,10 @@ struct regmap *__devm_regmap_init_slimbus(struct slim_device *slimbus,
- 				 const struct regmap_config *config,
- 				 struct lock_class_key *lock_key,
- 				 const char *lock_name);
-+struct regmap *__devm_regmap_init_i3c(struct i3c_device *i3c,
-+				 const struct regmap_config *config,
-+				 struct lock_class_key *lock_key,
-+				 const char *lock_name);
- /*
-  * Wrapper for regmap_init macros to include a unique lockdep key and name
-  * for each call. No-op if CONFIG_LOCKDEP is not set.
-@@ -982,6 +987,21 @@ bool regmap_ac97_default_volatile(struct device *dev, unsigned int reg);
- #define devm_regmap_init_slimbus(slimbus, config)			\
- 	__regmap_lockdep_wrapper(__devm_regmap_init_slimbus, #config,	\
- 				slimbus, config)
-+
-+/**
-+ * devm_regmap_init_i3c() - Initialise managed register map
-+ *
-+ * @i3c: Device that will be interacted with
-+ * @config: Configuration for register map
-+ *
-+ * The return value will be an ERR_PTR() on error or a valid pointer
-+ * to a struct regmap.  The regmap will be automatically freed by the
-+ * device management code.
-+ */
-+#define devm_regmap_init_i3c(i3c, config)				\
-+	__regmap_lockdep_wrapper(__devm_regmap_init_i3c, #config,	\
-+				i3c, config)
-+
- int regmap_mmio_attach_clk(struct regmap *map, struct clk *clk);
- void regmap_mmio_detach_clk(struct regmap *map);
- void regmap_exit(struct regmap *map);
 -- 
 2.7.4
 
