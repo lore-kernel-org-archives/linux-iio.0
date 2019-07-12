@@ -1,64 +1,108 @@
-Return-Path: <SRS0=m0he=VI=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Ca31=VJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427F0C742A1
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Jul 2019 21:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFC1FC742B1
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Jul 2019 09:41:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 19788208E4
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Jul 2019 21:30:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A68A52064B
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Jul 2019 09:41:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="VBrYnU0y"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728943AbfGKVaz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 11 Jul 2019 17:30:55 -0400
-Received: from shards.monkeyblade.net ([23.128.96.9]:47172 "EHLO
-        shards.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726446AbfGKVaz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Jul 2019 17:30:55 -0400
-Received: from localhost (unknown [IPv6:2601:601:9f80:35cd::d71])
-        (using TLSv1 with cipher AES256-SHA (256/256 bits))
-        (Client did not present a certificate)
-        (Authenticated sender: davem-davemloft)
-        by shards.monkeyblade.net (Postfix) with ESMTPSA id 9B36014CFC090;
-        Thu, 11 Jul 2019 14:30:53 -0700 (PDT)
-Date:   Thu, 11 Jul 2019 14:30:52 -0700 (PDT)
-Message-Id: <20190711.143052.1773408891723438773.davem@davemloft.net>
-To:     joe@perches.com
-Cc:     akpm@linux-foundation.org, venture@google.com, yuenn@google.com,
-        benjaminfair@google.com, andrew@aj.id.au, openbmc@lists.ozlabs.org,
-        linux-kernel@vger.kernel.org, linux-aspeed@lists.ozlabs.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, netdev@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-wireless@vger.kernel.org, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        linux-mmc@vger.kernel.org, devel@driverdev.osuosl.org,
-        alsa-devel@alsa-project.org
-Subject: Re: [PATCH 00/12] treewide: Fix GENMASK misuses
-From:   David Miller <davem@davemloft.net>
-In-Reply-To: <cover.1562734889.git.joe@perches.com>
-References: <cover.1562734889.git.joe@perches.com>
-X-Mailer: Mew version 6.8 on Emacs 26.1
-Mime-Version: 1.0
-Content-Type: Text/Plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
-X-Greylist: Sender succeeded SMTP AUTH, not delayed by milter-greylist-4.5.12 (shards.monkeyblade.net [149.20.54.216]); Thu, 11 Jul 2019 14:30:54 -0700 (PDT)
+        id S1726140AbfGLJl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Jul 2019 05:41:27 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:45228 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726284AbfGLJlY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Jul 2019 05:41:24 -0400
+Received: by mail-wr1-f67.google.com with SMTP id f9so9209651wre.12
+        for <linux-iio@vger.kernel.org>; Fri, 12 Jul 2019 02:41:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=K7MVo1cgFDsjyODbl6UghYby+bBwKYEV5/hf6CSHL9M=;
+        b=VBrYnU0yPv77EIYg1g/dicwzuGQ6nyDmHWmyZLJNEYGqWrydbj9U1R6UMjqTL+Rn64
+         bw2Sj2MTumt1Tlg2zcHRP6wDqUzILfMOksRhjy2dHSQ7JVORA3BFGlbPz0UhduB1cVFx
+         BLhluNhujbrdgj4kHFIfcDVsalyoAiSJ0vKdFdls/E9CCwdXqNJOcM/EnmsPo6VGb9C5
+         NP5DE7EKXioz12MeMD061C+7G5wLQKz1Pl/yiSp/7/HN1W3sBsCISb7DK5Q/QWQYAAuL
+         ZWXgEyj4bONMs9I/7xRB0MwXxYrzdsUDgS/yeIQwH1SSRYCqyybl8TMxGhjiLPBC4q4Q
+         qMNQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=K7MVo1cgFDsjyODbl6UghYby+bBwKYEV5/hf6CSHL9M=;
+        b=TxwjeIDq1Q3yLQU8yUwl7b4E0v6ZkNzCMrPsK94PsWLyKmNV0oATDi20IZjfhKoD7k
+         u28kI+v/bhlUUbJ68RdM0lHuC9SAxzenf6R75eVuCHm07tztJ4mcubgbr0Dd+rPMhP9D
+         LcC1us1UNRmhrimcF7bTBzsl+EpVIVS0Oc2yWJGE+dP9o2qsrRlpDXVGslJAqwbfPN2R
+         GN7FxH5Sa7Z6oxzoV7nH+L7zyFPfiwbQuc/gjV67i4Q7yAV5LA7jgfwKu6Q9AtshcZde
+         6LazFH12y+ec4uTiLmdgeSzM9y+HckmgxhpyxrtT/6NGT+iTKRycOFbxz+yAexPvSHrx
+         oB1w==
+X-Gm-Message-State: APjAAAXonFO3UP08AID6lNNNZju1cF/LGN4fGRONnIrMd4KAdR4T8M0P
+        foSAEcMNh4CiFf/FC8zsXF43Ow==
+X-Google-Smtp-Source: APXvYqx4f/6QDHi1/6qjUGikdMhx1yBPBfM4XuV2S++h0JOOo+dTiwzJXxgkTnyMoEJiobPg9Rby7A==
+X-Received: by 2002:a5d:4484:: with SMTP id j4mr10788448wrq.143.1562924482650;
+        Fri, 12 Jul 2019 02:41:22 -0700 (PDT)
+Received: from pop-os.baylibre.local ([2a01:e35:8ad2:2cb0:2dbb:fac9:5ec0:e3ef])
+        by smtp.googlemail.com with ESMTPSA id p18sm7310891wrm.16.2019.07.12.02.41.21
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Fri, 12 Jul 2019 02:41:22 -0700 (PDT)
+From:   Alexandre Mergnat <amergnat@baylibre.com>
+To:     robh+dt@kernel.org, mark.rutland@arm.com, jic23@kernel.org
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        baylibre-upstreaming@groups.io, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org,
+        Alexandre Mergnat <amergnat@baylibre.com>
+Subject: [PATCH v4 2/3] dt-bindings: iio: position: Add docs pat9125
+Date:   Fri, 12 Jul 2019 11:40:49 +0200
+Message-Id: <20190712094050.17432-3-amergnat@baylibre.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190712094050.17432-1-amergnat@baylibre.com>
+References: <20190712094050.17432-1-amergnat@baylibre.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Joe Perches <joe@perches.com>
-Date: Tue,  9 Jul 2019 22:04:13 -0700
+Add documentation for the optical tracker PAT9125 and
+"position" directory for chip which can provides position data.
 
-> These GENMASK uses are inverted argument order and the
-> actual masks produced are incorrect.  Fix them.
-> 
-> Add checkpatch tests to help avoid more misuses too.
+Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
+---
+ .../bindings/iio/position/pat9125.txt          | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/position/pat9125.txt
 
-Patches #7 and #8 applied to 'net', with appropriate Fixes tags
-added to #8.
+diff --git a/Documentation/devicetree/bindings/iio/position/pat9125.txt b/Documentation/devicetree/bindings/iio/position/pat9125.txt
+new file mode 100644
+index 000000000000..4028aeef9b42
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/position/pat9125.txt
+@@ -0,0 +1,18 @@
++PixArt Imaging PAT9125 Optical Tracking Miniature Chip device driver
++
++Required properties:
++	- compatible: must be "pixart,pat9125"
++	- reg: i2c address where to find the device
++	- interrupts: the sole interrupt generated by the device
++
++	Refer to interrupt-controller/interrupts.txt for generic
++	interrupt client node bindings.
++
++Example:
++
++pat9125@75 {
++	compatible = "pixart,pat9125";
++	reg = <0x75>;
++	interrupt-parent = <&gpio3>;
++	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++};
+-- 
+2.17.1
+
