@@ -7,198 +7,108 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA60CC742D2
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 16:28:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D35A9C73C66
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 16:30:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B9FED2089C
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 16:28:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 912FF214AE
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 16:30:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563121706;
-	bh=JGJxJ7qPXorbqif1S9ppyYqsk4qdKSaNz9pvrjWvvRo=;
+	s=default; t=1563121857;
+	bh=3B4TvzJE5x1tLkpsdLUDGRNudIhb22g/3330h2LrM6U=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=rBwVhPLYU9o54kGpS2G4yz8BS/1OqfIJVTIkI2TFw64tbBd1zRfRlyHR6mA42F7q0
-	 VHRxEzKmbaQLy3hUFOCZs69NzyROM3E4DCt547JUEx16LFA0vFK1AU+i0GkY1J7xmF
-	 rxIHprFA+ib+LXMSRv3/Xw2qAkVLx6oUvBCJUPMg=
+	b=RwAcG9fIMmWfVDSv3sRVuL1dPFSUOIyguKh3zcygBmdbiSh7kiPsE08EeHwZPYQn4
+	 P3W8jB6JH4z4Dr1/mG4a8RR5RG0W+LqliOwQShnhj7BvBfnKflwtp8SPRlsdgcDSYb
+	 JMhn8v9pqDc5yXPVWUOAO2lwdLb87OBklKo/KqLg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728297AbfGNQ20 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Jul 2019 12:28:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55774 "EHLO mail.kernel.org"
+        id S1728125AbfGNQa5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Jul 2019 12:30:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56576 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728106AbfGNQ20 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jul 2019 12:28:26 -0400
+        id S1728106AbfGNQa5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Jul 2019 12:30:57 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A4D82214AE;
-        Sun, 14 Jul 2019 16:28:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0BB7C2089C;
+        Sun, 14 Jul 2019 16:30:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563121704;
-        bh=JGJxJ7qPXorbqif1S9ppyYqsk4qdKSaNz9pvrjWvvRo=;
+        s=default; t=1563121856;
+        bh=3B4TvzJE5x1tLkpsdLUDGRNudIhb22g/3330h2LrM6U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EoYM4ob64WwyP8yo87vwTCg5x0g1BUXUxKmW90Q2uQVDhON54alLQ+csnXyn2haJu
-         OOSqmkU5zSCZWp7wtHxaEeb8ME9uL9h7bfpHLIRoRPG/PirjP0BKB7cdo0omSpXbmi
-         LEDi6V7gHt7LwTRjSSAzniEMQ0WSqbKM5sA97pZo=
-Date:   Sun, 14 Jul 2019 17:27:27 +0100
+        b=pnAf4ftXKOZDLj0MwK503NBE0xySOj4mlmEX4S8nMUlEc4IJoWT85vnYIBFJDwTQZ
+         64YZq3/3zv2IHDirEgmXq+SZnDKSN3wdO//6OBj0tm9gKnfYXnlpiJP5CDaiMzh/HD
+         OUVT07tcoup6GIIFGHW5ccE+2AWdVaMkMWbBBUpE=
+Date:   Sun, 14 Jul 2019 17:30:50 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add support to LSM6DS3TR-C
-Message-ID: <20190714172727.5b2a31a0@archlinux>
-In-Reply-To: <c0cf032e04524d20f646993e61d5b8696b9d2fa8.1561802767.git.lorenzo@kernel.org>
-References: <cover.1561802767.git.lorenzo@kernel.org>
-        <c0cf032e04524d20f646993e61d5b8696b9d2fa8.1561802767.git.lorenzo@kernel.org>
+To:     =?UTF-8?B?QsOhcmJhcmE=?= Fernandes <barbara.fernandes@usp.br>
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
+        stefan.popa@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        kernel-usp@googlegroups.com, Wilson Sales <spoonm@spoonm.org>
+Subject: Re: [PATCH v2] staging: iio: ad7192: create of_device_id array
+Message-ID: <20190714173050.2b6306a0@archlinux>
+In-Reply-To: <20190628194922.13277-1-barbara.fernandes@usp.br>
+References: <20190628194922.13277-1-barbara.fernandes@usp.br>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 29 Jun 2019 12:13:53 +0200
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Fri, 28 Jun 2019 16:49:22 -0300
+B=C3=A1rbara Fernandes <barbara.fernandes@usp.br> wrote:
 
-> Add support to STM LSM6DS3TR-C 6-axis (acc + gyro) Mems sensor
-> https://www.st.com/resource/en/datasheet/lsm6ds3tr-c.pdf
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to poke at it.
+> Create list of compatible device ids to be matched with those stated in
+> the device tree.
+>=20
+> Signed-off-by: B=C3=A1rbara Fernandes <barbara.fernandes@usp.br>
+> Signed-off-by: Wilson Sales <spoonm@spoonm.org>
+> Co-developed by: Wilson Sales <spoonm@spoonm.org>
+> ---
+Patch is fine and applied to the togreg branch of iio.git.
+
+Only thing to note is that reviewers and maintainers often have
+poor memories (or are jet lagged which is my excuse today!)
+so it helps to put a change log here under the ---
 
 Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/imu/st_lsm6dsx/Kconfig             | 2 +-
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 8 ++++----
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 5 ++++-
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 5 +++++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 5 +++++
->  6 files changed, 21 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> index 9e592973a8a6..b254d03e2043 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
-> +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> @@ -9,7 +9,7 @@ config IIO_ST_LSM6DSX
->  	help
->  	  Say yes here to build support for STMicroelectronics LSM6DSx imu
->  	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
-> -	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, lsm6dsr
-> +	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, lsm6dsr, lsm6ds3tr-c
->  
->  	  To compile this driver as a module, choose M here: the module
->  	  will be called st_lsm6dsx.
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index cd1642bb4ec0..ffa8402763c5 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -23,6 +23,7 @@
->  #define ST_ASM330LHH_DEV_NAME	"asm330lhh"
->  #define ST_LSM6DSOX_DEV_NAME	"lsm6dsox"
->  #define ST_LSM6DSR_DEV_NAME	"lsm6dsr"
-> +#define ST_LSM6DS3TRC_DEV_NAME	"lsm6ds3tr-c"
->  
->  enum st_lsm6dsx_hw_id {
->  	ST_LSM6DS3_ID,
-> @@ -34,6 +35,7 @@ enum st_lsm6dsx_hw_id {
->  	ST_ASM330LHH_ID,
->  	ST_LSM6DSOX_ID,
->  	ST_LSM6DSR_ID,
-> +	ST_LSM6DS3TRC_ID,
->  	ST_LSM6DSX_MAX_ID,
+>  drivers/staging/iio/adc/ad7192.c | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+>=20
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/a=
+d7192.c
+> index 3d74da9d37e7..70118db98d94 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -810,11 +810,23 @@ static const struct spi_device_id ad7192_id[] =3D {
+>  	{"ad7195", ID_AD7195},
+>  	{}
 >  };
->  
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> index 793598ee960a..61b20fa64108 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> @@ -1,10 +1,10 @@
->  /*
->   * STMicroelectronics st_lsm6dsx FIFO buffer library driver
->   *
-> - * LSM6DS3/LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC: The FIFO buffer can be
-> - * configured to store data from gyroscope and accelerometer. Samples are
-> - * queued without any tag according to a specific pattern based on
-> - * 'FIFO data sets' (6 bytes each):
-> + * LSM6DS3/LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC/LSM6DS3TR-C:
-> + * The FIFO buffer can be configured to store data from gyroscope and
-> + * accelerometer. Samples are queued without any tag according to a
-> + * specific pattern based on 'FIFO data sets' (6 bytes each):
->   *  - 1st data set is reserved for gyroscope data
->   *  - 2nd data set is reserved for accelerometer data
->   * The FIFO pattern changes depending on the ODRs and decimation factors
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 04233928d23e..dc479e139cfc 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -17,7 +17,7 @@
->   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
->   *   - FIFO size: 8KB
->   *
-> - * - LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC:
-> + * - LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC/LSM6DS3TR-C:
->   *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416
->   *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
->   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
-> @@ -234,6 +234,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->  			}, {
->  				.hw_id = ST_ISM330DLC_ID,
->  				.name = ST_ISM330DLC_DEV_NAME,
-> +			}, {
-> +				.hw_id = ST_LSM6DS3TRC_ID,
-> +				.name = ST_LSM6DS3TRC_DEV_NAME,
->  			},
->  		},
->  		.decimator = {
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> index 47581a4e456e..0542f64fb673 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> @@ -76,6 +76,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
->  		.compatible = "st,lsm6dsr",
->  		.data = (void *)ST_LSM6DSR_ID,
+> +
+>  MODULE_DEVICE_TABLE(spi, ad7192_id);
+> =20
+> +static const struct of_device_id ad7192_of_match[] =3D {
+> +	{ .compatible =3D "adi,ad7190" },
+> +	{ .compatible =3D "adi,ad7192" },
+> +	{ .compatible =3D "adi,ad7193" },
+> +	{ .compatible =3D "adi,ad7195" },
+> +	{}
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, ad7192_of_match);
+> +
+>  static struct spi_driver ad7192_driver =3D {
+>  	.driver =3D {
+>  		.name	=3D "ad7192",
+> +		.of_match_table =3D ad7192_of_match,
 >  	},
-> +	{
-> +		.compatible = "st,lsm6ds3tr-c",
-> +		.data = (void *)ST_LSM6DS3TRC_ID,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
-> @@ -90,6 +94,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
->  	{ ST_ASM330LHH_DEV_NAME, ST_ASM330LHH_ID },
->  	{ ST_LSM6DSOX_DEV_NAME, ST_LSM6DSOX_ID },
->  	{ ST_LSM6DSR_DEV_NAME, ST_LSM6DSR_ID },
-> +	{ ST_LSM6DS3TRC_DEV_NAME, ST_LSM6DS3TRC_ID },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> index facf66978a4b..4e160dcb0d7d 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> @@ -76,6 +76,10 @@ static const struct of_device_id st_lsm6dsx_spi_of_match[] = {
->  		.compatible = "st,lsm6dsr",
->  		.data = (void *)ST_LSM6DSR_ID,
->  	},
-> +	{
-> +		.compatible = "st,lsm6ds3tr-c",
-> +		.data = (void *)ST_LSM6DS3TRC_ID,
-> +	},
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
-> @@ -90,6 +94,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id_table[] = {
->  	{ ST_ASM330LHH_DEV_NAME, ST_ASM330LHH_ID },
->  	{ ST_LSM6DSOX_DEV_NAME, ST_LSM6DSOX_ID },
->  	{ ST_LSM6DSR_DEV_NAME, ST_LSM6DSR_ID },
-> +	{ ST_LSM6DS3TRC_DEV_NAME, ST_LSM6DS3TRC_ID },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
+>  	.probe		=3D ad7192_probe,
+>  	.remove		=3D ad7192_remove,
 
