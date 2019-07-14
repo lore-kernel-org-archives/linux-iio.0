@@ -1,96 +1,121 @@
-Return-Path: <SRS0=+KYf=VK=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=OALH=VL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6FB3C742DF
-	for <linux-iio@archiver.kernel.org>; Sat, 13 Jul 2019 08:05:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DACC73C66
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 10:09:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B10DB2083B
-	for <linux-iio@archiver.kernel.org>; Sat, 13 Jul 2019 08:05:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=baylibre-com.20150623.gappssmtp.com header.i=@baylibre-com.20150623.gappssmtp.com header.b="VyOLpZSo"
+	by mail.kernel.org (Postfix) with ESMTP id 22ED820896
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Jul 2019 10:09:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563098948;
+	bh=Yc6A1cGAFiY0v3G2IKWiF9mvk1/HlO1sJcd6V4N1RLw=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=ZRadLDRMQvzugXpOLFaK93ZFKWm3d2O47kuqwIZPIz3aByP5mO+cGMH35Klb5TqaN
+	 Tdg0GLSzFMpLdGA9bQv3dXFlO4foV+K1RMGxGN+6DheQrSvDxvFtQfa9SbYL96qj+j
+	 BeZ/qBSiO3SmEsEufECkvo5ILShUzr67dDo3nieo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727553AbfGMIFV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 13 Jul 2019 04:05:21 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35509 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726474AbfGMIFH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 13 Jul 2019 04:05:07 -0400
-Received: by mail-wr1-f68.google.com with SMTP id y4so12117387wrm.2
-        for <linux-iio@vger.kernel.org>; Sat, 13 Jul 2019 01:05:05 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=PCPAVIoBuVICJSah+Q7UfWDYKagBj0M35hF6OR30pG8=;
-        b=VyOLpZSo1+lXygJnf7L4tUyVOCvRuvglGR+cOpoMEp+aWlzqFfR0oFDg6Ca9Xyo+AZ
-         iwt8F+9XEFXRioksk0AOG7h1zmgXCRhkJiX/BdVnMGLlAjcR543kaqU3aBJe+GqiWhAb
-         5J4/EtZ2uHB8VZPW9j1oQxHR3U46wSFjAxyHVNTq6YKwWj6GLnjBYXujHfKfMX4jWc5N
-         a4mhxWB7PFeXv5NRvj48T/1pFPXVtO+mcD79EjRloDw2TXUKKHVY3yeKHIy/LvqyDI/5
-         dLdyCv8oT4tomgqaSPriTKiHwUQ40mRrqSeTg6psi4ejBHHQhN3M+jHRgGH/f5FPCUeu
-         X6Nw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=PCPAVIoBuVICJSah+Q7UfWDYKagBj0M35hF6OR30pG8=;
-        b=FWxfy92lbd+2mTr3XnYLlO3BCQ6iKigBl9DswlsW9l4q/6TfQSWNCfnRbWJXya4gqV
-         S/IdBQALRHXv5sCHsliL+oLP2Tq6nBktcnc2jV+AchsjD3f+jh/Wevc2rEC7cRDkAmq4
-         DP+m/CgaMZFtoQVCUwVMb8y7FhnttY99oACunfIaeZEJCFvSpNO5c31VOw29KOrvSeOs
-         mIk4UYijtfgBHF7mtIs7tfmG1ahv4Yj7eAsDXOccTdmt39eZR9EWuR9h4dwXHv4DSh1s
-         SFRY091m830wGZlQOOfN6qK8YUZR1hVhiuEZn7+34/33eiYORf1wTCh/xjX9d9FBCQFR
-         eZsA==
-X-Gm-Message-State: APjAAAUBkbaFRO7acxz45smoyWYx/KK07B+vB2Zjo+eISiCzV4pkscwp
-        J9g4s/SXeoyZx0wXPDVzQK19Og==
-X-Google-Smtp-Source: APXvYqzwLKvM1hEt5S+/RZGioP8rLTZCageVp8c98fn1RIYt39e9v/S7ytPFoajyUtUAlye133fipg==
-X-Received: by 2002:adf:de08:: with SMTP id b8mr16247723wrm.282.1563005105302;
-        Sat, 13 Jul 2019 01:05:05 -0700 (PDT)
-Received: from pop-os.baylibre.local ([2a01:e35:8ad2:2cb0:2dbb:fac9:5ec0:e3ef])
-        by smtp.googlemail.com with ESMTPSA id o26sm9621634wro.53.2019.07.13.01.05.04
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Sat, 13 Jul 2019 01:05:04 -0700 (PDT)
-From:   Alexandre Mergnat <amergnat@baylibre.com>
-To:     robh+dt@kernel.org, mark.rutland@arm.com, jic23@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        baylibre-upstreaming@groups.io, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        Alexandre Mergnat <amergnat@baylibre.com>
-Subject: [PATCH v4 1/3] dt-bindings: Add pixart vendor
-Date:   Sat, 13 Jul 2019 10:04:53 +0200
-Message-Id: <20190713080455.17513-2-amergnat@baylibre.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190713080455.17513-1-amergnat@baylibre.com>
-References: <20190713080455.17513-1-amergnat@baylibre.com>
+        id S1728065AbfGNKJH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Jul 2019 06:09:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44166 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726799AbfGNKJH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Jul 2019 06:09:07 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 72AEA20838;
+        Sun, 14 Jul 2019 10:09:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1563098946;
+        bh=Yc6A1cGAFiY0v3G2IKWiF9mvk1/HlO1sJcd6V4N1RLw=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZDxY3BZOCdUdALgKCB7dBFPWLfaNlyx1FB5VCelksB9alIU6P3TV62dLIed2S0tlT
+         ve2lgBis3EJnUiaZ/rkU3FnfKX/xnpA7oZHs+IpX6Bfm+n0LiLQKGMrC1VAdO0ilGi
+         twjFVTSheEUNKMg7GCzp5m6bPbumKhpSSSo7P8ok=
+Date:   Sun, 14 Jul 2019 11:09:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Benjamin Gaignard <benjamin.gaignard@st.com>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>
+Subject: Re: [PATCH] IIO: stm32: Remove quadrature related functions from
+ trigger driver
+Message-ID: <20190714110901.752643ae@archlinux>
+In-Reply-To: <20190711121620.GA11661@icarus>
+References: <20190507091224.17781-1-benjamin.gaignard@st.com>
+        <20190711115059.GA7778@icarus>
+        <CA+M3ks42Whd=QVQ-4==n5bRJKEwYpQtRHs=gBGEZ_Hr=_8YU1g@mail.gmail.com>
+        <20190711121620.GA11661@icarus>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-PixArt Imaging Inc. is expertized in CMOS image sensors (CIS),
-capacitive touch controllers and related imaging application development.
+On Thu, 11 Jul 2019 21:16:20 +0900
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-Signed-off-by: Alexandre Mergnat <amergnat@baylibre.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+> On Thu, Jul 11, 2019 at 02:12:27PM +0200, Benjamin Gaignard wrote:
+> > Le jeu. 11 juil. 2019 =C3=A0 13:51, William Breathitt Gray
+> > <vilhelm.gray@gmail.com> a =C3=A9crit : =20
+> > >
+> > > On Tue, May 07, 2019 at 11:12:24AM +0200, Benjamin Gaignard wrote: =20
+> > > > Quadrature feature is now hosted on it own framework.
+> > > > Remove quadrature related code from stm32-trigger driver to avoid
+> > > > code duplication and simplify the ABI.
+> > > >
+> > > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com> =20
+> > >
+> > > What is the status of this patch? Are there any objections currently =
+for
+> > > its inclusion? =20
+> >=20
+> > You were the only one asking for more details about it :-)
+> > If you agree I think that Jonathan can merge it.
+> >=20
+> > Benjamin =20
+> > >
+> > > William Breathitt Gray
+> > >
+> > > _______________________________________________
+> > > linux-arm-kernel mailing list
+> > > linux-arm-kernel@lists.infradead.org
+> > > http://lists.infradead.org/mailman/listinfo/linux-arm-kernel =20
+>=20
+> Yes, Jonathan please merge this if you have no objections, I hadn't
+> realized I was delaying it.
+>=20
+> Thank you,
+>=20
+> William Breathitt Gray
+One last thing...  This seems to be a userspace ABI change.  What
+are our potential issues with users of this ABI?
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 18b79c4cf7d5..120529f40c7c 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -705,6 +705,8 @@ patternProperties:
-     description: Pine64
-   "^pineriver,.*":
-     description: Shenzhen PineRiver Designs Co., Ltd.
-+  "^pixart,.*":
-+    description: PixArt Imaging Inc.
-   "^pixcir,.*":
-     description: PIXCIR MICROELECTRONICS Co., Ltd
-   "^plantower,.*":
--- 
-2.17.1
+It's not that costly to keep the code, though dropping the docs or
+putting a depreciated note in them is probably a good idea.  Hence
+I'm not totally convinced the risk of a regression is worth it.
+
+If we think it's the sort of change no one will notice, then
+fair enough we'll give it a go and cross our fingers.
+
+Thanks,
+
+Jonathan
+
 
