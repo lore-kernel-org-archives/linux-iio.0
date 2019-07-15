@@ -2,78 +2,105 @@ Return-Path: <SRS0=6Bzt=VM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.9 required=3.0 tests=DKIMWL_WL_MED,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEA3C76190
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 08:04:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2922C76190
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 08:15:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 20A84214DA
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 08:04:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 980DD20C01
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 08:15:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=nexedi.com header.i=kirr@nexedi.com header.b="XD405b89";
-	dkim=pass (1024-bit key) header.d=mandrillapp.com header.i=@mandrillapp.com header.b="PdtJb98I"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="PZLQJ8Sw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729375AbfGOIEB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Jul 2019 04:04:01 -0400
-Received: from mail133-22.atl131.mandrillapp.com ([198.2.133.22]:45299 "EHLO
-        mail133-22.atl131.mandrillapp.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726948AbfGOIEB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2019 04:04:01 -0400
-X-Greylist: delayed 1800 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Jul 2019 04:04:00 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; s=mandrill; d=nexedi.com;
- h=From:Subject:To:Cc:Message-Id:References:In-Reply-To:Date:MIME-Version:Content-Type:Content-Transfer-Encoding; i=kirr@nexedi.com;
- bh=VSAtOYjdYu8frJkKtKcesmwi099NUTNw9EPSls9KEqE=;
- b=XD405b8941VRcXAU+gGOQ/4UbnMEwZhJ+qayUEbAXwWqqkpwCOYggUlYw5OcHFeCmQNR74gEvgH7
-   EvgHA4nM6U1r4q5/sGHWcOmkeJCUkUUhz7G6olSUdQPAuDoATuElG2FLowL8nHa+eTi4PKX7oi1M
-   hPYJTjJjbDACrUa0oRs=
-Received: from pmta02.mandrill.prod.atl01.rsglab.com (127.0.0.1) by mail133-22.atl131.mandrillapp.com id h5gpn01sar8e for <linux-iio@vger.kernel.org>; Mon, 15 Jul 2019 07:33:59 +0000 (envelope-from <bounce-md_31050260.5d2c2c67.v1-0ad35a854a554d16bef4c6801ec3ac1f@mandrillapp.com>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=mandrillapp.com; 
- i=@mandrillapp.com; q=dns/txt; s=mandrill; t=1563176039; h=From : 
- Subject : To : Cc : Message-Id : References : In-Reply-To : Date : 
- MIME-Version : Content-Type : Content-Transfer-Encoding : From : 
- Subject : Date : X-Mandrill-User : List-Unsubscribe; 
- bh=VSAtOYjdYu8frJkKtKcesmwi099NUTNw9EPSls9KEqE=; 
- b=PdtJb98I5GQcqlmK+4hf2AkthiUWCVFutWAfJcAxImOTugFUxSTzl5Roq4E0iV5tw6MWkU
- 2aoSUmAa2SdB3avczozuyyE8T+UYtv5n1bDCRLlLXMJBGe7YKQppZnivopsmz2T8w9FvhN7F
- x6f+qE1w6s7LnaxdpdbtVCqkfiFjU=
-From:   Kirill Smelkov <kirr@nexedi.com>
-Subject: Re: [PULL] stream_open bits for Linux 5.3
-Received: from [87.98.221.171] by mandrillapp.com id 0ad35a854a554d16bef4c6801ec3ac1f; Mon, 15 Jul 2019 07:33:59 +0000
-To:     Linus Torvalds <torvalds@linux-foundation.org>
-Cc:     Julia Lawall <Julia.Lawall@lip6.fr>, Jan Blunck <jblunck@suse.de>,
-        Arnd Bergmann <arnd@arndb.de>, Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        <cocci@systeme.lip6.fr>, <linux-input@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <pr-tracker-bot@kernel.org>
-Message-Id: <20190715073353.GA3208@deco.navytux.spb.ru>
-References: <20190714141317.GA20277@deco.navytux.spb.ru> <156315060268.32091.6748401501797941411.pr-tracker-bot@kernel.org>
-In-Reply-To: <156315060268.32091.6748401501797941411.pr-tracker-bot@kernel.org>
-X-Report-Abuse: Please forward a copy of this message, including all headers, to abuse@mandrill.com
-X-Report-Abuse: You can also report abuse here: http://mandrillapp.com/contact/abuse?id=31050260.0ad35a854a554d16bef4c6801ec3ac1f
-X-Mandrill-User: md_31050260
-Date:   Mon, 15 Jul 2019 07:33:59 +0000
+        id S1729366AbfGOIPZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Jul 2019 04:15:25 -0400
+Received: from first.geanix.com ([116.203.34.67]:55292 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728933AbfGOIPY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 15 Jul 2019 04:15:24 -0400
+Received: from zen.localdomain (unknown [85.184.140.241])
+        by first.geanix.com (Postfix) with ESMTPSA id 8D3D443615;
+        Mon, 15 Jul 2019 08:15:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1563178500; bh=lRGBuiqP2hQgfR+6pX7mgEXMqw7g/yBjKUjEe4Ex3bA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=PZLQJ8Sw6rn3rFD8q0NZnq4l320o/i9jXYQCmv/ft50B7bEb7U01dq8WwOhf15epb
+         4KFBftL+M+PcVB7Avz2uG/2e0chv0G3Dg/ov/bC3SsEAXW3tu0sytrVMTsSZTf+ZOt
+         od4YbAE0VHpfVMIDjD71n3QFAF5mHhoHrM6uAWUCV3SId+dcbIi0pwFtMpxZH/+KoO
+         vTxqyBAcJSjJedgVEDnY8bOsME41XACShbht/H+R0K86p77TDzlIy116fE2pJVztPZ
+         ObCiY3o7Ep1Ra9rLi0e/QsJRBzWTDRp4U6Ev8NmILyG6PW25lekDPLCLcPcT15F9ZT
+         uQzdCja28kuBg==
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     linux-iio@vger.kernel.org, jic23@kernel.org
+Cc:     Sean Nyekjaer <sean@geanix.com>, lorenzo.bianconi83@gmail.com,
+        martin@geanix.com
+Subject: [PATCH v2 2/6] iio: imu: st_lsm6dsx: save drdy_pin in device struct
+Date:   Mon, 15 Jul 2019 10:15:10 +0200
+Message-Id: <20190715081514.81129-2-sean@geanix.com>
+X-Mailer: git-send-email 2.22.0
+In-Reply-To: <20190715081514.81129-1-sean@geanix.com>
+References: <20190715081514.81129-1-sean@geanix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jul 15, 2019 at 12:30:02AM +0000, pr-tracker-bot@kernel.org wrote:
-> The pull request you sent on Sun, 14 Jul 2019 14:13:45 +0000:
-> 
-> > https://lab.nexedi.com/kirr/linux.git stream_open-5.3
-> 
-> has been merged into torvalds/linux.git:
-> https://git.kernel.org/torvalds/c/fcd98147ac71f35b69e2f50b5fddc5524dd2dfa8
+This prepares the use of the drdy_pin for selecting the correct
+event interrupt register.
 
-Thanks.
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+---
+
+Changes since v1:
+ * new commit
+
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      | 1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 8 ++++----
+ 2 files changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index af379a5429ed..738bed4a9752 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -297,6 +297,7 @@ struct st_lsm6dsx_hw {
+ 	u8 enable_mask;
+ 	u8 ts_sip;
+ 	u8 sip;
++	int drdy_pin;
+ 
+ 	u8 *buff;
+ 
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index e67341802fc6..2c11addf568b 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -871,17 +871,17 @@ static int st_lsm6dsx_of_get_drdy_pin(struct st_lsm6dsx_hw *hw, int *drdy_pin)
+ 
+ static int st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw, u8 *drdy_reg)
+ {
+-	int err = 0, drdy_pin;
++	int err = 0;
+ 
+-	if (st_lsm6dsx_of_get_drdy_pin(hw, &drdy_pin) < 0) {
++	if (st_lsm6dsx_of_get_drdy_pin(hw, &hw->drdy_pin) < 0) {
+ 		struct st_sensors_platform_data *pdata;
+ 		struct device *dev = hw->dev;
+ 
+ 		pdata = (struct st_sensors_platform_data *)dev->platform_data;
+-		drdy_pin = pdata ? pdata->drdy_int_pin : 1;
++		hw->drdy_pin = pdata ? pdata->drdy_int_pin : 1;
+ 	}
+ 
+-	switch (drdy_pin) {
++	switch (hw->drdy_pin) {
+ 	case 1:
+ 		*drdy_reg = ST_LSM6DSX_REG_INT1_ADDR;
+ 		break;
+-- 
+2.22.0
+
