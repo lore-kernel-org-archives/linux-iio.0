@@ -2,76 +2,121 @@ Return-Path: <SRS0=6Bzt=VM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8023C73C66
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 00:30:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B44AC76190
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 07:02:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 929D4214DA
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 00:30:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563150604;
-	bh=K+QhQzq2u6E1eSAttnH4vXdAcH/ATqIhPSBVWgmM4B4=;
-	h=Subject:From:In-Reply-To:References:Date:To:Cc:List-ID:From;
-	b=FTbuH2YsSentrQNcjrXXQwR9KJ9cAXct7DxqKh52I1+PzTYkWGxbYd1ts2ndb8n6k
-	 EFCx3LlABC4DhR8wouFQigfG7pXi3Q8qMvlXpuGrI0tQCv9ezm2YGmJRKnPMhxq154
-	 WnM8RrykeZ9ICCiBBq6Ypg/b6fA863wLI3b1pVDw=
+	by mail.kernel.org (Postfix) with ESMTP id 301F220838
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 07:02:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="mNuPpWJU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728921AbfGOAaE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Jul 2019 20:30:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51994 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728900AbfGOAaD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Jul 2019 20:30:03 -0400
-Subject: Re: [PULL] stream_open bits for Linux 5.3
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563150602;
-        bh=K+QhQzq2u6E1eSAttnH4vXdAcH/ATqIhPSBVWgmM4B4=;
-        h=From:In-Reply-To:References:Date:To:Cc:From;
-        b=wREaXcRbnyjsoF9xozCulPSNFGrv4ZCjtIEjn6KbPtYq4q2h7/hcrDnMp8E9Hh0o5
-         P7MOLX8jjinm3ej2wuXRkBxtX8X1Dw1nMdfny3daBGm2zqxHBD76G1XsHiMNkF7kxq
-         2cMeW3QtZrG64ONyK7dh8BwKa4FwTA/VYwHuWLgc=
-From:   pr-tracker-bot@kernel.org
-In-Reply-To: <20190714141317.GA20277@deco.navytux.spb.ru>
-References: <20190714141317.GA20277@deco.navytux.spb.ru>
-X-PR-Tracked-List-Id: <linux-fsdevel.vger.kernel.org>
-X-PR-Tracked-Message-Id: <20190714141317.GA20277@deco.navytux.spb.ru>
-X-PR-Tracked-Remote: https://lab.nexedi.com/kirr/linux.git stream_open-5.3
-X-PR-Tracked-Commit-Id: 3975b097e577bac77267ed8df0f525e3ad3499ec
-X-PR-Merge-Tree: torvalds/linux.git
-X-PR-Merge-Refname: refs/heads/master
-X-PR-Merge-Commit-Id: fcd98147ac71f35b69e2f50b5fddc5524dd2dfa8
-Message-Id: <156315060268.32091.6748401501797941411.pr-tracker-bot@kernel.org>
-Date:   Mon, 15 Jul 2019 00:30:02 +0000
-To:     Kirill Smelkov <kirr@nexedi.com>
-Cc:     Linus Torvalds <torvalds@linux-foundation.org>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        Jan Blunck <jblunck@suse.de>, Arnd Bergmann <arnd@arndb.de>,
-        Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        <cocci@systeme.lip6.fr>, <linux-input@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-fsdevel@vger.kernel.org>,
+        id S1726948AbfGOHCI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Jul 2019 03:02:08 -0400
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:8358 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725787AbfGOHCI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2019 03:02:08 -0400
+Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6F6uSio030992;
+        Mon, 15 Jul 2019 09:01:10 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=STMicroelectronics;
+ bh=Zl4deGZbQ+vwkjKjMySHruoNEZ/Tdqr9qboU+Ck4czs=;
+ b=mNuPpWJUbgOtsdKvOrrjxjRe5FJn4yQ5m9gUfKCWt4Az42LPaH/qFaD6E5SKi5Sr3khE
+ P4urEGi0kp9oYCLif+cM3vFABuf0kmRFrSqlwBQD56IM5MGYxFfrAl/VM4NkZMqU5Ka0
+ W6bFfGJwZwgrRb8bYKCpUNvf98urVDrhNGBKdGuUSfvc/LqWGob3Pt3N+ltZTwN7Xknz
+ vaOPqmF5MasW0iGCW68hvqF4OpaWz0OHHcb8TAsHDMVJbVqFoA2byGwYpVN+3LZQJEec
+ bVWGt9WrvuwTOkuLPH63oj6+iboOzdKlQCi4yNn0bcqY4RqPsvilzISC+CYcZL1gGvY4 cQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2tq52u3xy5-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Mon, 15 Jul 2019 09:01:10 +0200
+Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 6839A38;
+        Mon, 15 Jul 2019 07:01:08 +0000 (GMT)
+Received: from Webmail-eu.st.com (Safex1hubcas22.st.com [10.75.90.92])
+        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 0FEA515AB;
+        Mon, 15 Jul 2019 07:01:08 +0000 (GMT)
+Received: from SAFEX1HUBCAS24.st.com (10.75.90.95) by Safex1hubcas22.st.com
+ (10.75.90.92) with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 15 Jul
+ 2019 09:01:07 +0200
+Received: from [10.48.0.167] (10.48.0.167) by webmail-ga.st.com (10.75.90.48)
+ with Microsoft SMTP Server (TLS) id 14.3.439.0; Mon, 15 Jul 2019 09:01:07
+ +0200
+Subject: Re: [PATCH v2 3/3] ARM: dts: stm32: add syscfg to ADC on stm32mp157c
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <robh+dt@kernel.org>, <alexandre.torgue@st.com>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
+References: <1562148496-26789-1-git-send-email-fabrice.gasnier@st.com>
+ <1562148496-26789-4-git-send-email-fabrice.gasnier@st.com>
+ <20190714171310.1816afe3@archlinux>
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <c69cff23-b67e-2aed-f250-c237e9cd4a3d@st.com>
+Date:   Mon, 15 Jul 2019 09:01:05 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.7.2
+MIME-Version: 1.0
+In-Reply-To: <20190714171310.1816afe3@archlinux>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.48.0.167]
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-15_02:,,
+ signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The pull request you sent on Sun, 14 Jul 2019 14:13:45 +0000:
+On 7/14/19 6:13 PM, Jonathan Cameron wrote:
+> On Wed, 3 Jul 2019 12:08:16 +0200
+> Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+> 
+>> On stm32mp157c, the ADC inputs are multiplexed with analog switches which
+>> have reduced performances when their supply is below 2.7V (vdda by
+>> default).
+>> Add syscfg registers that can be used on stm32mp157c, to get full ADC
+>> analog performances.
+>>
+>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> I've applied the patches using this on the assumption this will go via
+> the usual SoC route.
+> 
+> Thanks,
 
-> https://lab.nexedi.com/kirr/linux.git stream_open-5.3
+Hi Jonathan,
 
-has been merged into torvalds/linux.git:
-https://git.kernel.org/torvalds/c/fcd98147ac71f35b69e2f50b5fddc5524dd2dfa8
+Many thanks,
+Fabrice
 
-Thank you!
-
--- 
-Deet-doot-dot, I am a bot.
-https://korg.wiki.kernel.org/userdoc/prtracker
+> 
+> Jonathan
+> 
+>> ---
+>>  arch/arm/boot/dts/stm32mp157c.dtsi | 1 +
+>>  1 file changed, 1 insertion(+)
+>>
+>> diff --git a/arch/arm/boot/dts/stm32mp157c.dtsi b/arch/arm/boot/dts/stm32mp157c.dtsi
+>> index 2dd5162..b9a5b58 100644
+>> --- a/arch/arm/boot/dts/stm32mp157c.dtsi
+>> +++ b/arch/arm/boot/dts/stm32mp157c.dtsi
+>> @@ -862,6 +862,7 @@
+>>  			clocks = <&rcc ADC12>, <&rcc ADC12_K>;
+>>  			clock-names = "bus", "adc";
+>>  			interrupt-controller;
+>> +			st,syscfg = <&syscfg>;
+>>  			#interrupt-cells = <1>;
+>>  			#address-cells = <1>;
+>>  			#size-cells = <0>;
+> 
