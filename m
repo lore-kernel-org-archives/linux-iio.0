@@ -2,193 +2,105 @@ Return-Path: <SRS0=6Bzt=VM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E98C7618F
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 13:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6A68C76195
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 19:10:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DE89A2067C
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 13:26:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C2CEA20861
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Jul 2019 19:10:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="LUafB6tH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730375AbfGON0J (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Jul 2019 09:26:09 -0400
-Received: from comms.puri.sm ([159.203.221.185]:53310 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730124AbfGON0J (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 15 Jul 2019 09:26:09 -0400
-X-Greylist: delayed 354 seconds by postgrey-1.27 at vger.kernel.org; Mon, 15 Jul 2019 09:26:08 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 52D00E01EB;
-        Mon, 15 Jul 2019 06:20:14 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id NX4mBcKjbY7F; Mon, 15 Jul 2019 06:20:13 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     lorenzo.bianconi83@gmail.com, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH 1/3] iio: imu: st_lsm6sdx: move some register definitions to sensor_settings struct
-Date:   Mon, 15 Jul 2019 15:19:17 +0200
-Message-Id: <20190715131919.31938-1-martin.kepplinger@puri.sm>
+        id S1730252AbfGOTKY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Jul 2019 15:10:24 -0400
+Received: from mail-pf1-f195.google.com ([209.85.210.195]:37694 "EHLO
+        mail-pf1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729940AbfGOTKY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Jul 2019 15:10:24 -0400
+Received: by mail-pf1-f195.google.com with SMTP id 19so7867493pfa.4
+        for <linux-iio@vger.kernel.org>; Mon, 15 Jul 2019 12:10:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+w68P/RflnycNPzaHgCc3KB0ps9CtDDZmOzM+ZuWKXw=;
+        b=LUafB6tHMlY5qgFlhZWCnF9qkr7gq1BPTvu5+XkTX7zuet7c9EwLBeiZuGWZNyyaz4
+         NbHH3oIvOoGkdZcmFwUF1EQ+iSz+vrlDPsO2oaYM4p2MQoGxp4ne3b8+9xTGVP5MXqnU
+         IBrOenpyTjpPpwS5Capq7uJCk/vavwO4V1qBM=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+w68P/RflnycNPzaHgCc3KB0ps9CtDDZmOzM+ZuWKXw=;
+        b=hT/E85hTvdRlI3vcDw+0ey7cGQYNHD9wyEQ/1DAwvSmBaWxI5vPHLoslAgWLB2ZpJE
+         2wnQryQBgpGaNjMoGV0XL4LiQCku2JVkDCLEcUQbqIy0jSrBdAo6uZzS+12UclHluiTz
+         oXVo1CcHtpdD91twUiS+SNWc8SX8yIq/JtD/hNkbz4OGTBqqMSNIiG5MrNesuy5l4k92
+         71vX3WCUeyoyIsqGaGMZ4q+f8zki0m57ec3k39o2LRG5NuvtM0+wnYRQWSG+KM8Eoq71
+         Mdf4kBqISW9/tilfw6bsEKzbZA/OBq5x7ACVcdpW1g36NB1Gme3SH3O+pEoqehRIkmvv
+         VHgg==
+X-Gm-Message-State: APjAAAXCryuSmlXKxLCT52VIwQIEgcUS83JArfsDODyMnnTpdMJwznId
+        TBRKrKJAdhsyzhWEYBLlmkEWwA==
+X-Google-Smtp-Source: APXvYqzWfg6LLQbsHj2G2tia2ocmOfcuud7JEZ1ygUWjKr+Bqe/CimGgh9XM/QoOMv6LVAkRUsTgqQ==
+X-Received: by 2002:a63:89c2:: with SMTP id v185mr28193637pgd.241.1563217823684;
+        Mon, 15 Jul 2019 12:10:23 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:75a:3f6e:21d:9374])
+        by smtp.gmail.com with ESMTPSA id j6sm22960102pjd.19.2019.07.15.12.10.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 15 Jul 2019 12:10:23 -0700 (PDT)
+From:   Matthias Kaehlcke <mka@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Matthias Kaehlcke <mka@chromium.org>
+Subject: [PATCH] iio: cros_ec_accel_legacy: Always release lock when returning from _read()
+Date:   Mon, 15 Jul 2019 12:10:17 -0700
+Message-Id: <20190715191017.98488-1-mka@chromium.org>
+X-Mailer: git-send-email 2.22.0.510.g264f2c817a-goog
+MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move some register definitions to the per-device array of struct
-st_lsm6dsx_sensor_settings in order to simplify adding new sensor
-devices to the driver.
+Before doing any actual work cros_ec_accel_legacy_read() acquires
+a mutex, which is released at the end of the function. However for
+'calibbias' channels the function returns directly, without releasing
+the lock. The next attempt to acquire the lock blocks forever. Instead
+of an explicit return statement use the common return path, which
+releases the lock.
 
-Also, remove completely unused register definitions.
-
-Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Fixes: 11b86c7004ef1 ("platform/chrome: Add cros_ec_accel_legacy driver")
+Signed-off-by: Matthias Kaehlcke <mka@chromium.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  6 ++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 31 ++++++++++++++------
- 2 files changed, 28 insertions(+), 9 deletions(-)
+ drivers/iio/accel/cros_ec_accel_legacy.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index c14bf533b66b..f072ac14f213 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -196,6 +196,9 @@ struct st_lsm6dsx_ext_dev_settings {
- /**
-  * struct st_lsm6dsx_settings - ST IMU sensor settings
-  * @wai: Sensor WhoAmI default value.
-+ * @reg_int1_addr: Control Register address for INT1
-+ * @reg_int2_addr: Control Register address for INT2
-+ * @reg_reset_addr: register address for reset/reboot
-  * @max_fifo_size: Sensor max fifo length in FIFO words.
-  * @id: List of hw id/device name supported by the driver configuration.
-  * @decimator: List of decimator register info (addr + mask).
-@@ -206,6 +209,9 @@ struct st_lsm6dsx_ext_dev_settings {
-  */
- struct st_lsm6dsx_settings {
- 	u8 wai;
-+	u8 reg_int1_addr;
-+	u8 reg_int2_addr;
-+	u8 reg_reset_addr;
- 	u16 max_fifo_size;
- 	struct {
- 		enum st_lsm6dsx_hw_id hw_id;
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index a6702a74570e..7a4fe70a8f20 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -49,17 +49,12 @@
- 
- #include "st_lsm6dsx.h"
- 
--#define ST_LSM6DSX_REG_INT1_ADDR		0x0d
--#define ST_LSM6DSX_REG_INT2_ADDR		0x0e
- #define ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK	BIT(3)
- #define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
--#define ST_LSM6DSX_REG_RESET_ADDR		0x12
- #define ST_LSM6DSX_REG_RESET_MASK		BIT(0)
- #define ST_LSM6DSX_REG_BOOT_MASK		BIT(7)
- #define ST_LSM6DSX_REG_BDU_ADDR			0x12
- #define ST_LSM6DSX_REG_BDU_MASK			BIT(6)
--#define ST_LSM6DSX_REG_INT2_ON_INT1_ADDR	0x13
--#define ST_LSM6DSX_REG_INT2_ON_INT1_MASK	BIT(5)
- 
- #define ST_LSM6DSX_REG_ACC_OUT_X_L_ADDR		0x28
- #define ST_LSM6DSX_REG_ACC_OUT_Y_L_ADDR		0x2a
-@@ -122,6 +117,9 @@ static const struct st_lsm6dsx_fs_table_entry st_lsm6dsx_fs_table[] = {
- static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	{
- 		.wai = 0x69,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 1365,
- 		.id = {
- 			{
-@@ -172,6 +170,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	},
- 	{
- 		.wai = 0x69,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 682,
- 		.id = {
- 			{
-@@ -222,6 +223,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	},
- 	{
- 		.wai = 0x6a,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 682,
- 		.id = {
- 			{
-@@ -278,6 +282,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	},
- 	{
- 		.wai = 0x6c,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 512,
- 		.id = {
- 			{
-@@ -349,6 +356,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	},
- 	{
- 		.wai = 0x6b,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 512,
- 		.id = {
- 			{
-@@ -391,6 +401,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	},
- 	{
- 		.wai = 0x6b,
-+		.reg_int1_addr = 0x0d,
-+		.reg_int2_addr = 0x0e,
-+		.reg_reset_addr = 0x12,
- 		.max_fifo_size = 512,
- 		.id = {
- 			{
-@@ -873,10 +886,10 @@ static int st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw, u8 *drdy_reg)
- 
- 	switch (drdy_pin) {
- 	case 1:
--		*drdy_reg = ST_LSM6DSX_REG_INT1_ADDR;
-+		*drdy_reg = hw->settings->reg_int1_addr;
- 		break;
- 	case 2:
--		*drdy_reg = ST_LSM6DSX_REG_INT2_ADDR;
-+		*drdy_reg = hw->settings->reg_int2_addr;
- 		break;
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index 46bb2e421bb9..27ca4a64dddf 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -206,7 +206,8 @@ static int cros_ec_accel_legacy_read(struct iio_dev *indio_dev,
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		/* Calibration not supported. */
+ 		*val = 0;
+-		return IIO_VAL_INT;
++		ret = IIO_VAL_INT;
++		break;
  	default:
- 		dev_err(hw->dev, "unsupported data ready pin\n");
-@@ -976,7 +989,7 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
- 	int err;
- 
- 	/* device sw reset */
--	err = regmap_update_bits(hw->regmap, ST_LSM6DSX_REG_RESET_ADDR,
-+	err = regmap_update_bits(hw->regmap, hw->settings->reg_reset_addr,
- 				 ST_LSM6DSX_REG_RESET_MASK,
- 				 FIELD_PREP(ST_LSM6DSX_REG_RESET_MASK, 1));
- 	if (err < 0)
-@@ -985,7 +998,7 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
- 	msleep(50);
- 
- 	/* reload trimming parameter */
--	err = regmap_update_bits(hw->regmap, ST_LSM6DSX_REG_RESET_ADDR,
-+	err = regmap_update_bits(hw->regmap, hw->settings->reg_reset_addr,
- 				 ST_LSM6DSX_REG_BOOT_MASK,
- 				 FIELD_PREP(ST_LSM6DSX_REG_BOOT_MASK, 1));
- 	if (err < 0)
+ 		return -EINVAL;
+ 	}
 -- 
-2.20.1
+2.22.0.510.g264f2c817a-goog
 
