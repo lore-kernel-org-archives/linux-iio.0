@@ -2,207 +2,366 @@ Return-Path: <SRS0=LfXA=VO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E69E2C76186
-	for <linux-iio@archiver.kernel.org>; Wed, 17 Jul 2019 11:52:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86349C76192
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Jul 2019 14:10:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B2EB12173E
-	for <linux-iio@archiver.kernel.org>; Wed, 17 Jul 2019 11:52:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4671220818
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Jul 2019 14:10:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="M1VtI3cN"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="JxX7zu5C";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="G52e4fCA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731637AbfGQLvn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 Jul 2019 07:51:43 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:39836 "EHLO
-        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725906AbfGQLvm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2019 07:51:42 -0400
-Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6HBlwUq024285;
-        Wed, 17 Jul 2019 07:51:37 -0400
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2057.outbound.protection.outlook.com [104.47.37.57])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2ts491myv5-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 17 Jul 2019 07:51:37 -0400
+        id S1726085AbfGQOKn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Jul 2019 10:10:43 -0400
+Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:34994 "EHLO
+        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726081AbfGQOKn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 17 Jul 2019 10:10:43 -0400
+X-Greylist: delayed 1526 seconds by postgrey-1.27 at vger.kernel.org; Wed, 17 Jul 2019 10:10:42 EDT
+Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
+        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x6HDijfg007636;
+        Wed, 17 Jul 2019 06:45:11 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt1;
+ bh=thn74VFulo4p2wjCHy39udnWPeEDlXc8RPLQb5G2XqI=;
+ b=JxX7zu5CKG3JmKquDURLDFOjfy5Zxot7bEgfi3WN7nLdXej6AyrBPreh9kmJfgriNpQy
+ 3ySdsWBI2c5H7DtC5AGgPLwJgcJgJm50Y9MJHvIDCdlrVFy0VmmrP32Qs4jUb2LDZq6t
+ HhtXauAfqBEtMvdiTqKsA+McQF1WY5C8EAaHwXw8H+wrtn0V3+jRHyhMr17FLONh7Ip0
+ KhBBqSp+iFHbbAr/xuW4wy8etrCllAxgZuIgmceeEHF+tMf5J9hP+/waFFxcx+ZGV0Lr
+ vRh99TeeKmw3h7zRYoXuSK+DJlmUYed9aVnVh6LEgLNI7LsiXrT4iM9I2jKpMN8D1J7d Bw== 
+Received: from nam03-co1-obe.outbound.protection.outlook.com (mail-co1nam03lp2054.outbound.protection.outlook.com [104.47.40.54])
+        by mx0a-00328301.pphosted.com with ESMTP id 2tssd589fc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 17 Jul 2019 06:45:11 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=DM2F/SGhhBRLxaLsWkyr5MTq0lSrcnKnPTmnoojl25GtHwfoDZv08NIsx/zBvFDoHzoyZDCtxskJhXmwuNkpUV1szOto3tcuB8/tJdG9T2jjwtP0NKIcFZOO3KSG3J2JBQNC/rbAQXVnM0GoYUEz5kzRTVSmKHxxFb275WEqVs3Zqrw8Da78hTg8uxv5mtuumO5gYbj7mYwt6agbA9ujPTbikySTS1Q95qYGFlE/JbIsOtTcWcJwlOtmUGk349casctvK2w3zQe1cdGj2WBDnAAFb3LcTWyaBHPwaMmuUblVYyB4JpMzKYsFWqxqLP/ojFMnaOkNKhEuoypM5vbkXQ==
+ b=ktfUoPBq2iCyXFQWKhaaPlPQhWhXaSObxlLDvyMqUlzaqAIT6BFpX53aZChBpo8hj4jcBDpC8RZzqwnBbNKl4+wqqs7MVl3ELEQQ5YToWUFKFFtKTahPrgtgK38rje3InWrOyFNpIHLB82QBWHOgyVABIRqUVgi6MsAp+QIJBOwOQVMEDqNmqeKKGe80HFG0lwZ54ILVIl3gkHRC/pZwP13scLtaFEBKOfv0n1lOqxowvv/L6l5zIenClwXw0p6Ae9B1UrXa244fdNFXqqVm7/1117HA6eg/J/qTgu8IWLra4zBbezz4VOf/nf1vJH7+nlRTZ5T3+5krX6e1QN7DWw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yE+BnInK8aoK7ZmKElVQFCx9SV4eUVXn2ynkPMPbvD4=;
- b=amZ+oNvFXmZlGgJZKe8Aa2FSaPPKJvMzmnEsHnLZf1cU64GfEcL8O5fuv093am3v1SH+IWIk8Tw1mDwFCdjy5coZtg5dGG9AZcgDBoQtg1PKcToo8d0i2eD7QxtGLBq+UsyAR4RRD+dcB+lEUe/noSEHtLYJo0LzvuQsAqHrBibOo63WksWnU22Zl9B6lQTiYMf8hdIS9z768lgjrvBE5l3eiPNhjf7sOP1E9c4kDT/xklAE4gdnT811V9aVq7vQ6SohPJP6LVY4WCmRAXRcbQqF72H8QaSs79R6LLt+MsZGhZ8CPDEYxK6cKtcr1HCz9EuNRO1NZlUZIiLpKF8wWg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
- 137.71.25.57) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=analog.com;dmarc=bestguesspass action=none
- header.from=analog.com;dkim=none (message not signed);arc=none
+ bh=thn74VFulo4p2wjCHy39udnWPeEDlXc8RPLQb5G2XqI=;
+ b=DhsdMoPtyVebQ7Xx3YovQCJrQlcPpxgMvuEmQDyje7Qx6iw0wucncPTHfE+DC1yiNdHchS2YlDspP1vLtSfyp6b3W9rM2ubPtoPMd7gbGjZmlqMJPbJjje6UPnBMUKQh/bOOyrEfWCEu4Ma+oaJds59PBrSK2Ztrwf0oePxjtWchvX8lrjVRmtRVTyaW8kb3Mz1eIYi9j1D+4/gUlXsFzFZEl0r06A0UJOB6GqY9B2unR87DbinSSNDpqvMCwrcbGM+Bc2enDu2/2isiku9Y1SCYw6wqS//qXT00t1P9jE2QgGM2AHjammdCKpa+MMEuTeq6TC300F6mjHCdWCUDhw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass
+ smtp.mailfrom=invensense.com;dmarc=pass action=none
+ header.from=invensense.com;dkim=pass header.d=invensense.com;arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector1-analog-onmicrosoft-com;
+ d=invensense.onmicrosoft.com; s=selector1-invensense-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yE+BnInK8aoK7ZmKElVQFCx9SV4eUVXn2ynkPMPbvD4=;
- b=M1VtI3cN3nothq8zAUWP+TOYYX9s13fCOqVRT7mbqiL3XcGoU/gY1DBoQZysQS6TcAt82XD+DTIk1tddNIbaZmpYqu0Cy83dc45AXIWuBRSbU0/gwnQWZ0HRjKaiQZCXK90U/K7tyTE8JfVEuGxJg1g6gYz8PVazQ7OCI4aMFio=
-Received: from BN3PR03CA0075.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::35) by MN2PR03MB4718.namprd03.prod.outlook.com
- (2603:10b6:208:ae::20) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2073.10; Wed, 17 Jul
- 2019 11:51:36 +0000
-Received: from SN1NAM02FT022.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::202) by BN3PR03CA0075.outlook.office365.com
- (2a01:111:e400:7a4d::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2073.14 via Frontend
- Transport; Wed, 17 Jul 2019 11:51:36 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- SN1NAM02FT022.mail.protection.outlook.com (10.152.72.148) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2052.25
- via Frontend Transport; Wed, 17 Jul 2019 11:51:35 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x6HBpZGe003296
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Wed, 17 Jul 2019 04:51:35 -0700
-Received: from saturn.ad.analog.com (10.48.65.145) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Wed, 17 Jul 2019 07:51:34 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <broonie@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/4][V2] iio: imu: adis: Add support for SPI transfer cs_change_delay_usecs
-Date:   Wed, 17 Jul 2019 14:51:07 +0300
-Message-ID: <20190717115109.15168-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190717115109.15168-1-alexandru.ardelean@analog.com>
-References: <20190717115109.15168-1-alexandru.ardelean@analog.com>
+ bh=thn74VFulo4p2wjCHy39udnWPeEDlXc8RPLQb5G2XqI=;
+ b=G52e4fCAHmWECR1HDncMX5qEmpGDvqaXVoobQh4Oz2WozE50PM2MuBSbTDrfRCaNpm01WC0JJ4ijicFtLivJINg2kGov7FakYNUjrYtBBA1B/e8QkrjVam3R7RJY18c3SbqzH8QLkCqjZbOoaiNiVkhIF5P1RbeJ5Ewi/6ObeGI=
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
+ MN2PR12MB3422.namprd12.prod.outlook.com (20.178.243.155) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2073.14; Wed, 17 Jul 2019 13:45:07 +0000
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::e1b5:b52f:299e:1957]) by MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::e1b5:b52f:299e:1957%6]) with mapi id 15.20.2073.012; Wed, 17 Jul 2019
+ 13:45:07 +0000
+From:   Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+CC:     linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: imu: mpu6050: add missing available scan masks
+Thread-Topic: [PATCH v2] iio: imu: mpu6050: add missing available scan masks
+Thread-Index: AQHVLOsB+Bohq3cjZUigraO6Qp/HnKbKdwQAgAR6BSE=
+Date:   Wed, 17 Jul 2019 13:45:07 +0000
+Message-ID: <MN2PR12MB3373EB934E21684C64201A02C4C90@MN2PR12MB3373.namprd12.prod.outlook.com>
+References: <20190627131918.19619-1-jmaneyrol@invensense.com>,<20190714182026.5edebf23@archlinux>
+In-Reply-To: <20190714182026.5edebf23@archlinux>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [2a01:e34:efb7:6020:2814:844f:dac7:e1fb]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 5a486994-73b6-4212-38b0-08d70abcfaff
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR12MB3422;
+x-ms-traffictypediagnostic: MN2PR12MB3422:
+x-microsoft-antispam-prvs: <MN2PR12MB3422B040C414102B473F9E16C4C90@MN2PR12MB3422.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 01018CB5B3
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39850400004)(376002)(396003)(136003)(346002)(199004)(189003)(6916009)(5024004)(256004)(6436002)(86362001)(478600001)(2906002)(6116002)(25786009)(6246003)(4326008)(71200400001)(6506007)(33656002)(80792005)(476003)(486006)(55016002)(71190400001)(229853002)(5660300002)(76176011)(53546011)(7696005)(186003)(8676002)(46003)(11346002)(102836004)(446003)(305945005)(7736002)(99286004)(316002)(74316002)(68736007)(9686003)(91956017)(81156014)(66946007)(53936002)(8936002)(52536014)(14454004)(66446008)(76116006)(64756008)(66556008)(66476007)(81166006);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3422;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: invensense.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: /V6eATHGr2jcgiQ6h8dBgjact+mFO39EJUYsWtb1zP2KH/XcT9wiVShpqLGP3vl3G0dBbdCkxpanq1rpFkEPFZAXzBgrzg5yJ1dtpXcD7Ryn3EjzEI6WUoOCNrk4wJF5WxZ8seIhzAj5DAXjJG28STIxC4qxKKElKJZE/vak7aST/Sm3Tbq7fwhGYRIICtY4qL2UT64/MjYIfq4qjUYcM79vdvi4rivwQy5VkUZHHeCvj+m2lv4xNQPZNYw4x9bqDV9sB6+samUg3cJIQzgVjxBKMyVHEELzWzlJGRanrx5K0cDFWZaJATqXAZb+3ZvsHntOEd6g9VEchDpH+YfDhgmgdio3Z7u4QyfHYxxE5m5DNqJMtWtcQAnIL3rj31nnpMvD6MZze/snLeBJVSvHAevZCp6TzGicttorus82M2w=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(396003)(136003)(346002)(376002)(2980300002)(199004)(189003)(2616005)(7636002)(426003)(356004)(70206006)(476003)(106002)(8676002)(1076003)(126002)(107886003)(305945005)(446003)(36756003)(70586007)(2201001)(6666004)(336012)(48376002)(486006)(11346002)(246002)(8936002)(478600001)(316002)(44832011)(47776003)(186003)(26005)(86362001)(50226002)(2906002)(110136005)(2870700001)(7696005)(5660300002)(54906003)(51416003)(76176011)(4326008)(50466002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR03MB4718;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f152b794-df41-4a76-4f24-08d70aad1ee6
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:MN2PR03MB4718;
-X-MS-TrafficTypeDiagnostic: MN2PR03MB4718:
-X-Microsoft-Antispam-PRVS: <MN2PR03MB47186CB8960589850DC87E23F9C90@MN2PR03MB4718.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
-X-Forefront-PRVS: 01018CB5B3
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: hBxW+RJwUS4QYKlBT6uOH0FSp1uG0fHa/WlWaB9aScBmyN87sDAflzPs4bmbk515Bdua/L69ZOtB4Fu7f1MZf2Ml/AZAPbUThtAhoN1/S+ik1FxRyui7XEBOmqailWwatDj3aEnEqf0sDzZp3STRIg5pcRTJ4RfAW52Ln7Dv5QGlfyBQZLD7HQXLJe5TBkWCVobPOWYYC7jA2m//CBIthEzqt8V02t98QlTdAi0BFZNK4dGRtvl3KmH6c3sb5UzGjOh3ZRrRydF1jVDtmxXGaClX8EHZrxs+Z9Jkrm6FalXHIK0PhuTJdWm3TiaZRJ0/g6GZV4kaw2IjSCiwkP6cAXIE32pLy8kqEnK/5uTyCIhUxnw1/yi6rEecftGSDm+jdeDj8MoZY/0y6LDRusIR+/KzaxuVyJY9IUq6rIoh1Zk=
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Jul 2019 11:51:35.6461
+X-OriginatorOrg: invensense.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5a486994-73b6-4212-38b0-08d70abcfaff
+X-MS-Exchange-CrossTenant-originalarrivaltime: 17 Jul 2019 13:45:07.5924
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f152b794-df41-4a76-4f24-08d70aad1ee6
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR03MB4718
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-17_04:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907170145
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 462b3b3b-e42b-47ea-801a-f1581aac892d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: JManeyrol@invensense.com
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3422
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:5.22.84,1.0.8
+ definitions=2019-07-17_06:2019-07-17,2019-07-17 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
+ suspectscore=0 spamscore=0 bulkscore=0 impostorscore=0 mlxlogscore=999
+ phishscore=0 malwarescore=0 clxscore=1015 lowpriorityscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1904300001 definitions=main-1907170165
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADIS16460 requires a higher delay before the next transfer. Since the
-SPI framework supports configuring the delay before the next transfer, this
-driver will become the first user of it.
-
-The support for this functionality in ADIS16460 requires an addition to the
-ADIS lib to support the `cs_change_stall_delay_us` functionality in SPI.
-
-Not all transfers set `cs_change` to 1. Only those that do, have the
-`cs_change_delay` assigned.
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/imu/adis.c       | 6 ++++++
- include/linux/iio/imu/adis.h | 2 ++
- 2 files changed, 8 insertions(+)
-
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index c771ae6803a9..6fdb6f4cebd4 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -40,18 +40,21 @@ int adis_write_reg(struct adis *adis, unsigned int reg,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->write_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.tx_buf = adis->tx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->write_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.tx_buf = adis->tx + 4,
- 			.bits_per_word = 8,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->write_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.tx_buf = adis->tx + 6,
- 			.bits_per_word = 8,
-@@ -134,12 +137,14 @@ int adis_read_reg(struct adis *adis, unsigned int reg,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->write_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.tx_buf = adis->tx + 2,
- 			.bits_per_word = 8,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->read_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.tx_buf = adis->tx + 4,
- 			.rx_buf = adis->rx,
-@@ -147,6 +152,7 @@ int adis_read_reg(struct adis *adis, unsigned int reg,
- 			.len = 2,
- 			.cs_change = 1,
- 			.delay_usecs = adis->data->read_delay,
-+			.cs_change_delay_usecs = adis->data->cs_change_delay,
- 		}, {
- 			.rx_buf = adis->rx + 2,
- 			.bits_per_word = 8,
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index 469a493f7ae0..fd884b45ed45 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -27,6 +27,7 @@ struct adis_burst;
-  * struct adis_data - ADIS chip variant specific data
-  * @read_delay: SPI delay for read operations in us
-  * @write_delay: SPI delay for write operations in us
-+ * @cs_change_delay: SPI delay between CS changes in us
-  * @glob_cmd_reg: Register address of the GLOB_CMD register
-  * @msc_ctrl_reg: Register address of the MSC_CTRL register
-  * @diag_stat_reg: Register address of the DIAG_STAT register
-@@ -36,6 +37,7 @@ struct adis_burst;
- struct adis_data {
- 	unsigned int read_delay;
- 	unsigned int write_delay;
-+	unsigned int cs_change_delay;
- 
- 	unsigned int glob_cmd_reg;
- 	unsigned int msc_ctrl_reg;
--- 
-2.20.1
-
+Hello Jonathan,=0A=
+=0A=
+I am still not seeing this patch in the fixes-togreg branch or in the testi=
+ng branch. Neither in the testing-fixes branch.=0A=
+=0A=
+Is this expected?=0A=
+=0A=
+Thanks for your response.=0A=
+JB=0A=
+=0A=
+From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org> on =
+behalf of Jonathan Cameron <jic23@jic23.retrosnub.co.uk>=0A=
+=0A=
+Sent: Sunday, July 14, 2019 19:20=0A=
+=0A=
+To: Jean-Baptiste Maneyrol=0A=
+=0A=
+Cc: linux-iio@vger.kernel.org; stable@vger.kernel.org=0A=
+=0A=
+Subject: Re: [PATCH v2] iio: imu: mpu6050: add missing available scan masks=
+=0A=
+=0A=
+=A0=0A=
+=0A=
+=0A=
+=A0CAUTION: This email originated from outside of the organization. Please =
+make sure the sender is who they say they are and do not click links or ope=
+n attachments unless you recognize the sender and know the content is safe.=
+=0A=
+=0A=
+=0A=
+=0A=
+On Thu, 27 Jun 2019 13:19:53 +0000=0A=
+=0A=
+Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:=0A=
+=0A=
+=0A=
+=0A=
+> Driver only supports 3-axis gyro and/or 3-axis accel.=0A=
+=0A=
+> For icm20602, temp data is mandatory for all configurations.=0A=
+=0A=
+> =0A=
+=0A=
+> Fix all single and double axis configurations (almost never used) and mor=
+e=0A=
+=0A=
+> importantly fix 3-axis gyro and 6-axis accel+gyro buffer on icm20602 when=
+=0A=
+=0A=
+> temp data is not enabled.=0A=
+=0A=
+> =0A=
+=0A=
+> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>=0A=
+=0A=
+> Fixes: 1615fe41a195 ("iio: imu: mpu6050: Fix FIFO layout for ICM20602")=
+=0A=
+=0A=
+Something odd happened in this email that meant my client saved it as garba=
+ge.=0A=
+=0A=
+Oh well, cut and pasted worked ;)=0A=
+=0A=
+=0A=
+=0A=
+Applied to the fixes-togreg branch of iio.git and marked for stable.=0A=
+=0A=
+=0A=
+=0A=
+Thanks,=0A=
+=0A=
+=0A=
+=0A=
+Jonathan=0A=
+=0A=
+=0A=
+=0A=
+> ---=0A=
+=0A=
+> Changes in v2:=0A=
+=0A=
+>=A0=A0 - Use more explicit scan defines for masks=0A=
+=0A=
+> =0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 43 ++++++++++++++++++++++=
+=0A=
+=0A=
+>=A0 1 file changed, 43 insertions(+)=0A=
+=0A=
+> =0A=
+=0A=
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu=
+/inv_mpu6050/inv_mpu_core.c=0A=
+=0A=
+> index 385f14a4d5a7..66629c3adc21 100644=0A=
+=0A=
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c=0A=
+=0A=
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c=0A=
+=0A=
+> @@ -851,6 +851,25 @@ static const struct iio_chan_spec inv_mpu_channels[]=
+ =3D {=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_S=
+CAN_ACCL_Z),=0A=
+=0A=
+>=A0 };=0A=
+=0A=
+>=A0 =0A=
+=0A=
+> +static const unsigned long inv_mpu_scan_masks[] =3D {=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 3-axis accel */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_MPU6050_SCAN_ACCL_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_ACCL_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_ACCL_Z),=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 3-axis gyro */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_MPU6050_SCAN_GYRO_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_GYRO_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_GYRO_Z),=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 6-axis accel + gyro */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_MPU6050_SCAN_ACCL_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_ACCL_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_ACCL_Z)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_GYRO_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_GYRO_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_MPU6050_SCAN_GYRO_Z),=0A=
+=0A=
+> +=A0=A0=A0=A0 0,=0A=
+=0A=
+> +};=0A=
+=0A=
+> +=0A=
+=0A=
+>=A0 static const struct iio_chan_spec inv_icm20602_channels[] =3D {=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP)=
+,=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 {=0A=
+=0A=
+> @@ -877,6 +896,28 @@ static const struct iio_chan_spec inv_icm20602_chann=
+els[] =3D {=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_ICM20602_=
+SCAN_ACCL_Z),=0A=
+=0A=
+>=A0 };=0A=
+=0A=
+>=A0 =0A=
+=0A=
+> +static const unsigned long inv_icm20602_scan_masks[] =3D {=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 3-axis accel + temp (mandatory) */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_ICM20602_SCAN_ACCL_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_ACCL_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_ACCL_Z)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_TEMP),=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 3-axis gyro + temp (mandatory) */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_ICM20602_SCAN_GYRO_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_GYRO_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_GYRO_Z)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_TEMP),=0A=
+=0A=
+> +=A0=A0=A0=A0 /* 6-axis accel + gyro + temp (mandatory) */=0A=
+=0A=
+> +=A0=A0=A0=A0 BIT(INV_ICM20602_SCAN_ACCL_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_ACCL_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_ACCL_Z)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_GYRO_X)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_GYRO_Y)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_GYRO_Z)=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 | BIT(INV_ICM20602_SCAN_TEMP),=0A=
+=0A=
+> +=A0=A0=A0=A0 0,=0A=
+=0A=
+> +};=0A=
+=0A=
+> +=0A=
+=0A=
+>=A0 /*=0A=
+=0A=
+>=A0=A0 * The user can choose any frequency between INV_MPU6050_MIN_FIFO_RA=
+TE and=0A=
+=0A=
+>=A0=A0 * INV_MPU6050_MAX_FIFO_RATE, but only these frequencies are matched=
+ by the=0A=
+=0A=
+> @@ -1136,9 +1177,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int =
+irq, const char *name,=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 if (chip_type =3D=3D INV_ICM20602) {=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->channels =3D inv_=
+icm20602_channels;=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->num_channels =3D =
+ARRAY_SIZE(inv_icm20602_channels);=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->available_scan_masks =3D=
+ inv_icm20602_scan_masks;=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 } else {=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->channels =3D inv_=
+mpu_channels;=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->num_channels =3D =
+ARRAY_SIZE(inv_mpu_channels);=0A=
+=0A=
+> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 indio_dev->available_scan_masks =3D=
+ inv_mpu_scan_masks;=0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 }=0A=
+=0A=
+>=A0 =0A=
+=0A=
+>=A0=A0=A0=A0=A0=A0=A0 indio_dev->info =3D &mpu_info;=0A=
+=0A=
+=0A=
+=0A=
