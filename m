@@ -2,34 +2,35 @@ Return-Path: <SRS0=ae1u=VP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_GIT
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B0FC76191
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jul 2019 08:01:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB927C76195
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jul 2019 08:01:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7F88220880
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jul 2019 08:01:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE84A20880
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jul 2019 08:01:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727503AbfGRIBa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 18 Jul 2019 04:01:30 -0400
-Received: from mailgw01.mediatek.com ([210.61.82.183]:18594 "EHLO
+        id S2389221AbfGRIBg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 18 Jul 2019 04:01:36 -0400
+Received: from mailgw01.mediatek.com ([210.61.82.183]:40751 "EHLO
         mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726000AbfGRIBa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2019 04:01:30 -0400
-X-UUID: 69342f1487ee4fcaa2ce2f0d74f62c59-20190718
-X-UUID: 69342f1487ee4fcaa2ce2f0d74f62c59-20190718
-Received: from mtkcas06.mediatek.inc [(172.21.101.30)] by mailgw01.mediatek.com
+        with ESMTP id S2389321AbfGRIBf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Jul 2019 04:01:35 -0400
+X-UUID: 4512913e817a4a958b64f5ef79152754-20190718
+X-UUID: 4512913e817a4a958b64f5ef79152754-20190718
+Received: from mtkexhb01.mediatek.inc [(172.21.101.102)] by mailgw01.mediatek.com
         (envelope-from <zhiyong.tao@mediatek.com>)
         (mhqrelay.mediatek.com ESMTP with TLS)
-        with ESMTP id 1083301432; Thu, 18 Jul 2019 16:01:26 +0800
+        with ESMTP id 556583377; Thu, 18 Jul 2019 16:01:27 +0800
 Received: from mtkcas07.mediatek.inc (172.21.101.84) by
- mtkmbs01n2.mediatek.inc (172.21.101.79) with Microsoft SMTP Server (TLS) id
- 15.0.1395.4; Thu, 18 Jul 2019 16:01:23 +0800
+ mtkmbs01n1.mediatek.inc (172.21.101.68) with Microsoft SMTP Server (TLS) id
+ 15.0.1395.4; Thu, 18 Jul 2019 16:01:26 +0800
 Received: from localhost.localdomain (10.17.3.153) by mtkcas07.mediatek.inc
  (172.21.101.73) with Microsoft SMTP Server id 15.0.1395.4 via Frontend
- Transport; Thu, 18 Jul 2019 16:01:22 +0800
+ Transport; Thu, 18 Jul 2019 16:01:25 +0800
 From:   Zhiyong Tao <zhiyong.tao@mediatek.com>
 To:     <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
         <lars@metafoo.de>, <pmeerw@pmeerw.net>
@@ -40,32 +41,139 @@ CC:     <srv_heupstream@mediatek.com>, <hui.liu@mediatek.com>,
         <matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
-Subject: [PATCH v1 0/2] AUXADC: support efuse calibration on MT818 
-Date:   Thu, 18 Jul 2019 16:01:17 +0800
-Message-ID: <20190718080119.30707-1-zhiyong.tao@mediatek.com>
+        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: [PATCH v1 2/2] auxadc: mediatek: support efuse calibration in auxadc driver
+Date:   Thu, 18 Jul 2019 16:01:19 +0800
+Message-ID: <20190718080119.30707-3-zhiyong.tao@mediatek.com>
 X-Mailer: git-send-email 2.12.5
+In-Reply-To: <20190718080119.30707-1-zhiyong.tao@mediatek.com>
+References: <20190718080119.30707-1-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-TM-SNTS-SMTP: 655C57B55616B30867184C87976E81790A029DB57092B498944C9C7194938B5F2000:8
 X-MTK:  N
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series includes two patches:
-1.Add mt8183 auxadc efuse information in device tree.
-1.Add mt8183 efuse calibration function in auxadc driver.
+This patch support efuse calibration in auxadc driver
 
-Zhiyong Tao (2):
-  arm64: dts: mt8183: auxadc: add efuse information in device tree
-  auxadc: mediatek: support efuse calibration in auxadc driver
+Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Signed-off-by: jg_poxu <jg_poxu@mediatek.com>
+---
+ drivers/iio/adc/mt6577_auxadc.c | 71 +++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
- arch/arm64/boot/dts/mediatek/mt8183.dtsi |  5 +++
- drivers/iio/adc/mt6577_auxadc.c          | 71 ++++++++++++++++++++++++++++++++
- 2 files changed, 76 insertions(+)
-
---
+diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+index 95d76abb64ec..e30d9736b1a5 100644
+--- a/drivers/iio/adc/mt6577_auxadc.c
++++ b/drivers/iio/adc/mt6577_auxadc.c
+@@ -17,12 +17,14 @@
+ #include <linux/err.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/nvmem-consumer.h>
+ #include <linux/of.h>
+ #include <linux/of_device.h>
+ #include <linux/platform_device.h>
+ #include <linux/iopoll.h>
+ #include <linux/io.h>
+ #include <linux/iio/iio.h>
++#include <linux/slab.h>
+ 
+ /* Register definitions */
+ #define MT6577_AUXADC_CON0                    0x00
+@@ -42,6 +44,13 @@
+ #define MT6577_AUXADC_POWER_READY_MS          1
+ #define MT6577_AUXADC_SAMPLE_READY_US         25
+ 
++#define ADC_GE_A_SHIFT      10
++#define ADC_GE_A_MASK       (0x3ff << ADC_GE_A_SHIFT)
++#define ADC_OE_A_SHIFT      0
++#define ADC_OE_A_MASK       (0x3ff << ADC_OE_A_SHIFT)
++#define ADC_CALI_EN_A_SHIFT 20
++#define ADC_CALI_EN_A_MASK  (0x1 << ADC_CALI_EN_A_SHIFT)
++
+ struct mt6577_auxadc_device {
+ 	void __iomem *reg_base;
+ 	struct clk *adc_clk;
+@@ -74,6 +83,64 @@ static const struct iio_chan_spec mt6577_auxadc_iio_channels[] = {
+ 	MT6577_AUXADC_CHANNEL(15),
+ };
+ 
++s32 cali_oe;
++s32 cali_ge;
++struct adc_cali_info {
++	u32 cali_ge_a;
++	u32 cali_oe_a;
++	u32 gain;
++};
++static struct adc_cali_info adc_cali;
++
++static int mt6577_auxadc_update_cali(struct device *dev)
++{
++	struct nvmem_cell *cell;
++	u32 *buf;
++	size_t len;
++	int ret = 0;
++
++	cali_oe = 0;
++	cali_ge = 0;
++
++	cell = nvmem_cell_get(dev, "calibration-data");
++	if (IS_ERR(cell)) {
++		if (PTR_ERR(cell) == -EPROBE_DEFER)
++			return PTR_ERR(cell);
++		return 0;
++	}
++
++	buf = (u32 *)nvmem_cell_read(cell, &len);
++
++	nvmem_cell_put(cell);
++
++	if (IS_ERR(buf))
++		return PTR_ERR(buf);
++
++	if (len < sizeof(u32)) {
++		dev_warn(dev, "invalid calibration data\n");
++		ret = -EINVAL;
++		goto out;
++	}
++
++	if (((buf[0] & ADC_CALI_EN_A_MASK) >> ADC_CALI_EN_A_SHIFT) != 0) {
++		adc_cali.cali_oe_a =
++			(buf[0] & ADC_OE_A_MASK) >> ADC_OE_A_SHIFT;
++		adc_cali.cali_ge_a =
++			((buf[0] & ADC_GE_A_MASK) >> ADC_GE_A_SHIFT);
++
++		cali_ge = adc_cali.cali_ge_a - 512;
++		cali_oe = adc_cali.cali_oe_a - 512;
++		adc_cali.gain = 1 + cali_ge;
++	}  else {
++		dev_info(dev, "Device not calibrated, using default calibration values\n");
++	}
++
++out:
++	kfree(buf);
++
++	return ret;
++}
++
+ static inline void mt6577_auxadc_mod_reg(void __iomem *reg,
+ 					 u32 or_mask, u32 and_mask)
+ {
+@@ -274,6 +341,10 @@ static int mt6577_auxadc_probe(struct platform_device *pdev)
+ 		goto err_power_off;
+ 	}
+ 
++	ret = mt6577_auxadc_update_cali(&pdev->dev);
++	if (ret)
++		return ret;
++
+ 	return 0;
+ 
+ err_power_off:
+-- 
 2.12.5
 
