@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF522C76195
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0474C76188
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:33:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 895FE206DD
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:33:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C91DF206DD
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:33:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563510825;
-	bh=Q2SEaEAU3FeOtqv5GUeAciOTGA6J81HutJNlYGYF0XQ=;
+	s=default; t=1563510830;
+	bh=S/rJsy8G7o8vN+1VvSbzkJktlxPr15syvSlOs0q7d94=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=zW+Z7UuNmcFekQIrv8sDmLg9VZonZwtKo1R6tZQv5aWS34rwSdBVBXwUn+Y0yv1zW
-	 aXUu3uFWk6+sitEso/RXf+IEiADtBUM5YxK58Kkbc2rSTerptzii+sL89SNQ8K1ib9
-	 HKGd7+ModL2fEg3epsIR/2DZXXQAFdU+l/Fv+CRs=
+	b=afkbMV1voI/sxT+1C90Fh76oIb4zHfcCVly3puUcZ7zPYff3q/ZLsSk75mWY4Cljm
+	 9pNTtXpPZdPJZxsN5ocrQwhVDhvxxyQG1Vy1FqZ6NPW5VCBqAGQMw76F5DlzCr4MIP
+	 MQNDYj97Ki5sttcI9ZYkG6JS+DeEHiVPYN6B/OXI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729276AbfGSEdl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Jul 2019 00:33:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34904 "EHLO mail.kernel.org"
+        id S1732032AbfGSEdp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Jul 2019 00:33:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728763AbfGSECy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:02:54 -0400
+        id S1727344AbfGSECv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 19 Jul 2019 00:02:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1E0C321873;
-        Fri, 19 Jul 2019 04:02:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7375721852;
+        Fri, 19 Jul 2019 04:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563508973;
-        bh=Q2SEaEAU3FeOtqv5GUeAciOTGA6J81HutJNlYGYF0XQ=;
+        s=default; t=1563508971;
+        bh=S/rJsy8G7o8vN+1VvSbzkJktlxPr15syvSlOs0q7d94=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bme/rG9xwWXhZ9TkNM3JRvXlwu3r7RhpmDD76aKXMHyCt8wCgbJVmquYfAd7zx2UE
-         BKwzxxcSKxPHDsxC2nqnWPgE1kGxfpo3uZ+NFlzNZDXYLlK0iLgMJcxHG9UVJ3qVXV
-         NzzN3EM7rP24lN094OtFWaIAr/Y0jcDjyjgYy7Wc=
+        b=SMHL3BgygEXszUpaY61j4DGGN8whIW+aXZQj2rLHawRLVwZhUkR1c9XvXBCTdNhvY
+         KQvjfQ5+bBYbFKBbaLkF/KsqOG4KR73JBUFOtv221XhMai4rAGKyCSNTDznRY+BDS/
+         xnpxp/2CmZgpLxJiZEgp2w1XqWpCkNOv2tUhf/OQ=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Fabien Dessenne <fabien.dessenne@st.com>,
         Fabrice Gasnier <fabrice.gasnier@st.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.1 003/141] iio: adc: stm32-dfsdm: missing error case during probe
-Date:   Fri, 19 Jul 2019 00:00:28 -0400
-Message-Id: <20190719040246.15945-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 002/141] iio: adc: stm32-dfsdm: manage the get_irq error case
+Date:   Fri, 19 Jul 2019 00:00:27 -0400
+Message-Id: <20190719040246.15945-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190719040246.15945-1-sashal@kernel.org>
 References: <20190719040246.15945-1-sashal@kernel.org>
@@ -61,45 +61,35 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Fabien Dessenne <fabien.dessenne@st.com>
 
-[ Upstream commit d2fc0156963cae8f1eec8e2dd645fbbf1e1c1c8e ]
+[ Upstream commit 3e53ef91f826957dec013c47707ffc1bb42b42d7 ]
 
-During probe, check the devm_ioremap_resource() error value.
-Also return the devm_clk_get() error value instead of -EINVAL.
+During probe, check the "get_irq" error value.
 
 Signed-off-by: Fabien Dessenne <fabien.dessenne@st.com>
 Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/stm32-dfsdm-core.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iio/adc/stm32-dfsdm-core.c b/drivers/iio/adc/stm32-dfsdm-core.c
-index bf089f5d6225..941630615e88 100644
---- a/drivers/iio/adc/stm32-dfsdm-core.c
-+++ b/drivers/iio/adc/stm32-dfsdm-core.c
-@@ -213,6 +213,8 @@ static int stm32_dfsdm_parse_of(struct platform_device *pdev,
- 	}
- 	priv->dfsdm.phys_base = res->start;
- 	priv->dfsdm.base = devm_ioremap_resource(&pdev->dev, res);
-+	if (IS_ERR(priv->dfsdm.base))
-+		return PTR_ERR(priv->dfsdm.base);
- 
- 	/*
- 	 * "dfsdm" clock is mandatory for DFSDM peripheral clocking.
-@@ -222,8 +224,10 @@ static int stm32_dfsdm_parse_of(struct platform_device *pdev,
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index fcd4a1c00ca0..15a115210108 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -1144,6 +1144,12 @@ static int stm32_dfsdm_adc_probe(struct platform_device *pdev)
+ 	 * So IRQ associated to filter instance 0 is dedicated to the Filter 0.
  	 */
- 	priv->clk = devm_clk_get(&pdev->dev, "dfsdm");
- 	if (IS_ERR(priv->clk)) {
--		dev_err(&pdev->dev, "No stm32_dfsdm_clk clock found\n");
--		return -EINVAL;
-+		ret = PTR_ERR(priv->clk);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(&pdev->dev, "Failed to get clock (%d)\n", ret);
-+		return ret;
- 	}
- 
- 	priv->aclk = devm_clk_get(&pdev->dev, "audio");
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		if (irq != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get IRQ: %d\n", irq);
++		return irq;
++	}
++
+ 	ret = devm_request_irq(dev, irq, stm32_dfsdm_irq,
+ 			       0, pdev->name, adc);
+ 	if (ret < 0) {
 -- 
 2.20.1
 
