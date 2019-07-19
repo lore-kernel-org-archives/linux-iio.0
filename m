@@ -7,45 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E35BC76188
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B9F9C76196
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:41:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 44AF2206DD
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:39:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C23E20873
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:41:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563511151;
-	bh=QeqbiBHLeOYnomZOPhjCcLO0gyl5URbYFXDGeDoVHTo=;
+	s=default; t=1563511274;
+	bh=8XDsGFM4Eq54gtQvck4W4e5XB0iP9xgO8YE6Tl1Io08=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=gXuc6/7zSYU5Dh3XqWTB7uWsXU2Ibp0zJezMS9aEgmhOjmVPYveKQoZhkYSGOixt/
-	 1GrIFIzgcQHfJmMw/cVcIapaUdyiLV9ZDitjua3tPM9TiLyCNTq0AdOCJ9BRiM36gS
-	 0q9NXNFYH1AGVAIbnOPNTi4BTrDlB8l0lB/viud4=
+	b=UVmXoHLFb7/kembI8ttwLq1WxOBtEpoOEvwypbZxcq32fhlVPT4C67tswh0OiDTsK
+	 tCpmrYksHgouImSLw+egPJQ48anVFwMDoRISj+bPKpE68r/F5kGKXpvGmSryHS1ehZ
+	 a2NinQJb2pEJKjP0nWXRpqh64+LrAHxJnmu+S9bo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727870AbfGSEjE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Jul 2019 00:39:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58548 "EHLO mail.kernel.org"
+        id S1726769AbfGSD4u (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 18 Jul 2019 23:56:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56166 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728452AbfGSD7F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 18 Jul 2019 23:59:05 -0400
+        id S1726075AbfGSD4t (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 18 Jul 2019 23:56:49 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E952A21850;
-        Fri, 19 Jul 2019 03:59:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1845A21850;
+        Fri, 19 Jul 2019 03:56:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563508744;
-        bh=QeqbiBHLeOYnomZOPhjCcLO0gyl5URbYFXDGeDoVHTo=;
+        s=default; t=1563508608;
+        bh=8XDsGFM4Eq54gtQvck4W4e5XB0iP9xgO8YE6Tl1Io08=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Yh6hcVIF40otaGE538bJM62KAWrO2i0NqUl2Hu8soVbS3m9ZELnFeiwtExxKaMLCF
-         RPaF5ZcCph/6zF6lOzGS61d7tmwlwIPjWKek0cLDxokkznyOaMEbO6FdEx81JaU7cw
-         Aoa51N7tvQhlfehDMWb+ceDqvMijUlTPBwGn1OaY=
+        b=BhOCqz2KOyKevIE0Z/XDMWf7UGUhzl6lK8pMfU5HPnxqPXXYLQJTi/b2stA4YiCV4
+         Rq0ZM0ZfK+iTlcLob60nNWJ8zBaY71AohJASa/EBdiZC+Grxiegiq0FnycD9ZqviO5
+         Qo7R2Hj7uLDtBPKAXJ/neShIkcA+vPhLPTU3kdbA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Fabien Dessenne <fabien.dessenne@st.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 065/171] iio: adxl372: fix iio_triggered_buffer_{pre,post}enable positions
-Date:   Thu, 18 Jul 2019 23:54:56 -0400
-Message-Id: <20190719035643.14300-65-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 003/171] iio: adc: stm32-dfsdm: manage the get_irq error case
+Date:   Thu, 18 Jul 2019 23:53:54 -0400
+Message-Id: <20190719035643.14300-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190719035643.14300-1-sashal@kernel.org>
 References: <20190719035643.14300-1-sashal@kernel.org>
@@ -58,91 +59,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+From: Fabien Dessenne <fabien.dessenne@st.com>
 
-[ Upstream commit 0e4f0b42f42d88507b48282c8915f502551534e4 ]
+[ Upstream commit 3e53ef91f826957dec013c47707ffc1bb42b42d7 ]
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
+During probe, check the "get_irq" error value.
 
-For the predisable hook, the disable code should occur before detaching
-the poll func, and for the postenable hook, the poll func should be
-attached before the enable code.
-
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Fabien Dessenne <fabien.dessenne@st.com>
+Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/adxl372.c | 27 ++++++++++++++++-----------
- 1 file changed, 16 insertions(+), 11 deletions(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 3b84cb243a87..055227cb3d43 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -782,10 +782,14 @@ static int adxl372_buffer_postenable(struct iio_dev *indio_dev)
- 	unsigned int mask;
- 	int i, ret;
- 
--	ret = adxl372_set_interrupts(st, ADXL372_INT1_MAP_FIFO_FULL_MSK, 0);
-+	ret = iio_triggered_buffer_postenable(indio_dev);
- 	if (ret < 0)
- 		return ret;
- 
-+	ret = adxl372_set_interrupts(st, ADXL372_INT1_MAP_FIFO_FULL_MSK, 0);
-+	if (ret < 0)
-+		goto err;
-+
- 	mask = *indio_dev->active_scan_mask;
- 
- 	for (i = 0; i < ARRAY_SIZE(adxl372_axis_lookup_table); i++) {
-@@ -793,8 +797,10 @@ static int adxl372_buffer_postenable(struct iio_dev *indio_dev)
- 			break;
- 	}
- 
--	if (i == ARRAY_SIZE(adxl372_axis_lookup_table))
--		return -EINVAL;
-+	if (i == ARRAY_SIZE(adxl372_axis_lookup_table)) {
-+		ret = -EINVAL;
-+		goto err;
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index 19adc2b23472..588907cc3b6b 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -1456,6 +1456,12 @@ static int stm32_dfsdm_adc_probe(struct platform_device *pdev)
+ 	 * So IRQ associated to filter instance 0 is dedicated to the Filter 0.
+ 	 */
+ 	irq = platform_get_irq(pdev, 0);
++	if (irq < 0) {
++		if (irq != -EPROBE_DEFER)
++			dev_err(dev, "Failed to get IRQ: %d\n", irq);
++		return irq;
 +	}
- 
- 	st->fifo_format = adxl372_axis_lookup_table[i].fifo_format;
- 	st->fifo_set_size = bitmap_weight(indio_dev->active_scan_mask,
-@@ -814,26 +820,25 @@ static int adxl372_buffer_postenable(struct iio_dev *indio_dev)
- 	if (ret < 0) {
- 		st->fifo_mode = ADXL372_FIFO_BYPASSED;
- 		adxl372_set_interrupts(st, 0, 0);
--		return ret;
-+		goto err;
- 	}
- 
--	return iio_triggered_buffer_postenable(indio_dev);
-+	return 0;
 +
-+err:
-+	iio_triggered_buffer_predisable(indio_dev);
-+	return ret;
- }
- 
- static int adxl372_buffer_predisable(struct iio_dev *indio_dev)
- {
- 	struct adxl372_state *st = iio_priv(indio_dev);
--	int ret;
--
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
- 
- 	adxl372_set_interrupts(st, 0, 0);
- 	st->fifo_mode = ADXL372_FIFO_BYPASSED;
- 	adxl372_configure_fifo(st);
- 
--	return 0;
-+	return iio_triggered_buffer_predisable(indio_dev);
- }
- 
- static const struct iio_buffer_setup_ops adxl372_buffer_ops = {
+ 	ret = devm_request_irq(dev, irq, stm32_dfsdm_irq,
+ 			       0, pdev->name, adc);
+ 	if (ret < 0) {
 -- 
 2.20.1
 
