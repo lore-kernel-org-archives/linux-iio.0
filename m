@@ -4,49 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42379C76188
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C65C76195
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C37220873
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EEDF82173B
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563510322;
-	bh=vL3AmHwHotQnShlqS79F0dQKm8AQqsbtutrbeGWT9OU=;
+	s=default; t=1563510359;
+	bh=248KId4oJ/UXTy259lxG0UgQmqYIht55telL23IqvEE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Iri9Ekkec68krzjx1TYGEj4ZGZ4hBQVRvLrOQWJ1Z+5EvWnZVP4wdrjSXYGRD5fRM
-	 Vz1kc60KoLp2CuUpzRKPob3zV7jklPbJ5VjWFQWU+nDGD9xz2TW2aKnXQBQeYSVLM1
-	 /2B8AmyWBnsumZhuUT6Rgtnc6lRkEr0TY3yPUi4M=
+	b=VgtIvuPZpWXLyzz5e9D3vJozFSrOYw6DBnindsgwIrpwdanNhPHMQhS/IDniMgxv/
+	 OjIfJf87FVeADsM9AQo2ZMvQxyVBlYDmgMOMjts19wqaujXdPK4rOnRLcFUpD/krjW
+	 UArdx0jF+EruGFgJsLnIJ4CPx1Z8gsSuNZ8OMJDA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387418AbfGSEJE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Jul 2019 00:09:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43510 "EHLO mail.kernel.org"
+        id S1733281AbfGSEZ6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Jul 2019 00:25:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730572AbfGSEJD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:09:03 -0400
+        id S1731619AbfGSEIk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 19 Jul 2019 00:08:40 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3AFE62189D;
-        Fri, 19 Jul 2019 04:09:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 56E7F218D2;
+        Fri, 19 Jul 2019 04:08:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563509342;
-        bh=vL3AmHwHotQnShlqS79F0dQKm8AQqsbtutrbeGWT9OU=;
+        s=default; t=1563509320;
+        bh=248KId4oJ/UXTy259lxG0UgQmqYIht55telL23IqvEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=d2Cr7LFfw/9coZIgXbKGgEU/RLL9ISZHrzLJAhSCGMSmB+sj7nWiRs8bEsDVPlAz+
-         XHoapgOjS7CCpjL7cAt4GvcZVSUatgpijz8SZHHv4896uR/l7FuQFQvE4wJZ2c3+ns
-         j/mZbJgr5cBlf9UoGFW2QaOv3aktiqFjcImm/Sd4=
+        b=fdTD+cHIAgJQQDDQHmTmpBqKdicfLxeJDYs9yx+fOO+0osZx/x92k+87rz4WPtMKJ
+         q5EdZ4/4+xwUq4CAL7KKP4cLdglC3Uq1Nyf8ZpVxxO7V6gQbwCQRKz5xR4rKAPDTzt
+         4Z5yzoxgnvsAZsIPM0cxYxPTvKcWEmDhjBQVZC5M=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Denis Ciocca <denis.ciocca@st.com>,
+Cc:     Young Xiao <92siuyang@gmail.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 043/101] iio: st_accel: fix iio_triggered_buffer_{pre,post}enable positions
-Date:   Fri, 19 Jul 2019 00:06:34 -0400
-Message-Id: <20190719040732.17285-43-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 032/101] iio:core: Fix bug in length of event info_mask and catch unhandled bits set in masks.
+Date:   Fri, 19 Jul 2019 00:06:23 -0400
+Message-Id: <20190719040732.17285-32-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190719040732.17285-1-sashal@kernel.org>
 References: <20190719040732.17285-1-sashal@kernel.org>
@@ -59,81 +59,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+From: Young Xiao <92siuyang@gmail.com>
 
-[ Upstream commit 05b8bcc96278c9ef927a6f25a98e233e55de42e1 ]
+[ Upstream commit 936d3e536dcf88ce80d27bdb637009b13dba6d8c ]
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
+The incorrect limit for the for_each_set_bit loop was noticed whilst fixing
+this other case.  Note that as we only have 3 possible entries a the moment
+and the value was set to 4, the bug would not have any effect currently.
+It will bite fairly soon though, so best fix it now.
 
-For the predisable hook, the disable code should occur before detaching
-the poll func, and for the postenable hook, the poll func should be
-attached before the enable code.
+See commit ef4b4856593f ("iio:core: Fix bug in length of event info_mask and
+catch unhandled bits set in masks.") for details.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Acked-by: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Young Xiao <92siuyang@gmail.com>
+Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/st_accel_buffer.c | 22 +++++++++++++---------
- 1 file changed, 13 insertions(+), 9 deletions(-)
+ drivers/iio/industrialio-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/accel/st_accel_buffer.c b/drivers/iio/accel/st_accel_buffer.c
-index 7fddc137e91e..802ab7d2d93f 100644
---- a/drivers/iio/accel/st_accel_buffer.c
-+++ b/drivers/iio/accel/st_accel_buffer.c
-@@ -46,17 +46,19 @@ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
- 		goto allocate_memory_error;
- 	}
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 49d4b4f1a457..4bc9ea48da07 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1112,6 +1112,8 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
+ 	char *avail_postfix;
  
--	err = st_sensors_set_axis_enable(indio_dev,
--					(u8)indio_dev->active_scan_mask[0]);
-+	err = iio_triggered_buffer_postenable(indio_dev);
- 	if (err < 0)
- 		goto st_accel_buffer_postenable_error;
- 
--	err = iio_triggered_buffer_postenable(indio_dev);
-+	err = st_sensors_set_axis_enable(indio_dev,
-+					(u8)indio_dev->active_scan_mask[0]);
- 	if (err < 0)
--		goto st_accel_buffer_postenable_error;
-+		goto st_sensors_set_axis_enable_error;
- 
- 	return err;
- 
-+st_sensors_set_axis_enable_error:
-+	iio_triggered_buffer_predisable(indio_dev);
- st_accel_buffer_postenable_error:
- 	kfree(adata->buffer_data);
- allocate_memory_error:
-@@ -65,20 +67,22 @@ static int st_accel_buffer_postenable(struct iio_dev *indio_dev)
- 
- static int st_accel_buffer_predisable(struct iio_dev *indio_dev)
- {
--	int err;
-+	int err, err2;
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
- 
--	err = iio_triggered_buffer_predisable(indio_dev);
--	if (err < 0)
--		goto st_accel_buffer_predisable_error;
--
- 	err = st_sensors_set_axis_enable(indio_dev, ST_SENSORS_ENABLE_ALL_AXIS);
- 	if (err < 0)
- 		goto st_accel_buffer_predisable_error;
- 
- 	err = st_sensors_set_enable(indio_dev, false);
-+	if (err < 0)
-+		goto st_accel_buffer_predisable_error;
- 
- st_accel_buffer_predisable_error:
-+	err2 = iio_triggered_buffer_predisable(indio_dev);
-+	if (!err)
-+		err = err2;
-+
- 	kfree(adata->buffer_data);
- 	return err;
- }
+ 	for_each_set_bit(i, infomask, sizeof(*infomask) * 8) {
++		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
++			return -EINVAL;
+ 		avail_postfix = kasprintf(GFP_KERNEL,
+ 					  "%s_available",
+ 					  iio_chan_info_postfix[i]);
 -- 
 2.20.1
 
