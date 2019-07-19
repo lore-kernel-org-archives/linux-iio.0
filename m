@@ -2,54 +2,53 @@ Return-Path: <SRS0=DfoR=VQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29C65C76195
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C00AEC76196
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:30:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EEDF82173B
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:25:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9019C2082E
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Jul 2019 04:30:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563510359;
-	bh=248KId4oJ/UXTy259lxG0UgQmqYIht55telL23IqvEE=;
+	s=default; t=1563510646;
+	bh=iZ67JdgCIuYaVGiGuIHDqG7PjRoM2Dbn3bbUpNl2z/Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=VgtIvuPZpWXLyzz5e9D3vJozFSrOYw6DBnindsgwIrpwdanNhPHMQhS/IDniMgxv/
-	 OjIfJf87FVeADsM9AQo2ZMvQxyVBlYDmgMOMjts19wqaujXdPK4rOnRLcFUpD/krjW
-	 UArdx0jF+EruGFgJsLnIJ4CPx1Z8gsSuNZ8OMJDA=
+	b=YRTM4WFX1jzfzqNjeO/VAyGGxVrjbogZ7b5APHkO23SzUWSSSGuHXBKHWRXbtM6AE
+	 BHgDdMvqbVD+wvDYsGeb7PiDrgbLrMWvlVJu3MYCLVx4iE7SaEZKj4bxY1iUH6714p
+	 0nZf8UyQFPzgh3x8qTWDszfiEuSazV8wK+9VspvU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733281AbfGSEZ6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Jul 2019 00:25:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43038 "EHLO mail.kernel.org"
+        id S1730274AbfGSEab (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Jul 2019 00:30:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731619AbfGSEIk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 19 Jul 2019 00:08:40 -0400
+        id S1731405AbfGSEFA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 19 Jul 2019 00:05:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 56E7F218D2;
-        Fri, 19 Jul 2019 04:08:39 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 22170218B8;
+        Fri, 19 Jul 2019 04:04:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563509320;
-        bh=248KId4oJ/UXTy259lxG0UgQmqYIht55telL23IqvEE=;
+        s=default; t=1563509099;
+        bh=iZ67JdgCIuYaVGiGuIHDqG7PjRoM2Dbn3bbUpNl2z/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fdTD+cHIAgJQQDDQHmTmpBqKdicfLxeJDYs9yx+fOO+0osZx/x92k+87rz4WPtMKJ
-         q5EdZ4/4+xwUq4CAL7KKP4cLdglC3Uq1Nyf8ZpVxxO7V6gQbwCQRKz5xR4rKAPDTzt
-         4Z5yzoxgnvsAZsIPM0cxYxPTvKcWEmDhjBQVZC5M=
+        b=cPyQ/yUdWiBVLWPE51exHMlIVBv9Myt8BLFOsnPZ7TKW0+DSgECEWmpYtOJCAeH5J
+         Ti/Yge6GanisXMbbW+a1koUBDvtavBmoEwC9dyToiBM/zQoYCSA4HJ5FuaZRe9Ddo4
+         ZLWV9z0LCzOasHzbr2KWErIhe4imPaMhFSh9FSec=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Young Xiao <92siuyang@gmail.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Bastien Nocera <hadess@hadess.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 032/101] iio:core: Fix bug in length of event info_mask and catch unhandled bits set in masks.
-Date:   Fri, 19 Jul 2019 00:06:23 -0400
-Message-Id: <20190719040732.17285-32-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.1 068/141] iio: iio-utils: Fix possible incorrect mask calculation
+Date:   Fri, 19 Jul 2019 00:01:33 -0400
+Message-Id: <20190719040246.15945-68-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190719040732.17285-1-sashal@kernel.org>
-References: <20190719040732.17285-1-sashal@kernel.org>
+In-Reply-To: <20190719040246.15945-1-sashal@kernel.org>
+References: <20190719040246.15945-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -59,39 +58,53 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Young Xiao <92siuyang@gmail.com>
+From: Bastien Nocera <hadess@hadess.net>
 
-[ Upstream commit 936d3e536dcf88ce80d27bdb637009b13dba6d8c ]
+[ Upstream commit 208a68c8393d6041a90862992222f3d7943d44d6 ]
 
-The incorrect limit for the for_each_set_bit loop was noticed whilst fixing
-this other case.  Note that as we only have 3 possible entries a the moment
-and the value was set to 4, the bug would not have any effect currently.
-It will bite fairly soon though, so best fix it now.
+On some machines, iio-sensor-proxy was returning all 0's for IIO sensor
+values. It turns out that the bits_used for this sensor is 32, which makes
+the mask calculation:
 
-See commit ef4b4856593f ("iio:core: Fix bug in length of event info_mask and
-catch unhandled bits set in masks.") for details.
+*mask = (1 << 32) - 1;
 
-Signed-off-by: Young Xiao <92siuyang@gmail.com>
-Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+If the compiler interprets the 1 literals as 32-bit ints, it generates
+undefined behavior depending on compiler version and optimization level.
+On my system, it optimizes out the shift, so the mask value becomes
+
+*mask = (1) - 1;
+
+With a mask value of 0, iio-sensor-proxy will always return 0 for every axis.
+
+Avoid incorrect 0 values caused by compiler optimization.
+
+See original fix by Brett Dutro <brett.dutro@gmail.com> in
+iio-sensor-proxy:
+https://github.com/hadess/iio-sensor-proxy/commit/9615ceac7c134d838660e209726cd86aa2064fd3
+
+Signed-off-by: Bastien Nocera <hadess@hadess.net>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/industrialio-core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ tools/iio/iio_utils.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 49d4b4f1a457..4bc9ea48da07 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1112,6 +1112,8 @@ static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
- 	char *avail_postfix;
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index 7a6d61c6c012..55272fef3b50 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -159,9 +159,9 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
+ 			*be = (endianchar == 'b');
+ 			*bytes = padint / 8;
+ 			if (*bits_used == 64)
+-				*mask = ~0;
++				*mask = ~(0ULL);
+ 			else
+-				*mask = (1ULL << *bits_used) - 1;
++				*mask = (1ULL << *bits_used) - 1ULL;
  
- 	for_each_set_bit(i, infomask, sizeof(*infomask) * 8) {
-+		if (i >= ARRAY_SIZE(iio_chan_info_postfix))
-+			return -EINVAL;
- 		avail_postfix = kasprintf(GFP_KERNEL,
- 					  "%s_available",
- 					  iio_chan_info_postfix[i]);
+ 			*is_signed = (signchar == 's');
+ 			if (fclose(sysfsfp)) {
 -- 
 2.20.1
 
