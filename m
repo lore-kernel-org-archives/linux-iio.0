@@ -2,55 +2,52 @@ Return-Path: <SRS0=GPtq=VS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=DATE_IN_PAST_96_XX,
-	DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E64BFC76191
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Jul 2019 18:01:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE2C0C76191
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Jul 2019 18:01:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C4C5920828
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Jul 2019 18:01:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB1372147A
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Jul 2019 18:01:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1563732096;
-	bh=A9747IEEtjblJxW9GlvYUOKRVFleQqFB4PCyVdiiLco=;
+	s=default; t=1563732099;
+	bh=jITOuOAQnzPkR77Dksu3tMsVKIDs/YLV+2LW/cbk+L8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wD0H0Oc95OeMGPUXE6WqgeZ3YW4U8XU2BEph7BIzp7zt96MyuOIAUzF7pCj3ViC0S
-	 TmOiEzkNV/aHfgHrJzVcZ1uREmsfyhJpL9kb+PQJlHbriAnfpLTICeYGCf2slsOTTJ
-	 eI2V4e4YXZ7r2x2O7R7o5ITWzE4WHDZkN2D5yk4Y=
+	b=WidqnM4M+4LtJ1D5i9yHZfRpPGb6yYsfLWfY3RtPNDZQZY7UtwEpYtyAHaM1cDnlv
+	 njr6AoHAo0qyRqr8UgjCyV1H6SPTP6BS5EAhoD0389rgbCcnLZItvdWxjDwkYGjK/d
+	 8hI9/MRAXKo7tLaHfNOcZ9EMwJPkmiT7pubXWmOw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbfGUSBg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 21 Jul 2019 14:01:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39320 "EHLO mail.kernel.org"
+        id S1727116AbfGUSBi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 21 Jul 2019 14:01:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39366 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726902AbfGUSBg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Jul 2019 14:01:36 -0400
+        id S1726902AbfGUSBi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 21 Jul 2019 14:01:38 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2683D208E4;
-        Sun, 21 Jul 2019 18:01:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B33A7208E4;
+        Sun, 21 Jul 2019 18:01:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1563732095;
-        bh=A9747IEEtjblJxW9GlvYUOKRVFleQqFB4PCyVdiiLco=;
+        s=default; t=1563732098;
+        bh=jITOuOAQnzPkR77Dksu3tMsVKIDs/YLV+2LW/cbk+L8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cAYq6DvE3IMW1jUdSmXXr+roQNjoDEJLWqhD3LHkJ4kb8NK8UqV7aheSn6eIIiVRh
-         ErIXBt/hPn7j8TR99ycFMwHbewxDpYTkA9o8fbs1AFiFVtG4XHjdDHqddJTasbIqSm
-         l9xEzLiiQPF8GdEjos6ZoGiIwfODOM5v8OfDqYC8=
-Date:   Sun, 14 Jul 2019 17:32:03 +0100
+        b=XpXYeimZ+dWj8zBz6msXqlimV94CgBKxaXxBhT/rQZ2t/v7iJ1rYfYn557969MTw5
+         oVde2KY4MADp35AfkuIaXF6XNVxyxW5c2jH/1sGHE0teRh8QNPD+Lzk+z695rxsRAo
+         nhu/AwecZwwPpe41UU7mZ7YuqNcpSMt4BFlZdZ5w=
+Date:   Sun, 21 Jul 2019 18:52:41 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     bleung@chromium.org, enric.balletbo@collabora.com,
-        groeck@chromium.org, fabien.lahoudere@collabora.com,
-        dianders@chromium.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/4] iio: cros_ec: Add sign vector in core for
- backward compatibility
-Message-ID: <20190714173203.0b50d5c7@archlinux>
-In-Reply-To: <20190628191711.23584-2-gwendal@chromium.org>
-References: <20190628191711.23584-1-gwendal@chromium.org>
-        <20190628191711.23584-2-gwendal@chromium.org>
+To:     Denis Ciocca <denis.ciocca@st.com>
+Cc:     <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v2 05/11] iio:pressure: introduce
+ st_press_get_settings() function
+Message-ID: <20190721185241.082a9a83@archlinux>
+In-Reply-To: <20190718225353.2078-6-denis.ciocca@st.com>
+References: <20190718225353.2078-1-denis.ciocca@st.com>
+        <20190718225353.2078-6-denis.ciocca@st.com>
 X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,66 +57,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 28 Jun 2019 12:17:08 -0700
-Gwendal Grignou <gwendal@chromium.org> wrote:
+On Thu, 18 Jul 2019 15:53:47 -0700
+Denis Ciocca <denis.ciocca@st.com> wrote:
 
-> To allow cros_ec iio core library to be used with legacy device, add a
-> vector to rotate sensor data if necessary: legacy devices are not
-> reporting data in HTML5/Android sensor referential.
+> The function is introduced to retrieve press device settings. It will be
+> used by probe in order to configure regmap.
 > 
-> Check the data is not rotated on recent chromebooks that use the HTML5
-> standard to present sensor data.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Reviewed-by: Douglas Anderson <dianders@chromium.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-As I mentioned in one of the other series.  I've lost track of whether
-anyone wants me to apply any of these through IIO, so will just ack
-them as appropriate and assume someone will shout if they do want
-me to pick them up ;)
+> Signed-off-by: Denis Ciocca <denis.ciocca@st.com>
+Applied,
 
 Thanks,
 
 Jonathan
-
 > ---
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 4 ++++
->  include/linux/iio/common/cros_ec_sensors_core.h           | 1 +
->  2 files changed, 5 insertions(+)
+> Changes in v2:
+>  not there in v1. This meant to replace "iio:pressure:introduce st_press_multiread_bit() function"
 > 
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index 719a0df5aeeb..e8a4d78659c8 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -66,6 +66,9 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
->  		}
->  		state->type = state->resp->info.type;
->  		state->loc = state->resp->info.location;
+>  drivers/iio/pressure/st_pressure.h      |  1 +
+>  drivers/iio/pressure/st_pressure_core.c | 18 ++++++++++++++++++
+>  2 files changed, 19 insertions(+)
+> 
+> diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
+> index 6a720cfb5686..c2e47a6c3118 100644
+> --- a/drivers/iio/pressure/st_pressure.h
+> +++ b/drivers/iio/pressure/st_pressure.h
+> @@ -41,6 +41,7 @@ static const struct st_sensors_platform_data default_press_pdata = {
+>  	.drdy_int_pin = 1,
+>  };
+>  
+> +const struct st_sensor_settings *st_press_get_settings(const char *name);
+>  int st_press_common_probe(struct iio_dev *indio_dev);
+>  void st_press_common_remove(struct iio_dev *indio_dev);
+>  
+> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
+> index b960e76f7dfd..35d80ff27464 100644
+> --- a/drivers/iio/pressure/st_pressure_core.c
+> +++ b/drivers/iio/pressure/st_pressure_core.c
+> @@ -664,6 +664,24 @@ static const struct iio_trigger_ops st_press_trigger_ops = {
+>  #define ST_PRESS_TRIGGER_OPS NULL
+>  #endif
+>  
+> +/*
+> + * st_press_get_settings() - get sensor settings from device name
+> + * @name: device name buffer reference.
+> + *
+> + * Return: valid reference on success, NULL otherwise.
+> + */
+> +const struct st_sensor_settings *st_press_get_settings(const char *name)
+> +{
+> +	int index = st_sensors_get_settings_index(name,
+> +					st_press_sensors_settings,
+> +					ARRAY_SIZE(st_press_sensors_settings));
+> +	if (index < 0)
+> +		return NULL;
 > +
-> +		/* Set sign vector, only used for backward compatibility. */
-> +		memset(state->sign, 1, CROS_EC_SENSOR_MAX_AXIS);
->  	}
->  
->  	return 0;
-> @@ -254,6 +257,7 @@ static int cros_ec_sensors_read_data_unsafe(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			return ret;
->  
-> +		*data *= st->sign[i];
->  		data++;
->  	}
->  
-> diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
-> index ce16445411ac..a1c85ad4df91 100644
-> --- a/include/linux/iio/common/cros_ec_sensors_core.h
-> +++ b/include/linux/iio/common/cros_ec_sensors_core.h
-> @@ -71,6 +71,7 @@ struct cros_ec_sensors_core_state {
->  	enum motionsensor_location loc;
->  
->  	s16 calib[CROS_EC_SENSOR_MAX_AXIS];
-> +	s8 sign[CROS_EC_SENSOR_MAX_AXIS];
->  
->  	u8 samples[CROS_EC_SAMPLE_SIZE];
->  
+> +	return &st_press_sensors_settings[index];
+> +}
+> +EXPORT_SYMBOL(st_press_get_settings);
+> +
+>  int st_press_common_probe(struct iio_dev *indio_dev)
+>  {
+>  	struct st_sensor_data *press_data = iio_priv(indio_dev);
 
