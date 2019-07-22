@@ -2,66 +2,124 @@ Return-Path: <SRS0=PKuj=VT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ABAC7618F
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC4C5C76190
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 19:28:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6650721897
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C0EEE204EC
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 19:28:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KwvUZmA/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731372AbfGVR0Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Jul 2019 13:26:16 -0400
-Received: from sauhun.de ([88.99.104.3]:42188 "EHLO pokefinder.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731360AbfGVR0P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Jul 2019 13:26:15 -0400
-Received: from localhost (p54B33E22.dip0.t-ipconnect.de [84.179.62.34])
-        by pokefinder.org (Postfix) with ESMTPSA id 0FB394A1494;
-        Mon, 22 Jul 2019 19:26:14 +0200 (CEST)
-From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
-To:     linux-i2c@vger.kernel.org
-Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 0/3] iio: convert subsystem to i2c_new_dummy_device()
-Date:   Mon, 22 Jul 2019 19:26:10 +0200
-Message-Id: <20190722172613.3890-1-wsa+renesas@sang-engineering.com>
-X-Mailer: git-send-email 2.20.1
+        id S1731634AbfGVT2A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Jul 2019 15:28:00 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:37467 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727302AbfGVT2A (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2019 15:28:00 -0400
+Received: by mail-ot1-f65.google.com with SMTP id s20so41439190otp.4;
+        Mon, 22 Jul 2019 12:27:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Uj1vF7RfJZlwyLj5jo8OvTSlBivPfV0p9Isy1dRx0cw=;
+        b=KwvUZmA/TFlsf8phNB1484k3noJJmOLRi7PMyWcFL7iLRMAw8JLGcicEhsiyWEeG85
+         UWKv5qSpR7cQZnotUdM1xDJzdqRipuzwYLEoZTPVESXEs/+KkcVmK4EOoO3oEWjD8rME
+         54H4HkxA02p5hNl1B/ZqOOITWqKPprYmPO/mt9VmA5rCtkOBjiiHiybObG3hllGwcCHJ
+         OUQL0rBNSt4IZh2VV1jLAUwMM3QsncDJktSA6kkP4qPx1TJNCTQVpF6fQDqOmJ2EWIMs
+         R9KUEUuae/vD5FRJ4g2/WoBC3064GdDTdNNDqCB7WQcIMTq9egSI/6ZAJmhs3ApIrMuw
+         qhmw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Uj1vF7RfJZlwyLj5jo8OvTSlBivPfV0p9Isy1dRx0cw=;
+        b=VgE91Vt8aQO20343T+Yi6zJ2z9OXAuKVEnZ1pD9TFoR1jVDMfkLoCoXbOVI2QtQUHl
+         ePjhIoHAz5R0EMnbpSdV7RLndRx5a4+SX3nyk6z18MEW/Y+joPPCZUYiUedjpzzuJV9C
+         6zL3Xm8cCkN1CTmCPXt4VOXqMImnp0ERo7eR0Vd4TEYhRc7IT3+mwHk5MZ9miW1pGq94
+         rrDAXrfIxpAnUGVNR/YIutnLqXU96ZxPx++8k9mHp9xRUvg746Z9NGNmD3ecL8/oDfue
+         7EbzHDwQ/8fF/BMSs3/v/1DimVmvY5pQ/IGCekhIxB5tT4dODqMCDIQfqiABOlBkKuvi
+         f7hg==
+X-Gm-Message-State: APjAAAVCt8GFM+HUufAnTb4egDQN11IzWGhZVR7N5LHj84bNFUbeT5Qr
+        qHL9ao7YbyqcGconu/IyJNqqxMxFz2njKhDSPQU=
+X-Google-Smtp-Source: APXvYqx0aUZdbJBV0PvmJlamscXhqR0+FSAVSRL+feAm2R6HHFb8oR+l2aPxYMzo5wnr+7alnBi0yDE/CrWJjhAszYw=
+X-Received: by 2002:a9d:7b48:: with SMTP id f8mr27149286oto.207.1563823679323;
+ Mon, 22 Jul 2019 12:27:59 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20190722124747.4792-1-alexandru.ardelean@analog.com>
+ <20190722124747.4792-2-alexandru.ardelean@analog.com> <20190722163202.GG4756@sirena.org.uk>
+In-Reply-To: <20190722163202.GG4756@sirena.org.uk>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Mon, 22 Jul 2019 22:27:47 +0300
+Message-ID: <CA+U=DspSkWzwVp38No9tGYb0_zc2yVP5jFcLsOd2aLi2WxaW-w@mail.gmail.com>
+Subject: Re: [PATCH 1/4][V3] spi: Add optional stall delay between cs_change transfers
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        linux-iio@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Hennerich <michael.hennerich@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series is part of a tree-wide movement to replace the I2C API call
-'i2c_new_dummy' which returns NULL with its new counterpart returning an
-ERRPTR.
+On Mon, Jul 22, 2019 at 8:42 PM Mark Brown <broonie@kernel.org> wrote:
+>
+> On Mon, Jul 22, 2019 at 03:47:44PM +0300, Alexandru Ardelean wrote:
+> > Some devices like the ADIS16460 IMU require a longer period between
+> > transfers, i.e. between when the CS is de-asserted and re-asserted. The
+> > default value of 10us is not enough. This change makes the delay
+> > configurable for when the next CS change goes active, allowing the default
+> > to remain 10us is case it is unspecified.
+>
+> For the third time:
+>
+> | This looks like cs_change_delay.
+>
+> >  #define      SPI_NBITS_QUAD          0x04 /* 4bits transfer */
+> >       u8              bits_per_word;
+> >       u8              word_delay_usecs;
+> > +     u8              cs_change_delay;
+> >       u16             delay_usecs;
+> >       u32             speed_hz;
+> >       u16             word_delay;
+>
+> This patch doesn't apply and even if it did it won't compile because you
+> are trying to add a field with the same name as an existing one.
 
-The series was generated with coccinelle (audited afterwards, of course) and
-build tested by me and by buildbot. No tests on HW have been performed.
+oooohhhhhhhh
+now i see;
 
-The branch is based on v5.3-rc1. A branch (with some more stuff included) can
-be found here:
+well, my fault here;
+i was basing my patchset on top of branch iio/togreg from Jonathan's
+tree for the IMU:
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
+[ typically that's the base branch for new IIO drivers ]
 
-git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/i2c/new_dummy
+that one is a bit behind, and does not contain the cs_change_delay
+stuff you mentioned;
+also, i will admit that sometimes, some review comments are not
+completely obvious to me;
+i should have checked the SPI tree before opening my mouth, but this
+will [hopefully] serve me as a learning experience when sending
+multi-subsystem patches
+when sending to a single subsystem, it's clear; when sending to 2, i
+get a bit lost
 
-Some drivers still need to be manually converted. Patches for those will be
-sent out individually.
+i do feel a bit bad for the noise i caused, but it's not the worst
+thing i did today
 
+anyway: disregard this, and i will sync with Jonathan about how to
+proceed with this patch just for IIO;
 
-Wolfram Sang (3):
-  iio: light: cm36651: convert to i2c_new_dummy_device
-  iio: light: veml6070: convert to i2c_new_dummy_device
-  iio: pressure: hp03: convert to i2c_new_dummy_device
-
- drivers/iio/light/cm36651.c  | 12 ++++++------
- drivers/iio/light/veml6070.c |  6 +++---
- drivers/iio/pressure/hp03.c  |  6 +++---
- 3 files changed, 12 insertions(+), 12 deletions(-)
-
--- 
-2.20.1
-
+thanks for your time and sorry for the noise
+Alex
