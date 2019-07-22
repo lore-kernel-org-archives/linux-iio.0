@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54852C7618F
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:13:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 80B41C7618F
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:18:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 257B721955
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:13:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53D5520828
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:18:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="yiXU5BeD"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="jbyvO9Vw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730411AbfGVQNn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Jul 2019 12:13:43 -0400
-Received: from vern.gendns.com ([98.142.107.122]:51500 "EHLO vern.gendns.com"
+        id S1728266AbfGVQSC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Jul 2019 12:18:02 -0400
+Received: from vern.gendns.com ([98.142.107.122]:53252 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728972AbfGVQNn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Jul 2019 12:13:43 -0400
+        id S1728136AbfGVQSC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Jul 2019 12:18:02 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=lechnology.com; s=default; h=References:In-Reply-To:Message-Id:Date:Subject
         :Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=bUtZJiqidvzjWT6bJy+yoUNKniUAjIYim2yS80dfmnc=; b=yiXU5BeDFWfFqvEWEMLCs+52I
-        rBbGtpIx+wRrHnrIs+qYwikqzAWKb15YuHeekcgXxFj/7Ccsxyvw/EXaWfT5zLdt1kyjQ+G+/eQqN
-        4RseKQvpH2KTjyRbx/9RJTImV+bC2caRHsDcMbYoS1T2ta1S0G7hYwTfBUHRo5tVStIhymVw/eLoN
-        6DJjNA6xZLx0lJ6ID1E5KbX9rcnt0OmTMSt65OYhhZKMyd0RHM9mNNkcNMKzfKTHUfnb4r++ZWska
-        DTcZPMuR1N5+b5WUBTUyZnD8XTf+g02mMEEwRzB6PPZXB4qxgzGLVdM+rOhFMSZYj2s8Tv+BftrrO
-        7THaOFkbw==;
+         bh=kQ5tjS0DIkzEg92Su0xvHHf6qFC0tM+cXFESZNk2Qdc=; b=jbyvO9Vwktsa0oeaEDu6oNfSj
+        INCGXxhiypFiIpWeSeDImMe5LuwmX7rafXTcyntH94Je6nsqmfpGS7aZ4hh1g8lXFlQwsK82ZlqE3
+        bnTOoJIZG8IiaQO805qBLpuwpPyXmpdId2mayyljDpBtoizsYIWxDjX9M7FAfzb/esCNcBZaBnf7S
+        GbpCp4NOr9Zxk8Ko4H5B4atYQF4mgHdgIW8kPMUJ6F+QgHHNG2Tn/wjzzNiURZWxNgO6VhsG66Q5p
+        RpTrrpCW6KrYehyuoL+HZ45UOkRVs28xsjazv3Ue2/mLDYP43lUmNpUrZgRZpIR2ZeVDf5sea6vLP
+        RXUFgkexA==;
 Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:44690 helo=freyr.lechnology.com)
         by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.92)
         (envelope-from <david@lechnology.com>)
-        id 1hpaW2-006p1O-Dn; Mon, 22 Jul 2019 11:46:18 -0400
+        id 1hpaW5-006p1O-Jl; Mon, 22 Jul 2019 11:46:21 -0400
 From:   David Lechner <david@lechnology.com>
 To:     linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
         devicetree@vger.kernel.org
@@ -49,9 +49,9 @@ Cc:     David Lechner <david@lechnology.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH 1/4] dt-bindings: counter: new bindings for TI eQEP
-Date:   Mon, 22 Jul 2019 10:45:35 -0500
-Message-Id: <20190722154538.5314-2-david@lechnology.com>
+Subject: [PATCH 4/4] ARM: dts: am335x-boneblue: Enable eQEP
+Date:   Mon, 22 Jul 2019 10:45:38 -0500
+Message-Id: <20190722154538.5314-5-david@lechnology.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190722154538.5314-1-david@lechnology.com>
 References: <20190722154538.5314-1-david@lechnology.com>
@@ -70,39 +70,83 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This documents device tree binding for the Texas Instruments Enhanced
-Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
+This enables the Enhanced Quadrature Encoder Pulse (eQEP) module for
+connectors E1, E2 and E3 on BeagleBone Blue.
 
 Signed-off-by: David Lechner <david@lechnology.com>
 ---
- .../devicetree/bindings/counter/ti-eqep.txt    | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.txt
+ arch/arm/boot/dts/am335x-boneblue.dts | 54 +++++++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.txt b/Documentation/devicetree/bindings/counter/ti-eqep.txt
-new file mode 100644
-index 000000000000..fbcebc2c2cc2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/ti-eqep.txt
-@@ -0,0 +1,18 @@
-+Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP) Module
+diff --git a/arch/arm/boot/dts/am335x-boneblue.dts b/arch/arm/boot/dts/am335x-boneblue.dts
+index 0257576d5d16..df3978ce061c 100644
+--- a/arch/arm/boot/dts/am335x-boneblue.dts
++++ b/arch/arm/boot/dts/am335x-boneblue.dts
+@@ -258,6 +258,30 @@
+ 			AM33XX_PADCONF(AM335X_PIN_MII1_RXD0, PIN_OUTPUT, MUX_MODE7)		/* (M16) gmii1_rxd0.gpio2[21] */
+ 		>;
+ 	};
 +
-+Required properties:
-+- compatible:		Must be "ti,am3352-eqep".
-+- reg:			Physical base address and size of the registers map.
-+- clocks:		Handle to the PWM's functional clock.
-+- clock-names:		Must be "fck".
-+- interrupts:		Handle to the eQEP event interrupt
-+
-+Example:
-+
-+	eqep0: eqep@180 {
-+		compatible = "ti,am3352-eqep";
-+		reg = <0x180 0x80>;
-+		clocks = <&l4ls_gclk>;
-+		clock-names = "fck";
-+		interrupts = <79>;
++	/* E1 */
++	eqep0_pins: pinmux_eqep0_pins {
++		pinctrl-single,pins = <
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_AXR0, PIN_INPUT, MUX_MODE1)		/* (B12) mcasp0_aclkr.eQEP0A_in */
++			AM33XX_PADCONF(AM335X_PIN_MCASP0_FSR, PIN_INPUT, MUX_MODE1)		/* (C13) mcasp0_fsr.eQEP0B_in */
++		>;
 +	};
++
++	/* E2 */
++	eqep1_pins: pinmux_eqep1_pins {
++		pinctrl-single,pins = <
++			AM33XX_PADCONF(AM335X_PIN_LCD_DATA12, PIN_INPUT, MUX_MODE2)		/* (V2) lcd_data12.eQEP1A_in */
++			AM33XX_PADCONF(AM335X_PIN_LCD_DATA13, PIN_INPUT, MUX_MODE2)		/* (V3) lcd_data13.eQEP1B_in */
++		>;
++	};
++
++	/* E3 */
++	eqep2_pins: pinmux_eqep2_pins {
++		pinctrl-single,pins = <
++			AM33XX_PADCONF(AM335X_PIN_GPMC_AD12, PIN_INPUT, MUX_MODE4)		/* (T12) gpmc_ad12.eQEP2A_in */
++			AM33XX_PADCONF(AM335X_PIN_GPMC_AD13, PIN_INPUT, MUX_MODE4)		/* (R12) gpmc_ad13.eQEP2B_in */
++		>;
++	};
+ };
+ 
+ &uart0 {
+@@ -530,3 +554,33 @@
+ 		line-name = "LS_BUF_EN";
+ 	};
+ };
++
++&epwmss0 {
++	status = "okay";
++};
++
++&eqep0 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&eqep0_pins>;
++};
++
++&epwmss1 {
++	status = "okay";
++};
++
++&eqep1 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&eqep1_pins>;
++};
++
++&epwmss2 {
++	status = "okay";
++};
++
++&eqep2 {
++	status = "okay";
++	pinctrl-names = "default";
++	pinctrl-0 = <&eqep2_pins>;
++};
 -- 
 2.17.1
 
