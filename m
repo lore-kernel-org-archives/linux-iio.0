@@ -2,41 +2,33 @@ Return-Path: <SRS0=PKuj=VT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 093C8C7618F
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83ABAC7618F
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DAA8C21897
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6650721897
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 17:29:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731301AbfGVR0Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1731372AbfGVR0Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 22 Jul 2019 13:26:16 -0400
-Received: from sauhun.de ([88.99.104.3]:42138 "EHLO pokefinder.org"
+Received: from sauhun.de ([88.99.104.3]:42188 "EHLO pokefinder.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731363AbfGVR0Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Jul 2019 13:26:16 -0400
+        id S1731360AbfGVR0P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Jul 2019 13:26:15 -0400
 Received: from localhost (p54B33E22.dip0.t-ipconnect.de [84.179.62.34])
-        by pokefinder.org (Postfix) with ESMTPSA id 9B19E4A1495;
+        by pokefinder.org (Postfix) with ESMTPSA id 0FB394A1494;
         Mon, 22 Jul 2019 19:26:14 +0200 (CEST)
 From:   Wolfram Sang <wsa+renesas@sang-engineering.com>
 To:     linux-i2c@vger.kernel.org
 Cc:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        Kevin Tsai <ktsai@capellamicro.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] iio: light: cm36651: convert to i2c_new_dummy_device
-Date:   Mon, 22 Jul 2019 19:26:11 +0200
-Message-Id: <20190722172613.3890-2-wsa+renesas@sang-engineering.com>
+Subject: [PATCH 0/3] iio: convert subsystem to i2c_new_dummy_device()
+Date:   Mon, 22 Jul 2019 19:26:10 +0200
+Message-Id: <20190722172613.3890-1-wsa+renesas@sang-engineering.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190722172613.3890-1-wsa+renesas@sang-engineering.com>
-References: <20190722172613.3890-1-wsa+renesas@sang-engineering.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -44,46 +36,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move from i2c_new_dummy() to i2c_new_dummy_device(), so we now get an
-ERRPTR which we use in error handling.
+This series is part of a tree-wide movement to replace the I2C API call
+'i2c_new_dummy' which returns NULL with its new counterpart returning an
+ERRPTR.
 
-Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
----
+The series was generated with coccinelle (audited afterwards, of course) and
+build tested by me and by buildbot. No tests on HW have been performed.
 
-Generated with coccinelle. Build tested by me and buildbot. Not tested on HW.
+The branch is based on v5.3-rc1. A branch (with some more stuff included) can
+be found here:
 
- drivers/iio/light/cm36651.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+git://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git renesas/i2c/new_dummy
 
-diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
-index 7702c2bcbcfa..1019d625adb1 100644
---- a/drivers/iio/light/cm36651.c
-+++ b/drivers/iio/light/cm36651.c
-@@ -646,18 +646,18 @@ static int cm36651_probe(struct i2c_client *client,
- 	i2c_set_clientdata(client, indio_dev);
- 
- 	cm36651->client = client;
--	cm36651->ps_client = i2c_new_dummy(client->adapter,
-+	cm36651->ps_client = i2c_new_dummy_device(client->adapter,
- 						     CM36651_I2C_ADDR_PS);
--	if (!cm36651->ps_client) {
-+	if (IS_ERR(cm36651->ps_client)) {
- 		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
--		ret = -ENODEV;
-+		ret = PTR_ERR(cm36651->ps_client);
- 		goto error_disable_reg;
- 	}
- 
--	cm36651->ara_client = i2c_new_dummy(client->adapter, CM36651_ARA);
--	if (!cm36651->ara_client) {
-+	cm36651->ara_client = i2c_new_dummy_device(client->adapter, CM36651_ARA);
-+	if (IS_ERR(cm36651->ara_client)) {
- 		dev_err(&client->dev, "%s: new i2c device failed\n", __func__);
--		ret = -ENODEV;
-+		ret = PTR_ERR(cm36651->ara_client);
- 		goto error_i2c_unregister_ps;
- 	}
- 
+Some drivers still need to be manually converted. Patches for those will be
+sent out individually.
+
+
+Wolfram Sang (3):
+  iio: light: cm36651: convert to i2c_new_dummy_device
+  iio: light: veml6070: convert to i2c_new_dummy_device
+  iio: pressure: hp03: convert to i2c_new_dummy_device
+
+ drivers/iio/light/cm36651.c  | 12 ++++++------
+ drivers/iio/light/veml6070.c |  6 +++---
+ drivers/iio/pressure/hp03.c  |  6 +++---
+ 3 files changed, 12 insertions(+), 12 deletions(-)
+
 -- 
 2.20.1
 
