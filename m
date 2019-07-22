@@ -2,178 +2,169 @@ Return-Path: <SRS0=PKuj=VT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D969CC76188
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 12:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AA72C76190
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 13:10:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A821121951
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 12:48:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="VqKGelrv"
+	by mail.kernel.org (Postfix) with ESMTP id 405B321921
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 13:10:50 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563801050;
+	bh=vPjh8gK4RSC6MEpg+Ejbq/Y5/NME4LAf0JbaVtepcJo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=R5JrtLd7qCIK+8O53EHAHRxwyvBpN0wvGLrRKGCM6VHVfcgipvaCi+XFP3gmKfPYI
+	 /Ovr1fo7XVUrxu1t254t43A83fQG/ndeIyGXw56OvN01vMa0G3hI8c/Eoe+5E7Nczy
+	 LziczGDT82e0IFcjR2XAMkO0y9tsVZQW3dhmpoTQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729838AbfGVMs1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Jul 2019 08:48:27 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:21052 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728596AbfGVMsG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2019 08:48:06 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6MCShHn011804;
-        Mon, 22 Jul 2019 08:47:59 -0400
-Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2054.outbound.protection.outlook.com [104.47.44.54])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2tuyv3wv1j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Jul 2019 08:47:59 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=eE9iLm81U9bJ07cxLinppz48DhGju65r1lBafbX4bI2vbVUDGBxB8tV9N8yFzqhbDOUmwP9/sPAPZCL7ALzC/KFqhRBHNS/plgf2BQ1mcK9Oz6c7f2utSE5+t0l2RKJelnJyf7Z0h2mcpo/2T+91fF+SJ10nWyyELK+2QIi4IuKwCiyhTh9PAVIFSlcnMWlq7EJYaMcQjTPp07rDPeIjUmJGNi7QtlyDSBJPjzLUhU4RPQIFLuM4VGG8HqiKik1vAvOkWCps2rZtHABwkT8+bydxRM/pV2pNAw6V2aots9ryLQb02Ql1S/acX1HjQtwoIXt+aHPzND1o5QrPfCgjjg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hZQ17OTmhxC8xUM6JXeYhXizhO83gBVH6BbgQRYxqpE=;
- b=eWUT+KqKyKZLlZ2kdd3qK0Q/dCBfiPgljboNpwyxe7w2gnHAL4QXlaYPIgijgdUQQtdcJBpjT9nNp0droRX8Du58qFtY0qW5WjnBxytud0utK8FHhWB6ipj8/RvJmgEKCTDqn7XK0YDm/TGKqH6EJ/EWPqP3eOrdC09SbEy8hz9G6sgElywc2oIZOFiwzxVxSrWDbQrPN7FO9mn8s8tW/4PeGK42c6DuqZUfDXlFzL5WBuvrrZUOA4/cdIWgtQPCQ0nCu8PU6+rDxwGFAf0icrFv1NU3RPIma5/5zsIJ3oVvip/5HkBTVGfVFvTLlcF64TRjM3fJ2KssJx38B4FxnA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
- 137.71.25.55) smtp.rcpttodomain=vger.kernel.org
- smtp.mailfrom=analog.com;dmarc=bestguesspass action=none
- header.from=analog.com;dkim=none (message not signed);arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=hZQ17OTmhxC8xUM6JXeYhXizhO83gBVH6BbgQRYxqpE=;
- b=VqKGelrvzaOYdrLJ2ihKqfg/uR8z7vPbQyXMyM5sSDHjsRWNvVFlG6wqzk7DUxo5g4jtRIXfU7FWIKZPlPjvNF5Rgzfi/bPe/pJwvT9uvuDP0c0RnxmQjZ7WNvSTw8UMSNqOTY8M3iNHtcyIPxY32VRpSD7qBBCHHW5yXTzyfuA=
-Received: from BN6PR03CA0004.namprd03.prod.outlook.com (2603:10b6:404:23::14)
- by DM6PR03MB4714.namprd03.prod.outlook.com (2603:10b6:5:181::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2094.17; Mon, 22 Jul
- 2019 12:47:56 +0000
-Received: from SN1NAM02FT004.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e44::202) by BN6PR03CA0004.outlook.office365.com
- (2603:10b6:404:23::14) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2094.15 via Frontend
- Transport; Mon, 22 Jul 2019 12:47:56 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- SN1NAM02FT004.mail.protection.outlook.com (10.152.72.175) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2052.25
- via Frontend Transport; Mon, 22 Jul 2019 12:47:55 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x6MClqfr019615
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 22 Jul 2019 05:47:52 -0700
-Received: from saturn.ad.analog.com (10.48.65.145) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Mon, 22 Jul 2019 08:47:54 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <broonie@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 0/4][V3] iio: imu: Add support for the ADIS16460 IMU
-Date:   Mon, 22 Jul 2019 15:47:43 +0300
-Message-ID: <20190722124747.4792-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
+        id S1730460AbfGVNKt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Jul 2019 09:10:49 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:41274 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728343AbfGVNKt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2019 09:10:49 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Content-Transfer-Encoding:
+        Content-Type:MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:
+        From:Date:Sender:Reply-To:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=GLfj3XE94O2rj+M1sDTUTWfglE0+aX441ii2IeKx/CI=; b=nRZwn/4NR9XHQ9sVhmDigrjy7
+        3S3HlKrJQkjiz0voh8ZPb7dQm7aJXztF5PbsOj0DSouxZY2y0qPviHngwp1ZWVrE+dxDw6SoKrY2l
+        pF6HqDdBwRqqDDaHnXCfoXdLSq23wo9bRL8C9N7rA0GirCNhiSUCdOscHoY0mKB4XKMjBJr4C4oRh
+        8InhsLufSJN14DVBLsEuEp593sGGRaSS/RMWrTSz+MbrSvcSPAbpcD8HDOLR5mJ2mkkG7qC1Pw8Lz
+        I6wbdSuhVGHJBJlMFyz2F5TAmgmsWf1ZollbkM6ttMGYn2Ap7eilwDCK0Ku392VFkvbWxZQ77m2Mo
+        4dM8QpNxQ==;
+Received: from 177.157.124.3.dynamic.adsl.gvt.net.br ([177.157.124.3] helo=coco.lan)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hpY5P-0002aj-VB; Mon, 22 Jul 2019 13:10:40 +0000
+Date:   Mon, 22 Jul 2019 10:10:35 -0300
+From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+To:     Mark Brown <broonie@kernel.org>
+Cc:     Jonathan Corbet <corbet@lwn.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-doc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 04/22] docs: spi: convert to ReST and add it to the kABI
+ bookset
+Message-ID: <20190722101035.4f61c1bf@coco.lan>
+In-Reply-To: <20190722121151.GC4756@sirena.org.uk>
+References: <cover.1563792333.git.mchehab+samsung@kernel.org>
+        <be171b438013f8824425595e3d637f5e7d466249.1563792334.git.mchehab+samsung@kernel.org>
+        <20190722121151.GC4756@sirena.org.uk>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(136003)(376002)(346002)(396003)(2980300002)(54534003)(199004)(189003)(336012)(107886003)(246002)(50226002)(2906002)(14444005)(316002)(486006)(110136005)(54906003)(106002)(2201001)(26005)(126002)(44832011)(966005)(186003)(8936002)(8676002)(51416003)(7696005)(4326008)(1076003)(86362001)(50466002)(48376002)(305945005)(5660300002)(426003)(476003)(70206006)(36756003)(2616005)(47776003)(478600001)(356004)(6306002)(70586007)(7636002)(2870700001)(6666004);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB4714;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 11132758-a20f-4c2f-2bbd-08d70ea2d185
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:DM6PR03MB4714;
-X-MS-TrafficTypeDiagnostic: DM6PR03MB4714:
-X-MS-Exchange-PUrlCount: 1
-X-Microsoft-Antispam-PRVS: <DM6PR03MB4714D7B9633843E7D79020BDF9C40@DM6PR03MB4714.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
-X-Forefront-PRVS: 01068D0A20
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: P14AwspHzirCSORe2R5a5h4rr70bhtUtAhuxoz4posE778ZQ+msJ0axcFOmr70pfCCNYxcAnPhFBabx8yCy+11gRcW9R87edJ3FTiSivCCYQja+jxIJRIUGSo0MimnWrzH0V9urHefHq1LFeCcXsWKBT7ljo2vIrgqHcihSuX5ZC1J7eR+W30Xmr3kcMDpp7WnhymehAqMGo4IFLeLy8H6+DvSSaS8RatqayALEu47E3b8T1OFoJiV5EDq7g4GVSgcyeiXkww92py89ubtU6YQpQ0NIlTuzqgHPSelHh8kzVNY2FLz4q7W132zIacB4meJSFbKMQQg2Stu/C9zJXOKZe+EAXaQncRn30X6m7jdewajkuA0zPXh3odqltpLEiFYAjLx+26cq6XsVXQaFIMTq5OuDZdBYiEpkFfJBFIKc=
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jul 2019 12:47:55.5057
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 11132758-a20f-4c2f-2bbd-08d70ea2d185
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4714
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-22_10:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
- clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
- mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.0.1-1810050000 definitions=main-1907220147
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This changeset adds support for the ADIS16460.
+Em Mon, 22 Jul 2019 13:11:51 +0100
+Mark Brown <broonie@kernel.org> escreveu:
 
-Support for this chip, requires changes in both IIO & SPI, in order to
-support configurable/longer CS change delays.
+> On Mon, Jul 22, 2019 at 08:07:31AM -0300, Mauro Carvalho Chehab wrote:
+> > While there's one file there with briefily describes the uAPI,
+> > the documentation was written just like most subsystems: focused
+> > on kernel developers. So, add it together with driver-api books.  
+> 
+> Please use subject lines matching the style for the subsystem.  This
+> makes it easier for people to identify relevant patches.
 
-The default CS change delay is 10 uS, while the ADIS16460 requires a
-minimum of 16 uS. In order to accomodate this, the SPI transfer struct
-requires a `cs_change_delay_usecs` parameter that is used when `cs_change`
-is set.
+Sure. Do you prefer this prefixed by:
 
-The ADIS library also requires a small update to support the new SPI
-`cs_change_delay_usecs`, and after that, support for ADIS16460 is added,
-since all the required parts for operating the chip are in the kernel.
+	spi: docs:
 
-Continuing discussion from:
-  https://lore.kernel.org/lkml/20190717115109.15168-5-alexandru.ardelean@analog.com/T/
+Or with something else?
 
-Changelog v2 -> v3:
-* for SPI:
-  * used `cs_change_delay` instead of `cs_change_delay_usecs` (i.e. removed
-    `_usecs` suffix
-  * used SPI specific subject line for SPI patch
-* for ADIS lib:
-  * updated to use the `cs_change_delay`
-* for DT:
-  * added Rob's `Reviewed-by` tag
+> >  Documentation/spi/{spidev => spidev.rst}      |  30 +++--  
+> 
+> This is clearly a userspace focused document rather than a kernel
+> internal one.
 
-Changelog v1 -> v2:
-* for SPI:
-  * renamed `cs_change_stall_delay_us` -> `cs_change_delay_usecs`
-    initial recommendation was `cs_change_delay`, but decided to name this
-    `cs_change_delay_usecs`, since the convention for these delays seems
-    to add the `_usecs` suffix
-* for ADIS lib:
-  * renamed `stall_delay` -> `cs_change_delay`
-  * removed some assignments of `cs_change_delay`
-    where `cs_change` is not set
-* for ADIS16460 driver:
-  * fixed license
-  * adjusted to new `cs_change_delay[_usecs]`
+True. What I've been doing so far is, for all drivers that I'm converting
+with carries more than one documentation type (kABI, uABI and/or 
+admin-guide) is to keep the directory as-is, adding them under
+this section at Documentation/index.rst:
 
-Alexandru Ardelean (4):
-  spi: Add optional stall delay between cs_change transfers
-  iio: imu: adis: Add support for SPI transfer cs_change_delay
-  iio: imu: Add support for the ADIS16460 IMU
-  dt-bindings: iio: imu: add bindings for ADIS16460
+	Kernel API documentation
+	------------------------
 
- .../bindings/iio/imu/adi,adis16460.yaml       |  53 ++
- MAINTAINERS                                   |   8 +
- drivers/iio/imu/Kconfig                       |  12 +
- drivers/iio/imu/Makefile                      |   1 +
- drivers/iio/imu/adis.c                        |   6 +
- drivers/iio/imu/adis16460.c                   | 489 ++++++++++++++++++
- drivers/spi/spi.c                             |   3 +-
- include/linux/iio/imu/adis.h                  |   2 +
- include/linux/spi/spi.h                       |   2 +
- 9 files changed, 575 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
- create mode 100644 drivers/iio/imu/adis16460.c
+That's the case of media, input, hwmon, and so many other subsystems.
 
--- 
-2.20.1
+Yet, you're right: this implies that there will be some things
+to be done, as the long-term documentation should be like:
 
+	Documentation/admin-guide/{media, input, hwmon, spi, ...}
+	Documentation/userspace-api/{media, input, hwmon, spi, ...}
+	Documentation/driver-api/{media, input, hwmon, spi, ...}
+
+Btw, if you look at spidev file, it contains stuff for both
+userspace-api:
+
+	"SPI devices have a limited userspace API, supporting basic half-duplex
+	 read() and write() access to SPI slave devices.  Using ioctl() requests,"
+
+And for admin-guide:
+
+	"For a SPI device with chipselect C on bus B, you should see:
+
+	    /dev/spidevB.C ... character special device, major number 153 with
+		a dynamically chosen minor device number. "
+
+So, if we're willing to move it, the best is to do on a separate patch
+with would split its contents into two files: admin-guide/spi-devices.rst and 
+userspace-api/spi-api.rst.
+
+-
+
+There are a couple of reasons why I opted for this strategy:
+
+1) There are *lots* of docs that contain all 3 types of information
+   on it on a single file.
+
+2) On media, we use SPHINXDIRS to produce the media book from our
+   devel tree:
+	https://linuxtv.org/downloads/v4l-dvb-apis-new/index.html
+
+   When documents are built with either PDF SPHINXDIRS, each subdir
+   will be on a different book and all inter-book cross-references
+   will break.
+   
+   For this to be fixed, we'll likely need to use something like
+   intersphinx extension, but this would probably require a
+   per-subsystem mapping (for example, saying that, for media, the
+   site used to resolve broken cross references is linuxtv.org). 
+   Maintaining it can be painful.
+
+3) So far, I was unable to split even the media docs! Shame on
+   me! The reason is that this is not an easy task.
+
+
+One interesting example is at what we consider to be the media
+uAPI book. It actually contains both sysadmin and uAPI documentation.
+
+For example, at:
+
+	Documentation/media/uapi/v4l/open.rst
+
+You'll see that, while most things there belong to the admin
+guide (device node descriptions, multiple opens, etc), it
+mentions the Kernel userspace API - open(), read(), close() syscalls.
+
+Splitting this file on two separate books won't be that easy.
+
+Ideally, we should split what's there at media/uapi into admin-guide
+and userspace-api, but this would mean *a lot* of efforts. Not sure
+if it is worth the effort.
+
+
+Thanks,
+Mauro
