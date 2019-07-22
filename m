@@ -2,134 +2,109 @@ Return-Path: <SRS0=PKuj=VT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 778E7C7618F
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10DE5C76190
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:32:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 456532190F
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:24:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="QhU9m/MW"
+	by mail.kernel.org (Postfix) with ESMTP id DDED22190F
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jul 2019 16:32:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1563813133;
+	bh=frq9DOUL5vdSJjqBWz6x6F5L0v9cgIKb9CKdMsYQ8SU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=k1qfJOHmUXh5//5ppna0LrDMB/jdeaY4tGQ+2A1kadMC86lyHekAAyC4gX1M0P1x4
+	 /i8daYfct7CVGCknMqQAtSIaW65miypoMAqAAYTHJSG7HY24/MQxIOAOTjgnotyAxa
+	 inz4ydxI8Bjne1QFRghn1h5+fxpbKiEys/Y4cPFg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730155AbfGVQYd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Jul 2019 12:24:33 -0400
-Received: from vern.gendns.com ([98.142.107.122]:54450 "EHLO vern.gendns.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730116AbfGVQYd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Jul 2019 12:24:33 -0400
+        id S1729622AbfGVQcJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Jul 2019 12:32:09 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:54876 "EHLO
+        heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728270AbfGVQcJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jul 2019 12:32:09 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=References:In-Reply-To:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+        d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
+        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
         List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=nK9bOkcM1q9VVuhzkyupsEpjrNzM/n6WC+6bn/WV2yE=; b=QhU9m/MWtQ95UceZj7cx/wj0n
-        nP9fNZ+1G5aq6dPhweq7UXIpSfjIHZMhzeidTEQYkfXH1dsKLmzg1WEggKIatqzG1MU3vsJ42EU0h
-        Ii8UnLf5fC8Bk4ixrssWJzvV3H3X+pwklSuB1/FlCSqTKnvb5ytJSyBAs3Zkm0z5Ri5OScNyfmXs7
-        knYCVhMa3t6rVkYl5YqFpB7E3seF+ty3ruWIk2dgiC7mpRs1lKCbxClGXsrRu4KvF4M/2BCoWhXsj
-        MOk2jaCHzOU3AQY4GhcVZ8/GznJ2mXDH4JEzBcQoPAm8PH+WeioJCJC8zjyRcR9HUiT19B+upK1Mw
-        zEEqY0HAQ==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:44690 helo=freyr.lechnology.com)
-        by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
+         bh=m8yZMwUEiFcccV1SSNyMVjuNbCe2CWQuQkyxqZQmz/A=; b=XDKGkgBe4UhiABZFc+jlkWPgv
+        IRYyV0OE3GgSpmospTKxfgN3IIF1fRIZAQbQ80NQqoYjXS4RJ1tjX00qEGdgQhsourEy4GVhJ4MC0
+        VBXWaXryk8xLmDNTgkZ4zgaXagftmA07e/ooktiXKx7PYDCqk+nOJhctcnbU6sKqne3o0=;
+Received: from ypsilon.sirena.org.uk ([2001:470:1f1d:6b5::7])
+        by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <david@lechnology.com>)
-        id 1hpaW4-006p1O-Ii; Mon, 22 Jul 2019 11:46:20 -0400
-From:   David Lechner <david@lechnology.com>
-To:     linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     David Lechner <david@lechnology.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-pwm@vger.kernel.org
-Subject: [PATCH 3/4] ARM: dts: am33xx: Add nodes for eQEP
-Date:   Mon, 22 Jul 2019 10:45:37 -0500
-Message-Id: <20190722154538.5314-4-david@lechnology.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190722154538.5314-1-david@lechnology.com>
-References: <20190722154538.5314-1-david@lechnology.com>
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        (envelope-from <broonie@sirena.org.uk>)
+        id 1hpbEK-0000DV-3R; Mon, 22 Jul 2019 16:32:04 +0000
+Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
+        id D594D27416F9; Mon, 22 Jul 2019 17:32:02 +0100 (BST)
+Date:   Mon, 22 Jul 2019 17:32:02 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linux-iio@vger.kernel.org, linux-spi@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: Re: [PATCH 1/4][V3] spi: Add optional stall delay between cs_change
+ transfers
+Message-ID: <20190722163202.GG4756@sirena.org.uk>
+References: <20190722124747.4792-1-alexandru.ardelean@analog.com>
+ <20190722124747.4792-2-alexandru.ardelean@analog.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="B8ONY/mu/bqBak9m"
+Content-Disposition: inline
+In-Reply-To: <20190722124747.4792-2-alexandru.ardelean@analog.com>
+X-Cookie: No skis take rocks like rental skis!
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds new nodes for the Texas Instruments Enhanced Quadrature
-Encoder Pulse (eQEP) module in the PWM subsystem on AM33XX.
 
-Signed-off-by: David Lechner <david@lechnology.com>
----
- arch/arm/boot/dts/am33xx-l4.dtsi | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+--B8ONY/mu/bqBak9m
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/arm/boot/dts/am33xx-l4.dtsi b/arch/arm/boot/dts/am33xx-l4.dtsi
-index 3b1fb2ba4dff..7fdc2f61c553 100644
---- a/arch/arm/boot/dts/am33xx-l4.dtsi
-+++ b/arch/arm/boot/dts/am33xx-l4.dtsi
-@@ -1908,6 +1908,15 @@
- 					status = "disabled";
- 				};
- 
-+				eqep0: eqep@180 {
-+					compatible = "ti,am3352-eqep";
-+					reg = <0x180 0x80>;
-+					clocks = <&l4ls_gclk>;
-+					clock-names = "fck";
-+					interrupts = <79>;
-+					status = "disabled";
-+				};
-+
- 				ehrpwm0: pwm@200 {
- 					compatible = "ti,am3352-ehrpwm",
- 						     "ti,am33xx-ehrpwm";
-@@ -1961,6 +1970,15 @@
- 					status = "disabled";
- 				};
- 
-+				eqep1: eqep@180 {
-+					compatible = "ti,am3352-eqep";
-+					reg = <0x180 0x80>;
-+					clocks = <&l4ls_gclk>;
-+					clock-names = "fck";
-+					interrupts = <88>;
-+					status = "disabled";
-+				};
-+
- 				ehrpwm1: pwm@200 {
- 					compatible = "ti,am3352-ehrpwm",
- 						     "ti,am33xx-ehrpwm";
-@@ -2014,6 +2032,15 @@
- 					status = "disabled";
- 				};
- 
-+				eqep2: eqep@180 {
-+					compatible = "ti,am3352-eqep";
-+					reg = <0x180 0x80>;
-+					clocks = <&l4ls_gclk>;
-+					clock-names = "fck";
-+					interrupts = <89>;
-+					status = "disabled";
-+				};
-+
- 				ehrpwm2: pwm@200 {
- 					compatible = "ti,am3352-ehrpwm",
- 						     "ti,am33xx-ehrpwm";
--- 
-2.17.1
+On Mon, Jul 22, 2019 at 03:47:44PM +0300, Alexandru Ardelean wrote:
+> Some devices like the ADIS16460 IMU require a longer period between
+> transfers, i.e. between when the CS is de-asserted and re-asserted. The
+> default value of 10us is not enough. This change makes the delay
+> configurable for when the next CS change goes active, allowing the default
+> to remain 10us is case it is unspecified.
 
+For the third time:
+
+| This looks like cs_change_delay.
+
+>  #define	SPI_NBITS_QUAD		0x04 /* 4bits transfer */
+>  	u8		bits_per_word;
+>  	u8		word_delay_usecs;
+> +	u8		cs_change_delay;
+>  	u16		delay_usecs;
+>  	u32		speed_hz;
+>  	u16		word_delay;
+
+This patch doesn't apply and even if it did it won't compile because you
+are trying to add a field with the same name as an existing one.
+
+--B8ONY/mu/bqBak9m
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl015QIACgkQJNaLcl1U
+h9D5fwf/Wo4+Hmy98fxnDeg7DpbiGSC8Ran91cmRVruDQ85ReTVXSyjGLF7QuDPU
+h5eXuOE2jwzrDrqVmX1CK8kXQCF5k9I9SiLWZZlPBxVAFGQmOBufa2voUWHN3zr7
+lhESGw8Ayl7JzHYF6KRvtGSIFq5vJ2fhLLFH+lDZ0ewq7A92U99OqyjaZD0gZCo7
+Nb3YJ2wASgP37haiibEHvpddA585QtGgcCjqdxybeoIxAqkez/2RTijc3DBRcXeb
+VsseUyF20RRXnICBpBgUnonhzzwN7jwf1VIOM4aKGiWIIXGRqiKO3OD9akqXodSG
+owJ6FsifVUS4oEXPHb76eFpu1x5A0g==
+=+XeL
+-----END PGP SIGNATURE-----
+
+--B8ONY/mu/bqBak9m--
