@@ -2,39 +2,39 @@ Return-Path: <SRS0=tUtY=VU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-8.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F34EC76190
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Jul 2019 07:37:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D276C76190
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Jul 2019 07:37:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 335B22251B
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Jul 2019 07:37:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6615B2251B
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Jul 2019 07:37:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="BJ0xlUip"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="4DC/2d9p"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388444AbfGWHhG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Jul 2019 03:37:06 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:17012 "EHLO
+        id S2388428AbfGWHhE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Jul 2019 03:37:04 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:14278 "EHLO
         mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388423AbfGWHhG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jul 2019 03:37:06 -0400
-Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6N7X1Tr013740;
-        Tue, 23 Jul 2019 03:37:00 -0400
+        by vger.kernel.org with ESMTP id S1732876AbfGWHhA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jul 2019 03:37:00 -0400
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x6N7X5dk003699;
+        Tue, 23 Jul 2019 03:36:52 -0400
 Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2051.outbound.protection.outlook.com [104.47.37.51])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2tws1sgh3m-1
+        by mx0b-00128a01.pphosted.com with ESMTP id 2twun1892h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 23 Jul 2019 03:37:00 -0400
+        Tue, 23 Jul 2019 03:36:52 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=GXy9v2+SYPGL09pwRNKGyHWoyYtnM6m5S9Ox2jk6mDUPHCcmczsOw8M18BII4UR3U5oSZNRkN8w0tqK6PQW91TIT8cfNlEoiMKw9dEKudJz1vhkTjttdn5YBEllNnu4LQX2Lg8KHSh5phzSTKBJKIHvO1syKAc1/0odr24dujbOUe+HNgERENWq1aPR02xqTwmEFGTUdE5Xl4oBd8gpBT2ACnL2lIxCHKXyyb43aVdRyJDJ9VrgBj9pT/uj9xmTE/V0SeIx4wdAVFq5xka2dBa+xxrE1xC5GZQZh4/Bf5SJQRn4Ofnp8k2DKiqPImLzUmvDKaTOkztMYcIYuBt+FGQ==
+ b=ib4vq7WqU2aYkY57GXQrM1Ic0WtU25feRNl1VTZVMnGbhudgeuY/zty0oyMu2Cs22YIP5StnkQtuJwyUI6lZeGaD1HsnYowSCVkRhFRaESz8H7XGiaikhdSq4LqhkxpfAKub4CIAHx9JtlN4hQKfxEkANkII+VW1cpBAcCPxtBuK2f/OlMdMSpM0wAzF39UPa3Q2CV8xDGLDKdQFUrwyP4MEx3bfCK6p8IAu7dPvmq8z53KE5GOxa9nFbhHSqKNTDhtZ0Fr8TF7CWHUASkI4LZ/nHqNwV/2GEH06Gz+VZHdc0zMJmoSVWAPxviRZqgM4TH4eY74WiD9Kbnz6BG+4ig==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+QvzUQRnJyyj9xwyQNM6BeX3bb2nPk6FINSugzUh/oc=;
- b=bdRUKEI4Mr+bS1U9tcnskSu+zMJYf2/zm7CV3qnnAbb9D8bMBT92LPsRqV0POBz8vjq8xXkGE2R7RPp71VgIxTf7OF/UGhHlorS5wUqwYQ5CAUaW5NOjS8HxbceYwiMgcnKhPAU670K8qAW234hewEg3Bv5JOzWIZs1z8MhP72ohhZzwKcwDN0qpmH2KZ78K9Qnz6kuXgO8znUa+9gyccIfv92ICSjIcb0+eqPeftE2gIuS/Q/FgzfcoP++ptU2gBDFoeAqh/bv+WhQQiasyy4oOmgjvRldebvI6fBHhEpGwGnUsyZc4NOFKV83trb23wjlkGmD/aiOa09Dfgmqc7w==
+ bh=OPppcAnpgozGlEs0W60CaEywG0Lpw0uSoeFiv5ZE6AM=;
+ b=H7EGKp4f3uTlup/9Q3W+V9/kO2CWTrjTjIM87gUBaTsUhlOQ36W6Pw5LbUBgPF4wqJWTqU2iYNpHjgYkYBjo8Y/ytspKS8PcxcvrdWBWFAdjZ7dHOHOevmAo7b/HiVY8yRC38qfawlSQOWnrkvEPeRo8ZtrNDI6KoVAa0eha7OFMf/7vn3BrqLQgrnPcjFuD44uqUxf4JTGDmxPK5+X5gu6uSmgYrk2LjGMf0bvuHS+VaisS7Hve+nCT0DeWmlWNlDEnYGPfVN3u/zLleafItM8ZKx718Z/AgB9808RuWVkItzXVQuJBdaomQ6NUka6LFMS7WIg1Pc2CzumoYuu8hQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
  137.71.25.55) smtp.rcpttodomain=vger.kernel.org
  smtp.mailfrom=analog.com;dmarc=bestguesspass action=none
@@ -42,70 +42,66 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1;spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+QvzUQRnJyyj9xwyQNM6BeX3bb2nPk6FINSugzUh/oc=;
- b=BJ0xlUipP4det7c0of8MTw+udYgOtRlumn9eI62BA1J2koxUnoxgMOiXoO40RhDn7cxc7/D0+R2BGp3r3/RfpQJgJKng+kGJefvgaB8+PqkpMgdqrvzMXHELJLIWrpMq3Fpqz5j1Xe8/lGIDA1U768nX0jALF1ckuhrHT0W+UgE=
-Received: from BN3PR03CA0067.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::27) by BN6PR03MB3266.namprd03.prod.outlook.com
- (2603:10b6:405:41::35) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2115.10; Tue, 23 Jul
- 2019 07:36:58 +0000
-Received: from CY1NAM02FT009.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::201) by BN3PR03CA0067.outlook.office365.com
- (2a01:111:e400:7a4d::27) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2094.14 via Frontend
- Transport; Tue, 23 Jul 2019 07:36:58 +0000
+ bh=OPppcAnpgozGlEs0W60CaEywG0Lpw0uSoeFiv5ZE6AM=;
+ b=4DC/2d9phzxK9xlJT5pktNm3DHKrMA4DeciZbO+ZpwQUfnckex6tu/xqwyo+0rvUMPMiAs9MBYvmRC/VoIUuRVTL+S3wxW0Df3b9mTL9CgysgeoUwnhNmT5XY+1bDpwX7AcWTaxvgAJKLpQz5hqzgHsGaYKASa6D+yw6xuoOyCs=
+Received: from DM5PR03CA0036.namprd03.prod.outlook.com (2603:10b6:4:3b::25) by
+ CY4PR03MB3272.namprd03.prod.outlook.com (2603:10b6:910:55::13) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2094.16; Tue, 23 Jul 2019 07:36:51 +0000
+Received: from BL2NAM02FT030.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::200) by DM5PR03CA0036.outlook.office365.com
+ (2603:10b6:4:3b::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2094.16 via Frontend
+ Transport; Tue, 23 Jul 2019 07:36:50 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.55 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
 Received: from nwd2mta1.analog.com (137.71.25.55) by
- CY1NAM02FT009.mail.protection.outlook.com (10.152.75.12) with Microsoft SMTP
+ BL2NAM02FT030.mail.protection.outlook.com (10.152.77.172) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2052.25
- via Frontend Transport; Tue, 23 Jul 2019 07:36:57 +0000
+ via Frontend Transport; Tue, 23 Jul 2019 07:36:50 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x6N7asWE001502
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x6N7amdI001484
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Tue, 23 Jul 2019 00:36:54 -0700
+        Tue, 23 Jul 2019 00:36:48 -0700
 Received: from saturn.ad.analog.com (10.48.65.145) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Tue, 23 Jul 2019 03:36:56 -0400
+ 14.3.408.0; Tue, 23 Jul 2019 03:36:49 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-spi@vger.kernel.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
         <broonie@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH 3/3][V4] dt-bindings: iio: imu: add bindings for ADIS16460
-Date:   Tue, 23 Jul 2019 10:36:40 +0300
-Message-ID: <20190723073641.27801-4-alexandru.ardelean@analog.com>
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 0/3][V4] iio: imu: Add support for the ADIS16460 IMU
+Date:   Tue, 23 Jul 2019 10:36:37 +0300
+Message-ID: <20190723073641.27801-1-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190723073641.27801-1-alexandru.ardelean@analog.com>
-References: <20190723073641.27801-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(136003)(396003)(346002)(2980300002)(189003)(199004)(50226002)(8936002)(186003)(8676002)(5660300002)(36756003)(48376002)(426003)(486006)(476003)(2616005)(126002)(2906002)(2870700001)(44832011)(11346002)(4326008)(446003)(76176011)(51416003)(7696005)(1076003)(47776003)(106002)(50466002)(2201001)(53376002)(26005)(336012)(316002)(54906003)(6666004)(356004)(110136005)(6306002)(966005)(70586007)(246002)(86362001)(305945005)(478600001)(7636002)(70206006);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR03MB3266;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(376002)(346002)(396003)(39860400002)(2980300002)(54534003)(189003)(199004)(7696005)(4326008)(50466002)(8676002)(7636002)(336012)(126002)(48376002)(246002)(305945005)(8936002)(2870700001)(50226002)(107886003)(476003)(426003)(5660300002)(2616005)(486006)(26005)(44832011)(110136005)(54906003)(1076003)(186003)(966005)(2201001)(51416003)(478600001)(47776003)(106002)(2906002)(356004)(6666004)(316002)(36756003)(86362001)(70586007)(70206006)(6306002);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB3272;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 853b8a91-3b40-4948-528f-08d70f408b24
-X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:BN6PR03MB3266;
-X-MS-TrafficTypeDiagnostic: BN6PR03MB3266:
-X-MS-Exchange-PUrlCount: 4
-X-Microsoft-Antispam-PRVS: <BN6PR03MB3266D412A6104DF49504F963F9C70@BN6PR03MB3266.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 2c6bd4ec-f296-4948-051d-08d70f4086a2
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328);SRVR:CY4PR03MB3272;
+X-MS-TrafficTypeDiagnostic: CY4PR03MB3272:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <CY4PR03MB3272C99DDE4F593B176E2114F9C70@CY4PR03MB3272.namprd03.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:2449;
 X-Forefront-PRVS: 0107098B6C
 X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam-Message-Info: MH9gtSbQRFPnwfHkzDOi1IKjvvOjaj0nKTkRw+DdR9DCNScNF7Qc89fzkN8FIfepQu2CK5T52mp+u6suVWWVWV5VWez/Edfqh0PZAmdqU+9zrOigYkl6/UeLSWSqu64xstKguMPwEAh6WzjAaI/y5R1Yrtv2kQ/9G7GHKVFyYTaFQTigTNvVv+EDg3LTHbG7WFKb83cKnlD6NpOWY5adhUlcmMPukAdTlJfjpg8GNyiuSwTc09M1v5UbIX7/vCUwb/+G4kEileUx+Qqewo9QhbqGdLjd+hDOZdnPd36DDbcLxIHbuxPLzhgig3mDyQkYj0xPeXqTI1VCI6eOgx7VGxAH4c1tCMa3u/7Ffhur4TshEkBobTlzTnJ+JmGPBUudKkg4ff2Jt7KQTr+96hIO4al2wOH38MQRSQ9hnZiIx5I=
+X-Microsoft-Antispam-Message-Info: +PW2EDK5KKh+T2ZG+WEl5knJLl551oHGIwi1TEM2s/SwoJwwOpfHo1/QNMTnBch/F7ymGbcVSqd6PHNsv9+ERX0gwNjN7C+Y3OA/vmbYNL76dAQoOHKTQe6hF8iFj+aSZzAHw4TnXI2pqgvHuVMtxzEh/wCNIyJot+IjWSjx+XxISMWibZ8ZlflQYFnaQVNQReW57mAABrUVsPbvk734+WYln+PwOE9zVKFyiYLrYkG+KcvKHLginTEGvpP52a01S878PcyGsWhdyXqODdJO010SH+ALChk2iOBfaAVHUPOGqLiDOxNIe48fVWX6MfO6MxGuVGMzzZ1afTvMaIhnYZR1+qhtvyHl25JTS4dyP4TP2J6DCq5FqU7ND4RIcd0mryIYUA65PL6KO8H5ZHDPKLWMQcgXNWFkjDm0yGcJvZ4=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2019 07:36:57.6175
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 23 Jul 2019 07:36:50.6292
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 853b8a91-3b40-4948-528f-08d70f408b24
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2c6bd4ec-f296-4948-051d-08d70f4086a2
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB3266
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB3272
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-07-23_04:,,
  signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
@@ -118,87 +114,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change adds device-tree bindings for the ADIS16460.
+This changeset adds support for the ADIS16460.
+The default CS change delay is 10 uS, while the ADIS16460 requires a
+minimum of 16 uS.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- .../bindings/iio/imu/adi,adis16460.yaml       | 53 +++++++++++++++++++
- MAINTAINERS                                   |  1 +
- 2 files changed, 54 insertions(+)
+As it turns out, the SPI framework support already has support for this
+feature, which is currently present in the for-next branch:
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git/commit/?h=0ff2de8bb163551ec4230a5a6f3c40c1f6adec4f
+
+This changeset now makes use of that feature, to allow longer CS change
+times (as needed) for ADIS16460.
+
+The SPI patch is present in the iio/testing branch, but not present in the
+iio/togreg branch.
+
+Changelog v3 -> v4:
+* for SPI: no change
+* for ADIS lib: use existing `cs_change_delay` feature (from SPI)
+* for DT: no change
+
+Changelog v2 -> v3:
+* for SPI:
+  * used `cs_change_delay` instead of `cs_change_delay_usecs` (i.e. removed
+    `_usecs` suffix
+  * used SPI specific subject line for SPI patch
+* for ADIS lib:
+  * updated to use the `cs_change_delay`
+* for DT:
+  * added Rob's `Reviewed-by` tag
+
+Changelog v1 -> v2:
+* for SPI:
+  * renamed `cs_change_stall_delay_us` -> `cs_change_delay_usecs`
+    initial recommendation was `cs_change_delay`, but decided to name this
+    `cs_change_delay_usecs`, since the convention for these delays seems
+    to add the `_usecs` suffix
+* for ADIS lib:
+  * renamed `stall_delay` -> `cs_change_delay`
+  * removed some assignments of `cs_change_delay`
+    where `cs_change` is not set
+* for ADIS16460 driver:
+  * fixed license
+  * adjusted to new `cs_change_delay[_usecs]`
+
+Alexandru Ardelean (3):
+  iio: imu: adis: Add support for SPI transfer cs_change_delay
+  iio: imu: Add support for the ADIS16460 IMU
+  dt-bindings: iio: imu: add bindings for ADIS16460
+
+ .../bindings/iio/imu/adi,adis16460.yaml       |  53 ++
+ MAINTAINERS                                   |   8 +
+ drivers/iio/imu/Kconfig                       |  12 +
+ drivers/iio/imu/Makefile                      |   1 +
+ drivers/iio/imu/adis.c                        |  12 +
+ drivers/iio/imu/adis16460.c                   | 489 ++++++++++++++++++
+ include/linux/iio/imu/adis.h                  |   2 +
+ 7 files changed, 577 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
+ create mode 100644 drivers/iio/imu/adis16460.c
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml b/Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
-new file mode 100644
-index 000000000000..0c53009ba7d6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
-@@ -0,0 +1,53 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/imu/adi,adis16460.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADIS16460 and similar IMUs
-+
-+maintainers:
-+  - Dragos Bogdan <dragos.bogdan@analog.com>
-+
-+description: |
-+  Analog Devices ADIS16460 and similar IMUs
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/ADIS16460.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adis16460
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-cpha: true
-+
-+  spi-cpol: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        imu@0 {
-+            compatible = "adi,adis16460";
-+            reg = <0>;
-+            spi-max-frequency = <5000000>;
-+            spi-cpol;
-+            spi-cpha;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f7de89e82e35..07105e43ea1e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -951,6 +951,7 @@ S:	Supported
- L:	linux-iio@vger.kernel.org
- W:	http://ez.analog.com/community/linux-device-drivers
- F:	drivers/iio/imu/adis16460.c
-+F:	Documentation/devicetree/bindings/iio/imu/adi,adis16460.yaml
- 
- ANALOG DEVICES INC ADP5061 DRIVER
- M:	Stefan Popa <stefan.popa@analog.com>
 -- 
 2.20.1
 
