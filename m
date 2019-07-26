@@ -2,71 +2,59 @@ Return-Path: <SRS0=IgB3=VX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F7C3C7618B
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Jul 2019 11:07:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7244CC76191
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Jul 2019 11:47:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 133B321852
-	for <linux-iio@archiver.kernel.org>; Fri, 26 Jul 2019 11:07:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sw1m99dQ"
+	by mail.kernel.org (Postfix) with ESMTP id 4B83122C97
+	for <linux-iio@archiver.kernel.org>; Fri, 26 Jul 2019 11:47:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1564141657;
+	bh=I6h0SA2Pi0fk5XMgLjJwP8fdc38jTsGoB2DK9tJ3Hg8=;
+	h=From:Cc:Subject:Date:In-Reply-To:References:To:List-ID:From;
+	b=ERWpdkObPsgTDhqITit5Lp6c9R3ETTVUKiq4LDpcBuUNQF73NvaiTYzVJwZG3d9QC
+	 XE+Dz2HL2O0ZWG+kMM59raS5Hnl9bUFfyRMS5v/I1TtYEAd7l2X1/42yUUcZXL11mK
+	 +LxEhtgtV3ojs5dohRQCEjtMXHKA8I5Anyh6kHko=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726820AbfGZLHt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 26 Jul 2019 07:07:49 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:40734 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725953AbfGZLHt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jul 2019 07:07:49 -0400
-Received: by mail-pg1-f193.google.com with SMTP id w10so24636404pgj.7;
-        Fri, 26 Jul 2019 04:07:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/u86tfhQcNUSlYnznWNfROL83FOU2PZDyMsPMgWpdt4=;
-        b=Sw1m99dQ1GzjlHLbGqnzu70FxBtzRaQHol/jb6+KaF+HcEpBDJtve25ugTJ+NEPXEi
-         kDtTX+WunvJPbELt9OHJZYnNPFKioaIJ2VH4CH6Xk5+UHzDrzAk8Y3cu7e6ekUSKVYqH
-         XX09pZfTGhIw6goKE/C0fdiY8CNGHoH9ceO1frZzsKCyPbHm2ukUF28a2bs+plEUM/k1
-         RfAF7znQA4+TG8ojLSDg2U5rfd3dFMj3FMnaEfgZun7b99eHlCsO6rK6GgxLU7uh2Ta1
-         TbqnfJJeElbqSU73yAnuycdOZKbyGs34VG08povgQtOXmDsT9xYhMddcwW7IFIJR74tR
-         Wjqw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/u86tfhQcNUSlYnznWNfROL83FOU2PZDyMsPMgWpdt4=;
-        b=OOEd2tnyeWqu2czXDcUczF07fHu5MI5yDNhc9wbzjAPNl+rKjOjtIS3sIEqg5VejVB
-         5l0co1EnxG9hU94v/wrQpWlucWwfUk2rELXs6hwg8l0JsYSD6LUI8sMwg0cqVsdcS7qy
-         Ay5nd26PQRYgC76+a/FUIr8HmeK9VTX+PRjCIB8A6FrjkROQFbGmKG3FHtJUp4f00DkQ
-         RyncpUfukezn3H0T8eueVVW/3eIMNTKsy6XGocR6sXKOh+XLeDQMFWTOUW2VyZ7soq4j
-         efFN4PyV1QUuHEK7qmWh1Yxn4Ek/bDs2xaimP+YedeipRtHDv8wwHnnAkibF17XJdbNF
-         6+TA==
-X-Gm-Message-State: APjAAAWoYUegsxKbhhrFAoLoVD0v/bv9/2pfMNC9XrEUIqppQ1Uqcapk
-        saqTu8b7POyOHruuNqa/Byo=
-X-Google-Smtp-Source: APXvYqzTteDe4J3AZvvA/tFoePe0pGzSlEDOJwQ5IIZ4F3KPosMf8GMZPllfopvHebNMUwWthNnTcw==
-X-Received: by 2002:a63:5860:: with SMTP id i32mr62745268pgm.124.1564139268690;
-        Fri, 26 Jul 2019 04:07:48 -0700 (PDT)
-Received: from suzukaze.ipads-lab.se.sjtu.edu.cn ([89.31.126.54])
-        by smtp.gmail.com with ESMTPSA id x13sm55647182pfn.6.2019.07.26.04.07.44
-        (version=TLS1_3 cipher=AEAD-AES256-GCM-SHA384 bits=256/256);
-        Fri, 26 Jul 2019 04:07:47 -0700 (PDT)
-From:   Chuhong Yuan <hslester96@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Chuhong Yuan <hslester96@gmail.com>
-Subject: [PATCH] staging: iio: ad2s1210: Use device-managed API
-Date:   Fri, 26 Jul 2019 19:07:42 +0800
-Message-Id: <20190726110742.20445-1-hslester96@gmail.com>
-X-Mailer: git-send-email 2.20.1
+        id S1726404AbfGZLrc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 26 Jul 2019 07:47:32 -0400
+Received: from bombadil.infradead.org ([198.137.202.133]:47368 "EHLO
+        bombadil.infradead.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726211AbfGZLrc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Jul 2019 07:47:32 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=bombadil.20170209; h=Sender:Content-Transfer-Encoding:
+        MIME-Version:References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        Reply-To:Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=at/mIgBlu2gnTfF2dL+k+2q+ilBgl53195q9VZEG/NY=; b=aTznBVt5l/zfIREXZI+3vkR6El
+        il/QAyM+OEMrEnf7f9Mc7mrawmQ1RvF51ZOdr/mxWfNXAlrsNZMFaHvevwpUNAiNO5nVF/HAVikFe
+        WUFJx1EbJg6wUv7Qzw35mEhx2klY8JfSgUFgtVgGXa5zCY61Ewe8l3SMIco4K97kpq7vE5Qe/+n1H
+        wg57GLc0VDaM9vrl8AOC0sfyxzbSP9snPuEr0CrpLtrUXd2inMz7K/JTVDhF7vVMTlgeIrU91g6H9
+        23DPHKKA4XgPzkH/19U6liImcmLtufvNvBhMtkiNi/6DXE4WBrneOH3OAevbDVK31IDe7nd4INwz1
+        V/4l9JJw==;
+Received: from [179.95.31.157] (helo=bombadil.infradead.org)
+        by bombadil.infradead.org with esmtpsa (Exim 4.92 #3 (Red Hat Linux))
+        id 1hqyh9-0003BX-0s; Fri, 26 Jul 2019 11:47:31 +0000
+Received: from mchehab by bombadil.infradead.org with local (Exim 4.92)
+        (envelope-from <mchehab@bombadil.infradead.org>)
+        id 1hqyh7-0000tu-0F; Fri, 26 Jul 2019 08:47:29 -0300
+From:   Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
+        linux-doc@vger.kernel.org
+Subject: [PATCH 2/7] docs: generic-counter.rst: fix broken references for ABI file
+Date:   Fri, 26 Jul 2019 08:47:22 -0300
+Message-Id: <f55e1ef71a3a7194dacd3f0cecc0aa67aaffbd15.1564140865.git.mchehab+samsung@kernel.org>
+X-Mailer: git-send-email 2.21.0
+In-Reply-To: <cover.1564140865.git.mchehab+samsung@kernel.org>
+References: <cover.1564140865.git.mchehab+samsung@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 To:     unlisted-recipients:; (no To-header on input)
@@ -75,52 +63,40 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use device-managed API to simplify the code.
-The remove function is redundant now and can
-be deleted.
+There are two references to the generic counter ABI, with was added
+on a separate patch. Both point to a non-existing file.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+Fix them.
+
+Fixes: ea2b23b89579 ("counter: Documentation: Add Generic Counter sysfs documentation")
+Fixes: 09e7d4ed8991 ("docs: Add Generic Counter interface documentation")
+Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 12 +-----------
- 1 file changed, 1 insertion(+), 11 deletions(-)
+ Documentation/driver-api/generic-counter.rst | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 0c1bd108c386..4b25a3a314ed 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -671,7 +671,7 @@ static int ad2s1210_probe(struct spi_device *spi)
- 	indio_dev->num_channels = ARRAY_SIZE(ad2s1210_channels);
- 	indio_dev->name = spi_get_device_id(spi)->name;
+diff --git a/Documentation/driver-api/generic-counter.rst b/Documentation/driver-api/generic-counter.rst
+index 0c161b1a3be6..8382f01a53e3 100644
+--- a/Documentation/driver-api/generic-counter.rst
++++ b/Documentation/driver-api/generic-counter.rst
+@@ -233,7 +233,7 @@ Userspace Interface
+ Several sysfs attributes are generated by the Generic Counter interface,
+ and reside under the /sys/bus/counter/devices/counterX directory, where
+ counterX refers to the respective counter device. Please see
+-Documentation/ABI/testing/sys-bus-counter-generic-sysfs for detailed
++Documentation/ABI/testing/sysfs-bus-counter for detailed
+ information on each Generic Counter interface sysfs attribute.
  
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(&spi->dev, indio_dev);
- 	if (ret)
- 		return ret;
+ Through these sysfs attributes, programs and scripts may interact with
+@@ -325,7 +325,7 @@ sysfs attributes, where Y is the unique ID of the respective Count:
  
-@@ -683,15 +683,6 @@ static int ad2s1210_probe(struct spi_device *spi)
- 	return 0;
- }
+ For a more detailed breakdown of the available Generic Counter interface
+ sysfs attributes, please refer to the
+-Documentation/ABI/testing/sys-bus-counter file.
++Documentation/ABI/testing/sysfs-bus-counter file.
  
--static int ad2s1210_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--
--	iio_device_unregister(indio_dev);
--
--	return 0;
--}
--
- static const struct of_device_id ad2s1210_of_match[] = {
- 	{ .compatible = "adi,ad2s1210", },
- 	{ }
-@@ -710,7 +701,6 @@ static struct spi_driver ad2s1210_driver = {
- 		.of_match_table = of_match_ptr(ad2s1210_of_match),
- 	},
- 	.probe = ad2s1210_probe,
--	.remove = ad2s1210_remove,
- 	.id_table = ad2s1210_id,
- };
- module_spi_driver(ad2s1210_driver);
+ The Signals and Counts associated with the Counter device are registered
+ to the system as well by the counter_register function. The
 -- 
-2.20.1
+2.21.0
 
