@@ -2,154 +2,141 @@ Return-Path: <SRS0=mPuB=VZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B253C7618B
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Jul 2019 07:50:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67C3EC7618B
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Jul 2019 07:59:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4D282214C6
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Jul 2019 07:50:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3EC4C2085A
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Jul 2019 07:59:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1564300220;
-	bh=EMON1xbHxqhol4OWAY88eLLqBUAAabNCHjiC81S7aAY=;
+	s=default; t=1564300747;
+	bh=fycF8RP0WU9/NMk4CEpQiYWpTGtseQg109lSyQuWX+g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=dktF/i5Dsi2slaqHMvvf+7odo6SIn8pDl31D4oM4kD2bgn2nDLw/2bd1a/8vuvzk2
-	 co+aArh0JoUt8cK3aNSt94mx/xgop1XT2jxiRKt9TlyO0hTIkVRQluR32jxh+uosYn
-	 diD69PJxxbTocN46fIVFxEQ6UjGvbSAV5C7fGsgw=
+	b=pqHCkjZB6hbEw6yvjML+A/JeGS7q4lscGy7473FZbZv3Hy1XKEzozpJdVBXdQKg6X
+	 +ehdHCu1/SF6x0A6E/RMHwb5Ic8VA4sl+1Ldlco8Y6K/WjDfG3In7ZwStaqHDZhOGt
+	 K6XL/DdRRXhDBPpe70EXEmvy726KndRIcSl49VJs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725938AbfG1HuT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 Jul 2019 03:50:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49938 "EHLO mail.kernel.org"
+        id S1725880AbfG1H7F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 Jul 2019 03:59:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725886AbfG1HuT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Jul 2019 03:50:19 -0400
+        id S1725937AbfG1H7E (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 28 Jul 2019 03:59:04 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2AEE72070D;
-        Sun, 28 Jul 2019 07:50:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EC9422085A;
+        Sun, 28 Jul 2019 07:59:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1564300218;
-        bh=EMON1xbHxqhol4OWAY88eLLqBUAAabNCHjiC81S7aAY=;
+        s=default; t=1564300743;
+        bh=fycF8RP0WU9/NMk4CEpQiYWpTGtseQg109lSyQuWX+g=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LGuaTLMhdwiDq+5oLIuAxK9XVoZ/s/80qS+cHolmJG5RNnmG2PLPJz4Pf/Deu627K
-         TpevS7EwA6/OhT+f9EUq5V6GMBfT6WwAOUqxiMhtiPfnxsuPrteMMgXBGTAuXajEY4
-         GayUnT2iTbqojCvckqMgVD/5ttGKUXIljAoRS7Es=
-Date:   Sun, 28 Jul 2019 08:50:10 +0100
+        b=DP5jcM6ghA252s4jw5KpnPb7oHKBYP0OL00XmPG5j/WzsNRN2XYSubEj+vZ9djxzG
+         DtG7KWxF5jZABowMVA3ffQOuBueEE1E461hFttQf28jYegyo7ldVz2JX4jNwRoW/wW
+         vmGAA1EW6afLWLOXvTO86SiJkRXjI0iI93VI3kqY=
+Date:   Sun, 28 Jul 2019 08:58:59 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Martin Kelly <mkelly@xevo.com>,
-        Jonathan Marek <jonathan@marek.ca>,
-        Brian Masney <masneyb@onstation.org>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Discussions about the Letux Kernel 
-        <letux-kernel@openphoenux.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Samu Onkalo <samu.onkalo@intel.com>
-Subject: Re: [PATCH v2 02/10] iio: document bindings for mounting matrices
-Message-ID: <20190728085010.36040cb2@archlinux>
-In-Reply-To: <4C901747-1657-47AD-A9D7-10E41AFB35CB@goldelico.com>
-References: <cover.1550768574.git.hns@goldelico.com>
-        <32025b2a8ccc97cc01f8115ee962529eb5990f00.1550768574.git.hns@goldelico.com>
-        <CACRpkdZ5Z9VY457Fywt6X=K5XONgiPVcwbwSkwL_U+GCqZ+u5g@mail.gmail.com>
-        <4C901747-1657-47AD-A9D7-10E41AFB35CB@goldelico.com>
+To:     Beniamin Bia <beniamin.bia@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <biabeniamin@outlook.com>
+Subject: Re: [PATCH 5/5] iio: adc: ad7606: Add debug mode for ad7616
+Message-ID: <20190728085859.2c5c2932@archlinux>
+In-Reply-To: <20190718062734.17306-5-beniamin.bia@analog.com>
+References: <20190718062734.17306-1-beniamin.bia@analog.com>
+        <20190718062734.17306-5-beniamin.bia@analog.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 23 Jul 2019 11:46:49 +0200
-"H. Nikolaus Schaller" <hns@goldelico.com> wrote:
+On Thu, 18 Jul 2019 09:27:34 +0300
+Beniamin Bia <beniamin.bia@analog.com> wrote:
 
-> Hi Linus,
-> 
-> > Am 23.07.2019 um 09:42 schrieb Linus Walleij <linus.walleij@linaro.org>:
-> > 
-> > Hi H. Nikolaus,
-> > 
-> > On Thu, Feb 21, 2019 at 6:03 PM H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> >   
-> >> From: Linus Walleij <linus.walleij@linaro.org>  
-> > 
-> > It is fair for you to change authorship to yourself at this point.
-> > Just keeping my Signed-off-by is sufficient.  
-> 
-> Well, I think my contribution is less than yours :)
-> 
-> >   
-> >> The mounting matrix for sensors was introduced in
-> >> commit dfc57732ad38 ("iio:core: mounting matrix support")
-> >> 
-> >> However the device tree bindings are very terse and since this is
-> >> a widely applicable property, we need a proper binding for it
-> >> that the other bindings can reference. This will also be useful
-> >> for other operating systems and sensor engineering at large.
-> >> 
-> >> I think all 3D sensors should support it, the current situation
-> >> is probably that the mounting information is confined in magic
-> >> userspace components rather than using the mounting matrix, which
-> >> is not good for portability and reuse.
-> >> 
-> >> Cc: Linus Walleij <linus.walleij@linaro.org>
-> >> Cc: Gregor Boirie <gregor.boirie@parrot.com>
-> >> Cc: Sebastian Reichel <sre@kernel.org>
-> >> Cc: Samu Onkalo <samu.onkalo@intel.com>
-> >> Cc: devicetree@vger.kernel.org
-> >> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> >> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>  
-> > 
-> > Did this patch fall off somewhere? I think it's really neat, even in this
-> > form it is great help for developers. If you want I can try picking up the
-> > comments and resend it.  
-> 
-> Well, I had planned to review it again and promised to send out a new
-> version. But as usual this ToDo becomes hidden by always more important
-> tasks.
-> 
-> So I am fine if you can pick comments and resend it. I think there will
-> be others who help to make it even better in the future if the mount matrix
-> is more widely used.
-> 
-> BR,
-> Nikolaus
-> 
-Given the comments that 'need' any response are fairly minor, I've just
-taken the view that the perfect is the enemy of the good and applied
-it to the togreg branch of iio.git with some really small tweaks.
+> Support for register access was added for devices which have software
+> mode.
+>=20
+> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-Thanks for offering to tidy this up Linus, but seems like it would be
-a waste of your time for such trivial tweaks!
-
-The only one outstanding that I haven't 'fixed' is the question I raised
-on face down or face up when talking about flat on the ground.
-
-That might want a clarifying comment.
-
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it (or not as the case may be!)
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
+
+> ---
+> Changes in v2:
+> -nothing changed
+>=20
+>  drivers/iio/adc/ad7606.c | 33 ++++++++++++++++++++++++++++++++-
+>  1 file changed, 32 insertions(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+> index be2330c8b277..ed2d08437e5d 100644
+> --- a/drivers/iio/adc/ad7606.c
+> +++ b/drivers/iio/adc/ad7606.c
+> @@ -60,6 +60,29 @@ static int ad7606_reset(struct ad7606_state *st)
+>  	return -ENODEV;
+>  }
+> =20
+> +static int ad7606_reg_access(struct iio_dev *indio_dev,
+> +			     unsigned int reg,
+> +			     unsigned int writeval,
+> +			     unsigned int *readval)
+> +{
+> +	struct ad7606_state *st =3D iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&st->lock);
+> +	if (readval) {
+> +		ret =3D st->bops->reg_read(st, reg);
+> +		if (ret < 0)
+> +			goto err_unlock;
+> +		*readval =3D ret;
+> +		ret =3D 0;
+> +	} else {
+> +		ret =3D st->bops->reg_write(st, reg, writeval);
+> +	}
+> +err_unlock:
+> +	mutex_unlock(&st->lock);
+> +	return ret;
+> +}
+> +
+>  static int ad7606_read_samples(struct ad7606_state *st)
+>  {
+>  	unsigned int num =3D st->chip_info->num_channels;
+> @@ -501,6 +524,14 @@ static const struct iio_info ad7606_info_os_and_rang=
+e =3D {
+>  	.validate_trigger =3D &ad7606_validate_trigger,
+>  };
+> =20
+> +static const struct iio_info ad7606_info_os_range_and_debug =3D {
+> +	.read_raw =3D &ad7606_read_raw,
+> +	.write_raw =3D &ad7606_write_raw,
+> +	.debugfs_reg_access =3D &ad7606_reg_access,
+> +	.attrs =3D &ad7606_attribute_group_os_and_range,
+> +	.validate_trigger =3D &ad7606_validate_trigger,
+> +};
+> +
+>  static const struct iio_info ad7606_info_os =3D {
+>  	.read_raw =3D &ad7606_read_raw,
+>  	.write_raw =3D &ad7606_write_raw,
+> @@ -617,7 +648,7 @@ int ad7606_probe(struct device *dev, int irq, void __=
+iomem *base_address,
+> =20
+>  		/* After reset, in software mode, =C2=B110 V is set by default */
+>  		memset32(st->range, 2, ARRAY_SIZE(st->range));
+> -		indio_dev->info =3D &ad7606_info_os_and_range;
+> +		indio_dev->info =3D &ad7606_info_os_range_and_debug;
+> =20
+>  		ret =3D st->bops->sw_mode_config(indio_dev);
+>  		if (ret < 0)
 
