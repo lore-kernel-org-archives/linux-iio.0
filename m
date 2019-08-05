@@ -2,54 +2,53 @@ Return-Path: <SRS0=QEvZ=WB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 727E8C433FF
-	for <linux-iio@archiver.kernel.org>; Mon,  5 Aug 2019 14:19:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20026C0650F
+	for <linux-iio@archiver.kernel.org>; Mon,  5 Aug 2019 14:21:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 36E49214C6
-	for <linux-iio@archiver.kernel.org>; Mon,  5 Aug 2019 14:19:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E88D3214C6
+	for <linux-iio@archiver.kernel.org>; Mon,  5 Aug 2019 14:21:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565014795;
-	bh=91sFixUWOsEDwpbyOklHrTrH1uIRcz5WMAeevBWfmdU=;
+	s=default; t=1565014915;
+	bh=XAA7Flg5c5GFi9m33JML4YyxGkePU4glbZekU7pANpg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=MCfW0svQr8fU7VguzXTMsmk0sDHafQs8eCDqxrk5XakuGUGm2r8J/K6s1adOHGkSd
-	 ie8quxhBdKf1Zhe1VrrCfER15dnu5Lzmb8Lkl4GaPWkJrzdboCYjidpmeeu3c54nKY
-	 eET/Q96ziQvsaQYEI+3+h4OFYbD15B1vww9ZfXe8=
+	b=XvjsnU2nLxKu7ufsrASyqPpRJxrIeM3qugiY+IsBP5NjbRu5iqOI+2QbqW5aAU1V8
+	 QSzGOh48RwSI8A4IT5pXlPHAq9Uq0fkbe6L4vtwdolmvNB9VJZvT6toJ56gJQIKXqJ
+	 7c9luJhpDoaQDuzUgViJ1oglWa/SWPVXtsz8S5yM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728903AbfHEOTy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 5 Aug 2019 10:19:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54020 "EHLO mail.kernel.org"
+        id S1728837AbfHEOVy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 5 Aug 2019 10:21:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54172 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728863AbfHEOTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 5 Aug 2019 10:19:54 -0400
+        id S1728028AbfHEOVy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 5 Aug 2019 10:21:54 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 016B2206C1;
-        Mon,  5 Aug 2019 14:19:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CEB47206C1;
+        Mon,  5 Aug 2019 14:21:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565014794;
-        bh=91sFixUWOsEDwpbyOklHrTrH1uIRcz5WMAeevBWfmdU=;
+        s=default; t=1565014913;
+        bh=XAA7Flg5c5GFi9m33JML4YyxGkePU4glbZekU7pANpg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=MdU2qodB47Rgwiv16fLK31yDOY21RhCx/3ZEX+Aewt5o+C/zuGTuofgPKt5AKAQS3
-         3v4kTlUaK9ouHS7EKRj6+fWyXWXiiAb7cZB6iJDRohnDuP3bMlG+PlJY9zq+1YYdeo
-         VMNLWJ9gBke0bymVqPNQmb39MfMmf79ahhjFqdlM=
-Date:   Mon, 5 Aug 2019 15:19:49 +0100
+        b=gZflbhZO5wL2IJqDdj7C3PyIeif9ajRKpt9I2gvPVDtdzb0BypyhzRjIT5ogW0iiD
+         3UNvEFV3B0mUBPiGQAEB0bngO9gMJWRpAvhhzezVw9W+zDrbSe441TA2IDrlzsj9MP
+         fei20FuVg8oNi/hkg02l57xqlkefBr7QDWebJGf4=
+Date:   Mon, 5 Aug 2019 15:21:48 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Martin Kepplinger <martin.kepplinger@puri.sm>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, lorenzo.bianconi@redhat.com,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: imu: st_lsm6dsx: move iio chan definitions
- in st_lsm6dsx_sensor_settings
-Message-ID: <20190805151949.20a5584d@archlinux>
-In-Reply-To: <dff3f76d-a4f7-bed2-496f-daa0139ee1b0@puri.sm>
-References: <cover.1564427804.git.lorenzo@kernel.org>
-        <f4adc084ad92c1c31c2ed9cc748321c29e457c1c.1564427804.git.lorenzo@kernel.org>
-        <dff3f76d-a4f7-bed2-496f-daa0139ee1b0@puri.sm>
+Cc:     lorenzo.bianconi83@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: make IIO_CHAN_INFO_SCALE shared
+ by type
+Message-ID: <20190805152148.0ea55f6e@archlinux>
+In-Reply-To: <20190801143908.27608-1-martin.kepplinger@puri.sm>
+References: <20190801143908.27608-1-martin.kepplinger@puri.sm>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,32 +58,62 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 2 Aug 2019 07:36:03 +0200
+On Thu,  1 Aug 2019 16:39:08 +0200
 Martin Kepplinger <martin.kepplinger@puri.sm> wrote:
 
-> On 29.07.19 21:22, Lorenzo Bianconi wrote:
-> > Move IIO channel definitions in st_lsm6dsx_sensor_settings in order to
-> > support sensors with different channels maps.
-> > This is a preliminary patch to add support for LSM9DS1 sensor to
-> > st_lsm6dsx driver.
-> > 
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  5 +
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 96 ++++++++++++++++----
-> >  2 files changed, 81 insertions(+), 20 deletions(-)  
+> in_accel_x_scale, in_accel_y_scale and in_accel_z_scale are always
+> the same. The scale is still defined to be in "info_mask_separate".
 > 
+> Userspace (iio-sensor-proxy and others) is not used to that and only
+> looks for "in_accel_scale" for the scaling factor to apply.
 > 
-> thanks. I'm running this patchset now and will resend LSM9DS1 patches
-> after these are merged.
+> Change IIO_CHAN_INFO_SCALE from being separate in all channel to be
+> shared by type.
 > 
-> Tested-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+> This removes in_accel_x_scale, in_accel_y_scale and in_accel_z_scale and
+> makes available in_accel_scale.
+> 
+> Signed-off-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+> ---
+> 
+> AFAIK in all other drivers, IIO_CHAN_INFO_SCALE is "shared by type". Sure
+> devices are different, but LSM6DSX devices still don't have different
+> scales for x/y/z channels :)
 
-Applied and a particular thanks for the tested-by's.
+I'm fine with this, but would like a Lorenzo ack as we have had
+devices in other series where these are not equal.   It used to
+be common in accelerometers as I think it was hard to get a large
+range in the vertical direction.  Doubt that applies on these modern
+parts though!
 
 Thanks,
 
 Jonathan
 
+
 > 
+> thanks,
+> 
+>                               martin
+> 
+> 
+> 
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index af379a5429ed..59c3ab7cbb6f 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -56,8 +56,8 @@ enum st_lsm6dsx_hw_id {
+>  	.address = addr,						\
+>  	.modified = 1,							\
+>  	.channel2 = mod,						\
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+> -			      BIT(IIO_CHAN_INFO_SCALE),			\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+>  	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
+>  	.scan_index = scan_idx,						\
+>  	.scan_type = {							\
 
