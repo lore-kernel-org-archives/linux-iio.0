@@ -2,87 +2,99 @@ Return-Path: <SRS0=hUzv=WJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6DDCC32750
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 08:14:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05378C32750
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 09:26:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6F3C220663
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 08:14:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565684064;
-	bh=o3qviPvIhSfmyENqSfo1cBYDeP2tim9oMckM9VeKEjk=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ET/OzjW5o36A1NTcBucSwASEAqln+QuOUDONa6HmNgnANKQhGcQsjt57IuyIYR+DD
-	 RDQtUyu1Ih070cFAmJyGtfEyaSRv6vQngcUkjnNZEwqnLFcmDjAD24vClCHlMb6Z/X
-	 UENjEc3NXmf4TVbXhMv7l3VR5VGuCRH2l44QX6Bs=
+	by mail.kernel.org (Postfix) with ESMTP id BFB4E20673
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 09:26:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=essensium-com.20150623.gappssmtp.com header.i=@essensium-com.20150623.gappssmtp.com header.b="fh2sYXeq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727029AbfHMIOY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Aug 2019 04:14:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40564 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725981AbfHMIOX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Aug 2019 04:14:23 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B07220663;
-        Tue, 13 Aug 2019 08:14:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565684063;
-        bh=o3qviPvIhSfmyENqSfo1cBYDeP2tim9oMckM9VeKEjk=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Jt6JtTt9+jEItgvmGGZ7ODVvXkbZslOoH0SCuHBoxSlvv+CyBFaAJEVTVWdFlR1M3
-         qMTgAa5wtshSttON8adk1L+2d9Sx3hhLEmJsVduTxfGlSarZq+l9y8eNGNsdyBGR66
-         iDkoohZTxrjyKAmPmosyKSDE24q+dXAGFQgxQH3I=
-Date:   Tue, 13 Aug 2019 10:14:19 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] First set of new device support, cleanups and features
- for IIO in the 5.4 cycle.
-Message-ID: <20190813081419.GA18284@kroah.com>
-References: <20190812210428.1668b6d8@archlinux>
- <20190812205932.GA32616@kroah.com>
+        id S1727149AbfHMJ0Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Aug 2019 05:26:16 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:35151 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725781AbfHMJ0Q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Aug 2019 05:26:16 -0400
+Received: by mail-ot1-f65.google.com with SMTP id g17so18965126otl.2
+        for <linux-iio@vger.kernel.org>; Tue, 13 Aug 2019 02:26:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=essensium-com.20150623.gappssmtp.com; s=20150623;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dpJ1HxR677rrqzN3EZzIQmcSGDvCixhXFxeFq0HwGK8=;
+        b=fh2sYXeqSoNNkGtVSxX5I16eWwUzyEm4MHtIYg2B96Pcu0Lg4ILesreXhgaVDdIMR/
+         jcXguxUx3Gp1VqbeJO4DBt1Ru0w6G7DnAc4EoYT3OGZs3nJvHQDHYfMm6m/B0CgxO4/v
+         syKO3uKULX1QakQ6JDfUTeyg43UI7J6iZ6dsocuSVWu09IOoiNGlinkdwybw0sDySVmh
+         imMQKp0NTMYOWQvOXylcGtOGOY/6eVBS+7I87p7jPQj/s4yGB4xSyentXehYbAMstf+A
+         RatG1V9hPRbH+axk17QuqWmtUq9Yp4O1C3FdmuypyGIbXCkkfJb0dG1KdnzMm53kHGIE
+         D6gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dpJ1HxR677rrqzN3EZzIQmcSGDvCixhXFxeFq0HwGK8=;
+        b=Dc0UtAo11/B6X+FfHE+LwkPWkHeYtSxoDf6yYOmfDz27FumZUu1LjI19x6nrbhkYsf
+         ohYEHvoc+1wT6k/0g5WmJT5Yx+aNNMyWQQSIPAecgMXxIa9D0Asg4pQrS2/6opu9wEOJ
+         JuZjc88kqqZRwZjcqKWH2KF2DfwS/B6bqI+4gqmksOUwG+FffQ2J9pNYzyejwwiaSxGe
+         pHYV22GJxFgCLg58qiwuD0SfIkuYwNjA8I3WPTI4KB1AC5SmucrUwOX8tbO0TwCNVoAi
+         VNbusowP7fgm7y0CG8ThWDnRbKRlzZojdpzbK3i9eO8EIQTov/NQdXgDt7b/uyuhXcp+
+         mnuA==
+X-Gm-Message-State: APjAAAUD+mMa1pdyMp9cNTj0b9XO1UxI2faR06Gtm4V1zRxyUQeQHT3O
+        PgXyvgATDxozTCiw9NacUG8K4Y7O3EoiySngrTzirg==
+X-Google-Smtp-Source: APXvYqw6rHeiUiFJPgLV2nZLRO2wFPedXMqbwY4AU85yc+77oWTCo7iuxm3ZNj1wVwAdT+N6Np9t0/htAnPMIOK+cf8=
+X-Received: by 2002:aca:f003:: with SMTP id o3mr875487oih.59.1565688375236;
+ Tue, 13 Aug 2019 02:26:15 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190812205932.GA32616@kroah.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+References: <7cd8d12f59bcacd18a78f599b46dac555f7f16c0.camel@perches.com> <20190813060234.11940-1-efremov@linux.com>
+In-Reply-To: <20190813060234.11940-1-efremov@linux.com>
+From:   Patrick Havelange <patrick.havelange@essensium.com>
+Date:   Tue, 13 Aug 2019 11:26:03 +0200
+Message-ID: <CAKKE0ZHEsHHTJNx=T4HdPp3j6GTjPh1_Dg+B-O0yfhDYsrM2TQ@mail.gmail.com>
+Subject: Re: [PATCH] MAINTAINERS: ftm-quaddec: Fix typo in a filepath
+To:     Denis Efremov <efremov@linux.com>
+Cc:     linux-kernel@vger.kernel.org, joe@perches.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 12, 2019 at 10:59:32PM +0200, Greg KH wrote:
-> On Mon, Aug 12, 2019 at 09:04:28PM +0100, Jonathan Cameron wrote:
-> > The following changes since commit e59fc52529118aaad9aa666f25530dde6e2180e9:
-> > 
-> >   staging: rtl8192*: display ESSIDs using %pE (2019-07-25 14:38:52 +0200)
-> > 
-> > are available in the Git repository at:
-> > 
-> >   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.4a
-> 
-> Pulled and pushed out, thanks.
+On Tue, Aug 13, 2019 at 8:02 AM Denis Efremov <efremov@linux.com> wrote:
+>
+> Fix typo (s/quadddec/quaddec/) in the path to the documentation.
+>
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: linux-iio@vger.kernel.org
+> Fixes: 517b2d045aeb ("MAINTAINERS: add counter/ftm-quaddec driver entry")
+> Signed-off-by: Denis Efremov <efremov@linux.com>
+Acked-by: Patrick Havelange <patrick.havelange@essensium.com>
 
-0-day gives me the following warning, did you not see this on your tree?
-
-Can you send me a patch to fix this up?
-
-thanks,
-
-greg k-h
-
-----------------
-tree/branch: https://kernel.googlesource.com/pub/scm/linux/kernel/git/gregkh/staging.git  staging-testing
-branch HEAD: 6aed51d8912460cab375f7fc4ea834851e107b7a  Merge tag 'iio-for-5.4a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next
-
-Regressions in current branch:
-
-drivers/iio/light/noa1305.c:87:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
-
-
+> ---
+>  MAINTAINERS | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 9b4717ea2cfe..f31b852acdf3 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6321,7 +6321,7 @@ FLEXTIMER FTM-QUADDEC DRIVER
+>  M:     Patrick Havelange <patrick.havelange@essensium.com>
+>  L:     linux-iio@vger.kernel.org
+>  S:     Maintained
+> -F:     Documentation/ABI/testing/sysfs-bus-counter-ftm-quadddec
+> +F:     Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
+>  F:     Documentation/devicetree/bindings/counter/ftm-quaddec.txt
+>  F:     drivers/counter/ftm-quaddec.c
+>
+> --
+> 2.21.0
+>
