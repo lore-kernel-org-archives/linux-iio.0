@@ -2,80 +2,98 @@ Return-Path: <SRS0=hUzv=WJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.2 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68169C41517
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 09:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14344C433FF
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 13:34:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3E004206C1
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 09:34:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E617420844
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Aug 2019 13:34:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbfHMJeI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Aug 2019 05:34:08 -0400
-Received: from tr-host.de ([138.201.124.202]:35300 "EHLO kolab.tr-host.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726811AbfHMJeI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Aug 2019 05:34:08 -0400
-X-Greylist: delayed 528 seconds by postgrey-1.27 at vger.kernel.org; Tue, 13 Aug 2019 05:34:07 EDT
-Received: from localhost (localhost [127.0.0.1])
-        by kolab.tr-host.de (Postfix) with ESMTP id 236BE365A1C3;
-        Tue, 13 Aug 2019 11:25:18 +0200 (CEST)
-X-Virus-Scanned: amavisd-new at example.com
-Received: from kolab.tr-host.de ([127.0.0.1])
-        by localhost (kolab.tr-host.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id qKh9G4b_aYQI; Tue, 13 Aug 2019 11:25:14 +0200 (CEST)
-Received: from kolab.tr-host.de (localhost [127.0.0.1])
-        (using TLSv1 with cipher ECDHE-RSA-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: pollak@tr-host.de)
-        by kolab.tr-host.de (Postfix) with ESMTPSA id BEA93365A149;
-        Tue, 13 Aug 2019 11:25:14 +0200 (CEST)
+        id S1728820AbfHMNeh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Aug 2019 09:34:37 -0400
+Received: from szxga07-in.huawei.com ([45.249.212.35]:59782 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1728442AbfHMNeh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Aug 2019 09:34:37 -0400
+Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
+        by Forcepoint Email with ESMTP id 4202F1B0A1A224276374;
+        Tue, 13 Aug 2019 21:34:32 +0800 (CST)
+Received: from localhost (10.202.226.61) by DGGEMS404-HUB.china.huawei.com
+ (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Tue, 13 Aug 2019
+ 21:34:30 +0800
+Date:   Tue, 13 Aug 2019 14:34:21 +0100
+From:   Jonathan Cameron <jonathan.cameron@huawei.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First set of new device support, cleanups and features
+ for IIO in the 5.4 cycle.
+Message-ID: <20190813143421.000070c0@huawei.com>
+In-Reply-To: <20190813081419.GA18284@kroah.com>
+References: <20190812210428.1668b6d8@archlinux>
+        <20190812205932.GA32616@kroah.com>
+        <20190813081419.GA18284@kroah.com>
+Organization: Huawei
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8;
- format=flowed
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-Date:   Tue, 13 Aug 2019 11:25:14 +0200
-From:   "Pollak, Leonard" <pollak@tr-host.de>
-To:     linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Add ADE9000 driver to staging:iio:meter?
-User-Agent: Kolab 16/Roundcube 1.4-git
-Message-ID: <60e09b1c93eb54a6f8042ece9d34da80@tr-host.de>
-X-Sender: pollak@tr-host.de
+X-Originating-IP: [10.202.226.61]
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Tue, 13 Aug 2019 10:14:19 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
 
-I have written a driver for the ADE9000. It has enough functionality to 
-calibrate the device
-and use it for energy metering. This was tested on a Raspberry Pi 3 
-which i also have
-a dts for if anyone is interested.
+> On Mon, Aug 12, 2019 at 10:59:32PM +0200, Greg KH wrote:
+> > On Mon, Aug 12, 2019 at 09:04:28PM +0100, Jonathan Cameron wrote:  
+> > > The following changes since commit e59fc52529118aaad9aa666f25530dde6e2180e9:
+> > > 
+> > >   staging: rtl8192*: display ESSIDs using %pE (2019-07-25 14:38:52 +0200)
+> > > 
+> > > are available in the Git repository at:
+> > > 
+> > >   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.4a  
+> > 
+> > Pulled and pushed out, thanks.  
+> 
+> 0-day gives me the following warning, did you not see this on your tree?
 
-There are some quirks though since the ABI doesn't really make it easy 
-on this kind of device.
-For example: my driver (ab)uses the iio modifiers x and y to distinguish 
-between Wh and VAh.
-There are other issues with the driver I can think of (especially the 
-channel definitions).
-I think if you would want a more complete implementation of this IC as 
-an iio device one would
-need to start adding modifiers/types to the iio chan spec which would 
-probably need a lot
-of discussion. Since this is the first driver I have written for the 
-linux kernel don't
-expect too much, but I am commited to learn and happy to implement any 
-suggestions for
-making this a nice driver in the future :)
+Looks like my tree was based before the change that enabled the warning
+by default (I didn't check but a quick build shows it doesn't occur with
+iio.git/togreg and does with staging/staging-testing
 
-For now, I have forked the kernel tree from GKH made a patch and cleaned 
-it up with checkpatch.pl
-should I just send the driver as a patch is there anything else I need 
-to do beforehand?
+I can't actually find any completion message from 0-day so not sure if this
+hit an outage or if I'm not getting the completion messages for some reason.
 
-Regards,
-Leo
+Oops on missing this one in review!
+
+> 
+> Can you send me a patch to fix this up?
+
+On it's way.
+
+Jonathan
+
+> 
+> thanks,
+> 
+> greg k-h
+> 
+> ----------------
+> tree/branch: https://kernel.googlesource.com/pub/scm/linux/kernel/git/gregkh/staging.git  staging-testing
+> branch HEAD: 6aed51d8912460cab375f7fc4ea834851e107b7a  Merge tag 'iio-for-5.4a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next
+> 
+> Regressions in current branch:
+> 
+> drivers/iio/light/noa1305.c:87:9: warning: this statement may fall through [-Wimplicit-fallthrough=]
+> 
+> 
+
+
