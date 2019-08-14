@@ -7,46 +7,50 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CB8C433FF
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:33:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729F9C32753
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:40:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3F59520842
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:33:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A1802133F
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:40:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565750004;
-	bh=zNGBnoS6dsumvSQAk/THnjmLN330VYdItfdLp0kALgs=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=TjeJwkK5kHp3s/WuhOXl59fB/g/LMnLvAdpd+np3uQF6cxwC4CRrphc5Jp+hw9Nqb
-	 Cv9Ecal6R4eUAp3NLTq/K42OF/WHwj46xQQIsQkQ3Nx6v0i1tc80+hH5P8VuubJDJk
-	 3ZO5esaVh4nPxa8DgT/7555l3Np5XoCVWNSJtclM=
+	s=default; t=1565750412;
+	bh=v8JNMx8s3Mg4rx4naATw4/h6FoQvpnPlHvb9F9IPm6Q=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=RDxeeEEo85IU+omFpf8aWzvd5CvQInNq5EC5coQugor6rd1ygL+2ohANmuQkBkEdg
+	 ROAzxOATay6qoO0n9h8rqS32Ae1cu83dgFPy4zersimVzFsW1JqkZUkCuDnm1usFRK
+	 KNEgcVQOKoDXbiI97+is4ps8pJh06PpBg/onup10=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728415AbfHNCPw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Aug 2019 22:15:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47374 "EHLO mail.kernel.org"
+        id S1727692AbfHNCkH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Aug 2019 22:40:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728375AbfHNCPv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:15:51 -0400
+        id S1727206AbfHNCLK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:11:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6556F20842;
-        Wed, 14 Aug 2019 02:15:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4567420842;
+        Wed, 14 Aug 2019 02:11:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748950;
-        bh=zNGBnoS6dsumvSQAk/THnjmLN330VYdItfdLp0kALgs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=EXY8WXL9tqWDuL5Oka4XluTuxL+h24YDLCwTSFOi6oHPt8EBhUNZlOqRbJW37Xq9p
-         kvGb8ppG28eboHW8Pj8E1VyGKSziB06aW6qRZ8FSnwIrZYeFmD+3qL/EZWQLkgOJbA
-         YCpUXMKiyXPbeAiVeSsiRI+1ssUkwCTFfH5m8fc8=
+        s=default; t=1565748669;
+        bh=v8JNMx8s3Mg4rx4naATw4/h6FoQvpnPlHvb9F9IPm6Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=KQnvMBRG8uJYZEIFM1N6JEaGouD1SBiPVQjo5nNsjvaAm5MwIezut+KmlzlnOlBI9
+         sIWcgkwPuO9OoXkbpaFW5qjCKgTM6RSVdZpJKy7CWnvmb1gYH9thR8P38p9AEDwg7b
+         83sPZDGoaY1heFBIVyZbWGUbvZC317dpWNk47bIM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joe Perches <joe@perches.com>, Stable@vger.kernel.org,
+Cc:     Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/68] iio: adc: max9611: Fix misuse of GENMASK macro
-Date:   Tue, 13 Aug 2019 22:14:39 -0400
-Message-Id: <20190814021548.16001-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.2 010/123] iio: imu: mpu6050: add missing available scan masks
+Date:   Tue, 13 Aug 2019 22:08:54 -0400
+Message-Id: <20190814021047.14828-10-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
+References: <20190814021047.14828-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,34 +60,97 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Joe Perches <joe@perches.com>
+From: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
 
-[ Upstream commit ae8cc91a7d85e018c0c267f580820b2bb558cd48 ]
+[ Upstream commit 1244a720572fd1680ac8d6b8a4235f2e8557b810 ]
 
-Arguments are supposed to be ordered high then low.
+Driver only supports 3-axis gyro and/or 3-axis accel.
+For icm20602, temp data is mandatory for all configurations.
 
-Signed-off-by: Joe Perches <joe@perches.com>
-Fixes: 69780a3bbc0b ("iio: adc: Add Maxim max9611 ADC driver")
+Fix all single and double axis configurations (almost never used) and more
+importantly fix 3-axis gyro and 6-axis accel+gyro buffer on icm20602 when
+temp data is not enabled.
+
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Fixes: 1615fe41a195 ("iio: imu: mpu6050: Fix FIFO layout for ICM20602")
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/max9611.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 43 ++++++++++++++++++++++
+ 1 file changed, 43 insertions(+)
 
-diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index 0538ff8c4ac1d..ce9af43fa2de7 100644
---- a/drivers/iio/adc/max9611.c
-+++ b/drivers/iio/adc/max9611.c
-@@ -86,7 +86,7 @@
- #define MAX9611_TEMP_MAX_POS		0x7f80
- #define MAX9611_TEMP_MAX_NEG		0xff80
- #define MAX9611_TEMP_MIN_NEG		0xd980
--#define MAX9611_TEMP_MASK		GENMASK(7, 15)
-+#define MAX9611_TEMP_MASK		GENMASK(15, 7)
- #define MAX9611_TEMP_SHIFT		0x07
- #define MAX9611_TEMP_RAW(_r)		((_r) >> MAX9611_TEMP_SHIFT)
- #define MAX9611_TEMP_SCALE_NUM		1000000
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 53a59957cc542..8a704cd5bddb7 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -845,6 +845,25 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
+ 	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_SCAN_ACCL_Z),
+ };
+ 
++static const unsigned long inv_mpu_scan_masks[] = {
++	/* 3-axis accel */
++	BIT(INV_MPU6050_SCAN_ACCL_X)
++		| BIT(INV_MPU6050_SCAN_ACCL_Y)
++		| BIT(INV_MPU6050_SCAN_ACCL_Z),
++	/* 3-axis gyro */
++	BIT(INV_MPU6050_SCAN_GYRO_X)
++		| BIT(INV_MPU6050_SCAN_GYRO_Y)
++		| BIT(INV_MPU6050_SCAN_GYRO_Z),
++	/* 6-axis accel + gyro */
++	BIT(INV_MPU6050_SCAN_ACCL_X)
++		| BIT(INV_MPU6050_SCAN_ACCL_Y)
++		| BIT(INV_MPU6050_SCAN_ACCL_Z)
++		| BIT(INV_MPU6050_SCAN_GYRO_X)
++		| BIT(INV_MPU6050_SCAN_GYRO_Y)
++		| BIT(INV_MPU6050_SCAN_GYRO_Z),
++	0,
++};
++
+ static const struct iio_chan_spec inv_icm20602_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP),
+ 	{
+@@ -871,6 +890,28 @@ static const struct iio_chan_spec inv_icm20602_channels[] = {
+ 	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_ICM20602_SCAN_ACCL_Z),
+ };
+ 
++static const unsigned long inv_icm20602_scan_masks[] = {
++	/* 3-axis accel + temp (mandatory) */
++	BIT(INV_ICM20602_SCAN_ACCL_X)
++		| BIT(INV_ICM20602_SCAN_ACCL_Y)
++		| BIT(INV_ICM20602_SCAN_ACCL_Z)
++		| BIT(INV_ICM20602_SCAN_TEMP),
++	/* 3-axis gyro + temp (mandatory) */
++	BIT(INV_ICM20602_SCAN_GYRO_X)
++		| BIT(INV_ICM20602_SCAN_GYRO_Y)
++		| BIT(INV_ICM20602_SCAN_GYRO_Z)
++		| BIT(INV_ICM20602_SCAN_TEMP),
++	/* 6-axis accel + gyro + temp (mandatory) */
++	BIT(INV_ICM20602_SCAN_ACCL_X)
++		| BIT(INV_ICM20602_SCAN_ACCL_Y)
++		| BIT(INV_ICM20602_SCAN_ACCL_Z)
++		| BIT(INV_ICM20602_SCAN_GYRO_X)
++		| BIT(INV_ICM20602_SCAN_GYRO_Y)
++		| BIT(INV_ICM20602_SCAN_GYRO_Z)
++		| BIT(INV_ICM20602_SCAN_TEMP),
++	0,
++};
++
+ /*
+  * The user can choose any frequency between INV_MPU6050_MIN_FIFO_RATE and
+  * INV_MPU6050_MAX_FIFO_RATE, but only these frequencies are matched by the
+@@ -1130,9 +1171,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 	if (chip_type == INV_ICM20602) {
+ 		indio_dev->channels = inv_icm20602_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(inv_icm20602_channels);
++		indio_dev->available_scan_masks = inv_icm20602_scan_masks;
+ 	} else {
+ 		indio_dev->channels = inv_mpu_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(inv_mpu_channels);
++		indio_dev->available_scan_masks = inv_mpu_scan_masks;
+ 	}
+ 
+ 	indio_dev->info = &mpu_info;
 -- 
 2.20.1
 
