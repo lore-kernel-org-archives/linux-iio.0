@@ -4,49 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8007EC433FF
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2EA9C32750
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:33:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4E6EC2084F
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:22:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9B06F20842
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:33:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565749370;
-	bh=vnD6QbuZC/TTYCF8Lp5FJPo0BzDSu5sadSNToVvaedM=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=Nb1tHnoi2Ja9tB5QZRA0Hlm8L6EN22G4dOAbLm7B+QE/oehq3iF6CfjhkNwbJEfNx
-	 db2RAez5hsElwgdPa4KNhiGH8dE+nM46FA7muxZ41zgxY3CS2Da87pmqAIQ38GYWGm
-	 dpwN2nJ9+M70HNSJ4EXxq54BmXUnNu9pIHBfWGzw=
+	s=default; t=1565749998;
+	bh=mGv52XAZ3d+fAhOzX8m/aRfvStfvvZXLxF0cpc/IqOU=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=QNXE4MreNuyvIWzWmIcQvoRthMCYYbLHLiqCg6+O/QQh+4qokHY89EoNqN5FK9/cp
+	 yPMjf/Ej0CAjnCTT2W6G+D0F2P280JrLIeQELGMPbdbBHykLUsYmvQqDATrrgLrugx
+	 EF2glIekpNDhh9Stpk6AvKkewSFpx63c56y4WbSc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728739AbfHNCSi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Aug 2019 22:18:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49562 "EHLO mail.kernel.org"
+        id S1728750AbfHNCdS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Aug 2019 22:33:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47412 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727502AbfHNCSh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:18:37 -0400
+        id S1728840AbfHNCPw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Aug 2019 22:15:52 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D3A70216F4;
-        Wed, 14 Aug 2019 02:18:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C5471208C2;
+        Wed, 14 Aug 2019 02:15:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565749116;
-        bh=vnD6QbuZC/TTYCF8Lp5FJPo0BzDSu5sadSNToVvaedM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=E6/83lCV7oNBTvGc38TKzm2DGO1z2vKVY6eyeC1ryTBOuB5yKs2dw8WaqTDDWLxt3
-         OX4OL5ssXUKo6ZoxDHvm3eCB23+5W19YGevBaSWPQ+N06VRtR7G6UR17R/C5lCcAHK
-         kbVDb14kV2uG13kSoPBkMW5mus8M2ab1R5yEr2Gw=
+        s=default; t=1565748952;
+        bh=mGv52XAZ3d+fAhOzX8m/aRfvStfvvZXLxF0cpc/IqOU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ObR0Ptin4aRTgOsnJGHVvvtOkm1YX9grqyPTz3DruwnW4TmKY8OfsqAKEAdzEiV3X
+         CXb+YMO97vj7u/iejK0rQsJq4Nq1V+5bRDXWCv5v0pwv5VhCiaqSxwox2r/dHyanIO
+         Ix0Q0FYA4pyAI7NwPpBnfk0DHxig907OqTPCyF+w=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Joe Perches <joe@perches.com>, Stable@vger.kernel.org,
+Cc:     Gwendal Grignou <gwendal@chromium.org>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 01/44] iio: adc: max9611: Fix misuse of GENMASK macro
-Date:   Tue, 13 Aug 2019 22:17:50 -0400
-Message-Id: <20190814021834.16662-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 02/68] iio: cros_ec_accel_legacy: Fix incorrect channel setting
+Date:   Tue, 13 Aug 2019 22:14:40 -0400
+Message-Id: <20190814021548.16001-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190814021548.16001-1-sashal@kernel.org>
+References: <20190814021548.16001-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -56,34 +58,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Joe Perches <joe@perches.com>
+From: Gwendal Grignou <gwendal@chromium.org>
 
-[ Upstream commit ae8cc91a7d85e018c0c267f580820b2bb558cd48 ]
+[ Upstream commit 6cdff99c9f7d7d28b87cf05dd464f7c7736332ae ]
 
-Arguments are supposed to be ordered high then low.
+INFO_SCALE is set both for each channel and all channels.
+iio is using all channel setting, so the error was not user visible.
 
-Signed-off-by: Joe Perches <joe@perches.com>
-Fixes: 69780a3bbc0b ("iio: adc: Add Maxim max9611 ADC driver")
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/max9611.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/cros_ec_accel_legacy.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index b1dd17cbce588..f8f298c33b287 100644
---- a/drivers/iio/adc/max9611.c
-+++ b/drivers/iio/adc/max9611.c
-@@ -86,7 +86,7 @@
- #define MAX9611_TEMP_MAX_POS		0x7f80
- #define MAX9611_TEMP_MAX_NEG		0xff80
- #define MAX9611_TEMP_MIN_NEG		0xd980
--#define MAX9611_TEMP_MASK		GENMASK(7, 15)
-+#define MAX9611_TEMP_MASK		GENMASK(15, 7)
- #define MAX9611_TEMP_SHIFT		0x07
- #define MAX9611_TEMP_RAW(_r)		((_r) >> MAX9611_TEMP_SHIFT)
- #define MAX9611_TEMP_SCALE_NUM		1000000
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index 063e89eff791a..c776a3509a717 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -328,7 +328,6 @@ static const struct iio_chan_spec_ext_info cros_ec_accel_legacy_ext_info[] = {
+ 		.modified = 1,					        \
+ 		.info_mask_separate =					\
+ 			BIT(IIO_CHAN_INFO_RAW) |			\
+-			BIT(IIO_CHAN_INFO_SCALE) |			\
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
+ 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
+ 		.ext_info = cros_ec_accel_legacy_ext_info,		\
 -- 
 2.20.1
 
