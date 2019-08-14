@@ -2,212 +2,155 @@ Return-Path: <SRS0=YUg1=WK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5851CC32750
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:40:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF17C433FF
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 06:57:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 27170214DA
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 02:40:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1565750418;
-	bh=9RAKCN6QR0jyMvnU5LqbK9GlHJxo5HjFj1rPbL3jIws=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=KzzqkGzmWzsSzXvunPVSBjChvh7J9si+OCStG6zD0WOOBb4rp7zGmYjzhb73IgYk5
-	 jAVH5+jl8BdUvyINaUwFsp0h3Jg3QAIjFP9RCtP6wamS41q4xrwKdB6KlG5W5GPNgv
-	 Oqf5yqoiwR6ZGIargRuhA3T9+GmeR7SmM6YuMfF8=
+	by mail.kernel.org (Postfix) with ESMTP id 0931A20843
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 06:57:02 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="FkZyoaSR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727167AbfHNCLG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Aug 2019 22:11:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43266 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727151AbfHNCLF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Aug 2019 22:11:05 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 45C6D20844;
-        Wed, 14 Aug 2019 02:11:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1565748664;
-        bh=9RAKCN6QR0jyMvnU5LqbK9GlHJxo5HjFj1rPbL3jIws=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lSSA4di/dLyGTK8snqu3tFGPJsuq6YJiptuBkdBhvxtTmdxdDntt3CQr5Yv4WTN7g
-         JmeHMi3jiwoC8jLfhDjNVGfC8OA9srtQA3DXUp6xuqGfidJGe0Y2lEvGN3T9Koca8K
-         yVQDw1pq2qnS3fhtH2iBOWs7YJTODBVsd3OidFvA=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Maarten ter Huurne <maarten@treewalker.org>,
-        Artur Rojek <contact@artur-rojek.eu>, Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.2 008/123] IIO: Ingenic JZ47xx: Set clock divider on probe
-Date:   Tue, 13 Aug 2019 22:08:52 -0400
-Message-Id: <20190814021047.14828-8-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190814021047.14828-1-sashal@kernel.org>
-References: <20190814021047.14828-1-sashal@kernel.org>
+        id S1727197AbfHNG46 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Aug 2019 02:56:58 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:42906 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726007AbfHNG46 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Aug 2019 02:56:58 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7E6rXaS009034;
+        Wed, 14 Aug 2019 02:56:23 -0400
+Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2055.outbound.protection.outlook.com [104.47.37.55])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2uc0whhsdc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 14 Aug 2019 02:56:22 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=nKKE4kej61LSyR//Qc39ZXnqZpTdsan1K0GT9CkgAl1M9twDBk3DWrGP2qS+SXoKtixc9zJbAkoPzowg9Ly35+Zz8tnAyJU3FhxgBPrjXKA6HaO50vfyzCoprDXXv/4DCXCRt38Jnd9uC5PTqYNvNFItQ+iY+O+FgX6CUSVq01+855DkQ55wMtOiVAOnOij3q+HPzQcnqunVLMud+bqOv/3VYYm++4o1b5znLzfnFZ7bk0nDa6Wq1g4LVxEpfPI2RMYJfOgu1zJVaEp0Ic/w4kmTcH6p18JKn9k+QjbrwFS2yvodVyD/R8ZZ7OZ5WtCghDfjoFugd/sZGC/kPy+8nQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NIwUMvLo1s8tG+DoBqsBKC+2kV7Og0PzsQJI2lwahdM=;
+ b=mgy9ihmxNInv0Fm3StL+KEFytpXGp9vp7PIeblxKt+OOROOXrgyNINe6PCbkbvtgk/c/Xz4+8LqS67561ggDC6NBMcdPPosuwQOZoNP08bHii7GAsgoRGah20b6Lt4OwjuoEiuDFwpVUZH2JaoDQjeuDx1EGL3Guhru6lg7L2Ezozqezlv12vkqxZmHYPtM3ZX0kqXU0vy661ucRmoDGB5odHdmFMvdzUd8FbMFaFiltzr0id+jmbJie2DXJHHxaA60W/Qo1j6E/KEk9MS7P8uesCmhLCAUFg33xSw32iMW6MTo1IAT8xfUnrDzSj9/fWgznzFPrdsEHdP9Y+V65pQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=NIwUMvLo1s8tG+DoBqsBKC+2kV7Og0PzsQJI2lwahdM=;
+ b=FkZyoaSRBkJCVyigXKE62H9tJFZx/nxcPaeU2w4+QfH/5iAj340yVehk9Cb991cXSOHB6eVjpXzTw2vucyvFzWwSAzeDsIDDcs2nuGs94TKxkegHRoTovlA8tcJNT2/kRozr7w1PXty1ibdU8cT31Tnf9hYmOQ7eNyPaepWabYk=
+Received: from CH2PR03CA0029.namprd03.prod.outlook.com (2603:10b6:610:59::39)
+ by BLUPR0301MB2084.namprd03.prod.outlook.com (2a01:111:e400:c474::22) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.16; Wed, 14 Aug
+ 2019 06:56:21 +0000
+Received: from SN1NAM02FT064.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::207) by CH2PR03CA0029.outlook.office365.com
+ (2603:10b6:610:59::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.15 via Frontend
+ Transport; Wed, 14 Aug 2019 06:56:20 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ SN1NAM02FT064.mail.protection.outlook.com (10.152.72.143) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2157.15
+ via Frontend Transport; Wed, 14 Aug 2019 06:56:20 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x7E6uJGN012658
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Tue, 13 Aug 2019 23:56:19 -0700
+Received: from NWD2MBX7.ad.analog.com ([fe80::190e:f9c1:9a22:9663]) by
+ NWD2HUBCAS7.ad.analog.com ([fe80::595b:ced1:cc03:539d%12]) with mapi id
+ 14.03.0415.000; Wed, 14 Aug 2019 02:56:19 -0400
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "rodrigorsdc@gmail.com" <rodrigorsdc@gmail.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
+CC:     "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v2] staging: iio: accel: adis16240: Improve readability
+ on write_raw function
+Thread-Topic: [PATCH v2] staging: iio: accel: adis16240: Improve readability
+ on write_raw function
+Thread-Index: AQHVUg27ho7Fo7+PkkmXku6NXNI65qb6eawA
+Date:   Wed, 14 Aug 2019 06:56:18 +0000
+Message-ID: <28dda97db73c56fbaf746aa52eb63faaf02b15d7.camel@analog.com>
+References: <20190813193101.26867-1-rodrigorsdc@gmail.com>
+In-Reply-To: <20190813193101.26867-1-rodrigorsdc@gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [10.48.65.113]
+x-adiroutedonprem: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <DF30E5D4A3E6D54980D844CFF442E35F@analog.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(39860400002)(136003)(2980300002)(189003)(199004)(4326008)(426003)(229853002)(14454004)(6246003)(8676002)(2501003)(50466002)(356004)(11346002)(7636002)(54906003)(86362001)(436003)(7416002)(305945005)(336012)(7736002)(5660300002)(2486003)(23676004)(110136005)(47776003)(446003)(2906002)(6116002)(3846002)(316002)(36756003)(486006)(476003)(126002)(246002)(70586007)(118296001)(186003)(7696005)(106002)(2616005)(70206006)(2201001)(26005)(102836004)(76176011)(8936002)(478600001)(921003)(1121003);DIR:OUT;SFP:1101;SCL:1;SRVR:BLUPR0301MB2084;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 633cf9ca-a6e1-4923-2e3e-08d72084835b
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600148)(711020)(4605104)(4709080)(1401327)(2017052603328)(7193020);SRVR:BLUPR0301MB2084;
+X-MS-TrafficTypeDiagnostic: BLUPR0301MB2084:
+X-Microsoft-Antispam-PRVS: <BLUPR0301MB20848D18702677BA012470C1F9AD0@BLUPR0301MB2084.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Forefront-PRVS: 01294F875B
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: SWult33XP65Ll2GPRKmLEsZ9i8iJIIvn1lUfGlzqDQWiIQvgtB+r5K/M9g4xmOaf1AEkmWK5n+/pZk0E0NCoJH9SbG3rqD1q4FsC2YZVmVGjdHP0/wy8hn163D5i7Z3J5iQtx5HGDY3p3LMi0uJe8HX1MKayu1JsZvDFMllc7IAQXIqLMl12AIgbuL8rka4CqSgLVNzN4vPbGJayPaMwBcmObAFLQ2CKyeWuPbxM43zCzmYgy4djpMVo2UfitqlOna0KOzg/Z5x7i0i2HQI2TMK6mkOdGdYcYC8WGj9YKjyRyGdWGC3QXTNN8v9wQvgXuwj2jMb3aa46DDk0eq3aBCilnLP9BKH6wefTedgU8/N9J2WTMskMGibJ1btrm8J9GmEHzL3Slx2JLYDH7UCEKFEY70+7cR41HaipTz0hUhc=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 Aug 2019 06:56:20.2953
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 633cf9ca-a6e1-4923-2e3e-08d72084835b
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BLUPR0301MB2084
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-14_02:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1011 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908140065
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Maarten ter Huurne <maarten@treewalker.org>
-
-[ Upstream commit 5a304e1a4ea000177cf25f5ecf26e786dda25b98 ]
-
-The SADC component can run at up to 8 MHz on JZ4725B, but is fed
-a 12 MHz input clock (EXT). Divide it by two to get 6 MHz, then
-set up another divider to match, to produce a 10us clock.
-
-If the clock dividers are left on their power-on defaults (a divider
-of 1), the SADC mostly works, but will occasionally produce erroneous
-readings. This led to button presses being detected out of nowhere on
-the RS90 every few minutes. With this change, no ghost button presses
-were logged in almost a day worth of testing.
-
-The ADCLK register for configuring clock dividers doesn't exist on
-JZ4740, so avoid writing it there.
-
-A function has been introduced rather than a flag because there is a lot
-of variation between the ADCLK registers on JZ47xx SoCs, both in
-the internal layout of the register and in the frequency range
-supported by the SADC. So this solution should make it easier
-to add support for other JZ47xx SoCs later.
-
-Fixes: 1a78daea107d ("iio: adc: probe should set clock divider")
-Signed-off-by: Maarten ter Huurne <maarten@treewalker.org>
-Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/adc/ingenic-adc.c | 54 +++++++++++++++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
-
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 92b1d5037ac98..e234970b7150f 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -11,6 +11,7 @@
- #include <linux/iio/iio.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
-+#include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/mutex.h>
- #include <linux/platform_device.h>
-@@ -22,8 +23,11 @@
- #define JZ_ADC_REG_ADTCH		0x18
- #define JZ_ADC_REG_ADBDAT		0x1c
- #define JZ_ADC_REG_ADSDAT		0x20
-+#define JZ_ADC_REG_ADCLK		0x28
- 
- #define JZ_ADC_REG_CFG_BAT_MD		BIT(4)
-+#define JZ_ADC_REG_ADCLK_CLKDIV_LSB	0
-+#define JZ_ADC_REG_ADCLK_CLKDIV10US_LSB	16
- 
- #define JZ_ADC_AUX_VREF				3300
- #define JZ_ADC_AUX_VREF_BITS			12
-@@ -34,6 +38,8 @@
- #define JZ4740_ADC_BATTERY_HIGH_VREF		(7500 * 0.986)
- #define JZ4740_ADC_BATTERY_HIGH_VREF_BITS	12
- 
-+struct ingenic_adc;
-+
- struct ingenic_adc_soc_data {
- 	unsigned int battery_high_vref;
- 	unsigned int battery_high_vref_bits;
-@@ -41,6 +47,7 @@ struct ingenic_adc_soc_data {
- 	size_t battery_raw_avail_size;
- 	const int *battery_scale_avail;
- 	size_t battery_scale_avail_size;
-+	int (*init_clk_div)(struct device *dev, struct ingenic_adc *adc);
- };
- 
- struct ingenic_adc {
-@@ -151,6 +158,42 @@ static const int jz4740_adc_battery_scale_avail[] = {
- 	JZ_ADC_BATTERY_LOW_VREF, JZ_ADC_BATTERY_LOW_VREF_BITS,
- };
- 
-+static int jz4725b_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
-+{
-+	struct clk *parent_clk;
-+	unsigned long parent_rate, rate;
-+	unsigned int div_main, div_10us;
-+
-+	parent_clk = clk_get_parent(adc->clk);
-+	if (!parent_clk) {
-+		dev_err(dev, "ADC clock has no parent\n");
-+		return -ENODEV;
-+	}
-+	parent_rate = clk_get_rate(parent_clk);
-+
-+	/*
-+	 * The JZ4725B ADC works at 500 kHz to 8 MHz.
-+	 * We pick the highest rate possible.
-+	 * In practice we typically get 6 MHz, half of the 12 MHz EXT clock.
-+	 */
-+	div_main = DIV_ROUND_UP(parent_rate, 8000000);
-+	div_main = clamp(div_main, 1u, 64u);
-+	rate = parent_rate / div_main;
-+	if (rate < 500000 || rate > 8000000) {
-+		dev_err(dev, "No valid divider for ADC main clock\n");
-+		return -EINVAL;
-+	}
-+
-+	/* We also need a divider that produces a 10us clock. */
-+	div_10us = DIV_ROUND_UP(rate, 100000);
-+
-+	writel(((div_10us - 1) << JZ_ADC_REG_ADCLK_CLKDIV10US_LSB) |
-+	       (div_main - 1) << JZ_ADC_REG_ADCLK_CLKDIV_LSB,
-+	       adc->base + JZ_ADC_REG_ADCLK);
-+
-+	return 0;
-+}
-+
- static const struct ingenic_adc_soc_data jz4725b_adc_soc_data = {
- 	.battery_high_vref = JZ4725B_ADC_BATTERY_HIGH_VREF,
- 	.battery_high_vref_bits = JZ4725B_ADC_BATTERY_HIGH_VREF_BITS,
-@@ -158,6 +201,7 @@ static const struct ingenic_adc_soc_data jz4725b_adc_soc_data = {
- 	.battery_raw_avail_size = ARRAY_SIZE(jz4725b_adc_battery_raw_avail),
- 	.battery_scale_avail = jz4725b_adc_battery_scale_avail,
- 	.battery_scale_avail_size = ARRAY_SIZE(jz4725b_adc_battery_scale_avail),
-+	.init_clk_div = jz4725b_adc_init_clk_div,
- };
- 
- static const struct ingenic_adc_soc_data jz4740_adc_soc_data = {
-@@ -167,6 +211,7 @@ static const struct ingenic_adc_soc_data jz4740_adc_soc_data = {
- 	.battery_raw_avail_size = ARRAY_SIZE(jz4740_adc_battery_raw_avail),
- 	.battery_scale_avail = jz4740_adc_battery_scale_avail,
- 	.battery_scale_avail_size = ARRAY_SIZE(jz4740_adc_battery_scale_avail),
-+	.init_clk_div = NULL, /* no ADCLK register on JZ4740 */
- };
- 
- static int ingenic_adc_read_avail(struct iio_dev *iio_dev,
-@@ -317,6 +362,15 @@ static int ingenic_adc_probe(struct platform_device *pdev)
- 		return ret;
- 	}
- 
-+	/* Set clock dividers. */
-+	if (soc_data->init_clk_div) {
-+		ret = soc_data->init_clk_div(dev, adc);
-+		if (ret) {
-+			clk_disable_unprepare(adc->clk);
-+			return ret;
-+		}
-+	}
-+
- 	/* Put hardware in a known passive state. */
- 	writeb(0x00, adc->base + JZ_ADC_REG_ENABLE);
- 	writeb(0xff, adc->base + JZ_ADC_REG_CTRL);
--- 
-2.20.1
-
+T24gVHVlLCAyMDE5LTA4LTEzIGF0IDE2OjMxIC0wMzAwLCBSb2RyaWdvIFJpYmVpcm8gd3JvdGU6
+DQo+IFtFeHRlcm5hbF0NCj4gDQo+IFJlcGxhY2Ugc2hpZnQgYW5kIG1pbnVzIG9wZXJhdGlvbiBi
+eSBHRU5NQVNLIG1hY3JvIGFuZCByZW1vdmUgdGhlIGxvY2FsDQo+IHZhcmlhYmxlcyB1c2VkIHRv
+IHN0b3JlIGludGVybWVkaWF0ZSBkYXRhLg0KPiANCg0KUmV2aWV3ZWQtYnk6IEFsZXhhbmRydSBB
+cmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+DQoNCj4gU2lnbmVkLW9mZi1i
+eTogUm9kcmlnbyBSaWJlaXJvIENhcnZhbGhvIDxyb2RyaWdvcnNkY0BnbWFpbC5jb20+DQo+IC0t
+LQ0KPiB2MjoNCj4gICAgLSBMZWF2ZSBzd2l0Y2ggc3RhdGVtZW50IGluc3RlYWQgb2YgcmVwbGFj
+ZSBieSBpZiBzdGF0ZW1lbnQNCj4gIGRyaXZlcnMvc3RhZ2luZy9paW8vYWNjZWwvYWRpczE2MjQw
+LmMgfCA1ICstLS0tDQo+ICAxIGZpbGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKyksIDQgZGVsZXRp
+b25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9zdGFnaW5nL2lpby9hY2NlbC9hZGlz
+MTYyNDAuYyBiL2RyaXZlcnMvc3RhZ2luZy9paW8vYWNjZWwvYWRpczE2MjQwLmMNCj4gaW5kZXgg
+NjJmNGIzYjFiNDU3Li44MjA5OWRiNGJmMGMgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvc3RhZ2lu
+Zy9paW8vYWNjZWwvYWRpczE2MjQwLmMNCj4gKysrIGIvZHJpdmVycy9zdGFnaW5nL2lpby9hY2Nl
+bC9hZGlzMTYyNDAuYw0KPiBAQCAtMzA5LDE1ICszMDksMTIgQEAgc3RhdGljIGludCBhZGlzMTYy
+NDBfd3JpdGVfcmF3KHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYsDQo+ICAJCQkgICAgICAgbG9u
+ZyBtYXNrKQ0KPiAgew0KPiAgCXN0cnVjdCBhZGlzICpzdCA9IGlpb19wcml2KGluZGlvX2Rldik7
+DQo+IC0JaW50IGJpdHMgPSAxMDsNCj4gLQlzMTYgdmFsMTY7DQo+ICAJdTggYWRkcjsNCj4gIA0K
+PiAgCXN3aXRjaCAobWFzaykgew0KPiAgCWNhc2UgSUlPX0NIQU5fSU5GT19DQUxJQkJJQVM6DQo+
+IC0JCXZhbDE2ID0gdmFsICYgKCgxIDw8IGJpdHMpIC0gMSk7DQo+ICAJCWFkZHIgPSBhZGlzMTYy
+NDBfYWRkcmVzc2VzW2NoYW4tPnNjYW5faW5kZXhdWzBdOw0KPiAtCQlyZXR1cm4gYWRpc193cml0
+ZV9yZWdfMTYoc3QsIGFkZHIsIHZhbDE2KTsNCj4gKwkJcmV0dXJuIGFkaXNfd3JpdGVfcmVnXzE2
+KHN0LCBhZGRyLCB2YWwgJiBHRU5NQVNLKDksIDApKTsNCj4gIAl9DQo+ICAJcmV0dXJuIC1FSU5W
+QUw7DQo+ICB9DQo=
