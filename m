@@ -4,25 +4,25 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F3BC433FF
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F834C32753
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:22:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C60DB205C9
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:21:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D146204EC
+	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:22:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725996AbfHNJV4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 14 Aug 2019 05:21:56 -0400
-Received: from viti.kaiser.cx ([85.214.81.225]:42380 "EHLO viti.kaiser.cx"
+        id S1726530AbfHNJWU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Aug 2019 05:22:20 -0400
+Received: from viti.kaiser.cx ([85.214.81.225]:43064 "EHLO viti.kaiser.cx"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725954AbfHNJV4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 14 Aug 2019 05:21:56 -0400
+        id S1726019AbfHNJWU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 14 Aug 2019 05:22:20 -0400
 Received: from x4dbd508b.dyn.telefonica.de ([77.189.80.139] helo=martin-debian-1.paytec.ch)
         by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <martin@kaiser.cx>)
-        id 1hxpTa-0008Na-5F; Wed, 14 Aug 2019 11:21:50 +0200
+        id 1hxpU0-0008O2-BN; Wed, 14 Aug 2019 11:22:16 +0200
 From:   Martin Kaiser <martin@kaiser.cx>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -30,9 +30,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH] iio: max5481: use devres for iio device registration
-Date:   Wed, 14 Aug 2019 11:21:44 +0200
-Message-Id: <20190814092144.10980-1-martin@kaiser.cx>
+Subject: [PATCH] iio: max5487: use devres for iio device registration
+Date:   Wed, 14 Aug 2019 11:22:05 +0200
+Message-Id: <20190814092205.11031-1-martin@kaiser.cx>
 X-Mailer: git-send-email 2.11.0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -44,14 +44,14 @@ explicit function call to unregister the iio device.
 
 Signed-off-by: Martin Kaiser <martin@kaiser.cx>
 ---
- drivers/iio/potentiometer/max5481.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iio/potentiometer/max5487.c | 6 +-----
+ 1 file changed, 1 insertion(+), 5 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
-index 732375b6d131..40b7212e68dc 100644
---- a/drivers/iio/potentiometer/max5481.c
-+++ b/drivers/iio/potentiometer/max5481.c
-@@ -162,7 +162,7 @@ static int max5481_probe(struct spi_device *spi)
+diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
+index 68ff806d4668..a6c92050d397 100644
+--- a/drivers/iio/potentiometer/max5487.c
++++ b/drivers/iio/potentiometer/max5487.c
+@@ -110,15 +110,11 @@ static int max5487_spi_probe(struct spi_device *spi)
  	if (ret < 0)
  		return ret;
  
@@ -59,15 +59,14 @@ index 732375b6d131..40b7212e68dc 100644
 +	return devm_iio_device_register(&spi->dev, indio_dev);
  }
  
- static int max5481_remove(struct spi_device *spi)
-@@ -170,8 +170,6 @@ static int max5481_remove(struct spi_device *spi)
- 	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
- 	struct max5481_data *data = iio_priv(indio_dev);
- 
+ static int max5487_spi_remove(struct spi_device *spi)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
+-
 -	iio_device_unregister(indio_dev);
 -
- 	/* save wiper reg to NV reg */
- 	return max5481_write_cmd(data, MAX5481_COPY_AB_TO_NV, 0);
+ 	/* save both wiper regs to NV regs */
+ 	return max5487_write_cmd(spi, MAX5487_COPY_AB_TO_NV);
  }
 -- 
 2.11.0
