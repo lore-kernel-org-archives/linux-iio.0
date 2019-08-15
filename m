@@ -1,73 +1,90 @@
-Return-Path: <SRS0=YUg1=WK=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Wch3=WL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F834C32753
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19D8C433FF
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 02:39:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4D146204EC
-	for <linux-iio@archiver.kernel.org>; Wed, 14 Aug 2019 09:22:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69D03208C2
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 02:39:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1565836758;
+	bh=6QbandalLnAk7UTLMfGCysXOvMZVD8zDiXVztaTkPvM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=xoKw2BzXZg4gqY9RlEc/lqPgeWukepN/A9gpSHvXlIGIZ5/YR184H8Vq68GT2nOXr
+	 mwj6wkqnYzdnXrhGtRek4blWFtJQ1qDJoFX0iY385MxjoZqWA3AiYY2Z42tzLwSpS3
+	 WBrTeBI9nXNH0cne+wjcNNKiB8x0tZpzAWgeMsPk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726530AbfHNJWU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 14 Aug 2019 05:22:20 -0400
-Received: from viti.kaiser.cx ([85.214.81.225]:43064 "EHLO viti.kaiser.cx"
+        id S1728320AbfHOCjR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 14 Aug 2019 22:39:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726019AbfHNJWU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 14 Aug 2019 05:22:20 -0400
-Received: from x4dbd508b.dyn.telefonica.de ([77.189.80.139] helo=martin-debian-1.paytec.ch)
-        by viti.kaiser.cx with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.89)
-        (envelope-from <martin@kaiser.cx>)
-        id 1hxpU0-0008O2-BN; Wed, 14 Aug 2019 11:22:16 +0200
-From:   Martin Kaiser <martin@kaiser.cx>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Martin Kaiser <martin@kaiser.cx>
-Subject: [PATCH] iio: max5487: use devres for iio device registration
-Date:   Wed, 14 Aug 2019 11:22:05 +0200
-Message-Id: <20190814092205.11031-1-martin@kaiser.cx>
-X-Mailer: git-send-email 2.11.0
+        id S1726496AbfHOCjR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 14 Aug 2019 22:39:17 -0400
+Received: from mail-qt1-f178.google.com (mail-qt1-f178.google.com [209.85.160.178])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7B6FD216F4;
+        Thu, 15 Aug 2019 02:39:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1565836756;
+        bh=6QbandalLnAk7UTLMfGCysXOvMZVD8zDiXVztaTkPvM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=RSkuKlm0NGGu8APyg6jy9o40Z1GL5PDioKvTTmrex2ngWcAfSwaqqWhLdUzWmdLnj
+         FCqCB23jZjq+fQ52yCvopkjQDq9yjnmAiKyiArsa5D+Ge0uCmV9dKeEWUvhdHYdL5H
+         wo2RFawVbhBV8ymWz3Wj+DR8D0Zq93/KI15G/CnE=
+Received: by mail-qt1-f178.google.com with SMTP id y26so974455qto.4;
+        Wed, 14 Aug 2019 19:39:16 -0700 (PDT)
+X-Gm-Message-State: APjAAAWu0YdL4095pudP9m7riRw6zPz3UIHnjCMf3oSgYes05+kr7Trk
+        nugsbe2d00vMn0Sv0XnA8y42aNRH1Y7GF/bxvg==
+X-Google-Smtp-Source: APXvYqy720b+TBPiY3xSErK/uPvy00ygrhACFau+Inlb5PS4ZryBu4TZuITCQtM7YmMF5mIDTHqb7h7I0JYxps+k0mk=
+X-Received: by 2002:ac8:386f:: with SMTP id r44mr2221226qtb.300.1565836755669;
+ Wed, 14 Aug 2019 19:39:15 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190814073150.4602-1-mircea.caprioru@analog.com> <20190814073150.4602-4-mircea.caprioru@analog.com>
+In-Reply-To: <20190814073150.4602-4-mircea.caprioru@analog.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 14 Aug 2019 20:39:04 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKONxFbS-nUMc1c=-9HcXCrOVmOOfn9htKOJOjAS6HCKg@mail.gmail.com>
+Message-ID: <CAL_JsqKONxFbS-nUMc1c=-9HcXCrOVmOOfn9htKOJOjAS6HCKg@mail.gmail.com>
+Subject: Re: [PATCH V3 4/4] dt-bindings: iio: adc: ad7192: Add binding
+ documentation for AD7192
+To:     Mircea Caprioru <mircea.caprioru@analog.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Replace iio_device_register with the devres variant and drop the
-explicit function call to unregister the iio device.
+On Wed, Aug 14, 2019 at 1:32 AM Mircea Caprioru
+<mircea.caprioru@analog.com> wrote:
+>
+> This patch add device tree binding documentation for AD7192 adc in YAML
+> format.
+>
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+> ---
+> Changelog V2:
+> - remove description from spi and interrupt properties
+> - changed the name of the device from ad7192 to adc in the example
+>
+> Changelog V3:
+> - added semicolon at the end of the dt example
+>
+>  .../bindings/iio/adc/adi,ad7192.yaml          | 121 ++++++++++++++++++
+>  1 file changed, 121 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
 
-Signed-off-by: Martin Kaiser <martin@kaiser.cx>
----
- drivers/iio/potentiometer/max5487.c | 6 +-----
- 1 file changed, 1 insertion(+), 5 deletions(-)
-
-diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
-index 68ff806d4668..a6c92050d397 100644
---- a/drivers/iio/potentiometer/max5487.c
-+++ b/drivers/iio/potentiometer/max5487.c
-@@ -110,15 +110,11 @@ static int max5487_spi_probe(struct spi_device *spi)
- 	if (ret < 0)
- 		return ret;
- 
--	return iio_device_register(indio_dev);
-+	return devm_iio_device_register(&spi->dev, indio_dev);
- }
- 
- static int max5487_spi_remove(struct spi_device *spi)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
--
--	iio_device_unregister(indio_dev);
--
- 	/* save both wiper regs to NV regs */
- 	return max5487_write_cmd(spi, MAX5487_COPY_AB_TO_NV);
- }
--- 
-2.11.0
-
+Reviewed-by: Rob Herring <robh@kernel.org>
