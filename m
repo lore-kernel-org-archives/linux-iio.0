@@ -2,99 +2,104 @@ Return-Path: <SRS0=Wch3=WL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85B3FC31E40
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 12:00:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7662BC3A589
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 12:38:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5B0402173E
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 12:00:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4784F2086C
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Aug 2019 12:38:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bU7F69Oa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729971AbfHOMAS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Aug 2019 08:00:18 -0400
-Received: from www381.your-server.de ([78.46.137.84]:59664 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729818AbfHOMAS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Aug 2019 08:00:18 -0400
-X-Greylist: delayed 1174 seconds by postgrey-1.27 at vger.kernel.org; Thu, 15 Aug 2019 08:00:17 EDT
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <lars@metafoo.de>)
-        id 1hyE7Q-0004qd-Ce; Thu, 15 Aug 2019 13:40:36 +0200
-Received: from [93.104.111.225] (helo=[192.168.178.20])
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89)
-        (envelope-from <lars@metafoo.de>)
-        id 1hyE7Q-000IFI-3p; Thu, 15 Aug 2019 13:40:36 +0200
-Subject: Re: static analysis bug report in drivers/staging/iio/dac/ad5380.c
-To:     Colin Ian King <colin.king@canonical.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.ne>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        linux-iio@vger.kernel.org,
-        "devel@driverdev.osuosl.org" <devel@driverdev.osuosl.org>
-Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-References: <dd9e8ad0-31c8-a06f-be6b-e665e9b2c1c2@canonical.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <1f73a6d5-9e77-6f2f-8fcf-ec87f5ffa54d@metafoo.de>
-Date:   Thu, 15 Aug 2019 13:40:35 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
+        id S1730965AbfHOMiU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Aug 2019 08:38:20 -0400
+Received: from mail-pl1-f194.google.com ([209.85.214.194]:37481 "EHLO
+        mail-pl1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725977AbfHOMiU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Aug 2019 08:38:20 -0400
+Received: by mail-pl1-f194.google.com with SMTP id bj8so1039177plb.4;
+        Thu, 15 Aug 2019 05:38:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=1ee2WC7wFUitxl0VhlNk/I0IaNSildZhX3LeEHVWcaU=;
+        b=bU7F69OaIb5ke+Qt0qr7HlZwNfbiYKkzBNNDd8WzOHgsvEfE1khSOgq2w7EpiRuWPh
+         uTqfEiRYLy6fq3vEnJnH7/iPX37E1FVbVulx7Vv4U18g2VLI86sei7DpxGqKZDZ96V8+
+         rSoDO6VJthK6lxxQXoyz0eywkCeUmf/HVebo2WM0qgyPW9iHxjb5jXIwCH/78l9samiB
+         m2STME5iKjiocHcUzIBq5wqyuPgAlKn7Cq1b3FOToXEt7XIEjowRnd3jV3pH+WCgbrwb
+         y/wg7L3zNnBb2BOCFeUQahe99n0O2JYWx17ui9xB37TfI3KFvJtxA92FplWroT1DsaAR
+         LHVg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1ee2WC7wFUitxl0VhlNk/I0IaNSildZhX3LeEHVWcaU=;
+        b=ovbZ5cY9Trf6ZwcGv1tYn/TZUTd+r7paJG4+Q5oFgYBYbVsvoewwFhgpB4eNPFlTxI
+         jC9jY0iNn7t7e74onD8L0NcWQQFnmHwPF10gIIoKS1ijpZ5vpjI31Gmhnd2616ZwhO/D
+         +hSDlydnoBQceM8gm9y3+0Y2E5jAX37hF+uKWCIbvSo6sE1FbQUl8bfZPrYVlctdnM5J
+         6MLCJeLG3TTRS9pD2Il8x3sXkQNsm3riUVG5lJ22bFoRs/eZyWWxa6w5G9SkR2/x8hbo
+         a95v+VwN4FeDcteDIJSd5QzxGFd92DllBoHg06K3IL3xe/EPNKrCEQezfy+DA28eh8n3
+         VwTg==
+X-Gm-Message-State: APjAAAW4Q1sF4cJSddhaYGVhTutcImjlbyFSSC+7b+p3BbND4I/mSz3L
+        Tk6BajHMEOfijOLvFgXpwkk=
+X-Google-Smtp-Source: APXvYqwacwndMgsXukx1fTNdcEaTu+xtzJYP9eajJDSzmxObARVKtVJS5xCwgo93gUEa6Hu2wopekQ==
+X-Received: by 2002:a17:902:e60c:: with SMTP id cm12mr2573361plb.304.1565872699079;
+        Thu, 15 Aug 2019 05:38:19 -0700 (PDT)
+Received: from icarus ([2001:268:c146:4483:71c4:4d14:b4c7:2693])
+        by smtp.gmail.com with ESMTPSA id t4sm2836798pfd.109.2019.08.15.05.38.13
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 15 Aug 2019 05:38:17 -0700 (PDT)
+Date:   Thu, 15 Aug 2019 21:37:58 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     David Lechner <david@lechnology.com>
+Cc:     linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 3/5] counter: new TI eQEP driver
+Message-ID: <20190815123758.GA646493@icarus>
+References: <20190807194023.15318-1-david@lechnology.com>
+ <20190807194023.15318-4-david@lechnology.com>
 MIME-Version: 1.0
-In-Reply-To: <dd9e8ad0-31c8-a06f-be6b-e665e9b2c1c2@canonical.com>
 Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.100.3/25542/Thu Aug 15 10:25:56 2019)
+Content-Disposition: inline
+In-Reply-To: <20190807194023.15318-4-david@lechnology.com>
+User-Agent: Mutt/1.12.1 (2019-06-15)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 8/15/19 12:21 PM, Colin Ian King wrote:
-> Hi,
-> 
-> Static analysis with Coverity Scan has detected a potential assignment
-> bug in ad5380.c:
-> 
-> 217        case IIO_CHAN_INFO_CALIBBIAS:
-> 218                ret = regmap_read(st->regmap,
-> AD5380_REG_OFFSET(chan->address),
-> 219                                        val);
-> 220                if (ret)
-> 221                        return ret;
-> 222                *val >>= chan->scan_type.shift;
-> 
-> CID 43178 (#1 of 1): Unused value (UNUSED_VALUE)assigned_pointer:
-> Assigning value from val - (1 << chan->scan_type.realbits) / 2 to val
-> here, but that stored value is not used.
-> 
-> 223                val -= (1 << chan->scan_type.realbits) / 2;
-> 224                return IIO_VAL_INT;
-> 
-> val is a pointer and so updating it before a return is probably not the
-> intention.  I suspect the intention was probably:
-> 
-> 		   *val -= (1 << chan->scan_type.realbits) / 2;
-> 
-> However, I'm not confident about this as the following case has:
-> 
-> 225        case IIO_CHAN_INFO_SCALE:
-> 226                *val = 2 * st->vref;
-> 227                *val2 = chan->scan_type.realbits;
-> 228                return IIO_VAL_FRACTIONAL_LOG2;
-> 
-> which may imply the update maybe to *val2 instead, e.g.:
-> 
-> 		*val2 -= (1 << chan->scan_type.realbits) / 2;
-> 
-> Any ideas?
+On Wed, Aug 07, 2019 at 02:40:21PM -0500, David Lechner wrote:
+> +static struct counter_synapse ti_eqep_position_synapses[] = {
+> +	{
+> +		.action		= TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES,
+> +		.actions_list	= ti_eqep_position_synapse_actions,
+> +		.num_actions	= ARRAY_SIZE(ti_eqep_position_synapse_actions),
+> +		.signal		= &ti_eqep_signals[TI_EQEP_SIGNAL_QEPA],
+> +	},
+> +	{
+> +		.action		= TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES,
+> +		.actions_list	= ti_eqep_position_synapse_actions,
+> +		.num_actions	= ARRAY_SIZE(ti_eqep_position_synapse_actions),
+> +		.signal		= &ti_eqep_signals[TI_EQEP_SIGNAL_QEPB],
+> +	},
+> +};
 
-Updating changing val to *val is the right fix in this case.
+Hi David,
+
+Just a minor suggestion for your v3: you don't need to initialize
+"action" here since it'll be automatically updated in the core
+counter_action_show function to the value returned by your action_get
+callback function. So you can safely delete those two ".action =" lines.
+
+William Breathitt Gray
