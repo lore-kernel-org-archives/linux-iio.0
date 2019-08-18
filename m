@@ -7,47 +7,50 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08D2BC3A589
-	for <linux-iio@archiver.kernel.org>; Sun, 18 Aug 2019 18:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3425C3A589
+	for <linux-iio@archiver.kernel.org>; Sun, 18 Aug 2019 18:40:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CCAA72183E
-	for <linux-iio@archiver.kernel.org>; Sun, 18 Aug 2019 18:23:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9EEFC2184E
+	for <linux-iio@archiver.kernel.org>; Sun, 18 Aug 2019 18:40:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566152636;
-	bh=QKMDxrHIlEhHw8h/Wy2lYjL72K27cV6CI3M2K/KMOUM=;
+	s=default; t=1566153623;
+	bh=meJqC7/AX0rwugLoFXfdiYsPkc55SQda8m3FYAF6tR0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=mEjS3PJWzzn5sY3gX6xEkUk8DZeRR8k73F5jL6uWWHJ+aMC/NdkpLj1tgAMs0W8bJ
-	 y+YzGXc79tZ8Vumh7ECiKERJ2R3SowdOKuBGY2EVlt7tODKsdkcPZTFccxeCxTL5oB
-	 fqpu8pd05tz9Db6T4v1wzR1rruyHoFJVRMweEkaQ=
+	b=imon73I+LlNgrv7XvNDfwx9I7vo8DOw9GPSjbyYwzHY8D8evpcJNQsyzTmXhsKWgS
+	 bnXcyujnaguyIm/ldDYtMRXrAQxlSR/Jqw9qY+DaijNKIto8hKYmyQ7QZu8kNvjmgc
+	 mXQZsRIpR8zCUl24mjKhdC5HhgZtdVdhV3Azyq58=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbfHRSX4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 18 Aug 2019 14:23:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36648 "EHLO mail.kernel.org"
+        id S1726925AbfHRSkX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 18 Aug 2019 14:40:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48562 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726247AbfHRSX4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 18 Aug 2019 14:23:56 -0400
+        id S1726247AbfHRSkX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 18 Aug 2019 14:40:23 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9BFB72086C;
-        Sun, 18 Aug 2019 18:23:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1AE6720B7C;
+        Sun, 18 Aug 2019 18:40:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566152635;
-        bh=QKMDxrHIlEhHw8h/Wy2lYjL72K27cV6CI3M2K/KMOUM=;
+        s=default; t=1566153621;
+        bh=meJqC7/AX0rwugLoFXfdiYsPkc55SQda8m3FYAF6tR0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=rP7XGQlzlFVjxZUWypcUnNzlCMmh1/937HO6NAmKEuEqBMGczq1rRPJe9sF1+I8Pl
-         FWg14floeQNEEK9m5ga3OOhWXYju5CddRLoIzVInG23cFtpf+eGjJq8TRL79GvfpLc
-         kR3M3mAgkcYLwOlZcz9JayctKHNZIBgVlXFG2EJM=
-Date:   Sun, 18 Aug 2019 19:23:47 +0100
+        b=UBO+B9SebXTSJYPls00r1xIsQX4qJWhg84bwALN3eX1zexkhkcPfX8P9rGPtv8P4m
+         FCT6wWTU00a196WwkHHE/sgsOrzs0nNUnCK8tWJnZp6r7aphFLkd496Dw2odzBXZvm
+         gta3ANyLnSYeYUOSxViPJMAj/1l/OinffoA9JlxE=
+Date:   Sun, 18 Aug 2019 19:40:17 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Mircea Caprioru <mircea.caprioru@analog.com>
 Cc:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
         <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: adc: ad7192: Remove platform data
-Message-ID: <20190818192347.06d5c2a9@archlinux>
-In-Reply-To: <20190812090034.26769-1-mircea.caprioru@analog.com>
-References: <20190812090034.26769-1-mircea.caprioru@analog.com>
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
+Subject: Re: [PATCH V3 3/4] staging: iio: adc: ad7192: Add system
+ calibration support
+Message-ID: <20190818194017.7ba2fc97@archlinux>
+In-Reply-To: <20190814073150.4602-3-mircea.caprioru@analog.com>
+References: <20190814073150.4602-1-mircea.caprioru@analog.com>
+        <20190814073150.4602-3-mircea.caprioru@analog.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,116 +60,128 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 12 Aug 2019 12:00:34 +0300
+On Wed, 14 Aug 2019 10:31:49 +0300
 Mircea Caprioru <mircea.caprioru@analog.com> wrote:
 
-> This patch removes the reference voltage entry from the platform_data
-> structure. This is no longer needed since the reference voltage is obtained
-> from the device tree. With this we also remove the entire ad7192.h file.
-> 
-> The undefined reference voltage warning is promoted to an error signaling a
-> problem with the device tree.
+> This patch will add a system calibration attribute for each channel. Using
+> this option the user will have the ability to calibrate each channel for
+> zero scale and full scale. It uses the iio_chan_spec_ext_info and IIO_ENUM
+> to implement the functionality.
 > 
 > Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+
+Hi, 
+
+This introduces new ABI so needs documentation in
+Documentation/ABI/testing/...
+
+I'm not particularly keen on a write to what might be considered
+a mode select register resulting in a calibration starting.
+That is rather non obvious, I'd prefer to either two attributes
+to trigger the two modes, or a mode attr and some sort of calibrate
+now attribute.
+
+I'll back out patch 2 for now, as it was there to support this.
 
 Thanks,
 
 Jonathan
 
+
 > ---
->  drivers/staging/iio/adc/ad7192.c | 14 ++----------
->  drivers/staging/iio/adc/ad7192.h | 37 --------------------------------
->  2 files changed, 2 insertions(+), 49 deletions(-)
->  delete mode 100644 drivers/staging/iio/adc/ad7192.h
+> Changelog V2:
+> - no changes here
+> 
+> Changelog V3:
+> - no changes here
+> 
+>  drivers/staging/iio/adc/ad7192.c | 55 +++++++++++++++++++++++++++++++-
+>  1 file changed, 54 insertions(+), 1 deletion(-)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index df06e0570f9b..81ea2639c67c 100644
+> index d58ce08f3693..731072830f30 100644
 > --- a/drivers/staging/iio/adc/ad7192.c
 > +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -25,8 +25,6 @@
->  #include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/adc/ad_sigma_delta.h>
+> @@ -155,6 +155,11 @@
+>   * The DOUT/RDY output must also be wired to an interrupt capable GPIO.
+>   */
 >  
-> -#include "ad7192.h"
-> -
->  /* Registers */
->  #define AD7192_REG_COMM		0 /* Communications Register (WO, 8-bit) */
->  #define AD7192_REG_STAT		0 /* Status Register	     (RO, 8-bit) */
-> @@ -666,16 +664,10 @@ static int ad7192_channels_config(struct iio_dev *indio_dev)
+> +enum {
+> +   AD7192_SYSCALIB_ZERO_SCALE,
+> +   AD7192_SYSCALIB_FULL_SCALE,
+> +};
+> +
+>  struct ad7192_state {
+>  	struct regulator		*avdd;
+>  	struct regulator		*dvdd;
+> @@ -169,10 +174,56 @@ struct ad7192_state {
+>  	u8				devid;
+>  	u8				clock_sel;
+>  	struct mutex			lock;	/* protect sensor state */
+> +	u8				syscalib_mode[8];
 >  
->  static int ad7192_probe(struct spi_device *spi)
+>  	struct ad_sigma_delta		sd;
+>  };
+>  
+> +static const char * const ad7192_syscalib_modes[] = {
+> +	[AD7192_SYSCALIB_ZERO_SCALE] = "zero_scale",
+> +	[AD7192_SYSCALIB_FULL_SCALE] = "full_scale",
+> +};
+> +
+> +static int ad7192_set_syscalib_mode(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan,
+> +				    unsigned int mode)
+> +{
+> +	struct ad7192_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	st->syscalib_mode[chan->channel] = mode;
+> +
+> +	if (mode == AD7192_SYSCALIB_ZERO_SCALE)
+> +		ret = ad_sd_calibrate(&st->sd, AD7192_MODE_CAL_SYS_ZERO,
+> +				      chan->address);
+> +	else
+> +		ret = ad_sd_calibrate(&st->sd, AD7192_MODE_CAL_SYS_FULL,
+> +				      chan->address);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ad7192_get_syscalib_mode(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan)
+> +{
+> +	struct ad7192_state *st = iio_priv(indio_dev);
+> +
+> +	return st->syscalib_mode[chan->channel];
+> +}
+> +
+> +static const struct iio_enum ad7192_syscalib_mode_enum = {
+> +	.items = ad7192_syscalib_modes,
+> +	.num_items = ARRAY_SIZE(ad7192_syscalib_modes),
+> +	.set = ad7192_set_syscalib_mode,
+> +	.get = ad7192_get_syscalib_mode
+> +};
+> +
+> +static const struct iio_chan_spec_ext_info ad7192_calibsys_ext_info[] = {
+> +	IIO_ENUM("system_calibration", IIO_SEPARATE, &ad7192_syscalib_mode_enum),
+> +	IIO_ENUM_AVAILABLE("system_calibration", &ad7192_syscalib_mode_enum),
+> +	{}
+> +};
+> +
+>  static struct ad7192_state *ad_sigma_delta_to_ad7192(struct ad_sigma_delta *sd)
 >  {
-> -	const struct ad7192_platform_data *pdata = dev_get_platdata(&spi->dev);
->  	struct ad7192_state *st;
->  	struct iio_dev *indio_dev;
->  	int ret, voltage_uv = 0;
+>  	return container_of(sd, struct ad7192_state, sd);
+> @@ -769,9 +820,11 @@ static int ad7192_channels_config(struct iio_dev *indio_dev)
+>  		*chan = channels[i];
+>  		chan->info_mask_shared_by_all |=
+>  			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY);
+> -		if (chan->type != IIO_TEMP)
+> +		if (chan->type != IIO_TEMP) {
+>  			chan->info_mask_shared_by_type_available |=
+>  				BIT(IIO_CHAN_INFO_SCALE);
+> +			chan->ext_info = ad7192_calibsys_ext_info;
+> +		}
+>  		chan++;
+>  	}
 >  
-> -	if (!pdata) {
-> -		dev_err(&spi->dev, "no platform data?\n");
-> -		return -ENODEV;
-> -	}
-> -
->  	if (!spi->irq) {
->  		dev_err(&spi->dev, "no IRQ?\n");
->  		return -ENODEV;
-> @@ -713,12 +705,10 @@ static int ad7192_probe(struct spi_device *spi)
->  
->  	voltage_uv = regulator_get_voltage(st->avdd);
->  
-> -	if (pdata->vref_mv)
-> -		st->int_vref_mv = pdata->vref_mv;
-> -	else if (voltage_uv)
-> +	if (voltage_uv)
->  		st->int_vref_mv = voltage_uv / 1000;
->  	else
-> -		dev_warn(&spi->dev, "reference voltage undefined\n");
-> +		dev_err(&spi->dev, "Device tree error, reference voltage undefined\n");
->  
->  	spi_set_drvdata(spi, indio_dev);
->  	st->devid = spi_get_device_id(spi)->driver_data;
-> diff --git a/drivers/staging/iio/adc/ad7192.h b/drivers/staging/iio/adc/ad7192.h
-> deleted file mode 100644
-> index f3669e1df084..000000000000
-> --- a/drivers/staging/iio/adc/ad7192.h
-> +++ /dev/null
-> @@ -1,37 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0 */
-> -/*
-> - * AD7190 AD7192 AD7195 SPI ADC driver
-> - *
-> - * Copyright 2011 Analog Devices Inc.
-> - */
-> -#ifndef IIO_ADC_AD7192_H_
-> -#define IIO_ADC_AD7192_H_
-> -
-> -/*
-> - * TODO: struct ad7192_platform_data needs to go into include/linux/iio
-> - */
-> -
-> -/**
-> - * struct ad7192_platform_data - platform/board specific information
-> - * @vref_mv:		the external reference voltage in millivolt
-> - * @clock_source_sel:	[0..3]
-> - *			0 External 4.92 MHz clock connected from MCLK1 to MCLK2
-> - *			1 External Clock applied to MCLK2
-> - *			2 Internal 4.92 MHz Clock not available at the MCLK2 pin
-> - *			3 Internal 4.92 MHz Clock available at the MCLK2 pin
-> - * @ext_clk_Hz:		the external clock frequency in Hz, if not set
-> - *			the driver uses the internal clock (16.776 MHz)
-> - * @refin2_en:		REFIN1/REFIN2 Reference Select (AD7190/2 only)
-> - * @rej60_en:		50/60Hz notch filter enable
-> - * @sinc3_en:		SINC3 filter enable (default SINC4)
-> - * @chop_en:		CHOP mode enable
-> - * @buf_en:		buffered input mode enable
-> - * @unipolar_en:	unipolar mode enable
-> - * @burnout_curr_en:	constant current generators on AIN(+|-) enable
-> - */
-> -
-> -struct ad7192_platform_data {
-> -	u16		vref_mv;
-> -};
-> -
-> -#endif /* IIO_ADC_AD7192_H_ */
 
