@@ -4,56 +4,56 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B954C3A589
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:12:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 245BDC3A589
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:12:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0F72E22DCC
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:11:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EED8822DCC
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:12:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="ft6JmqWg"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="T+dL1ssF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730249AbfHTOL7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Aug 2019 10:11:59 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41569 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730229AbfHTOLz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2019 10:11:55 -0400
-Received: by mail-wr1-f67.google.com with SMTP id j16so12563428wrr.8
-        for <linux-iio@vger.kernel.org>; Tue, 20 Aug 2019 07:11:54 -0700 (PDT)
+        id S1730113AbfHTOLu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Aug 2019 10:11:50 -0400
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:56170 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729961AbfHTOLu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2019 10:11:50 -0400
+Received: by mail-wm1-f66.google.com with SMTP id f72so2753733wmf.5
+        for <linux-iio@vger.kernel.org>; Tue, 20 Aug 2019 07:11:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=monstr-eu.20150623.gappssmtp.com; s=20150623;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
          :in-reply-to:references;
-        bh=RwUl0tIvIWQJjsPo9IUx0TKimtG4MbaxDyHxqkSvC5A=;
-        b=ft6JmqWgSOSM4d24X1q0N2J56uYy/FU4k08SXAeJ6pgdaXJ5cYbZX2WQ70C3sFnKQV
-         4iXZe7h92gIl9tNrovxEYNUXt04plhsbh4BJqzGndjegbiJfrB7N8xhJCG7ZvR1SACp2
-         2/VVKPaWXVbDNH6tijKiFQui4GLWVWScAtnfxqMAHfmJrd4GRQlK/NOJn59hI/ng/kYf
-         fOlUF2vWVCwdU9uOBqJSgHdWj5Qe8GwEov/sD7ufWQpV2T2WdzrCQXAy44eL123/Vasu
-         1hPW9gsS/nzyJbhHGtH25EisfEton7FtFTT1lySEcdQk8smMI55NJB2JUdY5gRJKv5Kz
-         G5yA==
+        bh=2gZBRBMoTtxBnUUQUMgmv/Co/uEPvWKvt1ic6Ud7+dk=;
+        b=T+dL1ssFUIdUpMoMpCYeZxUeiYq6z0OFcwvolNe82M9FDXIvwx3RQReCIltmCEmMJs
+         CWQ9N6YCwiVWz3YuzcWScw0ucrDUqV4yBV/gMjdrs8gCf2vLS0OeL7nqzIaGv1qv4eB5
+         CQajQ5HQnoPDQuiHoe6B7FasPlJ7H5Lc4If3L5eF4106Ph7TG23A/82ygoGBcG5QORn6
+         XsqIqe9t6bQwW4YQgunnIU6F7lJ9QeDIZAcRCW1/fj1Z3vRHi9blAaA71KxYr/ZNyqIA
+         GuVxjecw1ovnLWvKQLffYzgkD36p+LAh8q9218offxYuAK5SnX3u1uElq1vpV0GjTITW
+         L8EA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references:in-reply-to:references;
-        bh=RwUl0tIvIWQJjsPo9IUx0TKimtG4MbaxDyHxqkSvC5A=;
-        b=HXLg4mmC+3AaPMPl2jVSegQ0qvOknZEgiDat+Rvr3gCutmXn2RPOHobfEGLdRiNcU9
-         lT6q4laFV98LFNpg6CvZKqpQm4zHdtSb589X62IC/ulpQfldzT9lMMO0gN6J01NDMbRn
-         9MoVlVeWNpN7waVFez0odBhAQrx0uxy84kMxIx5br//vYwdntLcmQe7aw5pDEaxy8H96
-         b1Ru9lH0nfOc/oeQOUk0Edk8vbOtPAq3mMUmHHNum/L486fn1T629ZOezqejSeBSQQDF
-         uoh8H06+kmYM6PcZhnODh9V7kA3SC0syWK8IXEVDBM+ysiAdSY9Bs0FZm8W/j4TKX4dg
-         FGwQ==
-X-Gm-Message-State: APjAAAUxMC5FiikCCyGo3Ip1/gIVjBtUicnxo1zapPJpowdUPZc+y2dD
-        NrvNl/fFiVuGYY/dbKkpsJmsRA==
-X-Google-Smtp-Source: APXvYqzEIh6wkeygw1xRCd3/+HZRcK6Zad12CN+JWvrC+aemT0aFfIfzYCUHEgz9nu5K7xswVg1Ejw==
-X-Received: by 2002:adf:b64b:: with SMTP id i11mr35140281wre.114.1566310313897;
-        Tue, 20 Aug 2019 07:11:53 -0700 (PDT)
+        bh=2gZBRBMoTtxBnUUQUMgmv/Co/uEPvWKvt1ic6Ud7+dk=;
+        b=b5enJnmUK17ZKViUQBuhqz1QoLgkPtXYReYcMHtwCyL8dlAPu9k3is3Rqm38aXQ1Cl
+         NeZ2m+SwTJz++rqjidLZUWb2Q3SlbzCBWZqYaxqsPt8t4XlqQVK+jGvaB+XmqMTruwbp
+         HVtCiR9HvA1hRZWRAwZevDuEo4VR6+5kff6nx71rL+1yYN4XxzqZx0g/A6COfaiCZW2U
+         aNwQsFvF/4Jj4hW4yMJdIROV4t2vRQK8sK+8UPQY9bWtrJKh6cwEKgOrseYtACPBRt/O
+         dpB5LWELTL1x3p9RdckIf+NCRLlm6Drta931W9Ho6SZ/SFrPEJc4jErH2s45r3FBfbVm
+         GwOQ==
+X-Gm-Message-State: APjAAAWpUr6OyH2ObfX+xntf3XxzSVz9nvaHTOQYLHqcjUSMR32T2Mxf
+        qIZq/dCcGlYngwpwBk0qzp7k2Q==
+X-Google-Smtp-Source: APXvYqwOpXWWfQkrSmxlW+dDzFrwROAmgDH8mO7cWLuxIpOZsMB3v+78Zw7sxK75f9hByv/fW7dNqQ==
+X-Received: by 2002:a1c:9ec5:: with SMTP id h188mr221409wme.176.1566310308440;
+        Tue, 20 Aug 2019 07:11:48 -0700 (PDT)
 Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
-        by smtp.gmail.com with ESMTPSA id 2sm84660wmz.16.2019.08.20.07.11.53
+        by smtp.gmail.com with ESMTPSA id f10sm13960332wrs.22.2019.08.20.07.11.47
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 20 Aug 2019 07:11:53 -0700 (PDT)
+        Tue, 20 Aug 2019 07:11:47 -0700 (PDT)
 From:   Michal Simek <michal.simek@xilinx.com>
 To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
         michal.simek@xilinx.com, linux@roeck-us.net
@@ -64,9 +64,9 @@ Cc:     Colin Ian King <colin.king@canonical.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH 4/4] iio: adc: ina2xx: Use label proper for device identification
-Date:   Tue, 20 Aug 2019 16:11:41 +0200
-Message-Id: <0542b562a813c5c22c42484ac24bbb626ac3c022.1566310292.git.michal.simek@xilinx.com>
+Subject: [PATCH 1/4] iio: adc: ina2xx: Define *device_node only once
+Date:   Tue, 20 Aug 2019 16:11:38 +0200
+Message-Id: <c13fb8284b68cf3dbe309941d767aa7701aa4c3a.1566310292.git.michal.simek@xilinx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <cover.1566310292.git.michal.simek@xilinx.com>
 References: <cover.1566310292.git.michal.simek@xilinx.com>
@@ -77,28 +77,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for using label property for easier device identification via
-iio framework.
+There is no reason to c&p full client->dev.of_node link when simple
+variable can keep it.
 
 Signed-off-by: Michal Simek <michal.simek@xilinx.com>
 ---
 
- drivers/iio/adc/ina2xx-adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ina2xx-adc.c | 7 ++++---
+ 1 file changed, 4 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 7c7c63677bf4..077c54915f70 100644
+index bdd7cba6f6b0..37058d9c2054 100644
 --- a/drivers/iio/adc/ina2xx-adc.c
 +++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -1033,7 +1033,7 @@ static int ina2xx_probe(struct i2c_client *client,
- 	snprintf(chip->name, sizeof(chip->name), "%s-%s",
- 		 client->name, dev_name(&client->dev));
+@@ -951,6 +951,7 @@ static int ina2xx_probe(struct i2c_client *client,
+ 	struct ina2xx_chip_info *chip;
+ 	struct iio_dev *indio_dev;
+ 	struct iio_buffer *buffer;
++	struct device_node *np = client->dev.of_node;
+ 	unsigned int val;
+ 	enum ina2xx_ids type;
+ 	int ret;
+@@ -970,7 +971,7 @@ static int ina2xx_probe(struct i2c_client *client,
+ 		return PTR_ERR(chip->regmap);
+ 	}
  
--	indio_dev->name = chip->name;
-+	indio_dev->name = of_get_property(np, "label", NULL) ? : chip->name;
- 	indio_dev->setup_ops = &ina2xx_setup_ops;
+-	if (client->dev.of_node)
++	if (np)
+ 		type = (enum ina2xx_ids)of_device_get_match_data(&client->dev);
+ 	else
+ 		type = id->driver_data;
+@@ -978,7 +979,7 @@ static int ina2xx_probe(struct i2c_client *client,
  
- 	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
+ 	mutex_init(&chip->state_lock);
+ 
+-	if (of_property_read_u32(client->dev.of_node,
++	if (of_property_read_u32(np,
+ 				 "shunt-resistor", &val) < 0) {
+ 		struct ina2xx_platform_data *pdata =
+ 		    dev_get_platdata(&client->dev);
+@@ -1016,7 +1017,7 @@ static int ina2xx_probe(struct i2c_client *client,
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->dev.of_node = client->dev.of_node;
++	indio_dev->dev.of_node = np;
+ 	if (id->driver_data == ina226) {
+ 		indio_dev->channels = ina226_channels;
+ 		indio_dev->num_channels = ARRAY_SIZE(ina226_channels);
 -- 
 2.17.1
 
