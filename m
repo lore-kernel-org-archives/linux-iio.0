@@ -2,110 +2,96 @@ Return-Path: <SRS0=pALz=WQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CC1EC3A589
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 05:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57818C3A59D
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3EC92087E
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 05:10:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="GtlBx2K5"
+	by mail.kernel.org (Postfix) with ESMTP id 1769422DA7
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1566308702;
+	bh=8EC/IqFK7cYJWrqHFTdbNdl1R6ctwn0PAOTv1t8eTZQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=HZIRaXmu0UxajzFIN0zQvO7QLNOCIWA6YOJUuF2hpzdFzgpUaz+XRSSys70HN/p2Q
+	 15ekOi6eP9plaaCL0v5UZqQbAJST4TQxhWSu+vBu+I4qPs31I1Or0oPdmJZ7jlP+pC
+	 BojZHzAgz0CLzzqi9dpmpQu8NyA9t/jnmiVS/XuE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729195AbfHTFKv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Aug 2019 01:10:51 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:32800 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729060AbfHTFKu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2019 01:10:50 -0400
-Received: by mail-pg1-f195.google.com with SMTP id n190so2512428pgn.0
-        for <linux-iio@vger.kernel.org>; Mon, 19 Aug 2019 22:10:50 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AucSo0iTG1cMBc8FIWdp3OKtOSf3xX/XdVDaCB+1w3E=;
-        b=GtlBx2K57kgXonIcp24pVGTKNMUMW2gH4Ka/ZnrNxGwyCABh9lNy6Dm2MpjIZImJ26
-         jU5y7MbU+ntQQYcCO02dfYsNsy3lD57BsjZjq5GFbK5hlEVPc4P2NEGqDWk6Sx6PSPdl
-         81cIek9c7CeGB0heLGXoLWzXk5ncVehlORCtw=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=AucSo0iTG1cMBc8FIWdp3OKtOSf3xX/XdVDaCB+1w3E=;
-        b=q/D7+tB3r/1oo5U8GMAL1njUX/bqD7MBgxhpoD4t+Bo30dqNv68j+aklzMI+p9QOWS
-         ot4/UGtY72GErB/tDBg2dbcAJ/zSJrduAezn0LxjnE56w/omxu5jYBaqavHxeS2r5uNL
-         e2MKNFGo2d8x3+rQvvcFMcItsaRkfoItALPD2LRng2eoIGgC6WZqkGwMNyLUalzMuXIY
-         ULa+QUDfI2A0vkFbYkZuVsrHRjhGvrshHnqS0moxvq21XTJJEIRuaDEwiKRsONexGcqG
-         e2eyUsO6cd+Az3uU3TP/zzicq6PDpO0bs3SsbPveU3nM2dTfzU3MotCQdmhq9I3nzt2q
-         ANOg==
-X-Gm-Message-State: APjAAAXpnlLDWGinp01LMLa+/lDteoUBmxtHPquyVW0G3GfDuehjGgFN
-        RE0hClRqgcLUpTOF59F6q3syihncqvI=
-X-Google-Smtp-Source: APXvYqy9EyoevmrNpsIqO5DMd+laWuPTmqYg30O6Tg+dLWKU64cDPDNIaFnu2C4J1cZccf0uzNhjOg==
-X-Received: by 2002:a65:49cc:: with SMTP id t12mr21549032pgs.83.1566277849606;
-        Mon, 19 Aug 2019 22:10:49 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id p189sm18873562pfb.112.2019.08.19.22.10.48
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
-        Mon, 19 Aug 2019 22:10:48 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org
-Cc:     enric.balletbo@collabora.com, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Nick Vaccaro <nvaccaro@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Fabien Lahoudere <fabien.lahoudere@collabora.com>,
-        Benson Leung <bleung@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: cros_ec: set calibscale for 3d MEMS to unit vector
-Date:   Mon, 19 Aug 2019 22:10:29 -0700
-Message-Id: <20190820051029.118905-1-gwendal@chromium.org>
-X-Mailer: git-send-email 2.23.0.rc1.153.gdeed80330f-goog
+        id S1730749AbfHTNm6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Aug 2019 09:42:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38444 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730745AbfHTNm6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 20 Aug 2019 09:42:58 -0400
+Received: from sasha-vm.mshome.net (unknown [12.236.144.82])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 153D722DBF;
+        Tue, 20 Aug 2019 13:42:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1566308577;
+        bh=8EC/IqFK7cYJWrqHFTdbNdl1R6ctwn0PAOTv1t8eTZQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=QZqVExN1SWxCHm0Arj/6mYLbLf5Pv5KcURCbfi8A07TF4xJFXcEzFjcQJH41vlyI0
+         iSOy5KfXTqHouzedFaagySEvrCKiJZIrXKIlkfz2oW8HPGgcG91qhJsVCMb31bCWLc
+         0xQs+Joy7o9T6PR3Dbz71jG2yNq3dcNdAaMT6z6c=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Jacopo Mondi <jacopo+renesas@jmondi.org>, Stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.14 02/12] iio: adc: max9611: Fix temperature reading in probe
+Date:   Tue, 20 Aug 2019 09:42:43 -0400
+Message-Id: <20190820134253.11562-2-sashal@kernel.org>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20190820134253.11562-1-sashal@kernel.org>
+References: <20190820134253.11562-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-By default, set the calibscale vector to unit vector.
-It prevents sending 0 as calibscale when not initialized.
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+[ Upstream commit b9ddd5091160793ee9fac10da765cf3f53d2aaf0 ]
+
+The max9611 driver reads the die temperature at probe time to validate
+the communication channel. Use the actual read value to perform the test
+instead of the read function return value, which was mistakenly used so
+far.
+
+The temperature reading test was only successful because the 0 return
+value is in the range of supported temperatures.
+
+Fixes: 69780a3bbc0b ("iio: adc: Add Maxim max9611 ADC driver")
+Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Cc: <Stable@vger.kernel.org>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
+ drivers/iio/adc/max9611.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index fd833295bb173..d44ae126f4578 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -90,7 +90,7 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 	struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
- 	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
- 	u32 ver_mask;
--	int ret;
-+	int ret, i;
+diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
+index f8f298c33b287..c61fbf5602718 100644
+--- a/drivers/iio/adc/max9611.c
++++ b/drivers/iio/adc/max9611.c
+@@ -484,7 +484,7 @@ static int max9611_init(struct max9611_dev *max9611)
+ 	if (ret)
+ 		return ret;
  
- 	platform_set_drvdata(pdev, indio_dev);
+-	regval = ret & MAX9611_TEMP_MASK;
++	regval &= MAX9611_TEMP_MASK;
  
-@@ -136,6 +136,9 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 		/* Set sign vector, only used for backward compatibility. */
- 		memset(state->sign, 1, CROS_EC_SENSOR_MAX_AXIS);
- 
-+		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
-+			state->calib[i].scale = MOTION_SENSE_DEFAULT_SCALE;
-+
- 		/* 0 is a correct value used to stop the device */
- 		state->frequencies[0] = 0;
- 		if (state->msg->version < 3) {
+ 	if ((regval > MAX9611_TEMP_MAX_POS &&
+ 	     regval < MAX9611_TEMP_MIN_NEG) ||
 -- 
-2.23.0.rc1.153.gdeed80330f-goog
+2.20.1
 
