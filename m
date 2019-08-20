@@ -7,48 +7,48 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57818C3A59D
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8FBAC3A59E
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1769422DA7
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93FC422DCC
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 13:45:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566308702;
-	bh=8EC/IqFK7cYJWrqHFTdbNdl1R6ctwn0PAOTv1t8eTZQ=;
+	s=default; t=1566308751;
+	bh=0dwwIdgtH7PjozajHkNaCBqCl7gFLOz9X/wet3Fyk8s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=HZIRaXmu0UxajzFIN0zQvO7QLNOCIWA6YOJUuF2hpzdFzgpUaz+XRSSys70HN/p2Q
-	 15ekOi6eP9plaaCL0v5UZqQbAJST4TQxhWSu+vBu+I4qPs31I1Or0oPdmJZ7jlP+pC
-	 BojZHzAgz0CLzzqi9dpmpQu8NyA9t/jnmiVS/XuE=
+	b=xCX0BxDit8HwHSRLVYxZ/Eww12z5T5l0YCHmmP2h7aL8gAotBAzlKmq90l96J/opZ
+	 kSY1Mk/JPn8USH0EVK35Td4+Zso4O//TrAJO+AL4gIzVQ2AN6s+16f8t23qQDWE74E
+	 sL+IjZ54f0AdnchS55WpHXjmxlECQKWNFdIqfwB4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730749AbfHTNm6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Aug 2019 09:42:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38444 "EHLO mail.kernel.org"
+        id S1730630AbfHTNm2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Aug 2019 09:42:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37802 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730745AbfHTNm6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 20 Aug 2019 09:42:58 -0400
+        id S1730212AbfHTNm2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 20 Aug 2019 09:42:28 -0400
 Received: from sasha-vm.mshome.net (unknown [12.236.144.82])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 153D722DBF;
-        Tue, 20 Aug 2019 13:42:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5ED42339F;
+        Tue, 20 Aug 2019 13:42:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566308577;
-        bh=8EC/IqFK7cYJWrqHFTdbNdl1R6ctwn0PAOTv1t8eTZQ=;
+        s=default; t=1566308547;
+        bh=0dwwIdgtH7PjozajHkNaCBqCl7gFLOz9X/wet3Fyk8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QZqVExN1SWxCHm0Arj/6mYLbLf5Pv5KcURCbfi8A07TF4xJFXcEzFjcQJH41vlyI0
-         iSOy5KfXTqHouzedFaagySEvrCKiJZIrXKIlkfz2oW8HPGgcG91qhJsVCMb31bCWLc
-         0xQs+Joy7o9T6PR3Dbz71jG2yNq3dcNdAaMT6z6c=
+        b=P7/2Mj50JkiALmkRY+X4KLo/gIKjau8tq/bPk8OSR95Z8+VaEJBiB9ZFLFIAO45/W
+         OLlowelJFS+9nqOfzu7RmrPL9LQM+3XtPTkLaAxrtflMJaYnYqWLs57ZSYwtZWEwJm
+         z/8G83UNdvlR30R9FEjO7o2X2DQi9Cy870CJlDKk=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jacopo Mondi <jacopo+renesas@jmondi.org>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 02/12] iio: adc: max9611: Fix temperature reading in probe
-Date:   Tue, 20 Aug 2019 09:42:43 -0400
-Message-Id: <20190820134253.11562-2-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 13/27] iio: adc: max9611: Fix temperature reading in probe
+Date:   Tue, 20 Aug 2019 09:41:59 -0400
+Message-Id: <20190820134213.11279-13-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190820134253.11562-1-sashal@kernel.org>
-References: <20190820134253.11562-1-sashal@kernel.org>
+In-Reply-To: <20190820134213.11279-1-sashal@kernel.org>
+References: <20190820134213.11279-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -80,10 +80,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-index f8f298c33b287..c61fbf5602718 100644
+index ce9af43fa2de7..49c1956e6a674 100644
 --- a/drivers/iio/adc/max9611.c
 +++ b/drivers/iio/adc/max9611.c
-@@ -484,7 +484,7 @@ static int max9611_init(struct max9611_dev *max9611)
+@@ -483,7 +483,7 @@ static int max9611_init(struct max9611_dev *max9611)
  	if (ret)
  		return ret;
  
