@@ -2,101 +2,131 @@ Return-Path: <SRS0=pALz=WQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07922C3A59E
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:11:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAEE8C3A589
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:11:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D2BD222DBF
-	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:11:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A148B22DA9
+	for <linux-iio@archiver.kernel.org>; Tue, 20 Aug 2019 14:11:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="Cs1pibJ1"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=monstr-eu.20150623.gappssmtp.com header.i=@monstr-eu.20150623.gappssmtp.com header.b="f3bIV3Sr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729762AbfHTOLt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Aug 2019 10:11:49 -0400
-Received: from mail-wm1-f43.google.com ([209.85.128.43]:40332 "EHLO
-        mail-wm1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729803AbfHTOLt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2019 10:11:49 -0400
-Received: by mail-wm1-f43.google.com with SMTP id v19so2780576wmj.5
-        for <linux-iio@vger.kernel.org>; Tue, 20 Aug 2019 07:11:47 -0700 (PDT)
+        id S1730174AbfHTOLw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Aug 2019 10:11:52 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:32781 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730115AbfHTOLw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Aug 2019 10:11:52 -0400
+Received: by mail-wr1-f67.google.com with SMTP id u16so12579494wrr.0
+        for <linux-iio@vger.kernel.org>; Tue, 20 Aug 2019 07:11:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=monstr-eu.20150623.gappssmtp.com; s=20150623;
-        h=sender:from:to:cc:subject:date:message-id;
-        bh=LEqTLls42sbmI5VwKOm6X28Wqd3lNc1FuJ61+Mb/tX8=;
-        b=Cs1pibJ1ZhNLrgABwvSomaLtVuOtZqECaToplmBgiSFFOyALHob2jmunT0LDP2rTLr
-         8xjyBUqopE2eXJdn2ardKgcbFEUxhOAELFlaikQyhvbAgG0ucDYMGZ4iADMDMSqDU+0O
-         3DrLOOguTT2aASkXqOvQzBmF3+MB8NoGMcF7sXLyiTh1vmNTV1OoUqjhx7oDQFt4yavz
-         1jAjzjETMvmWHa8jVtdHXC4xHalXdqlJQA6HMI/uasX0tSY9v7Vv1XeXCA6Iq/FR837h
-         oWZxhnY6V6D1G2GuQJr03LBCC0QDFpnpnYnoN5VfYqEAX02jmT6Ql+PoQjWi1c0x652o
-         74Ng==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
+         :in-reply-to:references;
+        bh=FGBKHCq8FJWMnIUa/LWFL4TzsPl3MOXhcThUateMRtc=;
+        b=f3bIV3SrHFrMQrtixm3U82rRcligpygZElE9yXd5V8V9ltf6yCrcMipHXrommhcqfw
+         TFOHb/OanU4gCVrKHQ4rz/c+Lfhl0tvYf7X1dwxm6Wgsb0V3lZi6+l3NjxduRxirIBhg
+         hWW408Mo9CNtLPe2K1XsYTiZwLTBeRtkzcdT6kM94Gw7kC4ZCx5uxEncz8qyBoj/iayH
+         QSjw5kDf4YeSbhEFMhXZb9Y5o+cnR5cHW72PjEkakxrM2G28a8rEre+NOZ/qpC3DNmKh
+         lUQzqHDbg+0ReV5HhEvmxRDpMVa7i8/eh+1DlHByywQhWXJivmNVoag839ISQcYEypA3
+         OXhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id;
-        bh=LEqTLls42sbmI5VwKOm6X28Wqd3lNc1FuJ61+Mb/tX8=;
-        b=b7X7OGB/UtLe7T1rW5UfkoUQbf04J57aUCkNjtOHKrRXd299B3SMVq47kHlVFyjV/v
-         RBXDQVzsyrPMJXNXO/b8HJsJbmXhRH2k8dCB7VvYr9UefRv0LGwxJDCT35bXJRZO52nc
-         wtEeaGWb17ry7+BXuBuzVfdbjAESgAzRS1eSsrsvREjX9j7Vp0pZKH4mhMMC9gZwD5oD
-         CAFT3tbWdf+5rrXrJWtuMxtAO3UPgIB6zpp5Agan25ghdUDA+n16HWd256AKe0uRwDnl
-         mfQO3U5dYvEwudvDxmKlcfvEqMf83kDO494k6hNSIHVCTnmZLuZOhWL7e+4Tk3niPSqI
-         P7kw==
-X-Gm-Message-State: APjAAAUxrT7i+jpePJK7CUMtdxDH1W2FfAdZzRkxI2AKb/iGhC/hMtAi
-        iQRC4U0YKe0aPWquDfmx4RoSeg==
-X-Google-Smtp-Source: APXvYqzNR58TVo7qQuCIjcdZQJaHL73fv9fbkxk4iC3wqq9XgsSdtNr1AIlJV9iaBdhgSN99G8bkHg==
-X-Received: by 2002:a1c:cfc6:: with SMTP id f189mr240811wmg.18.1566310306618;
-        Tue, 20 Aug 2019 07:11:46 -0700 (PDT)
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :in-reply-to:references:in-reply-to:references;
+        bh=FGBKHCq8FJWMnIUa/LWFL4TzsPl3MOXhcThUateMRtc=;
+        b=trqe4JEdlFfnwer+MnG9QLjTbiNXCV07V20NZ3ogZ67Mf3wcJdOoYZ0Y8/H/vsNb7X
+         tL8yn/38Ghu+/S5woUbVLUrv3ETh3YtJQUVy3vQR/6gMRwOQgfEF5MJcy9XH/8Df5Dr6
+         vaSBMJn4G0QMKLDFAygbM/yY/+p4fBDKLvbcBgFi81Tua4zwPueHHF4rZDSbbIp433ol
+         G2b0+3psbPDDjQVTbf6L0d17SltNuOjGJ2iWgEmGGQTpfaVsoizzz/9m5CobF+iAwNtK
+         sGiBTXMc5in4n4XWLfZU3Y0HmTprXoWZvzpG1NJ0XT3GzjZwhBDP4O+0QT6Xs2Ri7u1S
+         uCYg==
+X-Gm-Message-State: APjAAAXmMoaIBrbrFYk+LULsg5OUKIpdNoxGNMTDS/43miMaAlvzkh14
+        ocL7AYhBXtAIKV68XCH9PJw5hw==
+X-Google-Smtp-Source: APXvYqxobUNDMTRwNWh7KrFllFIt6Sw6gQaq/G0HklprIHThax3CILx4Cq6GYMtvbluPatyRvV4Qqw==
+X-Received: by 2002:adf:ef05:: with SMTP id e5mr34863140wro.158.1566310310222;
+        Tue, 20 Aug 2019 07:11:50 -0700 (PDT)
 Received: from localhost (nat-35.starnet.cz. [178.255.168.35])
-        by smtp.gmail.com with ESMTPSA id r123sm185142wme.7.2019.08.20.07.11.45
+        by smtp.gmail.com with ESMTPSA id u186sm229705wmu.26.2019.08.20.07.11.49
         (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
-        Tue, 20 Aug 2019 07:11:45 -0700 (PDT)
+        Tue, 20 Aug 2019 07:11:49 -0700 (PDT)
 From:   Michal Simek <michal.simek@xilinx.com>
 To:     linux-kernel@vger.kernel.org, monstr@monstr.eu,
         michal.simek@xilinx.com, linux@roeck-us.net
-Cc:     linux-hwmon@vger.kernel.org, devicetree@vger.kernel.org,
-        Colin Ian King <colin.king@canonical.com>,
+Cc:     Colin Ian King <colin.king@canonical.com>,
         linux-iio@vger.kernel.org,
         =?UTF-8?q?Stefan=20Br=C3=BCns?= <stefan.bruens@rwth-aachen.de>,
-        Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Jean Delvare <jdelvare@suse.com>,
-        Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>
-Subject: [PATCH 0/4] iio: adc: ina2xx: Improve device identification
-Date:   Tue, 20 Aug 2019 16:11:37 +0200
-Message-Id: <cover.1566310292.git.michal.simek@xilinx.com>
+Subject: [PATCH 2/4] iio: adc: ina2xx: Setup better name then simple ina2xx
+Date:   Tue, 20 Aug 2019 16:11:39 +0200
+Message-Id: <e1a9d7c5f94a4942a97a242e530a3bfdda8bbc74.1566310292.git.michal.simek@xilinx.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <cover.1566310292.git.michal.simek@xilinx.com>
+References: <cover.1566310292.git.michal.simek@xilinx.com>
+In-Reply-To: <cover.1566310292.git.michal.simek@xilinx.com>
+References: <cover.1566310292.git.michal.simek@xilinx.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On systems with multiple ina2xx chips it is impossible to find out which
+iio device is which one based on probe order. That's why it is necessary to
+setup better name based on possition.
+The patch is reusing dev_name which is setup by core with client->name.
 
-the purpose of this series is to improve ina226 identification. On systems
-like Xilinx ZynqMP zcu102 (check dt in the tree) you can find out almost 20
-ina226 chips and it is impossible to find out based on simple ina226 which
-chip is repsonsible for what.
-The series is adding two ways how to improve device identification.
-Please let me know what you think I am happy to do changes in it.
+name char array was setup to 128 byte length to correspond the same name
+length by HID device.
 
-Thanks,
-Michal
+Before this patch:
+iio:device9: ina226 (buffer capable)
+After:
+iio:device9: ina226-3-004a (buffer capable)
 
+Signed-off-by: Michal Simek <michal.simek@xilinx.com>
+---
 
-Michal Simek (4):
-  iio: adc: ina2xx: Define *device_node only once
-  iio: adc: ina2xx: Setup better name then simple ina2xx
-  dt-bindings: Add optional label property for ina2xx
-  iio: adc: ina2xx: Use label proper for device identification
+Also id->name can be used as prefix. On ina226 output is the same.
 
- .../devicetree/bindings/hwmon/ina2xx.txt          |  2 ++
- drivers/iio/adc/ina2xx-adc.c                      | 15 +++++++++++----
- 2 files changed, 13 insertions(+), 4 deletions(-)
+Also I am happy to change that space for name will be dynamicky allocated
+to save a space if needed.
+---
+ drivers/iio/adc/ina2xx-adc.c | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
 
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 37058d9c2054..7c7c63677bf4 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -146,6 +146,7 @@ struct ina2xx_chip_info {
+ 	int range_vbus; /* Bus voltage maximum in V */
+ 	int pga_gain_vshunt; /* Shunt voltage PGA gain */
+ 	bool allow_async_readout;
++	char name[128];
+ };
+ 
+ static const struct ina2xx_config ina2xx_config[] = {
+@@ -1027,7 +1028,12 @@ static int ina2xx_probe(struct i2c_client *client,
+ 		indio_dev->num_channels = ARRAY_SIZE(ina219_channels);
+ 		indio_dev->info = &ina219_info;
+ 	}
+-	indio_dev->name = id->name;
++
++	/* Compose chip name to unified i2c format */
++	snprintf(chip->name, sizeof(chip->name), "%s-%s",
++		 client->name, dev_name(&client->dev));
++
++	indio_dev->name = chip->name;
+ 	indio_dev->setup_ops = &ina2xx_setup_ops;
+ 
+ 	buffer = devm_iio_kfifo_allocate(&indio_dev->dev);
 -- 
 2.17.1
 
