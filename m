@@ -2,190 +2,165 @@ Return-Path: <SRS0=HzLZ=WR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5881DC3A59E
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 13:26:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B811FC3A5A0
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 14:17:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3587E2339F
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 13:26:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 84164233FC
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 14:17:50 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="WV7qnMpi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728821AbfHUNZ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Aug 2019 09:25:56 -0400
-Received: from comms.puri.sm ([159.203.221.185]:44928 "EHLO comms.puri.sm"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728007AbfHUNZ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 21 Aug 2019 09:25:56 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by comms.puri.sm (Postfix) with ESMTP id 0B82CDF905;
-        Wed, 21 Aug 2019 06:25:55 -0700 (PDT)
-Received: from comms.puri.sm ([127.0.0.1])
-        by localhost (comms.puri.sm [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id K3mBeymCY0YO; Wed, 21 Aug 2019 06:25:54 -0700 (PDT)
-From:   Martin Kepplinger <martin.kepplinger@puri.sm>
-To:     lorenzo.bianconi83@gmail.com, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Martin Kepplinger <martin.kepplinger@puri.sm>
-Subject: [PATCH v5 1/4] iio: imu: st_lsm6dsx: introduce update_fifo function pointer
-Date:   Wed, 21 Aug 2019 15:25:17 +0200
-Message-Id: <20190821132520.28225-2-martin.kepplinger@puri.sm>
-In-Reply-To: <20190821132520.28225-1-martin.kepplinger@puri.sm>
-References: <20190821132520.28225-1-martin.kepplinger@puri.sm>
-Content-Transfer-Encoding: 8bit
+        id S1729317AbfHUORs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Aug 2019 10:17:48 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:7912 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728981AbfHUORs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Aug 2019 10:17:48 -0400
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.27/8.16.0.27) with SMTP id x7LEFt4X026159;
+        Wed, 21 Aug 2019 10:17:11 -0400
+Received: from nam01-bn3-obe.outbound.protection.outlook.com (mail-bn3nam01lp2055.outbound.protection.outlook.com [104.47.33.55])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2ug3mac2wd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 21 Aug 2019 10:17:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=AQk6rVYfCOHb9kYWYp2ZohlBOJjFXWOrE6piCCBu9pjGzWdad5dUjGMRoFK9VmvJXEqcNDmIXrrPe3i5uNmggathcu9u3lZ2k7NGyClg0/1krgzMHE6iVKzfhKbi49GQz65XQjfI91owsYwS2T9XsoeE5ggLNyRz22Jdw8m/7qxdwiHjtMCQseW5BywheX/9KzfbW5FaqL/vjkWyZXs4XbwryfboJo6VoK/pEvRNsJ5DofUlEBc1FYf6uUMxFVAUfZb3Ed6FlY2CKREnLwzxm0qpZKrkNLJ/tfNIEQku22AXivWWE6c8Iuobm64C4dSDdYw+L1wpWbTyw+xmOUxdbw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bh9sSZWrstr07mS0w9mNVsQBVCj7BgAlH0eJ4glJsM8=;
+ b=n1K1aHikKuTEuLPo/ZzXOoVF7wbKSj9rWirIYh+dzwh4mXA8TD3HS61eG3dtAIt9M084gu0ejQG2HujX+YUdlooIstccJzeoBkbltZmApTpqSzOadQ3Jkp0QJaitMhXzhgY4SFZoZWJKn44QEPrBKgR8l7brq9rcvIJSQnDHhchS5Bd70YCHFfeEVm2rcY0BFxuiAQ7QOpeEc7Dwe8iyuO0+3088unKJR93KjEhEVAPJNJFbJMRJzDWVkEGet8nf/Deo59K4Eok+P0MyzngMj+MFhihbqBQKTG72oIxdMd+Hkx70IvuE96F0CREdwUt2sOQxAMqGfxjrvgIG4B4N1w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.55) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=bh9sSZWrstr07mS0w9mNVsQBVCj7BgAlH0eJ4glJsM8=;
+ b=WV7qnMpia10DBoYixEw8PugnngaZxQ6wP7j8b/zXo/wss7UbAQXRoez5Xk1KsUIbIQyeb/vV6YXpc1bMPRfSPi7Vdymw1bIP5TOHHYgTDGL0QLw/FKVAA6oaly8JjwgZcZCo9kYBUphzFG6v4h1Fms1HEeV3ueeVjv10dUwhhIg=
+Received: from CY4PR03CA0088.namprd03.prod.outlook.com (2603:10b6:910:4d::29)
+ by DM5PR03MB2553.namprd03.prod.outlook.com (2603:10b6:3:41::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2178.16; Wed, 21 Aug
+ 2019 14:17:08 +0000
+Received: from BL2NAM02FT010.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::200) by CY4PR03CA0088.outlook.office365.com
+ (2603:10b6:910:4d::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2178.16 via Frontend
+ Transport; Wed, 21 Aug 2019 14:17:08 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
+Received: from nwd2mta1.analog.com (137.71.25.55) by
+ BL2NAM02FT010.mail.protection.outlook.com (10.152.77.53) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2178.16
+ via Frontend Transport; Wed, 21 Aug 2019 14:17:08 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id x7LEH4YD005682
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Wed, 21 Aug 2019 07:17:04 -0700
+Received: from ben-Latitude-E6540.ad.analog.com (10.48.65.163) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Wed, 21 Aug 2019 10:17:07 -0400
+From:   Beniamin Bia <beniamin.bia@analog.com>
+To:     <jic23@kernel.org>
+CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
+        <mark.rutland@arm.com>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <paulmck@linux.ibm.com>,
+        <mchehab+samsung@kernel.org>, <linus.walleij@linaro.org>,
+        <nicolas.ferre@microchip.com>, <biabeniamin@outlook.com>,
+        Beniamin Bia <beniamin.bia@analog.com>
+Subject: [PATCH v3 4/4] dt-bindings: iio: adc: Add AD7606B ADC documentation
+Date:   Wed, 21 Aug 2019 17:16:56 +0300
+Message-ID: <20190821141656.4815-4-beniamin.bia@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190821141656.4815-1-beniamin.bia@analog.com>
+References: <20190821141656.4815-1-beniamin.bia@analog.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(39860400002)(346002)(376002)(136003)(2980300002)(199004)(189003)(44832011)(305945005)(54906003)(106002)(2616005)(2351001)(486006)(476003)(446003)(51416003)(7696005)(11346002)(316002)(126002)(107886003)(14444005)(1076003)(4326008)(186003)(5660300002)(26005)(6666004)(356004)(70586007)(966005)(70206006)(76176011)(336012)(426003)(16586007)(36756003)(8936002)(86362001)(50466002)(48376002)(47776003)(6916009)(50226002)(2906002)(8676002)(7636002)(7416002)(478600001)(6306002)(246002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR03MB2553;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 469d2330-1e7a-4c9e-f8d0-08d72642401e
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600148)(711020)(4605104)(4709080)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328);SRVR:DM5PR03MB2553;
+X-MS-TrafficTypeDiagnostic: DM5PR03MB2553:
+X-MS-Exchange-PUrlCount: 3
+X-Microsoft-Antispam-PRVS: <DM5PR03MB2553E35A76F48E93A5B44A70F0AA0@DM5PR03MB2553.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:6108;
+X-Forefront-PRVS: 0136C1DDA4
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: f95nOJpPZ9ImLLRkPOjiy7WdOGiBcEkd5puhsiDBU0+NMUQqD27aSTej2Hd2Z/XVz4XqgpI0dJ9MUOT+173lK4aKQp5WDCx0UEym0EKy7bhj3FBP++wZrQl/5zistpBCv/3OmsR8X3YRcNEmEH53hbWAK5VFHMW2WnvhEsx6+xF/W+Ag0cYQd1TGW2lGeWJdrRgDBMOrEZvYsnf5d9JzmzrPQN8LxfRr4kGqGmNAl6KFijetjWgkeZaL5kIxXb7lKez9N5Slj8hYtUCFJwQsesg2QKcY7OxkdUg7O69LflrchSHzfVxlY2VE+WU6TjDTbcTjjS9x/JYftHVUXJodQcrPAjgma//DSiHbDCqkrKAR8VNCboW3zrAkoVlvGaeQuO9Qyu12x3O4eHHNUCFgI2c3Czk4XToddfxXb5XLZZk=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Aug 2019 14:17:08.0622
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 469d2330-1e7a-4c9e-f8d0-08d72642401e
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR03MB2553
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-08-21_05:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 phishscore=0 bulkscore=0 spamscore=0
+ clxscore=1015 lowpriorityscore=0 mlxscore=0 impostorscore=0
+ mlxlogscore=999 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.0.1-1906280000 definitions=main-1908210156
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+Documentation for AD7606B Analog to Digital Converter and software
+mode was added.
 
-Introduce update_fifo routine pointer in st_lsm6dsx_fifo_ops data
-structure since we will need a different update FIFO configuration
-callback adding support for lsm6ds0/lsm9ds1 imu device
-
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Tested-by: Martin Kepplinger <martin.kepplinger@puri.sm>
+Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  4 ++++
- .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 19 +++++++++++++++----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  |  6 ++++++
- 3 files changed, 25 insertions(+), 4 deletions(-)
+Changes in v3:
+-nothing changed
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 4e8e67ae1632..055e52dec36a 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -75,6 +75,7 @@ struct st_lsm6dsx_reg {
- 	u8 mask;
- };
+ Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
+index 509dbe9c84d2..2afe31747a70 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
+@@ -13,6 +13,7 @@ maintainers:
+ description: |
+   Analog Devices AD7606 Simultaneous Sampling ADC
+   https://www.analog.com/media/en/technical-documentation/data-sheets/ad7606_7606-6_7606-4.pdf
++  https://www.analog.com/media/en/technical-documentation/data-sheets/AD7606B.pdf
+   https://www.analog.com/media/en/technical-documentation/data-sheets/AD7616.pdf
  
-+struct st_lsm6dsx_sensor;
- struct st_lsm6dsx_hw;
+ properties:
+@@ -22,6 +23,7 @@ properties:
+       - adi,ad7606-8
+       - adi,ad7606-6
+       - adi,ad7606-4
++      - adi,ad7606b
+       - adi,ad7616
  
- struct st_lsm6dsx_odr {
-@@ -101,12 +102,14 @@ struct st_lsm6dsx_fs_table_entry {
+   reg:
+@@ -87,7 +89,7 @@ properties:
  
- /**
-  * struct st_lsm6dsx_fifo_ops - ST IMU FIFO settings
-+ * @update_fifo: Update FIFO configuration callback.
-  * @read_fifo: Read FIFO callback.
-  * @fifo_th: FIFO threshold register info (addr + mask).
-  * @fifo_diff: FIFO diff status register info (addr + mask).
-  * @th_wl: FIFO threshold word length.
-  */
- struct st_lsm6dsx_fifo_ops {
-+	int (*update_fifo)(struct st_lsm6dsx_sensor *sensor, bool enable);
- 	int (*read_fifo)(struct st_lsm6dsx_hw *hw);
- 	struct {
- 		u8 addr;
-@@ -327,6 +330,7 @@ int st_lsm6dsx_fifo_setup(struct st_lsm6dsx_hw *hw);
- int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val);
- int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor,
- 				u16 watermark);
-+int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable);
- int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw);
- int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
- 			     enum st_lsm6dsx_fifo_mode fifo_mode);
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index 2c03a5b80f80..b0f3da1976e4 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -602,9 +602,8 @@ int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw)
- 	return err;
- }
- 
--static int st_lsm6dsx_update_fifo(struct iio_dev *iio_dev, bool enable)
-+int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable)
- {
--	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
- 	struct st_lsm6dsx_hw *hw = sensor->hw;
- 	int err;
- 
-@@ -676,12 +675,24 @@ static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
- 
- static int st_lsm6dsx_buffer_preenable(struct iio_dev *iio_dev)
- {
--	return st_lsm6dsx_update_fifo(iio_dev, true);
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+
-+	if (!hw->settings->fifo_ops.update_fifo)
-+		return -ENOTSUPP;
-+
-+	return hw->settings->fifo_ops.update_fifo(sensor, true);
- }
- 
- static int st_lsm6dsx_buffer_postdisable(struct iio_dev *iio_dev)
- {
--	return st_lsm6dsx_update_fifo(iio_dev, false);
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+
-+	if (!hw->settings->fifo_ops.update_fifo)
-+		return -ENOTSUPP;
-+
-+	return hw->settings->fifo_ops.update_fifo(sensor, false);
- }
- 
- static const struct iio_buffer_setup_ops st_lsm6dsx_buffer_ops = {
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 85824d6739ee..0aa93b45d772 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -154,6 +154,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_fifo,
- 			.fifo_th = {
- 				.addr = 0x06,
-@@ -262,6 +263,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_fifo,
- 			.fifo_th = {
- 				.addr = 0x06,
-@@ -379,6 +381,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_fifo,
- 			.fifo_th = {
- 				.addr = 0x06,
-@@ -490,6 +493,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_tagged_fifo,
- 			.fifo_th = {
- 				.addr = 0x07,
-@@ -616,6 +620,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_tagged_fifo,
- 			.fifo_th = {
- 				.addr = 0x07,
-@@ -719,6 +724,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 		},
- 		.fifo_ops = {
-+			.update_fifo = st_lsm6dsx_update_fifo,
- 			.read_fifo = st_lsm6dsx_read_tagged_fifo,
- 			.fifo_th = {
- 				.addr = 0x07,
+   adi,sw-mode:
+     description:
+-      Software mode of operation, so far available only for ad7616.
++      Software mode of operation, so far available only for ad7616 and ad7606B.
+       It is enabled when all three oversampling mode pins are connected to
+       high level. The device is configured by the corresponding registers. If the
+       adi,oversampling-ratio-gpios property is defined, then the driver will set the
 -- 
-2.20.1
+2.17.1
 
