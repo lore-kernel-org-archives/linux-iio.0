@@ -1,161 +1,95 @@
-Return-Path: <SRS0=HzLZ=WR=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=rrOS=WS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90664C3A59E
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 20:31:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C37E6C3A59D
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 06:06:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 646452339F
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Aug 2019 20:31:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566419494;
-	bh=qmr3EkBxegCW1cVj9TcBMOwuGqBhPKJInp6kC6+owFg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=LX5Kd172OZ04lTLhHrjJ+BzkY+ENSXzD4s8dzvx1NsCHy/n2CFzunDDIZiyKutudy
-	 0giDW4ZD5rFGbXJxTM8TOmLjc4W2U9kdKCryCwpqM7yYVaq3K9Zh+sXx7QbQTE6b7t
-	 f7E47oJnNrPFF80PUiq0dEPNC6oWRC8RdQ+25l2c=
+	by mail.kernel.org (Postfix) with ESMTP id 9DA8421848
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 06:06:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728955AbfHUUba (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Aug 2019 16:31:30 -0400
-Received: from mail-ot1-f65.google.com ([209.85.210.65]:34295 "EHLO
-        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727014AbfHUUba (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Aug 2019 16:31:30 -0400
-Received: by mail-ot1-f65.google.com with SMTP id c7so3361351otp.1;
-        Wed, 21 Aug 2019 13:31:29 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iabTxjGtNwFPz618omlBwY8T1BonwpR5OPoPhDx+RAI=;
-        b=WYbOEE9Gy49PJrRZIF4UzXIVNnr3FJk4n4J+C/Tb1KQz9hvmb1uczkBPxMBKM/igic
-         0SNsn4mNhaeqU/Tb5AS8Ni2Rpxxh0j+0WWN/5WrfIZKcY5/63lI2NMfwf6PK3BVqdPN7
-         DLwab1EEfwZ9T2vS9ceWnkIJ9hGAkJy2bszpoRGNyKJsgu0XQj6i0Ig1ziJW4CM6RPau
-         cowsQARkeHukD1/vawY5anj2mN2vbrYwmeTtCyUQ84uswelQdf7WQIOBV64CU1Rw5I+W
-         CJAZry04iuRsvm0CC4NOIPbEQg/SmOfaANmd0lA+ZgZxDdT0rpkkQkqr2eWD+2GPtH/k
-         /45Q==
-X-Gm-Message-State: APjAAAVoW7QyrpPLjF+scMFmsL/Rg9cl9HWIKDAC+JUaS/iUwjv1Cu7P
-        0C+M/iPipBU9yGSzkHGDtA==
-X-Google-Smtp-Source: APXvYqxA5DddGYiMIluqgvMEXnIjXJXPtUYSn4UKKWLOHwak79bzGLItjFHyJqv8AZhca2/koFNGsw==
-X-Received: by 2002:a9d:7a5a:: with SMTP id z26mr26056383otm.348.1566419488855;
-        Wed, 21 Aug 2019 13:31:28 -0700 (PDT)
-Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id d22sm6221319oic.23.2019.08.21.13.31.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Aug 2019 13:31:28 -0700 (PDT)
-Date:   Wed, 21 Aug 2019 15:31:27 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     David Lechner <david@lechnology.com>
-Cc:     linux-iio@vger.kernel.org, linux-omap@vger.kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pwm@vger.kernel.org
-Subject: Re: [PATCH v2 2/5] dt-bindings: counter: new bindings for TI eQEP
-Message-ID: <20190821203127.GA29308@bogus>
-References: <20190807194023.15318-1-david@lechnology.com>
- <20190807194023.15318-3-david@lechnology.com>
+        id S1728511AbfHVGGQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Aug 2019 02:06:16 -0400
+Received: from ox4u.de ([212.118.221.216]:45541 "EHLO s1.ox4u.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1729455AbfHVGGQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 22 Aug 2019 02:06:16 -0400
+Received: by s1.ox4u.de (Postfix, from userid 65534)
+        id 255FA260127; Thu, 22 Aug 2019 08:06:14 +0200 (CEST)
+Received: from ws-140106.systec.local (unknown [212.185.67.146])
+        (using TLSv1 with cipher DHE-RSA-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by s1.ox4u.de (Postfix) with ESMTPSA id 7A95C260122;
+        Thu, 22 Aug 2019 08:06:13 +0200 (CEST)
+From:   Alexander Stein <alexander.stein@systec-electronic.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Alexander Stein <alexander.stein@systec-electronic.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2 1/1] iio: core: Fix fractional format generation
+Date:   Thu, 22 Aug 2019 08:06:07 +0200
+Message-Id: <20190822060607.25339-1-alexander.stein@systec-electronic.com>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20190807194023.15318-3-david@lechnology.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Aug 07, 2019 at 02:40:20PM -0500, David Lechner wrote:
-> This documents device tree binding for the Texas Instruments Enhanced
-> Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
-> 
-> Signed-off-by: David Lechner <david@lechnology.com>
-> ---
-> 
-> v2 changes:
-> - convert to .yaml format
-> - rename clock to "sysclkout"
-> 
->  .../devicetree/bindings/counter/ti-eqep.yaml  | 50 +++++++++++++++++++
->  1 file changed, 50 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.yaml b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> new file mode 100644
-> index 000000000000..8f8b2e87e5c3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
-> @@ -0,0 +1,50 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/counter/ti-eqep.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP) Module
-> +
-> +maintainers:
-> +  - David Lechner <david@lechnology.com>
-> +
-> +properties:
-> +  compatible:
-> +    const: "ti,am3352-eqep"
+In case the result is -0.3252 tmp0 is 0 after the div_s64_rem, so tmp0 is
+non-negative which results in an output of 0.3252.
+Fix this by explicitly handling the negative sign ourselves.
 
-No need for quotes
+Signed-off-by: Alexander Stein <alexander.stein@systec-electronic.com>
+---
+Changes in v2:
+* Support vals[0] >= and vals[1] < 0 in IIO_VAL_FRACTIONAL
+* Note: IIO_VAL_FRACTIONAL is untested, as I lack hardware
+* Note2: Currently IIO_VAL_FRACTIONAL is only called with vals[1] from
+         in-kernel drivers AFAICS
 
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description: The eQEP event interrupt
+ drivers/iio/industrialio-core.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-Don't really have to have a description when there is only 1 entry.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 245b5844028d..247338142c87 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -568,6 +568,7 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ {
+ 	unsigned long long tmp;
+ 	int tmp0, tmp1;
++	char *sign;
+ 	bool scale_db = false;
+ 
+ 	switch (type) {
+@@ -593,11 +594,17 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ 		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+ 		tmp1 = vals[1];
+ 		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+-		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
++		if (vals[1] < 0) {
++			sign = vals[0] >= 0 ? "-" : "";
++		} else {
++			sign = vals[0] < 0 ? "-" : "";
++		}
++		return snprintf(buf, len, "%s%u.%09u", sign, abs(tmp0), abs(tmp1));
+ 	case IIO_VAL_FRACTIONAL_LOG2:
++		sign = vals[0] < 0 ? "-" : "";
+ 		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
+ 		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
+-		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
++		return snprintf(buf, len, "%s%u.%09u", sign, abs(tmp0), abs(tmp1));
+ 	case IIO_VAL_INT_MULTIPLE:
+ 	{
+ 		int i;
+-- 
+2.23.0
 
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description: The clock that determines the SYSCLKOUT rate for the eQEP
-> +                 peripheral.
-
-Same here. 2 spaces in from description is the normal indentation.
-
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    const: sysclkout
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    eqep0: eqep@180 {
-
-counter@...
-
-> +        compatible = "ti,am3352-eqep";
-> +        reg = <0x180 0x80>;
-> +        clocks = <&l4ls_gclk>;
-> +        clock-names = "sysclkout";
-> +        interrupts = <79>;
-> +    };
-> +
-> +...
-> -- 
-> 2.17.1
-> 
