@@ -2,165 +2,120 @@ Return-Path: <SRS0=rrOS=WS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1414CC3A59D
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 08:36:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E991DC3A5A1
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 13:22:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D6AFC23405
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 08:36:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B79172070B
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 13:22:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cD1pIDQE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731682AbfHVIgQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Aug 2019 04:36:16 -0400
-Received: from anchovy1.45ru.net.au ([203.30.46.145]:42598 "EHLO
-        anchovy1.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731680AbfHVIgQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2019 04:36:16 -0400
-Received: (qmail 29380 invoked by uid 5089); 22 Aug 2019 08:36:14 -0000
-Received: by simscan 1.2.0 ppid: 29213, pid: 29214, t: 0.0835s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
-Received: from unknown (HELO ?192.168.0.128?) (preid@electromag.com.au@203.59.235.95)
-  by anchovy1.45ru.net.au with ESMTPA; 22 Aug 2019 08:36:12 -0000
-Subject: Re: iio: Is storing output values to non volatile registers something
- we should do automatically or leave to userspace action. [was Re: [PATCH]
- iio: potentiometer: max5432: update the non-volatile position]
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Martin Kaiser <martin@kaiser.cx>, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20190809160617.21035-1-martin@kaiser.cx>
- <20190811101137.5bd495e9@archlinux>
- <20190812103751.gumfzgazlytq5zqm@viti.kaiser.cx>
- <42d99cc8-e59b-6c0b-d1e3-5690b8d1fe53@electromag.com.au>
- <20190818203256.202318d3@archlinux>
-From:   Phil Reid <preid@electromag.com.au>
-Message-ID: <18c1f34d-8db0-face-b026-a4676324220a@electromag.com.au>
-Date:   Thu, 22 Aug 2019 16:36:09 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:60.0) Gecko/20100101
- Thunderbird/60.8.0
-MIME-Version: 1.0
-In-Reply-To: <20190818203256.202318d3@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-AU
-Content-Transfer-Encoding: 7bit
+        id S1729704AbfHVNW1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Aug 2019 09:22:27 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:52092 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727401AbfHVNW1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2019 09:22:27 -0400
+Received: by mail-wm1-f65.google.com with SMTP id k1so5635813wmi.1;
+        Thu, 22 Aug 2019 06:22:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=Luuk1pqGXQ3LTo0vTwCyDXOtvHqT8koKOsr4J0FT5Fs=;
+        b=cD1pIDQETzko/f5Dq3TBV46ArVdMkx9fsJBv6BXBingcwaRSFNXnGIa8sGgYJR0US6
+         jGK1WFjr0g2Xkmv6iPon63GEdtS2s7Rd5ZPmBMSlWD4AUEVQMX/nxFX9ky1Qfr/JND1n
+         x19Lswx2JOx1uuMT16uCrE7/VZg14WFD7+rjsm+GU8lHFWHdi3zSlKrQcObSMy49HNLh
+         w5Do6UeAdJrfhBV/TslD48lJgDLkdQdNTRvh5tt3DJV/szK2BK776ZRYV5Nk7BvSLLTd
+         mzcLDTY/ZW85+qvd/JE2HSX7VDnJYezPv6j8d7EcXaThXljTrQiKU3Yov9SV1AL0Hk7Q
+         PfkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=Luuk1pqGXQ3LTo0vTwCyDXOtvHqT8koKOsr4J0FT5Fs=;
+        b=XSJF/cosu51SQ11D3u/dbRabnrPnDXAHFKjzrPxtyj9kdt9KMW4i4qRiuqf5HBErqB
+         4SRvsLSymC/rzd7AWDoREBCNGbIeHQ90KhhD9nquS+U945icfoguK3NJVzKhF4iai2AF
+         CY9geDAkvUCvgGSEfKfKAm/hE/3G2+2zm/6j+FDRmLI9bGNmIPTx7smkKfmSCB+3y6wF
+         PnSibHvm/RYAzOM7w9b02v4xo7uyrVnJPIEuZu843gg8F3El2fsZVVCCkjQPzIwkfFc7
+         Hupu2/woeRIOxtKCHt9Fmfsa3Eigi7cZkkguNIZP+yS3j+WZG9wEGnorLFX3WoIf4zUj
+         gmSw==
+X-Gm-Message-State: APjAAAXW3LVu+tm511L4C9ZjG1RnG4V6i8SoW4siF8/xRBW+K0ulKTQT
+        A04dZ3HiW3AxGi44S/HFWtY=
+X-Google-Smtp-Source: APXvYqy3qNIEb+nlLulGT8/JnUEPqj/ydST6mPALa9wu2JHUvW5JsZt5uCa0vLVoqueqMEcfGp0EdA==
+X-Received: by 2002:a05:600c:204:: with SMTP id 4mr6699377wmi.167.1566480144544;
+        Thu, 22 Aug 2019 06:22:24 -0700 (PDT)
+Received: from ctocxl0004.cto.st.com ([37.160.86.50])
+        by smtp.gmail.com with ESMTPSA id j15sm22235083wrn.70.2019.08.22.06.22.22
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Thu, 22 Aug 2019 06:22:23 -0700 (PDT)
+From:   Mario Tesi <martepisa@gmail.com>
+To:     lorenzo.bianconi83@gmail.com
+Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mario.tesi@st.com
+Subject: [PATCH] iio: imu: st_lsm6dsx: Fix FIFO diff mask for tagged fifo
+Date:   Thu, 22 Aug 2019 15:22:19 +0200
+Message-Id: <1566480139-4015-1-git-send-email-martepisa@gmail.com>
+X-Mailer: git-send-email 2.7.4
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 19/08/2019 03:32, Jonathan Cameron wrote:
-> On Mon, 12 Aug 2019 19:08:12 +0800
-> Phil Reid <preid@electromag.com.au> wrote:
-> 
->> G'day Martin / Jonathan,
->>
->> On 12/08/2019 18:37, Martin Kaiser wrote:
->>> Hi Jonathan,
->>>
->>> Thus wrote Jonathan Cameron (jic23@kernel.org):
->>>    
->>>> The patch is fine, but I'm wondering about whether we need some element
->>>> of policy control on this restore to current value.
->>>    
->>>> A few things to take into account.
->>>    
->>>> * Some devices don't have a non volatile store.  So userspace will be
->>>>     responsible for doing the restore on reboot.
->>>> * This may be one of several related devices, and it may make no sense
->>>>     to restore this one if the others aren't going to be in the same
->>>>     state as before the reboot.
->>>> * Some devices only have non volatile registers for this sort of value
->>>>     (or save to non volatile on removal of power). Hence any policy to
->>>>     not store the value can't apply to this class of device.
->>>
->>> I see your point. You'd like a consistent bahaviour across all
->>> potentiometer drivers. Or at least a way for user space to figure out
->>> whether a chip uses non-volatile storage or not.
->>> This property doesn't quite fit into the channel info that are defined
->>> in the arrays in drivers/iio/industrialio-core.c. Is there any other way
->>> to set such a property?
->>>    
->>>> My initial thought is that these probably don't matter that much and
->>>> we should apply this, but I would like to seek input from others!
->>>    
->>>> I thought there were some other drivers doing similar store to no
->>>> volatile but I can't find one.
->>>
->>> drivers/iio/potentiometer/max5481.c and max5487.c do something similar.
->>>
->>> They use a command to transfer the setting from volatile to non-volatile
->>> register in the spi remove function. I guess that the intention is to
->>> save the current setting when the system is rebooted. However, my
->>> understanding is that the remove function is called only when a module
->>> is unloaded or when user space does explicitly unbind the device from
->>> the bus via sysfs. That's why I tried using the shutdown function
->>> instead.
->>>
->>> Still, this approach has some disadvantages. For many systems, there's a
->>> soft reboot (shutdown -r) where the driver's shutdown function is called
->>> and a "hard reboot" where the power from the CPU and the potentiometer
->>> chip is removed and reapplied. In this case, the current value would not
->>> be transfered to the non-volatile register.
->>>
->>> At least for the max5432 family, there's no way to read the current
->>> setting. The only option for user space to have a well-defined setting
->>> is to set the wiper position explicitly at startup.
->>>
->>> I guess the only sensible way to use a non-volatile register would be a
->>> write operation where user space gets a response about successful
->>> completion.
->>>
->>> We could have two channels to write to the volatile or to non-volatile
->>> register. Or we stick to one channel and update both volatile and
->>> non-volatile registers when user space changes the value. This assumes
->>> that the setting does not change frequently, which is prabably not true
->>> for all applications...
-> 
-> I'm not keen on multiple channels as that is a fairly non obvious interface.
-> Definitely want to avoid writing all the time.
-> 
->>>
->>> Whatever we come up with, we should at least make the max* chips behave
->>> the same way.
->>>    
->> The AD5272/AD5274 Digital Rheostat has a 50-times limit for programming the NV register.
->> So you want to be real sure that you want to set it.
-> 
-> Ouch, I new some were limited to a few thousand cycles, but 50 is rather nasty!
-> 
->>
->> I'd rather my system default to a known "safe" value for next boot than
->> set to whatever the last write was. So some kind of policy on setting this would
->> be nice. I personally think it's something that userspace should initiate via an explicit
->> command.
-> Agreed. I think we should look at an explicit write.
-> 
-> Perhaps an extra attribute on the channels?  Hence a shared_by_all version
-> could be used when there is only one write command.
+From: mario tesi <mario.tesi@st.com>
 
-Yes, now the only question is what should it be called.
+	According to the latest version of datasheet the mask
+	for number of unread sensor data in FIFO_STATUS registers
+	has been extended to 10 bits
 
-> 
->>
->> Writing the NV for the AD5272 is something I planned to add at some stage.
->> But so far the default factory values have worked ok.
->> It'd be nice for cross device consistency for any interface for this.
->>
-> Agreed. This is an area that crept up on me, so we haven't enforced any
-> consistency on it yet.  However, we definitely should!
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> 
+	The devices involved are:
+	 - LSM6DSO
+	 - LSM6DSOX
+	 - ASM330LHH
+	 - LSM6DSR
+	 - ISM330DHCX
 
+Signed-off-by: mario tesi <mario.tesi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 85824d6..47b77d0 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -497,7 +497,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.fifo_diff = {
+ 				.addr = 0x3a,
+-				.mask = GENMASK(8, 0),
++				.mask = GENMASK(9, 0),
+ 			},
+ 			.th_wl = 1,
+ 		},
+@@ -623,7 +623,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.fifo_diff = {
+ 				.addr = 0x3a,
+-				.mask = GENMASK(8, 0),
++				.mask = GENMASK(9, 0),
+ 			},
+ 			.th_wl = 1,
+ 		},
+@@ -726,7 +726,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 			},
+ 			.fifo_diff = {
+ 				.addr = 0x3a,
+-				.mask = GENMASK(8, 0),
++				.mask = GENMASK(9, 0),
+ 			},
+ 			.th_wl = 1,
+ 		},
 -- 
-Regards
-Phil Reid
+2.7.4
 
