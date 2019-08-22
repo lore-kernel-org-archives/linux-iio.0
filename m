@@ -2,120 +2,117 @@ Return-Path: <SRS0=rrOS=WS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E991DC3A5A1
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 13:22:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2C6AC3A5A1
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 14:52:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B79172070B
-	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 13:22:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 851C2233FD
+	for <linux-iio@archiver.kernel.org>; Thu, 22 Aug 2019 14:52:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cD1pIDQE"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tVwWc0nM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729704AbfHVNW1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 22 Aug 2019 09:22:27 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:52092 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727401AbfHVNW1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2019 09:22:27 -0400
-Received: by mail-wm1-f65.google.com with SMTP id k1so5635813wmi.1;
-        Thu, 22 Aug 2019 06:22:25 -0700 (PDT)
+        id S1733209AbfHVOwj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 22 Aug 2019 10:52:39 -0400
+Received: from mail-lf1-f67.google.com ([209.85.167.67]:43911 "EHLO
+        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731958AbfHVOwj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Aug 2019 10:52:39 -0400
+Received: by mail-lf1-f67.google.com with SMTP id c19so4735373lfm.10
+        for <linux-iio@vger.kernel.org>; Thu, 22 Aug 2019 07:52:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=Luuk1pqGXQ3LTo0vTwCyDXOtvHqT8koKOsr4J0FT5Fs=;
-        b=cD1pIDQETzko/f5Dq3TBV46ArVdMkx9fsJBv6BXBingcwaRSFNXnGIa8sGgYJR0US6
-         jGK1WFjr0g2Xkmv6iPon63GEdtS2s7Rd5ZPmBMSlWD4AUEVQMX/nxFX9ky1Qfr/JND1n
-         x19Lswx2JOx1uuMT16uCrE7/VZg14WFD7+rjsm+GU8lHFWHdi3zSlKrQcObSMy49HNLh
-         w5Do6UeAdJrfhBV/TslD48lJgDLkdQdNTRvh5tt3DJV/szK2BK776ZRYV5Nk7BvSLLTd
-         mzcLDTY/ZW85+qvd/JE2HSX7VDnJYezPv6j8d7EcXaThXljTrQiKU3Yov9SV1AL0Hk7Q
-         PfkA==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sZ4yg2CqQWFZ6u9v2GeaK3WZzj4t516jSQ1lmsTEkhc=;
+        b=tVwWc0nMesN30p/71w9mUFS25/37yvAh9objNeIKfHmuF9s8rZLEmEi63P65OjU9kA
+         4M7vr46pdzjrL8QNsSk/fRfUDJiYXRx24ltXTKYnG58oMdqGlulZyegBF4BqhVxevmms
+         C2gQwUlfQmdrNwk38d37a6qbuZkVi+dDzTv3Et516tfU20nhODYZQ+X4iyTGXEXdGzeR
+         UsZgw4LZttEF1SMSwv5kP1Y/2PqFmjxtDg/1K3pxgLa2GMyP5iUY+jAeANrwDqWFkmBD
+         y9vcQ+J5W4nO/I/d9RFRL4LyHl48wfxKqJdTL6Vp+1GfKZfWGMMuNK8WLnGv09PPFZzk
+         O9pw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=Luuk1pqGXQ3LTo0vTwCyDXOtvHqT8koKOsr4J0FT5Fs=;
-        b=XSJF/cosu51SQ11D3u/dbRabnrPnDXAHFKjzrPxtyj9kdt9KMW4i4qRiuqf5HBErqB
-         4SRvsLSymC/rzd7AWDoREBCNGbIeHQ90KhhD9nquS+U945icfoguK3NJVzKhF4iai2AF
-         CY9geDAkvUCvgGSEfKfKAm/hE/3G2+2zm/6j+FDRmLI9bGNmIPTx7smkKfmSCB+3y6wF
-         PnSibHvm/RYAzOM7w9b02v4xo7uyrVnJPIEuZu843gg8F3El2fsZVVCCkjQPzIwkfFc7
-         Hupu2/woeRIOxtKCHt9Fmfsa3Eigi7cZkkguNIZP+yS3j+WZG9wEGnorLFX3WoIf4zUj
-         gmSw==
-X-Gm-Message-State: APjAAAXW3LVu+tm511L4C9ZjG1RnG4V6i8SoW4siF8/xRBW+K0ulKTQT
-        A04dZ3HiW3AxGi44S/HFWtY=
-X-Google-Smtp-Source: APXvYqy3qNIEb+nlLulGT8/JnUEPqj/ydST6mPALa9wu2JHUvW5JsZt5uCa0vLVoqueqMEcfGp0EdA==
-X-Received: by 2002:a05:600c:204:: with SMTP id 4mr6699377wmi.167.1566480144544;
-        Thu, 22 Aug 2019 06:22:24 -0700 (PDT)
-Received: from ctocxl0004.cto.st.com ([37.160.86.50])
-        by smtp.gmail.com with ESMTPSA id j15sm22235083wrn.70.2019.08.22.06.22.22
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Thu, 22 Aug 2019 06:22:23 -0700 (PDT)
-From:   Mario Tesi <martepisa@gmail.com>
-To:     lorenzo.bianconi83@gmail.com
-Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mario.tesi@st.com
-Subject: [PATCH] iio: imu: st_lsm6dsx: Fix FIFO diff mask for tagged fifo
-Date:   Thu, 22 Aug 2019 15:22:19 +0200
-Message-Id: <1566480139-4015-1-git-send-email-martepisa@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=sZ4yg2CqQWFZ6u9v2GeaK3WZzj4t516jSQ1lmsTEkhc=;
+        b=dKgJHGIcZyM+RqRFArTk+zhwPbcuDm9LlnWEQq2ajamI18zVjND0IRpWG0elRZ4Au7
+         q6dM6d1+MFPt6cRuO2T1AJ+qIAgvxGhYxoFBNskwOSWOOe5qWYWmsy09MfqNM/UJoLIC
+         uFGYrK9p32e/spkdG7jIgJQwlB1+3qw/S2Yp+VFYw5CrZBcuyF42rqqNPHV9QOFWdtLd
+         ioY68H/ujFLNb0s7x3zw0n0AeI9BkKHuIeGlbH5MQwmOIJsjSMtHvZhH25S3UBnB6Sxz
+         7TZKzvujyS1iCUbnTrrVRpu9eVKBLb+xu+M+QlTHcjXAxQ9mmASyDEyD2KHcpNjUinP8
+         fp/w==
+X-Gm-Message-State: APjAAAV9AknmOzC1fWzusTQ4qn8rAsjb7hV84ozXhuiUzmx951F+Vlc/
+        MmEGHsTLNwGCpQLP1YLizqZxVg==
+X-Google-Smtp-Source: APXvYqxI3ZuHO6gz1ebpVGfqXWCcECauBFCXFP7KaasIc56mFtOYP0yCpx0Py2r1p+88lH2dzy61mQ==
+X-Received: by 2002:ac2:5181:: with SMTP id u1mr21540759lfi.42.1566485556645;
+        Thu, 22 Aug 2019 07:52:36 -0700 (PDT)
+Received: from genomnajs.ideon.se ([85.235.10.227])
+        by smtp.gmail.com with ESMTPSA id s3sm3959374ljj.85.2019.08.22.07.52.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 22 Aug 2019 07:52:35 -0700 (PDT)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Lee Jones <lee.jones@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Mboumba Cedric Madianga <cedric.madianga@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/8 v2] AB8500 GPADC MFD to IIO conversion
+Date:   Thu, 22 Aug 2019 16:52:25 +0200
+Message-Id: <20190822145233.18222-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: mario tesi <mario.tesi@st.com>
+This is a resurrection of the patch set from two and a half
+years back fixing up this legacy driver to use IIO to provide
+ADC instead of necessarily different interfaces.
 
-	According to the latest version of datasheet the mask
-	for number of unread sensor data in FIFO_STATUS registers
-	has been extended to 10 bits
+I split the new driver into its own patch to make things
+easier for Jonathan to review. I plan to only iterate the
+IIO driver for further comments since the rest is pretty
+solidly ACKed already.
 
-	The devices involved are:
-	 - LSM6DSO
-	 - LSM6DSOX
-	 - ASM330LHH
-	 - LSM6DSR
-	 - ISM330DHCX
+Linus Walleij (8):
+  power: supply: ab8500_btemp: convert to IIO ADC
+  power: supply: ab8500_charger: convert to IIO ADC
+  power: supply: ab8500_fg: convert to IIO ADC
+  hwmon: ab8500: convert to IIO ADC
+  mfd: ab8500: augment DT bindings
+  iio: adc: New driver for the AB8500 GPADC
+  mfd: Switch the AB8500 GPADC to IIO
+  ARM: dts: ux500: declare GPADC IIO ADC channels
 
-Signed-off-by: mario tesi <mario.tesi@st.com>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../devicetree/bindings/mfd/ab8500.txt        |  119 ++
+ MAINTAINERS                                   |    1 +
+ arch/arm/boot/dts/ste-dbx5x0.dtsi             |  102 +-
+ drivers/hwmon/Kconfig                         |    3 +-
+ drivers/hwmon/ab8500.c                        |   65 +-
+ drivers/iio/adc/Kconfig                       |   10 +
+ drivers/iio/adc/Makefile                      |    1 +
+ drivers/iio/adc/ab8500-gpadc.c                | 1240 +++++++++++++++++
+ drivers/mfd/Kconfig                           |    7 -
+ drivers/mfd/Makefile                          |    1 -
+ drivers/mfd/ab8500-debugfs.c                  |  799 -----------
+ drivers/mfd/ab8500-gpadc.c                    | 1075 --------------
+ drivers/power/supply/Kconfig                  |    2 +-
+ drivers/power/supply/ab8500_btemp.c           |   41 +-
+ drivers/power/supply/ab8500_charger.c         |   78 +-
+ drivers/power/supply/ab8500_fg.c              |   23 +-
+ include/linux/mfd/abx500/ab8500-gpadc.h       |   75 -
+ 17 files changed, 1618 insertions(+), 2024 deletions(-)
+ create mode 100644 drivers/iio/adc/ab8500-gpadc.c
+ delete mode 100644 drivers/mfd/ab8500-gpadc.c
+ delete mode 100644 include/linux/mfd/abx500/ab8500-gpadc.h
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 85824d6..47b77d0 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -497,7 +497,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 			.fifo_diff = {
- 				.addr = 0x3a,
--				.mask = GENMASK(8, 0),
-+				.mask = GENMASK(9, 0),
- 			},
- 			.th_wl = 1,
- 		},
-@@ -623,7 +623,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 			.fifo_diff = {
- 				.addr = 0x3a,
--				.mask = GENMASK(8, 0),
-+				.mask = GENMASK(9, 0),
- 			},
- 			.th_wl = 1,
- 		},
-@@ -726,7 +726,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			},
- 			.fifo_diff = {
- 				.addr = 0x3a,
--				.mask = GENMASK(8, 0),
-+				.mask = GENMASK(9, 0),
- 			},
- 			.th_wl = 1,
- 		},
 -- 
-2.7.4
+2.21.0
 
