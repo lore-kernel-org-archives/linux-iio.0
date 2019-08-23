@@ -2,96 +2,112 @@ Return-Path: <SRS0=IFpd=WT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B53C3A5A3
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C76FBC3A5A2
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 18:43:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A71FA233A0
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 14:55:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1566572113;
-	bh=nkFSF4OdOPKE92SyyY1opddYzqI9ZCG7QHMbp2W9PuM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=qk4bT+XlFU/n2dWwGstWSwOxRE61UdVJaw87mWK9oEJxUb3tYvX1khcCqMRLOkVyi
-	 YNlXH2pG8LqQAoWrPuAJJTlmb0LjlJpiHgLcqHCDFbRhGJhi66RVhrllMKD2thXX/p
-	 XwMzRVdw+qYZWw5YieUrgycx4eLU0YBevInR+dAw=
+	by mail.kernel.org (Postfix) with ESMTP id 931A921897
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 18:43:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=sprayingsystems.onmicrosoft.com header.i=@sprayingsystems.onmicrosoft.com header.b="Aq5uE/lj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2395487AbfHWOyi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Aug 2019 10:54:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35550 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731256AbfHWOyg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 23 Aug 2019 10:54:36 -0400
-Received: from localhost.localdomain (unknown [194.230.147.11])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DD6C02339D;
-        Fri, 23 Aug 2019 14:54:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1566572075;
-        bh=nkFSF4OdOPKE92SyyY1opddYzqI9ZCG7QHMbp2W9PuM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=AnoRE8VnwWjru6srM3QiLQcSfz+FzGuu+q6QqI1T8dGTLA8Dy353T1Tx/mip+dWb6
-         JDVD0z7NHFRVIQGfI6O3I+L17VOQ026wU8kLa5xUdfADyEZwoHMf0F7hjYHsu+nj6I
-         ZJshruDGEcDdKTBiDO15su6xCHEvSQT/80GiwStM=
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-rtc@vger.kernel.org
-Cc:     notify@kernel.org, Arnd Bergmann <arnd@arndb.de>,
-        Olof Johansson <olof@lixom.net>,
-        Marek Szyprowski <m.szyprowski@samsung.com>,
-        Tomasz Figa <tomasz.figa@gmail.com>
-Subject: [RFC 3/9] dt-bindings: arm: samsung: Document missing Exynos7 boards bindings
-Date:   Fri, 23 Aug 2019 16:53:50 +0200
-Message-Id: <20190823145356.6341-3-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190823145356.6341-1-krzk@kernel.org>
-References: <20190823145356.6341-1-krzk@kernel.org>
+        id S2390289AbfHWSn1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Aug 2019 14:43:27 -0400
+Received: from mail-eopbgr820050.outbound.protection.outlook.com ([40.107.82.50]:40112
+        "EHLO NAM01-SN1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1732321AbfHWSn1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 23 Aug 2019 14:43:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=dvgA/DuYcy3xMJyrCm2kKzdn1q6EPxGUcSgM1OXAVlnCwWScW3rAfiKDjHvWy3du60n+LbaEQatDW94RaYXRN/pF+MACUS43Odoj6FFDPi8D97yxrTzCGg9GqxyVURA2BKghqCAKQUb+3Rpfmz970zJowRNZhVf5rTnvqAj7GT3uHcZkOFWVQ60Pwtwn6NQBsmaMYIc7HpMjzSzgCdTqvN82Mg5bD4FEvQF5yOdU5BTmN+DXDpG/t7eFk0i9BjuaSGfyhdrRpYqHB4m/WWUGMOwkd9JVvTfls3oYYhq0wHrF6oOBmhxXW4RNFOGjQMBfYMq6gAkLmutShnedIw5qEQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iWAZms+YWNCGZj+EUsl/AuG3lc5DytrdA6AFHwtbqVU=;
+ b=ND2uz4jUxlMkviQ4n/KJFikRvMzGeqxKxK0V91b0w0+e1DstNQ4FnDzKLemsu2VtsL4lnYD+8p9LshQK8Mke0qNXFIrm25jrUFOabDciiNom+vf23xSl8Ptc4nOwofqX5A4WF/MbnUDkn7wuRC4dmajKW+UABAMeS+vqAqNxZl0vG0XdQTVFQ6GTjiH7rjJpty3/xgPzDsReexzEek35DwEiIzvK9QZQL008vsId9/12UL1+IS8rf4mvSR6r5QEnTk6Bi4xpiO42UoZa5CmHyFfS6XBC2thyIRb0AmIsvGv5U5bwE76lAczs5Un0B1paBRgWtJabFkOEq9Gew5MYGw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=teejet.com; dmarc=pass action=none header.from=teejet.com;
+ dkim=pass header.d=teejet.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=sprayingsystems.onmicrosoft.com;
+ s=selector2-sprayingsystems-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=iWAZms+YWNCGZj+EUsl/AuG3lc5DytrdA6AFHwtbqVU=;
+ b=Aq5uE/ljITiZ0XsXoO9VGUzJLhWQd5lwzmhpiuDokVA0+EVvESc0gBOBTMgWLFR6fy74H7wcAFUUjh+F995XKBa1AAcoKTcS3QDWgqxXSNET7ssYEmh6sJp2gn9w9USobAgp2VHJB8JvPFxt0xrEFFyU/r0IDlC4dfJrz0qoa4k=
+Received: from DM5PR19MB1657.namprd19.prod.outlook.com (10.175.225.14) by
+ DM5PR19MB1546.namprd19.prod.outlook.com (10.175.225.136) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2178.16; Fri, 23 Aug 2019 18:43:25 +0000
+Received: from DM5PR19MB1657.namprd19.prod.outlook.com
+ ([fe80::8cc9:43a6:4ba7:95ad]) by DM5PR19MB1657.namprd19.prod.outlook.com
+ ([fe80::8cc9:43a6:4ba7:95ad%8]) with mapi id 15.20.2199.015; Fri, 23 Aug 2019
+ 18:43:25 +0000
+From:   "Grim, Dennis" <Dennis.Grim@teejet.com>
+To:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: buffer read
+Thread-Topic: buffer read
+Thread-Index: AdVZ4JwdLx/k60FyQVWzw6A5k5S4IA==
+Date:   Fri, 23 Aug 2019 18:43:24 +0000
+Message-ID: <DM5PR19MB1657B9E3EE28C387B09DB1889EA40@DM5PR19MB1657.namprd19.prod.outlook.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=Dennis.Grim@teejet.com; 
+x-originating-ip: [50.200.218.162]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 87b544b1-0aea-4630-58b9-08d727f9c7f1
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:DM5PR19MB1546;
+x-ms-traffictypediagnostic: DM5PR19MB1546:
+x-microsoft-antispam-prvs: <DM5PR19MB1546FF7873A29523612B5FCB9EA40@DM5PR19MB1546.namprd19.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:6790;
+x-forefront-prvs: 0138CD935C
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(4636009)(346002)(396003)(39850400004)(136003)(376002)(366004)(199004)(189003)(2906002)(6506007)(6916009)(74316002)(478600001)(305945005)(6436002)(7736002)(71200400001)(55016002)(71190400001)(3846002)(53936002)(256004)(9686003)(486006)(66446008)(66556008)(5640700003)(76116006)(64756008)(66476007)(81166006)(25786009)(2351001)(7696005)(66066001)(476003)(33656002)(221733001)(3480700005)(2501003)(66946007)(99286004)(316002)(86362001)(7116003)(8676002)(4744005)(52536014)(8936002)(81156014)(186003)(6116002)(14454004)(5660300002)(26005)(102836004);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR19MB1546;H:DM5PR19MB1657.namprd19.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: teejet.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: 7mrZIlqSamRhn/UwYsAy00fJRvaIfq4zdXIpAldZl3JrUNZDufLnfmQupJ1c/Tw4sbYnrJjQamZMJX4MtZDdp1Fm2SoiJL+LUQYQtHmrpEEK+cSvnti0lP8Pxy7o+vrHIVDsgMuIxA2KkdRznG1TSeebFdOLmipUYYfMl9LZM5SC1I2yUdh4Tu4H+o+bL6suJtwF2fBZX0MjzRu2hciCSL+EaFHCqlPUOoF4rTSjq5IE/XD/MIdkIEpkeWDtCiCb0qZ4io8yKfVUa/Bc1if7NZPnVwVtj3ljGjuOenVujifWfszIY3VyFn5YfsGSfLPp5ohdeFtf2YvsgZAK5NhCfa7opEv5yVU0/fbN27XckGEOUvdoTOud4LW+P1tieBQ80dP/mTzN5LXc/LuCd+0lcrQpU40BdzdztlNcUiR747k=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
+MIME-Version: 1.0
+X-OriginatorOrg: teejet.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87b544b1-0aea-4630-58b9-08d727f9c7f1
+X-MS-Exchange-CrossTenant-originalarrivaltime: 23 Aug 2019 18:43:24.9897
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: db000de6-d154-412a-bd1b-47cf93f41d57
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: zI2ydDj2wlcFbvKbuS27PfMD2Gv6VeQqvnocitrlvClvo7ENMN9GjJfbd4avuXTIc5MUd0xsDDp4R8dHqVFkHw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR19MB1546
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing documentation of ARMv8 Samsung Exynos7 SoC based boards
-bindings.
+On Linux 2.6.0, the read() in the following code does not block when the bu=
+ffer is empty.
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- .../devicetree/bindings/arm/samsung/samsung-boards.yaml     | 6 ++++++
- 1 file changed, 6 insertions(+)
+char data[1026];
+int fd =3D open("/dev/iio:device0", O_RDONLY);
+size_t count =3D read(fd, data, 1026);
 
-diff --git a/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml b/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
-index f8da3b5fb374..c640191c5d73 100644
---- a/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
-+++ b/Documentation/devicetree/bindings/arm/samsung/samsung-boards.yaml
-@@ -174,6 +174,12 @@ properties:
-               - samsung,tm2e                    # Samsung TM2E
-           - const: samsung,exynos5433
- 
-+      - description: Exynos7 based boards
-+        items:
-+          - enum:
-+              - samsung,exynos7-espresso        # Samsung Exynos7 Espresso
-+          - const: samsung,exynos7
-+
-   firmware:
-     type: object
-     description:
--- 
-2.17.1
+count is 0.
 
+Data pushed to the buffer with iio_push_to_buffers() does read correctly (a=
+fter a trigger).
+
+What might I be missing?
+
+-Dennis
+
+
+
+
+
+
+=20
