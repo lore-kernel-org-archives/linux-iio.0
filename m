@@ -2,79 +2,88 @@ Return-Path: <SRS0=IFpd=WT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 278B4C3A5A2
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 12:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 637D5C3A5A2
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 12:42:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 01FE9233A0
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 12:19:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3636B2173E
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Aug 2019 12:42:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387740AbfHWMTS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Aug 2019 08:19:18 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:60602 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729276AbfHWMTS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 23 Aug 2019 08:19:18 -0400
-Received: from DGGEMS407-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 8F36B7A8C45E8AFA8067;
-        Fri, 23 Aug 2019 20:19:15 +0800 (CST)
-Received: from localhost (10.133.213.239) by DGGEMS407-HUB.china.huawei.com
- (10.3.19.207) with Microsoft SMTP Server id 14.3.439.0; Fri, 23 Aug 2019
- 20:19:08 +0800
-From:   YueHaibing <yuehaibing@huawei.com>
-To:     <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <gregkh@linuxfoundation.org>,
-        <yuehaibing@huawei.com>, <tglx@linutronix.de>,
-        <denis.ciocca@st.com>, <Jonathan.Cameron@huawei.com>
-CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH -next] iio: st_sensors: Fix build error
-Date:   Fri, 23 Aug 2019 20:18:52 +0800
-Message-ID: <20190823121852.75108-1-yuehaibing@huawei.com>
-X-Mailer: git-send-email 2.10.2.windows.1
+        id S2394833AbfHWMmI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Aug 2019 08:42:08 -0400
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:46026 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2393272AbfHWMmI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Aug 2019 08:42:08 -0400
+Received: from laptop.home (unknown [IPv6:2a01:cb19:8ad6:900:42dd:dd1c:19ee:7c60])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: aragua)
+        by bhuna.collabora.co.uk (Postfix) with ESMTPSA id 6DA8528C1A1;
+        Fri, 23 Aug 2019 13:42:05 +0100 (BST)
+From:   Fabien Lahoudere <fabien.lahoudere@collabora.com>
+Cc:     gwendal@chromium.org, egranata@chromium.org, kernel@collabora.com,
+        Fabien Lahoudere <fabien.lahoudere@collabora.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Nick Vaccaro <nvaccaro@chromium.org>,
+        linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2 0/1] counter: cros_ec: Add sync sensor driver
+Date:   Fri, 23 Aug 2019 14:41:26 +0200
+Message-Id: <cover.1566563833.git.fabien.lahoudere@collabora.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.133.213.239]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-IIO_ST_SENSORS_CORE select IIO_ST_SENSORS_I2C
-unconditionally, if REGMAP_I2C is not set, build fails
+Some chromebook EC provides a counter to get all vsync coming from the back
+camera.
+This series introduces a patch coming from chromebook kernel 4.4 designed as an
+IIO counter. As IIO counter will be deprecated in favor of counter, I rebase the
+original patch and support the new counter API.
 
-drivers/iio/common/st_sensors/st_sensors_i2c.o: In function `st_sensors_i2c_configure':
-st_sensors_i2c.c:(.text+0x58): undefined reference to `__devm_regmap_init_i2c'
+The serie need to be merged after https://lkml.org/lkml/2019/7/9/305
 
-This patch selects REGMAP_I2C to fix it.
-IIO_ST_SENSORS_SPI is similar to SPI issue.
+Changes since v1:
+- Drop code related to IIO_COUNT
+- Add external attribute to the counter driver
+- Add cros_ec_sensors_sync.c to MAINTAINERS file
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: 062809ef7733 ("iio: make st_sensors drivers use regmap")
-Signed-off-by: YueHaibing <yuehaibing@huawei.com>
----
- drivers/iio/common/st_sensors/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+Gwendal Grignou (1):
+  counter: cros_ec: Add synchronization sensor
 
-diff --git a/drivers/iio/common/st_sensors/Kconfig b/drivers/iio/common/st_sensors/Kconfig
-index 91b98e1..16d973f 100644
---- a/drivers/iio/common/st_sensors/Kconfig
-+++ b/drivers/iio/common/st_sensors/Kconfig
-@@ -5,8 +5,10 @@
- 
- config IIO_ST_SENSORS_I2C
- 	tristate
-+	select REGMAP_I2C
- 
- config IIO_ST_SENSORS_SPI
-+	select REGMAP_SPI
- 	tristate
- 
- config IIO_ST_SENSORS_CORE
+ Documentation/driver-api/generic-counter.rst  |   3 +
+ MAINTAINERS                                   |   7 +
+ drivers/counter/Kconfig                       |   9 +
+ drivers/counter/Makefile                      |   1 +
+ drivers/counter/counter.c                     |   2 +
+ drivers/counter/cros_ec_sensors_sync.c        | 208 ++++++++++++++++++
+ .../cros_ec_sensors/cros_ec_sensors_core.c    |   1 +
+ drivers/mfd/cros_ec_dev.c                     |   3 +
+ include/linux/counter.h                       |   1 +
+ 9 files changed, 235 insertions(+)
+ create mode 100644 drivers/counter/cros_ec_sensors_sync.c
+
 -- 
-2.7.4
-
+2.20.1
 
