@@ -1,109 +1,119 @@
-Return-Path: <SRS0=1+9f=WW=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=N/LO=WX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CC54C3A59F
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Aug 2019 23:03:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E0A3C3A5A6
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Aug 2019 03:53:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57E8D21872
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Aug 2019 23:03:09 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="A3/pKOzD"
+	by mail.kernel.org (Postfix) with ESMTP id 4F95321881
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Aug 2019 03:53:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726990AbfHZXDI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Aug 2019 19:03:08 -0400
-Received: from mail-pg1-f196.google.com ([209.85.215.196]:42285 "EHLO
-        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726606AbfHZXDH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Aug 2019 19:03:07 -0400
-Received: by mail-pg1-f196.google.com with SMTP id p3so11461677pgb.9
-        for <linux-iio@vger.kernel.org>; Mon, 26 Aug 2019 16:03:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bVRIjgzMwAqxXns5N+dHw5KIDXsRHaWlI4IhPrgP/ww=;
-        b=A3/pKOzD0Np24RKGi9Qn/ncAueuHM8pXQLnXWy9z0isNL1x4sDbTSgz6CkBCKOc4Ja
-         RnA2HndYqYa5y9l3awHSCbQI0qoSvVz3dHIxtBpbQ1oH7sueTZY7fx2utPPow/4ni5T0
-         DxQFq05fVhs+VeL0c8gPWJ7CFPGfneY7UYNMk=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=bVRIjgzMwAqxXns5N+dHw5KIDXsRHaWlI4IhPrgP/ww=;
-        b=bOCe0sCKCcbd77fCOsrYsOHpaxsjuySmG2+BgCMNhR3ZRsfoIACL/sKrqm4rIEns6d
-         lqrItcp8lI3MEIlNCCHwlN5YnoQLaOtJZi//pigMDUNKK56Xwzf3/d6OxPsr/rjAhDaU
-         qiMpUNwi40oPQjCBTntlOqd7FmjOYijeJ1bp5YpfL8guedS7GLnRjYXnHDrTvqIWzbTv
-         i+rXdtvtc5/nI7AAaPpB7wyWLPD2O44IMYXMD5iWuHrDgSghhvaIxBFOMkVZfz/XqiHa
-         bIb/DmTwffrq2c8Qhu65NVj547/b+seRiPH7iiJQGRRB2SeEqHDy3Cg2Vyi94JojwF/l
-         KBcg==
-X-Gm-Message-State: APjAAAU4O/0EsAC1//jL6vou0KmcTzDOYD7jI905akRcsyhW1QgGzSv7
-        60IzzdCVk2ODyM2uHcIJh9zg/Q==
-X-Google-Smtp-Source: APXvYqysY75VXURBl0E23DHyZYz/VYDdXkvwmZDWBIaDTyDU2tpIPODWt0f1nmHLQdN0O3PR5G4hfA==
-X-Received: by 2002:aa7:9a52:: with SMTP id x18mr23384036pfj.8.1566860587004;
-        Mon, 26 Aug 2019 16:03:07 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id 15sm5094062pfh.188.2019.08.26.16.03.05
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 26 Aug 2019 16:03:06 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org
-Cc:     enric.balletbo@collabora.com, linux-iio@vger.kernel.org,
-        nvaccaro@chromium.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2] iio: cros_ec: set calibscale for 3d MEMS to unit vector
-Date:   Mon, 26 Aug 2019 16:02:58 -0700
-Message-Id: <20190826230258.203235-1-gwendal@chromium.org>
-X-Mailer: git-send-email 2.23.0.187.g17f5b7556c-goog
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1728345AbfH0DxW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Aug 2019 23:53:22 -0400
+Received: from anchovy3.45ru.net.au ([203.30.46.155]:43830 "EHLO
+        anchovy3.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728832AbfH0DxW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Aug 2019 23:53:22 -0400
+Received: (qmail 16245 invoked by uid 5089); 27 Aug 2019 03:53:20 -0000
+Received: by simscan 1.2.0 ppid: 16184, pid: 16187, t: 0.0333s
+         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
+X-RBL:  $rbltext
+Received: from unknown (HELO preid-c7.electromag.com.au) (preid@electromag.com.au@203.59.235.95)
+  by anchovy2.45ru.net.au with ESMTPA; 27 Aug 2019 03:53:19 -0000
+Received: by preid-c7.electromag.com.au (Postfix, from userid 1000)
+        id D04832021C4D0; Tue, 27 Aug 2019 11:35:28 +0800 (AWST)
+From:   Phil Reid <preid@electromag.com.au>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        preid@electromag.com.au, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, michal.simek@xilinx.com
+Subject: [PATCH 2/2] iio: core: Add optional symbolic label to device attributes
+Date:   Tue, 27 Aug 2019 11:35:24 +0800
+Message-Id: <1566876924-63608-3-git-send-email-preid@electromag.com.au>
+X-Mailer: git-send-email 1.8.3.1
+In-Reply-To: <1566876924-63608-1-git-send-email-preid@electromag.com.au>
+References: <1566876924-63608-1-git-send-email-preid@electromag.com.au>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-By default, set the calibscale vector to unit vector.
-When calibrating one axis, the other axis calibrations  are sent as well.
-If left to 0, sensor data from uncalibrated axis are zero'ed out until
-all axis are calibrated.
+If a label is defined in the device tree for this device add that
+to the device specific attributes. This is useful for userspace to
+be able to identify an individual device when multiple identical
+chips are present in the system.
 
-Fixes: ed1f2e85da79 ("iio: cros_ec: Add calibscale for 3d MEMS ")
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Phil Reid <preid@electromag.com.au>
 ---
-Changes in v2:
-- Add fixes tag.
-- Improve description.
+ drivers/iio/industrialio-core.c | 17 +++++++++++++++++
+ include/linux/iio/iio.h         |  1 +
+ 2 files changed, 18 insertions(+)
 
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index fd833295bb173..d44ae126f4578 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -90,7 +90,7 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 	struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
- 	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
- 	u32 ver_mask;
--	int ret;
-+	int ret, i;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 8303639963d7..2d7fb7629095 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1300,6 +1300,16 @@ static ssize_t iio_show_dev_name(struct device *dev,
  
- 	platform_set_drvdata(pdev, indio_dev);
+ static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
  
-@@ -136,6 +136,9 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 		/* Set sign vector, only used for backward compatibility. */
- 		memset(state->sign, 1, CROS_EC_SENSOR_MAX_AXIS);
- 
-+		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
-+			state->calib[i].scale = MOTION_SENSE_DEFAULT_SCALE;
++static ssize_t iio_show_dev_label(struct device *dev,
++				 struct device_attribute *attr,
++				 char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->label);
++}
 +
- 		/* 0 is a correct value used to stop the device */
- 		state->frequencies[0] = 0;
- 		if (state->msg->version < 3) {
++static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
++
+ static ssize_t iio_show_timestamp_clock(struct device *dev,
+ 					struct device_attribute *attr,
+ 					char *buf)
+@@ -1416,6 +1426,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 
+ 	if (indio_dev->name)
+ 		attrcount++;
++	if (indio_dev->label)
++		attrcount++;
+ 	if (clk)
+ 		attrcount++;
+ 
+@@ -1438,6 +1450,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
+ 	if (indio_dev->name)
+ 		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
++	if (indio_dev->label)
++		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_label.attr;
+ 	if (clk)
+ 		indio_dev->chan_attr_group.attrs[attrn++] = clk;
+ 
+@@ -1709,6 +1723,9 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+ 		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
+ 
++	indio_dev->label = of_get_property(indio_dev->dev.of_node, "label",
++					   NULL);
++
+ 	ret = iio_check_unique_scan_index(indio_dev);
+ 	if (ret < 0)
+ 		return ret;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a74cb177dc6f..3f89db50d3f6 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -556,6 +556,7 @@ struct iio_dev {
+ 	struct list_head		channel_attr_list;
+ 	struct attribute_group		chan_attr_group;
+ 	const char			*name;
++	const char			*label;
+ 	const struct iio_info		*info;
+ 	clockid_t			clock_id;
+ 	struct mutex			info_exist_lock;
 -- 
-2.23.0.187.g17f5b7556c-goog
+1.8.3.1
 
