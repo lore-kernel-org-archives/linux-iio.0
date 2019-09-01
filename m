@@ -2,41 +2,42 @@ Return-Path: <SRS0=lrDN=W4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E405C3A5A4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6A99C3A5A8
 	for <linux-iio@archiver.kernel.org>; Sun,  1 Sep 2019 22:59:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D97A7233A2
-	for <linux-iio@archiver.kernel.org>; Sun,  1 Sep 2019 22:59:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7B9F022D6D
+	for <linux-iio@archiver.kernel.org>; Sun,  1 Sep 2019 22:59:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="mAzKb4qB"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="dVaLhi49"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbfIAW6s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 1 Sep 2019 18:58:48 -0400
-Received: from vern.gendns.com ([98.142.107.122]:37370 "EHLO vern.gendns.com"
+        id S1729048AbfIAW7K (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 1 Sep 2019 18:59:10 -0400
+Received: from vern.gendns.com ([98.142.107.122]:37404 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729048AbfIAW6r (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 1 Sep 2019 18:58:47 -0400
+        id S1729136AbfIAW6t (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 1 Sep 2019 18:58:49 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Message-Id:Date:Subject:Cc:To:From:Sender:
-        Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=q5I8hNXYUTOVr6qJJGD6VgyFndq2TJGOuDuT4GVouDk=; b=mAzKb4qBMqscx40J8SieYVnJ4w
-        CDyosjONCebl6PiNzSRwIofpGAlYPNofqndaEpMvvk8lvwe1w7fsvH83Tujs96moLqifpQyJnux87
-        wkDWpRnJlKNZKRAlU8KfmigT6KsWTrRXB191TcLia30td2qHcwWP7Kx7ukmkiz0M15VlJFNVc0ULE
-        0i33kJnUTMUabzPKXh/lStK2yp9qJZzXMgkqG5NbNR7IRdZ7K76ic7jvivuq8pxkNa2OBX6iHRWrE
-        8ExsjK/beLyVM8HARyLDpaSa9bEjk8e82W+tGip6D4fkuhu5c2yyjRBihjeei/PfeAmTvYXu6CACe
-        o0IHTW0w==;
+        d=lechnology.com; s=default; h=References:In-Reply-To:Message-Id:Date:Subject
+        :Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=oGzwM3DUSRY7LxjqeoVdBJ9iKAUFa7Zf/+cgqE96YPY=; b=dVaLhi49Hq3UsLNguYJYOE/Nh
+        Xuv4xthiSR3KmYMBd+w2qIhljz5Hod4jQnRN5BtZcylgIoNGk9+NciGZK6O3HpD8Vee8Ocf4Y6ceD
+        +6rf3a930buRAwDX4wQ3KB4tEan8df1bc69+YpTU6UnrBSci//Q5F5/F+pOpOuAui6+wcQeNMYVHL
+        2ZOif0Ieig6qyd4dHlcYeG4PorRdySQNlzTHi/eE0WebQ4jk3xJd1bww8m4vvlbKGOQALmL+tsQsY
+        srM2ReVA5uXTGC8Ph8MgD6q2BYpbt1LBarokklB6Zcl7AH5hL6o+U0SoCy/eFefWsxDXbDeCqV3VF
+        pD3DHeTDw==;
 Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:58390 helo=freyr.lechnology.com)
         by vern.gendns.com with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.92)
         (envelope-from <david@lechnology.com>)
-        id 1i4Ynz-000351-RK; Sun, 01 Sep 2019 18:58:43 -0400
+        id 1i4Yo1-000351-VC; Sun, 01 Sep 2019 18:58:46 -0400
 From:   David Lechner <david@lechnology.com>
 To:     linux-iio@vger.kernel.org, linux-omap@vger.kernel.org
 Cc:     David Lechner <david@lechnology.com>,
@@ -48,10 +49,12 @@ Cc:     David Lechner <david@lechnology.com>,
         Thierry Reding <thierry.reding@gmail.com>,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-pwm@vger.kernel.org
-Subject: [PATCH v3 0/6] counter: new TI eQEP driver
-Date:   Sun,  1 Sep 2019 17:58:21 -0500
-Message-Id: <20190901225827.12301-1-david@lechnology.com>
+Subject: [PATCH v3 2/6] dt-bindings: counter: new bindings for TI eQEP
+Date:   Sun,  1 Sep 2019 17:58:23 -0500
+Message-Id: <20190901225827.12301-3-david@lechnology.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190901225827.12301-1-david@lechnology.com>
+References: <20190901225827.12301-1-david@lechnology.com>
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
 X-AntiAbuse: Primary Hostname - vern.gendns.com
 X-AntiAbuse: Original Domain - vger.kernel.org
@@ -67,96 +70,81 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series adds device tree bindings and a new counter driver for the Texas
-Instruments Enhanced Quadrature Encoder Pulse (eQEP).
+This documents device tree binding for the Texas Instruments Enhanced
+Quadrature Encoder Pulse (eQEP) Module found in various TI SoCs.
 
-As mentioned in one of the commit messages, to start with, the driver only
-supports reading the current counter value and setting the min/max values.
-Other features can be added as the counter subsystem gains support for them.
+Signed-off-by: David Lechner <david@lechnology.com>
+---
 
 v3 changes:
-- Minor changes to device tree bindings (style and generic node name)
-- Drop action in initializer
-- Fix ordering of pm runtime disable
+- fixed style issues
+- fixed generic node name
+- (was suggested to drop descriptions since there is only one interrupt and one
+  clock, but I opted to keep them anyway)
 v2 changes:
-- New patch to move TI PWMSS driver from drivers/pwm/ to drivers/bus/
-- Device tree bindings converted to .yaml format
-- Device tree clock renamed from "fck" to "sysclkout"
-- Dropped unused index and strobe signals from counter driver
-- Added synapses and actions to counter driver
-- Fixed base in of kstrtouint()
-- Clarifications in commit messages
+- convert to .yaml format
+- rename clock to "sysclkout"
 
-This series has been tested on a BeagleBone Blue with the following script:
-
-#!/usr/bin/env python3
-
-from os import path
-from time import sleep
-
-COUNTER_PATH = '/sys/bus/counter/devices'
-COUNTERS = ['counter0', 'counter1', 'counter2']
-COUNT0 = 'count0'
-COUNT = 'count'
-FUNCTION = 'function'
-CEILING = 'ceiling'
-FLOOR = 'floor'
-ENABLE = 'enable'
-
-cnts = []
-
-for c in COUNTERS:
-    function_path = path.join(COUNTER_PATH, c, COUNT0, FUNCTION)
-    with open(function_path, 'w') as f:
-        f.write('quadrature x4')
-    floor_path = path.join(COUNTER_PATH, c, COUNT0, FLOOR)
-    with open(floor_path, 'w') as f:
-        f.write(str(0))
-    ceiling_path = path.join(COUNTER_PATH, c, COUNT0, CEILING)
-    with open(ceiling_path, 'w') as f:
-        f.write(str(0xffffffff))
-    enable_path = path.join(COUNTER_PATH, c, COUNT0, ENABLE)
-    with open(enable_path, 'w') as f:
-        f.write('1')
-
-    cnt_path = path.join(COUNTER_PATH, c, COUNT0, COUNT)
-    cnts.append(open(cnt_path, 'r'))
-
-while True:
-    for c in cnts:
-        c.seek(0)
-        val = int(c.read())
-        if val >= 0x80000000:
-            val -= 0x100000000
-        print(val, end=' ')
-    print()
-    sleep(1)
-
-David Lechner (6):
-  bus/ti-pwmss: move TI PWMSS driver from PWM to bus subsystem
-  dt-bindings: counter: new bindings for TI eQEP
-  counter: new TI eQEP driver
-  ARM: dts: am33xx: Add nodes for eQEP
-  ARM: dts: am335x-boneblue: Enable eQEP
-  ARM: dts: am335x-boneblue: Use of am335x-osd335x-common.dtsi
-
- .../devicetree/bindings/counter/ti-eqep.yaml  |  50 ++
- MAINTAINERS                                   |   6 +
- arch/arm/boot/dts/am335x-boneblue.dts         | 146 +++---
- arch/arm/boot/dts/am33xx-l4.dtsi              |  27 +
- drivers/bus/Kconfig                           |   9 +
- drivers/bus/Makefile                          |   1 +
- drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} |   0
- drivers/counter/Kconfig                       |  11 +
- drivers/counter/Makefile                      |   1 +
- drivers/counter/ti-eqep.c                     | 473 ++++++++++++++++++
- drivers/pwm/Kconfig                           |   9 -
- drivers/pwm/Makefile                          |   1 -
- 12 files changed, 634 insertions(+), 100 deletions(-)
+ .../devicetree/bindings/counter/ti-eqep.yaml  | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/counter/ti-eqep.yaml
- rename drivers/{pwm/pwm-tipwmss.c => bus/ti-pwmss.c} (100%)
- create mode 100644 drivers/counter/ti-eqep.c
 
+diff --git a/Documentation/devicetree/bindings/counter/ti-eqep.yaml b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
+new file mode 100644
+index 000000000000..85f1ff83afe7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/counter/ti-eqep.yaml
+@@ -0,0 +1,50 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/counter/ti-eqep.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments Enhanced Quadrature Encoder Pulse (eQEP) Module
++
++maintainers:
++  - David Lechner <david@lechnology.com>
++
++properties:
++  compatible:
++    const: ti,am3352-eqep
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: The eQEP event interrupt
++    maxItems: 1
++
++  clocks:
++    description: The clock that determines the SYSCLKOUT rate for the eQEP
++      peripheral.
++    maxItems: 1
++
++  clock-names:
++    const: sysclkout
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    eqep0: counter@180 {
++        compatible = "ti,am3352-eqep";
++        reg = <0x180 0x80>;
++        clocks = <&l4ls_gclk>;
++        clock-names = "sysclkout";
++        interrupts = <79>;
++    };
++
++...
 -- 
 2.17.1
 
