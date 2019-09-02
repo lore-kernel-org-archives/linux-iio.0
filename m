@@ -2,113 +2,112 @@ Return-Path: <SRS0=Rqpv=W5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5336C3A59E
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Sep 2019 13:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B04C3A59E
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Sep 2019 13:09:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A69C22168B
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Sep 2019 13:05:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9E0DC20820
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Sep 2019 13:09:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="QfHUxc9o"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="daCuBBv2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726408AbfIBNFr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Sep 2019 09:05:47 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:16398 "EHLO
+        id S1729889AbfIBNJX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Sep 2019 09:09:23 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:35632 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726391AbfIBNFq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Sep 2019 09:05:46 -0400
+        by vger.kernel.org with ESMTP id S1729840AbfIBNJW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Sep 2019 09:09:22 -0400
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x82CwbTV006770;
-        Mon, 2 Sep 2019 09:05:10 -0400
-Received: from nam01-by2-obe.outbound.protection.outlook.com (mail-by2nam01lp2057.outbound.protection.outlook.com [104.47.34.57])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2uqjrab738-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x82CwbU4006770;
+        Mon, 2 Sep 2019 09:08:59 -0400
+Received: from nam04-co1-obe.outbound.protection.outlook.com (mail-co1nam04lp2053.outbound.protection.outlook.com [104.47.45.53])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2uqjrab78q-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Sep 2019 09:05:10 -0400
+        Mon, 02 Sep 2019 09:08:43 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RPzTd74OxXzoknRmfrdoj8oc43QA/AUkdMTqH66oCmD2hxA5HWMOcqBBxKwkqwfj6zHctlRTg1YGtVnhnvwf/T+POifuzhZGJkgO4BggyIBqgW1gWQvIg0WrBvA0ZHmWIH5ZMmHuCXzUSAF5U/Os2cucFcFYYMbncbqSmNXZU6PTDTvIOJNbeJWMaItClSZgPGn/8sq7Kj7mZriX7dHU29triNbM9VRc8a50Nc0GRMx3dW814g8DQTq/wuQBGewkfxvjTng4JP0mCOmmsn9zfQOxegYuNJetTcmKLZb0uFGha1ZyKGxblzdasJz/PIm3JTFcWdnAEpDt3LbKrFLn0A==
+ b=GXR1Y8NLxYfUvUt4XuhaKxonP3Y4U0tjdR53X8hHtD9WXemsZYCBgwF8yTUI8kiGnU8QpGOsQCC0NaC4k3NU/9qGkGS2qXHkU2pqPfo0b5h/HhqOeBChDJ0Po6AMueThI6ODkiFp1p9ioYORXwtLT9zIAA9qujnO9cAr368m0CCXSV6lJWmkt7WEc+SGqYKhcIAToizvQyr6/YZHLWybOkycE45o0wdyNDLEuT1R9szUR9EpPJCTObbYdmUUW0eUvfnjfkNptiYFSKuKGZFKySTO+H22AZnRkA8FlMX8+ofEnmtgifI5bVn/nVQ+z/JGtWauJzPQ/Mv3zVrwy5QJQA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=inB+Bh/NlCsBJxBrxRt8MuD0LQhtMOS4/hLb/ZGcFw0=;
- b=LiMiKob/RPSDmTDu4CEcSJeoQrYKGciEb5XQ58owXWyf3A5D0V9hkFr26yZ65fQWjrxN9bntsMK3F7c5dYnb0zt2fksiaYV4/mLz0hKNxnScebi0ibtFChelqc7RlGJWCGTqLhYAQtYvM6W+DbFbELEKyuwi1RcJl7DReRhBJZwmv9V05e9OIxdCxDl4xZlccwxqY5q7BEpa/klFAhfjaeVTVqTiIh+2v9mqCYlPLknmt/aGif7FOBdYhpI8DQYM33IneODjm7FXlV7AyLYwmHnN/edp2lfZWaFHL4zo1RL+rPdCPSNh9ZHyAvdQUpqbToM+OfIjonBhQGHAxhxZLg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
+ bh=DbXsXun/TgtVwLRfRUd8LK1u2JOGQ34IUP16JX0/1cc=;
+ b=NZfWkTVW8xeR9zCsCqREw7vNopkQhLCScedwsixCrnt9O4GUNcV1LOATu2peCfdrvjrFSpZBtXSjfmWIvhvHMyEn+De8egES+up/R/ncAgri6xMjbL61PEy7r4NM0wtOBODg9e4398wpWZj3UACUAUMu11Gq4rA37cWPo+e8v6GskYK+bjQGQrnnw9DHOuLDc3rKo2hRftjTuzl0ApLqq1qlHumve7RpUD8nK8IjtFcuaxe7BnIORBwJ3FNlSYoBLmdaIP3cB5BB0Lgn0Urpym7fJQourHrSmBy1MB44WshFoI+FQzWAXMj9oKCwEleRcTMO4HSXCWSAafKksUL3Pg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=metafoo.de smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=inB+Bh/NlCsBJxBrxRt8MuD0LQhtMOS4/hLb/ZGcFw0=;
- b=QfHUxc9oWSDp7nlJGei7HaNo/zNnKpBQ6Wt4FjtqfnyWWQ1QreqJOv+mM0omXmbqYXeliV0JiKsbjTa5vCoiobXgDKuzONQvOq84H/kDOi3kZ+KWbuVZ6E35OZyo/1hEcPq9QvftSIPXiPcNU5IWK4ft2uoFzjf6uy5u7RF2r9U=
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
- CH2PR03MB5207.namprd03.prod.outlook.com (20.180.15.9) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2220.19; Mon, 2 Sep 2019 13:05:08 +0000
-Received: from CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::ad16:8446:873b:4042]) by CH2PR03MB5192.namprd03.prod.outlook.com
- ([fe80::ad16:8446:873b:4042%3]) with mapi id 15.20.2220.021; Mon, 2 Sep 2019
- 13:05:08 +0000
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "rodrigorsdc@gmail.com" <rodrigorsdc@gmail.com>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>
-CC:     "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: accel: add binding documentation
- for ADIS16240
-Thread-Topic: [PATCH 1/2] dt-bindings: iio: accel: add binding documentation
- for ADIS16240
-Thread-Index: AQHVYSnTbqAlNO7980SO1u1taHQC/KcYW8KA
-Date:   Mon, 2 Sep 2019 13:05:08 +0000
-Message-ID: <15a6aad652ebf6165aeb1ec5739aeafa985d2bb0.camel@analog.com>
-References: <20190902005938.7734-1-rodrigorsdc@gmail.com>
-In-Reply-To: <20190902005938.7734-1-rodrigorsdc@gmail.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [137.71.226.54]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b081cd80-7ccc-4d09-4520-08d72fa62e4b
-x-ms-office365-filtering-ht: Tenant
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(4618075)(2017052603328)(7193020);SRVR:CH2PR03MB5207;
-x-ms-traffictypediagnostic: CH2PR03MB5207:
-x-ms-exchange-purlcount: 3
-x-ld-processed: eaa689b4-8f87-40e0-9c6f-7228de4d754a,ExtAddr
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <CH2PR03MB5207ED0C63C3523BFF7345F1F9BE0@CH2PR03MB5207.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:4125;
-x-forefront-prvs: 01480965DA
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39860400002)(136003)(346002)(366004)(376002)(396003)(199004)(189003)(51444003)(36756003)(2906002)(305945005)(53936002)(6306002)(66066001)(316002)(256004)(25786009)(6512007)(99286004)(91956017)(86362001)(4326008)(66556008)(66446008)(66476007)(64756008)(76116006)(66946007)(2201001)(5660300002)(2501003)(6246003)(54906003)(118296001)(110136005)(476003)(6486002)(2616005)(3846002)(6116002)(446003)(966005)(7736002)(229853002)(478600001)(14454004)(11346002)(6506007)(71200400001)(71190400001)(102836004)(6436002)(76176011)(26005)(186003)(486006)(53376002)(81156014)(8936002)(81166006)(8676002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5207;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: analog.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: TbnZCVhQCbqZ+XPaeLuSKU9UjguowD94ZGDzscMVCgwxn8ckeWRl7f8kI08aUW5IWoP5oCCI8MO8Ilrsn8pV0OCfNRFZPHnsS+9mLiFBljf/ywvMWiKDWuZ+Zi/aOte+Ao2JWBsXVuu4qvJfQfmRYkrH3NtqmCL4P1dH4ElNuRJcFCG+SVb2Tc3rG9vk9CdQJwUIqzzqTses3plLBbfwxvOtUlGVHx8v7wr2BcjO3OqjUlIJhlm7UeHgAoARYKrGADM2cPdtokhmPNJPBVCLIZgG4qCiN9asldNla1tSXvB9pBQXAcam4NQgVa80EGt+e/hXnoVx9VdQw2hyGiBZtilHmSMbBrqF1MkkZ3n+XpasU+G4CvDTbcdMohjCVIjnANOPznF9xlY/SVlMv9H8Lq3JCvtQGHiqE8jpdNzjIl8=
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <9C8F6A574CE28141B16837574294AF27@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+ bh=DbXsXun/TgtVwLRfRUd8LK1u2JOGQ34IUP16JX0/1cc=;
+ b=daCuBBv2W1aD0kdsw8bnNoFpYh2sLBMOIArzgsoTWA/WOn5SJ1Ibm2LisxgYnVH1LHH/dz/cWmFbcyyBUtRX2OBjJA9OQuSoD7/FKe4YK8WLSpfqkWHL4lZ/WSRaKLKMTO/BHb11V3VkaYWz/tWtSrrmP0ADTHWAmmR9z16j56Q=
+Received: from DM5PR03CA0034.namprd03.prod.outlook.com (2603:10b6:4:3b::23) by
+ BN8PR03MB4852.namprd03.prod.outlook.com (2603:10b6:408:6a::31) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2220.21; Mon, 2 Sep 2019 13:08:41 +0000
+Received: from BL2NAM02FT018.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::208) by DM5PR03CA0034.outlook.office365.com
+ (2603:10b6:4:3b::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2157.16 via Frontend
+ Transport; Mon, 2 Sep 2019 13:08:41 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ BL2NAM02FT018.mail.protection.outlook.com (10.152.77.170) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2220.16
+ via Frontend Transport; Mon, 2 Sep 2019 13:08:41 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x82D8fr9027145
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 2 Sep 2019 06:08:41 -0700
+Received: from mircea-Latitude-E6540.ad.analog.com (10.48.65.107) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Mon, 2 Sep 2019 09:08:40 -0400
+From:   Mircea Caprioru <mircea.caprioru@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <stefan.popa@analog.com>,
+        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: [PATCH V4 2/4] iio: adc: ad_sigma_delta: Export ad_sd_calibrate
+Date:   Mon, 2 Sep 2019 16:08:29 +0300
+Message-ID: <20190902130831.23057-2-mircea.caprioru@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20190902130831.23057-1-mircea.caprioru@analog.com>
+References: <20190902130831.23057-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(346002)(396003)(136003)(2980300002)(54534003)(189003)(199004)(6666004)(14444005)(50226002)(36756003)(48376002)(4326008)(107886003)(11346002)(50466002)(47776003)(356004)(44832011)(2616005)(486006)(126002)(476003)(246002)(54906003)(16586007)(186003)(7696005)(51416003)(2351001)(5660300002)(6916009)(76176011)(478600001)(446003)(336012)(305945005)(106002)(8676002)(8936002)(70586007)(70206006)(316002)(1076003)(86362001)(2906002)(426003)(7636002)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:BN8PR03MB4852;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 079ba56e-f9cc-4fe1-59c6-08d72fa6ad46
+X-Microsoft-Antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(4709080)(1401327)(4618075)(2017052603328);SRVR:BN8PR03MB4852;
+X-MS-TrafficTypeDiagnostic: BN8PR03MB4852:
+X-Microsoft-Antispam-PRVS: <BN8PR03MB48527F17515F504645840B8D81BE0@BN8PR03MB4852.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
+X-Forefront-PRVS: 01480965DA
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam-Message-Info: M/JmO5QSPCI6X0Lt7OJcNv2CGxYJCZyhrQ0+vL/tFUCURwxzUzaizGMLMnQpgckpAuM2GuFHyM36U5FIVEw2V4DYxUP5tItgCJ5wk5GP6lbZCRHbkOODhBmOrFdUvB47x9Apnt5xZBxP3uUIuPd7ItX6w8BQyhe/SZ/Zs81fvUv9hLmvB9r9z3urxuVTKuo4UpP0x4YauV+kYCmYu5T2lapH+ReVE8gc2+kwGiuabqP5ISf+wdkJtOLuQnqRAblQeZXkjZEAp/jy4jyJ6XF+ekoXepeOtn59TEqxpGQD97RcMfUBogBy8xkuavfopFzVwpK1MP5WJ/MSjb5fADg/dPTivI5gKrqiC7hTbdH1RXHoWmiGmMp6X8TRvKkKXGRLIiyigF0rb3/Qn+P1nQ76SXKI69gnnRqFah/tnIfaehA=
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b081cd80-7ccc-4d09-4520-08d72fa62e4b
-X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Sep 2019 13:05:08.3155
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 02 Sep 2019 13:08:41.3369
  (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: kW7+K4wkf2lMvqbQDH/81mA7mSFc6gtSQ5PNEQ5nIIW+6SQJNKGlma2SB5m758oKB+TS+S7NZMS1BLe400g568c0ckP4DcSBBItcGXNlPLw=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5207
+X-MS-Exchange-CrossTenant-Network-Message-Id: 079ba56e-f9cc-4fe1-59c6-08d72fa6ad46
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8PR03MB4852
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
  definitions=2019-09-02_04:2019-08-29,2019-09-02 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
  mlxlogscore=999 spamscore=0 malwarescore=0 bulkscore=0 clxscore=1015
- lowpriorityscore=0 phishscore=0 adultscore=0 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 phishscore=0 adultscore=0 mlxscore=0 suspectscore=1
  impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1906280000 definitions=main-1909020146
 Sender: linux-iio-owner@vger.kernel.org
@@ -116,46 +115,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE5LTA5LTAxIGF0IDIxOjU5IC0wMzAwLCBSb2RyaWdvIENhcnZhbGhvIHdyb3Rl
-Og0KPiBUaGlzIHBhdGNoIGFkZCBkZXZpY2UgdHJlZSBiaW5kaW5nIGRvY3VtZW50YXRpb24gZm9y
-IEFESVMxNjI0MC4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFJvZHJpZ28gUmliZWlybyBDYXJ2YWxo
-byA8cm9kcmlnb3JzZGNAZ21haWwuY29tPg0KPiAtLS0NCj4gSSBoYXZlIGRvdWJ0IGFib3V0IHdo
-YXQgbWFpbnRhaW5lciBJIG1heSB0byBwdXQgaW4gdGhhdCBkb2N1bWVudGF0aW9uLiBJDQo+IHB1
-dCBBbGV4YW5kcnUgYXMgbWFpbnRhaW5lciBiZWNhdXNlIGhlIHJldmlld2VkIG15IGxhc3QgcGF0
-Y2ggb24gdGhpcw0KPiBkcml2ZXIsIHNvIEkgdGhpbmsgdGhhdCBoZSBpcyBhIGdvb2QgY2FuZGlk
-YXRlLg0KDQpGaW5lIHRvIGxpc3QgbWUgYXMgbWFpbnRhaW5lciBmb3IgdGhpcy4NCg0KUmV2aWV3
-ZWQtYnk6IEFsZXhhbmRydSBBcmRlbGVhbiA8YWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20+
-DQoNCj4gIC4uLi9iaW5kaW5ncy9paW8vYWNjZWwvYWRpLGFkaXMxNjI0MC55YW1sICAgICB8IDU1
-ICsrKysrKysrKysrKysrKysrKysNCj4gIDEgZmlsZSBjaGFuZ2VkLCA1NSBpbnNlcnRpb25zKCsp
-DQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdz
-L2lpby9hY2NlbC9hZGksYWRpczE2MjQwLnlhbWwNCj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVu
-dGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FjY2VsL2FkaSxhZGlzMTYyNDAueWFtbA0K
-PiBiL0RvY3VtZW50YXRpb24vZGV2aWNldHJlZS9iaW5kaW5ncy9paW8vYWNjZWwvYWRpLGFkaXMx
-NjI0MC55YW1sDQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAwMDAwMC4u
-MDgwMTliNTE2MTFjDQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvRG9jdW1lbnRhdGlvbi9kZXZp
-Y2V0cmVlL2JpbmRpbmdzL2lpby9hY2NlbC9hZGksYWRpczE2MjQwLnlhbWwNCj4gQEAgLTAsMCAr
-MSw1NSBAQA0KPiArIyBTUERYLUxpY2Vuc2UtSWRlbnRpZmllcjogR1BMLTIuMA0KPiArJVlBTUwg
-MS4yDQo+ICstLS0NCj4gKyRpZDogaHR0cDovL2RldmljZXRyZWUub3JnL3NjaGVtYXMvaWlvL2Fj
-Y2VsL2FkaSxhZGlzMTYyNDAueWFtbCMNCj4gKyRzY2hlbWE6IGh0dHA6Ly9kZXZpY2V0cmVlLm9y
-Zy9tZXRhLXNjaGVtYXMvY29yZS55YW1sIw0KPiArDQo+ICt0aXRsZTogQURJUzE2MjQwIFByb2dy
-YW1tYWJsZSBJbXBhY3QgU2Vuc29yIGFuZCBSZWNvcmRlciBkcml2ZXINCj4gKw0KPiArbWFpbnRh
-aW5lcnM6DQo+ICsgIC0gQWxleGFuZHJ1IEFyZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5h
-bG9nLmNvbT4NCj4gKw0KPiArZGVzY3JpcHRpb246IHwNCj4gKyAgQURJUzE2MjQwIFByb2dyYW1t
-YWJsZSBJbXBhY3QgU2Vuc29yIGFuZCBSZWNvcmRlciBkcml2ZXIgdGhhdCBzdXBwb3J0cw0KPiAr
-ICBTUEkgaW50ZXJmYWNlLg0KPiArICAgIGh0dHBzOi8vd3d3LmFuYWxvZy5jb20vZW4vcHJvZHVj
-dHMvYWRpczE2MjQwLmh0bWwNCj4gKw0KPiArcHJvcGVydGllczoNCj4gKyAgY29tcGF0aWJsZToN
-Cj4gKyAgICBlbnVtOg0KPiArICAgICAgLSBhZGksYWRpczE2MjQwDQo+ICsNCj4gKyAgcmVnOg0K
-PiArICAgIG1heEl0ZW1zOiAxDQo+ICsNCj4gKyAgc3BpLWNwaGE6IHRydWUNCj4gKw0KPiArICBz
-cGktY3BvbDogdHJ1ZQ0KPiArDQo+ICsgIGludGVycnVwdHM6DQo+ICsgICAgbWF4SXRlbXM6IDEN
-Cj4gKw0KPiArcmVxdWlyZWQ6DQo+ICsgIC0gY29tcGF0aWJsZQ0KPiArICAtIHJlZw0KPiArICAt
-IGludGVycnVwdHMNCj4gKw0KPiArZXhhbXBsZXM6DQo+ICsgIC0gfA0KPiArICAgICNpbmNsdWRl
-IDxkdC1iaW5kaW5ncy9ncGlvL2dwaW8uaD4NCj4gKyAgICAjaW5jbHVkZSA8ZHQtYmluZGluZ3Mv
-aW50ZXJydXB0LWNvbnRyb2xsZXIvaXJxLmg+DQo+ICsgICAgc3BpMCB7DQo+ICsgICAgICAgICNh
-ZGRyZXNzLWNlbGxzID0gPDE+Ow0KPiArICAgICAgICAjc2l6ZS1jZWxscyA9IDwwPjsNCj4gKw0K
-PiArICAgICAgICAvKiBFeGFtcGxlIGZvciBhIFNQSSBkZXZpY2Ugbm9kZSAqLw0KPiArICAgICAg
-ICBhY2NlbGVyb21ldGVyQDAgew0KPiArICAgICAgICAgICAgY29tcGF0aWJsZSA9ICJhZGksYWRp
-czE2MjQwIjsNCj4gKyAgICAgICAgICAgIHJlZyA9IDwwPjsNCj4gKyAgICAgICAgICAgIHNwaS1t
-YXgtZnJlcXVlbmN5ID0gPDI1MDAwMDA+Ow0KPiArICAgICAgICAgICAgc3BpLWNwb2w7DQo+ICsg
-ICAgICAgICAgICBzcGktY3BoYTsNCj4gKyAgICAgICAgICAgIGludGVycnVwdC1wYXJlbnQgPSA8
-JmdwaW8wPjsNCj4gKyAgICAgICAgICAgIGludGVycnVwdHMgPSA8MCBJUlFfVFlQRV9MRVZFTF9I
-SUdIPjsNCj4gKyAgICAgICAgfTsNCj4gKyAgICB9Ow0K
+This patch exports the ad_sd_calibrate function in order to be able to
+call it from outside ad_sigma_delta.
+
+There are cases where the option to calibrate one channel at a time is
+necessary (ex. system calibration for zero scale and full scale).
+
+Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+---
+Changelog V2:
+- no changes here
+
+Changelog V3:
+- no changes here
+
+Changelog V4:
+- no changes here
+
+ drivers/iio/adc/ad_sigma_delta.c       | 3 ++-
+ include/linux/iio/adc/ad_sigma_delta.h | 2 ++
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index 2640b75fb774..8ba90486c787 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -205,7 +205,7 @@ int ad_sd_reset(struct ad_sigma_delta *sigma_delta,
+ }
+ EXPORT_SYMBOL_GPL(ad_sd_reset);
+ 
+-static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
++int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+ 	unsigned int mode, unsigned int channel)
+ {
+ 	int ret;
+@@ -242,6 +242,7 @@ static int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
+ 
+ 	return ret;
+ }
++EXPORT_SYMBOL_GPL(ad_sd_calibrate);
+ 
+ /**
+  * ad_sd_calibrate_all() - Performs channel calibration
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 7716fa0c9fce..8a4e25a7080c 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -119,6 +119,8 @@ int ad_sd_reset(struct ad_sigma_delta *sigma_delta,
+ 
+ int ad_sigma_delta_single_conversion(struct iio_dev *indio_dev,
+ 	const struct iio_chan_spec *chan, int *val);
++int ad_sd_calibrate(struct ad_sigma_delta *sigma_delta,
++	unsigned int mode, unsigned int channel);
+ int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
+ 	const struct ad_sd_calib_data *cd, unsigned int n);
+ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+-- 
+2.17.1
+
