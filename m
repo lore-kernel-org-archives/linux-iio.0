@@ -7,52 +7,50 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E790C3A5A2
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:27:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 678B8C3A5A5
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:33:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B07F23431
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:27:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3723623400
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:33:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567528048;
-	bh=jL960mftVsy4K2E1ETmoVa7GLoiRlSFtBXSAOIO1zaM=;
+	s=default; t=1567528385;
+	bh=jCOX+SwGOag7NdIay0mRQzQ2qpqHCUBCiuFIo8hWuzA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=k+P+62hTzuSYPdbNexUJ055UuyL+kMST4m+xdySiQ+Um8VFG5fPUJiBRYAmK7YvV5
-	 DYT2L5KbILx9kIv76kTYfzwrCBrBtfb4Cl14lHvb+rmvtw06l6LNMwgS1obt6ZgX3D
-	 TdRdz6hf0bG9krLPf9gjLKo4nVS8wZ5XzCFoxjZo=
+	b=cI/oOMqzeAJuSc1co20iDFhnLtWKCuIxtthBruVN4FWJYhJ5v2DjMsz1IGcEzr7Nk
+	 7I0ASX/KUlcqqZeuFxAQ/ihA+SKzBAQPCte+YUgTs8rjR0SmVv6z7AuL0zgmfCErm4
+	 8pTYnaIv8gHjtp0XXJppVTd7DuaK8gt7T4z8dTps=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730843AbfICQ1W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 Sep 2019 12:27:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48686 "EHLO mail.kernel.org"
+        id S1731392AbfICQcF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 Sep 2019 12:32:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55370 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730835AbfICQ1V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 3 Sep 2019 12:27:21 -0400
+        id S1731390AbfICQcE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 3 Sep 2019 12:32:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AB63623431;
-        Tue,  3 Sep 2019 16:27:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 57379238C7;
+        Tue,  3 Sep 2019 16:32:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567528040;
-        bh=jL960mftVsy4K2E1ETmoVa7GLoiRlSFtBXSAOIO1zaM=;
+        s=default; t=1567528323;
+        bh=jCOX+SwGOag7NdIay0mRQzQ2qpqHCUBCiuFIo8hWuzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nZRvBFHJg3rBVs21y87VOcjcF/AVWl9K9aqWSULDUtETkz20eL8K/nhz3oYoE7fCn
-         YucNfy2jDlLY9TThDuHutSQz7AyOC87+moElzAs6YdGhdXanAHWnXqoLt30er1euZH
-         s1S+3jlEZaa/734RKitO+EU/fCbl/RN0hawF7Dzc=
+        b=OY8vHw7pQkgKg0IDnzeUWQ/37gMAlMH7oNWT6EU3DOEXDmKUWX36oUYL5f+u19LUD
+         FR4dc9mZtnw4OB2kE/fm/9T8HebnJG/wH1+EDcwkAS9otiNpNVZB4xSFCCvq5D+pFF
+         oi3yPkKWfcHuK/ruIdMgfVUXD1lUUCJKdUkKQRV8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Bakker <xc-racer2@live.ca>,
-        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+Cc:     Arnd Bergmann <arnd@arndb.de>,
+        Wolfram Sang <wsa+renesas@sang-engineering.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 067/167] dt-bindings: iio: adc: exynos-adc: Add S5PV210 variant
-Date:   Tue,  3 Sep 2019 12:23:39 -0400
-Message-Id: <20190903162519.7136-67-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 155/167] iio: adc: gyroadc: fix uninitialized return code
+Date:   Tue,  3 Sep 2019 12:25:07 -0400
+Message-Id: <20190903162519.7136-155-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190903162519.7136-1-sashal@kernel.org>
 References: <20190903162519.7136-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -61,42 +59,50 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+From: Arnd Bergmann <arnd@arndb.de>
 
-[ Upstream commit a9b0a2a7c19316588421b94946c8e2e5a84ac14e ]
+[ Upstream commit 90c6260c1905a68fb596844087f2223bd4657fee ]
 
-Add information about new compatible for S5PV210
+gcc-9 complains about a blatant uninitialized variable use that
+all earlier compiler versions missed:
 
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
+drivers/iio/adc/rcar-gyroadc.c:510:5: warning: 'ret' may be used uninitialized in this function [-Wmaybe-uninitialized]
+
+Return -EINVAL instead here and a few lines above it where
+we accidentally return 0 on failure.
+
+Cc: stable@vger.kernel.org
+Fixes: 059c53b32329 ("iio: adc: Add Renesas GyroADC driver")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Reviewed-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../devicetree/bindings/iio/adc/samsung,exynos-adc.txt        | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/adc/rcar-gyroadc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-index 6c49db7f8ad25..a10c1f89037de 100644
---- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.txt
-@@ -11,7 +11,7 @@ New driver handles the following
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index dcb50172186f4..f3a966ab35dcb 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -391,7 +391,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 				dev_err(dev,
+ 					"Only %i channels supported with %s, but reg = <%i>.\n",
+ 					num_channels, child->name, reg);
+-				return ret;
++				return -EINVAL;
+ 			}
+ 		}
  
- Required properties:
- - compatible:		Must be "samsung,exynos-adc-v1"
--				for exynos4412/5250 and s5pv210 controllers.
-+				for exynos4412/5250 controllers.
- 			Must be "samsung,exynos-adc-v2" for
- 				future controllers.
- 			Must be "samsung,exynos3250-adc" for
-@@ -28,6 +28,8 @@ Required properties:
- 				the ADC in s3c2443 and compatibles
- 			Must be "samsung,s3c6410-adc" for
- 				the ADC in s3c6410 and compatibles
-+			Must be "samsung,s5pv210-adc" for
-+				the ADC in s5pv210 and compatibles
- - reg:			List of ADC register address range
- 			- The base address and range of ADC register
- 			- The base address and range of ADC_PHY register (every
+@@ -400,7 +400,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
+ 			dev_err(dev,
+ 				"Channel %i uses different ADC mode than the rest.\n",
+ 				reg);
+-			return ret;
++			return -EINVAL;
+ 		}
+ 
+ 		/* Channel is valid, grab the regulator. */
 -- 
 2.20.1
 
