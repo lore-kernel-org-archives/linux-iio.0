@@ -2,118 +2,92 @@ Return-Path: <SRS0=n2n1=W6=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5329C3A5A7
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:36:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B31C3A5A2
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 17:29:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7ECF52339D
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 16:36:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8D1FF21897
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Sep 2019 17:29:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567528581;
-	bh=CObjYhzcgxIymlgK/8BKotmVimCoec0fpoJRSZ6T+HA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=pbVlLLN4Iyk0p6vvz+OBBeCdbBaqpuMBdrXgojSZu9eOfol8zBv8nve+MVyt0Kc16
-	 C6EH1XvGy7bDwfT0rOk/0pWLR9fJSw3NayDK/1adeO+KZlgcFpOku9h9qxohR+x4tF
-	 cjxi8ePUCpRXnOx8LM91lbDJqUD2ae2di/sG+Bwo=
+	s=default; t=1567531782;
+	bh=ZpQk2Ot9qNjFmJaqHAiuRVYmqwa+rjFWg+ZY+eYkEt0=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=gQQdx7d785Ui7tb75Iw1JEefmnTfH7f6EhPO2wK2Dy417V2U2YEWn9Q+GZFT5ua5E
+	 K5HQaSRWz8HAOqPOmyHr1gCkXPXdaVG0fgMhhJjPzPvWWH8w9d7lcDduyvmCEeNpDG
+	 s1r0pc/cHT9V8iAItOnVAAkyg/KV9KWSa7Q+6Rqo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730826AbfICQ1T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 Sep 2019 12:27:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48654 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730823AbfICQ1S (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 3 Sep 2019 12:27:18 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6474C238C5;
-        Tue,  3 Sep 2019 16:27:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567528038;
-        bh=CObjYhzcgxIymlgK/8BKotmVimCoec0fpoJRSZ6T+HA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GI4iiMOmVy2LMOyKb43eQ12KMrcFkq2HaJn/ow1TohvJQKitY6nlhYlnlCd8ZqKKe
-         OF6keEVK7jSDSBFcwaZ0dqWVLKWzHQSFNBCxcgkj5sHabq9Qgy6EtQOnG/gy34fMsO
-         5lGnXBVDkbMGgj/4kYlsbtf+mir6PrhgTtN6TPLE=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Bakker <xc-racer2@live.ca>,
-        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 066/167] iio: adc: exynos-adc: Add S5PV210 variant
-Date:   Tue,  3 Sep 2019 12:23:38 -0400
-Message-Id: <20190903162519.7136-66-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20190903162519.7136-1-sashal@kernel.org>
-References: <20190903162519.7136-1-sashal@kernel.org>
+        id S1728864AbfICR3l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 Sep 2019 13:29:41 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:34763 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728679AbfICR3l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Sep 2019 13:29:41 -0400
+Received: by mail-wr1-f67.google.com with SMTP id s18so18421248wrn.1;
+        Tue, 03 Sep 2019 10:29:40 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=1y/QzUkCcqpWnaaB2UPlBL6rkcc+2weJiERqBvIAqW8=;
+        b=MryhOSBGWlQz1kkg3QeUJSHxIud9ulNj676luGixnwIsJunfQ/raQ0UOMW5ZnTpZAB
+         nL7BC79A/NcxDJ3OUQXXoremlBKrBeI5fUCicnubhX8DMXFAOVhdJNPmQEbSCNJ5MGxR
+         bPOU2d0JfdPhfBG6nd1WbJmTXBQGZ1eFYpKbljGLPT4Yd/g/CH3mTd5otKm3BcpTDuXW
+         9f7n0EASbxwMzkR8a3H4H7PvbT4ueAR+q2PFja9KwbGI8Zx8Wr1FMj31ZedcESNftj1Q
+         1WDuiNrpyxCPSwIKRNRLnL9+5MgH9PE9jC/0aKhQAr3TL1xwbLpBll7N5P/RtPWbj0J0
+         B8/A==
+X-Gm-Message-State: APjAAAWSeWOFMDobF0XeAkjlgkkwCHYGjrCqLO6SLpiKIFp7e8fsCq6M
+        JzfgRFIxJz6vI8sF9Vgpmw==
+X-Google-Smtp-Source: APXvYqxjsJYbE9ohCD01WYDc+yGRZ8dFjprGZ4Y0cLOYuKvgEwksgp61q+aQrJWH5lax8biar1g1TA==
+X-Received: by 2002:adf:db01:: with SMTP id s1mr35665426wri.164.1567531779299;
+        Tue, 03 Sep 2019 10:29:39 -0700 (PDT)
+Received: from localhost ([176.12.107.132])
+        by smtp.gmail.com with ESMTPSA id o9sm15518959wrm.88.2019.09.03.10.29.38
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Sep 2019 10:29:38 -0700 (PDT)
+Date:   Tue, 3 Sep 2019 18:29:37 +0100
+From:   Rob Herring <robh@kernel.org>
+To:     Mircea Caprioru <mircea.caprioru@analog.com>
+Cc:     jic23@kernel.org, Michael.Hennerich@analog.com,
+        stefan.popa@analog.com, lars@metafoo.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: Re: [PATCH V4 4/4] dt-bindings: iio: adc: ad7192: Add binding
+ documentation for AD7192
+Message-ID: <20190903172937.GA15494@bogus>
+References: <20190902130831.23057-1-mircea.caprioru@analog.com>
+ <20190902130831.23057-4-mircea.caprioru@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20190902130831.23057-4-mircea.caprioru@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Bakker <xc-racer2@live.ca>
+On Mon, 2 Sep 2019 16:08:31 +0300, Mircea Caprioru wrote:
+> This patch add device tree binding documentation for AD7192 adc in YAML
+> format.
+> 
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
+> ---
+> Changelog V2:
+> - no changes here
+> 
+> Changelog V3:
+> - no changes here
+> 
+> Changelog V4:
+> - remove the const value from avdd and dvdd supply
+> 
+>  .../bindings/iio/adc/adi,ad7192.yaml          | 119 ++++++++++++++++++
+>  1 file changed, 119 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
+> 
 
-[ Upstream commit 882bf52fdeab47dbe991cc0e564b0b51c571d0a3 ]
-
-S5PV210's ADC variant is almost the same as v1 except that it has 10
-channels and doesn't require the pmu register
-
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
-Signed-off-by: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/adc/exynos_adc.c | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
-
-diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-index 4be29ed447559..41da522fc6735 100644
---- a/drivers/iio/adc/exynos_adc.c
-+++ b/drivers/iio/adc/exynos_adc.c
-@@ -115,6 +115,7 @@
- #define MAX_ADC_V2_CHANNELS		10
- #define MAX_ADC_V1_CHANNELS		8
- #define MAX_EXYNOS3250_ADC_CHANNELS	2
-+#define MAX_S5PV210_ADC_CHANNELS	10
- 
- /* Bit definitions common for ADC_V1 and ADC_V2 */
- #define ADC_CON_EN_START	(1u << 0)
-@@ -282,6 +283,16 @@ static const struct exynos_adc_data exynos_adc_v1_data = {
- 	.start_conv	= exynos_adc_v1_start_conv,
- };
- 
-+static const struct exynos_adc_data exynos_adc_s5pv210_data = {
-+	.num_channels	= MAX_S5PV210_ADC_CHANNELS,
-+	.mask		= ADC_DATX_MASK,	/* 12 bit ADC resolution */
-+
-+	.init_hw	= exynos_adc_v1_init_hw,
-+	.exit_hw	= exynos_adc_v1_exit_hw,
-+	.clear_irq	= exynos_adc_v1_clear_irq,
-+	.start_conv	= exynos_adc_v1_start_conv,
-+};
-+
- static void exynos_adc_s3c2416_start_conv(struct exynos_adc *info,
- 					  unsigned long addr)
- {
-@@ -478,6 +489,9 @@ static const struct of_device_id exynos_adc_match[] = {
- 	}, {
- 		.compatible = "samsung,s3c6410-adc",
- 		.data = &exynos_adc_s3c64xx_data,
-+	}, {
-+		.compatible = "samsung,s5pv210-adc",
-+		.data = &exynos_adc_s5pv210_data,
- 	}, {
- 		.compatible = "samsung,exynos-adc-v1",
- 		.data = &exynos_adc_v1_data,
--- 
-2.20.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
