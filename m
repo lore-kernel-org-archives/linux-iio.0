@@ -2,105 +2,81 @@ Return-Path: <SRS0=sw36=XA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE870C3A5A5
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Sep 2019 06:47:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C40A9C3A5A5
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Sep 2019 07:02:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A8B6C2173B
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Sep 2019 06:47:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567666040;
-	bh=6HCrV9hrIAPZo/l8PPnVCY30OxwYxegvejUdNXq92rM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=rLY03gOSkv3ZL0gDzSwqmqIk4gXN1py/H7Kzo+XIdiBTOoL4KODXQSiV2Qohjuu7t
-	 Z73QJ4FlfhGBSbquthJOmFgdPqnFa6hRhdoSgGjXEW73q+el4No7qGdkW/PRZ7cBND
-	 xhfES0LRS5XMKRY8Dejevw7Ymp6o1DvYO6Bke9Rs=
+	by mail.kernel.org (Postfix) with ESMTP id 930F221848
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Sep 2019 07:02:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="C5ZwTBKY"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731344AbfIEGrU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Sep 2019 02:47:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54776 "EHLO mail.kernel.org"
+        id S1731675AbfIEHCI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Sep 2019 03:02:08 -0400
+Received: from first.geanix.com ([116.203.34.67]:39274 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730778AbfIEGrU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 5 Sep 2019 02:47:20 -0400
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7643420693;
-        Thu,  5 Sep 2019 06:47:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567666039;
-        bh=6HCrV9hrIAPZo/l8PPnVCY30OxwYxegvejUdNXq92rM=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XAUs3/aInQ4ndb6VEOyx27xKW6OMBAObYQSJtcth8NDeNW/xsKmWfOmZWGG8bpU+C
-         VYe4fC9xPNyYhzKaFntQzxC0yXwG5cjGAhSREufCElWrIlFqtV+98ZMDoSVqV5wb2/
-         fEZwNsrDD9h2s8fv9Q3+EyKUbaDGWVAD/Vy9H7H0=
-Date:   Thu, 5 Sep 2019 08:47:13 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Sean Nyekjaer <sean@geanix.com>
+        id S1731510AbfIEHCH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 5 Sep 2019 03:02:07 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 57BBC6338D;
+        Thu,  5 Sep 2019 07:01:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1567666916; bh=Q1qUJokFFHNRDEfo3WxlutXlQpU1iMorkTkP0vWdxl8=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=C5ZwTBKYMyyc4+SW3mKMUKPioaFg1sw4j3YYtW6BCr/hhf5sIOsEQOGHdrYNEaEwi
+         QcjKAW3tbcjnM0A/kvwfvvkf9M7vUtWYAFmQa405qR1/w9vfZW55xVSx2fzrXxLYsL
+         iQDxBw/NjNViQ60vGFxOqK3u2bYDre14LqwdRegVip97TTuU9wm/nC3JCrm4Ao2pXY
+         m5iyu/J0K1NR0o0SmO3PCKxtEowNN4JrRfEasOefvSxEkmfHsdQTQkMHhD2nzdrhYk
+         OPvyOOkoYZUlVicrS+9DFyAjOq3wOnQBBZMBMRWkwBSTXH5+G/XWaGGeG4lFJBQNhi
+         EzCfJbpLlb4jA==
+Subject: Re: [PATCH v3 5/6] iio: imu: st_lsm6dsx: add motion report function
+ and call from interrupt
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     linux-iio@vger.kernel.org, jic23@kernel.org,
         lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
         mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
-Subject: Re: [PATCH v3 4/6] iio: imu: st_lsm6dsx: always enter interrupt
- thread
-Message-ID: <20190905064713.GC31578@localhost.localdomain>
 References: <20190904091732.112281-1-sean@geanix.com>
- <20190904091732.112281-4-sean@geanix.com>
- <20190905063441.GA31578@localhost.localdomain>
- <a40bef10-8f82-e284-806e-4852abeb6400@geanix.com>
+ <20190904091732.112281-5-sean@geanix.com>
+ <20190905063959.GB31578@localhost.localdomain>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <94ee1cde-7cd3-0184-a551-236191a28025@geanix.com>
+Date:   Thu, 5 Sep 2019 09:01:44 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
+ Thunderbird/60.8.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="Sr1nOIr3CvdE5hEN"
-Content-Disposition: inline
-In-Reply-To: <a40bef10-8f82-e284-806e-4852abeb6400@geanix.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190905063959.GB31578@localhost.localdomain>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---Sr1nOIr3CvdE5hEN
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
->=20
->=20
-> On 05/09/2019 08.34, Lorenzo Bianconi wrote:
-> > This chunck is unnecessary since read_fifo() will check number of avail=
-able
-> > samples in the FIFO and moreover it is obviously broken since you are r=
-unning
-> > st_lsm6dsx_read_fifo directly instead of using fifo_ops pointer.
->=20
-> Thanks for the review :-)
->=20
-> I have missed that, I have spend a lot of time rebasing "iio: imu:
-> st_lsm6dsx: move interrupt thread to core".
-> It could be nice if that patch could be applied in the near future :-)
->=20
-> /Sean
+On 05/09/2019 08.39, Lorenzo Bianconi wrote:
+>> Should we include these new defines in device settings?
+> nope if are the same for all available chips..have you double checked?
+> 
 
-I think Jonathan will prefer the patch to be part of the series where it is
-actually needed (so up to him). I am fine even if you repost the single pat=
-ch
-adding requested changes
+lsm6ds3: yes
+lsm6ds3h: yes
+lsm6dsl: yes
+lsm6dsm: yes
+ism330dlc: yes :-)
+lsm6dso: yes
+asm330lhh: yes
+lsm6dsox: yes
+lsm6dsr: yes
+lsm6ds3tr-c: yes
+ism330dhcx: yes
+lsm9ds1_imu: no it have a very different reg layout
 
-Regards,
-Lorenzo
+I would a lot more confidence in patch/work if we only enable these 
+events for the devices i actually can test... (The ISM330DLC)
 
---Sr1nOIr3CvdE5hEN
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXXCvbwAKCRA6cBh0uS2t
-rHf8AQCHxVFANq0sIegK+JiSLBGNHS8ZR1FjqEwZ+pLKC4PEMgD9H8ouuDcHF99q
-I6MU+IBBjkAugh4sINsHAFcEG442xgE=
-=daIq
------END PGP SIGNATURE-----
-
---Sr1nOIr3CvdE5hEN--
+/Sean
