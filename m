@@ -2,189 +2,103 @@ Return-Path: <SRS0=v/qI=XC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB771C43331
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:21:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91795C00306
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:22:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A63DD21BE5
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:21:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B6BF21871
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:22:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567848086;
-	bh=kNGAeMnxvdXlA5z3Dc2JoX9K2D1dYgnE5dY/Pa4e/rU=;
-	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ckGIWXjukfTgXQn01IXPe7UBv+pNPyRhNHZiv4Dzzhn3j4hzgVVoGqZKw/zwf6bHr
-	 tTj4jM9FyqcbsJP2Vm25uPUNVMBuSd+IIBJ5x5AwTBWQLKT/PECmT9h+k9JK7YTkJ6
-	 ULgyt/fFJ14qjGxl6FREAgTBPGjdQlybei0ZMXlc=
+	s=default; t=1567848141;
+	bh=fBxqwyXRgG0wRFfx6cCxY4NmxXwIILcA5XjIypH7uu0=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=LUpYt0omBi73bX1+y/QiyODZWAVy4pamYvFK6ytqLXE1KkVYtwVfy9l8W98Os3g8Z
+	 Iq8BWr4MmpHepUIJB4kVzJbq9oNQI9kwXuBT9tbAv116vKasaf3f1rf9sHD0W5C0xv
+	 jWA4DsMil0/AcY+8W3B2z9W1t5dGa561G+50gJDE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406565AbfIGJUb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 Sep 2019 05:20:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59228 "EHLO mail.kernel.org"
+        id S1731630AbfIGJWR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Sep 2019 05:22:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388924AbfIGJUa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Sep 2019 05:20:30 -0400
-Received: from localhost.localdomain (unknown [194.230.155.145])
+        id S1727884AbfIGJWR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Sep 2019 05:22:17 -0400
+Received: from mail-lf1-f48.google.com (mail-lf1-f48.google.com [209.85.167.48])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5C39321907;
-        Sat,  7 Sep 2019 09:20:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C0C8421BE5;
+        Sat,  7 Sep 2019 09:22:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567848029;
-        bh=kNGAeMnxvdXlA5z3Dc2JoX9K2D1dYgnE5dY/Pa4e/rU=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=RlXjtBMtEIK7dgmUEEbVbHPMJxgMv1gIygNPsQYOqbZqaGfPssGUrAa9QjlDviHOF
-         iMRoC4mMevtJGnxRtl33iH5GH3ALBZsHNLCVBnhqa8/oKQr/OcBvoAvsPyLLJacH0n
-         DC2y9AjIo/A6nbZIEPodP55H6rN++sLeHbm57s5Y=
+        s=default; t=1567848137;
+        bh=fBxqwyXRgG0wRFfx6cCxY4NmxXwIILcA5XjIypH7uu0=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=zlt5xhpjzApIWNI0gaW5dXnJE36f4x6ZxAlNBjEMz8N0zlqPrJsWJNfiU3dVG7nzu
+         9SfXcDgvJMKWRPH5MJCJQGIakV8asCCscRsV7JOKfUpMlTXiIel38w92mwwilaeagH
+         WA17Qenz/0v1sTheTNRpTvsItNdVbT5GsnEeSsV8=
+Received: by mail-lf1-f48.google.com with SMTP id u29so6928258lfk.7;
+        Sat, 07 Sep 2019 02:22:16 -0700 (PDT)
+X-Gm-Message-State: APjAAAWpij9d2Nastt7bu93WMRRO4PUrdsYQzpXYOdyCLmztJfpxTVT0
+        uegrLfZUueoAav5Y4+IGw4MpHZ3ZwJ+G0+dx4Zs=
+X-Google-Smtp-Source: APXvYqzmcslfK41HV4+HPxQdPrd5x829CWIRSwqYXaJYvVNobPvFr0tb37FSkJUy6tzZ75dlNx+LflPaZcO8QXTsVY4=
+X-Received: by 2002:a19:7d55:: with SMTP id y82mr9373225lfc.106.1567848134943;
+ Sat, 07 Sep 2019 02:22:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190823145356.6341-1-krzk@kernel.org> <20190823145356.6341-5-krzk@kernel.org>
+ <CAL_JsqJybT41cEqiTriLMywUQj1BtAG_9muJ4=84OkF23y53CA@mail.gmail.com>
+ <CAJKOXPc0SY_8BHMsWLN=1M3VQh41+bdBiH21L4KQPA+iLPYy+A@mail.gmail.com>
+ <CAL_JsqKdsABWK9Og_f38T9zf3SCFFdhU8WOJ4uJjREantoYvYQ@mail.gmail.com>
+ <CAJKOXPfnvu=c5f6AcOSiQ_9E-C2fMf9qbEpy1Tr3QvH8LgAtpQ@mail.gmail.com> <CAL_JsqKyj3s-Mn3q_Lna0w38K3DJzvKN5d72WHzqt4CUVf5X4Q@mail.gmail.com>
+In-Reply-To: <CAL_JsqKyj3s-Mn3q_Lna0w38K3DJzvKN5d72WHzqt4CUVf5X4Q@mail.gmail.com>
 From:   Krzysztof Kozlowski <krzk@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
+Date:   Sat, 7 Sep 2019 11:22:03 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPfg4p1CAbXeF1++b7+OaR99RdeJGrkbusisNKNywoNHHg@mail.gmail.com>
+Message-ID: <CAJKOXPfg4p1CAbXeF1++b7+OaR99RdeJGrkbusisNKNywoNHHg@mail.gmail.com>
+Subject: Re: [RFC 5/9] dt-bindings: arm: samsung: Convert Exynos PMU bindings
+ to json-schema
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Sebastian Reichel <sre@kernel.org>,
         Alessandro Zummo <a.zummo@towertech.it>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-rtc@vger.kernel.org
-Subject: [PATCH v2 02/11] dt-bindings: power: syscon-poweroff: Convert bindings to json-schema
-Date:   Sat,  7 Sep 2019 11:19:58 +0200
-Message-Id: <20190907092007.9946-2-krzk@kernel.org>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20190907092007.9946-1-krzk@kernel.org>
-References: <20190907092007.9946-1-krzk@kernel.org>
+        =?UTF-8?Q?Pawe=C5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+        devicetree@vger.kernel.org,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-samsung-soc <linux-samsung-soc@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
+        <linux-rtc@vger.kernel.org>, notify@kernel.org,
+        Arnd Bergmann <arnd@arndb.de>, Olof Johansson <olof@lixom.net>,
+        Marek Szyprowski <m.szyprowski@samsung.com>,
+        Tomasz Figa <tomasz.figa@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the Syscon poweroff bindings to DT schema format using
-json-schema.
+On Fri, 6 Sep 2019 at 17:49, Rob Herring <robh+dt@kernel.org> wrote:
+> >
+> > The bindings never required any specific ordering. Also the driver
+> > just go through all indices and parses them.
+> >
+> > Your second syntax fails:
+> > Documentation/devicetree/bindings/arm/samsung/pmu.yaml:
+> > properties:clock-names:items: {'enum': ['clkout0', 'clkout1',
+> > 'clkout2', 'clkout3', 'clkout4', 'clkout5', 'clkout6', 'clkout7',
+> > 'clkout8', 'clkout9', 'clkout10', 'clkout11', 'clkout12', 'clkout13',
+> > 'clkout14', 'clkout15', 'clkout16']} is not of type 'array'
+>
+> Update dt-schema and try again. It should be allowed now. You'll also
+> need to define minItems and maxItems though.
 
-Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Thanks, works!
 
----
-
-Changes since v1:
-1. Remove unneeded maxItems from uint32 fields,
-2. Simplify if-else-then.
----
- .../bindings/power/reset/syscon-poweroff.txt  | 30 ----------
- .../bindings/power/reset/syscon-poweroff.yaml | 60 +++++++++++++++++++
- 2 files changed, 60 insertions(+), 30 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/power/reset/syscon-poweroff.txt
- create mode 100644 Documentation/devicetree/bindings/power/reset/syscon-poweroff.yaml
-
-diff --git a/Documentation/devicetree/bindings/power/reset/syscon-poweroff.txt b/Documentation/devicetree/bindings/power/reset/syscon-poweroff.txt
-deleted file mode 100644
-index 022ed1f3bc80..000000000000
---- a/Documentation/devicetree/bindings/power/reset/syscon-poweroff.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--Generic SYSCON mapped register poweroff driver
--
--This is a generic poweroff driver using syscon to map the poweroff register.
--The poweroff is generally performed with a write to the poweroff register
--defined by the register map pointed by syscon reference plus the offset
--with the value and mask defined in the poweroff node.
--
--Required properties:
--- compatible: should contain "syscon-poweroff"
--- regmap: this is phandle to the register map node
--- offset: offset in the register map for the poweroff register (in bytes)
--- value: the poweroff value written to the poweroff register (32 bit access)
--
--Optional properties:
--- mask: update only the register bits defined by the mask (32 bit)
--
--Legacy usage:
--If a node doesn't contain a value property but contains a mask property, the
--mask property is used as the value.
--
--Default will be little endian mode, 32 bit access only.
--
--Examples:
--
--	poweroff {
--	   compatible = "syscon-poweroff";
--	   regmap = <&regmapnode>;
--	   offset = <0x0>;
--	   mask = <0x7a>;
--	};
-diff --git a/Documentation/devicetree/bindings/power/reset/syscon-poweroff.yaml b/Documentation/devicetree/bindings/power/reset/syscon-poweroff.yaml
-new file mode 100644
-index 000000000000..fb812937b534
---- /dev/null
-+++ b/Documentation/devicetree/bindings/power/reset/syscon-poweroff.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/power/reset/syscon-poweroff.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Generic SYSCON mapped register poweroff driver
-+
-+maintainers:
-+  - Sebastian Reichel <sre@kernel.org>
-+
-+description: |+
-+  This is a generic poweroff driver using syscon to map the poweroff register.
-+  The poweroff is generally performed with a write to the poweroff register
-+  defined by the register map pointed by syscon reference plus the offset
-+  with the value and mask defined in the poweroff node.
-+  Default will be little endian mode, 32 bit access only.
-+
-+properties:
-+  compatible:
-+    const: syscon-poweroff
-+
-+  mask:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Update only the register bits defined by the mask (32 bit).
-+
-+  offset:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Offset in the register map for the poweroff register (in bytes).
-+
-+  regmap:
-+    $ref: /schemas/types.yaml#/definitions/phandle
-+    description: Phandle to the register map node.
-+
-+  value:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: The poweroff value written to the poweroff register (32 bit access).
-+
-+required:
-+  - compatible
-+  - regmap
-+  - offset
-+
-+allOf:
-+  - if:
-+      not:
-+        required:
-+          - mask
-+    then:
-+      required:
-+        - value
-+
-+examples:
-+  - |
-+    poweroff {
-+      compatible = "syscon-poweroff";
-+      regmap = <&regmapnode>;
-+      offset = <0x0>;
-+      mask = <0x7a>;
-+    };
--- 
-2.17.1
-
+Best regards,
+Krzysztof
