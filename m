@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D45C43331
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BF94C43331
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:21:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 20403218AC
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:20:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00F2421D56
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Sep 2019 09:21:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1567848055;
-	bh=LHFmcuk/vzruYg3dab9NBWSTbnEIQjOOGTrmtbnr1vo=;
+	s=default; t=1567848065;
+	bh=j4MBXQfXeRt5HrbT58rdgLpG2/WPrTHwL01G7iEVZkE=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=bwFr7YoSoEokgVR523FUwE/NdSiDRLcBXEwL68VRFLRrS3lN2OW9rzFKtWIKDbV5x
-	 zAdMBjylTAoGzCLN6iqNuFx8x4VnvPyenq/jDGIR0ORYvm3InRaD4yVyiNWeFFUmIc
-	 zECdZoDul7hkYOa4vevhwDsmWaEzFqHtg6Q2ix8M=
+	b=wxj6cYXVe7luQb4ShEeADyLbAj/EJrL1U9SZ60i8LC8GTSbIjZNnYwBegjUEEwRJ0
+	 t0gxb3cxwsdp0biiBT7k67yaK5jPs9JRGewdzWmfViFRCOWspcpS3ct+2ut2qfe52s
+	 3cBlgX/Ua+tkbqmIsO18fgAcB/sxaY4gQ8GZ48jI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406628AbfIGJUu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 Sep 2019 05:20:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59574 "EHLO mail.kernel.org"
+        id S1726132AbfIGJVA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Sep 2019 05:21:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59814 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2406600AbfIGJUt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Sep 2019 05:20:49 -0400
+        id S2406642AbfIGJU7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Sep 2019 05:20:59 -0400
 Received: from localhost.localdomain (unknown [194.230.155.145])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D0B2B218DE;
-        Sat,  7 Sep 2019 09:20:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6398921871;
+        Sat,  7 Sep 2019 09:20:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1567848049;
-        bh=LHFmcuk/vzruYg3dab9NBWSTbnEIQjOOGTrmtbnr1vo=;
+        s=default; t=1567848058;
+        bh=j4MBXQfXeRt5HrbT58rdgLpG2/WPrTHwL01G7iEVZkE=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=v5MkQIOSFsfvZcTxGNvc3U7CVH2HsEkHY6gy4q2XicW14ozJphjkVEogIwE2scXbE
-         HnE4So0qSq/NzzA04npiXdkAUoSI/t3vIjdAFhZs5gUGU48mU/BcU1fQ3pkWFKtZsB
-         b4DHql01Z09IqEOiMaLyBCLy2ETkqrNl+J99LV+s=
+        b=Jz7Qu85CAFJdiBHByTpy+lBWvxsnlo1LMgKKvHuyCUBrhQHECBYjlZWMk+g4uN3Nx
+         H48684rC9qyTcI0aBWqpKTV5FpE3nAS4uVZtYDsyfhHrcaTN/P9+yi1RTCn++LSV9C
+         1dXQmQStP9z8XSKtyLm9BwshrVjfOyX3H1dZrHsA=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -55,9 +55,9 @@ To:     Rob Herring <robh+dt@kernel.org>,
         linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-rtc@vger.kernel.org
-Subject: [PATCH v2 06/11] dt-bindings: arm: samsung: Convert Exynos Chipid bindings to json-schema
-Date:   Sat,  7 Sep 2019 11:20:02 +0200
-Message-Id: <20190907092007.9946-6-krzk@kernel.org>
+Subject: [PATCH v2 08/11] dt-bindings: arm: samsung: Convert Exynos System Registers bindings to json-schema
+Date:   Sat,  7 Sep 2019 11:20:04 +0200
+Message-Id: <20190907092007.9946-8-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20190907092007.9946-1-krzk@kernel.org>
 References: <20190907092007.9946-1-krzk@kernel.org>
@@ -66,48 +66,64 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert Samsung Exynos Chipid bindings to DT schema format using
-json-schema.
+Convert Samsung Exynos System Registers (SYSREG) bindings to DT schema
+format using json-schema.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
----
- .../bindings/arm/samsung/exynos-chipid.txt    | 12 ---------
- .../bindings/arm/samsung/exynos-chipid.yaml   | 25 +++++++++++++++++++
- 2 files changed, 25 insertions(+), 12 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-chipid.txt
- create mode 100644 Documentation/devicetree/bindings/arm/samsung/exynos-chipid.yaml
 
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.txt b/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.txt
+---
+
+Example somehow fails:
+Documentation/devicetree/bindings/arm/samsung/pmu.example.dt.yaml:
+system-controller@10040000: compatible:0: 'samsung,exynos5250-pmu' is
+not one of ['samsung,exynos4-sysreg', 'samsung,exynos5-sysreg']
+
+It seems that PMU schema is applied to sysreq nodes (and vice-versa).
+---
+ .../bindings/arm/samsung/sysreg.txt           | 19 -----------
+ .../bindings/arm/samsung/sysreg.yaml          | 33 +++++++++++++++++++
+ 2 files changed, 33 insertions(+), 19 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/arm/samsung/sysreg.txt
+ create mode 100644 Documentation/devicetree/bindings/arm/samsung/sysreg.yaml
+
+diff --git a/Documentation/devicetree/bindings/arm/samsung/sysreg.txt b/Documentation/devicetree/bindings/arm/samsung/sysreg.txt
 deleted file mode 100644
-index 85c5dfd4a720..000000000000
---- a/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.txt
+index 4fced6e9d5e4..000000000000
+--- a/Documentation/devicetree/bindings/arm/samsung/sysreg.txt
 +++ /dev/null
-@@ -1,12 +0,0 @@
--SAMSUNG Exynos SoCs Chipid driver.
+@@ -1,19 +0,0 @@
+-SAMSUNG S5P/Exynos SoC series System Registers (SYSREG)
 -
--Required properties:
--- compatible : Should at least contain "samsung,exynos4210-chipid".
--
--- reg: offset and length of the register set
+-Properties:
+- - compatible : should contain two values. First value must be one from following list:
+-		- "samsung,exynos4-sysreg" - for Exynos4 based SoCs,
+-		- "samsung,exynos5-sysreg" - for Exynos5 based SoCs.
+-		second value must be always "syscon".
+- - reg : offset and length of the register set.
 -
 -Example:
--	chipid@10000000 {
--		compatible = "samsung,exynos4210-chipid";
--		reg = <0x10000000 0x100>;
+-	syscon@10010000 {
+-		compatible = "samsung,exynos4-sysreg", "syscon";
+-		reg = <0x10010000 0x400>;
 -	};
-diff --git a/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.yaml b/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.yaml
+-
+-	syscon@10050000 {
+-		compatible = "samsung,exynos5-sysreg", "syscon";
+-		reg = <0x10050000 0x5000>;
+-	};
+diff --git a/Documentation/devicetree/bindings/arm/samsung/sysreg.yaml b/Documentation/devicetree/bindings/arm/samsung/sysreg.yaml
 new file mode 100644
-index 000000000000..9c573ad7dc7d
+index 000000000000..a3d44646e441
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/arm/samsung/exynos-chipid.yaml
-@@ -0,0 +1,25 @@
++++ b/Documentation/devicetree/bindings/arm/samsung/sysreg.yaml
+@@ -0,0 +1,33 @@
 +# SPDX-License-Identifier: GPL-2.0
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/arm/samsung/exynos-chipid.yaml#
++$id: http://devicetree.org/schemas/arm/samsung/sysreg.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Samsung Exynos SoC series Chipid driver
++title: Samsung S5P/Exynos SoC series System Registers (SYSREG)
 +
 +maintainers:
 +  - Krzysztof Kozlowski <krzk@kernel.org>
@@ -115,16 +131,24 @@ index 000000000000..9c573ad7dc7d
 +properties:
 +  compatible:
 +    items:
-+      - const: samsung,exynos4210-chipid
++      - enum:
++          - samsung,exynos4-sysreg
++          - samsung,exynos5-sysreg
++      - const: syscon
 +
 +  reg:
 +    maxItems: 1
 +
 +examples:
 +  - |
-+    chipid@10000000 {
-+      compatible = "samsung,exynos4210-chipid";
-+      reg = <0x10000000 0x100>;
++    syscon@10010000 {
++      compatible = "samsung,exynos4-sysreg", "syscon";
++      reg = <0x10010000 0x400>;
++    };
++
++    syscon@10050000 {
++      compatible = "samsung,exynos5-sysreg", "syscon";
++      reg = <0x10050000 0x5000>;
 +    };
 -- 
 2.17.1
