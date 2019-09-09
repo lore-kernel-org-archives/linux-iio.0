@@ -2,163 +2,265 @@ Return-Path: <SRS0=8cOJ=XE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF936C49ED5
-	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 09:45:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 63556C00307
+	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 09:56:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A5C8D21924
-	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 09:45:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 228942084D
+	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 09:56:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Kz7q+CsL"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="OksajV6l";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="SHoOlH7Z"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729091AbfIIJpT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 9 Sep 2019 05:45:19 -0400
-Received: from first.geanix.com ([116.203.34.67]:49156 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389125AbfIIJpT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 9 Sep 2019 05:45:19 -0400
-Received: from zen.localdomain (unknown [85.184.140.241])
-        by first.geanix.com (Postfix) with ESMTPSA id 5F0F72D7;
-        Mon,  9 Sep 2019 09:44:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1568022288; bh=qQ+GGJ5gsZ8WhTf6M2CJDTVnLZKSp2l++EeQnKVpRTw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Kz7q+CsLWRwb4lswhSfWnKbSiQWHYVMVd6bJ2auQtee/epaYd4IvWceRNFKXKa3gP
-         ognGGL3N5FDHWTWA0VdyI4Jcs5ihfIK9YbAAWmQ5Rx4VYb36igdRbjHCrudDuxfcz/
-         RmPsJwiDhr9KQ1Vy2PmElAgKKCqs+7DRDU87JIsp5pglPO5UR+Ur6ef7yikrxdUUQ1
-         k6cGHxMK/utitV+pXjRC7tDD6Kp4m0hlrOLuZkDD4oc4SMfPDjhWSu+26XyqttAjjF
-         P+g7ukD5Ztx005rrF3X5fu3Oly2x5X9KKEFqe3dqdPt+53LkXlUa+b9HVUAcVhwEDX
-         UPRLIBBwEoABw==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     linux-iio@vger.kernel.org, jic23@kernel.org,
-        lorenzo.bianconi83@gmail.com
-Cc:     Sean Nyekjaer <sean@geanix.com>, denis.ciocca@st.com,
-        mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
-Subject: [PATCH v5 5/6] iio: imu: st_lsm6dsx: add motion report function and call from interrupt
-Date:   Mon,  9 Sep 2019 11:45:05 +0200
-Message-Id: <20190909094506.51792-5-sean@geanix.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190909094506.51792-1-sean@geanix.com>
-References: <20190909094506.51792-1-sean@geanix.com>
+        id S1729201AbfIIJ4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 9 Sep 2019 05:56:04 -0400
+Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:49288 "EHLO
+        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729181AbfIIJ4E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Sep 2019 05:56:04 -0400
+Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
+        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x899u3kR001284;
+        Mon, 9 Sep 2019 02:56:03 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
+ subject : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pfpt1;
+ bh=7mkKsJ8v3WTsb9qrvyP9db0XnzHV9z/dcS1Yfp+MvHw=;
+ b=OksajV6lH7yDqFekji3ZifjChiffN6QVzqjXMrFJFtb1grkk7MQrc66q2RlEpXsWBFUW
+ viZBZw4SMo4kW17s3ufxTd8S5nhbxFUMVRUYvHqlG2tWTepY1j1vNJYCOatjyTiHrtdj
+ E8TgTx6xY6mXGAAyp1sAq3H/w8rE/amzvWK+GzSJfsVDdzg/PU8wzgNbFApwh2WYvkEK
+ 2tjBGW4NYCMERmcnCQt7SZ3U8/1B8uLgyVBNXio7AvGbrk0KQUk5fQxd1Q2iJ/dXdNoD
+ 2feU02bHzcDT+Otx/1eKmAg10oVRr8kneU56F95sQadnrqYyh1097tYBGxy+UbGxVXbT cQ== 
+Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2050.outbound.protection.outlook.com [104.47.37.50])
+        by mx0a-00328301.pphosted.com with ESMTP id 2uw1n5gaxa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 09 Sep 2019 02:56:02 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=n9YgmuisxwYFJ4RU4qiBlw05xnSKqyY5OU/RWFCly+vwYqzmfxSIgBMB8qrKD7DX+7VOPx9kqXlVQbHNCwTe+iHsUPWA9B+rJcZb02orHmWlLftWvG/E4RnpFJ4hP/bqdj9itXH7n6tn3Pt2FiHnFGLvz7CsU6Sg7SLe6mBJo2apn3AsyB01XIh3XVLH6BInedMMmfjcsp9ylS9hPYCjcJDpBQusb1iAjbGTvKuty+0QPWM6pAvXTuJzf+BjUGPoKI10imxEUwjCgfbsz5IXco5dmzcSccrRGNPFj4ec06n/wXS1v+lHyNCFmAZmzUg2WhJ6ngt2X7IsIWznkEPRzw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7mkKsJ8v3WTsb9qrvyP9db0XnzHV9z/dcS1Yfp+MvHw=;
+ b=eQNRfh5MOY2/pAnntT56tqpu9q//ZvlQzFGI8B/+4u6T0ZpxsR0xLii1n5mx0m6l/iZKWjijj4aOEu8goZaQH+JsScq+5f56b9u1FMDzkzHu+GAe84c16NfT6GiWzuhjARW6RCO/bc+lkVs8kkemW/vaCv0zgxDp60h7wyEnGs/NMh7UeQLQnsk5gARBfhuXRok8ts5LQM5dWDSkC9fixVqiyIX1siGcmJOESlM71sP/ZU5qAfdiuvEi7GRn24p+NHuur7VphvOUemYgDpwU1XKBCzjjGtev626F3cOXjs5D8YG5/oOFGs4KE9ZIliTMT7LriBDbdPADNvaIis0k8g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=invensense.com; dmarc=pass action=none
+ header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7mkKsJ8v3WTsb9qrvyP9db0XnzHV9z/dcS1Yfp+MvHw=;
+ b=SHoOlH7Z/CSAm2PTEimuMjzcG96mjcMpDlFqH3Uego7CIy3qenD2vp1OzNROm8TltPcqJhw0dHt+mRHXAObe5ZzQdyLnXwIPVSFYJcH1snQT423pdyiALPJlG/I1Lts75H9ZJ4Cne+aS3fueRHJHfYL3/tbhunW0CmN3doEqjXQ=
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
+ MN2PR12MB3951.namprd12.prod.outlook.com (10.255.238.152) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2241.15; Mon, 9 Sep 2019 09:55:59 +0000
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::256d:7ef4:1570:a166]) by MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::256d:7ef4:1570:a166%5]) with mapi id 15.20.2241.018; Mon, 9 Sep 2019
+ 09:55:59 +0000
+From:   Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 0/8] add magnetometer support for MPU925x
+Thread-Topic: [PATCH 0/8] add magnetometer support for MPU925x
+Thread-Index: AQHVXn0Fzssnqa4N1USG7L0WWvUwAachuBIAgAF0B90=
+Date:   Mon, 9 Sep 2019 09:55:59 +0000
+Message-ID: <MN2PR12MB337376A70BB66E8F7A3997D2C4B70@MN2PR12MB3373.namprd12.prod.outlook.com>
+References: <20190829151801.13014-1-jmaneyrol@invensense.com>,<20190908124242.21669f1f@archlinux>
+In-Reply-To: <20190908124242.21669f1f@archlinux>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [77.157.193.39]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 996fd04e-dcc8-4a8a-4e87-08d7350beac6
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600166)(711020)(4605104)(1401327)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:MN2PR12MB3951;
+x-ms-traffictypediagnostic: MN2PR12MB3951:
+x-microsoft-antispam-prvs: <MN2PR12MB395144485D54518CAE65E104C4B70@MN2PR12MB3951.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:10000;
+x-forefront-prvs: 01559F388D
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39850400004)(396003)(366004)(346002)(136003)(376002)(199004)(189003)(53936002)(66556008)(229853002)(6246003)(76116006)(66476007)(2906002)(91956017)(66446008)(6916009)(9686003)(66946007)(55016002)(81166006)(81156014)(186003)(4326008)(476003)(99286004)(8936002)(486006)(64756008)(25786009)(86362001)(6436002)(8676002)(53546011)(6506007)(102836004)(26005)(76176011)(256004)(74316002)(7736002)(305945005)(52536014)(478600001)(446003)(11346002)(7696005)(5024004)(14444005)(71200400001)(71190400001)(80792005)(3846002)(33656002)(6116002)(5660300002)(66066001)(14454004)(316002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3951;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: invensense.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: LsqVd32vIYh5FF9ZQzo9ZMaLEw9xinrn1I0ybP3bHOPCjtF+05gQ18VXnd6V0SKn+1t+xTcoqC2flL8tjGSKKFIhTKS3aR3qFiLjSxrnd5ILqtSzs4/ckFRu9UPiWnd21Nd8eKy/FNLxPNRRC5IePwMgTq1srIgLhRrLVdrAC1atb7fYhgKessExq0nx5QXY/eD7uIc+0+lhhpURM2mPB1ZEyc9ylj7JDXMw2kXT6KLolLEkS0h8FI9Yu6/1PXwbfEHABSsN94gTk69rEA/axFnHthwQWj2iw43CIXDbev41Xvr5GDVH/WB5rOQI/rdZNZ5zErafrzyx66gWY8oSOONyl21y4gugU6Z2liNt6AdRYWrPDageJ6hqX7eg83+SVXNE0PZfqQ1xvzJByHDdHQbny0aegk6PH/l2Z8TDG+U=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: invensense.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 996fd04e-dcc8-4a8a-4e87-08d7350beac6
+X-MS-Exchange-CrossTenant-originalarrivaltime: 09 Sep 2019 09:55:59.4072
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 462b3b3b-e42b-47ea-801a-f1581aac892d
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: F9mIAGm180peFyZUZpt0PQ5k5A8ai9M9zf0EV4nlMEiKhMLvd0cvTZylDzunUxxtdISLlptI9gds8GueKZyxrNK4bJTDOQBvm8aw4Zdeztk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3951
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-09_04:2019-09-09,2019-09-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ clxscore=1015 bulkscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ lowpriorityscore=0 impostorscore=0 adultscore=0 phishscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1906280000 definitions=main-1909090104
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Report iio motion events to iio subsystem
-
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
-Changes since v4:
- * Updated bitmask as pr Jonathans comments
-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  5 ++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 49 ++++++++++++++++++++
- 2 files changed, 54 insertions(+)
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index d04473861fba..015b837f366f 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -186,6 +186,11 @@ struct st_lsm6dsx_shub_settings {
- struct st_lsm6dsx_event_settings {
- 	struct st_lsm6dsx_reg enable_reg;
- 	struct st_lsm6dsx_reg wakeup_reg;
-+	u8 wakeup_src_reg;
-+	u8 wakeup_src_status_mask;
-+	u8 wakeup_src_z_mask;
-+	u8 wakeup_src_y_mask;
-+	u8 wakeup_src_x_mask;
- };
- 
- enum st_lsm6dsx_ext_sensor_id {
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 7ab31206104e..00ba14d15c13 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -48,6 +48,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/delay.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/interrupt.h>
-@@ -548,6 +549,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
- 	{
-@@ -1679,6 +1685,38 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
- 	return iio_dev;
- }
- 
-+void st_lsm6dsx_report_motion_event(struct st_lsm6dsx_hw *hw, int data)
-+{
-+	s64 timestamp = iio_get_time_ns(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_z_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_Z,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_x_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_Y,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_x_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_X,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+}
-+
- static irqreturn_t st_lsm6dsx_handler_irq(int irq, void *private)
- {
- 	return IRQ_WAKE_THREAD;
-@@ -1688,6 +1726,17 @@ static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
- {
- 	struct st_lsm6dsx_hw *hw = private;
- 	int count;
-+	int data, err;
-+
-+	if (hw->enable_event) {
-+		err = regmap_read(hw->regmap,
-+				  hw->settings->event_settings.wakeup_src_reg, &data);
-+		if (err < 0)
-+			return IRQ_NONE;
-+
-+		if (data & hw->settings->event_settings.wakeup_src_status_mask)
-+			st_lsm6dsx_report_motion_event(hw, data);
-+	}
- 
- 	mutex_lock(&hw->fifo_lock);
- 	count = hw->settings->fifo_ops.read_fifo(hw);
--- 
-2.23.0
-
+Hi Jonathan,=0A=
+=0A=
+we could add a check on the DT for i2c-gate node.=0A=
+We also need to add a check on the ACPI configuration used by the ASUS T100=
+TA device.=0A=
+=0A=
+In this case, do you think it is still valuable to have a Kconfig option? (=
+this can still help to reduce driver footprint)=0A=
+=0A=
+Thanks.=0A=
+JB=0A=
+=0A=
+=0A=
+From: Jonathan Cameron <jic23@kernel.org>=0A=
+=0A=
+Sent: Sunday, September 8, 2019 13:42=0A=
+=0A=
+To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>=0A=
+=0A=
+Cc: linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>=0A=
+=0A=
+Subject: Re: [PATCH 0/8] add magnetometer support for MPU925x=0A=
+=0A=
+=A0=0A=
+=0A=
+=0A=
+=A0CAUTION: This email originated from outside of the organization. Please =
+make sure the sender is who they say they are and do not click links or ope=
+n attachments unless you recognize the sender and know the content is safe.=
+=0A=
+=0A=
+=0A=
+=0A=
+On Thu, 29 Aug 2019 15:18:33 +0000=0A=
+=0A=
+Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:=0A=
+=0A=
+=0A=
+=0A=
+> This serie of patches adds support of magnetometer inside MPU925x chips.=
+=0A=
+=0A=
+> It is using the MPU i2c master to drive the integrated magnetometer and=
+=0A=
+=0A=
+> read data into the MPU FIFO.=0A=
+=0A=
+> =0A=
+=0A=
+> Beware that this is disabling access to the i2c auxiliary bus. Since this=
+=0A=
+=0A=
+> can break existing setup, it is an optional feature requiring to enable=
+=0A=
+=0A=
+> the corresponding Kconfig option.=0A=
+=0A=
+=0A=
+=0A=
+That's not great... People will fail to set that correctly for their=0A=
+=0A=
+setup even if there is a 'correct' setting.=0A=
+=0A=
+=0A=
+=0A=
+So we need more information to risk that breakage + discussions of=0A=
+=0A=
+ways to avoid it.=A0 Can we for example check if the auxiliary bus is=0A=
+=0A=
+in use? (DT binding for example - check for the i2c-gate node?)=0A=
+=0A=
+=0A=
+=0A=
+Jonathan=0A=
+=0A=
+=0A=
+=0A=
+> =0A=
+=0A=
+> Jean-Baptiste Maneyrol (8):=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: disable i2c mux for 925x under Kconfig=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: add header include protection macro=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: add defines for supporting 9-axis chips=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: fix objects syntax in Makefile=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: helpers for using i2c master on auxiliary bu=
+s=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: add magnetometer implementation for MPU925x=
+=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: add magnetometer support inside mpu driver=
+=0A=
+=0A=
+>=A0=A0 iio: imu: inv_mpu6050: add fifo support for magnetometer data=0A=
+=0A=
+> =0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/Kconfig=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 |=A0=
+=A0 9 +=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/Makefile=A0=A0=A0=A0=A0=A0=A0=A0=A0 |=A0=
+=A0 8 +-=0A=
+=0A=
+>=A0 .../iio/imu/inv_mpu6050/inv_mpu9250_magn.c=A0=A0=A0 | 239 ++++++++++++=
+++++++=0A=
+=0A=
+>=A0 .../iio/imu/inv_mpu6050/inv_mpu9250_magn.h=A0=A0=A0 |=A0 27 ++=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c=A0=A0=A0=A0 | 191 ++++++++++=
+++++=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_aux.h=A0=A0=A0=A0 |=A0 46 ++++=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c=A0=A0=A0 | 141 ++++++++++-=
+=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c=A0=A0=A0=A0 |=A0=A0 5 +=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h=A0=A0=A0=A0 |=A0 79 +++++-=
+=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c=A0=A0=A0 | 120 +++++++++=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h=A0=A0=A0 | 107 ++++++++=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c=A0=A0=A0 |=A0 14 +-=0A=
+=0A=
+>=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c |=A0 90 ++++++-=0A=
+=0A=
+>=A0 13 files changed, 1055 insertions(+), 21 deletions(-)=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu9250_magn.c=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu9250_magn.h=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_aux.c=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_aux.h=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c=0A=
+=0A=
+>=A0 create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h=0A=
+=0A=
+> =0A=
+=0A=
+=0A=
+=0A=
