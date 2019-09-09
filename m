@@ -2,108 +2,110 @@ Return-Path: <SRS0=8cOJ=XE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 606B7C433EF
-	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 11:14:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A804C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 11:28:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 26A412089F
-	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 11:14:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0177E2086D
+	for <linux-iio@archiver.kernel.org>; Mon,  9 Sep 2019 11:28:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="LIn0Z/6q"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="KlHEf5Dg"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731105AbfIILOJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 9 Sep 2019 07:14:09 -0400
-Received: from first.geanix.com ([116.203.34.67]:53136 "EHLO first.geanix.com"
+        id S1728269AbfIIL2y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 9 Sep 2019 07:28:54 -0400
+Received: from first.geanix.com ([116.203.34.67]:53512 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729483AbfIILOJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 9 Sep 2019 07:14:09 -0400
-Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 8CC46641B1;
-        Mon,  9 Sep 2019 11:13:39 +0000 (UTC)
+        id S1730067AbfIIL2y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 9 Sep 2019 07:28:54 -0400
+Received: from zen.localdomain (unknown [85.184.140.241])
+        by first.geanix.com (Postfix) with ESMTPSA id D46A5641DB;
+        Mon,  9 Sep 2019 11:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1568027619; bh=CK2BTGR5IZV/TUJe6QUjd6PfMTUbBAKIcnujZK1rltE=;
-        h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=LIn0Z/6qm4b+lbKkLYdsrGiTap/zKxiJ+SC90SAFarIO2oPLI2CeVkhqbtt+Uigrh
-         BrObkzNYdTNxp0YKg4xIFjmrQP7kl3w497DKOWtyqnx+tITIGh9AvyYeY/tIRoQNrG
-         OFSLpgl4cPYRbwyHOnjWxFiChoHNozb3Q6UOTG6jILVbD5Rm7OsJDEuG1V4KJb2oqH
-         Xmzv1S3W3nHu3RcIORAUDvQO5v/IKZLXPG6XvJfj9v04RrTo+f2SUxKtn3zUEm+1/g
-         OAQXULHIZHdTlZtnRHpkvXbP5PoDHybykTz7NGeLqqAdunway426wsbRx+ad7FCKf4
-         5jypPSlah0siA==
-Subject: Re: [PATCH v5 2/6] iio: imu: st_lsm6dsx: add motion events
+        t=1568028505; bh=8CUhMFxRQbpdsBH5w+3dud+1hSLr/8DO7JknUIMYWks=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=KlHEf5DgVwRidRtXYCHcVG2pEfO7086ikIJyw2dbc6OLd2CIQZXb4AfDenpoQvCxp
+         HlTu4V3JNMWCjExeyBcnlE2and/erN0uMOVdjcFrypaP950OiLEiDJqINfQQqwR9+X
+         zy8+e149HNduT089nQB+ReidBenYjVXxz2p5nhJWX/1n2uAiPum0qr08YbydNycXHk
+         ADHVmoKW8i1Jz/gc+5G+DY/WWLaq6lLGa8+LELvKTCkLHbyBnOqYvm+u55u6AXXVQ2
+         F9XkoGj3smwG19z+YxvhBM8cvsmOWMboh07nQ8+hIxvHLVJdhEH6olBrBoVkf1SqiJ
+         BhHeHHBpmy5FQ==
+From:   Sean Nyekjaer <sean@geanix.com>
 To:     linux-iio@vger.kernel.org, jic23@kernel.org,
         lorenzo.bianconi83@gmail.com
-Cc:     denis.ciocca@st.com, mario.tesi@st.com, armando.visconti@st.com,
-        martin@geanix.com
-References: <20190909094506.51792-1-sean@geanix.com>
- <20190909094506.51792-2-sean@geanix.com>
-From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <e1fcfc59-d06a-8da2-99b2-b987afc4192e@geanix.com>
-Date:   Mon, 9 Sep 2019 13:13:44 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.0
+Cc:     Sean Nyekjaer <sean@geanix.com>, denis.ciocca@st.com,
+        mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
+Subject: [PATCH v6 3/6] iio: imu: st_lsm6dsx: add wakeup-source option
+Date:   Mon,  9 Sep 2019 13:28:43 +0200
+Message-Id: <20190909112846.55280-3-sean@geanix.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20190909112846.55280-1-sean@geanix.com>
+References: <20190909112846.55280-1-sean@geanix.com>
 MIME-Version: 1.0
-In-Reply-To: <20190909094506.51792-2-sean@geanix.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US-large
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This add ways for the SoC to wake from accelerometer wake events.
 
+In the suspend function we skip disabling the sensor if wakeup-source
+and events are activated.
 
-On 09/09/2019 11.45, Sean Nyekjaer wrote:
-> +int st_lsm6dsx_event_setup(struct st_lsm6dsx_hw *hw, int state)
-> +{
-> +	int err;
-> +	u8 enable = 0;
-> +
-> +	if (!hw->settings->int1_func_addr)
-> +		return -ENOTSUPP;
-> +
-> +	enable = state ? hw->settings->event_settings.enable_reg.mask : 0;
-> +
-> +	err = regmap_update_bits(hw->regmap,
-> +				 hw->settings->event_settings.enable_reg.addr,
-> +				 hw->settings->event_settings.enable_reg.mask,
-> +				 enable);
-> +	if (err < 0)
-> +		return err;
-> +
-> +	enable = state ? hw->irq_routing.mask : 0;
-> +
-> +	/* Enable wakeup interrupt */
-> +	return regmap_update_bits(hw->regmap, hw->irq_routing.addr,
-> +				  hw->irq_routing.mask,
-> +				  enable);
-> +}
-> +
-> +static int st_lsm6dsx_read_event(struct iio_dev *iio_dev,
-> +				   const struct iio_chan_spec *chan,
-> +				   enum iio_event_type type,
-> +				   enum iio_event_direction dir,
-> +				   enum iio_event_info info,
-> +				   int *val, int *val2)
-> +{
-> +	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-> +	struct st_lsm6dsx_hw *hw = sensor->hw;
-> +
-> +	if (type != IIO_EV_TYPE_THRESH)
-> +		return -EINVAL;
-> +
-> +	*val2 = 0;
-> +	*val = hw->event_threshold;
-> +
-> +	return IIO_VAL_INT;
-> +}
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+---
+Changes since v4:
+ * More devices supports wakeup
 
-For a device that not support wake events the user will get a:
-root@board:/sys/bus/iio/devices/iio:device2# echo 1 > 
-events/in_accel_x_thresh_either_en
--sh: echo: write error: Unknown error 524
+Changes since v5:
+ * None
 
-/Sean
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index d58683e13465..9d023b99139f 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -1802,6 +1802,9 @@ int st_lsm6dsx_probe(struct device *dev, int irq, int hw_id,
+ 			return err;
+ 	}
+ 
++	if (dev->of_node && of_property_read_bool(dev->of_node, "wakeup-source"))
++		device_init_wakeup(dev, true);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL(st_lsm6dsx_probe);
+@@ -1820,6 +1823,12 @@ static int __maybe_unused st_lsm6dsx_suspend(struct device *dev)
+ 		if (!(hw->enable_mask & BIT(sensor->id)))
+ 			continue;
+ 
++		if (device_may_wakeup(dev) && i == ST_LSM6DSX_ID_ACC) {
++			/* Enable wake from IRQ */
++			enable_irq_wake(hw->irq);
++			continue;
++		}
++
+ 		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
+ 		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
+ 		    sensor->id == ST_LSM6DSX_ID_EXT2)
+@@ -1852,6 +1861,11 @@ static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
+ 		if (!(hw->suspend_mask & BIT(sensor->id)))
+ 			continue;
+ 
++		if (device_may_wakeup(dev) && i == ST_LSM6DSX_ID_ACC) {
++			disable_irq_wake(hw->irq);
++			continue;
++		}
++
+ 		if (sensor->id == ST_LSM6DSX_ID_EXT0 ||
+ 		    sensor->id == ST_LSM6DSX_ID_EXT1 ||
+ 		    sensor->id == ST_LSM6DSX_ID_EXT2)
+-- 
+2.23.0
+
