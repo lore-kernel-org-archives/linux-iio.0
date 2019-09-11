@@ -2,51 +2,58 @@ Return-Path: <SRS0=Kgok=XG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38C26C49ED6
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Sep 2019 12:37:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AAAAC5ACAE
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Sep 2019 12:41:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0CA8C2089F
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Sep 2019 12:37:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C1C8D20863
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Sep 2019 12:41:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="RPC43JEK"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="IXDssDVd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727302AbfIKMhu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Sep 2019 08:37:50 -0400
-Received: from first.geanix.com ([116.203.34.67]:52560 "EHLO first.geanix.com"
+        id S1727093AbfIKMlb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Sep 2019 08:41:31 -0400
+Received: from first.geanix.com ([116.203.34.67]:52680 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726952AbfIKMhu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 11 Sep 2019 08:37:50 -0400
+        id S1726928AbfIKMlb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 11 Sep 2019 08:41:31 -0400
 Received: from [192.168.100.95] (unknown [95.138.208.137])
-        by first.geanix.com (Postfix) with ESMTPSA id 87857646EF;
-        Wed, 11 Sep 2019 12:37:09 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 6B998646EF;
+        Wed, 11 Sep 2019 12:40:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1568205429; bh=6Tf2EGkA4u56scuPZFARyHyAr76XS/+ReKIY1c5+aZ0=;
+        t=1568205652; bh=YjOJKOOlFNkdNWBefyO+Ry1sbSKDS3gGXKsLpAUbWjc=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To;
-        b=RPC43JEK51YoA/h00gnCe1n2pvU9tzfQxp7VhhkFVy063KiRxOVOq+0Nuah3mDID9
-         p5AQj5tZzQSJpaqha/lplHJJhEF4Yaa0KezOrCcQ6fWvk788wjyDxGW/7owa/ozgeX
-         bcRYZhKHcKdkFJ+MqY03NZt+M1KvfhpY7AXTRYaj5kEK5mLG+9kg2WrSd7cCHNEN4V
-         XAMIIQtjw8dYw0j/F+2IpsF5eEE+OZseIeDSPjxd6z+U7Lb3XMC5Aj9bUiODSosj9y
-         G6v/RdSB/8H2lAfWcxgYV5n+hJjNUFeAj5YxmfI7/uzJX5w2AVZnA5N1LAmthpoIeT
-         t1IH0iOsvL7VQ==
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: enable LIR for sensor events
-To:     Lorenzo Bianconi <lorenzo@kernel.org>, jic23@kernel.org
-Cc:     lorenzo.bianconi@redhat.com, linux-iio@vger.kernel.org,
-        mario.tesi@st.com, armando.visconti@st.com, denis.ciocca@st.com
-References: <cover.1568184231.git.lorenzo@kernel.org>
- <376b8e64aa95f686e46aa760934cd25d9f47833f.1568184231.git.lorenzo@kernel.org>
+        b=IXDssDVdXXGwvbVFtl+rTJqsxFSLE9/eMJrHpDLxIg/eY9bXIC1N9gtpKZgS2DHdz
+         838Dc94vrrjRf3s1HWxGId8LxVpsLOGqXX6YEiXNHWIi03IQSixUr5/08DOAmj6UMa
+         +NxH8kYGo3g5AIS+AiXf9wZd2LI2kBzpOm3SlR7xyHm6fuUH+hIoKJdW+Ql63grj9b
+         pLG2mqPvkjqTQf+k0rJY5uEW+sk/EmDOIUlnbJDrHk6vA/niShMrKSBnTr0Eer7agh
+         cJdcIdovu7cJKUHRY5jRBkAOsEwh/S6PT01oiwjVvYlHhbLZDBoKuqLJd8TUxf3boj
+         KkNZ8PA93MLCw==
+Subject: Re: [PATCH v6 5/6] iio: imu: st_lsm6dsx: add motion report function
+ and call from interrupt
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     linux-iio@vger.kernel.org, jic23@kernel.org,
+        lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
+        mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
+References: <20190909112846.55280-1-sean@geanix.com>
+ <20190909112846.55280-5-sean@geanix.com>
+ <20190909120546.GE2990@localhost.localdomain>
+ <6e987a54-250c-c146-cff8-99fa33255f9b@geanix.com>
+ <20190910071250.GA2712@localhost.localdomain>
+ <58121fe6-067f-4515-3375-735ca7b41df6@geanix.com>
+ <20190910072646.GB2712@localhost.localdomain>
+ <20190910122740.GC2712@localhost.localdomain>
 From:   Sean Nyekjaer <sean@geanix.com>
-Message-ID: <9e55d2f6-5136-f783-bec6-bae79dbc59d2@geanix.com>
-Date:   Wed, 11 Sep 2019 14:37:23 +0200
+Message-ID: <632ea600-509e-ad83-4752-6e6fc3000345@geanix.com>
+Date:   Wed, 11 Sep 2019 14:41:06 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.0
 MIME-Version: 1.0
-In-Reply-To: <376b8e64aa95f686e46aa760934cd25d9f47833f.1568184231.git.lorenzo@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+In-Reply-To: <20190910122740.GC2712@localhost.localdomain>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Content-Language: en-US-large
 Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -56,122 +63,33 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 
 
-On 11/09/2019 08.50, Lorenzo Bianconi wrote:
-> Enable Latched interrupt by default for sensor events
-> 
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Tested-by: Sean Nyekjaer <sean@geanix.com>
-> ---
->   drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  2 ++
->   drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 35 ++++++++++++++++++++
->   2 files changed, 37 insertions(+)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index 5e3cd96b0059..3ea0dc13d101 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -215,6 +215,7 @@ struct st_lsm6dsx_ext_dev_settings {
->    * @fs_table: Hw sensors gain table (gain + val).
->    * @decimator: List of decimator register info (addr + mask).
->    * @batch: List of FIFO batching register info (addr + mask).
-> + * @lir: Latched interrupt register info (addr + mask).
->    * @fifo_ops: Sensor hw FIFO parameters.
->    * @ts_settings: Hw timer related settings.
->    * @shub_settings: i2c controller related settings.
-> @@ -237,6 +238,7 @@ struct st_lsm6dsx_settings {
->   	struct st_lsm6dsx_fs_table_entry fs_table[2];
->   	struct st_lsm6dsx_reg decimator[ST_LSM6DSX_MAX_ID];
->   	struct st_lsm6dsx_reg batch[ST_LSM6DSX_MAX_ID];
-> +	struct st_lsm6dsx_reg lir;
->   	struct st_lsm6dsx_fifo_ops fifo_ops;
->   	struct st_lsm6dsx_hw_ts_settings ts_settings;
->   	struct st_lsm6dsx_shub_settings shub_settings;
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 2d3495560136..a208da865efe 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -237,6 +237,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(5, 3),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x58,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_fifo,
-> @@ -349,6 +353,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(5, 3),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x58,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_fifo,
-> @@ -470,6 +478,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(5, 3),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x58,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_fifo,
-> @@ -585,6 +597,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(7, 4),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x56,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_tagged_fifo,
-> @@ -715,6 +731,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(7, 4),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x56,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_tagged_fifo,
-> @@ -822,6 +842,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->   				.mask = GENMASK(7, 4),
->   			},
->   		},
-> +		.lir = {
-> +			.addr = 0x56,
-> +			.mask = BIT(0),
-> +		},
->   		.fifo_ops = {
->   			.update_fifo = st_lsm6dsx_update_fifo,
->   			.read_fifo = st_lsm6dsx_read_tagged_fifo,
-> @@ -1416,6 +1440,17 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
->   	if (err < 0)
->   		return err;
->   
-> +	/* enable Latched interrupts for device events */
-> +	if (hw->settings->lir.addr) {
-> +		unsigned int data;
-> +
-> +		data = ST_LSM6DSX_SHIFT_VAL(1, hw->settings->lir.mask);
-> +		err = regmap_update_bits(hw->regmap, hw->settings->lir.addr,
-> +					 hw->settings->lir.mask, data);
-> +		if (err < 0)
-> +			return err;
-> +	}
-> +
->   	err = st_lsm6dsx_init_shub(hw);
->   	if (err < 0)
->   		return err;
-> 
+On 10/09/2019 14.27, Lorenzo Bianconi wrote:
+>> Could you please try to carry out the following test?
+>> 1- set the FIFO watermark to a high level (e.g. 128)
+>>     $echo 256 > /sys/bus/iio/devices/iio:device{x}/buffer/length
+>>     $echo 128 > /sys/bus/iio/devices/iio:device{x}/buffer/watermark
+>> 2- set a low acc odr (e.g 13Hz)
+>>     $echo 13 > /sys/bus/iio/devices/iio:device{x}/sampling_frequency
+>> 3- start reading from the accel and generate a wake-upp event
+>>
+>> Is still happen? Are you able to decode bus transaction? (register addresses,
+>> data read, ..)
+>>
+
+Do you still want this tested?
+
+[...]
+
+> Could you please try to enable the LIR (Latched interrupt - BIT(0) in 0x58)?
+> Please remember that on ISM330DLC the interrupt will be automatically cleared
+> reading the wake up src register after a time slice equals to 1/ODR so the it
+> will be set for longer time if you run the device at low ODR
+
+
+"iio: imu: st_lsm6dsx: enable LIR for sensor events"
+"iio: imu: st_lsm6dsx: enable clear on read for latched interrupts"
+Does allow us to get events and buffered reads simultaneously.
+
+I will drop PATCH 6/6.
+
+/Sean
