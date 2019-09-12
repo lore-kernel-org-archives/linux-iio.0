@@ -2,812 +2,772 @@ Return-Path: <SRS0=G7X0=XH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 343C6C4CECC
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 10:58:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0B96C4CEC5
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 10:59:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E1684214AE
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 10:58:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9550D21479
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 10:59:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="kphYfYwA";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="UY8hsiIE"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OMADvqvU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731324AbfILK6n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 Sep 2019 06:58:43 -0400
-Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:20132 "EHLO
-        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731294AbfILK6m (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Sep 2019 06:58:42 -0400
-Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
-        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8CAt1io012325;
-        Thu, 12 Sep 2019 03:58:38 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt1;
- bh=8GWKfZDi3BOUIwnrimpfRqeOg+WJDaylDOMJs6xHCgU=;
- b=kphYfYwAUj6TfGpMfTEVk5k7PyWirovFcAkHucwGO2K/xEf8/U4YUfJRVp9lg44oaXF/
- 7iyTRDn8bvk6xlGvUlP6yvQ9yyS3s/Tq+gPgqffulxpdUKPavNL9CIQ/rnIzVvYGinq2
- HEa0YBZPaeOdN9ubT+HubUWlzWJonW1aUWfVfHGiN6UJeKHIMAy4QzSlSfogIu3Gnvh9
- rYLsVaAz06tQmYHwZBELFha7xf+8/pPNhDCHcS464f+NZ/7icWUPKJ3WKoZnGk2XUxFe
- 6tacCN9eDoErweSrdObPv1qpRItNlMg6MTsff2udDeIlzg9XyBz9HI/DH2toVR9jxB3E KA== 
-Received: from nam05-dm3-obe.outbound.protection.outlook.com (mail-dm3nam05lp2051.outbound.protection.outlook.com [104.47.49.51])
-        by mx0b-00328301.pphosted.com with ESMTP id 2uv8gn2s9u-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 12 Sep 2019 03:58:37 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L5orphf+KlbHB7N5jOzH+KK5dm/TDt9Dq+11dKU1r2iXh9ke8rX9EI16UpjqIccIm5KcwmvpVX7/zEkjwvLL7ym4OdqymwJ+gbjQ2ju7brVdgbMFnua+PDQHozbnhsQALRQRRLnEhRBwQIu0LTdlUgzC3fuufmkmFrzDtkBIeVhzlS6IIoJMj6RiBCeVr04nZUhJSZFM5c4BatoYUYTY3EfrTU4xE/zAYuYob3Q0u2NoZP4Qa77BDl5NMWB/yx36cecVvs/78oPd+3m8KZqKQ0vVS+IYZBiszKwpmcPLTEMx7inPqZdFMigvIbawv5SgJLbcVxoUzz4rIxvRk4YGJw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8GWKfZDi3BOUIwnrimpfRqeOg+WJDaylDOMJs6xHCgU=;
- b=eT9Q6/nbWgMJe0YVuR8zo3iBA8+lpZBQisUqZksWlI4zeGjMokf+e8oSTOgsjSVyXTOr5PtlD+0X5eNHGbcZ94QYjCpkbh0TvERK4EDyPLP1PTuw/Xm58WI81w9dFJKPw6Wfe19qzAzyAV7Cg1qC7MyoRQc7g/sEaC5fPFeLc9YUzzw2NexhnlJZerWdNTZSWi8Ia9Q2VF0mXWKczq6dsqnSrM6h6AsqhctOJ8RBTR1bCEV4OXW+Wqd3isR0WkGpwweMOP55OCWPQMVNoKbUOPLpT6g2f0f5uLcvPLDYJvsPodxQly+JNDE5sZdYLwmWKDcDKr0NO0Nyq1CrC5mGgg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=invensense.com; dmarc=pass action=none
- header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
+        id S1731232AbfILK7Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 Sep 2019 06:59:24 -0400
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:36904 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731211AbfILK7Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Sep 2019 06:59:24 -0400
+Received: by mail-ot1-f65.google.com with SMTP id s28so25635346otd.4;
+        Thu, 12 Sep 2019 03:59:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=8GWKfZDi3BOUIwnrimpfRqeOg+WJDaylDOMJs6xHCgU=;
- b=UY8hsiIEONB9wLzEKpxL/GhV+IWSiQDxkeUQsyM+IPobFrhlPok0pK9y3k5s/isvb+CfUly6ECJDRJErDz2H+misTRSizzSrJ8jcz8Brc+3IPqUSgHaHaiTu1ELzzKi9TKHPExisgj30b5ktNhfU0U9PtXG8pLHFwW82OXAUqAQ=
-Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
- MN2PR12MB2911.namprd12.prod.outlook.com (20.179.80.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2241.15; Thu, 12 Sep 2019 10:58:36 +0000
-Received: from MN2PR12MB3373.namprd12.prod.outlook.com
- ([fe80::256d:7ef4:1570:a166]) by MN2PR12MB3373.namprd12.prod.outlook.com
- ([fe80::256d:7ef4:1570:a166%5]) with mapi id 15.20.2241.018; Thu, 12 Sep 2019
- 10:58:36 +0000
-From:   Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-To:     "jic23@kernel.org" <jic23@kernel.org>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-Subject: [PATCH v2 6/7] iio: imu: inv_mpu6050: add MPU925x magnetometer
- support
-Thread-Topic: [PATCH v2 6/7] iio: imu: inv_mpu6050: add MPU925x magnetometer
- support
-Thread-Index: AQHVaVkG052q11dNIkq4KAkIiMgs1w==
-Date:   Thu, 12 Sep 2019 10:58:36 +0000
-Message-ID: <20190912105804.15650-6-jmaneyrol@invensense.com>
-References: <20190912105804.15650-1-jmaneyrol@invensense.com>
-In-Reply-To: <20190912105804.15650-1-jmaneyrol@invensense.com>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-clientproxiedby: LO2P265CA0448.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:e::28) To MN2PR12MB3373.namprd12.prod.outlook.com
- (2603:10b6:208:c8::33)
-x-originating-ip: [77.157.193.39]
-x-ms-exchange-messagesentrepresentingtype: 1
-x-mailer: git-send-email 2.17.1
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 5b20a485-87d1-41a2-89c8-08d7377028d8
-x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(5600166)(711020)(4605104)(1401327)(2017052603328)(7193020);SRVR:MN2PR12MB2911;
-x-ms-traffictypediagnostic: MN2PR12MB2911:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <MN2PR12MB29118666F2D97FE4C94F047AC4B00@MN2PR12MB2911.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:8273;
-x-forefront-prvs: 01583E185C
-x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(39840400004)(366004)(396003)(376002)(136003)(346002)(199004)(189003)(86362001)(6116002)(30864003)(3846002)(99286004)(54906003)(2351001)(1076003)(81166006)(81156014)(8676002)(71190400001)(71200400001)(14454004)(476003)(446003)(36756003)(25786009)(80792005)(52116002)(11346002)(2616005)(14444005)(256004)(486006)(6436002)(478600001)(76176011)(386003)(53936002)(305945005)(66066001)(53946003)(6512007)(8936002)(6486002)(26005)(5640700003)(6916009)(102836004)(6506007)(2906002)(107886003)(50226002)(316002)(2501003)(5660300002)(66946007)(4326008)(66446008)(64756008)(66556008)(66476007)(7736002)(186003);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB2911;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-received-spf: None (protection.outlook.com: invensense.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam-message-info: nLykvjkTsHMgE0nhoc+ttG8i5S0NDZZFjpx7sGEURffkpfJHwaXE+sdGpi+cyL6yBATu8Wv8T9JKQcvhSAZ5fmHfZRq1aQQ+8xUm7CNGzxzZVRMQt+FFw52jDUY0luU1AeUv9UGphpltVTT/chHp6o5QW7OvGp4d+zuySL5969DVq3vrUoX8yPqRVt8LCbmHVrXqjJbj5jvzUs1Vpr+nrxKvb6w+Y1NqHFE7PdmGg8IonWLZ0Id7PmAhY3aChfa4rBSVKFj/2Sr7XGsQyn0y4M4YArS95elWxZTEP3MWVWgTZCr41Wh36FA84ihLYH3KPWBSXqffWi0hsbMpEGukpvhEHYJVAlBaWcQOXZ/Kh4+X7xfS5lkqChRHPPpBWYX5Yw2A+dskbFOQI3lYijaJnQfhVG2jFtQ1uX3jr4+FoMs=
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=mEd/o+j6LUXnxRNJJAbJ8bupb9RUXlnJD3bpuSIPRFA=;
+        b=OMADvqvULBIcSwpsMibktidlWMehKEBAU5HAn7gkyQnpeCt3BBwzdzkeXCNn4+eKKF
+         uasjRCNPHHUwcb/sSpOo02dmsVsnRqFO+GcK3RjJ+fFR6Kun5Cx3Bij31UOfubzG0x0i
+         N1jt232qDrT+QmDSZ4FAw1a5ewBpHjd6P2M2htU0DfMwztHqUNB0a090/iYHWtgIKB5s
+         s/UftO/Zmnb0TZryGKypuJbl/d3Rh0p0nvfB6hfjt/lxPEyAM3aMNTVtR9mXBUQE7v7/
+         sE3kOBwj56WfvS7c/YRKrNEIS6iuXfpJpDnpRLQEANvdi0G7boWLNZ8Fs4Z7910F8/Bh
+         xccw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=mEd/o+j6LUXnxRNJJAbJ8bupb9RUXlnJD3bpuSIPRFA=;
+        b=BGxytWbTVNhYCynEaR74KY7Pf8SnZkYTicIyMfAL/RUnwbsot+zo9Rax2FIcunfaUe
+         ptU7yRoBZYBFnH4oLEkYbZDiya9fgN2LFW5QIlq1y3XdC/q1O+lf1Qct2D+O15FRKem/
+         myb+0Jr443MyvOp5tlagweRmJa06TijNgC3A4zaMpROZ1eT9dWcyv4XMqoXfi333ntZw
+         oNQhwJQmQ/xoq++/0ED9U0TKNtbjYG38ossirxz7Wo4Vc+GIJMteDie9EjHTzOSVlbqf
+         /vxkebb7qq6FALYG4e94q938wADAk1ry3+A3KEaOdwMGAeS9KNYwqci+90ST4/GD+De2
+         vUGg==
+X-Gm-Message-State: APjAAAWGz4ILz0KM8Jy5Z8dmw1cr/jgps2H/gOvkzCzs8mTaM3v4JK9K
+        64rRW+MxdGpAgO1PoqUhpOj8vfZOIeL5mxwZ3ag=
+X-Google-Smtp-Source: APXvYqz03VuS9D1ELvTw0ClXn5NMfBRnXT4lP/dcbbUvra7un9J5kMSc6vxL5Hzafzy5gLB/6blEI1ChDtBjsaVLEtE=
+X-Received: by 2002:a05:6830:1b6b:: with SMTP id d11mr25071518ote.207.1568285962787;
+ Thu, 12 Sep 2019 03:59:22 -0700 (PDT)
 MIME-Version: 1.0
-X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5b20a485-87d1-41a2-89c8-08d7377028d8
-X-MS-Exchange-CrossTenant-originalarrivaltime: 12 Sep 2019 10:58:36.0917
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 462b3b3b-e42b-47ea-801a-f1581aac892d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: NLQXJBiswxzaT+8Sz+UmJRTccPervkzkOF5s6KhrniPRIETKpaxxWyovvom8eARAzhcp3z6iaRUfwU6jdbnIOxtv9M02/YcArF03lKEVOHk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB2911
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
- definitions=2019-09-12_05:2019-09-11,2019-09-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 clxscore=1015
- priorityscore=1501 mlxscore=0 lowpriorityscore=0 adultscore=0 spamscore=0
- mlxlogscore=999 phishscore=0 bulkscore=0 impostorscore=0 suspectscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1906280000
- definitions=main-1909120116
+References: <20190902005938.7734-1-rodrigorsdc@gmail.com> <20190902005938.7734-2-rodrigorsdc@gmail.com>
+ <5cd4ad2f84280d8567d8c82e745a3189cecbde49.camel@analog.com>
+ <20190908120905.4a1ffedc@archlinux> <4b20e66b44a113af6a2dfff5cb5592979b918101.camel@analog.com>
+ <CAOeBkLrdSAk4H=BcDnFqR4x14kQDR+PYPxqgJk67ZfXfBq_nTw@mail.gmail.com>
+In-Reply-To: <CAOeBkLrdSAk4H=BcDnFqR4x14kQDR+PYPxqgJk67ZfXfBq_nTw@mail.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Thu, 12 Sep 2019 16:59:10 +0300
+Message-ID: <CA+U=DsqZhcL2ch_cZ9ONn__74o97SfwbBhNNVLJqBVZcB05qeQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2] staging: iio: accel: adis16240: move out of staging
+To:     Rodrigo Carvalho <rodrigorsdc@gmail.com>
+Cc:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "kernel-usp@googlegroups.com" <kernel-usp@googlegroups.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Popa, Stefan Serban" <StefanSerban.Popa@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support of driving MPU9250 magnetometer connected on i2c
-auxiliary bus using the MPU i2c master.
+On Wed, Sep 11, 2019 at 7:21 PM Rodrigo Carvalho <rodrigorsdc@gmail.com> wr=
+ote:
+>
+> Hi,
+>
+> Em seg, 9 de set de 2019 =C3=A0s 02:53, Ardelean, Alexandru
+> <alexandru.Ardelean@analog.com> escreveu:
+> >
+> > On Sun, 2019-09-08 at 12:09 +0100, Jonathan Cameron wrote:
+> > > On Mon, 2 Sep 2019 13:26:02 +0000
+> > > "Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+> > >
+> > > > On Sun, 2019-09-01 at 21:59 -0300, Rodrigo Carvalho wrote:
+> > > > > Move ADIS16240 driver from staging to mainline.
+> > > > >
+> > > > > The ADIS16240 is a fully integrated digital shock detection
+> > > > > and recorder system.
+> > > >
+> > > > Hey,
+> > > >
+> > > > Comments inline.
+> > > >
+> > > > I'll probably take a look in the next days again.
+> > > > There seem to be some ABI/sysfs attributes that need to be resolved=
+ before moving this out of staging.
+> > >
+> > > Absolutely. It is a 'new' type of device so there are definitely some
+> > > corners that need discussing before we move out of staging and commit
+> > > to maintaining the ABI moving forwards.
+> > >
+> > > That is the real reason this driver was still in staging!  No one
+> > > had been through the process of proposing the ABI and responding to
+> > > questions etc.
+> > >
+> > > The issue with impact sensors has always been that they don't really =
+fit
+> > > our normal model for buffers or triggers.
+> > >
+> > > So normally a trigger (if exposed in IIO) is used as one trigger
+> > > causes 1 set of samples (so like a frame trigger for a camera).
+> > >
+> > > These devices tend to work in a mode where one trigger causes data
+> > > to be captured for a period of time.  In this part that's the event
+> > > recorder function
+> > >
+> > > No one is realistically going to buy an impact sensor to just use it
+> > > as an accelerometer which is what this driver is currently doing.
+> > > I suppose we could just leave support in that form for now, but
+> > > I'm no sure how much use it is to anyone.
+> > >
+> > > Analog Devices people, worth working out how to support the event
+> > > recorder?  For that someone needs to have hardware as it is complex
+> > > to say the least!
+> >
+> > Worth it: yes.
+> > But we don't have any resources to allocate for this [at this point in =
+time].
+> >
+> > >
+> > > We could move it out but might be worth adding a comment somewhere
+> > > saying this only really supports direct access to channels, and
+> > > not the event recorder functionality.
+> > >
+> >
+> > I guess, I would vote for leaving it in staging.
+> > It's also a way to mark it as a work-in-progress/not-done/still-needs-s=
+omething kind of thing.
+> > If we move it now, it gets the status of "everything-resolved" which is=
+ not yet the case.
+> >
+> > Thanks for the insight/background info.
+> > Much of it was discussed before my time.
+>
+> How about adis16203? Is it more simple to move this driver out of staging=
+?
 
-Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
----
- drivers/iio/imu/inv_mpu6050/Makefile       |   2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 144 ++++++++-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |   4 +
- drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c | 355 +++++++++++++++++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h |  36 +++
- 5 files changed, 537 insertions(+), 4 deletions(-)
- create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
- create mode 100644 drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h
+Replying from my personal email, as I seem to have my periodical
+issues with the work-email.
 
-diff --git a/drivers/iio/imu/inv_mpu6050/Makefile b/drivers/iio/imu/inv_mpu=
-6050/Makefile
-index 2cfbd926522f..c103441a906b 100644
---- a/drivers/iio/imu/inv_mpu6050/Makefile
-+++ b/drivers/iio/imu/inv_mpu6050/Makefile
-@@ -5,7 +5,7 @@
-=20
- obj-$(CONFIG_INV_MPU6050_IIO) +=3D inv-mpu6050.o
- inv-mpu6050-y :=3D inv_mpu_core.o inv_mpu_ring.o inv_mpu_trigger.o \
--		 inv_mpu_aux.o
-+		 inv_mpu_aux.o inv_mpu_magn.o
-=20
- obj-$(CONFIG_INV_MPU6050_I2C) +=3D inv-mpu6050-i2c.o
- inv-mpu6050-i2c-y :=3D inv_mpu_i2c.o inv_mpu_acpi.o
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/i=
-nv_mpu6050/inv_mpu_core.c
-index 7b2e4d81bbba..f1c65e0dd1a5 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -17,6 +17,7 @@
- #include <linux/platform_device.h>
- #include <linux/regulator/consumer.h>
- #include "inv_mpu_iio.h"
-+#include "inv_mpu_magn.h"
-=20
- /*
-  * this is the gyro scale translated from dynamic range plus/minus
-@@ -332,6 +333,11 @@ static int inv_mpu6050_init_config(struct iio_dev *ind=
-io_dev)
- 	 */
- 	st->chip_period =3D NSEC_PER_MSEC;
-=20
-+	/* magn chip init, noop if not present in the chip */
-+	result =3D inv_mpu_magn_probe(st);
-+	if (result)
-+		goto error_power_off;
-+
- 	return inv_mpu6050_set_power_itg(st, false);
-=20
- error_power_off:
-@@ -411,6 +417,9 @@ static int inv_mpu6050_read_channel_data(struct iio_dev=
- *indio_dev,
- 		ret =3D inv_mpu6050_sensor_show(st, st->reg->temperature,
- 					      IIO_MOD_X, val);
- 		break;
-+	case IIO_MAGN:
-+		ret =3D inv_mpu_magn_read(st, chan->channel2, val);
-+		break;
- 	default:
- 		ret =3D -EINVAL;
- 		break;
-@@ -469,6 +478,8 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
- 				*val2 =3D INV_MPU6050_TEMP_SCALE;
-=20
- 			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_MAGN:
-+			return inv_mpu_magn_get_scale(st, chan, val, val2);
- 		default:
- 			return -EINVAL;
- 		}
-@@ -710,6 +721,11 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct=
- device_attribute *attr,
- 	if (result)
- 		goto fifo_rate_fail_power_off;
-=20
-+	/* update rate for magn, noop if not present in chip */
-+	result =3D inv_mpu_magn_set_rate(st, fifo_rate);
-+	if (result)
-+		goto fifo_rate_fail_power_off;
-+
- fifo_rate_fail_power_off:
- 	result |=3D inv_mpu6050_set_power_itg(st, false);
- fifo_rate_fail_unlock:
-@@ -795,8 +811,14 @@ inv_get_mount_matrix(const struct iio_dev *indio_dev,
- 		     const struct iio_chan_spec *chan)
- {
- 	struct inv_mpu6050_state *data =3D iio_priv(indio_dev);
-+	const struct iio_mount_matrix *matrix;
-+
-+	if (chan->type =3D=3D IIO_MAGN)
-+		matrix =3D &data->magn_orient;
-+	else
-+		matrix =3D &data->orientation;
-=20
--	return &data->orientation;
-+	return matrix;
- }
-=20
- static const struct iio_chan_spec_ext_info inv_ext_info[] =3D {
-@@ -864,6 +886,98 @@ static const unsigned long inv_mpu_scan_masks[] =3D {
- 	0,
- };
-=20
-+#define INV_MPU9X50_MAGN_CHAN(_chan2, _bits, _index)			\
-+	{								\
-+		.type =3D IIO_MAGN,					\
-+		.modified =3D 1,						\
-+		.channel2 =3D _chan2,					\
-+		.info_mask_separate =3D BIT(IIO_CHAN_INFO_SCALE) |	\
-+				      BIT(IIO_CHAN_INFO_RAW),		\
-+		.scan_index =3D _index,					\
-+		.scan_type =3D {						\
-+			.sign =3D 's',					\
-+			.realbits =3D _bits,				\
-+			.storagebits =3D 16,				\
-+			.shift =3D 0,					\
-+			.endianness =3D IIO_BE,				\
-+		},							\
-+		.ext_info =3D inv_ext_info,				\
-+	}
-+
-+static const struct iio_chan_spec inv_mpu9250_channels[] =3D {
-+	IIO_CHAN_SOFT_TIMESTAMP(INV_MPU9X50_SCAN_TIMESTAMP),
-+	/*
-+	 * Note that temperature should only be via polled reading only,
-+	 * not the final scan elements output.
-+	 */
-+	{
-+		.type =3D IIO_TEMP,
-+		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW)
-+				| BIT(IIO_CHAN_INFO_OFFSET)
-+				| BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index =3D -1,
-+	},
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_MPU6050_SCAN_GYRO_X),
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Y, INV_MPU6050_SCAN_GYRO_Y),
-+	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_Z, INV_MPU6050_SCAN_GYRO_Z),
-+
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_X, INV_MPU6050_SCAN_ACCL_X),
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Y, INV_MPU6050_SCAN_ACCL_Y),
-+	INV_MPU6050_CHAN(IIO_ACCEL, IIO_MOD_Z, INV_MPU6050_SCAN_ACCL_Z),
-+
-+	/* Magnetometer resolution is 16 bits */
-+	INV_MPU9X50_MAGN_CHAN(IIO_MOD_X, 16, INV_MPU9X50_SCAN_MAGN_X),
-+	INV_MPU9X50_MAGN_CHAN(IIO_MOD_Y, 16, INV_MPU9X50_SCAN_MAGN_Y),
-+	INV_MPU9X50_MAGN_CHAN(IIO_MOD_Z, 16, INV_MPU9X50_SCAN_MAGN_Z),
-+};
-+
-+static const unsigned long inv_mpu9x50_scan_masks[] =3D {
-+	/* 3-axis accel */
-+	BIT(INV_MPU6050_SCAN_ACCL_X)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Y)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Z),
-+	/* 3-axis gyro */
-+	BIT(INV_MPU6050_SCAN_GYRO_X)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Y)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Z),
-+	/* 3-axis magn */
-+	BIT(INV_MPU9X50_SCAN_MAGN_X)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Y)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Z),
-+	/* 6-axis accel + gyro */
-+	BIT(INV_MPU6050_SCAN_ACCL_X)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Y)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Z)
-+		| BIT(INV_MPU6050_SCAN_GYRO_X)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Y)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Z),
-+	/* 6-axis accel + magn */
-+	BIT(INV_MPU6050_SCAN_ACCL_X)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Y)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Z)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_X)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Y)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Z),
-+	/* 6-axis gyro + magn */
-+	BIT(INV_MPU6050_SCAN_GYRO_X)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Y)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Z)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_X)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Y)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Z),
-+	/* 9-axis accel + gyro + magn */
-+	BIT(INV_MPU6050_SCAN_ACCL_X)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Y)
-+		| BIT(INV_MPU6050_SCAN_ACCL_Z)
-+		| BIT(INV_MPU6050_SCAN_GYRO_X)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Y)
-+		| BIT(INV_MPU6050_SCAN_GYRO_Z)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_X)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Y)
-+		| BIT(INV_MPU9X50_SCAN_MAGN_Z),
-+	0,
-+};
-+
- static const struct iio_chan_spec inv_icm20602_channels[] =3D {
- 	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM20602_SCAN_TIMESTAMP),
- 	{
-@@ -1145,6 +1259,11 @@ int inv_mpu_core_probe(struct regmap *regmap, int ir=
-q, const char *name,
- 		return result;
- 	}
-=20
-+	/* fill magnetometer orientation */
-+	result =3D inv_mpu_magn_set_orient(st);
-+	if (result)
-+		return result;
-+
- 	/* power is turned on inside check chip type*/
- 	result =3D inv_check_and_setup_chip(st);
- 	if (result)
-@@ -1168,14 +1287,33 @@ int inv_mpu_core_probe(struct regmap *regmap, int i=
-rq, const char *name,
- 	if (inv_mpu_bus_setup)
- 		inv_mpu_bus_setup(indio_dev);
-=20
--	if (chip_type =3D=3D INV_ICM20602) {
-+	switch (chip_type) {
-+	case INV_MPU9250:
-+	case INV_MPU9255:
-+		/*
-+		 * Use magnetometer inside the chip only if there is no i2c
-+		 * auxiliary device in use.
-+		 */
-+		if (!st->magn_disabled) {
-+			indio_dev->channels =3D inv_mpu9250_channels;
-+			indio_dev->num_channels =3D ARRAY_SIZE(inv_mpu9250_channels);
-+			indio_dev->available_scan_masks =3D inv_mpu9x50_scan_masks;
-+		} else {
-+			indio_dev->channels =3D inv_mpu_channels;
-+			indio_dev->num_channels =3D ARRAY_SIZE(inv_mpu_channels);
-+			indio_dev->available_scan_masks =3D inv_mpu_scan_masks;
-+		}
-+		break;
-+	case INV_ICM20602:
- 		indio_dev->channels =3D inv_icm20602_channels;
- 		indio_dev->num_channels =3D ARRAY_SIZE(inv_icm20602_channels);
- 		indio_dev->available_scan_masks =3D inv_icm20602_scan_masks;
--	} else {
-+		break;
-+	default:
- 		indio_dev->channels =3D inv_mpu_channels;
- 		indio_dev->num_channels =3D ARRAY_SIZE(inv_mpu_channels);
- 		indio_dev->available_scan_masks =3D inv_mpu_scan_masks;
-+		break;
- 	}
-=20
- 	indio_dev->info =3D &mpu_info;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/in=
-v_mpu6050/inv_mpu_iio.h
-index 04215bc6e8ab..953f85618199 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -130,6 +130,8 @@ struct inv_mpu6050_hw {
-  *  @data_timestamp:	timestamp for next data sample.
-  *  @vddio_supply	voltage regulator for the chip.
-  *  @magn_disabled:     magnetometer disabled for backward compatibility r=
-eason.
-+ *  @magn_raw_to_gauss:	coefficient to convert mag raw value to Gauss.
-+ *  @magn_orient:       magnetometer sensor chip orientation if available.
-  */
- struct inv_mpu6050_state {
- 	struct mutex lock;
-@@ -152,6 +154,8 @@ struct inv_mpu6050_state {
- 	s64 data_timestamp;
- 	struct regulator *vddio_supply;
- 	bool magn_disabled;
-+	s32 magn_raw_to_gauss[3];
-+	struct iio_mount_matrix magn_orient;
- };
-=20
- /*register and associated bit definition*/
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c b/drivers/iio/imu/i=
-nv_mpu6050/inv_mpu_magn.c
-new file mode 100644
-index 000000000000..415d8acece54
---- /dev/null
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
-@@ -0,0 +1,355 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Copyright (C) 2019 TDK-InvenSense, Inc.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/string.h>
-+
-+#include "inv_mpu_iio.h"
-+#include "inv_mpu_aux.h"
-+
-+/*
-+ * MPU9250 magnetometer is an AKM AK8963 chip on I2C aux bus
-+ */
-+#define INV_MPU_MAGN_I2C_ADDR		0x0C
-+
-+#define INV_MPU_MAGN_REG_WIA		0x00
-+#define INV_MPU_MAGN_BITS_WIA		0x48
-+
-+#define INV_MPU_MAGN_REG_ST1		0x02
-+#define INV_MPU_MAGN_BIT_DRDY		0x01
-+#define INV_MPU_MAGN_BIT_DOR		0x02
-+
-+#define INV_MPU_MAGN_REG_DATA		0x03
-+
-+#define INV_MPU_MAGN_REG_ST2		0x09
-+#define INV_MPU_MAGN_BIT_HOFL		0x08
-+#define INV_MPU_MAGN_BIT_BITM		0x10
-+
-+#define INV_MPU_MAGN_REG_CNTL1		0x0A
-+#define INV_MPU_MAGN_BITS_MODE_PWDN	0x00
-+#define INV_MPU_MAGN_BITS_MODE_SINGLE	0x01
-+#define INV_MPU_MAGN_BITS_MODE_FUSE	0x0F
-+#define INV_MPU_MAGN_BIT_OUTPUT_BIT	0x10
-+
-+#define INV_MPU_MAGN_REG_CNTL2		0x0B
-+#define INV_MPU_MAGN_BIT_SRST		0x01
-+
-+#define INV_MPU_MAGN_REG_ASAX		0x10
-+#define INV_MPU_MAGN_REG_ASAY		0x11
-+#define INV_MPU_MAGN_REG_ASAZ		0x12
-+
-+/* Magnetometer maximum frequency */
-+#define INV_MPU_MAGN_FREQ_HZ_MAX	50
-+
-+static bool inv_magn_supported(const struct inv_mpu6050_state *st)
-+{
-+	switch (st->chip_type) {
-+	case INV_MPU9250:
-+	case INV_MPU9255:
-+		return true;
-+	default:
-+		return false;
-+	}
-+}
-+
-+/* init magnetometer chip */
-+static int inv_magn_init(struct inv_mpu6050_state *st)
-+{
-+	uint8_t val;
-+	uint8_t asa[3];
-+	int ret;
-+
-+	/* check whoami */
-+	ret =3D inv_mpu_aux_read(st, INV_MPU_MAGN_I2C_ADDR, INV_MPU_MAGN_REG_WIA,
-+			       &val, sizeof(val));
-+	if (ret)
-+		return ret;
-+	if (val !=3D INV_MPU_MAGN_BITS_WIA)
-+		return -ENODEV;
-+
-+	/* reset chip */
-+	ret =3D inv_mpu_aux_write(st, INV_MPU_MAGN_I2C_ADDR,
-+				INV_MPU_MAGN_REG_CNTL2,
-+				INV_MPU_MAGN_BIT_SRST);
-+	if (ret)
-+		return ret;
-+
-+	/* read fuse ROM data */
-+	ret =3D inv_mpu_aux_write(st, INV_MPU_MAGN_I2C_ADDR,
-+				INV_MPU_MAGN_REG_CNTL1,
-+				INV_MPU_MAGN_BITS_MODE_FUSE);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D inv_mpu_aux_read(st, INV_MPU_MAGN_I2C_ADDR, INV_MPU_MAGN_REG_ASAX=
-,
-+			       asa, sizeof(asa));
-+	if (ret)
-+		return ret;
-+
-+	/* switch back to power-down */
-+	ret =3D inv_mpu_aux_write(st, INV_MPU_MAGN_I2C_ADDR,
-+				INV_MPU_MAGN_REG_CNTL1,
-+				INV_MPU_MAGN_BITS_MODE_PWDN);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Sensitivity adjustement and scale to Gauss
-+	 *
-+	 * Hadj =3D H * (((ASA - 128) * 0.5 / 128) + 1)
-+	 * Factor simplification:
-+	 * Hadj =3D H * ((ASA + 128) / 256)
-+	 *
-+	 * Sensor sentivity
-+	 * 0.15 uT in 16 bits mode
-+	 * 1 uT =3D 0.01 G and value is in micron (1e6)
-+	 * sensitvity =3D 0.15 uT * 0.01 * 1e6
-+	 *
-+	 * raw_to_gauss =3D Hadj * 1500
-+	 */
-+	st->magn_raw_to_gauss[0] =3D (((int32_t)asa[0] + 128) * 1500) / 256;
-+	st->magn_raw_to_gauss[1] =3D (((int32_t)asa[1] + 128) * 1500) / 256;
-+	st->magn_raw_to_gauss[2] =3D (((int32_t)asa[2] + 128) * 1500) / 256;
-+
-+	return 0;
-+}
-+
-+/**
-+ * inv_mpu_magn_probe() - probe and setup magnetometer chip
-+ * @st: driver internal state
-+ *
-+ * Returns 0 on success, a negative error code otherwise
-+ *
-+ * It is probing the chip and setting up all needed i2c transfers.
-+ * Noop if there is no magnetometer in the chip.
-+ */
-+int inv_mpu_magn_probe(struct inv_mpu6050_state *st)
-+{
-+	int ret;
-+
-+	/* quit if chip is not supported */
-+	if (!inv_magn_supported(st))
-+		return 0;
-+
-+	/* configure i2c master aux port */
-+	ret =3D inv_mpu_aux_init(st);
-+	if (ret)
-+		return ret;
-+
-+	/* check and init mag chip */
-+	ret =3D inv_magn_init(st);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * configure mpu i2c master accesses
-+	 * i2c SLV0: read sensor data, 7 bytes data(6)-ST2
-+	 * Byte swap data to store them in big-endian in impair address groups
-+	 */
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_ADDR(0),
-+			   INV_MPU6050_BIT_I2C_SLV_RNW | INV_MPU_MAGN_I2C_ADDR);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_REG(0),
-+			   INV_MPU_MAGN_REG_DATA);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_CTRL(0),
-+			   INV_MPU6050_BIT_SLV_EN |
-+			   INV_MPU6050_BIT_SLV_BYTE_SW |
-+			   INV_MPU6050_BIT_SLV_GRP |
-+			   INV_MPU9X50_BYTES_MAGN);
-+	if (ret)
-+		return ret;
-+
-+	/* i2c SLV1: launch single measurement */
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_ADDR(1),
-+			   INV_MPU_MAGN_I2C_ADDR);
-+	if (ret)
-+		return ret;
-+
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_REG(1),
-+			   INV_MPU_MAGN_REG_CNTL1);
-+	if (ret)
-+		return ret;
-+
-+	/* add 16 bits mode */
-+	ret =3D regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_DO(1),
-+			   INV_MPU_MAGN_BITS_MODE_SINGLE |
-+			   INV_MPU_MAGN_BIT_OUTPUT_BIT);
-+	if (ret)
-+		return ret;
-+
-+	return regmap_write(st->map, INV_MPU6050_REG_I2C_SLV_CTRL(1),
-+			    INV_MPU6050_BIT_SLV_EN | 1);
-+}
-+
-+/**
-+ * inv_mpu_magn_set_rate() - set magnetometer sampling rate
-+ * @st: driver internal state
-+ * @fifo_rate: mpu set fifo rate
-+ *
-+ * Returns 0 on success, a negative error code otherwise
-+ *
-+ * Limit sampling frequency to the maximum value supported by the
-+ * magnetometer chip. Resulting in duplicated data for higher frequencies.
-+ * Noop if there is no magnetometer in the chip.
-+ */
-+int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rat=
-e)
-+{
-+	uint8_t d;
-+
-+	/* quit if chip is not supported */
-+	if (!inv_magn_supported(st))
-+		return 0;
-+
-+	/*
-+	 * update i2c master delay to limit mag sampling to max frequency
-+	 * compute fifo_rate divider d: rate =3D fifo_rate / (d + 1)
-+	 */
-+	if (fifo_rate > INV_MPU_MAGN_FREQ_HZ_MAX)
-+		d =3D fifo_rate / INV_MPU_MAGN_FREQ_HZ_MAX - 1;
-+	else
-+		d =3D 0;
-+
-+	return regmap_write(st->map, INV_MPU6050_REG_I2C_SLV4_CTRL, d);
-+}
-+
-+/**
-+ * inv_mpu_magn_set_orient() - fill magnetometer mounting matrix
-+ * @st: driver internal state
-+ *
-+ * Returns 0 on success, a negative error code otherwise
-+ *
-+ * Fill magnetometer mounting matrix using the provided chip matrix.
-+ */
-+int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
-+{
-+	const char *orient;
-+	char *str;
-+	int i;
-+
-+	/* fill magnetometer orientation */
-+	switch (st->chip_type) {
-+	case INV_MPU9250:
-+	case INV_MPU9255:
-+		/* x <- y */
-+		st->magn_orient.rotation[0] =3D st->orientation.rotation[3];
-+		st->magn_orient.rotation[1] =3D st->orientation.rotation[4];
-+		st->magn_orient.rotation[2] =3D st->orientation.rotation[5];
-+		/* y <- x */
-+		st->magn_orient.rotation[3] =3D st->orientation.rotation[0];
-+		st->magn_orient.rotation[4] =3D st->orientation.rotation[1];
-+		st->magn_orient.rotation[5] =3D st->orientation.rotation[2];
-+		/* z <- -z */
-+		for (i =3D 0; i < 3; ++i) {
-+			orient =3D st->orientation.rotation[6 + i];
-+			/* use length + 2 for adding minus sign if needed */
-+			str =3D devm_kzalloc(regmap_get_device(st->map),
-+					   strlen(orient) + 2, GFP_KERNEL);
-+			if (str =3D=3D NULL)
-+				return -ENOMEM;
-+			if (strcmp(orient, "0") =3D=3D 0) {
-+				strcpy(str, orient);
-+			} else if (orient[0] =3D=3D '-') {
-+				strcpy(str, &orient[1]);
-+			} else {
-+				str[0] =3D '-';
-+				strcpy(&str[1], orient);
-+			}
-+			st->magn_orient.rotation[6 + i] =3D str;
-+		}
-+		break;
-+	default:
-+		st->magn_orient =3D st->orientation;
-+		break;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * inv_mpu_magn_read() - read magnetometer data
-+ * @st: driver internal state
-+ * @axis: IIO modifier axis value
-+ * @val: store corresponding axis value
-+ *
-+ * Returns 0 on success, a negative error code otherwise
-+ */
-+int inv_mpu_magn_read(const struct inv_mpu6050_state *st, int axis, int *v=
-al)
-+{
-+	unsigned int user_ctrl, status;
-+	__be16 data[3];
-+	uint8_t addr;
-+	uint8_t d;
-+	unsigned int period_ms;
-+	int ret;
-+
-+	/* quit if chip is not supported */
-+	if (!inv_magn_supported(st))
-+		return -ENODEV;
-+
-+	/* Mag data: X - Y - Z */
-+	switch (axis) {
-+	case IIO_MOD_X:
-+		addr =3D 0;
-+		break;
-+	case IIO_MOD_Y:
-+		addr =3D 1;
-+		break;
-+	case IIO_MOD_Z:
-+		addr =3D 2;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* set sample rate to max mag freq */
-+	d =3D INV_MPU6050_FIFO_RATE_TO_DIVIDER(INV_MPU_MAGN_FREQ_HZ_MAX);
-+	ret =3D regmap_write(st->map, st->reg->sample_rate_div, d);
-+	if (ret)
-+		return ret;
-+
-+	/* start i2c master, wait for xfer, stop */
-+	user_ctrl =3D st->chip_config.user_ctrl | INV_MPU6050_BIT_I2C_MST_EN;
-+	ret =3D regmap_write(st->map, st->reg->user_ctrl, user_ctrl);
-+	if (ret)
-+		return ret;
-+
-+	/* need to wait 2 periods + half-period margin */
-+	period_ms =3D 1000 / INV_MPU_MAGN_FREQ_HZ_MAX;
-+	msleep(period_ms * 2 + period_ms / 2);
-+	user_ctrl =3D st->chip_config.user_ctrl;
-+	ret =3D regmap_write(st->map, st->reg->user_ctrl, user_ctrl);
-+	if (ret)
-+		return ret;
-+
-+	/* restore sample rate */
-+	d =3D st->chip_config.divider;
-+	ret =3D regmap_write(st->map, st->reg->sample_rate_div, d);
-+	if (ret)
-+		return ret;
-+
-+	/* check i2c status and read raw data */
-+	ret =3D regmap_read(st->map, INV_MPU6050_REG_I2C_MST_STATUS, &status);
-+	if (ret)
-+		return ret;
-+
-+	if (status & INV_MPU6050_BIT_I2C_SLV0_NACK ||
-+			status & INV_MPU6050_BIT_I2C_SLV1_NACK)
-+		return -EIO;
-+
-+	ret =3D regmap_bulk_read(st->map, INV_MPU6050_REG_EXT_SENS_DATA,
-+			       data, sizeof(data));
-+	if (ret)
-+		return ret;
-+
-+	*val =3D (int16_t)be16_to_cpu(data[addr]);
-+
-+	return IIO_VAL_INT;
-+}
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h b/drivers/iio/imu/i=
-nv_mpu6050/inv_mpu_magn.h
-new file mode 100644
-index 000000000000..b41bd0578478
---- /dev/null
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.h
-@@ -0,0 +1,36 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Copyright (C) 2019 TDK-InvenSense, Inc.
-+ */
-+
-+#ifndef INV_MPU_MAGN_H_
-+#define INV_MPU_MAGN_H_
-+
-+#include <linux/kernel.h>
-+
-+#include "inv_mpu_iio.h"
-+
-+int inv_mpu_magn_probe(struct inv_mpu6050_state *st);
-+
-+/**
-+ * inv_mpu_magn_get_scale() - get magnetometer scale value
-+ * @st: driver internal state
-+ *
-+ * Returns IIO data format.
-+ */
-+static inline int inv_mpu_magn_get_scale(const struct inv_mpu6050_state *s=
-t,
-+					 const struct iio_chan_spec *chan,
-+					 int *val, int *val2)
-+{
-+	*val =3D 0;
-+	*val2 =3D st->magn_raw_to_gauss[chan->address];
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rat=
-e);
-+
-+int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st);
-+
-+int inv_mpu_magn_read(const struct inv_mpu6050_state *st, int axis, int *v=
-al);
-+
-+#endif		/* INV_MPU_MAGN_H_ */
---=20
-2.17.1
+At first glance I can't see any obvious blockers for this.
 
+I think Jonathan may need to provide some feedback here.
+
+Thanks
+Alex
+
+>
+> > >
+> > > Jonathan
+> >
+> > Alex
+> >
+> > >
+> > >
+> > > > > Signed-off-by: Rodrigo Ribeiro Carvalho <rodrigorsdc@gmail.com>
+> > > > > ---
+> > > > >  drivers/iio/accel/Kconfig             |  12 +
+> > > > >  drivers/iio/accel/Makefile            |   1 +
+> > > > >  drivers/iio/accel/adis16240.c         | 454 ++++++++++++++++++++=
+++++++
+> > > > >  drivers/staging/iio/accel/Kconfig     |  12 -
+> > > > >  drivers/staging/iio/accel/Makefile    |   1 -
+> > > > >  drivers/staging/iio/accel/adis16240.c | 454 --------------------=
+------
+> > > > >  6 files changed, 467 insertions(+), 467 deletions(-)
+> > > > >  create mode 100644 drivers/iio/accel/adis16240.c
+> > > > >  delete mode 100644 drivers/staging/iio/accel/adis16240.c
+> > > >
+> > > > Looks like MAINTAINERS file also needs to be updated, also with the=
+ DT bindings file.
+> > > > I think checkpatch usually complains about these.
+> > > >
+> > > > > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfi=
+g
+> > > > > index d4ef35aeb579..91fd8741c95f 100644
+> > > > > --- a/drivers/iio/accel/Kconfig
+> > > > > +++ b/drivers/iio/accel/Kconfig
+> > > > > @@ -30,6 +30,18 @@ config ADIS16209
+> > > > >     To compile this driver as a module, say M here: the module wi=
+ll be
+> > > > >     called adis16209.
+> > > > >
+> > > > > +config ADIS16240
+> > > > > + tristate "Analog Devices ADIS16240 Programmable Impact Sensor a=
+nd Recorder"
+> > > > > + depends on SPI
+> > > > > + select IIO_ADIS_LIB
+> > > > > + select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
+> > > > > + help
+> > > > > +   Say Y here to build support for Analog Devices adis16240 prog=
+rammable
+> > > > > +   impact Sensor and recorder.
+> > > > > +
+> > > > > +   To compile this driver as a module, say M here: the module wi=
+ll be
+> > > > > +   called adis16240.
+> > > > > +
+> > > > >  config ADXL345
+> > > > >   tristate
+> > > > >
+> > > > > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makef=
+ile
+> > > > > index 56bd0215e0d4..f7e025a86dd9 100644
+> > > > > --- a/drivers/iio/accel/Makefile
+> > > > > +++ b/drivers/iio/accel/Makefile
+> > > > > @@ -6,6 +6,7 @@
+> > > > >  # When adding new entries keep the list in alphabetical order
+> > > > >  obj-$(CONFIG_ADIS16201) +=3D adis16201.o
+> > > > >  obj-$(CONFIG_ADIS16209) +=3D adis16209.o
+> > > > > +obj-$(CONFIG_ADIS16240) +=3D adis16240.o
+> > > > >  obj-$(CONFIG_ADXL345) +=3D adxl345_core.o
+> > > > >  obj-$(CONFIG_ADXL345_I2C) +=3D adxl345_i2c.o
+> > > > >  obj-$(CONFIG_ADXL345_SPI) +=3D adxl345_spi.o
+> > > > > diff --git a/drivers/iio/accel/adis16240.c b/drivers/iio/accel/ad=
+is16240.c
+> > > > > new file mode 100644
+> > > > > index 000000000000..82099db4bf0c
+> > > > > --- /dev/null
+> > > > > +++ b/drivers/iio/accel/adis16240.c
+> > > > > @@ -0,0 +1,454 @@
+> > > > > +// SPDX-License-Identifier: GPL-2.0+
+> > > > > +/*
+> > > > > + * ADIS16240 Programmable Impact Sensor and Recorder driver
+> > > > > + *
+> > > > > + * Copyright 2010 Analog Devices Inc.
+> > > > > + */
+> > > > > +
+> > > > > +#include <linux/interrupt.h>
+> > > > > +#include <linux/irq.h>
+> > > > > +#include <linux/gpio.h>
+> > > > > +#include <linux/delay.h>
+> > > > > +#include <linux/device.h>
+> > > > > +#include <linux/kernel.h>
+> > > > > +#include <linux/spi/spi.h>
+> > > > > +#include <linux/slab.h>
+> > > > > +#include <linux/sysfs.h>
+> > > > > +#include <linux/list.h>
+> > > > > +#include <linux/module.h>
+> > > > > +
+> > > > > +#include <linux/iio/iio.h>
+> > > > > +#include <linux/iio/sysfs.h>
+> > > > > +#include <linux/iio/buffer.h>
+> > > > > +#include <linux/iio/imu/adis.h>
+> > > > > +
+> > > > > +#define ADIS16240_STARTUP_DELAY  220 /* ms */
+> > > > > +
+> > > > > +/* Flash memory write count */
+> > > > > +#define ADIS16240_FLASH_CNT      0x00
+> > > > > +
+> > > > > +/* Output, power supply */
+> > > > > +#define ADIS16240_SUPPLY_OUT     0x02
+> > > > > +
+> > > > > +/* Output, x-axis accelerometer */
+> > > > > +#define ADIS16240_XACCL_OUT      0x04
+> > > > > +
+> > > > > +/* Output, y-axis accelerometer */
+> > > > > +#define ADIS16240_YACCL_OUT      0x06
+> > > > > +
+> > > > > +/* Output, z-axis accelerometer */
+> > > > > +#define ADIS16240_ZACCL_OUT      0x08
+> > > > > +
+> > > > > +/* Output, auxiliary ADC input */
+> > > > > +#define ADIS16240_AUX_ADC        0x0A
+> > > > > +
+> > > > > +/* Output, temperature */
+> > > > > +#define ADIS16240_TEMP_OUT       0x0C
+> > > > > +
+> > > > > +/* Output, x-axis acceleration peak */
+> > > > > +#define ADIS16240_XPEAK_OUT      0x0E
+> > > > > +
+> > > > > +/* Output, y-axis acceleration peak */
+> > > > > +#define ADIS16240_YPEAK_OUT      0x10
+> > > > > +
+> > > > > +/* Output, z-axis acceleration peak */
+> > > > > +#define ADIS16240_ZPEAK_OUT      0x12
+> > > > > +
+> > > > > +/* Output, sum-of-squares acceleration peak */
+> > > > > +#define ADIS16240_XYZPEAK_OUT    0x14
+> > > > > +
+> > > > > +/* Output, Capture Buffer 1, X and Y acceleration */
+> > > > > +#define ADIS16240_CAPT_BUF1      0x16
+> > > > > +
+> > > > > +/* Output, Capture Buffer 2, Z acceleration */
+> > > > > +#define ADIS16240_CAPT_BUF2      0x18
+> > > > > +
+> > > > > +/* Diagnostic, error flags */
+> > > > > +#define ADIS16240_DIAG_STAT      0x1A
+> > > > > +This looks like it could be converted to IIO_CHAN_INFO_SAMP_FREQ=
+ attribute.
+> > > > > +/* Diagnostic, event counter */
+> > > > > +#define ADIS16240_EVNT_CNTR      0x1C
+> > > > > +
+> > > > > +/* Diagnostic, check sum value from firmware test */
+> > > > > +#define ADIS16240_CHK_SUM        0x1E
+> > > > > +
+> > > > > +/* Calibration, x-axis acceleration offset adjustment */
+> > > > > +#define ADIS16240_XACCL_OFF      0x20
+> > > > > +
+> > > > > +/* Calibration, y-axis acceleration offset adjustment */
+> > > > > +#define ADIS16240_YACCL_OFF      0x22
+> > > > > +
+> > > > > +/* Calibration, z-axis acceleration offset adjustment */
+> > > > > +#define ADIS16240_ZACCL_OFF      0x24
+> > > > > +This looks like it could be converted to IIO_CHAN_INFO_SAMP_FREQ=
+ attribute.
+> > > > > +/* Clock, hour and minute */
+> > > > > +#define ADIS16240_CLK_TIME       0x2E
+> > > > > +
+> > > > > +/* Clock, month and day */
+> > > > > +#define ADIS16240_CLK_DATE       0x30
+> > > > > +
+> > > > > +/* Clock, year */
+> > > > > +#define ADIS16240_CLK_YEAR       0x32
+> > > > > +
+> > > > > +/* Wake-up setting, hour and minute */
+> > > > > +#define ADIS16240_WAKE_TIME      0x34
+> > > > > +
+> > > > > +/* Wake-up setting, month and day */
+> > > > > +#define ADIS16240_WAKE_DATE      0x36
+> > > > > +
+> > > > > +/* Alarm 1 amplitude threshold */
+> > > > > +#define ADIS16240_ALM_MAG1       0x38
+> > > > > +
+> > > > > +/* Alarm 2 amplitude threshold */
+> > > > > +#define ADIS16240_ALM_MAG2       0x3A
+> > > > > +
+> > > > > +/* Alarm control */
+> > > > > +#define ADIS16240_ALM_CTRL       0x3C
+> > > > > +
+> > > > > +/* Capture, external trigger control */
+> > > > > +#define ADIS16240_XTRIG_CTRL     0x3E
+> > > > > +
+> > > > > +/* Capture, address pointer */
+> > > > > +#define ADIS16240_CAPT_PNTR      0x40
+> > > > > +
+> > > > > +/* Capture, configuration and control */
+> > > > > +#define ADIS16240_CAPT_CTRL      0x42
+> > > > > +
+> > > > > +/* General-purpose digital input/output control */
+> > > > > +#define ADIS16240_GPIO_CTRL      0x44
+> > > > > +
+> > > > > +/* Miscellaneous control */
+> > > > > +#define ADIS16240_MSC_CTRL       0x46
+> > > > > +
+> > > > > +/* Internal sample period (rate) control */
+> > > > > +#define ADIS16240_SMPL_PRD       0x48
+> > > > > +
+> > > > > +/* System command */
+> > > > > +#define ADIS16240_GLOB_CMD       0x4A
+> > > > > +
+> > > > > +/* MSC_CTRL */
+> > > > > +
+> > > > > +/* Enables sum-of-squares output (XYZPEAK_OUT) */
+> > > > > +#define ADIS16240_MSC_CTRL_XYZPEAK_OUT_EN        BIT(15)
+> > > > > +
+> > > > > +/* Enables peak tracking output (XPEAK_OUT, YPEAK_OUT, and ZPEAK=
+_OUT) */
+> > > > > +#define ADIS16240_MSC_CTRL_X_Y_ZPEAK_OUT_EN      BIT(14)
+> > > > > +
+> > > > > +/* Self-test enable: 1 =3D apply electrostatic force, 0 =3D disa=
+bled */
+> > > > > +#define ADIS16240_MSC_CTRL_SELF_TEST_EN          BIT(8)
+> > > > > +
+> > > > > +/* Data-ready enable: 1 =3D enabled, 0 =3D disabled */
+> > > > > +#define ADIS16240_MSC_CTRL_DATA_RDY_EN           BIT(2)
+> > > > > +
+> > > > > +/* Data-ready polarity: 1 =3D active high, 0 =3D active low */
+> > > > > +#define ADIS16240_MSC_CTRL_ACTIVE_HIGH           BIT(1)
+> > > > > +
+> > > > > +/* Data-ready line selection: 1 =3D DIO2, 0 =3D DIO1 */
+> > > > > +#define ADIS16240_MSC_CTRL_DATA_RDY_DIO2 BIT(0)
+> > > > > +
+> > > > > +/* DIAG_STAT */
+> > > > > +
+> > > > > +/* Alarm 2 status: 1 =3D alarm active, 0 =3D alarm inactive */
+> > > > > +#define ADIS16240_DIAG_STAT_ALARM2      BIT(9)
+> > > > > +
+> > > > > +/* Alarm 1 status: 1 =3D alarm active, 0 =3D alarm inactive */
+> > > > > +#define ADIS16240_DIAG_STAT_ALARM1      BIT(8)
+> > > > > +
+> > > > > +/* Capture buffer full: 1 =3D capture buffer is full */
+> > > > > +#define ADIS16240_DIAG_STAT_CPT_BUF_FUL BIT(7)
+> > > > > +
+> > > > > +/* Flash test, checksum flag: 1 =3D mismatch, 0 =3D match */
+> > > > > +#define ADIS16240_DIAG_STAT_CHKSUM      BIT(6)
+> > > > > +
+> > > > > +/* Power-on, self-test flag: 1 =3D failure, 0 =3D pass */
+> > > > > +#define ADIS16240_DIAG_STAT_PWRON_FAIL_BIT  5
+> > > > > +
+> > > > > +/* Power-on self-test: 1 =3D in-progress, 0 =3D complete */
+> > > > > +#define ADIS16240_DIAG_STAT_PWRON_BUSY  BIT(4)
+> > > > > +
+> > > > > +/* SPI communications failure */
+> > > > > +#define ADIS16240_DIAG_STAT_SPI_FAIL_BIT 3
+> > > > > +
+> > > > > +/* Flash update failure */
+> > > > > +#define ADIS16240_DIAG_STAT_FLASH_UPT_BIT        2
+> > > > > +
+> > > > > +/* Power supply above 3.625 V */
+> > > > > +#define ADIS16240_DIAG_STAT_POWER_HIGH_BIT       1
+> > > > > +
+> > > > > + /* Power supply below 2.225 V */
+> > > > > +#define ADIS16240_DIAG_STAT_POWER_LOW_BIT        0
+> > > > > +
+> > > > > +/* GLOB_CMD */
+> > > > > +
+> > > > > +#define ADIS16240_GLOB_CMD_RESUME        BIT(8)
+> > > > > +#define ADIS16240_GLOB_CMD_SW_RESET      BIT(7)
+> > > > > +#define ADIS16240_GLOB_CMD_STANDBY       BIT(2)
+> > > > > +
+> > > > > +#define ADIS16240_ERROR_ACTIVE          BIT(14)
+> > > > > +
+> > > > > +/* At the moment triggers are only used for ring buffer
+> > > > > + * filling. This may change!
+> > > > > + */
+> > > > > +
+> > > > > +enum adis16240_scan {
+> > > > > + ADIS16240_SCAN_ACC_X,
+> > > > > + ADIS16240_SCAN_ACC_Y,
+> > > > > + ADIS16240_SCAN_ACC_Z,
+> > > > > + ADIS16240_SCAN_SUPPLY,
+> > > > > + ADIS16240_SCAN_AUX_ADC,
+> > > > > + ADIS16240_SCAN_TEMP,
+> > > > > +};
+> > > > > +
+> > > > > +static ssize_t adis16240_spi_read_signed(struct device *dev,
+> > > > > +                                  struct device_attribute *attr,
+> > > > > +                                  char *buf,
+> > > > > +                                  unsigned int bits)
+> > > > > +{
+> > > > > + struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
+> > > > > + struct adis *st =3D iio_priv(indio_dev);
+> > > > > + int ret;
+> > > > > + s16 val =3D 0;
+> > > > > + unsigned int shift =3D 16 - bits;
+> > > > > + struct iio_dev_attr *this_attr =3D to_iio_dev_attr(attr);
+> > > > > +
+> > > > > + ret =3D adis_read_reg_16(st,
+> > > > > +                        this_attr->address, (u16 *)&val);
+> > >
+> > > Check for odd line breaks.  That looks like it'll fit under 80 chars
+> > > just fine.
+> > >
+> > > > > + if (ret)
+> > > > > +         return ret;
+> > > > > +
+> > > > > + if (val & ADIS16240_ERROR_ACTIVE)
+> > > > > +         adis_check_status(st);
+> > > > > +
+> > > > > + val =3D (s16)(val << shift) >> shift;
+> > >
+> > > Use sign_extend32 (added after this driver I think!)
+> > >
+> > > > > + return sprintf(buf, "%d\n", val);
+> > > > > +}
+> > > > > +
+> > > > > +static ssize_t adis16240_read_12bit_signed(struct device *dev,
+> > > > > +                                    struct device_attribute *att=
+r,
+> > > > > +                                    char *buf)
+> > > > > +{
+> > > > > + return adis16240_spi_read_signed(dev, attr, buf, 12);
+> > > > > +}
+> > > > > +
+> > > > > +static IIO_DEVICE_ATTR(in_accel_xyz_squared_peak_raw, 0444,
+> > > > > +                adis16240_read_12bit_signed, NULL,
+> > > > > +                ADIS16240_XYZPEAK_OUT);
+> > > > > +
+> > > > > +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("4096");
+> > > > > +
+> > > > > +static const u8 adis16240_addresses[][2] =3D {
+> > > > > + [ADIS16240_SCAN_ACC_X] =3D { ADIS16240_XACCL_OFF, ADIS16240_XPE=
+AK_OUT },
+> > > > > + [ADIS16240_SCAN_ACC_Y] =3D { ADIS16240_YACCL_OFF, ADIS16240_YPE=
+AK_OUT },
+> > > > > + [ADIS16240_SCAN_ACC_Z] =3D { ADIS16240_ZACCL_OFF, ADIS16240_ZPE=
+AK_OUT },
+> > > > > +};
+> > > > > +
+> > > > > +static int adis16240_read_raw(struct iio_dev *indio_dev,
+> > > > > +                       struct iio_chan_spec const *chan,
+> > > > > +                       int *val, int *val2,
+> > > > > +                       long mask)
+> > > > > +{
+> > > > > + struct adis *st =3D iio_priv(indio_dev);
+> > > > > + int ret;
+> > > > > + u8 addr;
+> > > > > + s16 val16;
+> > > > > +
+> > > > > + switch (mask) {
+> > > > > + case IIO_CHAN_INFO_RAW:
+> > > > > +         return adis_single_conversion(indio_dev, chan,
+> > > > > +                         ADIS16240_ERROR_ACTIVE, val);
+> > > > > + case IIO_CHAN_INFO_SCALE:
+> > > > > +         switch (chan->type) {
+> > > > > +         case IIO_VOLTAGE:
+> > > > > +                 if (chan->channel =3D=3D 0) {
+> > > > > +                         *val =3D 4;
+> > > > > +                         *val2 =3D 880000; /* 4.88 mV */
+> > > > > +                         return IIO_VAL_INT_PLUS_MICRO;
+> > > > > +                 }
+> > > > > +                 return -EINVAL;
+> > > > > +         case IIO_TEMP:
+> > > > > +                 *val =3D 244; /* 0.244 C */
+> > > > > +                 *val2 =3D 0;
+> > > >
+> > > > This looks like a bug in the original driver.
+> > > > I think *val =3D 0, and *val2 =3D 244 ?
+>
+> I have doubt about this. Also in adis16203, adis16209 and
+> adis16201 decimal parts are in *val and not in *val2 on
+> IIO_TEMP. What do you think? If it is really a bug, I can send
+> a patch.
+>
+> > > > > +                 return IIO_VAL_INT_PLUS_MICRO;
+> > > > > +         case IIO_ACCEL:
+> > > > > +                 *val =3D 0;
+> > > > > +                 *val2 =3D IIO_G_TO_M_S_2(51400); /* 51.4 mg */
+> > > > > +                 return IIO_VAL_INT_PLUS_MICRO;
+> > > > > +         default:
+> > > > > +                 return -EINVAL;
+> > > > > +         }
+> > > > > +         break;
+> > > > > + case IIO_CHAN_INFO_PEAK_SCALE:
+> > > > > +         *val =3D 0;
+> > > > > +         *val2 =3D IIO_G_TO_M_S_2(51400); /* 51.4 mg */
+> > > > > +         return IIO_VAL_INT_PLUS_MICRO;
+> > > > > + case IIO_CHAN_INFO_OFFSET:
+> > > > > +         *val =3D 25000 / 244 - 0x133; /* 25 C =3D 0x133 */
+> > > > > +         return IIO_VAL_INT;
+> > > > > + case IIO_CHAN_INFO_CALIBBIAS:
+> > > > > +         addr =3D adis16240_addresses[chan->scan_index][0];
+> > > > > +         ret =3D adis_read_reg_16(st, addr, &val16);
+> > > > > +         if (ret)
+> > > > > +                 return ret;
+> > > > > +         *val =3D sign_extend32(val16, 9);
+> > > > > +         return IIO_VAL_INT;
+> > > > > + case IIO_CHAN_INFO_PEAK:
+> > > > > +         addr =3D adis16240_addresses[chan->scan_index][1];
+> > > > > +         ret =3D adis_read_reg_16(st, addr, &val16);
+> > > > > +         if (ret)
+> > > > > +                 return ret;
+> > > > > +         *val =3D sign_extend32(val16, 9);
+> > > > > +         return IIO_VAL_INT;
+> > > > > + }
+> > > > > + return -EINVAL;
+> > > > > +}
+> > > > > +
+> > > > > +static int adis16240_write_raw(struct iio_dev *indio_dev,
+> > > > > +                        struct iio_chan_spec const *chan,
+> > > > > +                        int val,
+> > > > > +                        int val2,
+> > > > > +                        long mask)
+> > > > > +{
+> > > > > + struct adis *st =3D iio_priv(indio_dev);
+> > > > > + u8 addr;
+> > > > > +
+> > > > > + switch (mask) {
+> > > > > + case IIO_CHAN_INFO_CALIBBIAS:
+> > > > > +         addr =3D adis16240_addresses[chan->scan_index][0];
+> > > > > +         return adis_write_reg_16(st, addr, val & GENMASK(9, 0))=
+;
+> > > > > + }
+> > > > > + return -EINVAL;
+> > > > > +}
+> > > > > +
+> > > > > +static const struct iio_chan_spec adis16240_channels[] =3D {
+> > > > > + ADIS_SUPPLY_CHAN(ADIS16240_SUPPLY_OUT, ADIS16240_SCAN_SUPPLY, 0=
+, 10),
+> > > > > + ADIS_AUX_ADC_CHAN(ADIS16240_AUX_ADC, ADIS16240_SCAN_AUX_ADC, 0,=
+ 10),
+> > > > > + ADIS_ACCEL_CHAN(X, ADIS16240_XACCL_OUT, ADIS16240_SCAN_ACC_X,
+> > > > > +                 BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INF=
+O_PEAK),
+> > > > > +                 0, 10),
+> > > > > + ADIS_ACCEL_CHAN(Y, ADIS16240_YACCL_OUT, ADIS16240_SCAN_ACC_Y,
+> > > > > +                 BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INF=
+O_PEAK),
+> > > > > +                 0, 10),
+> > > > > + ADIS_ACCEL_CHAN(Z, ADIS16240_ZACCL_OUT, ADIS16240_SCAN_ACC_Z,
+> > > > > +                 BIT(IIO_CHAN_INFO_CALIBBIAS) | BIT(IIO_CHAN_INF=
+O_PEAK),
+> > > > > +                 0, 10),
+> > > > > + ADIS_TEMP_CHAN(ADIS16240_TEMP_OUT, ADIS16240_SCAN_TEMP, 0, 10),
+> > > > > + IIO_CHAN_SOFT_TIMESTAMP(6)
+> > > > > +};
+> > > > > +
+> > > > > +static struct attribute *adis16240_attributes[] =3D {
+> > > > > + &iio_dev_attr_in_accel_xyz_squared_peak_raw.dev_attr.attr,
+> > > >
+> > > > This one looks a bit weird/rare.
+> > > > I am not sure about it's use-case/need right now (at this point in =
+time).
+> > > >
+> > > > Maybe we could just drop it?
+> > > > Since I did not write the initial driver, I don't know yet what it =
+was supposed to be/do.
+> > >
+> > > For an impact sensor it's a fairly useful thing I suspect as it is gi=
+ving the maximum
+> > > acceleration in any direction that occured (once you square root it i=
+n userspace.)
+> > >
+> > > > In any case, if we want to add it, it looks like it needs an ABI do=
+cumentation.
+> > >
+> > > Agreed. Needs docs.  We actually have a modifier for it so can be han=
+dled
+> > > as a channel. IIO_MOD_SUM_SQUARED_X_Y_Z :)
+> > >
+> > >
+> > > >
+> > > > > + &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> > > >
+> > > > This looks like it could be converted to IIO_CHAN_INFO_SAMP_FREQ at=
+tribute.
+> > > >
+> > > >
+> > > > > + NULL
+> > > > > +};
+> > > > > +
+> > > > > +static const struct attribute_group adis16240_attribute_group =
+=3D {
+> > > > > + .attrs =3D adis16240_attributes,
+> > > > > +};
+> > > > > +
+> > > > > +static const struct iio_info adis16240_info =3D {
+> > > > > + .attrs =3D &adis16240_attribute_group,
+> > > > > + .read_raw =3D adis16240_read_raw,
+> > > > > + .write_raw =3D adis16240_write_raw,
+> > > > > + .update_scan_mode =3D adis_update_scan_mode,
+> > > > > +};
+> > > > > +
+> > > > > +static const char * const adis16240_status_error_msgs[] =3D {
+> > > > > + [ADIS16240_DIAG_STAT_PWRON_FAIL_BIT] =3D "Power on, self-test f=
+ailed",
+> > > > > + [ADIS16240_DIAG_STAT_SPI_FAIL_BIT] =3D "SPI failure",
+> > > > > + [ADIS16240_DIAG_STAT_FLASH_UPT_BIT] =3D "Flash update failed",
+> > > > > + [ADIS16240_DIAG_STAT_POWER_HIGH_BIT] =3D "Power supply above 3.=
+625V",
+> > > > > + [ADIS16240_DIAG_STAT_POWER_LOW_BIT] =3D "Power supply below 2.2=
+25V",
+> > > > > +};
+> > > > > +
+> > > > > +static const struct adis_data adis16240_data =3D {
+> > > > > + .write_delay =3D 35,
+> > > > > + .read_delay =3D 35,
+> > > > > + .msc_ctrl_reg =3D ADIS16240_MSC_CTRL,
+> > > > > + .glob_cmd_reg =3D ADIS16240_GLOB_CMD,
+> > > > > + .diag_stat_reg =3D ADIS16240_DIAG_STAT,
+> > > > > +
+> > > > > + .self_test_mask =3D ADIS16240_MSC_CTRL_SELF_TEST_EN,
+> > > > > + .self_test_no_autoclear =3D true,
+> > > > > + .startup_delay =3D ADIS16240_STARTUP_DELAY,
+> > > > > +
+> > > > > + .status_error_msgs =3D adis16240_status_error_msgs,
+> > > > > + .status_error_mask =3D BIT(ADIS16240_DIAG_STAT_PWRON_FAIL_BIT) =
+|
+> > > > > +         BIT(ADIS16240_DIAG_STAT_SPI_FAIL_BIT) |
+> > > > > +         BIT(ADIS16240_DIAG_STAT_FLASH_UPT_BIT) |
+> > > > > +         BIT(ADIS16240_DIAG_STAT_POWER_HIGH_BIT) |
+> > > > > +         BIT(ADIS16240_DIAG_STAT_POWER_LOW_BIT),
+> > > > > +};
+> > > > > +
+> > > > > +static int adis16240_probe(struct spi_device *spi)
+> > > > > +{
+> > > > > + int ret;
+> > > > > + struct adis *st;
+> > > > > + struct iio_dev *indio_dev;
+> > > > > +
+> > > > > + /* setup the industrialio driver allocated elements */
+> > >
+> > > I would review comments and decide whether they actually add anything=
+.
+> > > This one for example - I'm not convinced!
+> > >
+> > > > > + indio_dev =3D devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> > > > > + if (!indio_dev)
+> > > > > +         return -ENOMEM;
+> > > > > + st =3D iio_priv(indio_dev);
+> > > > > + /* this is only used for removal purposes */
+> > > > > + spi_set_drvdata(spi, indio_dev);
+> > > > > +
+> > > > > + indio_dev->name =3D spi->dev.driver->name;
+> > > > > + indio_dev->dev.parent =3D &spi->dev;
+> > > > > + indio_dev->info =3D &adis16240_info;
+> > > > > + indio_dev->channels =3D adis16240_channels;
+> > > > > + indio_dev->num_channels =3D ARRAY_SIZE(adis16240_channels);
+> > > > > + indio_dev->modes =3D INDIO_DIRECT_MODE;
+> > > > > +
+> > > > > + ret =3D adis_init(st, indio_dev, spi, &adis16240_data);
+> > > > > + if (ret)
+> > > > > +         return ret;
+> > >
+> > > Might be nice to look at adding some white space after error handling
+> > > blocks like this.  A blank line in locations like this make it
+> > > easier for the eye to follow the code.
+> > >
+> > > > > + ret =3D adis_setup_buffer_and_trigger(st, indio_dev, NULL);
+> > > > > + if (ret)
+> > > > > +         return ret;
+> > > > > +
+> > > > > + /* Get the device into a sane initial state */
+> > > > > + ret =3D adis_initial_startup(st);
+> > > > > + if (ret)
+> > > > > +         goto error_cleanup_buffer_trigger;
+> > > > > + ret =3D iio_device_register(indio_dev);
+> > > > > + if (ret)
+> > > > > +         goto error_cleanup_buffer_trigger;
+> > > > > + return 0;
+> > > > > +
+> > > > > +error_cleanup_buffer_trigger:
+> > > > > + adis_cleanup_buffer_and_trigger(st, indio_dev);
+> > > > > + return ret;
+> > > > > +}
+> > > > > +
+> > > > > +static int adis16240_remove(struct spi_device *spi)
+> > > > > +{
+> > > > > + struct iio_dev *indio_dev =3D spi_get_drvdata(spi);
+> > > > > + struct adis *st =3D iio_priv(indio_dev);
+> > > > > +
+> > > > > + iio_device_unregister(indio_dev);
+> > > > > + adis_cleanup_buffer_and_trigger(st, indio_dev);
+> > > > > +
+> > > > > + return 0;
+> > > > > +}
+> > > > > +
+> > > > > +static const struct of_device_id adis16240_of_match[] =3D {
+> > > > > + { .compatible =3D "adi,adis16240" },
+> > > > > + { },
+> > > > > +};
+> > > > > +MODULE_DEVICE_TABLE(of, adis16240_of_match);
+> > > > > +
+> > > > > +static struct spi_driver adis16240_driver =3D {
+> > > > > + .driver =3D {
+> > > > > +         .name =3D "adis16240",
+> > > > > +         .of_match_table =3D adis16240_of_match,
+> > > > > + },
+> > > > > + .probe =3D adis16240_probe,
+> > > > > + .remove =3D adis16240_remove,
+> > > > > +};
+> > > > > +module_spi_driver(adis16240_driver);
+> > > > > +
+> > > > > +MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+> > > > > +MODULE_DESCRIPTION("Analog Devices Programmable Impact Sensor an=
+d Recorder");
+> > > > > +MODULE_LICENSE("GPL v2");
+> > > > > +MODULE_ALIAS("spi:adis16240");
+> > > ...
+>
+> Thanks,
+> Rodrigo
