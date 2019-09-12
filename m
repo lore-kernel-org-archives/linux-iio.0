@@ -7,40 +7,40 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 20B1FC5ACAE
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 07:06:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 875C5ECDE20
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 07:06:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DFD4B20CC7
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 07:06:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D5B921479
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Sep 2019 07:06:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="Uh5KMpX9"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="hBbQy6ta"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729356AbfILHG0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 Sep 2019 03:06:26 -0400
-Received: from first.geanix.com ([116.203.34.67]:53080 "EHLO first.geanix.com"
+        id S1729736AbfILHG2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 Sep 2019 03:06:28 -0400
+Received: from first.geanix.com ([116.203.34.67]:53086 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729736AbfILHG0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 12 Sep 2019 03:06:26 -0400
+        id S1729740AbfILHG1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 12 Sep 2019 03:06:27 -0400
 Received: from zen.localdomain (unknown [85.184.140.241])
-        by first.geanix.com (Postfix) with ESMTPSA id A6AAB64D97;
-        Thu, 12 Sep 2019 07:05:41 +0000 (UTC)
+        by first.geanix.com (Postfix) with ESMTPSA id 157FC64D9F;
+        Thu, 12 Sep 2019 07:05:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1568271941; bh=d9IyjF4j/XWbXhgEzuncwnO9Okl83bH1vXEWvStt7FY=;
+        t=1568271945; bh=pLlBO35Sn5UbqZ1HN+8wwUU118j9Qzk2WKZWC8WzV2c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=Uh5KMpX9NC7mpZm0qtoyNT+LOpcg5LH5pm+hM9qhtW96PlWA/N22hSEiqERuKF2FO
-         ALLsGEgZidfJIhUw602aS14uqFh/o0yp/+97eRS3eHmZ1lXpw0f3flWwpi7CZXJUPb
-         pJdy/ct24ME3O7ALlPxjRRG9DYAbRYiamVQ/qvEHcEMACo0R7BvxvchYg33BmO3tqp
-         pQh0fMIPBBBYvrEiMQFOYZdYKjArNtqvdSEh7IOG4ujPGpILbUUtvRWempqP6MVDh0
-         wJyffxfq7F9EnpUBBPuPRX+HOE75j0OmDaf/LGUTaiAXd+RcH9NDAID5u8hCnC8Kg0
-         0DXKfwyYyvcCg==
+        b=hBbQy6tabMjpGrXiYrBrWycMVHywG7a72wtor/jlQX2mGGfs70ESRH67IKtqcn8W3
+         0fclwOoevcGofLX1JWwEuf2CBluaVKvBCpofiBke1hJs1YoHm89T4cHmRTaY0+UT41
+         9OKIRM5lHk+Xd9c73TYDDtbxy4rcGCWPiHclap/BhC9pNE50gCsGFm5FOvDcG6+65L
+         4AylqVzjy+aZe8T8d5abBFXdF7u1aWbjH3qGtQLvYSqolzlGKrJYs4T4m1tvVelYQm
+         oCoguDwocKET/mc10LKhrTDhUeQRobvHObUr0z+h6HSj0O5Fd5Rc6AHeyzrCMrNJQj
+         17YGQYzICGDZw==
 From:   Sean Nyekjaer <sean@geanix.com>
 To:     linux-iio@vger.kernel.org, jic23@kernel.org,
         lorenzo.bianconi83@gmail.com
 Cc:     Sean Nyekjaer <sean@geanix.com>, denis.ciocca@st.com,
         mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
-Subject: [PATCH v7 2/5] iio: imu: st_lsm6dsx: add motion events
-Date:   Thu, 12 Sep 2019 09:06:11 +0200
-Message-Id: <20190912070614.1144169-3-sean@geanix.com>
+Subject: [PATCH v7 5/5] iio: imu: st_lsm6dsx: add motion report function and call from interrupt
+Date:   Thu, 12 Sep 2019 09:06:14 +0200
+Message-Id: <20190912070614.1144169-6-sean@geanix.com>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <20190912070614.1144169-1-sean@geanix.com>
 References: <20190912070614.1144169-1-sean@geanix.com>
@@ -51,415 +51,169 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add event channels that controls the creation of motion events.
-Tested on ISM330DLC
+Report iio motion events to iio subsystem
 
 Signed-off-by: Sean Nyekjaer <sean@geanix.com>
 ---
 Changes since v4:
- * Added check for event support
- * Added registers for more devices that support this event
+ * Updated bitmask as pr Jonathans comments
 
 Changes since v5:
- * Moved wakeup_src masks to PATCH 5/6
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  41 ++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 191 ++++++++++++++++++-
- 2 files changed, 228 insertions(+), 4 deletions(-)
+ * None
 
 Changes since v6:
  * None
 
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  5 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 70 ++++++++++++++++++++
+ 2 files changed, 75 insertions(+)
+
 diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index fefd9042590a..449c2798f7ed 100644
+index 449c2798f7ed..7c50fac7b85c 100644
 --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
 +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -12,6 +12,7 @@
- #define ST_LSM6DSX_H
- 
- #include <linux/device.h>
-+#include <linux/iio/iio.h>
- 
- #define ST_LSM6DS3_DEV_NAME	"lsm6ds3"
- #define ST_LSM6DS3H_DEV_NAME	"lsm6ds3h"
-@@ -54,6 +55,26 @@ enum st_lsm6dsx_hw_id {
- 					 * ST_LSM6DSX_TAGGED_SAMPLE_SIZE)
- #define ST_LSM6DSX_SHIFT_VAL(val, mask)	(((val) << __ffs(mask)) & (mask))
- 
-+#define ST_LSM6DSX_CHANNEL_ACC(chan_type, addr, mod, scan_idx)		\
-+{									\
-+	.type = chan_type,						\
-+	.address = addr,						\
-+	.modified = 1,							\
-+	.channel2 = mod,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-+	.scan_index = scan_idx,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 16,						\
-+		.storagebits = 16,					\
-+		.endianness = IIO_LE,					\
-+	},								\
-+	.event_spec = &st_lsm6dsx_event,				\
-+	.num_event_specs = 1,						\
-+}
-+
- #define ST_LSM6DSX_CHANNEL(chan_type, addr, mod, scan_idx)		\
- {									\
- 	.type = chan_type,						\
-@@ -162,6 +183,11 @@ struct st_lsm6dsx_shub_settings {
- 	u8 batch_en;
+@@ -186,6 +186,11 @@ struct st_lsm6dsx_shub_settings {
+ struct st_lsm6dsx_event_settings {
+ 	struct st_lsm6dsx_reg enable_reg;
+ 	struct st_lsm6dsx_reg wakeup_reg;
++	u8 wakeup_src_reg;
++	u8 wakeup_src_status_mask;
++	u8 wakeup_src_z_mask;
++	u8 wakeup_src_y_mask;
++	u8 wakeup_src_x_mask;
  };
  
-+struct st_lsm6dsx_event_settings {
-+	struct st_lsm6dsx_reg enable_reg;
-+	struct st_lsm6dsx_reg wakeup_reg;
-+};
-+
  enum st_lsm6dsx_ext_sensor_id {
- 	ST_LSM6DSX_ID_MAGN,
- };
-@@ -225,6 +251,9 @@ struct st_lsm6dsx_settings {
- 	u8 wai;
- 	u8 int1_addr;
- 	u8 int2_addr;
-+	u8 int1_func_addr;
-+	u8 int2_func_addr;
-+	u8 int_func_mask;
- 	u8 reset_addr;
- 	u16 max_fifo_size;
- 	struct {
-@@ -244,6 +273,7 @@ struct st_lsm6dsx_settings {
- 	struct st_lsm6dsx_fifo_ops fifo_ops;
- 	struct st_lsm6dsx_hw_ts_settings ts_settings;
- 	struct st_lsm6dsx_shub_settings shub_settings;
-+	struct st_lsm6dsx_event_settings event_settings;
- };
- 
- enum st_lsm6dsx_sensor_id {
-@@ -324,6 +354,10 @@ struct st_lsm6dsx_hw {
- 	u8 ts_sip;
- 	u8 sip;
- 
-+	u8 event_threshold;
-+	bool enable_event;
-+	struct st_lsm6dsx_reg irq_routing;
-+
- 	u8 *buff;
- 
- 	struct iio_dev *iio_devs[ST_LSM6DSX_ID_MAX];
-@@ -331,6 +365,13 @@ struct st_lsm6dsx_hw {
- 	const struct st_lsm6dsx_settings *settings;
- };
- 
-+static const struct iio_event_spec st_lsm6dsx_event = {
-+	.type = IIO_EV_TYPE_THRESH,
-+	.dir = IIO_EV_DIR_EITHER,
-+	.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			 BIT(IIO_EV_INFO_ENABLE)
-+};
-+
- static const unsigned long st_lsm6dsx_available_scan_masks[] = {0x7, 0x0};
- extern const struct dev_pm_ops st_lsm6dsx_pm_ops;
- 
 diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index ef838206b30f..4198ba263d03 100644
+index c0568ab69a77..c6d2006d722c 100644
 --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
 +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -73,9 +73,9 @@
- #define ST_LSM6DSX_REG_PP_OD_MASK		BIT(4)
- 
- static const struct iio_chan_spec st_lsm6dsx_acc_channels[] = {
--	ST_LSM6DSX_CHANNEL(IIO_ACCEL, 0x28, IIO_MOD_X, 0),
--	ST_LSM6DSX_CHANNEL(IIO_ACCEL, 0x2a, IIO_MOD_Y, 1),
--	ST_LSM6DSX_CHANNEL(IIO_ACCEL, 0x2c, IIO_MOD_Z, 2),
-+	ST_LSM6DSX_CHANNEL_ACC(IIO_ACCEL, 0x28, IIO_MOD_X, 0),
-+	ST_LSM6DSX_CHANNEL_ACC(IIO_ACCEL, 0x2a, IIO_MOD_Y, 1),
-+	ST_LSM6DSX_CHANNEL_ACC(IIO_ACCEL, 0x2c, IIO_MOD_Z, 2),
- 	IIO_CHAN_SOFT_TIMESTAMP(3),
- };
- 
-@@ -168,6 +168,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		.wai = 0x69,
- 		.int1_addr = 0x0d,
- 		.int2_addr = 0x0e,
-+		.int1_func_addr = 0x5e,
-+		.int2_func_addr = 0x5f,
-+		.int_func_mask = BIT(5),
- 		.reset_addr = 0x12,
- 		.max_fifo_size = 1365,
- 		.id = {
-@@ -279,11 +282,20 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
+@@ -48,6 +48,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/delay.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/interrupt.h>
+@@ -287,6 +288,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.addr = 0x5B,
+ 				.mask = GENMASK(5, 0),
  			},
++			.wakeup_src_reg = 0x1b,
++			.wakeup_src_status_mask = BIT(3),
++			.wakeup_src_z_mask = BIT(0),
++			.wakeup_src_y_mask = BIT(1),
++			.wakeup_src_x_mask = BIT(2),
  		},
-+		.event_settings = {
-+			.wakeup_reg = {
-+				.addr = 0x5B,
-+				.mask = GENMASK(5, 0),
-+			},
-+		},
  	},
  	{
- 		.wai = 0x69,
- 		.int1_addr = 0x0d,
- 		.int2_addr = 0x0e,
-+		.int1_func_addr = 0x5e,
-+		.int2_func_addr = 0x5f,
-+		.int_func_mask = BIT(5),
- 		.reset_addr = 0x12,
- 		.max_fifo_size = 682,
- 		.id = {
-@@ -395,11 +407,20 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
+@@ -412,6 +418,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.addr = 0x5B,
+ 				.mask = GENMASK(5, 0),
  			},
++			.wakeup_src_reg = 0x1b,
++			.wakeup_src_status_mask = BIT(3),
++			.wakeup_src_z_mask = BIT(0),
++			.wakeup_src_y_mask = BIT(1),
++			.wakeup_src_x_mask = BIT(2),
  		},
-+		.event_settings = {
-+			.wakeup_reg = {
-+				.addr = 0x5B,
-+				.mask = GENMASK(5, 0),
-+			},
-+		},
  	},
  	{
- 		.wai = 0x6a,
- 		.int1_addr = 0x0d,
- 		.int2_addr = 0x0e,
-+		.int1_func_addr = 0x5e,
-+		.int2_func_addr = 0x5f,
-+		.int_func_mask = BIT(5),
- 		.reset_addr = 0x12,
- 		.max_fifo_size = 682,
- 		.id = {
-@@ -520,6 +541,16 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(5, 3),
+@@ -550,6 +561,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.addr = 0x5B,
+ 				.mask = GENMASK(5, 0),
  			},
++			.wakeup_src_reg = 0x1b,
++			.wakeup_src_status_mask = BIT(3),
++			.wakeup_src_z_mask = BIT(0),
++			.wakeup_src_y_mask = BIT(1),
++			.wakeup_src_x_mask = BIT(2),
  		},
-+		.event_settings = {
-+			.enable_reg = {
-+				.addr = 0x58,
-+				.mask = BIT(7),
-+			},
-+			.wakeup_reg = {
-+				.addr = 0x5B,
-+				.mask = GENMASK(5, 0),
-+			},
-+		},
  	},
  	{
- 		.wai = 0x6c,
-@@ -666,6 +697,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		.wai = 0x6b,
- 		.int1_addr = 0x0d,
- 		.int2_addr = 0x0e,
-+		.int1_func_addr = 0x5e,
-+		.int2_func_addr = 0x5f,
-+		.int_func_mask = BIT(5),
- 		.reset_addr = 0x12,
- 		.max_fifo_size = 512,
- 		.id = {
-@@ -773,11 +807,24 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.mask = GENMASK(7, 6),
+@@ -816,6 +832,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.addr = 0x5B,
+ 				.mask = GENMASK(5, 0),
  			},
++			.wakeup_src_reg = 0x1b,
++			.wakeup_src_status_mask = BIT(3),
++			.wakeup_src_z_mask = BIT(0),
++			.wakeup_src_y_mask = BIT(1),
++			.wakeup_src_x_mask = BIT(2),
  		},
-+		.event_settings = {
-+			.enable_reg = {
-+				.addr = 0x58,
-+				.mask = BIT(7),
-+			},
-+			.wakeup_reg = {
-+				.addr = 0x5B,
-+				.mask = GENMASK(5, 0),
-+			},
-+		},
  	},
  	{
- 		.wai = 0x6b,
- 		.int1_addr = 0x0d,
- 		.int2_addr = 0x0e,
-+		.int1_func_addr = 0x5e,
-+		.int2_func_addr = 0x5f,
-+		.int_func_mask = BIT(5),
- 		.reset_addr = 0x12,
- 		.max_fifo_size = 512,
- 		.id = {
-@@ -913,6 +960,16 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			.slv0_addr = 0x15,
- 			.dw_slv0_addr = 0x21,
- 			.batch_en = BIT(3),
-+		},
-+		.event_settings = {
-+			.enable_reg = {
-+				.addr = 0x58,
-+				.mask = BIT(7),
-+			},
-+			.wakeup_reg = {
-+				.addr = 0x5B,
-+				.mask = GENMASK(5, 0),
-+			},
+@@ -970,6 +991,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.addr = 0x5B,
+ 				.mask = GENMASK(5, 0),
+ 			},
++			.wakeup_src_reg = 0x1b,
++			.wakeup_src_status_mask = BIT(3),
++			.wakeup_src_z_mask = BIT(0),
++			.wakeup_src_y_mask = BIT(1),
++			.wakeup_src_x_mask = BIT(2),
  		}
  	},
  };
-@@ -1119,7 +1176,8 @@ static int st_lsm6dsx_read_oneshot(struct st_lsm6dsx_sensor *sensor,
- 	if (err < 0)
- 		return err;
- 
--	st_lsm6dsx_sensor_set_enable(sensor, false);
-+	if (!hw->enable_event)
-+		st_lsm6dsx_sensor_set_enable(sensor, false);
- 
- 	*val = (s16)le16_to_cpu(data);
- 
-@@ -1192,6 +1250,123 @@ static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
- 	return err;
+@@ -1715,6 +1741,38 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
+ 	return iio_dev;
  }
  
-+int st_lsm6dsx_event_setup(struct st_lsm6dsx_hw *hw, int state)
++void st_lsm6dsx_report_motion_event(struct st_lsm6dsx_hw *hw, int data)
 +{
-+	int err;
-+	u8 enable = 0;
++	s64 timestamp = iio_get_time_ns(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
 +
-+	if (!hw->settings->int1_func_addr)
-+		return -ENOTSUPP;
++	if (data & hw->settings->event_settings.wakeup_src_z_mask)
++		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
++						  0,
++						  IIO_MOD_Z,
++						  IIO_EV_TYPE_THRESH,
++						  IIO_EV_DIR_EITHER),
++						  timestamp);
 +
-+	enable = state ? hw->settings->event_settings.enable_reg.mask : 0;
++	if (data & hw->settings->event_settings.wakeup_src_x_mask)
++		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
++						  0,
++						  IIO_MOD_Y,
++						  IIO_EV_TYPE_THRESH,
++						  IIO_EV_DIR_EITHER),
++						  timestamp);
 +
-+	err = regmap_update_bits(hw->regmap,
-+				 hw->settings->event_settings.enable_reg.addr,
-+				 hw->settings->event_settings.enable_reg.mask,
-+				 enable);
-+	if (err < 0)
-+		return err;
-+
-+	enable = state ? hw->irq_routing.mask : 0;
-+
-+	/* Enable wakeup interrupt */
-+	return regmap_update_bits(hw->regmap, hw->irq_routing.addr,
-+				  hw->irq_routing.mask,
-+				  enable);
++	if (data & hw->settings->event_settings.wakeup_src_x_mask)
++		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
++			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
++						  0,
++						  IIO_MOD_X,
++						  IIO_EV_TYPE_THRESH,
++						  IIO_EV_DIR_EITHER),
++						  timestamp);
 +}
 +
-+static int st_lsm6dsx_read_event(struct iio_dev *iio_dev,
-+				   const struct iio_chan_spec *chan,
-+				   enum iio_event_type type,
-+				   enum iio_event_direction dir,
-+				   enum iio_event_info info,
-+				   int *val, int *val2)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	*val2 = 0;
-+	*val = hw->event_threshold;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int st_lsm6dsx_write_event(struct iio_dev *iio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir,
-+				    enum iio_event_info info,
-+				    int val, int val2)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+	int err;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	if (val < 0 || val > 31)
-+		return -EINVAL;
-+
-+	err = regmap_update_bits(hw->regmap,
-+				 hw->settings->event_settings.wakeup_reg.addr,
-+				 hw->settings->event_settings.wakeup_reg.mask,
-+				 val);
-+	if (err)
-+		return -EINVAL;
-+
-+	hw->event_threshold = val;
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_read_event_config(struct iio_dev *iio_dev,
-+					  const struct iio_chan_spec *chan,
-+					  enum iio_event_type type,
-+					  enum iio_event_direction dir)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	return hw->enable_event;
-+}
-+
-+static int st_lsm6dsx_write_event_config(struct iio_dev *iio_dev,
-+					   const struct iio_chan_spec *chan,
-+					   enum iio_event_type type,
-+					   enum iio_event_direction dir,
-+					   int state)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_hw *hw = sensor->hw;
-+	int err = 0;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	/* do not enable events if they are already enabled */
-+	if (state && hw->enable_event)
-+		return 0;
-+
-+	err = st_lsm6dsx_event_setup(hw, state);
-+	if (err < 0)
-+		return err;
-+
-+	err = st_lsm6dsx_sensor_set_enable(sensor, state);
-+	if (err < 0)
-+		return err;
-+
-+	hw->enable_event = state;
-+
-+	return 0;
-+}
-+
- int st_lsm6dsx_set_watermark(struct iio_dev *iio_dev, unsigned int val)
+ static irqreturn_t st_lsm6dsx_handler_irq(int irq, void *private)
  {
- 	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-@@ -1276,6 +1451,10 @@ static const struct iio_info st_lsm6dsx_acc_info = {
- 	.attrs = &st_lsm6dsx_acc_attribute_group,
- 	.read_raw = st_lsm6dsx_read_raw,
- 	.write_raw = st_lsm6dsx_write_raw,
-+	.read_event_value = st_lsm6dsx_read_event,
-+	.write_event_value = st_lsm6dsx_write_event,
-+	.read_event_config = st_lsm6dsx_read_event_config,
-+	.write_event_config = st_lsm6dsx_write_event_config,
- 	.hwfifo_set_watermark = st_lsm6dsx_set_watermark,
- };
+ 	return IRQ_WAKE_THREAD;
+@@ -1724,6 +1782,18 @@ static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
+ {
+ 	struct st_lsm6dsx_hw *hw = private;
+ 	int count;
++	int data, err;
++
++	if (hw->enable_event) {
++		err = regmap_read(hw->regmap,
++				  hw->settings->event_settings.wakeup_src_reg,
++				  &data);
++		if (err < 0)
++			return IRQ_NONE;
++
++		if (data & hw->settings->event_settings.wakeup_src_status_mask)
++			st_lsm6dsx_report_motion_event(hw, data);
++	}
  
-@@ -1321,9 +1500,13 @@ static int st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw, u8 *drdy_reg)
- 	switch (drdy_pin) {
- 	case 1:
- 		*drdy_reg = hw->settings->int1_addr;
-+		hw->irq_routing.addr = hw->settings->int1_func_addr;
-+		hw->irq_routing.mask = hw->settings->int_func_mask;
- 		break;
- 	case 2:
- 		*drdy_reg = hw->settings->int2_addr;
-+		hw->irq_routing.addr = hw->settings->int2_func_addr;
-+		hw->irq_routing.mask = hw->settings->int_func_mask;
- 		break;
- 	default:
- 		dev_err(hw->dev, "unsupported data ready pin\n");
+ 	mutex_lock(&hw->fifo_lock);
+ 	count = hw->settings->fifo_ops.read_fifo(hw);
 -- 
 2.23.0
 
