@@ -2,170 +2,70 @@ Return-Path: <SRS0=n4Xm=XI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E70DEC49ED7
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Sep 2019 08:58:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCEAC49ED7
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Sep 2019 09:00:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BA428214AE
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Sep 2019 08:58:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1568365138;
-	bh=onsHx30SkL9bzSV0rxKsD/mA8jgT78lwjFcNB4h0bvU=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=B25rVZYrpBmj2pojecN+AyzHK5OwiLB0NIFoVLBGXhhJtVspUXuwzT+m8urJ3PKFS
-	 5CrN0leLhN9HyVnjvZ27jhwXloSubdFnh30feuXBRZqoxQTGQ15zuzc3wLOR4eM/jr
-	 3Z96Bh5KDUjBEApTy2H/my1wCiHM4l9W2Zdc/j1g=
+	by mail.kernel.org (Postfix) with ESMTP id 9DB51214D8
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Sep 2019 09:00:41 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="EIVMCVQN"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387620AbfIMI66 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 13 Sep 2019 04:58:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50780 "EHLO mail.kernel.org"
+        id S2387788AbfIMJAl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 13 Sep 2019 05:00:41 -0400
+Received: from first.geanix.com ([116.203.34.67]:49374 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387499AbfIMI66 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 13 Sep 2019 04:58:58 -0400
-Received: from localhost.localdomain (nat-pool-mxp-t.redhat.com [149.6.153.186])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 64A0E208C0;
-        Fri, 13 Sep 2019 08:58:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1568365137;
-        bh=onsHx30SkL9bzSV0rxKsD/mA8jgT78lwjFcNB4h0bvU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=V0XcbMS7xjuo+eikiP3vTql+WRh1gits1930/9XVZvjl/f7YsiZtlBlk58dZcQnTz
-         R+HLz/a21UVHH7Glj3zHVmKQmMx0DbMU7BpFw6OW+vcAzJ/2VEaWk+EVDj0LvdfL8A
-         G5RmhT6zATUixW8KsX9EVTJ5u1sg9nvNWpE415dQ=
-Date:   Fri, 13 Sep 2019 10:58:51 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Sean Nyekjaer <sean@geanix.com>
+        id S2387499AbfIMJAk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 13 Sep 2019 05:00:40 -0400
+Received: from [192.168.100.95] (unknown [95.138.208.137])
+        by first.geanix.com (Postfix) with ESMTPSA id 06B0215E2;
+        Fri, 13 Sep 2019 08:59:54 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1568365194; bh=eJuFKCry6jk0T1xt3a3V2US2F/b1zAkiMgx/j3zPpE0=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=EIVMCVQN3nno/QvX+gFvb3puTtN8V30pMzEBItlAWk6xbc3o0IiOmrs/iDlsNLB9c
+         CiYPLZXjsJK5me2e91yOUoDMojgr2pA+ma3m9fpBYSiwM4VfEXP+i5BK5okKIc2Mgj
+         5sHuHcwW/0Z9Fw/pR5jyIEhs6UNGhfNX6R7ipSe1D56ey+B3NKxVH9vjAYYnYg+2/e
+         gycCXVcVsLkeT6Quyh0dR67HcklgF9R3OvC0SsdH4Q4p0ntKa9dxJhu5qwpldjwWBW
+         6+g3jK1yxnckv1o4z7c9HpPajPvNN6sAJtWEJwhj0ffR1YZcKmL1u3fa5JjotTz5Jv
+         6HX5elHUJB09w==
+Subject: Re: [PATCH v7 3/5] iio: imu: st_lsm6dsx: add wakeup-source option
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     linux-iio@vger.kernel.org, jic23@kernel.org,
         lorenzo.bianconi83@gmail.com, denis.ciocca@st.com,
         mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
-Subject: Re: [PATCH v7 3/5] iio: imu: st_lsm6dsx: add wakeup-source option
-Message-ID: <20190913085851.GB2698@localhost.localdomain>
 References: <20190912070614.1144169-1-sean@geanix.com>
  <20190912070614.1144169-4-sean@geanix.com>
  <6eb3a60f-0712-4ad7-fe3c-fd76a3ea135f@geanix.com>
  <20190913082701.GA2698@localhost.localdomain>
  <66e35f99-780b-7063-37ad-3fb656a6dffc@geanix.com>
+ <20190913085851.GB2698@localhost.localdomain>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <575df7e7-4b25-fa9a-c723-669c4aca7b5f@geanix.com>
+Date:   Fri, 13 Sep 2019 11:00:15 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="z6Eq5LdranGa6ru8"
-Content-Disposition: inline
-In-Reply-To: <66e35f99-780b-7063-37ad-3fb656a6dffc@geanix.com>
-User-Agent: Mutt/1.12.1 (2019-06-15)
+In-Reply-To: <20190913085851.GB2698@localhost.localdomain>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Language: en-US-large
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---z6Eq5LdranGa6ru8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
 
->=20
->=20
-> On 13/09/2019 10.27, Lorenzo Bianconi wrote:
-> > >=20
-> > >=20
-> > > On 12/09/2019 09.06, Sean Nyekjaer wrote:
-> > > > This add ways for the SoC to wake from accelerometer wake events.
-> > > >=20
-> > > > In the suspend function we skip disabling the sensor if wakeup-sour=
-ce
-> > > > and events are activated.
-> > > >=20
-> > > > Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-> > > > ---
-> > > > Changes since v4:
-> > > >    * More devices supports wakeup
-> > > >=20
-> > > > Changes since v5:
-> > > >    * None
-> > > >=20
-> > > > Changes since v6:
-> > > >    * None
-> > > >=20
-> > > >    drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 14 ++++++++++++++
-> > > >    1 file changed, 14 insertions(+)
-> > > >=20
-> > > > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers=
-/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > > > index 4198ba263d03..f79978a2870f 100644
-> > > > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > > > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > > > @@ -1858,6 +1858,9 @@ int st_lsm6dsx_probe(struct device *dev, int =
-irq, int hw_id,
-> > > >    			return err;
-> > > >    	}
-> > > > +	if (dev->of_node && of_property_read_bool(dev->of_node, "wakeup-s=
-ource"))
-> > > > +		device_init_wakeup(dev, true);
-> > > > +
-> > > >    	return 0;
-> > > >    }
-> > > >    EXPORT_SYMBOL(st_lsm6dsx_probe);
-> > > > @@ -1876,6 +1879,12 @@ static int __maybe_unused st_lsm6dsx_suspend=
-(struct device *dev)
-> > > >    		if (!(hw->enable_mask & BIT(sensor->id)))
-> > > >    			continue;
-> > > > +		if (device_may_wakeup(dev) && i =3D=3D ST_LSM6DSX_ID_ACC) {
-> > > > +			/* Enable wake from IRQ */
-> > > > +			enable_irq_wake(hw->irq);
-> > > > +			continue;
-> >=20
-> > I guess here we need even to check hw->event_enable, don't we?
-> Good idea :)
->=20
-> >=20
-> > > > +		}
-> > > > +
-> > > >    		if (sensor->id =3D=3D ST_LSM6DSX_ID_EXT0 ||
-> > > >    		    sensor->id =3D=3D ST_LSM6DSX_ID_EXT1 ||
-> > > >    		    sensor->id =3D=3D ST_LSM6DSX_ID_EXT2)
-> > > > @@ -1908,6 +1917,11 @@ static int __maybe_unused st_lsm6dsx_resume(=
-struct device *dev)
-> > > >    		if (!(hw->suspend_mask & BIT(sensor->id)))
-> > > >    			continue;
-> > > > +		if (device_may_wakeup(dev) && i =3D=3D ST_LSM6DSX_ID_ACC) {
-> > > > +			disable_irq_wake(hw->irq);
-> > > > +			continue;
-> > > > +		}
-> > > > +
-> > > This section needs to move above:
-> >=20
-> > agree, and we probably do not need 'continue'. Moreover I guess we shou=
-ld check
-> > hw->event_enable even here, right?
->=20
-> Correct we don't need the 'continue' here... The 'hw->suspend_mask' is not
-> set as we skip it in the resume part.
-> I'll add the 'hw->enable_event' check here as well.
->=20
-> Is there more stuff that blocks this series from your point of view?
+On 13/09/2019 10.58, Lorenzo Bianconi wrote:
+> Actually I have not tested, just compiled. Looking at the code seems fine.
+> 
+> Regards,
+> Lorenzo
 
-Actually I have not tested, just compiled. Looking at the code seems fine.
+I'll post V8 with updated [PATCH 3/5] for Jonathan :-)
 
-Regards,
-Lorenzo
-
->=20
-> /Sean
-
---z6Eq5LdranGa6ru8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXXtaSAAKCRA6cBh0uS2t
-rBjBAP9IDhb3BejqXJ5vqL2DIjnN9ORw9w8FI5JclGavNcuQNwD+P3+soTfVFwj8
-pOxhihC5ypVJ6/MX6Dyf7zOdBhWZdww=
-=D8b2
------END PGP SIGNATURE-----
-
---z6Eq5LdranGa6ru8--
+/Sean
