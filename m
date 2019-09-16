@@ -2,221 +2,139 @@ Return-Path: <SRS0=iV6u=XL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19091C4CECE
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 12:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB02DC49ED7
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 12:37:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E49BE214D9
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 12:35:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 94B80214D9
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 12:37:22 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="gJDR5yeh"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="ObJ98P4e"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727770AbfIPMfK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Sep 2019 08:35:10 -0400
-Received: from first.geanix.com ([116.203.34.67]:58064 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732604AbfIPMfK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Sep 2019 08:35:10 -0400
-Received: from zen.localdomain (unknown [85.184.140.241])
-        by first.geanix.com (Postfix) with ESMTPSA id 6DB09655ED;
-        Mon, 16 Sep 2019 12:34:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1568637248; bh=vsUSpumPqsDBYWnIh+147x/p5UBZk38iBHnqQpcFKT4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=gJDR5yehLXwVO5ibh0pc5YkCmqhTyYynHleQSUh1pBjWg3MPAoaptMTF41zzvopPj
-         fFq+BR+nyst1ASzpQbKocqHRaJ8Is2u/zCY8PJyAVtHjqGBy5p+ixEctL/fDewYRzB
-         2qBjF/2DyeBjqji7ZEs5ztRariprCWHp497Do0poJM2HITJDqUpSXUgJmwODwopI3F
-         VQDG9+mnu+mfOSnejwpKwkohw5+GUPJgdMCLBa9zuUc2+YoW6Q6fq23odVvtQkxyiF
-         /EAuDQ3is76kJdSV7WjLQI29sJzIOw2Bl9ShY6qe71cvDGXvQ9tG4I5y9P/RKDewOx
-         Sfj9owCnUScoQ==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     linux-iio@vger.kernel.org, jic23@kernel.org,
-        lorenzo.bianconi83@gmail.com
-Cc:     Sean Nyekjaer <sean@geanix.com>, denis.ciocca@st.com,
-        mario.tesi@st.com, armando.visconti@st.com, martin@geanix.com
-Subject: [PATCH v9 5/6] iio: imu: st_lsm6dsx: add motion report function and call from interrupt
-Date:   Mon, 16 Sep 2019 14:34:55 +0200
-Message-Id: <20190916123456.1742253-5-sean@geanix.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20190916123456.1742253-1-sean@geanix.com>
-References: <20190916123456.1742253-1-sean@geanix.com>
+        id S1732454AbfIPMhW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Sep 2019 08:37:22 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:23104 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727950AbfIPMhV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2019 08:37:21 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x8GCXUaS027290;
+        Mon, 16 Sep 2019 08:37:15 -0400
+Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2059.outbound.protection.outlook.com [104.47.37.59])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2v0w47k8t4-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 16 Sep 2019 08:37:15 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TJTaRgp0NKimqGsaRKkq1FV/NlKEWjOyJ76j0BrbjhrHbTgm+q1xV9ETikvOPT6sMq/9KXCVCcWJAg58lRYOi7u+RdrJNQ0OFnuztDTpHb3Pj8kPSEx2TyHxVKFMMVq53CSeiUPCYkAF5zpquL1zfSVDY+SOP+hDBwrgBfQlT2erSsKIaOJhpxhggXFSAfwTkm1UFxiOnC5+C67xrdBgV/kxZciZgBm/fC0FuWcjjrTTt/VoKnT6euEAAKlmXQXA/G5KEpaeRu/H1ZTi08AKk30mb0CrQiAnCz/WCwAJ6YRjA90nzPPYxDKjS8VqcfIyDmjiLRzYUh+G65YDm9stYQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f8d+FetZkSSGwp6YOGs4EWjSIgxhfzO5JTzMsDevBFs=;
+ b=gjCzywTZp7TD3rAcRrL2swUbRzmDPUIEct1TaYETksRoD3q5UxfjheyWQt2fkaDsnA6o5WMtRwoAdiWvvK6w8vCnLTFFxOAFyAhc0YMekKJxPRdUK6kYafoFahRmgs2ueQirMzlmKgkf+X8p7locIYknoEaPbn4T4MlZ5xN1bMH59/MwgKBpGayEkyp3jP3JkklPiER329troUtEwxuvkdPQuM+PerlC/iWm9XEDuRUlmeW3in8/V54gFu8LCPrAQ7obpe+vlhFLE1qRpCCDW7+bKCgA7O8LHcfPxhhSWkjl3LWevCPFB4YYBx7cxU7u7NUrEkZmhWr0YR6ze/FAvg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=f8d+FetZkSSGwp6YOGs4EWjSIgxhfzO5JTzMsDevBFs=;
+ b=ObJ98P4eM6F0dA6tZVVII24Zl7/SanjydPRskcp33GwkSn060bd5Rk3vh+QlwDXeUYe0qPkX6h6v/fxQch91k8iAtH8bdQt0wxyxo6iyOVavjdiKZZaaDnps832oZKa5/cLjPhSJoMeBhkxx8rIUUoJIxss90UZSIqT/MmXaggc=
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
+ CH2PR03MB5320.namprd03.prod.outlook.com (20.180.15.21) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2263.17; Mon, 16 Sep 2019 12:37:12 +0000
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::344d:7f50:49a3:db1b]) by CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::344d:7f50:49a3:db1b%3]) with mapi id 15.20.2263.023; Mon, 16 Sep 2019
+ 12:37:12 +0000
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "broonie@kernel.org" <broonie@kernel.org>
+CC:     "linux-spi@vger.kernel.org" <linux-spi@vger.kernel.org>,
+        "baolin.wang@linaro.org" <baolin.wang@linaro.org>,
+        "bcm-kernel-feedback-list@broadcom.com" 
+        <bcm-kernel-feedback-list@broadcom.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
+        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "f.fainelli@gmail.com" <f.fainelli@gmail.com>,
+        "orsonzhai@gmail.com" <orsonzhai@gmail.com>,
+        "zhang.lyra@gmail.com" <zhang.lyra@gmail.com>
+Subject: Re: [RFC PATCH 03/15] spi: make `cs_change_delay` the first user of
+ the `spi_delay` logic
+Thread-Topic: [RFC PATCH 03/15] spi: make `cs_change_delay` the first user of
+ the `spi_delay` logic
+Thread-Index: AQHVag+8uWmQQq3ExEyRd/qnwNwICqcuP2sAgAADYYA=
+Date:   Mon, 16 Sep 2019 12:37:12 +0000
+Message-ID: <ae469c65828443524f9ff0409f1c7a81bf64cf6b.camel@analog.com>
+References: <20190913114550.956-1-alexandru.ardelean@analog.com>
+         <20190913114550.956-4-alexandru.ardelean@analog.com>
+         <20190916122505.GC4352@sirena.co.uk>
+In-Reply-To: <20190916122505.GC4352@sirena.co.uk>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [137.71.226.54]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a0360b10-fa26-4134-a48a-08d73aa29941
+x-ms-office365-filtering-ht: Tenant
+x-microsoft-antispam: BCL:0;PCL:0;RULEID:(2390118)(7020095)(4652040)(8989299)(5600167)(711020)(4605104)(1401327)(4618075)(4534185)(4627221)(201703031133081)(201702281549075)(8990200)(2017052603328)(7193020);SRVR:CH2PR03MB5320;
+x-ms-traffictypediagnostic: CH2PR03MB5320:
+x-ms-exchange-purlcount: 2
+x-microsoft-antispam-prvs: <CH2PR03MB532072F146D11435FA38CB7AF98C0@CH2PR03MB5320.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:8882;
+x-forefront-prvs: 0162ACCC24
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(346002)(376002)(39860400002)(366004)(136003)(396003)(189003)(199004)(1730700003)(81156014)(6246003)(11346002)(446003)(478600001)(71190400001)(71200400001)(186003)(4744005)(2616005)(25786009)(66066001)(36756003)(6506007)(4326008)(3846002)(6116002)(102836004)(99286004)(2906002)(2351001)(2501003)(316002)(6306002)(486006)(256004)(476003)(66476007)(66946007)(76116006)(66446008)(64756008)(66556008)(8936002)(54906003)(26005)(76176011)(6512007)(53936002)(5660300002)(14454004)(6436002)(7736002)(229853002)(6916009)(7416002)(8676002)(5640700003)(305945005)(86362001)(118296001)(966005)(6486002)(81166006)(81973001);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5320;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+received-spf: None (protection.outlook.com: analog.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam-message-info: Mxb7KMFr9O24E5aIo6aUbObI0QL1UVf8VAJ20MtfNhVenjDk9Da8ScVrVCo1mQKPqaOoefQ/vSaR6EACUiLANzkVyRgXcW5IKzTHrcDgC7B1ngOEU05GONcCl4CmkcUMf96Vn13Jd8VqYFtkN247hwE1a7zqY1yuKpY97uLZv4/+/81WmjCQa17pG7+9owZC2pdqyLFV4yElTaTU0A4gBdDH+qcxdoNIYV2Wg5PHENLEvOyWnD33Lz9hredwkpCaItZ1DKrJjrIKQnmToD3ksDETDiZV+ZzZa8JC/fCM0ajpLAt0veGHxhjmo6sGnaTeXPLYZU5JGRm5dPa3PkJzLEpCGiwQIOCGsv9wfpeoDuwrjxyx2MgGM2DMvfBv0+b9r8Z/mSq9ljBOONuhnVhYZbTVgUMq9rdCsP/WbkiKPbk=
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <7A207019A739BF4BB5EC44846BC146A6@namprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a0360b10-fa26-4134-a48a-08d73aa29941
+X-MS-Exchange-CrossTenant-originalarrivaltime: 16 Sep 2019 12:37:12.5122
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BPCkEFEDvKiLto+zUPkEHfo6nU7EejwVsO9HqpIDScljev3n8IzsVKbQahrolw985wTDcTyPeoW0O7CS06yE3prMcIZBbCoW2lw/QK9+5f4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5320
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.70,1.0.8
+ definitions=2019-09-16_06:2019-09-11,2019-09-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
+ lowpriorityscore=0 impostorscore=0 mlxscore=0 mlxlogscore=999
+ malwarescore=0 bulkscore=0 priorityscore=1501 suspectscore=0 spamscore=0
+ phishscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1909160134
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Report iio motion events to iio subsystem
-
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
-Changes since v4:
- * Updated bitmask as pr Jonathans comments
-
-Changes since v5:
- * None
-
-Changes since v6:
- * None
-
-Changes since v7:
- * None
-
-Changes since v8:
- * None
-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  5 ++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 70 ++++++++++++++++++++
- 2 files changed, 75 insertions(+)
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 68c03e8ddd78..0a782af9445b 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -186,6 +186,11 @@ struct st_lsm6dsx_shub_settings {
- struct st_lsm6dsx_event_settings {
- 	struct st_lsm6dsx_reg enable_reg;
- 	struct st_lsm6dsx_reg wakeup_reg;
-+	u8 wakeup_src_reg;
-+	u8 wakeup_src_status_mask;
-+	u8 wakeup_src_z_mask;
-+	u8 wakeup_src_y_mask;
-+	u8 wakeup_src_x_mask;
- };
- 
- enum st_lsm6dsx_ext_sensor_id {
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 6b03c50f4732..6b88d93dca2a 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -48,6 +48,7 @@
- #include <linux/kernel.h>
- #include <linux/module.h>
- #include <linux/delay.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- #include <linux/interrupt.h>
-@@ -287,6 +288,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
- 	{
-@@ -412,6 +418,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
- 	{
-@@ -550,6 +561,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
- 	{
-@@ -816,6 +832,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
- 	{
-@@ -970,6 +991,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 				.addr = 0x5B,
- 				.mask = GENMASK(5, 0),
- 			},
-+			.wakeup_src_reg = 0x1b,
-+			.wakeup_src_status_mask = BIT(3),
-+			.wakeup_src_z_mask = BIT(0),
-+			.wakeup_src_y_mask = BIT(1),
-+			.wakeup_src_x_mask = BIT(2),
- 		}
- 	},
- };
-@@ -1715,10 +1741,54 @@ static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
- 	return iio_dev;
- }
- 
-+void st_lsm6dsx_report_motion_event(struct st_lsm6dsx_hw *hw, int data)
-+{
-+	s64 timestamp = iio_get_time_ns(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_z_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_Z,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_y_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_Y,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+
-+	if (data & hw->settings->event_settings.wakeup_src_x_mask)
-+		iio_push_event(hw->iio_devs[ST_LSM6DSX_ID_ACC],
-+			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
-+						  0,
-+						  IIO_MOD_X,
-+						  IIO_EV_TYPE_THRESH,
-+						  IIO_EV_DIR_EITHER),
-+						  timestamp);
-+}
-+
- static irqreturn_t st_lsm6dsx_handler_thread(int irq, void *private)
- {
- 	struct st_lsm6dsx_hw *hw = private;
- 	int count;
-+	int data, err;
-+
-+	if (hw->enable_event) {
-+		err = regmap_read(hw->regmap,
-+				  hw->settings->event_settings.wakeup_src_reg,
-+				  &data);
-+		if (err < 0)
-+			return IRQ_NONE;
-+
-+		if (data & hw->settings->event_settings.wakeup_src_status_mask)
-+			st_lsm6dsx_report_motion_event(hw, data);
-+	}
- 
- 	mutex_lock(&hw->fifo_lock);
- 	count = hw->settings->fifo_ops.read_fifo(hw);
--- 
-2.23.0
-
+T24gTW9uLCAyMDE5LTA5LTE2IGF0IDEzOjI1ICswMTAwLCBNYXJrIEJyb3duIHdyb3RlOg0KPiBb
+RXh0ZXJuYWxdDQo+IA0KPiBPbiBGcmksIFNlcCAxMywgMjAxOSBhdCAwMjo0NTozOFBNICswMzAw
+LCBBbGV4YW5kcnUgQXJkZWxlYW4gd3JvdGU6DQo+IA0KPiA+IC0JdTE2CQljc19jaGFuZ2VfZGVs
+YXk7DQo+ID4gLQl1OAkJY3NfY2hhbmdlX2RlbGF5X3VuaXQ7DQo+ID4gKwlzdHJ1Y3Qgc3BpX2Rl
+bGF5CWNzX2NoYW5nZV9kZWxheTsNCj4gDQo+IFRoaXMgYnJlYWtzIHRoZSBidWlsZCBhcyB0aGVy
+ZSBpcyBhIHVzZXIgb2YgdGhpcyBpbnRlcmZhY2UuDQoNCg0KQWNrLg0KSm9uYXRoYW4gcG9pbnRl
+ZCB0aGlzIG91dC4NClRoZXJlJ3MgYSBWMyB0aGF0IGNoYW5nZXMgYm90aCB0aGlzIGFuZCBpdCdz
+IHVzZXIgKGluIElJTykuDQoNClYzOg0KaHR0cHM6Ly9sb3JlLmtlcm5lbC5vcmcvbGludXgtaWlv
+LzIwMTkwOTE2MDcxMDI0LjIxNDQ3LTEtYWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20vVC8j
+dA0KDQpWMjoNCmh0dHBzOi8vbG9yZS5rZXJuZWwub3JnL2xpbnV4LWlpby8yMDE5MDkxMzExNTU0
+OS4zODIzLTEtYWxleGFuZHJ1LmFyZGVsZWFuQGFuYWxvZy5jb20vVC8jdA0KDQpbIGFyY2hpdmUg
+aXMgZnJvbSB0aGUgSUlPIGxpc3QgXQ0KDQpXZWxsLCBJJ20gaG9waW5nIHlvdSBhcmUgcmVmZXJy
+aW5nIHRvIHRoZSBzYW1lIHVzZXIuDQoNCk9uIGEgZ2VuZXJhbCBub3RlOiBJIGFwb2xvZ2lzZSBm
+b3IgdGhlIGFtb3VudCBvZiBub2lzZS9zcGFtIEkgYW0gZG9pbmcgaGVyZS4gU3RpbGwgYWRqdXN0
+aW5nIHRvIGhvdyB0byBkbyB0aGluZ3MvY2hhbmdlcw0KdGhhdCB0b3VjaCAyIHN1YnN5c3RlbXMs
+IGVzcGVjaWFsbHkgd2hlbiB0cmVlcyBhcmUgbm90IHF1aXRlIGluLXN5bmMuDQo=
