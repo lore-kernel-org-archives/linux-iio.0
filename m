@@ -2,67 +2,49 @@ Return-Path: <SRS0=iV6u=XL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA779C4CECE
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 19:01:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46BB8C4CECD
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 22:01:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AADBF206A4
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 19:01:16 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QRTDgkj/"
+	by mail.kernel.org (Postfix) with ESMTP id 0E1C5216C8
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Sep 2019 22:01:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1568671298;
+	bh=xqhVNJd5/Z861MxAPNLjsXkZbMQSWQl86jxQ7VGPWeo=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=WbM7N+cBnwu/qrlT6LTwWDYIfruqkJs6jJNm0DneT/9ijiVzY3aVa3xY76DKKZtdO
+	 bAs5cwtU/4j0RfGfkBEWNzqNPhDFSm7t0hOr07K97xDBIsAdV3RZSoFHDAiFpXwrIL
+	 KwidFVjgc2lReWG8mH77sfSzgz+wupSHkF9EGgz8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732945AbfIPTBG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Sep 2019 15:01:06 -0400
-Received: from mail-lj1-f173.google.com ([209.85.208.173]:33873 "EHLO
-        mail-lj1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725912AbfIPTBG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Sep 2019 15:01:06 -0400
-Received: by mail-lj1-f173.google.com with SMTP id h2so1018977ljk.1;
-        Mon, 16 Sep 2019 12:01:04 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CqMFQfPPzik6PBJ5QbPlwlrkMAtMbIFqzUMAsYQhzE=;
-        b=QRTDgkj/POnK8eFxO3R6Py0sADJBTC9U6j+eab0KHaDz3Gapsqc0sFSNF17m723GFc
-         F6SVrFxvXaL2ryKbe4Jh3kVCISQxmllpiTxhQ7Q8gempqIOa3M5UNpTaxs6c2sJ8Q/6e
-         wZW2Lsf3mQOfDU7y70Fdn+84QCPsiW7y7X4U3TrbVS5eE5lJpb+L0uQglF+UvLcTOGn2
-         oAQTIlcsJBE2QIYmDLq7IV220wwFZAl+jPbwKUSgdcD9CxPTPCHLPYe1hYG3CObEwTCu
-         KL7/GWV4K6CieMbXNyRmnYJmz8San+auJF/mVXMswrchL+PrBKAH+4qGqkEDo6K2F3Di
-         xjMA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CqMFQfPPzik6PBJ5QbPlwlrkMAtMbIFqzUMAsYQhzE=;
-        b=AGf/xi1fB37euohL14KpAUBcsJ0JMeIn8MircT3X77obd2R1GMSIL4bK19dvR+giH2
-         m9t0JIAN52jHyWjsRyAkiuwyvQ/FMpwriKQGnAkhMaBs2bISJA90YT6MvxS1+AvEWaTj
-         yEdpwtb2ng+Om5m9IW5i3yABqo9WqldFb3refAhTXfBNXyIlc++G4QUCY/TRTtDNY+J2
-         cKAjAgd9eNyACj1mBivT4F7cIBBcZIvHRYsn6kGN8WaYiol0oNVPViBVj2WaZ4KxBTvQ
-         VTaXvnEqotaMhGMDQb+pBNljv+ZmTCRPzn0o0LK/+NDYdOopHAxB1M/gshCfEWB5MSzU
-         5bFg==
-X-Gm-Message-State: APjAAAXVzWt99wuSQN5BbechhtDJs9d5DL7cc7VeYiFVcdi3FiwDSznm
-        3vkLXyKCvY+ORcMp+jpxsHamaIT4U4A=
-X-Google-Smtp-Source: APXvYqxO/r0hIUkSsLV5ZzgWYqmxDxOQ8w0ApXGJNx1us6E0OUNEpi3F9kZXQsToyP+Doq4/6jnf5w==
-X-Received: by 2002:a2e:958c:: with SMTP id w12mr590771ljh.98.1568660462791;
-        Mon, 16 Sep 2019 12:01:02 -0700 (PDT)
-Received: from arch.lan (89-70-31-203.dynamic.chello.pl. [89.70.31.203])
-        by smtp.gmail.com with ESMTPSA id z9sm8414053ljn.78.2019.09.16.12.01.01
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Sep 2019 12:01:01 -0700 (PDT)
-From:   Tomasz Duszynski <tduszyns@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        jic23@kernel.org, robh+dt@kernel.org,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH 0/2] iio: light: bh1750: convert bindings to yaml
-Date:   Mon, 16 Sep 2019 21:00:22 +0200
-Message-Id: <20190916190024.9955-1-tduszyns@gmail.com>
-X-Mailer: git-send-email 2.23.0
+        id S1732464AbfIPWBh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Sep 2019 18:01:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48386 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730459AbfIPWBh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Sep 2019 18:01:37 -0400
+Received: from lore-desk.lan (unknown [151.66.0.12])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 29A04206C2;
+        Mon, 16 Sep 2019 22:01:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1568671297;
+        bh=xqhVNJd5/Z861MxAPNLjsXkZbMQSWQl86jxQ7VGPWeo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=xsoj4pa1KVCM7zRnDRh4S64oIi5VX2G4CqUqa4r+bEaL93LrYTKRaEZpOONu5UIHg
+         cchYoTEH/2dRnKDSuhnRqsd8alXTuuwrCEORYt6+kern+ss1pKEkqMXLZJ0so3+hqp
+         MP/VJDpZ9ZwLDrkkLcbVdjm/aiKRCLQiyL8VYDbA=
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     lorenzo.bianconi@redhat.com, linux-iio@vger.kernel.org
+Subject: [PATCH] iio: imu: st_lsm6dsx: fix waitime for st_lsm6dsx i2c controller
+Date:   Tue, 17 Sep 2019 00:01:29 +0200
+Message-Id: <46d302e91284908061e0a39e36b9a3122aa6fb1a.1568670658.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -70,20 +52,35 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert ROHM BH1750 ambient light sensor bindings to yaml
-format and while at it add myself as a driver maintainer.
+i2c controller available in st_lsm6dsx series performs i2c slave
+configuration using accel clock as trigger.
+st_lsm6dsx_shub_wait_complete routine is used to wait the controller has
+carried out the requested configuration. However if the accel sensor is not
+enabled we should not use its configured odr to estimate a proper timeout
 
-Tomasz Duszynski (2):
-  dt-bindings: iio: light: bh1750: convert bindings to yaml
-  MAINTAINERS: add entry for ROHM BH1750 driver
+Fixes: c91c1c844ebd ("iio: imu: st_lsm6dsx: add i2c embedded controller support")
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
- .../devicetree/bindings/iio/light/bh1750.txt  | 18 --------
- .../devicetree/bindings/iio/light/bh1750.yaml | 43 +++++++++++++++++++
- MAINTAINERS                                   |  6 +++
- 3 files changed, 49 insertions(+), 18 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/light/bh1750.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/bh1750.yaml
-
---
-2.23.0
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+index 66fbcd94642d..4c754a02717b 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+@@ -92,9 +92,11 @@ static const struct st_lsm6dsx_ext_dev_settings st_lsm6dsx_ext_dev_table[] = {
+ static void st_lsm6dsx_shub_wait_complete(struct st_lsm6dsx_hw *hw)
+ {
+ 	struct st_lsm6dsx_sensor *sensor;
++	u16 odr;
+ 
+ 	sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
+-	msleep((2000U / sensor->odr) + 1);
++	odr = (hw->enable_mask & BIT(ST_LSM6DSX_ID_ACC)) ? sensor->odr : 13;
++	msleep((2000U / odr) + 1);
+ }
+ 
+ /**
+-- 
+2.21.0
 
