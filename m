@@ -6,34 +6,34 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B7BC4CECD
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4644C4CEC9
 	for <linux-iio@archiver.kernel.org>; Tue, 17 Sep 2019 16:09:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D2BAD206C2
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Sep 2019 16:09:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 84213206C2
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Sep 2019 16:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728990AbfIQQJl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Sep 2019 12:09:41 -0400
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:52373 "EHLO
+        id S1728989AbfIQQJm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Sep 2019 12:09:42 -0400
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:49537 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728989AbfIQQJl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2019 12:09:41 -0400
+        with ESMTP id S1728550AbfIQQJm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Sep 2019 12:09:42 -0400
 Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28] helo=dude02.lab.pengutronix.de)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1iAG2i-0007j7-FW; Tue, 17 Sep 2019 18:09:28 +0200
+        id 1iAG2i-0007j9-FW; Tue, 17 Sep 2019 18:09:28 +0200
 Received: from mfe by dude02.lab.pengutronix.de with local (Exim 4.92)
         (envelope-from <mfe@pengutronix.de>)
-        id 1iAG2g-0004VO-IY; Tue, 17 Sep 2019 18:09:26 +0200
+        id 1iAG2g-0004VU-JQ; Tue, 17 Sep 2019 18:09:26 +0200
 From:   Marco Felsch <m.felsch@pengutronix.de>
 To:     michael.hennerich@analog.com, lars@metafoo.de,
         stefan.popa@analog.com, jic23@kernel.org, knaack.h@gmx.de,
         pmeerw@pmeerw.net
 Cc:     linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 1/3] iio: adc: ad799x: fix probe error handling
-Date:   Tue, 17 Sep 2019 18:09:23 +0200
-Message-Id: <20190917160925.9791-2-m.felsch@pengutronix.de>
+Subject: [PATCH 3/3] iio: adc: ad799x: add pm_ops to disable the device completely
+Date:   Tue, 17 Sep 2019 18:09:25 +0200
+Message-Id: <20190917160925.9791-4-m.felsch@pengutronix.de>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20190917160925.9791-1-m.felsch@pengutronix.de>
 References: <20190917160925.9791-1-m.felsch@pengutronix.de>
@@ -48,34 +48,82 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since commit 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe
-and reset alert status on probe") the error path is wrong since it
-leaves the vref regulator on. Fix this by disabling both regulators.
+The device is always in a low-power state due to the hardware design. It
+wakes up upon a conversion request and goes back into the low-power
+state. The pm ops are added to disable the device completely and to free
+the regulator. Disbaling the device completely should be not that
+notable but freeing the regulator is important. Because if it is a shared
+power-rail the regulator won't be disabled during suspend-to-ram/disk
+and so all devices connected to that rail keeps on.
 
-Fixes: 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe and
-reset alert status on probe")
 Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
 ---
- drivers/iio/adc/ad799x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ad799x.c | 45 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
 
 diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 5a3ca5904ded..f658012baad8 100644
+index af5a2de9c22f..32d242ecb12c 100644
 --- a/drivers/iio/adc/ad799x.c
 +++ b/drivers/iio/adc/ad799x.c
-@@ -810,10 +810,10 @@ static int ad799x_probe(struct i2c_client *client,
+@@ -875,6 +875,50 @@ static int ad799x_remove(struct i2c_client *client)
+ 	return 0;
+ }
  
- 	ret = ad799x_write_config(st, st->chip_config->default_config);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	ret = ad799x_read_config(st);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	st->config = ret;
- 
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++static int __maybe_unused ad799x_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ad799x_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = regulator_disable(st->vref);
++	if (ret) {
++		dev_err(dev, "Unable to disable vref regulator\n");
++		return ret;
++	}
++	ret = regulator_disable(st->reg);
++	if (ret) {
++		dev_err(dev, "Unable to disable vcc regulator\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int __maybe_unused ad799x_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
++	struct ad799x_state *st = iio_priv(indio_dev);
++	int ret;
++
++	ret = regulator_enable(st->reg);
++	if (ret) {
++		dev_err(dev, "Unable to enable vcc regulator\n");
++		return ret;
++	}
++	ret = regulator_enable(st->vref);
++	if (ret) {
++		dev_err(dev, "Unable to enable vref regulator\n");
++		return ret;
++	}
++	/* resync config */
++	ad799x_update_config(st, st->config);
++
++	return 0;
++}
++
++static SIMPLE_DEV_PM_OPS(ad799x_pm_ops, ad799x_suspend, ad799x_resume);
++
+ static const struct i2c_device_id ad799x_id[] = {
+ 	{ "ad7991", ad7991 },
+ 	{ "ad7995", ad7995 },
+@@ -892,6 +936,7 @@ MODULE_DEVICE_TABLE(i2c, ad799x_id);
+ static struct i2c_driver ad799x_driver = {
+ 	.driver = {
+ 		.name = "ad799x",
++		.pm = &ad799x_pm_ops,
+ 	},
+ 	.probe = ad799x_probe,
+ 	.remove = ad799x_remove,
 -- 
 2.20.1
 
