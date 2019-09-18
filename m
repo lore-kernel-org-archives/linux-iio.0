@@ -2,132 +2,140 @@ Return-Path: <SRS0=YYtU=XN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5967C4CEC4
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Sep 2019 07:53:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0737FC4CEC9
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Sep 2019 08:00:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9CDE121924
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Sep 2019 07:53:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5CC692054F
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Sep 2019 07:59:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="gBsEGCLI"
+	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="cUDXgOqA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729164AbfIRHxr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Sep 2019 03:53:47 -0400
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:43061 "EHLO
-        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725989AbfIRHxq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Sep 2019 03:53:46 -0400
-Received: by mail-pf1-f194.google.com with SMTP id a2so3815256pfo.10;
-        Wed, 18 Sep 2019 00:53:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=wv4la6Y6FsJg+2v49trmGgdAwNGUcPB7OMZV54Bj2EQ=;
-        b=gBsEGCLIoG9yZOLSPABp5DkqpxUM9VPF+gft6+M58mitntGiBP2B8ZmrdxOFtVQXbn
-         Ri3QHHyEmNUfyQSyX52qq4D7m9tZmGEhy7E12ATGIl8xUL2fdr6MQC7B7UgLocy3qRN2
-         zKvq2O6kUZNUZUjYg9ZTnJLo1cAZ3DagU2gA6jbq1mM9d7b8TS+CBxCYv73a21JsSweL
-         YgDq8thCF1g0TVAs5oSjbcIWdTfUOK6BABgoT/pslldal2AWK0yke8OqcUmbkyBbntit
-         /xJdKQ99zJ/XgOU8AdprPj5kAjHHpD7e2Vrr4WeHEetM6hB5L+So+ClfGNokdxjz5+Vw
-         UwIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=wv4la6Y6FsJg+2v49trmGgdAwNGUcPB7OMZV54Bj2EQ=;
-        b=KIiza3Ym0/Iek06nYuTC0Q+Bf8u1iGmn36aGRe9W/I1gIFUEfGsbleqvuPZIWT00W8
-         br3rJrR/2H39KU5IhPVo1sEoS98RJTcYpjA9f3EeDxdoY/ek4TKpCxnLhjJsYyDgs9mq
-         5UyMw1Z1JmGOsDBuuR6fTmhHEfUGP82+FFbQdSPJn+qMFX61MTp+H4BNXc2gytT9HWEQ
-         1Y0sX4b1szCVT7f6AAfDkTzFbdF7HZDF0g22BzyCJecpkgXSzjoiwdIDU4sLVryoCmXx
-         Um8Vc8hzUKg4zSwCI+dEH0xaHnhaohNcEAfu+DjaKEj+HDeeVgcQTJokCj/uSyGiMEdn
-         CEXQ==
-X-Gm-Message-State: APjAAAWawIb3dwoRrSj8hB0RHg4M+Rzf5isi7d/OB00dbZSdpyxZH8uN
-        TrkX7mwGsR40gJC5g820QCQ=
-X-Google-Smtp-Source: APXvYqyk7VLAQdjAwuVNeoLOS2lLrS99HPfR5mFLVgsHVxJ42p5JUMRjPPcgX6gO5Y/xqCH3Tv6Kyg==
-X-Received: by 2002:a17:90a:b108:: with SMTP id z8mr2370791pjq.64.1568793226157;
-        Wed, 18 Sep 2019 00:53:46 -0700 (PDT)
-Received: from localhost.localdomain ([2001:268:c147:d9df:f819:e399:825f:f2dc])
-        by smtp.gmail.com with ESMTPSA id h8sm5580715pfo.64.2019.09.18.00.53.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Sep 2019 00:53:45 -0700 (PDT)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     jic23@jic23.retrosnub.co.uk
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v2 7/7] counter: stm32-timer-cnt: Update count_read and count_write callbacks
-Date:   Wed, 18 Sep 2019 16:52:48 +0900
-Message-Id: <327fe01b7ce4feb0fc3d854393691664a6a36b40.1568792697.git.vilhelm.gray@gmail.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <cover.1568792697.git.vilhelm.gray@gmail.com>
-References: <cover.1568792697.git.vilhelm.gray@gmail.com>
+        id S1727749AbfIRH77 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Sep 2019 03:59:59 -0400
+Received: from ns.pmeerw.net ([84.19.176.117]:48328 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725944AbfIRH76 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Sep 2019 03:59:58 -0400
+X-Greylist: delayed 502 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Sep 2019 03:59:58 EDT
+Received: by ns.pmeerw.net (Postfix, from userid 1000)
+        id 5567BE0387; Wed, 18 Sep 2019 09:51:35 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
+        t=1568793095; bh=qUhIXx3DaSHravNW0tGD9tyRrUWWCRu2AVYFYwSsJO8=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=cUDXgOqAM2y8N93lvRiEsAz/PzkKGdRl8f4HutLlcNGIZKDUq7P1S5XvwWGCnshe/
+         NnagnmymM3jQojKEE4RMNFXBlhI+GvglQehZNmyUXRY/4O7y3iFqAC3qlHr5+AelxX
+         s92OJH5rN+5kf7S+/vY1rm2LFIUvymAXsirZgyXI=
+Received: from localhost (localhost [127.0.0.1])
+        by ns.pmeerw.net (Postfix) with ESMTP id 2C466E0353;
+        Wed, 18 Sep 2019 09:51:35 +0200 (CEST)
+Date:   Wed, 18 Sep 2019 09:51:35 +0200 (CEST)
+From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To:     Rishi Gupta <gupt21@gmail.com>
+cc:     jic23@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: iio: light: add veml6030 ALS bindings
+In-Reply-To: <1568776157-5373-3-git-send-email-gupt21@gmail.com>
+Message-ID: <alpine.DEB.2.21.1909180950030.31639@vps.pmeerw.net>
+References: <1568776157-5373-1-git-send-email-gupt21@gmail.com> <1568776157-5373-3-git-send-email-gupt21@gmail.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The count_read and count_write callbacks pass unsigned long now.
+On Wed, 18 Sep 2019, Rishi Gupta wrote:
 
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/counter/stm32-timer-cnt.c | 17 +++++------------
- 1 file changed, 5 insertions(+), 12 deletions(-)
+> This commit adds device tree bindings for veml6030 ambient
+> light sensor.
 
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 644ba18a72ad..839083543323 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -48,34 +48,27 @@ static enum counter_count_function stm32_count_functions[] = {
- };
+comment below
  
- static int stm32_count_read(struct counter_device *counter,
--			    struct counter_count *count,
--			    struct counter_count_read_value *val)
-+			    struct counter_count *count, unsigned long *val)
- {
- 	struct stm32_timer_cnt *const priv = counter->priv;
- 	u32 cnt;
- 
- 	regmap_read(priv->regmap, TIM_CNT, &cnt);
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cnt);
-+	*val = cnt;
- 
- 	return 0;
- }
- 
- static int stm32_count_write(struct counter_device *counter,
- 			     struct counter_count *count,
--			     struct counter_count_write_value *val)
-+			     const unsigned long val)
- {
- 	struct stm32_timer_cnt *const priv = counter->priv;
--	u32 cnt;
--	int err;
--
--	err = counter_count_write_value_get(&cnt, COUNTER_COUNT_POSITION, val);
--	if (err)
--		return err;
- 
--	if (cnt > priv->ceiling)
-+	if (val > priv->ceiling)
- 		return -EINVAL;
- 
--	return regmap_write(priv->regmap, TIM_CNT, cnt);
-+	return regmap_write(priv->regmap, TIM_CNT, val);
- }
- 
- static int stm32_count_function_get(struct counter_device *counter,
+> Signed-off-by: Rishi Gupta <gupt21@gmail.com>
+> ---
+>  .../devicetree/bindings/iio/light/veml6030.yaml    | 62 ++++++++++++++++++++++
+>  1 file changed, 62 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/veml6030.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/veml6030.yaml b/Documentation/devicetree/bindings/iio/light/veml6030.yaml
+> new file mode 100644
+> index 0000000..d92684a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/veml6030.yaml
+> @@ -0,0 +1,62 @@
+> +# SPDX-License-Identifier: GPL-2.0+
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/light/veml6030.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: VEML6030 Ambient Light Sensor (ALS)
+> +
+> +maintainers:
+> +  - Rishi Gupta <gupt21@gmail.com>
+> +
+> +description: |
+> +  Bindings for the ambient light sensor veml6030 from Vishay
+> +  Semiconductors over an i2c interface.
+> +
+> +  Irrespective of whether interrupt is used or not, application
+> +  can get the ALS and White channel reading from IIO raw interface.
+> +
+> +  If the interrupts is used, application will receive an IIO event
+
+interrupts are used
+
+> +  whenever configured threshold is crossed.
+> +
+> +  Specifications about the sensor can be found at:
+> +    https://www.vishay.com/docs/84366/veml6030.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - vishay,veml6030
+> +
+> +  reg:
+> +    description:
+> +      I2C address of the device. If the ADDR pin on veml6030
+> +      is pulled up, this address is 0x48. If the ADDR pin is
+> +      pulled down, this address is 0x10.
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description:
+> +      interrupt mapping for IRQ. Configure with IRQ_TYPE_LEVEL_LOW.
+> +      Refer to interrupt-controller/interrupts.txt for generic
+> +      interrupt client node bindings.
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        light-sensor@10 {
+> +                compatible = "vishay,veml6030";
+> +                reg = <0x10>;
+> +                interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
+> +        };
+> +    };
+> +...
+> 
+
 -- 
-2.23.0
 
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
