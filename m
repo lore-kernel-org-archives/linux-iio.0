@@ -2,67 +2,107 @@ Return-Path: <SRS0=LJWu=XO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22672C49ED7
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 403CDC3A5A6
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 15:50:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 02C0121D7A
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 12C99208C0
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 15:50:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CUtE4JQp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732589AbfISOgT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 19 Sep 2019 10:36:19 -0400
-Received: from anchovy1.45ru.net.au ([203.30.46.145]:52679 "EHLO
-        anchovy1.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732590AbfISOgT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Sep 2019 10:36:19 -0400
-Received: (qmail 12600 invoked by uid 5089); 19 Sep 2019 14:36:16 -0000
-Received: by simscan 1.2.0 ppid: 12571, pid: 12572, t: 0.0425s
-         scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
-X-RBL:  $rbltext
-Received: from unknown (HELO preid-c7.electromag.com.au) (preid@electromag.com.au@118.208.174.34)
-  by anchovy1.45ru.net.au with ESMTPA; 19 Sep 2019 14:36:16 -0000
-Received: by preid-c7.electromag.com.au (Postfix, from userid 1000)
-        id D0C41201AF901; Thu, 19 Sep 2019 22:36:11 +0800 (AWST)
-From:   Phil Reid <preid@electromag.com.au>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        preid@electromag.com.au, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, michal.simek@xilinx.com
-Subject: [PATCH v2 0/2] iio: core: Add optional symbolic label to device attributes
-Date:   Thu, 19 Sep 2019 22:36:06 +0800
-Message-Id: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
-X-Mailer: git-send-email 1.8.3.1
+        id S2390076AbfISPuN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 Sep 2019 11:50:13 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:42304 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2390065AbfISPuN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Sep 2019 11:50:13 -0400
+Received: by mail-io1-f66.google.com with SMTP id n197so8815194iod.9;
+        Thu, 19 Sep 2019 08:50:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=k1MqWf4hKWlYZ+LlrC3Tc0jf+R8FcYzsjJ6RHV2LGYk=;
+        b=CUtE4JQpKmkzVHOxoWO7rotdcNW2FV34St0dMrMbNNJmfwbfgSeJ3aScixe0GuY6uq
+         kjXeW92nd7a6lC00s0WvNsqj825ifFgewqBk85eGwD4+ta8XLnu8/2/NCHSMwcf3kEaS
+         rB5fYAQLf/FNr2y42TjOHTh8etkZj3LOz5f6UAX7j1CU5jKH1EoldWwtyJyveBXnaaeH
+         7VE1ynzW/zERraSWC22JxusIj42Ew/xO++7prwZy6lGqFJChmHyaeVG4lpxNSLr0XO3t
+         PLSe9nWcCtGbaiOJbgYomT4LNaKR6X7P0NhJtfrsfbp4gnY5GyBdO5oY6r/YZMWta4wU
+         yPjw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=k1MqWf4hKWlYZ+LlrC3Tc0jf+R8FcYzsjJ6RHV2LGYk=;
+        b=CKcbvmcxigkO+yxisl/7PbtgBqgw04Nu/9n6X9neDN8YZSsC73n1sI42N95UsgUPe0
+         vufKiSBijEYWfYR4j0PTZ7Cq6TZHqGb45LaiWbBhemSBt2d7XNglVjjCMtHQJ2r2JTah
+         1rm5uqlsDBlrJ+VZw+Zg795vGC/rYKvk4PZbMF3API6iaRZF3nxsPDZj7HsJtNR3VDFE
+         uhmcd8FEIccmjhFUy3Z4NBGfPv2E6riBVH1UtByv35+NTzz54FiKKoyjTfL0ZF3LHG1W
+         wy+s+JEZ3qmr16SQah76VDPUka9buMTD+/D4OATAWV+FxuwwT9G3u7FHy5ttOqVj+SMj
+         4weg==
+X-Gm-Message-State: APjAAAXNFi0XgBFIt2ebQVdaKfVZbj0aJPsH/s3a36p369duOuzX3BBT
+        jaO6HIoxPhbXHhXyv/uxxfg=
+X-Google-Smtp-Source: APXvYqyy/9r/FuSLWgcOgR0bgpTp4wHoEp8GC82y7jPCewVqqvbfOLEB54sa1pMnNStlvNY/qbJyzg==
+X-Received: by 2002:a05:6638:777:: with SMTP id y23mr12904039jad.111.1568908212351;
+        Thu, 19 Sep 2019 08:50:12 -0700 (PDT)
+Received: from cs-dulles.cs.umn.edu (cs-dulles.cs.umn.edu. [128.101.35.54])
+        by smtp.googlemail.com with ESMTPSA id d9sm2094065ioq.9.2019.09.19.08.50.10
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 19 Sep 2019 08:50:11 -0700 (PDT)
+From:   Navid Emamdoost <navid.emamdoost@gmail.com>
+To:     alexandru.Ardelean@analog.com
+Cc:     emamd001@umn.edu, smccaman@umn.edu, kjlu@umn.edu,
+        Navid Emamdoost <navid.emamdoost@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: imu: adis16400: release allocated memory on failure
+Date:   Thu, 19 Sep 2019 10:50:02 -0500
+Message-Id: <20190919155003.2207-1-navid.emamdoost@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <84e2832b52cc88665ff071942c1545b83eeb5602.camel@analog.com>
+References: <84e2832b52cc88665ff071942c1545b83eeb5602.camel@analog.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If a label is defined in the device tree for this device add that
-to the device specific attributes. This is useful for userspace to
-be able to identify an individual device when multiple identical
-chips are present in the system.
+In adis_update_scan_mode, if allocation for adis->buffer fails,
+previously allocated adis->xfer needs to be released.
 
-Similar to leds, display labels etc.
+v2: added adis->xfer = NULL to avoid any potential double free.
 
-Changes from V1:
-- Update commit message for dt_bind commit
-- Update example label for dt-binding
+Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
+---
+ drivers/iio/imu/adis_buffer.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-I haven't added Rob's reviewed-by from V1. Wasnt't
-sure if the changes are minor enough to keep that.
-
-Phil Reid (2):
-  dt-binding: iio: Add optional label property
-  iio: core: Add optional symbolic label to device attributes
-
- Documentation/devicetree/bindings/iio/iio-bindings.txt |  5 +++++
- drivers/iio/industrialio-core.c                        | 17 +++++++++++++++++
- include/linux/iio/iio.h                                |  1 +
- 3 files changed, 23 insertions(+)
-
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 9ac8356d9a95..f446ff497809 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -78,8 +78,11 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 		return -ENOMEM;
+ 
+ 	adis->buffer = kcalloc(indio_dev->scan_bytes, 2, GFP_KERNEL);
+-	if (!adis->buffer)
++	if (!adis->buffer) {
++		kfree(adis->xfer);
++		adis->xfer = NULL;
+ 		return -ENOMEM;
++	}
+ 
+ 	rx = adis->buffer;
+ 	tx = rx + scan_count;
 -- 
-1.8.3.1
+2.17.1
 
