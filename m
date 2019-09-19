@@ -2,78 +2,67 @@ Return-Path: <SRS0=LJWu=XO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E63A3C4CEC4
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 22672C49ED7
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BD8DA21A49
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 02C0121D7A
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Sep 2019 14:36:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732581AbfISOgT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1732589AbfISOgT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 19 Sep 2019 10:36:19 -0400
-Received: from anchovy2.45ru.net.au ([203.30.46.146]:46412 "EHLO
-        anchovy2.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732506AbfISOgS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Sep 2019 10:36:18 -0400
-Received: (qmail 22142 invoked by uid 5089); 19 Sep 2019 14:36:16 -0000
-Received: by simscan 1.2.0 ppid: 22117, pid: 22118, t: 0.0448s
+Received: from anchovy1.45ru.net.au ([203.30.46.145]:52679 "EHLO
+        anchovy1.45ru.net.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732590AbfISOgT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Sep 2019 10:36:19 -0400
+Received: (qmail 12600 invoked by uid 5089); 19 Sep 2019 14:36:16 -0000
+Received: by simscan 1.2.0 ppid: 12571, pid: 12572, t: 0.0425s
          scanners: regex: 1.2.0 attach: 1.2.0 clamav: 0.88.3/m:40/d:1950
 X-RBL:  $rbltext
 Received: from unknown (HELO preid-c7.electromag.com.au) (preid@electromag.com.au@118.208.174.34)
-  by anchovy3.45ru.net.au with ESMTPA; 19 Sep 2019 14:36:16 -0000
+  by anchovy1.45ru.net.au with ESMTPA; 19 Sep 2019 14:36:16 -0000
 Received: by preid-c7.electromag.com.au (Postfix, from userid 1000)
-        id D5820201AF902; Thu, 19 Sep 2019 22:36:11 +0800 (AWST)
+        id D0C41201AF901; Thu, 19 Sep 2019 22:36:11 +0800 (AWST)
 From:   Phil Reid <preid@electromag.com.au>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
         preid@electromag.com.au, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, michal.simek@xilinx.com
-Subject: [PATCH v2 1/2] dt-binding: iio: Add optional label property
-Date:   Thu, 19 Sep 2019 22:36:07 +0800
-Message-Id: <1568903768-65998-2-git-send-email-preid@electromag.com.au>
+Subject: [PATCH v2 0/2] iio: core: Add optional symbolic label to device attributes
+Date:   Thu, 19 Sep 2019 22:36:06 +0800
+Message-Id: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
 X-Mailer: git-send-email 1.8.3.1
-In-Reply-To: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
-References: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This optional property defines a symbolic name for the device.
-This helps to distinguish between more than one iio device
-of the same type.
+If a label is defined in the device tree for this device add that
+to the device specific attributes. This is useful for userspace to
+be able to identify an individual device when multiple identical
+chips are present in the system.
 
-Suggested-by: Michal Simek <michal.simek@xilinx.com>
-Signed-off-by: Phil Reid <preid@electromag.com.au>
----
- Documentation/devicetree/bindings/iio/iio-bindings.txt | 5 +++++
- 1 file changed, 5 insertions(+)
+Similar to leds, display labels etc.
 
-diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-index 68d6f8ce063b..af33267727f4 100644
---- a/Documentation/devicetree/bindings/iio/iio-bindings.txt
-+++ b/Documentation/devicetree/bindings/iio/iio-bindings.txt
-@@ -18,12 +18,17 @@ Required properties:
- 		   with a single IIO output and 1 for nodes with multiple
- 		   IIO outputs.
- 
-+Optional properties:
-+label:		   A symbolic name for the device.
-+
-+
- Example for a simple configuration with no trigger:
- 
- 	adc: voltage-sensor@35 {
- 		compatible = "maxim,max1139";
- 		reg = <0x35>;
- 		#io-channel-cells = <1>;
-+		label = "voltage_feedback_group1";
- 	};
- 
- Example for a configuration with trigger:
+Changes from V1:
+- Update commit message for dt_bind commit
+- Update example label for dt-binding
+
+I haven't added Rob's reviewed-by from V1. Wasnt't
+sure if the changes are minor enough to keep that.
+
+Phil Reid (2):
+  dt-binding: iio: Add optional label property
+  iio: core: Add optional symbolic label to device attributes
+
+ Documentation/devicetree/bindings/iio/iio-bindings.txt |  5 +++++
+ drivers/iio/industrialio-core.c                        | 17 +++++++++++++++++
+ include/linux/iio/iio.h                                |  1 +
+ 3 files changed, 23 insertions(+)
+
 -- 
 1.8.3.1
 
