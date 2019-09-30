@@ -2,179 +2,154 @@ Return-Path: <SRS0=+/rV=XZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6ABC32792
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Sep 2019 21:15:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09010C35280
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Sep 2019 21:16:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E8F36215EA
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Sep 2019 21:15:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D039A215EA
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Sep 2019 21:16:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=ucr.edu header.i=@ucr.edu header.b="EM5IpVa8"
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="KZJAj1ok"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729326AbfI3VPp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Sep 2019 17:15:45 -0400
-Received: from mx3.ucr.edu ([138.23.248.64]:42529 "EHLO mx3.ucr.edu"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728424AbfI3VPp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Sep 2019 17:15:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=ucr.edu; i=@ucr.edu; q=dns/txt; s=selector3;
-  t=1569878144; x=1601414144;
-  h=from:to:cc:subject:date:message-id;
-  bh=6pCT4FCPO1NK+0ZWeQGx+EaJmUPdETidBAplVSBV5bg=;
-  b=EM5IpVa803foSV/ySpUMkNnsFVj5szddP04sOQvKFqHkIuZ29TtE6gu7
-   Y72fVMiPxJ6uLaI9Umw4hiSBBEOpbvbnRMEoK88qVuB9ZvYEVivX/2xhZ
-   TDDw2iAK+y9EJObigwLgZURyRE0PMgcPANutONrNCZf65nbMsvCILhee0
-   1L53SAZv80RD7OUkOv3kpQU1Oby+D7CEvQzD7cxRUA1TJYFJnV/iEr6sV
-   XbvpznPbGv5CAHd7qCy1o7FYBgFhr8fcreQbWps9hWKgSBmn/8U6kSA0l
-   JX5N3u4P+B3Wt5HDQ0RGvtLpK7JmYmuTSp2yFgzNRsFgTBo4TpDn6txsF
-   A==;
-IronPort-SDR: LWOR4GcAxIkdf7v5tnrRfui6dRIqxDKFUOoqsg+0bqOBogZ0aDQmUcO3Szbpv4nwGHL1qCFxoe
- SWEpRUtRH7yotC3b4xVYNOKWUjD0KKBQQ4Tx8Y5meoCxkDkWFmBRD5IT5p6yPQmOHI++QB2psl
- pjiunc9MT4nDEWZykpNJhCQfPvY1fZUmhYmledvvnIK3P4JU5tV9Kjebwpy8rxZwU0q1aR/m/F
- pdbSqluMmY/DjZSfhWqZqE+vCkwuKnDa2/L0FnMbT/UHV5HxgkYjsbYg2+gC+Ox9l0QlJkUv5N
- Rzw=
-IronPort-PHdr: =?us-ascii?q?9a23=3ARTkDchWIRDaRrkVaG3PydMaQ/YDV8LGtZVwlr6?=
- =?us-ascii?q?E/grcLSJyIuqrYYxyPt8tkgFKBZ4jH8fUM07OQ7/m7HzBaqs/a7zgrS99lb1?=
- =?us-ascii?q?c9k8IYnggtUoauKHbQC7rUVRE8B9lIT1R//nu2YgB/Ecf6YEDO8DXptWZBUh?=
- =?us-ascii?q?rwOhBoKevrB4Xck9q41/yo+53Ufg5EmCexbal9IRmrowjdrMYbjZVtJqosxB?=
- =?us-ascii?q?bEoGZDdvhLy29vOV+dhQv36N2q/J5k/SRQuvYh+NBFXK7nYak2TqFWASo/PW?=
- =?us-ascii?q?wt68LlqRfMTQ2U5nsBSWoWiQZHAxLE7B7hQJj8tDbxu/dn1ymbOc32Sq00WS?=
- =?us-ascii?q?in4qx2RhLklDsLOjgk+2zMlMd+kLxUrw6gpxxnwo7bfoeVNOZlfqjAed8WXH?=
- =?us-ascii?q?dNUtpNWyBEBI68aooPD/EaPeZZqYn9qEYFowWnCwKxCuPvyyFHhnvr0qYn1+?=
- =?us-ascii?q?gsHx3K0AkmEtkTsnrbsc/1Ob8SX+6r0afGwzbNYfRN1Dvh9ITFaAwtrOuQUb?=
- =?us-ascii?q?5sd8fa1EkhFxnCjlWVsYHqPTKV1+UNs2iG6OprSOWiim4mqgFxuDevx9sghp?=
- =?us-ascii?q?XHi48O11DL6T95zJwrKtKlVU52eNipG4ZTuSGCL4Z6XN8uTmVytCs5yrAKo4?=
- =?us-ascii?q?C3cDUFxZg92hLSb/+Kf5CV7h/iUOudOyl0iXxldb6lmRq/8FKsx+/zW8SyzV?=
- =?us-ascii?q?1EtDBKksPWuXAIzxHT78+HReZj8Uq5wjaP0hzT6vlDIUApiarXM54hzaA0lp?=
- =?us-ascii?q?oUqUnDGzX5mETyjKOPbkUk/vWk5/3pYrn7opKRNJV4ig75MqQplcy/Bfo3Ph?=
- =?us-ascii?q?ISUGic/OSwzLzj/UvnT7VWlvA6jLXVvZTAKckYpqO1GRFZ3pss5hqlEjur1N?=
- =?us-ascii?q?cVkWECLF1feRKHi4bpO0vJIPD9Ffq+g1WtkDdxyPDHIrHtHpvAI2PekLj9Z7?=
- =?us-ascii?q?Zx8VBTxxcuzdxH/ZJbFqkBIO7vWk/2rNHYCh45Mwqpw+foEdl914IeWWWUD6?=
- =?us-ascii?q?+HP6Pdr0WI6vgsI+aSfo8VvijyK/w/6/7pl385lgxVU7Ou2M4maWK4A/Mud1?=
- =?us-ascii?q?SLYXPt2o9aOXoBpEwzQPG82w7KaiJae3vnB/F03To8Eo/zSNibSw=3D=3D?=
-X-IronPort-Anti-Spam-Filtered: true
-X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2E5BQBrXJJdh8bWVdFmHgEGEoFcC4N?=
- =?us-ascii?q?eTBCNHoZGAQEGiyaBCYV6iDGBewEIAQEBDAEBLQIBAYRAg0YjNgcOAgMJAQE?=
- =?us-ascii?q?FAQEBAQEFBAEBAhABAQEIDQkIKYVAgjopgzULFhVSgRUBBQE1IjmCRwGBdhS?=
- =?us-ascii?q?iP4EDPIwlM4hdAQkNgUgJAQiBIoc1hFmBEIEHg25zh2WCRASBNwEBAYs4gji?=
- =?us-ascii?q?HK3CVWQEGAoIQFIF4kwcngjeCAok9OYsGAYpVnGsCCgcGDyOBNgOCCE0lgWw?=
- =?us-ascii?q?KgURQEBSBWw4JjkMhM4EIkBoB?=
-X-IPAS-Result: =?us-ascii?q?A2E5BQBrXJJdh8bWVdFmHgEGEoFcC4NeTBCNHoZGAQEGi?=
- =?us-ascii?q?yaBCYV6iDGBewEIAQEBDAEBLQIBAYRAg0YjNgcOAgMJAQEFAQEBAQEFBAEBA?=
- =?us-ascii?q?hABAQEIDQkIKYVAgjopgzULFhVSgRUBBQE1IjmCRwGBdhSiP4EDPIwlM4hdA?=
- =?us-ascii?q?QkNgUgJAQiBIoc1hFmBEIEHg25zh2WCRASBNwEBAYs4gjiHK3CVWQEGAoIQF?=
- =?us-ascii?q?IF4kwcngjeCAok9OYsGAYpVnGsCCgcGDyOBNgOCCE0lgWwKgURQEBSBWw4Jj?=
- =?us-ascii?q?kMhM4EIkBoB?=
-X-IronPort-AV: E=Sophos;i="5.64,568,1559545200"; 
-   d="scan'208";a="83994458"
-Received: from mail-pl1-f198.google.com ([209.85.214.198])
-  by smtp3.ucr.edu with ESMTP/TLS/ECDHE-RSA-AES128-GCM-SHA256; 30 Sep 2019 12:53:19 -0700
-Received: by mail-pl1-f198.google.com with SMTP id o9so2955580plk.13
-        for <linux-iio@vger.kernel.org>; Mon, 30 Sep 2019 12:53:18 -0700 (PDT)
+        id S1732210AbfI3VQ1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Sep 2019 17:16:27 -0400
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:41718 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729964AbfI3VQ1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Sep 2019 17:16:27 -0400
+Received: by mail-oi1-f195.google.com with SMTP id w17so12463840oiw.8;
+        Mon, 30 Sep 2019 14:16:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=AGl26BC0P4MPPAVNiVH76qN3peTSsIs0AC8gMsuxmhs=;
+        b=KZJAj1okYzXl6CRX8biKWyfxTA5Hiw5PdQNVDsGTOXm+vgzJoLkWJS9H0o4Twn7PD7
+         TYwoWabeDFDlFQDF8/mYMdb6C2k8UpbM+HE5dl5xdJ8I2wyOkmaYRrv9W7BXJRe+rwCE
+         xRKNIFbXqgr/2gP1EMo3+cEzuF1jSAN9YXehVh+aJeaWD3RaBH5zHb3uWi+8VJGEj8q3
+         yLOry7/uLgh3D/R/t6LecDLnT7MagjPfCWJ2Wyg+plYOA8ZUMGYvUrxzRA6VGBJgEUS7
+         TLbz4MoME9Xkh0UyVFFJoGD2q4Z90pAMKKMBucCA7Rs/Tid652uNdwMEO6ptzXGCOZ09
+         +a3g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=mtpDHPmhW0Yh7Xz6JlH7yVqsGjbzLMx+b7ky5TSik5U=;
-        b=D0lo54g3R+kXqD9WxJz6kr7UN6kcOdrPxxUsoCQcHFRh1hhs5z/CMZpJOKR1f7hKvY
-         lCqkxm9UZabINmEUHG4idlw8rVj8ATzXdHqlN/UWm7i59BONprkMl6mqvuoPrmJ6iakf
-         i5dN6I4I0MS4ufu7nylXnr+lTZVKCyzFBBIun/ilcvJPyGvgMk/a8DF4lFXVTC7F0w84
-         8YPOtfrOqi61UwAxcZHVLISTUv4jBqx40+Kj8cxk6sgGn6NPQSF7oCUAgLYmVctC9NJC
-         /k6wCHtmhBqpJ8mgk5GIgma6EyNE+Lsh4nrW2GuLT/PpGm33o+bf0WoyCeS9RTarDN1F
-         2m1Q==
-X-Gm-Message-State: APjAAAUT96J9skSVFdOF0GAmVLUeplkiJUhqB8q4nj9iAUqjnFLs9yiS
-        ERZlZBf3csMEY01y3LggMAjoNPanW8U6uxzHimHz0vcYSBRgT6Y2suTHUN2e5a5X5Rxzdkw09vh
-        xIbYxT2Ie0EXG/6GxAjgdlQ==
-X-Received: by 2002:a63:2aca:: with SMTP id q193mr25799136pgq.156.1569873197819;
-        Mon, 30 Sep 2019 12:53:17 -0700 (PDT)
-X-Google-Smtp-Source: APXvYqxF6lwNas3D/FgEkqSm4zKuRr+Ixd0SEanVYzHGnmwSzt46Z2CHd4yfGTjhZMCMas6tzuHMXg==
-X-Received: by 2002:a63:2aca:: with SMTP id q193mr25799110pgq.156.1569873197327;
-        Mon, 30 Sep 2019 12:53:17 -0700 (PDT)
-Received: from Yizhuo.cs.ucr.edu (yizhuo.cs.ucr.edu. [169.235.26.74])
-        by smtp.googlemail.com with ESMTPSA id p17sm12179234pfn.50.2019.09.30.12.53.15
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Sep 2019 12:53:16 -0700 (PDT)
-From:   Yizhuo <yzhai003@ucr.edu>
-Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu, Yizhuo <yzhai003@ucr.edu>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=AGl26BC0P4MPPAVNiVH76qN3peTSsIs0AC8gMsuxmhs=;
+        b=SRsz9ZOiJt6h5c7zSPHY3E1J+pnlGqWEuOygJnLXwwlPyAvPEASSIBENMhx809ZekJ
+         PPJ3Nla7uTq/rP66LIWi4A2TixMqFS0XzQwtLws7cRHzH9DgTfAyi0KIlOvFyyxjT6/i
+         FLfBiOv26WvHBceAoxOtClGTGBmWBfUTWfw3S9C9nKGpvWGYeTRecS2n5Ci31rUC9vHa
+         M8jjVfitgr+FIUod8KPqnmE0kzLAv2R2/jXjXJVppAyQf6Qw3ixlvoXOUjA16BhnMWHL
+         JdJUHYxerCbENfSiTrE3k84XYXKcLFGWfomoMHUaUySqQR/CZ+vDS2frOhxN7436pta8
+         V8gw==
+X-Gm-Message-State: APjAAAVtzAj5oRtrskJYulVCghYUR7rzq3BOdGt4ZvQSNo/WSnsx7RuE
+        eq/aNBCVVIsa0iy/7HlxD6/IjdnZdylKj96alQg=
+X-Google-Smtp-Source: APXvYqwo3X1AmgHw4aNAK1dFU4oJnTmjOuaJANGc3Lqec/DkuNhIVQyVWSQrPvO1BIegkPzh2bHOVAF5m+nxyXG3tes=
+X-Received: by 2002:aca:574c:: with SMTP id l73mr1038228oib.47.1569878186047;
+ Mon, 30 Sep 2019 14:16:26 -0700 (PDT)
+MIME-Version: 1.0
+References: <20190929164848.13930-1-yzhai003@ucr.edu>
+In-Reply-To: <20190929164848.13930-1-yzhai003@ucr.edu>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 30 Sep 2019 23:16:15 +0200
+Message-ID: <CAFBinCCewgHnvL+HRXR8MBOT4fdnC-nxDAw8E5rGf+NZDsbaJg@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: meson-saradc: Variables could be uninitalized
+ if regmap_read() fails
+To:     Yizhuo <yzhai003@ucr.edu>
+Cc:     csong@cs.ucr.edu, zhiyunq@cs.ucr.edu,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Enrico Weigelt <info@metux.net>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
         Thomas Gleixner <tglx@linutronix.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Nicholas Mc Guire <hofrat@osadl.org>,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: imx25-gcq: fix uninitialized variable usage
-Date:   Mon, 30 Sep 2019 12:53:54 -0700
-Message-Id: <20190930195358.27844-1-yzhai003@ucr.edu>
-X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In function mx25_gcq_irq(), local variable "stats" could
-be uninitialized if function regmap_read() returns -EINVAL.
-However, this value is used in if statement, which is
-potentially unsafe. The same case applied to the variable
-"data" in function mx25_gcq_get_raw_value() in the same file.
+Hi Yizhuo,
 
-Signed-off-by: Yizhuo <yzhai003@ucr.edu>
----
- drivers/iio/adc/fsl-imx25-gcq.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+thank you for this patch
 
-diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-index fa71489195c6..3b1e12b7c1ac 100644
---- a/drivers/iio/adc/fsl-imx25-gcq.c
-+++ b/drivers/iio/adc/fsl-imx25-gcq.c
-@@ -73,8 +73,12 @@ static irqreturn_t mx25_gcq_irq(int irq, void *data)
- {
- 	struct mx25_gcq_priv *priv = data;
- 	u32 stats;
-+	int ret;
- 
--	regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
-+	ret = regmap_read(priv->regs, MX25_ADCQ_SR, &stats);
-+	if (ret) {
-+		return ret;
-+	}
- 
- 	if (stats & MX25_ADCQ_SR_EOQ) {
- 		regmap_update_bits(priv->regs, MX25_ADCQ_MR,
-@@ -100,6 +104,7 @@ static int mx25_gcq_get_raw_value(struct device *dev,
- {
- 	long timeout;
- 	u32 data;
-+	int ret;
- 
- 	/* Setup the configuration we want to use */
- 	regmap_write(priv->regs, MX25_ADCQ_ITEM_7_0,
-@@ -121,7 +126,11 @@ static int mx25_gcq_get_raw_value(struct device *dev,
- 		return -ETIMEDOUT;
- 	}
- 
--	regmap_read(priv->regs, MX25_ADCQ_FIFO, &data);
-+	ret = regmap_read(priv->regs, MX25_ADCQ_FIFO, &data);
-+	if (ret) {
-+		dev_err(dev, "Failed to read MX25_ADCQ_FIFO.\n");
-+		return ret;
-+	}
- 
- 	*val = MX25_ADCQ_FIFO_DATA(data);
- 
--- 
-2.17.1
+On Sun, Sep 29, 2019 at 6:48 PM Yizhuo <yzhai003@ucr.edu> wrote:
+>
+> Several functions in this file are trying to use regmap_read() to
+> initialize the specific variable, however, if regmap_read() fails,
+> the variable could be uninitialized but used directly, which is
+> potentially unsafe. The return value of regmap_read() should be
+> checked and handled.
+the meson_saradc driver is using a MMIO regmap so read failures are
+unlikely (unless there's a bug in the code somewhere)
+did you find these issues with some static code analysis tool or did
+you experience a real world problem?
 
+> Signed-off-by: Yizhuo <yzhai003@ucr.edu>
+> ---
+>  drivers/iio/adc/meson_saradc.c | 30 ++++++++++++++++++++++++------
+>  1 file changed, 24 insertions(+), 6 deletions(-)
+>
+> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+> index 7b28d045d271..4b6c2983ef39 100644
+> --- a/drivers/iio/adc/meson_saradc.c
+> +++ b/drivers/iio/adc/meson_saradc.c
+> @@ -323,6 +323,7 @@ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
+>  {
+>         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+>         int regval, timeout = 10000;
+> +       int ret;
+why not add "ret" to the variables in the line above?
+so this could be shortened to (which is also consistent with the
+coding style in meson_saradc):
+  int ret, regval, timeout = 10000;
+
+> @@ -506,7 +514,10 @@ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
+>                  */
+>                 do {
+>                         udelay(1);
+> -                       regmap_read(priv->regmap, MESON_SAR_ADC_DELAY, &val);
+> +                       ret = regmap_read(priv->regmap,
+> +                                               MESON_SAR_ADC_DELAY, &val);
+> +                       if (ret)
+> +                               return ret;
+this is a big problem because we're returning with &indio_dev->mlock held
+see the "timeout < 0" block below
+
+> @@ -771,7 +782,7 @@ static int meson_sar_adc_init(struct iio_dev *indio_dev)
+>  {
+>         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+>         int regval, i, ret;
+> -
+> +       int ret;
+this removes an empty line between the variable declarations and the
+first code (comment)
+also "ret" is already defined in the line before
+(I haven't compile-tested this myself yet but I'm surprised that this
+doesn't give an error or at least a warning)
+
+> @@ -1013,8 +1027,12 @@ static irqreturn_t meson_sar_adc_irq(int irq, void *data)
+>         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+>         unsigned int cnt, threshold;
+>         u32 regval;
+> +       int ret;
+> +
+> +       ret = regmap_read(priv->regmap, MESON_SAR_ADC_REG0, &regval);
+> +       if (ret)
+> +               return ret;
+this function doesn't return "int" but irqreturn_t
+the only allowed values are: [0]
+
+
+Martin
+
+
+[0] https://elixir.bootlin.com/linux/v5.3/source/include/linux/irqreturn.h#L11
