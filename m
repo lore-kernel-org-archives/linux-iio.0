@@ -6,23 +6,23 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEFDCC352AA
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Oct 2019 12:30:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 021B1C35280
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Oct 2019 12:30:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C1CEA21920
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Oct 2019 12:30:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C7AA421D80
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Oct 2019 12:30:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727178AbfJBMag (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Oct 2019 08:30:36 -0400
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:38811 "EHLO
+        id S1727451AbfJBMai (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Oct 2019 08:30:38 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:52187 "EHLO
         relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726096AbfJBMad (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Oct 2019 08:30:33 -0400
+        with ESMTP id S1727216AbfJBMah (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Oct 2019 08:30:37 -0400
 X-Originating-IP: 86.250.200.211
 Received: from localhost.localdomain (lfbn-1-17395-211.w86-250.abo.wanadoo.fr [86.250.200.211])
         (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 5CC2CE0014;
-        Wed,  2 Oct 2019 12:30:31 +0000 (UTC)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 64AA7E000B;
+        Wed,  2 Oct 2019 12:30:35 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -34,9 +34,9 @@ Cc:     <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 3/7] iio: adc: max1027: Reset the device at probe time
-Date:   Wed,  2 Oct 2019 14:30:21 +0200
-Message-Id: <20191002123025.21413-4-miquel.raynal@bootlin.com>
+Subject: [PATCH 6/7] dt-bindings: iio: adc: max1027: Mark interrupts as optional
+Date:   Wed,  2 Oct 2019 14:30:24 +0200
+Message-Id: <20191002123025.21413-7-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191002123025.21413-1-miquel.raynal@bootlin.com>
 References: <20191002123025.21413-1-miquel.raynal@bootlin.com>
@@ -47,34 +47,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-All the registers are configured by the driver, let's reset the chip
-at probe time, avoiding any conflict with a possible earlier
-configuration.
+The chips have a 'start conversion' and a 'end of conversion' pair of
+pins. They can be used but this is absolutely not mandatory as regular
+polling is supported by the chip depending on its internal clocking
+setup.
+
+There is no physical reason to force the use of interrupts so turn
+them optional.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/devicetree/bindings/iio/adc/max1027-adc.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 823223b77a70..f9b473ee6711 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -466,6 +466,14 @@ static int max1027_probe(struct spi_device *spi)
- 		}
- 	}
- 
-+	/* Internal reset */
-+	st->reg = MAX1027_RST_REG;
-+	ret = spi_write(st->spi, &st->reg, 1);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Failed to reset the ADC\n");
-+		return ret;
-+	}
+diff --git a/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+index e680c61dfb84..7b23d68f655c 100644
+--- a/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/max1027-adc.txt
+@@ -3,6 +3,8 @@
+ Required properties:
+   - compatible: Should be "maxim,max1027" or "maxim,max1029" or "maxim,max1031"
+   - reg: SPI chip select number for the device
 +
- 	/* Disable averaging */
- 	st->reg = MAX1027_AVG_REG;
- 	ret = spi_write(st->spi, &st->reg, 1);
++Optional properties:
+   - interrupts: IRQ line for the ADC
+   see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+ 
 -- 
 2.20.1
 
