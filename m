@@ -2,27 +2,27 @@ Return-Path: <SRS0=Cr79=X4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 770D7C32792
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C12C4CED1
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5A53E2133F
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 59EDF2133F
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733267AbfJCReP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Oct 2019 13:34:15 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:33433 "EHLO
+        id S1733181AbfJCReM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Oct 2019 13:34:12 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:52859 "EHLO
         relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733237AbfJCReO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Oct 2019 13:34:14 -0400
+        with ESMTP id S1732907AbfJCReL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Oct 2019 13:34:11 -0400
 X-Originating-IP: 91.224.148.103
 Received: from localhost.localdomain (unknown [91.224.148.103])
         (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 73071FF812;
-        Thu,  3 Oct 2019 17:34:11 +0000 (UTC)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id ADB16FF80E;
+        Thu,  3 Oct 2019 17:34:07 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -34,102 +34,53 @@ Cc:     <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v2 2/7] iio: adc: max1027: Make it optional to use interrupts
-Date:   Thu,  3 Oct 2019 19:33:56 +0200
-Message-Id: <20191003173401.16343-3-miquel.raynal@bootlin.com>
+Subject: [PATCH v2 0/7] Introduce max12xx ADC support
+Date:   Thu,  3 Oct 2019 19:33:54 +0200
+Message-Id: <20191003173401.16343-1-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191003173401.16343-1-miquel.raynal@bootlin.com>
-References: <20191003173401.16343-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The chip has a 'start conversion' and a 'end of conversion' pair of
-pins. They can be used but this is absolutely not mandatory as regular
-polling of the value is totally fine with the current internal
-clocking setup. Turn the interrupts optional and do not error out if
-they are not inquired in the device tree. This has the effect to
-prevent triggered buffers use though.
+Hello, here is a patchset updating the existing max1027.c driver (for
+10-bit max1027/29/31 ADCs) with a few corrections/improvements and
+then introducing their 12-bit cousins named max1227/29/31.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- drivers/iio/adc/max1027.c | 57 +++++++++++++++++++++------------------
- 1 file changed, 31 insertions(+), 26 deletions(-)
+As on my hardware setup the "start conversion" and "end of conversion"
+pin are not wired (which is absolutely fine for this chip), I also
+updated the driver and the bindings to support optional interrupts. In
+this case, triggered buffers are not available and the user must poll
+the value from sysfs.
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 6cdfe9ef73fc..823223b77a70 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -430,35 +430,40 @@ static int max1027_probe(struct spi_device *spi)
- 		return -ENOMEM;
- 	}
- 
--	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
--					&iio_pollfunc_store_time,
--					&max1027_trigger_handler, NULL);
--	if (ret < 0) {
--		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
--		return ret;
--	}
-+	if (spi->irq) {
-+		ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+						      &iio_pollfunc_store_time,
-+						      &max1027_trigger_handler,
-+						      NULL);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "Failed to setup buffer\n");
-+			return ret;
-+		}
- 
--	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
--							indio_dev->name);
--	if (st->trig == NULL) {
--		ret = -ENOMEM;
--		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
--		return ret;
--	}
-+		st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
-+						  indio_dev->name);
-+		if (st->trig == NULL) {
-+			ret = -ENOMEM;
-+			dev_err(&indio_dev->dev,
-+				"Failed to allocate iio trigger\n");
-+			return ret;
-+		}
- 
--	st->trig->ops = &max1027_trigger_ops;
--	st->trig->dev.parent = &spi->dev;
--	iio_trigger_set_drvdata(st->trig, indio_dev);
--	iio_trigger_register(st->trig);
-+		st->trig->ops = &max1027_trigger_ops;
-+		st->trig->dev.parent = &spi->dev;
-+		iio_trigger_set_drvdata(st->trig, indio_dev);
-+		iio_trigger_register(st->trig);
- 
--	ret = devm_request_threaded_irq(&spi->dev, spi->irq,
--					iio_trigger_generic_data_rdy_poll,
--					NULL,
--					IRQF_TRIGGER_FALLING,
--					spi->dev.driver->name, st->trig);
--	if (ret < 0) {
--		dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
--		return ret;
-+		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
-+						iio_trigger_generic_data_rdy_poll,
-+						NULL,
-+						IRQF_TRIGGER_FALLING,
-+						spi->dev.driver->name,
-+						st->trig);
-+		if (ret < 0) {
-+			dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
-+			return ret;
-+		}
- 	}
- 
- 	/* Disable averaging */
+Thanks,
+Miquèl
+
+
+Changes in v2:
+==============
+* Removed the addition of three compatibles from patch 4 (the
+  preparation patch) to add these lines back in patch 5 (the actual
+  introduction).
+
+
+Miquel Raynal (7):
+  iio: adc: max1027: Add debugfs register read support
+  iio: adc: max1027: Make it optional to use interrupts
+  iio: adc: max1027: Reset the device at probe time
+  iio: adc: max1027: Prepare the introduction of different resolutions
+  iio: adc: max1027: Introduce 12-bit devices support
+  dt-bindings: iio: adc: max1027: Mark interrupts as optional
+  dt-bindings: iio: adc: max1027: Document max12xx series compatibles
+
+ .../bindings/iio/adc/max1027-adc.txt          |  12 +-
+ drivers/iio/adc/Kconfig                       |   4 +-
+ drivers/iio/adc/max1027.c                     | 190 +++++++++++-------
+ 3 files changed, 133 insertions(+), 73 deletions(-)
+
 -- 
 2.20.1
 
