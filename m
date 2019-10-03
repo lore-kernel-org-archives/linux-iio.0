@@ -2,69 +2,79 @@ Return-Path: <SRS0=Cr79=X4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 071EEC10F14
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 13:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2587C32792
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DBF16215EA
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 13:48:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D374020862
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Oct 2019 17:34:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728998AbfJCNsO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Oct 2019 09:48:14 -0400
-Received: from szxga06-in.huawei.com ([45.249.212.32]:51624 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726002AbfJCNsO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 3 Oct 2019 09:48:14 -0400
-Received: from DGGEMS404-HUB.china.huawei.com (unknown [172.30.72.60])
-        by Forcepoint Email with ESMTP id 137486BB1CDD9FC35C57;
-        Thu,  3 Oct 2019 21:48:12 +0800 (CST)
-Received: from localhost (10.202.226.61) by DGGEMS404-HUB.china.huawei.com
- (10.3.19.204) with Microsoft SMTP Server id 14.3.439.0; Thu, 3 Oct 2019
- 21:48:09 +0800
-Date:   Thu, 3 Oct 2019 14:48:01 +0100
-From:   Jonathan Cameron <jonathan.cameron@huawei.com>
-To:     Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: Patch ping
-Message-ID: <20191003144801.00005858@huawei.com>
-In-Reply-To: <MN2PR12MB337384FCC2C028F7384978E2C49D0@MN2PR12MB3373.namprd12.prod.outlook.com>
-References: <MN2PR12MB337384FCC2C028F7384978E2C49D0@MN2PR12MB3373.namprd12.prod.outlook.com>
-Organization: Huawei
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S2387447AbfJCReQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Oct 2019 13:34:16 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:35929 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1733244AbfJCReQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Oct 2019 13:34:16 -0400
+X-Originating-IP: 91.224.148.103
+Received: from localhost.localdomain (unknown [91.224.148.103])
+        (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 23AF6FF80B;
+        Thu,  3 Oct 2019 17:34:13 +0000 (UTC)
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v2 3/7] iio: adc: max1027: Reset the device at probe time
+Date:   Thu,  3 Oct 2019 19:33:57 +0200
+Message-Id: <20191003173401.16343-4-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20191003173401.16343-1-miquel.raynal@bootlin.com>
+References: <20191003173401.16343-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.61]
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 1 Oct 2019 08:50:08 +0000
-Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
+All the registers are configured by the driver, let's reset the chip
+at probe time, avoiding any conflict with a possible earlier
+configuration.
 
-> Hello Jonathan,
-> 
-> just a kindly remember about my magnetometer support series for inv_mpu6050 still waiting for approval and merge.
-> 
-> Thanks.
-> 
-> Best regards,
-> JB
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/iio/adc/max1027.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Hi JB,
-
-I'm lagging rather a lot currently, but coming out the end of
-a jetlag so should be fine to catch up at the weekend.
-
-I've just been slotting a few random reviews in gaps at work
-this week, but not had a proper catch up session since getting
-back from Linaro connect.
-
-Jonathan
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index 823223b77a70..f9b473ee6711 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -466,6 +466,14 @@ static int max1027_probe(struct spi_device *spi)
+ 		}
+ 	}
+ 
++	/* Internal reset */
++	st->reg = MAX1027_RST_REG;
++	ret = spi_write(st->spi, &st->reg, 1);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Failed to reset the ADC\n");
++		return ret;
++	}
++
+ 	/* Disable averaging */
+ 	st->reg = MAX1027_AVG_REG;
+ 	ret = spi_write(st->spi, &st->reg, 1);
+-- 
+2.20.1
 
