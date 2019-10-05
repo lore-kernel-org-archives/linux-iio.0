@@ -2,50 +2,54 @@ Return-Path: <SRS0=SkP8=X6=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BD8FC3E8AB
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 14:55:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2778CC4740A
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 14:58:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3E6FD222C8
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 14:55:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E070A222C8
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 14:58:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570287340;
-	bh=lT4+XQO5kabEOkBOW+mXH29PGOxKt5PvPJ3Z1ep493k=;
+	s=default; t=1570287498;
+	bh=Vc+YQJEsAFsoGb4fPTsygyli898B0N7NiXZC2OZEjzM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wjkovoXg3Ezx7bPoSgp9IfmdtEmFDDEGbVfw5YH/1mRX1WqR0JlBkm5r1W+vmfJfG
-	 c8Z9/Q9HWCLsq05+xJfTLdoBKDlWHANw+NF8I38+e/7FG9s8QaSf4QoaQKwgcmdLFn
-	 q7Sf66L/qRjZm7M+1WPVHlHI+IqCcE5T4WSmCNeI=
+	b=DXMu3iVrdzpByp30HGDb2no4zSpyXrEZzCFRBzpfafKpDJaKPTNAzOmmaMg7629fd
+	 zXWYH07WKPzb2UOdOIst8+XzlNEbReMTAKtrNkfhmMvAzgAzthson5NAQHM31O/C6I
+	 PW7cjSjGgeROzVr5CiGIg8lVDs7tjf1uXPveQzk8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728480AbfJEOzj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Oct 2019 10:55:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48176 "EHLO mail.kernel.org"
+        id S1727612AbfJEO6R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Oct 2019 10:58:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48248 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727980AbfJEOzj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Oct 2019 10:55:39 -0400
+        id S1725963AbfJEO6R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Oct 2019 10:58:17 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 414EC20862;
-        Sat,  5 Oct 2019 14:55:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC5F620862;
+        Sat,  5 Oct 2019 14:58:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570287338;
-        bh=lT4+XQO5kabEOkBOW+mXH29PGOxKt5PvPJ3Z1ep493k=;
+        s=default; t=1570287496;
+        bh=Vc+YQJEsAFsoGb4fPTsygyli898B0N7NiXZC2OZEjzM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XwPXoTzFEn9qHo0Jl5cKtzhhaCnx6+Kmn1YLAL2hnHgor3mDWQb/a/Tu8E7a0Yuvn
-         fGhHIrOOVo2DGBt+X8kNgydQzfRhcS5sXwSInp4NQyxshzDpuB+a3cRH3WL+aGu9tk
-         zc49aTCBhKFUQp1sXOQLP7QRaFka0twdVVgY7ltQ=
-Date:   Sat, 5 Oct 2019 15:55:33 +0100
+        b=zsvd19lGqWpNHr8KAqqUD/QnFuH7f9r/jBkQtBTZc2xKSoaCGUnNyke3I1VbhWOLb
+         5entkZmLjlaNOeL4LBJub5nylrHXaVPhFB1BMvv273d/5hvQ8MLcEmj8H2RfxeKVbr
+         Fl6QPDUlZ90fV5o7ZNAqWYiipWb0R/iEPutzE5nc=
+Date:   Sat, 5 Oct 2019 15:58:11 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: gyro: adis16080: replace mlock with own lock
-Message-ID: <20191005155525.1e72f9bb@archlinux>
-In-Reply-To: <20190919132303.9663-1-alexandru.ardelean@analog.com>
-References: <20190919132303.9663-1-alexandru.ardelean@analog.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Phil Reid <preid@electromag.com.au>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, mark.rutland@arm.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        michal.simek@xilinx.com
+Subject: Re: [PATCH v2 1/2] dt-binding: iio: Add optional label property
+Message-ID: <20191005155811.29374f19@archlinux>
+In-Reply-To: <20190927144419.GA26041@bogus>
+References: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
+        <1568903768-65998-2-git-send-email-preid@electromag.com.au>
+        <20190927144419.GA26041@bogus>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,64 +59,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 19 Sep 2019 16:23:03 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Fri, 27 Sep 2019 09:44:19 -0500
+Rob Herring <robh@kernel.org> wrote:
 
-> The lock is used to protect the buffer during reads. Though the spi
-> routines have their own locks, it may be the case that the buffer needs to
-> be protected before it's stored and passed to the IIO read hooks.
+> On Thu, Sep 19, 2019 at 10:36:07PM +0800, Phil Reid wrote:
+> > This optional property defines a symbolic name for the device.
+> > This helps to distinguish between more than one iio device
+> > of the same type.
+> > 
+> > Suggested-by: Michal Simek <michal.simek@xilinx.com>
+> > Signed-off-by: Phil Reid <preid@electromag.com.au>
+> > ---
+> >  Documentation/devicetree/bindings/iio/iio-bindings.txt | 5 +++++
+> >  1 file changed, 5 insertions(+)  
 > 
-> indio_dev's mlock was used before.
-> This change replaces it with the driver's own lock.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to poke holes in it.
+> Reviewed-by: Rob Herring <robh@kernel.org>
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for nothing much to happen to it.
 
 Thanks,
 
 Jonathan
-
-> ---
->  drivers/iio/gyro/adis16080.c | 8 ++++++--
->  1 file changed, 6 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/adis16080.c b/drivers/iio/gyro/adis16080.c
-> index 236220d6de02..1b84b8e112fe 100644
-> --- a/drivers/iio/gyro/adis16080.c
-> +++ b/drivers/iio/gyro/adis16080.c
-> @@ -38,10 +38,12 @@ struct adis16080_chip_info {
->   * @us:			actual spi_device to write data
->   * @info:		chip specific parameters
->   * @buf:		transmit or receive buffer
-> + * @lock		lock to protect buffer during reads
->   **/
->  struct adis16080_state {
->  	struct spi_device		*us;
->  	const struct adis16080_chip_info *info;
-> +	struct mutex			lock;
->  
->  	__be16 buf ____cacheline_aligned;
->  };
-> @@ -82,9 +84,9 @@ static int adis16080_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&indio_dev->mlock);
-> +		mutex_lock(&st->lock);
->  		ret = adis16080_read_sample(indio_dev, chan->address, val);
-> -		mutex_unlock(&indio_dev->mlock);
-> +		mutex_unlock(&st->lock);
->  		return ret ? ret : IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		switch (chan->type) {
-> @@ -196,6 +198,8 @@ static int adis16080_probe(struct spi_device *spi)
->  	/* this is only used for removal purposes */
->  	spi_set_drvdata(spi, indio_dev);
->  
-> +	mutex_init(&st->lock);
-> +
->  	/* Allocate the comms buffers */
->  	st->us = spi;
->  	st->info = &adis16080_chip_info[id->driver_data];
-
