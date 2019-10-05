@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45846C3E8AB
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 12:17:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7494CC3E8AB
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 12:21:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 050CF2133F
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 12:17:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 44C702133F
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Oct 2019 12:21:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570277848;
-	bh=+7i3edS+qMcEQzkxvCVdY8OXxyossuejgd5KHRxygi8=;
+	s=default; t=1570278106;
+	bh=0Qv6ievYjsSEhe8QwwCqTOMZU+Qy2Y3YSg8mxXJBhfM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=YsdmffEdeAjLlhVYuvqmjpOgUckZfsXkk97uz4E8Y21aRUeMzvRAST4o8fIZqP4G8
-	 IQcfeAv7e3jRbJu2xzlot+FbdFd7S6iS5QB20t4OD2d1YdGY+wDqaDaZpyc0LYThKc
-	 ZzAnqN42O/yfxW5nwrQ1mptFeA8Sw8L8cJKuisec=
+	b=WfKWCSsHtquWm/tdC3B6163MQx8hy1VoY3eGhPbgeQyKpuM1mhrNYIQtZji1FpEBq
+	 TGM5Qkma+YDTZMGuEECOWdvvSxjt3uzm4391j3QYQg04esqyTbeq/QrDupY+ARKCrr
+	 M72/84En2P7z9ETvkEAtNLvHThCaN0PDcVBWNoyw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727930AbfJEMR1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Oct 2019 08:17:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40118 "EHLO mail.kernel.org"
+        id S1726283AbfJEMVp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Oct 2019 08:21:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40346 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726125AbfJEMR1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Oct 2019 08:17:27 -0400
+        id S1726198AbfJEMVp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Oct 2019 08:21:45 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C98B92133F;
-        Sat,  5 Oct 2019 12:17:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ADC882133F;
+        Sat,  5 Oct 2019 12:21:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570277847;
-        bh=+7i3edS+qMcEQzkxvCVdY8OXxyossuejgd5KHRxygi8=;
+        s=default; t=1570278104;
+        bh=0Qv6ievYjsSEhe8QwwCqTOMZU+Qy2Y3YSg8mxXJBhfM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VqF22jOu2ULTdINgnpG1z/DkweJKOHJDbPSAde0gUfrJr6lQcWRT904fODpu38QAQ
-         o9qVbd4/foMDkRZImt7n8TBuikCCcG0wv50cFB6WL8t4dEW7upblROIFG3vve5Eb+U
-         mGDxFS7imp7wkHPesED3b+t4uucQVCCMAg7ExZiY=
-Date:   Sat, 5 Oct 2019 13:17:21 +0100
+        b=OkvNsaLGgGnCSXy8gTPDlJkcCJ2t09sndizauf1BuHdMFg4+33q7ZszFylmft/5AZ
+         s0fD0JaE8ZQ74TdRQnHgaBgfPifLu0nD7yi57vE2CZ7Ga1R8ojQtgw2yyTc/qMZMf4
+         EYQdJoPjFYEJ7OoA+5KCHK3f/kifFEinEftjNBLc=
+Date:   Sat, 5 Oct 2019 13:21:40 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Rob Herring <robh+dt@kernel.org>
 Cc:     Tomasz Duszynski <tduszyns@gmail.com>,
@@ -46,7 +46,7 @@ Cc:     Tomasz Duszynski <tduszyns@gmail.com>,
         devicetree@vger.kernel.org
 Subject: Re: [PATCH 1/2] dt-bindings: iio: light: bh1750: convert bindings
  to yaml
-Message-ID: <20191005131721.374ebcb1@archlinux>
+Message-ID: <20191005132140.6354efd6@archlinux>
 In-Reply-To: <CAL_JsqLj6jpgC5e607uDdVJGhKE6b53k=HHgZ3_dq8Qk-X5WDg@mail.gmail.com>
 References: <20190916190024.9955-1-tduszyns@gmail.com>
         <20190916190024.9955-2-tduszyns@gmail.com>
@@ -76,10 +76,9 @@ Rob Herring <robh+dt@kernel.org> wrote:
 > >  create mode 100644 Documentation/devicetree/bindings/iio/light/bh1750.yaml  
 > 
 > Reviewed-by: Rob Herring <robh@kernel.org>
+
 Applied to the togreg branch of iio.git and pushed out as testing.
 
 Thanks,
 
 Jonathan
-
-
