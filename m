@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ED86C10F14
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 13:22:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BFA3AC4360C
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 13:22:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 22A102087E
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 13:22:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 95E692133F
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 13:22:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570368168;
-	bh=ToihDePn9t+T//wYe2kgzJ0PK3Wvt/BsjHbN9WgnTVY=;
+	s=default; t=1570368170;
+	bh=du4I8ZEf1/8MRPe0eby4NOeQjZy7ujhUdHMW15Gi6eM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wNrNzUZqia4oldneQKXhdmQ7gdtyhVedZ11Qtm/EJbQ6Rrvjmu2AtosQ8JVdnfE9g
-	 WRziA11Mld5fuPbtc43uMrr7aWLW9ehU2VCKapVkulHb7S/75FAYkJkA4Q/fdW42WO
-	 2wWinYx+hHdQwG93eeWymyFbO7VQqRpxrzYnA2Wg=
+	b=AFIiDRfHL3y0YrEjaztZHbdWorQf9IzO2Wf4GAqdoajevxnM0RyrD20DbAIHIrGwB
+	 9WSEIVyGxRoVVApnm7+/vSrvxecU5rhsRYKt5y7TFjEMUcZLJGU2xBRFUKuhEWe5GL
+	 IIDPjevf8O0h0u9rEkia789ahTFY89NpmN4cdrF8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726529AbfJFNWr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Oct 2019 09:22:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38590 "EHLO mail.kernel.org"
+        id S1726532AbfJFNWu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Oct 2019 09:22:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38610 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726060AbfJFNWr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 6 Oct 2019 09:22:47 -0400
+        id S1726060AbfJFNWt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 6 Oct 2019 09:22:49 -0400
 Received: from lore-desk-wlan.lan (unknown [151.66.37.67])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 93B9920684;
-        Sun,  6 Oct 2019 13:22:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A44B320867;
+        Sun,  6 Oct 2019 13:22:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570368167;
-        bh=ToihDePn9t+T//wYe2kgzJ0PK3Wvt/BsjHbN9WgnTVY=;
+        s=default; t=1570368169;
+        bh=du4I8ZEf1/8MRPe0eby4NOeQjZy7ujhUdHMW15Gi6eM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nk5QbgL6lri1jbeFq6AmI6u2vePq+ZiIjy/XfKqe/H34CrFN1Q7moFQNxlcA4mYHH
-         28fcYoqDrD9isioYYSopLZpykLYj6kOhWLPCQrKDegO1q3dIp7+/IT+RGajaJldYSq
-         4LTVygZcVLxuyQGjPa5XiGG6QTguMoE2fFLthtOo=
+        b=Cml3DfjKEkjzJQtQwfTr4QyeI9hy+Ft45RFwUCBXgflRgqpTjS1XkGqrtcyWCpJSf
+         Gz6l2AW6V5DgtNNlVC46BnVAIm7AwK4V52TEw4nib6kGHQkO7DC1yjK29wI6D3BRD7
+         3JP+InAjWrS/+cu+jxsn+iIgNu/B2HVHq3NA4KGg=
 From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     jic23@kernel.org
 Cc:     linux-iio@vger.kernel.org, sean@geanix.com, martin@geanix.com,
         rjones@gateworks.com, lorenzo.bianconi@redhat.com,
         devicetree@vger.kernel.org
-Subject: [PATCH 11/13] iio: imu: st_lsm6dsx: add missing kernel documenation
-Date:   Sun,  6 Oct 2019 15:22:05 +0200
-Message-Id: <08d98185ff40de1b2183446d6da61fffcafb9b7f.1570367532.git.lorenzo@kernel.org>
+Subject: [PATCH 12/13] dt-bindings: iio: imu: st_lsm6dsx: document missing wakeup-source property
+Date:   Sun,  6 Oct 2019 15:22:06 +0200
+Message-Id: <b0521798dfc8a64780349876fe00a2664bc1b926.1570367532.git.lorenzo@kernel.org>
 X-Mailer: git-send-email 2.21.0
 In-Reply-To: <cover.1570367532.git.lorenzo@kernel.org>
 References: <cover.1570367532.git.lorenzo@kernel.org>
@@ -56,27 +56,23 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing kernel doc for st_lsm6dsx_hw data structure
-
 Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 5692ea695f04..40532f99ba4b 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -345,6 +345,9 @@ struct st_lsm6dsx_sensor {
-  * @ts_sip: Total number of timestamp samples in a given pattern.
-  * @sip: Total number of samples (acc/gyro/ts) in a given pattern.
-  * @buff: Device read buffer.
-+ * @irq_routing: pointer to interrupt routing configuration.
-+ * @event_threshold: wakeup event threshold.
-+ * @enable_event: enabled event bitmask.
-  * @iio_devs: Pointers to acc/gyro iio_dev instances.
-  * @settings: Pointer to the specific sensor settings in use.
-  */
+diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+index 6d0c050d89fe..1a07d38c813f 100644
+--- a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
++++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+@@ -31,6 +31,7 @@ Optional properties:
+ - interrupts: interrupt mapping for IRQ. It should be configured with
+   flags IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
+   IRQ_TYPE_EDGE_FALLING.
++- wakeup-source: Enables wake up of host system on event.
+ 
+   Refer to interrupt-controller/interrupts.txt for generic interrupt
+   client node bindings.
 -- 
 2.21.0
 
