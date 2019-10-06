@@ -2,58 +2,59 @@ Return-Path: <SRS0=e+7m=X7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C18CFC4360C
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 985BBECE58E
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 725352077B
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6EE1621871
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b8u9n4Ph"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="blJ+tDl8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725900AbfJFUDb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Oct 2019 16:03:31 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:33081 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfJFUDa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Oct 2019 16:03:30 -0400
-Received: by mail-yw1-f68.google.com with SMTP id w140so2698465ywd.0;
-        Sun, 06 Oct 2019 13:03:29 -0700 (PDT)
+        id S1726878AbfJFUDe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Oct 2019 16:03:34 -0400
+Received: from mail-yb1-f196.google.com ([209.85.219.196]:36868 "EHLO
+        mail-yb1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726777AbfJFUDe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Oct 2019 16:03:34 -0400
+Received: by mail-yb1-f196.google.com with SMTP id z125so3974665ybc.4;
+        Sun, 06 Oct 2019 13:03:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SAD87elW3s517JLI2iTshbAxE2vtTeLTbEEr73+JTTo=;
-        b=b8u9n4PhEviR3wP/yj+0PudSJxU/RYT93LpSALa8ko5AoW/fdnOhLH4/2mPEAfDvAT
-         LHvEgW6OrV4EhOgcB/pPShK15w3OhQrky7AEqW3EY+LTTmGJopYUVXngibHNt2zzZfht
-         XXSkY+gnBjhk0cmctHEciW2t9Ql/5hJW2IAbruDjuPHgTMpmxW4zVImSfzH7Lp4qDu8a
-         5WkgNMbHjtPP1dCrLdtfA44CJV9v+AQi1gV1AJrHa04fuFkzj7x4eYmwcwocemaIAcnV
-         uCshn4YyfgwT1DkAPBy1hYWXAg5KPYFjYoUGQT/X9AVU4QOhvb4JzjS2me3V3wb9H6xr
-         BTEQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=PIaX21W8I9U+EF8hoBafqL2VfdvHvRxIA6u3x9/TwM0=;
+        b=blJ+tDl8nG+FSdKewzSogp8WX4feg6K4mc5o3Fp+NyudNHmPlRGHJKHYyi3Dj0xOkv
+         Us73dYpeeXifqLcgdM7PX4S/pUTCneN+KVMetVEJaDNO7VZyM9xbHbUSQy7NGRtXOrhh
+         h8StpYzvNVVKJofD45zTFy+8iSfQKp+UUWfuGkUt9Z30wAatg9QkDUCc68Dl92za0EMf
+         WimwZNQ+QHrNuB8VCVgxJNs0PnHKUX6oveNe14tkFHHhvrAwHA5rGSCXF+7LylvHdl9k
+         GEQYNkWZE7HlncbmWwGSiiCFJv0aOQilT1YY2FBk+wTx64Q3I5oMqK0HdJuIw+1Dh+te
+         8KeQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=SAD87elW3s517JLI2iTshbAxE2vtTeLTbEEr73+JTTo=;
-        b=eU3Ua4+qeRH7JXzdxhCZGaSlD5tLICyTv8XSM1bCMdNXi6D606fStZBcylbdKL+SRV
-         4pkLupvrrfTAL0fC/hHygVohZhdIUz79y6P8ZnyQk1K9S1CI1AC33BWTNyqot5wkJNpj
-         Ybduh6RFvfoJumSiId3UvIvza1odHkBJvKbFsJby5cRw7etIUdq8bObyyyrpBBn5/pkJ
-         oWEdbbNLef6c6QIphwwD913nQL8l/LNm0KpS+6zw1I795Ja5dXRfO+Y5JXWzxpYm2NIq
-         PHO6+4fa8+9koum3vMUqy7fNtsn84Z/yatCFIC/V06y3etSACxfx7kCGQCnCgwBJzsPc
-         sL1A==
-X-Gm-Message-State: APjAAAVNSNwagCYkN4AbAscPrEa4JdkaegQOxsGkdG0TtMDBCI5T1tt6
-        HDbH6JrKbMN+0/XiREwV9au9uPaS
-X-Google-Smtp-Source: APXvYqyQPcYRjH/0i8mxOghstPu0yUg69Or8AFQkg1v3xcY/ad8RpW1sQgbaxICtMnMxyHWdaKP62w==
-X-Received: by 2002:a81:ee06:: with SMTP id l6mr13525880ywm.357.1570392209362;
-        Sun, 06 Oct 2019 13:03:29 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=PIaX21W8I9U+EF8hoBafqL2VfdvHvRxIA6u3x9/TwM0=;
+        b=OK5kXO6rvvs10GaXZwwoT6STuWuLCmlELrqQPmbLYnro1PXgDB/2KCM5ycMndwdZFs
+         RWI7bmG26OPYj6wzwdPmjoOBTymr2UoY6ddmEwN8Bz4QMdR+2ydurUXs2HCMxUu8q3k8
+         N5Nmy+J2dFtPM4Bvy4BpvAVSwiqZQcCB+lo9y4/E+HqJYJ9zhr3tZDtYKWw6ze/huaN4
+         50sJCdueo2DwiVDwvEWFCxeWBUTQe1LG+n4PduaqSCwjaqRhdtmU9Pbxa0q3MVNqcAj/
+         rENsRfNNR1sMqoubJ4USxVhpinr8lWbB2b/Vo3BqayOsoIFDikSOknINx+4pFygOxJIq
+         B+Rg==
+X-Gm-Message-State: APjAAAU9XJyjK+iBft0FSFEpQSK18rYmNou2r3TCtuhycQANeY+JWEkW
+        BY+9MIDeY0HGHlXjibvqmFk=
+X-Google-Smtp-Source: APXvYqz4mvN9s0757t230hmoQhGHOxs+DNUn1yMwWNnvg3C98M+iXwK0v5AeIOh5LLFcDlzwU/Briw==
+X-Received: by 2002:a5b:b05:: with SMTP id z5mr9181818ybp.7.1570392213485;
+        Sun, 06 Oct 2019 13:03:33 -0700 (PDT)
 Received: from localhost.localdomain (072-189-084-142.res.spectrum.com. [72.189.84.142])
-        by smtp.gmail.com with ESMTPSA id x16sm3765266ywx.103.2019.10.06.13.03.27
+        by smtp.gmail.com with ESMTPSA id x16sm3765266ywx.103.2019.10.06.13.03.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Oct 2019 13:03:28 -0700 (PDT)
+        Sun, 06 Oct 2019 13:03:32 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -63,10 +64,12 @@ Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, benjamin.gaignard@linaro.org,
         david@lechnology.com,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v5 0/3] Simplify count_read/count_write/signal_read
-Date:   Sun,  6 Oct 2019 16:03:08 -0400
-Message-Id: <cover.1570391994.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v5 3/3] counter: Fix typo in action_get description
+Date:   Sun,  6 Oct 2019 16:03:11 -0400
+Message-Id: <4d8dc1e31aaa02e2d0a1ea580f1923075967db5b.1570391994.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.23.0
+In-Reply-To: <cover.1570391994.git.vilhelm.gray@gmail.com>
+References: <cover.1570391994.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -74,93 +77,26 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in v5:
- - Add changes and additions to generic-counter.rst to clarify theory
-   and use of the Generic Counter interface
- - Fix typo in counter.h action_get description comment
+The action_get callback returns a Synapse's action mode.
 
-The changes in this patchset will not affect the userspace interface.
-Rather, these changes are intended to simplify the kernelspace Counter
-callbacks for counter device driver authors.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ include/linux/counter.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The following main changes are proposed:
-
-* Retire the opaque counter_count_read_value/counter_count_write_value
-  structures and simply represent count data as an unsigned integer.
-
-* Retire the opaque counter_signal_read_value structure and represent
-  Signal data as a counter_signal_value enum.
-
-These changes should reduce some complexity and code in the use and
-implementation of the count_read, count_write, and signal_read
-callbacks.
-
-The opaque structures for Count data and Signal data were introduced
-originally in anticipation of supporting various representations of
-counter data (e.g. arbitrary-precision tallies, floating-point spherical
-coordinate positions, etc). However, with the counter device drivers
-that have appeared, it's become apparent that utilizing opaque
-structures in kernelspace is not the best approach to take.
-
-I believe it is best to let userspace applications decide how to
-interpret the count data they receive. There are a couple of reasons why
-it would be good to do so:
-
-* Users use their devices in unexpected ways.
-
-  For example, a quadrature encoder counter device is typically used to
-  keep track of the position of a motor, but a user could set the device
-  in a pulse-direction mode and instead use it to count sporadic rising
-  edges from an arbitrary signal line unrelated to positioning. Users
-  should have the freedom to decide what their data represents.
-
-* Most counter devices represent data as unsigned integers anyway.
-
-  For example, whether the device is a tally counter or position
-  counter, the count data is represented to the user as an unsigned
-  integer value. So specifying that one device is representing tallies
-  while the other specifies positions does not provide much utility from
-  an interface perspective.
-
-For these reasons, the count_read and count_write callbacks have been
-redefined to pass count data directly as unsigned long instead of passed
-via opaque structures:
-
-        count_read(struct counter_device *counter,
-                   struct counter_count *count, unsigned long *val);
-        count_write(struct counter_device *counter,
-                    struct counter_count *count, unsigned long val);
-
-Similarly, the signal_read is redefined to pass Signal data directly as
-a counter_signal_value enum instead of via an opaque structure:
-
-        signal_read(struct counter_device *counter,
-                    struct counter_signal *signal,
-                    enum counter_signal_value *val);
-
-The counter_signal_value enum is simply the counter_signal_level enum
-redefined to remove the references to the Signal data "level" data type.
-
-William Breathitt Gray (3):
-  counter: Simplify the count_read and count_write callbacks
-  docs: driver-api: generic-counter: Update Count and Signal data types
-  counter: Fix typo in action_get description
-
- Documentation/driver-api/generic-counter.rst | 162 +++++++++++--------
- drivers/counter/104-quad-8.c                 |  33 ++--
- drivers/counter/counter.c                    | 101 ++----------
- drivers/counter/ftm-quaddec.c                |  14 +-
- drivers/counter/stm32-lptimer-cnt.c          |   5 +-
- drivers/counter/stm32-timer-cnt.c            |  17 +-
- drivers/counter/ti-eqep.c                    |  19 +--
- include/linux/counter.h                      |  76 ++-------
- 8 files changed, 144 insertions(+), 283 deletions(-)
-
-
-base-commit: 0c3aa63a842d84990bd02622f2fa50d2bd33c652
-prerequisite-patch-id: ebe284609b3db8d4130ea2915f7f7b185c743a70
-prerequisite-patch-id: cbe857759f10d875690df125d18bc04f585ac7c9
-prerequisite-patch-id: 21f2660dc88627387ee4666d08044c63dd961dae
+diff --git a/include/linux/counter.h b/include/linux/counter.h
+index 32fb4d8cc3fd..9dbd5df4cd34 100644
+--- a/include/linux/counter.h
++++ b/include/linux/counter.h
+@@ -315,7 +315,7 @@ enum counter_signal_value {
+  *			Count's functions_list array.
+  * @action_get:		function to get the current action mode. Returns 0 on
+  *			success and negative error code on error. The index of
+- *			the respective Signal's returned action mode should be
++ *			the respective Synapse's returned action mode should be
+  *			passed back via the action parameter.
+  * @action_set:		function to set the action mode. action is the index of
+  *			the requested action mode from the respective Synapse's
 -- 
 2.23.0
 
