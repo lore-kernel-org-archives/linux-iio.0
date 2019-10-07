@@ -7,51 +7,48 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A87C8C47404
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 20:33:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20A34ECE58C
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 21:17:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7D5022133F
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 20:33:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D06E42133F
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 21:17:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570480381;
-	bh=3tHkVCvmZXStv1/mWxk/P1kCzUPl0xZgJOSrtv6z2F8=;
+	s=default; t=1570483024;
+	bh=7nj9uQY6WqAuYiCgaynFxhnaYKExae7ZbQ7U1gc709g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=pJLjbBL2VECQ7HRKYHi+12Fp4Y0bZMCWkxP/yOJbVAJxkzEXryYRjJicmR6CbkTYz
-	 CyeiZrd2/A3lBOymbIQZP+QY3cfFt/QqpPsz1Xg0tDw5yNuvCN9vtJF21NVyNzHxGP
-	 DV/jmf3lULJxyvm1NAitElYMj/KfOzNUI9TB7VkU=
+	b=f+ib5Pj7MYpYZNredjKCubl8CNwD5eTlX/GhZt9hGoKrqLijSZlgP0atizQmUON5Y
+	 Sg2kfvgCYtijAiqC+oKrmJ2GTaSjFQdS6P6V5PMBLTGPMrfzfRhZteAlL40v2+QpvZ
+	 NdkC/Z1MWrcRN4ppICvDtw4+lBxM+bKeIWXM12uw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728792AbfJGUdB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Oct 2019 16:33:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54738 "EHLO mail.kernel.org"
+        id S1729363AbfJGVRD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Oct 2019 17:17:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32834 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728212AbfJGUdA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Oct 2019 16:33:00 -0400
+        id S1728330AbfJGVRD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Oct 2019 17:17:03 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3F47D2084D;
-        Mon,  7 Oct 2019 20:32:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0966A20867;
+        Mon,  7 Oct 2019 21:17:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570480380;
-        bh=3tHkVCvmZXStv1/mWxk/P1kCzUPl0xZgJOSrtv6z2F8=;
+        s=default; t=1570483021;
+        bh=7nj9uQY6WqAuYiCgaynFxhnaYKExae7ZbQ7U1gc709g=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=A/RNAMbIAfFhn5d32rQ4RHzxrTzxluXPESlkHLcNPm8WK98d47fPd5yWdJhmLAYtQ
-         Fggak++07Ab/1sUg9hp/xpLagrTx1YWv8sO1cmtf0k40ejN0N8jcSDGbROYgxomXyf
-         WR0zur6QvC1xzEZ95Kqk9bLNnOdMtAQpJn1YZqc8=
-Date:   Mon, 7 Oct 2019 21:32:54 +0100
+        b=NakiZhnu9dkcHeFbYC0TI933n5v7qzbrkt+BAZqMDFFIXxamIrH+o8rKz8jKqmMGu
+         5Z9kzlmzp1UEU0j3iPgmfFpJiVYXLH76pVgV/Up7L+bPkoPKOyCinpNfJaOGPiENmk
+         zWk7rCfuJsGe6vw//JMtnGexU/CCLbO1RlHuKyWA=
+Date:   Mon, 7 Oct 2019 22:16:57 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Phil Reid <preid@electromag.com.au>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        michal.simek@xilinx.com
-Subject: Re: [PATCH v2 2/2] iio: core: Add optional symbolic label to device
- attributes
-Message-ID: <20191007213244.2ed85c99@archlinux>
-In-Reply-To: <20191005155905.7fe1681e@archlinux>
-References: <1568903768-65998-1-git-send-email-preid@electromag.com.au>
-        <1568903768-65998-3-git-send-email-preid@electromag.com.au>
-        <20191005155905.7fe1681e@archlinux>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 02/10] iio: imu: adis: add unlocked read/write function
+ versions
+Message-ID: <20191007221649.4fb1ee25@archlinux>
+In-Reply-To: <20191006101201.051f9249@archlinux>
+References: <20190926111812.15957-1-alexandru.ardelean@analog.com>
+        <20190926111812.15957-3-alexandru.ardelean@analog.com>
+        <20191006101201.051f9249@archlinux>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,103 +58,271 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 5 Oct 2019 15:59:05 +0100
+On Sun, 6 Oct 2019 10:12:01 +0100
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Thu, 19 Sep 2019 22:36:08 +0800
-> Phil Reid <preid@electromag.com.au> wrote:
+> On Thu, 26 Sep 2019 14:18:04 +0300
+> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 > 
-> > If a label is defined in the device tree for this device add that
-> > to the device specific attributes. This is useful for userspace to
-> > be able to identify an individual device when multiple identical
-> > chips are present in the system.
+> > This will allow more flexible control to group reads & writes into a single
+> > lock (particularly the state_lock).
 > > 
-> > Tested-by: Michal Simek <michal.simek@xilinx.com>
-> > Signed-off-by: Phil Reid <preid@electromag.com.au>  
+> > The end-goal is to remove the indio_dev->mlock usage, and the simplest fix
+> > would have been to just add another lock, which would not be a good idea on
+> > the long-run.
+> > 
+> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
+> Applied to the togreg branch of iio.git and pushed out as testing etc.
 > 
-> Glad to see this going in given I thought I'd already applied it
-> and told someone they should be using it early today (oops ;)
+> Jonathan
 > 
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
+0-day found a potential issue (kind of) in the read functions.
 
-0-day picked up that there were no docs for this new field.
-I've added some and re pushed out.
+> > ---
+> >  drivers/iio/imu/adis.c       |  34 +++++------
+> >  include/linux/iio/imu/adis.h | 114 ++++++++++++++++++++++++++++++++++-
+> >  2 files changed, 128 insertions(+), 20 deletions(-)
+> > 
+> > diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+> > index 3c2d896e3a96..4f3be011c898 100644
+> > --- a/drivers/iio/imu/adis.c
+> > +++ b/drivers/iio/imu/adis.c
+> > @@ -26,7 +26,14 @@
+> >  #define ADIS_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
+> >  #define ADIS_GLOB_CMD_SW_RESET		BIT(7)
+> >  
+> > -int adis_write_reg(struct adis *adis, unsigned int reg,
+> > +/**
+> > + * __adis_write_reg() - write N bytes to register (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @value: The value to write to device (up to 4 bytes)
+> > + * @size: The size of the @value (in bytes)
+> > + */
+> > +int __adis_write_reg(struct adis *adis, unsigned int reg,
+> >  	unsigned int value, unsigned int size)
+> >  {
+> >  	unsigned int page = reg / ADIS_PAGE_SIZE;
+> > @@ -70,8 +77,6 @@ int adis_write_reg(struct adis *adis, unsigned int reg,
+> >  		},
+> >  	};
+> >  
+> > -	mutex_lock(&adis->state_lock);
+> > -
+> >  	spi_message_init(&msg);
+> >  
+> >  	if (adis->current_page != page) {
+> > @@ -96,8 +101,7 @@ int adis_write_reg(struct adis *adis, unsigned int reg,
+> >  		adis->tx[3] = value & 0xff;
+> >  		break;
+> >  	default:
+> > -		ret = -EINVAL;
+> > -		goto out_unlock;
+> > +		return -EINVAL;
+> >  	}
+> >  
+> >  	xfers[size].cs_change = 0;
+> > @@ -113,20 +117,18 @@ int adis_write_reg(struct adis *adis, unsigned int reg,
+> >  		adis->current_page = page;
+> >  	}
+> >  
+> > -out_unlock:
+> > -	mutex_unlock(&adis->state_lock);
+> > -
+> >  	return ret;
+> >  }
+> > -EXPORT_SYMBOL_GPL(adis_write_reg);
+> > +EXPORT_SYMBOL_GPL(__adis_write_reg);
+> >  
+> >  /**
+> > - * adis_read_reg() - read 2 bytes from a 16-bit register
+> > + * __adis_read_reg() - read N bytes from register (unlocked version)
+> >   * @adis: The adis device
+> >   * @reg: The address of the lower of the two registers
+> >   * @val: The value read back from the device
+> > + * @size: The size of the @val buffer
+> >   */
+> > -int adis_read_reg(struct adis *adis, unsigned int reg,
+> > +int __adis_read_reg(struct adis *adis, unsigned int reg,
+> >  	unsigned int *val, unsigned int size)
+> >  {
+> >  	unsigned int page = reg / ADIS_PAGE_SIZE;
+> > @@ -188,15 +190,14 @@ int adis_read_reg(struct adis *adis, unsigned int reg,
+> >  		spi_message_add_tail(&xfers[3], &msg);
+> >  		break;
+> >  	default:
+> > -		ret = -EINVAL;
+> > -		goto out_unlock;
+> > +		return -EINVAL;
+> >  	}
+> >  
+> >  	ret = spi_sync(adis->spi, &msg);
+> >  	if (ret) {
+> >  		dev_err(&adis->spi->dev, "Failed to read register 0x%02X: %d\n",
+> >  				reg, ret);
+> > -		goto out_unlock;
+> > +		return ret;
+> >  	} else {
+> >  		adis->current_page = page;
+> >  	}
+> > @@ -210,12 +211,9 @@ int adis_read_reg(struct adis *adis, unsigned int reg,
+> >  		break;
+> >  	}
+> >  
+> > -out_unlock:
+> > -	mutex_unlock(&adis->state_lock);
+> > -
+> >  	return ret;
+> >  }
+> > -EXPORT_SYMBOL_GPL(adis_read_reg);
+> > +EXPORT_SYMBOL_GPL(__adis_read_reg);
+> >  
+> >  #ifdef CONFIG_DEBUG_FS
+> >  
+> > diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+> > index 3ed5eceaac2d..3a028c40e04e 100644
+> > --- a/include/linux/iio/imu/adis.h
+> > +++ b/include/linux/iio/imu/adis.h
+> > @@ -75,11 +75,121 @@ int adis_init(struct adis *adis, struct iio_dev *indio_dev,
+> >  	struct spi_device *spi, const struct adis_data *data);
+> >  int adis_reset(struct adis *adis);
+> >  
+> > -int adis_write_reg(struct adis *adis, unsigned int reg,
+> > +int __adis_write_reg(struct adis *adis, unsigned int reg,
+> >  	unsigned int val, unsigned int size);
+> > -int adis_read_reg(struct adis *adis, unsigned int reg,
+> > +int __adis_read_reg(struct adis *adis, unsigned int reg,
+> >  	unsigned int *val, unsigned int size);
+> >  
+> > +/**
+> > + * __adis_write_reg_8() - Write single byte to a register (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the register to be written
+> > + * @value: The value to write
+> > + */
+> > +static inline int __adis_write_reg_8(struct adis *adis, unsigned int reg,
+> > +	uint8_t val)
+> > +{
+> > +	return __adis_write_reg(adis, reg, val, 1);
+> > +}
+> > +
+> > +/**
+> > + * __adis_write_reg_16() - Write 2 bytes to a pair of registers (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @value: Value to be written
+> > + */
+> > +static inline int __adis_write_reg_16(struct adis *adis, unsigned int reg,
+> > +	uint16_t val)
+> > +{
+> > +	return __adis_write_reg(adis, reg, val, 2);
+> > +}
+> > +
+> > +/**
+> > + * __adis_write_reg_32() - write 4 bytes to four registers (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the four register
+> > + * @value: Value to be written
+> > + */
+> > +static inline int __adis_write_reg_32(struct adis *adis, unsigned int reg,
+> > +	uint32_t val)
+> > +{
+> > +	return __adis_write_reg(adis, reg, val, 4);
+> > +}
+> > +
+> > +/**
+> > + * __adis_read_reg_16() - read 2 bytes from a 16-bit register (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @val: The value read back from the device
+> > + */
+> > +static inline int __adis_read_reg_16(struct adis *adis, unsigned int reg,
+> > +	uint16_t *val)
+> > +{
+> > +	unsigned int tmp;
+> > +	int ret;
+> > +
+> > +	ret = __adis_read_reg(adis, reg, &tmp, 2);
+Zero day isn't happy that this can use tmp without it actually being set in the
+__adis_read_reg.
+
+I've added
+	if (ret)
+		return ret;
+> > +	*val = tmp;
+> > +
+> > +	return ret;
+and changed this to return 0;
+
+Same in the 32bit case below.
+
+Hmm. There are quite a few sparse warnings in the adis16400 if anyone fancies
+cleaning them up ;)
 
 Thanks,
 
 Jonathan
 
-> 
-> Thanks for doing this.
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/industrialio-core.c | 17 +++++++++++++++++
-> >  include/linux/iio/iio.h         |  1 +
-> >  2 files changed, 18 insertions(+)
-> > 
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > index 524a686077ca..f72c2dc5f703 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -1238,6 +1238,16 @@ static ssize_t iio_show_dev_name(struct device *dev,
-> >  
-> >  static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
-> >  
-> > +static ssize_t iio_show_dev_label(struct device *dev,
-> > +				 struct device_attribute *attr,
-> > +				 char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	return snprintf(buf, PAGE_SIZE, "%s\n", indio_dev->label);
 > > +}
 > > +
-> > +static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
+> > +/**
+> > + * __adis_read_reg_32() - read 4 bytes from a 32-bit register (unlocked version)
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @val: The value read back from the device
+> > + */
+> > +static inline int __adis_read_reg_32(struct adis *adis, unsigned int reg,
+> > +	uint32_t *val)
+> > +{
+> > +	unsigned int tmp;
+> > +	int ret;
 > > +
-> >  static ssize_t iio_show_timestamp_clock(struct device *dev,
-> >  					struct device_attribute *attr,
-> >  					char *buf)
-> > @@ -1354,6 +1364,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
-> >  
-> >  	if (indio_dev->name)
-> >  		attrcount++;
-> > +	if (indio_dev->label)
-> > +		attrcount++;
-> >  	if (clk)
-> >  		attrcount++;
-> >  
-> > @@ -1376,6 +1388,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
-> >  		indio_dev->chan_attr_group.attrs[attrn++] = &p->dev_attr.attr;
-> >  	if (indio_dev->name)
-> >  		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_name.attr;
-> > +	if (indio_dev->label)
-> > +		indio_dev->chan_attr_group.attrs[attrn++] = &dev_attr_label.attr;
-> >  	if (clk)
-> >  		indio_dev->chan_attr_group.attrs[attrn++] = clk;
-> >  
-> > @@ -1647,6 +1661,9 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
-> >  	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
-> >  		indio_dev->dev.of_node = indio_dev->dev.parent->of_node;
-> >  
-> > +	indio_dev->label = of_get_property(indio_dev->dev.of_node, "label",
-> > +					   NULL);
+> > +	ret = __adis_read_reg(adis, reg, &tmp, 4);
+> > +	*val = tmp;
 > > +
-> >  	ret = iio_check_unique_scan_index(indio_dev);
-> >  	if (ret < 0)
-> >  		return ret;
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 8e132cf819e4..a2527c7ab934 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -553,6 +553,7 @@ struct iio_dev {
-> >  	struct list_head		channel_attr_list;
-> >  	struct attribute_group		chan_attr_group;
-> >  	const char			*name;
-> > +	const char			*label;
-> >  	const struct iio_info		*info;
-> >  	clockid_t			clock_id;
-> >  	struct mutex			info_exist_lock;  
+> > +	return ret;
+> > +}
+> > +
+> > +/**
+> > + * adis_write_reg() - write N bytes to register
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @value: The value to write to device (up to 4 bytes)
+> > + * @size: The size of the @value (in bytes)
+> > + */
+> > +static inline int adis_write_reg(struct adis *adis, unsigned int reg,
+> > +	unsigned int val, unsigned int size)
+> > +{
+> > +	int ret;
+> > +
+> > +	mutex_lock(&adis->state_lock);
+> > +	ret = __adis_write_reg(adis, reg, val, size);
+> > +	mutex_unlock(&adis->state_lock);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +/**
+> > + * adis_read_reg() - read N bytes from register
+> > + * @adis: The adis device
+> > + * @reg: The address of the lower of the two registers
+> > + * @val: The value read back from the device
+> > + * @size: The size of the @val buffer
+> > + */
+> > +static int adis_read_reg(struct adis *adis, unsigned int reg,
+> > +	unsigned int *val, unsigned int size)
+> > +{
+> > +	int ret;
+> > +
+> > +	mutex_lock(&adis->state_lock);
+> > +	ret = __adis_read_reg(adis, reg, val, size);
+> > +	mutex_unlock(&adis->state_lock);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  /**
+> >   * adis_write_reg_8() - Write single byte to a register
+> >   * @adis: The adis device  
 > 
 
