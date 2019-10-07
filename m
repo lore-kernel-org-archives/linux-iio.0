@@ -1,75 +1,70 @@
-Return-Path: <SRS0=e+7m=X7=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=cTxg=YA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB2F1C4360C
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E9AC10F14
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 02:41:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 76F7020867
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Oct 2019 20:03:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 591A72087E
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Oct 2019 02:41:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l9dPuxao"
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="qLMa5Yhy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726626AbfJFUDc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Oct 2019 16:03:32 -0400
-Received: from mail-yw1-f68.google.com ([209.85.161.68]:41380 "EHLO
-        mail-yw1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725865AbfJFUDc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Oct 2019 16:03:32 -0400
-Received: by mail-yw1-f68.google.com with SMTP id 129so4339725ywb.8;
-        Sun, 06 Oct 2019 13:03:31 -0700 (PDT)
+        id S1726960AbfJGClg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Oct 2019 22:41:36 -0400
+Received: from mail-pl1-f193.google.com ([209.85.214.193]:37096 "EHLO
+        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726789AbfJGClg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Oct 2019 22:41:36 -0400
+Received: by mail-pl1-f193.google.com with SMTP id u20so6137299plq.4
+        for <linux-iio@vger.kernel.org>; Sun, 06 Oct 2019 19:41:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Eu3bPlCLOrcM88dTtVn+o9Kw7Prt69iCXEQysv2u4Mc=;
-        b=l9dPuxaoUfOhGdewIo/w1xQfpjhAP0Q8hRqT6D6N8rTOzCll5XAEWHYMlayvCMF0MW
-         2oRgmpsWfPz9oTR0Qdd4rv59oWbQNR5x8gfx9pC9hr63mtSvzxE/c2VMRnJV7Oq/zqFF
-         XwtV7zwIcHIgfYU0aU2kStFAiMtMONF5q9WFeFfvRiQHEpsjN45Ahh2QRTpDzlxZo8y6
-         75xZ6liLaECIZeNC5UvJxM7gPjwM+XRSZ1oWLRzc0k084IM91QV9E4amMPSucZ6lQMjh
-         mDAWRf0lnGnbn9kDo5A2cz9Kp/5yjsKNr96naqbSB7wH8Qw5TIg31hYQMRdwrNlYS9fV
-         mI3Q==
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e6YCPvkqUEYPdp7Issb3rlEPCn0qCQu25RHzf2YaVvc=;
+        b=qLMa5YhyILm6yO8Na5KLscg9DAuCg9v6D6QUckNpATGWtNXINlxvAFEr8EDkVKe/qR
+         bQTb6vxps7Of7X4bDSdAasEp+piPWdS5YeumOTPaEvczVzJ3bNPySggN+IBIqwMu5J7g
+         dkLNrMMMENSnesQyX+c+AvNNhSO2L9OwX1g28nsyT0wIT55EtrLeXz9xe89a9dd9nH8W
+         hza4lsO3870R2hRFuM4DNTh3FFYBCYEAF7BYGFICzb8ntHsa+7LCDiTWc+FAR+uKYJ9r
+         FFo9/V1aNdmd2h8W8ywNv/WjEZs9diztFj7CXIaRTi3t7/sXEidSodSKw/phasIQjdVx
+         +XUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Eu3bPlCLOrcM88dTtVn+o9Kw7Prt69iCXEQysv2u4Mc=;
-        b=VGsQ6moFS4OY9dUaE7ZhQhGoBFtQk4fkCfJlOrMs7vuyKHJnulhJXnSIkYWrAHnE/5
-         idWHpjMKWajSU/nkJMh6tcuMH9O6qmOD5u7k8VkGp69I6rfu6WBKQ87tC0skiOr7a72d
-         ufWnmaNHinbdDCeH4bVPO8GlwmG1Ea+RR7W9IR+gf9HYBCChrVxhHCMi6OOLZOG5TTjB
-         E9SWAasi89WClsAdVFAP9Tf+dOxwTL4W6xC60tOlK3GVgCw1EKZ2L4qpESGx7GRCWcUm
-         sYx9TLw+/xXNVXv2qnEIwALCtmL2lN6QvcOy8HCWle66c4t/FoFZQEQ+slOhHwcj5hmn
-         e1jg==
-X-Gm-Message-State: APjAAAWdgLORZNHJbvebKXA1m8peTSTzVFH2hTuvPWp9P2GGSqTrKuOq
-        5GmCaHS4mQfJqSD773iUM4o=
-X-Google-Smtp-Source: APXvYqzFHiSO3ZgF18gj8cBoFfgJ7wKRoRDVxYKV7JVaYeG6TvZ1OOH+9ueldn0a7RhIDCUv8j+OVQ==
-X-Received: by 2002:a0d:dbc4:: with SMTP id d187mr18511214ywe.158.1570392210604;
-        Sun, 06 Oct 2019 13:03:30 -0700 (PDT)
-Received: from localhost.localdomain (072-189-084-142.res.spectrum.com. [72.189.84.142])
-        by smtp.gmail.com with ESMTPSA id x16sm3765266ywx.103.2019.10.06.13.03.29
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=e6YCPvkqUEYPdp7Issb3rlEPCn0qCQu25RHzf2YaVvc=;
+        b=f6oFxrzB+G/hAACU0EZBNQFdtRSKECiZnHDgI3beR9p6uqm9c848hQbQ+5ZUnMuM/G
+         79MUyPav/xqNeyYyhZqBeMPaiGYDjtWCrtc/Q0knGVsaXs5qGxUCXDO3qQ38elXyzgE4
+         XiTYY5mswQL8OUJH2n1I1bEnbhYetXkwxfta40c5EWO9Y0NbObrPR8gYXbw2a3foOMJY
+         Kr3j0TnaouWaMj6nhKUGeorRxQ5AcBy5lhVtfOT5NGBIXeK8knFVilhmcD5LtPFXF4WU
+         /c/nA6Bl2wFzWNAHtJzcLDfIiQTjJ2JXGxz6PbBkBJBk675/hkjU8cbXcT1FXzn/UAy6
+         L1pw==
+X-Gm-Message-State: APjAAAXg4KAYRpAeC7+sntlFZ6amH4KZHLAN3E+t5JEgrn593uf7JrW4
+        3E/Vcw9xiG5v1ruIGiue7K72lw==
+X-Google-Smtp-Source: APXvYqx0eJ2GKQ0KLH9t4w++nwR6ZWbjydgKAz1kNgkUTHi/fax0ACyxrNqhAZbAuGoiWHJ9jT0YvA==
+X-Received: by 2002:a17:902:8b89:: with SMTP id ay9mr27184492plb.81.1570416094190;
+        Sun, 06 Oct 2019 19:41:34 -0700 (PDT)
+Received: from debian-brgl.local (96-95-220-76-static.hfc.comcastbusiness.net. [96.95.220.76])
+        by smtp.gmail.com with ESMTPSA id 16sm12444822pfn.35.2019.10.06.19.41.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Oct 2019 13:03:29 -0700 (PDT)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     jic23@kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, benjamin.gaignard@linaro.org,
-        david@lechnology.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v5 1/3] counter: Simplify the count_read and count_write callbacks
-Date:   Sun,  6 Oct 2019 16:03:09 -0400
-Message-Id: <0ddcfa1de2ff2aface81a4fbe8a5a55b10ad23bf.1570391994.git.vilhelm.gray@gmail.com>
+        Sun, 06 Oct 2019 19:41:33 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v2] iio: pressure: bmp280: use devm action and remove labels from probe
+Date:   Mon,  7 Oct 2019 04:41:31 +0200
+Message-Id: <20191007024131.22708-1-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <cover.1570391994.git.vilhelm.gray@gmail.com>
-References: <cover.1570391994.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -77,546 +72,212 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The count_read and count_write callbacks are simplified to pass val as
-unsigned long rather than as an opaque data structure. The opaque
-counter_count_read_value and counter_count_write_value structures,
-counter_count_value_type enum, and relevant counter_count_read_value_set
-and counter_count_write_value_get functions, are removed as they are no
-longer used.
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Cc: Patrick Havelange <patrick.havelange@essensium.com>
-Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Acked-by: David Lechner <david@lechnology.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+We can drop some duplicate code if we use devm_action for disabling
+regulators and pm and the managed variant of iio_device_register().
+
+This allows us to completely remove all remove() callbacks from both
+i2c and spi code.
+
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
- drivers/counter/104-quad-8.c        |  33 +++------
- drivers/counter/counter.c           | 101 +++++-----------------------
- drivers/counter/ftm-quaddec.c       |  14 ++--
- drivers/counter/stm32-lptimer-cnt.c |   5 +-
- drivers/counter/stm32-timer-cnt.c   |  17 ++---
- drivers/counter/ti-eqep.c           |  19 ++----
- include/linux/counter.h             |  74 +++-----------------
- 7 files changed, 51 insertions(+), 212 deletions(-)
+v1 -> v2:
+- squash the patches using devm_iio_device_register() and devm_action
+  to keep the changes bisectable
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 00b113f4b958..17e67a84777d 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -562,11 +562,10 @@ static const struct iio_chan_spec quad8_channels[] = {
- };
- 
- static int quad8_signal_read(struct counter_device *counter,
--	struct counter_signal *signal, struct counter_signal_read_value *val)
-+	struct counter_signal *signal, enum counter_signal_value *val)
- {
- 	const struct quad8_iio *const priv = counter->priv;
- 	unsigned int state;
--	enum counter_signal_level level;
- 
- 	/* Only Index signal levels can be read */
- 	if (signal->id < 16)
-@@ -575,22 +574,19 @@ static int quad8_signal_read(struct counter_device *counter,
- 	state = inb(priv->base + QUAD8_REG_INDEX_INPUT_LEVELS)
- 		& BIT(signal->id - 16);
- 
--	level = (state) ? COUNTER_SIGNAL_LEVEL_HIGH : COUNTER_SIGNAL_LEVEL_LOW;
--
--	counter_signal_read_value_set(val, COUNTER_SIGNAL_LEVEL, &level);
-+	*val = (state) ? COUNTER_SIGNAL_HIGH : COUNTER_SIGNAL_LOW;
- 
+ drivers/iio/pressure/bmp280-core.c | 62 +++++++++++++++---------------
+ drivers/iio/pressure/bmp280-i2c.c  |  6 ---
+ drivers/iio/pressure/bmp280-spi.c  |  6 ---
+ drivers/iio/pressure/bmp280.h      |  1 -
+ 4 files changed, 30 insertions(+), 45 deletions(-)
+
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index c2988dbdb1a7..79254dd26dfd 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -984,6 +984,22 @@ static int bmp085_fetch_eoc_irq(struct device *dev,
  	return 0;
  }
  
- static int quad8_count_read(struct counter_device *counter,
--	struct counter_count *count, struct counter_count_read_value *val)
-+	struct counter_count *count, unsigned long *val)
- {
- 	const struct quad8_iio *const priv = counter->priv;
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned int flags;
- 	unsigned int borrow;
- 	unsigned int carry;
--	unsigned long position;
- 	int i;
++static void bmp280_pm_disable(void *data)
++{
++	struct device *dev = data;
++
++	pm_runtime_get_sync(dev);
++	pm_runtime_put_noidle(dev);
++	pm_runtime_disable(dev);
++}
++
++static void bmp280_regulators_disable(void *data)
++{
++	struct regulator_bulk_data *supplies = data;
++
++	regulator_bulk_disable(BMP280_NUM_SUPPLIES, supplies);
++}
++
+ int bmp280_common_probe(struct device *dev,
+ 			struct regmap *regmap,
+ 			unsigned int chip,
+@@ -1055,6 +1071,11 @@ int bmp280_common_probe(struct device *dev,
+ 		return ret;
+ 	}
  
- 	flags = inb(base_offset + 1);
-@@ -598,36 +594,27 @@ static int quad8_count_read(struct counter_device *counter,
- 	carry = !!(flags & QUAD8_FLAG_CT);
++	ret = devm_add_action_or_reset(dev, bmp280_regulators_disable,
++				       data->supplies);
++	if (ret)
++		return ret;
++
+ 	/* Wait to make sure we started up properly */
+ 	usleep_range(data->start_up_time, data->start_up_time + 100);
  
- 	/* Borrow XOR Carry effectively doubles count range */
--	position = (unsigned long)(borrow ^ carry) << 24;
-+	*val = (unsigned long)(borrow ^ carry) << 24;
+@@ -1069,17 +1090,16 @@ int bmp280_common_probe(struct device *dev,
+ 	data->regmap = regmap;
+ 	ret = regmap_read(regmap, BMP280_REG_ID, &chip_id);
+ 	if (ret < 0)
+-		goto out_disable_regulators;
++		return ret;
+ 	if (chip_id != chip) {
+ 		dev_err(dev, "bad chip id: expected %x got %x\n",
+ 			chip, chip_id);
+-		ret = -EINVAL;
+-		goto out_disable_regulators;
++		return -EINVAL;
+ 	}
  
- 	/* Reset Byte Pointer; transfer Counter to Output Latch */
- 	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_CNTR_OUT,
- 	     base_offset + 1);
+ 	ret = data->chip_info->chip_config(data);
+ 	if (ret < 0)
+-		goto out_disable_regulators;
++		return ret;
  
- 	for (i = 0; i < 3; i++)
--		position |= (unsigned long)inb(base_offset) << (8 * i);
--
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &position);
-+		*val |= (unsigned long)inb(base_offset) << (8 * i);
+ 	dev_set_drvdata(dev, indio_dev);
  
- 	return 0;
- }
+@@ -1093,14 +1113,14 @@ int bmp280_common_probe(struct device *dev,
+ 		if (ret < 0) {
+ 			dev_err(data->dev,
+ 				"failed to read calibration coefficients\n");
+-			goto out_disable_regulators;
++			return ret;
+ 		}
+ 	} else if (chip_id == BMP280_CHIP_ID || chip_id == BME280_CHIP_ID) {
+ 		ret = bmp280_read_calib(data, &data->calib.bmp280, chip_id);
+ 		if (ret < 0) {
+ 			dev_err(data->dev,
+ 				"failed to read calibration coefficients\n");
+-			goto out_disable_regulators;
++			return ret;
+ 		}
+ 	}
  
- static int quad8_count_write(struct counter_device *counter,
--	struct counter_count *count, struct counter_count_write_value *val)
-+	struct counter_count *count, unsigned long val)
- {
- 	const struct quad8_iio *const priv = counter->priv;
- 	const int base_offset = priv->base + 2 * count->id;
--	int err;
--	unsigned long position;
- 	int i;
+@@ -1112,7 +1132,7 @@ int bmp280_common_probe(struct device *dev,
+ 	if (irq > 0 || (chip_id  == BMP180_CHIP_ID)) {
+ 		ret = bmp085_fetch_eoc_irq(dev, name, irq, data);
+ 		if (ret)
+-			goto out_disable_regulators;
++			return ret;
+ 	}
  
--	err = counter_count_write_value_get(&position, COUNTER_COUNT_POSITION,
--					    val);
--	if (err)
--		return err;
--
- 	/* Only 24-bit values are supported */
--	if (position > 0xFFFFFF)
-+	if (val > 0xFFFFFF)
- 		return -EINVAL;
+ 	/* Enable runtime PM */
+@@ -1127,36 +1147,14 @@ int bmp280_common_probe(struct device *dev,
+ 	pm_runtime_use_autosuspend(dev);
+ 	pm_runtime_put(dev);
  
- 	/* Reset Byte Pointer */
-@@ -635,7 +622,7 @@ static int quad8_count_write(struct counter_device *counter,
- 
- 	/* Counter can only be set via Preset Register */
- 	for (i = 0; i < 3; i++)
--		outb(position >> (8 * i), base_offset);
-+		outb(val >> (8 * i), base_offset);
- 
- 	/* Transfer Preset Register to Counter */
- 	outb(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, base_offset + 1);
-@@ -644,9 +631,9 @@ static int quad8_count_write(struct counter_device *counter,
- 	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
- 
- 	/* Set Preset Register back to original value */
--	position = priv->preset[count->id];
-+	val = priv->preset[count->id];
- 	for (i = 0; i < 3; i++)
--		outb(position >> (8 * i), base_offset);
-+		outb(val >> (8 * i), base_offset);
- 
- 	/* Reset Borrow, Carry, Compare, and Sign flags */
- 	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
-diff --git a/drivers/counter/counter.c b/drivers/counter/counter.c
-index 106bc7180cd8..6a683d086008 100644
---- a/drivers/counter/counter.c
-+++ b/drivers/counter/counter.c
-@@ -220,86 +220,6 @@ ssize_t counter_device_enum_available_read(struct counter_device *counter,
- }
- EXPORT_SYMBOL_GPL(counter_device_enum_available_read);
- 
--static const char *const counter_signal_level_str[] = {
--	[COUNTER_SIGNAL_LEVEL_LOW] = "low",
--	[COUNTER_SIGNAL_LEVEL_HIGH] = "high"
--};
--
--/**
-- * counter_signal_read_value_set - set counter_signal_read_value data
-- * @val:	counter_signal_read_value structure to set
-- * @type:	property Signal data represents
-- * @data:	Signal data
-- *
-- * This function sets an opaque counter_signal_read_value structure with the
-- * provided Signal data.
-- */
--void counter_signal_read_value_set(struct counter_signal_read_value *const val,
--				   const enum counter_signal_value_type type,
--				   void *const data)
--{
--	if (type == COUNTER_SIGNAL_LEVEL)
--		val->len = sprintf(val->buf, "%s\n",
--				   counter_signal_level_str[*(enum counter_signal_level *)data]);
--	else
--		val->len = 0;
--}
--EXPORT_SYMBOL_GPL(counter_signal_read_value_set);
--
--/**
-- * counter_count_read_value_set - set counter_count_read_value data
-- * @val:	counter_count_read_value structure to set
-- * @type:	property Count data represents
-- * @data:	Count data
-- *
-- * This function sets an opaque counter_count_read_value structure with the
-- * provided Count data.
-- */
--void counter_count_read_value_set(struct counter_count_read_value *const val,
--				  const enum counter_count_value_type type,
--				  void *const data)
--{
--	switch (type) {
--	case COUNTER_COUNT_POSITION:
--		val->len = sprintf(val->buf, "%lu\n", *(unsigned long *)data);
--		break;
--	default:
--		val->len = 0;
--	}
--}
--EXPORT_SYMBOL_GPL(counter_count_read_value_set);
--
--/**
-- * counter_count_write_value_get - get counter_count_write_value data
-- * @data:	Count data
-- * @type:	property Count data represents
-- * @val:	counter_count_write_value structure containing data
-- *
-- * This function extracts Count data from the provided opaque
-- * counter_count_write_value structure and stores it at the address provided by
-- * @data.
-- *
-- * RETURNS:
-- * 0 on success, negative error number on failure.
-- */
--int counter_count_write_value_get(void *const data,
--				  const enum counter_count_value_type type,
--				  const struct counter_count_write_value *const val)
--{
--	int err;
--
--	switch (type) {
--	case COUNTER_COUNT_POSITION:
--		err = kstrtoul(val->buf, 0, data);
--		if (err)
--			return err;
--		break;
--	}
+-	ret = iio_device_register(indio_dev);
++	ret = devm_add_action_or_reset(dev, bmp280_pm_disable, dev);
+ 	if (ret)
+-		goto out_runtime_pm_disable;
 -
 -	return 0;
++		return ret;
+ 
+-out_runtime_pm_disable:
+-	pm_runtime_get_sync(data->dev);
+-	pm_runtime_put_noidle(data->dev);
+-	pm_runtime_disable(data->dev);
+-out_disable_regulators:
+-	regulator_bulk_disable(BMP280_NUM_SUPPLIES, data->supplies);
+-	return ret;
++	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL(bmp280_common_probe);
+ 
+-int bmp280_common_remove(struct device *dev)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct bmp280_data *data = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-	pm_runtime_get_sync(data->dev);
+-	pm_runtime_put_noidle(data->dev);
+-	pm_runtime_disable(data->dev);
+-	regulator_bulk_disable(BMP280_NUM_SUPPLIES, data->supplies);
+-	return 0;
 -}
--EXPORT_SYMBOL_GPL(counter_count_write_value_get);
+-EXPORT_SYMBOL(bmp280_common_remove);
 -
- struct counter_attr_parm {
- 	struct counter_device_attr_group *group;
- 	const char *prefix;
-@@ -369,6 +289,11 @@ struct counter_signal_unit {
- 	struct counter_signal *signal;
+ #ifdef CONFIG_PM
+ static int bmp280_runtime_suspend(struct device *dev)
+ {
+diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
+index acd9a3784fb4..3109c8e2cc11 100644
+--- a/drivers/iio/pressure/bmp280-i2c.c
++++ b/drivers/iio/pressure/bmp280-i2c.c
+@@ -38,11 +38,6 @@ static int bmp280_i2c_probe(struct i2c_client *client,
+ 				   client->irq);
+ }
+ 
+-static int bmp280_i2c_remove(struct i2c_client *client)
+-{
+-	return bmp280_common_remove(&client->dev);
+-}
+-
+ static const struct acpi_device_id bmp280_acpi_i2c_match[] = {
+ 	{"BMP0280", BMP280_CHIP_ID },
+ 	{"BMP0180", BMP180_CHIP_ID },
+@@ -82,7 +77,6 @@ static struct i2c_driver bmp280_i2c_driver = {
+ 		.pm = &bmp280_dev_pm_ops,
+ 	},
+ 	.probe		= bmp280_i2c_probe,
+-	.remove		= bmp280_i2c_remove,
+ 	.id_table	= bmp280_i2c_id,
  };
- 
-+static const char *const counter_signal_value_str[] = {
-+	[COUNTER_SIGNAL_LOW] = "low",
-+	[COUNTER_SIGNAL_HIGH] = "high"
-+};
-+
- static ssize_t counter_signal_show(struct device *dev,
- 				   struct device_attribute *attr, char *buf)
- {
-@@ -377,13 +302,13 @@ static ssize_t counter_signal_show(struct device *dev,
- 	const struct counter_signal_unit *const component = devattr->component;
- 	struct counter_signal *const signal = component->signal;
- 	int err;
--	struct counter_signal_read_value val = { .buf = buf };
-+	enum counter_signal_value val;
- 
- 	err = counter->ops->signal_read(counter, signal, &val);
- 	if (err)
- 		return err;
- 
--	return val.len;
-+	return sprintf(buf, "%s\n", counter_signal_value_str[val]);
+ module_i2c_driver(bmp280_i2c_driver);
+diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+index 9d57b7a3b134..625b86878ad8 100644
+--- a/drivers/iio/pressure/bmp280-spi.c
++++ b/drivers/iio/pressure/bmp280-spi.c
+@@ -86,11 +86,6 @@ static int bmp280_spi_probe(struct spi_device *spi)
+ 				   spi->irq);
  }
  
- struct counter_name_unit {
-@@ -788,13 +713,13 @@ static ssize_t counter_count_show(struct device *dev,
- 	const struct counter_count_unit *const component = devattr->component;
- 	struct counter_count *const count = component->count;
- 	int err;
--	struct counter_count_read_value val = { .buf = buf };
-+	unsigned long val;
- 
- 	err = counter->ops->count_read(counter, count, &val);
- 	if (err)
- 		return err;
- 
--	return val.len;
-+	return sprintf(buf, "%lu\n", val);
- }
- 
- static ssize_t counter_count_store(struct device *dev,
-@@ -806,9 +731,13 @@ static ssize_t counter_count_store(struct device *dev,
- 	const struct counter_count_unit *const component = devattr->component;
- 	struct counter_count *const count = component->count;
- 	int err;
--	struct counter_count_write_value val = { .buf = buf };
-+	unsigned long val;
-+
-+	err = kstrtoul(buf, 0, &val);
-+	if (err)
-+		return err;
- 
--	err = counter->ops->count_write(counter, count, &val);
-+	err = counter->ops->count_write(counter, count, val);
- 	if (err)
- 		return err;
- 
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index 4046aa9f9234..c2b3fdfd8b77 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -178,31 +178,25 @@ static const enum counter_count_function ftm_quaddec_count_functions[] = {
- 
- static int ftm_quaddec_count_read(struct counter_device *counter,
- 				  struct counter_count *count,
--				  struct counter_count_read_value *val)
-+				  unsigned long *val)
- {
- 	struct ftm_quaddec *const ftm = counter->priv;
- 	uint32_t cntval;
- 
- 	ftm_read(ftm, FTM_CNT, &cntval);
- 
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cntval);
-+	*val = cntval;
- 
- 	return 0;
- }
- 
- static int ftm_quaddec_count_write(struct counter_device *counter,
- 				   struct counter_count *count,
--				   struct counter_count_write_value *val)
-+				   const unsigned long val)
- {
- 	struct ftm_quaddec *const ftm = counter->priv;
--	u32 cnt;
--	int err;
- 
--	err = counter_count_write_value_get(&cnt, COUNTER_COUNT_POSITION, val);
--	if (err)
--		return err;
+-static int bmp280_spi_remove(struct spi_device *spi)
+-{
+-	return bmp280_common_remove(&spi->dev);
+-}
 -
--	if (cnt != 0) {
-+	if (val != 0) {
- 		dev_warn(&ftm->pdev->dev, "Can only accept '0' as new counter value\n");
- 		return -EINVAL;
- 	}
-diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
-index 28b63645c411..8e276eb655f5 100644
---- a/drivers/counter/stm32-lptimer-cnt.c
-+++ b/drivers/counter/stm32-lptimer-cnt.c
-@@ -377,8 +377,7 @@ static enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+ static const struct of_device_id bmp280_of_spi_match[] = {
+ 	{ .compatible = "bosch,bmp085", },
+ 	{ .compatible = "bosch,bmp180", },
+@@ -118,7 +113,6 @@ static struct spi_driver bmp280_spi_driver = {
+ 	},
+ 	.id_table = bmp280_spi_id,
+ 	.probe = bmp280_spi_probe,
+-	.remove = bmp280_spi_remove,
  };
+ module_spi_driver(bmp280_spi_driver);
  
- static int stm32_lptim_cnt_read(struct counter_device *counter,
--				struct counter_count *count,
--				struct counter_count_read_value *val)
-+				struct counter_count *count, unsigned long *val)
- {
- 	struct stm32_lptim_cnt *const priv = counter->priv;
- 	u32 cnt;
-@@ -388,7 +387,7 @@ static int stm32_lptim_cnt_read(struct counter_device *counter,
- 	if (ret)
- 		return ret;
+diff --git a/drivers/iio/pressure/bmp280.h b/drivers/iio/pressure/bmp280.h
+index eda50ef65706..57ba0e85db91 100644
+--- a/drivers/iio/pressure/bmp280.h
++++ b/drivers/iio/pressure/bmp280.h
+@@ -112,7 +112,6 @@ int bmp280_common_probe(struct device *dev,
+ 			unsigned int chip,
+ 			const char *name,
+ 			int irq);
+-int bmp280_common_remove(struct device *dev);
  
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cnt);
-+	*val = cnt;
- 
- 	return 0;
- }
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index b61135b63ee8..3eafccec3beb 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -48,34 +48,27 @@ static enum counter_count_function stm32_count_functions[] = {
- };
- 
- static int stm32_count_read(struct counter_device *counter,
--			    struct counter_count *count,
--			    struct counter_count_read_value *val)
-+			    struct counter_count *count, unsigned long *val)
- {
- 	struct stm32_timer_cnt *const priv = counter->priv;
- 	u32 cnt;
- 
- 	regmap_read(priv->regmap, TIM_CNT, &cnt);
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cnt);
-+	*val = cnt;
- 
- 	return 0;
- }
- 
- static int stm32_count_write(struct counter_device *counter,
- 			     struct counter_count *count,
--			     struct counter_count_write_value *val)
-+			     const unsigned long val)
- {
- 	struct stm32_timer_cnt *const priv = counter->priv;
--	u32 cnt;
--	int err;
--
--	err = counter_count_write_value_get(&cnt, COUNTER_COUNT_POSITION, val);
--	if (err)
--		return err;
- 
--	if (cnt > priv->ceiling)
-+	if (val > priv->ceiling)
- 		return -EINVAL;
- 
--	return regmap_write(priv->regmap, TIM_CNT, cnt);
-+	return regmap_write(priv->regmap, TIM_CNT, val);
- }
- 
- static int stm32_count_function_get(struct counter_device *counter,
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index 4b3ef2449c06..1ff07faef27f 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -93,35 +93,28 @@ struct ti_eqep_cnt {
- };
- 
- static int ti_eqep_count_read(struct counter_device *counter,
--			      struct counter_count *count,
--			      struct counter_count_read_value *val)
-+			      struct counter_count *count, unsigned long *val)
- {
- 	struct ti_eqep_cnt *priv = counter->priv;
- 	u32 cnt;
- 
- 	regmap_read(priv->regmap32, QPOSCNT, &cnt);
--	counter_count_read_value_set(val, COUNTER_COUNT_POSITION, &cnt);
-+	*val = cnt;
- 
- 	return 0;
- }
- 
- static int ti_eqep_count_write(struct counter_device *counter,
--			       struct counter_count *count,
--			       struct counter_count_write_value *val)
-+			       struct counter_count *count, unsigned long val)
- {
- 	struct ti_eqep_cnt *priv = counter->priv;
--	u32 cnt, max;
--	int err;
--
--	err = counter_count_write_value_get(&cnt, COUNTER_COUNT_POSITION, val);
--	if (err)
--		return err;
-+	u32 max;
- 
- 	regmap_read(priv->regmap32, QPOSMAX, &max);
--	if (cnt > max)
-+	if (val > max)
- 		return -EINVAL;
- 
--	return regmap_write(priv->regmap32, QPOSCNT, cnt);
-+	return regmap_write(priv->regmap32, QPOSCNT, val);
- }
- 
- static int ti_eqep_function_get(struct counter_device *counter,
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index a061cdcdef7c..32fb4d8cc3fd 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -290,53 +290,22 @@ struct counter_device_state {
- 	const struct attribute_group **groups;
- };
- 
--/**
-- * struct counter_signal_read_value - Opaque Signal read value
-- * @buf:	string representation of Signal read value
-- * @len:	length of string in @buf
-- */
--struct counter_signal_read_value {
--	char *buf;
--	size_t len;
--};
--
--/**
-- * struct counter_count_read_value - Opaque Count read value
-- * @buf:	string representation of Count read value
-- * @len:	length of string in @buf
-- */
--struct counter_count_read_value {
--	char *buf;
--	size_t len;
--};
--
--/**
-- * struct counter_count_write_value - Opaque Count write value
-- * @buf:	string representation of Count write value
-- */
--struct counter_count_write_value {
--	const char *buf;
-+enum counter_signal_value {
-+	COUNTER_SIGNAL_LOW = 0,
-+	COUNTER_SIGNAL_HIGH
- };
- 
- /**
-  * struct counter_ops - Callbacks from driver
-  * @signal_read:	optional read callback for Signal attribute. The read
-  *			value of the respective Signal should be passed back via
-- *			the val parameter. val points to an opaque type which
-- *			should be set only by calling the
-- *			counter_signal_read_value_set function from within the
-- *			signal_read callback.
-+ *			the val parameter.
-  * @count_read:		optional read callback for Count attribute. The read
-  *			value of the respective Count should be passed back via
-- *			the val parameter. val points to an opaque type which
-- *			should be set only by calling the
-- *			counter_count_read_value_set function from within the
-- *			count_read callback.
-+ *			the val parameter.
-  * @count_write:	optional write callback for Count attribute. The write
-  *			value for the respective Count is passed in via the val
-- *			parameter. val points to an opaque type which should be
-- *			accessed only by calling the
-- *			counter_count_write_value_get function.
-+ *			parameter.
-  * @function_get:	function to get the current count function mode. Returns
-  *			0 on success and negative error code on error. The index
-  *			of the respective Count's returned function mode should
-@@ -355,13 +324,11 @@ struct counter_count_write_value {
- struct counter_ops {
- 	int (*signal_read)(struct counter_device *counter,
- 			   struct counter_signal *signal,
--			   struct counter_signal_read_value *val);
-+			   enum counter_signal_value *val);
- 	int (*count_read)(struct counter_device *counter,
--			  struct counter_count *count,
--			  struct counter_count_read_value *val);
-+			  struct counter_count *count, unsigned long *val);
- 	int (*count_write)(struct counter_device *counter,
--			   struct counter_count *count,
--			   struct counter_count_write_value *val);
-+			   struct counter_count *count, unsigned long val);
- 	int (*function_get)(struct counter_device *counter,
- 			    struct counter_count *count, size_t *function);
- 	int (*function_set)(struct counter_device *counter,
-@@ -477,29 +444,6 @@ struct counter_device {
- 	void *priv;
- };
- 
--enum counter_signal_level {
--	COUNTER_SIGNAL_LEVEL_LOW = 0,
--	COUNTER_SIGNAL_LEVEL_HIGH
--};
--
--enum counter_signal_value_type {
--	COUNTER_SIGNAL_LEVEL = 0
--};
--
--enum counter_count_value_type {
--	COUNTER_COUNT_POSITION = 0,
--};
--
--void counter_signal_read_value_set(struct counter_signal_read_value *const val,
--				   const enum counter_signal_value_type type,
--				   void *const data);
--void counter_count_read_value_set(struct counter_count_read_value *const val,
--				  const enum counter_count_value_type type,
--				  void *const data);
--int counter_count_write_value_get(void *const data,
--				  const enum counter_count_value_type type,
--				  const struct counter_count_write_value *const val);
--
- int counter_register(struct counter_device *const counter);
- void counter_unregister(struct counter_device *const counter);
- int devm_counter_register(struct device *dev,
+ /* PM ops */
+ extern const struct dev_pm_ops bmp280_dev_pm_ops;
 -- 
 2.23.0
 
