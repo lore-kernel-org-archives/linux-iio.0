@@ -1,4 +1,4 @@
-Return-Path: <SRS0=R+cn=YB=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=YWMD=YC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
@@ -7,1284 +7,1201 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93FBC10F14
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Oct 2019 15:23:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA95ECE58D
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Oct 2019 09:45:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 811DD2070B
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Oct 2019 15:23:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD3C121721
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Oct 2019 09:45:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="X6zNwuiM"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sF6fRa7q"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726066AbfJHPXt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Oct 2019 11:23:49 -0400
-Received: from ns.pmeerw.net ([84.19.176.117]:57590 "EHLO ns.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725989AbfJHPXt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Oct 2019 11:23:49 -0400
-Received: by ns.pmeerw.net (Postfix, from userid 1000)
-        id 54B10E0654; Tue,  8 Oct 2019 17:23:46 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
-        t=1570548226; bh=QOre1B/a4O3wnBpIkKWDKo6xA+rQg4cwuQib8eUyphU=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=X6zNwuiM+2dxwI96Wc5CeFzwXVqG1kCIh1H8hrwvuulJsNqwY3iapj1oTwLB6R6A/
-         3VdSUz8DC7SZ3HFC85lLXH/C6mAFqSKwnStlbv7lKQWJEuBS8Qx3iZ0HsCreyMoahK
-         IWtzMK33eDQRiDxDi3TU1iPngL5+pOh94+i76yVw=
-Received: from localhost (localhost [127.0.0.1])
-        by ns.pmeerw.net (Postfix) with ESMTP id 2D856E02B7;
-        Tue,  8 Oct 2019 17:23:46 +0200 (CEST)
-Date:   Tue, 8 Oct 2019 17:23:46 +0200 (CEST)
-From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Dan Robertson <dan@dlrobertson.com>
-cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: (bma400) add driver for the BMA400
-In-Reply-To: <20191006093754.61a12172@archlinux>
-Message-ID: <alpine.DEB.2.21.1910081706050.10949@vps.pmeerw.net>
-References: <20190925013941.20431-1-dan@dlrobertson.com>        <20190925013941.20431-2-dan@dlrobertson.com> <20191006093754.61a12172@archlinux>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S1729747AbfJIJpg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Oct 2019 05:45:36 -0400
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:35109 "EHLO
+        mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729742AbfJIJpf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Oct 2019 05:45:35 -0400
+Received: by mail-pf1-f194.google.com with SMTP id 205so1284278pfw.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Oct 2019 02:45:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=TlxMmmyE8JkeV2ooiODQQmX/uuD09TXvS7GyX1ZOprY=;
+        b=sF6fRa7qbH7zIKhrHhf3BGhBhB+zZF0wUayYlD8ALa4CERvlqmNWSEiI6/IHu74c5K
+         PdNWEpD3nSN7wk3AfBFGkx8TcAOj5/yYB0NJ9kj8eSNqF7TgawIdUYLKsKwJ+qnFvwZg
+         ekXZ07uTcP0yFRYgWif9XWrh6WidV+Qt3/Kpb9yMXtkAuecxBsoQjuCQAn29s0YNy7Kf
+         esPjh67hjXB1CCBjAUx2pZiZyuYelktz7iumxSA0lHKG2kZO3UVW+LIIt+fjIeMJ81lM
+         Hz3ehTJPzknn0YdZlSccw34TzdXIR0weyScWv2xxvf5p+XSJhbx1wyxPJ+XeyB6lXyU+
+         GC4g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=TlxMmmyE8JkeV2ooiODQQmX/uuD09TXvS7GyX1ZOprY=;
+        b=VjjcGHuEwRcJadTwyNu4PFmGwTz9DgJkcYjfHu0R/5b4oKGqQjLooqYD9pRNL3ExSI
+         yD7suSsE68FTyFQIglFEw5cWJgDhjeF4ecu7VT2j1ykbbdb2HVpmj3wbSJCrkmxa6uTo
+         DR74q6Ljpt6Lz+nbcC4zBBrfzBMzmM/C/GN2kKucSYbLFKIHbibQpgVx17V+Z2PG4ztX
+         uGlPzxH0ppYZaC8nkeyoopXFy4FsOoOb1uxId9C4of0fUtkSTA07mr1fm7F1Sb6mKUOE
+         WqXLquTFlf5TvTFff4JH/uNAuvcfEV2EIb64QQwztSMUUHWy0yq1Qs+FaQgbQl8yR9or
+         3H7Q==
+X-Gm-Message-State: APjAAAV8nnYo6PEmAFDvu+4r/LeqynGS83mGtLETHCX80EivjARg3AGU
+        5jRqRYC4Ls6jcj7nolHCQ98m
+X-Google-Smtp-Source: APXvYqyOg/U+trfPLP+BDi945VlsbVFXTSpeY45wIEXda52GydCUZ5+9LSRcc1rxJREwJAh4H+20/g==
+X-Received: by 2002:a63:287:: with SMTP id 129mr3335661pgc.190.1570614333608;
+        Wed, 09 Oct 2019 02:45:33 -0700 (PDT)
+Received: from Mani-XPS-13-9360 ([103.59.132.163])
+        by smtp.gmail.com with ESMTPSA id 192sm3255090pfb.110.2019.10.09.02.45.28
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 09 Oct 2019 02:45:32 -0700 (PDT)
+Date:   Wed, 9 Oct 2019 15:15:24 +0530
+From:   Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH 2/2] iio: light: Add support for ADUX1020 sensor
+Message-ID: <20191009094524.GA17962@Mani-XPS-13-9360>
+References: <20191007101027.8383-1-manivannan.sadhasivam@linaro.org>
+ <20191007101027.8383-3-manivannan.sadhasivam@linaro.org>
+ <30c4a0f9aff5a40879d6839ad8a5ce40565f0923.camel@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <30c4a0f9aff5a40879d6839ad8a5ce40565f0923.camel@analog.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 6 Oct 2019, Jonathan Cameron wrote:
+Hi Ardelean,
 
-> On Wed, 25 Sep 2019 01:39:41 +0000
-> Dan Robertson <dan@dlrobertson.com> wrote:
-> 
-> > Add a IIO driver for the Bosch BMA400 3-axes ultra-low power accelerometer.
-> > The driver supports reading from the acceleration and temperature
-> > registers. The driver also supports reading and configuring the output data
-> > rate, oversampling ratio, and scale.
+Thanks for the quick review!
 
-some more comments (on top of Jonathan's)
- 
-> > Signed-off-by: Dan Robertson <dan@dlrobertson.com>
-> Hi Dan,
-> 
-> So my first thought was that Bosch have been moderately good at keeping their
-> interfaces consistent across generations.   Seems not this time from
-> a quick look!
-> 
-> Minor stuff inline.  Quite a bit of it is stylistic rather than functional.
-> I'm a lazy maintainer and tend to end up reading a lot of code so want to
-> think as little as possible ;)
-> 
-> I'd also expect a modern driver to have DT bindings.  Might let that go if
-> it was being used with ACPI but neither is true here.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/accel/Kconfig       |  19 +
-> >  drivers/iio/accel/Makefile      |   2 +
-> >  drivers/iio/accel/bma400.h      |  74 +++
-> >  drivers/iio/accel/bma400_core.c | 862 ++++++++++++++++++++++++++++++++
-> >  drivers/iio/accel/bma400_i2c.c  |  54 ++
-> >  5 files changed, 1011 insertions(+)
-> >  create mode 100644 drivers/iio/accel/bma400.h
-> >  create mode 100644 drivers/iio/accel/bma400_core.c
-> >  create mode 100644 drivers/iio/accel/bma400_i2c.c
+On Tue, Oct 08, 2019 at 06:52:50AM +0000, Ardelean, Alexandru wrote:
+> On Mon, 2019-10-07 at 15:40 +0530, Manivannan Sadhasivam wrote:
+> > [External]
 > > 
-> > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> > index 9b9656ce37e6..cca6727e037e 100644
-> > --- a/drivers/iio/accel/Kconfig
-> > +++ b/drivers/iio/accel/Kconfig
-> > @@ -112,6 +112,25 @@ config BMA220
-> >  	  To compile this driver as a module, choose M here: the
-> >  	  module will be called bma220_spi.
+> 
+> Hey,
+> 
+> Comments inline.
+> 
+> I thought I sent an initial review, but seems to have gotten lost [maybe in
+> my email client].
+> Oh well. I managed to re-do it anyway.
+> 
+> I tried to group them this time.
+> 
+> The more prominent part is [3]; this driver needs a bit more error checking
+> on regmap_() returns.
+> 
+
+Yes, agree. I forgot that I'm not working on memory mapped region ;-)
+
+> Generally some notes:
+> - Is there a need to implement the 32Khz or 32Mhz clock calibration
+> routines on startup? Some drivers need this, some don't/
+
+Calibration is required to have the precise reading but it is not a blocker.
+We can add it later.
+
+> - From the functional diagram, it looks like maybe the VREF would be needed
+> to be hooked via a regulator framework; but this could be done later
+
+Right but the reference board schematics is not very clear about VREF and
+neither the sensor datasheet. That's why I intentionally left it. Will get
+in touch with the board vendor to figure out what is the recommended VREF
+voltage and submit a patch later.
+
+> - Just curios here: there is gesture mode as well; will that be implemented
+> later? Or will there be other modes implemented?
+
+Currently only proximity mode is implemented. There are gesture and sample
+modes and I left those as a TODO. But I'm not sure whether IIO is supporting
+gesture mode properly or not.
+
+> 
+> If I remember anything else I may come back with a reply.
+> 
+
+Sure.
+
+> Thanks
+> Alex
+> 
+> > Add initial support for Analog Devices ADUX1020 Photometric sensor.
+> > Only proximity mode has been enabled for now.
+> > 
+> > Signed-off-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > ---
+> >  drivers/iio/light/Kconfig    |  11 +
+> >  drivers/iio/light/Makefile   |   1 +
+> >  drivers/iio/light/adux1020.c | 783 +++++++++++++++++++++++++++++++++++
+> 
+> Does MAINTAINERS need updating as well?
+> 
+
+I don't prefer to have MAINTAINERS entry for small drivers like this.
+Anyway, get_maintainers will return my mailing address based on the
+commit signing.
+
+> >  3 files changed, 795 insertions(+)
+> >  create mode 100644 drivers/iio/light/adux1020.c
+> > 
+> > diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+> > index 08d7e1ef2186..3f8c8689cd89 100644
+> > --- a/drivers/iio/light/Kconfig
+> > +++ b/drivers/iio/light/Kconfig
+> > @@ -32,6 +32,17 @@ config ADJD_S311
+> >  	  This driver can also be built as a module.  If so, the module
+> >  	  will be called adjd_s311.
 > >  
-> > +config BMA400
-> > +	tristate "Bosch BMA400 3-Axis Accelerometer Driver"
-> > +	depends on I2C
-> > +	select REGMAP
-> > +	select BMA400_I2C if (I2C)
-> > +	help
-> > +	  Say Y here if you want to build a driver for the Bosch BMA400
-> > +	  triaxial acceleration sensor.
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called bma400_core and you will also get
-> > +	  bma400_i2c for I2C
-> > +
-> > +config BMA400_I2C
-> > +	tristate
-> > +	depends on BMA400
-> > +	depends on I2C
+> > +config ADUX1020
+> > +	tristate "ADUX1020 photometric sensor"
 > > +	select REGMAP_I2C
+> > +	depends on I2C
+> > +	help
+> > +	 Say Y here if you want to build a driver for the Analog Devices
+> > +	 ADUX1020 photometric sensor.
 > > +
-> >  config BMC150_ACCEL
-> >  	tristate "Bosch BMC150 Accelerometer Driver"
-> >  	select IIO_BUFFER
-> > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> > index 56bd0215e0d4..3a051cf37f40 100644
-> > --- a/drivers/iio/accel/Makefile
-> > +++ b/drivers/iio/accel/Makefile
-> > @@ -14,6 +14,8 @@ obj-$(CONFIG_ADXL372_I2C) += adxl372_i2c.o
-> >  obj-$(CONFIG_ADXL372_SPI) += adxl372_spi.o
-> >  obj-$(CONFIG_BMA180) += bma180.o
-> >  obj-$(CONFIG_BMA220) += bma220_spi.o
-> > +obj-$(CONFIG_BMA400) += bma400_core.o
-> > +obj-$(CONFIG_BMA400_I2C) += bma400_i2c.o
-> >  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
-> >  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-> >  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-> > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
+> > +	 To compile this driver as a module, choose M here: the
+> > +	 module will be called adux1020.
+> > +
+> >  config AL3320A
+> >  	tristate "AL3320A ambient light sensor"
+> >  	depends on I2C
+> > diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+> > index 00d1f9b98f39..5d650ce46a40 100644
+> > --- a/drivers/iio/light/Makefile
+> > +++ b/drivers/iio/light/Makefile
+> > @@ -6,6 +6,7 @@
+> >  # When adding new entries keep the list in alphabetical order
+> >  obj-$(CONFIG_ACPI_ALS)		+= acpi-als.o
+> >  obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
+> > +obj-$(CONFIG_ADUX1020)		+= adux1020.o
+> >  obj-$(CONFIG_AL3320A)		+= al3320a.o
+> >  obj-$(CONFIG_APDS9300)		+= apds9300.o
+> >  obj-$(CONFIG_APDS9960)		+= apds9960.o
+> > diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
 > > new file mode 100644
-> > index 000000000000..7fa92bc457f6
+> > index 000000000000..d0b76e5b44f1
 > > --- /dev/null
-> > +++ b/drivers/iio/accel/bma400.h
-> > @@ -0,0 +1,74 @@
-> > +/* SPDX-License-Identifier: GPL-2.0-only */
+> > +++ b/drivers/iio/light/adux1020.c
+> > @@ -0,0 +1,783 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
 > > +/*
-> > + * bma400.h - Register constants and other forward declarations
-> > + *            needed by the bma400 sources.
-> > + *
-> > + * Copyright 2019 Dan Robertson <dan@dlrobertson.com>
-> > + *
+> > + * adux1020.c - Support for Analog Devices ADUX1020 photometric sensor
 > 
-> Blank line not needed.
+> Maybe drop the adux1020.c part?
+> I think something like this should be sufficient:
+> "Analog Devices ADUX1020 photometric sensor"
+>
+
+okay.
+
+> > + *
+> > + * Copyright (C) 2019 Linaro Ltd.
+> > + * Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+> > + *
+> > + * TODO: Triggered buffer support
 > 
+> Maybe drop the TODO?
+> It's not needed for mainline.
+>
+
+It is not needed but it can be added. TODO is required to explicitly
+mention what are all left in the driver which can be picked up by the
+community. So I prefer to keep it.
+ 
 > > + */
 > > +
-> > +#include <linux/regmap.h>
-> > +
-> > +/*
-> > + * Read-Only Registers
-> > + */
-> > +
-> > +/* Status and ID registers */
-> > +#define BMA400_CHIP_ID_REG      0x00
-> > +#define BMA400_ERR_REG          0x02
-> > +#define BMA400_STATUS_REG       0x03
-> > +
-> > +/* Acceleration registers */
-> > +#define BMA400_X_AXIS_LSB_REG   0x04
-> > +#define BMA400_X_AXIS_MSB_REG   0x05
-> > +#define BMA400_Y_AXIS_LSB_REG   0x06
-> > +#define BMA400_Y_AXIS_MSB_REG   0x07
-> > +#define BMA400_Z_AXIS_LSB_REG   0x08
-> > +#define BMA400_Z_AXIS_MSB_REG   0x09
-> > +
-> > +/* Sensort time registers */
-
-Sensor time
-
-> > +#define BMA400_SENSOR_TIME0     0x0a
-> > +#define BMA400_SENSOR_TIME1     0x0b
-> > +#define BMA400_SENSOR_TIME2     0x0c
-> > +
-> > +/* Event and interrupt registers */
-> > +#define BMA400_EVENT_REG        0x0d
-> > +#define BMA400_INT_STAT0_REG    0x0e
-> > +#define BMA400_INT_STAT1_REG    0x0f
-> > +#define BMA400_INT_STAT2_REG    0x10
-> > +
-> > +/* Temperature register */
-> > +#define BMA400_TEMP_DATA_REG    0x11
-> > +
-> > +/* FIFO length and data registers */
-> > +#define BMA400_FIFO_LENGTH0_REG 0x12
-> > +#define BMA400_FIFO_LENGTH1_REG 0x13
-> > +#define BMA400_FIFO_DATA_REG    0x14
-> > +
-> > +/* Step count registers */
-> > +#define BMA400_STEP_CNT0_REG    0x15
-> > +#define BMA400_STEP_CNT1_REG    0x16
-> > +#define BMA400_STEP_CNT3_REG    0x17
-> > +#define BMA400_STEP_STAT_REG    0x18
-> > +
-> > +/*
-> > + * Read-write configuration registers
-> > + */
-> > +#define BMA400_ACC_CONFIG0_REG  0x19
-> > +#define BMA400_ACC_CONFIG1_REG  0x1a
-> > +#define BMA400_ACC_CONFIG2_REG  0x1b
-> > +#define BMA400_CMD_REG          0x7e
-> > +
-> > +/* Chip ID of BMA 400 devices found in the chip ID register. */
-> > +#define BMA400_ID_REG_VAL       0x90
-> > +
-> > +/* The softreset command */
-> > +#define BMA400_SOFTRESET_CMD    0xb6
-> > +
-> > +extern const struct regmap_config bma400_regmap_config;
-> > +
-> > +int bma400_probe(struct device *dev,
-> > +		 struct regmap *regmap,
-> > +		 const char *name);
-> > +
-> > +int bma400_remove(struct device *dev);
-> > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> > new file mode 100644
-> > index 000000000000..55fe2f220c30
-> > --- /dev/null
-> > +++ b/drivers/iio/accel/bma400_core.c
-> > @@ -0,0 +1,862 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * bma400-core.c - Core IIO driver for Bosch BMA400 triaxial acceleration
-
-bma400_core.c (underscore)
-
-> > + *                 sensor. Used by bma400-i2c.
-> > + *
-> > + * Copyright 2019 Dan Robertson <dan@dlrobertson.com>
-> > + *
-> > + * TODO:
-> > + *  - Support for power management
-> > + *  - Support events and interrupts
-> > + *  - Create channel the step count
-> > + *  - Create channel for sensor time
-> > + */
-> > +
-> > +#include <linux/device.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/err.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/init.h>
+> > +#include <linux/interrupt.h>
+> > +#include <linux/irq.h>
 > > +#include <linux/module.h>
+> > +#include <linux/mutex.h>
 > > +#include <linux/regmap.h>
-> > +#include <linux/bitops.h>
+> > +
 > > +#include <linux/iio/iio.h>
 > > +#include <linux/iio/sysfs.h>
+> > +#include <linux/iio/events.h>
 > > +
-> > +#include "bma400.h"
+> > +#define ADUX1020_REGMAP_NAME		"adux1020_regmap"
+> > +#define ADUX1020_DRV_NAME		"adux1020"
 > > +
-> > +/*
-> > + * The G-range selection may be one of 2g, 4g, 8, or 16g. The scale may
-> > + * be selected with the acc_range bits of the ACC_CONFIG1 register.
-> > + */
-> > +const int bma400_scale_table[] = { 38344, 76590, 153277, 306457 };
+> > +/* System registers */
+> > +#define ADUX1020_REG_CHIP_ID		0x08
+> > +#define ADUX1020_REG_SLAVE_ADDRESS	0x09
+> > +
+> > +#define ADUX1020_REG_SW_RESET		0x0f
+> > +#define ADUX1020_REG_INT_ENABLE		0x1c
+> > +#define ADUX1020_REG_INT_POLARITY	0x1d
+> > +#define ADUX1020_REG_PROX_TH_ON1	0x2a
+> > +#define ADUX1020_REG_PROX_TH_OFF1	0x2b
+> > +#define	ADUX1020_REG_PROX_TYPE		0x2f
+> > +#define	ADUX1020_REG_TEST_MODES_3	0x32
+> > +#define	ADUX1020_REG_FORCE_MODE		0x33
+> > +#define	ADUX1020_REG_FREQUENCY		0x40
+> > +#define ADUX1020_REG_LED_CURRENT	0x41
+> > +#define	ADUX1020_REG_OP_MODE		0x45
+> > +#define	ADUX1020_REG_INT_MASK		0x48
+> > +#define	ADUX1020_REG_INT_STATUS		0x49
+> > +#define	ADUX1020_REG_DATA_BUFFER	0x60
+> > +
+> > +/* Chip ID bits */
+> > +#define ADUX1020_CHIP_ID_MASK		GENMASK(11, 0)
+> > +#define ADUX1020_CHIP_ID		0x03fc
+> > +
+> > +#define ADUX1020_MODE_OUT_SHIFT		4
+> 
+> I'm seeing a few _SHIFT macros.
+> Maybe use the FIELD_PREP() macro where possible? [1]
+> 
 
-static?
+okay.
+
+> > +#define ADUX1020_MODE_OUT_PROX_I	1
+> > +#define ADUX1020_MODE_OUT_PROX_XY	3
+> > +
+> > +#define ADUX1020_SW_RESET		BIT(1)
+> > +#define ADUX1020_FIFO_FLUSH		BIT(15)
+> > +#define ADUX1020_OP_MODE_MASK		GENMASK(3, 0)
+> > +#define ADUX1020_DATA_OUT_MODE_MASK	GENMASK(7, 4)
+> > +
+> > +#define ADUX1020_MODE_INT_MASK		GENMASK(7, 0)
+> > +#define ADUX1020_INT_ENABLE		0x2096
+> > +#define ADUX1020_INT_DISABLE		0x2090
+> > +#define ADUX1020_PROX_INT_ENABLE	0x00f0
+> > +#define ADUX1020_PROX_ON1_INT		BIT(0)
+> > +#define ADUX1020_PROX_OFF1_INT		BIT(1)
+> > +#define ADUX1020_FIFO_INT_ENABLE	0x7f
+> > +#define ADUX1020_MODE_INT_DISABLE	0xff
+> > +#define ADUX1020_MODE_INT_STATUS_MASK	GENMASK(7, 0)
+> > +#define ADUX1020_FIFO_STATUS_MASK	GENMASK(15, 8)
+> > +#define ADUX1020_PROX_TYPE		BIT(15)
+> > +
+> > +#define ADUX1020_INT_PROX_ON1		BIT(0)
+> > +#define ADUX1020_INT_PROX_OFF1		BIT(1)
+> > +
+> > +#define	ADUX1020_FORCE_CLOCK_ON		0x0f4f
+> > +#define	ADUX1020_FORCE_CLOCK_RESET	0x0040
+> 
+> nitpick: indentation seems inconsistent here
+> 
+
+will fix it.
+
+> > +#define ADUX1020_ACTIVE_4_STATE		0x0008
+> > +
+> > +#define ADUX1020_PROX_FREQ_MASK		GENMASK(7, 4)
+> > +#define ADUX1020_PROX_FREQ_SHIFT	4
+> 
+> Same as [1]. Maybe use FIELD_PREP() together with ADUX1020_PROX_FREQ_MASK?
+> See other examples, but we sometimes use them as:
+> 
+> #define ADUX_PROX_FREQ_SET(x)    FIELD_PREP(ADUX1020_PROX_FREQ_MASK, (x))
+> 
+
+okay.
 
 > > +
-> > +struct bma400_sample_freq {
-> > +	int hz;
-> > +	int micro_hz;
+> > +#define ADUX1020_LED_CURRENT_MASK	GENMASK(3, 0)
+> > +#define ADUX1020_LED_PIREF_EN		BIT(12)
+> > +
+> > +/* Operating modes */
+> > +enum adux1020_op_modes {
+> > +	ADUX1020_MODE_STANDBY,
+> > +	ADUX1020_MODE_PROX_I,
+> > +	ADUX1020_MODE_PROX_XY,
+> > +	ADUX1020_MODE_GEST,
+> > +	ADUX1020_MODE_SAMPLE,
+> > +	ADUX1020_MODE_FORCE = 0x0e,
+> > +	ADUX1020_MODE_IDLE = 0x0f,
 > > +};
 > > +
-> > +/* See the ACC_CONFIG1 section of the datasheet */
-> > +const struct bma400_sample_freq bma400_sample_freqs[] = {
-
-static?
-
-> > +	{ .hz = 12, .micro_hz = 500000 },
-> > +	{ .hz = 25, .micro_hz = 0 },
-> > +	{ .hz = 50, .micro_hz = 0 },
-> > +	{ .hz = 100, .micro_hz = 0 },
-> > +	{ .hz = 200, .micro_hz = 0 },
-> > +	{ .hz = 400, .micro_hz = 0 },
-> > +	{ .hz = 800, .micro_hz = 0 },
-> > +};
-> > +
-> > +/* See the ACC_CONFIG0 section of the datasheet */
-> > +enum bma400_power_mode {
-> > +	POWER_MODE_SLEEP   = 0x00,
-> > +	POWER_MODE_LOW     = 0x01,
-> > +	POWER_MODE_NORMAL  = 0x02,
-> > +	POWER_MODE_INVALID = 0x03,
-> > +};
-> > +
-> > +struct bma400_data {
-> > +	struct device *dev;
-> > +	struct mutex mutex; /* data register lock */
-> > +	struct iio_mount_matrix orientation;
+> > +struct adux1020_data {
+> > +	struct i2c_client *client;
+> > +	struct iio_dev *indio_dev;
+> > +	struct mutex lock;
 > > +	struct regmap *regmap;
-> > +	enum bma400_power_mode power_mode;
-> > +	const struct bma400_sample_freq *sample_freq;
-> > +	int oversampling_ratio;
-> > +	int scale;
 > > +};
 > > +
-> > +static bool bma400_is_writable_reg(struct device *dev, unsigned int reg)
-> > +{
-> > +	switch (reg) {
-> > +	case BMA400_CHIP_ID_REG:
-> > +	case BMA400_ERR_REG:
-> > +	case BMA400_STATUS_REG:
-> > +	case BMA400_X_AXIS_LSB_REG:
-> > +	case BMA400_X_AXIS_MSB_REG:
-> > +	case BMA400_Y_AXIS_LSB_REG:
-> > +	case BMA400_Y_AXIS_MSB_REG:
-> > +	case BMA400_Z_AXIS_LSB_REG:
-> > +	case BMA400_Z_AXIS_MSB_REG:
-> > +	case BMA400_SENSOR_TIME0:
-> > +	case BMA400_SENSOR_TIME1:
-> > +	case BMA400_SENSOR_TIME2:
-> > +	case BMA400_EVENT_REG:
-> > +	case BMA400_INT_STAT0_REG:
-> > +	case BMA400_INT_STAT1_REG:
-> > +	case BMA400_INT_STAT2_REG:
-> > +	case BMA400_TEMP_DATA_REG:
-> > +	case BMA400_FIFO_LENGTH0_REG:
-> > +	case BMA400_FIFO_LENGTH1_REG:
-> > +	case BMA400_FIFO_DATA_REG:
-> > +	case BMA400_STEP_CNT0_REG:
-> > +	case BMA400_STEP_CNT1_REG:
-> > +	case BMA400_STEP_CNT3_REG:
-> > +	case BMA400_STEP_STAT_REG:
-> > +		return false;
-> > +	default:
-> > +		return true;
-> > +	}
-> > +}
-> > +
-> > +static bool bma400_is_volatile_reg(struct device *dev, unsigned int reg)
-> > +{
-> > +	switch (reg) {
-> > +	case BMA400_ERR_REG:
-> > +	case BMA400_STATUS_REG:
-> > +	case BMA400_X_AXIS_LSB_REG:
-> > +	case BMA400_X_AXIS_MSB_REG:
-> > +	case BMA400_Y_AXIS_LSB_REG:
-> > +	case BMA400_Y_AXIS_MSB_REG:
-> > +	case BMA400_Z_AXIS_LSB_REG:
-> > +	case BMA400_Z_AXIS_MSB_REG:
-> > +	case BMA400_SENSOR_TIME0:
-> > +	case BMA400_SENSOR_TIME1:
-> > +	case BMA400_SENSOR_TIME2:
-> > +	case BMA400_EVENT_REG:
-> > +	case BMA400_INT_STAT0_REG:
-> > +	case BMA400_INT_STAT1_REG:
-> > +	case BMA400_INT_STAT2_REG:
-> > +	case BMA400_TEMP_DATA_REG:
-> > +	case BMA400_FIFO_LENGTH0_REG:
-> > +	case BMA400_FIFO_LENGTH1_REG:
-> > +	case BMA400_FIFO_DATA_REG:
-> > +	case BMA400_STEP_CNT0_REG:
-> > +	case BMA400_STEP_CNT1_REG:
-> > +	case BMA400_STEP_CNT3_REG:
-> > +	case BMA400_STEP_STAT_REG:
-> > +		return true;
-> > +	default:
-> > +		return false;
-> > +	}
-> > +}
-> > +
-> > +const struct regmap_config bma400_regmap_config = {
-> > +	.reg_bits = 8,
-> > +	.val_bits = 8,
-> > +	.max_register = BMA400_CMD_REG,
-> > +	.cache_type = REGCACHE_RBTREE,
-> > +	.writeable_reg = bma400_is_writable_reg,
-> > +	.volatile_reg = bma400_is_volatile_reg,
-> > +};
-> > +EXPORT_SYMBOL(bma400_regmap_config);
-> > +
-> > +static const struct iio_mount_matrix *
-> > +bma400_accel_get_mount_matrix(const struct iio_dev *indio_dev,
-> > +			      const struct iio_chan_spec *chan)
-> > +{
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +
-> > +	return &data->orientation;
-> > +}
-> > +
-> > +static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
-> > +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bma400_accel_get_mount_matrix),
-> > +	{ }
+> > +struct adux1020_mode_data {
+> > +	u8 bytes;
+> > +	u8 buf_len;
+> > +	u16 int_en;
 > > +};
 > > +
-> > +#define BMA400_ACC_CHANNEL(_axis) { \
-> > +	.type = IIO_ACCEL, \
-> > +	.modified = 1, \
-> > +	.channel2 = IIO_MOD_##_axis, \
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> > +		BIT(IIO_CHAN_INFO_SCALE) | \
-> > +		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> > +	.ext_info = bma400_ext_info \
-
-end with ,
-
-> > +}
-> > +
-> > +static const struct iio_chan_spec bma400_channels[] = {
-> > +	BMA400_ACC_CHANNEL(X),
-> > +	BMA400_ACC_CHANNEL(Y),
-> > +	BMA400_ACC_CHANNEL(Z),
-> > +	{
-> > +		.type = IIO_TEMP,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> > +static const struct adux1020_mode_data adux1020_modes[] = {
+> > +	[ADUX1020_MODE_PROX_I] = {
+> > +		.bytes = 2,
+> > +		.buf_len = 1,
+> > +		.int_en = ADUX1020_PROX_INT_ENABLE,
 > > +	},
 > > +};
 > > +
-> > +static int bma400_get_temp_reg(struct bma400_data *data, int *val, int *val2)
-> > +{
-> > +	int ret;
-> > +	int host_temp;
-> > +	unsigned int raw_temp;
-> > +
-> > +	if (data->power_mode == POWER_MODE_SLEEP)
-> > +		return -EBUSY;
-> > +
-> > +	ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &raw_temp);
-> > +
-> > +	if (!ret) {
-> Error path out of line, not the good one. See below.
-> 
-> > +		host_temp = sign_extend32(raw_temp, 7);
-> > +		/*
-> > +		 * The formula for the TEMP_DATA register in the datasheet
-> > +		 * is: x * 0.5 + 23
-> > +		 */
-> > +		*val = (host_temp >> 1) + 23;
-> > +		*val2 = (host_temp & 0x1) * 500000;
-> > +		ret = IIO_VAL_INT_PLUS_MICRO;
-> > +	}
-> > +	return ret;
-> > +}
-> > +
-> > +static int bma400_get_accel_reg(struct bma400_data *data,
-> > +				const struct iio_chan_spec *chan,
-> > +				int *val)
-> > +{
-> > +	int ret;
-> > +	u16 lsb_reg;
-
-the BMA400 seems to use 8-bit register addresses, u16 doesn't make sense 
-here (either u8 or just int)
-
-> > +	__le16 raw_accel = 0;
-> 
-> I don't think we need the assignment... Is there a compiler that
-> can't figure that out?
-> 
-> > +
-> > +	if (data->power_mode == POWER_MODE_SLEEP)
-> > +		return -EBUSY;
-> > +
-> > +	switch (chan->channel2) {
-> > +	case IIO_MOD_X:
-> > +		lsb_reg = BMA400_X_AXIS_LSB_REG;
-> > +		break;
-> > +	case IIO_MOD_Y:
-> > +		lsb_reg = BMA400_Y_AXIS_LSB_REG;
-> > +		break;
-> > +	case IIO_MOD_Z:
-> > +		lsb_reg = BMA400_Z_AXIS_LSB_REG;
-> > +		break;
-> > +	default:
-> > +		dev_err(data->dev, "invalid axis channel modifier");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	/* bulk read two registers, with the base being the LSB register */
-> > +	ret = regmap_bulk_read(data->regmap, lsb_reg, &raw_accel, 2);
-
-2 == sizeof(rawaccel)
-
-> > +	if (!ret) {
-> 
-> Same point as below on error path out of line.
-> 
-> > +		*val = sign_extend32(le16_to_cpu(raw_accel), 11);
-> > +		ret = IIO_VAL_INT;
-> > +	}
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bma400_ready_for_cmd(struct bma400_data *data)
-> > +{
-> > +	unsigned int val;
-> > +	int ret = regmap_read(data->regmap, BMA400_STATUS_REG, &val);
-> > +
-> > +	if (ret < 0 || !(val & 0x10))
-> > +		return 0;
-> > +
-> > +	return 1;
-> 
-> Maybe... (up to you on this one as I'm not convinced this is better :)
-> 
-> 	if (ret < 0)
-> 		return 0;
-> 
-> 	return (val & 0x10) ? 1 : 0;
-> 
-> Separates the error case from checking the parameter.
-
-the magic 0x10 would benefit from a #define
-
-> > +}
-> > +
-> > +static int bma400_softreset(struct bma400_data *data)
-> > +{
-> > +	int ret;
-> > +
-> > +	if (!bma400_ready_for_cmd(data))
-> > +		return -EAGAIN;
-> > +
-> > +	ret = regmap_write(data->regmap, BMA400_CMD_REG,
-> > +			   BMA400_SOFTRESET_CMD);
-> > +	if (!ret) {
-> As below, prefer the error path indented even if it costs a line or two of
-> code.
-> 	if (ret)
-> 		return ret;
-> 
-> 	data->...
-> > +		/* a softreset restores registers to their defaults */
-> > +		data->power_mode = POWER_MODE_SLEEP;
-> > +		data->sample_freq = NULL;
-> > +		data->oversampling_ratio = -1;
-> > +		data->scale = bma400_scale_table[0];
-> > +	}
-> > +	return ret;
-> > +}
-> > +
-> > +static int bma400_get_acc_config0_reg(struct bma400_data *data)
-> > +{
-> 
-> I'm unconvinced these wrappers add anything. Just do the regmap_read
-> inline.
-> 
-> > +	int ret;
-> > +	unsigned int val;
-> > +
-> > +	ret = regmap_read(data->regmap, BMA400_ACC_CONFIG0_REG,
-> > +			  &val);
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed read acc_config0");
-> > +		return ret;
-> > +	}
-> > +
-> > +	return val;
-> > +}
-> > +
-> > +static int bma400_get_acc_config1_reg(struct bma400_data *data)
-> > +{
-> > +	int ret;
-> > +	unsigned int val;
-> > +
-> > +	ret = regmap_read(data->regmap, BMA400_ACC_CONFIG1_REG,
-> > +			  &val);
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed read acc_config1");
-> > +		return ret;
-> > +	}
-> > +
-> > +	return val;
-> > +}
-> > +
-> > +static int bma400_get_accel_output_data_rate(struct bma400_data *data)
-> > +{
-> > +	int acc_config1;
-> > +	unsigned int odr;
-> > +	int idx;
-> > +
-> > +	switch (data->power_mode) {
-> > +	case POWER_MODE_LOW:
-> > +		/*
-> > +		 * Runs at a fixed rate in low-power mode. See section 4.3
-> > +		 * in the datasheet.
-> > +		 */
-> > +		data->sample_freq = &bma400_sample_freqs[1];
-> > +		return 0;
-> > +	case POWER_MODE_NORMAL:
-> > +		/*
-> > +		 * In normal mode the ODR can be found in the ACC_CONFIG1
-> > +		 * register.
-> > +		 */
-> > +		acc_config1 = bma400_get_acc_config1_reg(data);
-> > +		if (acc_config1 < 0) {
-> > +			data->sample_freq = NULL;
-> > +			return acc_config1;
-> > +		}
-> > +
-> > +		odr = (acc_config1 & 0x0f);
-> > +		if (odr < 0x05 || odr > 0x0b) {
-> > +			dev_err(data->dev, "invalid ODR=%x", odr);
-> > +			data->sample_freq = NULL;
-> > +			return -EINVAL;
-> > +		}
-> > +		idx = odr - 0x05;
-> > +
-> > +		data->sample_freq = &bma400_sample_freqs[idx];
-> > +		return 0;
-> > +	default:
-> > +		data->sample_freq = NULL;
-> > +		return 0;
-> > +	}
-> > +}
-> > +
-> > +static int bma400_get_accel_output_data_rate_idx(struct bma400_data *data,
-> > +						 int hz, int uhz)
-> > +{
-> > +	int i;
-> > +	const struct bma400_sample_freq *sample_freq;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bma400_sample_freqs); ++i) {
-> > +		sample_freq = &bma400_sample_freqs[i];
-> > +		if (sample_freq->hz == hz &&
-> > +		    sample_freq->micro_hz == uhz)
-> > +			return i;
-> > +	}
-> > +
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bma400_set_accel_output_data_rate(struct bma400_data *data,
-> > +					     int hz, int uhz)
-> > +{
-> > +	int acc_config1;
-> > +	unsigned int odr;
-> > +	int idx;
-> > +	int ret;
-> > +
-> > +	idx = bma400_get_accel_output_data_rate_idx(data, hz, uhz);
-> > +
-> > +	if (idx < 0)
-> > +		return idx;
-> > +
-> > +	acc_config1 = bma400_get_acc_config1_reg(data);
-> > +
-> > +	if (acc_config1 < 0)
-> > +		return acc_config1;
-> > +
-> > +	/* preserve the range and normal mode osr */
-> > +	odr = (0xf0 & acc_config1) | (idx + 0x5);
-> > +
-> > +	ret = regmap_write(data->regmap, BMA400_ACC_CONFIG1_REG, odr);
-> > +	if (!ret)
-> > +		data->sample_freq = &bma400_sample_freqs[idx];
-> 
-> I'd rather we kept error flow indented even if a bit longer. It means
-> these fine error checks are handled the same as earlier ones and makes
-> reviewing a little bit easier.
-> 
-> 	if (ret)
-> 		return ret;
-> 
-> 	data->...
-> 
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int bma400_get_accel_oversampling_ratio(struct bma400_data *data)
-> > +{
-> > +	int acc_config;
-> > +
-> > +	/*
-> > +	 * The oversampling ratio is stored in a different register
-> > +	 * based on the power-mode. In normal mode the OSR is stored
-> > +	 * in ACC_CONFIG1. In low-power mode it is stored in
-> > +	 * ACC_CONFIG0.
-> > +	 */
-> > +	switch (data->power_mode) {
-> > +	case POWER_MODE_LOW:
-> > +		acc_config = bma400_get_acc_config0_reg(data);
-> > +		if (acc_config < 0) {
-> > +			data->oversampling_ratio = -1;
-> > +			return acc_config;
-> > +		}
-> > +
-> > +		data->oversampling_ratio = (acc_config & 0x60) >> 5;
-> > +		return 0;
-> > +	case POWER_MODE_NORMAL:
-> > +		acc_config = bma400_get_acc_config1_reg(data);
-> > +		if (acc_config < 0) {
-> > +			data->oversampling_ratio = -1;
-> > +			return acc_config;
-> > +		}
-> > +
-> > +		data->oversampling_ratio = (acc_config & 0x30) >> 4;
-> > +		return 0;
-> > +	default:
-> > +		data->oversampling_ratio = -1;
-> > +		return 0;
-> > +	}
-> > +}
-> > +
-> > +static int bma400_set_accel_oversampling_ratio(struct bma400_data *data,
-> > +					       int val)
-> > +{
-> > +	int ret;
-> > +	int acc_config;
-> > +
-> > +	/* The oversampling ratio is a two bit field */
-> > +	if (val & ~0x3)
-> 
-> Use a define for that mask. Then we don't need the comment.
-> 
-> > +		return -EINVAL;
-> > +
-> > +	/* The oversampling ratio is stored in a different register
-> 
-> Most of the kernel, including iio, use
-> /*
->  * The...
->  * ..
->  */
-> 
-> > +	 * based on the power-mode.
-> > +	 */
-> > +	switch (data->power_mode) {
-> > +	case POWER_MODE_LOW:
-> > +		acc_config = bma400_get_acc_config0_reg(data);
-> > +		if (acc_config < 0)
-> > +			return acc_config;
-> > +
-> > +		ret = regmap_write(data->regmap, BMA400_ACC_CONFIG0_REG,
-> > +				   (acc_config & 0x9f) | (val << 5));
-> 
-> Use defines for these masks.
-> 
-> > +		if (ret < 0)
-> > +			dev_err(data->dev, "Failed to write out OSR");
-> > +		else
-> > +			data->oversampling_ratio = val;
-> > +		break;
-> > +	case POWER_MODE_NORMAL:
-> > +		acc_config = bma400_get_acc_config1_reg(data);
-> > +		if (acc_config < 0)
-> > +			return acc_config;
-> > +
-> > +		ret = regmap_write(data->regmap, BMA400_ACC_CONFIG1_REG,
-> > +				   (acc_config & 0xcf) | (val << 4));
-> > +		if (ret < 0)
-> > +			dev_err(data->dev, "Failed to write out OSR");
-> > +		else
-> > +			data->oversampling_ratio = val;
-> Nicer (even if a little longer) to read as:
-> 
-> 		if (ret < 0) {
-> 			dev_err(data->dev, "Failed to write out OSR");
-> 			return ret;
-> 		}
-> 
-> 		data->oversampling_ration = val;
-> 
-> 		return 0;
-> > +		break;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +	return ret;
-> 
-> 
-> > +}
-> > +
-> > +static int bma400_get_accel_scale(struct bma400_data *data)
-> > +{
-> > +	int idx;
-> > +	int acc_config1 = bma400_get_acc_config1_reg(data);
-> > +
-> > +	if (acc_config1 < 0)
-> > +		return acc_config1;
-> > +
-> > +	idx = (acc_config1 & 0xc0) >> 6;
-> > +	if (idx < ARRAY_SIZE(bma400_scale_table)) {
-> > +		data->scale = bma400_scale_table[idx];
-> > +		return 0;
-> 
-> Preference for error path indented in cases where it doesn't
-> make a substantial difference in code length.
-> 
-> 	if (idx >= ARRAY_SIZE(bma400_scale_table)
-> 		return -EINVAL;
-> 
-> 	data->scale = bma400_scale_table[idx];
-> 
-> 	return 0;
-> 
-> > +	}
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bma400_get_accel_scale_idx(struct bma400_data *data, int val)
-> > +{
-> > +	int i;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bma400_scale_table); ++i) {
-> > +		if (bma400_scale_table[i] == val)
-> > +			return i;
-> > +	}
-> > +	return -EINVAL;
-> > +}
-> > +
-> > +static int bma400_set_accel_scale(struct bma400_data *data, unsigned int val)
-> > +{
-> > +	int ret;
-> > +	int idx;
-> > +	int acc_config1 = bma400_get_acc_config1_reg(data);
-> > +
-> > +	if (acc_config1 < 0)
-> > +		return acc_config1;
-> > +
-> > +	idx = bma400_get_accel_scale_idx(data, val);
-> > +
-> > +	if (idx < 0)
-> > +		return idx;
-> > +
-> > +	ret = regmap_write(data->regmap, BMA400_ACC_CONFIG1_REG,
-> > +			   (acc_config1 & 0x3f) | (idx << 6));
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	data->scale = val;
-> > +	return 0;
-> > +}
-> > +
-> > +static int bma400_get_power_mode(struct bma400_data *data)
-> > +{
-> > +	int ret;
-> > +	unsigned int val;
-> > +
-> > +	ret = regmap_read(data->regmap, BMA400_STATUS_REG, &val);
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed to read status register");
-> > +		return ret;
-> > +	}
-> > +
-> > +	data->power_mode = (val >> 1) & 0x03;
-> 
-> Blank line here and in similar cases helps readability (a tiny bit).
-> 
-> > +	return 0;
-> > +}
-> > +
-> > +static int bma400_set_power_mode(struct bma400_data *data,
-> > +				 enum bma400_power_mode mode)
-> > +{
-> > +	int ret;
-> > +
-> > +	ret = bma400_get_acc_config0_reg(data);
-> > +
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	if (data->power_mode == mode)
-> > +		return 0;
-> > +
-> > +	if (mode == POWER_MODE_INVALID)
-> > +		return -EINVAL;
-> > +
-> > +	/* Preserve the low-power oversample ratio etc */
-> > +	ret = regmap_write(data->regmap, BMA400_ACC_CONFIG0_REG,
-> > +			   mode | (ret & 0xfc));
-> > +
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed to write to power-mode");
-> > +		return ret;
-> > +	}
-> > +
-> > +	/* Update our cached power-mode */
-> 
-> Bit marginal on whether that comment adds anything not obvious from
-> the code.  From a maintenance point of view, excess comments are
-> just opportunities for rot. Hence we are generally only in favour
-> of those that add significant value.
-> 
-> > +	data->power_mode = mode;
-> > +
-> > +	/*
-> > +	 * Update our cached osr and odr based on the new
-> > +	 * power-mode.
-> > +	 */
-> > +	bma400_get_accel_output_data_rate(data);
-> > +	bma400_get_accel_oversampling_ratio(data);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int bma400_init(struct bma400_data *data)
-> > +{
-> > +	int ret;
-> > +	unsigned int val;
-> > +
-> > +	/* Try to read chip_id register. It must return 0x90. */
-> > +	ret = regmap_read(data->regmap, BMA400_CHIP_ID_REG, &val);
-> > +
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed to read chip id register: %x!", ret);
-> > +		return ret;
-> > +	} else if (val != BMA400_ID_REG_VAL) {
-> > +		dev_err(data->dev, "CHIP ID MISMATCH: %x!", ret);
-> > +		return -ENODEV;
-> > +	}
-> > +
-> > +	ret = bma400_get_power_mode(data);
-> > +	if (ret < 0) {
-> > +		dev_err(data->dev, "Failed to get the initial power-mode!");
-> > +		return ret;
-> > +	}
-> > +
-> > +	if (data->power_mode != POWER_MODE_NORMAL) {
-> > +		ret = bma400_set_power_mode(data, POWER_MODE_NORMAL);
-> > +		if (ret < 0) {
-> > +			dev_err(data->dev, "Failed to wake up the device!");
-> > +			return ret;
-> > +		}
-> > +		/*
-> > +		 * TODO: The datasheet waits 1500us here in the example, but
-> > +		 * lists 2/ODR as the wakeup time.
-> > +		 */
-> > +		usleep_range(1500, 20000);
-> > +	}
-> > +
-> > +	ret = bma400_get_accel_output_data_rate(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = bma400_get_accel_oversampling_ratio(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = bma400_get_accel_scale(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	/*
-> > +	 * Once the interrupt engine is supported we might use the
-> > +	 * data_src_reg, but for now ensure this is set to the
-> > +	 * variable ODR filter selectable by the sample frequency
-> > +	 * channel.
-> > +	 */
-> > +	return regmap_write(data->regmap, BMA400_ACC_CONFIG2_REG, 0x00);
-> > +}
-> > +
-> > +static ssize_t bma400_show_samp_freq_avail(struct device *dev,
-> > +					   struct device_attribute *attr,
-> > +					   char *buf)
-> > +{
-> > +	int i;
-> > +	int len = 0;
-> > +	const struct bma400_sample_freq *sample_freq;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bma400_sample_freqs); ++i) {
-> > +		sample_freq = &bma400_sample_freqs[i];
-> > +		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%06d ",
-> > +				 sample_freq->hz, sample_freq->micro_hz);
-> > +	}
-> > +
-> > +	buf[len - 1] = '\n';
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static ssize_t bma400_show_scale_avail(struct device *dev,
-> > +				       struct device_attribute *attr,
-> > +				       char *buf)
-> As you are providing functions for it anyway, perhaps use the core
-> functions to do this?
-> See the docs for struct iio_info -> read_avail.
-> 
-> Not that many users yet as we added this for a few specific cases
-> that needed to query these from in kernel users.
-> 
-> 
-> > +{
-> > +	int i;
-> > +	int len = 0;
-> > +
-> > +	for (i = 0; i < ARRAY_SIZE(bma400_scale_table); ++i)
-> > +		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06d ",
-> > +				 bma400_scale_table[i]);
-> > +
-> > +	buf[len - 1] = '\n';
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(bma400_show_samp_freq_avail);
-> > +
-> > +static IIO_DEVICE_ATTR(in_accel_scale_available, 0444,
-> > +		       bma400_show_scale_avail, NULL, 0);
-> > +
-> > +static struct attribute *bma400_attributes[] = {
-> > +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-> > +	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-> > +	NULL,
+> > +static const struct regmap_config adux1020_regmap_config = {
+> > +	.name = ADUX1020_REGMAP_NAME,
+> > +	.reg_bits = 8,
+> > +	.val_bits = 16,
+> > +	.max_register = 0x6F,
+> > +	.cache_type = REGCACHE_NONE,
 > > +};
 > > +
-> > +static const struct attribute_group bma400_attrs_group = {
-> > +	.attrs = bma400_attributes,
+> > +static const int adux1020_def_conf[][2] = {
+> 
+> Maybe use "struct reg_sequence" here?[2]
+> You could then use "regmap_multi_reg_write()"
+> 
+
+ack.
+
+> > +	{ 0x000c, 0x000f },
+> > +	{ 0x0010, 0x1010 },
+> > +	{ 0x0011, 0x004c },
+> > +	{ 0x0012, 0x5f0c },
+> > +	{ 0x0013, 0xada5 },
+> > +	{ 0x0014, 0x0080 },
+> > +	{ 0x0015, 0x0000 },
+> > +	{ 0x0016, 0x0600 },
+> > +	{ 0x0017, 0x0000 },
+> > +	{ 0x0018, 0x2693 },
+> > +	{ 0x0019, 0x0004 },
+> > +	{ 0x001a, 0x4280 },
+> > +	{ 0x001b, 0x0060 },
+> > +	{ 0x001c, 0x2094 },
+> > +	{ 0x001d, 0x0020 },
+> > +	{ 0x001e, 0x0001 },
+> > +	{ 0x001f, 0x0100 },
+> > +	{ 0x0020, 0x0320 },
+> > +	{ 0x0021, 0x0A13 },
+> > +	{ 0x0022, 0x0320 },
+> > +	{ 0x0023, 0x0113 },
+> > +	{ 0x0024, 0x0000 },
+> > +	{ 0x0025, 0x2412 },
+> > +	{ 0x0026, 0x2412 },
+> > +	{ 0x0027, 0x0022 },
+> > +	{ 0x0028, 0x0000 },
+> > +	{ 0x0029, 0x0300 },
+> > +	{ 0x002a, 0x0700 },
+> > +	{ 0x002b, 0x0600 },
+> > +	{ 0x002c, 0x6000 },
+> > +	{ 0x002d, 0x4000 },
+> > +	{ 0x002e, 0x0000 },
+> > +	{ 0x002f, 0x0000 },
+> > +	{ 0x0030, 0x0000 },
+> > +	{ 0x0031, 0x0000 },
+> > +	{ 0x0032, 0x0040 },
+> > +	{ 0x0033, 0x0008 },
+> > +	{ 0x0034, 0xE400 },
+> > +	{ 0x0038, 0x8080 },
+> > +	{ 0x0039, 0x8080 },
+> > +	{ 0x003a, 0x2000 },
+> > +	{ 0x003b, 0x1f00 },
+> > +	{ 0x003c, 0x2000 },
+> > +	{ 0x003d, 0x2000 },
+> > +	{ 0x003e, 0x0000 },
+> > +	{ 0x0040, 0x8069 },
+> > +	{ 0x0041, 0x1f2f },
+> > +	{ 0x0042, 0x4000 },
+> > +	{ 0x0043, 0x0000 },
+> > +	{ 0x0044, 0x0008 },
+> > +	{ 0x0046, 0x0000 },
+> > +	{ 0x0048, 0x00ef },
+> > +	{ 0x0049, 0x0000 },
+> > +	{ 0x0045, 0x0000 },
 > > +};
 > > +
-> > +static int bma400_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan, int *val,
-> > +			   int *val2, long mask)
+> > +static const int adux1020_rate[][2] = {
+> > +	{ 0, 100000 },
+> > +	{ 0, 200000 },
+> > +	{ 0, 500000 },
+> > +	{ 1, 0 },
+> > +	{ 2, 0 },
+> > +	{ 5, 0 },
+> > +	{ 10, 0 },
+> > +	{ 20, 0 },
+> > +	{ 50, 0 },
+> > +	{ 100, 0 },
+> > +	{ 190, 0 },
+> > +	{ 450, 0 },
+> > +	{ 820, 0 },
+> > +	{ 1400, 0 },
+> > +};
+> > +
+> > +static const int adux1020_led_current[][2] = {
+> > +	{ 0, 25000 },
+> > +	{ 0, 40000 },
+> > +	{ 0, 55000 },
+> > +	{ 0, 70000 },
+> > +	{ 0, 85000 },
+> > +	{ 0, 100000 },
+> > +	{ 0, 115000 },
+> > +	{ 0, 130000 },
+> > +	{ 0, 145000 },
+> > +	{ 0, 160000 },
+> > +	{ 0, 175000 },
+> > +	{ 0, 190000 },
+> > +	{ 0, 205000 },
+> > +	{ 0, 220000 },
+> > +	{ 0, 235000 },
+> > +	{ 0, 250000 },
+> > +};
+> > +
+> > +static void adux1020_flush_fifo(struct adux1020_data *data)
 > > +{
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +	int ret;
+> > +	/* Force Idle mode */
+> > +	regmap_write(data->regmap, ADUX1020_REG_FORCE_MODE,
+> > +		     ADUX1020_ACTIVE_4_STATE);
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_OP_MODE,
+> > +			   ADUX1020_OP_MODE_MASK, ADUX1020_MODE_FORCE);
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_OP_MODE,
+> > +			   ADUX1020_OP_MODE_MASK, ADUX1020_MODE_IDLE);
+> > +
+> > +	/* Flush FIFO */
+> > +	regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
+> > +		     ADUX1020_FORCE_CLOCK_ON);
+> > +	regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
+> > +		     ADUX1020_FIFO_FLUSH);
+> > +	regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
+> > +		     ADUX1020_FORCE_CLOCK_RESET);
+> 
+> These bits could use with some minimal error checking.[3]
+> Maybe also convert to return int and check errors.
+> 
+
+Yes, I will added error check in relevant places.
+
+> > +}
+> > +
+> > +static int adux1020_read_fifo(struct adux1020_data *data, u16 *buf, u8
+> > buf_len)
+> > +{
+> > +	int i, ret = -EINVAL;
+> > +	unsigned int regval;
+> > +
+> > +	/* Enable 32MHz clock */
+> > +	regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
+> > +		     ADUX1020_FORCE_CLOCK_ON);
+> 
+> This looks weird [the FORCE_CLOCK_ON], but it is what the datasheet says.
+> Also, related to [3]: some error checking this return would be useful.
+> 
+
+ack.
+
+> > +
+> > +	for (i = 0; i < buf_len; i++) {
+> > +		ret = regmap_read(data->regmap, ADUX1020_REG_DATA_BUFFER,
+> > +				      &regval);
+> > +		if (ret < 0)
+> > +			goto err_out;
+> > +
+> > +		buf[i] = regval;
+> > +	}
+> > +
+> > +	/* Set 32MHz clock to be controlled by internal state machine */
+> > +	regmap_write(data->regmap, ADUX1020_REG_TEST_MODES_3,
+> > +		     ADUX1020_FORCE_CLOCK_RESET);
+> > +
+> > +err_out:
+> > +	return ret;
+> > +}
+> > +
+> > +static void adux1020_set_mode(struct adux1020_data *data,
+> > +			      enum adux1020_op_modes mode)
+> > +{
+> > +	/* Switch to standby mode before changing the mode */
+> > +	regmap_write(data->regmap, ADUX1020_REG_OP_MODE,
+> > ADUX1020_MODE_STANDBY);
+> 
+> [3] error checking maybe? and maybe int return?
+> 
+
+ack.
+
+> > +
+> > +	/* Set data out and switch to the desired mode */
+> > +	if (mode == ADUX1020_MODE_PROX_I) {
+> 
+> This could become a switch() statement, so that when/if other modes get
+> added, the patch looks cleaner.
+> 
+
+okay.
+
+> > +		regmap_update_bits(data->regmap, ADUX1020_REG_OP_MODE,
+> > +			ADUX1020_DATA_OUT_MODE_MASK,
+> > +			ADUX1020_MODE_OUT_PROX_I <<
+> > ADUX1020_MODE_OUT_SHIFT);
+> 
+> Related to [1]: a FIELD_PREP() macro would be useful.
+> 
+
+okay.
+
+> > +		regmap_update_bits(data->regmap, ADUX1020_REG_OP_MODE,
+> > +			ADUX1020_OP_MODE_MASK, ADUX1020_MODE_PROX_I);
+> > +	}
+> > +}
+> > +
+> > +static int adux1020_measure(struct adux1020_data *data,
+> > +			    enum adux1020_op_modes mode,
+> > +			    u16 *val)
+> > +{
+> > +	int ret, tries = 50;
+> > +	unsigned int status;
+> > +
+> > +	mutex_lock(&data->lock);
+> 
+> The scope of this lock looks like it would need to be extended a bit.
+> See [4] on some more notes for this.
+> 
+> > +
+> > +	/* Disable INT pin as polling is going to be used */
+> > +	regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
+> > +		     ADUX1020_INT_DISABLE);
+> > +
+> > +	/* Enable mode interrupt */
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
+> > +			   ADUX1020_MODE_INT_MASK,
+> > +			   adux1020_modes[mode].int_en);
+> 
+> [3] maybe some more error checking?
+> 
+
+ack.
+
+> > +
+> > +	while (tries--) {
+> > +		ret = regmap_read(data->regmap, ADUX1020_REG_INT_STATUS,
+> > +				  &status);
+> > +		if (ret < 0)
+> > +			goto fail;
+> > +
+> > +		status &= ADUX1020_FIFO_STATUS_MASK;
+> > +		if (status >= adux1020_modes[mode].bytes)
+> > +			break;
+> > +		msleep(20);
+> > +	}
+> > +
+> > +	if (tries < 0) {
+> > +		ret = -EIO;
+> > +		goto fail;
+> > +	}
+> > +
+> 
+> Regarding [8], the buffer is passed from adux1020_read_raw(), so maybe just
+> move the buffer here, since the information about size is near the buffer
+> definition.
+> Then do *val = buf[0];
+> 
+
+I don't see any benefit from this. As said below, the buffer size is fixed
+and is based on the maximum hardware FIFO size. It goes upto 6 bytes
+(3-16bit words).
+
+> > +	ret = adux1020_read_fifo(data, val, adux1020_modes[mode].buf_len);
+> > +	if (ret < 0)
+> > +		goto fail;
+> > +
+> > +	/* Clear mode interrupt */
+> > +	regmap_write(data->regmap, ADUX1020_REG_INT_STATUS,
+> > +			   (~adux1020_modes[mode].int_en));
+> > +	/* Disable mode interrupts */
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
+> > +			   ADUX1020_MODE_INT_MASK,
+> > ADUX1020_MODE_INT_DISABLE);
+> > +
+> > +fail:
+> > +	mutex_unlock(&data->lock);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int adux1020_read_raw(struct iio_dev *indio_dev,
+> > +			     struct iio_chan_spec const *chan,
+> > +			     int *val, int *val2, long mask)
+> > +{
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	u16 buf[3];
+> 
+> This buffer looks a bit weird. [8]
+> It's 3 elements-wide and passed without any information about size.
+> And only the first element is used.
+> So, maybe just convert u16 buf[3] -> u16 buf?
+> 
+
+The buffer declaration is based on the hardware buffer available. It
+is 3 elements wide since the remaining 2 elements will be used by other
+modes. The idea here is to reuse the adux1020_measure() API for all 3
+modes (which has varying buffer sizes).
+
+> > +	int ret = -EINVAL;
+> > +	unsigned int regval;
 > > +
 > > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_PROCESSED:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bma400_get_temp_reg(data, val, val2);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
 > > +	case IIO_CHAN_INFO_RAW:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bma400_get_accel_reg(data, chan, val);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
+> > +		switch (chan->type) {
+> > +		case IIO_PROXIMITY:
+> > +			adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+> > +			ret = adux1020_measure(data, ADUX1020_MODE_PROX_I,
+> > buf);
+> 
+> Regarding [4]: I'm thinking that the lock could be extended to
+> adux1020_{read,write}_raw() & adux1020_{read,write}_event_config()
+> functions, especialy [or only in places] where functions seem to do
+> consecutive R/W ops.
+> 
+
+okay.
+
+> > +			if (ret < 0)
+> > +				return ret;
+> > +
+> > +			*val = buf[0];
+> > +			ret = IIO_VAL_INT;
+> > +			break;
+> > +		default:
+> > +			break;
+> > +		}
+> > +		break;
+> > +	case IIO_CHAN_INFO_PROCESSED:
+> > +		switch (chan->type) {
+> > +		case IIO_CURRENT:
+> > +			ret = regmap_read(data->regmap,
+> > +					  ADUX1020_REG_LED_CURRENT,
+> > &regval);
+> > +			if (ret < 0)
+> > +				return ret;
+> > +
+> > +			regval = regval & ADUX1020_LED_CURRENT_MASK;
+> > +
+> > +			*val = adux1020_led_current[regval][0];
+> > +			*val2 = adux1020_led_current[regval][1];
+> > +
+> > +			ret = IIO_VAL_INT_PLUS_MICRO;
+> > +			break;
+> > +		default:
+> > +			break;
+> > +		}
+> > +		break;
 > > +	case IIO_CHAN_INFO_SAMP_FREQ:
 > > +		switch (chan->type) {
-> > +		case IIO_ACCEL:
-> > +			if (!data->sample_freq)
-> > +				return -EINVAL;
+> > +		case IIO_PROXIMITY:
+> > +			ret = regmap_read(data->regmap,
+> > ADUX1020_REG_FREQUENCY,
+> > +					  &regval);
+> > +			if (ret < 0)
+> > +				return ret;
 > > +
-> > +			*val = data->sample_freq->hz;
-> > +			if (!data->sample_freq->micro_hz)
-> > +				return IIO_VAL_INT;
+> > +			regval = (regval & ADUX1020_PROX_FREQ_MASK) >>
+> > +				  ADUX1020_PROX_FREQ_SHIFT;
+> 
+> Related to [1]: a FIELD_PREP() macro would be useful.
+> 
+
+ack.
+
 > > +
-> > +			*val2 = data->sample_freq->micro_hz;
-> > +			return IIO_VAL_INT_PLUS_MICRO;
-> > +		case IIO_TEMP:
-> > +			/*
-> > +			 * Runs at a fixed sampling frequency. See Section 4.4
-> > +			 * of the datasheet.
-> > +			 */
-> > +			*val = 6;
-> > +			*val2 = 250000;
-> > +			return IIO_VAL_INT_PLUS_MICRO;
+> > +			*val = adux1020_rate[regval][0];
+> > +			*val2 = adux1020_rate[regval][1];
+> > +
+> > +			ret = IIO_VAL_INT_PLUS_MICRO;
+> > +			break;
 > > +		default:
-> > +			return -EINVAL;
+> > +			break;
 > > +		}
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		*val = 0;
-> > +		*val2 = data->scale;
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > +		/*
-> > +		 * TODO: We could avoid this logic and returning -EINVAL here if
-> > +		 * we set both the low-power and normal mode OSR registers when
-> > +		 * we configure the device.
-> > +		 */
-> > +		if (data->oversampling_ratio < 0)
-> > +			return -EINVAL;
-> > +
-> > +		*val = data->oversampling_ratio;
-> > +		return IIO_VAL_INT;
+> > +		break;
 > > +	default:
-> > +		return -EINVAL;
+> > +		break;
 > > +	}
-> > +}
 > > +
-> > +static int bma400_write_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan, int val, int val2,
-> > +			    long mask)
-> > +{
-> > +	int ret;
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		/*
-> > +		 * The sample frequency is readonly for the temperature
-> > +		 * register and a fixed value in low-power mode.
-> > +		 */
-> > +		if (chan->type != IIO_ACCEL)
-> > +			return -EINVAL;
-> > +
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bma400_set_accel_output_data_rate(data, val, val2);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		if (val != 0)
-> > +			return -EINVAL;
-> > +
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bma400_set_accel_scale(data, val2);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > +		mutex_lock(&data->mutex);
-> > +		ret = bma400_set_accel_oversampling_ratio(data, val);
-> > +		mutex_unlock(&data->mutex);
-> > +		return ret;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
-> > +				    struct iio_chan_spec const *chan,
-> > +				    long mask)
-> > +{
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		return IIO_VAL_INT_PLUS_MICRO;
-> > +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > +		return IIO_VAL_INT;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct iio_info bma400_info = {
-> > +	.attrs             = &bma400_attrs_group,
-> > +	.read_raw          = bma400_read_raw,
-> > +	.write_raw         = bma400_write_raw,
-> > +	.write_raw_get_fmt = bma400_write_raw_get_fmt,
+> > +	return ret;
 > > +};
 > > +
-> > +int bma400_probe(struct device *dev,
-> > +		 struct regmap *regmap,
-> > +		 const char *name)
+> > +static int adux1020_write_raw(struct iio_dev *indio_dev,
+> > +			     struct iio_chan_spec const *chan,
+> > +			     int val, int val2, long mask)
 > > +{
-> > +	int ret;
-> > +	struct bma400_data *data;
-> > +	struct iio_dev *indio_dev;
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	int i, ret = -EINVAL;
 > > +
-> > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		if (chan->type == IIO_PROXIMITY) {
+> > +			for (i = 0; i < ARRAY_SIZE(adux1020_rate); i++) {
+> > +				if ((val == adux1020_rate[i][0]) &&
+> > +				     (val2 == adux1020_rate[i][1])) {
+> > +					ret = regmap_update_bits(data-
+> > >regmap,
+> > +						ADUX1020_REG_FREQUENCY,
+> > +						ADUX1020_PROX_FREQ_MASK,
+> > +						i <<
+> > ADUX1020_PROX_FREQ_SHIFT);
+> > +				}
+> > +			}
+> 
+> [5] This looks as it has too many level of indentations.
+> And could be reworked with either using the "find_closest()" macro, or at
+> least split into a helper that finds the index in the "adux1020_rate" array
+> based on val & val2.
+> 
+> Then you get something like:
+> ------------------------------------------------------------
+> i = adux1020_find_index(adux1020_rate, val, val2);
+> if (i < 0)
+>     return i;
+> 
+> return regmap_update_bits(data->regmap,
+>                           ADUX1020_REG_FREQUENCY,
+>                           ADUX1020_PROX_FREQ_SET(i));
+> ------------------------------------------------------------
+> 
+
+good idea! will implement.
+
+> > +		}
+> > +		break;
+> > +	case IIO_CHAN_INFO_PROCESSED:
+> > +		if (chan->type == IIO_CURRENT) {
+> > +			for (i = 0; i < ARRAY_SIZE(adux1020_led_current);
+> > i++) {
+> > +				if ((val == adux1020_led_current[i][0]) &&
+> > +				     (val2 == adux1020_led_current[i][1]))
+> > {
+> > +					ret = regmap_update_bits(data-
+> > >regmap,
+> > +						ADUX1020_REG_LED_CURRENT,
+> > +						ADUX1020_LED_CURRENT_MASK,
+> > i);
+> > +				}
+> > +			}
+> 
+> Same comment as [5]
+> 
+> > +		}
+> > +		break;
+> > +	default:
+> > +		break;
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int adux1020_write_event_config(struct iio_dev *indio_dev,
+> > +		const struct iio_chan_spec *chan, enum iio_event_type type,
+> > +		enum iio_event_direction dir, int state)
+> > +{
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +
+> > +	regmap_write(data->regmap, ADUX1020_REG_INT_ENABLE,
+> > +		     ADUX1020_INT_ENABLE);
+> > +
+> 
+> Regarding [4]: it looks like the lock could be useful here.
+> Regarding [3]: more error checking could be useful.
+> 
+> 
+> > +	regmap_write(data->regmap, ADUX1020_REG_INT_POLARITY, 0);
+> > +
+> > +	switch (chan->type) {
+> > +	case IIO_PROXIMITY:
+> > +		if (dir == IIO_EV_DIR_RISING) {
+> > +			regmap_update_bits(data->regmap,
+> > ADUX1020_REG_INT_MASK,
+> > +					   ADUX1020_PROX_ON1_INT,
+> > +					   state ? 0 :
+> > ADUX1020_PROX_ON1_INT);
+> > +		} else {
+> > +			regmap_update_bits(data->regmap,
+> > ADUX1020_REG_INT_MASK,
+> > +					   ADUX1020_PROX_OFF1_INT,
+> > +					   state ? 0 :
+> > ADUX1020_PROX_OFF1_INT);
+> > +		}
+> 
+> [6] More about style/preference.
+> I like the part in adux1020_read_event_config(), where
+> 
+> -------------------------------------------------
+>   if (dir == IIO_EV_DIR_RISING)
+>       mask = ADUX1020_PROX_ON1_INT;
+>   else
+>       mask = ADUX1020_PROX_OFF1_INT;
+> -------------------------------------------------
+> 
+> Then this could become:
+> 
+> -------------------------------------------------
+> if (state)
+>     state = mask;
+> else
+>     state = 0;
+> 
+> ret = regmap_update_bits(data->regmap,
+>                          ADUX1020_REG_INT_MASK,
+>                          mask, state);
+> -------------------------------------------------
+> 
+
+looks good, will implement.
+
+> 
+> > +
+> > +		/*
+> > +		 * Trigger proximity interrupt when the intensity is above
+> > +		 * or below threshold
+> > +		 */
+> > +		regmap_update_bits(data->regmap, ADUX1020_REG_PROX_TYPE,
+> > +				   ADUX1020_PROX_TYPE, ADUX1020_PROX_TYPE);
+> > +
+> > +		/* Set proximity mode */
+> > +		adux1020_set_mode(data, ADUX1020_MODE_PROX_I);
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int adux1020_read_event_config(struct iio_dev *indio_dev,
+> > +		const struct iio_chan_spec *chan, enum iio_event_type type,
+> > +		enum iio_event_direction dir)
+> > +{
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	int ret, mask;
+> > +	unsigned int regval;
+> > +
+> > +	switch (chan->type) {
+> > +	case IIO_PROXIMITY:
+> > +		if (dir == IIO_EV_DIR_RISING)
+> > +			mask = ADUX1020_PROX_ON1_INT;
+> > +		else
+> > +			mask = ADUX1020_PROX_OFF1_INT;
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = regmap_read(data->regmap, ADUX1020_REG_INT_MASK, &regval);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	return !(regval & mask);
+> > +}
+> > +
+> > +static int adux1020_read_thresh(struct iio_dev *indio_dev,
+> > +		const struct iio_chan_spec *chan, enum iio_event_type type,
+> > +		enum iio_event_direction dir, enum iio_event_info info,
+> > +		int *val, int *val2)
+> > +{
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	u8 reg;
+> > +	int ret;
+> > +	unsigned int regval;
+> > +
+> > +	switch (chan->type) {
+> > +	case IIO_PROXIMITY:
+> > +		if (dir == IIO_EV_DIR_RISING)
+> > +			reg = ADUX1020_REG_PROX_TH_ON1;
+> > +		else
+> > +			reg = ADUX1020_REG_PROX_TH_OFF1;
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = regmap_read(data->regmap, reg, &regval);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	*val = regval;
+> > +
+> > +	return IIO_VAL_INT;
+> > +}
+> > +
+> > +static int adux1020_write_thresh(struct iio_dev *indio_dev,
+> > +		const struct iio_chan_spec *chan, enum iio_event_type type,
+> > +		enum iio_event_direction dir, enum iio_event_info info,
+> > +		int val, int val2)
+> > +{
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	u8 reg;
+> > +
+> > +	switch (chan->type) {
+> > +	case IIO_PROXIMITY:
+> > +		if (dir == IIO_EV_DIR_RISING)
+> > +			reg = ADUX1020_REG_PROX_TH_ON1;
+> > +		else
+> > +			reg = ADUX1020_REG_PROX_TH_OFF1;
+> > +		break;
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	/* Full scale threshold value is 0-65535  */
+> > +	if (val < 0 || val > 65535)
+> > +		return -EINVAL;
+> > +
+> > +	return regmap_write(data->regmap, reg, val);
+> > +}
+> > +
+> > +static const struct iio_event_spec adux1020_proximity_event[] = {
+> > +	{
+> > +		.type = IIO_EV_TYPE_THRESH,
+> > +		.dir = IIO_EV_DIR_RISING,
+> > +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> > +			BIT(IIO_EV_INFO_ENABLE),
+> > +	},
+> > +	{
+> > +		.type = IIO_EV_TYPE_THRESH,
+> > +		.dir = IIO_EV_DIR_FALLING,
+> > +		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
+> > +			BIT(IIO_EV_INFO_ENABLE),
+> > +	},
+> > +};
+> > +
+> > +static const struct iio_chan_spec adux1020_channels[] = {
+> > +	{
+> > +		.type = IIO_PROXIMITY,
+> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> > +				      BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> > +		.event_spec = adux1020_proximity_event,
+> > +		.num_event_specs = ARRAY_SIZE(adux1020_proximity_event),
+> > +	},
+> > +	{
+> > +		.type = IIO_CURRENT,
+> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> > +		.extend_name = "led",
+> > +	},
+> > +};
+> > +
+> > +static IIO_CONST_ATTR(sampling_frequency_available,
+> > +		      "0.1 0.2 0.5 1 2 5 10 20 50 100 190 450 820 1400");
+> 
+> This could re-use the IIO_CONST_ATTR_SAMP_FREQ_AVAIL() macro.
+> 
+
+ack.
+
+> > +
+> > +static struct attribute *adux1020_attributes[] = {
+> > +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> > +	NULL
+> > +};
+> > +
+> > +static const struct attribute_group adux1020_attribute_group = {
+> > +	.attrs = adux1020_attributes,
+> > +};
+> > +
+> > +static const struct iio_info adux1020_info = {
+> > +	.attrs = &adux1020_attribute_group,
+> > +	.read_raw = adux1020_read_raw,
+> > +	.write_raw = adux1020_write_raw,
+> > +	.read_event_config = adux1020_read_event_config,
+> > +	.write_event_config = adux1020_write_event_config,
+> > +	.read_event_value = adux1020_read_thresh,
+> > +	.write_event_value = adux1020_write_thresh,
+> > +};
+> > +
+> > +static irqreturn_t adux1020_interrupt_handler(int irq, void *private)
+> > +{
+> > +	struct iio_dev *indio_dev = private;
+> > +	struct adux1020_data *data = iio_priv(indio_dev);
+> > +	int ret, status;
+> > +
+> > +	ret = regmap_read(data->regmap, ADUX1020_REG_INT_STATUS, &status);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	status &= ADUX1020_MODE_INT_STATUS_MASK;
+> > +
+> > +	if (status & ADUX1020_INT_PROX_ON1) {
+> > +		iio_push_event(indio_dev,
+> > +				IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+> > +					IIO_EV_TYPE_THRESH,
+> > +					IIO_EV_DIR_RISING),
+> > +				iio_get_time_ns(indio_dev));
+> > +	}
+> > +
+> > +	if (status & ADUX1020_INT_PROX_OFF1) {
+> > +		iio_push_event(indio_dev,
+> > +				IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
+> > +					IIO_EV_TYPE_THRESH,
+> > +					IIO_EV_DIR_FALLING),
+> > +				iio_get_time_ns(indio_dev));
+> > +	}
+> > +
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_INT_STATUS,
+> > +			   ADUX1020_MODE_INT_MASK, status);
+> > +
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> > +static int adux1020_chip_init(struct adux1020_data *data)
+> > +{
+> > +	struct i2c_client *client = data->client;
+> > +	int ret, i;
+> > +	unsigned int val;
+> > +
+> > +	ret = regmap_read(data->regmap, ADUX1020_REG_CHIP_ID, &val);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	val &= ADUX1020_CHIP_ID_MASK;
+> > +
+> > +	if (val != ADUX1020_CHIP_ID) {
+> > +		dev_err(&client->dev, "invalid chip id 0x%04x\n", val);
+> > +		return -ENODEV;
+> > +	};
+> > +
+> > +	dev_dbg(&client->dev, "Detected ADUX1020 with chip id: 0x%04x\n",
+> > val);
+> > +
+> > +	/* Perform software reset */
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_SW_RESET,
+> > +			   ADUX1020_SW_RESET, ADUX1020_SW_RESET);
+> > +
+> > +	/* Load default configuration */
+> > +	for (i = 0; i < ARRAY_SIZE(adux1020_def_conf); i++)
+> > +		regmap_write(data->regmap, adux1020_def_conf[i][0],
+> > +			     adux1020_def_conf[i][1]);
+> > +
+> > +	adux1020_flush_fifo(data);
+> > +
+> > +	/* Use LED_IREF for proximity mode */
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_LED_CURRENT,
+> > +			   ADUX1020_LED_PIREF_EN, 0);
+> > +
+> > +	/* Mask all interrupts */
+> > +	regmap_update_bits(data->regmap, ADUX1020_REG_INT_MASK,
+> > +			   ADUX1020_MODE_INT_MASK,
+> > ADUX1020_MODE_INT_DISABLE);
+> 
+> Same as [3]: a bit more error checking here could be useful.
+> 
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int adux1020_probe(struct i2c_client *client,
+> > +			  const struct i2c_device_id *id)
+> > +{
+> > +	struct adux1020_data *data;
+> > +	struct iio_dev *indio_dev;
+> > +	int ret;
+> > +
+> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
 > > +	if (!indio_dev)
 > > +		return -ENOMEM;
 > > +
-> > +	data = iio_priv(indio_dev);
-> > +	data->regmap = regmap;
-> > +	data->dev = dev;
-> > +
-> > +	ret = bma400_init(data);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = iio_read_mount_matrix(dev, "mount-matrix",
-> > +				    &data->orientation);
-> 
-> Looks like the above will fit on one line..
-> 
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	mutex_init(&data->mutex);
-> > +	indio_dev->dev.parent = dev;
-> > +	indio_dev->name = name;
-> > +	indio_dev->info = &bma400_info;
-> > +	indio_dev->channels = bma400_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(bma400_channels);
+> > +	indio_dev->dev.parent = &client->dev;
+> > +	indio_dev->info = &adux1020_info;
+> > +	indio_dev->name = ADUX1020_DRV_NAME;
+> > +	indio_dev->channels = adux1020_channels;
+> > +	indio_dev->num_channels = ARRAY_SIZE(adux1020_channels);
 > > +	indio_dev->modes = INDIO_DIRECT_MODE;
 > > +
-> > +	dev_set_drvdata(dev, indio_dev);
+> > +	data = iio_priv(indio_dev);
+> > +	i2c_set_clientdata(client, indio_dev);
+> > +
+> > +	data->regmap = devm_regmap_init_i2c(client,
+> > &adux1020_regmap_config);
+> > +	if (IS_ERR(data->regmap)) {
+> > +		dev_err(&client->dev, "regmap initialization failed.\n");
+> > +		return PTR_ERR(data->regmap);
+> > +	}
+> > +
+> > +	data->client = client;
+> > +	data->indio_dev = indio_dev;
+> > +	mutex_init(&data->lock);
+> > +
+> > +	ret = adux1020_chip_init(data);
+> > +	if (ret)
+> > +		goto err_out;
+> > +
+> > +	if (client->irq) {
+> > +		ret = devm_request_threaded_irq(&client->dev, client->irq,
+> > +				NULL, adux1020_interrupt_handler,
+> > +				IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
+> > +				ADUX1020_DRV_NAME, indio_dev);
+> > +		if (ret) {
+> > +			dev_err(&client->dev, "irq request error %d\n",
+> > -ret);
+> > +			goto err_out;
+> > +		}
+> > +	}
 > > +
 > > +	ret = iio_device_register(indio_dev);
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "unable to register iio device\n");
-> > +		return ret;
 > 
-> Drop the return out of the if statement and no need for the return 0 below.
-
-I'd also avoid the error message altogether
-
+> [7] Jonathan may correct me here.
+> If this doesn't need to do anything more later, this could use
+> devm_iio_device_register(), and then the  adux1020_remove() hook could be
+> removed.
 > 
+
+right. will switch to devm_ API.
+
+Thanks,
+Mani
+
+> > +	if (ret) {
+> > +		dev_err(&client->dev, "Failed to register IIO device\n");
+> > +		goto err_out;
 > > +	}
 > > +
 > > +	return 0;
+> > +
+> > +err_out:
+> > +	return ret;
 > > +}
-> > +EXPORT_SYMBOL(bma400_probe);
 > > +
-> > +int bma400_remove(struct device *dev)
+> > +static int adux1020_remove(struct i2c_client *client)
 > > +{
-> > +	int ret;
-> > +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-> > +	struct bma400_data *data = iio_priv(indio_dev);
-> > +
-> > +	mutex_lock(&data->mutex);
-> > +	ret = bma400_softreset(data);
-> > +	if (ret < 0) {
-> > +		/*
-> > +		 * If the softreset failed, try to put the device in
-> > +		 * sleep mode, but still report the error.
-> > +		 */
-> > +		dev_err(data->dev, "Failed to reset the device");
-> > +		bma400_set_power_mode(data, POWER_MODE_SLEEP);
-> > +	}
-> > +	mutex_unlock(&data->mutex);
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > > +
 > > +	iio_device_unregister(indio_dev);
 > > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL(bma400_remove);
-> > +
-> > +MODULE_AUTHOR("Dan Robertson <dan@dlrobertson.com>");
-> > +MODULE_DESCRIPTION("Bosch BMA400 triaxial acceleration sensor");
-> > +MODULE_LICENSE("GPL");
-> > diff --git a/drivers/iio/accel/bma400_i2c.c b/drivers/iio/accel/bma400_i2c.c
-> > new file mode 100644
-> > index 000000000000..227012a32e13
-> > --- /dev/null
-> > +++ b/drivers/iio/accel/bma400_i2c.c
-> > @@ -0,0 +1,54 @@
-> > +// SPDX-License-Identifier: GPL-2.0-only
-> > +/*
-> > + * bma400-i2c.c - I2C IIO driver for Bosch BMA400 triaxial acceleration sensor.
-> > + *
-> > + * Copyright 2019 Dan Robertson <dan@dlrobertson.com>
-> > + *
-> > + * I2C address is either 0x14 or 0x15 depending on SDO
-> > + *
-> 
-> This blank line doesn't add anything (nitpick)
-> 
-> > + */
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/acpi.h>
-> 
-> Slight preference for alphabetical order.  Also why ACPI?
-> 
-> > +#include <linux/of.h>
-> > +#include <linux/regmap.h>
-> > +
-> > +#include "bma400.h"
-> > +
-> > +static int bma400_i2c_probe(struct i2c_client *client,
-> > +			    const struct i2c_device_id *id)
-> > +{
-> > +	struct regmap *regmap;
-> > +
-> > +	regmap = devm_regmap_init_i2c(client,
-> > +				      &bma400_regmap_config);
-> > +
-> > +	return bma400_probe(&client->dev, regmap, id->name);
+> > +	return 0;
 > > +}
 > > +
-> > +static int bma400_i2c_remove(struct i2c_client *client)
-> > +{
-> > +	return bma400_remove(&client->dev);
-> > +}
+> > +static const struct i2c_device_id adux1020_id[] = {
+> > +	{ "adux1020", 0 },
+> > +	{}
+> > +};
+> > +MODULE_DEVICE_TABLE(i2c, adux1020_id);
 > > +
-> > +static const struct i2c_device_id bma400_i2c_ids[] = {
-> > +	{ "bma400", 0 },
+> > +static const struct of_device_id adux1020_of_match[] = {
+> > +	{ .compatible = "adi,adux1020" },
 > > +	{ }
 > > +};
+> > +MODULE_DEVICE_TABLE(of, adux1020_of_match);
 > > +
-> > +MODULE_DEVICE_TABLE(i2c, bma400_i2c_ids);
-> > +
-> 
-> Good to have a of_device_id table as well from the start.
-> There is a general (but slow) move to stop using the fallback
-> to the i2c_device_id table.
-> 
-> > +static struct i2c_driver bma400_i2c_driver = {
+> > +static struct i2c_driver adux1020_driver = {
 > > +	.driver = {
-> > +		.name = "bma400",
+> > +		.name	= ADUX1020_DRV_NAME,
+> > +		.of_match_table = adux1020_of_match,
 > > +	},
-> > +	.probe    = bma400_i2c_probe,
-> > +	.remove   = bma400_i2c_remove,
-> > +	.id_table = bma400_i2c_ids,
+> > +	.probe		= adux1020_probe,
+> > +	.remove		= adux1020_remove,
+> > +	.id_table	= adux1020_id,
 > > +};
+> > +module_i2c_driver(adux1020_driver);
 > > +
-> > +module_i2c_driver(bma400_i2c_driver);
-> > +
-> > +MODULE_AUTHOR("Dan Robertson <dan@dlrobertson.com>");
-> > +MODULE_DESCRIPTION("Bosch BMA400 triaxial acceleration sensor");
+> > +MODULE_AUTHOR("Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>"
+> > );
+> > +MODULE_DESCRIPTION("ADUX1020 photometric sensor");
 > > +MODULE_LICENSE("GPL");
-> > 
-> > 
-> 
-
--- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
