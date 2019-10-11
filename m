@@ -1,82 +1,101 @@
-Return-Path: <SRS0=Tt4o=YD=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=YDly=YE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F06C4360C
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Oct 2019 21:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16C62C47404
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Oct 2019 07:07:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CDA8A218AC
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Oct 2019 21:31:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E3DA92084C
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Oct 2019 07:07:45 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="m82JXHQo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727289AbfJJVbe convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Oct 2019 17:31:34 -0400
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:45023 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725867AbfJJVbe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Oct 2019 17:31:34 -0400
-X-Originating-IP: 91.224.148.103
-Received: from xps13 (unknown [91.224.148.103])
-        (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id BAD3A240009;
-        Thu, 10 Oct 2019 21:31:30 +0000 (UTC)
-Date:   Thu, 10 Oct 2019 23:31:29 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
+        id S1727575AbfJKHHp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Oct 2019 03:07:45 -0400
+Received: from mail-lj1-f194.google.com ([209.85.208.194]:37852 "EHLO
+        mail-lj1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726755AbfJKHHp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Oct 2019 03:07:45 -0400
+Received: by mail-lj1-f194.google.com with SMTP id l21so8743177lje.4
+        for <linux-iio@vger.kernel.org>; Fri, 11 Oct 2019 00:07:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=PMRAqG5BzH34QtcOckq2OAXBNCAwG74oouEQA4P4k5k=;
+        b=m82JXHQoMVAx2eaF4EZXaxc/l0OAJ2Gx3DIHP925pL2EWhdXTjfHjOlcDZ6NmD41NH
+         rnE3FGwv226fgYKudXxyByX9AYafguW6y2/VjcjYr4o6CxqeH7slzdkCvs0ZyWD1hAQh
+         5UPoqgrF71EuqavQaw2aWGWMOwg/oPLvgRy/l3wiaGEWmJn1moFhlhD18/2y0IiE6iNb
+         4LnpXBtgbsAbzxKf5eop/ijUdIWg46UAJtkC4ObcDGGRLwftlvuUnx24jNRV06JiL3MY
+         RMNrJjhwAFdFLhczdpuh8JQCluARffb9GdMSr1MbHPLMcpY1n70nVH0oLwHo/h0OWxUS
+         A52Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=PMRAqG5BzH34QtcOckq2OAXBNCAwG74oouEQA4P4k5k=;
+        b=FCOG20RWhYF8XWcoemksBtwtCtndjbwRqbdapxNhvtP6cw7k+rLNDoKE4qOqCTCUbC
+         rBbt9gHtUHB1I4VkiIytaazAnz0jy0ys9Y+fugN7pS0ntrVIXXi/05lDBlGKOz0kJOXU
+         RvGPNmvlGbJfXj8iNz5nzuE5o5nes2Ib88GlCSPQRJ8t+QWBWdReJJaBHJbSG5jGW2xR
+         X4zuZTgU353Hu2GkTIrbPpMcRjLhBb9pKpjrtKKOI4rIUXQNvUFi/zOmzAbZgcft5QFj
+         381LShl5iFnfpu6EqJ+57dah585Afj7r7ww2FGjME1OmjenFqDug/9OMd96nYFTU8VqM
+         F9Nw==
+X-Gm-Message-State: APjAAAUWdRoP+ZdCUBsDja+nFJkLiwtQpbnAQRJXZ5wBeh/0/sbCqW/9
+        hgtRhU5R0y9BtAVJFsJjmYemV4bFoaruT442dcY/kw==
+X-Google-Smtp-Source: APXvYqwKX431J+PMA2u2tXXF96O/zALY0bVxm7M6HozsrL+W3kvBvywF1bZix14nfbqpwAlTiZNB8AkMZjlwIpW0Cwk=
+X-Received: by 2002:a2e:894b:: with SMTP id b11mr8332395ljk.152.1570777662155;
+ Fri, 11 Oct 2019 00:07:42 -0700 (PDT)
+MIME-Version: 1.0
+References: <20191001221356.19317-1-linus.walleij@linaro.org>
+ <20191001221356.19317-6-linus.walleij@linaro.org> <20191010183902.GA4633@bogus>
+In-Reply-To: <20191010183902.GA4633@bogus>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Fri, 11 Oct 2019 09:07:30 +0200
+Message-ID: <CACRpkdZZK9kQuEBHjNBG37EqeugFiVmJ3GLFf19L70OiYwy14Q@mail.gmail.com>
+Subject: Re: [PATCH 5/7 v3] mfd: ab8500: augment DT bindings
 To:     Rob Herring <robh@kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+Cc:     Lee Jones <lee.jones@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v3 8/8] dt-bindings: Add max12xx SPI ADC series as
- trivial devices
-Message-ID: <20191010233129.67a1d76c@xps13>
-In-Reply-To: <20191010204751.GA22206@bogus>
-References: <20191007132657.4190-1-miquel.raynal@bootlin.com>
-        <20191007132657.4190-9-miquel.raynal@bootlin.com>
-        <20191010204751.GA22206@bogus>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+        Mboumba Cedric Madianga <cedric.madianga@gmail.com>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Rob,
-
-Rob Herring <robh@kernel.org> wrote on Thu, 10 Oct 2019 15:47:51 -0500:
-
-> On Mon, Oct 07, 2019 at 03:26:57PM +0200, Miquel Raynal wrote:
-> > Update the compatible list with three Maxim ADCs compatibles.
-> > 
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+On Thu, Oct 10, 2019 at 8:39 PM Rob Herring <robh@kernel.org> wrote:
+> On Wed, Oct 02, 2019 at 12:13:54AM +0200, Linus Walleij wrote:
+> > As we migrate the AB8500 GPADC driver to use IIO, we need to augment
+> > the bindings to account for defining the ADC channels in the device
+> > tree.
+> >
+> > Cc: devicetree@vger.kernel.org
+> > Acked-by: Lee Jones <lee.jones@linaro.org>
+> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > > ---
-> >  .../bindings/iio/adc/max1027-adc.txt          | 28 +++++++++++++++++++
-> >  .../devicetree/bindings/trivial-devices.yaml  |  6 ++++
-> >  2 files changed, 34 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/max1027-adc.txt  
-> 
-> Devices are supposed to be documented in one place or the other. So 
-> either make max1027-adc.txt a schema or drop it.
-> 
-> I'm fine either way. Obviously, trivial-devices.yaml is trivial to add 
-> to, but it does leave some ambiguities. Like is an interrupt required, 
-> optional or non-existent? What about power supplies? Or what are allowed 
-> values for spi-max-frequency.
+> > ChangeLog v2->v3:
+> > - Change "adc-channel@" to "channel@" as per preferred notation.
+> > - Add some full stops to the end of sentences.
+> > - Reference the new ADC-specific documentation for channel specifier
+> >   etc.
+> > - Collect Lee's ACK.
+> > - Rebased on v5.4-rc1
+>
+> Humm, this is the 2nd v3. Can you address my comments in the 1st v3 you
+> sent[1].
 
-Rhaaa... I obviously wanted to drop the *txt file, just forgot to do
-it. As the interrupts are optional I found the trivial device
-description accurate enough.
+Sorry for the sloppiness. I blame it on the weather and some
+organizational stress. I'll fix it up and send a proper v4.
 
-Thanks,
-Miquèl
+Yours,
+Linus Walleij
