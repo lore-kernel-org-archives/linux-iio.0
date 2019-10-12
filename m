@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 679E5C4CECE
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D17BC10F14
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 38A2A2089C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55F4821850
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570880079;
-	bh=jKeraCEEgKwTtqXbkpB0/jAraSbIKG4qed7oTsYia6g=;
+	s=default; t=1570880085;
+	bh=MLIYy09xXiNKtFM7Du7Vsz4gtjB6l5q/YwnKYLL7yos=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=QRPKxMEY2D7/bB1Twe1rE2PlkcfvyKhkqg0Kz6d6J8t97NWisSxWf1tXd71ZQ8LTl
-	 3/t4uS12RGCzzrKu/4MC7iFAQzif6jPbAs44dlIIrHp7BlrEQNz8YW3uVxf/F0+fFZ
-	 ojGHn22acEfBc+StwUTJG7XrndaOTnZleFlr7ZG8=
+	b=L5M9C0RabbFGB7dtCzPcPZ5B/iLAwsd9ML9OPv/F3K8g9lGde9nkgyZzk/xrlu+L/
+	 d16nEg+r8Xre0ez9nClyoHuRZQ6prFi4ueOEkcY0XwzfdhJA0p1DBWgAQe64DbOAzV
+	 KRHuhcnAirZ6f+IpsciAsD0fFKc2c+tSCSO31C74=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729155AbfJLLei (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Oct 2019 07:34:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41694 "EHLO mail.kernel.org"
+        id S1729179AbfJLLel (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Oct 2019 07:34:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41720 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727068AbfJLLeh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Oct 2019 07:34:37 -0400
+        id S1729267AbfJLLek (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Oct 2019 07:34:40 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0C62C2190F;
-        Sat, 12 Oct 2019 11:34:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ED0E921A4A;
+        Sat, 12 Oct 2019 11:34:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570880077;
-        bh=jKeraCEEgKwTtqXbkpB0/jAraSbIKG4qed7oTsYia6g=;
+        s=default; t=1570880079;
+        bh=MLIYy09xXiNKtFM7Du7Vsz4gtjB6l5q/YwnKYLL7yos=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ALkHJdnlmseuM140ifzp+/OMaSFljHh3GxcGv6yxHVsyFGhviAITnhbOIfHlUOPVg
-         2MqK4RtOrjTmWiJOl8zzzHXER5khzknN8u3vKiaKLGUYoKfnLldGitQj9QuaxHiiRL
-         xq6bhMghuZ9PMUDjjuVdDdEM6WZDFJI/CG6goAqA=
-Date:   Sat, 12 Oct 2019 12:25:25 +0100
+        b=p+c/Bx1tqX0FY7ajIr4Ii8M9zXpqHJ3uJlgcbs6fwgJpPaBM5rQD6cy34uxGEBYt+
+         4SzIHTGXP5bXgSB8Ft1CMApHuVhKuJve7lIpHAVTh0SB+hYXWgBojUSi5HHAvQSSti
+         +ipCOy+aYy5U7BReFQUBkbU2QR9GkhMdbgtycu7w=
+Date:   Sat, 12 Oct 2019 12:29:12 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -49,12 +49,12 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v4 1/8] iio: adc: max1027: Add debugfs register read
- support
-Message-ID: <20191012122525.181fe29f@archlinux>
-In-Reply-To: <20191011144347.19146-2-miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v4 4/8] iio: adc: max1027: Prepare the introduction of
+ different resolutions
+Message-ID: <20191012122912.5882d2e7@archlinux>
+In-Reply-To: <20191011144347.19146-5-miquel.raynal@bootlin.com>
 References: <20191011144347.19146-1-miquel.raynal@bootlin.com>
-        <20191011144347.19146-2-miquel.raynal@bootlin.com>
+        <20191011144347.19146-5-miquel.raynal@bootlin.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,45 +64,139 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 11 Oct 2019 16:43:40 +0200
+On Fri, 11 Oct 2019 16:43:43 +0200
 Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-> Until now, only write operations were supported. Force two bytes read
-> operation when reading, which should fit most of the development
-> purposes. Of course, extended operations like buffered reads on
-> multiple channels or even temperature + voltage reads will not be read
-> entirely. Usually, just starting a new operation will work but in any
-> case a software reset (done through the debufs interface too) will
-> return the device in a usable state.
+> Maxim's max1027/29/31 series returns the measured voltages with a
+> resolution of 10 bits. There is a very similar series, max1227/29/31
+> which works identically but uses a resolution of 12 bits. Prepare the
+> support for these chips by turning the 'depth' into a macro parameter
+> instead of hardcoding it everywhere. Also reorganize just a bit the
+> macros at the top to avoid repeating tens of lines when adding support
+> for a new chip.
 > 
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Applied.
 
-thanks,
+Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/max1027.c | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+>  drivers/iio/adc/max1027.c | 74 +++++++++++++++++----------------------
+>  1 file changed, 32 insertions(+), 42 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-> index 214883458582..6cdfe9ef73fc 100644
+> index f9b473ee6711..8b449044bef5 100644
 > --- a/drivers/iio/adc/max1027.c
 > +++ b/drivers/iio/adc/max1027.c
-> @@ -309,8 +309,11 @@ static int max1027_debugfs_reg_access(struct iio_dev *indio_dev,
->  	struct max1027_state *st = iio_priv(indio_dev);
->  	u8 *val = (u8 *)st->buffer;
+> @@ -83,7 +83,7 @@ static const struct of_device_id max1027_adc_dt_ids[] = {
+>  MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
+>  #endif
 >  
-> -	if (readval != NULL)
-> -		return -EINVAL;
-> +	if (readval) {
-> +		int ret = spi_read(st->spi, val, 2);
-> +		*readval = be16_to_cpu(st->buffer[0]);
-> +		return ret;
-> +	}
+> -#define MAX1027_V_CHAN(index)						\
+> +#define MAX1027_V_CHAN(index, depth)					\
+>  	{								\
+>  		.type = IIO_VOLTAGE,					\
+>  		.indexed = 1,						\
+> @@ -93,7 +93,7 @@ MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
+>  		.scan_index = index + 1,				\
+>  		.scan_type = {						\
+>  			.sign = 'u',					\
+> -			.realbits = 10,					\
+> +			.realbits = depth,				\
+>  			.storagebits = 16,				\
+>  			.shift = 2,					\
+>  			.endianness = IIO_BE,				\
+> @@ -115,52 +115,42 @@ MODULE_DEVICE_TABLE(of, max1027_adc_dt_ids);
+>  		},							\
+>  	}
 >  
->  	*val = (u8)writeval;
->  	return spi_write(st->spi, val, 1);
+> +#define MAX1X27_CHANNELS(depth)			\
+> +	MAX1027_T_CHAN,				\
+> +	MAX1027_V_CHAN(0, depth),		\
+> +	MAX1027_V_CHAN(1, depth),		\
+> +	MAX1027_V_CHAN(2, depth),		\
+> +	MAX1027_V_CHAN(3, depth),		\
+> +	MAX1027_V_CHAN(4, depth),		\
+> +	MAX1027_V_CHAN(5, depth),		\
+> +	MAX1027_V_CHAN(6, depth),		\
+> +	MAX1027_V_CHAN(7, depth)
+> +
+> +#define MAX1X29_CHANNELS(depth)			\
+> +	MAX1X27_CHANNELS(depth),		\
+> +	MAX1027_V_CHAN(8, depth),		\
+> +	MAX1027_V_CHAN(9, depth),		\
+> +	MAX1027_V_CHAN(10, depth),		\
+> +	MAX1027_V_CHAN(11, depth)
+> +
+> +#define MAX1X31_CHANNELS(depth)			\
+> +	MAX1X27_CHANNELS(depth),		\
+> +	MAX1X29_CHANNELS(depth),		\
+> +	MAX1027_V_CHAN(12, depth),		\
+> +	MAX1027_V_CHAN(13, depth),		\
+> +	MAX1027_V_CHAN(14, depth),		\
+> +	MAX1027_V_CHAN(15, depth)
+> +
+>  static const struct iio_chan_spec max1027_channels[] = {
+> -	MAX1027_T_CHAN,
+> -	MAX1027_V_CHAN(0),
+> -	MAX1027_V_CHAN(1),
+> -	MAX1027_V_CHAN(2),
+> -	MAX1027_V_CHAN(3),
+> -	MAX1027_V_CHAN(4),
+> -	MAX1027_V_CHAN(5),
+> -	MAX1027_V_CHAN(6),
+> -	MAX1027_V_CHAN(7)
+> +	MAX1X27_CHANNELS(10),
+>  };
+>  
+>  static const struct iio_chan_spec max1029_channels[] = {
+> -	MAX1027_T_CHAN,
+> -	MAX1027_V_CHAN(0),
+> -	MAX1027_V_CHAN(1),
+> -	MAX1027_V_CHAN(2),
+> -	MAX1027_V_CHAN(3),
+> -	MAX1027_V_CHAN(4),
+> -	MAX1027_V_CHAN(5),
+> -	MAX1027_V_CHAN(6),
+> -	MAX1027_V_CHAN(7),
+> -	MAX1027_V_CHAN(8),
+> -	MAX1027_V_CHAN(9),
+> -	MAX1027_V_CHAN(10),
+> -	MAX1027_V_CHAN(11)
+> +	MAX1X29_CHANNELS(10),
+>  };
+>  
+>  static const struct iio_chan_spec max1031_channels[] = {
+> -	MAX1027_T_CHAN,
+> -	MAX1027_V_CHAN(0),
+> -	MAX1027_V_CHAN(1),
+> -	MAX1027_V_CHAN(2),
+> -	MAX1027_V_CHAN(3),
+> -	MAX1027_V_CHAN(4),
+> -	MAX1027_V_CHAN(5),
+> -	MAX1027_V_CHAN(6),
+> -	MAX1027_V_CHAN(7),
+> -	MAX1027_V_CHAN(8),
+> -	MAX1027_V_CHAN(9),
+> -	MAX1027_V_CHAN(10),
+> -	MAX1027_V_CHAN(11),
+> -	MAX1027_V_CHAN(12),
+> -	MAX1027_V_CHAN(13),
+> -	MAX1027_V_CHAN(14),
+> -	MAX1027_V_CHAN(15)
+> +	MAX1X31_CHANNELS(10),
+>  };
+>  
+>  static const unsigned long max1027_available_scan_masks[] = {
+> @@ -284,7 +274,7 @@ static int max1027_read_raw(struct iio_dev *indio_dev,
+>  			break;
+>  		case IIO_VOLTAGE:
+>  			*val = 2500;
+> -			*val2 = 10;
+> +			*val2 = chan->scan_type.realbits;
+>  			ret = IIO_VAL_FRACTIONAL_LOG2;
+>  			break;
+>  		default:
 
