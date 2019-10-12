@@ -2,132 +2,163 @@ Return-Path: <SRS0=wvAN=YF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52B20C4360C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 16:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78103C4360C
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 18:44:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 334C721929
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 16:55:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 47DAE20673
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 18:44:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iSJyreRx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729220AbfJLQzM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Oct 2019 12:55:12 -0400
-Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17421 "EHLO
-        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727115AbfJLQxM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2019 12:53:12 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1570899183; cv=none; 
-        d=zoho.com; s=zohoarc; 
-        b=K+1e2/BFHXnRReb+f3XBc3FGfdWHDXmhlOtSs5lRq1CFVXB+4RA2tuFOL1yG6VSYp7CrRinIFMlqsvYSlPoptLpSmGz/J0/6JnoERQ3OH1M2klMHvYKJWLHs4VEbAIgnpk4xhWI5QiXysomDxyTnEVSDJGMjx+lNrt26mn3zsR4=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zoho.com; s=zohoarc; 
-        t=1570899183; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=H490T33NOXsNv5uW2IbnnmW85uAQoogCvlGuJzkeYHg=; 
-        b=HQtCAaVnSdO0rh2dh99uiPOqQR4dskSaQCfd2LmK/0VtKLYycoKarAIS8YJo++5RKqHUrlW4gTZpFsFZbReaRdh4wU+9wntR7Oo0ev7xCYQuSLFtH18IduOwPtgVIgoj7nR26o6gOwCP/OfoX4IxrXlfsPf7pPiAGxhxBXSBjdA=
-ARC-Authentication-Results: i=1; mx.zoho.com;
-        dkim=pass  header.i=dlrobertson.com;
-        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
-        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
-Received: from nessie (pool-100-15-144-194.washdc.fios.verizon.net [100.15.144.194]) by mx.zohomail.com
-        with SMTPS id 157089918141952.24960803847944; Sat, 12 Oct 2019 09:53:01 -0700 (PDT)
-Date:   Sat, 12 Oct 2019 16:38:39 +0000
-From:   Dan Robertson <dan@dlrobertson.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        linux-kernel@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: (bma400) add driver for the BMA400
-Message-ID: <20191012163839.GB15972@nessie>
-References: <20191012035420.13904-1-dan@dlrobertson.com>
- <20191012035420.13904-3-dan@dlrobertson.com>
- <20191012104033.006b33f9@archlinux>
- <20191012153556.GA15972@nessie>
- <20191012173344.7d25fd02@archlinux>
+        id S1728636AbfJLSod (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Oct 2019 14:44:33 -0400
+Received: from mail-oi1-f193.google.com ([209.85.167.193]:41962 "EHLO
+        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728111AbfJLSod (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2019 14:44:33 -0400
+Received: by mail-oi1-f193.google.com with SMTP id w65so10691650oiw.8
+        for <linux-iio@vger.kernel.org>; Sat, 12 Oct 2019 11:44:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=tt7EwK0Ub05bYLQcTiSuwkmJDE/NFbm7qXnc4dJJNYc=;
+        b=iSJyreRxKiKXWLf9IM46ccwUxLb3tfVcWV5KufPfHxSv6l49GI0OZoJ10mchXpXEoe
+         hJEP2bYlvsG//5j/BOjMZhfAiRQXtZ3mHQQ+R+pXeJE63NIUBh9entfIjgHn8prmgcCG
+         zByjOVlTPCV1kAunsfAm8+dwbC/cL+x1vne/f432AxEZC12p2dvrt4RAKX8f8Edat2oe
+         Yb4yi+6SNpT0rNbSILElHIP77u+ITAI7D5DdvPGcIgLRFWmFhmJFTxKT/9sIai061uTx
+         hdcyXyczTsW6MTW9OYdVedo+6Lzpdw5yRS6mtDxwfDz5ydMH4qoVKyyIDVkHbJ1JnKW1
+         mAAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=tt7EwK0Ub05bYLQcTiSuwkmJDE/NFbm7qXnc4dJJNYc=;
+        b=Y+C+BqFpTB4sGbPcBlmjB9LPPmgrg32wBpOApZAoqT1tiOw8fpuxo/K9FOvY9cxAwv
+         dScKaxxYY/ciorAJnjNKClbdF5Fwj2mucDiZqgi+kJR3/VDOV5bfnpR3rQLdX3I+G4RF
+         nQb4EJi4F5MKTNedlSGaMzOSbDl0ebn3BEGpTtpuuom0APgTBjkRRRaJqk1WJTu0EKkq
+         PGMPYPBYgtNCG1UrsCoZTKhK5RhvFA4wJfKIiSnW9lbaxdOJGWFmL6RJKOSVZovU1Hqb
+         HHTlxOuC0aBHOlCky9QU1HMaGfMtUbd7SYlKVpE3rSVJ5J+xvZlVDXoz4224I7Nx7ZYa
+         /QPQ==
+X-Gm-Message-State: APjAAAV+dR78TXotn5Fznb24+LV5wfQYptIyMd+uh67ZlmxXJCX9UuQ0
+        vOj2MBf5E0WmSLwkiAK32JnsuW5d+ERLbmn7hLmojQ==
+X-Google-Smtp-Source: APXvYqztFgRYweMlTqW1WULS88/8rbPWheT+71FQkjwWdUFy1jn6UCtm2P5CTQuWh0WshLLbJtDaIdqNxlHLhEUj+xI=
+X-Received: by 2002:a05:6808:155:: with SMTP id h21mr17135074oie.117.1570905872612;
+ Sat, 12 Oct 2019 11:44:32 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ZfOjI3PrQbgiZnxM"
-Content-Disposition: inline
-In-Reply-To: <20191012173344.7d25fd02@archlinux>
-User-Agent: Mutt/1.12.2 (2019-09-21)
-X-Zoho-Virus-Status: 1
-X-ZohoMailClient: External
+References: <20191012162808.1196470-1-jic23@kernel.org>
+In-Reply-To: <20191012162808.1196470-1-jic23@kernel.org>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Sat, 12 Oct 2019 21:44:21 +0300
+Message-ID: <CA+U=DspSueLQjD9bkW63xEJ8+fpE8M=H0hK=M-m0Oab5f-O8Rg@mail.gmail.com>
+Subject: Re: [RFC] iio: adis: Fix build warnings due to disagreement on
+ whether ret can be > 0
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Sat, Oct 12, 2019 at 7:32 PM <jic23@kernel.org> wrote:
+>
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> I added a check to the inline functions in the header that provide
+> the specific sized versions of __adis_read_reg_* to check if
+> they were returning 0 before setting the value.   This was
+> needed to solve a 0-day report which I was unable to replicate.
+>
+> Unfortunately it caused some build warnings because the drivers
+> check for ret is not negative before using the value, leaving the
+> positive range where flow continues, but the value is unset.
+>
+> This is one of several possible fixes, hence the RFC.
+>
 
---ZfOjI3PrQbgiZnxM
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I'll take a closer look at this patch on Monday.
+But I'll also want to look at the whole series again for ADIS.
 
-On Sat, Oct 12, 2019 at 05:33:44PM +0100, Jonathan Cameron wrote:
-> On Sat, 12 Oct 2019 15:35:56 +0000
-> Dan Robertson <dan@dlrobertson.com> wrote:
-> > On Sat, Oct 12, 2019 at 10:40:33AM +0100, Jonathan Cameron wrote:
-> > >
-> > > Silly question.  Why is soft_reset preferred to sleep mode? =20
-> >=20
-> > Not a silly question. I actually debated this when initially implementi=
-ng the
-> > driver. The datasheet describes soft-reset behavior in section 4.9, the
-> > following snippet from the datasheet is particularly relevant:
-> >=20
-> > > The softreset performs a fundamental reset to the device which is lar=
-gely
-> > > equivalent to a power cycle. Following a delay, all user configuration
-> > > settings are overwritten with their default state... =20
-> >=20
-> > Sleep mode is the default power-mode, so the only real difference would=
- be that
-> > the oversampling ratio, sampling frequency, and scale would all be rese=
-t to
-> > their defaults with a soft-reset. If we just set the power-mode to slee=
-p mode,
-> > the user configuration registers would be preserved.
-> >=20
-> > I can add a comment about the behavior of a softreset in bma400_remove.
-> I'd just not do it.  That way there is only the putting it to sleep path.
-> We normally assume that we don't know the state during startup and aren't
-> as careful on remove to make sure things are in a default state.
->=20
-> That way you only need a single path in the remove function. If sleep mode
-> fails you are probably broken anyway.
+It looks to me that the rework (though it looked credible at review),
+did expose some subtleties that the compiler complains about.
+I'll probably use this issue as a test-bed for the CI improvements
+I'll do on our end.
 
-Sounds good. That does make remove much easier if the device is not ready f=
-or a
-command. I'll remove this in the next patchset version.
+Thanks
+Alex
 
-Cheers,
-
- - Dan
-
---ZfOjI3PrQbgiZnxM
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCAAdFiEEF5dO2RaKc5C+SCJ9RcSmUsR+QqUFAl2iAYYACgkQRcSmUsR+
-QqWfehAApr+GUxN8hPr6rvlGNCYOUAsH0xR5O1yDbOBeJ+KNTRu4yqOci19XXRvu
-oZh7eexWE+Jg3cqomkO4MBTqFbcE8fSMVsRS1g/dBSmIjP8t7elUXkyo0+u8BKhM
-BrPP/W9WnGQmj0m9crH9GYmAUh00KG1eG8JfPV/iO4Nj25FzyjidDgVdUb7+pieK
-EE85HRYLxc4EjbgiR5aFfHrHS7gFv0k/JZYGpTseL93VmHkRWEXYGemvEMJeu/GY
-+ZdHTL5kSyrQDsWOsc12B3uWxDbaVT0t6afEiaS0wHC5FeWg/axvldCO/SXaMSVy
-FUUH9+kIbS1CofTosjTsEopz8gEvmfM+Gn2n4PoP3R8GPzQJYDB1JSanJBwJlUKX
-70+27TdX1HQq7iapt5QvjeQfarCGCrcWX7fQs3Z8uJxeGX2+WgElE1K58Cy1pe+c
-Z9DgLY1Baqb+njAWe5WAuLXaIBMsrbuJyu4jmanYdLD5OEkokbSdhht0Gcm2rRnp
-jErnlJHmQNZ9U9fv87nM6hAbHorj1ABasLvc2nyCAlQyGUaYnzXvYEXMLqBGAmie
-7Cjv2gd53aoLyfFq1F4Yy6ETWmo/0lzRPS9+Lv/jgPyr4z7Lch3tZEFAmQMRHz8P
-WEza1Op588Do/vFarcCzQgHlPNfY1HS7P3J6ae2oFIB33cil8hc=
-=0oSI
------END PGP SIGNATURE-----
-
---ZfOjI3PrQbgiZnxM--
-
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+>  drivers/iio/gyro/adis16136.c | 4 ++--
+>  drivers/iio/imu/adis.c       | 2 +-
+>  drivers/iio/imu/adis16480.c  | 4 ++--
+>  3 files changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+> index 2d2c48f0b996..223c42ef6f86 100644
+> --- a/drivers/iio/gyro/adis16136.c
+> +++ b/drivers/iio/gyro/adis16136.c
+> @@ -191,7 +191,7 @@ static int __adis16136_get_freq(struct adis16136 *adis16136, unsigned int *freq)
+>         int ret;
+>
+>         ret = __adis_read_reg_16(&adis16136->adis, ADIS16136_REG_SMPL_PRD, &t);
+> -       if (ret < 0)
+> +       if (ret)
+>                 return ret;
+>
+>         *freq = 32768 / (t + 1);
+> @@ -288,7 +288,7 @@ static int adis16136_get_filter(struct iio_dev *indio_dev, int *val)
+>
+>         ret = __adis_read_reg_16(&adis16136->adis, ADIS16136_REG_AVG_CNT,
+>                                  &val16);
+> -       if (ret < 0)
+> +       if (ret)
+>                 goto err_unlock;
+>
+>         ret = __adis16136_get_freq(adis16136, &freq);
+> diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+> index 5e28464ea05b..6ee54996609a 100644
+> --- a/drivers/iio/imu/adis.c
+> +++ b/drivers/iio/imu/adis.c
+> @@ -289,7 +289,7 @@ int __adis_check_status(struct adis *adis)
+>         int i;
+>
+>         ret = __adis_read_reg_16(adis, adis->data->diag_stat_reg, &status);
+> -       if (ret < 0)
+> +       if (ret)
+>                 return ret;
+>
+>         status &= adis->data->status_error_mask;
+> diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+> index 01dae50e985b..ed3e52651003 100644
+> --- a/drivers/iio/imu/adis16480.c
+> +++ b/drivers/iio/imu/adis16480.c
+> @@ -564,7 +564,7 @@ static int adis16480_set_filter_freq(struct iio_dev *indio_dev,
+>         mutex_lock(slock);
+>
+>         ret = __adis_read_reg_16(&st->adis, reg, &val);
+> -       if (ret < 0)
+> +       if (ret)
+>                 goto out_unlock;
+>
+>         if (freq == 0) {
+> @@ -944,7 +944,7 @@ static int adis16480_enable_irq(struct adis *adis, bool enable)
+>         int ret;
+>
+>         ret = __adis_read_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, &val);
+> -       if (ret < 0)
+> +       if (ret)
+>                 return ret;
+>
+>         val &= ~ADIS16480_DRDY_EN_MSK;
+> --
+> 2.23.0
+>
