@@ -4,41 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4370C10F14
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90F6EC10F14
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:35:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 92E182196E
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:34:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 68B4121850
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 11:35:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570880092;
-	bh=W4NC8632bGz/c1s9iiMhYVGkCQw4mSPBogNjkzVISYo=;
+	s=default; t=1570880101;
+	bh=M8pIuI3N9q6O19inwH7iwVRpRXidMZc87RjRVHszNGA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=YRhIDCT35IhYr55ll+Yughj0GZ45FP1U6VkfFGxSOQfMOckCHkiAqRjNUbUX5eKcX
-	 KjfLqxfS+cu3tVM8j53ZTAZ/6qAOV6Je+ribeGKrGX3bdQU+FgUOj31dWy7On7SQeG
-	 b5zc+ytAPeWt20hWsWW2HPDUfnRZhtlSD5upx/WI=
+	b=weT99BFe+UPLLZN2TcNhZr7024/F62+xLYcjPbxmmD7pa7CxxUd1nLGCT7FsrOQjh
+	 KFCYYaYpt9Q+5/i4vXYEA2bA8nsb2Kv1mwBtkNDyRIpG7gnCbKDJqQTF0KaVcRlVPS
+	 /0QQgOno5mx6GaQKglyapBB3IfS1q0SvH5aom8dY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729236AbfJLLef (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Oct 2019 07:34:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41670 "EHLO mail.kernel.org"
+        id S1729002AbfJLLfB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Oct 2019 07:35:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42116 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727068AbfJLLee (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Oct 2019 07:34:34 -0400
+        id S1728636AbfJLLfA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Oct 2019 07:35:00 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 175BF21850;
-        Sat, 12 Oct 2019 11:34:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 299462089C;
+        Sat, 12 Oct 2019 11:34:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570880074;
-        bh=W4NC8632bGz/c1s9iiMhYVGkCQw4mSPBogNjkzVISYo=;
+        s=default; t=1570880100;
+        bh=M8pIuI3N9q6O19inwH7iwVRpRXidMZc87RjRVHszNGA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=VztAou9dJZ/QG8h9Xhxo/g9avXs5IPbCYRZNnYOWmJO0paq0EUYD4MqHPqLtudTGz
-         g3iE6VnqJ2xGTUCQz6gJT1TQkRfrgtGD7QP2sVQ4QkHCM88Jtlt8/BXQTI0qSmvmEx
-         wgZ/Cm2lp1+1PvqOn2lrErXL0qis85LutGMIWvOk=
-Date:   Sat, 12 Oct 2019 12:32:58 +0100
+        b=Agu+IATAylmCBlT5b/EgQcCruhFS4xRBrIagE47BvVsQdvK2+f01Klj3luzu7i7H5
+         vfdtPY3aTojd4PoJSU/pvuDiXL8MigMgKGIpVYpO5mykAJhjZzBXNKoygiqR6hH/XK
+         WTbaksUlStkjqZqm5ILC1KCZx4DZ+lI0zfL65Sbc=
+Date:   Sat, 12 Oct 2019 12:34:55 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -49,12 +49,12 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH v4 8/8] dt-bindings: Add max12xx SPI ADC series as
- trivial devices
-Message-ID: <20191012123258.67734ca7@archlinux>
-In-Reply-To: <20191011144347.19146-9-miquel.raynal@bootlin.com>
+Subject: Re: [PATCH v4 2/8] iio: adc: max1027: Make it optional to use
+ interrupts
+Message-ID: <20191012123455.7317c298@archlinux>
+In-Reply-To: <20191011144347.19146-3-miquel.raynal@bootlin.com>
 References: <20191011144347.19146-1-miquel.raynal@bootlin.com>
-        <20191011144347.19146-9-miquel.raynal@bootlin.com>
+        <20191011144347.19146-3-miquel.raynal@bootlin.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,38 +64,94 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 11 Oct 2019 16:43:47 +0200
+On Fri, 11 Oct 2019 16:43:41 +0200
 Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-> Update the compatible list with three Maxim ADCs compatibles.
+> The chip has a 'start conversion' and a 'end of conversion' pair of
+> pins. They can be used but this is absolutely not mandatory as regular
+> polling of the value is totally fine with the current internal
+> clocking setup. Turn the interrupts optional and do not error out if
+> they are not inquired in the device tree. This has the effect to
+> prevent triggered buffers use though.
 > 
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to poke at it.
+Applied.
 
 Thanks,
 
-Jonathan
-
 > ---
->  Documentation/devicetree/bindings/trivial-devices.yaml | 6 ++++++
->  1 file changed, 6 insertions(+)
+>  drivers/iio/adc/max1027.c | 57 +++++++++++++++++++++------------------
+>  1 file changed, 31 insertions(+), 26 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-> index e0095ecb472f..765fd1c170df 100644
-> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
-> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-> @@ -120,6 +120,12 @@ properties:
->            - maxim,max1029
->              # 10-bit 16 channels 300ks/s SPI ADC with temperature sensor
->            - maxim,max1031
-> +            # 12-bit 8 channels 300ks/s SPI ADC with temperature sensor
-> +          - maxim,max1227
-> +            # 12-bit 12 channels 300ks/s SPI ADC with temperature sensor
-> +          - maxim,max1229
-> +            # 12-bit 16 channels 300ks/s SPI ADC with temperature sensor
-> +          - maxim,max1231
->              # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
->            - maxim,max1237
->              # PECI-to-I2C translator for PECI-to-SMBus/I2C protocol conversion
+> diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> index 6cdfe9ef73fc..823223b77a70 100644
+> --- a/drivers/iio/adc/max1027.c
+> +++ b/drivers/iio/adc/max1027.c
+> @@ -430,35 +430,40 @@ static int max1027_probe(struct spi_device *spi)
+>  		return -ENOMEM;
+>  	}
+>  
+> -	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+> -					&iio_pollfunc_store_time,
+> -					&max1027_trigger_handler, NULL);
+> -	if (ret < 0) {
+> -		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
+> -		return ret;
+> -	}
+> +	if (spi->irq) {
+> +		ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+> +						      &iio_pollfunc_store_time,
+> +						      &max1027_trigger_handler,
+> +						      NULL);
+> +		if (ret < 0) {
+> +			dev_err(&indio_dev->dev, "Failed to setup buffer\n");
+> +			return ret;
+> +		}
+>  
+> -	st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+> -							indio_dev->name);
+> -	if (st->trig == NULL) {
+> -		ret = -ENOMEM;
+> -		dev_err(&indio_dev->dev, "Failed to allocate iio trigger\n");
+> -		return ret;
+> -	}
+> +		st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+> +						  indio_dev->name);
+> +		if (st->trig == NULL) {
+> +			ret = -ENOMEM;
+> +			dev_err(&indio_dev->dev,
+> +				"Failed to allocate iio trigger\n");
+> +			return ret;
+> +		}
+>  
+> -	st->trig->ops = &max1027_trigger_ops;
+> -	st->trig->dev.parent = &spi->dev;
+> -	iio_trigger_set_drvdata(st->trig, indio_dev);
+> -	iio_trigger_register(st->trig);
+> +		st->trig->ops = &max1027_trigger_ops;
+> +		st->trig->dev.parent = &spi->dev;
+> +		iio_trigger_set_drvdata(st->trig, indio_dev);
+> +		iio_trigger_register(st->trig);
+>  
+> -	ret = devm_request_threaded_irq(&spi->dev, spi->irq,
+> -					iio_trigger_generic_data_rdy_poll,
+> -					NULL,
+> -					IRQF_TRIGGER_FALLING,
+> -					spi->dev.driver->name, st->trig);
+> -	if (ret < 0) {
+> -		dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
+> -		return ret;
+> +		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
+> +						iio_trigger_generic_data_rdy_poll,
+> +						NULL,
+> +						IRQF_TRIGGER_FALLING,
+> +						spi->dev.driver->name,
+> +						st->trig);
+> +		if (ret < 0) {
+> +			dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
+> +			return ret;
+> +		}
+>  	}
+>  
+>  	/* Disable averaging */
 
