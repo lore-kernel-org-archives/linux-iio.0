@@ -2,181 +2,101 @@ Return-Path: <SRS0=wvAN=YF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17869C4360C
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 18:47:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7896ECE58E
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 19:40:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E0B272087E
-	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 18:47:34 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uP3OraWl"
+	by mail.kernel.org (Postfix) with ESMTP id 9E2832087E
+	for <linux-iio@archiver.kernel.org>; Sat, 12 Oct 2019 19:40:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729195AbfJLSre (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Oct 2019 14:47:34 -0400
-Received: from mail-oi1-f194.google.com ([209.85.167.194]:37631 "EHLO
-        mail-oi1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728111AbfJLSre (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2019 14:47:34 -0400
-Received: by mail-oi1-f194.google.com with SMTP id i16so10723245oie.4
-        for <linux-iio@vger.kernel.org>; Sat, 12 Oct 2019 11:47:33 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=M4hviIaYBakjq3wyzuCK4M7g9B6CKEUn9YNNsq0+fnU=;
-        b=uP3OraWlzSy2PZJRBaCPb5+3g/+y7Jo1TY8r/m4F5F6EQLG5VarvkiafjsLmocQEsa
-         5UUhhyUMjlSu2WxD1WMYDrEbon7JZYqQkrwx2kWKU64FTumhfd1+gpQodzGuIh+paRQL
-         OkGOhkeZxurd+5cvWLklWsltYSnl3FB4cx/2BgInI1ok+nucdhc2G2dr0sn66Zbh5A78
-         bL2wMUjWZZWQI5rzoRqwCOEv7KP7sk6EO5kxD22o8Wegq8ixK5b36GFJhRkGBe9u+Kfc
-         rPNRhNxqsUun60nyg0UeWEj3A3gGOK8ZgTRT0+LcAdWCFh1LTncZtwIqtyVhHN4VAh16
-         tK+g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=M4hviIaYBakjq3wyzuCK4M7g9B6CKEUn9YNNsq0+fnU=;
-        b=dsGS8JKcSAbCNbVtogN66uYXjn/8mRxZmf0uhxhD0PrQW2fAlUJiTYvM8vgrnpFSrx
-         /rlmSXOrMNrOqtdidjUsXKCF0P1lQVaJ637fbuUjCvG9jHL9mzhHaEEdcxcmuJO+3UEU
-         HXGL3IQ/XAX6pPcTdFIVKEuS7GtIIq+NGPAPbiuyY4Q0OCYqxNzAbGvVFZwex0hI3Jgd
-         Wo25yK0U1ezNEy9cDhEiNy/fOmo96BWiPpBJ++eEwf4XWSeiRaOlX7JK8gzQ/MfXoKHP
-         qZoNIWzVaLlQk9+rovxLUpjXa/aHKze5v1shgR4PiA+Lt3o1gbwpfbY6p/BVChu24cj4
-         S72w==
-X-Gm-Message-State: APjAAAWypPmUoacZKqIAmp4manZIVxQjdzHiudO0WkpECegdvHCKADGc
-        uc4QLgdAeDoPP6Qjon/YsOzGhF3TH23aIP7xuJRxZPuU
-X-Google-Smtp-Source: APXvYqzYWF3HcEMnPRW56ohU4zZN/W+gIK366v5hGFlEHSmi9eSw8OYO0bZxJ/v9YzO4vGxWAkPH/iQ+AgUnAPuxksA=
-X-Received: by 2002:aca:4794:: with SMTP id u142mr18195555oia.159.1570905716989;
- Sat, 12 Oct 2019 11:41:56 -0700 (PDT)
+        id S1729434AbfJLTkg convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Oct 2019 15:40:36 -0400
+Received: from sender4-op-o14.zoho.com ([136.143.188.14]:17418 "EHLO
+        sender4-op-o14.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728579AbfJLTkg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Oct 2019 15:40:36 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1570909225; cv=none; 
+        d=zoho.com; s=zohoarc; 
+        b=S0wQqpZk8NAZnjTgki3Q6Bfd/eeCduh9YaeoYrbCd4IRfHgDS1CVhOSZMSz71sh7fQfPWCf9/u6sRuirzhfsjgIrTROndJwXjw1VXiOucOJlCrqM6M3ew/Y+R08PebIh+M/w715xRmgFmg9qzr6G3wfjAeS1lC5tYyKfzXG2F+c=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zoho.com; s=zohoarc; 
+        t=1570909225; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=DOS/NudUiknsAbT7xTUrpQE0GPqL0XnW+UVisungjnw=; 
+        b=WZHVfiyclhDY6XS41IAtoEgFuBTpM+O6/5A9Is68TSNK1aMu4TTzJsafj2Wa+Inle2xUMGXt++CDph+gZ5Q9vAfXhwhmohLzohN46EHsUwE/AhMk7y1m/jSENhI4EIfXnMzqz+jSRpa7aWNnJIudDvK+wWzTK3nDEC+hy8Uqo44=
+ARC-Authentication-Results: i=1; mx.zoho.com;
+        dkim=pass  header.i=dlrobertson.com;
+        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
+        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
+Received: from nessie.verizon.net (pool-100-15-144-194.washdc.fios.verizon.net [100.15.144.194]) by mx.zohomail.com
+        with SMTPS id 1570909224991415.13001537411003; Sat, 12 Oct 2019 12:40:24 -0700 (PDT)
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, Dan Robertson <dan@dlrobertson.com>
+Message-ID: <20191012192525.21040-1-dan@dlrobertson.com>
+Subject: [PATCH v3 0/2] iio: add driver for Bosch BMA400 accelerometer
+Date:   Sat, 12 Oct 2019 19:25:23 +0000
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <20191012121946.051b646f@archlinux> <20191012152744.GA2142233@kroah.com>
- <20191012152841.GB2142233@kroah.com> <20191012170615.01546a96@archlinux>
-In-Reply-To: <20191012170615.01546a96@archlinux>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Sat, 12 Oct 2019 21:41:45 +0300
-Message-ID: <CA+U=DspmQcUZU3q-ntJEVaqtkkK=gk0GCCu06ntYf_kvnpnLZw@mail.gmail.com>
-Subject: Re: [PULL v2] First set of iio new device support etc for the 5.5 cycle
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Greg KH <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Oct 12, 2019 at 7:18 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Sat, 12 Oct 2019 17:28:41 +0200
-> Greg KH <gregkh@linuxfoundation.org> wrote:
->
-> > On Sat, Oct 12, 2019 at 05:27:44PM +0200, Greg KH wrote:
-> > > On Sat, Oct 12, 2019 at 12:19:46PM +0100, Jonathan Cameron wrote:
-> > > > The following changes since commit b73b93a2af3392b9b7b8ba7e818ee767=
-499f9655:
-> > > >
-> > > >   iio: adc: ad7192: Add sysfs ABI documentation (2019-09-08 10:34:4=
-9 +0100)
-> > > >
-> > > > are available in the Git repository at:
-> > > >
-> > > >   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tag=
-s/iio-for-5.5a-take2
-> > >
-> > > Better, but I see this now:
-> > >
-> > > drivers/iio/imu/adis.c: In function =E2=80=98__adis_check_status=E2=
-=80=99:
-> > > drivers/iio/imu/adis.c:295:9: warning: =E2=80=98status=E2=80=99 may b=
-e used uninitialized in this function [-Wmaybe-uninitialized]
-> > >   295 |  status &=3D adis->data->status_error_mask;
-> > >       |         ^~
-> > >
-> > >
-> > > I'll take this, can you just send a follow-on patch for this?
-> >
-> > Also I see:
-> >
-> > drivers/iio/imu/adis16480.c: In function =E2=80=98adis16480_enable_irq=
-=E2=80=99:
-> > drivers/iio/imu/adis16480.c:950:6: warning: =E2=80=98val=E2=80=99 may b=
-e used uninitialized in this function [-Wmaybe-uninitialized]
-> >   950 |  val &=3D ~ADIS16480_DRDY_EN_MSK;
-> >       |      ^~
-> >   CC [M]  drivers/iio/magnetometer/hmc5843_i2c.o
-> > drivers/iio/imu/adis16480.c: In function =E2=80=98adis16480_write_raw=
-=E2=80=99:
-> > drivers/iio/imu/adis16480.c:571:7: warning: =E2=80=98val=E2=80=99 may b=
-e used uninitialized in this function [-Wmaybe-uninitialized]
-> >   571 |   val &=3D ~enable_mask;
-> >       |       ^~
-> > drivers/iio/imu/adis16480.c:557:11: note: =E2=80=98val=E2=80=99 was dec=
-lared here
-> >   557 |  uint16_t val;
-> >       |           ^~~
-> >
-> >
-> > So did you really fix anything here?
-> >
-> > I'll drop this pull again.
-> >
-> > What version of gcc are you using?  Might I suggest a newer one (i.e. a
-> > modern one?)
->
-> Ah. This is my mistake.  I did see all of these, but still thought we wer=
-e
-> in the category of tidying up some compiler version caused issues.
->
-> The adis16400 came up in my local tests, so I previously pinged Alex on
-> basis it was something to do in a follow up. The other two showed up, but
-> again I still thought these were compiler version issues, particularly
-> as 0-day didn't highlight them (there were several other issues it
-> did highlight this week). Hence again I requested a follow up to tidy
-> it up.
->
-> Anyhow, did some digging.  The issue here was a 'fix' I put in to an init=
-ial
-> 0-day issue in the inline functions that Alex added.  Note that one
-> appears to be compiler version dependent as it didn't turn up in my
-> local builds. There are now inline functions that check if (ret)
-> and don't set the value if ret is non 0.
->
-> Out in the drivers, the check is the more specific (unnecessarily)
-> if (ret < 0) and hence the compiler is concluded that there might be a pa=
-th to
-> val not being set.  Previously it was giving up figuring this out.
-> So reality is they are a false positive (sort of as in reality ret
-> is never positive) but the compiler has made a reasonable point
-> that it can't see that.
->
-> Never mind, I'll do a new pull request once fixes are in place.
-> Given there are two obvious ways of suppressing this and it's Alex's
-> driver I'll wait until he has time to take a look.
->
-> Sorry for wasting your time.
->
+This patchset adds a IIO driver for the Bosch BMA400 3-axes ultra low-power
+accelerometer.  The initial implementation of the driver adds read support for
+the acceleration and temperature data registers. The driver also has support
+for reading and writing to the output data rate, oversampling ratio, and scale
+configuration registers.
 
-If it helps, let's drop the ADIS patches for this round, and I can
-take a closer look as well.
-The cleanup does seem to have revealed a few gaps in our CI in
-relation to upstreaming things.
+Version 3 implements the feedback from reviewers of the v2 patchset.
 
-We use Travis-CI for our stuff and stuff is public:
-https://travis-ci.org/analogdevicesinc/linux
+Cheers,
 
-So, if anyone sees anything we should do better, I'm open to
-improvements/suggestions.
-I am in the process of adding sparse-builds, maybe some build
-hardening is next (stronger compile/build flags), adding our patches
-on top of a newer kernel (that's partially done).
-That should help us catch things a bit earlier.
+ - Dan
 
-Sorry for the noise from my side as-well.
-Alex
+Changes in v3:
+
+ * Use yaml format for DT bindings
+ * Remove strict dependency on OF
+ * Tidy Kconfig dependencies
+ * Stylistic changes
+ * Do not soft-reset device on remove
+
+Changes in v2:
+
+ * Implemented iio_info -> read_avail
+ * Stylistic changes
+ * Implemented devicetree bindings
+
+Dan Robertson (2):
+  dt-bindings: iio: accel: bma400: add bindings
+  iio: (bma400) add driver for the BMA400
+
+ .../devicetree/bindings/iio/accel/bma400.yaml |  39 +
+ drivers/iio/accel/Kconfig                     |  18 +
+ drivers/iio/accel/Makefile                    |   2 +
+ drivers/iio/accel/bma400.h                    |  80 ++
+ drivers/iio/accel/bma400_core.c               | 788 ++++++++++++++++++
+ drivers/iio/accel/bma400_i2c.c                |  60 ++
+ 6 files changed, 987 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/bma400.yaml
+ create mode 100644 drivers/iio/accel/bma400.h
+ create mode 100644 drivers/iio/accel/bma400_core.c
+ create mode 100644 drivers/iio/accel/bma400_i2c.c
+
+-- 
+2.23.0
 
 
-> Jonathan
+
