@@ -2,110 +2,83 @@ Return-Path: <SRS0=XRxs=YG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 21ABCC4360C
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 17:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BF97C4CECE
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 18:12:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E07F120659
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 17:58:39 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="TOyr4vv3"
+	by mail.kernel.org (Postfix) with ESMTP id 12C2D207FF
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 18:12:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1570990338;
+	bh=MIB0uySEmy2qxR8n4Ge2mPBHsGT2R57wc80SxbEt2tE=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=SHi16xGSsmhCSUqXb7/5nMtPfQ3YeidiNJupDj8yQWqPZdbSx5U8H6o28aXCbxLBp
+	 OxDm37vG7Gausp/OfgGSD5DFxVA4coCJjvaGJwvoH7/JVC0Wbt3Fs8n+5WzHduNKT7
+	 nCO0xma+/jjnm9UflONCdZrmEXkb7shlXuJ5u3E4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728413AbfJMR6j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Oct 2019 13:58:39 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:43530 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727141AbfJMR6j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 13 Oct 2019 13:58:39 -0400
-Received: by mail-io1-f66.google.com with SMTP id v2so32641368iob.10
-        for <linux-iio@vger.kernel.org>; Sun, 13 Oct 2019 10:58:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cgjciGW3EUw8J7QiKJ5CuBFqgOpr7DEABczokyzu7Ys=;
-        b=TOyr4vv3PCHCncrNU0f36ARpDUDfcSPIIpxXwajgFAFve8ejXBpgAU4rNFFRNjJnLQ
-         LpF50UulLkS6ZqVW9tAxKU0rgAgfdYixSK3u9sgOCIqxy1J2ntHq0PLx7bEJEdyk44yv
-         AZMyhdde0bk10RkZ/kgQBR0PoRr50OEfM9/w8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cgjciGW3EUw8J7QiKJ5CuBFqgOpr7DEABczokyzu7Ys=;
-        b=BInjXk/36XHoiMafQsgj9EHjOoTn76UOjgVQ7r1zY3rFpNxuHl0DoxqramGf01YJdf
-         i3MSlQX1x4SY3a9mxQihHKffq8YCnMZBuen95KusOi5XGo0qTUkprchrMGePaEs5paYE
-         nNX8ECWzlwLPpWqkqXJu+mq/6x+ZI57Nj7T1OQfJwPCKBIvQACvukPfXkoPacjjteli+
-         09aFnt9xFlCyxV5Uou+GS+RVsxWve/Qh9PkSwLpm4zON01yxRRApm7ya92Ig5horVS+t
-         Ny02RaixC7kpjMzygalcsy9o4xksFQEPZ0uLNsigHPtXPYRf6BeLtwtbc3zvuXBxGgfS
-         qC3g==
-X-Gm-Message-State: APjAAAUWC0/HIewjgZ4p2iUjqTptkdfI0fo/PO+zwdhTa6zIcl5msBn0
-        LSocq+6s7kYS1xkD37PJfXuo386Pb0Ixj/VFX/tDwQ==
-X-Google-Smtp-Source: APXvYqxYNJBRmhV6rUc4U98GQ6/wbOrmWQWZUbIfJXFxwOTI04pCM9l0oY40/m57AM9t32P1qWmqfLoagk5UTMTbPxc=
-X-Received: by 2002:a05:6602:2547:: with SMTP id j7mr15260259ioe.77.1570989518042;
- Sun, 13 Oct 2019 10:58:38 -0700 (PDT)
+        id S1728945AbfJMSMR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Oct 2019 14:12:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40324 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727141AbfJMSMR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Oct 2019 14:12:17 -0400
+Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 234A620673;
+        Sun, 13 Oct 2019 18:12:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1570990336;
+        bh=MIB0uySEmy2qxR8n4Ge2mPBHsGT2R57wc80SxbEt2tE=;
+        h=From:To:Cc:Subject:Date:From;
+        b=qs3i+HCxOtW7bcPRQ0Teltnox+D6jqjHP8Jlk7mr5A04CyvwV4GssYvB+w5YtZVT2
+         cUJSe9HwqXWt/RJL0ydjmDGqaX3mZgYfGEb0yYlKjRD1b66B0YRANs+YgPo76+yRLw
+         WjMCWIukFoouA1B3qyvfRhT0SC/8s4Q9HbNce+9Y=
+From:   jic23@kernel.org
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH] iio: temp: maxim thermocouple: Drop unneeded semi colon.
+Date:   Sun, 13 Oct 2019 19:10:13 +0100
+Message-Id: <20191013181013.2399842-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
-References: <20191013102600.1463679-1-jic23@kernel.org>
-In-Reply-To: <20191013102600.1463679-1-jic23@kernel.org>
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-Date:   Sun, 13 Oct 2019 20:58:26 +0300
-Message-ID: <CAJCx=gnYkdwOOspqa_WynyPsDo8pLhPN3_5UNj6Z2bGWoxr_2A@mail.gmail.com>
-Subject: Re: [PATCH] iio: proximity: pulsedlight v2: Tidy up an endian issue
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 1:28 PM <jic23@kernel.org> wrote:
->
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Sparse identified the following
-> CHECK   drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> drivers/iio/proximity/pulsedlight-lidar-lite-v2.c:144:24: warning: cast to restricted __be16
-> drivers/iio/proximity/pulsedlight-lidar-lite-v2.c:144:24: warning: cast to restricted __be16
-> drivers/iio/proximity/pulsedlight-lidar-lite-v2.c:144:24: warning: cast to restricted __be16
-> drivers/iio/proximity/pulsedlight-lidar-lite-v2.c:144:24: warning: cast to restricted __be16
->
-> This cleans up by adding a local variable to hold the value whilst
-> it is __be16 before applying endian converstion into eventual destination.
->
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Identified by coccinelle
 
-> ---
->  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> index 47af54f14756..5b369645ef49 100644
-> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-> @@ -136,12 +136,13 @@ static inline int lidar_write_power(struct lidar_data *data, int val)
->
->  static int lidar_read_measurement(struct lidar_data *data, u16 *reg)
->  {
-> +       __be16 value;
->         int ret = data->xfer(data, LIDAR_REG_DATA_HBYTE |
->                         (data->i2c_enabled ? LIDAR_REG_DATA_WORD_READ : 0),
-> -                       (u8 *) reg, 2);
-> +                       (u8 *) &value, 2);
->
->         if (!ret)
-> -               *reg = be16_to_cpu(*reg);
-> +               *reg = be16_to_cpu(value);
->
->         return ret;
->  }
-> --
-> 2.23.0
->
+CHECK   drivers/iio/temperature/maxim_thermocouple.c
+drivers/iio/temperature/maxim_thermocouple.c:197:3-4: Unneeded semicolon
+
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/temperature/maxim_thermocouple.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+index 2ab68282d0b6..d1360605209c 100644
+--- a/drivers/iio/temperature/maxim_thermocouple.c
++++ b/drivers/iio/temperature/maxim_thermocouple.c
+@@ -194,7 +194,7 @@ static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			*val = 250; /* 1000 * 0.25 */
+ 			ret = IIO_VAL_INT;
+-		};
++		}
+ 		break;
+ 	}
+ 
+-- 
+2.23.0
+
