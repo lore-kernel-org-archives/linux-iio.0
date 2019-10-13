@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04284C4360C
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 12:27:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18D58C4360C
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 12:37:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C7D412084D
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 12:27:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DF8812084D
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 12:37:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570969638;
-	bh=pztlU3OIlw6RCelH88vjmv73d1NP3/wCDgPzo9Opae8=;
+	s=default; t=1570970251;
+	bh=49YuXkdLy/5nDhj8hqMUuAy1SjCxYXhUWGj1VlwQobE=;
 	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=jGrGzw1EDotX9sIPj8vGdaBLnVfd7rB1apaa3xMNzlS2GTJIA4lv144Gf0nLiMkqP
-	 Bx4IiZc2H3zPcojTSYy6C+nHyASalX1cGKuzPlha4LQKa1djnqEVGw9zYZbrIETC8S
-	 AzpXOrf4xogmEOffpSg+1ij2JjunGQhQzR3KJl3E=
+	b=VUbwn0Zj6IOq1VjLfUFczlR7ctnOzVdClu5MdMsAP9H40Lf2+gBRh+j5ExVcMi4pM
+	 ZDLkaU8BYSbsCQxxQuP7Jq6yhT2LD3bdmkho0nmAtdsSlayL1fyJrRcmoKqXpbFS+G
+	 zl+g0a6FmZ2d2DPlzl95CP7OhotrvetIlfIaxMlI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728919AbfJMM1S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Oct 2019 08:27:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42258 "EHLO mail.kernel.org"
+        id S1728956AbfJMMhb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Oct 2019 08:37:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49556 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728620AbfJMM1S (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Oct 2019 08:27:18 -0400
+        id S1728932AbfJMMhb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Oct 2019 08:37:31 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C0C782082F;
-        Sun, 13 Oct 2019 12:27:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9F82D2067B;
+        Sun, 13 Oct 2019 12:37:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570969637;
-        bh=pztlU3OIlw6RCelH88vjmv73d1NP3/wCDgPzo9Opae8=;
+        s=default; t=1570970250;
+        bh=49YuXkdLy/5nDhj8hqMUuAy1SjCxYXhUWGj1VlwQobE=;
         h=From:To:Cc:Subject:Date:From;
-        b=IZ0mNHB/qYDfZ29XggoTPKIMesa2NeCC8NS8LwHwgZGu5PGYSWyYmdrG923ycN7S7
-         zSb2tS0Jvmk/gQ1HswChyAd0wnkGTcU3xagOnIymvnlHpf4rcqh9IaKRm6dyMsrhrH
-         6W65fyV+wI6TqlivLFZOCCAgp09WDddfXVVXq3DU=
+        b=mrIYj8Y5snpAMjOCs7WpL1w9yXd9r0CZlphza0BoCaIdGzIkmjd1CypG9vI1L3Nf5
+         npJKlB9bgqzSBAg504o8ZXMsLeaGKkgxOnFG8ccqomgKT9huHuMsOH0SvrUMOhLVKb
+         WrqYoZk4y2C8jnH9gT+JKZ10p7AFSQgZg0fM60sw=
 From:   jic23@kernel.org
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Naidu Tellapati <naidu.tellapati@imgtec.com>
-Subject: [PATCH] iio: adc: cc10001: use devm_platform_ioremap_resource
-Date:   Sun, 13 Oct 2019 13:25:12 +0100
-Message-Id: <20191013122512.1793656-1-jic23@kernel.org>
+Cc:     Chanwoo Choi <cw00.choi@samsung.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 1/2] iio: adc: exynos: Drop a stray semicolon
+Date:   Sun, 13 Oct 2019 13:35:23 +0100
+Message-Id: <20191013123524.1821390-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -55,39 +55,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Reduces local boilerplate.
-Found by coccinelle:
-
-drivers/iio/adc/cc10001_adc.c:344:1-18: WARNING: Use devm_platform_ioremap_resource for adc_dev -> reg_base
+Identified by coccinelle
+drivers/iio/adc/exynos_adc.c:654:2-3: Unneeded semicolon
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Naidu Tellapati <naidu.tellapati@imgtec.com>
 ---
- drivers/iio/adc/cc10001_adc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iio/adc/exynos_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/cc10001_adc.c b/drivers/iio/adc/cc10001_adc.c
-index f93f1d93b80d..fe9257624f16 100644
---- a/drivers/iio/adc/cc10001_adc.c
-+++ b/drivers/iio/adc/cc10001_adc.c
-@@ -310,7 +310,6 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 	struct device_node *node = pdev->dev.of_node;
- 	struct cc10001_adc_device *adc_dev;
- 	unsigned long adc_clk_rate;
--	struct resource *res;
- 	struct iio_dev *indio_dev;
- 	unsigned long channel_map;
- 	int ret;
-@@ -340,8 +339,7 @@ static int cc10001_adc_probe(struct platform_device *pdev)
- 	indio_dev->info = &cc10001_adc_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 42a3ced11fbd..b5a497381452 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -651,7 +651,7 @@ static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
+ 		input_sync(info->input);
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
-+	adc_dev->reg_base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(adc_dev->reg_base)) {
- 		ret = PTR_ERR(adc_dev->reg_base);
- 		goto err_disable_reg;
+ 		usleep_range(1000, 1100);
+-	};
++	}
+ 
+ 	writel(0, ADC_V1_CLRINTPNDNUP(info->regs));
+ 
 -- 
 2.23.0
 
