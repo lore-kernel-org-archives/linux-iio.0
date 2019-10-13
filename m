@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC259C4360C
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 15:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C051C4360C
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 15:50:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A85EE2082F
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 15:46:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 01BFD2082F
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Oct 2019 15:50:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1570981592;
-	bh=VrTukjtrCbmeIV1DAjolbBaA5GY5/dT0n9uv0ndDQ+Y=;
+	s=default; t=1570981840;
+	bh=rijLT5LKeTjWQ72GtqKXs7DE8zdfQ5GWo4DY9Vi/kQI=;
 	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=hS5wltrcpgKMtAW1XYtS+8lZAy2pQN0ZIkZcbJjaWYL9yjBd1HD6LocwzyaSJAYK8
-	 rx2/hIW3zarXCPjnMTy5zKSB5Mq05ySqX7kIx/da4qLfAoBFE+4AfHET6YHa0tL9y6
-	 +CXyuxfebe+AiGujNBdyov7jKet61r0uUKLnoQoY=
+	b=QlADJWD4Xf9Rx4mGaVdIAbMd1tTyQ3s5pgF1sXfdDDIg78okLxltqejsNIIXlggAO
+	 IoHGOG0uKkNMl7FsJG9nHNsgloXHSkK4plvbPpv7BDHnjrdMlSiB99PDK5/fB/5T3T
+	 cssmQEi/gI0Jvp9CTC60htzeEtAd6cutibAhQvOU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728293AbfJMPqc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Oct 2019 11:46:32 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57926 "EHLO mail.kernel.org"
+        id S1727492AbfJMPuj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Oct 2019 11:50:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727974AbfJMPqc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Oct 2019 11:46:32 -0400
+        id S1727141AbfJMPuj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Oct 2019 11:50:39 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A04D8206B7;
-        Sun, 13 Oct 2019 15:46:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E889C206B7;
+        Sun, 13 Oct 2019 15:50:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1570981591;
-        bh=VrTukjtrCbmeIV1DAjolbBaA5GY5/dT0n9uv0ndDQ+Y=;
+        s=default; t=1570981838;
+        bh=rijLT5LKeTjWQ72GtqKXs7DE8zdfQ5GWo4DY9Vi/kQI=;
         h=From:To:Cc:Subject:Date:From;
-        b=eoNmaYKsPHUmVrMmXt8R+dauwLy7+jNOI1+qwoGj+o8u6mJmylVdMtOeZnlDLnLHb
-         ZPM5sZOazZDiu0/3S3SuwtJGQX0OBVYBIUqo39BVQ4Mi79vMSR2Gt3IEuvp9EIwEiW
-         AbNsW639R42tESeX1aXj+yYQVbNCGjPVDmQq3eZA=
+        b=uoOrWsgIqDsVK5srhTWvL1KeXdyzLGydZqsApKti41pE2pF0Sl0VaSNT2IkjLehXw
+         d9BtUxxQ3tkzO1swTY7by2gJIsW1eSb8gsyCHD21ONj2mdPnLv1TPDzg/13kgtCdSU
+         6tTtwBLyd4IVFSG4raCivWwugekU0/Z9mCRmHfCw=
 From:   jic23@kernel.org
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH] iio: adc: npcm: use devm_platform_ioremap_resource
-Date:   Sun, 13 Oct 2019 16:44:27 +0100
-Message-Id: <20191013154427.1853794-1-jic23@kernel.org>
+        Marek Vasut <marek.vasut+renesas@gmail.com>
+Subject: [PATCH] iio: adc: rcar-gyroadc: use devm_platform_ioremap_resource
+Date:   Sun, 13 Oct 2019 16:48:32 +0100
+Message-Id: <20191013154832.1858884-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.23.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -55,39 +55,39 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Reduces local boilerplate code.
-Suggested by coccinelle via coccicheck.
+Avoids some local boilerplate.
+Suggested by coccinelle.
 
-CHECK   drivers/iio/adc/npcm_adc.c
-drivers/iio/adc/npcm_adc.c:200:1-11: WARNING: Use devm_platform_ioremap_resource for info -> regs
+CHECK   drivers/iio/adc/rcar-gyroadc.c
+drivers/iio/adc/rcar-gyroadc.c:495:1-11: WARNING: Use devm_platform_ioremap_resource for priv -> regs
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Tomer Maimon <tmaimon77@gmail.com>
+Cc: Marek Vasut <marek.vasut+renesas@gmail.com>
 ---
- drivers/iio/adc/npcm_adc.c | 4 +---
+ drivers/iio/adc/rcar-gyroadc.c | 4 +---
  1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
-index 910f3585fa54..a6170a37ebe8 100644
---- a/drivers/iio/adc/npcm_adc.c
-+++ b/drivers/iio/adc/npcm_adc.c
-@@ -183,7 +183,6 @@ static int npcm_adc_probe(struct platform_device *pdev)
- 	int irq;
- 	u32 div;
- 	u32 reg_con;
--	struct resource *res;
- 	struct npcm_adc *info;
- 	struct iio_dev *indio_dev;
+diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+index c37f201294b2..63ce743ee7af 100644
+--- a/drivers/iio/adc/rcar-gyroadc.c
++++ b/drivers/iio/adc/rcar-gyroadc.c
+@@ -481,7 +481,6 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
  	struct device *dev = &pdev->dev;
-@@ -196,8 +195,7 @@ static int npcm_adc_probe(struct platform_device *pdev)
+ 	struct rcar_gyroadc *priv;
+ 	struct iio_dev *indio_dev;
+-	struct resource *mem;
+ 	int ret;
  
- 	info->dev = &pdev->dev;
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+@@ -491,8 +490,7 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+ 	priv = iio_priv(indio_dev);
+ 	priv->dev = dev;
  
--	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	info->regs = devm_ioremap_resource(&pdev->dev, res);
-+	info->regs = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(info->regs))
- 		return PTR_ERR(info->regs);
+-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	priv->regs = devm_ioremap_resource(dev, mem);
++	priv->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(priv->regs))
+ 		return PTR_ERR(priv->regs);
  
 -- 
 2.23.0
