@@ -2,127 +2,143 @@ Return-Path: <SRS0=WeWk=YH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FORGED_MUA_MOZILLA,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2478ECE58C
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Oct 2019 03:20:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F725ECE587
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Oct 2019 07:08:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ABADE20815
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Oct 2019 03:20:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EF2F207FF
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Oct 2019 07:08:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=samsung.com header.i=@samsung.com header.b="qfRpIYGL"
+	dkim=pass (1024-bit key) header.d=microchiptechnology.onmicrosoft.com header.i=@microchiptechnology.onmicrosoft.com header.b="dT+7ajpr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729691AbfJNDUF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Oct 2019 23:20:05 -0400
-Received: from mailout2.samsung.com ([203.254.224.25]:53301 "EHLO
-        mailout2.samsung.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729550AbfJNDUF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 13 Oct 2019 23:20:05 -0400
-Received: from epcas1p3.samsung.com (unknown [182.195.41.47])
-        by mailout2.samsung.com (KnoxPortal) with ESMTP id 20191014032001epoutp0202a0ffdf4d07f89c1fb374afd543c9fc~NZUc31lqW3145631456epoutp02e
-        for <linux-iio@vger.kernel.org>; Mon, 14 Oct 2019 03:20:01 +0000 (GMT)
-DKIM-Filter: OpenDKIM Filter v2.11.0 mailout2.samsung.com 20191014032001epoutp0202a0ffdf4d07f89c1fb374afd543c9fc~NZUc31lqW3145631456epoutp02e
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=samsung.com;
-        s=mail20170921; t=1571023201;
-        bh=ENKwsxPooOWx4gptVxpMHqn1Yk+tYUZ0nYhY0NTtcdA=;
-        h=Subject:To:Cc:From:Date:In-Reply-To:References:From;
-        b=qfRpIYGLgm5UvPOmL9Iw3UWtttsJV2fTaPWkUpiWrmZDYvyX7zAHf15W3N45+BmEo
-         fEgPeWgr8miABCWnjOlRwbwo57ERQ1L0VTrGavwos0Xf5RaE3TcfbWVGMeenoyTAhK
-         jYoULZHaBxQfK5pNyyN4Eq+/zecsZEHNE53qI9rc=
-Received: from epcpadp1 (unknown [182.195.40.11]) by epcas1p3.samsung.com
-        (KnoxPortal) with ESMTP id
-        20191014032001epcas1p37b29a7851268037a04bc64250a31b2cc~NZUcp58p90276702767epcas1p3y;
-        Mon, 14 Oct 2019 03:20:01 +0000 (GMT)
-Received: from epsmtrp2.samsung.com (unknown [182.195.40.14]) by
-        epcas1p3.samsung.com (KnoxPortal) with ESMTPA id
-        20191014021343epcas1p3a34d546f21007a1a6f73b87792508411~NYakEEAGs1373913739epcas1p3D;
-        Mon, 14 Oct 2019 02:13:43 +0000 (GMT)
-Received: from epsmgms1p1new.samsung.com (unknown [182.195.42.41]) by
-        epsmtrp2.samsung.com (KnoxPortal) with ESMTP id
-        20191014021343epsmtrp2f0ea5e7afadc487b21cbf32befd69151~NYakDbVkg2918229182epsmtrp2X;
-        Mon, 14 Oct 2019 02:13:43 +0000 (GMT)
-X-AuditID: b6c32a29-a07ff70000000ff1-ef-5da3d9d7f4e5
-Received: from epsmtip2.samsung.com ( [182.195.34.31]) by
-        epsmgms1p1new.samsung.com (Symantec Messaging Gateway) with SMTP id
-        AB.26.04081.7D9D3AD5; Mon, 14 Oct 2019 11:13:43 +0900 (KST)
-Received: from [10.113.221.102] (unknown [10.113.221.102]) by
-        epsmtip2.samsung.com (KnoxPortal) with ESMTPA id
-        20191014021343epsmtip2febdaa82f0d782d9f25952082712eb54~NYaj2HdTT1603916039epsmtip2E;
-        Mon, 14 Oct 2019 02:13:43 +0000 (GMT)
-Subject: Re: [PATCH 1/2] iio: adc: exynos: Drop a stray semicolon
-To:     jic23@kernel.org, linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "cpgs (cpgs@samsung.com)" <cpgs@samsung.com>
-From:   Chanwoo Choi <cw00.choi@samsung.com>
-Organization: Samsung Electronics
-Message-ID: <1019298652.01571023201320.JavaMail.epsvc@epcpadp1>
-Date:   Mon, 14 Oct 2019 11:18:43 +0900
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
-        Thunderbird/60.9.0
-MIME-Version: 1.0
-In-Reply-To: <20191013123524.1821390-1-jic23@kernel.org>
+        id S1730274AbfJNHIW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Oct 2019 03:08:22 -0400
+Received: from esa3.microchip.iphmx.com ([68.232.153.233]:60420 "EHLO
+        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730263AbfJNHIV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Oct 2019 03:08:21 -0400
+Received-SPF: Pass (esa3.microchip.iphmx.com: domain of
+  Eugen.Hristev@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Eugen.Hristev@microchip.com";
+  x-sender="Eugen.Hristev@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com a:mx1.microchip.iphmx.com
+  a:mx2.microchip.iphmx.com include:servers.mcsv.net
+  include:mktomail.com include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa3.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa3.microchip.iphmx.com;
+  envelope-from="Eugen.Hristev@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa3.microchip.iphmx.com; spf=Pass smtp.mailfrom=Eugen.Hristev@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: J+4SCdY1k2D8Hjvtd+33w+5EWzkwqhTQt7sZDYjS6s7Skml2wKAD69Q+hH9hlYd1vPYbfhu1sA
+ jh1dQW1gKpkkYemSYXQZLT/CGeMacbMEGFZ6IMimAWVasqvnRsSzmipWl4XdpAN4Og1xNPO5zZ
+ SxWL/mYu3HsZKjIplcesFCra+HY2kiDP4SOmXZ5jZFa4WQLM9/FtIVD8B7Sgu9RUicAjpLPgMu
+ Y2ZFfGaQ9aVaZYlMYy4j7S83NhS2SI75ukKs1/ZPKoEonm1MCYzf9/A8wjwe8V8eQR81vCId08
+ p/8=
+X-IronPort-AV: E=Sophos;i="5.67,295,1566889200"; 
+   d="scan'208";a="52818443"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Oct 2019 00:08:20 -0700
+Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
+ chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Mon, 14 Oct 2019 00:08:20 -0700
+Received: from NAM01-BN3-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.152) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5
+ via Frontend Transport; Mon, 14 Oct 2019 00:08:20 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=B/ePu37spm1N/XXUgcT2yYwbvuK5ItyMlyUfc5gJUIqCqJ83XteUwGPn3sRXPc05cSCe5CuG9+grfBoZiB3X5o0l74K2+wlIHALwk4vdpGO5TkScVsIRCuU4q6sU4wQ6ZK8p3bqVlwnJps/BilxzH3Og50DJb6L29UZ7KwGuCWwQQN81mfOr+Eiep5Vi3jdKUb1o3s6ntIvMaz3nGWVres+xtNqFfubQaNU9f3bzWek5ckuYtFeQ8gNgWdTno/cdQShcRiQMTTjUY/RMUaNEHK6iV3v7kd7ucrc9ygZEC2ICkRMkF/0LnqYcdhzvJy4iA85znkAciq/5hYIXjOZgWQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a/TLglJapcCnMfkJDPf/xlp6a68he5zkqnQyXKV50uw=;
+ b=hScMd0hvGd9lipflFiiQV6Je+t6BLUJIY145YQQRwzeEFLgycyd2k9Vsov4csENEMeVkqIOVETOyAzjXyp2W9tsOXOMowQ0BcRIqhMfsjtySur9GUTwQfCi0OAQwpesOQPEdsU5TAEtKxrtbaG+Hl6j0+ChFnDnueuAWGd6CsUtYrlcTndiHBN/M6ieykE6ajrZUbz4QxijNc0NzNCd1EZ/vb4QN1jpvbjK7i8Ll1gDqgrAyKnCpncDDHh/bWq/xdEJ6wGPuC8lRjrN5/i2VsTj/+OF8u+ufu/AX123AGPVvMFo00Utf5EtVFgsWPgtYO1zOLGBOI8zoG2A1UJbcQA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=a/TLglJapcCnMfkJDPf/xlp6a68he5zkqnQyXKV50uw=;
+ b=dT+7ajprYE4iUa6sHm6pbSDd8uJLLO+KuVIphNa4Q68I/TDYExzdAGSGTtCaayrqVcv10jgBDEP9wCxSpd78vJHTubm3yq/oJzXoF47JcPsNNabTcq0fgInnRTKZEMZMXr3LzVzqEetPGoOlfgCwvappzF9MAdWUJyYQhUPLnRM=
+Received: from DM5PR11MB1242.namprd11.prod.outlook.com (10.168.108.8) by
+ DM5PR11MB0009.namprd11.prod.outlook.com (10.164.155.27) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2347.16; Mon, 14 Oct 2019 07:08:15 +0000
+Received: from DM5PR11MB1242.namprd11.prod.outlook.com
+ ([fe80::b125:76c1:c9b1:34f4]) by DM5PR11MB1242.namprd11.prod.outlook.com
+ ([fe80::b125:76c1:c9b1:34f4%10]) with mapi id 15.20.2347.021; Mon, 14 Oct
+ 2019 07:08:15 +0000
+From:   <Eugen.Hristev@microchip.com>
+To:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+CC:     <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH] iio:adc:at91-sama5d2: Replace 0 with NULL when clearing
+ some pointers.
+Thread-Topic: [PATCH] iio:adc:at91-sama5d2: Replace 0 with NULL when clearing
+ some pointers.
+Thread-Index: AQHVgaScXsuc4bhqvk+DxRwF8D6j/qdZt3MA
+Date:   Mon, 14 Oct 2019 07:08:15 +0000
+Message-ID: <a5c95788-25fd-1efa-2eef-9172d84242db@microchip.com>
+References: <20191013085723.1366012-1-jic23@kernel.org>
+In-Reply-To: <20191013085723.1366012-1-jic23@kernel.org>
+Accept-Language: en-US, ro-RO
 Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Brightmail-Tracker: H4sIAAAAAAAAA+NgFvrBLMWRmVeSWpSXmKPExsWy7bCSvO71m4tjDe7tkLJ4eUjT4kHTKiaL
-        VQuvsVnMO/KOxYHFo+XIW1aPTas62Tz6tqxi9Pi8SS6AJYrLJiU1J7MstUjfLoEr48WlNsaC
-        HvaK5puJDYzvWLsYOTkkBEwkDr6fC2YLCexmlHg6QQwiLikx7eJR5i5GDiBbWOLw4WKIkreM
-        Eg9Wg9nCAo4S7792MILYIgL6ErN29bGA2MwCSRK/Tm8GGskFVN/NKHF+1XE2kASbgJbE/hc3
-        wGx+AUWJqz8egzXzCthJtC0+BWazCKhKPDvfww5iiwpESDzffgOqRlDi5MwnYAs4BSwkfi3Z
-        wgSxTF3iz7xLzBC2uMStJ/Oh4vISzVtnM09gFJ6FpH0WkpZZSFpmIWlZwMiyilEytaA4Nz23
-        2LDAMC+1XK84Mbe4NC9dLzk/dxMjOD60NHcwXl4Sf4hRgINRiYf3RPLiWCHWxLLiytxDjBIc
-        zEoivAwTFsQK8aYkVlalFuXHF5XmpBYfYpTmYFES532adyxSSCA9sSQ1OzW1ILUIJsvEwSnV
-        wMhipf9WxvzgN003Z0Xn2MzY1sbatZu2vMufpZ33IaM70/28uOiOtOi7GqJynmbJ1j/lJec0
-        3E2btdH4rxlrQ931mTvEFDbsv/jl9vmHJSabmbfE/SmJvhh9Rr76D2fOrBNM3TO+m/xSmSiq
-        nbjh99makOffHFp3tT/3+cHsydO8vF0wzSlZQImlOCPRUIu5qDgRAIlf1lOLAgAA
-X-CMS-MailID: 20191014021343epcas1p3a34d546f21007a1a6f73b87792508411
-X-Msg-Generator: CA
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-clientproxiedby: VI1PR02CA0044.eurprd02.prod.outlook.com
+ (2603:10a6:802:14::15) To DM5PR11MB1242.namprd11.prod.outlook.com
+ (2603:10b6:3:14::8)
+x-ms-exchange-messagesentrepresentingtype: 1
+x-tagtoolbar-keys: D20191014100239968
+x-originating-ip: [94.177.32.156]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 6297d23e-76f2-4557-5e6c-08d75075487c
+x-ms-traffictypediagnostic: DM5PR11MB0009:
+x-microsoft-antispam-prvs: <DM5PR11MB0009980EDEDBE5176C308680E8900@DM5PR11MB0009.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:47;
+x-forefront-prvs: 01901B3451
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(346002)(396003)(39860400002)(366004)(136003)(199004)(189003)(6246003)(66946007)(316002)(229853002)(6486002)(8676002)(4744005)(6512007)(6436002)(2906002)(4326008)(110136005)(478600001)(5660300002)(86362001)(14454004)(31696002)(305945005)(7736002)(486006)(36756003)(66066001)(256004)(71190400001)(71200400001)(3846002)(81156014)(6116002)(14444005)(99286004)(76176011)(26005)(31686004)(386003)(6506007)(53546011)(102836004)(186003)(446003)(11346002)(476003)(2616005)(52116002)(8936002)(66556008)(81166006)(66476007)(66446008)(2501003)(64756008)(25786009);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR11MB0009;H:DM5PR11MB1242.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microchip.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: EyCD1cW5JAMZvQcH5wt8QYmdoEgDroOn4WhUXzZx7f8NflNGXdulH5EgkEPn/Jr/TP0nzRM7sC+Q4zIap/qJbIwaHfk5JxzaNg3vRCy/Z7amqWRJRoVCvHheIUTjIkufLhySh269ZaN0f4A5/a566HA9e5EmXftknpTxz2Xq1+enQZSQUVvK/cioiPr6fsCrJZPd2lJD26L6JVsLM1f53XV2krCRJz8tgkt5vNImV1PE6FtqKJS7xtr0UHhxezsqGwtC0nKNh5ph2SWf3VtI7mIi0cKE8Q9bIjvq5z8XlaoVAYiVBN494b9x0rPdlUC/ZT0NOP2aWjFatXCX5ZlduP2WB2vG2ZdHDCwzgKCL3wtNGd8PZTWQFMMujDlhEKDWmMcTnxYla22TTzptH/+xFOpI7UypxbZXLRI09S/rd+c=
+x-ms-exchange-transport-forked: True
 Content-Type: text/plain; charset="utf-8"
-X-Sendblock-Type: SVC_REQ_APPROVE
-X-CPGSPASS: Y
-X-Hop-Count: 3
-X-CMS-RootMailID: 20191013123734epcas4p138622f17adc5c3baaeba8eb8f4cff1bb
-References: <CGME20191013123734epcas4p138622f17adc5c3baaeba8eb8f4cff1bb@epcas4p1.samsung.com>
-        <20191013123524.1821390-1-jic23@kernel.org>
+Content-ID: <6D1E65684993D5479609384568A724C5@namprd11.prod.outlook.com>
+Content-Transfer-Encoding: base64
+MIME-Version: 1.0
+X-MS-Exchange-CrossTenant-Network-Message-Id: 6297d23e-76f2-4557-5e6c-08d75075487c
+X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Oct 2019 07:08:15.6519
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: TGuHQ1J63StQMd9rrjo0mOfvo1IR3dSVuRKROscyVbP6KpNd7eb+a78RHLBdo0iWai6dIWwRgIElVfafA6qWa92Ut1WuFRrm60lioQ0h/SY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB0009
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-
-On 19. 10. 13. 오후 9:35, jic23@kernel.org wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Identified by coccinelle
-> drivers/iio/adc/exynos_adc.c:654:2-3: Unneeded semicolon
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
->  drivers/iio/adc/exynos_adc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
-> index 42a3ced11fbd..b5a497381452 100644
-> --- a/drivers/iio/adc/exynos_adc.c
-> +++ b/drivers/iio/adc/exynos_adc.c
-> @@ -651,7 +651,7 @@ static irqreturn_t exynos_ts_isr(int irq, void *dev_id)
->  		input_sync(info->input);
->  
->  		usleep_range(1000, 1100);
-> -	};
-> +	}
->  
->  	writel(0, ADC_V1_CLRINTPNDNUP(info->regs));
->  
-> 
-
-Reviewed-by: Chanwoo Choi <cw00.choi@samsung.com>
-
--- 
-Best Regards,
-Chanwoo Choi
-Samsung Electronics
-
+DQoNCk9uIDEzLjEwLjIwMTkgMTE6NTcsIGppYzIzQGtlcm5lbC5vcmcgd3JvdGU6DQo+IEZyb206
+IEpvbmF0aGFuIENhbWVyb24gPEpvbmF0aGFuLkNhbWVyb25AaHVhd2VpLmNvbT4NCj4gDQo+IENs
+ZWFucyB1cCB0aGUgc3BhcnNlIHdhcm5pbmc6DQo+IA0KPiBDSEVDSyAgIGRyaXZlcnMvaWlvL2Fk
+Yy9hdDkxLXNhbWE1ZDJfYWRjLmMNCj4gZHJpdmVycy9paW8vYWRjL2F0OTEtc2FtYTVkMl9hZGMu
+YzoxNDg2OjMxOiB3YXJuaW5nOiBVc2luZyBwbGFpbiBpbnRlZ2VyIGFzIE5VTEwgcG9pbnRlcg0K
+PiBkcml2ZXJzL2lpby9hZGMvYXQ5MS1zYW1hNWQyX2FkYy5jOjE1MDk6MzE6IHdhcm5pbmc6IFVz
+aW5nIHBsYWluIGludGVnZXIgYXMgTlVMTCBwb2ludGVyDQo+IA0KPiBTaWduZWQtb2ZmLWJ5OiBK
+b25hdGhhbiBDYW1lcm9uIDxKb25hdGhhbi5DYW1lcm9uQGh1YXdlaS5jb20+DQo+IENjOiBFdWdl
+biBIcmlzdGV2IDxldWdlbi5ocmlzdGV2QG1pY3JvY2hpcC5jb20+DQo+IC0tLQ0KDQpSZXZpZXdl
+ZC1ieTogRXVnZW4gSHJpc3RldiA8ZXVnZW4uaHJpc3RldkBtaWNyb2NoaXAuY29tPg0K
