@@ -7,24 +7,24 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDDBC10F14
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81AE7ECE588
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A9218218DE
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55BC5218DE
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571138016;
-	bh=k0VZtIG1G4MMzABWNwo/ptJOC0ykwyI9Xc8DGDiQEEU=;
+	s=default; t=1571138021;
+	bh=7G/Oty+w6IZEgV6wFoqDUeniynk3M4iYXCfu3X49hLU=;
 	h=From:To:Cc:Subject:In-Reply-To:Date:List-ID:From;
-	b=VsEwvQ3ETe152Iy12nmObJY0wRe0MIq3OWlbiofnQFPFPashe2PyM0r15Mqv/Ivgw
-	 aKitIBGfuCU5Ratz6hNs5Sn4sIV4GrDngQTR0B6tVRtt/KyimdIl/T8DslpWqlCw21
-	 DbF9j6sdDu1mLO0Ae+mHFjdtDduzbJB8V9IBFcWA=
+	b=D1lrv3bKAx/itTI321vw3H2lNm0/726HjeyzOK9waZQMHbFlKgqvimx9XeBOgyTG5
+	 A/ErWobpJRplmY5cc7A4jDxK+2GwqGwPIRHE30t0AtVpcEnupfLoWN1LbuQZjNogcJ
+	 w8rmZFoyTJokaeNJjxQOEMhoQa38HshCc7B4sHTk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729160AbfJOLNc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 07:13:32 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50450 "EHLO
+        id S1727243AbfJOLNg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 07:13:36 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50368 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728769AbfJOLM2 (ORCPT
+        with ESMTP id S1731689AbfJOLM2 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:28 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
@@ -32,17 +32,17 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
         List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=MgY4bxFY17PHIsD8EZBTx9xqaC4wci+W07NNCCTrDxg=; b=VwP6mNLys83T
-        EwBLJHsdCOVbIVn37RACoo2clg2uiG8A75BZCWyB8SkdNmik8S3qKBqyu9p3lifRyVwlk5El3NuqH
-        j7ZLSxWvsmkOvsrkqJClQ25fp6J8yTQ43dk/RHxMcwvzByv3WmEbGcMZky64KIeD/4jvJUw83VMXe
-        RJgEI=;
+        List-Archive; bh=sM7E8taO+faCX1B08W8bz1doM9EMVFx0kjcSL7W4bos=; b=Im4sf9CqkWHp
+        mxoldhr3R0kBLyeAxNQS4R5lsFBSqqwL85EeL2CQZ5Vb2cXaaIQSToWzqAw8VC9CRYWslE2gA55YT
+        eMTQMl0oVsc2ThniTsjucqHuAnJEJGwlDUkBtYe9hiLyiWZYC7XYSw2rgxT89c6spHK38smJMP4Eu
+        x4UaM=;
 Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <broonie@sirena.co.uk>)
-        id 1iKKka-00021B-7B; Tue, 15 Oct 2019 11:12:24 +0000
+        id 1iKKkY-00020b-AU; Tue, 15 Oct 2019 11:12:22 +0000
 Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id A18602741CD7; Tue, 15 Oct 2019 12:12:23 +0100 (BST)
+        id CAFB92741CD7; Tue, 15 Oct 2019 12:12:21 +0100 (BST)
 From:   Mark Brown <broonie@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
@@ -52,11 +52,11 @@ Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
         linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
         Mark Brown <broonie@kernel.org>, orsonzhai@gmail.com,
         zhang.lyra@gmail.com
-Subject: Applied "spi: spidev: use new `delay` field for spi transfers" to the spi tree
-In-Reply-To: <20190926105147.7839-14-alexandru.ardelean@analog.com>
+Subject: Applied "spi: spi-axi: extend support for the `delay` field" to the spi tree
+In-Reply-To: <20190926105147.7839-20-alexandru.ardelean@analog.com>
 X-Patchwork-Hint: ignore
-Message-Id: <20191015111223.A18602741CD7@ypsilon.sirena.org.uk>
-Date:   Tue, 15 Oct 2019 12:12:23 +0100 (BST)
+Message-Id: <20191015111221.CAFB92741CD7@ypsilon.sirena.org.uk>
+Date:   Tue, 15 Oct 2019 12:12:21 +0100 (BST)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -64,7 +64,7 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The patch
 
-   spi: spidev: use new `delay` field for spi transfers
+   spi: spi-axi: extend support for the `delay` field
 
 has been applied to the spi tree at
 
@@ -89,42 +89,60 @@ to this mail.
 Thanks,
 Mark
 
-From 8e319dd5f1ebbc1fffa9e550b2a643cbce7515b1 Mon Sep 17 00:00:00 2001
+From acc7720de3cb9721ac07f68309dd6d7aae8e9a7a Mon Sep 17 00:00:00 2001
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Date: Thu, 26 Sep 2019 13:51:41 +0300
-Subject: [PATCH] spi: spidev: use new `delay` field for spi transfers
+Date: Thu, 26 Sep 2019 13:51:47 +0300
+Subject: [PATCH] spi: spi-axi: extend support for the `delay` field
 
-The `delay` field has type `struct spi_delay`.
-This allows users to specify nano-second or clock-cycle delays (if needed).
-
-Converting to use `delay` is straightforward: it's just assigning the
-value to `delay.value` and hard-coding the `delay.unit` to
-`SPI_DELAY_UNIT_USECS`.
-
-This keeps the uapi for spidev un-changed. Changing it can be part of
-another changeset and discussion.
+The AXI SPI engine driver uses the `delay_usecs` field from `spi_transfer`
+to configure delays, which the controller will execute.
+This change extends the logic to also include the `delay` value, in case it
+is used (instead if `delay_usecs`).
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Link: https://lore.kernel.org/r/20190926105147.7839-14-alexandru.ardelean@analog.com
+Link: https://lore.kernel.org/r/20190926105147.7839-20-alexandru.ardelean@analog.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/spi/spidev.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/spi/spi-axi-spi-engine.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
-index d63235dcb231..1e217e3e9486 100644
---- a/drivers/spi/spidev.c
-+++ b/drivers/spi/spidev.c
-@@ -265,7 +265,8 @@ static int spidev_message(struct spidev_data *spidev,
- 		k_tmp->tx_nbits = u_tmp->tx_nbits;
- 		k_tmp->rx_nbits = u_tmp->rx_nbits;
- 		k_tmp->bits_per_word = u_tmp->bits_per_word;
--		k_tmp->delay_usecs = u_tmp->delay_usecs;
-+		k_tmp->delay.value = u_tmp->delay_usecs;
-+		k_tmp->delay.unit = SPI_DELAY_UNIT_USECS;
- 		k_tmp->speed_hz = u_tmp->speed_hz;
- 		k_tmp->word_delay.value = u_tmp->word_delay_usecs;
- 		k_tmp->word_delay.unit = SPI_DELAY_UNIT_USECS;
+diff --git a/drivers/spi/spi-axi-spi-engine.c b/drivers/spi/spi-axi-spi-engine.c
+index 74842f6019ed..eb9b78a90dcf 100644
+--- a/drivers/spi/spi-axi-spi-engine.c
++++ b/drivers/spi/spi-axi-spi-engine.c
+@@ -163,10 +163,21 @@ static void spi_engine_gen_xfer(struct spi_engine_program *p, bool dry,
+ }
+ 
+ static void spi_engine_gen_sleep(struct spi_engine_program *p, bool dry,
+-	struct spi_engine *spi_engine, unsigned int clk_div, unsigned int delay)
++	struct spi_engine *spi_engine, unsigned int clk_div,
++	struct spi_transfer *xfer)
+ {
+ 	unsigned int spi_clk = clk_get_rate(spi_engine->ref_clk);
+ 	unsigned int t;
++	int delay;
++
++	if (xfer->delay_usecs) {
++		delay = xfer->delay_usecs;
++	} else {
++		delay = spi_delay_to_ns(&xfer->delay, xfer);
++		if (delay < 0)
++			return;
++		delay /= 1000;
++	}
+ 
+ 	if (delay == 0)
+ 		return;
+@@ -218,8 +229,7 @@ static int spi_engine_compile_message(struct spi_engine *spi_engine,
+ 			spi_engine_gen_cs(p, dry, spi, true);
+ 
+ 		spi_engine_gen_xfer(p, dry, xfer);
+-		spi_engine_gen_sleep(p, dry, spi_engine, clk_div,
+-			xfer->delay_usecs);
++		spi_engine_gen_sleep(p, dry, spi_engine, clk_div, xfer);
+ 
+ 		cs_change = xfer->cs_change;
+ 		if (list_is_last(&xfer->transfer_list, &msg->transfers))
 -- 
 2.20.1
 
