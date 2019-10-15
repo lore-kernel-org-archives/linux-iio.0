@@ -2,96 +2,77 @@ Return-Path: <SRS0=9pL2=YI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39852ECE58C
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 20:12:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD573ECE58F
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 20:34:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0159220854
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 20:12:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A302220873
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 20:34:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571170342;
-	bh=ISc+2X2k54eakg+ko+Wp0btFvZNCdnW6EQneCYE5tGY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=rNdEZTEWF8N3ryNDBHnuU6uBvdCDjfovcn0GG7xMzNMu0eQ9iJAOFhzz84VALJ6BD
-	 YprFzzp4cg7wEyuKHAEO2BsOcJm6C7CMUSi5JC2/C933rOIgxAokLp9FmK4nSG+B8E
-	 xJ/A5ZIGILsCb/mCyKjKHnhXVSpK4dR9inZfAxC8=
+	s=default; t=1571171643;
+	bh=hCUhOtxbSZlQyUxGOBdgDfrKzp4NCgCKDFzHGsWUVgs=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=R+kwJGlcpquZlsiyUzS4G1v828OiWFSkaXWdu/xpp7amPhLlmmsb7sMk1eUltE3bm
+	 2VssGJ8EhmYCbEdLEFjWE71K2/jjru9UAX93YI6Syex76PjHt37PsaQIGxJsfHmeIZ
+	 Hp326mxascGj0PG6+b0BOMzDtbtAk1zfgu3uO1Wc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728177AbfJOUMV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 16:12:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40410 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727782AbfJOUMV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 15 Oct 2019 16:12:21 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 207C82083B;
-        Tue, 15 Oct 2019 20:12:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571170340;
-        bh=ISc+2X2k54eakg+ko+Wp0btFvZNCdnW6EQneCYE5tGY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GKr/gioaPIJU8damTbt8j0mDsmnnjoxS+IAw9wMyK5oK+JbE8JCh4ZQo+nrIFcWcL
-         W++VnMUPbTu4fyqQN+bTnTfujqHIxXVPcNwTzYBoYVTdthWo9mv0rIiaphihhnEqDM
-         bm8eH0RbSxi5+bwrh1D7hqxECvY1E9KoUA4w7z54=
-Date:   Tue, 15 Oct 2019 21:12:15 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH] iio: light: adux1020: Drop an unwanted semicolon.
-Message-ID: <20191015211215.1c78c8a5@archlinux>
-In-Reply-To: <20191013173852.2265620-1-jic23@kernel.org>
-References: <20191013173852.2265620-1-jic23@kernel.org>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388016AbfJOUeD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 16:34:03 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:32848 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387777AbfJOUeD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 16:34:03 -0400
+Received: by mail-oi1-f196.google.com with SMTP id a15so18062851oic.0;
+        Tue, 15 Oct 2019 13:34:02 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=momjIFO0lgXJzooic5QXjfuW8VzSzlu4LDVeHEPwLxo=;
+        b=SS7uQYLEYz3DPasdqjtmdeAKobOkqRR8oOs/G6O0DiLmoG+Q3LXsiL0YF8mhI6KVeW
+         gcouwqjoP+0HtVA5nz00NUfSsHGp+rR0reN4zJ1mfs3FrOyEhb5qEo8xxYQF/R19ty6e
+         YhQb+p9ft4vD3bzrZo2/TgBFCbM9tNyGFnZ4w8FeqXzbktD6MiyWffjMSY05jmMpUW8v
+         qwZODCRUDcibjBBn2Uqf2P8k5yXq1AulbcXbHLC3ODgrT+D9+oDLIO9DoB+VWastZsgX
+         B1+rW40R/QdLjUK/bmEweIb78OtNsnJE2tUlyf2/QsfEt3Ga25Zg2+GmGmsm+WcR6QUQ
+         KlrQ==
+X-Gm-Message-State: APjAAAVNL/qdOstVE6gbgLzRqW3YDHSAAb4y/aKQRMAAuMNqwu7edNHi
+        Z8W4f3faaR2Y2No8pmBexA==
+X-Google-Smtp-Source: APXvYqyE5ATjyR1hAAcfQBPHThRHVE7/AYHhZqIFJo6QhyfXn4nmNjwKd/lbWDyKfK7lWt3avWGRvw==
+X-Received: by 2002:aca:48d8:: with SMTP id v207mr362654oia.113.1571171642164;
+        Tue, 15 Oct 2019 13:34:02 -0700 (PDT)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id w20sm6884877otk.73.2019.10.15.13.34.01
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Oct 2019 13:34:01 -0700 (PDT)
+Date:   Tue, 15 Oct 2019 15:34:00 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     jic23@kernel.org, linux-iio@vger.kernel.org, sean@geanix.com,
+        martin@geanix.com, rjones@gateworks.com,
+        lorenzo.bianconi@redhat.com, devicetree@vger.kernel.org
+Subject: Re: [PATCH 12/13] dt-bindings: iio: imu: st_lsm6dsx: document
+ missing wakeup-source property
+Message-ID: <20191015203400.GA6162@bogus>
+References: <cover.1570367532.git.lorenzo@kernel.org>
+ <b0521798dfc8a64780349876fe00a2664bc1b926.1570367532.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <b0521798dfc8a64780349876fe00a2664bc1b926.1570367532.git.lorenzo@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 13 Oct 2019 18:38:52 +0100
-jic23@kernel.org wrote:
-
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Suggested by coccinelle
-> 
-> CHECK   drivers/iio/light/adux1020.c
-> drivers/iio/light/adux1020.c:747:2-3: Unneeded semicolon
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-0-day sent me the same patch as well.
-
-I've rolled it into the original code as that was still on 
-testing only which was getting rebased anyway.
-
-Thanks,
-
-Jonathan
-
+On Sun,  6 Oct 2019 15:22:06 +0200, Lorenzo Bianconi wrote:
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 > ---
->  drivers/iio/light/adux1020.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/iio/light/adux1020.c b/drivers/iio/light/adux1020.c
-> index 830e5e95d58f..b07797ac10d7 100644
-> --- a/drivers/iio/light/adux1020.c
-> +++ b/drivers/iio/light/adux1020.c
-> @@ -744,7 +744,7 @@ static int adux1020_chip_init(struct adux1020_data *data)
->  	if ((val & ADUX1020_CHIP_ID_MASK) != ADUX1020_CHIP_ID) {
->  		dev_err(&client->dev, "invalid chip id 0x%04x\n", val);
->  		return -ENODEV;
-> -	};
-> +	}
->  
->  	dev_dbg(&client->dev, "Detected ADUX1020 with chip id: 0x%04x\n", val);
->  
 
+Acked-by: Rob Herring <robh@kernel.org>
