@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E689C10F14
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06231C10F14
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3CF9C21848
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D1E3320873
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571137998;
-	bh=waBOQajXgNGZjihESM1TiEfoprnoFjgn23g2Vudf4z0=;
+	s=default; t=1571138000;
+	bh=MYgUd5XN06xHZh5k4nzR0Gw086nqMGVg5fbiqHmehcg=;
 	h=From:To:Cc:Subject:In-Reply-To:Date:List-ID:From;
-	b=d7t56rxUW+DBAQcTtphP2VnVi1qQRTP/q8+aOz8pONPRIICC6tT+mirBSONwVmsCf
-	 Ygb2RxVU/Sqc0xUWpDvpULWqswZxtu647kITlJlHzII+mwXIE17jhlp1BrQ5O6kja4
-	 WAS/T75cX9WBAUPI4Rac2bTnDz206LCnYRj3t16U=
+	b=T9K+8cipCG12y1pkoFEIu5axOfmMGoNwVFxP+52bR1vMpTP1bSf/IdqnaK+RWVbub
+	 BaNr76I8Mtjov4u7uGYDJ/NLpJ8CxKM4h0m1dbi6M/fpWi64Gfy93JwPUtmpTjyXFJ
+	 ashpRnFxpfPaoBR4l8//ugV8DmuWZpNr8OXnJFf4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731987AbfJOLNH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 07:13:07 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50510 "EHLO
+        id S1731816AbfJOLM3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 07:12:29 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50458 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731799AbfJOLMb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:31 -0400
+        with ESMTP id S1731757AbfJOLM3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:29 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
         Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
         List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=FImbjSlBLQU6w2z/iCVuGjm90w0sbr42HLTIqyphFao=; b=lKXNwCEX34O8
-        QSn0eqeuZDlrRCmkFQWcaizKE9uEyt7EkP1Tlvs/bu/BCYsCWvgWbuHG8C4KquopBhtZk63eNXqsT
-        HTTHFRh/pReCMuafjBIFg+DW1DDkp4s2OYPR4tQl2i0Nyxc+SN51u3pBuzN3+6/TBfMvBa/PSwH1O
-        mti7k=;
+        List-Archive; bh=SdFplOdARAiXBlTlJSvHykmSu/OcgUoZEZ9Bc5ESoPY=; b=qf0oDaBGPypQ
+        vHYzI8emcLmoeAewd9mYDvNs8jm97ENdNYLGHwm1UdTJXkO7yNmcU4F+VyqAHMnIwzMQxKPClHmUG
+        +rnqzRG/kAQk2f1CApikAhDqbdMekRksxnKzOTbtAlzlVb+AtG5W5DJwpK89CONxD8Ss9XEQgL1Wc
+        uf8bI=;
 Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <broonie@sirena.co.uk>)
-        id 1iKKkb-00021k-Oh; Tue, 15 Oct 2019 11:12:25 +0000
+        id 1iKKkZ-00020m-6B; Tue, 15 Oct 2019 11:12:23 +0000
 Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 44F652741CD7; Tue, 15 Oct 2019 12:12:25 +0100 (BST)
+        id A2DE12741CD7; Tue, 15 Oct 2019 12:12:22 +0100 (BST)
 From:   Mark Brown <broonie@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
@@ -52,11 +52,11 @@ Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
         linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
         Mark Brown <broonie@kernel.org>, orsonzhai@gmail.com,
         zhang.lyra@gmail.com
-Subject: Applied "spi: core,atmel: convert `word_delay_usecs` -> `word_delay` for spi_device" to the spi tree
-In-Reply-To: <20190926105147.7839-8-alexandru.ardelean@analog.com>
+Subject: Applied "spi: spi-fsl-espi: convert transfer delay to `spi_delay` format" to the spi tree
+In-Reply-To: <20190926105147.7839-17-alexandru.ardelean@analog.com>
 X-Patchwork-Hint: ignore
-Message-Id: <20191015111225.44F652741CD7@ypsilon.sirena.org.uk>
-Date:   Tue, 15 Oct 2019 12:12:25 +0100 (BST)
+Message-Id: <20191015111222.A2DE12741CD7@ypsilon.sirena.org.uk>
+Date:   Tue, 15 Oct 2019 12:12:22 +0100 (BST)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -64,7 +64,7 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The patch
 
-   spi: core,atmel: convert `word_delay_usecs` -> `word_delay` for spi_device
+   spi: spi-fsl-espi: convert transfer delay to `spi_delay` format
 
 has been applied to the spi tree at
 
@@ -89,171 +89,124 @@ to this mail.
 Thanks,
 Mark
 
-From 6c613f68aabf33385c01e949204ac5ed30887161 Mon Sep 17 00:00:00 2001
+From 3984d39b0e41ac4de8b4530ae3911ccf52ed4bbf Mon Sep 17 00:00:00 2001
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Date: Thu, 26 Sep 2019 13:51:35 +0300
-Subject: [PATCH] spi: core,atmel: convert `word_delay_usecs` -> `word_delay`
- for spi_device
+Date: Thu, 26 Sep 2019 13:51:44 +0300
+Subject: [PATCH] spi: spi-fsl-espi: convert transfer delay to `spi_delay`
+ format
 
-This change does a conversion from the `word_delay_usecs` -> `word_delay`
-for the `spi_device` struct.
+The way the max delay is computed for this controller, it looks like it is
+searching for the max delay from an SPI message a using that.
 
-This allows users to specify inter-word delays in other unit types
-(nano-seconds or clock cycles), depending on how users want.
-
-The Atmel SPI driver is the only current user of the `word_delay_usecs`
-field (from the `spi_device` struct).
-So, it needed a slight conversion to use the `word_delay` as an `spi_delay`
-struct.
-
-In SPI core, the only required mechanism is to update the `word_delay`
-information per `spi_transfer`. This requires a bit more logic than before,
-because it needs that both delays be converted to a common unit
-(nano-seconds) for comparison.
+No idea if this is valid. But this change should support both `delay_usecs`
+and the new `delay` data which is of `spi_delay` type.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Link: https://lore.kernel.org/r/20190926105147.7839-8-alexandru.ardelean@analog.com
+Link: https://lore.kernel.org/r/20190926105147.7839-17-alexandru.ardelean@analog.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/spi/spi-atmel.c | 26 ++++++++++++++++++++++++--
- drivers/spi/spi.c       | 24 ++++++++++++++++++++++--
- include/linux/spi/spi.h |  7 ++-----
- 3 files changed, 48 insertions(+), 9 deletions(-)
+ drivers/spi/spi-fsl-espi.c | 16 +++++++++++++---
+ drivers/spi/spi.c          |  9 +++++----
+ include/linux/spi/spi.h    |  1 +
+ 3 files changed, 19 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/spi/spi-atmel.c b/drivers/spi/spi-atmel.c
-index 3ed5e663da6f..1471b049f99a 100644
---- a/drivers/spi/spi-atmel.c
-+++ b/drivers/spi/spi-atmel.c
-@@ -1149,12 +1149,31 @@ atmel_spi_pdc_interrupt(int irq, void *dev_id)
- 	return ret;
- }
- 
-+static int atmel_word_delay_csr(struct spi_device *spi, struct atmel_spi *as)
-+{
-+	struct spi_delay *delay = &spi->word_delay;
-+	u32 value = delay->value;
-+
-+	switch (delay->unit) {
-+	case SPI_DELAY_UNIT_NSECS:
-+		value /= 1000;
-+		break;
-+	case SPI_DELAY_UNIT_USECS:
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return (as->spi_clk / 1000000 * value) >> 5;
-+}
-+
- static int atmel_spi_setup(struct spi_device *spi)
+diff --git a/drivers/spi/spi-fsl-espi.c b/drivers/spi/spi-fsl-espi.c
+index f20326714b9d..f72daf66f3f3 100644
+--- a/drivers/spi/spi-fsl-espi.c
++++ b/drivers/spi/spi-fsl-espi.c
+@@ -437,6 +437,7 @@ static int fsl_espi_do_one_msg(struct spi_master *master,
+ 			       struct spi_message *m)
  {
- 	struct atmel_spi	*as;
- 	struct atmel_spi_device	*asd;
- 	u32			csr;
- 	unsigned int		bits = spi->bits_per_word;
-+	int			word_delay_csr;
+ 	unsigned int delay_usecs = 0, rx_nbits = 0;
++	unsigned int delay_nsecs = 0, delay_nsecs1 = 0;
+ 	struct spi_transfer *t, trans = {};
+ 	int ret;
  
- 	as = spi_master_get_devdata(spi->master);
+@@ -445,8 +446,16 @@ static int fsl_espi_do_one_msg(struct spi_master *master,
+ 		goto out;
  
-@@ -1178,11 +1197,14 @@ static int atmel_spi_setup(struct spi_device *spi)
- 	 */
- 	csr |= SPI_BF(DLYBS, 0);
+ 	list_for_each_entry(t, &m->transfers, transfer_list) {
+-		if (t->delay_usecs > delay_usecs)
+-			delay_usecs = t->delay_usecs;
++		if (t->delay_usecs) {
++			if (t->delay_usecs > delay_usecs) {
++				delay_usecs = t->delay_usecs;
++				delay_nsecs = delay_usecs * 1000;
++			}
++		} else {
++			delay_nsecs1 = spi_delay_to_ns(&t->delay, t);
++			if (delay_nsecs1 > delay_nsecs)
++				delay_nsecs = delay_nsecs1;
++		}
+ 		if (t->rx_nbits > rx_nbits)
+ 			rx_nbits = t->rx_nbits;
+ 	}
+@@ -457,7 +466,8 @@ static int fsl_espi_do_one_msg(struct spi_master *master,
+ 	trans.len = m->frame_length;
+ 	trans.speed_hz = t->speed_hz;
+ 	trans.bits_per_word = t->bits_per_word;
+-	trans.delay_usecs = delay_usecs;
++	trans.delay.value = delay_nsecs;
++	trans.delay.unit = SPI_DELAY_UNIT_NSECS;
+ 	trans.rx_nbits = rx_nbits;
  
-+	word_delay_csr = atmel_word_delay_csr(spi, as);
-+	if (word_delay_csr < 0)
-+		return word_delay_csr;
-+
- 	/* DLYBCT adds delays between words.  This is useful for slow devices
- 	 * that need a bit of time to setup the next transfer.
- 	 */
--	csr |= SPI_BF(DLYBCT,
--			(as->spi_clk / 1000000 * spi->word_delay_usecs) >> 5);
-+	csr |= SPI_BF(DLYBCT, word_delay_csr);
- 
- 	asd = spi->controller_state;
- 	if (!asd) {
+ 	if (trans.len)
 diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index b69c14082c52..307e440dd92d 100644
+index 21628b0728f1..5414a10afd65 100644
 --- a/drivers/spi/spi.c
 +++ b/drivers/spi/spi.c
-@@ -3281,6 +3281,26 @@ void spi_set_cs_timing(struct spi_device *spi, u8 setup, u8 hold,
- }
- EXPORT_SYMBOL_GPL(spi_set_cs_timing);
- 
-+static int _spi_xfer_word_delay_update(struct spi_transfer *xfer,
-+				       struct spi_device *spi)
-+{
-+	int delay1, delay2;
-+
-+	delay1 = _spi_delay_to_ns(&xfer->word_delay, xfer);
-+	if (delay1 < 0)
-+		return delay1;
-+
-+	delay2 = _spi_delay_to_ns(&spi->word_delay, xfer);
-+	if (delay2 < 0)
-+		return delay2;
-+
-+	if (delay1 < delay2)
-+		memcpy(&xfer->word_delay, &spi->word_delay,
-+		       sizeof(xfer->word_delay));
-+
-+	return 0;
-+}
-+
- static int __spi_validate(struct spi_device *spi, struct spi_message *message)
- {
- 	struct spi_controller *ctlr = spi->controller;
-@@ -3416,8 +3436,8 @@ static int __spi_validate(struct spi_device *spi, struct spi_message *message)
- 				return -EINVAL;
- 		}
- 
--		if (xfer->word_delay_usecs < spi->word_delay_usecs)
--			xfer->word_delay_usecs = spi->word_delay_usecs;
-+		if (_spi_xfer_word_delay_update(xfer, spi))
-+			return -EINVAL;
+@@ -1120,7 +1120,7 @@ static void _spi_transfer_delay_ns(u32 ns)
  	}
+ }
  
- 	message->status = -EINPROGRESS;
+-static int _spi_delay_to_ns(struct spi_delay *_delay, struct spi_transfer *xfer)
++int spi_delay_to_ns(struct spi_delay *_delay, struct spi_transfer *xfer)
+ {
+ 	u32 delay = _delay->value;
+ 	u32 unit = _delay->unit;
+@@ -1153,6 +1153,7 @@ static int _spi_delay_to_ns(struct spi_delay *_delay, struct spi_transfer *xfer)
+ 
+ 	return delay;
+ }
++EXPORT_SYMBOL_GPL(spi_delay_to_ns);
+ 
+ int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer)
+ {
+@@ -1161,7 +1162,7 @@ int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer)
+ 	if (!_delay)
+ 		return -EINVAL;
+ 
+-	delay = _spi_delay_to_ns(_delay, xfer);
++	delay = spi_delay_to_ns(_delay, xfer);
+ 	if (delay < 0)
+ 		return delay;
+ 
+@@ -3333,11 +3334,11 @@ static int _spi_xfer_word_delay_update(struct spi_transfer *xfer,
+ {
+ 	int delay1, delay2;
+ 
+-	delay1 = _spi_delay_to_ns(&xfer->word_delay, xfer);
++	delay1 = spi_delay_to_ns(&xfer->word_delay, xfer);
+ 	if (delay1 < 0)
+ 		return delay1;
+ 
+-	delay2 = _spi_delay_to_ns(&spi->word_delay, xfer);
++	delay2 = spi_delay_to_ns(&spi->word_delay, xfer);
+ 	if (delay2 < 0)
+ 		return delay2;
+ 
 diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 6cb67ad53ffa..ebeb272aeb0f 100644
+index cfd87b18f077..c40d6af2bf07 100644
 --- a/include/linux/spi/spi.h
 +++ b/include/linux/spi/spi.h
-@@ -139,7 +139,7 @@ extern int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer);
-  *	the spi_master.
-  * @cs_gpiod: gpio descriptor of the chipselect line (optional, NULL when
-  *	not using a GPIO line)
-- * @word_delay_usecs: microsecond delay to be inserted between consecutive
-+ * @word_delay: delay to be inserted between consecutive
-  *	words of a transfer
-  *
-  * @statistics: statistics for the spi_device
-@@ -189,7 +189,7 @@ struct spi_device {
- 	const char		*driver_override;
- 	int			cs_gpio;	/* LEGACY: chip select gpio */
- 	struct gpio_desc	*cs_gpiod;	/* chip select gpio desc */
--	uint8_t			word_delay_usecs; /* inter-word delay */
-+	struct spi_delay	word_delay; /* inter-word delay */
+@@ -103,6 +103,7 @@ struct spi_delay {
+ 	u8	unit;
+ };
  
- 	/* the statistics */
- 	struct spi_statistics	statistics;
-@@ -781,8 +781,6 @@ extern void spi_res_release(struct spi_controller *ctlr,
-  * @delay_usecs: microseconds to delay after this transfer before
-  *	(optionally) changing the chipselect status, then starting
-  *	the next transfer or completing this @spi_message.
-- * @word_delay_usecs: microseconds to inter word delay after each word size
-- *	(set by bits_per_word) transmission.
-  * @word_delay: inter word delay to be introduced after each word size
-  *	(set by bits_per_word) transmission.
-  * @effective_speed_hz: the effective SCK-speed that was used to
-@@ -897,7 +895,6 @@ struct spi_transfer {
- #define	SPI_NBITS_DUAL		0x02 /* 2bits transfer */
- #define	SPI_NBITS_QUAD		0x04 /* 4bits transfer */
- 	u8		bits_per_word;
--	u8		word_delay_usecs;
- 	u16		delay_usecs;
- 	struct spi_delay	cs_change_delay;
- 	struct spi_delay	word_delay;
++extern int spi_delay_to_ns(struct spi_delay *_delay, struct spi_transfer *xfer);
+ extern int spi_delay_exec(struct spi_delay *_delay, struct spi_transfer *xfer);
+ 
+ /**
 -- 
 2.20.1
 
