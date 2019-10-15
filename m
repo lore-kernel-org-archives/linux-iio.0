@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4427DECE58F
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50042ECE58F
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B020218DE
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 280AE21848
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:13:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571137983;
-	bh=h6pwPYR284ayP5uYa5owJh0IBB80Mrn6CM14Lonk7Uw=;
+	s=default; t=1571137985;
+	bh=u7bNuZSADWOXZ1d0RsxdGzAoYcrdEviR20h3SZsIDLs=;
 	h=From:To:Cc:Subject:In-Reply-To:Date:List-ID:From;
-	b=Nolf15yqQhw6WdJsVhQSsbCC+DjUBybzcm+d87Tqp9MvC2AivRjMJVH/WobLmQ3q6
-	 Zzt7oJLffF5hRkFYp0dM/qvip4H+OSuOQ+9wK8Gyqd+uTUuFjItyYJUUK9aanZy9Mo
-	 3e+ikBV+r4ZdQM9sa7OEN7HI1OisDGRQ1eHLWBkw=
+	b=H6bEdsC3NqKcRx2sghCAsZvGdldkMNgGFGT3VLyBW7+FNRMForyFP7HpiA8iQQpFM
+	 A9Bfm/m+qNEg17gUVghkLtJlUMe3584ZGcTB0L2+55oj2gORnAYAdpzodwL7AVbaQb
+	 Zi5Y3H6gpD54hqiBx2+TOipfUV0VuRggrax1dYHk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728962AbfJOLM6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 07:12:58 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50654 "EHLO
+        id S1731855AbfJOLMc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 07:12:32 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50574 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731775AbfJOLMd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:33 -0400
+        with ESMTP id S1731819AbfJOLMb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:31 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
         Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
         List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=AWIbhsUruWClV4Qy9gSJ6HfD9RoU6LHfITwF1J+WuQs=; b=kq41q2/r7m0M
-        Xc7qXh1h6VN4AQZ6C5uB/Esmh7mQu7E5ad47VYNFXMOaHvzlfhTFQXACdN5IHlGXvXpZcnSw08g2b
-        jos6YDy9zsVAt6+1A2X1Agt7kw9R4ya5i/Af34IKHlUIajd35h26CUa32pe6MH5/AA15VCuqtobEt
-        wCWw0=;
+        List-Archive; bh=qbDy1QjYo7Y9HLm2+PkGIA6oe2QcmXmsffZY81/aSwk=; b=Udr0d3CBzgEn
+        FxfWdTqqbGRN8OyN3DziEu9jrb36OPhb/d4H3nuEJFG1495BGbOOdFxV3tp5jkGDuztrkm3wf48uA
+        Giui4BOJZY+Bl7zvQC3/BMV9fpopZWvXzjZ9g0mQ78hUDEvwHXD3TDh9cJlcL+4icYEK+RcfZZueZ
+        B9vu0=;
 Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <broonie@sirena.co.uk>)
-        id 1iKKke-00022g-GM; Tue, 15 Oct 2019 11:12:28 +0000
+        id 1iKKkc-00021r-2M; Tue, 15 Oct 2019 11:12:26 +0000
 Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id F296127419E4; Tue, 15 Oct 2019 12:12:27 +0100 (BST)
+        id 8434427419E4; Tue, 15 Oct 2019 12:12:25 +0100 (BST)
 From:   Mark Brown <broonie@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
@@ -52,11 +52,11 @@ Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
         linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
         Mark Brown <broonie@kernel.org>, orsonzhai@gmail.com,
         zhang.lyra@gmail.com
-Subject: Applied "spi: sprd: convert transfer word delay to spi_delay struct" to the spi tree
-In-Reply-To:  <20190926105147.7839-5-alexandru.ardelean@analog.com>
+Subject: Applied "spi: spidev: use new `word_delay` field for spi transfers" to the spi tree
+In-Reply-To: <20190926105147.7839-7-alexandru.ardelean@analog.com>
 X-Patchwork-Hint: ignore
-Message-Id: <20191015111227.F296127419E4@ypsilon.sirena.org.uk>
-Date:   Tue, 15 Oct 2019 12:12:27 +0100 (BST)
+Message-Id: <20191015111225.8434427419E4@ypsilon.sirena.org.uk>
+Date:   Tue, 15 Oct 2019 12:12:25 +0100 (BST)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -64,11 +64,11 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The patch
 
-   spi: sprd: convert transfer word delay to spi_delay struct
+   spi: spidev: use new `word_delay` field for spi transfers
 
 has been applied to the spi tree at
 
-   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git 
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.5
 
 All being well this means that it will be integrated into the linux-next
 tree (usually sometime in the next 24 hours) and sent to Linus during
@@ -89,105 +89,42 @@ to this mail.
 Thanks,
 Mark
 
-From 84593a131c3af21d686d05c4b4432290a415d399 Mon Sep 17 00:00:00 2001
+From ec3fa72fa8404128771a095d5a56b738752ba9ff Mon Sep 17 00:00:00 2001
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Date: Thu, 26 Sep 2019 13:51:32 +0300
-Subject: [PATCH] spi: sprd: convert transfer word delay to spi_delay struct
+Date: Thu, 26 Sep 2019 13:51:34 +0300
+Subject: [PATCH] spi: spidev: use new `word_delay` field for spi transfers
 
-The Spreadtrum SPI driver is the only user of the `word_delay` field in
-the `spi_transfer` struct.
+The `word_delay` field had it's type changed to `struct spi_delay`.
+This allows users to specify nano-second or clock-cycle delays (if needed).
 
-This change converts the field to use the `spi_delay` struct. This also
-enforces the users to specify the delay unit to be `SPI_DELAY_UNIT_SCK`.
+Converting to use `word_delay` is straightforward: it's just assigning the
+value to `word_delay.value` and hard-coding the `word_delay.unit` to
+`SPI_DELAY_UNIT_USECS`
+
+This keeps the uapi for spidev un-changed. Changing it can be part of
+another changeset and discussion.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Link: https://lore.kernel.org/r/20190926105147.7839-5-alexandru.ardelean@analog.com
+Link: https://lore.kernel.org/r/20190926105147.7839-7-alexandru.ardelean@analog.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/spi/spi-sprd.c  | 15 ++++++++++++---
- include/linux/spi/spi.h |  4 ++--
- 2 files changed, 14 insertions(+), 5 deletions(-)
+ drivers/spi/spidev.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/spi/spi-sprd.c b/drivers/spi/spi-sprd.c
-index 8c9021b7f7a9..2ee1feb41681 100644
---- a/drivers/spi/spi-sprd.c
-+++ b/drivers/spi/spi-sprd.c
-@@ -669,11 +669,15 @@ static void sprd_spi_set_speed(struct sprd_spi *ss, u32 speed_hz)
- 	writel_relaxed(clk_div, ss->base + SPRD_SPI_CLKD);
- }
- 
--static void sprd_spi_init_hw(struct sprd_spi *ss, struct spi_transfer *t)
-+static int sprd_spi_init_hw(struct sprd_spi *ss, struct spi_transfer *t)
- {
-+	struct spi_delay *d = &t->word_delay;
- 	u16 word_delay, interval;
- 	u32 val;
- 
-+	if (d->unit != SPI_DELAY_UNIT_SCK)
-+		return -EINVAL;
-+
- 	val = readl_relaxed(ss->base + SPRD_SPI_CTL7);
- 	val &= ~(SPRD_SPI_SCK_REV | SPRD_SPI_NG_TX | SPRD_SPI_NG_RX);
- 	/* Set default chip selection, clock phase and clock polarity */
-@@ -686,7 +690,7 @@ static void sprd_spi_init_hw(struct sprd_spi *ss, struct spi_transfer *t)
- 	 * formula as below per datasheet:
- 	 * interval time (source clock cycles) = interval * 4 + 10.
- 	 */
--	word_delay = clamp_t(u16, t->word_delay, SPRD_SPI_MIN_DELAY_CYCLE,
-+	word_delay = clamp_t(u16, d->value, SPRD_SPI_MIN_DELAY_CYCLE,
- 			     SPRD_SPI_MAX_DELAY_CYCLE);
- 	interval = DIV_ROUND_UP(word_delay - 10, 4);
- 	ss->word_delay = interval * 4 + 10;
-@@ -711,6 +715,8 @@ static void sprd_spi_init_hw(struct sprd_spi *ss, struct spi_transfer *t)
- 		val &= ~SPRD_SPI_DATA_LINE2_EN;
- 
- 	writel_relaxed(val, ss->base + SPRD_SPI_CTL7);
-+
-+	return 0;
- }
- 
- static int sprd_spi_setup_transfer(struct spi_device *sdev,
-@@ -719,13 +725,16 @@ static int sprd_spi_setup_transfer(struct spi_device *sdev,
- 	struct sprd_spi *ss = spi_controller_get_devdata(sdev->controller);
- 	u8 bits_per_word = t->bits_per_word;
- 	u32 val, mode = 0;
-+	int ret;
- 
- 	ss->len = t->len;
- 	ss->tx_buf = t->tx_buf;
- 	ss->rx_buf = t->rx_buf;
- 
- 	ss->hw_mode = sdev->mode;
--	sprd_spi_init_hw(ss, t);
-+	ret = sprd_spi_init_hw(ss, t);
-+	if (ret)
-+		return ret;
- 
- 	/* Set tansfer speed and valid bits */
- 	sprd_spi_set_speed(ss, t->speed_hz);
-diff --git a/include/linux/spi/spi.h b/include/linux/spi/spi.h
-index 7670be934643..6cb67ad53ffa 100644
---- a/include/linux/spi/spi.h
-+++ b/include/linux/spi/spi.h
-@@ -783,7 +783,7 @@ extern void spi_res_release(struct spi_controller *ctlr,
-  *	the next transfer or completing this @spi_message.
-  * @word_delay_usecs: microseconds to inter word delay after each word size
-  *	(set by bits_per_word) transmission.
-- * @word_delay: clock cycles to inter word delay after each word size
-+ * @word_delay: inter word delay to be introduced after each word size
-  *	(set by bits_per_word) transmission.
-  * @effective_speed_hz: the effective SCK-speed that was used to
-  *      transfer this transfer. Set to 0 if the spi bus driver does
-@@ -900,8 +900,8 @@ struct spi_transfer {
- 	u8		word_delay_usecs;
- 	u16		delay_usecs;
- 	struct spi_delay	cs_change_delay;
-+	struct spi_delay	word_delay;
- 	u32		speed_hz;
--	u16		word_delay;
- 
- 	u32		effective_speed_hz;
- 
+diff --git a/drivers/spi/spidev.c b/drivers/spi/spidev.c
+index 3ea9d8a3e6e8..d63235dcb231 100644
+--- a/drivers/spi/spidev.c
++++ b/drivers/spi/spidev.c
+@@ -267,7 +267,8 @@ static int spidev_message(struct spidev_data *spidev,
+ 		k_tmp->bits_per_word = u_tmp->bits_per_word;
+ 		k_tmp->delay_usecs = u_tmp->delay_usecs;
+ 		k_tmp->speed_hz = u_tmp->speed_hz;
+-		k_tmp->word_delay_usecs = u_tmp->word_delay_usecs;
++		k_tmp->word_delay.value = u_tmp->word_delay_usecs;
++		k_tmp->word_delay.unit = SPI_DELAY_UNIT_USECS;
+ 		if (!k_tmp->speed_hz)
+ 			k_tmp->speed_hz = spidev->speed_hz;
+ #ifdef VERBOSE
 -- 
 2.20.1
 
