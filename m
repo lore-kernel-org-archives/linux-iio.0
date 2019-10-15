@@ -2,94 +2,122 @@ Return-Path: <SRS0=9pL2=YI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D712CC10F14
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:11:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9ADC8ECE588
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE63D20873
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:11:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 71A23222C3
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571137902;
-	bh=jyqwbpgPH38QVb9gb8sryesFmn7GzhP74eJ85yXQfBQ=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=de6LGsKhXQku1nbR49ucF6aJPpPmy7WzQQUFEBJ+Lm9P29sGS4tK5hAr4WE6QIvvs
-	 sFbyyD+UVlfoS+7acZyQf2R+W9ZDZ8kyDCss5ZtORbys9Sy5NeJOLa0AJA2EHBg0+g
-	 luNHBbMNEXMPZDvnyVoj1AF0RdQy6roeqhaWE41Y=
+	s=default; t=1571137948;
+	bh=RMP6Tmax7xHojvM87tWwgpfP0mAAoqsXE205AzgZ1mQ=;
+	h=From:To:Cc:Subject:In-Reply-To:Date:List-ID:From;
+	b=HUUsvEuY4/E2YhN7U8kq5VBS+KTTuAb3SRUUG0ykpPITfKglH8MqC+hwG0OlxDC0l
+	 dC/BWqamx2Mqh6x2Ul03Fr1M/kDN9PMUkEgV3VtGmNPS0ivZlXe4eQ8vLB1hF8d1C3
+	 CYEsfWwEkcpzTM6EUA5pLdAF7z/CkGYkU2ScXcXs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731671AbfJOLLi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 07:11:38 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:48898 "EHLO
+        id S1731760AbfJOLM2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 07:12:28 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50322 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726054AbfJOLLi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:11:38 -0400
+        with ESMTP id S1730448AbfJOLM1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:27 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sirena.org.uk; s=20170815-heliosphere; h=In-Reply-To:Content-Type:
-        MIME-Version:References:Message-ID:Subject:Cc:To:From:Date:Sender:Reply-To:
+        d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
+        Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
-        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
-        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-         bh=jyqwbpgPH38QVb9gb8sryesFmn7GzhP74eJ85yXQfBQ=; b=Jb6nnfLnuhofmDi4AiE1yMQXJ
-        /o3/VGeCQDzWgGcTDTUtkFC4+Fpr8HfaY9dUUKCB7b+jllxkOyHWIHCVDTn0URp421E8u+kUERNq+
-        AUy4le7PuZfQvLsipTwqQHoKvXx7u2bNwZBUD7ThgK/Ht8GraN935YRZM+5lgPMDT6GYo=;
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
+        List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
+        List-Archive; bh=ozxjDEuvmCR1qhM0gekOKO4P+Dq1BuOBLJHr+rFe3bo=; b=jAHArkMX56x3
+        waR4ugKQSl7AkAoqMMpLWUyQAeT4xd7/v2/mR28vE8nRu2otWEzHDlUi1Q+ZqnZspDBKggEcOkVO4
+        Q48Po77NVRnCTefr0vDAdnyDf3zt0BGsJoDgjNEzbsrxkwBqL15B9HpkxC6THCTNDs2oPOkmHq2X2
+        1HR3k=;
 Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <broonie@sirena.co.uk>)
-        id 1iKKjf-00020H-C7; Tue, 15 Oct 2019 11:11:27 +0000
+        id 1iKKkY-00020e-Ix; Tue, 15 Oct 2019 11:12:22 +0000
 Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id 701C427419E4; Tue, 15 Oct 2019 12:11:26 +0100 (BST)
-Date:   Tue, 15 Oct 2019 12:11:26 +0100
+        id 140C02741DCA; Tue, 15 Oct 2019 12:12:22 +0100 (BST)
 From:   Mark Brown <broonie@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     bcm-kernel-feedback-list@broadcom.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-spi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-tegra@vger.kernel.org,
-        jic23@kernel.org, f.fainelli@gmail.com, linus.walleij@linaro.org,
-        orsonzhai@gmail.com, baolin.wang@linaro.org, zhang.lyra@gmail.com
-Subject: Re: [PATCH v4 04/19] spi: sprd: convert transfer word delay to
- spi_delay struct
-Message-ID: <20191015111126.GA4030@sirena.co.uk>
-References: <20190926105147.7839-1-alexandru.ardelean@analog.com>
- <20190926105147.7839-5-alexandru.ardelean@analog.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="n8g4imXOkfNTN/H1"
-Content-Disposition: inline
-In-Reply-To: <20190926105147.7839-5-alexandru.ardelean@analog.com>
-X-Cookie: Yes, but which self do you want to be?
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
+        broonie@kernel.org, f.fainelli@gmail.com, jic23@kernel.org,
+        linus.walleij@linaro.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
+        Mark Brown <broonie@kernel.org>, orsonzhai@gmail.com,
+        zhang.lyra@gmail.com
+Subject: Applied "spi: bcm63xx: extend error condition to `delay` as well" to the spi tree
+In-Reply-To: <20190926105147.7839-19-alexandru.ardelean@analog.com>
+X-Patchwork-Hint: ignore
+Message-Id: <20191015111222.140C02741DCA@ypsilon.sirena.org.uk>
+Date:   Tue, 15 Oct 2019 12:12:22 +0100 (BST)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The patch
 
---n8g4imXOkfNTN/H1
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+   spi: bcm63xx: extend error condition to `delay` as well
 
-On Thu, Sep 26, 2019 at 01:51:32PM +0300, Alexandru Ardelean wrote:
-> The Spreadtrum SPI driver is the only user of the `word_delay` field in
-> the `spi_transfer` struct.
+has been applied to the spi tree at
 
-This doesn't apply against current code, please check and resend.
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-5.5
 
---n8g4imXOkfNTN/H1
-Content-Type: application/pgp-signature; name="signature.asc"
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.  
 
------BEGIN PGP SIGNATURE-----
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl2lqV0ACgkQJNaLcl1U
-h9CHiQf9GnqkNc3cR7NIFRHuaNNvuhYAgTsUs8m4UlwI7cQ/XcISc7kD1fUMD3tu
-By1lFV/xCEANfVBa8wDijwRyvK5RMcTXYFuPZAetNPoRb006+se0MZbPeukeTjlw
-JSA7tlI9mnu5p+5lXHQxIIigZnVdcgCqujQ3AG3lPW3YUHt8BIrVJqPGNkvhBDkF
-YLjLMMUvSJpskjMq9OLBCtKhevA7ZHMdvfuxJ22h5BQPsNZWZxZJv7QAMdhXA7VI
-nkJjcxeyvBY0GzAz5vi3SJGlLFDAec1qvF16d7mOre/0bWCRTNML0gyIt0wNiwZs
-80Dr9YLhjDBQmNejzh3MvVO6sStBxQ==
-=wgwp
------END PGP SIGNATURE-----
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
---n8g4imXOkfNTN/H1--
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
+
+Thanks,
+Mark
+
+From c5751ba0f71e3afe62000a9505915093efa31bd6 Mon Sep 17 00:00:00 2001
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Date: Thu, 26 Sep 2019 13:51:46 +0300
+Subject: [PATCH] spi: bcm63xx: extend error condition to `delay` as well
+
+The driver errors out if `delay_usecs` is non-zero. This error condition
+should be extended to the new `delay` field, to account for when it will be
+used.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Link: https://lore.kernel.org/r/20190926105147.7839-19-alexandru.ardelean@analog.com
+Signed-off-by: Mark Brown <broonie@kernel.org>
+---
+ drivers/spi/spi-bcm63xx.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/spi/spi-bcm63xx.c b/drivers/spi/spi-bcm63xx.c
+index fdd7eaa0b8ed..0f1b10a4ef0c 100644
+--- a/drivers/spi/spi-bcm63xx.c
++++ b/drivers/spi/spi-bcm63xx.c
+@@ -368,7 +368,7 @@ static int bcm63xx_spi_transfer_one(struct spi_master *master,
+ 		}
+ 
+ 		/* CS will be deasserted directly after transfer */
+-		if (t->delay_usecs) {
++		if (t->delay_usecs || t->delay.value) {
+ 			dev_err(&spi->dev, "unable to keep CS asserted after transfer\n");
+ 			status = -EINVAL;
+ 			goto exit;
+-- 
+2.20.1
+
