@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-12.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAA53ECE58F
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CECB5ECE588
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A127821848
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A507121848
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Oct 2019 11:12:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571137975;
-	bh=xodyW6n16yuV9RV4zLEmHEn6NwWjJAxSk0Sqh/B0U3M=;
+	s=default; t=1571137977;
+	bh=NYcmvjai4/+35rZzmhtmY54fqffrb5j66YqUjpa9mOQ=;
 	h=From:To:Cc:Subject:In-Reply-To:Date:List-ID:From;
-	b=ZPeZW1iKXcOtWASS+Egy3pJByULDiZ8wKL9JCwtsUpAahKtcGAqmhSoY8ByIVzG08
-	 zXWcRmCbB0Ukk2Xib049p06mKl5chpslwpx3G5Xs41mqHMIHgw0mdGj5xD9JXT7qaS
-	 dj4I89vwk3waKwgBqi7akePWIIxshlzQ+dgFnhQI=
+	b=mwsaWEyGgNRZOVNNkfAbktv1LW/7iU3hnTetYE+iyhBf4NIbHmXHRgvIMs92bs61T
+	 q8IpPXaF7f5KZ06aNv2ZMxsXf4twTPBRvVeFkXGE6jgmVuJ0iIMxaXWRN/e+Ol19kh
+	 2ia6Z0pIsKQSs2qrmsjgRKpn7YTPOPwafHNmcyY0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731922AbfJOLMl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Oct 2019 07:12:41 -0400
-Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50890 "EHLO
+        id S1731900AbfJOLMj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Oct 2019 07:12:39 -0400
+Received: from heliosphere.sirena.org.uk ([172.104.155.198]:50692 "EHLO
         heliosphere.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731903AbfJOLMl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:41 -0400
+        with ESMTP id S1731866AbfJOLMf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Oct 2019 07:12:35 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=sirena.org.uk; s=20170815-heliosphere; h=Date:Message-Id:In-Reply-To:
         Subject:Cc:To:From:Sender:Reply-To:MIME-Version:Content-Type:
         Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
         Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:References:
         List-Id:List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:
-        List-Archive; bh=HxCw+GrSFAjIDABzZL5hlFUSN3/Z4sQnIyk1p1c3V9o=; b=xg2pQfOmcooJ
-        4JAirHEZx2LJXvvRwu2jLT98sArjuGfJ6Vv2q2DBDgRJzElWIwXgR3VYyzJ0hyuPpWnp9cDidcvRy
-        42aD6hF4rIWxagTMPBJpvh2aYxO9OVBAdLfthyE2/wVSowC1NKzQ0hGShSRLPMJB7JUjwasETD8/Z
-        tmNJw=;
+        List-Archive; bh=XCG6nXMGLYQhVpZyzuReMuwYH4A65umGWgOZuO0RXAo=; b=ffme7iF5Ra6w
+        6h7DVHdA2T9b4sS225fPXOlD4FCRb0nxCGP+SCFCkfVTukpRnWCdaHAwOpvxY+r74L8zTbdt15Qlz
+        E96ZCiw9zJlbabXCFJlzIafub6qVaakYc8BQYC71qO+w33ROIZvQBaYCXu88D/ziYmHMaqYhxvO1r
+        TmH40=;
 Received: from cpc102320-sgyl38-2-0-cust46.18-2.cable.virginm.net ([82.37.168.47] helo=ypsilon.sirena.org.uk)
         by heliosphere.sirena.org.uk with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <broonie@sirena.co.uk>)
-        id 1iKKkf-000234-Ec; Tue, 15 Oct 2019 11:12:29 +0000
+        id 1iKKka-00021J-Hd; Tue, 15 Oct 2019 11:12:24 +0000
 Received: by ypsilon.sirena.org.uk (Postfix, from userid 1000)
-        id E15C92741DCA; Tue, 15 Oct 2019 12:12:28 +0100 (BST)
+        id 0F45627419E4; Tue, 15 Oct 2019 12:12:23 +0100 (BST)
 From:   Mark Brown <broonie@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
@@ -52,11 +52,11 @@ Cc:     baolin.wang@linaro.org, bcm-kernel-feedback-list@broadcom.com,
         linux-spi@vger.kernel.org, linux-tegra@vger.kernel.org,
         Mark Brown <broonie@kernel.org>, orsonzhai@gmail.com,
         zhang.lyra@gmail.com
-Subject: Applied "spi: move `cs_change_delay` backwards compat logic outside switch" to the spi tree
-In-Reply-To: <20190926105147.7839-2-alexandru.ardelean@analog.com>
+Subject: Applied "spi: spi-loopback-test: use new `delay` field" to the spi tree
+In-Reply-To: <20190926105147.7839-13-alexandru.ardelean@analog.com>
 X-Patchwork-Hint: ignore
-Message-Id: <20191015111228.E15C92741DCA@ypsilon.sirena.org.uk>
-Date:   Tue, 15 Oct 2019 12:12:28 +0100 (BST)
+Message-Id: <20191015111224.0F45627419E4@ypsilon.sirena.org.uk>
+Date:   Tue, 15 Oct 2019 12:12:23 +0100 (BST)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -64,7 +64,7 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The patch
 
-   spi: move `cs_change_delay` backwards compat logic outside switch
+   spi: spi-loopback-test: use new `delay` field
 
 has been applied to the spi tree at
 
@@ -89,49 +89,56 @@ to this mail.
 Thanks,
 Mark
 
-From 6b3f236a998550dba91a46a22feb1cc02f39fb06 Mon Sep 17 00:00:00 2001
+From 867bd8868bbd16e17bbd26c5959abc3118902218 Mon Sep 17 00:00:00 2001
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Date: Thu, 26 Sep 2019 13:51:29 +0300
-Subject: [PATCH] spi: move `cs_change_delay` backwards compat logic outside
- switch
+Date: Thu, 26 Sep 2019 13:51:40 +0300
+Subject: [PATCH] spi: spi-loopback-test: use new `delay` field
 
-The `cs_change_delay` backwards compatibility value could be moved outside
-of the switch statement.
-The only reason to do it, is to make the next patches easier to diff.
+This change replaces the use of the `delay_usecs` field with the new
+`delay` field. The code/test still uses micro-seconds, but they are now
+configured and used via the `struct spi_delay` format of the `delay` field.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Link: https://lore.kernel.org/r/20190926105147.7839-2-alexandru.ardelean@analog.com
+Link: https://lore.kernel.org/r/20190926105147.7839-13-alexandru.ardelean@analog.com
 Signed-off-by: Mark Brown <broonie@kernel.org>
 ---
- drivers/spi/spi.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/spi/spi-loopback-test.c | 12 +++++++++---
+ 1 file changed, 9 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/spi/spi.c b/drivers/spi/spi.c
-index 9bb36c32cbf9..7ba981cdb86b 100644
---- a/drivers/spi/spi.c
-+++ b/drivers/spi/spi.c
-@@ -1114,16 +1114,15 @@ static void _spi_transfer_cs_change_delay(struct spi_message *msg,
- 	u32 hz;
+diff --git a/drivers/spi/spi-loopback-test.c b/drivers/spi/spi-loopback-test.c
+index 6f18d4952767..b6d79cd156fb 100644
+--- a/drivers/spi/spi-loopback-test.c
++++ b/drivers/spi/spi-loopback-test.c
+@@ -298,12 +298,18 @@ static struct spi_test spi_tests[] = {
+ 			{
+ 				.tx_buf = TX(0),
+ 				.rx_buf = RX(0),
+-				.delay_usecs = 1000,
++				.delay = {
++					.value = 1000,
++					.unit = SPI_DELAY_UNIT_USECS,
++				},
+ 			},
+ 			{
+ 				.tx_buf = TX(0),
+ 				.rx_buf = RX(0),
+-				.delay_usecs = 1000,
++				.delay = {
++					.value = 1000,
++					.unit = SPI_DELAY_UNIT_USECS,
++				},
+ 			},
+ 		},
+ 	},
+@@ -537,7 +543,7 @@ static int spi_test_check_elapsed_time(struct spi_device *spi,
+ 		unsigned long long nbits = (unsigned long long)BITS_PER_BYTE *
+ 					   xfer->len;
  
- 	/* return early on "fast" mode - for everything but USECS */
--	if (!delay && unit != SPI_DELAY_UNIT_USECS)
-+	if (!delay) {
-+		if (unit == SPI_DELAY_UNIT_USECS)
-+			_spi_transfer_delay_ns(10000);
- 		return;
-+	}
- 
- 	switch (unit) {
- 	case SPI_DELAY_UNIT_USECS:
--		/* for compatibility use default of 10us */
--		if (!delay)
--			delay = 10000;
--		else
--			delay *= 1000;
-+		delay *= 1000;
- 		break;
- 	case SPI_DELAY_UNIT_NSECS: /* nothing to do here */
- 		break;
+-		delay_usecs += xfer->delay_usecs;
++		delay_usecs += xfer->delay.value;
+ 		if (!xfer->speed_hz)
+ 			continue;
+ 		estimated_time += div_u64(nbits * NSEC_PER_SEC, xfer->speed_hz);
 -- 
 2.20.1
 
