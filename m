@@ -2,93 +2,80 @@ Return-Path: <SRS0=LfIq=YJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56C36FA372A
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Oct 2019 12:20:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DBB4FA372B
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Oct 2019 12:55:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2181F21848
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Oct 2019 12:20:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="qdgkmqij"
+	by mail.kernel.org (Postfix) with ESMTP id 6C924218DE
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Oct 2019 12:55:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1571230548;
+	bh=rbNfYXot6B4phReyHmLnQcdB4k3mkqDFtqJzuIKNx7k=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=bGwKJ3jbfbvVrF7DGC6hN/LTtGR3/NqyCRFvdGsgBi1xbgLfZwYS7Z7Qce+gb0GAu
+	 YnDhpcrRM2yH4MEydOv54HwY4r/sD5jIWQDXgGkR/1NyRBjqZwxJG0dIGefSGiv/ur
+	 oHNIX3njJym1hfBxvhc5eb3427cRrD6U9KGszm90=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405217AbfJPMUo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Oct 2019 08:20:44 -0400
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:39020 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2405187AbfJPMUo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Oct 2019 08:20:44 -0400
-Received: by mail-lf1-f67.google.com with SMTP id 195so4343484lfj.6
-        for <linux-iio@vger.kernel.org>; Wed, 16 Oct 2019 05:20:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u6GV8doMb+gqzCvtrSmZqY1Hj8oeje5u/TcPUTpe6WI=;
-        b=qdgkmqij9P79ZYU6S8CVk0DzQmZw/5eXOU6Zu1o+bhhud2u28ebVvCGnEuesqLv2zQ
-         rcrdshmCrR2YtDxnXElJq/kpUIkdvPMZm0ybZcHbVFrYslsCw4l5hYcgxWjVVZrG1XPy
-         9W4KG+nemB+KTVJw3iSkJe59nkT08Lo7METbArW13bc9I4nPkbqo3LT8kyf3YLfrni9g
-         K6bqPJ6HNIwBd47pt1sMrNAM4Hg9XxbVTq8th4lsuey6MxuYFNhJTOGh9Gfo4dwWzU8b
-         FzHp7yfg3yYqHEI4QLKRBTX8L+usg3oUWZO9Ct7U7fFP+dZNF06XaKPO6XHFubT9XKBv
-         PhhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u6GV8doMb+gqzCvtrSmZqY1Hj8oeje5u/TcPUTpe6WI=;
-        b=eV+0UcNVPQ6lOdpY3mPdDyNt50RMjst+ofKiLKd7Y4r2DNYGFQl9gNbKoEzNqH/1XS
-         ybma5G+U1RluphZH+Ygd7xIUrAQpG5MFlrq16QJAzuF09BwWh3J0fe/R5s+7sjcWjD7c
-         vdS+KaGb5Dj2/Zh08r5IHw/aJxFFRlbU5y32D93WMfMfqRrQYg1SbYGzQUEzYdHAk27S
-         GSeMbiGcA6LgS/7NeosLDX4BF7xL8qFP3Fxo58Linw4SBcGMBfP9CuuJ/E+VeI+0lSCm
-         Wb2bYXm98Urrshe8DJgVuAAhq1rZxiPMaS18EzaUJEJFigzgdj97G+6cVd+ATPGmyxsd
-         btjg==
-X-Gm-Message-State: APjAAAX4vKMg+qEbw55JRpp/Yl9ostobcYWTDtSJ3f97eOkb+nvfL50s
-        2HY7lnjTrspjA69O/PprvNgv0+gAO7GhkA9clStuGw==
-X-Google-Smtp-Source: APXvYqxqCUJQ2O4mfHiED/0u+6XOo4LO/oE5DNO22lpkRYsECqAV/MzwdixmV8dPGearq2WpT0a5A8T7nQ8mRVD4pvI=
-X-Received: by 2002:a19:22c4:: with SMTP id i187mr5204884lfi.152.1571228442275;
- Wed, 16 Oct 2019 05:20:42 -0700 (PDT)
+        id S2391514AbfJPMzr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Oct 2019 08:55:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57646 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727881AbfJPMzr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Oct 2019 08:55:47 -0400
+Received: from mail-qk1-f172.google.com (mail-qk1-f172.google.com [209.85.222.172])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5BA621928;
+        Wed, 16 Oct 2019 12:55:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1571230546;
+        bh=rbNfYXot6B4phReyHmLnQcdB4k3mkqDFtqJzuIKNx7k=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=XdSjKEi9tZBvfFVluQBY8ZfCuOD+oIR57IeVyfwjlx6GIgIi3A+DhZkxbR/h1DASb
+         1ctAvNbkHWVLFXCpiRE7G5GbHBKiI1I4PaowB7mc/J2DnT1sjm30bW8acSAmRzvp4t
+         arDx5HApCJcjpawgUhzMuhiVHzeJ7c6Nmi/p7YAQ=
+Received: by mail-qk1-f172.google.com with SMTP id e66so2039022qkf.13;
+        Wed, 16 Oct 2019 05:55:46 -0700 (PDT)
+X-Gm-Message-State: APjAAAWjRqzxT2mKsLXqhGAxBxuCqsKc/0Q8UKmlISABSsEH8/1FMbUs
+        hV6IIpPB4SABZeyLkGOu1sVio+A7Twj+2BvBdQ==
+X-Google-Smtp-Source: APXvYqyHpwl4TJsuFh51VNkoTIXF81m9R20b8MuJFddby8fvhPaJ+qBhaekdeVTmRlfflsNXkX7+A/Hlapw8uVeC2/0=
+X-Received: by 2002:a37:98c1:: with SMTP id a184mr5337384qke.119.1571230545772;
+ Wed, 16 Oct 2019 05:55:45 -0700 (PDT)
 MIME-Version: 1.0
-References: <20191013101742.1454364-1-jic23@kernel.org>
-In-Reply-To: <20191013101742.1454364-1-jic23@kernel.org>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Wed, 16 Oct 2019 14:20:29 +0200
-Message-ID: <CACRpkdaW-UXaKcgWA0DpxF1QWhajDXwOYcZhUKztq9UY3mh5fA@mail.gmail.com>
-Subject: Re: [PATCH] iio: pressure: bmp280 endian tidy ups
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20191010175648.10830-1-rjones@gateworks.com> <20191014184921.22524-1-rjones@gateworks.com>
+ <20191014184921.22524-2-rjones@gateworks.com>
+In-Reply-To: <20191014184921.22524-2-rjones@gateworks.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Wed, 16 Oct 2019 07:55:34 -0500
+X-Gmail-Original-Message-ID: <CAL_Jsq+yspnFz5PTW9WU1LRgKv5SpmsBuPs-4qCgjYfaLvoWwg@mail.gmail.com>
+Message-ID: <CAL_Jsq+yspnFz5PTW9WU1LRgKv5SpmsBuPs-4qCgjYfaLvoWwg@mail.gmail.com>
+Subject: Re: [PATCH v4 1/2] dt-bindings: iio: imu: add fxos8700 imu binding
+To:     Robert Jones <rjones@gateworks.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        devicetree@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Oct 13, 2019 at 12:19 PM <jic23@kernel.org> wrote:
-
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Mon, Oct 14, 2019 at 1:49 PM Robert Jones <rjones@gateworks.com> wrote:
 >
-> There is a somewhat interesting mixture of be16 and le16 going on in
-> this one function.  Changes here formalize that a little more.
+> This adds documentation for the Freescale FXOS8700 Inertial Measurement Unit
+> device-tree bindings.
 >
-> CHECK   drivers/iio/pressure/bmp280-core.c
-> drivers/iio/pressure/bmp280-core.c:215:35: warning: cast to restricted __le16
-> drivers/iio/pressure/bmp280-core.c:229:37: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:229:37: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:229:37: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:229:37: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:230:36: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:230:36: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:230:36: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:230:36: warning: cast to restricted __be16
-> drivers/iio/pressure/bmp280-core.c:237:37: warning: cast to restricted __le16
->
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Linus Walleij <linus.walleij@linaro.org>
+> Signed-off-by: Robert Jones <rjones@gateworks.com>
+> ---
+>  .../devicetree/bindings/iio/imu/nxp,fxos8700.yaml  | 76 ++++++++++++++++++++++
+>  1 file changed, 76 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/imu/nxp,fxos8700.yaml
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-
-Yours,
-Linus Walleij
+Reviewed-by: Rob Herring <robh@kernel.org>
