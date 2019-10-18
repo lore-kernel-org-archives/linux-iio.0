@@ -4,52 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E29FCA9EAB
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C480ECA9EA0
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:10:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6898D22474
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:10:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8FA7D2246F
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:10:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436603;
-	bh=MND4XA/zdatSx8Pwf3w+LUrvVxf3bYfvOmWc5lqG2+g=;
+	s=default; t=1571436636;
+	bh=EZ38xqHL1iO39dpknD7nBw6uImA2WQGPxHKul5BNyY8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=0mhDfwQzOZLPDNqreuXHHWAQBy5z80LtrXQPRchhC/rTnWFo1RfsmBa8vrdgyg4k/
-	 qdpMgVSd63kTavCpdFwiUhfJVp8HUxjuW5Lk1BISPqNjf3d9qC2PH9QaW1ZAGcWzVn
-	 mgIAfqJcE4LD2i0Qe51lvrrWh1I1zjQ5u8Bq7sjc=
+	b=PqtPCK1LoErJLf99eulwRNbGxuaT5MKbC5ntAYYysXxYlR1GjejAeXLBBKlCKJJX+
+	 /aW6krymTPt9dPGoRuKrM/7XfzcIuZmDXdsw+qqXa1MaqeBIvoJcrD7NG9WtkYZf+2
+	 vrYE7Pgfat4HryTcbbEQf18oOb2BLNyAJx5jal54=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389597AbfJRWKC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:10:02 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42818 "EHLO mail.kernel.org"
+        id S2390403AbfJRWKf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:10:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43554 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2389589AbfJRWKB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:10:01 -0400
+        id S2390334AbfJRWKe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:10:34 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4A79C222D1;
-        Fri, 18 Oct 2019 22:10:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 602B82247D;
+        Fri, 18 Oct 2019 22:10:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436601;
-        bh=MND4XA/zdatSx8Pwf3w+LUrvVxf3bYfvOmWc5lqG2+g=;
+        s=default; t=1571436634;
+        bh=EZ38xqHL1iO39dpknD7nBw6uImA2WQGPxHKul5BNyY8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SswravvvDo75wQKRlaHgp1tlHfb1uW9Mwy+mXJPOPwNTJsxm/mUUJDfUtv58zgBV6
-         WNjsiFaEEXc3wD2hT0pTWK1vX83IBaZkb7V9PjVEWod16B0frSSOny7JO2dyw6ad9q
-         zKcnVpu5hDOZ+P5mL6nIBpDywAHBoil2Ahw1j5d4=
+        b=2rnSt37whdOJ2Gciqa1WrvvhJXae+0+ss/pU0Y1GBtXjNDUvda1wLLEOUPTn/t/h8
+         vd9S3Y798bqvEYsg2sEVzml6sIuYtyCpUs2kcyqG9t+wURQrZeZXiNF6hoX3TKkIYg
+         7vo7uNz9XkWlTKMZc6/I2SSuj+6NU0lvrO1Bm8B0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     David Frey <dpfrey@gmail.com>,
         Andreas Dannenberg <dannenberg@ti.com>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 24/29] iio: light: opt3001: fix mutex unlock race
-Date:   Fri, 18 Oct 2019 18:09:15 -0400
-Message-Id: <20191018220920.10545-24-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 17/21] iio: light: opt3001: fix mutex unlock race
+Date:   Fri, 18 Oct 2019 18:10:03 -0400
+Message-Id: <20191018221007.10851-17-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220920.10545-1-sashal@kernel.org>
-References: <20191018220920.10545-1-sashal@kernel.org>
+In-Reply-To: <20191018221007.10851-1-sashal@kernel.org>
+References: <20191018221007.10851-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -82,10 +82,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 5 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index 78c9b3a6453ae..be55477de2acc 100644
+index 01e111e72d4bb..eecdc50ed282f 100644
 --- a/drivers/iio/light/opt3001.c
 +++ b/drivers/iio/light/opt3001.c
-@@ -695,6 +695,7 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+@@ -646,6 +646,7 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
  	struct iio_dev *iio = _iio;
  	struct opt3001 *opt = iio_priv(iio);
  	int ret;
@@ -93,7 +93,7 @@ index 78c9b3a6453ae..be55477de2acc 100644
  
  	if (!opt->ok_to_ignore_lock)
  		mutex_lock(&opt->lock);
-@@ -729,13 +730,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+@@ -680,13 +681,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
  		}
  		opt->result = ret;
  		opt->result_ready = true;
