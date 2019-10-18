@@ -7,45 +7,49 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FE0FCA9EA9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AEA24CA9EA9
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:16:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6B56520679
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:16:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81F5B20854
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:16:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436980;
-	bh=gzJIr3oEpeI6UESWP5YHp1gXpssUBoR3tv0ZGUfuQ44=;
+	s=default; t=1571436981;
+	bh=HDsv24RpewDnlRB22Fo8IdX8RsS0btuV9oTMySaKPco=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=orwlCk6jUZmSvKHL9loilygGoqSFMQx/rqfmN0UM11rW0nbKMa5CP9gAd16iKtaoh
-	 0nO0cJPCjlwR/1p293V8O2D49942aFJpUPNRuslV5K5/5X+ggij5rBEs940WWwNsfj
-	 mK/5Gg5uvnerIMD/LYSH0osqoLvo0qlRmCjtZBuk=
+	b=tUSdmbJ2PPyhYwRr+MYvv5+KcV6+7KG+zLhxQ13iRnPFHC9T7rqd/yNPK6HknAPDS
+	 rTWkokO0/QZGjUYOdggydCltPc0Rau96BMaMRwxOdZ1AmNxBGJPbhafEZ59usqtKqQ
+	 yhokLee5+lcULaBMzAS/mk39ZUswQficmv3Xibjc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387825AbfJRWIa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:08:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40964 "EHLO mail.kernel.org"
+        id S2387808AbfJRWI3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:08:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387814AbfJRWIa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:08:30 -0400
+        id S2387798AbfJRWI3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:08:29 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 36465222D1;
-        Fri, 18 Oct 2019 22:08:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9DBB0222C2;
+        Fri, 18 Oct 2019 22:08:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436509;
-        bh=gzJIr3oEpeI6UESWP5YHp1gXpssUBoR3tv0ZGUfuQ44=;
+        s=default; t=1571436508;
+        bh=HDsv24RpewDnlRB22Fo8IdX8RsS0btuV9oTMySaKPco=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=C8kT2lyYkwwRDvmtah0RcvC2oFSAkiRMAZcP4Uiepi1XziBFPVwjH4kcvgEpXX5v4
-         /FDLjmeF9/tcfYKxRd1lDV5G3PS8T2CfZuStcYd90xQHn/ScPStg4QXYrGIChtgtOZ
-         PSxlLys8+Pzyqiqg+CWUwq3QlDzHKek7SF0F5Geg=
+        b=ZcqajXV60nD2r+DiBGM/ZeVpWdf1OiJoWv4xjCWVxm/XernE1nBX+Ioc61k5UPncb
+         xlkLRkDkl2fDDWtCi2+5p/1vb7WnVm4POCt96IoI7LvKA6apEh2sU173hhdWWTOmaZ
+         6D48VoWi4HO1Y9JjrkvXzfcHTjbUREWqImAFBTsE=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Pascal Bouwmann <bouwmann@tau-tec.de>,
+Cc:     Remi Pommarel <repk@triplefau.lt>,
+        Elie Roudninski <xademax@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 20/56] iio: fix center temperature of bmc150-accel-core
-Date:   Fri, 18 Oct 2019 18:07:17 -0400
-Message-Id: <20191018220753.10002-20-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
+        linux-amlogic@lists.infradead.org
+Subject: [PATCH AUTOSEL 4.14 19/56] iio: adc: meson_saradc: Fix memory allocation order
+Date:   Fri, 18 Oct 2019 18:07:16 -0400
+Message-Id: <20191018220753.10002-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220753.10002-1-sashal@kernel.org>
 References: <20191018220753.10002-1-sashal@kernel.org>
@@ -58,37 +62,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Pascal Bouwmann <bouwmann@tau-tec.de>
+From: Remi Pommarel <repk@triplefau.lt>
 
-[ Upstream commit 6c59a962e081df6d8fe43325bbfabec57e0d4751 ]
+[ Upstream commit de10ac47597e7a3596b27631d0d5ce5f48d2c099 ]
 
-The center temperature of the supported devices stored in the constant
-BMC150_ACCEL_TEMP_CENTER_VAL is not 24 degrees but 23 degrees.
+meson_saradc's irq handler uses priv->regmap so make sure that it is
+allocated before the irq get enabled.
 
-It seems that some datasheets were inconsistent on this value leading
-to the error.  For most usecases will only make minor difference so
-not queued for stable.
+This also fixes crash when CONFIG_DEBUG_SHIRQ is enabled, as device
+managed resources are freed in the inverted order they had been
+allocated, priv->regmap was freed before the spurious fake irq that
+CONFIG_DEBUG_SHIRQ adds called the handler.
 
-Signed-off-by: Pascal Bouwmann <bouwmann@tau-tec.de>
+Fixes: 3af109131b7eb8 ("iio: adc: meson-saradc: switch from polling to interrupt mode")
+Reported-by: Elie Roudninski <xademax@gmail.com>
+Signed-off-by: Remi Pommarel <repk@triplefau.lt>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Tested-by: Elie ROUDNINSKI <xademax@gmail.com>
+Reviewed-by: Kevin Hilman <khilman@baylibre.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/bmc150-accel-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/meson_saradc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 807299dd45ebf..7e86a5b7ec4e8 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -125,7 +125,7 @@
- #define BMC150_ACCEL_SLEEP_1_SEC		0x0F
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 2515badf8b280..9b2121f249263 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -976,6 +976,11 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 	if (IS_ERR(base))
+ 		return PTR_ERR(base);
  
- #define BMC150_ACCEL_REG_TEMP			0x08
--#define BMC150_ACCEL_TEMP_CENTER_VAL		24
-+#define BMC150_ACCEL_TEMP_CENTER_VAL		23
++	priv->regmap = devm_regmap_init_mmio(&pdev->dev, base,
++					     priv->data->regmap_config);
++	if (IS_ERR(priv->regmap))
++		return PTR_ERR(priv->regmap);
++
+ 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
+ 	if (!irq)
+ 		return -EINVAL;
+@@ -985,11 +990,6 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
- #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
- #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
+-	priv->regmap = devm_regmap_init_mmio(&pdev->dev, base,
+-					     priv->data->regmap_config);
+-	if (IS_ERR(priv->regmap))
+-		return PTR_ERR(priv->regmap);
+-
+ 	priv->clkin = devm_clk_get(&pdev->dev, "clkin");
+ 	if (IS_ERR(priv->clkin)) {
+ 		dev_err(&pdev->dev, "failed to get clkin\n");
 -- 
 2.20.1
 
