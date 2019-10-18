@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3FFCA9EAB
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8200CA9EA0
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 956BF205C9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 672F9205C9
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437454;
-	bh=ygm/bLbEKE+ydYb6n27zhUbjztKPi1bevmfl1GTnNCk=;
+	s=default; t=1571437460;
+	bh=uEND3GKoWK+g/JWo/oyDeh6QDH6dGdOrvIJh9bfh8S0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=eGe205vqd475aBLNVJvKvTTI2d0jeP4KXkyE96+hbTh4uPKq9YnLsC++moidNiBUI
-	 MLY2MvfvigXCk5XxLzkOUpQZZwQXy7RnRTzOG2CrFqQveJM8wi6OzsjAmyoK9a+UTI
-	 yunnI3UsbOPDEJtFfCt9r+RppmxMZXNvvxMg4M/Q=
+	b=KNCaIYe0uJ1oyQIULS4q5tDRmYy26kfZUEABDGF8RA9qBiWzAcxRGVZbGjLZ4jBoy
+	 ZH4MBWa3gMB3jlru7eo9nvdUPe9sN//WEmNTVb4fdCat53Ws3j6dW2cCX22SFC2n1A
+	 tpJNNH2IIaaSoSc1HR6R/5KHIdsUSjrOXTt/oRFc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728978AbfJRWFE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:05:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36860 "EHLO mail.kernel.org"
+        id S2405537AbfJRWYO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:24:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36828 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729126AbfJRWFD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:05:03 -0400
+        id S1728911AbfJRWFC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:05:02 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8243A222D4;
-        Fri, 18 Oct 2019 22:05:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 698F520679;
+        Fri, 18 Oct 2019 22:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436303;
-        bh=ygm/bLbEKE+ydYb6n27zhUbjztKPi1bevmfl1GTnNCk=;
+        s=default; t=1571436302;
+        bh=uEND3GKoWK+g/JWo/oyDeh6QDH6dGdOrvIJh9bfh8S0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kltX15avdl3QHp7AYoatQdM1VE4OR7S4GA9c9pzu3EFHBn8PjhYb4ZgUpsmCoRZ/t
-         F1sQ25KBBxqWar64qgjsIVC/pOBiKdzzadUOLpiiAamsbPzlrrnvUxJFVnAz1Zqx9W
-         aOmXNOdCAPwl31WzkeyfTlPIpnh984IwqddrmmyE=
+        b=wi6WjNs1F+abJcYvp3SABJyqSRMnaXLODl1drlgBXBOJplzIofRmxLKSdl/gGY7Jg
+         Wx26B6eI7IGLcgFTy3xQFFwesOGJjkLZFTIEsVEL8ZGOU1IOt3oTccUrzVdAVjPmT0
+         Jr7tdmsBbhLWYytaYOwUEQKONVHd4TrzNn8NxfvI=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Navid Emamdoost <navid.emamdoost@gmail.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 74/89] iio: imu: adis16400: fix memory leak
-Date:   Fri, 18 Oct 2019 18:03:09 -0400
-Message-Id: <20191018220324.8165-74-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 73/89] iio: imu: adis16400: release allocated memory on failure
+Date:   Fri, 18 Oct 2019 18:03:08 -0400
+Message-Id: <20191018220324.8165-73-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
 References: <20191018220324.8165-1-sashal@kernel.org>
@@ -61,10 +61,10 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Navid Emamdoost <navid.emamdoost@gmail.com>
 
-[ Upstream commit 9c0530e898f384c5d279bfcebd8bb17af1105873 ]
+[ Upstream commit ab612b1daf415b62c58e130cb3d0f30b255a14d0 ]
 
-In adis_update_scan_mode_burst, if adis->buffer allocation fails release
-the adis->xfer.
+In adis_update_scan_mode, if allocation for adis->buffer fails,
+previously allocated adis->xfer needs to be released.
 
 Signed-off-by: Navid Emamdoost <navid.emamdoost@gmail.com>
 Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
@@ -75,13 +75,13 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
-index f446ff4978091..4998a89d083d5 100644
+index 9ac8356d9a954..f446ff4978091 100644
 --- a/drivers/iio/imu/adis_buffer.c
 +++ b/drivers/iio/imu/adis_buffer.c
-@@ -35,8 +35,11 @@ static int adis_update_scan_mode_burst(struct iio_dev *indio_dev,
+@@ -78,8 +78,11 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
  		return -ENOMEM;
  
- 	adis->buffer = kzalloc(burst_length + sizeof(u16), GFP_KERNEL);
+ 	adis->buffer = kcalloc(indio_dev->scan_bytes, 2, GFP_KERNEL);
 -	if (!adis->buffer)
 +	if (!adis->buffer) {
 +		kfree(adis->xfer);
@@ -89,8 +89,8 @@ index f446ff4978091..4998a89d083d5 100644
  		return -ENOMEM;
 +	}
  
- 	tx = adis->buffer + burst_length;
- 	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
+ 	rx = adis->buffer;
+ 	tx = rx + scan_count;
 -- 
 2.20.1
 
