@@ -7,47 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8141CA9EA9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:11:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70C11CA9EAB
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 721C220854
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:11:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 349C820854
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:12:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436708;
-	bh=bEc6Pcgb7U72JjG3S76enk5VJayqngYFsyIKtKCpKjw=;
+	s=default; t=1571436764;
+	bh=NbW4pyrujrDlr8pQUBXCEo4GhfvTIkKR090Vqwr3XBc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=AcK2Q+oJhdW66X3W7kLOMtRtWbbpCeomPosLY0XAzVvaxyg1vvOjDuiUJvrjpezw4
-	 UT2IZIi8zLheqakUFi87Mc7vzY7tdMGiLqISGK01mou0B+i8mlyRTzo1LpJDl8/S8Q
-	 tDJCMxHcoQVhZd6ks3oeXN1oEkx8RtFyDUGccC7c=
+	b=hxmPP7RDrd7O9tA+SE45ifruSbgPVQAcS5hUJkgi/bzI3ef7cAd1VEMnQHcxcPGMF
+	 +UsPJ4dbYLWc2sbjsoXkcJ695XLtMa0RUpVDyAV5eOLD0ndt++WmW5Yhzkfff8nBaU
+	 9I2Ii+vyWiaI18bM5b/qLwkopQSi5vBDhccq8/vc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732385AbfJRWLh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:11:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43540 "EHLO mail.kernel.org"
+        id S2391683AbfJRWMm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:12:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2390321AbfJRWKd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:10:33 -0400
+        id S2389897AbfJRWKR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:10:17 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0D1D22246F;
-        Fri, 18 Oct 2019 22:10:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 513712245C;
+        Fri, 18 Oct 2019 22:10:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436632;
-        bh=bEc6Pcgb7U72JjG3S76enk5VJayqngYFsyIKtKCpKjw=;
+        s=default; t=1571436617;
+        bh=NbW4pyrujrDlr8pQUBXCEo4GhfvTIkKR090Vqwr3XBc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YElW3W5OUIy+/s112szwhrtp5qIK7g3iNDeb1t5tpzrl3c2AekVWkDy7RwNz5jHPg
-         Eobu+3iqQ7XTRcNlthZfTAhRcawh3NXmPE1vEer+kxnWug4i9n0yNWjwFgzJH4YMDp
-         tL2FD2rFql6wFcVTf5tF12BSX25VIrcacQJ/ii2g=
+        b=pv2k2u2N0cyqAjVKPOVcjCXHeB3ELBzCrJI6MIGfwHlF53aH4yf6nmX0bfys9u5m+
+         vriRWxjEyre/oOFmcbjEirDRKkv18OrMcpGgw0bCQ0dlzkZEoXLulrBtco2xG/bFtv
+         +JPD44+EKXY/EyWxwP1+IimfTHRedsSWHzsCuJYY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Marco Felsch <m.felsch@pengutronix.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Stable@vger.kernel.org,
+Cc:     Pascal Bouwmann <bouwmann@tau-tec.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 16/21] iio: adc: ad799x: fix probe error handling
-Date:   Fri, 18 Oct 2019 18:10:02 -0400
-Message-Id: <20191018221007.10851-16-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 06/21] iio: fix center temperature of bmc150-accel-core
+Date:   Fri, 18 Oct 2019 18:09:52 -0400
+Message-Id: <20191018221007.10851-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018221007.10851-1-sashal@kernel.org>
 References: <20191018221007.10851-1-sashal@kernel.org>
@@ -60,41 +58,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Marco Felsch <m.felsch@pengutronix.de>
+From: Pascal Bouwmann <bouwmann@tau-tec.de>
 
-[ Upstream commit c62dd44901cfff12acc5792bf3d2dec20bcaf392 ]
+[ Upstream commit 6c59a962e081df6d8fe43325bbfabec57e0d4751 ]
 
-Since commit 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe
-and reset alert status on probe") the error path is wrong since it
-leaves the vref regulator on. Fix this by disabling both regulators.
+The center temperature of the supported devices stored in the constant
+BMC150_ACCEL_TEMP_CENTER_VAL is not 24 degrees but 23 degrees.
 
-Fixes: 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe and reset alert status on probe")
-Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
-Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <Stable@vger.kernel.org>
+It seems that some datasheets were inconsistent on this value leading
+to the error.  For most usecases will only make minor difference so
+not queued for stable.
+
+Signed-off-by: Pascal Bouwmann <bouwmann@tau-tec.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/ad799x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index ba82de25a7972..46681e399e226 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -822,10 +822,10 @@ static int ad799x_probe(struct i2c_client *client,
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index c7122919a8c0e..ec7ddf8673497 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -126,7 +126,7 @@
+ #define BMC150_ACCEL_SLEEP_1_SEC		0x0F
  
- 	ret = ad799x_write_config(st, st->chip_config->default_config);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	ret = ad799x_read_config(st);
- 	if (ret < 0)
--		goto error_disable_reg;
-+		goto error_disable_vref;
- 	st->config = ret;
+ #define BMC150_ACCEL_REG_TEMP			0x08
+-#define BMC150_ACCEL_TEMP_CENTER_VAL		24
++#define BMC150_ACCEL_TEMP_CENTER_VAL		23
  
- 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
+ #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
 -- 
 2.20.1
 
