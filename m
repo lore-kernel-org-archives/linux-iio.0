@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FDB4CA9EA0
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 605AECA9EAB
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:28:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EE1A520872
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2B6F420872
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:28:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437478;
-	bh=KT6JUrdslB3ISnhA1e5qu4apPwPFT29frazQVGLrH9w=;
+	s=default; t=1571437714;
+	bh=9NnODbZOz4a/iwhi9I2k4MwlKVQmuVTUJBtV1kF9jBM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ees8U0skstbP+PgNRx/iKsG6QgM9e06DekZbm8z7Wg4hqg6CeVGZhW3Uhyg2G5zW+
-	 meJh82KcoehFDuKi/U4IVsP2eT2OLo9KtqNCWZmUVZTxjV9JijSaJmoSkTkjLb+nQ4
-	 V85JC1cWPk55P8UcK7jQBNAbTnSnyIBr2VT7ZMHk=
+	b=mjksxrgaB65zX96PxtxnRThjfwL8hd7xI1jBy9BwqcBbpNGXf2B5xwnZySkWoYD2Q
+	 NN4k+JW322uBN5ytiVG6Z7fTTFUydyMchta1iUbRcYQzAuoya6BOD5aF7Xd3KpTEUR
+	 J747uQQNAc0QM2LMxQOoS6N0mZmihu7TF1C5yLy0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729016AbfJRWYf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:24:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36770 "EHLO mail.kernel.org"
+        id S1726764AbfJRWD3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:03:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34776 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728993AbfJRWE7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:04:59 -0400
+        id S1726604AbfJRWD2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:03:28 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1EEEE20679;
-        Fri, 18 Oct 2019 22:04:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 170202089C;
+        Fri, 18 Oct 2019 22:03:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436298;
-        bh=KT6JUrdslB3ISnhA1e5qu4apPwPFT29frazQVGLrH9w=;
+        s=default; t=1571436207;
+        bh=9NnODbZOz4a/iwhi9I2k4MwlKVQmuVTUJBtV1kF9jBM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pUitnbIb4idLkYAgJ1WPahi57kbRl1UgMb36wzjRg8iYrvfZfcTFzbPh9820Ms0mb
-         71DOOzeAr2OcyCWhlKXOLT/3yiN+ajobJ1hv46z0n3gId7f1SZBqXLyvX/v/GdlqmH
-         hEgEw71pigqQ2G2qcCyjU9yHKDoxCTe/326ZeUO8=
+        b=AzKb7Ig2N8M34g01lZJThxhgziwR7IqJ/oLWsgWCzAKIyR3V/QQyK7POIZEJBrmkj
+         H+YCaOyr6wjpY1euOJ6rwJLdGAmz0Q+2yJ4iTcX1ZnQ/SvfV+BKJQvecUQfPUyqP6t
+         wP7fNfh55GZxP7t8fFfrAFTacd1ZlJ+0NzfxINZc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Popa <stefan.popa@analog.com>, Stable@vger.kernel.org,
+Cc:     Pascal Bouwmann <bouwmann@tau-tec.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 70/89] iio: accel: adxl372: Fix/remove limitation for FIFO samples
-Date:   Fri, 18 Oct 2019 18:03:05 -0400
-Message-Id: <20191018220324.8165-70-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 02/89] iio: fix center temperature of bmc150-accel-core
+Date:   Fri, 18 Oct 2019 18:01:57 -0400
+Message-Id: <20191018220324.8165-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
 References: <20191018220324.8165-1-sashal@kernel.org>
@@ -58,49 +58,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Popa <stefan.popa@analog.com>
+From: Pascal Bouwmann <bouwmann@tau-tec.de>
 
-[ Upstream commit d202ce4787e446556c6b9d01f84734c3f8174ba3 ]
+[ Upstream commit 6c59a962e081df6d8fe43325bbfabec57e0d4751 ]
 
-Currently, the driver sets the FIFO_SAMPLES register with the number of
-sample sets (maximum of 170 for 3 axis data, 256 for 2-axis and 512 for
-single axis). However, the FIFO_SAMPLES register should store the number
-of samples, regardless of how the FIFO format is configured.
+The center temperature of the supported devices stored in the constant
+BMC150_ACCEL_TEMP_CENTER_VAL is not 24 degrees but 23 degrees.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Fixes: f4f55ce38e5f ("iio:adxl372: Add FIFO and interrupts support")
-Cc: <Stable@vger.kernel.org>
+It seems that some datasheets were inconsistent on this value leading
+to the error.  For most usecases will only make minor difference so
+not queued for stable.
+
+Signed-off-by: Pascal Bouwmann <bouwmann@tau-tec.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/adxl372.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index 055227cb3d43c..863fe61a371fb 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -474,12 +474,17 @@ static int adxl372_configure_fifo(struct adxl372_state *st)
- 	if (ret < 0)
- 		return ret;
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index cf6c0e3a83d38..121b4e89f038c 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -117,7 +117,7 @@
+ #define BMC150_ACCEL_SLEEP_1_SEC		0x0F
  
--	fifo_samples = st->watermark & 0xFF;
-+	/*
-+	 * watermark stores the number of sets; we need to write the FIFO
-+	 * registers with the number of samples
-+	 */
-+	fifo_samples = (st->watermark * st->fifo_set_size);
- 	fifo_ctl = ADXL372_FIFO_CTL_FORMAT_MODE(st->fifo_format) |
- 		   ADXL372_FIFO_CTL_MODE_MODE(st->fifo_mode) |
--		   ADXL372_FIFO_CTL_SAMPLES_MODE(st->watermark);
-+		   ADXL372_FIFO_CTL_SAMPLES_MODE(fifo_samples);
+ #define BMC150_ACCEL_REG_TEMP			0x08
+-#define BMC150_ACCEL_TEMP_CENTER_VAL		24
++#define BMC150_ACCEL_TEMP_CENTER_VAL		23
  
--	ret = regmap_write(st->regmap, ADXL372_FIFO_SAMPLES, fifo_samples);
-+	ret = regmap_write(st->regmap,
-+			   ADXL372_FIFO_SAMPLES, fifo_samples & 0xFF);
- 	if (ret < 0)
- 		return ret;
- 
+ #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
+ #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
 -- 
 2.20.1
 
