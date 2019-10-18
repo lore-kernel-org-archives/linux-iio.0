@@ -4,49 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CE0CA9EAB
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E72ECA9EAC
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BE2C421925
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC03821925
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:15:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571436905;
-	bh=A1dcWW0Dnd/tqqaFleDJNjiqHkFzOb00B6+TkPnp6Dc=;
+	s=default; t=1571436908;
+	bh=NLmoFS64RoWdYxbg20A3xc1xvUz733WUVaV8uglnhwk=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=puj/xJO3cMuSPKsqCX8qSF+p44QZDYMQvVhrnR2MEdJ7vYXn4B09W8oG70ioX4jnf
-	 /N5JXjzHMw+pTTYLOv8/KENxb01J31b27cseo1U4ctUMvRziZfP1onAdr+mj3A62dU
-	 Im1IE+sr0hjRgeUakqareNv78snnpaz3F48/OJLg=
+	b=Oul9SOQaRXBJX4ixGr/CtAALQEmPX/fheTFouRdmd0+8Q/QtNiGBKhy3Jj1b8yf8i
+	 1Dm5S5YtjNuOPoCRab+5q+zfThK/SipnNVATy8bUoBm5sfnZ2TiHCORhHHtw+3t900
+	 dZYbS1PNF0Q6QWCKv5H7i3BCpvD5T3ts27i9pvjc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388649AbfJRWPB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:15:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41870 "EHLO mail.kernel.org"
+        id S2390552AbfJRWPG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:15:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41860 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388627AbfJRWJL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:09:11 -0400
+        id S2388596AbfJRWJK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:09:10 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E27B52245D;
-        Fri, 18 Oct 2019 22:09:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F257222D4;
+        Fri, 18 Oct 2019 22:09:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436550;
-        bh=A1dcWW0Dnd/tqqaFleDJNjiqHkFzOb00B6+TkPnp6Dc=;
+        s=default; t=1571436549;
+        bh=NLmoFS64RoWdYxbg20A3xc1xvUz733WUVaV8uglnhwk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tIYT93or6ndjOD6tz9vVImOqsRkIy18vwjvX6sxkrP2gDfYFxKdtU/ahkBN12DlJa
-         3nLggBe/mhPH/p9cWOwe9K73J0N1mPZcKpEceAFMTLso87jvlswcQxYA8xxw0VSnJF
-         mr0v/uDLIBtDZ4J51RdRbRnL0eb/NMpGk1bnUByw=
+        b=lC+U6hmC1IFKxHk2G4AFT780ecdmfzCLEbhQ6tSkjqFTs8+CsOWkbOsZAQg1WtYGj
+         ouwVFFko8JNKdyTBOCUPJ0ToWpSD0NdSLXBphta6oGjRRgTBVCQ/YLZ3u2tFlogJSj
+         JlUkuwrauBtSMv1ODWHVRvAWXyxLgjzzx9kKKeIs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     David Frey <dpfrey@gmail.com>,
-        Andreas Dannenberg <dannenberg@ti.com>, Stable@vger.kernel.org,
+Cc:     Marco Felsch <m.felsch@pengutronix.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 49/56] iio: light: opt3001: fix mutex unlock race
-Date:   Fri, 18 Oct 2019 18:07:46 -0400
-Message-Id: <20191018220753.10002-49-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 48/56] iio: adc: ad799x: fix probe error handling
+Date:   Fri, 18 Oct 2019 18:07:45 -0400
+Message-Id: <20191018220753.10002-48-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220753.10002-1-sashal@kernel.org>
 References: <20191018220753.10002-1-sashal@kernel.org>
@@ -59,58 +60,41 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: David Frey <dpfrey@gmail.com>
+From: Marco Felsch <m.felsch@pengutronix.de>
 
-[ Upstream commit 82f3015635249a8c8c45bac303fd84905066f04f ]
+[ Upstream commit c62dd44901cfff12acc5792bf3d2dec20bcaf392 ]
 
-When an end-of-conversion interrupt is received after performing a
-single-shot reading of the light sensor, the driver was waking up the
-result ready queue before checking opt->ok_to_ignore_lock to determine
-if it should unlock the mutex. The problem occurred in the case where
-the other thread woke up and changed the value of opt->ok_to_ignore_lock
-to false prior to the interrupt thread performing its read of the
-variable. In this case, the mutex would be unlocked twice.
+Since commit 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe
+and reset alert status on probe") the error path is wrong since it
+leaves the vref regulator on. Fix this by disabling both regulators.
 
-Signed-off-by: David Frey <dpfrey@gmail.com>
-Reviewed-by: Andreas Dannenberg <dannenberg@ti.com>
-Fixes: 94a9b7b1809f ("iio: light: add support for TI's opt3001 light sensor")
+Fixes: 0f7ddcc1bff1 ("iio:adc:ad799x: Write default config on probe and reset alert status on probe")
+Signed-off-by: Marco Felsch <m.felsch@pengutronix.de>
+Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/light/opt3001.c | 6 +++++-
- 1 file changed, 5 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ad799x.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
-index b91ebc3483cea..743fd2cfdd54e 100644
---- a/drivers/iio/light/opt3001.c
-+++ b/drivers/iio/light/opt3001.c
-@@ -695,6 +695,7 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
- 	struct iio_dev *iio = _iio;
- 	struct opt3001 *opt = iio_priv(iio);
- 	int ret;
-+	bool wake_result_ready_queue = false;
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 22426ae4af97a..7d1895035af68 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -817,10 +817,10 @@ static int ad799x_probe(struct i2c_client *client,
  
- 	if (!opt->ok_to_ignore_lock)
- 		mutex_lock(&opt->lock);
-@@ -729,13 +730,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
- 		}
- 		opt->result = ret;
- 		opt->result_ready = true;
--		wake_up(&opt->result_ready_queue);
-+		wake_result_ready_queue = true;
- 	}
+ 	ret = ad799x_write_config(st, st->chip_config->default_config);
+ 	if (ret < 0)
+-		goto error_disable_reg;
++		goto error_disable_vref;
+ 	ret = ad799x_read_config(st);
+ 	if (ret < 0)
+-		goto error_disable_reg;
++		goto error_disable_vref;
+ 	st->config = ret;
  
- out:
- 	if (!opt->ok_to_ignore_lock)
- 		mutex_unlock(&opt->lock);
- 
-+	if (wake_result_ready_queue)
-+		wake_up(&opt->result_ready_queue);
-+
- 	return IRQ_HANDLED;
- }
- 
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
 -- 
 2.20.1
 
