@@ -7,52 +7,49 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323F2CA9EA9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:20:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4A48CA9EA9
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:23:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 04B6F21852
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:20:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AF38A205C9
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:23:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437223;
-	bh=vj/8ObRPRjWFmRGY3nBsYaYGTcbH47acTDF/rjhkA78=;
+	s=default; t=1571437436;
+	bh=+DOoDVc0VcnWbD40iSGHebhxChdm5C5qW61ySyP17ZA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=gmKm54xvKPDQvxqAi1yd4ZvtlH/+Jibt/LQiKa6K/iZyjefOcmlVq63CfcPGtdXB0
-	 g57WcEAg6St6y2p3bYiFZzNICi2Ul8VCVoxi4sesnn0+W1AuAlQScSBUl52JZI7EcB
-	 Zwq5C0WRtXYbcOvuiun8DGXBGGUXvFd/qyCP/zcs=
+	b=bo9N8a6+9NDyLO7phJfYHUmx/aJPq05/rAeN6yVMeED+DH3IqvoycRk0cVqL3viX/
+	 xpndDrW+wK85AMJSS7XICaJ/nnKsJrrbEu273Aa1Vta23hsqj7LujyolyU6pzoetQ3
+	 5l0HUjY3UYwqFdJ8Rgbi0ZOh0ZXqRvi7OZ88ozzQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2393895AbfJRWUR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:20:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38690 "EHLO mail.kernel.org"
+        id S1729360AbfJRWXw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:23:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731881AbfJRWGm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:06:42 -0400
+        id S1729237AbfJRWFJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:05:09 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 23593205F4;
-        Fri, 18 Oct 2019 22:06:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8D9252245B;
+        Fri, 18 Oct 2019 22:05:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436401;
-        bh=vj/8ObRPRjWFmRGY3nBsYaYGTcbH47acTDF/rjhkA78=;
+        s=default; t=1571436309;
+        bh=+DOoDVc0VcnWbD40iSGHebhxChdm5C5qW61ySyP17ZA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hkx25FtZKWcgOsdqfgzcy59H7Z6HKj/W1D/UUEv14LGyX+Rl0eIci4fGACCntHmKB
-         Uo6OTtzHxvr2MZ/uGyy0WVUdr3xdRxo3sOiRBAFIj1Be02+2b9PMNgEjtxs69m8081
-         4uEQwd6gjRyQnOwIP692TE3kMR9A2Or+jEEdSuB8=
+        b=ErK5GLxMF+lLVZggHVtdVJuIrTMoComiyHd4uwbXPzws0XRIcKp4Jq+oW13ewKw0q
+         kpFv7g6Ofu1RFqK8CeV/XrS0xJdNxqMYnjyGNKS2HnjQqzAkhNyIUia9fiEDV6VTQB
+         BSu7blfELmsRcgreZpWbVskk89TwiQ4YLK/6WM4o=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Remi Pommarel <repk@triplefau.lt>,
-        Elie Roudninski <xademax@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
+Cc:     David Frey <dpfrey@gmail.com>,
+        Andreas Dannenberg <dannenberg@ti.com>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        linux-amlogic@lists.infradead.org
-Subject: [PATCH AUTOSEL 4.19 050/100] iio: adc: meson_saradc: Fix memory allocation order
-Date:   Fri, 18 Oct 2019 18:04:35 -0400
-Message-Id: <20191018220525.9042-50-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.3 79/89] iio: light: opt3001: fix mutex unlock race
+Date:   Fri, 18 Oct 2019 18:03:14 -0400
+Message-Id: <20191018220324.8165-79-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
-References: <20191018220525.9042-1-sashal@kernel.org>
+In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
+References: <20191018220324.8165-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -62,58 +59,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Remi Pommarel <repk@triplefau.lt>
+From: David Frey <dpfrey@gmail.com>
 
-[ Upstream commit de10ac47597e7a3596b27631d0d5ce5f48d2c099 ]
+[ Upstream commit 82f3015635249a8c8c45bac303fd84905066f04f ]
 
-meson_saradc's irq handler uses priv->regmap so make sure that it is
-allocated before the irq get enabled.
+When an end-of-conversion interrupt is received after performing a
+single-shot reading of the light sensor, the driver was waking up the
+result ready queue before checking opt->ok_to_ignore_lock to determine
+if it should unlock the mutex. The problem occurred in the case where
+the other thread woke up and changed the value of opt->ok_to_ignore_lock
+to false prior to the interrupt thread performing its read of the
+variable. In this case, the mutex would be unlocked twice.
 
-This also fixes crash when CONFIG_DEBUG_SHIRQ is enabled, as device
-managed resources are freed in the inverted order they had been
-allocated, priv->regmap was freed before the spurious fake irq that
-CONFIG_DEBUG_SHIRQ adds called the handler.
-
-Fixes: 3af109131b7eb8 ("iio: adc: meson-saradc: switch from polling to interrupt mode")
-Reported-by: Elie Roudninski <xademax@gmail.com>
-Signed-off-by: Remi Pommarel <repk@triplefau.lt>
-Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Tested-by: Elie ROUDNINSKI <xademax@gmail.com>
-Reviewed-by: Kevin Hilman <khilman@baylibre.com>
+Signed-off-by: David Frey <dpfrey@gmail.com>
+Reviewed-by: Andreas Dannenberg <dannenberg@ti.com>
+Fixes: 94a9b7b1809f ("iio: light: add support for TI's opt3001 light sensor")
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/meson_saradc.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/light/opt3001.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 5dd104cf0939b..6e0ef9bb2497f 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -1023,6 +1023,11 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index e666879007d2c..92004a2563ea8 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -686,6 +686,7 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 	struct iio_dev *iio = _iio;
+ 	struct opt3001 *opt = iio_priv(iio);
+ 	int ret;
++	bool wake_result_ready_queue = false;
  
-+	priv->regmap = devm_regmap_init_mmio(&pdev->dev, base,
-+					     priv->data->param->regmap_config);
-+	if (IS_ERR(priv->regmap))
-+		return PTR_ERR(priv->regmap);
+ 	if (!opt->ok_to_ignore_lock)
+ 		mutex_lock(&opt->lock);
+@@ -720,13 +721,16 @@ static irqreturn_t opt3001_irq(int irq, void *_iio)
+ 		}
+ 		opt->result = ret;
+ 		opt->result_ready = true;
+-		wake_up(&opt->result_ready_queue);
++		wake_result_ready_queue = true;
+ 	}
+ 
+ out:
+ 	if (!opt->ok_to_ignore_lock)
+ 		mutex_unlock(&opt->lock);
+ 
++	if (wake_result_ready_queue)
++		wake_up(&opt->result_ready_queue);
 +
- 	irq = irq_of_parse_and_map(pdev->dev.of_node, 0);
- 	if (!irq)
- 		return -EINVAL;
-@@ -1032,11 +1037,6 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
+ 	return IRQ_HANDLED;
+ }
  
--	priv->regmap = devm_regmap_init_mmio(&pdev->dev, base,
--					     priv->data->param->regmap_config);
--	if (IS_ERR(priv->regmap))
--		return PTR_ERR(priv->regmap);
--
- 	priv->clkin = devm_clk_get(&pdev->dev, "clkin");
- 	if (IS_ERR(priv->clkin)) {
- 		dev_err(&pdev->dev, "failed to get clkin\n");
 -- 
 2.20.1
 
