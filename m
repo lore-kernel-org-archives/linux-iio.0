@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EE8DCA9EA0
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F24FCA9EA0
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:20:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2282F20872
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:17:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5978022473
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:20:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437069;
-	bh=diCshV9a4pVZR6o458+ck/iOrPs3rlpxB36EUXWPJYE=;
+	s=default; t=1571437216;
+	bh=A1CC+d9DZVVwc+jQwceLaceB74uPRg43Vtk7GxRaMSs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=IeDoOL+n5qyK1MNYzT0L/1rz+JW4WmG6k3Lk1vnZCvUmWr9lgBy+tY8b6CpJAZ8Pq
-	 L4cHcTXSmZEoNqPcHPa14xOrHFuP75F8qhSfQCx3kwLid09pVYrm0LK8Bk1kkiJRjR
-	 WK0SbCAOpYU9dLxRKk5J2XFEr26Hje2sUeWq17uU=
+	b=dASt7Vy3qt0Ji2zSpgscxln7DVK5mmx1KKer5spOsu3QgsQ1KTiVC6sukXH4XhMkQ
+	 35C19J/nnnUCR6xoIvWNwK/4lXeheedNPNXhh6+arYHwSIQWPxUe1ogPWHnT3kDQI9
+	 D1aiHhdKQm5gv9gCkizCbwIe/zjL68K6nJ+UWvrc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733076AbfJRWHi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:07:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39914 "EHLO mail.kernel.org"
+        id S1731905AbfJRWGn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Oct 2019 18:06:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733061AbfJRWHi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Oct 2019 18:07:38 -0400
+        id S1731464AbfJRWGm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:06:42 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ADD4F22466;
-        Fri, 18 Oct 2019 22:07:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D4DF20679;
+        Fri, 18 Oct 2019 22:06:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436457;
-        bh=diCshV9a4pVZR6o458+ck/iOrPs3rlpxB36EUXWPJYE=;
+        s=default; t=1571436402;
+        bh=A1CC+d9DZVVwc+jQwceLaceB74uPRg43Vtk7GxRaMSs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vNxQuVSPj5jnMoqlcdAQf/qptA+MFFpzv5Vk4drkq4EjILSB9GVCtHX+9vX33oVsf
-         oFym5QnIaQoDg/MgMUjcBnkwf/pgFNf5mvEhS6WydLxyhhezVL8fq/epbyxpcVFQw4
-         gep4yqD2bjm4BmLdgWqBMnEpF/d8nPPnoMRCmrOc=
+        b=hZ/+J5ZO6BMVIrW2l0gqDRlx0rOPAKpmj6lULZYQ2Czsw3JfZ8kScit8gVAvu/YsK
+         sQZW6eODt4Sy2IIBL0xaf3zkeXqLaZ9RA2lCr80S2H0BuzdieTcvHxLSjEzkxpAaCK
+         ClHhGfjJP7UK4NlTv7w5ytndor+C+QcrWTsVnGjM=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andreas Klinger <ak@it-klinger.de>, Stable@vger.kernel.org,
+Cc:     Pascal Bouwmann <bouwmann@tau-tec.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 089/100] iio: adc: hx711: fix bug in sampling of data
-Date:   Fri, 18 Oct 2019 18:05:14 -0400
-Message-Id: <20191018220525.9042-89-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.19 051/100] iio: fix center temperature of bmc150-accel-core
+Date:   Fri, 18 Oct 2019 18:04:36 -0400
+Message-Id: <20191018220525.9042-51-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220525.9042-1-sashal@kernel.org>
 References: <20191018220525.9042-1-sashal@kernel.org>
@@ -58,77 +58,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andreas Klinger <ak@it-klinger.de>
+From: Pascal Bouwmann <bouwmann@tau-tec.de>
 
-[ Upstream commit 4043ecfb5fc4355a090111e14faf7945ff0fdbd5 ]
+[ Upstream commit 6c59a962e081df6d8fe43325bbfabec57e0d4751 ]
 
-Fix bug in sampling function hx711_cycle() when interrupt occures while
-PD_SCK is high. If PD_SCK is high for at least 60 us power down mode of
-the sensor is entered which in turn leads to a wrong measurement.
+The center temperature of the supported devices stored in the constant
+BMC150_ACCEL_TEMP_CENTER_VAL is not 24 degrees but 23 degrees.
 
-Switch off interrupts during a PD_SCK high period and move query of DOUT
-to the latest point of time which is at the end of PD_SCK low period.
+It seems that some datasheets were inconsistent on this value leading
+to the error.  For most usecases will only make minor difference so
+not queued for stable.
 
-This bug exists in the driver since it's initial addition. The more
-interrupts on the system the higher is the probability that it happens.
-
-Fixes: c3b2fdd0ea7e ("iio: adc: hx711: Add IIO driver for AVIA HX711")
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-Cc: <Stable@vger.kernel.org>
+Signed-off-by: Pascal Bouwmann <bouwmann@tau-tec.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/hx711.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-index 36b59d8957fb8..6c5d81a89aec9 100644
---- a/drivers/iio/adc/hx711.c
-+++ b/drivers/iio/adc/hx711.c
-@@ -109,14 +109,14 @@ struct hx711_data {
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 383c802eb5b86..cb8c98a440109 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -125,7 +125,7 @@
+ #define BMC150_ACCEL_SLEEP_1_SEC		0x0F
  
- static int hx711_cycle(struct hx711_data *hx711_data)
- {
--	int val;
-+	unsigned long flags;
+ #define BMC150_ACCEL_REG_TEMP			0x08
+-#define BMC150_ACCEL_TEMP_CENTER_VAL		24
++#define BMC150_ACCEL_TEMP_CENTER_VAL		23
  
- 	/*
- 	 * if preempted for more then 60us while PD_SCK is high:
- 	 * hx711 is going in reset
- 	 * ==> measuring is false
- 	 */
--	preempt_disable();
-+	local_irq_save(flags);
- 	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
- 
- 	/*
-@@ -126,7 +126,6 @@ static int hx711_cycle(struct hx711_data *hx711_data)
- 	 */
- 	ndelay(hx711_data->data_ready_delay_ns);
- 
--	val = gpiod_get_value(hx711_data->gpiod_dout);
- 	/*
- 	 * here we are not waiting for 0.2 us as suggested by the datasheet,
- 	 * because the oscilloscope showed in a test scenario
-@@ -134,7 +133,7 @@ static int hx711_cycle(struct hx711_data *hx711_data)
- 	 * and 0.56 us for PD_SCK low on TI Sitara with 800 MHz
- 	 */
- 	gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
--	preempt_enable();
-+	local_irq_restore(flags);
- 
- 	/*
- 	 * make it a square wave for addressing cases with capacitance on
-@@ -142,7 +141,8 @@ static int hx711_cycle(struct hx711_data *hx711_data)
- 	 */
- 	ndelay(hx711_data->data_ready_delay_ns);
- 
--	return val;
-+	/* sample as late as possible */
-+	return gpiod_get_value(hx711_data->gpiod_dout);
- }
- 
- static int hx711_read(struct hx711_data *hx711_data)
+ #define BMC150_ACCEL_AXIS_TO_REG(axis)	(BMC150_ACCEL_REG_XOUT_L + (axis * 2))
+ #define BMC150_AUTO_SUSPEND_DELAY_MS		2000
 -- 
 2.20.1
 
