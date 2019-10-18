@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CA42CA9EA9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E637CA9EA9
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 67E0F205C9
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E662E20872
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Oct 2019 22:24:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1571437467;
-	bh=1a7w7GetW5FhHuRCvaMI7Qle4+x0C2k7Ge+UODumWyk=;
+	s=default; t=1571437469;
+	bh=wcM6TwOsJEJ4ba0dvvFQxuCQYRTD52M8/Wbqdh7BNoY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=XvIEHyp/reJUdItRztnPbXbxDVcNbxIayNPMJqPBPRckeR1/fDnSyz7TxyB5g9uGD
-	 /IJwoX1CgB/yXuwmqgqh/qM7X/I6qsJY/X2m2aMhCflCDy4/ljd/lZ8jqMi+/mutPW
-	 Qg0Wl1uQkPprJStO298XV9QZARaiZQbmL0gNh8Fs=
+	b=zY3eYma4E6mv0E4OenxfO37H93hdpTan3p6+wWG/mDwWiZE+BE33dGZPESvxhSGYO
+	 xm0kCXxtzaak4bj+3Gi1rqG0nMstCKea9qhEvgjrFD1O3WDZ8uXcim4NclNMss0TGM
+	 Ar+1N2MSq6wnPcglsagpZRr26BlTddO0PYN6P4bU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732572AbfJRWYW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Oct 2019 18:24:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36820 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729035AbfJRWFB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1729028AbfJRWFB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 18 Oct 2019 18:05:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36736 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728978AbfJRWE6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Oct 2019 18:04:58 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4F542222CD;
-        Fri, 18 Oct 2019 22:05:00 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 047F52245D;
+        Fri, 18 Oct 2019 22:04:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1571436301;
-        bh=1a7w7GetW5FhHuRCvaMI7Qle4+x0C2k7Ge+UODumWyk=;
+        s=default; t=1571436297;
+        bh=wcM6TwOsJEJ4ba0dvvFQxuCQYRTD52M8/Wbqdh7BNoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ddaftopwMGTzQDX46oQMo+dzQbSkd3fhv+O29K8Uia45O0LVzJhQIkOoJbR989OyI
-         7Zrlqbdi3luP9NnaQNZXY5EEIKocpySNDWn+9njgXJkFyH4aTnUlV2OEEqcTzdwXVD
-         9qvY7kYnpeTZ4A5lcUnf4dfaFdVq9xT2mbnTiPWI=
+        b=HR8nzIqIF8eH9WXTVTSNWVVj/up/FCqg2SsdY7mvZ56CmAC2/DoFVt1KaKgRPCWKN
+         Zhss8wWmhvK8v6t0S+4zhllmDed8GJ5GNntnzeveWNQmEr93NSbl5vti8jPIoajqiI
+         KEbt0UOOCx09PPi9wc8juG2nGs/s3hRtAMQZ7Cy4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Stefan Popa <stefan.popa@analog.com>, Stable@vger.kernel.org,
+Cc:     Andreas Klinger <ak@it-klinger.de>, Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 72/89] iio: accel: adxl372: Perform a reset at start up
-Date:   Fri, 18 Oct 2019 18:03:07 -0400
-Message-Id: <20191018220324.8165-72-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 69/89] iio: adc: hx711: fix bug in sampling of data
+Date:   Fri, 18 Oct 2019 18:03:04 -0400
+Message-Id: <20191018220324.8165-69-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191018220324.8165-1-sashal@kernel.org>
 References: <20191018220324.8165-1-sashal@kernel.org>
@@ -58,43 +58,77 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Popa <stefan.popa@analog.com>
+From: Andreas Klinger <ak@it-klinger.de>
 
-[ Upstream commit d9a997bd4d762d5bd8cc548d762902f58b5e0a74 ]
+[ Upstream commit 4043ecfb5fc4355a090111e14faf7945ff0fdbd5 ]
 
-We need to perform a reset a start up to make sure that the chip is in a
-consistent state. This reset also disables all the interrupts which
-should only be enabled together with the iio buffer. Not doing this, was
-sometimes causing unwanted interrupts to trigger.
+Fix bug in sampling function hx711_cycle() when interrupt occures while
+PD_SCK is high. If PD_SCK is high for at least 60 us power down mode of
+the sensor is entered which in turn leads to a wrong measurement.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Fixes: f4f55ce38e5f ("iio:adxl372: Add FIFO and interrupts support")
+Switch off interrupts during a PD_SCK high period and move query of DOUT
+to the latest point of time which is at the end of PD_SCK low period.
+
+This bug exists in the driver since it's initial addition. The more
+interrupts on the system the higher is the probability that it happens.
+
+Fixes: c3b2fdd0ea7e ("iio: adc: hx711: Add IIO driver for AVIA HX711")
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/accel/adxl372.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/adc/hx711.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index fbad4b45fe42d..67b8817995c04 100644
---- a/drivers/iio/accel/adxl372.c
-+++ b/drivers/iio/accel/adxl372.c
-@@ -575,6 +575,14 @@ static int adxl372_setup(struct adxl372_state *st)
- 		return -ENODEV;
- 	}
+diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+index 88c7fe15003b7..62e6c8badd22a 100644
+--- a/drivers/iio/adc/hx711.c
++++ b/drivers/iio/adc/hx711.c
+@@ -100,14 +100,14 @@ struct hx711_data {
  
-+	/*
-+	 * Perform a software reset to make sure the device is in a consistent
-+	 * state after start up.
-+	 */
-+	ret = regmap_write(st->regmap, ADXL372_RESET, ADXL372_RESET_CODE);
-+	if (ret < 0)
-+		return ret;
-+
- 	ret = adxl372_set_op_mode(st, ADXL372_STANDBY);
- 	if (ret < 0)
- 		return ret;
+ static int hx711_cycle(struct hx711_data *hx711_data)
+ {
+-	int val;
++	unsigned long flags;
+ 
+ 	/*
+ 	 * if preempted for more then 60us while PD_SCK is high:
+ 	 * hx711 is going in reset
+ 	 * ==> measuring is false
+ 	 */
+-	preempt_disable();
++	local_irq_save(flags);
+ 	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
+ 
+ 	/*
+@@ -117,7 +117,6 @@ static int hx711_cycle(struct hx711_data *hx711_data)
+ 	 */
+ 	ndelay(hx711_data->data_ready_delay_ns);
+ 
+-	val = gpiod_get_value(hx711_data->gpiod_dout);
+ 	/*
+ 	 * here we are not waiting for 0.2 us as suggested by the datasheet,
+ 	 * because the oscilloscope showed in a test scenario
+@@ -125,7 +124,7 @@ static int hx711_cycle(struct hx711_data *hx711_data)
+ 	 * and 0.56 us for PD_SCK low on TI Sitara with 800 MHz
+ 	 */
+ 	gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
+-	preempt_enable();
++	local_irq_restore(flags);
+ 
+ 	/*
+ 	 * make it a square wave for addressing cases with capacitance on
+@@ -133,7 +132,8 @@ static int hx711_cycle(struct hx711_data *hx711_data)
+ 	 */
+ 	ndelay(hx711_data->data_ready_delay_ns);
+ 
+-	return val;
++	/* sample as late as possible */
++	return gpiod_get_value(hx711_data->gpiod_dout);
+ }
+ 
+ static int hx711_read(struct hx711_data *hx711_data)
 -- 
 2.20.1
 
