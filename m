@@ -2,126 +2,151 @@ Return-Path: <SRS0=rF6j=YO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96CC4CA9EAF
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 13:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF09DCA9EAF
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 14:07:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 68E5620B7C
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 13:37:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 969592053B
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 14:07:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lqfIWVVF"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="W5Wz9/Pa"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728854AbfJUNhY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Oct 2019 09:37:24 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:38181 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728670AbfJUNhX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 09:37:23 -0400
-Received: by mail-io1-f66.google.com with SMTP id u8so15895792iom.5;
-        Mon, 21 Oct 2019 06:37:22 -0700 (PDT)
+        id S1728812AbfJUOHT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Oct 2019 10:07:19 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:19410 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728098AbfJUOHT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 10:07:19 -0400
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9LE31KR000487;
+        Mon, 21 Oct 2019 10:06:29 -0400
+Received: from nam01-bn3-obe.outbound.protection.outlook.com (mail-bn3nam01lp2052.outbound.protection.outlook.com [104.47.33.52])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2vqv8akt3y-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 21 Oct 2019 10:06:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=PxAwjfXbsKsGNjUmf/Xc+cAx3NiIn2unxqFA3Yfc0KZt8Yzl36OJ440YDn/g5pJY1vSPD7f9kWU4rloM6Pb0Pqns5uFeIYQP7RzJ6koeEk65Ro1PXWs1Dj2aqYIHStoXnmRSp9qiUnKGGOAo9q3FVvGanVKbVlPc3v1WGhHpnq4ipUt+OHSVMlBP3ggyyOHlGY0sV/YXimQl6/u5X2khVJdLQQfVjyyR3mNjWTVuGyEKvL0EJCzliYEROrR+f6ICHbVMzVK+RPL/sybRvyRzQyOj62Qh7d3g1OwTU9rKvsUin/FF8xHkSWfFub22bl/FMDVoNHqHxQ7zywwWnB4eJg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=84bgcNDK4gm60A+wcL4TAAWpl70oA/CilePQmCoZguE=;
+ b=Gs3WDnp/w4wF/2Xirm0thskCiFzOIhSvBgl+lJnls3ewF0Qeyw0trtKPYYFc3rUEAZb2SFbIhTgnmMu2rGjlJvscUcxGOS5svzDKgBanD4H2d1bSQHQl/NBuMZtrX2tAjavMbYjZe+SLwslEUox265CVEbT0uS9kznP3fl59uPKh3a0/tlkLxr7suln1Ap6K5RUIEhSufihzoYxsTrKA5DMJxBbRMqNcvRr3RWCdqY0zoD6lOn1hKGLxHZurREz1Gp9CPxulJePwU+5/5gqLF+cozwMi7GxvIwUotp5bAEqYEAKBIxnugCcdjyxDQO97c05QNuKOq9oTsbFdJzxBvQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9YtUi7K3waaV8CCBvUHH0JCwm/sq5iQANn0TbVheL5U=;
-        b=lqfIWVVF/KccYunqBMQKJWtWfT2Z+bSPEzxCVzgRlYJSe96/BErSlB5jSPyClRqmi1
-         wpImdxlN8HDa2arRCe/hi6tsA5VCrB0J2zCPX8t2nq4pmD3m5ucUo26DAU39YrtntCMb
-         reDG7jarejYbeGceenbjQqWR+jSSFC0MBq+xvLGIrKbfvciQLpjz7ujdRsB9CiWENfQg
-         mFZwKO3UO1FvlNTjUB4z2miojcJ66EfgqfGgCJ2nEgbH33qsVxuZJ8a+uUiynXZiEYEa
-         u4jZLpzS1+nHuV351SoOgfCTsJ3M8TuUOLkE0CDWLIwBQuDflVkLQVszOPxof7WTwFS3
-         FuYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9YtUi7K3waaV8CCBvUHH0JCwm/sq5iQANn0TbVheL5U=;
-        b=K7kinMwJwwU8nZO8FBY0i2wT44Jy2Q7X3hSAwERkYjKEN1+A5ivIRTl4BHEdWmLRjr
-         HivAPYAn1qIPXidj/kpJHHkuKY0cAW7tlrONFOsXjRzD4kzhp7qZJojR6dHQAsIWMiln
-         5lcdCS7cYUSRR4pak/A/bWcroDW3foqvKo9g7CYYlgkula8tVva3bkBeVm2AixWSj0ge
-         1ROqwx4bqj3nyL2/LL1I4U6xLvCSc9MLFCSF4e9JJW6R8g6gR2LmAWAwk8/M9kIGHGVl
-         Osehihr5w3Fao5DmaTl/BAfU6WpDxtAi+v4LhI/010me+X+YHHqgU7OwoWj1UA5DIP2v
-         B5dw==
-X-Gm-Message-State: APjAAAVgyFiinVyiPC2JUgu5mHlOjXBWLfCd3HD2TTg5M7nOxFwXE6P6
-        G8MLyYn7rlp3lCZA3Wg2F9zXb4CjKcKU1Y5Hw3Q=
-X-Google-Smtp-Source: APXvYqw+jd7rZZbK1vJ/nAoQk5MT+Q5ueuQdrwrc7pBCEHmL3uTsIDYf2Vnugc9uJ0Ov+9crMCMJtM3/Dk+XLf7Yc08=
-X-Received: by 2002:a02:c9cb:: with SMTP id c11mr7117107jap.81.1571665041604;
- Mon, 21 Oct 2019 06:37:21 -0700 (PDT)
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=84bgcNDK4gm60A+wcL4TAAWpl70oA/CilePQmCoZguE=;
+ b=W5Wz9/PaXVMmLgahgNQjcQ7/AJLKLwTpqo0GYpri/Zr0dtXch8Ad0/yYFG59kxNG92QYy+MyZXw0+ZDoW8+n+8rrcb5EzgDTnqSS8RSZvQevuTrYwVa/fGR/4R+FjaHmyF5l51LpeCjusV4ICSw6ulJQY0d+4PHwT/VsmmhacsU=
+Received: from MWHPR03CA0017.namprd03.prod.outlook.com (2603:10b6:300:117::27)
+ by CY4PR03MB2695.namprd03.prod.outlook.com (2603:10b6:903:76::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2367.20; Mon, 21 Oct
+ 2019 14:06:28 +0000
+Received: from CY1NAM02FT051.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::200) by MWHPR03CA0017.outlook.office365.com
+ (2603:10b6:300:117::27) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2367.21 via Frontend
+ Transport; Mon, 21 Oct 2019 14:06:28 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT051.mail.protection.outlook.com (10.152.74.148) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2367.14
+ via Frontend Transport; Mon, 21 Oct 2019 14:06:27 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x9LE6KMr013315
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Mon, 21 Oct 2019 07:06:20 -0700
+Received: from ben-Latitude-E6540.ad.analog.com (10.48.65.163) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Mon, 21 Oct 2019 10:06:26 -0400
+From:   Beniamin Bia <beniamin.bia@analog.com>
+To:     <jic23@kernel.org>
+CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <gregkh@linuxfoundation.org>, <linux-iio@vger.kernel.org>,
+        <devel@driverdev.osuosl.org>, <linux-kernel@vger.kernel.org>,
+        <mark.rutland@arm.com>, <robh+dt@kernel.org>,
+        <devicetree@vger.kernel.org>, <paulmck@linux.ibm.com>,
+        <mchehab+samsung@kernel.org>, <linus.walleij@linaro.org>,
+        <nicolas.ferre@microchip.com>, <biabeniamin@outlook.com>,
+        Beniamin Bia <beniamin.bia@analog.com>
+Subject: [PATCH 4/4] MAINTAINERS: add entry for AD7091R5 driver
+Date:   Mon, 21 Oct 2019 20:06:08 +0300
+Message-ID: <20191021170608.26412-4-beniamin.bia@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191021170608.26412-1-beniamin.bia@analog.com>
+References: <20191021170608.26412-1-beniamin.bia@analog.com>
 MIME-Version: 1.0
-References: <cover.1569321085.git.gupt21@gmail.com> <20191005150838.542b0219@archlinux>
-In-Reply-To: <20191005150838.542b0219@archlinux>
-From:   rishi gupta <gupt21@gmail.com>
-Date:   Mon, 21 Oct 2019 19:07:10 +0530
-Message-ID: <CALUj-gsKph=5V52=aV+dsgKaELinHGEPBe+E+QGZF+8-CnCPTw@mail.gmail.com>
-Subject: Re: [RESEND PATCH v2 0/3] Add driver for veml6030 ambient light sensor
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     knaack.h@gmx.de, lars@metafoo.de,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        gregkh@linuxfoundation.org, tglx@linutronix.de,
-        allison@lohutok.net, alexios.zavras@intel.com, angus@akkea.ca,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        hslester96@gmail.com, wsa+renesas@sang-engineering.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(136003)(396003)(346002)(189003)(199004)(106002)(316002)(8936002)(48376002)(8676002)(246002)(2906002)(5660300002)(4744005)(76176011)(26005)(50466002)(356004)(6666004)(7696005)(51416003)(1076003)(11346002)(86362001)(446003)(44832011)(54906003)(186003)(336012)(50226002)(16586007)(426003)(2616005)(126002)(476003)(486006)(6916009)(4326008)(6306002)(107886003)(47776003)(36756003)(70586007)(70206006)(7636002)(966005)(2351001)(7416002)(478600001)(305945005);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB2695;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: d2a81c24-8299-4bdc-bc19-08d7562fddaa
+X-MS-TrafficTypeDiagnostic: CY4PR03MB2695:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <CY4PR03MB26958F2D106A4720AC278B4FF0690@CY4PR03MB2695.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
+X-Forefront-PRVS: 0197AFBD92
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: JthcmkJu5xOaIt69rjiqgnBHzmqWOswsrTN2oi8gcobX5k9RzVgLe5e8CoFANhBJVb4WL46ZzzmJv6yvRmmmAdJ8Tivo0LWFBAkR46tCddTeHUPtA9Q0sVNqJ2N4b43g3MkdRCWmfyNRoWS8gEYysYcCreV+MdBoIMbLZEJpGs0FvJ8Sc7h/V1P86smYKjQrHTBsWNPd5e+G0mcR9vMnZ1WbT9n/67v6LPd3j9RfWQqMEQCbO1ut0bZSVeY2tzUpJmy9sCeSp34z68PTSXcn2W5Q19A0Neolntsp/vsAWkzWfVXHCc9k3Ti4cfYLnjRSXI+/THaZc4ONR1WKIExXzHdH/Rx5h31PUUaCBWN7NS6d6nmwYW3uUYSpi6c/54uOim6lywXqy4dhq7AP7tX25TvXgB/KqswZTJ95vjEEIFKqd/S1kyJ20ZvEYPdOnRf8k1x+JN60LKm+FvIoTEwrmq68C4MYpJKzBEdOSMOAKAs=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Oct 2019 14:06:27.7219
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: d2a81c24-8299-4bdc-bc19-08d7562fddaa
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB2695
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-21_04:2019-10-21,2019-10-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ spamscore=0 bulkscore=0 clxscore=1015 mlxlogscore=999 priorityscore=1501
+ phishscore=0 adultscore=0 suspectscore=1 lowpriorityscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910210133
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-My email server returned error so I was confused whether all patches
-reached to mailing list intact or not, that is why I resent.
-Regards,
-Rishi
+Add Beniamin Bia as a maintainer for AD7091R5 ADC.
 
-On Sat, Oct 5, 2019 at 7:38 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Tue, 24 Sep 2019 16:21:55 +0530
-> Rishi Gupta <gupt21@gmail.com> wrote:
->
-> When doing a RESEND as opposed to a new version, please say
-> why.
->
-> > The veml6030 is an ambient light sensor from vishay and
-> > is a different hardware from an existing hardware for which
-> > driver currently exist, therefore this driver submission.
-> >
-> > * All features; ALS, white channel & power management is
-> >   supported.
-> >
-> > * All configurable parameters are supported through standard
-> >   iio sysfs entries. User space can get valid values of any
-> >   parameter (xx_available) and then can write to appropriate
-> >   sysfs entry.
-> >
-> > * User space can get ALS & White channel readings through RAW
-> >   IIO interface.
-> >
-> > * IIO events are used to notify application whenever threshold
-> >   is crossed. This uses IRQ pin of veml6030.
-> >
-> > * Some registers in veml6030 are read only. For these registers
-> >   read callback returns error to user space.
-> >
-> > There are 3 patches for this submission:
-> > [PATCH 1/3] iio: light: add driver for veml6030 ambient light sensor
-> > [PATCH 2/3] dt-bindings: iio: light: add veml6030 ALS bindings
-> > [PATCH 3/3] iio: documentation: light: Add veml6030 sysfs documentation
-> >
-> > Rishi Gupta (3):
-> >   iio: light: add driver for veml6030 ambient light sensor
-> >   dt-bindings: iio: light: add veml6030 ALS bindings
-> >   iio: documentation: light: Add veml6030 sysfs documentation
-> >
-> >  .../ABI/testing/sysfs-bus-iio-light-veml6030       |  49 ++
-> >  .../devicetree/bindings/iio/light/veml6030.yaml    |  62 ++
-> >  drivers/iio/light/Kconfig                          |  11 +
-> >  drivers/iio/light/Makefile                         |   1 +
-> >  drivers/iio/light/veml6030.c                       | 633 +++++++++++++++++++++
-> >  5 files changed, 756 insertions(+)
-> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-veml6030
-> >  create mode 100644 Documentation/devicetree/bindings/iio/light/veml6030.yaml
-> >  create mode 100644 drivers/iio/light/veml6030.c
-> >
->
+Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+---
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2e01d0f0b0e5..7f1e4b88688f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -893,6 +893,14 @@ S:	Supported
+ F:	drivers/iio/dac/ad5758.c
+ F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+ 
++ANALOG DEVICES INC AD7091R5 DRIVER
++M:	Beniamin Bia <beniamin.bia@analog.com>
++L:	linux-iio@vger.kernel.org
++W:	http://ez.analog.com/community/linux-device-drivers
++S:	Supported
++F:	drivers/iio/adc/ad7091r5.c
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
++
+ ANALOG DEVICES INC AD7124 DRIVER
+ M:	Stefan Popa <stefan.popa@analog.com>
+ L:	linux-iio@vger.kernel.org
+-- 
+2.17.1
+
