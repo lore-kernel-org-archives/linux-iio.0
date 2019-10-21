@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6F23CA9EB9
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05EB3CA9EB5
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A69E2089C
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C57DF2089C
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="bjYbwrM0"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="VESvtTcv"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727361AbfJUFyk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Oct 2019 01:54:40 -0400
-Received: from mail-pf1-f193.google.com ([209.85.210.193]:37910 "EHLO
-        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727356AbfJUFyj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 01:54:39 -0400
-Received: by mail-pf1-f193.google.com with SMTP id h195so7692945pfe.5
-        for <linux-iio@vger.kernel.org>; Sun, 20 Oct 2019 22:54:39 -0700 (PDT)
+        id S1727339AbfJUFyi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Oct 2019 01:54:38 -0400
+Received: from mail-pl1-f196.google.com ([209.85.214.196]:33601 "EHLO
+        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727329AbfJUFyi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 01:54:38 -0400
+Received: by mail-pl1-f196.google.com with SMTP id d22so6084022pls.0
+        for <linux-iio@vger.kernel.org>; Sun, 20 Oct 2019 22:54:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=y8VvIDEUzgzOMc6xpWZ3lCTYzI69DQPFZmVj3lTRNRw=;
-        b=bjYbwrM0vAFomwWAxnewGnzfPMxYI7qz90WNYhoErZZ2KaPma2q9lAVzN6YR4esmfq
-         8OhInS6RGIdaSNObOM4//0A3vpF2PMLse2i6Lzt1sQQfW87868lyaZreKtHwGjL0lDdm
-         yEJPWUqk8vUQDWcosvYF0+a6oIMBtCgJ2Cd+0=
+        bh=0VdDH0oiiJrSkc0zfZlLZPe7HDYCACJthi66MKbNDC8=;
+        b=VESvtTcv2DeGmwubIKZAZZMJFC7evaOHf35UgBrRK8OvMQRAo1EAb5N5RbyD6UhdN0
+         ccHnOmwKLdm28vxymnPaIYWEKGNZiuVT85evQhKayVtpCcFs4vOjk8zxNzI4GBUDbsOv
+         ldCTrsfkM3uEq5Ewar1DxCH0WjdlkX0nqXpvo=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=y8VvIDEUzgzOMc6xpWZ3lCTYzI69DQPFZmVj3lTRNRw=;
-        b=XxgYQCDtc7s5NgjUABrWd4ryV3m0azRXeNbA/Uk+4uvI+MOewG3y5nn1BfP+/JWnZ0
-         ETl7LhR2Q/aFsSd2fT30hFIU/oEHmyHITcWsz1aKWQ7LKeqJXQhxG94jVdnpO2ZClqMa
-         OJLwTDULVZgZsLuZgj0ul19g+iDeGNkaMrQ7/X/0BN6bYPG9lUXzuts8UQQd9XKkCkDL
-         lIs3KYqXspC3wwojzmOBurgkYkciKLHAyfIcwkO0RO1faBHer6H4cW2iPygmmZkLWrrq
-         AVSCqIWcp0oGot5kqpCXY1DOslDXUkJ4/gotoRiCykttoCca7maRENeJ8Q0lM+rp4eAA
-         Z54g==
-X-Gm-Message-State: APjAAAWxgVs/v1cOOA2dbyNVSN2giXHeF6BjxOonf5sOcE+C8zau2zgq
-        ESWPE+YeT9vn834YYyoDPzinDA==
-X-Google-Smtp-Source: APXvYqztHNMff55mPoiBI7Lm86tfSoxkcF39JDu/xF5Aw5WiwPe4IYx6LTEp4kiXfqjjS0BaQEywDg==
-X-Received: by 2002:a63:6d0:: with SMTP id 199mr23068156pgg.96.1571637278614;
-        Sun, 20 Oct 2019 22:54:38 -0700 (PDT)
+        bh=0VdDH0oiiJrSkc0zfZlLZPe7HDYCACJthi66MKbNDC8=;
+        b=bdR/mVlgeZjPzuu5t1tAylRz3I/7wz+tMul7glgYZ3F209luABPwzlOF1YO6zb/dkA
+         9GzzK5dMhj/X94PGQtYJY6Iw335sOLKpOjyRPc4XUeG55ryt9Ya4QS+FhwXFag9h6dRm
+         qmU3xBzdJiHPxwBD181JQ2yzNTUIxTawAsv6RV0CmITamtEnKtuywST3EgMWCYWkvjz0
+         Yup84TopzjY8USk1VrVJihJX0zVxqQwJx2fieMBJ7OPyysXrWIAnbfG6o+8G8Emhk0i7
+         f+jt9YC3I1PrRzc7HAV1dJgoglPimL3bAQETfAH/naDxS23Ez8N4rd7OxcoTETabOujD
+         Weuw==
+X-Gm-Message-State: APjAAAUVllpAOoUaYbBzKZuA+4zfc84O7OKmGhzCqE+SQ/7QRCo+R+x5
+        MPeQcyEkxnVAXLT6EtvCi+8V3A==
+X-Google-Smtp-Source: APXvYqxD6A6wu+IXtcNCvi1hGS7KVWrz3NngNRwVUv6hnug1LqXcpLl2Xr8zexZuGhHz/NvlNIbSwg==
+X-Received: by 2002:a17:902:ab82:: with SMTP id f2mr23379055plr.39.1571637275558;
+        Sun, 20 Oct 2019 22:54:35 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id h66sm22633572pjb.0.2019.10.20.22.54.37
+        by smtp.gmail.com with ESMTPSA id c64sm16902207pfc.19.2019.10.20.22.54.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Oct 2019 22:54:37 -0700 (PDT)
+        Sun, 20 Oct 2019 22:54:35 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     briannorris@chromium.org, jic23@kernel.org, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
@@ -59,9 +59,9 @@ To:     briannorris@chromium.org, jic23@kernel.org, knaack.h@gmx.de,
         fabien.lahoudere@collabora.com
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 17/18] iio: cros_ec: Report hwfifo_watermark_max
-Date:   Sun, 20 Oct 2019 22:54:02 -0700
-Message-Id: <20191021055403.67849-18-gwendal@chromium.org>
+Subject: [PATCH v2 15/18] iio: cros_ec: Remove pm function
+Date:   Sun, 20 Oct 2019 22:54:00 -0700
+Message-Id: <20191021055403.67849-16-gwendal@chromium.org>
 X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
 In-Reply-To: <20191021055403.67849-1-gwendal@chromium.org>
 References: <20191021055403.67849-1-gwendal@chromium.org>
@@ -72,115 +72,138 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Report the maximum amount of sample the EC can hold.
-This is not tunable, but can be useful for application to find out the
-maximum amount of time it can sleep when hwfifo_timeout is set to a
-large number.
+Since cros_ec_sensorhub is shutting down the FIFO when the device
+suspends, no need to slow down the EC sampling period rate.
+It was necesseary to do that before command CMD_FIFO_INT_ENABLE was
+introduced, but now all supported chromebooks have it.
 
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
-Changes in v2:
-- Remove double lines, add line before return for visibility.
+New in v2.
 
- .../cros_ec_sensors/cros_ec_sensors_core.c    | 34 +++++++++++++++++--
- .../linux/iio/common/cros_ec_sensors_core.h   |  3 ++
- 2 files changed, 35 insertions(+), 2 deletions(-)
+ .../cros_ec_sensors/cros_ec_lid_angle.c       |  1 -
+ .../common/cros_ec_sensors/cros_ec_sensors.c  |  1 -
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 47 -------------------
+ drivers/iio/light/cros_ec_light_prox.c        |  1 -
+ .../linux/iio/common/cros_ec_sensors_core.h   |  5 --
+ 5 files changed, 55 deletions(-)
 
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+index e30a59fcf0f95..af801e203623e 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+@@ -127,7 +127,6 @@ MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
+ static struct platform_driver cros_ec_lid_angle_platform_driver = {
+ 	.driver = {
+ 		.name	= DRV_NAME,
+-		.pm	= &cros_ec_sensors_pm_ops,
+ 	},
+ 	.probe		= cros_ec_lid_angle_probe,
+ 	.id_table	= cros_ec_lid_angle_ids,
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index 9e7903ff99f80..2eb4bb254fbde 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -314,7 +314,6 @@ MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+ static struct platform_driver cros_ec_sensors_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-sensors",
+-		.pm	= &cros_ec_sensors_pm_ops,
+ 	},
+ 	.probe		= cros_ec_sensors_probe,
+ 	.id_table	= cros_ec_sensors_ids,
 diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index 92128c67a166e..f50e239f9a1e9 100644
+index 3d2e17093c75a..e89c355bb4b35 100644
 --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
 +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -23,6 +23,12 @@
- #include <linux/platform_data/cros_ec_sensorhub.h>
- #include <linux/platform_device.h>
+@@ -716,52 +716,5 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
  
-+/*
-+ * Hard coded to the first device to support sensor fifo.  The EC has a 2048
-+ * byte fifo and will trigger an interrupt when fifo is 2/3 full.
-+ */
-+#define CROS_EC_FIFO_SIZE (2048 * 2 / 3)
-+
- static char *cros_ec_loc[] = {
- 	[MOTIONSENSE_LOC_BASE] = "base",
- 	[MOTIONSENSE_LOC_LID] = "lid",
-@@ -56,8 +62,15 @@ static int cros_ec_get_host_cmd_version_mask(struct cros_ec_device *ec_dev,
- 
- static void get_default_min_max_freq(enum motionsensor_type type,
- 				     u32 *min_freq,
--				     u32 *max_freq)
-+				     u32 *max_freq,
-+				     u32 *max_fifo_events)
- {
-+	/*
-+	 * We don't know fifo size, set to size previously used by older
-+	 * hardware.
-+	 */
-+	*max_fifo_events = CROS_EC_FIFO_SIZE;
-+
- 	switch (type) {
- 	case MOTIONSENSE_TYPE_ACCEL:
- 	case MOTIONSENSE_TYPE_GYRO:
-@@ -150,8 +163,22 @@ static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
- 		       cros_ec_sensor_get_report_latency,
- 		       cros_ec_sensor_set_report_latency, 0);
- 
-+static ssize_t hwfifo_watermark_max_show(
-+		struct device *dev,
-+		struct device_attribute *attr,
-+		char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n", st->fifo_max_event_count);
-+}
-+
-+static IIO_DEVICE_ATTR_RO(hwfifo_watermark_max, 0);
-+
- const struct attribute *cros_ec_sensor_fifo_attributes[] = {
- 	&iio_dev_attr_hwfifo_timeout.dev_attr.attr,
-+	&iio_dev_attr_hwfifo_watermark_max.dev_attr.attr,
- 	NULL,
- };
- EXPORT_SYMBOL_GPL(cros_ec_sensor_fifo_attributes);
-@@ -281,12 +308,15 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
- 		if (state->msg->version < 3) {
- 			get_default_min_max_freq(state->resp->info.type,
- 						 &state->frequencies[1],
--						 &state->frequencies[2]);
-+						 &state->frequencies[2],
-+						 &state->fifo_max_event_count);
- 		} else {
- 			state->frequencies[1] =
- 			    state->resp->info_3.min_frequency;
- 			state->frequencies[2] =
- 			    state->resp->info_3.max_frequency;
-+			state->fifo_max_event_count =
-+			    state->resp->info_3.fifo_max_event_count;
- 		}
- 
- 		ret = devm_iio_triggered_buffer_setup(
+-static int __maybe_unused cros_ec_sensors_prepare(struct device *dev)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+-
+-	if (st->curr_sampl_freq == 0)
+-		return 0;
+-
+-	/*
+-	 * If the sensors are sampled at high frequency, we will not be able to
+-	 * sleep. Set sampling to a long period if necessary.
+-	 */
+-	if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+-		mutex_lock(&st->cmd_lock);
+-		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+-		st->param.ec_rate.data = CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY;
+-		cros_ec_motion_send_host_cmd(st, 0);
+-		mutex_unlock(&st->cmd_lock);
+-	}
+-	return 0;
+-}
+-
+-static void __maybe_unused cros_ec_sensors_complete(struct device *dev)
+-{
+-	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+-	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+-
+-	if (st->curr_sampl_freq == 0)
+-		return;
+-
+-	if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+-		mutex_lock(&st->cmd_lock);
+-		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+-		st->param.ec_rate.data = st->curr_sampl_freq;
+-		cros_ec_motion_send_host_cmd(st, 0);
+-		mutex_unlock(&st->cmd_lock);
+-	}
+-}
+-
+-const struct dev_pm_ops cros_ec_sensors_pm_ops = {
+-#ifdef CONFIG_PM_SLEEP
+-	.prepare = cros_ec_sensors_prepare,
+-	.complete = cros_ec_sensors_complete
+-#endif
+-};
+-EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
+-
+ MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index da40c38370965..6bac02cdd898a 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -255,7 +255,6 @@ MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
+ static struct platform_driver cros_ec_light_prox_platform_driver = {
+ 	.driver = {
+ 		.name	= "cros-ec-light-prox",
+-		.pm	= &cros_ec_sensors_pm_ops,
+ 	},
+ 	.probe		= cros_ec_light_prox_probe,
+ 	.id_table	= cros_ec_light_prox_ids,
 diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
-index 387ca9e61dac8..4df3abd151fbf 100644
+index b4eb3790cde11..db3da7ffcc376 100644
 --- a/include/linux/iio/common/cros_ec_sensors_core.h
 +++ b/include/linux/iio/common/cros_ec_sensors_core.h
-@@ -51,6 +51,7 @@ typedef irqreturn_t (*cros_ec_sensors_capture_t)(int irq, void *p);
-  *				the timestamp. The timestamp is always last and
-  *				is always 8-byte aligned.
-  * @read_ec_sensors_data:	function used for accessing sensors values
-+ * @fifo_max_event_count:	Size of the EC sensor FIFO
+@@ -30,9 +30,6 @@ enum {
   */
- struct cros_ec_sensors_core_state {
- 	struct cros_ec_device *ec;
-@@ -73,6 +74,8 @@ struct cros_ec_sensors_core_state {
- 	int (*read_ec_sensors_data)(struct iio_dev *indio_dev,
- 				    unsigned long scan_mask, s16 *data);
+ #define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
  
-+	u32 fifo_max_event_count;
-+
- 	/* Table of known available frequencies : 0, Min and Max in mHz */
- 	int frequencies[3];
- };
+-/* Minimum sampling period to use when device is suspending */
+-#define CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY 1000  /* 1 second */
+-
+ typedef irqreturn_t (*cros_ec_sensors_capture_t)(int irq, void *p);
+ 
+ 
+@@ -119,8 +116,6 @@ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ 			       struct iio_chan_spec const *chan,
+ 			       int val, int val2, long mask);
+ 
+-extern const struct dev_pm_ops cros_ec_sensors_pm_ops;
+-
+ /* List of extended channel specification for all sensors */
+ extern const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[];
+ 
 -- 
 2.23.0.866.gb869b98d4c-goog
 
