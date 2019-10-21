@@ -4,53 +4,53 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA978CA9EB5
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C26D6CA9EB5
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AA5F820700
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C84120700
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Oct 2019 05:54:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="dy0NE2JV"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="PfgZUBDG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727294AbfJUFya (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Oct 2019 01:54:30 -0400
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37047 "EHLO
+        id S1727318AbfJUFyf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Oct 2019 01:54:35 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:40474 "EHLO
         mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727287AbfJUFy2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 01:54:28 -0400
-Received: by mail-pg1-f193.google.com with SMTP id p1so7079606pgi.4
-        for <linux-iio@vger.kernel.org>; Sun, 20 Oct 2019 22:54:26 -0700 (PDT)
+        with ESMTP id S1727310AbfJUFye (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Oct 2019 01:54:34 -0400
+Received: by mail-pg1-f193.google.com with SMTP id 15so1720454pgt.7
+        for <linux-iio@vger.kernel.org>; Sun, 20 Oct 2019 22:54:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=agTpXvCTTB9wh7DBugiS1SMOpvplNNTL1004RlqbTps=;
-        b=dy0NE2JV2NoCiDdxCroYxnRuBoAKSlSsMWVmpKZ9481xU7i8pVhw4NYGcBY5eSKVmn
-         rY5u70XMTEtwAB98UY8IMLRrrfx/MpkH3r11oJntxhbUT3FO4qALKi8finJbe3s7nKxy
-         4Q/krUxvl4JGy+F95QjajqGoihNkBgqHFo6Vs=
+        bh=WJtIyWnycVeHZNXYT1yBsr9fxhf3liFPRNbszaXJ+U8=;
+        b=PfgZUBDGXEdQVUaesV452ZrXTiTj8rPHCiR7ynknCTpxmfOhPNNUT1DnEx+XLEIwkd
+         gj3tQOGPHzVNW5s4Su9svyOfvC2eF0KKOgTZCl6wDMOeB2xQaGInVdrgELyjK0cg1jUA
+         xLI1jZG2iejrKwHEpS7z0/LmlztrsGmkZt1XQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=agTpXvCTTB9wh7DBugiS1SMOpvplNNTL1004RlqbTps=;
-        b=izJ3o+JvJ2i146nzVs5zEPfzbavqxkU/QvBgc9xKPdqrU9yx1s3BMOuagNSHUEUm0O
-         W1w30H5cn0PSsq3fRWDtoU/2O8yjywZM4YXUmHwOFh5Eju/hDkeeolT/zSn+uRjtmmHE
-         uyBjounwpZaLo2hS0WiSKfdn7CNgDxT7fL9VNpgXIgQU0ONyEH6A6mK8JiAOAQiuPhTE
-         6fS6SdYUvO92/9XBz/WfwfDAYy60iKgxvOxrijodKeWKBn1CT5bcNZx9+vYeoNJKAPtu
-         Wz31JzRCZB/FPAydaamffOy7pObzlLwOx6FFGSPUJwa76S2YeVc93Vak7dUUBntGTK3S
-         9eSQ==
-X-Gm-Message-State: APjAAAXYTYj45vu1s8i3yIKnGmCgzprOGB8LntVaYyzjBd6ITk0fgj9E
-        1bjj8+mPjh1/OvuwKsYieJ4Paw==
-X-Google-Smtp-Source: APXvYqyG8NF0G6wNd0iIRzjhDcom/LjD5zyhDumJ/RKSURlt36qy6yWJgAGhMn4cjRcy2Qss5VhtRQ==
-X-Received: by 2002:a63:3c47:: with SMTP id i7mr19600231pgn.237.1571637266080;
-        Sun, 20 Oct 2019 22:54:26 -0700 (PDT)
+        bh=WJtIyWnycVeHZNXYT1yBsr9fxhf3liFPRNbszaXJ+U8=;
+        b=ixS66jJO8CigtBQP4gmfzbq1FvRx2q/8UwJnpmNtsGQVf3RLDBHXzq5mZbmOOZ0Vwj
+         oFrDp5rhYsX3ZhA8AygbCiCBWEFqF8eGb9GP+we1F5dKMcPIGqgXZfjTZAUxhI8KLW7U
+         ijTqueLZSLCZKod08NkDdd5oA8VnWoE+LLX3t5bR9vtQh54G7URa4ekril7EeTOUMMuB
+         sh9CFVYZ0rRy05I1GlvM9TmBJO/54QAv2ntNSGn+aWJvXd43Ns0qN4FqIBkLa3JyX7HM
+         W0PaSoRpn/bU3xA68VbelSVM24iWQl+08dFNxJA2VTrZmDAp0vsALsM+7xdax4CnM/JQ
+         QE3w==
+X-Gm-Message-State: APjAAAVfAp07thYZFkW3vEKFGK75dBpOznbHITsv95xOv9NFViA3dwGr
+        gI4R2PISRCwJnUTMiKPtIwqcGQ==
+X-Google-Smtp-Source: APXvYqzBZpBeN4KR7DhteXwlvFKoFX5C8EvUuCIe122bIvQbeF64cZPGF6CWGOGZTK/joEl0Gh4IzQ==
+X-Received: by 2002:a17:90a:8c02:: with SMTP id a2mr26573846pjo.79.1571637272765;
+        Sun, 20 Oct 2019 22:54:32 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id s14sm13477263pfe.52.2019.10.20.22.54.25
+        by smtp.gmail.com with ESMTPSA id u3sm13232365pfn.134.2019.10.20.22.54.31
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Oct 2019 22:54:25 -0700 (PDT)
+        Sun, 20 Oct 2019 22:54:31 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     briannorris@chromium.org, jic23@kernel.org, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
@@ -59,9 +59,9 @@ To:     briannorris@chromium.org, jic23@kernel.org, knaack.h@gmx.de,
         fabien.lahoudere@collabora.com
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 09/18] Revert "Input: cros_ec_keyb: mask out extra flags in event_type"
-Date:   Sun, 20 Oct 2019 22:53:54 -0700
-Message-Id: <20191021055403.67849-10-gwendal@chromium.org>
+Subject: [PATCH v2 13/18] iio: cros_ec: Move function description to .c file
+Date:   Sun, 20 Oct 2019 22:53:58 -0700
+Message-Id: <20191021055403.67849-14-gwendal@chromium.org>
 X-Mailer: git-send-email 2.23.0.866.gb869b98d4c-goog
 In-Reply-To: <20191021055403.67849-1-gwendal@chromium.org>
 References: <20191021055403.67849-1-gwendal@chromium.org>
@@ -72,32 +72,256 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This reverts commit d096aa3eb6045a6a475a0239f3471c59eedf3d61.
-
-This patch is not needed anymore since we clear EC_MKBP_HAS_MORE_EVENTS
-flag before calling the notifiers in patch
-"9d9518f5b52a (platform: chrome: cros_ec: handle MKBP more events flag)"
+To prevent comment rot, move function description to
+cros_ec_sensors_core.c.
 
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
-New to v2.
+New in v2.
 
- drivers/input/keyboard/cros_ec_keyb.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 69 ++++++++++++++++
+ .../linux/iio/common/cros_ec_sensors_core.h   | 80 -------------------
+ 2 files changed, 69 insertions(+), 80 deletions(-)
 
-diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
-index a29e81fdf1861..2b71c5a51f907 100644
---- a/drivers/input/keyboard/cros_ec_keyb.c
-+++ b/drivers/input/keyboard/cros_ec_keyb.c
-@@ -237,7 +237,7 @@ static int cros_ec_keyb_work(struct notifier_block *nb,
- 	if (queued_during_suspend && !device_may_wakeup(ckdev->dev))
- 		return NOTIFY_OK;
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index 81a7f692de2f3..4acb8b7310d43 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -83,6 +83,14 @@ static void get_default_min_max_freq(enum motionsensor_type type,
+ 	}
+ }
  
--	switch (ckdev->ec->event_data.event_type & EC_MKBP_EVENT_TYPE_MASK) {
-+	switch (ckdev->ec->event_data.event_type) {
- 	case EC_MKBP_EVENT_KEY_MATRIX:
- 		pm_wakeup_event(ckdev->dev, 0);
++/**
++ * cros_ec_sensors_core_init() - basic initialization of the core structure
++ * @pdev:		platform device created for the sensors
++ * @indio_dev:		iio device structure of the device
++ * @physical_device:	true if the device refers to a physical device
++ *
++ * Return: 0 on success, -errno on failure.
++ */
+ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev,
+ 			      bool physical_device)
+@@ -160,6 +168,16 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
  
++/**
++ * cros_ec_motion_send_host_cmd() - send motion sense host command
++ * @st:		pointer to state information for device
++ * @opt_length:	optional length to reduce the response size, useful on the data
++ *		path. Otherwise, the maximal allowed response size is used
++ *
++ * When called, the sub-command is assumed to be set in param->cmd.
++ *
++ * Return: 0 on success, -errno on failure.
++ */
+ int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *state,
+ 				 u16 opt_length)
+ {
+@@ -422,6 +440,14 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_read_lpc);
+ 
++/**
++ * cros_ec_sensors_read_cmd() - retrieve data using the EC command protocol
++ * @indio_dev:	pointer to IIO device
++ * @scan_mask:	bitmap of the sensor indices to scan
++ * @data:	location to store data
++ *
++ * Return: 0 on success, -errno on failure.
++ */
+ int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev,
+ 			     unsigned long scan_mask, s16 *data)
+ {
+@@ -446,6 +472,18 @@ int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_read_cmd);
+ 
++/**
++ * cros_ec_sensors_capture() - the trigger handler function
++ * @irq:	the interrupt number.
++ * @p:		a pointer to the poll function.
++ *
++ * On a trigger event occurring, if the pollfunc is attached then this
++ * handler is called as a threaded interrupt (and hence may sleep). It
++ * is responsible for grabbing data from the device and pushing it into
++ * the associated buffer.
++ *
++ * Return: IRQ_HANDLED
++ */
+ irqreturn_t cros_ec_sensors_capture(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -481,6 +519,16 @@ irqreturn_t cros_ec_sensors_capture(int irq, void *p)
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_capture);
+ 
++/**
++ * cros_ec_sensors_core_read() - function to request a value from the sensor
++ * @st:		pointer to state information for device
++ * @chan:	channel specification structure table
++ * @val:	will contain one element making up the returned value
++ * @val2:	will contain another element making up the returned value
++ * @mask:	specifies which values to be requested
++ *
++ * Return:	the type of value returned by the device
++ */
+ int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+ 			  struct iio_chan_spec const *chan,
+ 			  int *val, int *val2, long mask)
+@@ -521,6 +569,17 @@ int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read);
+ 
++/**
++ * cros_ec_sensors_core_read_avail() - get available values
++ * @indio_dev:		pointer to state information for device
++ * @chan:	channel specification structure table
++ * @vals:	list of available values
++ * @type:	type of data returned
++ * @length:	number of data returned in the array
++ * @mask:	specifies which values to be requested
++ *
++ * Return:	an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST
++ */
+ int cros_ec_sensors_core_read_avail(struct iio_dev *indio_dev,
+ 				    struct iio_chan_spec const *chan,
+ 				    const int **vals,
+@@ -542,6 +601,16 @@ int cros_ec_sensors_core_read_avail(struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read_avail);
+ 
++/**
++ * cros_ec_sensors_core_write() - function to write a value to the sensor
++ * @st:		pointer to state information for device
++ * @chan:	channel specification structure table
++ * @val:	first part of value to write
++ * @val2:	second part of value to write
++ * @mask:	specifies which values to write
++ *
++ * Return:	the type of value returned by the device
++ */
+ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ 			       struct iio_chan_spec const *chan,
+ 			       int val, int val2, long mask)
+diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
+index bb331e6356a9c..0af918978f975 100644
+--- a/include/linux/iio/common/cros_ec_sensors_core.h
++++ b/include/linux/iio/common/cros_ec_sensors_core.h
+@@ -79,95 +79,25 @@ struct cros_ec_sensors_core_state {
+ 	int frequencies[3];
+ };
+ 
+-/**
+- * cros_ec_sensors_read_lpc() - retrieve data from EC shared memory
+- * @indio_dev:	pointer to IIO device
+- * @scan_mask:	bitmap of the sensor indices to scan
+- * @data:	location to store data
+- *
+- * This is the safe function for reading the EC data. It guarantees that the
+- * data sampled was not modified by the EC while being read.
+- *
+- * Return: 0 on success, -errno on failure.
+- */
+ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev, unsigned long scan_mask,
+ 			     s16 *data);
+ 
+-/**
+- * cros_ec_sensors_read_cmd() - retrieve data using the EC command protocol
+- * @indio_dev:	pointer to IIO device
+- * @scan_mask:	bitmap of the sensor indices to scan
+- * @data:	location to store data
+- *
+- * Return: 0 on success, -errno on failure.
+- */
+ int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev, unsigned long scan_mask,
+ 			     s16 *data);
+ 
+ struct platform_device;
+-/**
+- * cros_ec_sensors_core_init() - basic initialization of the core structure
+- * @pdev:		platform device created for the sensors
+- * @indio_dev:		iio device structure of the device
+- * @physical_device:	true if the device refers to a physical device
+- *
+- * Return: 0 on success, -errno on failure.
+- */
+ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev, bool physical_device);
+ 
+-/**
+- * cros_ec_sensors_capture() - the trigger handler function
+- * @irq:	the interrupt number.
+- * @p:		a pointer to the poll function.
+- *
+- * On a trigger event occurring, if the pollfunc is attached then this
+- * handler is called as a threaded interrupt (and hence may sleep). It
+- * is responsible for grabbing data from the device and pushing it into
+- * the associated buffer.
+- *
+- * Return: IRQ_HANDLED
+- */
+ irqreturn_t cros_ec_sensors_capture(int irq, void *p);
+ 
+-/**
+- * cros_ec_motion_send_host_cmd() - send motion sense host command
+- * @st:		pointer to state information for device
+- * @opt_length:	optional length to reduce the response size, useful on the data
+- *		path. Otherwise, the maximal allowed response size is used
+- *
+- * When called, the sub-command is assumed to be set in param->cmd.
+- *
+- * Return: 0 on success, -errno on failure.
+- */
+ int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *st,
+ 				 u16 opt_length);
+ 
+-/**
+- * cros_ec_sensors_core_read() - function to request a value from the sensor
+- * @st:		pointer to state information for device
+- * @chan:	channel specification structure table
+- * @val:	will contain one element making up the returned value
+- * @val2:	will contain another element making up the returned value
+- * @mask:	specifies which values to be requested
+- *
+- * Return:	the type of value returned by the device
+- */
+ int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+ 			      struct iio_chan_spec const *chan,
+ 			      int *val, int *val2, long mask);
+ 
+-/**
+- * cros_ec_sensors_core_read_avail() - get available values
+- * @indio_dev:		pointer to state information for device
+- * @chan:	channel specification structure table
+- * @vals:	list of available values
+- * @type:	type of data returned
+- * @length:	number of data returned in the array
+- * @mask:	specifies which values to be requested
+- *
+- * Return:	an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST
+- */
+ int cros_ec_sensors_core_read_avail(struct iio_dev *indio_dev,
+ 				    struct iio_chan_spec const *chan,
+ 				    const int **vals,
+@@ -175,16 +105,6 @@ int cros_ec_sensors_core_read_avail(struct iio_dev *indio_dev,
+ 				    int *length,
+ 				    long mask);
+ 
+-/**
+- * cros_ec_sensors_core_write() - function to write a value to the sensor
+- * @st:		pointer to state information for device
+- * @chan:	channel specification structure table
+- * @val:	first part of value to write
+- * @val2:	second part of value to write
+- * @mask:	specifies which values to write
+- *
+- * Return:	the type of value returned by the device
+- */
+ int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+ 			       struct iio_chan_spec const *chan,
+ 			       int val, int val2, long mask);
 -- 
 2.23.0.866.gb869b98d4c-goog
 
