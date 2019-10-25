@@ -1,403 +1,145 @@
-Return-Path: <SRS0=W9g2=YR=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=9Ekx=YS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNPARSEABLE_RELAY,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDC1DCA9EAF
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Oct 2019 17:03:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E57A9CA9EBC
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Oct 2019 12:45:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A631C20650
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Oct 2019 17:03:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AEEBE21D71
+	for <linux-iio@archiver.kernel.org>; Fri, 25 Oct 2019 12:45:09 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="Oss1IIhc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405939AbfJXRDS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Oct 2019 13:03:18 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:54862 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730622AbfJXRDR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Oct 2019 13:03:17 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 79FD8286063
-Subject: Re: [PATCH v2 01/18] platform: chrome: Put docs with the code
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>
-Cc:     briannorris@chromium.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, lee.jones@linaro.org, bleung@chromium.org,
-        dianders@chromium.org, groeck@chromium.org,
-        fabien.lahoudere@collabora.com, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-References: <20191021055403.67849-1-gwendal@chromium.org>
- <20191021055403.67849-2-gwendal@chromium.org>
- <20191021163134.6d121b1e@archlinux>
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <50b45b37-d02e-df9a-1ce5-54cea23debb6@collabora.com>
-Date:   Thu, 24 Oct 2019 19:03:12 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S2403762AbfJYMpH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 25 Oct 2019 08:45:07 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:13924 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726338AbfJYMpH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Oct 2019 08:45:07 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9PCbfh4002961;
+        Fri, 25 Oct 2019 08:44:45 -0400
+Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2052.outbound.protection.outlook.com [104.47.44.52])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2vt9t2btsg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 25 Oct 2019 08:44:45 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=hWs+AO8A6k0pC/u7MjwZye5rz0y3mcwCOq81h062tBdTJgLSM1bZBAnDYdrM+C2g5qKJzKoGDQjcqi2N6b9d0/lYfOCEduB4Y4OFzLQvK3iCEflucLVN07Iaj7agcV4+JWsmMYMVCylSBKF5V+XGB+5LNnP9OCPSJ7aUcbp7aLnpjHRMriRuIaDRdzt2WT1ubhYSxF+vyKuNiuQeyz14wQ8VfVGF9Fpdn33IZMjwqsiOCYnDC+bv4av8ETG2DsAxXPsEEA2hq2pp3720JqeLaFE949yYiE+QHUuPlUxt7nsqTuK1YWNvCeodJWhzCQ3FGBW2hl23sHIzYLfsAR3CCQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4ubdty69p3lfKxwu+v6QmiiWCpK/8p58KYfZhn8svEc=;
+ b=P/cLVNooFxW59W4ib7OgVb+id7EMGc28QBgceZtlBA1H1Z+ec9fVYeKW851Fg9jpU8NwuERX3LQq/vTuOhntZLt0qugjuoxswpF37+S9ov5wCaJOpUfUJRNUgazGJ9Y3MZeOCd4c4aYf3QRpzXQ3QNnJnFlRcP2AFz8N9HgXf4ZDOZDKJ052Ri42p0IscSK01JBDp0N2yEKZrFXJX1SaHzY/gCLUxE7yheHJGS52vtcYNK7jGQr4UuF/FWXPY6uUsKcK0yYusTk0nXwA5Ogns8UzqYVCnhsJgnCg68zVN3wx34Dsz0GhZFSqsNArP2m4lAZd8FIaqIgTp6Tov/LDYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=metafoo.de smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=4ubdty69p3lfKxwu+v6QmiiWCpK/8p58KYfZhn8svEc=;
+ b=Oss1IIhc9OSWzVJAkm0qCuU0xv3Rs0mwMeZcsd3u9owHc5bOArj/36I0YRG6BUWM/c2y733wfmDbBXFIVrfqbrOA6kGmn5Sz0cI6T9UvQUNZE7GvCFtJbnYJheb2ZDhPmjVEW09yZakGWRSdTm0YT9QrShnRZ8eIqJlRTKi0O00=
+Received: from BN8PR03CA0002.namprd03.prod.outlook.com (2603:10b6:408:94::15)
+ by DM6PR03MB4844.namprd03.prod.outlook.com (2603:10b6:5:188::12) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2387.20; Fri, 25 Oct
+ 2019 12:44:44 +0000
+Received: from SN1NAM02FT007.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e44::202) by BN8PR03CA0002.outlook.office365.com
+ (2603:10b6:408:94::15) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2387.20 via Frontend
+ Transport; Fri, 25 Oct 2019 12:44:43 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ SN1NAM02FT007.mail.protection.outlook.com (10.152.72.88) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2387.20
+ via Frontend Transport; Fri, 25 Oct 2019 12:44:42 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id x9PCiZsl020952
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Fri, 25 Oct 2019 05:44:35 -0700
+Received: from nsa.sphairon.box (10.44.3.90) by NWD2HUBCAS7.ad.analog.com
+ (10.64.69.107) with Microsoft SMTP Server (TLS) id 14.3.408.0; Fri, 25 Oct
+ 2019 08:44:42 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH 2/2] iio: adis16480: Add debugfs_reg_access entry
+Date:   Fri, 25 Oct 2019 14:45:08 +0200
+Message-ID: <20191025124508.166648-2-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191025124508.166648-1-nuno.sa@analog.com>
+References: <20191025124508.166648-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <20191021163134.6d121b1e@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-Originating-IP: [10.44.3.90]
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(136003)(39860400002)(376002)(346002)(189003)(199004)(50466002)(6666004)(356004)(5660300002)(5820100001)(7736002)(305945005)(7636002)(186003)(16526019)(23676004)(426003)(2351001)(76176011)(53416004)(336012)(6916009)(26005)(47776003)(54906003)(86362001)(446003)(2616005)(316002)(476003)(2870700001)(70586007)(126002)(70206006)(106002)(8676002)(1076003)(4744005)(11346002)(50226002)(5024004)(14444005)(486006)(45776006)(4326008)(3846002)(478600001)(6116002)(2906002)(8936002)(246002)(36756003);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB4844;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 8ba83783-947f-4c08-d0b9-08d759491bd3
+X-MS-TrafficTypeDiagnostic: DM6PR03MB4844:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB48444F86F4298526A8BCD80399650@DM6PR03MB4844.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:663;
+X-Forefront-PRVS: 02015246A9
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: ssKMGnUdzcuGI9+RtjbKfoGvfjQWIBWg2NXnAfATM+MKZ6TUFSZCTTlsCIPlqyccAN7CKEtamwP93faCfhzBxrDte1Wp4lbENMTjLGto1poHugq3Rqru2ACoUUTObHZep8yVjOhcs+bpLuyEPV8VY/EsD/7qu19W8wrqVJiXlHDaRRr8F4WWVxujD2nLrNk4Bs9IQ7WSOMzC6PaVQ9HueBOyEZaH19iOVFFYXvh4HoZqqT0tbFjqi9zHQhCCaAYRwwN1d6/XsiIJaYnTVAUJRh5Oir0oW2luOHsD5Yo4+j4QlEzkhzMSo/WF/c+RHQTWMCGX6+T4NLPLqe6EWK1/tkEc02hnK7lItXs0pJRcGQkJ6RuEc53WPpK7aqQrXREEzM41TWBXBHcDZd+PXnWBJ0IscmvuwxXRxqkPuMAJMo3tzYH30elz2T1PiLdJyMAs
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 Oct 2019 12:44:42.9444
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ba83783-947f-4c08-d0b9-08d759491bd3
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4844
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-25_07:2019-10-25,2019-10-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ priorityscore=1501 suspectscore=1 mlxlogscore=965 phishscore=0
+ impostorscore=0 clxscore=1015 malwarescore=0 spamscore=0 bulkscore=0
+ mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910250121
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The driver is defining debugfs entries by calling
+`adis16480_debugfs_init()`. However, those entries are attached to the
+iio_dev debugfs entry which won't exist if no debugfs_reg_access
+callback is provided.
 
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/imu/adis16480.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-On 21/10/19 17:31, Jonathan Cameron wrote:
-> On Sun, 20 Oct 2019 22:53:46 -0700
-> Gwendal Grignou <gwendal@chromium.org> wrote:
-> 
->> To avoid doc rot, put function documentations with code, not header.
->> Use kernel-doc style comments for exported functions.
->>
->> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Looks good to me.
-> 
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 3b53bbb11bfb..94aa1c57e605 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -921,6 +921,7 @@ static const struct iio_info adis16480_info = {
+ 	.read_raw = &adis16480_read_raw,
+ 	.write_raw = &adis16480_write_raw,
+ 	.update_scan_mode = adis_update_scan_mode,
++	.debugfs_reg_access = adis_debugfs_reg_access,
+ };
+ 
+ static int adis16480_stop_device(struct iio_dev *indio_dev)
+-- 
+2.23.0
 
-applied for 5.5, thanks.
-
-
->> ---
->> New in v2.
->>
->>  drivers/platform/chrome/cros_ec.c           |  33 +++++++
->>  drivers/platform/chrome/cros_ec_proto.c     |  70 +++++++++++++
->>  include/linux/platform_data/cros_ec_proto.h | 103 --------------------
->>  3 files changed, 103 insertions(+), 103 deletions(-)
->>
->> diff --git a/drivers/platform/chrome/cros_ec.c b/drivers/platform/chrome/cros_ec.c
->> index fd77e6fa74c2c..9b2d07422e175 100644
->> --- a/drivers/platform/chrome/cros_ec.c
->> +++ b/drivers/platform/chrome/cros_ec.c
->> @@ -104,6 +104,15 @@ static int cros_ec_sleep_event(struct cros_ec_device *ec_dev, u8 sleep_event)
->>  	return ret;
->>  }
->>  
->> +/**
->> + * cros_ec_register() - Register a new ChromeOS EC, using the provided info.
->> + * @ec_dev: Device to register.
->> + *
->> + * Before calling this, allocate a pointer to a new device and then fill
->> + * in all the fields up to the --private-- marker.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_register(struct cros_ec_device *ec_dev)
->>  {
->>  	struct device *dev = ec_dev->dev;
->> @@ -198,6 +207,14 @@ int cros_ec_register(struct cros_ec_device *ec_dev)
->>  }
->>  EXPORT_SYMBOL(cros_ec_register);
->>  
->> +/**
->> + * cros_ec_unregister() - Remove a ChromeOS EC.
->> + * @ec_dev: Device to unregister.
->> + *
->> + * Call this to deregister a ChromeOS EC, then clean up any private data.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_unregister(struct cros_ec_device *ec_dev)
->>  {
->>  	if (ec_dev->pd)
->> @@ -209,6 +226,14 @@ int cros_ec_unregister(struct cros_ec_device *ec_dev)
->>  EXPORT_SYMBOL(cros_ec_unregister);
->>  
->>  #ifdef CONFIG_PM_SLEEP
->> +/**
->> + * cros_ec_suspend() - Handle a suspend operation for the ChromeOS EC device.
->> + * @ec_dev: Device to suspend.
->> + *
->> + * This can be called by drivers to handle a suspend event.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_suspend(struct cros_ec_device *ec_dev)
->>  {
->>  	struct device *dev = ec_dev->dev;
->> @@ -243,6 +268,14 @@ static void cros_ec_report_events_during_suspend(struct cros_ec_device *ec_dev)
->>  					     1, ec_dev);
->>  }
->>  
->> +/**
->> + * cros_ec_resume() - Handle a resume operation for the ChromeOS EC device.
->> + * @ec_dev: Device to resume.
->> + *
->> + * This can be called by drivers to handle a resume event.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_resume(struct cros_ec_device *ec_dev)
->>  {
->>  	int ret;
->> diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
->> index f659f96bda128..7db58771ec77c 100644
->> --- a/drivers/platform/chrome/cros_ec_proto.c
->> +++ b/drivers/platform/chrome/cros_ec_proto.c
->> @@ -117,6 +117,17 @@ static int send_command(struct cros_ec_device *ec_dev,
->>  	return ret;
->>  }
->>  
->> +/**
->> + * cros_ec_prepare_tx() - Prepare an outgoing message in the output buffer.
->> + * @ec_dev: Device to register.
->> + * @msg: Message to write.
->> + *
->> + * This is intended to be used by all ChromeOS EC drivers, but at present
->> + * only SPI uses it. Once LPC uses the same protocol it can start using it.
->> + * I2C could use it now, with a refactor of the existing code.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
->>  		       struct cros_ec_command *msg)
->>  {
->> @@ -141,6 +152,16 @@ int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
->>  }
->>  EXPORT_SYMBOL(cros_ec_prepare_tx);
->>  
->> +/**
->> + * cros_ec_check_result() - Check ec_msg->result.
->> + * @ec_dev: EC device.
->> + * @msg: Message to check.
->> + *
->> + * This is used by ChromeOS EC drivers to check the ec_msg->result for
->> + * errors and to warn about them.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_check_result(struct cros_ec_device *ec_dev,
->>  			 struct cros_ec_command *msg)
->>  {
->> @@ -326,6 +347,13 @@ static int cros_ec_get_host_command_version_mask(struct cros_ec_device *ec_dev,
->>  	return ret;
->>  }
->>  
->> +/**
->> + * cros_ec_query_all() -  Query the protocol version supported by the
->> + *         ChromeOS EC.
->> + * @ec_dev: Device to register.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_query_all(struct cros_ec_device *ec_dev)
->>  {
->>  	struct device *dev = ec_dev->dev;
->> @@ -453,6 +481,16 @@ int cros_ec_query_all(struct cros_ec_device *ec_dev)
->>  }
->>  EXPORT_SYMBOL(cros_ec_query_all);
->>  
->> +/**
->> + * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
->> + * @ec_dev: EC device.
->> + * @msg: Message to write.
->> + *
->> + * Call this to send a command to the ChromeOS EC.  This should be used
->> + * instead of calling the EC's cmd_xfer() callback directly.
->> + *
->> + * Return: 0 on success or negative error code.
->> + */
->>  int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
->>  		     struct cros_ec_command *msg)
->>  {
->> @@ -500,6 +538,18 @@ int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
->>  }
->>  EXPORT_SYMBOL(cros_ec_cmd_xfer);
->>  
->> +/**
->> + * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
->> + * @ec_dev: EC device.
->> + * @msg: Message to write.
->> + *
->> + * This function is identical to cros_ec_cmd_xfer, except it returns success
->> + * status only if both the command was transmitted successfully and the EC
->> + * replied with success status. It's not necessary to check msg->result when
->> + * using this function.
->> + *
->> + * Return: The number of bytes transferred on success or negative error code.
->> + */
->>  int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
->>  			    struct cros_ec_command *msg)
->>  {
->> @@ -584,6 +634,16 @@ static int get_keyboard_state_event(struct cros_ec_device *ec_dev)
->>  	return ec_dev->event_size;
->>  }
->>  
->> +/**
->> + * cros_ec_get_next_event() - Fetch next event from the ChromeOS EC.
->> + * @ec_dev: Device to fetch event from.
->> + * @wake_event: Pointer to a bool set to true upon return if the event might be
->> + *              treated as a wake event. Ignored if null.
->> + *
->> + * Return: negative error code on errors; 0 for no data; or else number of
->> + * bytes received (i.e., an event was retrieved successfully). Event types are
->> + * written out to @ec_dev->event_data.event_type on success.
->> + */
->>  int cros_ec_get_next_event(struct cros_ec_device *ec_dev, bool *wake_event)
->>  {
->>  	u8 event_type;
->> @@ -628,6 +688,16 @@ int cros_ec_get_next_event(struct cros_ec_device *ec_dev, bool *wake_event)
->>  }
->>  EXPORT_SYMBOL(cros_ec_get_next_event);
->>  
->> +/**
->> + * cros_ec_get_host_event() - Return a mask of event set by the ChromeOS EC.
->> + * @ec_dev: Device to fetch event from.
->> + *
->> + * When MKBP is supported, when the EC raises an interrupt, we collect the
->> + * events raised and call the functions in the ec notifier. This function
->> + * is a helper to know which events are raised.
->> + *
->> + * Return: 0 on error or non-zero bitmask of one or more EC_HOST_EVENT_*.
->> + */
->>  u32 cros_ec_get_host_event(struct cros_ec_device *ec_dev)
->>  {
->>  	u32 host_event;
->> diff --git a/include/linux/platform_data/cros_ec_proto.h b/include/linux/platform_data/cros_ec_proto.h
->> index eab7036cda090..0d4e4aaed37af 100644
->> --- a/include/linux/platform_data/cros_ec_proto.h
->> +++ b/include/linux/platform_data/cros_ec_proto.h
->> @@ -187,133 +187,30 @@ struct cros_ec_platform {
->>  	u16 cmd_offset;
->>  };
->>  
->> -/**
->> - * cros_ec_suspend() - Handle a suspend operation for the ChromeOS EC device.
->> - * @ec_dev: Device to suspend.
->> - *
->> - * This can be called by drivers to handle a suspend event.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_suspend(struct cros_ec_device *ec_dev);
->>  
->> -/**
->> - * cros_ec_resume() - Handle a resume operation for the ChromeOS EC device.
->> - * @ec_dev: Device to resume.
->> - *
->> - * This can be called by drivers to handle a resume event.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_resume(struct cros_ec_device *ec_dev);
->>  
->> -/**
->> - * cros_ec_prepare_tx() - Prepare an outgoing message in the output buffer.
->> - * @ec_dev: Device to register.
->> - * @msg: Message to write.
->> - *
->> - * This is intended to be used by all ChromeOS EC drivers, but at present
->> - * only SPI uses it. Once LPC uses the same protocol it can start using it.
->> - * I2C could use it now, with a refactor of the existing code.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_prepare_tx(struct cros_ec_device *ec_dev,
->>  		       struct cros_ec_command *msg);
->>  
->> -/**
->> - * cros_ec_check_result() - Check ec_msg->result.
->> - * @ec_dev: EC device.
->> - * @msg: Message to check.
->> - *
->> - * This is used by ChromeOS EC drivers to check the ec_msg->result for
->> - * errors and to warn about them.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_check_result(struct cros_ec_device *ec_dev,
->>  			 struct cros_ec_command *msg);
->>  
->> -/**
->> - * cros_ec_cmd_xfer() - Send a command to the ChromeOS EC.
->> - * @ec_dev: EC device.
->> - * @msg: Message to write.
->> - *
->> - * Call this to send a command to the ChromeOS EC.  This should be used
->> - * instead of calling the EC's cmd_xfer() callback directly.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
->>  		     struct cros_ec_command *msg);
->>  
->> -/**
->> - * cros_ec_cmd_xfer_status() - Send a command to the ChromeOS EC.
->> - * @ec_dev: EC device.
->> - * @msg: Message to write.
->> - *
->> - * This function is identical to cros_ec_cmd_xfer, except it returns success
->> - * status only if both the command was transmitted successfully and the EC
->> - * replied with success status. It's not necessary to check msg->result when
->> - * using this function.
->> - *
->> - * Return: The number of bytes transferred on success or negative error code.
->> - */
->>  int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
->>  			    struct cros_ec_command *msg);
->>  
->> -/**
->> - * cros_ec_register() - Register a new ChromeOS EC, using the provided info.
->> - * @ec_dev: Device to register.
->> - *
->> - * Before calling this, allocate a pointer to a new device and then fill
->> - * in all the fields up to the --private-- marker.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_register(struct cros_ec_device *ec_dev);
->>  
->> -/**
->> - * cros_ec_unregister() - Remove a ChromeOS EC.
->> - * @ec_dev: Device to unregister.
->> - *
->> - * Call this to deregister a ChromeOS EC, then clean up any private data.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_unregister(struct cros_ec_device *ec_dev);
->>  
->> -/**
->> - * cros_ec_query_all() -  Query the protocol version supported by the
->> - *         ChromeOS EC.
->> - * @ec_dev: Device to register.
->> - *
->> - * Return: 0 on success or negative error code.
->> - */
->>  int cros_ec_query_all(struct cros_ec_device *ec_dev);
->>  
->> -/**
->> - * cros_ec_get_next_event() - Fetch next event from the ChromeOS EC.
->> - * @ec_dev: Device to fetch event from.
->> - * @wake_event: Pointer to a bool set to true upon return if the event might be
->> - *              treated as a wake event. Ignored if null.
->> - *
->> - * Return: negative error code on errors; 0 for no data; or else number of
->> - * bytes received (i.e., an event was retrieved successfully). Event types are
->> - * written out to @ec_dev->event_data.event_type on success.
->> - */
->>  int cros_ec_get_next_event(struct cros_ec_device *ec_dev, bool *wake_event);
->>  
->> -/**
->> - * cros_ec_get_host_event() - Return a mask of event set by the ChromeOS EC.
->> - * @ec_dev: Device to fetch event from.
->> - *
->> - * When MKBP is supported, when the EC raises an interrupt, we collect the
->> - * events raised and call the functions in the ec notifier. This function
->> - * is a helper to know which events are raised.
->> - *
->> - * Return: 0 on error or non-zero bitmask of one or more EC_HOST_EVENT_*.
->> - */
->>  u32 cros_ec_get_host_event(struct cros_ec_device *ec_dev);
->>  
->>  #endif /* __LINUX_CROS_EC_PROTO_H */
-> 
