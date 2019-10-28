@@ -1,400 +1,167 @@
-Return-Path: <SRS0=gq1U=YU=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=LXN/=YV=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71115CA9EAF
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Oct 2019 23:11:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EE9B4CA9EA0
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Oct 2019 07:11:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 38FB221726
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Oct 2019 23:11:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ABEA1208C0
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Oct 2019 07:11:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ROUIju85"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="XM5AatMW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728095AbfJ0XLE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Oct 2019 19:11:04 -0400
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:34503 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727958AbfJ0XJz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Oct 2019 19:09:55 -0400
-Received: by mail-pg1-f195.google.com with SMTP id e4so1083054pgs.1
-        for <linux-iio@vger.kernel.org>; Sun, 27 Oct 2019 16:09:54 -0700 (PDT)
+        id S1728653AbfJ1HL6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Oct 2019 03:11:58 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:7278 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726834AbfJ1HL5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Oct 2019 03:11:57 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9S78BNJ012869;
+        Mon, 28 Oct 2019 03:11:54 -0400
+Received: from nam01-by2-obe.outbound.protection.outlook.com (mail-by2nam01lp2059.outbound.protection.outlook.com [104.47.34.59])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2vvjs63huw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Mon, 28 Oct 2019 03:11:53 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=CcRP98jNZcq2kU7FabGhzygyZXIVlP74GrruZwMJ47GHgQOOgm1ARG/zU8F9ffaBPPiVrK5elAD5+mXpJ5Tbb4v5OM0y/ycC2/Znojn8znX0KUQHFQePrv7ee8q0wJIbw0XcSEhgq8w9GDfn1srSL3prZUPcC8ZF98CFhys/zreIeob/rbIfT/5NcSsdXToZO+B1v1qZ4hexMmWzsru7xdHpBIDN04OVM8DTgBM6CG7LPCEoRHidSF3K1nEaLtdo7k3M5UF2oE+yy1PcgYMH2bZh6lYgJ5KyRRuOWjs87DNKVBElyqlCWXqBhL4aZEUVu57x7GvElx1HOXojMYZzpw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OODunbp52pRpeb5hpsUWU12UNBYKPlOat9iQH40O6rQ=;
+ b=Ix6f9LpRSAd/1yNUX5lT2n+cWpHNBKY5pD+lQfwYemJCAhEcYAts2lOl8oM6DgEDHZi5I7nwSc36Hre7J93lZYbF+wHXp2zwjYPD+d8pVlpC0QHemybZKmRKBesMKj7Klk8pf7tYvATgcGsBwThSHHb/ZciyINIJ/rigGOI+hZ1c1LrQHr87JUyRzbOkafPDk3JS2DeeAqULf60aCEYOO9JsUtTS1RzWfkrCjBgNWIyS1BYNX/zb0+mkMKt66G1Jq8b1hcebVPAxf90f/sTHjOQEgTba6kKNRNNoGQ0UiqDjFlfWvoqbCEvXP0dt5uw9zk+Vutui0O2X5dDwaAkGBA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=88HzHaI/b1vr8BW0SqilRvf1zIa7FAM3FTP808LFAI4=;
-        b=ROUIju85Z6Q3Q2Sh12GxbQaHgE26pu+JzHeKBLTkAVyRDuOtNqVxyfC3wKM5f+x3PG
-         0lY728t0X+B8rvNv6XTBWeUI/VBbxXlIm399tRnsD3Hpwwv5qjyXRhvZ6YJB48DHOvra
-         ifMfdbwJTVNCAhPEXyWF8rNwp0JgpksyqKb/A=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=88HzHaI/b1vr8BW0SqilRvf1zIa7FAM3FTP808LFAI4=;
-        b=IZDo/RT+7ngB/BcYqu2B2IUyFwNKnG70UYlj93XokYAQcf8TodEcnYP6AECB5CY2iX
-         OMrKpRMyuqqLqrwxtk9H/cRAxDaYSKIoahVt27okDdil4UK/FcX91LTFP4guBprGR6tj
-         qUSopamK3wVV5H/f0BgfWFsde7KGcnEksNsPSzg4vmR39LbsI5rCMjIxG4wSY8pQJsjC
-         BcAITuJtgnjU09N48K3ha4UUAlUZawgop63rwbEZk8OGYcIqaqNXsUrkHZmoeg9c5Qcc
-         LxVbj8bHAYGCr9a9ymfNUwMAvYvieJRZ6Pi4yTzvDKOPxdZGXnXQdJKXGA/5sdYrbXvM
-         c7xw==
-X-Gm-Message-State: APjAAAU0OF754FNELFN5z5yPyoJi71mLnTHyQCQljaWwklPf5U8WSHZs
-        ZqXzxLt8xEaeJft/P0j7fAC1qA==
-X-Google-Smtp-Source: APXvYqw82IihQSdHb83I0PV5LF/0UFqzZF8JLLwLM0Jc6eOM1kEmldVLzp6+BkB1JZhmxZsdcaIddA==
-X-Received: by 2002:a17:90a:c505:: with SMTP id k5mr18000573pjt.84.1572217793527;
-        Sun, 27 Oct 2019 16:09:53 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id r19sm8906290pgj.43.2019.10.27.16.09.52
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 27 Oct 2019 16:09:53 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     briannorris@chromium.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
-        bleung@chromium.org, enric.balletbo@collabora.com,
-        dianders@chromium.org, groeck@chromium.org,
-        fabien.lahoudere@collabora.com
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 03/18] platform: cros_ec: Add cros_ec_sensor_hub driver
-Date:   Sun, 27 Oct 2019 16:09:06 -0700
-Message-Id: <20191027230921.205251-4-gwendal@chromium.org>
-X-Mailer: git-send-email 2.24.0.rc0.303.g954a862665-goog
-In-Reply-To: <20191027230921.205251-1-gwendal@chromium.org>
-References: <20191027230921.205251-1-gwendal@chromium.org>
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=OODunbp52pRpeb5hpsUWU12UNBYKPlOat9iQH40O6rQ=;
+ b=XM5AatMWb/4+kz9sD9ZbemN742T80xLEbmAIgLt2c9ZbgzJY33eV6rnngpIuaI+V8prViPQoWQACE+forWTilxtrImB7iP5apfyFUJIZ5zRRLRnSO+UUUaQRJCDtZptOKQqbxyPjhkMWRzV4mhm8hCfrI4GiIhA2nECCbUE9nyQ=
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com (20.180.12.152) by
+ CH2PR03MB5301.namprd03.prod.outlook.com (20.180.15.211) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2387.24; Mon, 28 Oct 2019 07:11:52 +0000
+Received: from CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::99:71f2:a588:977c]) by CH2PR03MB5192.namprd03.prod.outlook.com
+ ([fe80::99:71f2:a588:977c%3]) with mapi id 15.20.2387.023; Mon, 28 Oct 2019
+ 07:11:52 +0000
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "jic23@kernel.org" <jic23@kernel.org>,
+        "matt.ranostay@konsulko.com" <matt.ranostay@konsulko.com>
+CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: hdc100x: fix
+ iio_triggered_buffer_{predisable,postenable} positions
+Thread-Topic: [PATCH] iio: hdc100x: fix
+ iio_triggered_buffer_{predisable,postenable} positions
+Thread-Index: AQHViXuhHdwgzF5oQkm7mTEnWOLlyKduvHiAgAAbz4CAANLZAA==
+Date:   Mon, 28 Oct 2019 07:11:51 +0000
+Message-ID: <46d418bd0546c98e22a0d331741c053274c2170f.camel@analog.com>
+References: <20191023082714.18681-1-alexandru.ardelean@analog.com>
+         <20191027165813.5a5b0519@archlinux>
+         <CAJCx=gnCaqKHuZkRoCyHXR4ewwmqFCsRTiUty=CH0KB8PS+YCQ@mail.gmail.com>
+In-Reply-To: <CAJCx=gnCaqKHuZkRoCyHXR4ewwmqFCsRTiUty=CH0KB8PS+YCQ@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [137.71.226.54]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 87e3184d-a33d-4c9c-9d2c-08d75b761b6b
+x-ms-traffictypediagnostic: CH2PR03MB5301:
+x-microsoft-antispam-prvs: <CH2PR03MB530165548E5783B75B82C495F9660@CH2PR03MB5301.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0204F0BDE2
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(376002)(396003)(346002)(136003)(366004)(39860400002)(199004)(189003)(6436002)(64756008)(66556008)(66446008)(8676002)(66476007)(36756003)(476003)(486006)(118296001)(25786009)(86362001)(26005)(2501003)(81166006)(14454004)(5660300002)(81156014)(6486002)(229853002)(7736002)(91956017)(66946007)(76116006)(305945005)(6512007)(8936002)(446003)(11346002)(2616005)(99286004)(186003)(71190400001)(102836004)(66066001)(14444005)(5024004)(71200400001)(256004)(4001150100001)(3846002)(54906003)(110136005)(478600001)(316002)(6116002)(4326008)(2906002)(53546011)(6506007)(6246003)(76176011)(142933001);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR03MB5301;H:CH2PR03MB5192.namprd03.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: analog.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: RtRvQMd3Cgl/OG/M2YsQOzJ9O2e7OVg/3KWUGrPHReyPIb0ZuZuUXMpY1n/06dQr0acDnOLnYL+y6U61UV+ID9nhyjZex5ZO6aJchqsMrDkRGWKe9Al/maosdecT1rECb005R4y0EsD/kwfCK8VCx66weTayG997SkXG7sFVqutbuwL4w4JJKG854TT3n1qaXaZZ6yq90hPxRuRogzqTJqSc98TPz3Tan+v/QVBp1FzCe5wOl+LwORrq38QP3zl1YUGDtbtfTuQgrRfOe22mqk6BAOBAf/kQ1q3pFo2m6LWC89k1P9qvkszGjWftfRtD/ab446kGI2F3Mq2uZcEtFUtgutcJKu2Op923wCUopB8ZClgH81NnsXb8ImWRJp7Y5iL25ijBjs9XgJlH3yAsMaD01Tt56/tXzd2Xd3pYEAcKD53eRsaZP7wMrAQbjDNx
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <C7F28B73EFDDAC44AC3121C397593DC5@namprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87e3184d-a33d-4c9c-9d2c-08d75b761b6b
+X-MS-Exchange-CrossTenant-originalarrivaltime: 28 Oct 2019 07:11:51.8947
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: Ih6T175kTg3QZcB84TJl0HITlIL4VOStRmGNk3VwBehb3ak1ywZIbzUtOuonV9jYxoY3+dsaOCfnsLucPv/MDxwx97IOq8yl9hIipaaY8TY=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR03MB5301
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-28_03:2019-10-25,2019-10-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ malwarescore=0 mlxlogscore=999 impostorscore=0 clxscore=1015 adultscore=0
+ priorityscore=1501 spamscore=0 suspectscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1908290000 definitions=main-1910280071
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Similar to HID sensor stack, the new driver sits between cros_ec_dev
-and the iio device drivers:
-
-EC based iio device topology would be:
-iio:device1 ->
-...0/0000:00:1f.0/PNP0C09:00/GOOG0004:00/cros-ec-dev.6.auto/
-                                         cros-ec-sensorhub.7.auto/
-                                         cros-ec-accel.15.auto/
-                                         iio:device1
-
-It will be expanded to control EC sensor FIFO.
-
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
-Changes in v3:
-- Fix doxygen comments
-- Fix use of ret |=
-- Remove unncessary goto.
-Changes in v2:
-- Remove unerelated changes.
-- Fix spelling.
-- Use !x instead of x == NULL
-- Use platform_ API directly to register IIO sensors from
-  cros_ec_sensorhub.
-
- drivers/iio/common/cros_ec_sensors/Kconfig    |   2 +-
- drivers/platform/chrome/Kconfig               |  12 +
- drivers/platform/chrome/Makefile              |   1 +
- drivers/platform/chrome/cros_ec_sensorhub.c   | 208 ++++++++++++++++++
- .../linux/platform_data/cros_ec_sensorhub.h   |  21 ++
- 5 files changed, 243 insertions(+), 1 deletion(-)
- create mode 100644 drivers/platform/chrome/cros_ec_sensorhub.c
- create mode 100644 include/linux/platform_data/cros_ec_sensorhub.h
-
-diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-index cdbb29cfb9076..fefad95727907 100644
---- a/drivers/iio/common/cros_ec_sensors/Kconfig
-+++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-@@ -4,7 +4,7 @@
- #
- config IIO_CROS_EC_SENSORS_CORE
- 	tristate "ChromeOS EC Sensors Core"
--	depends on SYSFS && CROS_EC
-+	depends on SYSFS && CROS_EC_SENSORHUB
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
-diff --git a/drivers/platform/chrome/Kconfig b/drivers/platform/chrome/Kconfig
-index ee5f08ea57b6c..56a25317a6bee 100644
---- a/drivers/platform/chrome/Kconfig
-+++ b/drivers/platform/chrome/Kconfig
-@@ -190,6 +190,18 @@ config CROS_EC_DEBUGFS
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called cros_ec_debugfs.
- 
-+config CROS_EC_SENSORHUB
-+	tristate "ChromeOS EC MEMS Sensor Hub"
-+	depends on CROS_EC && IIO
-+	help
-+	  Allow loading IIO sensors. This driver is loaded by MFD and will in
-+	  turn query the EC and register the sensors.
-+	  It also spreads the sensor data coming from the EC to the IIO sensor
-+	  object.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called cros_ec_sensorhub.
-+
- config CROS_EC_SYSFS
- 	tristate "ChromeOS EC control and information through sysfs"
- 	depends on MFD_CROS_EC_DEV && SYSFS
-diff --git a/drivers/platform/chrome/Makefile b/drivers/platform/chrome/Makefile
-index 477ec3d1d1c98..a164c40dc0996 100644
---- a/drivers/platform/chrome/Makefile
-+++ b/drivers/platform/chrome/Makefile
-@@ -17,6 +17,7 @@ obj-$(CONFIG_CROS_EC_PROTO)		+= cros_ec_proto.o cros_ec_trace.o
- obj-$(CONFIG_CROS_KBD_LED_BACKLIGHT)	+= cros_kbd_led_backlight.o
- obj-$(CONFIG_CROS_EC_CHARDEV)		+= cros_ec_chardev.o
- obj-$(CONFIG_CROS_EC_LIGHTBAR)		+= cros_ec_lightbar.o
-+obj-$(CONFIG_CROS_EC_SENSORHUB)		+= cros_ec_sensorhub.o
- obj-$(CONFIG_CROS_EC_VBC)		+= cros_ec_vbc.o
- obj-$(CONFIG_CROS_EC_DEBUGFS)		+= cros_ec_debugfs.o
- obj-$(CONFIG_CROS_EC_SYSFS)		+= cros_ec_sysfs.o
-diff --git a/drivers/platform/chrome/cros_ec_sensorhub.c b/drivers/platform/chrome/cros_ec_sensorhub.c
-new file mode 100644
-index 0000000000000..7cb316135f4c0
---- /dev/null
-+++ b/drivers/platform/chrome/cros_ec_sensorhub.c
-@@ -0,0 +1,208 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * SensorHub: driver that discover sensors behind
-+ * a ChromeOS Embedded controller.
-+ *
-+ * Copyright 2019 Google LLC
-+ */
-+
-+#include <linux/init.h>
-+#include <linux/device.h>
-+#include <linux/fs.h>
-+#include <linux/miscdevice.h>
-+#include <linux/module.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/platform_data/cros_ec_commands.h>
-+#include <linux/platform_data/cros_ec_proto.h>
-+#include <linux/platform_data/cros_ec_sensorhub.h>
-+#include <linux/platform_device.h>
-+#include <linux/poll.h>
-+#include <linux/slab.h>
-+#include <linux/types.h>
-+#include <linux/uaccess.h>
-+
-+#define DRV_NAME		"cros-ec-sensorhub"
-+
-+static struct device_type cros_ec_sensorhub_dev_type = {
-+	.name	= "cros_ec_iio_sensor",
-+};
-+
-+static int cros_ec_sensorhub_allocate_single_sensor(
-+		struct device *parent,
-+		char *sensor_name,
-+		int sensor_num)
-+{
-+	struct platform_device *pdev;
-+	struct cros_ec_sensor_platform sensor_platforms = {
-+		.sensor_num = sensor_num,
-+	};
-+	int ret;
-+
-+	pdev = platform_device_alloc(sensor_name, PLATFORM_DEVID_AUTO);
-+	if (!pdev)
-+		return -ENOMEM;
-+
-+	pdev->dev.parent = parent;
-+	pdev->dev.type = &cros_ec_sensorhub_dev_type;
-+
-+	ret = platform_device_add_data(pdev, &sensor_platforms,
-+			sizeof(sensor_platforms));
-+	if (ret)
-+		goto fail_device;
-+
-+	ret = platform_device_add(pdev);
-+	if (ret)
-+		goto fail_device;
-+
-+	return 0;
-+
-+fail_device:
-+	platform_device_put(pdev);
-+	return ret;
-+}
-+
-+static int cros_ec_sensorhub_register(struct device *dev,
-+		struct cros_ec_dev *ec)
-+{
-+	int ret, i, id, sensor_num;
-+	int sensor_type[MOTIONSENSE_TYPE_MAX] = { 0 };
-+	struct ec_params_motion_sense *params;
-+	struct ec_response_motion_sense *resp;
-+	struct cros_ec_command *msg;
-+	char *name;
-+
-+	sensor_num = cros_ec_get_sensor_count(ec);
-+	if (sensor_num < 0) {
-+		dev_err(dev,
-+			"Unable to retrieve sensor information (err:%d)\n",
-+			sensor_num);
-+		return sensor_num;
-+	}
-+
-+	if (sensor_num == 0) {
-+		dev_err(dev, "Zero sensors reported.\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Prepare a message to send INFO command to each sensor. */
-+	msg = kzalloc(sizeof(struct cros_ec_command) +
-+		      max(sizeof(*params), sizeof(*resp)), GFP_KERNEL);
-+	if (!msg)
-+		return -ENOMEM;
-+
-+	msg->version = 1;
-+	msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
-+	msg->outsize = sizeof(*params);
-+	msg->insize = sizeof(*resp);
-+	params = (struct ec_params_motion_sense *)msg->data;
-+	resp = (struct ec_response_motion_sense *)msg->data;
-+
-+	id = 0;
-+	for (i = 0; i < sensor_num; i++) {
-+		params->cmd = MOTIONSENSE_CMD_INFO;
-+		params->info.sensor_num = i;
-+		ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
-+		if (ret < 0) {
-+			dev_warn(dev, "no info for EC sensor %d : %d/%d\n",
-+				 i, ret, msg->result);
-+			continue;
-+		}
-+		switch (resp->info.type) {
-+		case MOTIONSENSE_TYPE_ACCEL:
-+			name = "cros-ec-accel";
-+			break;
-+		case MOTIONSENSE_TYPE_BARO:
-+			name = "cros-ec-baro";
-+			break;
-+		case MOTIONSENSE_TYPE_GYRO:
-+			name = "cros-ec-gyro";
-+			break;
-+		case MOTIONSENSE_TYPE_MAG:
-+			name = "cros-ec-mag";
-+			break;
-+		case MOTIONSENSE_TYPE_PROX:
-+			name = "cros-ec-prox";
-+			break;
-+		case MOTIONSENSE_TYPE_LIGHT:
-+			name = "cros-ec-light";
-+			break;
-+		case MOTIONSENSE_TYPE_ACTIVITY:
-+			name = "cros-ec-activity";
-+			break;
-+		default:
-+			dev_warn(dev, "unknown type %d\n", resp->info.type);
-+			continue;
-+		}
-+		ret = cros_ec_sensorhub_allocate_single_sensor(dev, name, i);
-+		if (ret)
-+			goto error;
-+
-+		sensor_type[resp->info.type]++;
-+	}
-+
-+	if (sensor_type[MOTIONSENSE_TYPE_ACCEL] >= 2)
-+		ec->has_kb_wake_angle = true;
-+
-+	if (cros_ec_check_features(ec,
-+				EC_FEATURE_REFINED_TABLET_MODE_HYSTERESIS)) {
-+		ret = cros_ec_sensorhub_allocate_single_sensor(
-+				dev, "cros-ec-lid-angle", 0);
-+	}
-+
-+error:
-+	kfree(msg);
-+	return ret;
-+}
-+
-+static int cros_ec_sensorhub_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cros_ec_dev *ec = dev_get_drvdata(dev->parent);
-+	int ret, i;
-+	struct cros_ec_sensorhub *data =
-+		kzalloc(sizeof(struct cros_ec_sensorhub), GFP_KERNEL);
-+
-+	if (!data)
-+		return -ENOMEM;
-+
-+	data->ec = ec;
-+	dev_set_drvdata(dev, data);
-+
-+	/* Check whether this EC is a sensor hub. */
-+	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE)) {
-+		ret = cros_ec_sensorhub_register(dev, ec);
-+		if (ret) {
-+			dev_err(dev, "Register failed %d\n", ret);
-+			return ret;
-+		}
-+	} else {
-+		/*
-+		 * If the device has sensors but does not claim to
-+		 * be a sensor hub, we are in legacy mode.
-+		 */
-+		for (i = 0; i < 2; i++) {
-+			ret = cros_ec_sensorhub_allocate_single_sensor(
-+					dev, "cros-ec-accel-legacy", i);
-+			if (ret) {
-+				dev_err(dev, "Legacy %d failed %d\n", i, ret);
-+				return ret;
-+			}
-+		}
-+	}
-+
-+	return 0;
-+}
-+
-+static struct platform_driver cros_ec_sensorhub_driver = {
-+	.driver = {
-+		.name = DRV_NAME,
-+	},
-+	.probe = cros_ec_sensorhub_probe,
-+};
-+
-+module_platform_driver(cros_ec_sensorhub_driver);
-+
-+MODULE_ALIAS("platform:" DRV_NAME);
-+MODULE_AUTHOR("Gwendal Grignou <gwendal@chromium.org>");
-+MODULE_DESCRIPTION("ChromeOS EC MEMS Sensor Hub Driver");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/platform_data/cros_ec_sensorhub.h b/include/linux/platform_data/cros_ec_sensorhub.h
-new file mode 100644
-index 0000000000000..7737685591ad3
---- /dev/null
-+++ b/include/linux/platform_data/cros_ec_sensorhub.h
-@@ -0,0 +1,21 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * cros_ec_sensorhub- Chrome OS EC MEMS Sensor Hub driver.
-+ *
-+ * Copyright (C) 2019 Google, Inc
-+ */
-+
-+#ifndef __LINUX_PLATFORM_DATA_CROS_EC_SENSORHUB_H
-+#define __LINUX_PLATFORM_DATA_CROS_EC_SENSORHUB_H
-+
-+#include <linux/platform_data/cros_ec_commands.h>
-+
-+/*
-+ * struct cros_ec_sensorhub - Sensor Hub device data.
-+ */
-+struct cros_ec_sensorhub {
-+	/* Embedded Controller where the hub is located. */
-+	struct cros_ec_dev *ec;
-+};
-+
-+#endif   /* __LINUX_PLATFORM_DATA_CROS_EC_SENSORHUB_H */
--- 
-2.23.0.866.gb869b98d4c-goog
-
+T24gU3VuLCAyMDE5LTEwLTI3IGF0IDIwOjM3ICswMjAwLCBNYXR0IFJhbm9zdGF5IHdyb3RlOg0K
+PiBbRXh0ZXJuYWxdDQo+IA0KPiBPbiBTdW4sIE9jdCAyNywgMjAxOSBhdCA2OjU4IFBNIEpvbmF0
+aGFuIENhbWVyb24gPGppYzIzQGtlcm5lbC5vcmc+DQo+IHdyb3RlOg0KPiA+IE9uIFdlZCwgMjMg
+T2N0IDIwMTkgMTE6Mjc6MTQgKzAzMDANCj4gPiBBbGV4YW5kcnUgQXJkZWxlYW4gPGFsZXhhbmRy
+dS5hcmRlbGVhbkBhbmFsb2cuY29tPiB3cm90ZToNCj4gPiANCj4gPiA+IFRoZSBpaW9fdHJpZ2dl
+cmVkX2J1ZmZlcl9wb3N0ZW5hYmxlKCkgaG9vayBzaG91bGQgYmUgY2FsbGVkIGZpcnN0IHRvDQo+
+ID4gPiBhdHRhY2ggdGhlIHBvbGwgZnVuY3Rpb24gYW5kIHRoZSBpaW9fdHJpZ2dlcmVkX2J1ZmZl
+cl9wcmVkaXNhYmxlKCkNCj4gPiA+IGhvb2sNCj4gPiA+IHNob3VsZCBiZSBjYWxsZWQgbGFzdCBp
+biB0aGUgcHJlZGlzYWJsZSBob29rLg0KPiA+ID4gDQo+ID4gPiBUaGlzIGNoYW5nZSB1cGRhdGVz
+IHRoZSBkcml2ZXIgdG8gYXR0YWNoL2RldGFjaCB0aGUgcG9sbCBmdW5jIGluIHRoZQ0KPiA+ID4g
+Y29ycmVjdCBvcmRlci4NCj4gPiA+IA0KPiA+ID4gU2lnbmVkLW9mZi1ieTogQWxleGFuZHJ1IEFy
+ZGVsZWFuIDxhbGV4YW5kcnUuYXJkZWxlYW5AYW5hbG9nLmNvbT4NCj4gPiBTZWVtcyBmaW5lLCBi
+dXQgc2hvdWxkIGhhdmUgY2MnZCBNYXR0IGFuZCBJJ2QgbGlrZSB0byBnaXZlIGhpbSB0aW1lDQo+
+ID4gdG8gdGFrZSBhIHF1aWNrIGxvb2suDQo+ID4gDQo+IA0KPiBSZXZpZXdlZC1ieTogTWF0dCBS
+YW5vc3RheSA8bWF0dC5yYW5vc3RheUBrb25zdWxrby5jb20+DQoNCkFwb2xvZ2llcyBmb3Igbm90
+IENDLWluZyBNYXR0Lg0KSSBndWVzcyBJIHdhc24ndCBwYXlpbmcgW2Nsb3NlIGVub3VnaF0gYXR0
+ZW50aW9uIHRvIHRoZSBvdXRwdXQgb2YNCmdldF9tYWludGFpbmVycy5wbA0KDQpUaGFua3MNCkFs
+ZXgNCg0KPiANCj4gPiArQ0MgTWF0dC4NCj4gPiANCj4gPiBUaGFua3MsDQo+ID4gDQo+ID4gSm9u
+YXRoYW4NCj4gPiANCj4gPiA+IC0tLQ0KPiA+ID4gIGRyaXZlcnMvaWlvL2h1bWlkaXR5L2hkYzEw
+MHguYyB8IDE5ICsrKysrKysrKysrLS0tLS0tLS0NCj4gPiA+ICAxIGZpbGUgY2hhbmdlZCwgMTEg
+aW5zZXJ0aW9ucygrKSwgOCBkZWxldGlvbnMoLSkNCj4gPiA+IA0KPiA+ID4gZGlmZiAtLWdpdCBh
+L2RyaXZlcnMvaWlvL2h1bWlkaXR5L2hkYzEwMHguYw0KPiA+ID4gYi9kcml2ZXJzL2lpby9odW1p
+ZGl0eS9oZGMxMDB4LmMNCj4gPiA+IGluZGV4IGJmZTFjZGIxNjg0Ni4uOTYzZmYwNDNlZWNmIDEw
+MDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVycy9paW8vaHVtaWRpdHkvaGRjMTAweC5jDQo+ID4gPiAr
+KysgYi9kcml2ZXJzL2lpby9odW1pZGl0eS9oZGMxMDB4LmMNCj4gPiA+IEBAIC0yNzgsMzEgKzI3
+OCwzNCBAQCBzdGF0aWMgaW50IGhkYzEwMHhfYnVmZmVyX3Bvc3RlbmFibGUoc3RydWN0DQo+ID4g
+PiBpaW9fZGV2ICppbmRpb19kZXYpDQo+ID4gPiAgICAgICBzdHJ1Y3QgaGRjMTAweF9kYXRhICpk
+YXRhID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiA+ICAgICAgIGludCByZXQ7DQo+ID4gPiAN
+Cj4gPiA+ICsgICAgIHJldCA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3Bvc3RlbmFibGUoaW5kaW9f
+ZGV2KTsNCj4gPiA+ICsgICAgIGlmIChyZXQpDQo+ID4gPiArICAgICAgICAgICAgIHJldHVybiBy
+ZXQ7DQo+ID4gPiArDQo+ID4gPiAgICAgICAvKiBCdWZmZXIgaXMgZW5hYmxlZC4gRmlyc3Qgc2V0
+IEFDUSBNb2RlLCB0aGVuIGF0dGFjaCBwb2xsIGZ1bmMNCj4gPiA+ICovDQo+ID4gPiAgICAgICBt
+dXRleF9sb2NrKCZkYXRhLT5sb2NrKTsNCj4gPiA+ICAgICAgIHJldCA9IGhkYzEwMHhfdXBkYXRl
+X2NvbmZpZyhkYXRhLCBIREMxMDBYX1JFR19DT05GSUdfQUNRX01PREUsDQo+ID4gPiAgICAgICAg
+ICAgICAgICAgICAgICAgICAgICAgICAgICAgSERDMTAwWF9SRUdfQ09ORklHX0FDUV9NT0RFKTsN
+Cj4gPiA+ICAgICAgIG11dGV4X3VubG9jaygmZGF0YS0+bG9jayk7DQo+ID4gPiAgICAgICBpZiAo
+cmV0KQ0KPiA+ID4gLSAgICAgICAgICAgICByZXR1cm4gcmV0Ow0KPiA+ID4gKyAgICAgICAgICAg
+ICBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wcmVkaXNhYmxlKGluZGlvX2Rldik7DQo+ID4gPiANCj4g
+PiA+IC0gICAgIHJldHVybiBpaW9fdHJpZ2dlcmVkX2J1ZmZlcl9wb3N0ZW5hYmxlKGluZGlvX2Rl
+dik7DQo+ID4gPiArICAgICByZXR1cm4gcmV0Ow0KPiA+ID4gIH0NCj4gPiA+IA0KPiA+ID4gIHN0
+YXRpYyBpbnQgaGRjMTAweF9idWZmZXJfcHJlZGlzYWJsZShzdHJ1Y3QgaWlvX2RldiAqaW5kaW9f
+ZGV2KQ0KPiA+ID4gIHsNCj4gPiA+ICAgICAgIHN0cnVjdCBoZGMxMDB4X2RhdGEgKmRhdGEgPSBp
+aW9fcHJpdihpbmRpb19kZXYpOw0KPiA+ID4gLSAgICAgaW50IHJldDsNCj4gPiA+IC0NCj4gPiA+
+IC0gICAgIC8qIEZpcnN0IGRldGFjaCBwb2xsIGZ1bmMsIHRoZW4gcmVzZXQgQUNRIG1vZGUuIE9L
+IHRvIGRpc2FibGUNCj4gPiA+IGJ1ZmZlciAqLw0KPiA+ID4gLSAgICAgcmV0ID0gaWlvX3RyaWdn
+ZXJlZF9idWZmZXJfcHJlZGlzYWJsZShpbmRpb19kZXYpOw0KPiA+ID4gLSAgICAgaWYgKHJldCkN
+Cj4gPiA+IC0gICAgICAgICAgICAgcmV0dXJuIHJldDsNCj4gPiA+ICsgICAgIGludCByZXQsIHJl
+dDI7DQo+ID4gPiANCj4gPiA+ICAgICAgIG11dGV4X2xvY2soJmRhdGEtPmxvY2spOw0KPiA+ID4g
+ICAgICAgcmV0ID0gaGRjMTAweF91cGRhdGVfY29uZmlnKGRhdGEsIEhEQzEwMFhfUkVHX0NPTkZJ
+R19BQ1FfTU9ERSwNCj4gPiA+IDApOw0KPiA+ID4gICAgICAgbXV0ZXhfdW5sb2NrKCZkYXRhLT5s
+b2NrKTsNCj4gPiA+IA0KPiA+ID4gKyAgICAgcmV0MiA9IGlpb190cmlnZ2VyZWRfYnVmZmVyX3By
+ZWRpc2FibGUoaW5kaW9fZGV2KTsNCj4gPiA+ICsgICAgIGlmIChyZXQgPT0gMCkNCj4gPiA+ICsg
+ICAgICAgICAgICAgcmV0ID0gcmV0MjsNCj4gPiA+ICsNCj4gPiA+ICAgICAgIHJldHVybiByZXQ7
+DQo+ID4gPiAgfQ0KPiA+ID4gDQo=
