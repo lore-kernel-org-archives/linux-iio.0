@@ -2,172 +2,691 @@ Return-Path: <SRS0=3iDe=YY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-13.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4795CA9EC3
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:31:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5569CA9ECF
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 13:44:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9A2822087F
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:31:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9CF62208C0
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 13:44:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="AXFvmehU"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="N6F5t+9G"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726650AbfJaMbR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Oct 2019 08:31:17 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:53926 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726462AbfJaMbR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Oct 2019 08:31:17 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9VCRQ5U030921;
-        Thu, 31 Oct 2019 13:30:54 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=STMicroelectronics;
- bh=RgvneSBRTilulYhN5amimgSanJ3OY7+cEr1+3gGNZwE=;
- b=AXFvmehUqvWgmAijEaStt+aCSiGdbb364k2EzKh67ktuGnrJlA7J56zQlRpeEereshnM
- 4ds9IfY053aIy6FwVBvyefxPpPKbxsswu5mK2s5+wmwIedmdoYHZRiovbCIUW06XUSbn
- 4O4ld/G22W4FMSURAFibeLWWZld3aIk5cN8YAV3uW+8M2IU8OBtdD2FaFtSLrj+EuIXs
- yUB4AQXxnwSravd6ko1xEbqdkPfBKQTSBHbDkWxzxTFnzQV4Mlnu1aM7kS+IV8hbTSNe
- 3ptJnBFFMCJVprjQ0tmeThdTtMjNU5XLeps0z+o6qg2AbOTiIzNynmxSBOluG82rvIps YQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2vxwrnsrb3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 31 Oct 2019 13:30:54 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id ACBAA100034;
-        Thu, 31 Oct 2019 13:30:50 +0100 (CET)
-Received: from Webmail-eu.st.com (Safex1hubcas21.st.com [10.75.90.44])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 98F0E2B7837;
-        Thu, 31 Oct 2019 13:30:50 +0100 (CET)
-Received: from SAFEX1HUBCAS22.st.com (10.75.90.93) by SAFEX1HUBCAS21.st.com
- (10.75.90.44) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 31 Oct
- 2019 13:30:50 +0100
-Received: from localhost (10.201.20.122) by Webmail-ga.st.com (10.75.90.48)
- with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 31 Oct 2019 13:30:50
- +0100
-From:   Benjamin Gaignard <benjamin.gaignard@st.com>
-To:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
-        <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <lee.jones@linaro.org>,
-        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <benjamin.gaignard@st.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-Subject: [PATCH 1/4] dt-bindings: counter: Convert stm32 counter bindings to json-schema
-Date:   Thu, 31 Oct 2019 13:30:37 +0100
-Message-ID: <20191031123040.26316-2-benjamin.gaignard@st.com>
-X-Mailer: git-send-email 2.15.0
-In-Reply-To: <20191031123040.26316-1-benjamin.gaignard@st.com>
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
+        id S1727575AbfJaNoR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Oct 2019 09:44:17 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:50843 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbfJaNoR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Oct 2019 09:44:17 -0400
+Received: by mail-wm1-f65.google.com with SMTP id 11so6010847wmk.0
+        for <linux-iio@vger.kernel.org>; Thu, 31 Oct 2019 06:44:13 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=FR3I/LHhv/0aXpMYEVXsDim1n6QfxRC2L9CPT6E8Ib0=;
+        b=N6F5t+9GWhJHdrnW3bKiBuD7SKb9xCV/uxAhlrecjdkk9J6TxF7TwEkzAiW1n+OyJc
+         0oedbn0XUWnko5mRl2KdmMDh/55Cbq28JdO8KMEithOvpN+a8RKiWbDoe9X53jLB1hov
+         rVCLwYkMF0LgcdQKyALLzRewzG/kz7Ae9PMOmFU9WUPk0e61759aimSVjh/2xK30MDHy
+         CZvBqwV9E1SxX5wwpmEB/bU++tu87SS9r+UL1M6gX5GNGBR/7Md6d+wfjQVVuUWxgBZM
+         TFvlG7qk5rBgg8/ZBJxDlLjNOqVKkrk5cSakuB6qHJwQj3tcgoaqTN6JiEamQiyhy5xn
+         LjXg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=FR3I/LHhv/0aXpMYEVXsDim1n6QfxRC2L9CPT6E8Ib0=;
+        b=hUShCjFKV+Dwkt03yYO/m5puDSw1VebTju1eOnx0h7Qr/PfipRD2pFJYrvjUBURqag
+         dyOSKwOaKp8wE7wGUAAKy49b9YHlEfaIxRxoMS599kb8O06sHFEdI46WAnRl28Sx+Cjz
+         HCrPrf+tjpm2rl+1RK/t//X+eki89863VSNE1kGvgmYYF/zkUWLEIPo5E+HYjG33xRl2
+         iCLImNZ/0skO90M3bqzoTo/qRlfd+LVYYaJt+1x5FVA35QKiv5CcsPRV5RmTxJvanCIm
+         Pd5wiH1f3TIDKP2HrNhodBz5BCoz48brfeWuErDXhH9vEXZWb8EFFpMTuAmuOhBRi/Zv
+         irYw==
+X-Gm-Message-State: APjAAAVOr7qCIcVM7irpTfS/8+1Ev7FitiPNgCb1wZD1/evG41nZVbIO
+        F7RbtsDUsg9JYXMIQxKQAxFz1Q==
+X-Google-Smtp-Source: APXvYqxbCnjYSUsca0bUuC0Fh4JitE0MDu4cg4vD9WcKArRDXCKMct12Fq0/ANoNn7cs/LCLLT27lw==
+X-Received: by 2002:a05:600c:2488:: with SMTP id 8mr5169127wms.31.1572529452773;
+        Thu, 31 Oct 2019 06:44:12 -0700 (PDT)
+Received: from dell ([2.31.163.64])
+        by smtp.gmail.com with ESMTPSA id t12sm3914943wrx.93.2019.10.31.06.44.11
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Thu, 31 Oct 2019 06:44:12 -0700 (PDT)
+Date:   Thu, 31 Oct 2019 13:44:10 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Jeff LaBundy <jeff@labundy.com>
+Cc:     dmitry.torokhov@gmail.com, jdelvare@suse.com, linux@roeck-us.net,
+        thierry.reding@gmail.com, jic23@kernel.org,
+        devicetree@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, u.kleine-koenig@pengutronix.de,
+        linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org, robh+dt@kernel.org,
+        mark.rutland@arm.com
+Subject: Re: [PATCH 2/8] mfd: Add support for Azoteq IQS620A/621/622/624/625
+Message-ID: <20191031134410.GB5700@dell>
+References: <1571631083-4962-1-git-send-email-jeff@labundy.com>
+ <1571631083-4962-3-git-send-email-jeff@labundy.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.201.20.122]
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-10-31_05:2019-10-30,2019-10-31 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1571631083-4962-3-git-send-email-jeff@labundy.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the STM32 counter binding to DT schema format using json-schema
+On Sun, 20 Oct 2019, Jeff LaBundy wrote:
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../bindings/counter/st,stm32-timer-cnt.yaml       | 38 ++++++++++++++++++++++
- .../bindings/counter/stm32-timer-cnt.txt           | 31 ------------------
- 2 files changed, 38 insertions(+), 31 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/counter/st,stm32-timer-cnt.yaml
- delete mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
+> This patch adds support for core functions common to all six-channel
+> members of the Azoteq ProxFusion family of sensor devices.
+> 
+> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
+> ---
+>  drivers/mfd/Kconfig         |  13 +
+>  drivers/mfd/Makefile        |   2 +
+>  drivers/mfd/iqs62x-core.c   | 638 ++++++++++++++++++++++++++++++++++++++++++++
+>  drivers/mfd/iqs62x-tables.c | 424 +++++++++++++++++++++++++++++
+>  include/linux/mfd/iqs62x.h  | 148 ++++++++++
+>  5 files changed, 1225 insertions(+)
+>  create mode 100644 drivers/mfd/iqs62x-core.c
+>  create mode 100644 drivers/mfd/iqs62x-tables.c
+>  create mode 100644 include/linux/mfd/iqs62x.h
+> 
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index ae24d3e..df391f7 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -642,6 +642,19 @@ config MFD_IPAQ_MICRO
+>  	  AT90LS8535 microcontroller flashed with a special iPAQ
+>  	  firmware using the custom protocol implemented in this driver.
+>  
+> +config MFD_IQS62X
+> +	tristate "Azoteq IQS620A/621/622/624/625 core support"
+> +	depends on I2C
+> +	select MFD_CORE
+> +	select REGMAP_I2C
+> +	help
+> +	  Say Y here if you want to build support for six-channel members of
+> +	  the Azoteq ProxFusion family of sensor devices. Additional options
+> +	  must be selected to enable device-specific functions.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called iqs62x.
+> +
+>  config MFD_JANZ_CMODIO
+>  	tristate "Janz CMOD-IO PCI MODULbus Carrier Board"
+>  	select MFD_CORE
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index c1067ea..23dd71c6 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -256,3 +256,5 @@ obj-$(CONFIG_MFD_ROHM_BD70528)	+= rohm-bd70528.o
+>  obj-$(CONFIG_MFD_ROHM_BD718XX)	+= rohm-bd718x7.o
+>  obj-$(CONFIG_MFD_STMFX) 	+= stmfx.o
+>  
+> +iqs62x-objs			:= iqs62x-core.o iqs62x-tables.o
+> +obj-$(CONFIG_MFD_IQS62X)	+= iqs62x.o
+> diff --git a/drivers/mfd/iqs62x-core.c b/drivers/mfd/iqs62x-core.c
+> new file mode 100644
+> index 0000000..e2200c8
+> --- /dev/null
+> +++ b/drivers/mfd/iqs62x-core.c
+> @@ -0,0 +1,638 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Azoteq IQS620A/621/622/624/625 ProxFusion Sensor Family
+> + *
+> + * Copyright (C) 2019
 
-diff --git a/Documentation/devicetree/bindings/counter/st,stm32-timer-cnt.yaml b/Documentation/devicetree/bindings/counter/st,stm32-timer-cnt.yaml
-new file mode 100644
-index 000000000000..56192d613601
---- /dev/null
-+++ b/Documentation/devicetree/bindings/counter/st,stm32-timer-cnt.yaml
-@@ -0,0 +1,38 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/counter/st,stm32-timer-cnt.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: STMicroelectronics STM32 Timers quadrature bindings
-+
-+description:
-+  STM32 Timer provides quadrature encoder to detect angular position
-+  and direction of rotary elements, from IN1 and IN2 input signals.
-+
-+maintainers:
-+  - Benjamin Gaignard <benjamin.gaignard@st.com>
-+  - Fabrice Gasnier <fabrice.gasnier@st.com>
-+
-+properties:
-+  counter:
-+    type: object
-+
-+    description:
-+      must be a sub-node of an STM32 Timer device tree node
-+
-+    properties:
-+      compatible:
-+        const: st,stm32-timer-counter
-+            
-+    required:
-+      - compatible
-+
-+examples:
-+  - |
-+    counter {
-+      compatible = "st,stm32-timer-counter";
-+    };
-+
-+...
-+
-diff --git a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt b/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
-deleted file mode 100644
-index c52fcdd4bf6c..000000000000
---- a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
-+++ /dev/null
-@@ -1,31 +0,0 @@
--STMicroelectronics STM32 Timer quadrature encoder
--
--STM32 Timer provides quadrature encoder to detect
--angular position and direction of rotary elements,
--from IN1 and IN2 input signals.
--
--Must be a sub-node of an STM32 Timer device tree node.
--See ../mfd/stm32-timers.txt for details about the parent node.
--
--Required properties:
--- compatible:		Must be "st,stm32-timer-counter".
--- pinctrl-names: 	Set to "default".
--- pinctrl-0: 		List of phandles pointing to pin configuration nodes,
--			to set CH1/CH2 pins in mode of operation for STM32
--			Timer input on external pin.
--
--Example:
--	timers@40010000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "st,stm32-timers";
--		reg = <0x40010000 0x400>;
--		clocks = <&rcc 0 160>;
--		clock-names = "int";
--
--		counter {
--			compatible = "st,stm32-timer-counter";
--			pinctrl-names = "default";
--			pinctrl-0 = <&tim1_in_pins>;
--		};
--	};
+Needs a company or person's name.
+
+> + * Author: Jeff LaBundy <jeff@labundy.com>
+> + *
+> + * These devices rely on application-specific register settings and calibration
+> + * data developed in and exported from a suite of GUIs offered by the vendor. A
+> + * separate tool converts the GUIs' ASCII-based output into a standard firmware
+> + * file parsed by the driver.
+
+This troubles me somewhat. So here we take a C header file which is
+the output of a vendor supplied configuration tool, convert it to a
+bespoke file format using a Python script authored by yourself, which
+we masquerade as Linux firmware in order to set-up the hardware.
+
+Is that correct?
+
+What is preventing a very naughty person from providing their own
+register map (firmware) in order to read/write unsuitable registers
+from kernel context for their own gains; simply by swapping out a file
+contained in userspace?
+
+It would probably be a better idea to compile the register definitions
+with the kernel/module to be safe. You can use Device Tree for
+run-time configuration changes.
+
+> + * Link to data sheets and GUIs: https://www.azoteq.com/products/proxfusion/
+> + *
+> + * Link to conversion tool: https://github.com/jlabundy/iqs62x-h2bin.git
+
+This is unlikely to stand the test of time. Probably best to just list
+the name of the tool in the description above.
+
+> + */
+> +
+> +#include <linux/completion.h>
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/err.h>
+> +#include <linux/firmware.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/list.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/module.h>
+> +#include <linux/notifier.h>
+> +#include <linux/of_device.h>
+> +#include <linux/property.h>
+> +#include <linux/regmap.h>
+> +#include <linux/slab.h>
+> +#include <asm/unaligned.h>
+
+[...]
+
+> +static int iqs62x_fw_parse(struct iqs62x_core *iqs62x,
+> +			   const struct firmware *fw)
+> +{
+> +	struct i2c_client *client = iqs62x->client;
+> +	struct iqs62x_fw_rec *fw_rec;
+> +	struct iqs62x_fw_blk *fw_blk;
+> +	unsigned int hall_cal_index = 0;
+> +	size_t pos = 0;
+> +	int error = 0;
+> +	u8 mask, len;
+> +	u8 *data;
+> +
+> +	while (pos < fw->size) {
+> +		if (pos + sizeof(*fw_rec) > fw->size) {
+> +			error = -EINVAL;
+> +			break;
+> +		}
+> +		fw_rec = (struct iqs62x_fw_rec *)(fw->data + pos);
+> +		pos += sizeof(*fw_rec);
+> +
+> +		if (pos + fw_rec->len - 1 > fw->size) {
+> +			error = -EINVAL;
+> +			break;
+> +		}
+> +		pos += fw_rec->len - 1;
+> +
+> +		switch (fw_rec->type) {
+> +		case IQS62X_FW_REC_TYPE_INFO:
+> +			continue;
+> +
+> +		case IQS62X_FW_REC_TYPE_PROD:
+> +			if (fw_rec->data == iqs62x->dev_desc->prod_num)
+> +				continue;
+> +
+> +			dev_err(&client->dev,
+> +				"Incompatible product number: 0x%02X\n",
+> +				fw_rec->data);
+> +			error = -EINVAL;
+> +			break;
+> +
+> +		case IQS62X_FW_REC_TYPE_HALL:
+> +			if (!hall_cal_index) {
+> +				error = regmap_write(iqs62x->map,
+> +						     IQS62X_OTP_CMD,
+> +						     IQS62X_OTP_CMD_FG3);
+> +				if (error)
+> +					break;
+> +
+> +				error = regmap_read(iqs62x->map,
+> +						    IQS62X_OTP_DATA,
+> +						    &hall_cal_index);
+> +				if (error)
+> +					break;
+> +
+> +				hall_cal_index &= IQS62X_HALL_CAL_MASK;
+> +				if (!hall_cal_index) {
+> +					dev_err(&client->dev,
+> +						"Uncalibrated device\n");
+> +					error = -ENODATA;
+> +					break;
+> +				}
+> +			}
+> +
+> +			if (hall_cal_index > fw_rec->len) {
+> +				error = -EINVAL;
+> +				break;
+> +			}
+> +
+> +			mask = 0;
+> +			data = &fw_rec->data + hall_cal_index - 1;
+> +			len = sizeof(*data);
+> +			break;
+> +
+> +		case IQS62X_FW_REC_TYPE_MASK:
+> +			if (fw_rec->len < (sizeof(mask) + sizeof(*data))) {
+> +				error = -EINVAL;
+> +				break;
+> +			}
+> +
+> +			mask = fw_rec->data;
+> +			data = &fw_rec->data + sizeof(mask);
+> +			len = sizeof(*data);
+> +			break;
+> +
+> +		case IQS62X_FW_REC_TYPE_DATA:
+> +			mask = 0;
+> +			data = &fw_rec->data;
+> +			len = fw_rec->len;
+> +			break;
+> +
+> +		default:
+> +			dev_err(&client->dev,
+> +				"Unrecognized record type: 0x%02X\n",
+> +				fw_rec->type);
+> +			error = -EINVAL;
+> +		}
+> +
+> +		if (error)
+> +			break;
+> +
+> +		fw_blk = devm_kzalloc(&client->dev,
+> +				      struct_size(fw_blk, data, len),
+> +				      GFP_KERNEL);
+> +		if (!fw_blk) {
+> +			error = -ENOMEM;
+> +			break;
+> +		}
+> +
+> +		fw_blk->addr = fw_rec->addr;
+> +		fw_blk->mask = mask;
+> +		fw_blk->len = len;
+> +		memcpy(fw_blk->data, data, len);
+> +
+> +		list_add(&fw_blk->list, &iqs62x->fw_blk_head);
+> +	}
+> +
+> +	release_firmware(fw);
+> +
+> +	return error;
+> +}
+> +
+> +static irqreturn_t iqs62x_irq(int irq, void *context)
+> +{
+> +	struct iqs62x_core *iqs62x = context;
+> +	struct iqs62x_event_data event_data;
+> +	struct iqs62x_event_desc event_desc;
+> +	enum iqs62x_event_reg event_reg;
+> +	unsigned long event_flags = 0;
+> +	int error, i, j;
+> +	u8 event_map[IQS62X_EVENT_SIZE];
+> +
+> +	/*
+> +	 * The device asserts the RDY output to signal the beginning of a
+> +	 * communication window, which is closed by an I2C stop condition.
+> +	 * As such, all interrupt status is captured in a single read and
+> +	 * broadcast to any interested sub-device drivers.
+> +	 */
+> +	error = regmap_raw_read(iqs62x->map, IQS62X_SYS_FLAGS,
+> +				event_map, sizeof(event_map));
+> +	if (error)
+> +		return IRQ_NONE;
+> +
+> +	for (i = 0; i < sizeof(event_map); i++) {
+> +		event_reg = iqs62x->dev_desc->event_regs[iqs62x->ui_sel][i];
+> +
+> +		switch (event_reg) {
+> +		case IQS62X_EVENT_UI_LO:
+> +			event_data.ui_data = get_unaligned_le16(&event_map[i]);
+> +			/* fall through */
+> +		case IQS62X_EVENT_UI_HI:
+> +		case IQS62X_EVENT_NONE:
+> +		case IQS62X_EVENT_GLBL:
+> +			continue;
+> +
+> +		case IQS62X_EVENT_TEMP:
+> +			event_data.temp_flags = event_map[i];
+> +			continue;
+> +
+> +		case IQS62X_EVENT_ALS:
+> +			event_data.als_flags = event_map[i];
+> +			continue;
+> +
+> +		case IQS62X_EVENT_IR:
+> +			event_data.ir_flags = event_map[i];
+> +			continue;
+> +
+> +		case IQS62X_EVENT_INTER:
+> +			event_data.interval = event_map[i];
+> +			continue;
+> +
+> +		case IQS62X_EVENT_HYST:
+> +			event_map[i] <<= iqs62x->dev_desc->hyst_shift;
+> +			/* fall through */
+> +		case IQS62X_EVENT_WHEEL:
+> +		case IQS62X_EVENT_HALL:
+> +		case IQS62X_EVENT_PROX:
+> +		case IQS62X_EVENT_SYS:
+> +			break;
+> +		}
+> +
+> +		for (j = 0; j < IQS62X_NUM_EVENTS; j++) {
+> +			event_desc = iqs62x_events[j];
+> +
+> +			if (event_desc.reg != event_reg)
+> +				continue;
+> +
+> +			if ((event_map[i] & event_desc.mask) == event_desc.val)
+> +				event_flags |= BIT(j);
+> +		}
+> +	}
+> +
+> +	/*
+> +	 * The device resets itself in response to the I2C master stalling
+> +	 * communication beyond a timeout. In this case, all registers are
+> +	 * restored and any interested sub-device drivers are notified.
+> +	 */
+> +	if (event_flags & BIT(IQS62X_EVENT_SYS_RESET)) {
+> +		dev_err(&iqs62x->client->dev, "Unexpected device reset\n");
+> +
+> +		error = iqs62x_dev_init(iqs62x);
+
+Is it safe to re-initialise the entire device in IRQ context?
+
+> +		if (error) {
+> +			dev_err(&iqs62x->client->dev,
+> +				"Failed to re-initialize device: %d\n", error);
+> +			return IRQ_NONE;
+> +		}
+> +	}
+> +
+> +	error = blocking_notifier_call_chain(&iqs62x->nh, event_flags,
+> +					     &event_data);
+> +	if (error & NOTIFY_STOP_MASK)
+> +		return IRQ_NONE;
+> +
+> +	/*
+> +	 * Once the communication window is closed, a small delay is added to
+> +	 * ensure the device's RDY output has been deasserted by the time the
+> +	 * interrupt handler returns.
+> +	 */
+> +	usleep_range(50, 100);
+> +
+> +	return IRQ_HANDLED;
+> +}
+
+[...]
+
+> +static int iqs62x_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iqs62x_core *iqs62x;
+> +	struct iqs62x_info info;
+> +	unsigned int val;
+> +	int error, i, j;
+
+Nit: It's more common to use 'ret' or 'err' - my preference is 'ret'.
+
+> +	const char *fw_file = NULL;
+> +
+> +	iqs62x = devm_kzalloc(&client->dev, sizeof(*iqs62x), GFP_KERNEL);
+> +	if (!iqs62x)
+> +		return -ENOMEM;
+> +
+> +	i2c_set_clientdata(client, iqs62x);
+> +	iqs62x->client = client;
+> +
+> +	BLOCKING_INIT_NOTIFIER_HEAD(&iqs62x->nh);
+> +	INIT_LIST_HEAD(&iqs62x->fw_blk_head);
+> +	init_completion(&iqs62x->fw_done);
+> +
+> +	iqs62x->map = devm_regmap_init_i2c(client, &iqs62x_map_config);
+> +	if (IS_ERR(iqs62x->map)) {
+> +		error = PTR_ERR(iqs62x->map);
+> +		dev_err(&client->dev, "Failed to initialize register map: %d\n",
+> +			error);
+> +		return error;
+> +	}
+> +
+> +	error = regmap_raw_read(iqs62x->map, IQS62X_PROD_NUM, &info,
+> +				sizeof(info));
+> +	if (error)
+> +		return error;
+> +
+> +	for (i = 0; i < IQS62X_NUM_DEV; i++) {
+> +		if (info.prod_num == iqs62x_devs[i].prod_num)
+> +			iqs62x->dev_desc = &iqs62x_devs[i];
+> +		else
+> +			continue;
+
+Reads better without the else:
+
+		if (info.prod_num != iqs62x_devs[i].prod_num)
+			continue;
+
+> +		if (info.sw_num >= iqs62x->dev_desc->sw_num)
+> +			iqs62x->sw_num = info.sw_num;
+> +		else
+> +			continue;
+
+Same as above.
+
+Do you still need to be in this loop at this point?
+
+> +		for (j = 0; j < iqs62x->dev_desc->num_cal_regs; j++) {
+
+What are you doing here? Please provide a comment.
+
+> +			error = regmap_read(iqs62x->map,
+> +					    iqs62x->dev_desc->cal_regs[j],
+> +					    &val);
+> +			if (error)
+> +				return error;
+> +
+> +			if (!val)
+> +				break;
+> +		}
+> +
+> +		if (j == iqs62x->dev_desc->num_cal_regs)
+> +			break;
+
+Is there a reason not to break here? If the product number matched
+once, can it match for a second time?
+
+> +	}
+> +
+> +	if (!iqs62x->dev_desc) {
+> +		dev_err(&client->dev, "Unrecognized product number: 0x%02X\n",
+> +			info.prod_num);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (!iqs62x->sw_num) {
+> +		dev_err(&client->dev, "Unrecognized software number: 0x%02X\n",
+> +			info.sw_num);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (i == IQS62X_NUM_DEV) {
+> +		dev_err(&client->dev, "Uncalibrated device\n");
+> +		return -ENODATA;
+> +	}
+> +
+> +	error = regmap_write(iqs62x->map, IQS62X_SYS_SETTINGS,
+> +			     IQS62X_SYS_SETTINGS_SOFT_RESET);
+> +	if (error)
+> +		return error;
+> +	usleep_range(10000, 10100);
+> +
+> +	device_property_read_string(&client->dev, "linux,fw-file", &fw_file);
+> +
+> +	error = request_firmware_nowait(THIS_MODULE, FW_ACTION_HOTPLUG,
+> +					fw_file ? : iqs62x->dev_desc->fw_file,
+> +					&client->dev, GFP_KERNEL, iqs62x,
+> +					iqs62x_fw_load);
+> +	if (error)
+> +		dev_err(&client->dev, "Failed to request firmware: %d\n",
+> +			error);
+> +
+> +	return error;
+> +}
+> +
+> +static int iqs62x_remove(struct i2c_client *client)
+> +{
+> +	struct iqs62x_core *iqs62x = i2c_get_clientdata(client);
+> +
+> +	wait_for_completion(&iqs62x->fw_done);
+> +
+> +	return 0;
+> +}
+
+Please move the suspend/resume calls down to here.
+
+> +static const struct i2c_device_id iqs62x_id[] = {
+> +	{ "iqs620a", 0 },
+> +	{ "iqs621", 1 },
+> +	{ "iqs622", 2 },
+> +	{ "iqs624", 3 },
+> +	{ "iqs625", 4 },
+
+Better to define these. In fact, do you even use the .ids?
+
+If not, you can use the new I2C probe function and drop this table.
+
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, iqs62x_id);
+> +
+> +static const struct of_device_id iqs62x_of_match[] = {
+> +	{ .compatible = "azoteq,iqs620a" },
+> +	{ .compatible = "azoteq,iqs621" },
+> +	{ .compatible = "azoteq,iqs622" },
+> +	{ .compatible = "azoteq,iqs624" },
+> +	{ .compatible = "azoteq,iqs625" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, iqs62x_of_match);
+> +
+> +static struct i2c_driver iqs62x_i2c_driver = {
+> +	.driver = {
+> +		.name		= "iqs62x",
+> +		.of_match_table = iqs62x_of_match,
+> +		.pm		= &iqs62x_pm,
+> +	},
+> +	.id_table	= iqs62x_id,
+> +	.probe		= iqs62x_probe,
+> +	.remove		= iqs62x_remove,
+> +};
+> +module_i2c_driver(iqs62x_i2c_driver);
+> +
+> +MODULE_AUTHOR("Jeff LaBundy <jeff@labundy.com>");
+> +MODULE_DESCRIPTION("Azoteq IQS620A/621/622/624/625 ProxFusion Sensor Family");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/mfd/iqs62x-tables.c b/drivers/mfd/iqs62x-tables.c
+> new file mode 100644
+> index 0000000..12300b7
+> --- /dev/null
+> +++ b/drivers/mfd/iqs62x-tables.c
+> @@ -0,0 +1,424 @@
+> +// SPDX-License-Identifier: GPL-2.0+
+> +/*
+> + * Azoteq IQS620A/621/622/624/625 ProxFusion Sensor Family
+> + *
+> + * Copyright (C) 2019
+> + * Author: Jeff LaBundy <jeff@labundy.com>
+> + */
+> +
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/mfd/iqs62x.h>
+> +
+> +static const struct mfd_cell iqs620at_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs620a-keys",
+> +	},
+> +	{
+> +		.name = IQS620_DRV_NAME_PWM,
+> +		.of_compatible = "azoteq,iqs620a-pwm",
+> +	},
+> +	{
+> +		.name = IQS620_DRV_NAME_TEMP,
+> +	},
+> +};
+> +
+> +static const struct mfd_cell iqs620a_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs620a-keys",
+> +	},
+> +	{
+> +		.name = IQS620_DRV_NAME_PWM,
+> +		.of_compatible = "azoteq,iqs620a-pwm",
+> +	},
+> +};
+> +
+> +static const struct mfd_cell iqs621_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs621-keys",
+> +	},
+> +	{
+> +		.name = IQS621_DRV_NAME_ALS,
+> +	},
+> +};
+> +
+> +static const struct mfd_cell iqs622_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs622-keys",
+> +	},
+> +	{
+> +		.name = IQS622_DRV_NAME_PROX,
+> +		.of_compatible = "azoteq,iqs622-prox",
+> +	},
+> +};
+> +
+> +static const struct mfd_cell iqs624_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs624-keys",
+> +	},
+> +	{
+> +		.name = IQS624_DRV_NAME_POS,
+> +	},
+> +};
+> +
+> +static const struct mfd_cell iqs625_sub_devs[] = {
+> +	{
+> +		.name = IQS62X_DRV_NAME_KEYS,
+> +		.of_compatible = "azoteq,iqs625-keys",
+> +	},
+> +	{
+> +		.name = IQS624_DRV_NAME_POS,
+> +	},
+> +};
+
+These should be moved into the core driver.
+
+> +static const u8 iqs620at_cal_regs[] = { 0xC2, 0xC3, 0xC4, };
+> +static const u8 iqs621_cal_regs[] = { 0x82, 0x83, };
+
+What do these mean?
+
+Probably best of do define them, so people can read them.
+
+[...]
+
 -- 
-2.15.0
-
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
