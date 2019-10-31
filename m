@@ -2,313 +2,192 @@ Return-Path: <SRS0=3iDe=YY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1626FCA9EC3
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BDF6CA9EC3
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:31:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DA93F2080F
-	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:13:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73249208C0
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Oct 2019 12:31:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="eWEB6+B1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbfJaMNY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 31 Oct 2019 08:13:24 -0400
-Received: from mout.kundenserver.de ([212.227.126.130]:48437 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726462AbfJaMNY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Oct 2019 08:13:24 -0400
-Received: from localhost ([46.78.193.225]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1M6DrU-1iJYgB2qgi-006eja; Thu, 31 Oct 2019 13:13:19 +0100
-Date:   Thu, 31 Oct 2019 13:13:19 +0100
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org
-Subject: [RFC] iio: srf04: add parallax ping sensors
-Message-ID: <20191031121317.vojiwnijmuq5jxap@arbad>
+        id S1726741AbfJaMbS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Oct 2019 08:31:18 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:13352 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726538AbfJaMbR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Oct 2019 08:31:17 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id x9VCQm2j029135;
+        Thu, 31 Oct 2019 13:30:55 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=STMicroelectronics;
+ bh=XobN5zu4BmNIGNVaY/JnEEHn+q2OpaXORVnInB3cdq4=;
+ b=eWEB6+B1HOrepyJ4WJRDLMyuI9PXQWASN9adjrKxVIyL5yRCbF9YLcc/yPdmdPJYV3QT
+ 2GHYgLY0xbpRqrX6IU1yZuwPpu89k2qmlIfcPZ86JtwCCIXQ1tRpT9T/Kv3zpqIzA/oz
+ mTnH+WpF2bILB+mT+AlcIMeR7BnVHXs7M4S/PmFXdFlj6RDPwa8l5xtRULy1QdmM+RY5
+ wOHeANc7j91gtBY3FtBXjwUtro+MQg4q9gdJOFyeT4Z5UdvkeU+2+bTFdC8V34jMJrYx
+ 9biD4wHrOdpRH6hCWFr6Q+2+r8qQFJnUevIcG/X3Te/Ffy/2L8xpL+2bDpkWjqvGJr9r fg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx08-00178001.pphosted.com with ESMTP id 2vxwhussfa-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 31 Oct 2019 13:30:55 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E0C8C100039;
+        Thu, 31 Oct 2019 13:30:53 +0100 (CET)
+Received: from Webmail-eu.st.com (Safex1hubcas21.st.com [10.75.90.44])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CE8D12B7837;
+        Thu, 31 Oct 2019 13:30:53 +0100 (CET)
+Received: from SAFEX1HUBCAS22.st.com (10.75.90.93) by SAFEX1HUBCAS21.st.com
+ (10.75.90.44) with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 31 Oct
+ 2019 13:30:53 +0100
+Received: from localhost (10.201.20.122) by Webmail-ga.st.com (10.75.90.48)
+ with Microsoft SMTP Server (TLS) id 14.3.439.0; Thu, 31 Oct 2019 13:30:53
+ +0100
+From:   Benjamin Gaignard <benjamin.gaignard@st.com>
+To:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
+        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
+        <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <lee.jones@linaro.org>,
+        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
+        <benjamin.gaignard@st.com>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-pwm@vger.kernel.org>
+Subject: [PATCH 3/4] dt-bindings: pwm: Convert stm32 pwm bindings to json-schema
+Date:   Thu, 31 Oct 2019 13:30:39 +0100
+Message-ID: <20191031123040.26316-4-benjamin.gaignard@st.com>
+X-Mailer: git-send-email 2.15.0
+In-Reply-To: <20191031123040.26316-1-benjamin.gaignard@st.com>
+References: <20191031123040.26316-1-benjamin.gaignard@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:/dek+YVNReTrl+vK+ZTQnT63YZssoCdt/xYsybAXxfuNjSr3hXC
- onAhHZTc7UsD2GMnUuMmDOwZFZ7ICuvhB687kE7ykHJRSel0nnpeboaJeSbnDn+2nWK9PTk
- iVCxTcdh9xrRwrP3W9e0MvcYPOR0vSmK1uW1EKZ9JWKhAVs+6Y1r+Go2yDGUh51qaJNOccd
- hfMcePD2r4VLSECwAIBdw==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:zN3owq6sgi0=:oLR64eAqDOwKPBJWnPJfs2
- GU4T3zwbckCaUyTEeIWRxzUYL1F1VNL8xpunZjfC/vYRVXO8Z/arM6soGpXHm+YVsRbgzJFR4
- n3aAHcSN5ZTyuKJX+cTB+AI/tf5/e1NEOW1uBiR53sdrVyPLm5Ki6i0cs4wokxLtuKG5WBAS1
- JIKzsrF05WUijXj5Nai1Nbqej6MbXVqWewh22XI5OR9p2JYggb5Fn1CDFTPlAWD+XRzUyTEor
- +7Z0MSa5hSQ7R/XZNsVe+x5ctytM1LPeMEUQantmr8CWbwsJox7JwTvpxKqVYwFetemdNpYYA
- 63KqKY4AotiY9vKS1R8c7zGpCcAr7nSptIdAcCip1pbMnxb2DEFoJc9O8292ff9p5VeSlAMpO
- EZQvsZtcGFOPMsyf3kD0IJKYF30h8OC9tAKg8cIXOn2ErKjoYXFMimeQqu+Wm9yA/+8aN/Flq
- rhle8GhTAnE5ufaHAXZV/UOFGzfnw9Ba3hKckk3eFh2N6Hq0KLndzJ6pYu0aKfO4uj5GQdgI/
- B89eC8go+PZ63wxJc88nArR5eWpjxEF8ZaXIoo7saNqdr2nkYxiIMKXEjTXw2ZzMyGhZhtb1r
- GeX4mH0sQAFyj4asXJTStY784FHE+6IbRbz3mucTBN68rZVvSdeVu9lj/txGUaUj4YsN4Ynqh
- ZjipxT0IIMOHwkSyCADp5KWvyl5Kspcjc8RWawvKSXbTxADupeiLxQ44BB03Ce9PBflFN8Tgy
- /PgQwov6/oO+sWe3+N+yL3z//pcgbJyzxPH75vxvtn/rcXyae1QfXo9ZRbVO1+RgOpwNBUvj3
- AnxhJTuy66ZoK1SdVesJ/T+5Z/pb6vyoaCtCsJEBZM0mVxfEV3qt3znUzVBzUIShtJ52Ht2FY
- Iro4zXOrb0QwCSa4ZjsA==
+Content-Type: text/plain
+X-Originating-IP: [10.201.20.122]
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
+ definitions=2019-10-31_05:2019-10-30,2019-10-31 signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Convert the STM32 pwm binding to DT schema format using json-schema
 
-i added support for parallax ping and laser ping sensors with just one pin
-for trigger and echo signal.
-
-After implementing it turned out that this one pin sensor requires a lot of
-conditions and special treatment. But the calculation is still the same as
-for srf04.
-
-Should it be integrated into the existing srf04 driver or should i create a
-new one for those single pin us sensors? Maybe together with a C module for
-the calculations they have in common.
-
-Regards,
-
-Andreas
-
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 ---
- drivers/iio/proximity/srf04.c | 151 ++++++++++++++++++++++++++++++++++--------
- 1 file changed, 122 insertions(+), 29 deletions(-)
+ .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ----------------
+ .../devicetree/bindings/pwm/st,stm32-pwm.yaml      | 51 ++++++++++++++++++++++
+ 2 files changed, 51 insertions(+), 38 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/st,stm32-pwm.yaml
 
-diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
-index 01eb8cc63076..8bcc77a45965 100644
---- a/drivers/iio/proximity/srf04.c
-+++ b/drivers/iio/proximity/srf04.c
-@@ -49,7 +49,12 @@
- #include <linux/iio/sysfs.h>
- 
- struct srf04_cfg {
--	unsigned long trigger_pulse_us;
-+	unsigned long	trigger_pulse_us;	/* length of trigger pulse */
-+	int		single_pin_mode;	/* just one pin for trigger */
-+						/*   and echo */
-+	int		laserping_error;	/* support error code in */
-+						/*   pulse width of laser */
-+						/*   ping sensors */
- };
- 
- struct srf04_data {
-@@ -67,10 +72,26 @@ struct srf04_data {
- 
- static const struct srf04_cfg srf04_cfg = {
- 	.trigger_pulse_us = 10,
-+	.single_pin_mode = 0,
-+	.laserping_error = 0,
- };
- 
- static const struct srf04_cfg mb_lv_cfg = {
- 	.trigger_pulse_us = 20,
-+	.single_pin_mode = 0,
-+	.laserping_error = 0,
-+};
-+
-+static const struct srf04_cfg pa_ping_cfg = {
-+	.trigger_pulse_us = 5,
-+	.single_pin_mode = 1,
-+	.laserping_error = 0,
-+};
-+
-+static const struct srf04_cfg pa_laser_ping_cfg = {
-+	.trigger_pulse_us = 5,
-+	.single_pin_mode = 1,
-+	.laserping_error = 1,
- };
- 
- static irqreturn_t srf04_handle_irq(int irq, void *dev_id)
-@@ -96,6 +117,9 @@ static int srf04_read(struct srf04_data *data)
- 	ktime_t ktime_dt;
- 	u64 dt_ns;
- 	u32 time_ns, distance_mm;
-+	struct platform_device *pdev = container_of(data->dev,
-+						struct platform_device, dev);
-+	struct iio_dev *indio_dev = iio_priv_to_dev(data);
- 
- 	/*
- 	 * just one read-echo-cycle can take place at a time
-@@ -110,30 +134,58 @@ static int srf04_read(struct srf04_data *data)
- 	udelay(data->cfg->trigger_pulse_us);
- 	gpiod_set_value(data->gpiod_trig, 0);
- 
-+	if (data->cfg->single_pin_mode) {
-+		ret = gpiod_direction_input(data->gpiod_trig);
-+		if (ret < 0) {
-+			mutex_unlock(&data->lock);
-+			return ret;
-+		}
-+
-+		data->irqnr = gpiod_to_irq(data->gpiod_echo);
-+		if (data->irqnr < 0) {
-+			dev_err(data->dev, "gpiod_to_irq: %d\n", data->irqnr);
-+			return data->irqnr;
-+		}
-+
-+		ret = devm_request_irq(data->dev, data->irqnr, srf04_handle_irq,
-+				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+				pdev->name, indio_dev);
-+		if (ret < 0) {
-+			dev_err(data->dev, "request_irq: %d\n", ret);
-+			return ret;
-+		}
-+	}
-+
- 	/* it should not take more than 20 ms until echo is rising */
- 	ret = wait_for_completion_killable_timeout(&data->rising, HZ/50);
--	if (ret < 0) {
--		mutex_unlock(&data->lock);
--		return ret;
--	} else if (ret == 0) {
--		mutex_unlock(&data->lock);
--		return -ETIMEDOUT;
-+	if (ret < 0)
-+		goto err_reset_direction;
-+	else if (ret == 0) {
-+		ret = -ETIMEDOUT;
-+		goto err_reset_direction;
- 	}
- 
- 	/* it cannot take more than 50 ms until echo is falling */
- 	ret = wait_for_completion_killable_timeout(&data->falling, HZ/20);
--	if (ret < 0) {
--		mutex_unlock(&data->lock);
--		return ret;
--	} else if (ret == 0) {
--		mutex_unlock(&data->lock);
--		return -ETIMEDOUT;
-+	if (ret < 0)
-+		goto err_reset_direction;
-+	else if (ret == 0) {
-+		ret = -ETIMEDOUT;
-+		goto err_reset_direction;
- 	}
- 
- 	ktime_dt = ktime_sub(data->ts_falling, data->ts_rising);
- 
- 	mutex_unlock(&data->lock);
- 
-+	if (data->cfg->single_pin_mode) {
-+		free_irq(data->irqnr, indio_dev);
-+
-+		ret = gpiod_direction_output(data->gpiod_trig, GPIOD_OUT_LOW);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
- 	dt_ns = ktime_to_ns(ktime_dt);
- 	/*
- 	 * measuring more than 6,45 meters is beyond the capabilities of
-@@ -154,6 +206,25 @@ static int srf04_read(struct srf04_data *data)
- 	time_ns = dt_ns;
- 
- 	/*
-+	 * read error code of laser ping sensor and give users chance to
-+	 * figure out error by using dynamic debuggging
-+	 */
-+	if (data->cfg->laserping_error) {
-+		if ((time_ns >= 12500000) && (time_ns < 13500000)) {
-+			dev_dbg(data->dev, "target too close or to far\n");
-+			return -EIO;
-+		}
-+		if ((time_ns >= 13500000) && (time_ns < 14500000)) {
-+			dev_dbg(data->dev, "internal sensor error\n");
-+			return -EIO;
-+		}
-+		if ((time_ns >= 14500000) && (time_ns < 15500000)) {
-+			dev_dbg(data->dev, "internal sensor timeout\n");
-+			return -EIO;
-+		}
-+	}
-+
-+	/*
- 	 * the speed as function of the temperature is approximately:
- 	 *
- 	 * speed = 331,5 + 0,6 * Temp
-@@ -176,6 +247,16 @@ static int srf04_read(struct srf04_data *data)
- 	distance_mm = time_ns * 106 / 617176;
- 
- 	return distance_mm;
-+
-+err_reset_direction:
-+	mutex_unlock(&data->lock);
-+	if (data->cfg->single_pin_mode) {
-+		free_irq(data->irqnr, indio_dev);
-+
-+		if (gpiod_direction_output(data->gpiod_trig, GPIOD_OUT_LOW))
-+			dev_dbg(data->dev, "error in gpiod_direction_output\n");
-+	}
-+	return ret;
- }
- 
- static int srf04_read_raw(struct iio_dev *indio_dev,
-@@ -228,6 +309,8 @@ static const struct of_device_id of_srf04_match[] = {
- 	{ .compatible = "maxbotix,mb1020", .data = &mb_lv_cfg},
- 	{ .compatible = "maxbotix,mb1030", .data = &mb_lv_cfg},
- 	{ .compatible = "maxbotix,mb1040", .data = &mb_lv_cfg},
-+	{ .compatible = "parallax,ping", .data = &pa_ping_cfg},
-+	{ .compatible = "parallax,laserping", .data = &pa_ping_cfg},
- 	{},
- };
- 
-@@ -261,11 +344,19 @@ static int srf04_probe(struct platform_device *pdev)
- 		return PTR_ERR(data->gpiod_trig);
- 	}
- 
--	data->gpiod_echo = devm_gpiod_get(dev, "echo", GPIOD_IN);
--	if (IS_ERR(data->gpiod_echo)) {
--		dev_err(dev, "failed to get echo-gpios: err=%ld\n",
-+	/*
-+	 * some sensors come along with just one pin for triggering and the
-+	 * echo
-+	 */
-+	if (data->cfg->single_pin_mode)
-+		data->gpiod_echo = data->gpiod_trig;
-+	else {
-+		data->gpiod_echo = devm_gpiod_get(dev, "echo", GPIOD_IN);
-+		if (IS_ERR(data->gpiod_echo)) {
-+			dev_err(dev, "failed to get echo-gpios: err=%ld\n",
- 					PTR_ERR(data->gpiod_echo));
--		return PTR_ERR(data->gpiod_echo);
-+			return PTR_ERR(data->gpiod_echo);
-+		}
- 	}
- 
- 	if (gpiod_cansleep(data->gpiod_echo)) {
-@@ -273,18 +364,20 @@ static int srf04_probe(struct platform_device *pdev)
- 		return -ENODEV;
- 	}
- 
--	data->irqnr = gpiod_to_irq(data->gpiod_echo);
--	if (data->irqnr < 0) {
--		dev_err(data->dev, "gpiod_to_irq: %d\n", data->irqnr);
--		return data->irqnr;
--	}
+diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+deleted file mode 100644
+index a8690bfa5e1f..000000000000
+--- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
++++ /dev/null
+@@ -1,38 +0,0 @@
+-STMicroelectronics STM32 Timers PWM bindings
 -
--	ret = devm_request_irq(dev, data->irqnr, srf04_handle_irq,
--			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
--			pdev->name, indio_dev);
--	if (ret < 0) {
--		dev_err(data->dev, "request_irq: %d\n", ret);
--		return ret;
-+	if (!data->cfg->single_pin_mode) {
-+		data->irqnr = gpiod_to_irq(data->gpiod_echo);
-+		if (data->irqnr < 0) {
-+			dev_err(data->dev, "gpiod_to_irq: %d\n", data->irqnr);
-+			return data->irqnr;
-+		}
+-Must be a sub-node of an STM32 Timers device tree node.
+-See ../mfd/stm32-timers.txt for details about the parent node.
+-
+-Required parameters:
+-- compatible:		Must be "st,stm32-pwm".
+-- pinctrl-names: 	Set to "default".
+-- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
+-			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+-- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
+-			bindings defined in pwm.txt.
+-
+-Optional parameters:
+-- st,breakinput:	One or two <index level filter> to describe break input configurations.
+-			"index" indicates on which break input (0 or 1) the configuration
+-			should be applied.
+-			"level" gives the active level (0=low or 1=high) of the input signal
+-			for this configuration.
+-			"filter" gives the filtering value to be applied.
+-
+-Example:
+-	timers@40010000 {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-		compatible = "st,stm32-timers";
+-		reg = <0x40010000 0x400>;
+-		clocks = <&rcc 0 160>;
+-		clock-names = "int";
+-
+-		pwm {
+-			compatible = "st,stm32-pwm";
+-			#pwm-cells = <3>;
+-			pinctrl-0	= <&pwm1_pins>;
+-			pinctrl-names	= "default";
+-			st,breakinput = <0 1 5>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/pwm/st,stm32-pwm.yaml b/Documentation/devicetree/bindings/pwm/st,stm32-pwm.yaml
+new file mode 100644
+index 000000000000..d3f8180edd88
+--- /dev/null
++++ b/Documentation/devicetree/bindings/pwm/st,stm32-pwm.yaml
+@@ -0,0 +1,51 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/pwm/st,stm32-pwm.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		ret = devm_request_irq(dev, data->irqnr, srf04_handle_irq,
-+				IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+				pdev->name, indio_dev);
-+		if (ret < 0) {
-+			dev_err(data->dev, "request_irq: %d\n", ret);
-+			return ret;
-+		}
- 	}
- 
- 	platform_set_drvdata(pdev, indio_dev);
++title: STMicroelectronics STM32 Timers PWM bindings
++
++maintainers:
++  - Benjamin Gaignard <benjamin.gaignard@st.com>
++  - Fabrice Gasnier <fabrice.gasnier@st.com>
++
++properties:
++  pwn:
++    type: object
++
++    description:
++      must be a sub-node of an STM32 Timer device tree node
++
++    properties:
++      compatible:
++        const: st,stm32-pwm
++
++      "#pwm-cells":
++        const: 3
++      
++      st,breakinput:
++        description: |
++          One or two <index level filter> to describe break input configurations.
++          "index" indicates on which break input (0 or 1) the configuration should be applied.
++          "level" gives the active level (0=low or 1=high) of the input signal for this configuration.
++          "filter" gives the filtering value (up to 15) to be applied.
++   
++        allOf:
++          - $ref: /schemas/types.yaml#/definitions/uint32-array
++          - minItems: 3
++          - maxItems: 3
++
++    required:
++      - "#pwm-cells"
++      - compatible
++
++examples:
++  - |
++    pwm {
++      compatible = "st,stm32-pwm";
++      #pwm-cells = <3>;
++      st,breakinput = <0 1 5>;
++    };
++
++...
 -- 
-2.11.0
+2.15.0
+
