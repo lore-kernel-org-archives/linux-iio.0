@@ -7,34 +7,34 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 658C2CA9ED1
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A39C47E49
 	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:36:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3C8A7218AC
+	by mail.kernel.org (Postfix) with ESMTP id 88955218DE
 	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:36:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="P2MUnBRB"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="OlUC9epE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729085AbfKAJfn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Nov 2019 05:35:43 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:64478 "EHLO
+        id S1728948AbfKAJfc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Nov 2019 05:35:32 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:58338 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729017AbfKAJfk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Nov 2019 05:35:40 -0400
+        by vger.kernel.org with ESMTP id S1728901AbfKAJfc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Nov 2019 05:35:32 -0400
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA19XUH6003902;
-        Fri, 1 Nov 2019 05:35:28 -0400
-Received: from nam01-bn3-obe.outbound.protection.outlook.com (mail-bn3nam01lp2054.outbound.protection.outlook.com [104.47.33.54])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2vxwhjrw1a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Nov 2019 05:35:28 -0400
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA19XUxi003899;
+        Fri, 1 Nov 2019 05:35:20 -0400
+Received: from nam03-dm3-obe.outbound.protection.outlook.com (mail-dm3nam03lp2057.outbound.protection.outlook.com [104.47.41.57])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2vxwhjrw19-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 01 Nov 2019 05:35:20 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RUZzslhYVj6yXtz9+F/7VKSgw1ZUDitufuPpGs/vIzFug8TLKlNz/25Wv9Y3XHng3cM6jDg8VoA+sIhthmHE0/TzgBqdT/9l43kHpA1AzX9FCePxDCvNCcBk1VRRADoMbP1OZC5ZOPzqnD/95Eb4lC0vSYNsUbVuLsSlDsMqqHI+59rh5PSU2LK1k1wsq5UhxOkoDO62ZRGsJ7hdG+NENr751+ldLP04BULqbr3GdW/Hti+wxIoY6mzkb/KgQosIyTrwBcnaeC/8pETwqpHP9FscCAWdezzXLrFRTVQaQQMKPgczHgCvw/8+jqbViCyQ/zhkxbvKx3rpD1zlGjDcIQ==
+ b=dn2UkTkbMCS9b1bCYm8ftpCjDpIjzW4scg5gE/0Z2wb92e3rzTGI4KiH5wbOvUdcIFGFA9e5jaDaAO1iKc8maof0DQ64p2QBEO6zI8RZG0TEYmEAGhlQjadO0riirhfrRZH1Lt57pRij9FDAn4IKqW2DYr9iccz+ZLo0GkEjp4u+/8oJlWQ7dRT/NeC9pJtjZ3QCx/qjD1wfk63Cz4TXN5T7YUvOdd/LFuouJanb3JDs6f8KXa7eJzuPtW3vSOgWajwG8C5rHcpgsi0nufDyKlfZW3k9nByZq7BacHD0EzTt0exCe16iAtn5Y46VgrTBWtTVwDJuX05ZfEWbfdr+tA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iutoMGZBZJr043uZlhisldR32lkJFHY26oYznxwowBA=;
- b=VG8oqZoXF/ayBSqh6y9kDdN2KQmzXUtjGuNiY65Zf/6PW8cXFOYCwtHOvYyIEs1cxAStSsFsib971gi4A9pvOniwdF0Rd3MjIsU5PgQqptXggIbyDA7ifBV2NNs5sgcKxB7hfSL7m9o7zeWW4iy9HFXhYUpX2fxBxt2eUqeGL5Q8i7xqh1EaDAbQAKEUUNJnBrANaZSkmPdRwgrU1kg81aFm+4BHbfs6BUfQRbyjG5uSN7SYtaf8J77yfkdVFHPOQBdsP9tu8C7zC5A2XkIKqhUFjcFZg+yP4QY2LyapXx7gY9HmFwNXooA3HJfzVyU3EnB2BmKgR9LJPDN/PfveZw==
+ bh=uqAbtWyP1oqZstS4KcjRFQseXzYuanor1MeW60wBkRI=;
+ b=hSvsfUu/3/WwbS0ZZ2WfXcl7vLbUvfx7ccUY4EQGUtRyVuTsvSgYNGyu8c0YX4fo6aYvDtzpgR4BmQXCv2vMKH90UsaNYlQl7q5J+E+9vnfZKAy6BwMjhjGE7WOQMxF5zlqbIKFO1/2a+t0ehekx+8zOhXf2vZJ2QHOImbfvhVBukWOkur3zqh1zArUz5pSq1nKkGCmPWYSTzTLeyq5ckMdWMzVU6dmKcMvfx0QVs8kBwi2ia/HCNihX+ui0MfDB2Xg/1bNcQnVdThFW2knTpU3gg0jLF8uQ5zxH1Vl//KcfUXRcGZw8hmQkEgwX51qbQ4TtxjtOHt+IH24FFrZxGg==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  137.71.25.57) smtp.rcpttodomain=metafoo.de smtp.mailfrom=analog.com;
  dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
@@ -42,40 +42,40 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=iutoMGZBZJr043uZlhisldR32lkJFHY26oYznxwowBA=;
- b=P2MUnBRBiUa0Y/4WyacpOQJH+dKbxKwMdPCPmsnqHHwPvyyFIWymah1POGHir8GyILxjguhKrsVmE5/lykpVMigu+w6jiKIPtLZEsJJw+m76FuLB1Z8xCDW7Chlm0NlHlosWGpHref4NcxuNKeXBDbcvDbjGtEvJiV6Q29kd+RM=
-Received: from CY4PR03CA0092.namprd03.prod.outlook.com (2603:10b6:910:4d::33)
- by MWHPR03MB3101.namprd03.prod.outlook.com (2603:10b6:301:3c::18) with
+ bh=uqAbtWyP1oqZstS4KcjRFQseXzYuanor1MeW60wBkRI=;
+ b=OlUC9epEkDFX6h8RgVGWHzIuy0UAAtPlruQ9FXgBtH5i1zlceSt4/grquChkzKZ7mYXq+g/2FtIENeDfz3c87BUjuyOn2X2yoIE/GM6TJrupx6LQCtGB3JdxuRsuyoBwW0nDQ9lSzH1JRlRVVfvzzQhW29XEueLK3MQ3JoJ24D0=
+Received: from CH2PR03CA0029.namprd03.prod.outlook.com (2603:10b6:610:59::39)
+ by MWHPR03MB2543.namprd03.prod.outlook.com (2603:10b6:300:7::19) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2387.24; Fri, 1 Nov
- 2019 09:35:26 +0000
-Received: from BL2NAM02FT044.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::206) by CY4PR03CA0092.outlook.office365.com
- (2603:10b6:910:4d::33) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2408.21 via Frontend
- Transport; Fri, 1 Nov 2019 09:35:25 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2387.20; Fri, 1 Nov
+ 2019 09:35:18 +0000
+Received: from BL2NAM02FT049.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::209) by CH2PR03CA0029.outlook.office365.com
+ (2603:10b6:610:59::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2408.20 via Frontend
+ Transport; Fri, 1 Nov 2019 09:35:17 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.57 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
 Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2NAM02FT044.mail.protection.outlook.com (10.152.77.35) with Microsoft SMTP
+ BL2NAM02FT049.mail.protection.outlook.com (10.152.77.118) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2387.20
- via Frontend Transport; Fri, 1 Nov 2019 09:35:24 +0000
+ via Frontend Transport; Fri, 1 Nov 2019 09:35:17 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xA19ZHIM025084
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xA19Z9Qx025004
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 1 Nov 2019 02:35:17 -0700
+        Fri, 1 Nov 2019 02:35:09 -0700
 Received: from saturn.ad.analog.com (10.48.65.117) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 1 Nov 2019 05:35:23 -0400
+ 14.3.408.0; Fri, 1 Nov 2019 05:35:16 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 07/10] iio: imu: adis16480: prefer `unsigned int` over `unsigned`
-Date:   Fri, 1 Nov 2019 11:35:02 +0200
-Message-ID: <20191101093505.9408-8-alexandru.ardelean@analog.com>
+Subject: [PATCH 03/10] iio: imu: adis16460: check ret val for non-zero vs less-than-zero
+Date:   Fri, 1 Nov 2019 11:34:58 +0200
+Message-ID: <20191101093505.9408-4-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191101093505.9408-1-alexandru.ardelean@analog.com>
 References: <20191101093505.9408-1-alexandru.ardelean@analog.com>
@@ -85,28 +85,28 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(136003)(346002)(376002)(396003)(189003)(199004)(86362001)(4326008)(54906003)(4744005)(47776003)(5660300002)(316002)(356004)(6666004)(14444005)(8936002)(26005)(50226002)(2906002)(478600001)(246002)(50466002)(70586007)(336012)(76176011)(51416003)(44832011)(305945005)(7636002)(70206006)(48376002)(106002)(107886003)(1076003)(36756003)(476003)(2870700001)(486006)(446003)(126002)(2616005)(110136005)(11346002)(426003)(7696005)(186003)(8676002)(81973001);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR03MB3101;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(136003)(376002)(346002)(39860400002)(189003)(199004)(86362001)(426003)(7696005)(476003)(446003)(51416003)(356004)(336012)(6666004)(5660300002)(126002)(4326008)(44832011)(2906002)(11346002)(50466002)(110136005)(486006)(186003)(70586007)(70206006)(54906003)(36756003)(106002)(8676002)(48376002)(47776003)(1076003)(2870700001)(246002)(26005)(478600001)(316002)(2616005)(76176011)(107886003)(305945005)(50226002)(8936002)(7636002);DIR:OUT;SFP:1101;SCL:1;SRVR:MWHPR03MB2543;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 5fc5e79e-322c-46d6-bcd8-08d75eaed2b6
-X-MS-TrafficTypeDiagnostic: MWHPR03MB3101:
-X-Microsoft-Antispam-PRVS: <MWHPR03MB310199397D222B52DB8A689BF9620@MWHPR03MB3101.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2276;
+X-MS-Office365-Filtering-Correlation-Id: 7a8c9ba3-c9e8-41f7-ddb6-08d75eaece1a
+X-MS-TrafficTypeDiagnostic: MWHPR03MB2543:
+X-Microsoft-Antispam-PRVS: <MWHPR03MB25433CBDA079693D722D97ADF9620@MWHPR03MB2543.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
 X-Forefront-PRVS: 020877E0CB
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: i/JV8M5uGIfCaK9pTPk8c0+eFK9TMwNYqS33Re1aShqZB2lP9H6A7/cFH5ycxTiZCqyKaDT7vf8JEdULaCuSO27Klx68+98ysmYgsv+HWw017BOW9VNwH+BlejnKb2kobOqnOmcZBSaBorF6SltkxOoNx4rjCXap37cnOAOQTO3cPU2dKhfrxdHUO8AIr3ktUqtH3/ia4O0B9yZLxl8uaQCp//5jTYnCycxcam8rbWbYNf3rn17qqveBgE+jRm9YUMvuvggKXqZw41M/O8JPskGA1GnTB39WZM8tYc0NkH8FmIsDRDCMNU37cMUm9rB/L3Olke0rYk9v+Y3ig3QYt/WXOCy5zXHDZIh5i3ooVviViFdA0/DTIugKyHnP4Fej1XjISfgwLaLFkTAu50rQeW8S8W7MFdEwT/bab4SsqigEf6HDzDvB8n8WcnKRYKkB
+X-Microsoft-Antispam-Message-Info: 637tHRv6wg7BREuQOU/l3cBrDHyRxPw0OhzKeqME3wRC999WBOPKQnbQJK4ACUBEr8RN0IW+jRNXAGJlZf9f4AU7Uo/zPVD/HTMd+zZ8GsrLoiKbbAV9a2/MvDm6qVUwFVa/mE5ODA4f+8gzWHDVMnB6fPvVhlTUzdevBipAhgSEzVeLEN7FAFeI8YcMmxvBUH5ZXCmj3fXmTJHOPO9YnfOBiCJ0/TXbNLgL4O0uPVUK2SB7ELqUSd7c8N44OYSdgmHsqj3bZERDLjKyRr0KE8IxHtNptX/mmDR2CCk2oyPjSq8gAe72aWd1okVw9O1eXSjNpmofVkdhD422khsq9u5e8dMF6yJmYlIZuDg3rb6+0P5Z53Uif8mg5gGjDxqOMEm6Z31jAL5UxnXzfKNYl1Kv9B/ApGbGKtbm4ex8P7dg8V2XS9YJ+z+cr1XOIg9K
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2019 09:35:24.8305
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2019 09:35:17.0981
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5fc5e79e-322c-46d6-bcd8-08d75eaed2b6
+X-MS-Exchange-CrossTenant-Network-Message-Id: 7a8c9ba3-c9e8-41f7-ddb6-08d75eaece1a
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR03MB3101
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MWHPR03MB2543
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-11-01_03:2019-10-30,2019-11-01 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- mlxlogscore=923 priorityscore=1501 adultscore=0 mlxscore=0 malwarescore=0
+ mlxlogscore=828 priorityscore=1501 adultscore=0 mlxscore=0 malwarescore=0
  bulkscore=0 spamscore=0 phishscore=0 clxscore=1015 impostorscore=0
  suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1908290000 definitions=main-1911010095
@@ -115,27 +115,60 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a typical checkpatch warning. The change just renames the type of
-the `freq` var to `unsigned int`.
+The ADIS library functions return zero on success, and negative values for
+error. Positive values aren't returned, but we only care about the success
+value (which is zero).
+
+This change is mostly needed so that the compiler won't make any inferences
+about some about values being potentially un-initialized. This only
+triggers after making some functions inline, because the compiler can
+better follow return paths.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/imu/adis16480.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/adis16460.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index d199d3d3c4bd..b9e2695bcfad 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -350,7 +350,7 @@ static int adis16480_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
- 	struct adis16480 *st = iio_priv(indio_dev);
- 	uint16_t t;
- 	int ret;
--	unsigned freq;
-+	unsigned int freq;
- 	unsigned int reg;
+diff --git a/drivers/iio/imu/adis16460.c b/drivers/iio/imu/adis16460.c
+index 6aed9e84abbf..b55812521537 100644
+--- a/drivers/iio/imu/adis16460.c
++++ b/drivers/iio/imu/adis16460.c
+@@ -80,7 +80,7 @@ static int adis16460_show_serial_number(void *arg, u64 *val)
  
- 	if (st->clk_mode == ADIS16480_CLK_PPS)
+ 	ret = adis_read_reg_16(&adis16460->adis, ADIS16460_REG_SERIAL_NUM,
+ 		&serial);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	*val = serial;
+@@ -98,7 +98,7 @@ static int adis16460_show_product_id(void *arg, u64 *val)
+ 
+ 	ret = adis_read_reg_16(&adis16460->adis, ADIS16460_REG_PROD_ID,
+ 		&prod_id);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	*val = prod_id;
+@@ -116,7 +116,7 @@ static int adis16460_show_flash_count(void *arg, u64 *val)
+ 
+ 	ret = adis_read_reg_32(&adis16460->adis, ADIS16460_REG_FLASH_CNT,
+ 		&flash_count);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	*val = flash_count;
+@@ -176,7 +176,7 @@ static int adis16460_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
+ 	unsigned int freq;
+ 
+ 	ret = adis_read_reg_16(&st->adis, ADIS16460_REG_DEC_RATE, &t);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	freq = 2048000 / (t + 1);
 -- 
 2.20.1
 
