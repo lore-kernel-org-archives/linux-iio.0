@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8903CA9ECF
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:35:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E570DCA9ECF
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:35:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E1E3217D9
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:35:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE17A21897
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Nov 2019 09:35:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="XXbc/FTF"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="KpZ2pVCO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729099AbfKAJfn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Nov 2019 05:35:43 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:55572 "EHLO
+        id S1729205AbfKAJf4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Nov 2019 05:35:56 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:63116 "EHLO
         mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728901AbfKAJff (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Nov 2019 05:35:35 -0400
+        by vger.kernel.org with ESMTP id S1729074AbfKAJfn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Nov 2019 05:35:43 -0400
 Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA19XTSU026930;
-        Fri, 1 Nov 2019 05:35:23 -0400
-Received: from nam05-dm3-obe.outbound.protection.outlook.com (mail-dm3nam05lp2051.outbound.protection.outlook.com [104.47.49.51])
-        by mx0b-00128a01.pphosted.com with ESMTP id 2vxwgwh8wv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 01 Nov 2019 05:35:22 -0400
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA19YdbW027913;
+        Fri, 1 Nov 2019 05:35:31 -0400
+Received: from nam05-dm3-obe.outbound.protection.outlook.com (mail-dm3nam05lp2055.outbound.protection.outlook.com [104.47.49.55])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2vxwgwh8x6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Fri, 01 Nov 2019 05:35:31 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Kq/mv8nVQZxQ1WvBT1SlTABuI3T9jKKOmu/nvzt53DbTrPbtvE5goEKJz44q13viAcYTe1DicRCK9QekiERWssjNOe2ygPURuDB5aTAf5kis+VgI2wVm4jfiVIQv8X6Z85oo5o0hqRyaT1Hp2l694vJBihu/8LsjFlSgUBVzvsGjpIvmjmcrflu4qZbzUWJScz275DBqYNzhvJr1G4UOA6A0WqSg1jDeiKbGzY/uhyvddo9k7w6h5KW5+D/pS6v/CsNjCrnPgqE7YwcUL0kkXGOc9fpLrxM+3Igd8oask4cZlyLC2fJQQWOOaBq+zhGbVh054e7wwVFUvX9wb/RVwQ==
+ b=kEUv508WoVmq9vA7vGRAjBTTPpQblcdKpYHBdoB0tbHQkxEX3GmUhIjuEvMvXG8XngOQxJ7xnvcZugNSnULdzLIMbR7GSdY72VvuAuA0ez+lQxD9LQCExs/Wt0yWqzEsVN2q+coiqBA+jNRxKC6OhWEi4g+7VEPubsCeOiwEEo4Me++spkYcV72vD2EBstEzazV3EYgYfljCghrgPMnFphVAwRB9B3tCK8I7E6KPr+Ru/1pYvHENecriIljuuRj3OfjUmIN1cw4nJgv/0MNXNAPURTYECiYjjgSrxu4LORy3hS9MypCZEIlMlAcD61ZdRKJomDnqeADJuRTZUp9OHA==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6qWuMSIf3Vk6QvjbMmfHsYntFAg5LbGQwvLNnz5cEJo=;
- b=MFx1M7utTQ8pXOANGAlu7oI8lGZN5sTl3UktfE2jtRstLE92XJ9WjX5I/KyYQESXHHmmfz9cAp+moolPMA2GlIpm+u/oFjBv+2XAtbJa5woIARkPoG3PIPX8CxwabbM++g6Gg59pfXThvDy6t73VLJrsFLZQGJzbkRxwsF/i99QSkXocFPkFwRNhZmeg25cuSNikTiciBnr2E5TlF5vvkpwPWDsdY+jkj9TiFKtGqhV+hRX2/tLGwA/XEmUjDciBgsSEzky0HXuuatw3YpSM8bCQ18SmRr9Nwo0GCRGcMOCgT/WUD6JnkmSRuIemJdgu6SmQZdlGF9bI7bj+HSkqxg==
+ bh=Tb7UZOr139aoTeDFSnbx1h6lLPxo8UuX3qcWC9LfMzE=;
+ b=YUMX1KqgLtiWzM/4Q+oKCyiJy7hKWbvQEpnFGeLwubhIo5710cOHydskZaA6u2CL7+BGwY1oKBzBKT2CRK2ccvOcY1j69c+YpbETKxbwQZiNNJaZW7G/y1+rfuaCRpbQEDZkdiu2yD7AYdAOSIKzGoM10cItjFEM6clArhgDGcavxTlPc9AXvn+Gr3KAYTL9Y06FLNVzq9KnDoWOdctrIJm3X6j8jzTC1Qyh+P/QBg6XouE0bwBiEYuc1L2LBF4f5kCLK5jXBFMrXeuJoYkzR+64A5T7Elnn9Yw/u7QP95LOBch/q2KCPsk5nMGrtdFJRS9gceWbUQzb32bTFdFffQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  137.71.25.57) smtp.rcpttodomain=metafoo.de smtp.mailfrom=analog.com;
  dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
@@ -42,40 +42,40 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=6qWuMSIf3Vk6QvjbMmfHsYntFAg5LbGQwvLNnz5cEJo=;
- b=XXbc/FTFf8i69Ps0TOXexQzbFs6+TnHNSgg724H8Govd4w1w5Tk4ag3LRoaHo8eXRLdNaqXzxZaR5CCuNhNvlCa97mb2oZBLn7qrxB8ezn3vm+iIX6MDwKgvZDYD5pPXUbXUvkAGCrddCKEgdWBhwdReZmHymfWd1xemkaq1wNo=
-Received: from BN3PR03CA0058.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::18) by CY4PR03MB2485.namprd03.prod.outlook.com
- (2603:10b6:903:38::18) with Microsoft SMTP Server (version=TLS1_2,
+ bh=Tb7UZOr139aoTeDFSnbx1h6lLPxo8UuX3qcWC9LfMzE=;
+ b=KpZ2pVCOGdc9w+4HWmO/nGk2jfrS2KGbACVA6TO/0hfrHniEnHT/DAl/d1Bu9il8/O0ob6H94vzitF6oWTp5yS8eZ7DJWkHcH0hBor9aWE0QvUooGWe4VjT+0PjuHBalMCUggE1uxWofBp/skFNXvK3kcb9jNlBOQwTOI3Q3LwY=
+Received: from CY4PR03CA0013.namprd03.prod.outlook.com (2603:10b6:903:33::23)
+ by CY4PR03MB2534.namprd03.prod.outlook.com (2603:10b6:903:39::22) with
+ Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2408.17; Fri, 1 Nov
- 2019 09:35:20 +0000
-Received: from BL2NAM02FT042.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::207) by BN3PR03CA0058.outlook.office365.com
- (2a01:111:e400:7a4d::18) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id 15.20.2408.22 via Frontend
- Transport; Fri, 1 Nov 2019 09:35:19 +0000
+ 2019 09:35:29 +0000
+Received: from CY1NAM02FT027.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::206) by CY4PR03CA0013.outlook.office365.com
+ (2603:10b6:903:33::23) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2408.20 via Frontend
+ Transport; Fri, 1 Nov 2019 09:35:29 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.57 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
 Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2NAM02FT042.mail.protection.outlook.com (10.152.76.193) with Microsoft SMTP
+ CY1NAM02FT027.mail.protection.outlook.com (10.152.75.159) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2387.20
- via Frontend Transport; Fri, 1 Nov 2019 09:35:18 +0000
+ via Frontend Transport; Fri, 1 Nov 2019 09:35:29 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xA19ZBC0025012
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xA19ZLDs025106
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 1 Nov 2019 02:35:11 -0700
+        Fri, 1 Nov 2019 02:35:21 -0700
 Received: from saturn.ad.analog.com (10.48.65.117) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 1 Nov 2019 05:35:18 -0400
+ 14.3.408.0; Fri, 1 Nov 2019 05:35:27 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 04/10] iio: imu: adis16480: check ret val for non-zero vs less-than-zero
-Date:   Fri, 1 Nov 2019 11:34:59 +0200
-Message-ID: <20191101093505.9408-5-alexandru.ardelean@analog.com>
+Subject: [PATCH 09/10] iio: imu: adis: assign read val in debugfs hook only if op successful
+Date:   Fri, 1 Nov 2019 11:35:04 +0200
+Message-ID: <20191101093505.9408-10-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191101093505.9408-1-alexandru.ardelean@analog.com>
 References: <20191101093505.9408-1-alexandru.ardelean@analog.com>
@@ -85,27 +85,27 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(346002)(136003)(39860400002)(396003)(189003)(199004)(476003)(44832011)(2616005)(26005)(2906002)(47776003)(4326008)(246002)(126002)(305945005)(50226002)(107886003)(6666004)(356004)(7636002)(8936002)(336012)(7696005)(51416003)(70206006)(486006)(11346002)(76176011)(2870700001)(8676002)(186003)(70586007)(446003)(426003)(54906003)(86362001)(110136005)(1076003)(50466002)(36756003)(316002)(48376002)(5660300002)(478600001)(106002);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB2485;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(346002)(396003)(136003)(189003)(199004)(2906002)(51416003)(476003)(446003)(50466002)(44832011)(2616005)(426003)(126002)(2870700001)(48376002)(11346002)(246002)(356004)(106002)(50226002)(6666004)(8936002)(486006)(1076003)(47776003)(7696005)(316002)(4326008)(336012)(36756003)(8676002)(76176011)(86362001)(70206006)(305945005)(14444005)(186003)(7636002)(70586007)(107886003)(5660300002)(4744005)(54906003)(478600001)(110136005)(26005);DIR:OUT;SFP:1101;SCL:1;SRVR:CY4PR03MB2534;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: df8df1cc-1c14-4c4a-3482-08d75eaecf32
-X-MS-TrafficTypeDiagnostic: CY4PR03MB2485:
-X-Microsoft-Antispam-PRVS: <CY4PR03MB248583285A58AF773ED09C43F9620@CY4PR03MB2485.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Office365-Filtering-Correlation-Id: 5bb042c9-b3ae-43d9-708f-08d75eaed550
+X-MS-TrafficTypeDiagnostic: CY4PR03MB2534:
+X-Microsoft-Antispam-PRVS: <CY4PR03MB2534A1D24D7D92A5174E4C3CF9620@CY4PR03MB2534.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5516;
 X-Forefront-PRVS: 020877E0CB
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: IpF2sffXz0MQJ+34XhxMmU9S7HdH6QAvKXMMcl16imtjhyAqYfC0VpsONy1u29VXrQtcWr2aMNIlQ49/sq9Yu9CIolYYcvEtPSOhl+Qgdv9Hqdw5+3PC9bubsnjDxG1/541qN1enxAbC6QRAi0tU/iyWMtGZ4eUG7WGb4XFQV7lT2JOc33XRsYLmO+LjZzAUTlj1GcPitBu4BhaoJcDNWUz8sFkFEBAZh5y5JFfmtI/jK9EFKRK3OdmtodXKVP23Bfb0Vu1CKR4atAiAigYqcqV8wkNh3g4z3tvNuTFVIlkPGXKopMp6xpj+dSeSwF5vlw50V4NqCRjRXd9pBdQN+UBcye/Lq8sd/GZENIPSkB6TZ3ovaOPzVx8MLOahErdUvUGQKPCd1ePzOhAoYD1nhHEHIoe//x2mcB8MxDMgyrLDuwoinS/hdGCzGI8wVsm3
+X-Microsoft-Antispam-Message-Info: pIIdAczUE7w/vRewBnabEjHetvGue8DPtV4dN89Drwu9njoroLYyAOGuRUU2cUeIuHBaoBjddO6s1DomIhdVdkduv68Rz/0UKjBw0kVe4p3hV026QBwmZFNCFPEi5nROWn+pmVv63NpP01hbXPlE6J/rr+/3E6EklpMHCtOZ3LVhd7KZgqwIfMIEX5T0bCC1RQncpxe9RFrCGw1zJh8f/i0KQFEAbZcGPAGNOyQODH9jkBXChluqixM6WJSCRjYnROEJELFOFuZwTU9GroC67XbA3HhZ/T+Wc+rv8LH0SmYiQrmO97Zzzk0we9DDw4CU3yqxPoG5UZo46SEuGiYwJMVbAoxisVGS5xKERbHNPj7qhXentXIN+cZyCXER+jm/GloEC9qZVVWOiQo78ytxxNnq/QzsdeuQGjEqR41VpoHi8FC5rAH1krNAmCNsLiYO
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2019 09:35:18.9298
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 01 Nov 2019 09:35:29.1162
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: df8df1cc-1c14-4c4a-3482-08d75eaecf32
+X-MS-Exchange-CrossTenant-Network-Message-Id: 5bb042c9-b3ae-43d9-708f-08d75eaed550
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB2485
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CY4PR03MB2534
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
  definitions=2019-11-01_03:2019-10-30,2019-11-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=868
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
  lowpriorityscore=0 bulkscore=0 mlxscore=0 clxscore=1015 suspectscore=0
  priorityscore=1501 adultscore=0 malwarescore=0 impostorscore=0 spamscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
@@ -115,146 +115,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADIS library functions return zero on success, and negative values for
-error. Positive values aren't returned, but we only care about the success
-value (which is zero).
+This was also caught by the `-Wmaybe-uninitialized` warning, which
+(ironically as-is) it makes quite a lot of sense to do for this.
 
-This change is mostly needed so that the compiler won't make any inferences
-about some about values being potentially un-initialized. This only
-triggers after making some functions inline, because the compiler can
-better follow return paths.
-
+Fixes: 78026a6fde8f7 ("iio:imu:adis: Add debugfs register access support")
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/imu/adis16480.c | 28 ++++++++++++++--------------
- 1 file changed, 14 insertions(+), 14 deletions(-)
+ drivers/iio/imu/adis.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index b99d73887c9f..86801f3c5f0d 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -181,7 +181,7 @@ static ssize_t adis16480_show_firmware_revision(struct file *file,
- 	int ret;
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index dc2f9e061d98..85de565a4e80 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -229,7 +229,8 @@ int adis_debugfs_reg_access(struct iio_dev *indio_dev,
+ 		int ret;
  
- 	ret = adis_read_reg_16(&adis16480->adis, ADIS16480_REG_FIRM_REV, &rev);
--	if (ret < 0)
-+	if (ret)
+ 		ret = adis_read_reg_16(adis, reg, &val16);
+-		*readval = val16;
++		if (ret == 0)
++			*readval = val16;
+ 
  		return ret;
- 
- 	len = scnprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev & 0xff);
-@@ -206,11 +206,11 @@ static ssize_t adis16480_show_firmware_date(struct file *file,
- 	int ret;
- 
- 	ret = adis_read_reg_16(&adis16480->adis, ADIS16480_REG_FIRM_Y, &year);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	ret = adis_read_reg_16(&adis16480->adis, ADIS16480_REG_FIRM_DM, &md);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	len = snprintf(buf, sizeof(buf), "%.2x-%.2x-%.4x\n",
-@@ -234,7 +234,7 @@ static int adis16480_show_serial_number(void *arg, u64 *val)
- 
- 	ret = adis_read_reg_16(&adis16480->adis, ADIS16480_REG_SERIAL_NUM,
- 		&serial);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	*val = serial;
-@@ -252,7 +252,7 @@ static int adis16480_show_product_id(void *arg, u64 *val)
- 
- 	ret = adis_read_reg_16(&adis16480->adis, ADIS16480_REG_PROD_ID,
- 		&prod_id);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	*val = prod_id;
-@@ -270,7 +270,7 @@ static int adis16480_show_flash_count(void *arg, u64 *val)
- 
- 	ret = adis_read_reg_32(&adis16480->adis, ADIS16480_REG_FLASH_CNT,
- 		&flash_count);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	*val = flash_count;
-@@ -359,7 +359,7 @@ static int adis16480_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
- 		reg = ADIS16480_REG_DEC_RATE;
- 
- 	ret = adis_read_reg_16(&st->adis, reg, &t);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	/*
-@@ -462,7 +462,7 @@ static int adis16480_get_calibbias(struct iio_dev *indio_dev,
- 			ret = -EINVAL;
- 	}
- 
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return IIO_VAL_INT;
-@@ -489,7 +489,7 @@ static int adis16480_get_calibscale(struct iio_dev *indio_dev,
- 	int ret;
- 
- 	ret = adis_read_reg_16(&st->adis, reg, &val16);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	*scale = sign_extend32(val16, 15);
-@@ -535,7 +535,7 @@ static int adis16480_get_filter_freq(struct iio_dev *indio_dev,
- 	enable_mask = BIT(offset + 2);
- 
- 	ret = adis_read_reg_16(&st->adis, reg, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	if (!(val & enable_mask))
-@@ -561,7 +561,7 @@ static int adis16480_set_filter_freq(struct iio_dev *indio_dev,
- 	enable_mask = BIT(offset + 2);
- 
- 	ret = adis_read_reg_16(&st->adis, reg, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	if (freq == 0) {
-@@ -937,7 +937,7 @@ static int adis16480_enable_irq(struct adis *adis, bool enable)
- 	int ret;
- 
- 	ret = adis_read_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	val &= ~ADIS16480_DRDY_EN_MSK;
-@@ -1115,7 +1115,7 @@ static int adis16480_ext_clk_config(struct adis16480 *st,
- 	int ret;
- 
- 	ret = adis_read_reg_16(&st->adis, ADIS16480_REG_FNCTIO_CTRL, &val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	pin = adis16480_of_get_ext_clk_pin(st, of_node);
-@@ -1141,7 +1141,7 @@ static int adis16480_ext_clk_config(struct adis16480 *st,
- 	val |= mode;
- 
- 	ret = adis_write_reg_16(&st->adis, ADIS16480_REG_FNCTIO_CTRL, val);
--	if (ret < 0)
-+	if (ret)
- 		return ret;
- 
- 	return clk_prepare_enable(st->ext_clk);
+ 	} else {
 -- 
 2.20.1
 
