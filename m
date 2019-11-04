@@ -2,142 +2,335 @@ Return-Path: <SRS0=u35A=Y4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83CBACA9EB5
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 13:26:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07966CA9EB5
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 13:51:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4EE27222C1
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 13:26:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BC89B21744
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 13:51:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="jcFdddau"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YYGE8YKq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728783AbfKDN0i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Nov 2019 08:26:38 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:53978 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727430AbfKDN0h (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Nov 2019 08:26:37 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xA4DPCja005491;
-        Mon, 4 Nov 2019 08:26:10 -0500
-Received: from nam05-co1-obe.outbound.protection.outlook.com (mail-co1nam05lp2059.outbound.protection.outlook.com [104.47.48.59])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2w2a4e1dps-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 04 Nov 2019 08:26:09 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=lR7+aMOflqr11UEp5YC3B+H0NnEUe4qpjyKW+TAdE7U7SG2t4de5Kqzg24b/p8d+4gYyAXDQa0Nq1bEaA184SQbNyeOlVkQy2PVI5oN0ccY28ac3JZ7Nzl8qeV8SUhPEXctUIFc15HYAQdWQUXV3jUwD1iReugSkNA/VwOJAkGuXl/H4Qc5RkBTHXrAizu5KZioaWL4h+Ok+nycJWdSaBUCt+qRLbeAwvbBeeoNhQT/VN4p4qsrP7NLU3rzXDaGWekTuVR3HNrResigPhpsF/HgRKSREQsYR2Jtl+mjRb3s334G5nYHgBiv3I8E671LDid/sgy+bTBuIuZUPC7k7bg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wCScrHChId/QxK23tsqxJMaKLa2vhvb5FJCyhhgHDlc=;
- b=lHe2B+5qhXc7b/QFxTUAPSrB6+LHjlePFOv+A3DW62XCg4dNIhPoNjboei9ffQCCVKzRWqj1uPNZotNqdSUo0DfvUbY/ViH2APmRbbEnNa9aTs6kwsXqgYTgJC4hDMLhQPBtM6Z6DHKYagZXNjRdzfyDJsRU2Qc18ZdFDTxEt9PG9/2qOPHmy5sKZrZyvhSf4o/5ON/MEGRpX5ILDShhUCKqmGacfzAyi7CCu7qsKUvQpsSQFFn4vTxj6vzquTRCXtDLI6S2E/DyGFJHSiUVZPi0fSAEogYQHuHEQYPgEt9AUoA7eKvPLdAsMMt4iBHgitx0wH9BnWQfRIRZvHAXbQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 137.71.25.55) smtp.rcpttodomain=gmx.de smtp.mailfrom=analog.com;
- dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
- not signed); arc=none
+        id S1728413AbfKDNvX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Nov 2019 08:51:23 -0500
+Received: from mail-wm1-f66.google.com ([209.85.128.66]:38300 "EHLO
+        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727663AbfKDNvX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Nov 2019 08:51:23 -0500
+Received: by mail-wm1-f66.google.com with SMTP id z19so11975419wmk.3
+        for <linux-iio@vger.kernel.org>; Mon, 04 Nov 2019 05:51:19 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=wCScrHChId/QxK23tsqxJMaKLa2vhvb5FJCyhhgHDlc=;
- b=jcFdddaurmvqLoi4dzFDP4Y2pygWgMPxNVNU7jrpbLEnah055UvkdPOwnstBjn1/8u4/ay0cnprdjvfS8vWoCyujrTJ4q01qVLyBnVaQ8iV3Y8wzjk6zbnesnlrXatyO63C2YjTDNUEHGLrLrr8e6r4ZpKugy+ww2o900qSv5u0=
-Received: from BN3PR03CA0091.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::51) by BN7PR03MB4465.namprd03.prod.outlook.com
- (2603:10b6:408:8::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2408.24; Mon, 4 Nov
- 2019 13:26:08 +0000
-Received: from CY1NAM02FT009.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e45::208) by BN3PR03CA0091.outlook.office365.com
- (2a01:111:e400:7a4d::51) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2408.24 via Frontend
- Transport; Mon, 4 Nov 2019 13:26:07 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.55 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.55; helo=nwd2mta1.analog.com;
-Received: from nwd2mta1.analog.com (137.71.25.55) by
- CY1NAM02FT009.mail.protection.outlook.com (10.152.75.12) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2387.20
- via Frontend Transport; Mon, 4 Nov 2019 13:26:07 +0000
-Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta1.analog.com (8.13.8/8.13.8) with ESMTP id xA4DQ6wC027272
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Mon, 4 Nov 2019 05:26:06 -0800
-Received: from ben-Latitude-E6540.ad.analog.com (10.48.65.163) by
- NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Mon, 4 Nov 2019 08:26:05 -0500
-From:   Beniamin Bia <beniamin.bia@analog.com>
-To:     <jic23@kernel.org>
-CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <biabeniamin@outlook.com>,
-        <rwoerle@mibtec.de>, Beniamin Bia <beniamin.bia@analog.com>
-Subject: [PATCH] iio: adc: ad7606: fix reading unnecessary data from device
-Date:   Mon, 4 Nov 2019 18:26:34 +0200
-Message-ID: <20191104162634.5394-1-beniamin.bia@analog.com>
-X-Mailer: git-send-email 2.17.1
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=qaOVsKj7Aed+cUkpAJK47W3QRcflZSDnEMh6awYa/Pc=;
+        b=YYGE8YKqpsykdCGgo09ZR6t2dQWMi/wv5lvOPZXZRo8DJv/UC8UezW6XIGq6PT+fk3
+         ghkITO5AKMfAgzRehS7yycrqB9bxHYNDVrzakNOO+pSRuuxtbUqOVXJQuTOQbt3pCGlv
+         WzEnjoP9QzrN24WNWW15cc0KG4f9+n0PpVAH0RSPA271CQpzU4jmrqmj2L5VF/nfgN9n
+         enPXIa3t6OAN4761W45sXwnmwHQICYTNqkVvewxkEEwQhzEGzIN3mS94EZddA9QTZIAm
+         9KIaI5TyLo5cqHZOYV2mUl6MUgxWLlFgPWXX5vUuqrr+lnULTHxOBDATmpV36dmBLkvf
+         SXDg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=qaOVsKj7Aed+cUkpAJK47W3QRcflZSDnEMh6awYa/Pc=;
+        b=P5jPPGZAxXafkzcBNGeqjph2LWecFFABsAML/BwUAkQ1CBwOD+WgK2aGKHtkE51vAc
+         ODf3bnFBEFbWoGhvbJPqF2bxK9MAZXNystibf4NeEYZgLX3axqhKgbheiWhlG8sZawwn
+         0+99VUdTizC5vlCVhTzlAG9NcOtN+YD82GdrIAzfMBiilBgzCqFk0eGW/UoZrqra726T
+         wY0VbUp6M+91CyBZk4Q5ZkKmBsN14FDOAcanrk49dchT68JquFZmYwgEa0ki8q1L9O3s
+         MTqARzYB3mvwGN9SDrpXYspst8VziIuFY3EFn5RLLqIQaB2Z6WvsjPm3csTN1/BoFpds
+         cWUw==
+X-Gm-Message-State: APjAAAWlO3xrqPjUG9K2PC0mFCd14zUjeUiqS/r2ViNhSgJyAAnihAsx
+        vPV5Jxn8JXndZfSd3HPgLUuJHPCry5GpbmeqrPw=
+X-Google-Smtp-Source: APXvYqxakAG8fL2xvQpGrxVLpxTRHrIF/XjRfcXfuWFeFRMZUieUPEXKFdDnajb5J9cdv2Yj8eICP01wLMSxXX1YRgc=
+X-Received: by 2002:a1c:6a1a:: with SMTP id f26mr16280748wmc.19.1572875478998;
+ Mon, 04 Nov 2019 05:51:18 -0800 (PST)
 MIME-Version: 1.0
+References: <20190923121714.13672-1-andrea.merello@gmail.com>
+ <20190923121714.13672-2-andrea.merello@gmail.com> <20191006085423.68bcecfd@archlinux>
+ <CAN8YU5Ogcp8ERkxntTVQH3EoJF7h61VCONPXEaP-kvpx8EmS+g@mail.gmail.com>
+ <20191017133210.00002799@huawei.com> <CAN8YU5Nxrv8q4LjCCrHH-qR6kj=PjNLBANgrTkYdX1b1OP+gkA@mail.gmail.com>
+ <20191022103458.3a112511@archlinux> <CAN8YU5OxU+DTeNzczdKPsM42BGwCY9SVpzPGvfH=e-wqU4sgjQ@mail.gmail.com>
+ <20191027092254.35a4c151@archlinux> <CAN8YU5P4vUWOTSJWiL-cPDmQ3aJLe0Z-E3TK5Pmzg1kkxptY-w@mail.gmail.com>
+ <20191102141725.04437533@archlinux>
+In-Reply-To: <20191102141725.04437533@archlinux>
+Reply-To: andrea.merello@gmail.com
+From:   Andrea Merello <andrea.merello@gmail.com>
+Date:   Mon, 4 Nov 2019 14:51:07 +0100
+Message-ID: <CAN8YU5N9-izG=AhrjPLbxWP1a+SUfaYFHqJzwM=yiEPL8MnVpQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: max31856: add option for setting mains filter
+ rejection frequency
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Jonathan Cameron <jonathan.cameron@huawei.com>,
+        patrick.havelange@essensium.com,
+        paresh.chaudhary@rockwellcollins.com, pmeerw@pmeerw.net,
+        lars@metafoo.de, knaack.h@gmx.de,
+        Matthew Weber <matthew.weber@rockwellcollins.com>,
+        Colin King <colin.king@canonical.com>,
+        linux-iio@vger.kernel.org
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.55;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(39860400002)(376002)(396003)(136003)(346002)(199004)(189003)(2616005)(70586007)(54906003)(426003)(106002)(26005)(336012)(6666004)(6916009)(305945005)(186003)(7636002)(66574012)(1076003)(47776003)(14444005)(44832011)(476003)(126002)(486006)(50466002)(5660300002)(70206006)(23676004)(2870700001)(107886003)(356004)(316002)(86362001)(2351001)(246002)(7696005)(478600001)(8676002)(4744005)(36756003)(50226002)(8936002)(5820100001)(2906002)(4326008);DIR:OUT;SFP:1101;SCL:1;SRVR:BN7PR03MB4465;H:nwd2mta1.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail10.analog.com;A:1;MX:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 65dc6aa9-c109-4682-0b37-08d7612a8cef
-X-MS-TrafficTypeDiagnostic: BN7PR03MB4465:
-X-Microsoft-Antispam-PRVS: <BN7PR03MB44654724CF1635C5F45B3542F07F0@BN7PR03MB4465.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:1443;
-X-Forefront-PRVS: 0211965D06
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: pNC4bN3BBGckVRVorTRd1Ts0BQv3YOTr+sDnySWpLLNcFsgQBawlADPStExPDmRp6iAiYqVVSKznHxPyqTf4nlJHWt7Z5JDFg0KgPJJdg5zNi1i7eyJBdCXtw/HKLnA5HcWCBkl3frf4HHBDCOHSJLJHcWud1CmPudn7mgXqTN05hlx2EIOOQxdIXUq3frpA3CSMlrWckbMO7u3E7JoHg/iMMgqLoP6blV3xpTEmLuY6cVHskfKoA8gKT4cSABuBx5/QVPpGy6a93zPcx49x4LzKFowHjAQ9W6G6aTtc9MR/8z2VFw2ajmXzYTBZ6FE15iTRpKPePQjFO7gsTpnbkuObRgMlkzq2ZO1ipakAmzEN7rDJK4izGfn1x7Q8o6K85YI91pkKfSiMYnORhiym2Y7GZnAENwd42Q/RvPRmNCCMAmJWhJ5iYXZGX7JGd+Y0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Nov 2019 13:26:07.5980
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65dc6aa9-c109-4682-0b37-08d7612a8cef
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.55];Helo=[nwd2mta1.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN7PR03MB4465
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,1.0.8
- definitions=2019-11-04_08:2019-11-04,2019-11-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxlogscore=999 priorityscore=1501
- malwarescore=0 clxscore=1015 adultscore=0 impostorscore=0 suspectscore=1
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1908290000
- definitions=main-1911040133
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When a conversion result is being read from ADC, the driver reads the
-number of channels + 1 because it thinks that IIO_CHAN_SOFT_TIMESTAMP
-is also a physical channel. This patch fixes this issue.
+Il giorno sab 2 nov 2019 alle ore 15:17 Jonathan Cameron
+<jic23@kernel.org> ha scritto:
+>
+> On Mon, 28 Oct 2019 08:32:48 +0100
+> Andrea Merello <andrea.merello@gmail.com> wrote:
+>
+> > Il giorno dom 27 ott 2019 alle ore 10:23 Jonathan Cameron
+> > <jic23@kernel.org> ha scritto:
+> > >
+> > > On Wed, 23 Oct 2019 10:29:07 +0200
+> > > Andrea Merello <andrea.merello@gmail.com> wrote:
+> > >
+> > > > Il giorno mar 22 ott 2019 alle ore 11:35 Jonathan Cameron
+> > > > <jic23@kernel.org> ha scritto:
+> > > > >
+> > > > > On Fri, 18 Oct 2019 15:46:32 +0200
+> > > > > Andrea Merello <andrea.merello@gmail.com> wrote:
+> > > > >
+> > > > > > Il giorno gio 17 ott 2019 alle ore 14:32 Jonathan Cameron
+> > > > > > <jonathan.cameron@huawei.com> ha scritto:
+> > > > > > >
+> > > > > > > On Wed, 16 Oct 2019 15:14:20 +0200
+> > > > > > > Andrea Merello <andrea.merello@gmail.com> wrote:
+> > > > > > >
+> > > > > > > > Il giorno dom 6 ott 2019 alle ore 09:54 Jonathan Cameron
+> > > > > > > > <jic23@kernel.org> ha scritto:
+> > > > > > > > >
+> > > > > > > > > On Mon, 23 Sep 2019 14:17:12 +0200
+> > > > > > > > > Andrea Merello <andrea.merello@gmail.com> wrote:
+> > > > > > > > >
+> > > > > > > > > > This sensor has an embedded notch filter for reducing interferences caused
+> > > > > > > > > > by the power mains. This filter can be tuned to reject either 50Hz or 60Hz
+> > > > > > > > > > (and harmonics).
+> > > > > > > > > >
+> > > > > > > > > > Currently the said setting is left alone (the sensor defaults to 60Hz).
+> > > > > > > > > > This patch introduces a IIO attribute that allows the user to set the said
+> > > > > > > > > > filter to the desired frequency.
+> > > > > > > > > >
+> > > > > > > > > > NOTE: this has been intentionally not tied to any DT property to allow
+> > > > > > > > > > the configuration of this setting from userspace, e.g. with a GUI or by
+> > > > > > > > > > reading a configuration file, or maybe reading a GPIO tied to a physical
+> > > > > > > > > > switch or accessing some device that can autodetect the line frequency.
+> > > > > > > > > >
+> > > > > > > > > > Signed-off-by: Andrea Merello <andrea.merello@gmail.com>
+> > > > > > > > > This one is not something that can be expect to be known from the setup
+> > > > > > > > > of the device as it will depend on local mains frequency.
+> > > > > > > > >
+> > > > > > > > > So fine, to have it as a userspace control, but the name is too generic.
+> > > > > > > > > We already have a number of filter attributes and we should try to
+> > > > > > > > > work out how to bring it inline with them.
+> > > > > > > >
+> > > > > > > > Sure
+> > > > > > > >
+> > > > > > > > > in_X_filter_low_pass_3db_frequency
+> > > > > > > > > in_X_filter_high_pass_3db_frequency
+> > > > > > > > >
+> > > > > > > > > So would,
+> > > > > > > > > in_X_filter_notch_center_frequency work?
+> > > > > > > > > ( I suppose we should use the American spelling ;)
+> > > > > > > >
+> > > > > > > > Yes, it seems OK in this case. I will produce a V2 with this modification.
+> > > > > > > >
+> > > > > > > > > This kind of ignores the harmonics aspect but at least documents the
+> > > > > > > > > main frequency being blocked.
+> > > > > > > >
+> > > > > > > > I think this is perfectly fine: the user wants to set the notch filter
+> > > > > > > > center frequency to either 60Hz or 50Hz to match the line frequency,
+> > > > > > > > then she/he expects the filter to simply "work" somehow; IMO the
+> > > > > > > > harmonic thing does not needed to be explicit.
+> > > > > > > >
+> > > > > > > > > There is a slight complexity that we have devices that have dual
+> > > > > > > > > notchfilters (50 and 60Hz) and ones where you can turn it off entirely.
+> > > > > > > > >
+> > > > > > > > > I suppose no value would count as off and we could perhaps use a list
+> > > > > > > > > for both on at the same time (though that's a bit horrible).
+> > > > > > > >
+> > > > > > > > IMHO it seems reasonable. Maybe for all-off and both-on conditions we
+> > > > > > > > could also use magic strings like i.e. "all" and "off".
+> > > > > > >
+> > > > > > > I go with 'maybe' on that one.  Need to think about whether that is just
+> > > > > > > a partial solution as we will probably find a device with 3 options that only
+> > > > > > > supports any 2 at one time.  That would still need a more complex interface.
+> > > > > > >
+> > > > > > > Will think on this.
+> > > > > >
+> > > > > > I'll keep this patch on hold, waiting for your thoughts. Take the time
+> > > > > > you need :)
+> > > > > >
+> > > > > > BTW IMHO:
+> > > > > >
+> > > > > > If we want to address the most possible generic case, then we may
+> > > > > > standardize a set of possible attributes for filters (like "enable",
+> > > > > > "center_frequency", "width",  "Q" , etc). Of course most filters will
+> > > > > > not allow for setting most of those attributes.
+> > > > >
+> > > > > Absolutely.  We currently have a few defined for low and high pass
+> > > > > filters, but if there are more complex features to define we should
+> > > > > do so.
+> > > > >
+> > > > > >
+> > > > > > Then i.e.  in our case we could have one single filter that allows for
+> > > > > > setting the frequency to either 50hz or 60hz; in other cases we could
+> > > > > > have i.e. two filters (with 50hz and 60hz center freq respectively),
+> > > > > > and they would allow to set only the "enable" attribute; in case you
+> > > > > > can i.e. enable only two of three filters, when you try to enable the
+> > > > > > 3rd it just refuse that. In this scenario probably "center_frequency"
+> > > > > > could be just a regular value (not a list).
+> > > > >
+> > > > > Agreed.  The question is whether to index filters.  So allow more
+> > > > > than one of a given type on a given channel. So far we have
+> > > > > only had the one and there isn't a nice way to support multiple
+> > > > > as we currently don't have any indexed parameters of a single channel.
+> > > >
+> > > > Yes, being able to indexing filters was the underlying assumption..
+> > > >
+> > > > > I haven't seen parts that actually do have this level of sophisticated
+> > > > > filtering built in, with the exception of mains filters like this one.
+> > > >
+> > > > Yes, I didn't too indeed.
+> > > >
+> > > > > I think we have to allow for the possibility so if you are happy to do
+> > > > > so please propose the ABI additions to support multiple filters of
+> > > > > a type. I would suggest keeping them per type though
+> > > > >
+> > > > > e.g.
+> > > > >
+> > > > > in_X_filter_low_passY_3db_frequency etc
+> > > > > with Y as the optional index.
+> > > >
+> > > > Seems reasonable.
+> > > >
+> > > > Well the idea is the one you've just explained here, that is adding an
+> > > > optional index for filters (per type and per ch); I'm not getting what
+> > > > do you mean about proposing it..
+> > > Like all new ABI, needs a formal documentation patch.  Sometimes
+> > > we get more review on those than on discussions deep in a thread like
+> > > this.
+> >
+> > OK, this is honestly a bit out of my scope, but - if this is OK for
+> > you - I may try to do that after getting to some end with those
+> > in-flight patches..
+>
+> That is fine, but we will need docs for anything that is added
+> even if it's the version without an index.
+>
+> Don't have to be detailed etc, just a couple of lines for
+> Documentation/ABI/testing/sysfs-bus-iio to define what it is and
+> what it's units are.
 
-Fixes: 552a21f35477 ("staging: iio: adc: ad7606: Move out of staging")
-Reported-by: Robert Wörle <rwoerle@mibtec.de>
-Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
----
- drivers/iio/adc/ad7606.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+OK
 
-diff --git a/drivers/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
-index f5ba94c03a8d..e4683a68522a 100644
---- a/drivers/iio/adc/ad7606.c
-+++ b/drivers/iio/adc/ad7606.c
-@@ -85,7 +85,7 @@ static int ad7606_reg_access(struct iio_dev *indio_dev,
- 
- static int ad7606_read_samples(struct ad7606_state *st)
- {
--	unsigned int num = st->chip_info->num_channels;
-+	unsigned int num = st->chip_info->num_channels - 1;
- 	u16 *data = st->data;
- 	int ret;
- 
--- 
-2.17.1
+> >
+> > > >
+> > > > > For now, lets just implement then using extended attributes rather
+> > > > > than trying to extend the core to generate these automatically.
+> > > > >
+> > > > > If this turns out not to be a corner case we can try to figure
+> > > > > out a sane way of generating the multiple indexed versions.
+> > > >
+> > > > OK. Let's try not to over-complicate things until it's really needed -
+> > > > Also, maybe if we'll hit other weird devices that need something like
+> > > > this, then they could have some exotic features that we haven't in
+> > > > mind yet now; it might turn out that we need something even more
+> > > > different, so maybe it's better to wait for real "users" of the ABI
+> > > > before deciding how to change it..
+> > > >
+> > > > But indeed, getting back to the patch originally discussed in this
+> > > > thread: if you are OK whit this, then I'll go with a
+> > > > "in_temp_filter_notch_center_frequency" attribute.
+> > > >
+> > > > I may use a specific IIO_DEVIC_ATTR or add it to the core (without
+> > > > addressing the index thing), as you prefer.
+> > >
+> > > Which ever makes most sense to you. Either is fine for a new
+> > > attribute, though here don't we need the indexed filters?
+> >
+> > This specific device has only the option to choose either 50Hz
+> > filtering or 60Hz filtering; no option to disable filtering or enable
+> > both frequency. So I would say that here we can expose just one filter
+> > for which the center frequency can be set to either 50Hz or 60Hz (like
+> > the original patch did - but with proper name this time). I would say
+> > that we don't need indexed filters here. Or have I missed something ?
+> >
+> > (So I would start with a IIO_DEVICE_ATTR for now then).
+>
+> That's fine.  I'd somehow gotten it into my head that the part
+> had two filters :)
 
+OK :)
+
+> >
+> > > >
+> > > > BTW: Looking at other drivers, it seems that for other attributes
+> > > > (e.g. oversampling_ratio, discussed in 2/3) they tend to round
+> > > > required values to the closest allowed value, instead of returning an
+> > > > error. In this specific case, do you want to apply the same logic? For
+> > > > consistency reasons I would do that, but at the practical side,
+> > > > requiring a line filter frequency which is not either 50Hz or 60Hz
+> > > > seems really an error to me..
+> > >
+> > > It can be a bit of a tricky decision but for something like this
+> > > where the precise value works, it should reject incorrect ones.
+> >
+> > OK
+> >
+> > > Oversampling is an odd one.  It should probably always round up
+> > > as it's usually not a problem to average more results, it just
+> > > wastes power.  That only applies if the oversampling_ratio
+> > > is independent of other attributes such as sampling frequency.
+> >
+> > It actually affects also the sampling rate; the more samples you
+> > average, the slowest output rate you achieve. But actually there is no
+> > attribute for setting the sampling frequency.. it is internally
+> > adjusted by the chip depending by averaging and filter line frequency
+> > (don't know why).
+> >
+> > (if we want also this attribute, then I can craft another patch for
+> > adding it; it may be usefult to report the actual sample rate, I'm not
+> > sure if it makes sense to let the user set it, because we can
+> > basically just switch the averaging to one of the few possible values
+> > to get the sample rate to change as a side effect - assuming that one
+> > doesn't want to change the line frequency filter).
+>
+> OK.  There are no hard rules on which attributes are the 'dominant'
+> ones so it would be fine to either not expose it or to have it read
+> only.  It can certainly be useful for fast devices as it lets you
+> size the buffers, but for a temperature sensor like this one
+> sampling_frequency probably doesn't matter to anyone.
+
+Ok, I will sitck with just adding the filter attribute.
+
+> >
+> > BTW What about to round the requested oversampling_ratio to the
+> > closest allowed value (instead of rounding up)?
+>
+> If a user has requested a value for oversampling ratio, it will
+> be to achieve a particular improvement in noise rejection.
+>
+> As such I'd assume round up was most appropriate, or error on any
+> value that isn't a precise value.
+
+Both seem reasonable to me. I will think to it a bit more then I'll
+make a choice :) .. and then I'll go with a V2 series with all changes
+we discussed.
+
+> >
+> > > Still, we have traditionally been relaxed on this as long
+> > > as writing the the 'correct' value always works as that's what
+> > > userspace ABI should be doing.
+> > >
+> > > Jonathan
+> > >
+> Thanks,
+>
+> Jonathan
