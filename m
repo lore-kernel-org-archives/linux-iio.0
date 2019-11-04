@@ -5,129 +5,193 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E38CA9EB5
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 15:39:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D48CA9EB5
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 17:38:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0EA4C2080F
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 15:39:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E311120869
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Nov 2019 17:38:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kCJtm8UO"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W0AMDC8t"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729295AbfKDPjl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Nov 2019 10:39:41 -0500
-Received: from mail-pf1-f196.google.com ([209.85.210.196]:40420 "EHLO
-        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727891AbfKDPjl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Nov 2019 10:39:41 -0500
-Received: by mail-pf1-f196.google.com with SMTP id r4so12413714pfl.7;
-        Mon, 04 Nov 2019 07:39:41 -0800 (PST)
+        id S1729367AbfKDRiF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Nov 2019 12:38:05 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:35704 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728336AbfKDRiF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Nov 2019 12:38:05 -0500
+Received: by mail-lf1-f68.google.com with SMTP id y6so12907410lfj.2;
+        Mon, 04 Nov 2019 09:38:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=nfnRrxBa0z3rlP8AZ8oPOA1x6dlENumbdaVhl7WFFL4=;
-        b=kCJtm8UOvxqWt8J6FEKTE7jojzU5Pdh742fhyp8GSJgUEaePyQt3MgzjCbkR6T9N7N
-         6vEzFyTJcpNFqxKImttV2pTWsZoU+6MhoSggw21rzX42Ooq/4t/PgIpFkkUWDMFqp7h8
-         R7I0TEtgwxQQOl++s2SeH7BHWAgnGyxgncPL6dclxTBzoMFrvIShk1Uof9W1ZJfNFTMD
-         wR2gUSCM38eEA9/j2T4F8nhHIZMu3Gmw7bYOhlAb5RfT+S+okK8THcocFm4jpgx9cLXr
-         HvUXzGXzZ3m7rgs2/h2mIX7m4p6Hs96wdv7QqsjQJPRHoYz0U/oRMHizkMREoSXD4DHP
-         Kb+w==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EUNcrQSOI4sR8ixM1BFvc1Mc4tX105obcT/Qt8emx5A=;
+        b=W0AMDC8tB7cgDZAYLAXWsst6rLCF34qqWs2VFiSVmr4w2o2MnEfiLJibugUec4cSkp
+         JnGuSEgzSpWXE0x+5lo5OnTEDIFHEqss8mmxM9O7QGxI8wJa+Hn6f4TnKVI+CviIX0tB
+         PF2wfLF5+Q+hG52l+gf7FPQhp9wiR9R+R2+3HeYTS3Spece97puytr6jRFHW73Wzksij
+         dWrDp36sa9Pd1mEZ9r4F4RBuu02rDW5XUvkrj+MOBU9JDSRa+kAst634cOgppbItmvn7
+         egfAzhqxXZttWGbgyNLdAajbk9Kd6nA1SndpTF/aOPILUbj1R/4bwB+E2dQu8y/cBq9q
+         g74Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=nfnRrxBa0z3rlP8AZ8oPOA1x6dlENumbdaVhl7WFFL4=;
-        b=A/6sHLE9Bgsq6RIQuP08MHTkRB3+ExHAyMT111yg3fIKM33YrYlDr6HCC0U4HCRsIp
-         TDKbOT4xQJW7xFMVHXZk8YS2n8cvKNW2LUbDrUFEtZFm7wDaVQGFVrCuz5nPxcSBjmA/
-         ciqzk5ZrJMGvjg00Zu+r0nXO2zGyrl+kfpMb52dmFj2AwlrXmUXJ2VoLpFtLkrWkhJ8b
-         0w8N6ZQiu810zn0/gqjrPDvmnk/WCie79nkBIR0Z3r082VFOu0Kn6Q+PFifOgs8gtfcV
-         5i/NaPdm42NzcEIDfdU8dOh8BOZg/0Cyn9Pgw0kSgtXHBoH60pJbkhCOof2d6U6cY5TL
-         ntxQ==
-X-Gm-Message-State: APjAAAVeLM+eVq5jrnxFFo4v+F7S3ZJ82UAnh+DK+UKWp15AlfDjqPf6
-        tSyQXuJlpRQVlx1NFqT4UxU=
-X-Google-Smtp-Source: APXvYqwp7tkc+cXtXWu5YP6A0OgBo+Ncy3eo1+Je3q4QIatken1fTQV8FYF61FB4Pmztv1qzxYqDKw==
-X-Received: by 2002:a17:90b:8d1:: with SMTP id ds17mr14104772pjb.33.1572881980739;
-        Mon, 04 Nov 2019 07:39:40 -0800 (PST)
-Received: from localhost.localdomain ([106.51.108.222])
-        by smtp.gmail.com with ESMTPSA id j7sm4774324pjz.12.2019.11.04.07.39.37
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Mon, 04 Nov 2019 07:39:40 -0800 (PST)
-From:   Rishi Gupta <gupt21@gmail.com>
-To:     jic23@kernel.org
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, tglx@linutronix.de,
-        allison@lohutok.net, alexios.zavras@intel.com, angus@akkea.ca,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rishi Gupta <gupt21@gmail.com>
-Subject: [PATCH v6 3/3] iio: documentation: light: Add veml6030 sysfs documentation
-Date:   Mon,  4 Nov 2019 21:09:28 +0530
-Message-Id: <1572881968-15583-1-git-send-email-gupt21@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EUNcrQSOI4sR8ixM1BFvc1Mc4tX105obcT/Qt8emx5A=;
+        b=jhxQ1VieNrmn9SFYSS/dsWgF8WmkvmHfj7gbuMStyt/HBPuhtNqvrYxtbp7XnemEP2
+         cbeTeQAuQeRVuwtPK+101sUXqmY+xuloacIl4sE+zuFIVJxJZh6G1AlL/5T/TB17hGM7
+         5PvdcXhuRsP/wS0xLlj5WNugMeskIWlAz+oL2u/zHHzdP5iDzNxwBTzXC7r8xx0wh4OM
+         JAsZLSn+xllQxD+w1VZ5MC4uWXNWZ4nkzAEI7O2AfeVKkz4I2x5NEEOU9YoPF6foIL32
+         1oQa6lxtCCglLjd847CycR+ipJmCWLHS07m1BIt9eVlrtNKRDXJfHjYTrfZ2CM1jNbD6
+         tK9Q==
+X-Gm-Message-State: APjAAAUhYEsB67vp2xlSIJmf/gzN90Wem5SfdYpLsD6n0S2Fo3f7rGrb
+        /oC+HsdtC0Hl7MSjFtruC/o=
+X-Google-Smtp-Source: APXvYqztqZhavZJd8viRhAJEQHNeRV3229XQ0PyA+N9A6KdwiN8etZAGPZVm6vw85TgRkdJF403hOw==
+X-Received: by 2002:a19:5010:: with SMTP id e16mr3833483lfb.49.1572889081644;
+        Mon, 04 Nov 2019 09:38:01 -0800 (PST)
+Received: from localhost.localdomain (c-2ec20990-74736162.cust.telenor.se. [46.194.9.144])
+        by smtp.gmail.com with ESMTPSA id s23sm6891061ljm.20.2019.11.04.09.37.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 04 Nov 2019 09:38:00 -0800 (PST)
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "David S . Miller" <davem@davemloft.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Paul E . McKenney" <paulmck@linux.ibm.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] dt-bindings: iio: dac: Migrate LTC1660 documentation to yaml
+Date:   Mon,  4 Nov 2019 18:40:36 +0100
+Message-Id: <20191104174036.3535-1-marcus.folkesson@gmail.com>
+X-Mailer: git-send-email 2.23.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The driver for veml6030 light sensor provides sysfs
-entries like configuring cutoff for interrupt. This
-commit document them.
+Rewrite bindings to use json-schema vocabulary.
 
-Signed-off-by: Rishi Gupta <gupt21@gmail.com>
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
-Changes in v6:
-* in_illuminance_period_available now shows values in seconds 
+ .../bindings/iio/dac/lltc,ltc1660.yaml        | 54 +++++++++++++++++++
+ .../devicetree/bindings/iio/dac/ltc1660.txt   | 21 --------
+ MAINTAINERS                                   |  2 +-
+ 3 files changed, 55 insertions(+), 22 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml
+ delete mode 100644 Documentation/devicetree/bindings/iio/dac/ltc1660.txt
 
-Changes in v5:
-* Use ABI/testing/sysfs-bus-iio to document sysfs files for veml6030
-
-Changes in v4:
-* None
-
-Changes in v3:
-* Updated Date from September to October
-* Updated KernelVersion from 5.3.1 to 5.4
-* in_illuminance_period_available is now in events directory
-
-Changes in v2:
-* None
-
- Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
- 1 file changed, 11 insertions(+)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 6804516..faaa216 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -753,6 +753,8 @@ What:		/sys/.../events/in_illuminance0_thresh_falling_value
- what:		/sys/.../events/in_illuminance0_thresh_rising_value
- what:		/sys/.../events/in_proximity0_thresh_falling_value
- what:		/sys/.../events/in_proximity0_thresh_rising_value
-+What:		/sys/.../events/in_illuminance_thresh_rising_value
-+What:		/sys/.../events/in_illuminance_thresh_falling_value
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -972,6 +974,7 @@ What:		/sys/.../events/in_activity_jogging_thresh_rising_period
- What:		/sys/.../events/in_activity_jogging_thresh_falling_period
- What:		/sys/.../events/in_activity_running_thresh_rising_period
- What:		/sys/.../events/in_activity_running_thresh_falling_period
-+What:		/sys/.../events/in_illuminance_thresh_either_period
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -1715,3 +1718,11 @@ Description:
- 		Mass concentration reading of particulate matter in ug / m3.
- 		pmX consists of particles with aerodynamic diameter less or
- 		equal to X micrometers.
+diff --git a/Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml b/Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml
+new file mode 100644
+index 000000000000..1f3136bfffcd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: GPL-2.0
++# Copyright 2019 Marcus Folkesson <marcus.folkesson@gmail.com>
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/bindings/iio/dac/lltc,ltc1660.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/events/in_illuminance_period_available
-+Date:		November 2019
-+KernelVersion:	5.4
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		List of valid periods (in seconds) for which the light intensity
-+		must be above the threshold level before interrupt is asserted.
++title: Linear Technology Micropower octal 8-Bit and 10-Bit DACs
++
++maintainers:
++  - Marcus Folkesson <marcus.folkesson@gmail.com>
++
++description: |
++  Bindings for the Linear Technology Micropower octal 8-Bit and 10-Bit DAC.
++  Datasheet can be found here: https://www.analog.com/media/en/technical-documentation/data-sheets/166560fa.pdf
++
++properties:
++  compatible:
++    enum:
++      - lltc,ltc1660
++      - lltc,ltc1665
++
++  reg:
++    description: SPI chip select number for the device
++    maxItems: 1
++
++  spi-max-frequency:
++    description: |
++      Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt.
++    maximum: 5000000
++    maxItems: 1
++
++  vref-supply:
++    description: Phandle to the external reference voltage supply.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - vref-supply
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++  
++      dac@0 {
++        compatible = "lltc,ltc1660";
++        reg = <0>;
++        spi-max-frequency = <5000000>;
++        vref-supply = <&vref_reg>;
++      };
++    };
+diff --git a/Documentation/devicetree/bindings/iio/dac/ltc1660.txt b/Documentation/devicetree/bindings/iio/dac/ltc1660.txt
+deleted file mode 100644
+index c5b5f22d6c64..000000000000
+--- a/Documentation/devicetree/bindings/iio/dac/ltc1660.txt
++++ /dev/null
+@@ -1,21 +0,0 @@
+-* Linear Technology Micropower octal 8-Bit and 10-Bit DACs
+-
+-Required properties:
+- - compatible: Must be one of the following:
+-		"lltc,ltc1660"
+-		"lltc,ltc1665"
+- - reg: SPI chip select number for the device
+- - vref-supply: Phandle to the voltage reference supply
+-
+-Recommended properties:
+- - spi-max-frequency: Definition as per
+-	 Documentation/devicetree/bindings/spi/spi-bus.txt.
+-	 Max frequency for this chip is 5 MHz.
+-
+-Example:
+-dac@0 {
+-	compatible = "lltc,ltc1660";
+-	reg = <0>;
+-	spi-max-frequency = <5000000>;
+-	vref-supply = <&vref_reg>;
+-};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index fbccc9d450ff..23497d713298 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -9619,7 +9619,7 @@ LTC1660 DAC DRIVER
+ M:	Marcus Folkesson <marcus.folkesson@gmail.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+-F:	Documentation/devicetree/bindings/iio/dac/ltc1660.txt
++F:	Documentation/devicetree/bindings/iio/dac/lltc,ltc1660.yaml
+ F:	drivers/iio/dac/ltc1660.c
+ 
+ LTC4261 HARDWARE MONITOR DRIVER
 -- 
-2.7.4
+2.23.0
 
