@@ -2,228 +2,156 @@ Return-Path: <SRS0=Gx3I=Y5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16AACFC6199
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Nov 2019 10:07:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28AB9C5DF60
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Nov 2019 20:19:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D5D4721929
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Nov 2019 10:07:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="VEO755CM"
+	by mail.kernel.org (Postfix) with ESMTP id DCD3B21A4A
+	for <linux-iio@archiver.kernel.org>; Tue,  5 Nov 2019 20:19:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1572985176;
+	bh=GyelMJW25YnnMBPhUYz/eAXNyRrneJFGG4HtJzJDBBw=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=olbP87otYTYYiEYo0b5G8MPOUzqrmmVb+MkFYDFXXSX4yzlJeLt85wSTJuDXmXcIt
+	 3WWNFGOyp1Wfjme1gUISP6FYmCJ20dQO7ywqBdptTlOhI/Y76mWHqM8cXz1oUVUpLn
+	 wJnUQhnXVpQ+NsMHCMfV/BJbzXg9cxvsiEIDIigI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730724AbfKEKH3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Nov 2019 05:07:29 -0500
-Received: from mail-qk1-f196.google.com ([209.85.222.196]:39981 "EHLO
-        mail-qk1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730718AbfKEKH3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Nov 2019 05:07:29 -0500
-Received: by mail-qk1-f196.google.com with SMTP id a18so2931129qkk.7
-        for <linux-iio@vger.kernel.org>; Tue, 05 Nov 2019 02:07:28 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CNinsozng4H5Ktf3rvHjg3jRh9c0NmbS8rmNz478Pe8=;
-        b=VEO755CMkWYZ+HZKjDSD2H8hkfHFILjBODJuUT7dyLJ2VacVXn30QPaKiB2aJr3dFj
-         UUfvdFj6N0LnOAXPpkBIo09s0N5k2JqZAjoxblyCjvylpwFmN2gB0t7J2CGgbJNVhTmU
-         Xcr/1pKIJxSCw64FjFq0CtKjgFgTUfNVSSd9U2EvGxP5Nf0q3JVy0Cb5eF45Tr0S+WOE
-         0zKyddIay8ulBTDwkAa9yHfkd+eUs/9amxlaNsSWxZ5fur+Ya/bxWYGvrXrX0FWTo8vt
-         H4Dh97ZxjUuuKm7+8LrgGpf1cTXIb42yHnSZIPyQugGcQMUmFsLEOAZC5E/3rGykiu40
-         5mcA==
+        id S1727095AbfKEUTg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Nov 2019 15:19:36 -0500
+Received: from mail-oi1-f195.google.com ([209.85.167.195]:43531 "EHLO
+        mail-oi1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726368AbfKEUTg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Nov 2019 15:19:36 -0500
+Received: by mail-oi1-f195.google.com with SMTP id l20so6701223oie.10;
+        Tue, 05 Nov 2019 12:19:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CNinsozng4H5Ktf3rvHjg3jRh9c0NmbS8rmNz478Pe8=;
-        b=qHZYy25nMs6TwxobdPKxBX0kfUIK2wj8vO4Tq5lwn4IQ66YRLm9RlTuljTTr08Bhql
-         B0mBmNqO+/8epJ6dit+TiysMWCrULC+8pRMVBm7XYyvXq7D3+VBDnhDjIy5/Ha+Ox0oA
-         M4ysUuj0iRzCGp2JSQimZfFMTeQE9B4McbWVlZiomJB/EiOkEm33qSeECCnXdVr67Xhj
-         Fu8iyR7FFqtdVAIScnmsxNxNfjRCcvvi21iXGh7OHd4QcoUUpzlc3kSFXFa5+3X67sKW
-         jHQu4wJdei9IQ4EIdxr7+dXxnwY3jCFUFdPFf3ANjeSmdQ1bj+l42O1CyjhDz6p3e+Ue
-         dW+A==
-X-Gm-Message-State: APjAAAUlaot82b8/qM3i8kUms3s+AlikNLXOsUh9tbOA9w/3Lex6WZxg
-        rSIGjftv40KiZwUNsAawWaKve39YB872w67qNZjESA==
-X-Google-Smtp-Source: APXvYqw9bNDchC8BBBpEdelYeypgmRQMVHiuZm+RJGKYBw6ulBdYAA7iNafLNDZB2gz23179UM0YXlSw8t9Sm2JcFdA=
-X-Received: by 2002:ae9:eb07:: with SMTP id b7mr7705763qkg.104.1572948447803;
- Tue, 05 Nov 2019 02:07:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20191031123040.26316-1-benjamin.gaignard@st.com>
- <20191031123040.26316-3-benjamin.gaignard@st.com> <20191103110841.3ad3ecfb@archlinux>
-In-Reply-To: <20191103110841.3ad3ecfb@archlinux>
-From:   Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Date:   Tue, 5 Nov 2019 11:07:16 +0100
-Message-ID: <CA+M3ks5sZ6wwV-V+HCLC8OLdeLqrxK0Ga-pXTsdktQErbMOk4g@mail.gmail.com>
-Subject: Re: [PATCH 2/4] dt-bindings: iio: timer: Convert stm32 IIO trigger
- bindings to json-schema
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Benjamin Gaignard <benjamin.gaignard@st.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        linux-iio@vger.kernel.org, u.kleine-koenig@pengutronix.de,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=Nx7kJTn3OdCopAIR7Uif4GRlSRK0moBADISBNdcfrTs=;
+        b=CfErN2/fXneyoKLva9QaXEWV9InFtjqfbLUF4t/NjrhOI69gK5iCHtRaHP31DywgYl
+         VL5lrVQYAkIejBB36NkBTJ0fm3YrGyBjB0bH0Okjw+Wkxaa4vah32sKoanlNABehmpQv
+         ol+xK9XIHDTwMR8Wo7CSYCr81LRgQCKpyFCwbQgInUrlRCiij3USuzKX7TWqbkqMMU54
+         UIObKILHW/NKnsE1Ct2MD7FFkBJHbsIemKEjm6kWPfs15WovkDAqFK5GwZXVJASNm/1c
+         9awtmKjWCYWcp8YDU2eYE6Ep99eR7OnuY0ZzJTYGYcD2jBK9Y7QKXGP0Obs5KYUYndYy
+         C/7g==
+X-Gm-Message-State: APjAAAVBypSyKfNEr4Ap9aCecBk5ayKrFI4sPJtf64GqAbBb+10mwZ/R
+        pXrVjvm+9DmMAhZhWhoLTg==
+X-Google-Smtp-Source: APXvYqzcwQTTuh/ucjVOm77Dw2qQBBOp4x78YLgbH+mDcvDa5vMIG9/s7Mrn5jjgeZmF/Hy7tj1Clw==
+X-Received: by 2002:aca:dd0a:: with SMTP id u10mr766731oig.130.1572985173589;
+        Tue, 05 Nov 2019 12:19:33 -0800 (PST)
+Received: from localhost (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id v26sm2778262oic.5.2019.11.05.12.19.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 05 Nov 2019 12:19:32 -0800 (PST)
+Date:   Tue, 5 Nov 2019 14:19:32 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Rodrigo Carvalho <rodrigorsdc@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        kernel-usp@googlegroups.com
+Subject: Re: [PATCH v3] dt-bindings: iio: accel: add binding documentation
+ for ADIS16240
+Message-ID: <20191105201932.GA24515@bogus>
+References: <20191101000301.12901-1-rodrigorsdc@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191101000301.12901-1-rodrigorsdc@gmail.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le dim. 3 nov. 2019 =C3=A0 12:08, Jonathan Cameron <jic23@kernel.org> a =C3=
-=A9crit :
->
-> On Thu, 31 Oct 2019 13:30:38 +0100
-> Benjamin Gaignard <benjamin.gaignard@st.com> wrote:
->
-> > Convert the STM32 IIO trigger binding to DT schema format using json-sc=
-hema
-> >
-> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> I'm far from great on these as still haven't taken the time I should to l=
-earn
-> the yaml syntax properly.  A few comments inline however based mostly on =
-this
-> doesn't quite look like other ones I've seen recently.
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  .../bindings/iio/timer/st,stm32-timer-trigger.yaml | 44 ++++++++++++++=
-++++++++
-> >  .../bindings/iio/timer/stm32-timer-trigger.txt     | 25 ------------
-> >  2 files changed, 44 insertions(+), 25 deletions(-)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/timer/st,stm3=
-2-timer-trigger.yaml
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-t=
-imer-trigger.txt
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/timer/st,stm32-timer=
--trigger.yaml b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-=
-trigger.yaml
-> > new file mode 100644
-> > index 000000000000..1c8c8b55e8cd
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/timer/st,stm32-timer-trigge=
-r.yaml
-> > @@ -0,0 +1,44 @@
-> > +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/timer/st,stm32-timer-trigger.ya=
-ml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: STMicroelectronics STM32 Timers IIO timer bindings
-> > +
-> > +maintainers:
-> > +  - Benjamin Gaignard <benjamin.gaignard@st.com>
-> > +  - Fabrice Gasnier <fabrice.gasnier@st.com>
-> > +
-> > +properties:
-> > +  $nodemane:
->
-> nodename?
+On Thu, Oct 31, 2019 at 09:03:01PM -0300, Rodrigo Carvalho wrote:
+> This patch add device tree binding documentation for ADIS16240.
+> 
+> Signed-off-by: Rodrigo Ribeiro Carvalho <rodrigorsdc@gmail.com>
+> ---
+> V3:
+>    - Remove spi-cpol and spi-cpha field. They don't seem necessary
 
-That will be in v2
+Not necessary to document or use? The latter requires the former.
 
->
-> > +    pattern: "^timer@[0-9]+$"
-> > +    type: object
-> > +
-> > +    description:
-> > +      must be a sub-node of an STM32 Timer device tree node
-> > +
-> > +    properties:
-> > +      compatible:
-> > +        oneOf:
->
-> enum is I think preferred for these.
+If your device only supports one timing mode, then you don't need them 
+because it should be implied and the driver can just tell the SPI 
+subsystem what mode it requires. If the device can support multiple 
+timing modes, then you should document that you are using the 
+properties.
 
-as you like it will be in v2
-
->
-> > +          - const: st,stm32-timer-trigger
-> > +          - const: st,stm32h7-timer-trigger
-> > +
-> > +      reg: true
->
-> Normally some info for what the reg value is..
-I can't put "description" on this field because the syntax doesn't allow it=
-.
-I will add a comment in v2 to explain what reg is.
-
-Thanks for your review.
-Benjamin
->
-> > +
-> > +    required:
-> > +      - compatible
-> > +      - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    timers2: timer@40000000 {
-> > +      #address-cells =3D <1>;
-> > +      #size-cells =3D <0>;
-> > +      timer@0 {
-> > +        compatible =3D "st,stm32-timer-trigger";
-> > +        reg =3D <0>;
-> > +      };
-> > +    };
-> > +
-> > +...
-> > diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-tr=
-igger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger=
-.txt
-> > deleted file mode 100644
-> > index b8e8c769d434..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.t=
-xt
-> > +++ /dev/null
-> > @@ -1,25 +0,0 @@
-> > -STMicroelectronics STM32 Timers IIO timer bindings
-> > -
-> > -Must be a sub-node of an STM32 Timers device tree node.
-> > -See ../mfd/stm32-timers.txt for details about the parent node.
-> > -
-> > -Required parameters:
-> > -- compatible:        Must be one of:
-> > -             "st,stm32-timer-trigger"
-> > -             "st,stm32h7-timer-trigger"
-> > -- reg:               Identify trigger hardware block.
-> > -
-> > -Example:
-> > -     timers@40010000 {
-> > -             #address-cells =3D <1>;
-> > -             #size-cells =3D <0>;
-> > -             compatible =3D "st,stm32-timers";
-> > -             reg =3D <0x40010000 0x400>;
-> > -             clocks =3D <&rcc 0 160>;
-> > -             clock-names =3D "int";
-> > -
-> > -             timer@0 {
-> > -                     compatible =3D "st,stm32-timer-trigger";
-> > -                     reg =3D <0>;
-> > -             };
-> > -     };
->
->
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+>  .../bindings/iio/accel/adi,adis16240.yaml     | 51 +++++++++++++++++++
+>  1 file changed, 51 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> new file mode 100644
+> index 000000000000..9a4cd12c4818
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> @@ -0,0 +1,51 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/accel/adi,adis16240.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ADIS16240 Programmable Impact Sensor and Recorder driver
+> +
+> +maintainers:
+> +  - Alexandru Ardelean <alexandru.ardelean@analog.com>
+> +
+> +description: |
+> +  ADIS16240 Programmable Impact Sensor and Recorder driver that supports
+> +  SPI interface.
+> +    https://www.analog.com/en/products/adis16240.html
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,adis16240
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi0 {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        /* Example for a SPI device node */
+> +        accelerometer@0 {
+> +            compatible = "adi,adis16240";
+> +            reg = <0>;
+> +            spi-max-frequency = <2500000>;
+> +            spi-cpol;
+> +            spi-cpha;
+> +            interrupt-parent = <&gpio0>;
+> +            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
+> +        };
+> +    };
+> -- 
+> 2.23.0
+> 
