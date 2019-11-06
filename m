@@ -2,63 +2,64 @@ Return-Path: <SRS0=0DN8=Y6=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50AC2C5DF63
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Nov 2019 17:55:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 200EBC5DF63
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Nov 2019 18:49:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1B80A217D7
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Nov 2019 17:55:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 60CBF217F9
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Nov 2019 18:49:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="RGC8VoaY"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gerhold.net header.i=@gerhold.net header.b="NVvUj9mQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727397AbfKFRzo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Nov 2019 12:55:44 -0500
-Received: from mail-qv1-f66.google.com ([209.85.219.66]:40745 "EHLO
-        mail-qv1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726963AbfKFRzo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Nov 2019 12:55:44 -0500
-Received: by mail-qv1-f66.google.com with SMTP id r8so1784662qvq.7
-        for <linux-iio@vger.kernel.org>; Wed, 06 Nov 2019 09:55:44 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FJUHLMbm/tSIBVChotuCj0exRQqONQj2GQ4evg4p8S4=;
-        b=RGC8VoaYZgvMAG9dHAi3ksfCgLsDHuzPId0Etq13p+14RiaQeRCZAiAYGR+gQtFmIj
-         Jq+VbG6R0zbeVnCln39x86W5DNDaQ4IGvbYJoJVU/X67IrxX0MLsPmFysQ/GwVmWqE19
-         vfgZLlZt2+LeX0sB+N+LxV1uBxygSx4anhhd8=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=FJUHLMbm/tSIBVChotuCj0exRQqONQj2GQ4evg4p8S4=;
-        b=CpLvxuATUKS/H/PHdLBqIjSJ+jTW0uPk2pRjqD+a5eYYzCGzrmwhvmEZON4D139bI9
-         lRTJdrjRlSbNrTAaszxcWtQPziqMlipyOfTdMkRRU0TC+Gx4X+/x2RoElPguWeRNIz77
-         DG+8lEYmuGxsJGRfljrRUiUkhA+L4XpLvVh65d1UgE37+xZhWGluNrT1nuXZ+cua08Zm
-         4roYjr5SRchLp1ouMOPdpTSwgi6pvfRFhJoHxhXYFqNziwOjtOX4yfDyqMY0yIH11QTI
-         oEYvOgzfcoLNeAQV1XVAQi/LR579c591oQjd7MKLi4ox2+hwr9aE35YDd6tHG2DUOOFn
-         r7iQ==
-X-Gm-Message-State: APjAAAV9meuyQpzmLxdm8nkawklhrNzkHVBnAxu5e7/vn7BypZx3PjaQ
-        qQpJki6sYt6tcnAyUZfWV/H+RQ4WSdsjsw==
-X-Google-Smtp-Source: APXvYqzujX2c2birywXm7OIXBUo15MaC1VRQP0EYr/lN7hw9f7//js/ruVmerChKJmZphx1nnhYu1Q==
-X-Received: by 2002:a63:e148:: with SMTP id h8mr4191713pgk.297.1573062942282;
-        Wed, 06 Nov 2019 09:55:42 -0800 (PST)
-Received: from localhost ([2620:15c:202:1:3c8f:512b:3522:dfaf])
-        by smtp.gmail.com with ESMTPSA id l62sm14511880pgl.24.2019.11.06.09.55.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 Nov 2019 09:55:41 -0800 (PST)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     fabien.lahoudere@collabora.com, enric.balletbo@collabora.com,
-        jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2] iio: cros_ec_baro: set info_mask_shared_by_all_available field
-Date:   Wed,  6 Nov 2019 09:55:33 -0800
-Message-Id: <20191106175533.199257-1-gwendal@chromium.org>
-X-Mailer: git-send-email 2.24.0.432.g9d3f5f5b63-goog
+        id S1727341AbfKFSts (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Nov 2019 13:49:48 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.80]:10139 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727208AbfKFSts (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Nov 2019 13:49:48 -0500
+X-Greylist: delayed 535 seconds by postgrey-1.27 at vger.kernel.org; Wed, 06 Nov 2019 13:49:46 EST
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1573066185;
+        s=strato-dkim-0002; d=gerhold.net;
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
+        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
+        bh=PBzDxbv5y8LCYgRpYy8Thw+tCvRv0ESWr1IvbIjPMj4=;
+        b=NVvUj9mQGGeTsWRKrMeNcs54peE6qd4bHfIFrPUWIWsugJi+4otLmIDz6bRXom/fS5
+        YLR3R5lfCjLJrK2H9a77wL6kx1R7/Y+JuHYwjqFZdczTBO3u9nETL6Hj2eQYdstNfb06
+        Df0CU/D2PTndpOAjkMCnUdEI86Z55bGfZqCuwmCzBNbsgxIEcspXHEsRf38CfULn47V5
+        ewQvP2dTEpvDA5HliSYSsnQFHdfKr/3ph0ccfRtGfcDgOO+g7nlMMYi69zqBo6WnYlXx
+        2EpPdYN8VKgcYqkzM8/RJNUCKqy/Wi2OxoaOOaKfmToS2hHCeDifFNeOC0KPDoPBSWJX
+        BxUw==
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXQrEOHTIXs8PvtBNfIQ=="
+X-RZG-CLASS-ID: mo00
+Received: from localhost.localdomain
+        by smtp.strato.de (RZmta 44.29.0 AUTH)
+        with ESMTPSA id e07688vA6IbkhoV
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve secp521r1 with 521 ECDH bits, eq. 15360 bits RSA))
+        (Client did not present a certificate);
+        Wed, 6 Nov 2019 19:37:46 +0100 (CET)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Brian Masney <masneyb@onstation.org>,
+        Jonathan Marek <jonathan@marek.ca>,
+        Jean-Baptiste Maneyrol <JManeyrol@invensense.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH 2/2] iio: imu: mpu6050: Add support for vdd-supply regulator
+Date:   Wed,  6 Nov 2019 19:35:36 +0100
+Message-Id: <20191106183536.123070-2-stephan@gerhold.net>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <20191106183536.123070-1-stephan@gerhold.net>
+References: <20191106183536.123070-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -66,42 +67,106 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Field was already set for light/proximity and
-accelerometer/gyroscope/magnetometer sensors.
+MPU6050 has two power supply pins: VDD and VLOGIC, but the mpu6050
+only supports enabling one of them at the moment. In some cases,
+they may need to be enabled separately.
 
-Fixes: ae7b02ad2f32 ("iio: common: cros_ec_sensors: Expose
-cros_ec_sensors frequency range via iio sysfs")
+Add an additional "vdd-supply", but keep the code simple by making
+the driver use the regulator bulk API. This actually allows further
+simplifying the code since regulator_bulk_* already logs the errors
+for us.
 
-Change-Id: Iffa4c47979994eaaf1abb609c75c080923ecf600
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
-Changes in v2:
- Forgot to add read_avail entry point.
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 30 +++++++---------------
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  |  5 ++--
+ 2 files changed, 12 insertions(+), 23 deletions(-)
 
- drivers/iio/pressure/cros_ec_baro.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-index 2354302375de..52f53f3123b1 100644
---- a/drivers/iio/pressure/cros_ec_baro.c
-+++ b/drivers/iio/pressure/cros_ec_baro.c
-@@ -114,6 +114,7 @@ static int cros_ec_baro_write(struct iio_dev *indio_dev,
- static const struct iio_info cros_ec_baro_info = {
- 	.read_raw = &cros_ec_baro_read,
- 	.write_raw = &cros_ec_baro_write,
-+	.read_avail = &cros_ec_sensors_core_read_avail,
- };
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 354030e9bed5..8e50dbcd730b 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -1144,11 +1144,8 @@ static int inv_mpu_core_enable_regulator(struct inv_mpu6050_state *st)
+ {
+ 	int result;
  
- static int cros_ec_baro_probe(struct platform_device *pdev)
-@@ -149,6 +150,8 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_FREQUENCY);
-+	channel->info_mask_shared_by_all_available =
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ);
- 	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
- 	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
- 	channel->scan_type.shift = 0;
+-	result = regulator_enable(st->vddio_supply);
+-	if (result) {
+-		dev_err(regmap_get_device(st->map),
+-			"Failed to enable regulator: %d\n", result);
+-	} else {
++	result = regulator_bulk_enable(ARRAY_SIZE(st->supplies), st->supplies);
++	if (result == 0) {
+ 		/* Give the device a little bit of time to start up. */
+ 		usleep_range(35000, 70000);
+ 	}
+@@ -1158,14 +1155,7 @@ static int inv_mpu_core_enable_regulator(struct inv_mpu6050_state *st)
+ 
+ static int inv_mpu_core_disable_regulator(struct inv_mpu6050_state *st)
+ {
+-	int result;
+-
+-	result = regulator_disable(st->vddio_supply);
+-	if (result)
+-		dev_err(regmap_get_device(st->map),
+-			"Failed to disable regulator: %d\n", result);
+-
+-	return result;
++	return regulator_bulk_disable(ARRAY_SIZE(st->supplies), st->supplies);
+ }
+ 
+ static void inv_mpu_core_disable_regulator_action(void *_data)
+@@ -1239,14 +1229,12 @@ int inv_mpu_core_probe(struct regmap *regmap, int irq, const char *name,
+ 		return -EINVAL;
+ 	}
+ 
+-	st->vddio_supply = devm_regulator_get(dev, "vddio");
+-	if (IS_ERR(st->vddio_supply)) {
+-		if (PTR_ERR(st->vddio_supply) != -EPROBE_DEFER)
+-			dev_err(dev, "Failed to get vddio regulator %d\n",
+-				(int)PTR_ERR(st->vddio_supply));
+-
+-		return PTR_ERR(st->vddio_supply);
+-	}
++	st->supplies[0].supply = "vdd";
++	st->supplies[1].supply = "vddio";
++	result = devm_regulator_bulk_get(dev, ARRAY_SIZE(st->supplies),
++					 st->supplies);
++	if (result)
++		return result;
+ 
+ 	result = inv_mpu_core_enable_regulator(st);
+ 	if (result)
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index 52fcf45050a5..96cbd7f2b4b3 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -12,6 +12,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/kfifo_buf.h>
+ #include <linux/iio/trigger.h>
+@@ -130,7 +131,7 @@ struct inv_mpu6050_hw {
+  *  @chip_period:	chip internal period estimation (~1kHz).
+  *  @it_timestamp:	timestamp from previous interrupt.
+  *  @data_timestamp:	timestamp for next data sample.
+- *  @vddio_supply	voltage regulator for the chip.
++ *  @supplies:		voltage regulators for the chip.
+  *  @magn_disabled:     magnetometer disabled for backward compatibility reason.
+  *  @magn_raw_to_gauss:	coefficient to convert mag raw value to Gauss.
+  *  @magn_orient:       magnetometer sensor chip orientation if available.
+@@ -154,7 +155,7 @@ struct inv_mpu6050_state {
+ 	s64 chip_period;
+ 	s64 it_timestamp;
+ 	s64 data_timestamp;
+-	struct regulator *vddio_supply;
++	struct regulator_bulk_data supplies[2];
+ 	bool magn_disabled;
+ 	s32 magn_raw_to_gauss[3];
+ 	struct iio_mount_matrix magn_orient;
 -- 
-2.24.0.432.g9d3f5f5b63-goog
+2.23.0
 
