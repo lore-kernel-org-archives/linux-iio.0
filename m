@@ -7,22 +7,22 @@ X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 56191C5DF61
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Nov 2019 13:02:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD6EC5DF61
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Nov 2019 13:03:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3742F21D7B
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Nov 2019 13:02:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6C6A2067B
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Nov 2019 13:03:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388442AbfKGNCN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Nov 2019 08:02:13 -0500
-Received: from mout.kundenserver.de ([212.227.17.24]:58211 "EHLO
+        id S2388678AbfKGND3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Nov 2019 08:03:29 -0500
+Received: from mout.kundenserver.de ([212.227.17.24]:36291 "EHLO
         mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726873AbfKGNCM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Nov 2019 08:02:12 -0500
+        with ESMTP id S2388407AbfKGND3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Nov 2019 08:03:29 -0500
 Received: from localhost ([46.78.193.225]) by mrelayeu.kundenserver.de
- (mreue109 [212.227.15.183]) with ESMTPSA (Nemesis) id
- 1M3DBb-1iU4q23Lif-003eaF; Thu, 07 Nov 2019 14:00:08 +0100
-Date:   Thu, 7 Nov 2019 14:00:05 +0100
+ (mreue108 [212.227.15.183]) with ESMTPSA (Nemesis) id
+ 1N4yyQ-1hjq0Z1xnY-010xdN; Thu, 07 Nov 2019 14:02:56 +0100
+Date:   Thu, 7 Nov 2019 14:02:50 +0100
 From:   Andreas Klinger <ak@it-klinger.de>
 To:     robh+dt@kernel.org, jic23@kernel.org, mark.rutland@arm.com
 Cc:     mripard@kernel.org, shawnguo@kernel.org, heiko@sntech.de,
@@ -33,54 +33,59 @@ Cc:     mripard@kernel.org, shawnguo@kernel.org, heiko@sntech.de,
         davem@davemloft.net, paulmck@linux.ibm.com,
         devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 1/5] dt-bindings: add vendor prefix parallax
-Message-ID: <20191107130003.m6ul3klzmv2g2sbd@arbad>
+Subject: [PATCH 5/5] MAINTAINERS: add maintainer for ping iio sensors
+Message-ID: <20191107130133.asgoinzne4wpvx2b@arbad>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 User-Agent: NeoMutt/20170113 (1.7.2)
-X-Provags-ID: V03:K1:C8IX4KdRmZEk6Z1ftKghKP5WhDeC1HAho2hptIwhg03itfX28K5
- lc5HmJpLEkeM6YsYzsdC+yQbqlHpPqsnG52s/6txbNzsFteh96kfsJ9xthD+ey6/ykNbwSu
- QzDqp92HVmdqOPiXaJR22TewJPtzaY7EIOAIpm7B6e+62n9CJv+LXUNtxHyUb8cH4sJtEWW
- /elcDwQ70aljywhAYF+1g==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:ITQGoTZy2B4=:tzABNfQqv5gz/B7DJ+4lOn
- IQKJwWy2x3whNLzk0E+i3VTumuWdeA6FYk17ZHZj4NYGC0M1v6CYu5OvitKJvGj2AwLkA3xEG
- 7TjsNwvNfUdK1/4YFoTrZ/wGeleqZv84LVZZEBhICgdEdOJzLxTaUgxGZS9QEmlTP49yHoY05
- swSKIp4vGYeJvJxOI5XPunIVFNnENMM71cPh6xo9flo1/dPDLZWRrynsT543mvw1XJqlz02Hw
- K1QTDfUVfcIPP7LsVqRvZiLEEOB62nWGyxaf60wBZx2FOtwr+8c/kRIMMqHWk/zXZqF//zipc
- jKB5kE4MkR3zEMCZidBqlI0nAfNhu7EzomO9mliH9XgxREi6mT+4ACrymsEevtEctrIpIdlxP
- b9++PCKLXa2p4WeWs76emn0bo42SeiRz/pUvGMt1FfUsVE/dEt/ypWDPkn2N4zAhsgc3sEoBO
- yEhLOXgvAfxjjRemm3LR/kuNfWHwvbjRR8o5XBpbtm+TxXPdbVsJlGovLSrRcanjIVJvWOa3I
- Zadh3DPHz6QL1a+5artch818Gify7IuLyduZAD/NHBU9MJwd/w5ZAld220/mqjeyNHWc55yhx
- 2vWn6DHMobtlMeThS31PErW+BPC0PmcqTAeZ1XjyqvRpvEv9ywKUEpr6e46PIMd0WcjrI/QiF
- XHctthFnuIxVz8qyhKboNgiP3qTou5wXaXn51llPkBMXh70aDHpo3a37UcXKzoRFOAeWNOcpb
- KL4JvNiFLkoQRq52sZw44mHGYFB0wAPCboBoOWDG7e3gzWg2K1yH0Wj8HmXnxYg9nschN8rtM
- ykbJ+MPdvEtLTyHGHQ5iqAHYeplO07NEbPkx577jkwEEMijIwJ2zdNg5aAyHHYcjeAtzLfifx
- Za3OoghaosvGOrkEV7lA==
+X-Provags-ID: V03:K1:roj6/uW2rfWs1vtm4BS1f4RBniw3LM9usYRsDw9ryAHb5sWJl6S
+ wR/Sah8Rcd0r+wsmEsrkn2d2o5rnnqutq80WhTuY193F60xRSsRHLKb8bI07jXL8DtNiWEE
+ LJmF00G6+pB0tC+xo6sxWCVC23ZCBPKtdc944ob8BWaK8g7d5hUUidsNV1gnaUe7O8HZ0nq
+ DpGl8DQ6nz7s8E+E4QpbA==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:A6AJSlv7As8=:AMHdnxsg19HuEiOij2fX2I
+ zM2nuwPtI8vqgqnS5cJaSpofBe5DFIWdKngNtM/+b7J0S1CrcjlTtg0NjxiXpLPQiqr+uC8pj
+ SiBfgYOU7M8lGHXHJ10UzLh5QAkJlFmgGO/iFUGICs+pOTJPxUGhEv5Rmcv9CbnuXw2gjbhLZ
+ 8l/AEn/vSWY7VREHZsc64JbHByRckn4F7SXdidNQUywy0UWSruccymI/oOytR8ETGuznuWYKY
+ L/UGuQSlz5ZW5EKtnt5X+FmL8UMZDwQ9gEGWMMFFQzC3mE7v8hGo4+A/ZAFWwacSZzn+bgvNv
+ rL1GLc4NEENh2claz4z7KJEwHIFO6LjqdpiEjiCFYnKj4+3bxJzbkwLDw987ozjKrvkPxd+Ea
+ j72lJ4m0g+OP1MdIIYlNABHsfHa1UGaUNWLBptZA88Ho7yeuMbujdYYtARBYgtOL5RKQUB/K4
+ aGizZG06nOdakKT1V18Y6jMtBQq5fgD9GkCdVSx51FeTwzeun673EynwLFBPnbTwDl/V2TtMz
+ AllSnwF6Oe4ejir0MDQZ1kDG2crqJaukkpYsATKLrkYZ54k3zhflFOakCAcuW0oToC2zAjFgE
+ Z9SnliU07qA12xp6sfKxpon/0NOehKQSuvdYeiO7Bgjk9BaxWt3jKYMeM49wy91XM8nYRXHeb
+ aCjuUYJbqpx75ew5DrdHNH6uQJCp0FCLnyX44XFrnQENYk5xoIEmi69gcYCBLPLwL7ihvl7Lv
+ gwiq2uGW1hkf80MWsgKDh53mUsEFyD0xBIQKmT0RYiwZ88FezFaQkEe/0e68RwLhlBrE9deKo
+ 5iaR+hCY0UcmgESdegfoVysg1gMjV5RYe1VFpIcUZ/blYBRn6ucQZsDKto4gKv7Y1KM3yWJ4/
+ Ssx+MPZ6HxjlxG2Bw28Q==
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add new vendor prefix parallax for newly created ping iio sensors.
+Add a maintainer for the new parallax PING))) and LaserPING IIO sensors
 
 Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 967e78c5ec0a..d3f9690e1e4b 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -713,6 +713,8 @@ patternProperties:
-     description: Panasonic Corporation
-   "^parade,.*":
-     description: Parade Technologies Inc.
-+  "^parallax,.*":
-+    description: Parallax Inc.
-   "^pda,.*":
-     description: Precision Design Associates, Inc.
-   "^pericom,.*":
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c6c34d04ce95..ad469adffb99 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12264,6 +12264,13 @@ L:	platform-driver-x86@vger.kernel.org
+ S:	Maintained
+ F:	drivers/platform/x86/panasonic-laptop.c
+ 
++PARALLAX PING IIO SENSOR DRIVER
++M:	Andreas Klinger <ak@it-klinger.de>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/proximity/parallax-ping.yaml
++F:	drivers/iio/proximity/ping.c
++
+ PARALLEL LCD/KEYPAD PANEL DRIVER
+ M:	Willy Tarreau <willy@haproxy.com>
+ M:	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
 -- 
 2.11.0
