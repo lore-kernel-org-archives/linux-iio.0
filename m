@@ -4,51 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9B26C5DF60
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Nov 2019 11:43:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F156BFA372C
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Nov 2019 11:51:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 852EE222C4
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Nov 2019 11:43:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE64420659
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Nov 2019 11:51:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573213400;
+	s=default; t=1573213905;
 	bh=WiBksml3Di1WYFYiOQH1mulf+M8x8gaNtPvMG683ctI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=QGpUdh1hdjjQmOJJujEt+IfBPYsPn2gPzM4QSnMSaSUJgq5cBY6XRYG+2WIjO1mDS
-	 sX5iCoIAUAdseBbYDW3v7S2CRWxr/jneVQL342+SvyFvE0A5W2noSRCDJHpsNfp3kL
-	 woHYfMdIZ2l4MQ2MKIbm21ERsW+jdAZNRD7MABGw=
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=e0HxxNO1C5nuBNj4HPeQ7g4JGTjzS7PmusY3gqzmEfYa3wdrHgUO3+057kj5mxKV+
+	 07SGhA5xsQRu9TO5vVDQxxM7W3BaONQsRy7dnEet74sa2cUI2kxfSOvDOt3nLSIr48
+	 wV6gzVumLaaeYjol74E0eoVJzBG0MJ0iOzcTJ65I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390409AbfKHLnS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Nov 2019 06:43:18 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57658 "EHLO mail.kernel.org"
+        id S2390647AbfKHLrZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Nov 2019 06:47:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:35888 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732512AbfKHLnR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 8 Nov 2019 06:43:17 -0500
+        id S2389733AbfKHLrY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 8 Nov 2019 06:47:24 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3EA9F222C6;
-        Fri,  8 Nov 2019 11:43:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E6DD1222C5;
+        Fri,  8 Nov 2019 11:47:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573213396;
+        s=default; t=1573213643;
         bh=WiBksml3Di1WYFYiOQH1mulf+M8x8gaNtPvMG683ctI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BJtUccS+wycD1sGcCmgxVr6eLQSiD0Tmr544nUw5+2t8z1gGD3AhW9y3mGmqDOI1R
-         hwUr8e9IcleR5gdQp9+9FQPzgQMif5xqO2VWsf+s73LJK/eGiNfOb6uavKnuPKcibC
-         wIv2smdvijn4Iz3qolVmp9rd4Kk76+rFVSf58Tcw=
+        h=From:To:Cc:Subject:Date:From;
+        b=oP7a35t7o/B70xqvk5lOS0jY5MAJ/s+NtK3011/2hfwlYIJ4pVfbd7gugk4/rtTKS
+         0VUnTlZk6TPnfRfqv1BPvu9OiHJlI+0AUuKsM50DIesBiHvTFSgI8hLZRAfvty+r4C
+         ioJxPkCzCRepanoQktZ9vQ12OxRUaJ6GaIh47W5E=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 004/103] iio: dac: mcp4922: fix error handling in mcp4922_write_raw
-Date:   Fri,  8 Nov 2019 06:41:29 -0500
-Message-Id: <20191108114310.14363-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 01/44] iio: dac: mcp4922: fix error handling in mcp4922_write_raw
+Date:   Fri,  8 Nov 2019 06:46:37 -0500
+Message-Id: <20191108114721.15944-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191108114310.14363-1-sashal@kernel.org>
-References: <20191108114310.14363-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
