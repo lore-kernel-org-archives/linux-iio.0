@@ -2,53 +2,59 @@ Return-Path: <SRS0=Sggk=ZB=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C90D7C43331
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Nov 2019 12:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B43CFC43331
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Nov 2019 12:36:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8E55521882
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Nov 2019 12:32:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8A47B21924
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Nov 2019 12:36:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1573302752;
-	bh=uH1tghfYu2yIv43zpAU7ZhVCiSkTEvt4MtcadK8Y0mc=;
+	s=default; t=1573303019;
+	bh=94rB6uATtbEgExwYm/yBTizcjTGeAPvuJQYjQ5LwJB4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wVb7SiNrm4lU+KqnM8gz+xFpPe5nN1W8k5a3KtMjwPjIfhRAolFpZy5F5Uw9kEc0x
-	 B6uKEEC9+Z+7Hv+h7OOslgZRakhZGgwm8BMOZjKdamZlcJEMLcD0QPy/cGt9w3sDmz
-	 Z6dQqqLq8aQycHVMES/a3COtkXAgjo0MQi4OIJkM=
+	b=S4nI0aFeASIFijBoEh8CdWPZYMZ77AYBEpJMzxh/+RSm2IEr0nku/6FBDmSDB1E5Y
+	 aHITpc0dfjR0SmwRlj0ij6Q537mr41ESNoxT4HuMP6ylxe4bJScA8Ss5rjSEYmxUIN
+	 tJ/ePVG2pBH5pIO+i9Sc16rUkRpEpjSuWZ6Cpnc8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726282AbfKIMcc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Nov 2019 07:32:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:44046 "EHLO mail.kernel.org"
+        id S1726281AbfKIMgz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Nov 2019 07:36:55 -0500
+Received: from mail.kernel.org ([198.145.29.99]:44376 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726219AbfKIMcc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Nov 2019 07:32:32 -0500
+        id S1726219AbfKIMgz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 9 Nov 2019 07:36:55 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 46C15207FF;
-        Sat,  9 Nov 2019 12:32:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 41233207FF;
+        Sat,  9 Nov 2019 12:36:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1573302751;
-        bh=uH1tghfYu2yIv43zpAU7ZhVCiSkTEvt4MtcadK8Y0mc=;
+        s=default; t=1573303015;
+        bh=94rB6uATtbEgExwYm/yBTizcjTGeAPvuJQYjQ5LwJB4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=moAxqOXT2s4E8OEQ6/fi69+2J9EujtcSHJkT+CvktU2UJ/JpCD926nQ7dJrqGtOC/
-         OAhBdnE1f+6Wcs185EiqExkxM8uFgGTcJXN8WMaleM9xkx8r5w+bV8mL2szecESvuq
-         SjzFu+IyGTdvtccyYlUWToFKR3NW7LH5Oom1gGj4=
-Date:   Sat, 9 Nov 2019 12:32:25 +0000
+        b=kjWuatU2Y3QYgPQx1zMJ59fS4cQBznORLZ7LCWzd4tHW7DNWUmlqiS0eFvqAxZGwZ
+         fZrmVfYc8sAauNj5DJU4bHbQ9kQRUX9VQLU37N24r2w5FPoGkfH0rcf6b2NyX8cELm
+         86ZXvexof6vOJh3GeBCqHQUJ5h3p78OK8wMnI+7A=
+Date:   Sat, 9 Nov 2019 12:36:49 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>,
-        "maitysanchayan@gmail.com" <maitysanchayan@gmail.com>
-Subject: Re: [PATCH] iio: dac: vf610: Use devm_platform_ioremap_resource
-Message-ID: <20191109123225.02d181fa@archlinux>
-In-Reply-To: <997b426fd9211cda5b3bb8ae645c07c1dbb5af7e.camel@analog.com>
-References: <20191013171732.2169010-1-jic23@kernel.org>
-        <997b426fd9211cda5b3bb8ae645c07c1dbb5af7e.camel@analog.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Fabrice Gasnier <fabrice.gasnier@st.com>, robh+dt@kernel.org,
+        alexandre.torgue@st.com, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, lars@metafoo.de, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: stm32-adc: add max clock rate
+ property
+Message-ID: <20191109123649.0f77474e@archlinux>
+In-Reply-To: <20191106032917.GA25856@bogus>
+References: <1572279108-25916-1-git-send-email-fabrice.gasnier@st.com>
+        <1572279108-25916-2-git-send-email-fabrice.gasnier@st.com>
+        <20191106032917.GA25856@bogus>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,56 +64,24 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 4 Nov 2019 15:18:09 +0000
-"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+On Tue, 5 Nov 2019 21:29:17 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-> On Sun, 2019-10-13 at 18:17 +0100, jic23@kernel.org wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> On Mon, 28 Oct 2019 17:11:47 +0100, Fabrice Gasnier wrote:
+> > Add optional dt property to tune maximum desired analog clock rate.
 > > 
-> > Reduce local boilerplate.
-> > Suggested by coccinelle
-> > 
-> > CHECK   drivers/iio/dac/vf610_dac.c
-> > drivers/iio/dac/vf610_dac.c:189:1-11: WARNING: Use
-> > devm_platform_ioremap_resource for info -> regs
+> > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> > ---
+> >  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt | 2 ++
+> >  1 file changed, 2 insertions(+)
 > >   
 > 
-> Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied,
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Applied to the togreg branch of iio.git.  Whether I get a pull request
+out for this cycle or this hits early in next is dependent on whether
+Linus hints at an rc8 and gives an extra week.
 
 Thanks,
 
 Jonathan
-
-> 
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Sanchayan Maity <maitysanchayan@gmail.com>
-> > ---
-> >  drivers/iio/dac/vf610_dac.c | 4 +---
-> >  1 file changed, 1 insertion(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/dac/vf610_dac.c b/drivers/iio/dac/vf610_dac.c
-> > index 0ec4d2609ef9..71f8a5c471c4 100644
-> > --- a/drivers/iio/dac/vf610_dac.c
-> > +++ b/drivers/iio/dac/vf610_dac.c
-> > @@ -172,7 +172,6 @@ static int vf610_dac_probe(struct platform_device
-> > *pdev)
-> >  {
-> >  	struct iio_dev *indio_dev;
-> >  	struct vf610_dac *info;
-> > -	struct resource *mem;
-> >  	int ret;
-> >  
-> >  	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> > @@ -185,8 +184,7 @@ static int vf610_dac_probe(struct platform_device
-> > *pdev)
-> >  	info = iio_priv(indio_dev);
-> >  	info->dev = &pdev->dev;
-> >  
-> > -	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > -	info->regs = devm_ioremap_resource(&pdev->dev, mem);
-> > +	info->regs = devm_platform_ioremap_resource(pdev, 0);
-> >  	if (IS_ERR(info->regs))
-> >  		return PTR_ERR(info->regs);
-> >    
 
