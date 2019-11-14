@@ -2,30 +2,30 @@ Return-Path: <SRS0=jAeF=ZG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5194C432C3
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:52:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5FCF9C432C3
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:52:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE3FE2071F
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:52:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 41484206EF
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:52:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726567AbfKNKwP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Nov 2019 05:52:15 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:59083 "EHLO
+        id S1726263AbfKNKwU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Nov 2019 05:52:20 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:38145 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725977AbfKNKwP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Nov 2019 05:52:15 -0500
+        with ESMTP id S1725977AbfKNKwU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Nov 2019 05:52:20 -0500
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1iVCjL-0005Ho-CP; Thu, 14 Nov 2019 11:52:03 +0100
+        id 1iVCjL-0005Hl-CP; Thu, 14 Nov 2019 11:52:03 +0100
 Received: from ukl by dude.hi.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1iVCjJ-00043M-KA; Thu, 14 Nov 2019 11:52:01 +0100
+        id 1iVCjJ-0003yF-DX; Thu, 14 Nov 2019 11:52:01 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>,
@@ -38,12 +38,10 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Stefan Popa <stefan.popa@analog.com>,
         Alexandru Ardelean <alexandru.Ardelean@analog.com>
 Cc:     linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH v2 3/3] iio: adc: new driver to support Linear technology's ltc2496
-Date:   Thu, 14 Nov 2019 11:51:59 +0100
-Message-Id: <20191114105159.14195-4-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v2 0/3] iio: adc: add support for ltc2496
+Date:   Thu, 14 Nov 2019 11:51:56 +0100
+Message-Id: <20191114105159.14195-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191114105159.14195-1-u.kleine-koenig@pengutronix.de>
-References: <20191114105159.14195-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,158 +54,45 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This chip is similar to the LTC2497 ADC, it just uses SPI instead of I2C
-and so has a slightly different protocol. Only the actual hardware
-access is different. The spi protocol is different enough to not be able
-to map the differences via a regmap.
+Hello,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/iio/adc/Kconfig   |  10 ++++
- drivers/iio/adc/Makefile  |   1 +
- drivers/iio/adc/ltc2496.c | 100 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 111 insertions(+)
+this is v2 of a series sent earlier starting with Message-id:
+20191111214025.18310-1-u.kleine-koenig@pengutronix.de and addresses the
+comments by Alexandru Ardelean. I'm a bit naughty here because I didn't
+carry out all suggestions. So I didn't use ...-spi.c and -i2c.c as file
+names, because this isn't about a single chip supporting both, but two
+different ones supporting only one bus each. So I thought ltc2496.c,
+ltc2497.c and ltc249x.c was fine.
+
+Also I didn't merge the binding docs of ltc2496 and ltc2497 for the same
+reason. I'm still not entirely happy with the (now) yaml document. I'd
+like to have a statement that says: This is an spi device, so it might
+have all the properties described in
+Documentation/devicetree/bindings/spi/spi-controller.yaml for an SPI
+device.
+
+Uwe Kleine-König (3):
+  iio: adc: ltc2496: provide device tree binding document
+  iio: adc: ltc2497: split protocol independent part in a separate
+    module
+  iio: adc: new driver to support Linear technology's ltc2496
+
+ .../bindings/iio/adc/lltc,ltc2496.yaml        |  30 +++
+ MAINTAINERS                                   |   2 +-
+ drivers/iio/adc/Kconfig                       |  10 +
+ drivers/iio/adc/Makefile                      |   3 +-
+ drivers/iio/adc/ltc2496.c                     | 100 +++++++
+ drivers/iio/adc/ltc2497.c                     | 237 ++---------------
+ drivers/iio/adc/ltc249x.c                     | 244 ++++++++++++++++++
+ drivers/iio/adc/ltc249x.h                     |  18 ++
+ 8 files changed, 433 insertions(+), 211 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
  create mode 100644 drivers/iio/adc/ltc2496.c
+ create mode 100644 drivers/iio/adc/ltc249x.c
+ create mode 100644 drivers/iio/adc/ltc249x.h
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f0af3a42f53c..deb86f6039b3 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -492,6 +492,16 @@ config LTC2485
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ltc2485.
- 
-+config LTC2496
-+	tristate "Linear Technology LTC2496 ADC driver"
-+	depends on SPI
-+	help
-+	  Say yes here to build support for Linear Technology LTC2496
-+	  16-Bit 8-/16-Channel Delta Sigma ADC.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called ltc2496.
-+
- config LTC2497
- 	tristate "Linear Technology LTC2497 ADC driver"
- 	depends on I2C
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 660242c2cca7..afe2b6db4a5e 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -47,6 +47,7 @@ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
- obj-$(CONFIG_LPC32XX_ADC) += lpc32xx_adc.o
- obj-$(CONFIG_LTC2471) += ltc2471.o
- obj-$(CONFIG_LTC2485) += ltc2485.o
-+obj-$(CONFIG_LTC2496) += ltc2496.o ltc249x.o
- obj-$(CONFIG_LTC2497) += ltc2497.o ltc249x.o
- obj-$(CONFIG_MAX1027) += max1027.o
- obj-$(CONFIG_MAX11100) += max11100.o
-diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
-new file mode 100644
-index 000000000000..870526c6df1b
---- /dev/null
-+++ b/drivers/iio/adc/ltc2496.c
-@@ -0,0 +1,100 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ltc2496.c - Driver for Analog Devices/Linear Technology LTC2496 ADC
-+ *
-+ * Based on ltc2497.c which has
-+ * Copyright (C) 2017 Analog Devices Inc.
-+ *
-+ * Licensed under the GPL-2.
-+ *
-+ * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/2496fc.pdf
-+ */
-+
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+
-+#include "ltc249x.h"
-+
-+struct ltc2496_st {
-+	/* this must be the first member */
-+	struct ltc249x_driverdata common_ddata;
-+	struct spi_device *spi;
-+};
-+
-+static int ltc2496_result_and_measure(struct ltc249x_driverdata *ddata,
-+				      u8 address, int *val)
-+{
-+	struct ltc2496_st *st =
-+		container_of(ddata, struct ltc2496_st, common_ddata);
-+	unsigned char txbuf[3] = { LTC249X_ENABLE | address, };
-+	unsigned char rxbuf[3];
-+	struct spi_transfer t = {
-+		.tx_buf = txbuf,
-+		.rx_buf = rxbuf,
-+		.len = sizeof(txbuf),
-+	};
-+	int ret;
-+
-+	ret = spi_sync_transfer(st->spi, &t, 1);
-+	if (ret < 0)  {
-+		dev_err(&st->spi->dev, "spi_sync_transfer failed: %pe\n",
-+			ERR_PTR(ret));
-+		return ret;
-+	}
-+
-+	if (val)
-+		*val = ((rxbuf[0] & 0x3f) << 12 | rxbuf[1] << 4 | rxbuf[2] >> 4)
-+			- (1 << 17);
-+
-+	return 0;
-+}
-+
-+static int ltc2496_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct ltc2496_st *st;
-+	struct device *dev = &spi->dev;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	spi_set_drvdata(spi, indio_dev);
-+	st->spi = spi;
-+	st->common_ddata.result_and_measure = ltc2496_result_and_measure;
-+
-+	return ltc249x_probe(dev, indio_dev);
-+}
-+
-+static int ltc2496_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+
-+	ltc249x_remove(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id ltc2496_of_match[] = {
-+	{ .compatible = "lltc,ltc2496", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, ltc2496_of_match);
-+
-+static struct spi_driver ltc2496_driver = {
-+	.driver = {
-+		.name = "ltc2496",
-+		.of_match_table = of_match_ptr(ltc2496_of_match),
-+	},
-+	.probe = ltc2496_probe,
-+	.remove = ltc2496_remove,
-+};
-+module_spi_driver(ltc2496_driver);
-+
-+MODULE_AUTHOR("Uwe Kleine-König <u.kleine-könig@pengutronix.de>");
-+MODULE_DESCRIPTION("Linear Technology LTC2496 ADC driver");
-+MODULE_LICENSE("GPL v2");
+
+base-commit: 31f4f5b495a62c9a8b15b1c3581acd5efeb9af8c
 -- 
 2.24.0
 
