@@ -2,58 +2,61 @@ Return-Path: <SRS0=jAeF=ZG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08711C33C9A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6802EC432C3
 	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:30:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DAB23206F0
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:30:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4424C20723
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:30:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="key not found in DNS" (0-bit key) header.d=avl.com header.i=@avl.com header.b="hl/TMdxq";
-	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="joX2MjKL"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=avl.com header.i=@avl.com header.b="qyJj1h+/";
+	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="kP/nPePA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbfKNKao (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726115AbfKNKao (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 14 Nov 2019 05:30:44 -0500
-Received: from mx08-002cda01.pphosted.com ([185.183.28.84]:15490 "EHLO
+Received: from mx08-002cda01.pphosted.com ([185.183.28.84]:1684 "EHLO
         mx08-002cda01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726115AbfKNKao (ORCPT
+        by vger.kernel.org with ESMTP id S1726717AbfKNKao (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Nov 2019 05:30:44 -0500
 Received: from pps.filterd (m0135533.ppops.net [127.0.0.1])
-        by mx07-002cda01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEA9Acp032465;
-        Thu, 14 Nov 2019 10:09:10 GMT
+        by mx07-002cda01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEA9DP7032475;
+        Thu, 14 Nov 2019 10:09:13 GMT
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=08102019;
- bh=TefWMD6rRoX5VUE97XIMfnlVOo2CqQDgySSkkPaoFEs=;
- b=hl/TMdxqVlQmAI7fQFBC2ofi+vSLkK9hZxN55EGzY9DNN2omRZNBK3cu6lXfNAa+alzw
- dYNnbA9zkXF39ntchn02cffq4qcYHYQUpTiHZ4fawLqsmI6sHSOXmERVXG9buRSrqsPt
- Ub34XohQ1+1vuv48IfSifZT1P/Io7j+Xb2hPKZImXxZqoknhrab5f2DDdytK/wRWBQ60
- veb43j8E8aisLuioCJT5vYSgtXfHlj+NcF4kOMfOLoHFR5wMTvGMwlI9ESyJ4Tk35c4V
- u/P+LlggJIfGzcRd3Zv6MnrsIhryC9mraXHjAPnxtWKa1INYsGetKwRhqRlkJfne8o8T jQ== 
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=08102019; bh=1blvfBTOpYzV5ruJbLT+DJ4E+bzOGuKbYJ4DY1IlgF8=;
+ b=qyJj1h+/MW7cqJT0e67irCa7GFkDx8Tq4LW6GGaGB6iMqxWHeXdLjVk9idHRgY+LlaqH
+ FsftJL1pFjmpQ8KLNeO/9PI1jg3KXZ6dm7fU4cFJRNE5mvATLrVSI8/Um9BF0QDGVWov
+ YwdL4ugeV0v1GRMFsV11MxjPNuXHUPSUWnKxa07n+AFaBAkI+h17RDUJmpwuL4FHobjq
+ ma3zXqnylw1GCZK8+NS86K5gKt84ycXD+0jR7TurRuZFKdy7ProIx/MN5hhyd2EWqak8
+ m6YrMjqTMX18QYNW2MMe7AtIsEAlmqGTFxCT/cVBCLUXz48eFJ56M3UA9rZWvJOBw7fL HA== 
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=19122018;
- bh=TefWMD6rRoX5VUE97XIMfnlVOo2CqQDgySSkkPaoFEs=;
- b=joX2MjKL/jrl8lEChfHH+tZsksLof9MG3i8CGNjsumlRfbl5CPxDeQ4DoKIYS9Btt41C
- JIr3TNsz+JRHJZxwgVmV3vUZxHCq2urs9T+mC5BT5V0RyQSaLbK4r8fhG+n1Xvax40nh
- ovWuoh8fzQSsKcJInrbYHpv6w3zcWt9P1Ye+O1esVMp8jxx03o4WaHS0qCaRVB0Ib73C
- KX58+/AnP3S7HWui94/zW7GvyMxtHT0Mc1Ffj7YBLHjfn4PCW1l3UE9pk5hJtwzbL4wL
- 8ibxpkXWbXld/jx4ZgqxPLACNfXmbfAqOiPxkueD0LGPltaC9YjeMnch1xzEVJV6qB0K pw== 
-Received: from atgrzso8132.avl01.avlcorp.lan ([192.102.17.76])
-        by mx07-002cda01.pphosted.com with ESMTP id 2w5p88a23x-1
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=19122018; bh=1blvfBTOpYzV5ruJbLT+DJ4E+bzOGuKbYJ4DY1IlgF8=;
+ b=kP/nPePALsdnPnms+xYsgAgQJDC+t864weiX2ZGb2nqUoanQ+UPDX38SGlrWP583fvFg
+ EoY0vIjHOxiYnOENa5sZ/OGwq5Dn06cf6NrUICnY1ia0NdYa5ulUThTM7GcCfxqjJR7t
+ oiTYSVnXDPcFctjOfkUYX8r573lQh5xXjl0Y97jWepHY/l8GvR558/oDDpG8x//LBgyD
+ O2MLF5ErrHJ2+UboxbeanX7603oBuqV0FKOAhFk+abecud9T8HNbn+YZ6JTstvSFW7Vv
+ BFjZFHYzdUO/4Jd1xNjWKWCBW9fjLLHHedDbKr/1bjzQ76RarJH3TYqAqpuTZONwODbM 6g== 
+Received: from atgrzso2901.avl01.avlcorp.lan ([192.102.17.76])
+        by mx07-002cda01.pphosted.com with ESMTP id 2w5p88a241-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Nov 2019 10:09:10 +0000
-Received: from pps.filterd (atgrzso8132.avl01.avlcorp.lan [127.0.0.1])
-        by atgrzso8132.avl01.avlcorp.lan (8.16.0.27/8.16.0.27) with SMTP id xAEA99ud026403;
-        Thu, 14 Nov 2019 11:09:09 +0100
-Received: from atgrzsw1691.avl01.avlcorp.lan ([10.13.100.86])
-        by atgrzso8132.avl01.avlcorp.lan with ESMTP id 2w93df82wx-1
+        Thu, 14 Nov 2019 10:09:13 +0000
+Received: from pps.filterd (atgrzso2901.avl01.avlcorp.lan [127.0.0.1])
+        by atgrzso2901.avl01.avlcorp.lan (8.16.0.27/8.16.0.27) with SMTP id xAEA9BJY001938;
+        Thu, 14 Nov 2019 11:09:12 +0100
+Received: from atgrzsw1696.avl01.avlcorp.lan ([10.13.100.86])
+        by atgrzso2901.avl01.avlcorp.lan with ESMTP id 2w93dg02wd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Thu, 14 Nov 2019 11:09:09 +0100
+        Thu, 14 Nov 2019 11:09:11 +0100
+Received: from atgrzsw3272.avl01.avlcorp.lan (10.12.65.158) by
+ atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 14 Nov 2019 11:09:09 +0100
 Received: from atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) by
- ATGRZSW1691.avl01.avlcorp.lan (10.12.64.112) with Microsoft SMTP Server (TLS)
+ atgrzsw3272.avl01.avlcorp.lan (10.12.65.158) with Microsoft SMTP Server (TLS)
  id 15.0.1497.2; Thu, 14 Nov 2019 11:09:09 +0100
 Received: from ATGRZWN210080.avl01.avlcorp.lan (10.12.100.12) by
  atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) with Microsoft SMTP Server id
@@ -62,25 +65,27 @@ From:   <tomislav.denis@avl.com>
 To:     <jic23@kernel.org>
 CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <tomislav.denis@avl.com>
-Subject: [PATCH 0/3] Add support for DLH pressure sensors 
-Date:   Thu, 14 Nov 2019 11:09:05 +0100
-Message-ID: <20191114100908.11180-1-tomislav.denis@avl.com>
+Subject: [PATCH 2/3] dt-bindings: Add asc vendor
+Date:   Thu, 14 Nov 2019 11:09:07 +0100
+Message-ID: <20191114100908.11180-3-tomislav.denis@avl.com>
 X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20191114100908.11180-1-tomislav.denis@avl.com>
+References: <20191114100908.11180-1-tomislav.denis@avl.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EXCLAIMER-MD-CONFIG: f9e74532-fb7d-4806-8539-2b9574eafa9a
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-14_01:,,
  signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=733
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
  adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.0.1-1910280000 definitions=main-1911140094
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-14_01:2019-11-14,2019-11-14 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 adultscore=0
- priorityscore=1501 impostorscore=0 mlxlogscore=798 lowpriorityscore=0
- spamscore=0 phishscore=0 bulkscore=0 suspectscore=0 malwarescore=0
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ priorityscore=1501 impostorscore=0 mlxlogscore=999 lowpriorityscore=0
+ spamscore=0 phishscore=0 bulkscore=0 suspectscore=1 malwarescore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-1911140094
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -89,26 +94,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Tomislav Denis <tomislav.denis@avl.com>
 
-This patchset adds support for All Sensors DLH series low
-voltage digital pressure sensors.
+All Sensors Corporation is a manufacturer of MEMS piezoresitive
+ultra low pressure sensors and pressure transducers.
 
-Datasheet: https://www.allsensors.com/cad/DS-0355_Rev_B.PDF
+Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
+---
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Tomislav Denis (3):
-  iio: pressure: Add driver for DLH pressure sensors
-  dt-bindings: Add asc vendor
-  bindings: iio: pressure: Add dlh-i2c documentation
-
- .../devicetree/bindings/iio/pressure/dlh-i2c.yaml  |  43 +++
- .../devicetree/bindings/vendor-prefixes.yaml       |   2 +
- MAINTAINERS                                        |   8 +
- drivers/iio/pressure/Kconfig                       |  12 +
- drivers/iio/pressure/Makefile                      |   1 +
- drivers/iio/pressure/dlh-i2c.c                     | 322 +++++++++++++++++++++
- 6 files changed, 388 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/dlh-i2c.yaml
- create mode 100644 drivers/iio/pressure/dlh-i2c.c
-
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 967e78c..88247b3 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -109,6 +109,8 @@ patternProperties:
+     description: Artesyn Embedded Technologies Inc.
+   "^asahi-kasei,.*":
+     description: Asahi Kasei Corp.
++  "^asc,.*":
++    description: All Sensors Corporation
+   "^aspeed,.*":
+     description: ASPEED Technology Inc.
+   "^asus,.*":
 -- 
 2.7.4
 
