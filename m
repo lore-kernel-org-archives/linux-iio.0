@@ -7,458 +7,486 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8B01C43215
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A87C43141
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:30:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B414C2071F
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:19:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0FB7F20723
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Nov 2019 10:30:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="W8RszgtN"
+	dkim=fail reason="key not found in DNS" (0-bit key) header.d=avl.com header.i=@avl.com header.b="WSKx0JZH";
+	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="FYWEqSO0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726516AbfKNKS7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Nov 2019 05:18:59 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:46036 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725977AbfKNKS6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Nov 2019 05:18:58 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEAGx2R019168;
-        Thu, 14 Nov 2019 11:18:27 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
- : date : message-id : mime-version : content-type; s=STMicroelectronics;
- bh=4Au/eVPO+AY3eCHnOk12sw75BnaxHmJkxSTekvX96OA=;
- b=W8RszgtNRfkAyXkMWIFPnL2ErGgMfGQzfpiUflpJjticeZ9lvMX1GZzX47eCVfb2ZPEq
- vgxaJxrFaorBP2TPIhj+j2Y3jiyIrkbWdSvXMMaeUBXTtQrcQzh81+9aU1p7JM3M2rdU
- O9+vQRis7aLbOeqTIg9T2EB/qJmwkkdK8oTsw6MNfGA13OgIoi7fX0oTJ7Q42SsEGGlp
- yTM7DQk+XHhz2H2t2t0UNzT8vORj2qmoQbjvx9XYUlE4MqK3clS90BF3BpRh7OElj1LU
- Ztbh2IVX7GiHIoiwALjtMj1QBDT5mq8RwPg9VCZoSPxJ0qzsL9THmmrPO5C0WFtJiwHA uA== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2w7psu5ey5-1
+        id S1726179AbfKNKal (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Nov 2019 05:30:41 -0500
+Received: from mx08-002cda01.pphosted.com ([185.183.28.84]:43774 "EHLO
+        mx08-002cda01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726115AbfKNKal (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Nov 2019 05:30:41 -0500
+X-Greylist: delayed 1284 seconds by postgrey-1.27 at vger.kernel.org; Thu, 14 Nov 2019 05:30:37 EST
+Received: from pps.filterd (m0135532.ppops.net [127.0.0.1])
+        by mx07-002cda01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAEA9CvQ031980;
+        Thu, 14 Nov 2019 10:09:12 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=08102019; bh=afFkTbYC5UTgsN7nGB3KXb0tfmeMQ56VhGhc+jTo29Q=;
+ b=WSKx0JZHMFqcLbBusStPlNPFtB/jeRQbflrfGuBC5uhHKNQJXEHGsiJ0AxUjN9/lxJmN
+ XSbiMCS5WhXZZtUzwlnVaiqBxJw5pBvqgLp8HUyJpk5s8SL115cqaCn8bSZ3BHTNyNMs
+ sJGYQuizWRktmW8QInBYAx1/Y915/+42dzyIFMpBIVjkHJcP6gBbyI1iQS/yL7R+YU0M
+ 2NWh/j47lOTIkBy8kuRQnbxpLQkK5ZF6DDeltpqlI0u+xlEDtDujNXbYJUD9fE8CWoo4
+ x8lnBRTAxeJ5ecG5XyFCxQlXlPRnkS9A1ypIgiRcg0OGJ+cwkO/PreNTtahhNb/+cY6J jw== 
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=19122018; bh=afFkTbYC5UTgsN7nGB3KXb0tfmeMQ56VhGhc+jTo29Q=;
+ b=FYWEqSO0pOE7179URg4C8mvcegvKcpMVzIXxAWtQHBYxyfqJZ74bz0h9Peaw6auLxC2H
+ hpDHF7+qf7546x+nZp4IOGH9IducHca0tIY7jON2iUQLciNctx2hkEkBpzwIhUas2FcI
+ HJFRPZkb7NOFeqoe3WXl6woZxemjSLx9uJGOqHusAaFYp56kLgKwGTE+NE8dc8knWjFV
+ iqR7f5wjCwiQGUsVXlFt7DbMfxn5gFg1J7yUqvN9HDPw/bLYWWlE+c9GCIWnBvLvy78G
+ an1Megs7/Ux2uJ9l3f2t6byHfJJBOfkTGSvEoj4G3uC/Z+EwlVv3018OVlMpcQO1yzZp xA== 
+Received: from atgrzso2833.avl01.avlcorp.lan ([192.102.17.76])
+        by mx07-002cda01.pphosted.com with ESMTP id 2w5p7s213v-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 Nov 2019 11:18:27 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 8E607100034;
-        Thu, 14 Nov 2019 11:18:25 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag3node3.st.com [10.75.127.9])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 708FE2B4967;
-        Thu, 14 Nov 2019 11:18:25 +0100 (CET)
-Received: from localhost (10.75.127.50) by SFHDAG3NODE3.st.com (10.75.127.9)
- with Microsoft SMTP Server (TLS) id 15.0.1347.2; Thu, 14 Nov 2019 11:18:24
- +0100
-From:   Benjamin Gaignard <benjamin.gaignard@st.com>
-To:     <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <alexandre.torgue@st.com>, <fabrice.gasnier@st.com>,
-        <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <lee.jones@linaro.org>,
-        <thierry.reding@gmail.com>, <u.kleine-koenig@pengutronix.de>,
-        <benjamin.gaignard@st.com>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-pwm@vger.kernel.org>
-Subject: [PATCH v3] dt-bindings: mfd: Convert stm32 timers bindings to json-schema
-Date:   Thu, 14 Nov 2019 11:18:23 +0100
-Message-ID: <20191114101823.23144-1-benjamin.gaignard@st.com>
-X-Mailer: git-send-email 2.15.0
+        Thu, 14 Nov 2019 10:09:11 +0000
+Received: from pps.filterd (atgrzso2833.avl01.avlcorp.lan [127.0.0.1])
+        by atgrzso2833.avl01.avlcorp.lan (8.16.0.27/8.16.0.27) with SMTP id xAEA9AoV019859;
+        Thu, 14 Nov 2019 11:09:10 +0100
+Received: from atgrzsw1695.avl01.avlcorp.lan ([10.13.100.86])
+        by atgrzso2833.avl01.avlcorp.lan with ESMTP id 2w93dg02qc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Thu, 14 Nov 2019 11:09:10 +0100
+Received: from atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) by
+ atgrzsw1695.avl01.avlcorp.lan (10.12.64.163) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Thu, 14 Nov 2019 11:09:09 +0100
+Received: from ATGRZWN210080.avl01.avlcorp.lan (10.12.100.12) by
+ atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Thu, 14 Nov 2019 11:09:09 +0100
+From:   <tomislav.denis@avl.com>
+To:     <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <tomislav.denis@avl.com>
+Subject: [PATCH 1/3] iio: pressure: Add driver for DLH pressure sensors
+Date:   Thu, 14 Nov 2019 11:09:06 +0100
+Message-ID: <20191114100908.11180-2-tomislav.denis@avl.com>
+X-Mailer: git-send-email 2.12.0.windows.1
+In-Reply-To: <20191114100908.11180-1-tomislav.denis@avl.com>
+References: <20191114100908.11180-1-tomislav.denis@avl.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG3NODE2.st.com (10.75.127.8) To SFHDAG3NODE3.st.com
- (10.75.127.9)
+X-EXCLAIMER-MD-CONFIG: f9e74532-fb7d-4806-8539-2b9574eafa9a
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-11-14_01:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1910280000 definitions=main-1911140094
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-14_01:2019-11-14,2019-11-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
+ lowpriorityscore=0 adultscore=0 spamscore=0 mlxscore=0 malwarescore=0
+ suspectscore=1 mlxlogscore=999 priorityscore=1501 bulkscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911140094
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the STM32 timers binding to DT schema format using json-schema
+From: Tomislav Denis <tomislav.denis@avl.com>
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+All Sensors DLH is series of low voltage digital pressure sensors.
+Additionally to pressure value sensors deliver a temperature value.
+Sensors can be accessed over I2C and SPI, this driver supports
+only I2C access.
+
+Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
 ---
-version 3:
-- correctly use enum for dma-names and remove additionalItems: true
-- provide a range of values for reg property
+ MAINTAINERS                    |   7 +
+ drivers/iio/pressure/Kconfig   |  12 ++
+ drivers/iio/pressure/Makefile  |   1 +
+ drivers/iio/pressure/dlh-i2c.c | 322 +++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 342 insertions(+)
+ create mode 100644 drivers/iio/pressure/dlh-i2c.c
 
-version 2:
-- merge all (mfd, iio, pwm, counter) bindings in one file
-- fix typo and trailing spaces
-- rework dmas and dma-names properties to allow schemas like:
-  ch1 , ch2, ch4
-  ch2, up, com
-- use patternProperties to describe timer subnode
-- improve st,breakinput property definition to be able to check the values
-  inside de tuple
-
- .../bindings/counter/stm32-timer-cnt.txt           |  31 ----
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  25 ----
- .../devicetree/bindings/mfd/st,stm32-timers.yaml   | 159 +++++++++++++++++++++
- .../devicetree/bindings/mfd/stm32-timers.txt       |  73 ----------
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  38 -----
- 5 files changed, 159 insertions(+), 167 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
- delete mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- delete mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-
-diff --git a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt b/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
-deleted file mode 100644
-index c52fcdd4bf6c..000000000000
---- a/Documentation/devicetree/bindings/counter/stm32-timer-cnt.txt
-+++ /dev/null
-@@ -1,31 +0,0 @@
--STMicroelectronics STM32 Timer quadrature encoder
--
--STM32 Timer provides quadrature encoder to detect
--angular position and direction of rotary elements,
--from IN1 and IN2 input signals.
--
--Must be a sub-node of an STM32 Timer device tree node.
--See ../mfd/stm32-timers.txt for details about the parent node.
--
--Required properties:
--- compatible:		Must be "st,stm32-timer-counter".
--- pinctrl-names: 	Set to "default".
--- pinctrl-0: 		List of phandles pointing to pin configuration nodes,
--			to set CH1/CH2 pins in mode of operation for STM32
--			Timer input on external pin.
--
--Example:
--	timers@40010000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "st,stm32-timers";
--		reg = <0x40010000 0x400>;
--		clocks = <&rcc 0 160>;
--		clock-names = "int";
--
--		counter {
--			compatible = "st,stm32-timer-counter";
--			pinctrl-names = "default";
--			pinctrl-0 = <&tim1_in_pins>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-deleted file mode 100644
-index b8e8c769d434..000000000000
---- a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-+++ /dev/null
-@@ -1,25 +0,0 @@
--STMicroelectronics STM32 Timers IIO timer bindings
--
--Must be a sub-node of an STM32 Timers device tree node.
--See ../mfd/stm32-timers.txt for details about the parent node.
--
--Required parameters:
--- compatible:	Must be one of:
--		"st,stm32-timer-trigger"
--		"st,stm32h7-timer-trigger"
--- reg:		Identify trigger hardware block.
--
--Example:
--	timers@40010000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "st,stm32-timers";
--		reg = <0x40010000 0x400>;
--		clocks = <&rcc 0 160>;
--		clock-names = "int";
--
--		timer@0 {
--			compatible = "st,stm32-timer-trigger";
--			reg = <0>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 8323258..2a08923 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -668,6 +668,13 @@ S:	Maintained
+ F:	Documentation/i2c/busses/i2c-ali1563.rst
+ F:	drivers/i2c/busses/i2c-ali1563.c
+ 
++ALL SENSORS DLH SERIES PRESSURE SENSORS DRIVER
++M:	Tomislav Denis <tomislav.denis@avl.com>
++W:	http://www.allsensors.com/cad/DS-0355_Rev_B.PDF
++S:	Maintained
++L:	linux-iio@vger.kernel.org
++F:	drivers/iio/pressure/dlh-i2c.c
++
+ ALLEGRO DVT VIDEO IP CORE DRIVER
+ M:	Michael Tretter <m.tretter@pengutronix.de>
+ R:	Pengutronix Kernel Team <kernel@pengutronix.de>
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index ba420e4..504de3e 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -53,6 +53,18 @@ config IIO_CROS_EC_BARO
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called cros_ec_baro.
+ 
++config DLH_I2C
++	tristate "All Sensors DLH series low voltage digital pressure sensors"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the All Sensors DLH series
++	  pressure sensors driver.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called dlh-i2c.
++
+ config DPS310
+ 	tristate "Infineon DPS310 pressure and temperature sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index d8f5ace..1851a36 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
+ bmp280-objs := bmp280-core.o bmp280-regmap.o
+ obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+ obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
++obj-$(CONFIG_DLH_I2C) += dlh-i2c.o
+ obj-$(CONFIG_DPS310) += dps310.o
+ obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+diff --git a/drivers/iio/pressure/dlh-i2c.c b/drivers/iio/pressure/dlh-i2c.c
 new file mode 100644
-index 000000000000..2f645018a9a9
+index 0000000..4ef13c2
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/st,stm32-timers.yaml
-@@ -0,0 +1,159 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/st,stm32-timers.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/pressure/dlh-i2c.c
+@@ -0,0 +1,322 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * All Sensors DLH series low voltage digital pressure sensors
++ *
++ * Copyright (c) 2019 AVL DiTEST GmbH
++ *   Tomislav Denis <tomislav.denis@avl.com>
++ *
++ * Datasheet: http://www.allsensors.com/cad/DS-0355_Rev_B.PDF
++ */
 +
-+title: STMicroelectronics STM32 Timers bindings
++#include <linux/module.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
 +
-+description: |
-+  This hardware block provides 3 types of timer along with PWM functionality:
-+    - advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
-+      prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
-+    - general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
-+      programmable prescaler and PWM outputs.
-+    - basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
++/* Commands */
++#define DLH_START_SINGLE    0xAA
 +
-+maintainers:
-+  - Benjamin Gaignard <benjamin.gaignard@st.com>
-+  - Fabrice Gasnier <fabrice.gasnier@st.com>
++/* Status bits */
++#define DLH_STATUS_OK       0x40
 +
-+properties:
-+  compatible:
-+    const: st,stm32-timers
++/* DLH  data format */
++#define DLH_NUM_READ_BYTES  7
++#define DLH_NUM_DATA_BYTES  3
++#define DLH_NUM_PR_BITS     24
++#define DLH_NUM_TEMP_BITS   24
 +
-+  reg:
-+    maxItems: 1
++/* DLH  timings */
++#define DLH_SINGLE_DUT_MS   5
 +
-+  clocks:
-+    maxItems: 1
++enum dhl_ids {
++	dlhl60d,
++	dlhl60g,
++};
 +
-+  clock-names:
-+    items:
-+      - const: int
++struct dlh_info {
++	u8 osdig;           /* digital offset factor */
++	unsigned int fss;   /* full scale span (inch H2O) */
++};
 +
-+  reset:
-+    maxItems: 1
++struct dlh_state {
++	struct i2c_client *client;
++	struct dlh_info info;
++	u8 rx_buf[DLH_NUM_READ_BYTES] ____cacheline_aligned;
++};
 +
-+  dmas:
-+    minItems: 1
-+    maxItems: 7
++static struct dlh_info dlh_info_tbl[] = {
++	[dlhl60d] = {
++		.osdig = 2,
++		.fss = 120,
++	},
++	[dlhl60g] = {
++		.osdig = 10,
++		.fss = 60,
++	},
++};
 +
-+  dma-names:
-+    items:
-+      enum: [ ch1, ch2, ch3, ch4, up, trig, com ]
-+    minItems: 1
-+    maxItems: 7
++static int dlh_i2c_read_direct(struct dlh_state *st,
++	unsigned int *pressure, unsigned int *temperature)
++{
++	int ret;
 +
-+  "#address-cells":
-+    const: 1
++	ret = i2c_smbus_write_byte(st->client, DLH_START_SINGLE);
++	if (ret) {
++		dev_err(&st->client->dev,
++			"%s: I2C write byte failed\n", __func__);
++		return ret;
++	}
 +
-+  "#size-cells":
-+    const: 0
++	mdelay(DLH_SINGLE_DUT_MS);
 +
-+  pwm:
-+    type: object
++	ret = i2c_master_recv(st->client, st->rx_buf, DLH_NUM_READ_BYTES);
++	if (ret < 0) {
++		dev_err(&st->client->dev,
++			"%s: I2C read block failed\n", __func__);
++		return ret;
++	}
 +
-+    properties:
-+      compatible:
-+        const: st,stm32-pwm
++	if (st->rx_buf[0] != DLH_STATUS_OK) {
++		dev_err(&st->client->dev,
++			"%s: invalid status 0x%02x\n", __func__, st->rx_buf[0]);
++		return -EBUSY;
++	}
 +
-+      "#pwm-cells":
-+        const: 3
++	*pressure = be32_to_cpup((u32 *)&st->rx_buf[1]) >> 8;
++	*temperature = be32_to_cpup((u32 *)&st->rx_buf[3]) &
++		GENMASK(DLH_NUM_TEMP_BITS - 1, 0);
 +
-+      st,breakinput:
-+        description: |
-+          One or two <index level filter> to describe break input configurations.
++	return 0;
++}
 +
-+        allOf:
-+          - $ref: /schemas/types.yaml#/definitions/uint32-matrix
-+          - items:
-+              items:
-+                - description: |
-+                    "index" indicates on which break input (0 or 1) the configuration should be applied.
-+                  enum: [ 0 , 1]
-+                - description: |
-+                    "level" gives the active level (0=low or 1=high) of the input signal for this configuration
-+                  enum: [ 0, 1 ]
-+                - description: |
-+                    "filter" gives the filtering value (up to 15) to be applied.
-+                  maximum: 15
-+            minItems: 1
-+            maxItems: 2
++static int dlh_i2c_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *channel, int *value,
++	int *value2, long mask)
++{
++	struct dlh_state *st = iio_priv(indio_dev);
++	unsigned int pressure, temperature;
++	int ret;
 +
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (iio_buffer_enabled(indio_dev))
++			return -EBUSY;
 +
-+    required:
-+      - "#pwm-cells"
-+      - compatible
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
 +
-+patternProperties:
-+  "^timer@[0-9]+$":
-+    type: object
++		ret = dlh_i2c_read_direct(st, &pressure, &temperature);
++		iio_device_release_direct_mode(indio_dev);
++		if (ret)
++			return ret;
 +
-+    properties:
-+      compatible:
-+        enum:
-+          - st,stm32-timer-trigger
-+          - st,stm32h7-timer-trigger
++		switch (channel->type) {
++		case IIO_PRESSURE: /* inch H2O */
++			*value = pressure;
++			return IIO_VAL_INT;
 +
-+      reg:
-+        description: Identify trigger hardware block.
-+        items:
-+         minimum: 0
-+         maximum: 16
++		case IIO_TEMP: /* degrees Celsius */
++			*value = temperature;
++			return IIO_VAL_INT;
 +
-+    required:
-+      - compatible
-+      - reg
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (channel->type) {
++		case IIO_PRESSURE:
++			*value = 125 * st->info.fss;
++			*value2 = 100 * (1 << DLH_NUM_PR_BITS);
++			return IIO_VAL_FRACTIONAL;
 +
-+  counter:
-+    type: object
++		case IIO_TEMP:
++			*value = 125;
++			*value2 = DLH_NUM_TEMP_BITS;
++			return IIO_VAL_FRACTIONAL_LOG2;
 +
-+    properties:
-+      compatible:
-+        const: st,stm32-timer-counter
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		switch (channel->type) {
++		case IIO_PRESSURE:
++			*value = -125 * st->info.fss;
++			*value2 = 100 * st->info.osdig;
++			return IIO_VAL_FRACTIONAL;
 +
-+    required:
-+      - compatible
++		case IIO_TEMP:
++			*value = -40;
++			return IIO_VAL_INT;
 +
-+required:
-+  - "#address-cells"
-+  - "#size-cells"
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
++		default:
++			return -EINVAL;
++		}
++	}
 +
-+additionalProperties: false
++	return -EINVAL;
++}
 +
-+examples:
-+  - |
-+    #include <dt-bindings/clock/stm32mp1-clks.h>
-+    timers2: timers@40000000 {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      compatible = "st,stm32-timers";
-+      reg = <0x40000000 0x400>;
-+      clocks = <&rcc TIM2_K>;
-+      clock-names = "int";
-+      dmas = <&dmamux1 18 0x400 0x1>,
-+             <&dmamux1 19 0x400 0x1>,
-+             <&dmamux1 20 0x400 0x1>,
-+             <&dmamux1 21 0x400 0x1>,
-+             <&dmamux1 22 0x400 0x1>;
-+      dma-names = "ch1", "ch2", "ch3", "ch4", "up";
-+      pwm {
-+        compatible = "st,stm32-pwm";
-+        #pwm-cells = <3>;
-+        st,breakinput = <0 1 5>;
-+      };
-+      timer@0 {
-+        compatible = "st,stm32-timer-trigger";
-+        reg = <0>;
-+      };
-+      counter {
-+        compatible = "st,stm32-timer-counter";
-+      };
-+    };
++static const struct iio_info dlh_i2c_info = {
++	.read_raw = dlh_i2c_read_raw,
++};
 +
-+...
-diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
-deleted file mode 100644
-index 15c3b87f51d9..000000000000
---- a/Documentation/devicetree/bindings/mfd/stm32-timers.txt
-+++ /dev/null
-@@ -1,73 +0,0 @@
--STM32 Timers driver bindings
--
--This IP provides 3 types of timer along with PWM functionality:
--- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
--  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
--- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
--  programmable prescaler and PWM outputs.
--- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
--
--Required parameters:
--- compatible: must be "st,stm32-timers"
--
--- reg:			Physical base address and length of the controller's
--			registers.
--- clock-names:		Set to "int".
--- clocks: 		Phandle to the clock used by the timer module.
--			For Clk properties, please refer to ../clock/clock-bindings.txt
--
--Optional parameters:
--- resets:		Phandle to the parent reset controller.
--			See ../reset/st,stm32-rcc.txt
--- dmas:			List of phandle to dma channels that can be used for
--			this timer instance. There may be up to 7 dma channels.
--- dma-names:		List of dma names. Must match 'dmas' property. Valid
--			names are: "ch1", "ch2", "ch3", "ch4", "up", "trig",
--			"com".
--
--Optional subnodes:
--- pwm:			See ../pwm/pwm-stm32.txt
--- timer:		See ../iio/timer/stm32-timer-trigger.txt
--- counter:		See ../counter/stm32-timer-cnt.txt
--
--Example:
--	timers@40010000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "st,stm32-timers";
--		reg = <0x40010000 0x400>;
--		clocks = <&rcc 0 160>;
--		clock-names = "int";
--
--		pwm {
--			compatible = "st,stm32-pwm";
--			pinctrl-0	= <&pwm1_pins>;
--			pinctrl-names	= "default";
--		};
--
--		timer@0 {
--			compatible = "st,stm32-timer-trigger";
--			reg = <0>;
--		};
--
--		counter {
--			compatible = "st,stm32-timer-counter";
--			pinctrl-names = "default";
--			pinctrl-0 = <&tim1_in_pins>;
--		};
--	};
--
--Example with all dmas:
--	timer@40010000 {
--		...
--		dmas = <&dmamux1 11 0x400 0x0>,
--		       <&dmamux1 12 0x400 0x0>,
--		       <&dmamux1 13 0x400 0x0>,
--		       <&dmamux1 14 0x400 0x0>,
--		       <&dmamux1 15 0x400 0x0>,
--		       <&dmamux1 16 0x400 0x0>,
--		       <&dmamux1 17 0x400 0x0>;
--		dma-names = "ch1", "ch2", "ch3", "ch4", "up", "trig", "com";
--		...
--		child nodes...
--	};
-diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-deleted file mode 100644
-index a8690bfa5e1f..000000000000
---- a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
-+++ /dev/null
-@@ -1,38 +0,0 @@
--STMicroelectronics STM32 Timers PWM bindings
--
--Must be a sub-node of an STM32 Timers device tree node.
--See ../mfd/stm32-timers.txt for details about the parent node.
--
--Required parameters:
--- compatible:		Must be "st,stm32-pwm".
--- pinctrl-names: 	Set to "default".
--- pinctrl-0: 		List of phandles pointing to pin configuration nodes for PWM module.
--			For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
--- #pwm-cells:		Should be set to 3. This PWM chip uses the default 3 cells
--			bindings defined in pwm.txt.
--
--Optional parameters:
--- st,breakinput:	One or two <index level filter> to describe break input configurations.
--			"index" indicates on which break input (0 or 1) the configuration
--			should be applied.
--			"level" gives the active level (0=low or 1=high) of the input signal
--			for this configuration.
--			"filter" gives the filtering value to be applied.
--
--Example:
--	timers@40010000 {
--		#address-cells = <1>;
--		#size-cells = <0>;
--		compatible = "st,stm32-timers";
--		reg = <0x40010000 0x400>;
--		clocks = <&rcc 0 160>;
--		clock-names = "int";
--
--		pwm {
--			compatible = "st,stm32-pwm";
--			#pwm-cells = <3>;
--			pinctrl-0	= <&pwm1_pins>;
--			pinctrl-names	= "default";
--			st,breakinput = <0 1 5>;
--		};
--	};
++static const struct iio_chan_spec dlh_i2c_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.indexed = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type =
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = DLH_NUM_PR_BITS,
++			.storagebits = 32,
++			.shift = 8,
++			.endianness = IIO_BE,
++		},
++	}, {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type =
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = DLH_NUM_TEMP_BITS,
++			.storagebits = 32,
++			.shift = 8,
++			.endianness = IIO_BE,
++		},
++	}
++};
++
++static irqreturn_t dlh_i2c_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = (struct iio_poll_func *)private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct dlh_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned int chn, i = 0;
++	__be32 tmp_buf[2];
++
++	ret = i2c_master_recv(st->client, st->rx_buf, DLH_NUM_READ_BYTES);
++	if (ret < 0) {
++		dev_err(&st->client->dev,
++			"%s: I2C read block failed\n", __func__);
++		goto out;
++	}
++
++	if (st->rx_buf[0] != DLH_STATUS_OK) {
++		dev_err(&st->client->dev,
++			"%s: invalid status 0x%02x\n", __func__, st->rx_buf[0]);
++		goto out;
++	}
++
++	ret = i2c_smbus_write_byte(st->client, DLH_START_SINGLE);
++	if (ret) {
++		dev_err(&st->client->dev,
++			"%s: I2C write byte failed\n", __func__);
++		goto out;
++	}
++
++	for_each_set_bit(chn, indio_dev->active_scan_mask,
++		indio_dev->masklength) {
++		memcpy(tmp_buf + i,
++			&st->rx_buf[1] + chn * DLH_NUM_DATA_BYTES,
++			DLH_NUM_DATA_BYTES);
++		i++;
++	}
++
++	iio_push_to_buffers(indio_dev, tmp_buf);
++
++out:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int dlh_i2c_probe(struct i2c_client *client,
++	const struct i2c_device_id *id)
++{
++	struct dlh_state *st;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter,
++		I2C_FUNC_I2C | I2C_FUNC_SMBUS_WRITE_BYTE)) {
++		dev_err(&client->dev,
++			"adapter doesn't support required i2c functionality\n");
++		return -EOPNOTSUPP;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
++	if (!indio_dev) {
++		dev_err(&client->dev, "failed to allocate iio device\n");
++		return -ENOMEM;
++	}
++
++	i2c_set_clientdata(client, indio_dev);
++
++	st = iio_priv(indio_dev);
++	st->info = dlh_info_tbl[id->driver_data];
++	st->client = client;
++
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->dev.of_node = client->dev.of_node;
++	indio_dev->info = &dlh_i2c_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels =  dlh_i2c_channels;
++	indio_dev->num_channels = ARRAY_SIZE(dlh_i2c_channels);
++
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
++		&iio_pollfunc_store_time, &dlh_i2c_trigger_handler, NULL);
++	if (ret) {
++		dev_err(&client->dev, "failed to setup iio buffer\n");
++		return ret;
++	}
++
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret) {
++		dev_err(&client->dev, "failed to register iio device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id dlh_i2c_of_match[] = {
++	{ .compatible = "asc,dlhl60d" },
++	{ .compatible = "asc,dlhl60g" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, dlh_i2c_of_match);
++
++static const struct i2c_device_id dlh_i2c_id[] = {
++	{ "dlhl60d",    dlhl60d },
++	{ "dlhl60g",    dlhl60g },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, dlh_i2c_id);
++
++static struct i2c_driver dlh_i2c_driver = {
++	.driver = {
++		.name = "dlh_i2c",
++		.of_match_table = dlh_i2c_of_match,
++	},
++	.probe = dlh_i2c_probe,
++	.id_table = dlh_i2c_id,
++};
++module_i2c_driver(dlh_i2c_driver);
++
++MODULE_AUTHOR("Tomislav Denis <tomislav.denis@avl.com>");
++MODULE_DESCRIPTION("Driver for All Sensors DLH series pressure sensors");
++MODULE_LICENSE("GPL v2");
 -- 
-2.15.0
+2.7.4
 
