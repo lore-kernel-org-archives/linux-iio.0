@@ -2,114 +2,152 @@ Return-Path: <SRS0=0ATL=ZH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E71BC432C3
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Nov 2019 13:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCFAC432C3
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Nov 2019 13:57:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7A0DC2073B
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Nov 2019 13:04:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFAB420733
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Nov 2019 13:57:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="YQVJAjOD"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="ckM6OXTi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727402AbfKONEt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Nov 2019 08:04:49 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:36866 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727329AbfKONEt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Nov 2019 08:04:49 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAFCx9Ue167692;
-        Fri, 15 Nov 2019 13:04:16 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : references : mime-version : content-type :
- in-reply-to; s=corp-2019-08-05;
- bh=NFSSVbjhEqElsrA73XhmCVdsI7Nss0hsHyVS7FwP2+Q=;
- b=YQVJAjOD8u/DCdzbTWgjB6kB+86XbwfNvVG7HB4og2jcOuYIoorw9Q0nkqXYcYRYisSN
- aepKCWa+8+eYyaAJ3vCuvuCAxqGNJYt/T/V07mfYHzTeQo0Gy/ggjPSc0Vc98o2b30ul
- wtXquJGr3i3w8r/zQiIYaXbhGct+RBGyxizIoCLdpAGfNU8GwaV4T7UQQmWSLq6/hBwU
- oP2OyO7QXXejzW08cEid5+zGbKT/76G/p51uxVcWg5xjdIWdMshHO9vtZzBKNhgff9a4
- Vam6PKjXqF83Nz2Y/U7zL6RKBmqe40HuI9EQLO5rpaip/GGr3Qnm3sGc1oSR8u82aGyS mw== 
-Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
-        by aserp2120.oracle.com with ESMTP id 2w9gxpk4b3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Nov 2019 13:04:16 +0000
-Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
-        by userp3030.oracle.com (8.16.0.27/8.16.0.27) with SMTP id xAFCx7p0167338;
-        Fri, 15 Nov 2019 13:04:15 GMT
-Received: from aserv0121.oracle.com (aserv0121.oracle.com [141.146.126.235])
-        by userp3030.oracle.com with ESMTP id 2w9h14fam4-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 15 Nov 2019 13:04:15 +0000
-Received: from abhmp0009.oracle.com (abhmp0009.oracle.com [141.146.116.15])
-        by aserv0121.oracle.com (8.14.4/8.13.8) with ESMTP id xAFD48Hx001873;
-        Fri, 15 Nov 2019 13:04:08 GMT
-Received: from kadam.lan (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Fri, 15 Nov 2019 05:04:08 -0800
-Date:   Fri, 15 Nov 2019 16:03:59 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Beniamin Bia <beniamin.bia@analog.com>
-Cc:     jic23@kernel.org, devel@driverdev.osuosl.org, mark.rutland@arm.com,
-        lars@metafoo.de, biabeniamin@outlook.com,
-        Michael.Hennerich@analog.com, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        pmeerw@pmeerw.net, knaack.h@gmx.de,
-        Paul Cercueil <paul.cercueil@analog.com>
-Subject: Re: [PATCH v4 2/4] iio: adc: ad7091r5: Add scale and external VREF
- support
-Message-ID: <20191115130359.GE19101@kadam.lan>
-References: <20191115122316.20893-1-beniamin.bia@analog.com>
- <20191115122316.20893-2-beniamin.bia@analog.com>
+        id S1727683AbfKON5c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Nov 2019 08:57:32 -0500
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:33776 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727508AbfKON5b (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Nov 2019 08:57:31 -0500
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAFDm2Ap000883;
+        Fri, 15 Nov 2019 08:57:05 -0500
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2054.outbound.protection.outlook.com [104.47.36.54])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2w7prg200r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 15 Nov 2019 08:57:04 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=h/0KGkJ0DjGIhRj5Q2VUqgLhUR8PRj2WWI8pZUvFrECUFHwHl7sTNWUYmc5FY02rPpoCsisYG4vlLwyYAHurbpCkFg8bu3bqn6tzrnD7A6/7Ed36M5Eqp7g3v28r9L4shdXOKXfrLw1DAPWzRHhfn3TNxg6giIvEkUnXIHXo3+cJxplHADxzWVcrsFs5iOI4apnJIFQpeWaSMvO/NvXmFNK+6PzUM/bTzqJ4HKvaUhGA7bXtz1VzIK/G38RftDTTwLFT6TTVnmBFesn8pOe6iHCjmng9k52WkO4Umcljl51NX0dJyy/7Gx1uzQ1H9XYx9PcSwg+gM/d87zJ1imN6+w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k0vzK/qgF7I7l4GXj3CMMNUnGg2gI5RHY1JdLyJDCaw=;
+ b=lmbpt6eu3Kckv+eLraoq6VWHk3umytzcY3ybP0Uhq/1eVy7RbkXg1UjX+DHn1sf2rkR8iBdPwY4JQDImuGILKCkZE2Gl7ykdPaemDZTMAohavVy1BIJtWNxCzWAqtfq6ePR6+SK6Wr66PDEZww3HztUM4t2TYarDxirt5FnquusbZRa2XSgt9gsuSOXbXhhOtCGLzcmE2oO8lZNAffW7lx3et/j8G+1Nd+s0Mmv+fljRblDjhWasYIEBMT+dGIRh8jfrBY7y0wtCKV3VkVWzgh+kv4bdMta8NMmx9oDyIB1npUIY2N7sl8T+DU4vs4FQhYu4uUgasL5Ux8eXcsoLtg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=linuxfoundation.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=k0vzK/qgF7I7l4GXj3CMMNUnGg2gI5RHY1JdLyJDCaw=;
+ b=ckM6OXTiTsHrA5NTdywxGZtgZkKSP/0w7iZPbad3+XLKFnQ7Lue317O/nn4ToN4v0dpfVI/81fCvtyk8zQ2sIo+tkPi4bx9HYxyN0B/Qj7ZJmF8dYcWcJdhcgQYJkz+yohs8IsWsIyhPGHpBBUHX9JeyMCszghupj7zXRQMdOTU=
+Received: from BN3PR03CA0057.namprd03.prod.outlook.com
+ (2a01:111:e400:7a4d::17) by BN6PR03MB2740.namprd03.prod.outlook.com
+ (2603:10b6:404:5b::7) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2451.28; Fri, 15 Nov
+ 2019 13:57:03 +0000
+Received: from BL2NAM02FT017.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::204) by BN3PR03CA0057.outlook.office365.com
+ (2a01:111:e400:7a4d::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2451.23 via Frontend
+ Transport; Fri, 15 Nov 2019 13:57:03 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ BL2NAM02FT017.mail.protection.outlook.com (10.152.77.174) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2451.23
+ via Frontend Transport; Fri, 15 Nov 2019 13:57:03 +0000
+Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xAFDuslW003086
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
+        Fri, 15 Nov 2019 05:56:54 -0800
+Received: from ben-Latitude-E6540.ad.analog.com (10.48.65.231) by
+ NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
+ 14.3.408.0; Fri, 15 Nov 2019 08:57:02 -0500
+From:   Beniamin Bia <beniamin.bia@analog.com>
+To:     <jic23@kernel.org>
+CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <pmeerw@pmeerw.net>, <gregkh@linuxfoundation.org>,
+        <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
+        <linux-kernel@vger.kernel.org>, <mark.rutland@arm.com>,
+        <devicetree@vger.kernel.org>, <biabeniamin@outlook.com>,
+        <knaack.h@gmx.de>, <robh+dt@kernel.org>,
+        Beniamin Bia <beniamin.bia@analog.com>
+Subject: [PATCH v5 4/4] MAINTAINERS: add entry for AD7091R5 driver
+Date:   Fri, 15 Nov 2019 15:57:23 +0200
+Message-ID: <20191115135723.12219-4-beniamin.bia@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20191115135723.12219-1-beniamin.bia@analog.com>
+References: <20191115135723.12219-1-beniamin.bia@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20191115122316.20893-2-beniamin.bia@analog.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9441 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1911150120
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9441 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1015
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=999 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-1911150120
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(376002)(39860400002)(346002)(136003)(396003)(199004)(189003)(486006)(106002)(107886003)(48376002)(7416002)(126002)(44832011)(16586007)(47776003)(5660300002)(8676002)(50226002)(8936002)(336012)(316002)(356004)(6666004)(246002)(7636002)(305945005)(26005)(186003)(6916009)(6306002)(478600001)(70586007)(36756003)(54906003)(70206006)(966005)(2351001)(76176011)(426003)(446003)(1076003)(50466002)(7696005)(4744005)(2906002)(4326008)(11346002)(476003)(51416003)(86362001)(2616005);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR03MB2740;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f394538d-e087-4a7a-9ddc-08d769d3b175
+X-MS-TrafficTypeDiagnostic: BN6PR03MB2740:
+X-MS-Exchange-PUrlCount: 1
+X-Microsoft-Antispam-PRVS: <BN6PR03MB274046FF416A469EC37E7F1AF0700@BN6PR03MB2740.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1303;
+X-Forefront-PRVS: 02229A4115
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 8BhPCSYCS70yMvfqHFw9CABCbnBqu38Yx3OlVZN0LeHvzbwLp4KEYaRJbxSZSjk07eR0bkIGPOi/ei8TeO0zG0spgfgSabOz8pgpOOREtHg5uKjBULPiDXr6lnEq1EJa7vZqk/qab8fhKso4r9abiFxa6N9MIDJZc3/BPBoq/RbkKO7LcZwCv4fp6i7upL6MplCNiieemwn8VkYyIMgcgeBHAbtsoB9AIF+90FHVvHJOg3MioJ3yvney5r9JkYawaPrMhVz4XETH+OOy9+mp2+c+nG+VUWrX35Ut4hJpkH9gupi/fbVlICTsogbaOrcgE0PlY1C+ZE5J6HwGBHKxWdMTtz8501dml+rQIfDbfiBIYNok4y+9fHF1Lb449sFsBpGu19N67dPYb7zyNKaFWf2pOwS7uaIwd0dq0S9yxx5RirTjp6wh1WWEhQEzBviXe46dwlPqnomvNKsziCU2EqIOOV316R5OAec1aDZV0Lg=
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 15 Nov 2019 13:57:03.1905
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f394538d-e087-4a7a-9ddc-08d769d3b175
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB2740
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-11-15_04:2019-11-15,2019-11-15 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1
+ mlxlogscore=999 bulkscore=0 clxscore=1015 adultscore=0 malwarescore=0
+ lowpriorityscore=0 priorityscore=1501 spamscore=0 mlxscore=0 phishscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1911150126
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Nov 15, 2019 at 02:23:14PM +0200, Beniamin Bia wrote:
-> @@ -216,6 +240,21 @@ int ad7091r_probe(struct device *dev, const char *name,
->  			return ret;
->  	}
->  
-> +	st->vref = devm_regulator_get_optional(dev, "vref");
-> +	if (IS_ERR(st->vref)) {
-> +		if (PTR_ERR(st->vref) == EPROBE_DEFER)
-                                      ^^^^^^^^^^^^^^^
-Missing - on EPROBE_DEFER.
+Add Beniamin Bia as a maintainer for AD7091R5 ADC.
 
-> +			return -EPROBE_DEFER;
-> +
-> +		st->vref = NULL;
-> +	} else {
-> +		ret = regulator_enable(st->vref);
-> +		if (ret)
-> +			return ret;
-> +		ret = devm_add_action_or_reset(dev, ad7091r_remove, st);
-> +		if (ret)
-> +			return ret;
-> +		}
+Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+---
+Changes in v5:
+-nothing changed
 
-Curly brace is indented an extra tab.
+ MAINTAINERS | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-regards,
-dan carpenter
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2e01d0f0b0e5..7f1e4b88688f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -893,6 +893,14 @@ S:	Supported
+ F:	drivers/iio/dac/ad5758.c
+ F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+ 
++ANALOG DEVICES INC AD7091R5 DRIVER
++M:	Beniamin Bia <beniamin.bia@analog.com>
++L:	linux-iio@vger.kernel.org
++W:	http://ez.analog.com/community/linux-device-drivers
++S:	Supported
++F:	drivers/iio/adc/ad7091r5.c
++F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
++
+ ANALOG DEVICES INC AD7124 DRIVER
+ M:	Stefan Popa <stefan.popa@analog.com>
+ L:	linux-iio@vger.kernel.org
+-- 
+2.17.1
+
