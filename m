@@ -2,197 +2,101 @@ Return-Path: <SRS0=0hCn=ZI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 91C26C43141
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Nov 2019 16:52:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4845BC432C3
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Nov 2019 17:11:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 74C2821843
-	for <linux-iio@archiver.kernel.org>; Sat, 16 Nov 2019 16:52:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 21DB821843
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Nov 2019 17:11:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1573924316;
+	bh=LN3C1kuC2V3MUsIX/lSbSx0Ac7RRwn+wgAylpuf6cYo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=tX43JG3ILxgjkjdJgAOG+4lPS+9wIfrCAfGNXnn0Oh0nNd9Loz7WIO5Ztp9h27Q8E
+	 7DC3fgDGjB8XYpQ9OMZl/qf868W9TqzOf3pz7tRx14havFltfnFWe+ZWD4zTT76zwI
+	 v3Hs6M8cnIvWLPY9hJs1aa07JBhL4P8cG6xDPgU8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727979AbfKPQwt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Nov 2019 11:52:49 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:35797 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727852AbfKPQwt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Nov 2019 11:52:49 -0500
-X-Originating-IP: 93.34.114.233
-Received: from uno.localdomain (93-34-114-233.ip49.fastwebnet.it [93.34.114.233])
-        (Authenticated sender: jacopo@jmondi.org)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 0C27E20002;
-        Sat, 16 Nov 2019 16:52:45 +0000 (UTC)
-Date:   Sat, 16 Nov 2019 17:54:44 +0100
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: max9611: Make enum relations more future proof
-Message-ID: <20191116165444.4fsqfrzimachyal3@uno.localdomain>
-References: <20191113100938.27604-1-geert+renesas@glider.be>
- <20191114072803.GC26902@bigcity.dyn.berto.se>
- <20191116162522.1e68243c@archlinux>
+        id S1727842AbfKPRLw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Nov 2019 12:11:52 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34776 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727568AbfKPRLw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Nov 2019 12:11:52 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 58860214E0;
+        Sat, 16 Nov 2019 17:11:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1573924311;
+        bh=LN3C1kuC2V3MUsIX/lSbSx0Ac7RRwn+wgAylpuf6cYo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IlzfehQqgakG3TXV9S0nYj8jLyHRxBU7PuGAFfuO3PCuc6C32vqEFoaFzBXXb3Ogr
+         0noU10cZz4v7ue9NIMhBmLvPc2ELxW0W/cdaxMBdWslC2q6G3NdLpmkW4BnBow8HwM
+         oUPK0f2wp0zdQlN0rRTM7qW0j73Jt8vQFMAP6s5o=
+Date:   Sat, 16 Nov 2019 17:11:46 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Beniamin Bia <beniamin.bia@analog.com>
+Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <pmeerw@pmeerw.net>, <gregkh@linuxfoundation.org>,
+        <linux-iio@vger.kernel.org>, <devel@driverdev.osuosl.org>,
+        <linux-kernel@vger.kernel.org>, <mark.rutland@arm.com>,
+        <devicetree@vger.kernel.org>, <biabeniamin@outlook.com>,
+        <knaack.h@gmx.de>, <robh+dt@kernel.org>
+Subject: Re: [PATCH v5 4/4] MAINTAINERS: add entry for AD7091R5 driver
+Message-ID: <20191116171146.029e2a57@archlinux>
+In-Reply-To: <20191115135723.12219-4-beniamin.bia@analog.com>
+References: <20191115135723.12219-1-beniamin.bia@analog.com>
+        <20191115135723.12219-4-beniamin.bia@analog.com>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="jl7d2nspvl7tn5qg"
-Content-Disposition: inline
-In-Reply-To: <20191116162522.1e68243c@archlinux>
-User-Agent: NeoMutt/20180716
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Fri, 15 Nov 2019 15:57:23 +0200
+Beniamin Bia <beniamin.bia@analog.com> wrote:
 
---jl7d2nspvl7tn5qg
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Add Beniamin Bia as a maintainer for AD7091R5 ADC.
+> 
+> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+Applied,
 
-Hello,
+Thanks,
 
-On Sat, Nov 16, 2019 at 04:25:22PM +0000, Jonathan Cameron wrote:
-> On Thu, 14 Nov 2019 08:28:03 +0100
-> Niklas S=C3=B6derlund <niklas.soderlund@ragnatech.se> wrote:
->
-> > Hi Geert,
-> >
-> > Looks good.
-> >
-> > On 2019-11-13 11:09:38 +0100, Geert Uytterhoeven wrote:
-> > > The relations between enum values and array indices values are curren=
-tly
-> > > not enforced by the code, which makes them fragile w.r.t. future
-> > > changes.
-> > >
-> > > Fix this by:
-> > >   1. Using designated array initializers, to make sure array indices =
-and
-> > >      enums values match,
-> > >   2. Linking max9611_csa_gain enum values to the corresponding
-> > >      max9611_conf_ids enum values, as the latter is cast to the former
-> > >      in max9611_read_csa_voltage().
-> > >
-> > > No change in generated code.
-> > >
-> > > Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
-> >
-> > Reviewed-by: Niklas S=C3=B6derlund <niklas.soderlund+renesas@ragnatech.=
-se>
->
-> Looks good to me, but I'd like to leave a little longer for any
-> feedback from Jacopo as author of the driver.
+Jonathan
 
-yeah, sorry I've been sloppy.. I meant to give the patches a run, but
-it seems there are only syntactic changes here, which indeed make the
-code more robust.
+> ---
+> Changes in v5:
+> -nothing changed
+> 
+>  MAINTAINERS | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 2e01d0f0b0e5..7f1e4b88688f 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -893,6 +893,14 @@ S:	Supported
+>  F:	drivers/iio/dac/ad5758.c
+>  F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+>  
+> +ANALOG DEVICES INC AD7091R5 DRIVER
+> +M:	Beniamin Bia <beniamin.bia@analog.com>
+> +L:	linux-iio@vger.kernel.org
+> +W:	http://ez.analog.com/community/linux-device-drivers
+> +S:	Supported
+> +F:	drivers/iio/adc/ad7091r5.c
+> +F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
+> +
+>  ANALOG DEVICES INC AD7124 DRIVER
+>  M:	Stefan Popa <stefan.popa@analog.com>
+>  L:	linux-iio@vger.kernel.org
 
-Even if not tested, please add
-Acked-by: Jacopo Mondi <jacopo@jmondi.org>
-
-Thanks
-  j
-
->
-> Thanks,
->
-> Jonathan
-> >
-> > > ---
-> > >  drivers/iio/adc/max9611.c | 36 +++++++++++-------------------------
-> > >  1 file changed, 11 insertions(+), 25 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/adc/max9611.c b/drivers/iio/adc/max9611.c
-> > > index b0755f25356d700d..cb306ff1a5d6a0b2 100644
-> > > --- a/drivers/iio/adc/max9611.c
-> > > +++ b/drivers/iio/adc/max9611.c
-> > > @@ -114,22 +114,17 @@ enum max9611_conf_ids {
-> > >   *		      where data shall be read from
-> > >   */
-> > >  static const unsigned int max9611_mux_conf[][2] =3D {
-> > > -	/* CONF_SENSE_1x */
-> > > -	{ MAX9611_MUX_SENSE_1x, MAX9611_REG_CSA_DATA },
-> > > -	/* CONF_SENSE_4x */
-> > > -	{ MAX9611_MUX_SENSE_4x, MAX9611_REG_CSA_DATA },
-> > > -	/* CONF_SENSE_8x */
-> > > -	{ MAX9611_MUX_SENSE_8x, MAX9611_REG_CSA_DATA },
-> > > -	/* CONF_IN_VOLT */
-> > > -	{ MAX9611_INPUT_VOLT, MAX9611_REG_RS_DATA },
-> > > -	/* CONF_TEMP */
-> > > -	{ MAX9611_MUX_TEMP, MAX9611_REG_TEMP_DATA },
-> > > +	[CONF_SENSE_1x]	=3D { MAX9611_MUX_SENSE_1x, MAX9611_REG_CSA_DATA },
-> > > +	[CONF_SENSE_4x]	=3D { MAX9611_MUX_SENSE_4x, MAX9611_REG_CSA_DATA },
-> > > +	[CONF_SENSE_8x]	=3D { MAX9611_MUX_SENSE_8x, MAX9611_REG_CSA_DATA },
-> > > +	[CONF_IN_VOLT]	=3D { MAX9611_INPUT_VOLT, MAX9611_REG_RS_DATA },
-> > > +	[CONF_TEMP]	=3D { MAX9611_MUX_TEMP, MAX9611_REG_TEMP_DATA },
-> > >  };
-> > >
-> > >  enum max9611_csa_gain {
-> > > -	CSA_GAIN_1x,
-> > > -	CSA_GAIN_4x,
-> > > -	CSA_GAIN_8x,
-> > > +	CSA_GAIN_1x =3D CONF_SENSE_1x,
-> > > +	CSA_GAIN_4x =3D CONF_SENSE_4x,
-> > > +	CSA_GAIN_8x =3D CONF_SENSE_8x,
-> > >  };
-> > >
-> > >  enum max9611_csa_gain_params {
-> > > @@ -147,18 +142,9 @@ enum max9611_csa_gain_params {
-> > >   * value; use this structure to retrieve the correct LSB and offset =
-values.
-> > >   */
-> > >  static const unsigned int max9611_gain_conf[][2] =3D {
-> > > -	{ /* [0] CSA_GAIN_1x */
-> > > -		MAX9611_CSA_1X_LSB_nV,
-> > > -		MAX9611_CSA_1X_OFFS_RAW,
-> > > -	},
-> > > -	{ /* [1] CSA_GAIN_4x */
-> > > -		MAX9611_CSA_4X_LSB_nV,
-> > > -		MAX9611_CSA_4X_OFFS_RAW,
-> > > -	},
-> > > -	{ /* [2] CSA_GAIN_8x */
-> > > -		MAX9611_CSA_8X_LSB_nV,
-> > > -		MAX9611_CSA_8X_OFFS_RAW,
-> > > -	},
-> > > +	[CSA_GAIN_1x] =3D { MAX9611_CSA_1X_LSB_nV, MAX9611_CSA_1X_OFFS_RAW,=
- },
-> > > +	[CSA_GAIN_4x] =3D { MAX9611_CSA_4X_LSB_nV, MAX9611_CSA_4X_OFFS_RAW,=
- },
-> > > +	[CSA_GAIN_8x] =3D { MAX9611_CSA_8X_LSB_nV, MAX9611_CSA_8X_OFFS_RAW,=
- },
-> > >  };
-> > >
-> > >  enum max9611_chan_addrs {
-> > > --
-> > > 2.17.1
-> > >
-> >
->
-
---jl7d2nspvl7tn5qg
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEtcQ9SICaIIqPWDjAcjQGjxahVjwFAl3QKdAACgkQcjQGjxah
-VjzvshAAucm2eLgK3WyUG1EhAxN91fVjfwgHkR+Q2dhT4R5QYgIsvVhrYlRH/MfQ
-QedHq4c2DJ2N2XU7zZHt2tAV2FSbfxS4nCCjNk4ywzkqN0m91/+nDKuCoN9Lvw/M
-3mO6hvWuJYn11XsvEHQHOR06rgVQSm40fobwjxG2uqTB9jVmh0ap6rLn3wUrqg0x
-alT68zQH7/ngIAYGx383UVUGn2aIqbtVZ+RSebmVRQ6tWVun8rTNrJH+s7hZUV8A
-6c5nh3ATQGDmgfcSi2BdxJdaiuPET+VmAbNaF25/xN+jHzr7ieU3zZ/FC41uuSgd
-pIRLiUEl5gyyDIqGVX4bUBPt3/3iP4LVJVTP9eXYOEpyAeAYqsb1+/KNr+zzygOw
-YjyPKeEqIzxWH2/u0FcWZdacgLVAmN4R7A2SmF3HUI1vnCd/E4Y5jLhzF1wG3P1/
-WJbMa7yW4IoiIso0iMYDvk7BgkTX6wpnYo+vLsZ5jijE7ja6TOBTnYf9UmdtXabo
-Fc6E+AMr08el354otO48oojoUMJOdGzpX/dDHejwCiiacWLduQmwUD7Hz22W6BrI
-kJhGfsyLpV/doNOy2cqcP/7ydmwPwYxrE5tyXXfWPGfFjrnSLc0kjcC0IBYqHEUD
-55qe4PwcEl3m1Ps6VBQQk7fHge846kg/iBh4DrLFNxLjWYYeK+Y=
-=omju
------END PGP SIGNATURE-----
-
---jl7d2nspvl7tn5qg--
