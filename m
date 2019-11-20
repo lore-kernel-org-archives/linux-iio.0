@@ -8,52 +8,52 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1816C43141
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Nov 2019 14:49:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A117C432C0
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Nov 2019 14:49:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 876BA20721
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Nov 2019 14:49:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D23E8206DA
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Nov 2019 14:49:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kZ54j4MI"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b+xYT7WV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728049AbfKTOtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Nov 2019 09:49:23 -0500
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:39539 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730794AbfKTOtX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Nov 2019 09:49:23 -0500
-Received: by mail-wr1-f66.google.com with SMTP id l7so107356wrp.6
-        for <linux-iio@vger.kernel.org>; Wed, 20 Nov 2019 06:49:21 -0800 (PST)
+        id S1731125AbfKTOtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Nov 2019 09:49:25 -0500
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:39432 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729932AbfKTOtZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Nov 2019 09:49:25 -0500
+Received: by mail-wm1-f65.google.com with SMTP id t26so8119056wmi.4
+        for <linux-iio@vger.kernel.org>; Wed, 20 Nov 2019 06:49:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=dW+Z64oSlVI0UEL1kpDuI9nX6HWNagHFv6yFzU7lfsA=;
-        b=kZ54j4MIcnixX+Jyj/zwgwTcJv8op1dzPr9PhED+vFvPQf5pZSZeoHUAcj+ej6gsIj
-         /d+m9rfPPNcnrGpzNcUgcxzLO/T1Fqr/rwMsOKx66HsfCJhO8izvdjmpI0X/55PqH90x
-         97j+9MqjiVO9y8Fmc0DEjK+/vuF+AnCWR8BLAMj1i3+sbinAVK2iPErWRLWy/r4v86wy
-         HhvIfqC0PUEXBrHetwyVbWD3YMNbw9Sq5H+hGn5DIfnk347e/McFkzMV5GozI9qu7zhJ
-         7kbdckrwwBfKMvlBd4IwMsrUliFLw6FICVvgqCba1loh+KB2J1vFSjYYvYjWS56R+CkR
-         1Xig==
+        bh=kI+6z7y49c6+W2tZw/F82eQLktjdxraputejG6O/yos=;
+        b=b+xYT7WVEbv9Otm7uYIaVc/U/SKtsCTG6O7qEgDOHmN+0EI4GOblIzttf/WZju4sSD
+         V8iZe8Aeazq4vJLLFwYl/Fq2bbb9aFCPABrX2qEC595AF22vgbo9gYIYN0+nSMWMvq+U
+         Tp9A86ECBQtCYFF9jaSGSKZGnkiIXJq4F52JYCNuGd/J/rXEZaosZecqFVNmuvOY1uGy
+         UzmEIGUKs+57+Ry50jQ8ybWzG/TZzWUFqYckVdu50MhlDsDowCbXtP3tWlED9uf//hI+
+         ypQMIFK/xqoW8IMjvwTXNON3RrC9TBYcnIdoRqt0vwkL6bIYpMoDGt+i1K+d5wNJY143
+         Pieg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=dW+Z64oSlVI0UEL1kpDuI9nX6HWNagHFv6yFzU7lfsA=;
-        b=Vqi/6AGL3Loi8XOhn/YK/MA/m7DgraT3+MBqknv4kaNiy1QV7pH9T7UEavv2W9pK3T
-         aPVUErgbA4/lztpGaae65ge5Ywpv15VgFKp88SleJr79zGigQIuYQdEmZ2O77Pbe3YDL
-         xXHE+ZHP3dDpfFjrB6ZLg/TbyyX4LKqEW34uURYUDwzjMBculv3xagqtbiBhdaP9+8M4
-         R13GYX1YL6TD86TJzca77YxmRheybtJiKUI+K3EcY4uUM1DD4TsYwvUUYzw6cbrYhkQS
-         bqg733A5VheQguohGycFoq5HYkIO9SZlwHaVOgrddwAfmMi7+rl8+oh1gyc3bpcQwcQ3
-         /0Hw==
-X-Gm-Message-State: APjAAAWtagK1pllXIUcFkQ9w4Nzk81SEx5RXrH8N8XNuGJqfqNy+2t/R
-        6xBHvuCJ5wfi9jSawfJ1udE=
-X-Google-Smtp-Source: APXvYqzeZh5CQ/NCYrYnSjkxNurSJjJjvk6DXnxhsGD8Y7m1T+u4Yvqy4kqcAlIZ19SweZiyVlXpvA==
-X-Received: by 2002:a5d:538d:: with SMTP id d13mr4027419wrv.304.1574261360745;
-        Wed, 20 Nov 2019 06:49:20 -0800 (PST)
+        bh=kI+6z7y49c6+W2tZw/F82eQLktjdxraputejG6O/yos=;
+        b=PRoF30BU9kmHd335FPpJ2xCVBKENMbkbNkFdM/XXgNI/fGTlsq/uYjgTW0tKDPxBNc
+         Uo4JPpmRWD+3NwcF9/Qvc1jk0q9h9tw5OutfRTmbCw8U9BapNcqQQrqSQnrQwvR6+OYt
+         aMB0fA4OFu9BgGQ2P9GXfHr5PLIaphm+brHCSNzf7E71rqwgzD5fZbKpexlf9YOyei6L
+         ueCnfV80qQcZg8Wo8+W+0QJO+2l5imGVMUcYQwLWaarCTjsMN60l6Z6XDXmvch+cfnTw
+         RSaJSjzTtBE9+kQTcbzkdO2qwL+Tgnqohk1Jy/ATq+Q9UlAn97K7g3NBR2yoi8KAV7WZ
+         znaw==
+X-Gm-Message-State: APjAAAWtgFXKYplu6lbw4naYnwyotYGHXI5S4xxN7fPmrUsCLU57KA+T
+        l62iyoJsNPpYO8SIUuKmtSI=
+X-Google-Smtp-Source: APXvYqyA754sNmRl6zVbgNqLCDnQAPlj8lCFC/IQNwacCFN9hc/14702KqkTlIBun1Pz9Y50wX7s5w==
+X-Received: by 2002:a1c:16:: with SMTP id 22mr3865056wma.0.1574261362954;
+        Wed, 20 Nov 2019 06:49:22 -0800 (PST)
 Received: from NewMoon.iit.local ([90.147.180.254])
-        by smtp.gmail.com with ESMTPSA id b2sm5822120wrr.76.2019.11.20.06.49.19
+        by smtp.gmail.com with ESMTPSA id b2sm5822120wrr.76.2019.11.20.06.49.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 Nov 2019 06:49:20 -0800 (PST)
+        Wed, 20 Nov 2019 06:49:22 -0800 (PST)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org
 Cc:     Andrea Merello <andrea.merello@gmail.com>,
@@ -66,9 +66,9 @@ Cc:     Andrea Merello <andrea.merello@gmail.com>,
         Matt Ranostay <matt.ranostay@konsulko.com>,
         Chuhong Yuan <hslester96@gmail.com>,
         Daniel Gomez <dagmcr@gmail.com>, linux-iio@vger.kernel.org
-Subject: [v3 2/9] Documentation: ABI: document IIO in_temp_filter_notch_center_frequency file
-Date:   Wed, 20 Nov 2019 15:47:49 +0100
-Message-Id: <20191120144756.28424-3-andrea.merello@gmail.com>
+Subject: [v3 4/9] RFC: iio: core: add char type for sysfs attributes
+Date:   Wed, 20 Nov 2019 15:47:51 +0100
+Message-Id: <20191120144756.28424-5-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20191120144756.28424-1-andrea.merello@gmail.com>
 References: <20191111153517.13862-1-andrea.merello@gmail.com>
@@ -78,9 +78,18 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-max31856 IIO driver introduced a new attribute
-"in_temp_filter_notch_center_frequency".
-This patch adds it to the list of documented ABI for sysfs-bus-iio
+This patch introduces IIO_VAL_CHAR type for standard IIO attributes to
+allow for attributes that needs to be represented by character rather
+than a number. This is preparatory for introducing a new attribute whose
+purpose is to describe thermocouple type, that can be i.e. "J", "K", etc..
+
+The char-type value is stored in the first "value" integer that is passed
+to the .[read/write]_raw() callbacks.
+
+Note that in order to make it possible for the IIO core to correctly parse
+this type (actually, to avoid integer parsing), it became mandatory for
+any driver that wish to use IIO_VAL_CHAR on a writable attribute to
+implement .write_raw_get_fmt().
 
 Cc: Hartmut Knaack <knaack.h@gmx.de>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
@@ -94,24 +103,73 @@ Cc: Daniel Gomez <dagmcr@gmail.com>
 Cc: linux-iio@vger.kernel.org
 Signed-off-by: Andrea Merello <andrea.merello@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/industrialio-core.c | 22 ++++++++++++++++++----
+ include/linux/iio/types.h       |  1 +
+ 2 files changed, 19 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index faaa2166d741..94f7eb675108 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1726,3 +1726,10 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		List of valid periods (in seconds) for which the light intensity
- 		must be above the threshold level before interrupt is asserted.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index f72c2dc5f703..958b5c48a86f 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -596,6 +596,8 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ 		}
+ 		return l;
+ 	}
++	case IIO_VAL_CHAR:
++		return snprintf(buf, len, "%c", (char)vals[0]);
+ 	default:
+ 		return 0;
+ 	}
+@@ -837,7 +839,8 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	int ret, fract_mult = 100000;
+-	int integer, fract;
++	int integer, fract = 0;
++	bool is_char = false;
+ 
+ 	/* Assumes decimal - precision based on number of digits */
+ 	if (!indio_dev->info->write_raw)
+@@ -855,13 +858,24 @@ static ssize_t iio_write_channel_info(struct device *dev,
+ 		case IIO_VAL_INT_PLUS_NANO:
+ 			fract_mult = 100000000;
+ 			break;
++		case IIO_VAL_CHAR:
++			is_char = true;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+ 
+-	ret = iio_str_to_fixpoint(buf, fract_mult, &integer, &fract);
+-	if (ret)
+-		return ret;
++	if (is_char) {
++		char ch;
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_filter_notch_center_frequency
-+KernelVersion:	5.5
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Center frequency in Hz for a notch filter. Used i.e. for line
-+		noise suppression.
++		if (sscanf(buf, "%c", &ch) != 1)
++			return -EINVAL;
++		integer = ch;
++	} else {
++		ret = iio_str_to_fixpoint(buf, fract_mult, &integer, &fract);
++		if (ret)
++			return ret;
++	}
+ 
+ 	ret = indio_dev->info->write_raw(indio_dev, this_attr->c,
+ 					 integer, fract, this_attr->address);
+diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+index fa824e160f35..8e0026da38c9 100644
+--- a/include/linux/iio/types.h
++++ b/include/linux/iio/types.h
+@@ -25,6 +25,7 @@ enum iio_event_info {
+ #define IIO_VAL_INT_MULTIPLE 5
+ #define IIO_VAL_FRACTIONAL 10
+ #define IIO_VAL_FRACTIONAL_LOG2 11
++#define IIO_VAL_CHAR 12
+ 
+ enum iio_available_type {
+ 	IIO_AVAIL_LIST,
 -- 
 2.17.1
 
