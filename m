@@ -4,37 +4,37 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4416C43215
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Nov 2019 13:30:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA51C432C0
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Nov 2019 13:30:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9C3CB2082F
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Nov 2019 13:30:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 790DC2073F
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Nov 2019 13:30:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="6OqBkMyl"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="VxutJUUo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727967AbfKVNaL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Nov 2019 08:30:11 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:24100 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727959AbfKVNaK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Nov 2019 08:30:10 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAMDN8Vf006098;
-        Fri, 22 Nov 2019 08:30:07 -0500
-Received: from nam04-bn3-obe.outbound.protection.outlook.com (mail-bn3nam04lp2052.outbound.protection.outlook.com [104.47.46.52])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2wabu7myuv-1
+        id S1727996AbfKVNad (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Nov 2019 08:30:33 -0500
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:62814 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727545AbfKVNaJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Nov 2019 08:30:09 -0500
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xAMDN8Ou011422;
+        Fri, 22 Nov 2019 08:30:05 -0500
+Received: from nam01-bn3-obe.outbound.protection.outlook.com (mail-bn3nam01lp2057.outbound.protection.outlook.com [104.47.33.57])
+        by mx0b-00128a01.pphosted.com with ESMTP id 2wbg0jtqya-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Nov 2019 08:30:06 -0500
+        Fri, 22 Nov 2019 08:30:05 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=js/jrLQ4YCXZbFjhXXjBuSDd/Ii5h/f/g8cqpMTQNgx6YuJGYCFpPtTWMibWnZK6RJSC2AmbsVyhWUcVEO0CuX+2qYyvp2gYxQuUTREx2OE+x0AUnZMxnxHZKFXsZzIPp8VyQ9QlPUhf/x7Krvwd7X+LzvArzkU0c/F4SvHjmNpoXuB9hleZmGyDD4+rlDQ2DUIAVn2BMw1yde34iaE4GmT18Fuos9PfCOdG4L/IbpkNEYRwv6J0YnYLoy8IRwZlqXeg0S5iw58wQPVthj63aDKGOJQ782qGHUhbAGYrdDqT/oIPTbGeDPtG2VeI3yNyETEzOaXz4/kkJyOdxc80NQ==
+ b=LGQpsaByIeLXPddc4endnvKi/EDsnWfIECAv8dKHprG/2RqQFIlLwYNZlVwqPeY4dz0AS3cQznwTbalMrMKAUZIa6DcksRfJDAZ1y77D9p81jfL92n4cfTzztqn/1SaQ7KCWOk/52TMh3WmSagiPnsbNUUGrCELctXsO3iZZt7OVOn42OnzUrfAA2Mu9+PSK3O38/MzGAzNGHZQkVW5NJxT36mVKovCTZ9wUTgBDLIO0S+M3o8hI6Ddo3Jv+Nf0nd3FkdL2vv5p/XkNwqUJmW1KjTdOjjH6if6iZyWHBRC3/jZIZA0bs44URdeqMa091IxXg6h/YAExBfruzkREnvQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1yOwAaQjdU112y4txRQ75SDbU1oDb3E940kZ7t80gEo=;
- b=ArK5LZ4wtAqfS8F3PkO6eBSy8MNkP82aNnzJciLvXyosrySC0iuSPlW2lp1W4RRQFypVfEFypn2FG3bGirR4fpHTQPxVe53bTsaCVB2Em8ArInq4PnQ316ub4Jv4fvN+L214NFrW5nXNivnkMDOCiyceZKJeDgRVXs1rL580Jww+HaokBeJcSihxjREm1h9QHgduBMXgQaEB35Olee9HH2Mpt0oT/2WxFUgmEPqcfYNzxnXsSMYUNMyWllwKF/ePuoj/4Cp8QhCno+bUlOEVfI5X8mN0C6K3cGwHsczo+9Ug+hlSUAW4ccvg+O98Q0PKq7uJtsAwy4eoINnrHPe57w==
+ bh=OQjqjPR4d0w8LHNi0M5yY78MFQNo5hgrkH1PvSNU1cs=;
+ b=D7nQXwhhP7X6Vy9uyzDcsxvJbf3uptZhLSg0tNpwDu9fnOxJDyRwyUpxq0UCXH9zVvzo4TJri+o8mbVChRskmvI2J0Ofh3WavWEJRhV8FPVJjOHDa70V+eGGBumcLDQkGtIIaoWnz62sZLEiZadrwzwSqnQ5SzZaDi/zfyA7D6NqaPyW3KedTTKMxhq8tKdixrbuQmplOIMwzNMNrF7pgenuX03Qhz562YQZajJ2rcmtdynloxCiVszd3kmPZoxvHBf/9akWS7UQ/8IdxX+H9FZnaUQ6piajoCHOfVpD0dKRq6cZy1e6b7EiuVnDkR1EjygVcVPFZWrFv7z7fLmhDw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  137.71.25.57) smtp.rcpttodomain=kernel.org smtp.mailfrom=analog.com;
  dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
@@ -42,40 +42,39 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=1yOwAaQjdU112y4txRQ75SDbU1oDb3E940kZ7t80gEo=;
- b=6OqBkMyljXzJLQKvcyCkOL/iQlDWDdP7glP5njfIXyrorLp5EiedmRrSgiPB7g2nBkigeXs8TM0gLNeq6QbSPbbX7xFr6gxAma/ZaVu1dqDIdWbgl+ij8IsSBNUwcFsedgxjE0V1QTmZTEezFO913/jBhF4ZX1dGQJqN8KI9goA=
-Received: from BN6PR03CA0115.namprd03.prod.outlook.com (2603:10b6:404:10::29)
- by SN6PR03MB4590.namprd03.prod.outlook.com (2603:10b6:805:fe::14) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2474.16; Fri, 22 Nov
- 2019 13:30:02 +0000
-Received: from BL2NAM02FT014.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::206) by BN6PR03CA0115.outlook.office365.com
- (2603:10b6:404:10::29) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2474.16 via Frontend
- Transport; Fri, 22 Nov 2019 13:30:02 +0000
+ bh=OQjqjPR4d0w8LHNi0M5yY78MFQNo5hgrkH1PvSNU1cs=;
+ b=VxutJUUoIohvcVKhI4oG9G8bOfbKZ0p4IAuv29uqv7qewfp2SWF5ckWN9sb5iyPW6itzD1GCnRPOnb1jtRiartMXdMNqWRyFNEjjI1SRF/MK/xOZQYHPUmG910G4Z8qQjoLHlMr4P5geWekVgxoy7ymT9AveL1pu8IbFj3gJqyw=
+Received: from DM6PR03CA0033.namprd03.prod.outlook.com (2603:10b6:5:40::46) by
+ DM5PR03MB3307.namprd03.prod.outlook.com (2603:10b6:4:43::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2451.30; Fri, 22 Nov 2019 13:30:03 +0000
+Received: from BL2NAM02FT060.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::206) by DM6PR03CA0033.outlook.office365.com
+ (2603:10b6:5:40::46) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2474.17 via Frontend
+ Transport; Fri, 22 Nov 2019 13:29:57 +0000
 Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
  137.71.25.57 as permitted sender) receiver=protection.outlook.com;
  client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
 Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2NAM02FT014.mail.protection.outlook.com (10.152.76.154) with Microsoft SMTP
+ BL2NAM02FT060.mail.protection.outlook.com (10.152.76.124) with Microsoft SMTP
  Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2474.17
- via Frontend Transport; Fri, 22 Nov 2019 13:30:02 +0000
+ via Frontend Transport; Fri, 22 Nov 2019 13:29:57 +0000
 Received: from NWD2HUBCAS7.ad.analog.com (nwd2hubcas7.ad.analog.com [10.64.69.107])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xAMDTrug015814
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xAMDTmIo015781
         (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=OK);
-        Fri, 22 Nov 2019 05:29:53 -0800
+        Fri, 22 Nov 2019 05:29:48 -0800
 Received: from saturn.ad.analog.com (10.48.65.119) by
  NWD2HUBCAS7.ad.analog.com (10.64.69.107) with Microsoft SMTP Server id
- 14.3.408.0; Fri, 22 Nov 2019 08:30:01 -0500
+ 14.3.408.0; Fri, 22 Nov 2019 08:29:56 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <jic23@kernel.org>, <nuno.sa@analog.com>,
         <Michael.Hennerich@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 07/11] iio: imu: adis: group single conversion under a single state lock
-Date:   Fri, 22 Nov 2019 15:24:17 +0200
-Message-ID: <20191122132421.5500-8-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 04/11] iio: imu: adis: create an unlocked version of adis_check_status()
+Date:   Fri, 22 Nov 2019 15:24:14 +0200
+Message-ID: <20191122132421.5500-5-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191122132421.5500-1-alexandru.ardelean@analog.com>
 References: <20191122132421.5500-1-alexandru.ardelean@analog.com>
@@ -85,102 +84,105 @@ Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-EOPAttributedMessage: 0
 X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(39860400002)(136003)(376002)(396003)(199004)(189003)(7696005)(8676002)(51416003)(8936002)(2906002)(26005)(305945005)(86362001)(246002)(76176011)(47776003)(70206006)(6666004)(356004)(14444005)(107886003)(186003)(50226002)(1076003)(70586007)(2870700001)(336012)(2616005)(48376002)(478600001)(11346002)(446003)(106002)(426003)(4326008)(7636002)(5660300002)(316002)(54906003)(44832011)(36756003)(110136005)(50466002);DIR:OUT;SFP:1101;SCL:1;SRVR:SN6PR03MB4590;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(346002)(376002)(396003)(136003)(39860400002)(199004)(189003)(51416003)(86362001)(54906003)(110136005)(47776003)(8936002)(1076003)(5660300002)(14444005)(356004)(6666004)(50226002)(70206006)(76176011)(107886003)(316002)(186003)(2870700001)(426003)(48376002)(8676002)(446003)(7636002)(11346002)(4326008)(336012)(26005)(106002)(50466002)(478600001)(36756003)(305945005)(246002)(70586007)(2616005)(7696005)(2906002)(44832011);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR03MB3307;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: b05cefba-75cb-42e3-fa30-08d76f501475
-X-MS-TrafficTypeDiagnostic: SN6PR03MB4590:
-X-Microsoft-Antispam-PRVS: <SN6PR03MB4590872ACA1F80837E0C3CA8F9490@SN6PR03MB4590.namprd03.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 0c5837a0-81dd-4c92-0c0d-08d76f501175
+X-MS-TrafficTypeDiagnostic: DM5PR03MB3307:
+X-Microsoft-Antispam-PRVS: <DM5PR03MB33075EF266DF556239695C74F9490@DM5PR03MB3307.namprd03.prod.outlook.com>
 X-MS-Oob-TLC-OOBClassifiers: OLM:5797;
 X-Forefront-PRVS: 02296943FF
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: =?us-ascii?Q?aC6zPktTZzbFqlXj2cXcPqp6um9O/OQU8uh/Mr9zrFx8NFITaQj4WpA7sMAg?=
- =?us-ascii?Q?2WoqbKTQUOFzoBxlJRCIOrqEPySt+SLE49Hpl10b8/yGOUlDq0qXB6kxiZGe?=
- =?us-ascii?Q?nnjqBZ5IhSMaoXtrKbeEt+Z5Y1WzM83VS1nSTVhdaSvcZ5dXpYbuVlo1+oIQ?=
- =?us-ascii?Q?z1PiFgimT8LC1eYGWORJ7rWPZpbxNkUE/HharXujXH9lou8cPtDB8gpLpT+T?=
- =?us-ascii?Q?Kg9EDQDVupN0vbjo5uekwurN6AGBWg/I3/7faP9TzmUrfeRhu6y+93HK8xVg?=
- =?us-ascii?Q?l4kAUwZDCnFF1JGktBo61dnGmN+FGoXRhX+crFQio90sFS4gjXyyYWx0eqlL?=
- =?us-ascii?Q?LY+dnRSMbXwhU2z2i56GGoxqZFJJFCETH7iiFuh/DMbL3SIj5zvxFEY3WfjD?=
- =?us-ascii?Q?rCYuqzusV648H+0rU47rDV7UwPa5o075VIpNM9xEaPzwhxneQTM89CT+fD03?=
- =?us-ascii?Q?gjJNa2winhiR3YFepAKWdU1LK48RANrjOGp3IhUPstwcom/mvF/1nlQnvmH2?=
- =?us-ascii?Q?ZqFb6sW8euUgMfXkoMvAV3CAx0spy4qg37+k1NLc7PqohsnuFXv5PbyOg0tA?=
- =?us-ascii?Q?ihoeDlxkXRAV9RxFto4PAr3gDVhOiiVItDBu1u0uOfo/oolrpBdyQgZB33Aa?=
- =?us-ascii?Q?XGHQkwTUd24in3DXBHuyZdSsXyQVSyIG1hnChDmZRw40L4wNaFdivmf0nQkn?=
- =?us-ascii?Q?Iax+B44JLdw2MzK1YRx3EzG1LPsx0jP2jB7L9okAYuNRS7GX1577GSPyPRK7?=
- =?us-ascii?Q?5UveJvLVOkq8qXXEINNkEJMtjHeLDTwYft0W1Nl5SDY3pvw7QgQQ4LNAr3fY?=
- =?us-ascii?Q?BIZZ/jkCynGBfTLmGGoplZrgOF2B15+KSIWfg2qHotqfYaNwpkAmdiSstNHh?=
- =?us-ascii?Q?k/X8eLJ0gZYE6Qw38YQG1dTFmnefIdAmUu89BnB4QbJ4bor9q1i5mKaNFQZk?=
- =?us-ascii?Q?m+duz1mxHvN0xi17MyWhvZbJb/sXuLQ9Xu4YxUTEIVI3woo5kZBw6Wlr3YoU?=
- =?us-ascii?Q?vwhkBxkzBOmDh7UWgbQprRDFGJZ2fnXGgPDlzBCwv28nTCK9vfCSLcQaL2A7?=
- =?us-ascii?Q?1ALmx9rS5Esihj8Wad87joEaGnf6+PqCPtkBqv7yda53AKb/pzgKgKld2pLu?=
- =?us-ascii?Q?Jlqr/7wvL07ThrcCKNzhD6vFbRs1sPoye3IsSh02ztcGhd813ZEe8+L34zJx?=
- =?us-ascii?Q?cp9Zku3qgEd5BJ5tJwtSM2G1/TyIB4wzL/mOLtX8XEMeRwbsh2jqxO2xW6aN?=
- =?us-ascii?Q?o/Wsp84wRxNAr88ReKxXSxUG7s1uaKZkFlzW66d9ioqesuJGB8cu9Q/fMBDI?=
- =?us-ascii?Q?cprVK58wsF/8AtBgjMALTFylIIXiddcLFc9QmA3dVtnAPCqfwKqvQ8+OYCT9?=
- =?us-ascii?Q?dgJfHj9yQDcArByjJSvg9UR1eSwzF7Yhz4mfRYcFL3N61o8izEj/Jnd3x1UY?=
- =?us-ascii?Q?8OrGMqo0biS5vD7jwEZqg7SRzoXJart2?=
+X-Microsoft-Antispam-Message-Info: tSJSUKnDIjzpWEA8abKpj1Zsn/9gcqpoIFupeUYpXYzzvOieI2VZUdIa1om09G11g51ODG9gLivGm5b/0ayXKD1guAUDTGmMef1cmXi3WUzHmJ6+qUXOfkobZ7hJWIrOaGj29B4eEUnLlXbuH6AmfLn5X5bpcNcTp0iw/BDK2/80CxY7Hmr8NTy1Yd3ERc4Dia/avNVL6SItKER2Bh1Zt4H/295/2+TcD8CFm82WSjfSKSvL+m+St0d7+62cXiffJ9btgKk5X7CXDXocNGoItjk2BhUNSbA/sUvx5cxKDfwZpevMapS16iUME/kCNAjwW/atzIZguD9tN+mPiviUWjwotOWjuHz0ZAG7sSkL0TQnQG5ritisb2V2HXuxZgYLpYi33zDe53fOgNEPW5Cu/MTNmG2WRr5x3695xtuOXbBLB33IkNBV/DPto5u86win
 X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2019 13:30:02.7147
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Nov 2019 13:29:57.6754
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: b05cefba-75cb-42e3-fa30-08d76f501475
+X-MS-Exchange-CrossTenant-Network-Message-Id: 0c5837a0-81dd-4c92-0c0d-08d76f501175
 X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR03MB4590
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR03MB3307
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
  definitions=2019-11-22_02:2019-11-21,2019-11-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- impostorscore=0 spamscore=0 adultscore=0 clxscore=1015 mlxlogscore=999
- bulkscore=0 malwarescore=0 lowpriorityscore=0 suspectscore=0 mlxscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1911220119
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 spamscore=0
+ suspectscore=0 adultscore=0 bulkscore=0 mlxlogscore=999 priorityscore=1501
+ lowpriorityscore=0 malwarescore=0 mlxscore=0 phishscore=0 impostorscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-1910280000
+ definitions=main-1911220119
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The single conversion function does a series of reads + writes. This change
-extends the use of the state_lock for the entire set of operations.
-Previously, indio_dev's mlock was used. This change also removes the use of
-this lock.
+This one also gets re-used in certain operations, so it makes sense to
+have an unlocked version of this to group it with other
+reads/writes/operations to have a single lock for the whole state change.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/imu/adis.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/imu/adis.c       |  8 ++++----
+ include/linux/iio/imu/adis.h | 13 ++++++++++++-
+ 2 files changed, 16 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 10b8922fd51b..c53f3ed3cb97 100644
+index 5cf7a15be6ee..b63d6e6f5415 100644
 --- a/drivers/iio/imu/adis.c
 +++ b/drivers/iio/imu/adis.c
-@@ -404,15 +404,15 @@ int adis_single_conversion(struct iio_dev *indio_dev,
- 	unsigned int uval;
+@@ -277,18 +277,18 @@ int adis_enable_irq(struct adis *adis, bool enable)
+ EXPORT_SYMBOL(adis_enable_irq);
+ 
+ /**
+- * adis_check_status() - Check the device for error conditions
++ * __adis_check_status() - Check the device for error conditions (unlocked)
+  * @adis: The adis device
+  *
+  * Returns 0 on success, a negative error code otherwise
+  */
+-int adis_check_status(struct adis *adis)
++int __adis_check_status(struct adis *adis)
+ {
+ 	uint16_t status;
  	int ret;
+ 	int i;
  
--	mutex_lock(&indio_dev->mlock);
-+	mutex_lock(&adis->state_lock);
- 
--	ret = adis_read_reg(adis, chan->address, &uval,
-+	ret = __adis_read_reg(adis, chan->address, &uval,
- 			chan->scan_type.storagebits / 8);
+-	ret = adis_read_reg_16(adis, adis->data->diag_stat_reg, &status);
++	ret = __adis_read_reg_16(adis, adis->data->diag_stat_reg, &status);
  	if (ret)
- 		goto err_unlock;
+ 		return ret;
  
- 	if (uval & error_mask) {
--		ret = adis_check_status(adis);
-+		ret = __adis_check_status(adis);
- 		if (ret)
- 			goto err_unlock;
- 	}
-@@ -424,7 +424,7 @@ int adis_single_conversion(struct iio_dev *indio_dev,
+@@ -306,7 +306,7 @@ int adis_check_status(struct adis *adis)
  
- 	ret = IIO_VAL_INT;
- err_unlock:
--	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&adis->state_lock);
- 	return ret;
+ 	return -EIO;
  }
- EXPORT_SYMBOL_GPL(adis_single_conversion);
+-EXPORT_SYMBOL_GPL(adis_check_status);
++EXPORT_SYMBOL_GPL(__adis_check_status);
+ 
+ /**
+  * adis_reset() - Reset the device
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index 38ebe41092e1..db759957e1c1 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -267,7 +267,18 @@ static inline int adis_read_reg_32(struct adis *adis, unsigned int reg,
+ }
+ 
+ int adis_enable_irq(struct adis *adis, bool enable);
+-int adis_check_status(struct adis *adis);
++int __adis_check_status(struct adis *adis);
++
++static inline int adis_check_status(struct adis *adis)
++{
++	int ret;
++
++	mutex_lock(&adis->state_lock);
++	ret = __adis_check_status(adis);
++	mutex_unlock(&adis->state_lock);
++
++	return ret;
++}
+ 
+ int adis_initial_startup(struct adis *adis);
+ 
 -- 
 2.20.1
 
