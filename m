@@ -6,148 +6,145 @@ X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8154BC432C0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:51:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C2B3C432C0
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 14:15:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5851620719
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:51:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15A8820714
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 14:15:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574513504;
-	bh=VcQqBg6GDNAXOn4fAhOKNH28W07HsOtsOWrG/Qk4LGo=;
+	s=default; t=1574518521;
+	bh=uI4rimQXWPAfHwLl1iypdUeaUk/AsqK7GNtaATN05/4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=oikshV0yx8sS4ofCmbyc6+dlq8vyixu2Ft+I01Jjf89OuvVFFRS/wEpztjeKeNUI4
-	 jAN6l2dQoB7uDyaXlOdjLIJeKxwwhPNTI3E/STWa0tUg9aLMsNz61KLMm7u8j2PsZx
-	 2WTk36Vj03/AzIbxB/ChOs5QE8H1yczRc4j0H3QY=
+	b=q2KHW/5mrf860+rjRT3qHHj+b8QoV4qpVgiU3pofCZO5Nnfw7X8qIQzAtGa5mJB48
+	 aPrhC1QO+/GAzT9J91+HSFwP2LpeonYp9cyDsPux22FFLDDzgwTMohGYppWIMRWfGv
+	 suuKvc/hIgfmqPyQGwCaug1IpaicxGqfrOdyOo2I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726666AbfKWMvl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Nov 2019 07:51:41 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34384 "EHLO mail.kernel.org"
+        id S1726620AbfKWOPU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Nov 2019 09:15:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55502 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726451AbfKWMvl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 23 Nov 2019 07:51:41 -0500
+        id S1726524AbfKWOPU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 23 Nov 2019 09:15:20 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BFF9D20658;
-        Sat, 23 Nov 2019 12:51:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B8A6205C9;
+        Sat, 23 Nov 2019 14:15:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574513500;
-        bh=VcQqBg6GDNAXOn4fAhOKNH28W07HsOtsOWrG/Qk4LGo=;
+        s=default; t=1574518519;
+        bh=uI4rimQXWPAfHwLl1iypdUeaUk/AsqK7GNtaATN05/4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i7flcV814pcX83luI7s0sZh/Nn3WTIhDkvVjsjr7mE8pW5x7bN/WcV1duu1OuvWmz
-         78iyCoYx0ROh1GKPt5Bqy4/PklM2o88tOZ67AYbG0BC6icJzm8QCinNh9oHmqI9K4r
-         e/WkKWqMAFHryuBiYvFT2HKkRNEAobUttnQyK1fQ=
-Date:   Sat, 23 Nov 2019 12:51:35 +0000
+        b=Kf0tuNuPBqTxBz2ySYJ1qRYpqRRNVL5K4Tm/+yCmiRe59J9YWZ/SFAgjdNq/hem3Z
+         H8leyO1C08rM5cNiNlrlM91zaYhsHt4+aNiNmT5LykUH9yF7HrNeISpLm+Lpddgh3L
+         +M34+DDnzD0IGX5VpN2ZAd/7LKmYwNElOg0/Gkq4=
+Date:   Sat, 23 Nov 2019 14:15:15 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dan Robertson <dan@dlrobertson.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        devicetree <devicetree@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Randy Dunlap <rdunlap@infradead.org>
-Subject: Re: [PATCH v4 2/2] iio: (bma400) add driver for the BMA400
-Message-ID: <20191123125135.4c7efcb0@archlinux>
-In-Reply-To: <20191118002504.GA29469@nessie>
-References: <20191018031848.18538-1-dan@dlrobertson.com>
-        <20191018031848.18538-3-dan@dlrobertson.com>
-        <CAHp75VfMW0fvmO9jGTnQumJ9Sm-SgNL0ohjSR4qRQY365aeMBw@mail.gmail.com>
-        <20191019024351.GB8593@nessie>
-        <20191021162016.531e6a2e@archlinux>
-        <20191118002504.GA29469@nessie>
+To:     Eugene Zaikonnikov <eugene.zaikonnikov@norphonic.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        development@norphonic.com, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 0/1] Add support for TI HDC200x humidity and temperature
+ sensors
+Message-ID: <20191123141515.55d9eebc@archlinux>
+In-Reply-To: <996dd531-cbc6-9ecc-0a67-0a9b8e686c0c@norphonic.com>
+References: <71176abd-4997-70f8-8132-137fadda7768@norphonic.com>
+        <20191103121921.5b1d0b02@archlinux>
+        <996dd531-cbc6-9ecc-0a67-0a9b8e686c0c@norphonic.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 18 Nov 2019 00:25:04 +0000
-Dan Robertson <dan@dlrobertson.com> wrote:
+On Fri, 22 Nov 2019 15:50:43 +0100
+Eugene Zaikonnikov <eugene.zaikonnikov@norphonic.com> wrote:
 
-> Sorry for the incredibly late reply. Before I submit the next patchset version,
-> I have a question from the last set of reviews.
-> 
-> On Mon, Oct 21, 2019 at 04:20:16PM +0100, Jonathan Cameron wrote:
-> > On Sat, 19 Oct 2019 02:43:51 +0000
-> > Dan Robertson <dan@dlrobertson.com> wrote:  
-> > > On Fri, Oct 18, 2019 at 10:23:38AM +0300, Andy Shevchenko wrote:  
-> > > > On Fri, Oct 18, 2019 at 6:44 AM Dan Robertson <dan@dlrobertson.com> wrote:    
-> > > > > +static const int bma400_osr_table[] = { 0, 1, 3 };    
-> > > >     
-> > > > > +/* See the ACC_CONFIG1 section of the datasheet */
-> > > > > +static const int bma400_sample_freqs[] = {
-> > > > > +       12,  500000,
-> > > > > +       25,  0,
-> > > > > +       50,  0,
-> > > > > +       100, 0,
-> > > > > +       200, 0,
-> > > > > +       400, 0,
-> > > > > +       800, 0,
-> > > > > +};    
-> > > > 
-> > > > This can be replaced by a formula(s).    
-> > > 
-> > > Yeah I think I can implement the get, set, and read functions for sample_freq
-> > > with a formula, but the scale and sample frequency tables are needed by the
-> > > implementation of read_avail. A implementation of read_avail with a range and
-> > > a step would be ideal, but I couldn't find any documentation on implementing
-> > > read_avail where the step value of the range is a multiple. Please correct
-> > > me if I've missed something.  
-> > 
-> > Indeed. We've only defined it as being fixed intervals.
-> > I'm not keen to expand the options for the userspace interface any
-> > further.  
-> > 
-> > You could compute the values at startup and store it in your state structure
-> > I think (or compute them on demand, but you'd need to have the space somewhere
-> > non volatile).
-> >   
-> 
-> I ended up writing an implementation that uses a formula for the get/set
-> functions of the sample frequency and scale, but uses a table for the
-> implementation of the read_avail function. While it does work, I worry
-> that this makes the driver less maintainable and would make it harder to
-> add support for a new hypothetical future BMA4xx device. Also, the majority
-> of drivers seem to use a table for the raw value to user input conversion,
-> so a move from this might make the code less "familiar".
-> 
-> If we do stick with the translation table, would it be better to have two
-> tables (a translation table and a read_avail table) so that we do not have
-> a step distance of two? This would mean we would need to maintain two
-> tables, but would simplify the code.
+> Jonathan,
+>=20
+> Just got back to fixing most of the issues you pointed out, excepting the=
+se:
+>=20
+> On 03.11.2019 13:19, Jonathan Cameron wrote:
+>=20
+> > + =20
+> >> +static const struct iio_chan_spec hdc200x_channels[] =3D {
+> >> +=C2=A0=C2=A0=C2=A0 {
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 .type =3D IIO_TEMP,
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 .extend_name =3D "Temperature",=
+ =20
+> > Any use of extend_name changes the ABI and should be done extremely
+> > carefully.  It basically means that generic userspace code cannot
+> > use your driver.
+> >
+> > Here I can't see any advantage in doing so at all so drop it. =20
+>=20
+> If I have two temperature channels and provide no extend_name to at least=
+ one of them, they fail to register.
+This only worked on the assumption that you could use PEAK below so only
+have one channel for both.
 
-If a function is your preferred route you could also just use it to compute
-the values for the available table at startup?
+Alternative would be to index them, but that doesn't make much sense here e=
+ither.
 
-Otherwise, its fine to just use a table for both.
+>=20
+> > =20
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 },
+> >> +=C2=A0=C2=A0=C2=A0 },
+> >> +=C2=A0=C2=A0=C2=A0 {
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 .type =3D IIO_TEMP,
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 .extend_name =3D "Temperature_M=
+AX", =20
+> > Could we use the IIO_CHAN_INFO_PEAK element for this?  Given
+> > the different scale, we'd need to do some work to make it
+> > have the same scale as temp. =20
+>=20
+> Started looking into this.
+> Are there any examples or docs of using IIO_CHAN_INFO_PEAK? Couldn't find=
+ much in the IIO subtree.
+> Is it used together with INFO_RAW? And temp&max temp channels have differ=
+ent scales already.
 
-> 
-> Random workflow question:
-> 
-> The sampling ratio, frequency, etc code seems to be the most complicated part
-> of the driver. Is it typically recommended to upstream a more minimal driver
-> that might assume the defaults?
+ah. I missed they had different scale values.  That's unfortunate.
+A simple work around for this might be to just multiply the output in the _=
+MAX
+case by 256.  That way the two would have the same scale which is assumed i=
+f using
+the IIO_RAW and IIO_PEAK together.
 
-Often people upstream a first version that just uses defaults, then follow
-up (if they care) with later series adding the more fiddly elements.
-
-Sometimes those more fiddly bits never come as a particular author
-never needed them.  That's absolutely fine.  It's a rare driver
-that supports all the features on a non trivial device!
-
-Thanks,
+>=20
+> >> +{
+> >> +=C2=A0=C2=A0=C2=A0 char tmp =3D (~mask & data->drdy_config) | val;
+> >> +=C2=A0=C2=A0=C2=A0 int ret;
+> >> +
+> >> +=C2=A0=C2=A0=C2=A0 ret =3D i2c_smbus_write_byte_data(data->client,
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=
+=C2=A0 =C2=A0=C2=A0=C2=A0 HDC200X_REG_RESET_DRDY_INT_CONF, tmp);
+> >> +=C2=A0=C2=A0=C2=A0 if (!ret)
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 data->drdy_config =3D tmp;
+> >> +
+> >> +=C2=A0=C2=A0=C2=A0 return ret;
+> >> +}
+> >> +
+> >> +static int hdc200x_get_measurement_word(struct hdc200x_data *data,
+> >> +=C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=C2=A0 =C2=A0=C2=A0=
+=C2=A0 =C2=A0=C2=A0=C2=A0 struct iio_chan_spec const *chan) =20
+> > These wrappers add relatively little.  I'd prefer that you just call
+> > the i2c calls directly instead.  Less code and ultimately a tiny
+> > bit easier to review. =20
+>=20
+> Removed wrappers that are called once. Leaving the wrapper called in diff=
+erent places, makes intent more clear IMO.
+Hmm. It's always a trade off.  Will see what the result looks
+like!
 
 Jonathan
 
-> 
-> Cheers,
-> 
->  - Dan
-> 
+>=20
+> --
+>=20
+> =C2=A0 Eugene
+>=20
 
