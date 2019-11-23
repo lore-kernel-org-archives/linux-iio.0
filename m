@@ -6,38 +6,38 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B54CBC432C0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A38AFC432C0
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:27:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8AA8C20714
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:25:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 726AF2071B
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:27:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574511954;
-	bh=z07hXbxuYWALaZvw5W/e1nEbTvKOPkGW10MgUIV9CjY=;
+	s=default; t=1574512042;
+	bh=SsWubT6FKhUcPX8TZbsw73+cTSuxlkDbC4LL2Z9UGEk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=UnOVUKcj7gTyQmU4cqqFtECvg3Dn9q1Siyb5HCGudN0hUz8PUfCZLxiJRN6nZUYio
-	 rHSoibzrGtZEvFI/hrPzFvs1EYVdtOv/M6EIiurfC6BipCRlzPM7bhBjZzSb3aHDJi
-	 Vo7LOR4TcNmg+f3BvUfWr6vrvLQnxWoNX9UoyvLg=
+	b=fBbdkFZ71Q4zAp6TsZbUlGF+VuWGXl50xN92gdJbvEiAcp6QzlwWrqa32OPTSu22M
+	 ZI5xnA4TB8YpjZdTHlOZgv2je0wuwd3D3+4+93YOg/N7NdmC8KxzcuB70cEur4WC/U
+	 TLX3PSg5yMGsyCD+mdu2BuDRRk7AUBupw3XSZFXw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726638AbfKWMZy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Nov 2019 07:25:54 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57746 "EHLO mail.kernel.org"
+        id S1726524AbfKWM1W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Nov 2019 07:27:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58084 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726634AbfKWMZx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 23 Nov 2019 07:25:53 -0500
+        id S1726451AbfKWM1V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 23 Nov 2019 07:27:21 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD13520714;
-        Sat, 23 Nov 2019 12:25:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE09B20714;
+        Sat, 23 Nov 2019 12:27:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574511953;
-        bh=z07hXbxuYWALaZvw5W/e1nEbTvKOPkGW10MgUIV9CjY=;
+        s=default; t=1574512041;
+        bh=SsWubT6FKhUcPX8TZbsw73+cTSuxlkDbC4LL2Z9UGEk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NX9zjUy5SwdZQWO9O5tSZ6mL0TkejzaL0PiMLKnCavTuSbYuDRdxCHPdoYyN6j2BL
-         DX3cfQvZRm8QYY0/eib8okpO/vtMGD/fwxP04RjBzs0mXZLuLBmFxzJqGv7FB6ylYX
-         rvojvzYGYI6NUDaW+/WyNrieyRRL3LMoMmHr66y0=
-Date:   Sat, 23 Nov 2019 12:25:48 +0000
+        b=neZaNnrM+o3iVUbzo0IBv07m+7Wphi5zxeqjfwgTjV0A0dsZhH6+1ZNf04YWxCM1/
+         fnTxEM4XQ/x9RSCrSfszgMLpkFEm/e2V68JzuhHlfo9pbmQpmUxo8ZuYJq9P6Cs3Lw
+         H0v2n9qD27awkBL/euL1F+OhvsC1I6MPZUlr3rws=
+Date:   Sat, 23 Nov 2019 12:27:16 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Rob Herring <robh@kernel.org>
 Cc:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
@@ -46,12 +46,12 @@ Cc:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
         devicetree@vger.kernel.org, kernel-usp@googlegroups.com
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: ad7292: Update SPDX
- identifier
-Message-ID: <20191123122548.54f0f529@archlinux>
-In-Reply-To: <CAL_JsqJzi_0eYj=rMxwQe+OTh_m3ngocOvcPZd-tykAwAJAw6g@mail.gmail.com>
-References: <20191116205026.dvlevawj5obq7weh@smtp.gmail.com>
-        <CAL_JsqJzi_0eYj=rMxwQe+OTh_m3ngocOvcPZd-tykAwAJAw6g@mail.gmail.com>
+Subject: Re: [PATCH 2/2] dt-bindings: iio: adc: ad7292: fix constraint over
+ channel quantity
+Message-ID: <20191123122716.2e97a60d@archlinux>
+In-Reply-To: <CAL_Jsq+uf3Jf87YSCuFzZMJeyqbg1==sFL6ScBVW7i_WSC61kA@mail.gmail.com>
+References: <20191116205110.vvqkmujecc6u5fvi@smtp.gmail.com>
+        <CAL_Jsq+uf3Jf87YSCuFzZMJeyqbg1==sFL6ScBVW7i_WSC61kA@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,31 +61,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 22 Nov 2019 10:05:52 -0600
+On Fri, 22 Nov 2019 10:06:23 -0600
 Rob Herring <robh@kernel.org> wrote:
 
-> On Sat, Nov 16, 2019 at 2:50 PM Marcelo Schmitt
+> On Sat, Nov 16, 2019 at 2:51 PM Marcelo Schmitt
 > <marcelo.schmitt1@gmail.com> wrote:
 > >
-> > Update SPDX identifier to the preferred dual GPL-2.0 OR BSD-2-Clause
-> > licensing.
+> > Change items property of AD7292 channels to correctly constrain their
+> > quantity.
 > >
 > > Signed-off-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 > > ---
-> > I split the changes into 2 different patches since they are about
-> > different issues.
-> >
-> >  Documentation/devicetree/bindings/iio/adc/adi,ad7292.yaml | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)  
+> >  Documentation/devicetree/bindings/iio/adc/adi,ad7292.yaml | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)  
 > 
 > Reviewed-by: Rob Herring <robh@kernel.org>
-I've applied this to the fixes-togreg branch so it'll go in during
-the early RCs.  Nice not to have a release with a different
-license, particularly as this was me running too fast at taking
-patches.
+
+
+Applied to the fixes-togreg branch of iio.git.
 
 Thanks,
 
 Jonathan
-
-
