@@ -2,44 +2,28 @@ Return-Path: <SRS0=9Qmd=ZP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F6D0C432C0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:47:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3E2C432C0
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:50:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 635892071B
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:47:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1574513220;
-	bh=aUEfRbvT0/W6nAuMnX8s9amFoP9GvVhbOH+w/M9bSVg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=AFuc71vHnhPV4HZmOK1mEnnzY2QL8Q6nSNqgSm6nibzPRSgol9CuwLcNg8NY5xqyn
-	 SAb1fvDv5jF6q/irQmjN/ikg3A7uYxEFvpb8VFxUhqz0XdAQdrsH78bUtWZo+e9Fz3
-	 5iu39c9RD8NNQJP82VHU5Q4Mz4OqpTHYjKdvOKm4=
+	by mail.kernel.org (Postfix) with ESMTP id B75E920714
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:50:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726620AbfKWMq7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Nov 2019 07:46:59 -0500
-Received: from mail.kernel.org ([198.145.29.99]:33752 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726451AbfKWMq7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 23 Nov 2019 07:46:59 -0500
+        id S1726634AbfKWMuh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Nov 2019 07:50:37 -0500
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:44070 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726451AbfKWMuh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2019 07:50:37 -0500
+X-Greylist: delayed 536 seconds by postgrey-1.27 at vger.kernel.org; Sat, 23 Nov 2019 07:50:36 EST
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 897FB20714;
-        Sat, 23 Nov 2019 12:46:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1574513218;
-        bh=aUEfRbvT0/W6nAuMnX8s9amFoP9GvVhbOH+w/M9bSVg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bjYbDztnevddhghLSJXY+W5YvpjAeOXBtj1BY15oiEqKevfBFyv01hC7l5c6sdBo1
-         sLz7xp6nSSnQjXdr01j74RvKS8xTeK5/gA8jEeahXu4kT4+p7+7/ZppLmOBbMwv8jL
-         hIy4TInYI0p4ngrSjN7/3yTAzDfVItHOtd5/eW/Y=
-Date:   Sat, 23 Nov 2019 12:46:53 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 523AE9E7BB5;
+        Sat, 23 Nov 2019 12:41:37 +0000 (GMT)
+Date:   Sat, 23 Nov 2019 12:41:35 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
 To:     Andrea Merello <andrea.merello@gmail.com>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -49,16 +33,15 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Matt Weber <matthew.weber@rockwellcollins.com>,
         Matt Ranostay <matt.ranostay@konsulko.com>,
         Chuhong Yuan <hslester96@gmail.com>,
-        Daniel Gomez <dagmcr@gmail.com>, linux-iio@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
-Subject: Re: [v3 9/9] dt-bindings: iio: maxim_thermocouple: document new
- 'compatible' strings
-Message-ID: <20191123124653.4d08445d@archlinux>
-In-Reply-To: <20191120144756.28424-10-andrea.merello@gmail.com>
+        Daniel Gomez <dagmcr@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [v3 7/9] iio: max31856: add support for runtime-configuring the
+ thermocouple type
+Message-ID: <20191123124135.32ddd243@archlinux>
+In-Reply-To: <20191123124019.33908147@archlinux>
 References: <20191111153517.13862-1-andrea.merello@gmail.com>
         <20191120144756.28424-1-andrea.merello@gmail.com>
-        <20191120144756.28424-10-andrea.merello@gmail.com>
+        <20191120144756.28424-8-andrea.merello@gmail.com>
+        <20191123124019.33908147@archlinux>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,62 +51,151 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Nov 2019 15:47:56 +0100
-Andrea Merello <andrea.merello@gmail.com> wrote:
+On Sat, 23 Nov 2019 12:40:19 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Now the maxim_thermocouple has new, more specific, 'compatible' strings for
-> better distinguish the various supported chips.
+> On Wed, 20 Nov 2019 15:47:54 +0100
+> Andrea Merello <andrea.merello@gmail.com> wrote:
 > 
-> This patch updates the DT bindings documentation accordingly
+> > The sensor support various thermocouple types (e.g. J, K, N, ...). The
+> > driver allows to configure this parameter using a DT property.
+> > 
+> > This is useful when i.e. the thermocouple is physically tied to the sensor
+> > and it is usually not removed, or when it is at least known in advance
+> > which sensor will be connected to the circuit.
+> > 
+> > However, if the user can randomly connect any kind of thermocouples (i.e.
+> > the device exposes a connector, and the user is free to connect its own
+> > sensors), it would be more appropriate to provide a mechanism to
+> > dynamically switch from one thermocouple type to another. This can be i.e.
+> > handled in userspace by a GUI, a configuration file or a program that
+> > detects the thermocouple type by reading a GPIO, or a eeprom on the probe,
+> > or whatever.
+> > 
+> > This patch adds a IIO attribute that can be used to override, at run-time,
+> > the DT-provided setting (which serves as default).
+> > 
+> > Cc: Hartmut Knaack <knaack.h@gmx.de>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>
+> > Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> > Cc: Colin Ian King <colin.king@canonical.com>
+> > Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> > Cc: Matt Weber <matthew.weber@rockwellcollins.com>
+> > Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+> > Cc: Chuhong Yuan <hslester96@gmail.com>
+> > Cc: Daniel Gomez <dagmcr@gmail.com>
+> > Cc: linux-iio@vger.kernel.org
+> > Signed-off-by: Andrea Merello <andrea.merello@gmail.com>  
+> Applied to the togreg branch of iio.git and pushed out as testing for
+> the autobuilders to play with it.
 > 
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Colin Ian King <colin.king@canonical.com>
-> Cc: Patrick Havelange <patrick.havelange@essensium.com>
-> Cc: Matt Weber <matthew.weber@rockwellcollins.com>
-> Cc: Matt Ranostay <matt.ranostay@konsulko.com>
-> Cc: Chuhong Yuan <hslester96@gmail.com>
-> Cc: Daniel Gomez <dagmcr@gmail.com>
-> Cc: linux-iio@vger.kernel.org
-> Cc: Rob Herring <robh+dt@kernel.org>
-> Cc: Mark Rutland <mark.rutland@arm.com>
-> Cc: devicetree@vger.kernel.org
-> Signed-off-by: Andrea Merello <andrea.merello@gmail.com>
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied,
-
-Thanks,
+One immediate tweak from my own build tests.  Missing static on the 
+types array. I've fixed up.
 
 Jonathan
 
-> ---
->  .../bindings/iio/temperature/maxim_thermocouple.txt        | 7 +++++--
->  1 file changed, 5 insertions(+), 2 deletions(-)
+> thanks,
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-> index 28bc5c4d965b..bb85cd0e039c 100644
-> --- a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-> +++ b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-> @@ -5,7 +5,10 @@ Maxim thermocouple support
->  
->  Required properties:
->  
-> -	- compatible: must be "maxim,max31855" or "maxim,max6675"
-> +	- compatible: must be "maxim,max6675" or one of the following:
-> +	   "maxim,max31855k", "maxim,max31855j", "maxim,max31855n",
-> +	   "maxim,max31855s", "maxim,max31855t", "maxim,max31855e",
-> +	   "maxim,max31855r"; the generic "max,max31855" is deprecated.
->  	- reg: SPI chip select number for the device
->  	- spi-max-frequency: must be 4300000
->  	- spi-cpha: must be defined for max6675 to enable SPI mode 1
-> @@ -15,7 +18,7 @@ Required properties:
->  Example:
->  
->  	max31855@0 {
-> -		compatible = "maxim,max31855";
-> +		compatible = "maxim,max31855k";
->  		reg = <0>;
->  		spi-max-frequency = <4300000>;
->  	};
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/temperature/max31856.c | 41 +++++++++++++++++++++++++++++-
+> >  1 file changed, 40 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/temperature/max31856.c b/drivers/iio/temperature/max31856.c
+> > index 8457ca9ae326..4952e89c00bb 100644
+> > --- a/drivers/iio/temperature/max31856.c
+> > +++ b/drivers/iio/temperature/max31856.c
+> > @@ -6,6 +6,7 @@
+> >   * Copyright (C) 2018-2019 Rockwell Collins
+> >   */
+> >  
+> > +#include <linux/ctype.h>
+> >  #include <linux/module.h>
+> >  #include <linux/init.h>
+> >  #include <linux/err.h>
+> > @@ -53,7 +54,8 @@ static const struct iio_chan_spec max31856_channels[] = {
+> >  	{	/* Thermocouple Temperature */
+> >  		.type = IIO_TEMP,
+> >  		.info_mask_separate =
+> > -			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> > +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
+> > +			BIT(IIO_CHAN_INFO_THERMOCOUPLE_TYPE),
+> >  		.info_mask_shared_by_type =
+> >  			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+> >  	},
+> > @@ -75,6 +77,10 @@ struct max31856_data {
+> >  	int averaging;
+> >  };
+> >  
+> > +const char max31856_tc_types[] = {
+> > +	'B', 'E', 'J', 'K', 'N', 'R', 'S', 'T'
+> > +};
+> > +
+> >  static int max31856_read(struct max31856_data *data, u8 reg,
+> >  			 u8 val[], unsigned int read_size)
+> >  {
+> > @@ -232,6 +238,9 @@ static int max31856_read_raw(struct iio_dev *indio_dev,
+> >  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+> >  		*val = 1 << data->averaging;
+> >  		return IIO_VAL_INT;
+> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
+> > +		*val = max31856_tc_types[data->thermocouple_type];
+> > +		return IIO_VAL_CHAR;
+> >  	default:
+> >  		ret = -EINVAL;
+> >  		break;
+> > @@ -240,6 +249,18 @@ static int max31856_read_raw(struct iio_dev *indio_dev,
+> >  	return ret;
+> >  }
+> >  
+> > +static int max31856_write_raw_get_fmt(struct iio_dev *indio_dev,
+> > +				      struct iio_chan_spec const *chan,
+> > +				      long mask)
+> > +{
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
+> > +		return IIO_VAL_CHAR;
+> > +	default:
+> > +		return IIO_VAL_INT;
+> > +	}
+> > +}
+> > +
+> >  static int max31856_write_raw(struct iio_dev *indio_dev,
+> >  			      struct iio_chan_spec const *chan,
+> >  			      int val, int val2, long mask)
+> > @@ -259,7 +280,24 @@ static int max31856_write_raw(struct iio_dev *indio_dev,
+> >  		data->averaging = msb;
+> >  		max31856_init(data);
+> >  		break;
+> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
+> > +	{
+> > +		int tc_type = -1;
+> > +		int i;
+> > +
+> > +		for (i = 0; i < ARRAY_SIZE(max31856_tc_types); i++) {
+> > +			if (max31856_tc_types[i] == toupper(val)) {
+> > +				tc_type = i;
+> > +				break;
+> > +			}
+> > +		}
+> > +		if (tc_type < 0)
+> > +			return -EINVAL;
+> >  
+> > +		data->thermocouple_type = tc_type;
+> > +		max31856_init(data);
+> > +		break;
+> > +	}
+> >  	default:
+> >  		return -EINVAL;
+> >  	}
+> > @@ -356,6 +394,7 @@ static const struct attribute_group max31856_group = {
+> >  static const struct iio_info max31856_info = {
+> >  	.read_raw = max31856_read_raw,
+> >  	.write_raw = max31856_write_raw,
+> > +	.write_raw_get_fmt = max31856_write_raw_get_fmt,
+> >  	.attrs = &max31856_group,
+> >  };
+> >    
+> 
 
