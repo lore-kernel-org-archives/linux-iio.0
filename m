@@ -2,46 +2,62 @@ Return-Path: <SRS0=9Qmd=ZP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3E2C432C0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:50:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8154BC432C0
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:51:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B75E920714
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:50:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5851620719
+	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 12:51:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1574513504;
+	bh=VcQqBg6GDNAXOn4fAhOKNH28W07HsOtsOWrG/Qk4LGo=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=oikshV0yx8sS4ofCmbyc6+dlq8vyixu2Ft+I01Jjf89OuvVFFRS/wEpztjeKeNUI4
+	 jAN6l2dQoB7uDyaXlOdjLIJeKxwwhPNTI3E/STWa0tUg9aLMsNz61KLMm7u8j2PsZx
+	 2WTk36Vj03/AzIbxB/ChOs5QE8H1yczRc4j0H3QY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726634AbfKWMuh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Nov 2019 07:50:37 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:44070 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726451AbfKWMuh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2019 07:50:37 -0500
-X-Greylist: delayed 536 seconds by postgrey-1.27 at vger.kernel.org; Sat, 23 Nov 2019 07:50:36 EST
+        id S1726666AbfKWMvl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 Nov 2019 07:51:41 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34384 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726451AbfKWMvl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 23 Nov 2019 07:51:41 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 523AE9E7BB5;
-        Sat, 23 Nov 2019 12:41:37 +0000 (GMT)
-Date:   Sat, 23 Nov 2019 12:41:35 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Andrea Merello <andrea.merello@gmail.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id BFF9D20658;
+        Sat, 23 Nov 2019 12:51:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1574513500;
+        bh=VcQqBg6GDNAXOn4fAhOKNH28W07HsOtsOWrG/Qk4LGo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i7flcV814pcX83luI7s0sZh/Nn3WTIhDkvVjsjr7mE8pW5x7bN/WcV1duu1OuvWmz
+         78iyCoYx0ROh1GKPt5Bqy4/PklM2o88tOZ67AYbG0BC6icJzm8QCinNh9oHmqI9K4r
+         e/WkKWqMAFHryuBiYvFT2HKkRNEAobUttnQyK1fQ=
+Date:   Sat, 23 Nov 2019 12:51:35 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dan Robertson <dan@dlrobertson.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Colin Ian King <colin.king@canonical.com>,
-        Patrick Havelange <patrick.havelange@essensium.com>,
-        Matt Weber <matthew.weber@rockwellcollins.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Chuhong Yuan <hslester96@gmail.com>,
-        Daniel Gomez <dagmcr@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [v3 7/9] iio: max31856: add support for runtime-configuring the
- thermocouple type
-Message-ID: <20191123124135.32ddd243@archlinux>
-In-Reply-To: <20191123124019.33908147@archlinux>
-References: <20191111153517.13862-1-andrea.merello@gmail.com>
-        <20191120144756.28424-1-andrea.merello@gmail.com>
-        <20191120144756.28424-8-andrea.merello@gmail.com>
-        <20191123124019.33908147@archlinux>
+        devicetree <devicetree@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Randy Dunlap <rdunlap@infradead.org>
+Subject: Re: [PATCH v4 2/2] iio: (bma400) add driver for the BMA400
+Message-ID: <20191123125135.4c7efcb0@archlinux>
+In-Reply-To: <20191118002504.GA29469@nessie>
+References: <20191018031848.18538-1-dan@dlrobertson.com>
+        <20191018031848.18538-3-dan@dlrobertson.com>
+        <CAHp75VfMW0fvmO9jGTnQumJ9Sm-SgNL0ohjSR4qRQY365aeMBw@mail.gmail.com>
+        <20191019024351.GB8593@nessie>
+        <20191021162016.531e6a2e@archlinux>
+        <20191118002504.GA29469@nessie>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -51,151 +67,87 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 23 Nov 2019 12:40:19 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Mon, 18 Nov 2019 00:25:04 +0000
+Dan Robertson <dan@dlrobertson.com> wrote:
 
-> On Wed, 20 Nov 2019 15:47:54 +0100
-> Andrea Merello <andrea.merello@gmail.com> wrote:
+> Sorry for the incredibly late reply. Before I submit the next patchset version,
+> I have a question from the last set of reviews.
 > 
-> > The sensor support various thermocouple types (e.g. J, K, N, ...). The
-> > driver allows to configure this parameter using a DT property.
+> On Mon, Oct 21, 2019 at 04:20:16PM +0100, Jonathan Cameron wrote:
+> > On Sat, 19 Oct 2019 02:43:51 +0000
+> > Dan Robertson <dan@dlrobertson.com> wrote:  
+> > > On Fri, Oct 18, 2019 at 10:23:38AM +0300, Andy Shevchenko wrote:  
+> > > > On Fri, Oct 18, 2019 at 6:44 AM Dan Robertson <dan@dlrobertson.com> wrote:    
+> > > > > +static const int bma400_osr_table[] = { 0, 1, 3 };    
+> > > >     
+> > > > > +/* See the ACC_CONFIG1 section of the datasheet */
+> > > > > +static const int bma400_sample_freqs[] = {
+> > > > > +       12,  500000,
+> > > > > +       25,  0,
+> > > > > +       50,  0,
+> > > > > +       100, 0,
+> > > > > +       200, 0,
+> > > > > +       400, 0,
+> > > > > +       800, 0,
+> > > > > +};    
+> > > > 
+> > > > This can be replaced by a formula(s).    
+> > > 
+> > > Yeah I think I can implement the get, set, and read functions for sample_freq
+> > > with a formula, but the scale and sample frequency tables are needed by the
+> > > implementation of read_avail. A implementation of read_avail with a range and
+> > > a step would be ideal, but I couldn't find any documentation on implementing
+> > > read_avail where the step value of the range is a multiple. Please correct
+> > > me if I've missed something.  
 > > 
-> > This is useful when i.e. the thermocouple is physically tied to the sensor
-> > and it is usually not removed, or when it is at least known in advance
-> > which sensor will be connected to the circuit.
+> > Indeed. We've only defined it as being fixed intervals.
+> > I'm not keen to expand the options for the userspace interface any
+> > further.  
 > > 
-> > However, if the user can randomly connect any kind of thermocouples (i.e.
-> > the device exposes a connector, and the user is free to connect its own
-> > sensors), it would be more appropriate to provide a mechanism to
-> > dynamically switch from one thermocouple type to another. This can be i.e.
-> > handled in userspace by a GUI, a configuration file or a program that
-> > detects the thermocouple type by reading a GPIO, or a eeprom on the probe,
-> > or whatever.
-> > 
-> > This patch adds a IIO attribute that can be used to override, at run-time,
-> > the DT-provided setting (which serves as default).
-> > 
-> > Cc: Hartmut Knaack <knaack.h@gmx.de>
-> > Cc: Lars-Peter Clausen <lars@metafoo.de>
-> > Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> > Cc: Colin Ian King <colin.king@canonical.com>
-> > Cc: Patrick Havelange <patrick.havelange@essensium.com>
-> > Cc: Matt Weber <matthew.weber@rockwellcollins.com>
-> > Cc: Matt Ranostay <matt.ranostay@konsulko.com>
-> > Cc: Chuhong Yuan <hslester96@gmail.com>
-> > Cc: Daniel Gomez <dagmcr@gmail.com>
-> > Cc: linux-iio@vger.kernel.org
-> > Signed-off-by: Andrea Merello <andrea.merello@gmail.com>  
-> Applied to the togreg branch of iio.git and pushed out as testing for
-> the autobuilders to play with it.
+> > You could compute the values at startup and store it in your state structure
+> > I think (or compute them on demand, but you'd need to have the space somewhere
+> > non volatile).
+> >   
 > 
-One immediate tweak from my own build tests.  Missing static on the 
-types array. I've fixed up.
+> I ended up writing an implementation that uses a formula for the get/set
+> functions of the sample frequency and scale, but uses a table for the
+> implementation of the read_avail function. While it does work, I worry
+> that this makes the driver less maintainable and would make it harder to
+> add support for a new hypothetical future BMA4xx device. Also, the majority
+> of drivers seem to use a table for the raw value to user input conversion,
+> so a move from this might make the code less "familiar".
+> 
+> If we do stick with the translation table, would it be better to have two
+> tables (a translation table and a read_avail table) so that we do not have
+> a step distance of two? This would mean we would need to maintain two
+> tables, but would simplify the code.
+
+If a function is your preferred route you could also just use it to compute
+the values for the available table at startup?
+
+Otherwise, its fine to just use a table for both.
+
+> 
+> Random workflow question:
+> 
+> The sampling ratio, frequency, etc code seems to be the most complicated part
+> of the driver. Is it typically recommended to upstream a more minimal driver
+> that might assume the defaults?
+
+Often people upstream a first version that just uses defaults, then follow
+up (if they care) with later series adding the more fiddly elements.
+
+Sometimes those more fiddly bits never come as a particular author
+never needed them.  That's absolutely fine.  It's a rare driver
+that supports all the features on a non trivial device!
+
+Thanks,
 
 Jonathan
 
-> thanks,
 > 
-> Jonathan
+> Cheers,
 > 
-> > ---
-> >  drivers/iio/temperature/max31856.c | 41 +++++++++++++++++++++++++++++-
-> >  1 file changed, 40 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/temperature/max31856.c b/drivers/iio/temperature/max31856.c
-> > index 8457ca9ae326..4952e89c00bb 100644
-> > --- a/drivers/iio/temperature/max31856.c
-> > +++ b/drivers/iio/temperature/max31856.c
-> > @@ -6,6 +6,7 @@
-> >   * Copyright (C) 2018-2019 Rockwell Collins
-> >   */
-> >  
-> > +#include <linux/ctype.h>
-> >  #include <linux/module.h>
-> >  #include <linux/init.h>
-> >  #include <linux/err.h>
-> > @@ -53,7 +54,8 @@ static const struct iio_chan_spec max31856_channels[] = {
-> >  	{	/* Thermocouple Temperature */
-> >  		.type = IIO_TEMP,
-> >  		.info_mask_separate =
-> > -			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> > +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
-> > +			BIT(IIO_CHAN_INFO_THERMOCOUPLE_TYPE),
-> >  		.info_mask_shared_by_type =
-> >  			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)
-> >  	},
-> > @@ -75,6 +77,10 @@ struct max31856_data {
-> >  	int averaging;
-> >  };
-> >  
-> > +const char max31856_tc_types[] = {
-> > +	'B', 'E', 'J', 'K', 'N', 'R', 'S', 'T'
-> > +};
-> > +
-> >  static int max31856_read(struct max31856_data *data, u8 reg,
-> >  			 u8 val[], unsigned int read_size)
-> >  {
-> > @@ -232,6 +238,9 @@ static int max31856_read_raw(struct iio_dev *indio_dev,
-> >  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> >  		*val = 1 << data->averaging;
-> >  		return IIO_VAL_INT;
-> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
-> > +		*val = max31856_tc_types[data->thermocouple_type];
-> > +		return IIO_VAL_CHAR;
-> >  	default:
-> >  		ret = -EINVAL;
-> >  		break;
-> > @@ -240,6 +249,18 @@ static int max31856_read_raw(struct iio_dev *indio_dev,
-> >  	return ret;
-> >  }
-> >  
-> > +static int max31856_write_raw_get_fmt(struct iio_dev *indio_dev,
-> > +				      struct iio_chan_spec const *chan,
-> > +				      long mask)
-> > +{
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
-> > +		return IIO_VAL_CHAR;
-> > +	default:
-> > +		return IIO_VAL_INT;
-> > +	}
-> > +}
-> > +
-> >  static int max31856_write_raw(struct iio_dev *indio_dev,
-> >  			      struct iio_chan_spec const *chan,
-> >  			      int val, int val2, long mask)
-> > @@ -259,7 +280,24 @@ static int max31856_write_raw(struct iio_dev *indio_dev,
-> >  		data->averaging = msb;
-> >  		max31856_init(data);
-> >  		break;
-> > +	case IIO_CHAN_INFO_THERMOCOUPLE_TYPE:
-> > +	{
-> > +		int tc_type = -1;
-> > +		int i;
-> > +
-> > +		for (i = 0; i < ARRAY_SIZE(max31856_tc_types); i++) {
-> > +			if (max31856_tc_types[i] == toupper(val)) {
-> > +				tc_type = i;
-> > +				break;
-> > +			}
-> > +		}
-> > +		if (tc_type < 0)
-> > +			return -EINVAL;
-> >  
-> > +		data->thermocouple_type = tc_type;
-> > +		max31856_init(data);
-> > +		break;
-> > +	}
-> >  	default:
-> >  		return -EINVAL;
-> >  	}
-> > @@ -356,6 +394,7 @@ static const struct attribute_group max31856_group = {
-> >  static const struct iio_info max31856_info = {
-> >  	.read_raw = max31856_read_raw,
-> >  	.write_raw = max31856_write_raw,
-> > +	.write_raw_get_fmt = max31856_write_raw_get_fmt,
-> >  	.attrs = &max31856_group,
-> >  };
-> >    
+>  - Dan
 > 
 
