@@ -1,152 +1,139 @@
-Return-Path: <SRS0=9Qmd=ZP=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=f4Sf=ZQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2114C432C0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 23:36:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C70CAC432C0
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Nov 2019 19:11:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4DAAA2071B
-	for <linux-iio@archiver.kernel.org>; Sat, 23 Nov 2019 23:36:08 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aVRPkvGb"
+	by mail.kernel.org (Postfix) with ESMTP id ACCAA2080D
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Nov 2019 19:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726977AbfKWXgF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 Nov 2019 18:36:05 -0500
-Received: from mail-qt1-f182.google.com ([209.85.160.182]:42351 "EHLO
-        mail-qt1-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726939AbfKWXgC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 Nov 2019 18:36:02 -0500
-Received: by mail-qt1-f182.google.com with SMTP id t20so12545502qtn.9;
-        Sat, 23 Nov 2019 15:36:02 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=2od3CCfgH/wIJisYHutA7VGKvbA/ioFGgCw20B9AbCQ=;
-        b=aVRPkvGbxERhDbAG8Ocv8JoY/lx7E3zCK+HMvmy0zK/T+ZOHuhS5Bjgd6h1wXmkVbP
-         JYq7hmz23+kDhPYYJpZpLIXdCyBrb2E+kw5BJGyBxfgmTZRSIaJHFZ0CrDMxg50kmHsp
-         6TnrKhZbTFV9i0J+Hp8Ln7IQhM4oDmtodv6LnY9VYg+7iJzcCr4l+gUhVscdOz48vwRP
-         GLKHjawSPd5dJfwlw3tTIb49UWFWKYPvHqLoDznjCaFFAVZoMrRHfGNwtT2qZEcEV04m
-         7fDjZOjf9+Ra8YcjpSXVxycuR7s4FrUNiZSCJBIAcVN7uxF3SXyF2hM/H3SoiiiUNYOy
-         HvaA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=2od3CCfgH/wIJisYHutA7VGKvbA/ioFGgCw20B9AbCQ=;
-        b=bcXchlhavyhX6WlkTqjTRj4fhBZn1FnFmZy3ccUndq0Jat+EXc7m79Hp4S3HlcthIJ
-         jkE8AYp0l5odjfObLKhn70D65jSzTV0m8SkeXKqLL2Ca10WxfT+Z5MO3XjXHq4RkWzNz
-         ur3WLZM/n0w1gzIDE4xV16uJLhvqt9stjp5tayyTUdphdpe2yVyZOLFGytTM8llRYI8w
-         /kG+9FMbqbCw7QovEJfjL7S2eXzK3GAQ8L1LyiuMdEbsx/inwQKGoxkV1UFxRhzcNx9F
-         yYsyGYZTMNoqYdhHf8nLznVFXcKoQABMNQ9Ub6Abr0sXhKngsYPLu/pduDFJ4/x5Kuqn
-         x6rg==
-X-Gm-Message-State: APjAAAUV6V/3z/ru1AmtJAltTx1zbscscMwioLpvSmEHo34WR2RLLu33
-        b1QcOQJr6dYl5Obqkht1fRM=
-X-Google-Smtp-Source: APXvYqwiW5oPSsRKtf1m5y8Vp4pPXQoOpP371XN7h1l7Y0p0ha1FctguEtstT6uIp6HcajHDmWmkVg==
-X-Received: by 2002:ac8:424e:: with SMTP id r14mr4386591qtm.193.1574552161525;
-        Sat, 23 Nov 2019 15:36:01 -0800 (PST)
-Received: from localhost.localdomain ([177.76.215.166])
-        by smtp.gmail.com with ESMTPSA id f22sm1357518qtc.43.2019.11.23.15.35.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 23 Nov 2019 15:36:01 -0800 (PST)
-From:   Rodrigo Carvalho <rodrigorsdc@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
+        id S1726910AbfKXTLW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Nov 2019 14:11:22 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:55949 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbfKXTLW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Nov 2019 14:11:22 -0500
+Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iYxHk-0004i4-LW; Sun, 24 Nov 2019 20:11:04 +0100
+Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1iYxHh-0006Zd-QY; Sun, 24 Nov 2019 20:11:01 +0100
+Date:   Sun, 24 Nov 2019 20:11:01 +0100
+From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Stefan Popa <stefan.popa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        alexandru.ardelean@analog.com
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Rodrigo Carvalho <rodrigorsdc@gmail.com>
-Subject: [PATCH v5 2/2] dt-bindings: iio: accel: add binding documentation for ADIS16240
-Date:   Sat, 23 Nov 2019 20:35:10 -0300
-Message-Id: <20191123233510.4890-2-rodrigorsdc@gmail.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191123233510.4890-1-rodrigorsdc@gmail.com>
-References: <20191123233510.4890-1-rodrigorsdc@gmail.com>
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        linux-iio@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH v3 3/3] iio: adc: new driver to support Linear
+ technology's ltc2496
+Message-ID: <20191124191101.duh646kbrlackget@pengutronix.de>
+References: <20191121210007.25646-1-u.kleine-koenig@pengutronix.de>
+ <20191121210007.25646-4-u.kleine-koenig@pengutronix.de>
+ <20191123171204.3a714322@archlinux>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20191123171204.3a714322@archlinux>
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch add device tree binding documentation for ADIS16240.
+On Sat, Nov 23, 2019 at 05:12:04PM +0000, Jonathan Cameron wrote:
+> On Thu, 21 Nov 2019 22:00:07 +0100
+> Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
+> 
+> > This chip is similar to the LTC2497 ADC, it just uses SPI instead of I2C
+> > and so has a slightly different protocol. Only the actual hardware
+> > access is different. The spi protocol is different enough to not be able
+> > to map the differences via a regmap.
+> > 
+> > Also generalize the entry in MAINTAINER to cover the newly introduced
+> > file.
+> > 
+> > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+> looks good with the exception of the now overly protected DMA buffers.
+> 
+> See inline.  As that's all I'm seeing that needs fixing I'll just
+> fix this up whilst applying.
+> 
+> I'd like the series to sit a little longer on the list though to give
+> devicetree maintainers time to look at the bindings.
 
-Signed-off-by: Rodrigo Ribeiro Carvalho <rodrigorsdc@gmail.com>
----
-V5:
-  - None 
+ok.
 
- .../bindings/iio/accel/adi,adis16240.yaml     | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+> > +struct ltc2496_driverdata {
+> > +	/* this must be the first member */
+> > +	struct ltc2497core_driverdata common_ddata;
+> > +	struct spi_device *spi;
+> > +
+> > +	/*
+> > +	 * DMA (thus cache coherency maintenance) requires the
+> > +	 * transfer buffers to live in their own cache lines.
+> > +	 */
+> > +	unsigned char rxbuf[3] ____cacheline_aligned;
+> > +	unsigned char txbuf[3] ____cacheline_aligned;
+> Ah.  I've not explained this clearly enough.  Upshot is you only need
+> to ensure that the buffers used for dma are not shared with any other
+> usage.  the __cacheline_aligned marker pads the structure to ensure
+> the element so marked is at the start of a new cacheline.  This means
+> there is no sharing with non DMA related elements which may be accidentally
+> reset when the DMA transfer ends.
+> 
+> Imagine we had:
+> struct bob {
+> 	int a; //used for all sorts of fun things not related to dma and not
+>        	       //protected from happening concurrently with dma.
+> 	unsigned char rx_buf[3];
+> 	unsigned char tx_buf[3]
+> };
+> 
+> The buffers are used for DMA.  The DMA engine takes a copy of the cacheline
+> to start doing it's magic.
+> 
+> Along comes other activity and writes to 'a'.
+> 
+> DMA completes, then engine pushes the cacheline back to the memory including
+> writing back what it had as a copy of a.  Thus the update to 'a' is lost.
+> 
+> Now the guarantee we make use of is that DMA engines are not allowed to
+> copy cachelines that do not contain the buffers they are using (all sorts
+> of things would break if they were).
+> 
+> However, there is no need to separate rx_buf and tx_buf as they are being
+> used by the same DMA engine and nothing else is going to update them whilst
+> they are in use.
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
-new file mode 100644
-index 000000000000..8e902f7c49e6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adis16240.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADIS16240 Programmable Impact Sensor and Recorder driver
-+
-+maintainers:
-+  - Alexandru Ardelean <alexandru.ardelean@analog.com>
-+
-+description: |
-+  ADIS16240 Programmable Impact Sensor and Recorder driver that supports
-+  SPI interface.
-+    https://www.analog.com/en/products/adis16240.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adis16240
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        /* Example for a SPI device node */
-+        accelerometer@0 {
-+            compatible = "adi,adis16240";
-+            reg = <0>;
-+            spi-max-frequency = <2500000>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
+Yeah, I thought about that when adding the second annotation but then
+forgot to mention that in my cover letter.
+
+So I assume you will just drop the 2nd ____cacheline_aligned? That's
+fine for me; thanks.
+
+Best regards
+Uwe
+
 -- 
-2.24.0
-
+Pengutronix e.K.                           | Uwe Kleine-König            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
