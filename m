@@ -2,108 +2,124 @@ Return-Path: <SRS0=5Wrn=Z2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1019EC3F68F
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 10:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B21C43603
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 11:07:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D92322084F
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 10:13:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="COfni8lq"
+	by mail.kernel.org (Postfix) with ESMTP id 83DE72073C
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 11:07:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727331AbfLDKNZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 4 Dec 2019 05:13:25 -0500
-Received: from mx07-002cda01.pphosted.com ([185.132.180.122]:38015 "EHLO
-        mx07-002cda01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726899AbfLDKNY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Dec 2019 05:13:24 -0500
-Received: from pps.filterd (m0135534.ppops.net [127.0.0.1])
-        by mx07-002cda01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB4A0Eq0031335;
-        Wed, 4 Dec 2019 10:03:56 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-type; s=08102019; bh=sKv1Q+W8G0/Kap939kV8/J8YKysqithOUtf1evnTyms=;
- b=COfni8lqoXcufsUSmBxdykUQbbV//xvA+rnKNTYPqcSZu2FbINvcAczT+WavbxvYHZ7q
- 8IKJ2dybN09um+WvM/0ycgKGitw5500yCWkCgCPJH9cZBHxyY/2W8M/093wl+qldY6Hj
- FkR0GtRG1ziYVfsbpf2tnAvbcebkvu400/H5YkyxT4nW4v5jNThUYZ868HL0/7Q/sRbG
- 38+xAOR3lz/RQDq6JYRQ7+OaSduXPzZEZbZJDigouWQ8aBt95si51PE0aH5FYD9Sywdh
- PaVw0vrF1I9o3HNNXa5N3waYQt24+VnvzR1BHGFYLtzKOIhk7Zkxcc9fzHsVq2d1Q7Ba wQ== 
-Received: from atgrzso2901.avl01.avlcorp.lan ([192.102.17.76])
-        by mx07-002cda01.pphosted.com with ESMTP id 2wnjsjaeyv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 04 Dec 2019 10:03:56 +0000
-Received: from pps.filterd (atgrzso2901.avl01.avlcorp.lan [127.0.0.1])
-        by atgrzso2901.avl01.avlcorp.lan (8.16.0.27/8.16.0.27) with SMTP id xB49xHWi004547;
-        Wed, 4 Dec 2019 11:03:55 +0100
-Received: from atgrzsw1695.avl01.avlcorp.lan ([10.13.100.86])
-        by atgrzso2901.avl01.avlcorp.lan with ESMTP id 2wkh0p9yfb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
-        Wed, 04 Dec 2019 11:03:55 +0100
-Received: from atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) by
- atgrzsw1695.avl01.avlcorp.lan (10.12.64.163) with Microsoft SMTP Server (TLS)
- id 15.0.1497.2; Wed, 4 Dec 2019 11:03:55 +0100
-Received: from ATGRZWN210214.avl01.avlcorp.lan (10.12.100.12) by
- atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) with Microsoft SMTP Server id
- 15.0.1497.2 via Frontend Transport; Wed, 4 Dec 2019 11:03:55 +0100
-From:   <tomislav.denis@avl.com>
-To:     <jic23@kernel.org>
-CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <tomislav.denis@avl.com>
-Subject: [PATCH v3 2/3] dt-bindings: Add asc vendor
-Date:   Wed, 4 Dec 2019 11:03:53 +0100
-Message-ID: <20191204100354.16652-3-tomislav.denis@avl.com>
-X-Mailer: git-send-email 2.10.1.windows.1
-In-Reply-To: <20191204100354.16652-1-tomislav.denis@avl.com>
-References: <20191204100354.16652-1-tomislav.denis@avl.com>
+        id S1727268AbfLDLHD convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 4 Dec 2019 06:07:03 -0500
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2155 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727445AbfLDLHD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 4 Dec 2019 06:07:03 -0500
+Received: from lhreml703-cah.china.huawei.com (unknown [172.18.7.107])
+        by Forcepoint Email with ESMTP id 1ED1A4C7D6D6837F8347;
+        Wed,  4 Dec 2019 11:07:01 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml703-cah.china.huawei.com (10.201.108.44) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Wed, 4 Dec 2019 11:07:00 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Wed, 4 Dec 2019
+ 11:07:00 +0000
+Date:   Wed, 4 Dec 2019 11:06:59 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Couret Charles-Antoine <charles-antoine.couret@essensium.com>
+CC:     Andrea Merello <andrea.merello@gmail.com>, <jic23@kernel.org>,
+        "Alexandru Ardelean" <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Stefan Popa" <stefan.popa@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [v2] iio: ad7949: fix channels mixups
+Message-ID: <20191204110659.00004987@Huawei.com>
+In-Reply-To: <c3f3367f-cc78-23f3-ec89-439b9bc8f433@essensium.com>
+References: <9ea595fc-d53b-3cd4-a511-db2b09726606@essensium.com>
+        <20191202141336.4507-1-andrea.merello@gmail.com>
+        <c3f3367f-cc78-23f3-ec89-439b9bc8f433@essensium.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: f9e74532-fb7d-4806-8539-2b9574eafa9a
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-12-04_03:,,
- signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-1912040077
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-04_03:2019-12-04,2019-12-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 suspectscore=1 mlxscore=0 malwarescore=0
- priorityscore=1501 mlxlogscore=999 impostorscore=0 phishscore=0
- bulkscore=0 spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-1910280000 definitions=main-1912040076
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml717-chm.china.huawei.com (10.201.108.68) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Tomislav Denis <tomislav.denis@avl.com>
+On Mon, 2 Dec 2019 16:36:19 +0100
+Couret Charles-Antoine <charles-antoine.couret@essensium.com> wrote:
 
-All Sensors Corporation is a manufacturer of MEMS piezoresitive
-ultra low pressure sensors and pressure transducers.
+> Le 02/12/2019 à 15:13, Andrea Merello a écrit :
+> >   drivers/iio/adc/ad7949.c | 22 +++++++++++++++++-----
+> >   1 file changed, 17 insertions(+), 5 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
+> > index 5c2b3446fa4a..2c6f60edb7ce 100644
+> > --- a/drivers/iio/adc/ad7949.c
+> > +++ b/drivers/iio/adc/ad7949.c
+> > @@ -89,6 +89,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
+> >   				   unsigned int channel)
+> >   {
+> >   	int ret;
+> > +	int i;
+> >   	int bits_per_word = ad7949_adc->resolution;
+> >   	int mask = GENMASK(ad7949_adc->resolution, 0);
+> >   	struct spi_message msg;
+> > @@ -100,12 +101,23 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
+> >   		},
+> >   	};
+> >   
+> > -	ret = ad7949_spi_write_cfg(ad7949_adc,
+> > -				   channel << AD7949_OFFSET_CHANNEL_SEL,
+> > -				   AD7949_MASK_CHANNEL_SEL);
+> > -	if (ret)
+> > -		return ret;
+> > +	/*
+> > +	 * 1: write CFG for sample N and read old data (sample N-2)
+> > +	 * 2: if CFG was not changed since sample N-1 then we'll get good data
+> > +	 *    at the next xfer, so we bail out now, otherwise we write something
+> > +	 *    and we read garbage (sample N-1 configuration).
+> > +	 */
+> > +	for (i = 0; i < 2; i++) {
+> > +		ret = ad7949_spi_write_cfg(ad7949_adc,
+> > +					   channel << AD7949_OFFSET_CHANNEL_SEL,
+> > +					   AD7949_MASK_CHANNEL_SEL);
+> > +		if (ret)
+> > +			return ret;
+> > +		if (channel == ad7949_adc->current_channel)
+> > +			break;
+> > +	}
+> >   
+> > +	/* 3: write something and read actual data */
+> >   	ad7949_adc->buffer = 0;
+> >   	spi_message_init_with_transfers(&msg, tx, 1);
+> >   	ret = spi_sync(ad7949_adc->spi, &msg);  
+> 
+> Signed-off-by: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+Hi Charles-Antoine,
 
-Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+Why a signed-off-by as opposed to a reviewed-by or similar?
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 967e78c..88247b3 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -109,6 +109,8 @@ patternProperties:
-     description: Artesyn Embedded Technologies Inc.
-   "^asahi-kasei,.*":
-     description: Asahi Kasei Corp.
-+  "^asc,.*":
-+    description: All Sensors Corporation
-   "^aspeed,.*":
-     description: ASPEED Technology Inc.
-   "^asus,.*":
--- 
-2.7.4
+signed-off-by brings some very specific legal implications around Developer
+Certificate of Origin, so is normally just the author plus people involved in
+the path to upstream (maintainers).
+
+> 
+> Regards,
+> Charles-Antoine Couret
+
 
