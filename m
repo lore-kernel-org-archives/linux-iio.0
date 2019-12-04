@@ -2,249 +2,535 @@ Return-Path: <SRS0=5Wrn=Z2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19BEAC43603
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 09:24:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AC6C43603
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 10:10:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3FCD42073C
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 09:24:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00B632077B
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Dec 2019 10:10:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=plating.de header.i=@plating.de header.b="Sj3TqdIM"
+	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="KAAye7Vq"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725922AbfLDJYr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 4 Dec 2019 04:24:47 -0500
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:30489 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727425AbfLDJYq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Dec 2019 04:24:46 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1575451481;
-        s=strato-dkim-0002; d=plating.de;
-        h=In-Reply-To:Date:Message-ID:From:References:To:Subject:
-        X-RZG-CLASS-ID:X-RZG-AUTH:From:Subject:Sender;
-        bh=qPfG4pqms1E1nNyYO/dUhuUn2d0RD+MYBznsYgNCklU=;
-        b=Sj3TqdIMDpKB+gVZdzvRZ/kQP66GNEVqD2RBBz+GcColykpz858NxSlt48vt+bYEni
-        U1daCP5sRT06En7tOEtrkBwZOOOS/UyXgQZD7vuvKgIrj81Sby3rerdK8gfO1bJPb+kA
-        RBKvRGkl/0bvRohMbB/8T0V/60ZZle7LGYalYj8JD5OoYH/RZ4XMj8lkEZ/49PudHyW7
-        GYe7tPHYKBRqt64WeJynF45/miPZoAXvON/k/7AenPgncHQR+NRykYP4D8QFXb5hgnnd
-        X0mh70y3w7aWNqXpfs1MJciSWFHroXx7a03UQ979T7Vp/+6waGjC9pxiWVRLXlOXzFNS
-        A5dg==
-X-RZG-AUTH: ":P2EQZVataeyI5jZ/YFVerR/NeEUpp/1ZEi4FSKT8sA3i0IzVhLiw6JgrUzaKN77axfKEX18="
-X-RZG-CLASS-ID: mo00
-Received: from mail.dl.plating.de
-        by smtp.strato.de (RZmta 46.0.2 AUTH)
-        with ESMTPSA id n0aa50vB49Oe7qK
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (curve X9_62_prime256v1 with 256 ECDH bits, eq. 3072 bits RSA))
-        (Client did not present a certificate);
-        Wed, 4 Dec 2019 10:24:40 +0100 (CET)
-Received: from localhost (localhost [127.0.0.1])
-        by mail.dl.plating.de (Postfix) with ESMTP id 6FC1E122217;
-        Wed,  4 Dec 2019 10:24:40 +0100 (CET)
-X-Virus-Scanned: amavisd-new at dl.plating.de
-Received: from mail.dl.plating.de ([127.0.0.1])
-        by localhost (mail.dl.plating.de [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3z2ugWq5SZDR; Wed,  4 Dec 2019 10:24:34 +0100 (CET)
-Received: from [172.16.4.186] (unknown [172.16.4.186])
-        by mail.dl.plating.de (Postfix) with ESMTPSA id 2D513120429;
-        Wed,  4 Dec 2019 10:24:33 +0100 (CET)
-Subject: Re: [PATCH 1/3] iio: buffer: align the size of scan bytes to size of
- the largest element
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>
-References: <810ab64f-31bf-c4af-a655-7bddf364dae4@metafoo.de>
- <20191202130113.24005-1-lars.moellendorf@plating.de>
- <531d08db4d758cb8ab9f7e1955c7b918ff2b0c69.camel@analog.com>
-From:   =?UTF-8?Q?Lars_M=c3=b6llendorf?= <lars.moellendorf@plating.de>
-Message-ID: <a6b4d1aa-cb7b-690e-f0b0-2171f993f679@plating.de>
-Date:   Wed, 4 Dec 2019 10:24:30 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1727268AbfLDKKO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 4 Dec 2019 05:10:14 -0500
+Received: from mx07-002cda01.pphosted.com ([185.132.180.122]:22058 "EHLO
+        mx07-002cda01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726899AbfLDKKO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Dec 2019 05:10:14 -0500
+X-Greylist: delayed 371 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Dec 2019 05:10:11 EST
+Received: from pps.filterd (m0135534.ppops.net [127.0.0.1])
+        by mx07-002cda01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xB4A0Epx031335;
+        Wed, 4 Dec 2019 10:03:56 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=08102019; bh=L4iYIrrHNrxNXjsgPSaPHs4dt2VfoJp2L2PP0EKDZ1M=;
+ b=KAAye7VqIypPtROQ2RomG1DLAP6A+nsB+WXTCji9+9dzYuhHiNlii/wCvt8ZoWtj2xnu
+ Z5Awd39OyaM4+czdlIMGkEwyE2p7ZWMqraACVTpMEVyWbzQdxeiPC84sg7V4k3K+jZ1O
+ 17771CI5a4t9O+U7m4FXesMcnmiyhYqzAj41M3gF+/NcnCN7RmmMUcWjrJjiZzVowfe5
+ iJaPdAGicXuaj4bmjQPUG7eYnj1e+H+WS+O2VU7cU5OcXfvvdL/ssu2pkBG+afpowCpU
+ Y8Yu75tjoKmzOHRnRGX8TJNGcIfa1qhM4UygraHqE87Hn8cqifJQ9IoI1cT4K6AR5Ngm 7Q== 
+Received: from atgrzso8133.avl01.avlcorp.lan ([192.102.17.76])
+        by mx07-002cda01.pphosted.com with ESMTP id 2wnjsjaeyu-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 04 Dec 2019 10:03:56 +0000
+Received: from pps.filterd (atgrzso8133.avl01.avlcorp.lan [127.0.0.1])
+        by atgrzso8133.avl01.avlcorp.lan (8.16.0.27/8.16.0.27) with SMTP id xB49xJ2u012696;
+        Wed, 4 Dec 2019 11:03:55 +0100
+Received: from atgrzsw1694.avl01.avlcorp.lan ([10.13.100.86])
+        by atgrzso8133.avl01.avlcorp.lan with ESMTP id 2wkfvma17b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-SHA384 bits=256 verify=NOT);
+        Wed, 04 Dec 2019 11:03:55 +0100
+Received: from atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) by
+ ATGRZSW1694.avl01.avlcorp.lan (10.12.64.115) with Microsoft SMTP Server (TLS)
+ id 15.0.1497.2; Wed, 4 Dec 2019 11:03:55 +0100
+Received: from ATGRZWN210214.avl01.avlcorp.lan (10.12.100.12) by
+ atgrzsw1696.avl01.avlcorp.lan (10.12.64.164) with Microsoft SMTP Server id
+ 15.0.1497.2 via Frontend Transport; Wed, 4 Dec 2019 11:03:54 +0100
+From:   <tomislav.denis@avl.com>
+To:     <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <tomislav.denis@avl.com>
+Subject: [PATCH v3 1/3] iio: pressure: Add driver for DLH pressure sensors
+Date:   Wed, 4 Dec 2019 11:03:52 +0100
+Message-ID: <20191204100354.16652-2-tomislav.denis@avl.com>
+X-Mailer: git-send-email 2.10.1.windows.1
+In-Reply-To: <20191204100354.16652-1-tomislav.denis@avl.com>
+References: <20191204100354.16652-1-tomislav.denis@avl.com>
 MIME-Version: 1.0
-In-Reply-To: <531d08db4d758cb8ab9f7e1955c7b918ff2b0c69.camel@analog.com>
-Content-Type: multipart/mixed;
- boundary="------------09C45F0841F2CB5C2E14C937"
-Content-Language: en-US
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: f9e74532-fb7d-4806-8539-2b9574eafa9a
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:,, definitions=2019-12-04_03:,,
+ signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 malwarescore=0
+ phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.0.1-1911140001 definitions=main-1912040077
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-04_03:2019-12-04,2019-12-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
+ lowpriorityscore=0 suspectscore=1 mlxscore=0 malwarescore=0
+ priorityscore=1501 mlxlogscore=999 impostorscore=0 phishscore=0
+ bulkscore=0 spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-1910280000 definitions=main-1912040076
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a multi-part message in MIME format.
---------------09C45F0841F2CB5C2E14C937
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+From: Tomislav Denis <tomislav.denis@avl.com>
 
-On 02.12.19 14:37, Ardelean, Alexandru wrote:
-> On Mon, 2019-12-02 at 14:01 +0100, Lars M=C3=B6llendorf wrote:
->>
->=20
-> Hey Lars,
->=20
-> Thank you for the patch.
->=20
-> Could you add a description of the problem in the commit description?
-> You did a really great job on describing it via email earlier, and it w=
-ould
-> be great to have it in the git history as well.
+All Sensors DLH is series of low voltage digital pressure sensors.
+Additionally to pressure value sensors deliver a temperature value.
+Sensors can be accessed over I2C and SPI, this driver supports
+only I2C access.
 
-Is the description in my latest patch ok?
+Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
+---
+ MAINTAINERS                    |   7 +
+ drivers/iio/pressure/Kconfig   |  12 ++
+ drivers/iio/pressure/Makefile  |   1 +
+ drivers/iio/pressure/dlh-i2c.c | 375 +++++++++++++++++++++++++++++++++++++++++
+ 4 files changed, 395 insertions(+)
+ create mode 100644 drivers/iio/pressure/dlh-i2c.c
 
+diff --git a/MAINTAINERS b/MAINTAINERS
+index d5ea4e4..39d6f0f 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -668,6 +668,13 @@ S:	Maintained
+ F:	Documentation/i2c/busses/i2c-ali1563.rst
+ F:	drivers/i2c/busses/i2c-ali1563.c
+ 
++ALL SENSORS DLH SERIES PRESSURE SENSORS DRIVER
++M:	Tomislav Denis <tomislav.denis@avl.com>
++W:	http://www.allsensors.com/
++S:	Maintained
++L:	linux-iio@vger.kernel.org
++F:	drivers/iio/pressure/dlh-i2c.c
++
+ ALLEGRO DVT VIDEO IP CORE DRIVER
+ M:	Michael Tretter <m.tretter@pengutronix.de>
+ R:	Pengutronix Kernel Team <kernel@pengutronix.de>
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index ba420e4..504de3e 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -53,6 +53,18 @@ config IIO_CROS_EC_BARO
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called cros_ec_baro.
+ 
++config DLH_I2C
++	tristate "All Sensors DLH series low voltage digital pressure sensors"
++	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the All Sensors DLH series
++	  pressure sensors driver.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called dlh-i2c.
++
+ config DPS310
+ 	tristate "Infineon DPS310 pressure and temperature sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index d8f5ace..1851a36 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
+ bmp280-objs := bmp280-core.o bmp280-regmap.o
+ obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+ obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
++obj-$(CONFIG_DLH_I2C) += dlh-i2c.o
+ obj-$(CONFIG_DPS310) += dps310.o
+ obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+diff --git a/drivers/iio/pressure/dlh-i2c.c b/drivers/iio/pressure/dlh-i2c.c
+new file mode 100644
+index 0000000..b8491a8
+--- /dev/null
++++ b/drivers/iio/pressure/dlh-i2c.c
+@@ -0,0 +1,375 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * All Sensors DLH series low voltage digital pressure sensors
++ *
++ * Copyright (c) 2019 AVL DiTEST GmbH
++ *   Tomislav Denis <tomislav.denis@avl.com>
++ *
++ * Datasheet: http://www.allsensors.com/cad/DS-0355_Rev_B.PDF
++ */
++
++#include <linux/module.h>
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++/* Commands */
++#define DLH_START_SINGLE    0xAA
++
++/* Status bits */
++#define DLH_STATUS_OK       0x40
++
++/* DLH  data format */
++#define DLH_NUM_READ_BYTES  7
++#define DLH_NUM_DATA_BYTES  3
++#define DLH_NUM_PR_BITS     24
++#define DLH_NUM_TEMP_BITS   24
++
++/* DLH  timings */
++#define DLH_SINGLE_DUT_MS   5
++
++enum dhl_ids {
++	dlhl60d,
++	dlhl60g,
++};
++
++struct dlh_info {
++	u8 osdig;           /* digital offset factor */
++	unsigned int fss;   /* full scale span (inch H2O) */
++};
++
++struct dlh_state {
++	struct i2c_client *client;
++	struct dlh_info info;
++	bool use_interrupt;
++	struct completion completion;
++	u8 rx_buf[DLH_NUM_READ_BYTES] ____cacheline_aligned;
++};
++
++static struct dlh_info dlh_info_tbl[] = {
++	[dlhl60d] = {
++		.osdig = 2,
++		.fss = 120,
++	},
++	[dlhl60g] = {
++		.osdig = 10,
++		.fss = 60,
++	},
++};
++
++
++static int dlh_i2c_cmd_start_single(struct dlh_state *st)
++{
++	int ret;
++
++	ret = i2c_smbus_write_byte(st->client, DLH_START_SINGLE);
++	if (ret)
++		dev_err(&st->client->dev,
++			"%s: I2C write byte failed\n", __func__);
++
++	return ret;
++}
++
++static int dlh_i2c_cmd_read_data(struct dlh_state *st)
++{
++	int ret;
++
++	ret = i2c_master_recv(st->client, st->rx_buf, DLH_NUM_READ_BYTES);
++	if (ret < 0) {
++		dev_err(&st->client->dev,
++			"%s: I2C read block failed\n", __func__);
++		return ret;
++	}
++
++	if (st->rx_buf[0] != DLH_STATUS_OK) {
++		dev_err(&st->client->dev,
++			"%s: invalid status 0x%02x\n", __func__, st->rx_buf[0]);
++		return -EBUSY;
++	}
++
++	return 0;
++}
++
++static int dlh_i2c_start_capture_and_read(struct dlh_state *st)
++{
++	int ret;
++
++	if (st->use_interrupt)
++		reinit_completion(&st->completion);
++
++	ret = dlh_i2c_cmd_start_single(st);
++	if (ret)
++		return ret;
++
++	if (st->use_interrupt) {
++		ret = wait_for_completion_timeout(&st->completion,
++			msecs_to_jiffies(DLH_SINGLE_DUT_MS));
++		if (!ret) {
++			dev_err(&st->client->dev,
++				"%s: conversion timed out\n", __func__);
++			return -ETIMEDOUT;
++		}
++	} else {
++		mdelay(DLH_SINGLE_DUT_MS);
++	}
++
++	return dlh_i2c_cmd_read_data(st);
++}
++
++static int dlh_i2c_read_direct(struct dlh_state *st,
++	unsigned int *pressure, unsigned int *temperature)
++{
++	int ret;
++
++	ret = dlh_i2c_start_capture_and_read(st);
++	if (ret)
++		return ret;
++
++	*pressure = be32_to_cpup((u32 *)&st->rx_buf[1]) >> 8;
++	*temperature = be32_to_cpup((u32 *)&st->rx_buf[3]) &
++		GENMASK(DLH_NUM_TEMP_BITS - 1, 0);
++
++	return 0;
++}
++
++static int dlh_i2c_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *channel, int *value,
++	int *value2, long mask)
++{
++	struct dlh_state *st = iio_priv(indio_dev);
++	unsigned int pressure, temperature;
++	int ret;
++	s64 tmp;
++	s32 rem;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		ret = dlh_i2c_read_direct(st, &pressure, &temperature);
++		iio_device_release_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		switch (channel->type) {
++		case IIO_PRESSURE:
++			*value = pressure;
++			return IIO_VAL_INT;
++
++		case IIO_TEMP:
++			*value = temperature;
++			return IIO_VAL_INT;
++
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (channel->type) {
++		case IIO_PRESSURE:
++			tmp = div_s64(125LL * st->info.fss * 24909 * 100,
++				1 << DLH_NUM_PR_BITS);
++			tmp = div_s64_rem(tmp, 1000000000LL, &rem);
++			*value = tmp;
++			*value2 = rem;
++			return IIO_VAL_INT_PLUS_NANO;
++
++		case IIO_TEMP:
++			*value = 125 * 1000;
++			*value2 = DLH_NUM_TEMP_BITS;
++			return IIO_VAL_FRACTIONAL_LOG2;
++
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		switch (channel->type) {
++		case IIO_PRESSURE:
++			*value = -125 * st->info.fss * 24909;
++			*value2 = 100 * st->info.osdig * 100000;
++			return IIO_VAL_FRACTIONAL;
++
++		case IIO_TEMP:
++			*value = -40 * 1000;
++			return IIO_VAL_INT;
++
++		default:
++			return -EINVAL;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info dlh_i2c_info = {
++	.read_raw = dlh_i2c_read_raw,
++};
++
++static const struct iio_chan_spec dlh_i2c_channels[] = {
++	{
++		.type = IIO_PRESSURE,
++		.indexed = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type =
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = DLH_NUM_PR_BITS,
++			.storagebits = 32,
++			.shift = 8,
++			.endianness = IIO_BE,
++		},
++	}, {
++		.type = IIO_TEMP,
++		.indexed = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type =
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = DLH_NUM_TEMP_BITS,
++			.storagebits = 32,
++			.shift = 8,
++			.endianness = IIO_BE,
++		},
++	}
++};
++
++static irqreturn_t dlh_i2c_trigger_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct dlh_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned int chn, i = 0;
++	__be32 tmp_buf[2];
++
++	ret = dlh_i2c_start_capture_and_read(st);
++	if (ret)
++		goto out;
++
++	for_each_set_bit(chn, indio_dev->active_scan_mask,
++		indio_dev->masklength) {
++		memcpy(tmp_buf + i,
++			&st->rx_buf[1] + chn * DLH_NUM_DATA_BYTES,
++			DLH_NUM_DATA_BYTES);
++		i++;
++	}
++
++	iio_push_to_buffers(indio_dev, tmp_buf);
++
++out:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t dlh_i2c_interrupt(int irq, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct dlh_state *st = iio_priv(indio_dev);
++
++	complete(&st->completion);
++
++	return IRQ_HANDLED;
++};
++
++static int dlh_i2c_probe(struct i2c_client *client,
++	const struct i2c_device_id *id)
++{
++	struct dlh_state *st;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter,
++		I2C_FUNC_I2C | I2C_FUNC_SMBUS_WRITE_BYTE)) {
++		dev_err(&client->dev,
++			"adapter doesn't support required i2c functionality\n");
++		return -EOPNOTSUPP;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*st));
++	if (!indio_dev) {
++		dev_err(&client->dev, "failed to allocate iio device\n");
++		return -ENOMEM;
++	}
++
++	i2c_set_clientdata(client, indio_dev);
++
++	st = iio_priv(indio_dev);
++	st->info = dlh_info_tbl[id->driver_data];
++	st->client = client;
++	st->use_interrupt = false;
++
++	indio_dev->name = id->name;
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->dev.of_node = client->dev.of_node;
++	indio_dev->info = &dlh_i2c_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels =  dlh_i2c_channels;
++	indio_dev->num_channels = ARRAY_SIZE(dlh_i2c_channels);
++
++	if (client->irq > 0) {
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++			dlh_i2c_interrupt, NULL,
++			IRQF_TRIGGER_RISING | IRQF_ONESHOT,
++			id->name, indio_dev);
++		if (ret) {
++			dev_err(&client->dev, "failed to allocate threaded irq");
++			return ret;
++		}
++
++		st->use_interrupt = true;
++		init_completion(&st->completion);
++	}
++
++	ret = devm_iio_triggered_buffer_setup(&client->dev, indio_dev,
++		NULL, &dlh_i2c_trigger_handler, NULL);
++	if (ret) {
++		dev_err(&client->dev, "failed to setup iio buffer\n");
++		return ret;
++	}
++
++	ret = devm_iio_device_register(&client->dev, indio_dev);
++	if (ret)
++		dev_err(&client->dev, "failed to register iio device\n");
++
++	return ret;
++}
++
++static const struct of_device_id dlh_i2c_of_match[] = {
++	{ .compatible = "asc,dlhl60d" },
++	{ .compatible = "asc,dlhl60g" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, dlh_i2c_of_match);
++
++static const struct i2c_device_id dlh_i2c_id[] = {
++	{ "dlhl60d",    dlhl60d },
++	{ "dlhl60g",    dlhl60g },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, dlh_i2c_id);
++
++static struct i2c_driver dlh_i2c_driver = {
++	.driver = {
++		.name = "dlh_i2c",
++		.of_match_table = dlh_i2c_of_match,
++	},
++	.probe = dlh_i2c_probe,
++	.id_table = dlh_i2c_id,
++};
++module_i2c_driver(dlh_i2c_driver);
++
++MODULE_AUTHOR("Tomislav Denis <tomislav.denis@avl.com>");
++MODULE_DESCRIPTION("Driver for All Sensors DLH series pressure sensors");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
 
-> Also, this patch is marked 1/3 ; curios: are there 2 more patches in a =
-set?
-> Sometimes, some patches get lost via email clients/servers.
-
-No, there is only one patch. I just did not use `git format-patch`
-correctly in my first attempt.
-
-> Maybe Jonathan [or someone else] has some more points to this.
-
-Anything else I can do to improve the patch? It is the first time I am
-trying to submit a patch to the kernel. Would be nice to know if it is
-accepted and if not, why. So I can learn from my mistakes.
-
->=20
-> Thanks
-> Alex
->=20
->> Signed-off-by: Lars M=C3=B6llendorf <lars.moellendorf@plating.de>
->> ---
->>  drivers/iio/industrialio-buffer.c | 6 +++++-
->>  1 file changed, 5 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/industrialio-buffer.c
->> b/drivers/iio/industrialio-buffer.c
->> index 5d05c38c4ba9..2f037cd59d53 100644
->> --- a/drivers/iio/industrialio-buffer.c
->> +++ b/drivers/iio/industrialio-buffer.c
->> @@ -546,7 +546,7 @@ static int iio_compute_scan_bytes(struct iio_dev
->> *indio_dev,
->>  				const unsigned long *mask, bool timestamp)
->>  {
->>  	unsigned bytes =3D 0;
->> -	int length, i;
->> +	int length, i, largest =3D 0;
->>
->>  	/* How much space will the demuxed element take? */
->>  	for_each_set_bit(i, mask,
->> @@ -554,13 +554,17 @@ static int iio_compute_scan_bytes(struct iio_dev=
-
->> *indio_dev,
->>  		length =3D iio_storage_bytes_for_si(indio_dev, i);
->>  		bytes =3D ALIGN(bytes, length);
->>  		bytes +=3D length;
->> +		largest =3D max(largest, length);
->>  	}
->>
->>  	if (timestamp) {
->>  		length =3D iio_storage_bytes_for_timestamp(indio_dev);
->>  		bytes =3D ALIGN(bytes, length);
->>  		bytes +=3D length;
->> +		largest =3D max(largest, length);
->>  	}
->> +
->> +	bytes =3D ALIGN(bytes, largest);
->>  	return bytes;
->>  }
->>
->> --
->> 2.23.0
->>
-
---=20
-
-Lars M=C3=B6llendorf, B. Eng.
-
-
-Tel.:    +49 (0) 7641 93500-425
-Fax:     +49 (0) 7641 93500-999
-E-Mail:  lars.moellendorf@plating.de <mailto:lars.moellendorf@plating.de>=
-
-Website: www.plating.de <http://www.plating.de>
-
---------------------------------
-plating electronic GmbH - Amtsgericht Freiburg - HRB Nr. 260 592 /
-Gesch=C3=A4ftsf=C3=BChrer Karl Rieder / Rheinstra=C3=9Fe 4 =E2=80=93 7935=
-0 Sexau =E2=80=93 Tel.:+49 (0)
-7641 =E2=80=93 93500-0
-
---------------------------------
-Der Inhalt dieser E-Mail ist vertraulich und ausschlie=C3=9Flich f=C3=BCr=
- den
-bezeichneten Adressaten bestimmt. Wenn Sie nicht der vorgesehene
-Adressat dieser E-Mail oder dessen Vertreter sein sollten, so beachten
-Sie bitte, dass jede Form der Kenntnisnahme, Ver=C3=B6ffentlichung,
-Vervielf=C3=A4ltigung oder Weitergabe des Inhalts dieser E-Mail unzul=C3=A4=
-ssig
-ist. Wir bitten Sie, sich in diesem Fall mit dem Absender der E-Mail in
-Verbindung zu setzen. Aussagen gegen=C3=BCber  dem Adressaten unterliegen=
- den
-Regelungen des zugrundeliegenden Angebotes bzw. Auftrags, insbesondere
-den Allgemeinen Gesch=C3=A4ftsbedingungen und der individuellen
-Haftungsvereinbarung. Der Inhalt der E-Mail ist nur rechtsverbindlich,
-wenn er unsererseits durch einen Brief oder ein Telefax entsprechend
-bestaetigt wird.
-
-The information contained in this email is confidential. It is intended
-solely for the addressee. Access to this email by anyone else is
-unauthorized. If you are not the intended recipient, any form of
-disclosure, reproduction, distribution or any action taken or refrained
-from in reliance on it, is prohibited and may be unlawful. Please notify
-the sender immediately. All statements of opinion or advice directed via
-this email to our clients are subject to the terms and conditions
-expressed in the governing client engagement letter. The content of this
-email is not legally binding unless confirmed by letter or fax.
-
-Although plating electronic GmbH attempts to sweep e-mail and
-attachments for viruses, it does not guarantee that either are
-virus-free and accepts no liability for any damage sustained as a result
-of viruses.
-
-
---------------09C45F0841F2CB5C2E14C937
-Content-Type: application/pgp-keys;
- name="pEpkey.asc"
-Content-Transfer-Encoding: quoted-printable
-Content-Disposition: attachment;
- filename="pEpkey.asc"
-
------BEGIN PGP PUBLIC KEY BLOCK-----
-
-mQENBFsNAUABCACbezP4zrBG9BWw9SaAz4LvY6tPQQhMk9+fv6CleGWZIYw5J9Ni
-PyV90P/A1nr0Gvn8pMOyBWr0debM1vMWMg6/LB4umeGEIZbXT/+h0paMn4yNCzqn
-S1ndTIJ6PmEAGRDfATZKBrQMWqRj/zJvqcOV0n/sEvnGifdM2olVQEyTFXxYYqVI
-KBFwP2bjU6vL+43/+rWPMond6FFG4ddz+Mio9i5TGhLgR7ROrsNlEqcwX1s33oiL
-Aq+cMwSLz1OFdgLXW8Unq5B0OJcuw1Z5Qy+Q4ge5HIvGxfvFvwuP3Yq1MnOTprC/
-kol+0VbWf6j/F58URah5qwdeYYxIio+TDm/BABEBAAG0LkxhcnMgTcO2bGxlbmRv
-cmYgPGxhcnMubW9lbGxlbmRvcmZAcGxhdGluZy5kZT6JAVQEEwEIAD4CGwMFCwkI
-BwIGFQoJCAsCBBYCAwECHgECF4AWIQSWUL2CuFDU2EeeK/xAA9xF+Xc2PwUCXPE4
-uwUJA8Vq+wAKCRBAA9xF+Xc2PycqB/0V1O0/KTN7zJXH4tcLP4m/dzxRzd6WP7W4
-85g4fuDRfSyRjLErkTbeHvKQc+KoyLKEznVc+JTrVEvHOCw7m4dbFvBqUi19FohQ
-MfT/gZvh3SgCzL1VNEYW6OBo9WoozPKQujWq4zBhbRsce1tFzgZ+E2BIUX43Qoh0
-IdkRrfWinHpzZOvWe7XIaV87BtPPusIeTKaEKyEd6Ol20vPl2Gl6ooGONw5y3c8T
-D9ncXTdfuCP/9FkisBWLAac3xOilgVyZxWTzNtLz/3/yohUZjF1gL6lRCRlHW1QG
-2/Mj6B7AWl4APfPCBhPOftQ5FsNQlMcLtU5PFr9wofW4DYltFQU4uQENBFsNAUEB
-CADhdaHowDiVPtwHd2LTb/6RJPhQFWZlgrgk+zfkBjJmRi80nogcZLJFUkWTagiK
-qTFsYBWOLZYpU/YBzQXIh/EJ9rDkqn+aNPWEu+YPdQj9V1wBhBr8+2DZe9mqqkgP
-4U7U57WKdcOlkjYD5YXpR1Qns48rGRLOQsoO0I+sEpC5hFF50/HiWknqk7xK0G4q
-TlHFBSYni5hf0K7/U4d7YuYLbUP19tvPv7IOhfKJbnVHs4//Xt/cKYWBpprJ/G8q
-tcrFxmFz7fWoJcq2eM7Ky2ZTq+m74FgRkFHc33zpIhV721iqtD8RCt5laxptokgq
-iVAY2pP/mBYr01e1VyAPr7/HABEBAAGJATwEGAEIACYCGwwWIQSWUL2CuFDU2Eee
-K/xAA9xF+Xc2PwUCXPE7YQUJA8VtoAAKCRBAA9xF+Xc2P2b3B/9/j1+nI52P3puX
-vfeRHPnmbFBGLgB0OTECp6f0/R8oXKcIZSHTKVvRe9cAANKMiEA+SfIMaFHpadHr
-zlu5M6bHrurvwWKIT1r84/UGKv/wnCcXvPnF0dupsiZx8Er95c9sx3ftQmwWkG36
-+cAqO91S30haamIclq3XYNHsmxKkoQ+b532WdP8pD6JQ4xEQreltelqhnhBwqDC4
-yoivK+7UO4HgsXgQ6LXw1Evwy72TwsZ2klg3ZA1KEOIBp10wg30Itg4MjiAnon+6
-3hRZueGk3FEyzJrVmaVP2qSdqqz9Tmp6oghpBVzTUgtWhYThsbGjYrYQ5CrKSJjN
-LcZ9xDIl
-=3Dfv/q
------END PGP PUBLIC KEY BLOCK-----
-
---------------09C45F0841F2CB5C2E14C937--
