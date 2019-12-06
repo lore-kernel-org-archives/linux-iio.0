@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E9FCC43603
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Dec 2019 17:46:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF49AC43603
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Dec 2019 17:48:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0954A24673
-	for <linux-iio@archiver.kernel.org>; Fri,  6 Dec 2019 17:46:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9D15324673
+	for <linux-iio@archiver.kernel.org>; Fri,  6 Dec 2019 17:48:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575654414;
-	bh=AWvBmXEb/1CdPbn3BpTF6ilLDCmEDOHfqgnpuyJYXUQ=;
+	s=default; t=1575654499;
+	bh=eMse2k/BQ/bmieQOECywIK5kP7R5h5NRESYh+mz6IC8=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wtggeiuGBtPEtdVfEkvseybFPH/4tWE+pqIklI2LAe8KKa+SlDMhGwCG9bpZHOLi+
-	 LJG/ECVgS8+n1Rze27tdi3Tqyhs91QG/oLbdemC02DzYOP1FI1gag+NsKeHzbS4A3O
-	 CWmKANmkKnYRd+yjO72oZkGIK1fYfFznzoKKO6Rw=
+	b=oNPQBLPkkVlb0jYCRL0riUQGbQPoAGmpmqCyItKUQ7Y42+SWXf8L4i38H0V/puuZ7
+	 jpM8H7kn/ElZW9vzUv2WQ+yGql5tlVFaNqZdUp35RTcpIK6OUMpvL7s0LkSJCuvPJH
+	 V2NkoyPFsNTO3/d6Xa/blil357cTzuuH/uO/ilCA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726298AbfLFRqx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 6 Dec 2019 12:46:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:37154 "EHLO mail.kernel.org"
+        id S1726353AbfLFRsT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 6 Dec 2019 12:48:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:37354 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726287AbfLFRqx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 6 Dec 2019 12:46:53 -0500
+        id S1726298AbfLFRsT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 6 Dec 2019 12:48:19 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EECB524670;
-        Fri,  6 Dec 2019 17:46:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 71AE524670;
+        Fri,  6 Dec 2019 17:48:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575654413;
-        bh=AWvBmXEb/1CdPbn3BpTF6ilLDCmEDOHfqgnpuyJYXUQ=;
+        s=default; t=1575654498;
+        bh=eMse2k/BQ/bmieQOECywIK5kP7R5h5NRESYh+mz6IC8=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=V8g7B+uGhX/xIRV69Br3VQUHbDeztvRqQbIcFc65Gp2lXC/N+25/eBMmQVZstNM0V
-         HPyZkxUBqUn0R6ZQvNtDqfZ18m7FRJ6YM/QP2WXkB7HBtiEaxOncI4RWmqbV+nF/RC
-         N607h8A9FOO4waEZDa81L1Kg5qzokS7nSKC/VvcA=
-Date:   Fri, 6 Dec 2019 17:46:49 +0000
+        b=mYZy6kre31WjBgxKyu+oFJiPoUyVDROpYn8ueb8NCO5efQxoomf2fZ276qK4SjYcb
+         ykSXdbkt/M2AS9kpu2uSAXkWbsn7eOltCriRXaS5jbcQSabGzi9aFPjSNmU/vSr4fH
+         Stg+m5lcnjKCuAlwcuPNt6Nn8zIaNwcNtibTEtNY=
+Date:   Fri, 6 Dec 2019 17:48:14 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: as3935: Drop GPIO includes
-Message-ID: <20191206174649.55c0cac8@archlinux>
-In-Reply-To: <20191202081943.62073-1-linus.walleij@linaro.org>
-References: <20191202081943.62073-1-linus.walleij@linaro.org>
+Subject: Re: [PATCH] iio: si1145: Drop GPIO include
+Message-ID: <20191206174814.5c0786c3@archlinux>
+In-Reply-To: <20191202082123.62350-1-linus.walleij@linaro.org>
+References: <20191202082123.62350-1-linus.walleij@linaro.org>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,43 +57,33 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  2 Dec 2019 09:19:43 +0100
+On Mon,  2 Dec 2019 09:21:23 +0100
 Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> The driver includes <linux/gpio.h> and <linux/of_gpio.h> yet
-> fails to use symbols from any of the include files, so drop
-> these includes.
+> The driver include <linux/gpio.h> yet does not use any
+> of the symbols from the header, so drop the include.
 > 
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Applied,
+Applied.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/proximity/as3935.c | 3 ---
->  1 file changed, 3 deletions(-)
+>  drivers/iio/light/si1145.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
-> index b591c63bd6c4..bac9a433dd19 100644
-> --- a/drivers/iio/proximity/as3935.c
-> +++ b/drivers/iio/proximity/as3935.c
-> @@ -14,7 +14,6 @@
->  #include <linux/mutex.h>
->  #include <linux/err.h>
+> diff --git a/drivers/iio/light/si1145.c b/drivers/iio/light/si1145.c
+> index 982bba0c54e7..0476c2bc8138 100644
+> --- a/drivers/iio/light/si1145.c
+> +++ b/drivers/iio/light/si1145.c
+> @@ -17,7 +17,6 @@
+>  #include <linux/slab.h>
+>  #include <linux/delay.h>
 >  #include <linux/irq.h>
 > -#include <linux/gpio.h>
->  #include <linux/spi/spi.h>
+>  
 >  #include <linux/iio/iio.h>
 >  #include <linux/iio/sysfs.h>
-> @@ -22,8 +21,6 @@
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include <linux/of_gpio.h>
-> -
->  
->  #define AS3935_AFE_GAIN		0x00
->  #define AS3935_AFE_MASK		0x3F
 
