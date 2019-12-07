@@ -2,150 +2,90 @@ Return-Path: <SRS0=h9gr=Z5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA1A5C2D0BE
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 04:54:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C98C43603
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:39:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BDE9A21835
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 04:54:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vKFZXiU8"
+	by mail.kernel.org (Postfix) with ESMTP id 4AEF3227BF
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:39:33 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1575711573;
+	bh=3oxFgfcVwBJYgbQuUqLTNEyrtcwoU4bjFGfXR2SFFEs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=dDNetOIAFkpAnehU0M7C5C2+dNQ9pINyJRrWTWT26mV4UKoA6WsEGQ35wHt62Hbvt
+	 t9TN/XVEU8ybWamVzFeGBhKj36/qoTkACddQ/CewSqvbpQnnzw20W3KGeQoxVJ4wRe
+	 Baq8ot3/If5Cs9ml3RNI9qrj6c2ghrJN5mnMdjnI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726511AbfLGEyQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 6 Dec 2019 23:54:16 -0500
-Received: from mail-ua1-f51.google.com ([209.85.222.51]:45128 "EHLO
-        mail-ua1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726400AbfLGEyQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Dec 2019 23:54:16 -0500
-Received: by mail-ua1-f51.google.com with SMTP id 59so3709126uap.12;
-        Fri, 06 Dec 2019 20:54:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=PoAYAtQsECMKBQu3m3UL38cyfBNcCrjyU109EM5/2Kk=;
-        b=vKFZXiU88cdk8U11fBerp2o/L9d60eSFcOf8iuyvdLhzAF+nThRMBGnaPY0Gm5EIO7
-         fwco54CdXQfPHpYvhDp/m3EsVFrA8TciyqTvJ9DvDSTciLEHNm1xMdpNHsrdltMGQRSm
-         xtv2y6APCIZ1MqVTlB6QAWiJGI/ezpQB/bIdhtivtjotOiONQAqwtXpVRfc2yqmWlbiD
-         vRkWv2u45JfIoQsNVwLZhMnUfq7FIJbR7f8RoUo2lxqi+rH8L5qHNT7dlDPzaTYkoFSr
-         R3h5DB6Kf8hIPGe9YU85vzyjY8YbKZvv9cUWekwvVS1fkbN0PqjgnSv1IXBi67u2+BUN
-         7D3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=PoAYAtQsECMKBQu3m3UL38cyfBNcCrjyU109EM5/2Kk=;
-        b=BzMzn3X+XCr0WH/XL2SfOHvsEv12ipyXIV88eSPVBpC2vTLt4odaII3d+DokjER9Tl
-         RF1lZc8msRFGW6L8Y5f296eNq+3vMaI6pOkVAEjCilJgKmUYtcEH1lTAniEZipa2W7gG
-         wtxvv3QnDcxZASW5Yd8DtTYFtFEuMt7iVIGcqmVSQCbU80JBqAJVUacQXaHkxKlsf2gi
-         +eKgCgyVQawkOQ8P+clGHf25D1CsrWIbWVLHDm7qIdKfb3xFRxWq0b6cOZoHyQFCmSrX
-         jf8yCdXkaD2GbgiR83+cLQnLHoiFEOp4XSjxa2/SaooHRoOpFcULF9IixmYXIc+SPdy2
-         IK7w==
-X-Gm-Message-State: APjAAAV4N7wBrLM3WLVSuvruSGF7mum1yB1tp39mNHbu/7tkotvBbJmw
-        kQb6uzu+iW3V7AxB1/YZjCE=
-X-Google-Smtp-Source: APXvYqz5B4qddztDDlAGY2AqZoYhWgimCOX1uIFxzn4FIBcw/FxrrTMa9ztU/J7UcMFTFBUysGo9Jw==
-X-Received: by 2002:ab0:30a4:: with SMTP id b4mr10697339uam.85.1575694455208;
-        Fri, 06 Dec 2019 20:54:15 -0800 (PST)
-Received: from localhost.localdomain ([177.45.184.74])
-        by smtp.gmail.com with ESMTPSA id w132sm8156205vkw.46.2019.12.06.20.54.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 06 Dec 2019 20:54:14 -0800 (PST)
-From:   Rodrigo Carvalho <rodrigorsdc@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        kernel-usp@googlegroups.com,
-        Rodrigo Carvalho <rodrigorsdc@gmail.com>
-Subject: [PATCH v6 2/2] dt-bindings: iio: accel: add binding documentation for ADIS16240
-Date:   Sat,  7 Dec 2019 01:53:39 -0300
-Message-Id: <20191207045339.9186-2-rodrigorsdc@gmail.com>
-X-Mailer: git-send-email 2.24.0
-In-Reply-To: <20191207045339.9186-1-rodrigorsdc@gmail.com>
-References: <20191207045339.9186-1-rodrigorsdc@gmail.com>
+        id S1726000AbfLGJjc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Dec 2019 04:39:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52316 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725992AbfLGJjb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Dec 2019 04:39:31 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 43E822173E;
+        Sat,  7 Dec 2019 09:39:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1575711571;
+        bh=3oxFgfcVwBJYgbQuUqLTNEyrtcwoU4bjFGfXR2SFFEs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=yihPvVCN94W7tknNhFFbDbQLZS8GmZsu/fEl2xKp8H5s7RJ8Xx9cLSSYXiBCLFaA2
+         bilrK8eig6JGhE5OahFJbTyeRW+nT0P3pBOoRiTLFPSTaAB2NgjvZGgTII1gt7cPAI
+         xiMQVPYi4Bj42XfHFzzLBKQlhEooVpiThlKPKGuM=
+Date:   Sat, 7 Dec 2019 09:39:26 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: ad2s1200: Drop legacy include
+Message-ID: <20191207093926.4e1df45e@archlinux>
+In-Reply-To: <20191202082301.62599-1-linus.walleij@linaro.org>
+References: <20191202082301.62599-1-linus.walleij@linaro.org>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch add device tree binding documentation for ADIS16240.
+On Mon,  2 Dec 2019 09:23:01 +0100
+Linus Walleij <linus.walleij@linaro.org> wrote:
 
-Signed-off-by: Rodrigo Carvalho <rodrigorsdc@gmail.com>
----
-V6:
-  - Update SPDX license identifier
+> This driver is using the GPIO descriptor API but yet includes
+> the legacy <linux/gpio.h> header for no reason. Drop the
+> surplus include.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to have fun.
 
- .../bindings/iio/accel/adi,adis16240.yaml     | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
+THanks,
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
-new file mode 100644
-index 000000000000..4147f02b5e3c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16240.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adis16240.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADIS16240 Programmable Impact Sensor and Recorder driver
-+
-+maintainers:
-+  - Alexandru Ardelean <alexandru.ardelean@analog.com>
-+
-+description: |
-+  ADIS16240 Programmable Impact Sensor and Recorder driver that supports
-+  SPI interface.
-+    https://www.analog.com/en/products/adis16240.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adis16240
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        /* Example for a SPI device node */
-+        accelerometer@0 {
-+            compatible = "adi,adis16240";
-+            reg = <0>;
-+            spi-max-frequency = <2500000>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
--- 
-2.24.0
+Jonathan
+
+> ---
+>  drivers/iio/resolver/ad2s1200.c | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
+> index 17b89623418c..a391f46ee06b 100644
+> --- a/drivers/iio/resolver/ad2s1200.c
+> +++ b/drivers/iio/resolver/ad2s1200.c
+> @@ -10,7 +10,6 @@
+>  #include <linux/bitops.h>
+>  #include <linux/delay.h>
+>  #include <linux/device.h>
+> -#include <linux/gpio.h>
+>  #include <linux/gpio/consumer.h>
+>  #include <linux/module.h>
+>  #include <linux/mutex.h>
 
