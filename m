@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C6E4AC43603
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:41:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F558C2D0BE
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:44:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7FF30227BF
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:41:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F2EFB24670
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Dec 2019 09:44:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1575711672;
-	bh=PVgg6GS/wTv+h1ke3Hn4S0SRBFIdDH/UUfEzuwXAkSg=;
+	s=default; t=1575711856;
+	bh=zKUt0zWqEpyq7pKzwKvy5c2qAU6CwaNc1rc87W9jXVY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=p00aunv6Pc7diw09tZRiLcWcZ6XA6CiQi7o5xL9CRzAPkW1fiz2z9pI761gsmMuIi
-	 EsavShrxKkC51S87eQq6LG5OS8q3rqv0rOWemCy/rz3fsoz7EvT+Mf+e47Gfqscm+H
-	 fNW0zTgXtdGF2rgErQhKegzIWFZ8E5PpO2k+5uTg=
+	b=XMSqtfdl//YRZKxyxwZwgJ95DDWFJ/CDjdUylHfJV5CPFtU11QZtVIOhJVFdOwhSL
+	 YjbdJKYExbsv6nhPE+z/0561Qc0uRKbgCoWtEZXlo25mgkCaO+VZ80wlYMUp75Htf8
+	 p0Jki+pYxx5z+5rw1BtlD0k7VTkadSqYcgC7o4kw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726025AbfLGJlL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 Dec 2019 04:41:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:53144 "EHLO mail.kernel.org"
+        id S1726106AbfLGJoP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Dec 2019 04:44:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:53670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725992AbfLGJlL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 7 Dec 2019 04:41:11 -0500
+        id S1725992AbfLGJoP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 7 Dec 2019 04:44:15 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 343262173E;
-        Sat,  7 Dec 2019 09:41:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D0D582173E;
+        Sat,  7 Dec 2019 09:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1575711671;
-        bh=PVgg6GS/wTv+h1ke3Hn4S0SRBFIdDH/UUfEzuwXAkSg=;
+        s=default; t=1575711854;
+        bh=zKUt0zWqEpyq7pKzwKvy5c2qAU6CwaNc1rc87W9jXVY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=GnFLj1s47lklMQFMw59GoYa2oZO2SRhdUyVF9l8IQ8iitDrP5uy3ehrV3mcXn5253
-         RUySRmRrW3aFU9LDeXCSHHmiTL5PZEgQMknnVC2eLhZspwGRy4Y2BSu4Znf2Ncr1k9
-         BR2PuFCSpWZ2PVGdI1sNrg5x77r6E6kjF8DGIwHU=
-Date:   Sat, 7 Dec 2019 09:41:06 +0000
+        b=DFOmsGIzOFHCk2HUiNPuUYp/Vn+Wut1sE2vNXMRjAGxCmLJgU1VyQjWJkMvNtLqyv
+         6WxO9GOBLchCpMAdZq4u0LQTlMy9pxXubt9G/nH8em4biJRL9sBDEgJtfpmOBt1eOT
+         HW6aHHdYfFrc3uNfQF3zclfi4d4M80t80Qt2azwk=
+Date:   Sat, 7 Dec 2019 09:44:10 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Linus Walleij <linus.walleij@linaro.org>
 Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: apds9960: Drop GPIO includes
-Message-ID: <20191207094106.4e9d0c15@archlinux>
-In-Reply-To: <20191202082452.62989-1-linus.walleij@linaro.org>
-References: <20191202082452.62989-1-linus.walleij@linaro.org>
+Subject: Re: [PATCH] iio: itg3200: Drop GPIO include
+Message-ID: <20191207094410.2d5581b3@archlinux>
+In-Reply-To: <20191202082603.63227-1-linus.walleij@linaro.org>
+References: <20191202082603.63227-1-linus.walleij@linaro.org>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,42 +57,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  2 Dec 2019 09:24:52 +0100
+On Mon,  2 Dec 2019 09:26:03 +0100
 Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> The driver includes <linux/gpio.h> and <linux/of_gpio.h> yet
-> fails to use symbols from any of the include files, so drop
-> these includes.
+> The driver include <linux/gpio.h> yet does not use any
+> of the symbols from the header, so drop the include.
 > 
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 Applied,
-
-Thanks,
-
-Jonathan
-
 > ---
->  drivers/iio/light/apds9960.c | 2 --
->  1 file changed, 2 deletions(-)
+>  drivers/iio/gyro/itg3200_core.c | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/apds9960.c b/drivers/iio/light/apds9960.c
-> index c5dfb9a6b5a1..52f86bc777dd 100644
-> --- a/drivers/iio/light/apds9960.c
-> +++ b/drivers/iio/light/apds9960.c
+> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
+> index 981ae2291505..b3afa556f973 100644
+> --- a/drivers/iio/gyro/itg3200_core.c
+> +++ b/drivers/iio/gyro/itg3200_core.c
 > @@ -15,7 +15,6 @@
->  #include <linux/mutex.h>
->  #include <linux/err.h>
+>  #include <linux/interrupt.h>
 >  #include <linux/irq.h>
-> -#include <linux/gpio.h>
 >  #include <linux/i2c.h>
->  #include <linux/pm_runtime.h>
->  #include <linux/regmap.h>
-> @@ -24,7 +23,6 @@
->  #include <linux/iio/events.h>
->  #include <linux/iio/kfifo_buf.h>
->  #include <linux/iio/sysfs.h>
-> -#include <linux/of_gpio.h>
->  
->  #define APDS9960_REGMAP_NAME	"apds9960_regmap"
->  #define APDS9960_DRV_NAME	"apds9960"
+> -#include <linux/gpio.h>
+>  #include <linux/slab.h>
+>  #include <linux/stat.h>
+>  #include <linux/module.h>
 
