@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3381DC00454
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:11:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC707C2D0BF
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:12:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 082BB21D7D
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:11:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A1BE8207FF
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:12:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576015888;
-	bh=7Lwsdk8FMDxQADLZXYHrz6IWTdOq72axp5dI/yhXioY=;
+	s=default; t=1576015940;
+	bh=gD1W76kL8X7UVNMDJci8laqVu1XV2u7VpXQq0xu/VwA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=pWzvP1CVw8nz7OPZaOrTUTzNk3VzUrVnaWnSYwPO5Gck933bHKmcnvMRDHI3wIiH3
-	 5zEnTk5J68deuAWVW3rLE69PTl8MfFRjs4PkwwBcYwD7UbEQ/Mcf6RTl/Hke106A7F
-	 AoBQoh2HaWOLMSF7WB5rrVcoa/alme5b8J96UGrI=
+	b=YnLm5KDpWrNsSXnMAKjrkfyJk7HEUAIhkNvNQA+pghnMMj6PC/eOVlz3YaMF24jQb
+	 CGmwD4L4LgZInawwHF8JKeLwD+4NwgUpHivVOI5xzJbEdd78AWO5iHxuEe7Aytb+T5
+	 WTTWfnPEfvnwbmTUm1BNaby1FMUjyPJ6OgIpxTDQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728526AbfLJWLX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:11:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34548 "EHLO mail.kernel.org"
+        id S1728503AbfLJWMT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 17:12:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33928 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728382AbfLJWEB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:04:01 -0500
+        id S1727956AbfLJWDj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:03:39 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EFB8420838;
-        Tue, 10 Dec 2019 22:03:59 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1571E24653;
+        Tue, 10 Dec 2019 22:03:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576015440;
-        bh=7Lwsdk8FMDxQADLZXYHrz6IWTdOq72axp5dI/yhXioY=;
+        s=default; t=1576015418;
+        bh=gD1W76kL8X7UVNMDJci8laqVu1XV2u7VpXQq0xu/VwA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VPEONqC0HhlOBnncs3tQ6s8pJBPna50Qde5tsy6EMGKUAY3uuLVrZNM1pLWz0vxr2
-         DwN2HK9P8t/sm3K3AiD+AyhShnIiI7lcUhPEnR4EobJdc0PLJ/0fjFkMhk1YSP+ynJ
-         tD/R6VGAO63xSgSf01/bvKw7OCirv9ip4GJWQx8I=
+        b=Z5EVC1oz98RYaacm3QDpN16JiIA8kwwgirm6m0NroQt74A178wldDvvH+LEvLUi2r
+         3EJt/24a5wpKiVY5VRpsLSFCg/GhjxF6E2W2/12lg7VyJGJLGCdqcD0ZK0JwYlwZNl
+         UjVFPUucDnNuZUkITTSkvjceT93ao3ACCFmsNzqc=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 049/130] iio: adc: max1027: Reset the device at probe time
-Date:   Tue, 10 Dec 2019 17:01:40 -0500
-Message-Id: <20191210220301.13262-49-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 031/130] iio: proximity: sx9500: fix iio_triggered_buffer_{predisable,postenable} positions
+Date:   Tue, 10 Dec 2019 17:01:22 -0500
+Message-Id: <20191210220301.13262-31-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210220301.13262-1-sashal@kernel.org>
 References: <20191210220301.13262-1-sashal@kernel.org>
@@ -58,40 +58,83 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-[ Upstream commit db033831b4f5589f9fcbadb837614a7c4eac0308 ]
+[ Upstream commit 3cfd6464fe23deb45bb688df66184b3f32fefc16 ]
 
-All the registers are configured by the driver, let's reset the chip
-at probe time, avoiding any conflict with a possible earlier
-configuration.
+The iio_triggered_buffer_predisable() should be called last, to detach the
+poll func after the devices has been suspended.
 
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+This change re-organizes things a bit so that the postenable & predisable
+are symmetrical. It also converts the preenable() to a postenable().
+
+Not stable material as there is no known problem with the current
+code, it's just not consistent with the form we would like all the
+IIO drivers to adopt so as to allow subsystem wide changes.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/adc/max1027.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/proximity/sx9500.c | 16 +++++++++++-----
+ 1 file changed, 11 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index ebc715927e63b..03af02769370b 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -462,6 +462,14 @@ static int max1027_probe(struct spi_device *spi)
- 		goto fail_dev_register;
- 	}
+diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
+index dba796c06ba6c..ac25a0c2e99d7 100644
+--- a/drivers/iio/proximity/sx9500.c
++++ b/drivers/iio/proximity/sx9500.c
+@@ -683,11 +683,15 @@ static irqreturn_t sx9500_trigger_handler(int irq, void *private)
+ 	return IRQ_HANDLED;
+ }
  
-+	/* Internal reset */
-+	st->reg = MAX1027_RST_REG;
-+	ret = spi_write(st->spi, &st->reg, 1);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Failed to reset the ADC\n");
+-static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
++static int sx9500_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct sx9500_data *data = iio_priv(indio_dev);
+ 	int ret = 0, i;
+ 
++	ret = iio_triggered_buffer_postenable(indio_dev);
++	if (ret)
 +		return ret;
-+	}
 +
- 	/* Disable averaging */
- 	st->reg = MAX1027_AVG_REG;
- 	ret = spi_write(st->spi, &st->reg, 1);
+ 	mutex_lock(&data->mutex);
+ 
+ 	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+@@ -704,6 +708,9 @@ static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
+ 
+ 	mutex_unlock(&data->mutex);
+ 
++	if (ret)
++		iio_triggered_buffer_predisable(indio_dev);
++
+ 	return ret;
+ }
+ 
+@@ -712,8 +719,6 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
+ 	struct sx9500_data *data = iio_priv(indio_dev);
+ 	int ret = 0, i;
+ 
+-	iio_triggered_buffer_predisable(indio_dev);
+-
+ 	mutex_lock(&data->mutex);
+ 
+ 	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
+@@ -730,12 +735,13 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
+ 
+ 	mutex_unlock(&data->mutex);
+ 
++	iio_triggered_buffer_predisable(indio_dev);
++
+ 	return ret;
+ }
+ 
+ static const struct iio_buffer_setup_ops sx9500_buffer_setup_ops = {
+-	.preenable = sx9500_buffer_preenable,
+-	.postenable = iio_triggered_buffer_postenable,
++	.postenable = sx9500_buffer_postenable,
+ 	.predisable = sx9500_buffer_predisable,
+ };
+ 
 -- 
 2.20.1
 
