@@ -4,51 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF647C2D0BF
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:31:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9D4C43603
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:33:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8B4F521D7D
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:31:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 069D720828
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:33:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576017078;
-	bh=liTrcPA/gmUVmqbPhhMcuFvRir8+iX6pr/GE8YldxqQ=;
+	s=default; t=1576017232;
+	bh=UmCZsASE+z6+nSXxmbq3udmWCmPI8/QcKDL02fFCtoM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=orm1QaXlkiXyNhO/VJc1shnGo/qUpbqdmqD5WzoWHQ6Gxza/an2oAXrLhq+PDf9lt
-	 gFOKuScC3POP6fjGd2YFwLnQNyCYiCRlgXOnasQzYSiiow6NaUIMBVK/5wifb7cImj
-	 bI413vjE4QpKoJ6bWDUUwYeNoOQ8n/m9CwFK4Cbs=
+	b=cwOOwqn1T2oKqw02lMbpX5ihuPH8oHuUV6axJ/AzGTIv+P9C0PLqbC9xr4AY13qVo
+	 0kBKyUOQucywbfyL0TaSAoyG2n9w1R7EVvP2IzTruWcLlKTC+175SZUW/uRthkUZoa
+	 72kXbuOi2knEMi7A2v+AzVcjkApBT/QHqGoqcxDQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728107AbfLJWbR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:31:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51250 "EHLO mail.kernel.org"
+        id S1730011AbfLJWdu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 17:33:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54874 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728220AbfLJWbR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:31:17 -0500
+        id S1729992AbfLJWdt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:33:49 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0E2C12073D;
-        Tue, 10 Dec 2019 22:31:15 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A341B20828;
+        Tue, 10 Dec 2019 22:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017076;
-        bh=liTrcPA/gmUVmqbPhhMcuFvRir8+iX6pr/GE8YldxqQ=;
+        s=default; t=1576017229;
+        bh=UmCZsASE+z6+nSXxmbq3udmWCmPI8/QcKDL02fFCtoM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0HTML7Qqye+wqI4KUobwAJHIBVX9OU8mpWXslwZLzTZSBVaU+qKtcgBUzfg5uKaRf
-         WpdA49VwO6qVqaLewLA2m7R9yVZbrADZ9l1PkMCK6VoNWC+Jmnhg/rJzg1sfOKR/Rm
-         UGemYoqHZnLaNz3MNdNlC3FU9coZOOPKohCeXiYY=
+        b=AkVN34Rg1nJ9xLg/dZ5RScRzwwNNi/gNUCSXQVS7iMx/RfzHePEsMJUSHST27ZrW8
+         HuqW49IKfKmlAw/OTsOaRad63+XblAWF8S8cVqDrYwUTvTkS0ghOz36QunqU6HUGMt
+         F+5QAJQaCQvdoI0uKX0+Rz56lzLBkGNu6VmL4Qg4=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 34/91] iio: adc: max1027: Reset the device at probe time
-Date:   Tue, 10 Dec 2019 17:29:38 -0500
-Message-Id: <20191210223035.14270-34-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.4 27/71] iio: adc: max1027: Reset the device at probe time
+Date:   Tue, 10 Dec 2019 17:32:32 -0500
+Message-Id: <20191210223316.14988-27-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210223035.14270-1-sashal@kernel.org>
-References: <20191210223035.14270-1-sashal@kernel.org>
+In-Reply-To: <20191210223316.14988-1-sashal@kernel.org>
+References: <20191210223316.14988-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -74,10 +74,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 8 insertions(+)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 712fbd2b1f162..ec3f7bc70b75e 100644
+index 41d495c6035e1..7d5e4114e7a8a 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -471,6 +471,14 @@ static int max1027_probe(struct spi_device *spi)
+@@ -470,6 +470,14 @@ static int max1027_probe(struct spi_device *spi)
  		goto fail_dev_register;
  	}
  
