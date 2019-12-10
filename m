@@ -7,45 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D51A3C00454
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE5A0C3F68F
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A9F3322B48
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A41C324655
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576017769;
-	bh=26sIAPxWOxDTt0sfmsLSrbEC8BEZn+0RTlIRcTTz9hw=;
+	s=default; t=1576017779;
+	bh=B1QIwygrLOhokb6wIsVKv19GcVnKSWWMr+sjIqDHfZY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=oaVaqeBIcSXEKnviFczo5tJA8Pa06EpBNOKCPtp4Z4XHfr6ROnRQdmNRM6UBt2Os2
-	 eDfM8lMKM9NDLZHwZnIiwo1KmVLJvZJNNS46+3Q9ln02c+F5G8fPcJtJyPEymJv2gY
-	 upccFgputRFl3unN/eCNyG2u3AtOWI/ytP9D+x4I=
+	b=Ws3aVSLTeZS3OF/aceWJf/RclzUq8bE0aMecDfpA5yG8ifeP1EbBPqHuGprb69kJ6
+	 fmoofTbvSlkl1Smhelz9x34fiSZ4U1Om65hZZWiY5uGcTOmQDzPRWwY3eXRufVb0W9
+	 PSN2C409fC17mWepVTCD2vMy2o2T0vdNnrnrZ7Uw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728270AbfLJWbU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:31:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51262 "EHLO mail.kernel.org"
+        id S1728141AbfLJWbN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 17:31:13 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51140 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728227AbfLJWbS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:31:18 -0500
+        id S1728107AbfLJWbM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:31:12 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 17E0320836;
-        Tue, 10 Dec 2019 22:31:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2872B2073D;
+        Tue, 10 Dec 2019 22:31:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017077;
-        bh=26sIAPxWOxDTt0sfmsLSrbEC8BEZn+0RTlIRcTTz9hw=;
+        s=default; t=1576017071;
+        bh=B1QIwygrLOhokb6wIsVKv19GcVnKSWWMr+sjIqDHfZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JZOzhHrn2GzbgvfotEsqru1PTXBscvVeUWjB1z+Y8a982cLc+DB9WWz2XHW/xK9gt
-         J/54KksarXEJ6bfCe1H/VymviWP1LGkDSyD5E831CqRLOR2BNRmFDtUxoau/0DCN9I
-         qJgkd9HaizrtA8vJKaIIrtYO+iDzR4v39C1CbyFA=
+        b=aS5ih6bHImVN+LpAodVrPU7Vwym2QLfb4LyusboWsVsnVzWORyhH+QZLeQO6SXC7W
+         cetolBhGfhbBvDdqg9GFDlfEO9cK6sN36HLCAFfKJg9/yK5ziq52B/Ol/ySOFfESxy
+         dg90+vgrJHKPaUnPuT3YTV7i0oejwU3oNcslU/nA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 35/91] iio: dac: ad7303: replace mlock with own lock
-Date:   Tue, 10 Dec 2019 17:29:39 -0500
-Message-Id: <20191210223035.14270-35-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 30/91] iio: chemical: atlas-ph-sensor: fix iio_triggered_buffer_predisable() position
+Date:   Tue, 10 Dec 2019 17:29:34 -0500
+Message-Id: <20191210223035.14270-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210223035.14270-1-sashal@kernel.org>
 References: <20191210223035.14270-1-sashal@kernel.org>
@@ -60,83 +61,54 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-[ Upstream commit c991bf9b650f39481cf3c1137092d4754a2c75de ]
+[ Upstream commit 0c8a6e72f3c04bfe92a64e5e0791bfe006aabe08 ]
 
-This change replaces indio_dev's mlock with the driver's own lock. The lock
-is mostly needed to protect state when changing the `dac_cache` info.
-The lock has been extended to `ad7303_read_raw()`, to make sure that the
-cache is updated if an SPI-write is already in progress.
+The iio_triggered_buffer_{predisable,postenable} functions attach/detach
+the poll functions.
+
+The iio_triggered_buffer_predisable() should be called last, to detach the
+poll func after the devices has been suspended.
+
+The position of iio_triggered_buffer_postenable() is correct.
+
+Note this is not stable material. It's a fix in the logical
+model rather fixing an actual bug.  These are being tidied up
+throughout the subsystem to allow more substantial rework that
+was blocked by variations in how things were done.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/dac/ad7303.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/iio/chemical/atlas-ph-sensor.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
-index 4b0f942b89145..2e5e753ab7066 100644
---- a/drivers/iio/dac/ad7303.c
-+++ b/drivers/iio/dac/ad7303.c
-@@ -42,6 +42,7 @@ struct ad7303_state {
- 	struct regulator *vdd_reg;
- 	struct regulator *vref_reg;
+diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+index dad2a8be68308..f5859c118a44a 100644
+--- a/drivers/iio/chemical/atlas-ph-sensor.c
++++ b/drivers/iio/chemical/atlas-ph-sensor.c
+@@ -331,16 +331,16 @@ static int atlas_buffer_predisable(struct iio_dev *indio_dev)
+ 	struct atlas_data *data = iio_priv(indio_dev);
+ 	int ret;
  
-+	struct mutex lock;
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-@@ -80,7 +81,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
+-	ret = iio_triggered_buffer_predisable(indio_dev);
++	ret = atlas_set_interrupt(data, false);
  	if (ret)
  		return ret;
  
--	mutex_lock(&indio_dev->mlock);
-+	mutex_lock(&st->lock);
+-	ret = atlas_set_interrupt(data, false);
++	pm_runtime_mark_last_busy(&data->client->dev);
++	ret = pm_runtime_put_autosuspend(&data->client->dev);
+ 	if (ret)
+ 		return ret;
  
- 	if (pwr_down)
- 		st->config |= AD7303_CFG_POWER_DOWN(chan->channel);
-@@ -91,7 +92,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
- 	 * mode, so just write one of the DAC channels again */
- 	ad7303_write(st, chan->channel, st->dac_cache[chan->channel]);
- 
--	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&st->lock);
- 	return len;
+-	pm_runtime_mark_last_busy(&data->client->dev);
+-	return pm_runtime_put_autosuspend(&data->client->dev);
++	return iio_triggered_buffer_predisable(indio_dev);
  }
  
-@@ -117,7 +118,9 @@ static int ad7303_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (info) {
- 	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&st->lock);
- 		*val = st->dac_cache[chan->channel];
-+		mutex_unlock(&st->lock);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		vref_uv = ad7303_get_vref(st, chan);
-@@ -145,11 +148,11 @@ static int ad7303_write_raw(struct iio_dev *indio_dev,
- 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
- 			return -EINVAL;
- 
--		mutex_lock(&indio_dev->mlock);
-+		mutex_lock(&st->lock);
- 		ret = ad7303_write(st, chan->address, val);
- 		if (ret == 0)
- 			st->dac_cache[chan->channel] = val;
--		mutex_unlock(&indio_dev->mlock);
-+		mutex_unlock(&st->lock);
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -213,6 +216,8 @@ static int ad7303_probe(struct spi_device *spi)
- 
- 	st->spi = spi;
- 
-+	mutex_init(&st->lock);
-+
- 	st->vdd_reg = devm_regulator_get(&spi->dev, "Vdd");
- 	if (IS_ERR(st->vdd_reg))
- 		return PTR_ERR(st->vdd_reg);
+ static const struct iio_trigger_ops atlas_interrupt_trigger_ops = {
 -- 
 2.20.1
 
