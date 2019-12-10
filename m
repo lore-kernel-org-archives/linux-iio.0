@@ -4,48 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B33EFC2D0BF
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D51A3C00454
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 875442053B
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A9F3322B48
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:42:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576017756;
-	bh=mQCliQUuDvr0riFtN9VdVoENc7SI8ZrshGbUX15EB5c=;
+	s=default; t=1576017769;
+	bh=26sIAPxWOxDTt0sfmsLSrbEC8BEZn+0RTlIRcTTz9hw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=R7I6lLTmHWXXnWryOlbwWi0khwPZfBdJj+9xXdjFckwiZaMwhovL7ucR5ilL3Zf4M
-	 vJNj7OijH3ZqUhaoxzfZsIIsWYMO+t6EaG1gqvUf7Nag5RQjHRppDrzeEWF2Or5YEm
-	 RlAImlXH1udR2G66B+PW/AaJVWICQaHsXibs4W2k=
+	b=oaVaqeBIcSXEKnviFczo5tJA8Pa06EpBNOKCPtp4Z4XHfr6ROnRQdmNRM6UBt2Os2
+	 eDfM8lMKM9NDLZHwZnIiwo1KmVLJvZJNNS46+3Q9ln02c+F5G8fPcJtJyPEymJv2gY
+	 upccFgputRFl3unN/eCNyG2u3AtOWI/ytP9D+x4I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728892AbfLJWmf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:42:35 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51392 "EHLO mail.kernel.org"
+        id S1728270AbfLJWbU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 17:31:20 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51262 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728361AbfLJWbX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:31:23 -0500
+        id S1728227AbfLJWbS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:31:18 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 186C02073D;
-        Tue, 10 Dec 2019 22:31:22 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17E0320836;
+        Tue, 10 Dec 2019 22:31:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017082;
-        bh=mQCliQUuDvr0riFtN9VdVoENc7SI8ZrshGbUX15EB5c=;
+        s=default; t=1576017077;
+        bh=26sIAPxWOxDTt0sfmsLSrbEC8BEZn+0RTlIRcTTz9hw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Go7+EBkpl6IcWC7kvHCvDCJDOZAtbUSrgqecb6ECYd1gduVBKiLeAsPx8oM13dvTl
-         QUtwt9wnLdoOoDVFU40jPc5odaQ/uK6Wvq1/X3/UgntPyQdgaqpJMba88muY/TBzgh
-         bfSaP+yRoOFc8ctSsozXEeSxFdZZQzCczQmtpEDo=
+        b=JZOzhHrn2GzbgvfotEsqru1PTXBscvVeUWjB1z+Y8a982cLc+DB9WWz2XHW/xK9gt
+         J/54KksarXEJ6bfCe1H/VymviWP1LGkDSyD5E831CqRLOR2BNRmFDtUxoau/0DCN9I
+         qJgkd9HaizrtA8vJKaIIrtYO+iDzR4v39C1CbyFA=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 39/91] iio: pressure: zpa2326: fix iio_triggered_buffer_postenable position
-Date:   Tue, 10 Dec 2019 17:29:43 -0500
-Message-Id: <20191210223035.14270-39-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 35/91] iio: dac: ad7303: replace mlock with own lock
+Date:   Tue, 10 Dec 2019 17:29:39 -0500
+Message-Id: <20191210223035.14270-35-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210223035.14270-1-sashal@kernel.org>
 References: <20191210223035.14270-1-sashal@kernel.org>
@@ -60,72 +60,83 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-[ Upstream commit fe2392c67db9730d46f11fc4fadfa7bffa8843fa ]
+[ Upstream commit c991bf9b650f39481cf3c1137092d4754a2c75de ]
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
-
-The iio_triggered_buffer_postenable() should be called before (to attach
-the poll func) and then the
-
-The iio_triggered_buffer_predisable() function is hooked directly without
-anything, which is probably fine, as the postenable() version seems to also
-do some reset/wake-up of the device.
-This will mean it will be easier when removing it; i.e. it just gets
-removed.
+This change replaces indio_dev's mlock with the driver's own lock. The lock
+is mostly needed to protect state when changing the `dac_cache` info.
+The lock has been extended to `ad7303_read_raw()`, to make sure that the
+cache is updated if an SPI-write is already in progress.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/pressure/zpa2326.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+ drivers/iio/dac/ad7303.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-index cc002b958f7e8..e79729ee151ed 100644
---- a/drivers/iio/pressure/zpa2326.c
-+++ b/drivers/iio/pressure/zpa2326.c
-@@ -1255,6 +1255,11 @@ static int zpa2326_postenable_buffer(struct iio_dev *indio_dev)
- 	const struct zpa2326_private *priv = iio_priv(indio_dev);
- 	int                           err;
+diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
+index 4b0f942b89145..2e5e753ab7066 100644
+--- a/drivers/iio/dac/ad7303.c
++++ b/drivers/iio/dac/ad7303.c
+@@ -42,6 +42,7 @@ struct ad7303_state {
+ 	struct regulator *vdd_reg;
+ 	struct regulator *vref_reg;
  
-+	/* Plug our own trigger event handler. */
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err)
-+		goto err;
++	struct mutex lock;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -80,7 +81,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		return ret;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 
+ 	if (pwr_down)
+ 		st->config |= AD7303_CFG_POWER_DOWN(chan->channel);
+@@ -91,7 +92,7 @@ static ssize_t ad7303_write_dac_powerdown(struct iio_dev *indio_dev,
+ 	 * mode, so just write one of the DAC channels again */
+ 	ad7303_write(st, chan->channel, st->dac_cache[chan->channel]);
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 	return len;
+ }
+ 
+@@ -117,7 +118,9 @@ static int ad7303_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (info) {
+ 	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&st->lock);
+ 		*val = st->dac_cache[chan->channel];
++		mutex_unlock(&st->lock);
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		vref_uv = ad7303_get_vref(st, chan);
+@@ -145,11 +148,11 @@ static int ad7303_write_raw(struct iio_dev *indio_dev,
+ 		if (val >= (1 << chan->scan_type.realbits) || val < 0)
+ 			return -EINVAL;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		ret = ad7303_write(st, chan->address, val);
+ 		if (ret == 0)
+ 			st->dac_cache[chan->channel] = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -213,6 +216,8 @@ static int ad7303_probe(struct spi_device *spi)
+ 
+ 	st->spi = spi;
+ 
++	mutex_init(&st->lock);
 +
- 	if (!priv->waken) {
- 		/*
- 		 * We were already power supplied. Just clear hardware FIFO to
-@@ -1262,7 +1267,7 @@ static int zpa2326_postenable_buffer(struct iio_dev *indio_dev)
- 		 */
- 		err = zpa2326_clear_fifo(indio_dev, 0);
- 		if (err)
--			goto err;
-+			goto err_buffer_predisable;
- 	}
- 
- 	if (!iio_trigger_using_own(indio_dev) && priv->waken) {
-@@ -1272,16 +1277,13 @@ static int zpa2326_postenable_buffer(struct iio_dev *indio_dev)
- 		 */
- 		err = zpa2326_config_oneshot(indio_dev, priv->irq);
- 		if (err)
--			goto err;
-+			goto err_buffer_predisable;
- 	}
- 
--	/* Plug our own trigger event handler. */
--	err = iio_triggered_buffer_postenable(indio_dev);
--	if (err)
--		goto err;
--
- 	return 0;
- 
-+err_buffer_predisable:
-+	iio_triggered_buffer_predisable(indio_dev);
- err:
- 	zpa2326_err(indio_dev, "failed to enable buffering (%d)", err);
- 
+ 	st->vdd_reg = devm_regulator_get(&spi->dev, "Vdd");
+ 	if (IS_ERR(st->vdd_reg))
+ 		return PTR_ERR(st->vdd_reg);
 -- 
 2.20.1
 
