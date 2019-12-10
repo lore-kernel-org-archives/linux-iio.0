@@ -7,51 +7,49 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 335E8C43603
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:31:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15A97C43603
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:38:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F3CB52073B
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:31:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE2C52073B
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:38:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576013491;
-	bh=Uu84qpMnEvTek01jYaB5sD7m/AD+QkDsg73IgbTZqkI=;
+	s=default; t=1576013936;
+	bh=P2+H/mNFkPxMa3vOFEINwrWiU5sbnq8adCuZsANTxDo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=E/u1khEBbMSGjel/HW3hYKbkbCVTm17nUgiujMVzd49c782ji9zGTx0H5mTNvD5d9
-	 /PcJkYj9/O8TFf+7Rb9BW3u8dZoOO/NmR9KlZkb0Wh99DrMjnSp9heqO/k7UIvEfBF
-	 9CSQhk7GUfuBsdFQshCN9uQaLW0H1EGo6I9l6GPs=
+	b=n4onaJZ43gxi42I361GN4RbdxHYaYvFl64rVpxWVYaPQLEs3OFPiI7F4uxFLsKsRW
+	 otme6eAbKTRC08kEQtntUyRuRVvRI64pQWZC3vO0eyR1dw74vJNpnz+Xp7iSVgerBQ
+	 OYduzyIgx4U8187dbRLNEim3ZUQrtzKAgjpEVosk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728157AbfLJVJc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 16:09:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58088 "EHLO mail.kernel.org"
+        id S1730192AbfLJVfL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 16:35:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727809AbfLJVJa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:09:30 -0500
+        id S1729781AbfLJVfJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:35:09 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39F7E246A2;
-        Tue, 10 Dec 2019 21:09:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7CCC3214AF;
+        Tue, 10 Dec 2019 21:35:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576012170;
-        bh=Uu84qpMnEvTek01jYaB5sD7m/AD+QkDsg73IgbTZqkI=;
+        s=default; t=1576013709;
+        bh=P2+H/mNFkPxMa3vOFEINwrWiU5sbnq8adCuZsANTxDo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=11qm0ncgsqu23jJFRvuEqlC0ws4zA0Z6/B2X4w9CeCU2bbK2wr25yp+cdxEpWqhON
-         QYJo/DbyeU4OQ4JZsqTVWGu/Kv9CNTWg80/cjysNgFnUD6yidHWidl498AUv4KRaFF
-         7xow5Hbq74eW71JphrqwENmUhRgaXWklx2hMIAS4=
+        b=0fZzC72YTAb9sqfzYGsxY0MWrTFkujVujgiY58MeqN3HXheL+yxPQyQBTXEFc9/WJ
+         z5hPXd9wivvROESIIAcg1FDIJ7aFchypAT01XvFwBBAtsOMj/ybrOxp/HNFKJZ6DCa
+         LJilbClMW3oqkorxcb1cj/TUt40VFPQGpTkJLt8U=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Chuhong Yuan <hslester96@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Stefan Popa <stefan.popa@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.4 129/350] staging: iio: ad9834: add a check for devm_clk_get
-Date:   Tue, 10 Dec 2019 16:03:54 -0500
-Message-Id: <20191210210735.9077-90-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.19 137/177] iio: dac: ad5446: Add support for new AD5600 DAC
+Date:   Tue, 10 Dec 2019 16:31:41 -0500
+Message-Id: <20191210213221.11921-137-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210210735.9077-1-sashal@kernel.org>
-References: <20191210210735.9077-1-sashal@kernel.org>
+In-Reply-To: <20191210213221.11921-1-sashal@kernel.org>
+References: <20191210213221.11921-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -61,37 +59,74 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Chuhong Yuan <hslester96@gmail.com>
+From: Stefan Popa <stefan.popa@analog.com>
 
-[ Upstream commit a96de139301385e5992768c0f60240ddfbb33325 ]
+[ Upstream commit 6376cbe549fffb378403cee78efd26b8a2c8e450 ]
 
-ad9834_probe misses a check for devm_clk_get and may cause problems.
-Add a check like what ad9832 does to fix it.
+The AD5600 is a single channel, 16-bit resolution, voltage output digital
+to analog converter (DAC). The AD5600 uses a 3-wire SPI interface. It is
+part of the AD5541 family of DACs.
 
-Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
-Reviewed-by: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+The ad5446 IIO driver implements support for some of these DACs (in the
+AD5441 family), so the change is a simple entry in this driver.
+
+Link: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5600.pdf
+
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/staging/iio/frequency/ad9834.c | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/iio/dac/Kconfig  | 4 ++--
+ drivers/iio/dac/ad5446.c | 6 ++++++
+ 2 files changed, 8 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 038d6732c3fdb..23026978a5a5f 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -417,6 +417,10 @@ static int ad9834_probe(struct spi_device *spi)
- 	st = iio_priv(indio_dev);
- 	mutex_init(&st->lock);
- 	st->mclk = devm_clk_get(&spi->dev, NULL);
-+	if (IS_ERR(st->mclk)) {
-+		ret = PTR_ERR(st->mclk);
-+		goto error_disable_reg;
-+	}
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index 80beb64e9e0c6..69f4cfa6494b5 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -59,8 +59,8 @@ config AD5446
+ 	help
+ 	  Say yes here to build support for Analog Devices AD5300, AD5301, AD5310,
+ 	  AD5311, AD5320, AD5321, AD5444, AD5446, AD5450, AD5451, AD5452, AD5453,
+-	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5601, AD5602, AD5611, AD5612,
+-	  AD5620, AD5621, AD5622, AD5640, AD5641, AD5660, AD5662 DACs
++	  AD5512A, AD5541A, AD5542A, AD5543, AD5553, AD5600, AD5601, AD5602, AD5611,
++	  AD5612, AD5620, AD5621, AD5622, AD5640, AD5641, AD5660, AD5662 DACs
+ 	  as well as Texas Instruments DAC081S101, DAC101S101, DAC121S101.
  
- 	ret = clk_prepare_enable(st->mclk);
- 	if (ret) {
+ 	  To compile this driver as a module, choose M here: the
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index fd26a4272fc5b..d3ce5def4f659 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -328,6 +328,7 @@ enum ad5446_supported_spi_device_ids {
+ 	ID_AD5541A,
+ 	ID_AD5512A,
+ 	ID_AD5553,
++	ID_AD5600,
+ 	ID_AD5601,
+ 	ID_AD5611,
+ 	ID_AD5621,
+@@ -382,6 +383,10 @@ static const struct ad5446_chip_info ad5446_spi_chip_info[] = {
+ 		.channel = AD5446_CHANNEL(14, 16, 0),
+ 		.write = ad5446_write,
+ 	},
++	[ID_AD5600] = {
++		.channel = AD5446_CHANNEL(16, 16, 0),
++		.write = ad5446_write,
++	},
+ 	[ID_AD5601] = {
+ 		.channel = AD5446_CHANNEL_POWERDOWN(8, 16, 6),
+ 		.write = ad5446_write,
+@@ -449,6 +454,7 @@ static const struct spi_device_id ad5446_spi_ids[] = {
+ 	{"ad5542a", ID_AD5541A}, /* ad5541a and ad5542a are compatible */
+ 	{"ad5543", ID_AD5541A}, /* ad5541a and ad5543 are compatible */
+ 	{"ad5553", ID_AD5553},
++	{"ad5600", ID_AD5600},
+ 	{"ad5601", ID_AD5601},
+ 	{"ad5611", ID_AD5611},
+ 	{"ad5621", ID_AD5621},
 -- 
 2.20.1
 
