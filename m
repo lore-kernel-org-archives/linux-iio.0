@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06403C2D0C5
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25E2AC2D0BF
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:25:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CFCE1206D5
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:25:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EEF60214AF
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 21:25:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576013125;
-	bh=tkOpwSDV7vgPsGvpRYsdLPmzvmcFNmPQMjROjg37NxM=;
+	s=default; t=1576013131;
+	bh=8sQZi92LYMSGs3wG0gKqFzU+WlXbbH0AzH5Aku7580E=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=2SqclBAlFvshbzMH0sr5brNxOOaMmamHwB8WoMntlNJPSMTIadHwR3xi5VbZM9hJx
-	 BYgEPRdxTy/CEsprY92DsQwXyPvr7Iix5nvoTmvWqqCsML65xqlLlF6AnX3i6i8D3P
-	 CGYwvxUC4j4xAZdy2TzNcupGnEdqY6nltj2kUFh0=
+	b=umKLx154Sz8SmkR48Ov+xiESZpNpbNn3UHgYYlob2weBcOGk7NU39KfuHw/kHa2wC
+	 7rVw3nQqNvb/8BaQ3S+kTMa8uVqKb/iT7fE8HR3tGFkjGCksOyeNaawp+ftekxoVnS
+	 q7rqS3pDXkZ2FDF+qlIQHWcG6MaSEQmRu80SiD0Q=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728544AbfLJVZX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 16:25:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56108 "EHLO mail.kernel.org"
+        id S1729507AbfLJVZa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 16:25:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56506 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729466AbfLJVZW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 16:25:22 -0500
+        id S1729499AbfLJVZ3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 16:25:29 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 30135214AF;
-        Tue, 10 Dec 2019 21:25:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6AA0420836;
+        Tue, 10 Dec 2019 21:25:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576013121;
-        bh=tkOpwSDV7vgPsGvpRYsdLPmzvmcFNmPQMjROjg37NxM=;
+        s=default; t=1576013129;
+        bh=8sQZi92LYMSGs3wG0gKqFzU+WlXbbH0AzH5Aku7580E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nfMzogzpHHFnAlDSkWsxik+dq+vflGj96EXBRuy+K8dXYFWDOm8CPKWbt24llueLU
-         NQIxV5O/PTeSZQ9CNYNnw3dqX9JyokdOC2RIWN+ZZONbxtnNgsaDRwTqNnZNALtEzn
-         ZJIp+Pbkkq2asw0VIpbaio0Y21KY6dkb8S4Ad5fE=
+        b=UBTrp2qJ7Q9h5G2sM3sjdYSIVBYYsSD1GyljiSeVIzj76U27a+oKeaFOVAvjjcFop
+         eKyM7neXRGzdbofm74dKuOrP5XWahPw5aaN+s2eqGPwPNpky/1Hbo0gudnjnSSrB+7
+         9ahgxWuRUyfUUNUogcVTuwLhosRJPSVxPJv8FraU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Andrea Merello <andrea.merello@gmail.com>,
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.3 008/292] iio: max31856: add missing of_node and parent references to iio_dev
-Date:   Tue, 10 Dec 2019 16:20:27 -0500
-Message-Id: <20191210212511.11392-8-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.3 014/292] iio: tcs3414: fix iio_triggered_buffer_{pre,post}enable positions
+Date:   Tue, 10 Dec 2019 16:20:33 -0500
+Message-Id: <20191210212511.11392-14-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210212511.11392-1-sashal@kernel.org>
 References: <20191210212511.11392-1-sashal@kernel.org>
@@ -58,34 +58,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andrea Merello <andrea.merello@gmail.com>
+From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-[ Upstream commit 505ea3ada665c466d0064b11b6e611b7f995517d ]
+[ Upstream commit 0fe2f2b789190661df24bb8bf62294145729a1fe ]
 
-Adding missing indio_dev->dev.of_node references so that, in case multiple
-max31856 are present, users can get some clues to being able to distinguish
-each of them. While at it, add also the missing parent reference.
+The iio_triggered_buffer_{predisable,postenable} functions attach/detach
+the poll functions.
 
-Signed-off-by: Andrea Merello <andrea.merello@gmail.com>
+For the predisable hook, the disable code should occur before detaching
+the poll func, and for the postenable hook, the poll func should be
+attached before the enable code.
+
+The driver was slightly reworked. The preenable hook was moved to the
+postenable, to add some symmetry to the postenable/predisable part.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/temperature/max31856.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/light/tcs3414.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/temperature/max31856.c b/drivers/iio/temperature/max31856.c
-index f184ba5601d94..73ed550e3fc95 100644
---- a/drivers/iio/temperature/max31856.c
-+++ b/drivers/iio/temperature/max31856.c
-@@ -284,6 +284,8 @@ static int max31856_probe(struct spi_device *spi)
- 	spi_set_drvdata(spi, indio_dev);
+diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
+index 7c0291c5fe76e..b542e5619ead8 100644
+--- a/drivers/iio/light/tcs3414.c
++++ b/drivers/iio/light/tcs3414.c
+@@ -240,32 +240,42 @@ static const struct iio_info tcs3414_info = {
+ 	.attrs = &tcs3414_attribute_group,
+ };
  
- 	indio_dev->info = &max31856_info;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->dev.of_node = spi->dev.of_node;
- 	indio_dev->name = id->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = max31856_channels;
+-static int tcs3414_buffer_preenable(struct iio_dev *indio_dev)
++static int tcs3414_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct tcs3414_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = iio_triggered_buffer_postenable(indio_dev);
++	if (ret)
++		return ret;
+ 
+ 	data->control |= TCS3414_CONTROL_ADC_EN;
+-	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+ 		data->control);
++	if (ret)
++		iio_triggered_buffer_predisable(indio_dev);
++
++	return ret;
+ }
+ 
+ static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
+ {
+ 	struct tcs3414_data *data = iio_priv(indio_dev);
+-	int ret;
+-
+-	ret = iio_triggered_buffer_predisable(indio_dev);
+-	if (ret < 0)
+-		return ret;
++	int ret, ret2;
+ 
+ 	data->control &= ~TCS3414_CONTROL_ADC_EN;
+-	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
++	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
+ 		data->control);
++
++	ret2 = iio_triggered_buffer_predisable(indio_dev);
++	if (!ret)
++		ret = ret2;
++
++	return ret;
+ }
+ 
+ static const struct iio_buffer_setup_ops tcs3414_buffer_setup_ops = {
+-	.preenable = tcs3414_buffer_preenable,
+-	.postenable = &iio_triggered_buffer_postenable,
++	.postenable = tcs3414_buffer_postenable,
+ 	.predisable = tcs3414_buffer_predisable,
+ };
+ 
 -- 
 2.20.1
 
