@@ -7,49 +7,52 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68CACC43603
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:43:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2629C00454
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:45:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 28F812077B
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:43:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9ADCA20836
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:45:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576017815;
-	bh=iurVc/ItTeczwTRe+6d4cB16/xmHVvOblSfQtO2a6Ow=;
+	s=default; t=1576017923;
+	bh=LFOAkg9kscunvVIpl231DkBrnvdPxs3A18yFFNInxJc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=eskW/mMzBrYvfq4A46oWhIeXRMYuk/IvRJRzXUngWGkz4IV+5qCWLo8UCGJgi1NHD
-	 i1UJ9SZw6mH+Htba6Pt/MJcXz0cpAMDKJD53NF00LrVJ49zhncHoNSArbgYgOjpBE4
-	 RUtX7WzJLfazdtiwUk78xXZeYSdWepTvgnC99Sqk=
+	b=JQZ+KKOPg8YWz5pmaEURzpUkNV24DkU1w/JDYDaRKia0sD+5CVc+3F6bneANcscLT
+	 vyRRRW1BUknvlOoea0CxIh0dKZncjWM8joWuC+zAZ5iUCNU+kxavbqQcwtBNP6G6Yp
+	 9X1EFWdSyK0fv01aHk18nrjNkXcGVDocHkXRop84=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727855AbfLJWbE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:31:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50898 "EHLO mail.kernel.org"
+        id S1726986AbfLJWam (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 17:30:42 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50336 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727668AbfLJWbE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:31:04 -0500
+        id S1726841AbfLJWak (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 10 Dec 2019 17:30:40 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 779BB214AF;
-        Tue, 10 Dec 2019 22:31:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 65C9820838;
+        Tue, 10 Dec 2019 22:30:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017063;
-        bh=iurVc/ItTeczwTRe+6d4cB16/xmHVvOblSfQtO2a6Ow=;
+        s=default; t=1576017040;
+        bh=LFOAkg9kscunvVIpl231DkBrnvdPxs3A18yFFNInxJc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SV+kwQoOy69fFr5+mQsaraKptIbcEzQi73r2vXuqKWu9+93H/IHZkRUv1dYWZuMgC
-         0RBVV7NwSow4E+tTjdDUv49ZEECK0oUnWFgM93OIEvqWT3QjfyOxiCX1o1IRnTD0gb
-         T94lCA5C9wCouD6+a0J/ihTrhiwADEFWqnR2mj+8=
+        b=uGCCqTA2uo6HvJE6hFAemESCXxlIYEiTNxx/sxk+Yu5/ATn5QhmusewT2zJxc5eM7
+         LSRPXqKJ+kZe/+m7n/jvoSHaztvr5Acnh5h8KIMasasILRcvAWtjFtZ/E9YLn9Wvvg
+         i+CjCZaHggx6OZvsBPvhFGHw0Yrs9WgdRVXbnaL0=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Krzysztof Wilczynski <kw@linux.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 23/91] iio: proximity: sx9500: fix iio_triggered_buffer_{predisable,postenable} positions
-Date:   Tue, 10 Dec 2019 17:29:27 -0500
-Message-Id: <20191210223035.14270-23-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 03/91] iio: light: bh1750: Resolve compiler warning and make code more readable
+Date:   Tue, 10 Dec 2019 17:29:07 -0500
+Message-Id: <20191210223035.14270-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20191210223035.14270-1-sashal@kernel.org>
 References: <20191210223035.14270-1-sashal@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 X-stable: review
 X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
@@ -58,83 +61,49 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+From: Krzysztof Wilczynski <kw@linux.com>
 
-[ Upstream commit 3cfd6464fe23deb45bb688df66184b3f32fefc16 ]
+[ Upstream commit f552fde983d378e7339f9ea74a25f918563bf0d3 ]
 
-The iio_triggered_buffer_predisable() should be called last, to detach the
-poll func after the devices has been suspended.
+Separate the declaration of struct bh1750_chip_info from definition
+of bh1750_chip_info_tbl[] in a single statement as it makes the code
+hard to read, and with the extra newline it makes it look as if the
+bh1750_chip_info_tbl[] had no explicit type.
 
-This change re-organizes things a bit so that the postenable & predisable
-are symmetrical. It also converts the preenable() to a postenable().
+This change also resolves the following compiler warning about the
+unusual position of the static keyword that can be seen when building
+with warnings enabled (W=1):
 
-Not stable material as there is no known problem with the current
-code, it's just not consistent with the form we would like all the
-IIO drivers to adopt so as to allow subsystem wide changes.
+drivers/iio/light/bh1750.c:64:1: warning:
+  ‘static’ is not at beginning of declaration [-Wold-style-declaration]
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Related to commit 3a11fbb037a1 ("iio: light: add support for ROHM
+BH1710/BH1715/BH1721/BH1750/BH1751 ambient light sensors").
+
+Signed-off-by: Krzysztof Wilczynski <kw@linux.com>
+Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/proximity/sx9500.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/iio/light/bh1750.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/proximity/sx9500.c b/drivers/iio/proximity/sx9500.c
-index 9ea147f1a50d1..c6128aa4974d7 100644
---- a/drivers/iio/proximity/sx9500.c
-+++ b/drivers/iio/proximity/sx9500.c
-@@ -683,11 +683,15 @@ static irqreturn_t sx9500_trigger_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
+diff --git a/drivers/iio/light/bh1750.c b/drivers/iio/light/bh1750.c
+index b05946604f804..6d5bb11594dc1 100644
+--- a/drivers/iio/light/bh1750.c
++++ b/drivers/iio/light/bh1750.c
+@@ -62,9 +62,9 @@ struct bh1750_chip_info {
  
--static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
-+static int sx9500_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct sx9500_data *data = iio_priv(indio_dev);
- 	int ret = 0, i;
+ 	u16 int_time_low_mask;
+ 	u16 int_time_high_mask;
+-}
++};
  
-+	ret = iio_triggered_buffer_postenable(indio_dev);
-+	if (ret)
-+		return ret;
-+
- 	mutex_lock(&data->mutex);
- 
- 	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
-@@ -704,6 +708,9 @@ static int sx9500_buffer_preenable(struct iio_dev *indio_dev)
- 
- 	mutex_unlock(&data->mutex);
- 
-+	if (ret)
-+		iio_triggered_buffer_predisable(indio_dev);
-+
- 	return ret;
- }
- 
-@@ -712,8 +719,6 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
- 	struct sx9500_data *data = iio_priv(indio_dev);
- 	int ret = 0, i;
- 
--	iio_triggered_buffer_predisable(indio_dev);
--
- 	mutex_lock(&data->mutex);
- 
- 	for (i = 0; i < SX9500_NUM_CHANNELS; i++)
-@@ -730,12 +735,13 @@ static int sx9500_buffer_predisable(struct iio_dev *indio_dev)
- 
- 	mutex_unlock(&data->mutex);
- 
-+	iio_triggered_buffer_predisable(indio_dev);
-+
- 	return ret;
- }
- 
- static const struct iio_buffer_setup_ops sx9500_buffer_setup_ops = {
--	.preenable = sx9500_buffer_preenable,
--	.postenable = iio_triggered_buffer_postenable,
-+	.postenable = sx9500_buffer_postenable,
- 	.predisable = sx9500_buffer_predisable,
- };
- 
+-static const bh1750_chip_info_tbl[] = {
++static const struct bh1750_chip_info bh1750_chip_info_tbl[] = {
+ 	[BH1710] = { 140, 1022, 300, 400,  250000000, 2, 0x001F, 0x03E0 },
+ 	[BH1721] = { 140, 1020, 300, 400,  250000000, 2, 0x0010, 0x03E0 },
+ 	[BH1750] = { 31,  254,  69,  1740, 57500000,  1, 0x001F, 0x00E0 },
 -- 
 2.20.1
 
