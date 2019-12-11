@@ -8,71 +8,63 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073F9C2D0C6
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1BFC43603
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C75072173E
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5CF5E2173E
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cTFNRC0S"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="GfB0dMl6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730140AbfLKOjf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Dec 2019 09:39:35 -0500
-Received: from mail-pj1-f67.google.com ([209.85.216.67]:39575 "EHLO
-        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730139AbfLKOjf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:39:35 -0500
-Received: by mail-pj1-f67.google.com with SMTP id v93so9017878pjb.6;
-        Wed, 11 Dec 2019 06:39:34 -0800 (PST)
+        id S1730199AbfLKOjr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Dec 2019 09:39:47 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:37583 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730192AbfLKOjq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:39:46 -0500
+Received: by mail-pg1-f195.google.com with SMTP id q127so10877412pga.4;
+        Wed, 11 Dec 2019 06:39:46 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XbYbcASd2+KhdijffyhFolrYSToXlnSKrqANevTKCr0=;
-        b=cTFNRC0SDsTy6TOB5GAhoEjp+6Nx4jpqI/v0BumN/4YTcJP+nvYX069JP+MbzEagHr
-         H0ef6hXStk3Qg5lCvjuLedPwtDGDXfRoB85H+g1U06dX5OfXuUM2jxLvl6Cjs9tJ1WL+
-         S0yPKhGp9Gb3thch8kkmllLkaCqodmqe2Sx4pEr+RL5dqATYLc3rAUoO5MLajiv7DCO3
-         JNeUQRpuduNY8cUkoj6eofMk5/c454aa+Ha1eoWmL458SQ2qJ+ii3tkN3pBKHkkAAY6b
-         u0wOCJNda/YXvxTj1qSg10BkhZrqKRHmv4Z2Tw0e/Zvq2XZkBq2HeYHcgVAzWVb+uVUw
-         R2hA==
+        bh=GhXVAnhaL3dF2Pk0jAZjmHL842tdRou+nNjmrun5mDI=;
+        b=GfB0dMl66LMji7iSDluDDgU95hFyrbLyBDa8g9R6tZQrYvzznr7sbD0EI+zx9PZa2a
+         UPcDzuUIfU+mXjTqpj1nB/cZRBTziPKDINSxpV160A8qKLUskV7icNyoDpzGtFJ/W4WG
+         2iBDG2uBtjRDggXzegIdkZ21vawseCOf6qaPFh0AlPaij/VqPMZ1PrqwB4igUsER3fw9
+         MGwC4Bw2o1XiM61vnkvQn/3OuFljldg0RPznpVhmrQCbj2V20rgrMUe4mQ5FtASiBaVH
+         t8gKx1S12ypjJZhGV6bC07NGCq71O6eQQkdVJ3Dpwjy0E0oVLRZkOjg1ya4ol/N4tXPC
+         gHUA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=XbYbcASd2+KhdijffyhFolrYSToXlnSKrqANevTKCr0=;
-        b=F2gS3f3Q8nwmFgGR5vallu8cUdUccFy6xiFautOvd0/45t60Ziy9nKbJNR78DM1IBt
-         XkXq2BaLGYm+E/9jbbDERIg2vhWSdVrE+QMpODlZIU8Vl9rLVv1jhEVavyXjdddA1h1w
-         srcqaiVaXp3TpoVGqzRvFdZ5eVC6s2z4l3jmWVCQ7IrWEcRUK5ZDENn39rQRq4e8IzE9
-         2sRUCl2zMboOy68L3obFchQnebk/RSOLKYsx5TgGjv7J291VvZ3ABpJzRdO+dTy7bKSb
-         EftGA0N83HKK8ar9qiv6k9xrpqI4nYgh5oCP9BqDnXZNYTD5C86iDgHhnaq+dh9Bud4Y
-         QhoQ==
-X-Gm-Message-State: APjAAAXWgom63XuX0etys8LKG5SfbNptbCYH0JeQnKVY9U1dfQvHIICW
-        l2GEdKWBS7g9AT4vHE1f5/o=
-X-Google-Smtp-Source: APXvYqw0ZMYCDczwvXAKv4QaKyfYTxS7oOjP0rRHfMNhKXXkmJLTUVSslEFXuouLo4HrbdvcoGIzRQ==
-X-Received: by 2002:a17:90a:970b:: with SMTP id x11mr3797597pjo.35.1576075174618;
-        Wed, 11 Dec 2019 06:39:34 -0800 (PST)
+        bh=GhXVAnhaL3dF2Pk0jAZjmHL842tdRou+nNjmrun5mDI=;
+        b=OYgwxc51CziZLzIjPtIP3tiFKoA+eSppIzupd9iGkYcQsYKTMSYNEBXllHqMJN1wgD
+         U0LUmk2RSEHZnoPy0kGzF9wTQ2TM6R72ax3YqduEO4/10uzyh+ZOzEl9wY7cWUuZuT6A
+         dGmUQMbNByDE6DllEyauP2d+aSY4sct18JTwe0ynYNkfg1cmWZ1+XUAo2sMqVZfp9f5D
+         F7yqPD/RVwVMJr3gATwbJY8yT4zEoECAPgLhjrn/ikxfwM65YfWQci6xDICQZhkrZykz
+         6MzfiWD7U/2RnXlNLRr9hP0uO/29vRY0+EYok5PFz+X2sl2hPoVEzWnP2h/hQeBRuu+N
+         pgUQ==
+X-Gm-Message-State: APjAAAVoAA2Ph83XsPeZ5PMuwkoVbTX2VFdpbbLIw8kPFct03rEYLcpn
+        2UCnhjjii+YOW/v99i4K2V8=
+X-Google-Smtp-Source: APXvYqwSkDQsttnam5DXc1gmHwbz0oD5Nrbbl83FHdZwnnYrsoV2z/G3N/ntf8aYY+yXSPtKkfWXnQ==
+X-Received: by 2002:a62:1883:: with SMTP id 125mr4054521pfy.166.1576075186342;
+        Wed, 11 Dec 2019 06:39:46 -0800 (PST)
 Received: from localhost.localdomain ([240f:34:212d:1:368e:e048:68f1:84e7])
-        by smtp.gmail.com with ESMTPSA id q11sm3444239pff.111.2019.12.11.06.39.29
+        by smtp.gmail.com with ESMTPSA id q11sm3444239pff.111.2019.12.11.06.39.42
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 11 Dec 2019 06:39:33 -0800 (PST)
+        Wed, 11 Dec 2019 06:39:45 -0800 (PST)
 From:   Akinobu Mita <akinobu.mita@gmail.com>
 To:     linux-nvme@lists.infradead.org, linux-hwmon@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-wireless@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Akinobu Mita <akinobu.mita@gmail.com>,
-        Sujith Thomas <sujith.thomas@intel.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
         Zhang Rui <rui.zhang@intel.com>,
         Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v3 08/12] thermal: remove kelvin to/from Celsius conversion helpers from <linux/thermal.h>
-Date:   Wed, 11 Dec 2019 23:38:15 +0900
-Message-Id: <1576075099-3441-9-git-send-email-akinobu.mita@gmail.com>
+        Amit Kucheria <amit.kucheria@verdurent.com>
+Subject: [PATCH v3 11/12] thermal: armada: remove unused TO_MCELSIUS macro
+Date:   Wed, 11 Dec 2019 23:38:18 +0900
+Message-Id: <1576075099-3441-12-git-send-email-akinobu.mita@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
 References: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
@@ -81,51 +73,31 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This removes the kelvin to/from Celsius conversion helper macros in
-<linux/thermal.h> which were switched to the inline helper functions
-in <linux/units.h>.
+This removes unused TO_MCELSIUS() macro.
 
-Cc: Sujith Thomas <sujith.thomas@intel.com>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Andy Shevchenko <andy@infradead.org>
 Cc: Zhang Rui <rui.zhang@intel.com>
 Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
 Cc: Amit Kucheria <amit.kucheria@verdurent.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Keith Busch <kbusch@kernel.org>
-Cc: Jens Axboe <axboe@fb.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Sagi Grimberg <sagi@grimberg.me>
 Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 ---
-* No changes from v2
+* New patch from v3
 
- include/linux/thermal.h | 11 -----------
- 1 file changed, 11 deletions(-)
+ drivers/thermal/armada_thermal.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-index d9111ae..126913c6 100644
---- a/include/linux/thermal.h
-+++ b/include/linux/thermal.h
-@@ -32,17 +32,6 @@
- /* use value, which < 0K, to indicate an invalid/uninitialized temperature */
- #define THERMAL_TEMP_INVALID	-274000
+diff --git a/drivers/thermal/armada_thermal.c b/drivers/thermal/armada_thermal.c
+index 709a22f..fc6dc10 100644
+--- a/drivers/thermal/armada_thermal.c
++++ b/drivers/thermal/armada_thermal.c
+@@ -21,8 +21,6 @@
  
--/* Unit conversion macros */
--#define DECI_KELVIN_TO_CELSIUS(t)	({			\
--	long _t = (t);						\
--	((_t-2732 >= 0) ? (_t-2732+5)/10 : (_t-2732-5)/10);	\
--})
--#define CELSIUS_TO_DECI_KELVIN(t)	((t)*10+2732)
--#define DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(t, off) (((t) - (off)) * 100)
--#define DECI_KELVIN_TO_MILLICELSIUS(t) DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(t, 2732)
--#define MILLICELSIUS_TO_DECI_KELVIN_WITH_OFFSET(t, off) (((t) / 100) + (off))
--#define MILLICELSIUS_TO_DECI_KELVIN(t) MILLICELSIUS_TO_DECI_KELVIN_WITH_OFFSET(t, 2732)
+ #include "thermal_core.h"
+ 
+-#define TO_MCELSIUS(c)			((c) * 1000)
 -
- /* Default Thermal Governor */
- #if defined(CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE)
- #define DEFAULT_THERMAL_GOVERNOR       "step_wise"
+ /* Thermal Manager Control and Status Register */
+ #define PMU_TDC0_SW_RST_MASK		(0x1 << 1)
+ #define PMU_TM_DISABLE_OFFS		0
 -- 
 2.7.4
 
