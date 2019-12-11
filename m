@@ -2,196 +2,192 @@ Return-Path: <SRS0=ZKnQ=2B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C370C43603
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:34:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7430C43603
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:56:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 64AF92464B
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:34:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A26192073B
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:56:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="saTYAymW"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="UiyYdZ94"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387748AbfLKPet (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Dec 2019 10:34:49 -0500
-Received: from mail-pg1-f193.google.com ([209.85.215.193]:37240 "EHLO
-        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387561AbfLKPer (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 10:34:47 -0500
-Received: by mail-pg1-f193.google.com with SMTP id q127so10944456pga.4;
-        Wed, 11 Dec 2019 07:34:47 -0800 (PST)
+        id S1731100AbfLKP4a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Dec 2019 10:56:30 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:5730 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1731770AbfLKPPZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 10:15:25 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBBF8rHi012039;
+        Wed, 11 Dec 2019 10:15:22 -0500
+Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2051.outbound.protection.outlook.com [104.47.44.51])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2wraq3mry1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 Dec 2019 10:15:22 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=jzdSgRMdxrPOWG3wdBtEiJPmUrFN2OpPTVNO7RUsFP+Cx24nW0+1uA1ht1iEF7iCtuAeETjsQLvW6/5zg2gmJoefT2rDU6obfKwBWWQWDpCob+B87EVVaw6ENOzsq8IwB9Ml3XWQ1tXbbj9YvbfY+ttAJ7hSwnbIrRdcHdTk10qcPxVz7WCAtO4WqQ6ZmOc5FCBIpdCPKjjqrEpMD35MgpFm9TY0Eo5X2I4yQuKXLUsSkEQfjflC0mt5gMC/CTzazcK6zZDHC+9lNvydiBdTF2rSS3tB0XaxNbjh8GoeVuqQ3SXWR84mdAX0qdjbGrctybhJjSgizt4Pitoc2GN/WA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2PrsMZEXI4PpiwET8BdVm7Qg5vr+H1mJJ+nrlZKxl7c=;
+ b=KPzWurw7nR3efMCPGFWiCg0J+gr7JKkNTQ7SLMSwkg8LuhXbAWeUlYgOttrcGkXGvXgmoLt8v8TLrtzvPwyGlbvJANXkSdkY8sbqou6KTGI0KmI9ujRkhrVLXBg7NggmI8huT3I7n4NvyfZZoQF+2Ga7DShgjMuNbKuUIL1GnsZFA94ggNfouNGA1vRdy9SkhgPu6mVFN0BLu/492p6JnrtPYz0cyVssTYKH6Qvf3nxvLKSiyAKbz1eyIjDJ7fPhEPkYZfXsA1Qez4Nfzq2CG42xCP36za1NdZsCpZTJAUvSW87qIsuf2TMgWtjLZJwmRib0MjUcpGt4IZOeqxYZ0g==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=HVbcFREEaAqSDDWDOprFJiM+U7AawLPMDqSvqgEPZVM=;
-        b=saTYAymWtQJVo2xDI5CVVPD7OFscZvr3OmDkn9R98p/K2QPfrErbyRBfLSWuDw82Je
-         o5ei0YTQ5fgmkh7BZCrXIsR8OBZyO/sfNZyPb/2FHmifAkGNyAGukafSKofRjuTXMFXl
-         WMQxGPuD9wxK4yLU1VhNzWYYmxihNPVzCRYgjRidEsjCXlEHWzI7tLoB4bV+Tg3p4Myq
-         VXt9uBaV6jd+hJ6IiKy+pcyDX7aXRViVdLgvrrtrP2D7MFxBpcCNbOct/mx5x6fZqNzY
-         wB9Y8YH11zoDDTXPnrVGiEROE/KKqb2trAGgVZw0dOKu3YAS5kWfyPCL9O/gC/FZ67Mj
-         Od8w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HVbcFREEaAqSDDWDOprFJiM+U7AawLPMDqSvqgEPZVM=;
-        b=bYAetMkQEIiFZIm3qnffBXcd6lIlL9J+d3IgIYIvwk3iFFmlv6oL6Xef1QRJ8h/xYX
-         BS5uk3rmX+n6N4zUJ/WF4i36CNeNLI7fc+oPNjOYrO55/WiXoqGgPhojY8bcSIS8MwaY
-         D0xT9omgE62Ud+OZ2s5zVaa2n8S1F67lp2doKCSb9Ejv5925cM93w6MZmhKyXNI0K+3C
-         miyyY4u4sxrPSKqGcVKHH5s+WtaeXJRrWZJDKN9ggsLlmZ2iDnqMheTxnUM/vR3CteLt
-         bNWz0wRPvIwaupjz/CBrDdRHag6wWQeYZqDDkHc9vO/6U8NHpal14A7ThErWqXfdcJ90
-         yMCQ==
-X-Gm-Message-State: APjAAAXONB2Wd6FQyap/8Kga4+tUPU3aML+AsSWGjPvAoXWT9epAtMWA
-        u7F4U+Q3lhoLS/zSGYv6vAwREvrkN4min5dBMto=
-X-Google-Smtp-Source: APXvYqzJ499NHPqVSLLyDUscDbmBddDHmzhr28AkkyOZGKxqfxHIirybt8amARCuiU4PKcyZgP8Qc63k0WPAFrMp7QU=
-X-Received: by 2002:a62:1944:: with SMTP id 65mr4526218pfz.151.1576078486945;
- Wed, 11 Dec 2019 07:34:46 -0800 (PST)
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=2PrsMZEXI4PpiwET8BdVm7Qg5vr+H1mJJ+nrlZKxl7c=;
+ b=UiyYdZ94jjjEdFcPavuGveZZcpNS4zSGU6QGl+dGULrH5tqwWvSKqn5aLk1CctzuDGyfJR9U+QSshKlFkw/ZMxk9IzaaDdmu5ezN5Lca4CKjOSovLrjJpjk5yt7JkJx1omfGbVPSfIt0S4XXVpXNh2AIH0R0mJwLpI4o5NkMEN4=
+Received: from BN3PR03CA0064.namprd03.prod.outlook.com
+ (2a01:111:e400:7a4d::24) by DM6PR03MB3883.namprd03.prod.outlook.com
+ (2603:10b6:5:4f::17) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2516.18; Wed, 11 Dec
+ 2019 15:15:21 +0000
+Received: from BL2NAM02FT033.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e46::205) by BN3PR03CA0064.outlook.office365.com
+ (2a01:111:e400:7a4d::24) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2516.14 via Frontend
+ Transport; Wed, 11 Dec 2019 15:15:21 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ BL2NAM02FT033.mail.protection.outlook.com (10.152.77.163) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2538.14
+ via Frontend Transport; Wed, 11 Dec 2019 15:15:20 +0000
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xBBFFK17021129
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 11 Dec 2019 07:15:20 -0800
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 11 Dec 2019 07:15:20 -0800
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 11 Dec 2019 07:15:20 -0800
+Received: from saturn.ad.analog.com ([10.48.65.121])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id xBBFFIJo012456;
+        Wed, 11 Dec 2019 10:15:18 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: core: print error message on debugfs register failure
+Date:   Wed, 11 Dec 2019 17:16:36 +0200
+Message-ID: <20191211151636.13547-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
-In-Reply-To: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 11 Dec 2019 17:34:37 +0200
-Message-ID: <CAHp75VcsfbkG7n6FHkpnPN0sG_PdKg_iKS7VGfATxuPVYU5jcQ@mail.gmail.com>
-Subject: Re: [PATCH v3 00/12] add header file for kelvin to/from Celsius
- conversion helpers
-To:     Akinobu Mita <akinobu.mita@gmail.com>
-Cc:     Linux NVMe Mailinglist <linux-nvme@lists.infradead.org>,
-        linux-hwmon@vger.kernel.org, Linux PM <linux-pm@vger.kernel.org>,
-        "open list:TI WILINK WIRELES..." <linux-wireless@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Sujith Thomas <sujith.thomas@intel.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>,
-        Kalle Valo <kvalo@codeaurora.org>,
-        Stanislaw Gruszka <sgruszka@redhat.com>,
-        Johannes Berg <johannes.berg@intel.com>,
-        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
-        Luca Coelho <luciano.coelho@intel.com>,
-        Intel Linux Wireless <linuxwifi@intel.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(396003)(39860400002)(346002)(376002)(189003)(199004)(110136005)(70206006)(26005)(8676002)(36756003)(70586007)(54906003)(7696005)(86362001)(7636002)(316002)(44832011)(186003)(246002)(8936002)(478600001)(5660300002)(336012)(356004)(6666004)(2616005)(4326008)(107886003)(1076003)(426003)(2906002)(15650500001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB3883;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: f43d9cbf-8450-4352-8525-08d77e4ceff9
+X-MS-TrafficTypeDiagnostic: DM6PR03MB3883:
+X-Microsoft-Antispam-PRVS: <DM6PR03MB388346BAB2ACF2A7FDE8F522F95A0@DM6PR03MB3883.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
+X-Forefront-PRVS: 024847EE92
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: 5N0SRVA+KGdfyilcS1zkT/sKrJKseHMj1lDldqun6M4YO3ZgPGN7oCO5lM6ypMYOtisTTVrwb7LnD2lZF04WRRrNWa9ibqIA3kMeH628XcQCbVMFRW5d2S++4y+OygcqQXeO9etJ2djKIjUWMkGaVtTTVWp0QUamQzUIOCy/LW74GCUQ07vQ5glYJl/vyTD53noFFl3WaK/hTRt0z/f6QcQ0/v7nu/vBS48MYYSWT6hMYfS1wLqs43ne1H3TpqMXIWH/v+5shlbXFCxC8b4jCEDFvd25XRWmq5nW/fYX5IsgYnslm3h7PmhmuYF+tZKjzWarARBHKotSnDe6pg7sTx1tTMP8yXlU1ZRNoUbZglEGnyx7WPj/SnRAUdeyDzmZoFNn+llNFZPT2TS4LK58wFZaVD2g9kFbRWu0VIhYiXPpnKWu+gg9jtbQz9ITGIXC
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2019 15:15:20.4205
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: f43d9cbf-8450-4352-8525-08d77e4ceff9
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3883
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-11_04:2019-12-11,2019-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
+ priorityscore=1501 lowpriorityscore=0 malwarescore=0 phishscore=0
+ impostorscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912110129
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Dec 11, 2019 at 4:38 PM Akinobu Mita <akinobu.mita@gmail.com> wrote:
->
-> There are several helper macros to convert kelvin to/from Celsius in
-> <linux/thermal.h> for thermal drivers.  These are useful for any other
-> drivers or subsystems, but it's odd to include <linux/thermal.h> just for
-> the helpers.
->
-> This adds a new <linux/units.h> that provides the equivalent inline
-> functions for any drivers or subsystems, and switches all the users of
-> conversion helpers in <linux/thermal.h> to use <linux/units.h>
-> helpers.
->
+From: Michael Hennerich <michael.hennerich@analog.com>
 
-Thank you for an update.
+If there's a failure when registering a debugfs entry for a device, don't
+silently ignore the failure. Instead, print an error message and an error
+code signaling the failure.
 
-For non-commented patches
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/industrialio-core.c | 34 +++++++++++++++++++++++++++------
+ 1 file changed, 28 insertions(+), 6 deletions(-)
 
-> * v3
-> - rename new header name from <linux/temperature.h> to <linux/units.h>
-> - add milli_kelvin_to_millicelsius() and millicelsius_to_milli_kelvin() and
->   use them for implementing other helpers
-> - add MILLIDEGREE_PER_DEGREE and MILLIDEGREE_PER_DECIDEGREE and replace
->   the hardcoded constants
-> - add kelvin_to_celsius() and celsius_to_kelvin() in <linux/units.h>
-> - add Reviewed-by tags
-> - switch iwlegacy driver to use <linux/units.h> helpers
-> - switch iwlwifi driver to use <linux/units.h> helpers
-> - remove unused TO_MCELSIUS macro in armada thermal driver
-> - switch qcom-vadc-common module to use <linux/units.h> helpers
->
-> * v2
-> - add deci_kelvin_to_millicelsius_with_offset() in linux/temperature.h
-> - stop including linux/temperature.h from linux/thermal.h
-> - include <linux/temperature.h> explicitly from thermal drivers
-> - fix s/temprature/temperature/ typo in commit log
-> - use deci_kelvin_to_millicelsius_with_offset() in ACPI thermal zone driver
-> - don't mix up another fix (format string for cellsius value)
-> - add Acked-by and Reviewed-by tags
->
-> Akinobu Mita (12):
->   add helpers for kelvin to/from Celsius conversion
->   ACPI: thermal: switch to use <linux/units.h> helpers
->   platform/x86: asus-wmi: switch to use <linux/units.h> helpers
->   platform/x86: intel_menlow: switch to use <linux/units.h> helpers
->   thermal: int340x: switch to use <linux/units.h> helpers
->   thermal: intel_pch: switch to use <linux/units.h> helpers
->   nvme: hwmon: switch to use <linux/units.h> helpers
->   thermal: remove kelvin to/from Celsius conversion helpers from
->     <linux/thermal.h>
->   wireless: iwlegacy: use <linux/units.h> helpers
->   wireless: iwlwifi: use <linux/units.h> helpers
->   thermal: armada: remove unused TO_MCELSIUS macro
->   iio: adc: qcom-vadc-common: use <linux/units.h> helpers
->
->  drivers/acpi/thermal.c                             | 36 +++++-----
->  drivers/iio/adc/qcom-vadc-common.c                 |  6 +-
->  drivers/iio/adc/qcom-vadc-common.h                 |  1 -
->  drivers/net/wireless/intel/iwlegacy/4965-mac.c     |  3 +-
->  drivers/net/wireless/intel/iwlegacy/4965.c         | 11 +--
->  drivers/net/wireless/intel/iwlegacy/common.h       |  3 -
->  drivers/net/wireless/intel/iwlwifi/dvm/dev.h       |  5 --
->  drivers/net/wireless/intel/iwlwifi/dvm/devices.c   |  6 +-
->  drivers/nvme/host/hwmon.c                          | 13 ++--
->  drivers/platform/x86/asus-wmi.c                    |  7 +-
->  drivers/platform/x86/intel_menlow.c                |  9 ++-
->  drivers/thermal/armada_thermal.c                   |  2 -
->  .../intel/int340x_thermal/int340x_thermal_zone.c   |  7 +-
->  drivers/thermal/intel/intel_pch_thermal.c          |  3 +-
->  include/linux/thermal.h                            | 11 ---
->  include/linux/units.h                              | 84 ++++++++++++++++++++++
->  16 files changed, 139 insertions(+), 68 deletions(-)
->  create mode 100644 include/linux/units.h
->
-> Cc: Sujith Thomas <sujith.thomas@intel.com>
-> Cc: Darren Hart <dvhart@infradead.org>
-> Cc: Andy Shevchenko <andy@infradead.org>
-> Cc: Zhang Rui <rui.zhang@intel.com>
-> Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-> Cc: Amit Kucheria <amit.kucheria@verdurent.com>
-> Cc: Jean Delvare <jdelvare@suse.com>
-> Cc: Guenter Roeck <linux@roeck-us.net>
-> Cc: Keith Busch <kbusch@kernel.org>
-> Cc: Jens Axboe <axboe@fb.com>
-> Cc: Christoph Hellwig <hch@lst.de>
-> Cc: Sagi Grimberg <sagi@grimberg.me>
-> Cc: Kalle Valo <kvalo@codeaurora.org>
-> Cc: Stanislaw Gruszka <sgruszka@redhat.com>
-> Cc: Johannes Berg <johannes.berg@intel.com>
-> Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
-> Cc: Luca Coelho <luciano.coelho@intel.com>
-> Cc: Intel Linux Wireless <linuxwifi@intel.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> --
-> 2.7.4
->
-
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index dab67cb69fe6..662dabf8b08c 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -364,23 +364,45 @@ static const struct file_operations iio_debugfs_reg_fops = {
+ static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+ {
+ 	debugfs_remove_recursive(indio_dev->debugfs_dentry);
++	indio_dev->debugfs_dentry = NULL;
+ }
+ 
+ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+ {
++	struct dentry *d;
++	int ret;
++
+ 	if (indio_dev->info->debugfs_reg_access == NULL)
+ 		return;
+ 
+ 	if (!iio_debugfs_dentry)
+ 		return;
+ 
+-	indio_dev->debugfs_dentry =
+-		debugfs_create_dir(dev_name(&indio_dev->dev),
+-				   iio_debugfs_dentry);
++	d = debugfs_create_dir(dev_name(&indio_dev->dev), iio_debugfs_dentry);
++	if (IS_ERR_OR_NULL(d))
++		goto error;
++
++	indio_dev->debugfs_dentry = d;
++
++	d = debugfs_create_file("direct_reg_access", 0644,
++				indio_dev->debugfs_dentry, indio_dev,
++				&iio_debugfs_reg_fops);
++
++	if (IS_ERR_OR_NULL(d))
++		goto error;
+ 
+-	debugfs_create_file("direct_reg_access", 0644,
+-			    indio_dev->debugfs_dentry, indio_dev,
+-			    &iio_debugfs_reg_fops);
++	return;
++
++error:
++	if (IS_ERR(d))
++		ret = PTR_ERR(d);
++	else
++		ret = -EFAULT;
++
++	dev_err(indio_dev->dev.parent,
++		"Error when trying to register debugfs: %d\n", ret);
++
++	iio_device_unregister_debugfs(indio_dev);
+ }
+ #else
+ static void iio_device_register_debugfs(struct iio_dev *indio_dev)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.20.1
+
