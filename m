@@ -8,52 +8,52 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F460C2D0C7
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E669BC2D0C6
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4421D222C4
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD2AA24653
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:39:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TD38CrYz"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="iPTNp0Ed"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730055AbfLKOjN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Dec 2019 09:39:13 -0500
-Received: from mail-pl1-f196.google.com ([209.85.214.196]:44945 "EHLO
-        mail-pl1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730052AbfLKOjM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:39:12 -0500
-Received: by mail-pl1-f196.google.com with SMTP id bh2so1487933plb.11;
-        Wed, 11 Dec 2019 06:39:12 -0800 (PST)
+        id S1730097AbfLKOjY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Dec 2019 09:39:24 -0500
+Received: from mail-pj1-f65.google.com ([209.85.216.65]:33631 "EHLO
+        mail-pj1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729686AbfLKOjX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:39:23 -0500
+Received: by mail-pj1-f65.google.com with SMTP id r67so9022996pjb.0;
+        Wed, 11 Dec 2019 06:39:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wO3jkH+pH7VdbFARKta9bxoSsbke4b8Zl03d1mXFCcM=;
-        b=TD38CrYzoOsQjlzXB2cRRd9HRMMDxp/xytFAH/OIzDUwWaAkxa4/eFqTBtP/67AZPk
-         4Cb+kTlTIFDeKa5EbUk3bL883UV4w4DnKx5+iIGYC5bjeArB1QqBJeKqt/SXfFn7m2XF
-         XqX/7RxhHaTIJTZn7f8PKyerSkxDJR6+DutaZhebcyVWAmtxb6L0DPh/mspVZQkW5qyP
-         WtpwxDzi8FXsr2Bg0te7lsyN58AUxi/7W7OGFKQawgqAdVsWF+TKZLpXZocEiHDha8j8
-         0LQWIchLb46fnZagkhhjL/h/ZgywDXrQ9noPfS9l3XIPha4u59zKcCe2mCmy52hJnNNr
-         gfwA==
+        bh=30ClsBWVMQFbgwDIq9w8WCwwNMvj/q4ymjJp8oUF1J0=;
+        b=iPTNp0EdadO4y2qivxFKBUpzEsaPwhGKdyaPxOlJenJBVxrjZDK77cuy1xm8y3/vwo
+         XAU33lFCH4T/3DEpnMyPFn6xvlTZdCX8Y/G3vVNDBizKWUagtzlppvbFHBKxI8/Qzgli
+         056XNDvIhN4ii1itJlKwXt80wjd295T2EeFmuKxHDcesF1kjQH1DUsdulYHgs8J8gmp8
+         InGX15hisePqvBdSawpSkTi5rAQXLdhUlmEHERSnfwz5Z3FiZ+nZFa1WP1exJSLOjypP
+         wqQIAcTsATodjUx32eYVG4H6IPzbyD7WHdjJLcss5z7w5GHfOtNx7Sjbyizgieki1RVz
+         OCDw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=wO3jkH+pH7VdbFARKta9bxoSsbke4b8Zl03d1mXFCcM=;
-        b=eQVzYgdKg9TXOaGGavFEyGB7LB5wuhAgTzM2LZ9ekCPP1jCWvU11Vo/mRU+UJLYenv
-         wwFd8BcPH7b9iMrMwPEl6OMcC+BmmFVrsWNWRhJk+yistN+SIQ8+GNQD3Ry9E1ENjcQH
-         npQK7C+pNzUreuXtn+CaGLY5keNcQGZscs/EkDAq2up0xtIY+XaIZ65ImY2yiDymF4p7
-         5M40/sldd4XvmwowqeM5alCm+Tx510EX2Ku+HXs1Q2lIvru0Uc2xPqwT6aDVWFa7XW1T
-         2Am/ZVV1I9DgNbQ6x2daBdlGqxZ3u2SnDUT0ZyVP4U1d1AlSdt+N1VZZt82ohY0+p0EB
-         Bqxg==
-X-Gm-Message-State: APjAAAV6TfchqUoaYiWIzoHp4s6cncj2IRG5wOwIbL96KVC0nY9s170j
-        17tQoXU0M4kVvLNl3b6/CB/wT4zhMMc=
-X-Google-Smtp-Source: APXvYqxT+/d6//9eH3ZYvjUMxrZPNz60pNUqUzbihUXUSGTG82cKy/Rxgy6yRUUjVA8t32UcmaqAxw==
-X-Received: by 2002:a17:902:8d83:: with SMTP id v3mr3552557plo.205.1576075151675;
-        Wed, 11 Dec 2019 06:39:11 -0800 (PST)
+        bh=30ClsBWVMQFbgwDIq9w8WCwwNMvj/q4ymjJp8oUF1J0=;
+        b=XEnL7GaPaeT21ukAOLDLbrJCEIffd1/pPBntbnnXFAx4vEYN2D/vWSwyFzBOHJ4WjQ
+         yumsvPYHa4/Ts8WVryCkexOC7coPFEj1nn27uPMIgXV1JJtlLTX0yt/gp/ckkHBMTZdv
+         2OX+34wjKinNvqzUHQhv3BivkieG+B5hVM6Vd2XjYCvJI9/hsNOKQDyTizrwH+BTceDu
+         a8EfZAWzNKywDBaSAQbWhmNAxUsu+4OKJXcgWJ411txVWq9YuAOUQupG5W0eTEIkQhyG
+         TCFR00OxBaB0ZRE1XxmWCYahGzsTzR61u1ReDF44ZAKQsbQLv5CK4xJeyxBLqaWqPRHM
+         Z44A==
+X-Gm-Message-State: APjAAAUr1L3avFoJiqi83vC+lHapLRatgs+dzI2/CzW/13krHTeRuJoc
+        p7rOo/LKCBJtJ5sIMteceXDfmWQatkc=
+X-Google-Smtp-Source: APXvYqyPc4UFSiMgsD4yZYd76DuxU8U2qOWD+TGrVH0/E0V5787xpYx4yK1YXlYV7OTuxTKh7/rsHg==
+X-Received: by 2002:a17:902:8507:: with SMTP id bj7mr3489251plb.69.1576075163124;
+        Wed, 11 Dec 2019 06:39:23 -0800 (PST)
 Received: from localhost.localdomain ([240f:34:212d:1:368e:e048:68f1:84e7])
-        by smtp.gmail.com with ESMTPSA id q11sm3444239pff.111.2019.12.11.06.39.06
+        by smtp.gmail.com with ESMTPSA id q11sm3444239pff.111.2019.12.11.06.39.18
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 11 Dec 2019 06:39:10 -0800 (PST)
+        Wed, 11 Dec 2019 06:39:22 -0800 (PST)
 From:   Akinobu Mita <akinobu.mita@gmail.com>
 To:     linux-nvme@lists.infradead.org, linux-hwmon@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-wireless@vger.kernel.org,
@@ -70,9 +70,9 @@ Cc:     Akinobu Mita <akinobu.mita@gmail.com>,
         Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
         Christoph Hellwig <hch@lst.de>,
         Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v3 04/12] platform/x86: intel_menlow: switch to use <linux/units.h> helpers
-Date:   Wed, 11 Dec 2019 23:38:11 +0900
-Message-Id: <1576075099-3441-5-git-send-email-akinobu.mita@gmail.com>
+Subject: [PATCH v3 06/12] thermal: intel_pch: switch to use <linux/units.h> helpers
+Date:   Wed, 11 Dec 2019 23:38:13 +0900
+Message-Id: <1576075099-3441-7-git-send-email-akinobu.mita@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
 References: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
@@ -81,14 +81,12 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This switches the intel_menlow driver to use deci_kelvin_to_celsius() and
-celsius_to_deci_kelvin() in <linux/units.h> instead of helpers in
+This switches the intel pch thermal driver to use
+deci_kelvin_to_millicelsius() in <linux/units.h> instead of helpers in
 <linux/thermal.h>.
 
 This is preparation for centralizing the kelvin to/from Celsius conversion
 helpers in <linux/units.h>.
-
-This also removes a trailing space, while we're at it.
 
 Cc: Sujith Thomas <sujith.thomas@intel.com>
 Cc: Darren Hart <dvhart@infradead.org>
@@ -102,50 +100,35 @@ Cc: Keith Busch <kbusch@kernel.org>
 Cc: Jens Axboe <axboe@fb.com>
 Cc: Christoph Hellwig <hch@lst.de>
 Cc: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 ---
 * v3
 - rename new header name from <linux/temperature.h> to <linux/units.h>
 
- drivers/platform/x86/intel_menlow.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/thermal/intel/intel_pch_thermal.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/platform/x86/intel_menlow.c b/drivers/platform/x86/intel_menlow.c
-index b102f6d..101d7e7 100644
---- a/drivers/platform/x86/intel_menlow.c
-+++ b/drivers/platform/x86/intel_menlow.c
-@@ -22,6 +22,7 @@
- #include <linux/slab.h>
+diff --git a/drivers/thermal/intel/intel_pch_thermal.c b/drivers/thermal/intel/intel_pch_thermal.c
+index 4f0bb8f..b118611 100644
+--- a/drivers/thermal/intel/intel_pch_thermal.c
++++ b/drivers/thermal/intel/intel_pch_thermal.c
+@@ -13,6 +13,7 @@
+ #include <linux/pci.h>
+ #include <linux/acpi.h>
  #include <linux/thermal.h>
- #include <linux/types.h>
 +#include <linux/units.h>
+ #include <linux/pm.h>
  
- MODULE_AUTHOR("Thomas Sujith");
- MODULE_AUTHOR("Zhang Rui");
-@@ -302,8 +303,10 @@ static ssize_t aux_show(struct device *dev, struct device_attribute *dev_attr,
- 	int result;
+ /* Intel PCH thermal Device IDs */
+@@ -92,7 +93,7 @@ static void pch_wpt_add_acpi_psv_trip(struct pch_thermal_device *ptd,
+ 		if (ACPI_SUCCESS(status)) {
+ 			unsigned long trip_temp;
  
- 	result = sensor_get_auxtrip(attr->handle, idx, &value);
-+	if (result)
-+		return result;
- 
--	return result ? result : sprintf(buf, "%lu", DECI_KELVIN_TO_CELSIUS(value));
-+	return sprintf(buf, "%lu", deci_kelvin_to_celsius(value));
- }
- 
- static ssize_t aux0_show(struct device *dev,
-@@ -332,8 +335,8 @@ static ssize_t aux_store(struct device *dev, struct device_attribute *dev_attr,
- 	if (value < 0)
- 		return -EINVAL;
- 
--	result = sensor_set_auxtrip(attr->handle, idx, 
--				    CELSIUS_TO_DECI_KELVIN(value));
-+	result = sensor_set_auxtrip(attr->handle, idx,
-+				    celsius_to_deci_kelvin(value));
- 	return result ? result : count;
- }
- 
+-			trip_temp = DECI_KELVIN_TO_MILLICELSIUS(r);
++			trip_temp = deci_kelvin_to_millicelsius(r);
+ 			if (trip_temp) {
+ 				ptd->psv_temp = trip_temp;
+ 				ptd->psv_trip_id = *nr_trips;
 -- 
 2.7.4
 
