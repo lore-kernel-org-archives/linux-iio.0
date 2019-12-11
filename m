@@ -1,141 +1,116 @@
-Return-Path: <SRS0=JBba=2A=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=ZKnQ=2B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06718C3F68F
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0773AC43603
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 01:20:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D02BC214AF
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Dec 2019 22:45:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1576017923;
-	bh=abgahavQ5SwoxyCcLIir3wWNWk56AQB8IQ+J/HqMmSY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Hq1BVQp2RAW4cJqAxXdAZ3e18228YtTBg7+FbuXRj+ksSw0MzPCwjEoOWNq6/8iT+
-	 SRMP91WvKo4AMzZKxZNjGngQbKF5pxGhGGBzB70mSZkHsh5hucLngRIHTB/110avYq
-	 d8EAXZooaktAzLpPAwmunEvsPx0D2T44g3a/2m1s=
+	by mail.kernel.org (Postfix) with ESMTP id CE4552073D
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 01:20:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbfLJWam (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Dec 2019 17:30:42 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50386 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726847AbfLJWam (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Dec 2019 17:30:42 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8E0B4207FF;
-        Tue, 10 Dec 2019 22:30:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1576017041;
-        bh=abgahavQ5SwoxyCcLIir3wWNWk56AQB8IQ+J/HqMmSY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LB8cLeQ49ib8DfzlCsWgf7+74wdETl4klr2tIfWwRe/X6Cx9au7Jqm/xcacGXXy17
-         5/Wt64/OcFiurAW2WuZMytUkx0VXVNvUv2S3fiyHHA7d1DDVUEAsz4b08cxDKZ606R
-         6PMq8G1CBaRzFH6FUXFE2Yn5Hee3GcLNHjM/OTPo=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 04/91] iio: tcs3414: fix iio_triggered_buffer_{pre,post}enable positions
-Date:   Tue, 10 Dec 2019 17:29:08 -0500
-Message-Id: <20191210223035.14270-4-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20191210223035.14270-1-sashal@kernel.org>
-References: <20191210223035.14270-1-sashal@kernel.org>
+        id S1726362AbfLKBUQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Dec 2019 20:20:16 -0500
+Received: from sender4-op-o11.zoho.com ([136.143.188.11]:17164 "EHLO
+        sender4-op-o11.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726364AbfLKBUP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Dec 2019 20:20:15 -0500
+ARC-Seal: i=1; a=rsa-sha256; t=1576027194; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=nBC/a8KgwAEFS8owKJPJteNGwqKKpZ9l/pwkdpn0hYabhMF2sWdKEU7AtMAzjtXy863uwAZBHDt7RiA/UIT8Cad4imwinPXuhx1JY0kg63LRmGGBLI6pLZottID3rigiZ7x4n0Px9MttjiMt2VGL4BiFzVYNE1MZdUPiPzKuCTs=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1576027194; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=DuYLWfyJP9Xff1OS3yX3DZJn48FedLL4mZAzGQCoZrE=; 
+        b=Wwyh+DhfYltvYfBZy2eveO0P5AYDvNf2uwNfLH6TkoyLY/a2eb6vNxnlFByCfW6xj+Db5r6swJyx+gQ8WI5maDG+uNf4zvYLPA/NfCk9LSTyQ5kEIDOWn09r8QqNvOLM+Xh0mDugnjBXK+XgjTefW3XHZezS/we7Y1dviFfqu/I=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        dkim=pass  header.i=dlrobertson.com;
+        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
+        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
+Received: from nessie.verizon.net (pool-173-73-58-202.washdc.fios.verizon.net [173.73.58.202]) by mx.zohomail.com
+        with SMTPS id 157602719391847.389218584379364; Tue, 10 Dec 2019 17:19:53 -0800 (PST)
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        linux-kernel@vger.kernel.org, Randy Dunlap <rdunlap@infradead.org>,
+        Joe Perches <joe@perches.com>,
+        Dan Robertson <dan@dlrobertson.com>
+Message-ID: <20191211010308.1525-1-dan@dlrobertson.com>
+Subject: [PATCH v6 0/2] iio: add driver for Bosch BMA400 accelerometer
+Date:   Wed, 11 Dec 2019 01:03:06 +0000
+X-Mailer: git-send-email 2.24.0
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Only update from the last patchset are the changes to the Kconfig
+options.
 
-[ Upstream commit 0fe2f2b789190661df24bb8bf62294145729a1fe ]
+Cheers,
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
+ - Dan
 
-For the predisable hook, the disable code should occur before detaching
-the poll func, and for the postenable hook, the poll func should be
-attached before the enable code.
 
-The driver was slightly reworked. The preenable hook was moved to the
-postenable, to add some symmetry to the postenable/predisable part.
+Changes in v6:
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/light/tcs3414.c | 30 ++++++++++++++++++++----------
- 1 file changed, 20 insertions(+), 10 deletions(-)
+ * Improve readability Kconfig options
 
-diff --git a/drivers/iio/light/tcs3414.c b/drivers/iio/light/tcs3414.c
-index a795afb7667bd..b5a35c7b6b7f4 100644
---- a/drivers/iio/light/tcs3414.c
-+++ b/drivers/iio/light/tcs3414.c
-@@ -244,32 +244,42 @@ static const struct iio_info tcs3414_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
--static int tcs3414_buffer_preenable(struct iio_dev *indio_dev)
-+static int tcs3414_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct tcs3414_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = iio_triggered_buffer_postenable(indio_dev);
-+	if (ret)
-+		return ret;
- 
- 	data->control |= TCS3414_CONTROL_ADC_EN;
--	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
-+	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
- 		data->control);
-+	if (ret)
-+		iio_triggered_buffer_predisable(indio_dev);
-+
-+	return ret;
- }
- 
- static int tcs3414_buffer_predisable(struct iio_dev *indio_dev)
- {
- 	struct tcs3414_data *data = iio_priv(indio_dev);
--	int ret;
--
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
-+	int ret, ret2;
- 
- 	data->control &= ~TCS3414_CONTROL_ADC_EN;
--	return i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
-+	ret = i2c_smbus_write_byte_data(data->client, TCS3414_CONTROL,
- 		data->control);
-+
-+	ret2 = iio_triggered_buffer_predisable(indio_dev);
-+	if (!ret)
-+		ret = ret2;
-+
-+	return ret;
- }
- 
- static const struct iio_buffer_setup_ops tcs3414_buffer_setup_ops = {
--	.preenable = tcs3414_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
-+	.postenable = tcs3414_buffer_postenable,
- 	.predisable = tcs3414_buffer_predisable,
- };
- 
--- 
-2.20.1
+Changes in v5:
+
+ * Move to using a function instead of lookup tables for scale and
+   frequency conversions.
+ * Rename DT bindings to bosch,bma400.yaml
+ * Fixed other errors and improvements found by reviewers
+
+Changes in v4:
+
+ * Fix error in DT bindings
+ * Fix typo when setting the OSR
+ * Simplified the cached sample frequency
+ * Fix the MODULE_LICENSE
+
+Changes in v3:
+
+ * Use yaml format for DT bindings
+ * Remove strict dependency on OF
+ * Tidy Kconfig dependencies
+ * Stylistic changes
+ * Do not soft-reset device on remove
+
+Changes in v2:
+
+ * Implemented iio_info -> read_avail
+ * Stylistic changes
+ * Implemented devicetree bindings
+
+
+Dan Robertson (2):
+  dt-bindings: iio: accel: bma400: add bindings
+  iio: (bma400) add driver for the BMA400
+
+ .../bindings/iio/accel/bosch,bma400.yaml      |  39 +
+ drivers/iio/accel/Kconfig                     |  16 +
+ drivers/iio/accel/Makefile                    |   2 +
+ drivers/iio/accel/bma400.h                    |  95 ++
+ drivers/iio/accel/bma400_core.c               | 823 ++++++++++++++++++
+ drivers/iio/accel/bma400_i2c.c                |  62 ++
+ 6 files changed, 1037 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/bosch,bma400.yaml
+ create mode 100644 drivers/iio/accel/bma400.h
+ create mode 100644 drivers/iio/accel/bma400_core.c
+ create mode 100644 drivers/iio/accel/bma400_i2c.c
+
+
 
