@@ -2,151 +2,151 @@ Return-Path: <SRS0=ZKnQ=2B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBF4C43603
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:40:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B0DCC43603
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:58:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 85B652173E
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:40:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 03CA221556
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 14:58:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lKwtyK3L"
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="Wdqol48E"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730070AbfLKOjT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Dec 2019 09:39:19 -0500
-Received: from mail-pg1-f195.google.com ([209.85.215.195]:39383 "EHLO
-        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729686AbfLKOjS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:39:18 -0500
-Received: by mail-pg1-f195.google.com with SMTP id b137so10872609pga.6;
-        Wed, 11 Dec 2019 06:39:18 -0800 (PST)
+        id S1727851AbfLKO6B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Dec 2019 09:58:01 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:24318 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727457AbfLKO6B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 09:58:01 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBBEviDO008476;
+        Wed, 11 Dec 2019 09:57:46 -0500
+Received: from nam02-sn1-obe.outbound.protection.outlook.com (mail-sn1nam02lp2058.outbound.protection.outlook.com [104.47.36.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2wrb1scn1f-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 Dec 2019 09:57:46 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=V5YTlmdO7YA/73EpXKgthhfbEc+PwX4UefnwNF0yAaVS7y+y2jP0HCIJVQaqlvBgLOaNEFasGKTqSrFuDxfqkOf6Zpw97T90RcTzGrPaC5ulkogONPw7+/85mBr6DmwtH/sMUJ1QbSWK6UBEXx8AIoqz7JQ/rZqJW6J/awgrwfOq5dfeAiksA6ld/fNoNwM3sBNrW7fMP4Xi+l8mr7Z6MXJBf29lT2C9DLDn1MRKHnLsml2wTDtG6wf9JnPu7kJU1gsAtq3BgaWMmoO8ERcQJBo/k3fweLweAYHjK8W9z/3XRZeqB3GYMbN24DYuPTGSd6aglIoN+uN+KPqbZXqq5Q==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p4qWQrKzfPKEKASiO+kwAxVOYqAJGTaJ43nPOC/jL8k=;
+ b=liiC13Jffio7EbZeMqndqONV3TG53rmVGJR3QE9v5nx5+skLgb11WNT4roTDnZrF8yGrEbTTCKGPeLaH+CrE3YJ0gDye7y6uYCinek5iusWwosdWMsGBhFMLrNXPhnLz6dKC0pEQRqJBswyaIIjt7ezl0oYAzGR0rjjfaaL1/jaqDnGQ4f8wX3gCijcs6r//I6KKcDhw0JamJji+Wm3LB41OJxhcgq3GsrBuunMmeuoNidWwIj5x+zQ7MvEEP17Osl6UDTCx/dCl1F0m90oPNrHDkvpvquJzf8Vu7Rs9Oc7xAm0f5VPX4a8r2mmOcSQcx3iB3tI0mzIqGlJ09siMng==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
+ dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
+ not signed); arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=LkssNv9xnqcTUQeW4rk5Aqaqz7M0e85np77FGc2j2Og=;
-        b=lKwtyK3LHvPbGuZ5gO2dFqSx3FVmSA3+UiU4qNpfKyLsdS77OrGXzcH5/Tf+cPV7Of
-         lSSfjD2joW9Id/QtOjlQMvFEMrCKuiL4KE9Z9Q13/OFjaFSEQEbclJzZ3YFB89hNEa7W
-         udzJM2daCneUwMoMb1f1+X//b3YXnOI4rzAi3J8kjldYrNBEjIhzHvgilXdXZ3yFD4wX
-         jV92IL3P3Dj9SAge1bXWpRKrim0kDLhQrMvJ3/NLNVufEMdMuC84jcv/nLfxdoPl0tmn
-         vLhyuJcPNcQXhSV8cRKclty8GvISXuY2EMyGo7d8RZgOeJEqVTpXhOnO1r9A5iqFLzqj
-         TYrg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=LkssNv9xnqcTUQeW4rk5Aqaqz7M0e85np77FGc2j2Og=;
-        b=o3mDTX8yWvPjTulDsINtDIMg1Enu0HjON1jmO8bpQviRi9GJZqK9vsNuzcma8VHZNI
-         xVA7nOi491aEP0rcvDPYSHBK6DSF/FxU6HIT7/c0/4reClvJvLpMDG8EekCJOreblE7D
-         Truqr+csbp7q8ChJZbuSrUuEe99p8p3/KccOBwzgukpsYw9qBNLUgwRpB3y3tPaaVJ/O
-         9JnDUhMDhypWRbgIpqTCDCNfKNTpHhpjLI5lNdJSvx1PxSZ5SgaFm1qWLUPfi01BwMHk
-         MpQJh682mFQSUs46q5ZiZc9u7tBGWw2qOAKebQdUIvfZGDM07D/XI1yXBR6HxWtHRH81
-         z0bA==
-X-Gm-Message-State: APjAAAUmp1rA3gpR9Q4yQnIkTOuLzDOLj+PKSZdxeMdDHFVwg41qP7vF
-        ihPQvITHL+Qb6JnLmKs89RU5bv6+szo=
-X-Google-Smtp-Source: APXvYqxX+IBGqxdzlhJQ/pgZQaqQCCBZodhkOhhvQDd4JZ7+cFq4k8qS4IF5R/U8Rwdx9yb93TYpZg==
-X-Received: by 2002:aa7:951c:: with SMTP id b28mr3997505pfp.97.1576075157829;
-        Wed, 11 Dec 2019 06:39:17 -0800 (PST)
-Received: from localhost.localdomain ([240f:34:212d:1:368e:e048:68f1:84e7])
-        by smtp.gmail.com with ESMTPSA id q11sm3444239pff.111.2019.12.11.06.39.12
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Wed, 11 Dec 2019 06:39:16 -0800 (PST)
-From:   Akinobu Mita <akinobu.mita@gmail.com>
-To:     linux-nvme@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Akinobu Mita <akinobu.mita@gmail.com>,
-        Sujith Thomas <sujith.thomas@intel.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v3 05/12] thermal: int340x: switch to use <linux/units.h> helpers
-Date:   Wed, 11 Dec 2019 23:38:12 +0900
-Message-Id: <1576075099-3441-6-git-send-email-akinobu.mita@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
-References: <1576075099-3441-1-git-send-email-akinobu.mita@gmail.com>
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=p4qWQrKzfPKEKASiO+kwAxVOYqAJGTaJ43nPOC/jL8k=;
+ b=Wdqol48EihDcG/LSkzlVeS7EVrIjuKpB6TRY844iqIjLxb1NvPnatTZvS1eRtmvTs5lc98BvXuZY2JaW8MdYniPg8HaP4gwiUkRB0lpsk+0DrmiHboj+6ipm7EH3iwejN07+fIdqwMWrOXuCU1liGIH3+sS7ySPauyQehrGOLuw=
+Received: from BY5PR03CA0029.namprd03.prod.outlook.com (2603:10b6:a03:1e0::39)
+ by BN6PR03MB3363.namprd03.prod.outlook.com (2603:10b6:405:42::19) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2538.15; Wed, 11 Dec
+ 2019 14:57:44 +0000
+Received: from CY1NAM02FT008.eop-nam02.prod.protection.outlook.com
+ (2a01:111:f400:7e45::206) by BY5PR03CA0029.outlook.office365.com
+ (2603:10b6:a03:1e0::39) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2538.15 via Frontend
+ Transport; Wed, 11 Dec 2019 14:57:44 +0000
+Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
+ 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
+ client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
+Received: from nwd2mta2.analog.com (137.71.25.57) by
+ CY1NAM02FT008.mail.protection.outlook.com (10.152.75.59) with Microsoft SMTP
+ Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2538.14
+ via Frontend Transport; Wed, 11 Dec 2019 14:57:43 +0000
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xBBEvguA012871
+        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
+        Wed, 11 Dec 2019 06:57:42 -0800
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 11 Dec
+ 2019 09:57:42 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 11 Dec 2019 09:57:42 -0500
+Received: from saturn.ad.analog.com ([10.48.65.121])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id xBBEvdpK011262;
+        Wed, 11 Dec 2019 09:57:40 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: core: use debugfs_remove_recursive() on IIO unload
+Date:   Wed, 11 Dec 2019 16:59:03 +0200
+Message-ID: <20191211145903.22395-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-HT: Tenant
+X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(396003)(136003)(376002)(39860400002)(346002)(199004)(189003)(4326008)(8676002)(2906002)(44832011)(8936002)(7636002)(36756003)(246002)(107886003)(26005)(186003)(70206006)(5660300002)(1076003)(70586007)(4744005)(356004)(316002)(478600001)(6666004)(86362001)(54906003)(110136005)(7696005)(2616005)(336012)(426003);DIR:OUT;SFP:1101;SCL:1;SRVR:BN6PR03MB3363;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;A:1;MX:1;
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: fa0b3284-faa6-4769-5dd1-08d77e4a79f8
+X-MS-TrafficTypeDiagnostic: BN6PR03MB3363:
+X-Microsoft-Antispam-PRVS: <BN6PR03MB33637EF3FCEF35AE2A07E1C8F95A0@BN6PR03MB3363.namprd03.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Forefront-PRVS: 024847EE92
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: Ps0/bBfXg0bxJ1/slOdxCYmt0d0lTNVkYwn1m2ktEpWhuCOvrJY2WkyVFICSxoSd1nQOahXTST6np4zJiciZz54ayblxulc/++C/YLZMzv0wzpM+gWKO5quJleX75/p1nUUiCBWWwEw9ke6YcZwt+VYgwWX4Vfgd4W261QX7WLxretudVE1fSfUCjdV+wUcTU94Hve/rYJI2n83tqEtPjMOL9/3SGq4BbQxX+BbMp5b6N25iQL1OlK9MpZfRAoIpJBZl+0Bf0KL791bShcVNkIHQQcdEMi+3/bFV2g/7rVNdl/yfBSYHiW/IHDLE9yVxXbXFCP1O3j6y+TDVfIzNrTt7PAxgOwmWchfZYESP1a7tf4V+P/oI3o/t3M490v0p5QHQLUx6JsRKuBYtLrIjXZN4SZEyDNaSzjDY8RzeUPjJl5iv6/1FO60ZlLdHnf8x
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2019 14:57:43.3863
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa0b3284-faa6-4769-5dd1-08d77e4a79f8
+X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN6PR03MB3363
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
+ definitions=2019-12-11_04:2019-12-11,2019-12-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
+ impostorscore=0 lowpriorityscore=0 mlxlogscore=999 priorityscore=1501
+ adultscore=0 phishscore=0 suspectscore=0 mlxscore=0 spamscore=0
+ clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-1912110127
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This switches the int340x thermal zone driver to use
-deci_kelvin_to_millicelsius() and millicelsius_to_deci_kelvin() in
-<linux/units.h> instead of helpers in <linux/thermal.h>.
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-This is preparation for centralizing the kelvin to/from Celsius conversion
-helpers in <linux/units.h>.
+The debugfs dir may have multiple files/dirs attached to it. Use
+debugfs_remove_recursive() to clean it up when the IIO module unloads.
 
-Cc: Sujith Thomas <sujith.thomas@intel.com>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Andy Shevchenko <andy@infradead.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Amit Kucheria <amit.kucheria@verdurent.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Keith Busch <kbusch@kernel.org>
-Cc: Jens Axboe <axboe@fb.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
-* v3
-- rename new header name from <linux/temperature.h> to <linux/units.h>
 
- drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Note: note sure if this needs a Fixes tag. It's been in here for ages now,
+      so it may not be a big issue.
 
-diff --git a/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c b/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-index 75484d6..4322132 100644
---- a/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-+++ b/drivers/thermal/intel/int340x_thermal/int340x_thermal_zone.c
-@@ -8,6 +8,7 @@
- #include <linux/init.h>
- #include <linux/acpi.h>
- #include <linux/thermal.h>
-+#include <linux/units.h>
- #include "int340x_thermal_zone.h"
- 
- static int int340x_thermal_get_zone_temp(struct thermal_zone_device *zone,
-@@ -34,7 +35,7 @@ static int int340x_thermal_get_zone_temp(struct thermal_zone_device *zone,
- 		*temp = (unsigned long)conv_temp * 10;
- 	} else
- 		/* _TMP returns the temperature in tenths of degrees Kelvin */
--		*temp = DECI_KELVIN_TO_MILLICELSIUS(tmp);
-+		*temp = deci_kelvin_to_millicelsius(tmp);
- 
- 	return 0;
+ drivers/iio/industrialio-core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 9a3579943574..dab67cb69fe6 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -292,7 +292,7 @@ static void __exit iio_exit(void)
+ 	if (iio_devt)
+ 		unregister_chrdev_region(iio_devt, IIO_DEV_MAX);
+ 	bus_unregister(&iio_bus_type);
+-	debugfs_remove(iio_debugfs_dentry);
++	debugfs_remove_recursive(iio_debugfs_dentry);
  }
-@@ -116,7 +117,7 @@ static int int340x_thermal_set_trip_temp(struct thermal_zone_device *zone,
  
- 	snprintf(name, sizeof(name), "PAT%d", trip);
- 	status = acpi_execute_simple_method(d->adev->handle, name,
--			MILLICELSIUS_TO_DECI_KELVIN(temp));
-+			millicelsius_to_deci_kelvin(temp));
- 	if (ACPI_FAILURE(status))
- 		return -EIO;
- 
-@@ -163,7 +164,7 @@ static int int340x_thermal_get_trip_config(acpi_handle handle, char *name,
- 	if (ACPI_FAILURE(status))
- 		return -EIO;
- 
--	*temp = DECI_KELVIN_TO_MILLICELSIUS(r);
-+	*temp = deci_kelvin_to_millicelsius(r);
- 
- 	return 0;
- }
+ #if defined(CONFIG_DEBUG_FS)
 -- 
-2.7.4
+2.20.1
 
