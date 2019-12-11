@@ -2,192 +2,164 @@ Return-Path: <SRS0=ZKnQ=2B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7430C43603
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F019CC2D0C6
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 21:38:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A26192073B
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 15:56:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C58A121556
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Dec 2019 21:38:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="UiyYdZ94"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oPSrqKo+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731100AbfLKP4a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Dec 2019 10:56:30 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:5730 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731770AbfLKPPZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 10:15:25 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id xBBF8rHi012039;
-        Wed, 11 Dec 2019 10:15:22 -0500
-Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2051.outbound.protection.outlook.com [104.47.44.51])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2wraq3mry1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 11 Dec 2019 10:15:22 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=jzdSgRMdxrPOWG3wdBtEiJPmUrFN2OpPTVNO7RUsFP+Cx24nW0+1uA1ht1iEF7iCtuAeETjsQLvW6/5zg2gmJoefT2rDU6obfKwBWWQWDpCob+B87EVVaw6ENOzsq8IwB9Ml3XWQ1tXbbj9YvbfY+ttAJ7hSwnbIrRdcHdTk10qcPxVz7WCAtO4WqQ6ZmOc5FCBIpdCPKjjqrEpMD35MgpFm9TY0Eo5X2I4yQuKXLUsSkEQfjflC0mt5gMC/CTzazcK6zZDHC+9lNvydiBdTF2rSS3tB0XaxNbjh8GoeVuqQ3SXWR84mdAX0qdjbGrctybhJjSgizt4Pitoc2GN/WA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PrsMZEXI4PpiwET8BdVm7Qg5vr+H1mJJ+nrlZKxl7c=;
- b=KPzWurw7nR3efMCPGFWiCg0J+gr7JKkNTQ7SLMSwkg8LuhXbAWeUlYgOttrcGkXGvXgmoLt8v8TLrtzvPwyGlbvJANXkSdkY8sbqou6KTGI0KmI9ujRkhrVLXBg7NggmI8huT3I7n4NvyfZZoQF+2Ga7DShgjMuNbKuUIL1GnsZFA94ggNfouNGA1vRdy9SkhgPu6mVFN0BLu/492p6JnrtPYz0cyVssTYKH6Qvf3nxvLKSiyAKbz1eyIjDJ7fPhEPkYZfXsA1Qez4Nfzq2CG42xCP36za1NdZsCpZTJAUvSW87qIsuf2TMgWtjLZJwmRib0MjUcpGt4IZOeqxYZ0g==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 137.71.25.57) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=analog.com;
- dmarc=bestguesspass action=none header.from=analog.com; dkim=none (message
- not signed); arc=none
+        id S1726141AbfLKVi1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Dec 2019 16:38:27 -0500
+Received: from mail-lf1-f65.google.com ([209.85.167.65]:34719 "EHLO
+        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726313AbfLKVi1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Dec 2019 16:38:27 -0500
+Received: by mail-lf1-f65.google.com with SMTP id l18so20278lfc.1
+        for <linux-iio@vger.kernel.org>; Wed, 11 Dec 2019 13:38:25 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2PrsMZEXI4PpiwET8BdVm7Qg5vr+H1mJJ+nrlZKxl7c=;
- b=UiyYdZ94jjjEdFcPavuGveZZcpNS4zSGU6QGl+dGULrH5tqwWvSKqn5aLk1CctzuDGyfJR9U+QSshKlFkw/ZMxk9IzaaDdmu5ezN5Lca4CKjOSovLrjJpjk5yt7JkJx1omfGbVPSfIt0S4XXVpXNh2AIH0R0mJwLpI4o5NkMEN4=
-Received: from BN3PR03CA0064.namprd03.prod.outlook.com
- (2a01:111:e400:7a4d::24) by DM6PR03MB3883.namprd03.prod.outlook.com
- (2603:10b6:5:4f::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2516.18; Wed, 11 Dec
- 2019 15:15:21 +0000
-Received: from BL2NAM02FT033.eop-nam02.prod.protection.outlook.com
- (2a01:111:f400:7e46::205) by BN3PR03CA0064.outlook.office365.com
- (2a01:111:e400:7a4d::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2516.14 via Frontend
- Transport; Wed, 11 Dec 2019 15:15:21 +0000
-Received-SPF: Pass (protection.outlook.com: domain of analog.com designates
- 137.71.25.57 as permitted sender) receiver=protection.outlook.com;
- client-ip=137.71.25.57; helo=nwd2mta2.analog.com;
-Received: from nwd2mta2.analog.com (137.71.25.57) by
- BL2NAM02FT033.mail.protection.outlook.com (10.152.77.163) with Microsoft SMTP
- Server (version=TLS1_0, cipher=TLS_RSA_WITH_AES_256_CBC_SHA) id 15.20.2538.14
- via Frontend Transport; Wed, 11 Dec 2019 15:15:20 +0000
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta2.analog.com (8.13.8/8.13.8) with ESMTP id xBBFFK17021129
-        (version=TLSv1/SSLv3 cipher=AES256-SHA bits=256 verify=FAIL);
-        Wed, 11 Dec 2019 07:15:20 -0800
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 11 Dec 2019 07:15:20 -0800
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 11 Dec 2019 07:15:20 -0800
-Received: from saturn.ad.analog.com ([10.48.65.121])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id xBBFFIJo012456;
-        Wed, 11 Dec 2019 10:15:18 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH] iio: core: print error message on debugfs register failure
-Date:   Wed, 11 Dec 2019 17:16:36 +0200
-Message-ID: <20191211151636.13547-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H+GJDsZn7GdT3QKoU6jRs2z6sFLUbUBmp9X/WhTZ+V4=;
+        b=oPSrqKo+2GSBGR1G17CVAerVDDjTXe/ye/8of8naHxHWP5Qty/ljb7JQ27PYvmcwBo
+         8fwqPuA/Suk5DsJmk4z8tFuKq9lY11nttXCfN1VUYX5PagHUv8a1x8W3DZocqnuOZ63p
+         iM73ksgLrXAiMJv26w8z/C2F75wtu63eVRNXXOrp2AC2U2HQrqGkiYlY1xXIJUN/70LA
+         JGSa7dfXLHJwTQuiWKlWpFVgzfyRbywSFA3cHK5VOei/X/VoFKTG6MlLM//25EB6ktkt
+         wS92HTOkr3rkYnzd/m6zWg1fqUlliw9ga39x1D1pnj4IxQ2lW3++lawJuLk3JXv6X248
+         Fhlg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=H+GJDsZn7GdT3QKoU6jRs2z6sFLUbUBmp9X/WhTZ+V4=;
+        b=DM1sp9zwWHDXhEn+DIG9BAj8A0ctbgedSIb7zn+7iDCidzKxpMKV3UwBOwxK+VLeZj
+         3LaNcimEpde97nVZq6FU4PpAX/Dt6FrnSiaZ5zcFFiC3uHs8fZ33ImoLbfQuT6CsP4MQ
+         KDbhHR/JX8dyA0v5G/775P61x/2J/kpgme9d9EZXQz80fRjTp8/FebH65AGe/uPmueEM
+         lv4rZaLsouhbWhwCmsz0WTiVd2L8asgAInMbkmevV9Sxv4K4YVK+ri1KWxIlQYLot/3Q
+         5jZYFfBdJKSbXkFxybZALHviAoXLVPWwUn5PHZTtVwRP1vJGnjd5GbOa5fosFsm3jBLO
+         MmZQ==
+X-Gm-Message-State: APjAAAVht/xX29Zbc0rCoRVsoXf2z+DuRYZq5GBXdY53zTI8L7xupj5J
+        ZCoDYi0XX40OSauPMFljyBjgqg==
+X-Google-Smtp-Source: APXvYqy2AlkFND/4qNpWLvpqxMn1gFEW39r/0U4HO4wgQuS2f5wWr7AaBnzoo64lh9O59owU/C5EjA==
+X-Received: by 2002:a05:6512:41b:: with SMTP id u27mr3751238lfk.164.1576100305008;
+        Wed, 11 Dec 2019 13:38:25 -0800 (PST)
+Received: from localhost.bredbandsbolaget (c-21cd225c.014-348-6c756e10.bbcust.telenor.se. [92.34.205.33])
+        by smtp.gmail.com with ESMTPSA id e8sm2074199ljb.45.2019.12.11.13.38.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 11 Dec 2019 13:38:23 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Subject: [PATCH 1/4] iio: accel: bma180: Add dev helper variable
+Date:   Wed, 11 Dec 2019 22:38:16 +0100
+Message-Id: <20191211213819.14024-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-Forefront-Antispam-Report: CIP:137.71.25.57;IPV:NLI;CTRY:US;EFV:NLI;SFV:NSPM;SFS:(10009020)(136003)(396003)(39860400002)(346002)(376002)(189003)(199004)(110136005)(70206006)(26005)(8676002)(36756003)(70586007)(54906003)(7696005)(86362001)(7636002)(316002)(44832011)(186003)(246002)(8936002)(478600001)(5660300002)(336012)(356004)(6666004)(2616005)(4326008)(107886003)(1076003)(426003)(2906002)(15650500001);DIR:OUT;SFP:1101;SCL:1;SRVR:DM6PR03MB3883;H:nwd2mta2.analog.com;FPR:;SPF:Pass;LANG:en;PTR:nwd2mail11.analog.com;MX:1;A:1;
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: f43d9cbf-8450-4352-8525-08d77e4ceff9
-X-MS-TrafficTypeDiagnostic: DM6PR03MB3883:
-X-Microsoft-Antispam-PRVS: <DM6PR03MB388346BAB2ACF2A7FDE8F522F95A0@DM6PR03MB3883.namprd03.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:2887;
-X-Forefront-PRVS: 024847EE92
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 5N0SRVA+KGdfyilcS1zkT/sKrJKseHMj1lDldqun6M4YO3ZgPGN7oCO5lM6ypMYOtisTTVrwb7LnD2lZF04WRRrNWa9ibqIA3kMeH628XcQCbVMFRW5d2S++4y+OygcqQXeO9etJ2djKIjUWMkGaVtTTVWp0QUamQzUIOCy/LW74GCUQ07vQ5glYJl/vyTD53noFFl3WaK/hTRt0z/f6QcQ0/v7nu/vBS48MYYSWT6hMYfS1wLqs43ne1H3TpqMXIWH/v+5shlbXFCxC8b4jCEDFvd25XRWmq5nW/fYX5IsgYnslm3h7PmhmuYF+tZKjzWarARBHKotSnDe6pg7sTx1tTMP8yXlU1ZRNoUbZglEGnyx7WPj/SnRAUdeyDzmZoFNn+llNFZPT2TS4LK58wFZaVD2g9kFbRWu0VIhYiXPpnKWu+gg9jtbQz9ITGIXC
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Dec 2019 15:15:20.4205
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: f43d9cbf-8450-4352-8525-08d77e4ceff9
-X-MS-Exchange-CrossTenant-Id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=eaa689b4-8f87-40e0-9c6f-7228de4d754a;Ip=[137.71.25.57];Helo=[nwd2mta2.analog.com]
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3883
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.95,18.0.572
- definitions=2019-12-11_04:2019-12-11,2019-12-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 bulkscore=0
- priorityscore=1501 lowpriorityscore=0 malwarescore=0 phishscore=0
- impostorscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999 spamscore=0
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-1912110129
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+Having a shorthand "dev" instead of &client->dev everywhere
+makes the code easier to read (more compact).
 
-If there's a failure when registering a debugfs entry for a device, don't
-silently ignore the failure. Instead, print an error message and an error
-code signaling the failure.
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Oleksandr Kravchenko <o.v.kravchenko@globallogic.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/industrialio-core.c | 34 +++++++++++++++++++++++++++------
- 1 file changed, 28 insertions(+), 6 deletions(-)
+ drivers/iio/accel/bma180.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index dab67cb69fe6..662dabf8b08c 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -364,23 +364,45 @@ static const struct file_operations iio_debugfs_reg_fops = {
- static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index 1574e4604a4f..518efbe4eaf6 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -712,12 +712,13 @@ static const struct iio_trigger_ops bma180_trigger_ops = {
+ static int bma180_probe(struct i2c_client *client,
+ 		const struct i2c_device_id *id)
  {
- 	debugfs_remove_recursive(indio_dev->debugfs_dentry);
-+	indio_dev->debugfs_dentry = NULL;
- }
++	struct device *dev = &client->dev;
+ 	struct bma180_data *data;
+ 	struct iio_dev *indio_dev;
+ 	enum chip_ids chip;
+ 	int ret;
  
- static void iio_device_register_debugfs(struct iio_dev *indio_dev)
- {
-+	struct dentry *d;
-+	int ret;
-+
- 	if (indio_dev->info->debugfs_reg_access == NULL)
- 		return;
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
  
- 	if (!iio_debugfs_dentry)
- 		return;
+@@ -725,12 +726,12 @@ static int bma180_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	if (client->dev.of_node)
+-		chip = (enum chip_ids)of_device_get_match_data(&client->dev);
++		chip = (enum chip_ids)of_device_get_match_data(dev);
+ 	else
+ 		chip = id->driver_data;
+ 	data->part_info = &bma180_part_info[chip];
  
--	indio_dev->debugfs_dentry =
--		debugfs_create_dir(dev_name(&indio_dev->dev),
--				   iio_debugfs_dentry);
-+	d = debugfs_create_dir(dev_name(&indio_dev->dev), iio_debugfs_dentry);
-+	if (IS_ERR_OR_NULL(d))
-+		goto error;
-+
-+	indio_dev->debugfs_dentry = d;
-+
-+	d = debugfs_create_file("direct_reg_access", 0644,
-+				indio_dev->debugfs_dentry, indio_dev,
-+				&iio_debugfs_reg_fops);
-+
-+	if (IS_ERR_OR_NULL(d))
-+		goto error;
+-	ret = iio_read_mount_matrix(&client->dev, "mount-matrix",
++	ret = iio_read_mount_matrix(dev, "mount-matrix",
+ 				&data->orientation);
+ 	if (ret)
+ 		return ret;
+@@ -740,7 +741,7 @@ static int bma180_probe(struct i2c_client *client,
+ 		goto err_chip_disable;
  
--	debugfs_create_file("direct_reg_access", 0644,
--			    indio_dev->debugfs_dentry, indio_dev,
--			    &iio_debugfs_reg_fops);
-+	return;
-+
-+error:
-+	if (IS_ERR(d))
-+		ret = PTR_ERR(d);
-+	else
-+		ret = -EFAULT;
-+
-+	dev_err(indio_dev->dev.parent,
-+		"Error when trying to register debugfs: %d\n", ret);
-+
-+	iio_device_unregister_debugfs(indio_dev);
- }
- #else
- static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+ 	mutex_init(&data->mutex);
+-	indio_dev->dev.parent = &client->dev;
++	indio_dev->dev.parent = dev;
+ 	indio_dev->channels = data->part_info->channels;
+ 	indio_dev->num_channels = data->part_info->num_channels;
+ 	indio_dev->name = id->name;
+@@ -755,15 +756,15 @@ static int bma180_probe(struct i2c_client *client,
+ 			goto err_chip_disable;
+ 		}
+ 
+-		ret = devm_request_irq(&client->dev, client->irq,
++		ret = devm_request_irq(dev, client->irq,
+ 			iio_trigger_generic_data_rdy_poll, IRQF_TRIGGER_RISING,
+ 			"bma180_event", data->trig);
+ 		if (ret) {
+-			dev_err(&client->dev, "unable to request IRQ\n");
++			dev_err(dev, "unable to request IRQ\n");
+ 			goto err_trigger_free;
+ 		}
+ 
+-		data->trig->dev.parent = &client->dev;
++		data->trig->dev.parent = dev;
+ 		data->trig->ops = &bma180_trigger_ops;
+ 		iio_trigger_set_drvdata(data->trig, indio_dev);
+ 		indio_dev->trig = iio_trigger_get(data->trig);
+@@ -776,13 +777,13 @@ static int bma180_probe(struct i2c_client *client,
+ 	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+ 			bma180_trigger_handler, NULL);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "unable to setup iio triggered buffer\n");
++		dev_err(dev, "unable to setup iio triggered buffer\n");
+ 		goto err_trigger_unregister;
+ 	}
+ 
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "unable to register iio device\n");
++		dev_err(dev, "unable to register iio device\n");
+ 		goto err_buffer_cleanup;
+ 	}
+ 
 -- 
-2.20.1
+2.21.0
 
