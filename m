@@ -2,133 +2,158 @@ Return-Path: <SRS0=NL2V=2F=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C07DCC2D0C8
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A32CDC43603
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 11:50:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 937D02253D
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:57 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CARqNQEG"
+	by mail.kernel.org (Postfix) with ESMTP id 6663320866
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 11:50:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1576410606;
+	bh=7ZEl5SInaPZ7B7UvDnmlJi2h2w0ig60NQ/+aMR/+hIU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=wynhr/8b6d44y9ekhCNHb9cr/hHYfg2uGC1/p6uTe9MRD1Zz46NG1CFYesPzhWCnl
+	 FNW14NW1uxbcMjDA/yrzIbiEqhmQCuABewC5QuoEgQ5YPnxQ4Md+pGltiXLWcboSiE
+	 Ws4tD3mLvSMrRBXxacgKIxSGVylXJgIzVPeNO8bU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726833AbfLOFRb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Dec 2019 00:17:31 -0500
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:42653 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725861AbfLOFRb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Dec 2019 00:17:31 -0500
-Received: by mail-pg1-f194.google.com with SMTP id s64so1716676pgb.9;
-        Sat, 14 Dec 2019 21:17:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=wNtUm+SbN+0a8GrjUSZCRK4zHG4L4L6an0ip7ptF0d0=;
-        b=CARqNQEGgXO6NPLDpqfdZ8o0UQ+3RuRnE7NqTCXaWSswkmnp/+HkwkITZstEhn/nmX
-         HcevBsy0kEg3sUHjdGc0RqmDxfCBhjAM8THzFd+Xvl67sT7JSUzI73iuR2E/l4+ncAGJ
-         HjGYI+FzFACe1DhH/ZzpHu+m/62n2xsZzbLMSt/ANKN1fEsj+jZhvTx/XWi1q6glBfat
-         kYon/9k2+Ja8NrZx4yY7DMLTmeFx1SwyhBN/NPot2bJVbU54KE/kdEqad/8zdTZi7F3+
-         00KDKKCOxU3RqpVpKwJdp4THa1xZJgS+GTAdj9pFAj13S4HJn1Vb6GsDPNKClSLR7Khe
-         yOZg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=wNtUm+SbN+0a8GrjUSZCRK4zHG4L4L6an0ip7ptF0d0=;
-        b=eHfuyC11sgqLUNqFNf3fC+9JJdns+302kfnsvtV3rgen9JATYqGhce0ptSDHfqPMaa
-         36TQZ1mrZbTNVcurcCcZy0JTslpXSkoyKuD75MqgorvLEb278/HhGPN/w8m9hc4CM9ho
-         T35GC+Q30M8tBlO7EhJ3e51RNTKafPrvIFIbWd8TIWg24rCBtnK6eTkpIo6ZqFjpHdwR
-         x4ZQq+vH9aouR4GDqaT3BpQIfAXtDEbbKu6PtP1ACXueSlnnQFH1Xfyaxe0RZH3cdii/
-         fQsUtqw+bLzAkjs9MrA214Nu21B+JwqoEMbVjHJ/thBtVtCCAe1fKxFqaDLUpU8cOAvj
-         zUXA==
-X-Gm-Message-State: APjAAAUiKk3y34SCOFXWI23wtAomfV7sXR0LY4k346YEZDi7K6CeYJ46
-        XFO5Lwzjs8HpLtJe9VQyfYg=
-X-Google-Smtp-Source: APXvYqyRvp6w8dX6QbBOEnKG62KgsdB7W7pSUy/KgK7EVQbEeUeuesZYikCPANPFgyHy/nhytxOxug==
-X-Received: by 2002:a65:4106:: with SMTP id w6mr4234387pgp.347.1576387050494;
-        Sat, 14 Dec 2019 21:17:30 -0800 (PST)
-Received: from localhost.localdomain ([240f:34:212d:1:368e:e048:68f1:84e7])
-        by smtp.gmail.com with ESMTPSA id u10sm16596528pgg.41.2019.12.14.21.17.24
-        (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 14 Dec 2019 21:17:29 -0800 (PST)
-From:   Akinobu Mita <akinobu.mita@gmail.com>
-To:     linux-nvme@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-wireless@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        akpm@linux-foundation.org
-Cc:     Akinobu Mita <akinobu.mita@gmail.com>,
-        Sujith Thomas <sujith.thomas@intel.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v4 08/12] thermal: remove kelvin to/from Celsius conversion helpers from <linux/thermal.h>
-Date:   Sun, 15 Dec 2019 14:16:11 +0900
-Message-Id: <1576386975-7941-9-git-send-email-akinobu.mita@gmail.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1576386975-7941-1-git-send-email-akinobu.mita@gmail.com>
-References: <1576386975-7941-1-git-send-email-akinobu.mita@gmail.com>
+        id S1726125AbfLOLuF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Dec 2019 06:50:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43570 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726121AbfLOLuE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 15 Dec 2019 06:50:04 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6423D2053B;
+        Sun, 15 Dec 2019 11:50:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576410604;
+        bh=7ZEl5SInaPZ7B7UvDnmlJi2h2w0ig60NQ/+aMR/+hIU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=TwL6c9LUcCnhvO9RucluGI1f59LWmHBTLc5O859lGAo0hvZGL/GDHOaw2QLdnzooI
+         UARJpA8ydyeTy4x/AyifkvQpSsVwIHqBr/CqeRIJPKWeOKm51Tt3eEmfCf00Aw1nq9
+         XMkrUqCjrLgp3m4AJPEfRsFzme/3gjd/OB4xnvsc=
+Date:   Sun, 15 Dec 2019 11:49:58 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        linux-iio@vger.kernel.org, kernel@pengutronix.de
+Subject: Re: [PATCH v4 1/3] iio: adc: ltc2496: provide device tree binding
+ document
+Message-ID: <20191215114958.6ad37d19@archlinux>
+In-Reply-To: <20191209203248.21555-2-u.kleine-koenig@pengutronix.de>
+References: <20191209203248.21555-1-u.kleine-koenig@pengutronix.de>
+        <20191209203248.21555-2-u.kleine-koenig@pengutronix.de>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This removes the kelvin to/from Celsius conversion helper macros in
-<linux/thermal.h> which were switched to the inline helper functions
-in <linux/units.h>.
+On Mon,  9 Dec 2019 21:32:46 +0100
+Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
 
-Cc: Sujith Thomas <sujith.thomas@intel.com>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Andy Shevchenko <andy@infradead.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Amit Kucheria <amit.kucheria@verdurent.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Keith Busch <kbusch@kernel.org>
-Cc: Jens Axboe <axboe@fb.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
----
-* v4
-- add Reviewed-by tag
+> The ADC only requires the standard stuff for spi devices and a reference
+> voltage.
+>=20
+> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+Thanks for figuring out what was wrong and fixing it up.
 
- include/linux/thermal.h | 11 -----------
- 1 file changed, 11 deletions(-)
+I've made a couple of small tweaks whilst applying.  See below.
 
-diff --git a/include/linux/thermal.h b/include/linux/thermal.h
-index d9111ae..126913c6 100644
---- a/include/linux/thermal.h
-+++ b/include/linux/thermal.h
-@@ -32,17 +32,6 @@
- /* use value, which < 0K, to indicate an invalid/uninitialized temperature */
- #define THERMAL_TEMP_INVALID	-274000
- 
--/* Unit conversion macros */
--#define DECI_KELVIN_TO_CELSIUS(t)	({			\
--	long _t = (t);						\
--	((_t-2732 >= 0) ? (_t-2732+5)/10 : (_t-2732-5)/10);	\
--})
--#define CELSIUS_TO_DECI_KELVIN(t)	((t)*10+2732)
--#define DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(t, off) (((t) - (off)) * 100)
--#define DECI_KELVIN_TO_MILLICELSIUS(t) DECI_KELVIN_TO_MILLICELSIUS_WITH_OFFSET(t, 2732)
--#define MILLICELSIUS_TO_DECI_KELVIN_WITH_OFFSET(t, off) (((t) / 100) + (off))
--#define MILLICELSIUS_TO_DECI_KELVIN(t) MILLICELSIUS_TO_DECI_KELVIN_WITH_OFFSET(t, 2732)
--
- /* Default Thermal Governor */
- #if defined(CONFIG_THERMAL_DEFAULT_GOV_STEP_WISE)
- #define DEFAULT_THERMAL_GOVERNOR       "step_wise"
--- 
-2.7.4
+Applied to the togreg branch of iio.git and pushed out as testing.
+I'm not planning to do a pull request until at least next weekend
+so plenty of time if a DT maintainer wants to take another look.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  .../bindings/iio/adc/lltc,ltc2496.yaml        | 47 +++++++++++++++++++
+>  1 file changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc249=
+6.yaml
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml =
+b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+> new file mode 100644
+> index 000000000000..195c8c8f2f4c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/lltc,ltc2496.yaml
+> @@ -0,0 +1,47 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/lltc,ltc2496.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Linear Technology / Analog Devices LTC2496 ADC
+> +
+> +maintainers:
+> + - Lars-Peter Clausen <lars@metafoo.de>
+> + - Michael Hennerich <Michael.Hennerich@analog.com>
+> + - Stefan Popa <stefan.popa@analog.com>
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - lltc,ltc2496
+> +
+> +  vref-supply:
+> +    description: phandle to an external regulator providing the referenc=
+e voltage
+> +    allOf:
+> +      - $ref: /schemas/types.yaml#/definitions/phandle
+> +
+> +  reg:
+> +    description: spi chipselect number according to the usual spi bindin=
+gs
+> +
+> +  spi-max-frequency:
+> +    description: maximal spi bus frequency supported by the chip
+
+dropped the "by the chip" as this is also about the wiring on the board.  I=
+f it
+were just the chip, it could be put in the driver.  The unknown bit is
+if there is some other reason why it might need to be set lower than the ma=
+ximum.
+
+> +
+> +required:
+> +  - compatible
+> +  - vref-supply
+> +  - reg
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +        #address-cells =3D <1>;
+> +        #size-cells =3D <0>;
+> +
+> +        adc@0 {
+> +        	compatible =3D "lltc,ltc2496";
+You can't easily see it here, but this is a mixture of spaces
+and tabs.  Should be all spaces.  I've tidied that up.
+> +        	reg =3D <0>;
+> +        	vref-supply =3D <&ltc2496_reg>;
+> +        	spi-max-frequency =3D <2000000>;
+> +        };
+> +    };
 
