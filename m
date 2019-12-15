@@ -8,72 +8,66 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B2A6C43603
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 194C9C43603
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6083F22B48
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E2AAA24654
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Dec 2019 05:17:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="N4CbPu6f"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="erojmZQu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726776AbfLOFRZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Dec 2019 00:17:25 -0500
-Received: from mail-pf1-f194.google.com ([209.85.210.194]:39916 "EHLO
+        id S1726926AbfLOFRj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Dec 2019 00:17:39 -0500
+Received: from mail-pf1-f194.google.com ([209.85.210.194]:32815 "EHLO
         mail-pf1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725861AbfLOFRZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Dec 2019 00:17:25 -0500
-Received: by mail-pf1-f194.google.com with SMTP id 2so3758321pfx.6;
-        Sat, 14 Dec 2019 21:17:25 -0800 (PST)
+        with ESMTP id S1726865AbfLOFRj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Dec 2019 00:17:39 -0500
+Received: by mail-pf1-f194.google.com with SMTP id y206so3773767pfb.0;
+        Sat, 14 Dec 2019 21:17:38 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=yyoE/kJT7Za8oOamE8LAfuYOwDLTmHlQFdtd0CuJ34k=;
-        b=N4CbPu6fl9qY4tyGJ0tQFP8vj5OWJLuktbW6f/YyYtElFDPg0L6iPbWlqQakJuy8e7
-         tTzV3KjkXuGVcoQt5Emmir0+p/P7qL/ZZBZhJmhwP6oL1nwdkjxUMHjusjoJPgdRGx9z
-         /XQVX5oH5xkWXa9NBmnAYiU/+CrOqduGAcw2UeJvDaYOirsO0IyoYt1Wt/e+Zs1JUNly
-         xLiu7BZXozvgfoYzc8bdKq3Rg+il2wTHFloMdTvVHeTEFZ7tUQZ3w5JHXt5ZMpYdDCn8
-         6UsGDqNo/rYSrt05bQT6p21UdUXssIDE92iyshielrqWwUEdSC/qQvE1gmRAixv4nl51
-         e1RA==
+        bh=o0nAQcnsb+T5h9bhgeYIzbak+OeGPv1PHTKsTeCIoXY=;
+        b=erojmZQu2yIt3sG10pk8q7D162SAcRjxoBKbUaHuIhQ9qCS8Ovsrir9CSC6ymhCozZ
+         FqJbFyL+b7YifQFa/0j7JxpknZq8Q2X9TeL1mjAJCnQEZo0ZaUgUDC3SmpcLnC97qrcz
+         6+zdTV3ejXQXKXZW4bWUv3pwgL4xdnBcdl4GiSkW2HOo6e+sUTG07tQiiOZOVyEKlvGZ
+         8LWNoxfJfejbBmxVEhjyX3vtC9aLJQopm1lxsyysNlSrJnFGkIcEn/CigYEybtUr7B++
+         WTxENH/IzJk+aDB4t8OozPOkKfLmn3HRsMt9cVmg1exjUHP4KQqCK1sXC5J6ExTdjFWA
+         aPRw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=yyoE/kJT7Za8oOamE8LAfuYOwDLTmHlQFdtd0CuJ34k=;
-        b=IeBi9GUYYZQdCHWGxqmuR2RkQCByOu8tP5vc1grP1krxXUDBdF3k6iB+AE91G8X5wg
-         vL2sKBKvoChQ2VD1vmssosYxBg0LjIPrRxCZ+HDpOMU2YLENugEso7/wVH/lfpW69O/F
-         /Zye2CZ+LSE5ysTlmyn8qh8OyqgSVe6sR/Qz4iHSaLrdlE9VR1eEHuYGYPGX+3DnmiOe
-         tfCZQKdN9mEHlOeprSNyoFUePcy5hW8yr/EeYKCz4JDuILdHHRj0kY1BuuQqFqfcDwTe
-         spOoR5xNH3HajZtGCD+f79m4DWGnMh5FS1Mdl30ltS1dlSsl5xumRU+xMx8zeuyUgORy
-         akIA==
-X-Gm-Message-State: APjAAAXigSFFaBNmrB7PklYXvLh5cFCT4y42izcEFUaFh9nD0kaA7fND
-        WybGMytjcYI6gBmh+ZPfI5M=
-X-Google-Smtp-Source: APXvYqx3VkY0cSg/7bN0Y0W5G2/U6JBARCdKWa0nOQSgon43lbz4BsIfhgC4OCM7Owt5n+zvtJvdnQ==
-X-Received: by 2002:a63:cc4f:: with SMTP id q15mr10235784pgi.159.1576387044564;
-        Sat, 14 Dec 2019 21:17:24 -0800 (PST)
+        bh=o0nAQcnsb+T5h9bhgeYIzbak+OeGPv1PHTKsTeCIoXY=;
+        b=gJxgYzzKjQdG5b50t6ibHdYqQda8tbwwL++OY8pSECbwjdAqIlYPfoOi+p/0jarzqx
+         8IMb1iEGqaL0R9EkiQ0fSRC3NHMbGAT8dtGi1tTf/oYFCowqAw9zKa9YyzFw9ibDFxE1
+         y+mhQF4wDaqQ/AR5Sj0LuDSNSt3VFQli7j19q3Xc0qEJWhQtbyvWDMIONneccr1B+xcS
+         igU7Qdx4SOF+R6L4lo/9QWmbtrp3JP6mK0VtMuJxXFE4b1riW0KugrcEf3mQTmkhFT9S
+         Osw2KXOkaZq4mdIZ3VYjVkus62Bj0/K+MfgYHh2rj6rHFgdVNwcB+RFgs328zGhNWLRT
+         L/gw==
+X-Gm-Message-State: APjAAAUNl9+bPoQ2q71wXpXOtLkmPARHsfw57GzaDctc0NBRFEBuWGh0
+        4j96MUvnWsbbOnq7ynCbU2Q=
+X-Google-Smtp-Source: APXvYqxoUa7OEVWIs7gSylEoHGyOHkaN4si8hTmYB1eDQDWpbT6CBXJiWnAxrimODPovU2iUuCMwpg==
+X-Received: by 2002:a63:7705:: with SMTP id s5mr9996843pgc.379.1576387058498;
+        Sat, 14 Dec 2019 21:17:38 -0800 (PST)
 Received: from localhost.localdomain ([240f:34:212d:1:368e:e048:68f1:84e7])
-        by smtp.gmail.com with ESMTPSA id u10sm16596528pgg.41.2019.12.14.21.17.19
+        by smtp.gmail.com with ESMTPSA id u10sm16596528pgg.41.2019.12.14.21.17.34
         (version=TLS1_2 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
-        Sat, 14 Dec 2019 21:17:23 -0800 (PST)
+        Sat, 14 Dec 2019 21:17:37 -0800 (PST)
 From:   Akinobu Mita <akinobu.mita@gmail.com>
 To:     linux-nvme@lists.infradead.org, linux-hwmon@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-wireless@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         akpm@linux-foundation.org
 Cc:     Akinobu Mita <akinobu.mita@gmail.com>,
-        Sujith Thomas <sujith.thomas@intel.com>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amit.kucheria@verdurent.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Keith Busch <kbusch@kernel.org>, Jens Axboe <axboe@fb.com>,
-        Christoph Hellwig <hch@lst.de>,
-        Sagi Grimberg <sagi@grimberg.me>
-Subject: [PATCH v4 07/12] nvme: hwmon: switch to use <linux/units.h> helpers
-Date:   Sun, 15 Dec 2019 14:16:10 +0900
-Message-Id: <1576386975-7941-8-git-send-email-akinobu.mita@gmail.com>
+        Kalle Valo <kvalo@codeaurora.org>,
+        Johannes Berg <johannes.berg@intel.com>,
+        Emmanuel Grumbach <emmanuel.grumbach@intel.com>,
+        Luca Coelho <luciano.coelho@intel.com>,
+        Intel Linux Wireless <linuxwifi@intel.com>
+Subject: [PATCH v4 10/12] iwlwifi: use <linux/units.h> helpers
+Date:   Sun, 15 Dec 2019 14:16:13 +0900
+Message-Id: <1576386975-7941-11-git-send-email-akinobu.mita@gmail.com>
 X-Mailer: git-send-email 2.7.4
 In-Reply-To: <1576386975-7941-1-git-send-email-akinobu.mita@gmail.com>
 References: <1576386975-7941-1-git-send-email-akinobu.mita@gmail.com>
@@ -82,89 +76,73 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This switches the nvme driver to use kelvin_to_millicelsius() and
-millicelsius_to_kelvin() in <linux/units.h>.
+This switches the iwlwifi driver to use celsius_to_kelvin() and
+kelvin_to_celsius() in <linux/units.h>.
 
-Cc: Sujith Thomas <sujith.thomas@intel.com>
-Cc: Darren Hart <dvhart@infradead.org>
-Cc: Andy Shevchenko <andy@infradead.org>
-Cc: Zhang Rui <rui.zhang@intel.com>
-Cc: Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc: Amit Kucheria <amit.kucheria@verdurent.com>
-Cc: Jean Delvare <jdelvare@suse.com>
-Cc: Guenter Roeck <linux@roeck-us.net>
-Cc: Keith Busch <kbusch@kernel.org>
-Cc: Jens Axboe <axboe@fb.com>
-Cc: Christoph Hellwig <hch@lst.de>
-Cc: Sagi Grimberg <sagi@grimberg.me>
-Reviewed-by: Christoph Hellwig <hch@lst.de>
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
-Reviewed-by: Keith Busch <kbusch@kernel.org>
+Cc: Kalle Valo <kvalo@codeaurora.org>
+Cc: Johannes Berg <johannes.berg@intel.com>
+Cc: Emmanuel Grumbach <emmanuel.grumbach@intel.com>
+Cc: Luca Coelho <luciano.coelho@intel.com>
+Cc: Intel Linux Wireless <linuxwifi@intel.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Acked-by: Luca Coelho <luciano.coelho@intel.com>
 Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
 ---
 * v4
-- add Reviewed-by tags
+- add Reviewed-by and Acked-by tags
+- remove "wireless: " in the title
 
- drivers/nvme/host/hwmon.c | 13 +++++--------
- 1 file changed, 5 insertions(+), 8 deletions(-)
+ drivers/net/wireless/intel/iwlwifi/dvm/dev.h     | 5 -----
+ drivers/net/wireless/intel/iwlwifi/dvm/devices.c | 6 ++++--
+ 2 files changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/nvme/host/hwmon.c b/drivers/nvme/host/hwmon.c
-index a5af21f..2e6477e 100644
---- a/drivers/nvme/host/hwmon.c
-+++ b/drivers/nvme/host/hwmon.c
-@@ -5,14 +5,11 @@
-  */
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/dev.h b/drivers/net/wireless/intel/iwlwifi/dvm/dev.h
+index be5ef4c..8d83800 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/dev.h
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/dev.h
+@@ -237,11 +237,6 @@ struct iwl_sensitivity_ranges {
+ 	u16 nrg_th_cca;
+ };
  
- #include <linux/hwmon.h>
-+#include <linux/units.h>
- #include <asm/unaligned.h>
- 
- #include "nvme.h"
- 
--/* These macros should be moved to linux/temperature.h */
--#define MILLICELSIUS_TO_KELVIN(t) DIV_ROUND_CLOSEST((t) + 273150, 1000)
--#define KELVIN_TO_MILLICELSIUS(t) ((t) * 1000L - 273150)
 -
- struct nvme_hwmon_data {
- 	struct nvme_ctrl *ctrl;
- 	struct nvme_smart_log log;
-@@ -35,7 +32,7 @@ static int nvme_get_temp_thresh(struct nvme_ctrl *ctrl, int sensor, bool under,
- 		return -EIO;
- 	if (ret < 0)
- 		return ret;
--	*temp = KELVIN_TO_MILLICELSIUS(status & NVME_TEMP_THRESH_MASK);
-+	*temp = kelvin_to_millicelsius(status & NVME_TEMP_THRESH_MASK);
+-#define KELVIN_TO_CELSIUS(x) ((x)-273)
+-#define CELSIUS_TO_KELVIN(x) ((x)+273)
+-
+-
+ /******************************************************************************
+  *
+  * Functions implemented in core module which are forward declared here
+diff --git a/drivers/net/wireless/intel/iwlwifi/dvm/devices.c b/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
+index dc3f197..d42bc46 100644
+--- a/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
++++ b/drivers/net/wireless/intel/iwlwifi/dvm/devices.c
+@@ -10,6 +10,8 @@
+  *
+  *****************************************************************************/
  
- 	return 0;
++#include <linux/units.h>
++
+ /*
+  * DVM device-specific data & functions
+  */
+@@ -345,7 +347,7 @@ static s32 iwl_temp_calib_to_offset(struct iwl_priv *priv)
+ static void iwl5150_set_ct_threshold(struct iwl_priv *priv)
+ {
+ 	const s32 volt2temp_coef = IWL_5150_VOLTAGE_TO_TEMPERATURE_COEFF;
+-	s32 threshold = (s32)CELSIUS_TO_KELVIN(CT_KILL_THRESHOLD_LEGACY) -
++	s32 threshold = (s32)celsius_to_kelvin(CT_KILL_THRESHOLD_LEGACY) -
+ 			iwl_temp_calib_to_offset(priv);
+ 
+ 	priv->hw_params.ct_kill_threshold = threshold * volt2temp_coef;
+@@ -381,7 +383,7 @@ static void iwl5150_temperature(struct iwl_priv *priv)
+ 	vt = le32_to_cpu(priv->statistics.common.temperature);
+ 	vt = vt / IWL_5150_VOLTAGE_TO_TEMPERATURE_COEFF + offset;
+ 	/* now vt hold the temperature in Kelvin */
+-	priv->temperature = KELVIN_TO_CELSIUS(vt);
++	priv->temperature = kelvin_to_celsius(vt);
+ 	iwl_tt_handler(priv);
  }
-@@ -46,7 +43,7 @@ static int nvme_set_temp_thresh(struct nvme_ctrl *ctrl, int sensor, bool under,
- 	unsigned int threshold = sensor << NVME_TEMP_THRESH_SELECT_SHIFT;
- 	int ret;
  
--	temp = MILLICELSIUS_TO_KELVIN(temp);
-+	temp = millicelsius_to_kelvin(temp);
- 	threshold |= clamp_val(temp, 0, NVME_TEMP_THRESH_MASK);
- 
- 	if (under)
-@@ -88,7 +85,7 @@ static int nvme_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 	case hwmon_temp_min:
- 		return nvme_get_temp_thresh(data->ctrl, channel, true, val);
- 	case hwmon_temp_crit:
--		*val = KELVIN_TO_MILLICELSIUS(data->ctrl->cctemp);
-+		*val = kelvin_to_millicelsius(data->ctrl->cctemp);
- 		return 0;
- 	default:
- 		break;
-@@ -105,7 +102,7 @@ static int nvme_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
- 			temp = get_unaligned_le16(log->temperature);
- 		else
- 			temp = le16_to_cpu(log->temp_sensor[channel - 1]);
--		*val = KELVIN_TO_MILLICELSIUS(temp);
-+		*val = kelvin_to_millicelsius(temp);
- 		break;
- 	case hwmon_temp_alarm:
- 		*val = !!(log->critical_warning & NVME_SMART_CRIT_TEMPERATURE);
 -- 
 2.7.4
 
