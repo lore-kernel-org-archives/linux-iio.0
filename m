@@ -6,78 +6,69 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B0ADC3F68F
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Dec 2019 17:38:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65DDFC4741C
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Dec 2019 17:39:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3C0BA206D7
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Dec 2019 17:38:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4117B20726
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Dec 2019 17:39:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726141AbfLPRi6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Dec 2019 12:38:58 -0500
-Received: from mga12.intel.com ([192.55.52.136]:10948 "EHLO mga12.intel.com"
+        id S1726313AbfLPRi7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Dec 2019 12:38:59 -0500
+Received: from mga04.intel.com ([192.55.52.120]:19438 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726227AbfLPRi6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Dec 2019 12:38:58 -0500
+        id S1726275AbfLPRi7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Dec 2019 12:38:59 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Dec 2019 09:38:58 -0800
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 16 Dec 2019 09:38:58 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.69,322,1571727600"; 
-   d="scan'208";a="247116666"
+   d="scan'208";a="217493069"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 16 Dec 2019 09:38:56 -0800
+  by orsmga003.jf.intel.com with ESMTP; 16 Dec 2019 09:38:56 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0DB5324C; Mon, 16 Dec 2019 19:38:55 +0200 (EET)
+        id EB80645; Mon, 16 Dec 2019 19:38:54 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 4/9] iio: gyro: st_gyro: Mark gyro_pdata with __maybe_unused
-Date:   Mon, 16 Dec 2019 19:38:48 +0200
-Message-Id: <20191216173853.75797-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/9] iio: accel: st_accel: Drop unnecessary #else branch for ACPI
+Date:   Mon, 16 Dec 2019 19:38:46 +0200
+Message-Id: <20191216173853.75797-2-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.24.0
 In-Reply-To: <20191216173853.75797-1-andriy.shevchenko@linux.intel.com>
 References: <20191216173853.75797-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since we put static variable to a header file it's copied to each module
-that includes the header. But not all of them are actually used it.
-
-Mark gyro_pdata with __maybe_unused to calm a compiler down:
-
-In file included from drivers/iio/gyro/st_gyro_i2c.c:18:
-drivers/iio/gyro/st_gyro.h:31:46: warning: ‘gyro_pdata’ defined but not used [-Wunused-const-variable=]
-   31 | static const struct st_sensors_platform_data gyro_pdata = {
-      |                                              ^~~~~~~~~~
-...
+ACPI_PTR() takes care of the argument in case of !CONFIG_ACPI.
+Remove unnecessary #else branch.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/gyro/st_gyro.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/accel/st_accel_i2c.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/st_gyro.h b/drivers/iio/gyro/st_gyro.h
-index 592f6b34e987..fd9171cc3aba 100644
---- a/drivers/iio/gyro/st_gyro.h
-+++ b/drivers/iio/gyro/st_gyro.h
-@@ -28,7 +28,7 @@
-  * struct st_sensors_platform_data - gyro platform data
-  * @drdy_int_pin: DRDY on gyros is available only on INT2 pin.
-  */
--static const struct st_sensors_platform_data gyro_pdata = {
-+static __maybe_unused const struct st_sensors_platform_data gyro_pdata = {
- 	.drdy_int_pin = 2,
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index 50fa0fc32baa..0f4aef5448e7 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -119,8 +119,6 @@ static const struct acpi_device_id st_accel_acpi_match[] = {
+ 	{ },
  };
+ MODULE_DEVICE_TABLE(acpi, st_accel_acpi_match);
+-#else
+-#define st_accel_acpi_match NULL
+ #endif
  
+ static const struct i2c_device_id st_accel_id_table[] = {
 -- 
 2.24.0
 
