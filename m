@@ -2,176 +2,129 @@ Return-Path: <SRS0=Y7SI=2H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 453F4C2D0C8
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Dec 2019 14:10:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFA48C43603
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Dec 2019 15:19:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 174C520663
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Dec 2019 14:10:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="DOWO4hY7"
+	by mail.kernel.org (Postfix) with ESMTP id A406D218AC
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Dec 2019 15:19:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1576595983;
+	bh=K3G4TQZr7CYHmEJwoV7I2f70tg7GGFtXgrXSz/VHhVA=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=srT7EQp1jlOZ0/BTWoosxrdTKG6M6CroYFlO4THBStlX7ElAL+tnDoFXS4o+IrAan
+	 34HxSeUP9N2N7L6W+nze9ZaEwvHQtJWjUj0SqRx7XRSK/rcHBJSiYuzWIiQBDhpV/b
+	 m8+uAt9RMmfN2LnLgPzh8Jbs0r6Ji78fyWU5k7iI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728768AbfLQOKT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Dec 2019 09:10:19 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:56826 "EHLO
-        fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728801AbfLQOKT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Dec 2019 09:10:19 -0500
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id xBHE9xmV126814;
-        Tue, 17 Dec 2019 08:09:59 -0600
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1576591799;
-        bh=39XSBHslFW4qLVK93KPUqercQvzcryx8huumV5amdlk=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=DOWO4hY7XL5knYI8O2w7n3QgXg6vxPdE966QMAD6TikiudS1nxMCubKsHWiXEteQg
-         /rr/NUj43wlPsHtpmvFPLsziQKeGbERS4pIeF2n3S8LTJIQm2t9NmoDziO8ZzvfaR9
-         F/5eAIE34NIXmUpoKb3JBnipIQHuMB1SUya61xNs=
-Received: from DFLE115.ent.ti.com (dfle115.ent.ti.com [10.64.6.36])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBHE9xfd123765;
-        Tue, 17 Dec 2019 08:09:59 -0600
-Received: from DFLE104.ent.ti.com (10.64.6.25) by DFLE115.ent.ti.com
- (10.64.6.36) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3; Tue, 17
- Dec 2019 08:09:58 -0600
-Received: from lelv0327.itg.ti.com (10.180.67.183) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1847.3 via
- Frontend Transport; Tue, 17 Dec 2019 08:09:58 -0600
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0327.itg.ti.com (8.15.2/8.15.2) with ESMTP id xBHE9wKj121002;
-        Tue, 17 Dec 2019 08:09:58 -0600
-From:   Dan Murphy <dmurphy@ti.com>
-To:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-CC:     <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH 1/2] dt-binding: iio: dac8771: Add TI DAC8771 binding
-Date:   Tue, 17 Dec 2019 08:07:30 -0600
-Message-ID: <20191217140731.30504-2-dmurphy@ti.com>
-X-Mailer: git-send-email 2.23.0
-In-Reply-To: <20191217140731.30504-1-dmurphy@ti.com>
-References: <20191217140731.30504-1-dmurphy@ti.com>
+        id S1728238AbfLQPTn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Dec 2019 10:19:43 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56038 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728227AbfLQPTn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Dec 2019 10:19:43 -0500
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4E188206A5;
+        Tue, 17 Dec 2019 15:19:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1576595982;
+        bh=K3G4TQZr7CYHmEJwoV7I2f70tg7GGFtXgrXSz/VHhVA=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=HzsVL0/VBaicl1VLel0zxkkX6nH5/SKo6OtcFJXfjdk/C/FJ6J/Dymf+7uqRKkB6E
+         Tg/cCyJEdvPfqOgErNyOziApd8aCCSeICOHC4wcFECxzg+0Z5gCMr9YO0Vsi4KVfhb
+         Kp8nWv1fsPObJbgsS/OmlynFml+xC9SLHTj5i8m8=
+Date:   Tue, 17 Dec 2019 16:19:40 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, Michael Hennerich <michael.hennerich@analog.com>
+Subject: Re: [PATCH] iio: core: print error message on debugfs register
+ failure
+Message-ID: <20191217151940.GB3654493@kroah.com>
+References: <20191211151636.13547-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191211151636.13547-1-alexandru.ardelean@analog.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add the TI DAC8771 DT binding.
+On Wed, Dec 11, 2019 at 05:16:36PM +0200, Alexandru Ardelean wrote:
+> From: Michael Hennerich <michael.hennerich@analog.com>
+> 
+> If there's a failure when registering a debugfs entry for a device, don't
+> silently ignore the failure. Instead, print an error message and an error
+> code signaling the failure.
 
-Datasheet:
-http://www.ti.com/lit/ds/symlink/dac8771.pdf
+No, never do that.
 
-Signed-off-by: Dan Murphy <dmurphy@ti.com>
-CC: Rob Herring <robh+dt@kernel.org>
----
- .../bindings/iio/dac/ti,dac8771.yaml          | 89 +++++++++++++++++++
- 1 file changed, 89 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/ti,dac8771.yaml
+> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  drivers/iio/industrialio-core.c | 34 +++++++++++++++++++++++++++------
+>  1 file changed, 28 insertions(+), 6 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index dab67cb69fe6..662dabf8b08c 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -364,23 +364,45 @@ static const struct file_operations iio_debugfs_reg_fops = {
+>  static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
+>  {
+>  	debugfs_remove_recursive(indio_dev->debugfs_dentry);
+> +	indio_dev->debugfs_dentry = NULL;
+>  }
+>  
+>  static void iio_device_register_debugfs(struct iio_dev *indio_dev)
+>  {
+> +	struct dentry *d;
+> +	int ret;
+> +
+>  	if (indio_dev->info->debugfs_reg_access == NULL)
+>  		return;
+>  
+>  	if (!iio_debugfs_dentry)
+>  		return;
+>  
+> -	indio_dev->debugfs_dentry =
+> -		debugfs_create_dir(dev_name(&indio_dev->dev),
+> -				   iio_debugfs_dentry);
+> +	d = debugfs_create_dir(dev_name(&indio_dev->dev), iio_debugfs_dentry);
+> +	if (IS_ERR_OR_NULL(d))
+> +		goto error;
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac8771.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac8771.yaml
-new file mode 100644
-index 000000000000..6aba6789d36c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/ti,dac8771.yaml
-@@ -0,0 +1,89 @@
-+# SPDX-License-Identifier: GPL-2.0
-+# Copyright (C) 2019 Texas Instruments Incorporated
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/bindings/iio/dac/ti,dac8771.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Texas Instruments DAC8771
-+
-+maintainers:
-+  - Dan Murphy <dmurphy@ti.com>
-+
-+description: |
-+  The DAC8771 is a single channel, precision, fully integrated 16-bit digital
-+  to analog converter (DAC) with adaptive power management, and is designed to
-+  meet the requirements of industrial control applications.
-+
-+  Specifications can be found at:
-+    http://www.ti.com/lit/ds/symlink/dac8771.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ti,dac8771
-+
-+  reg:
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description: |
-+       GPIO used for hardware reset.
-+
-+  loaddacs-gpios:
-+    description: |
-+       GPIO used to shift the data from the SPI FIFO to the processing engine.
-+
-+  spi-max-frequency:
-+    maximum: 25000000
-+
-+  vref-supply:
-+    description: Phandle to the external reference voltage supply.
-+
-+  ti,output-range:
-+    description: Output range of the DAC
-+       0 - Voltage output 0 to +5 V (default)
-+       1 - Voltage output 0 to +10 V
-+       2 - Voltage output ±5 V
-+       3 - Voltage output ±10 V
-+       4 - Current output 3.5 mA to 23.5 mA
-+       5 - Current output 0 to 20 mA
-+       6 - Current output 0 to 24 mA
-+       7 - Current output ±24 mA
-+       8 - Voltage output 0 to +6 V
-+       9 - Voltage output 0 to +12 V
-+       10 - Voltage output ±6 V
-+       11 - Voltage output ±12 V
-+       12 - Current output 4 mA to 20 mA
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint8
-+      - enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
-+
-+  interrupts:
-+    description: IRQ line for the DAC
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - vref-supply
-+
-+examples:
-+  - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+  
-+      dac@0 {
-+        compatible = "ti,dac8771";
-+        reg = <0>;
-+        spi-max-frequency = <25000000>;
-+        vref-supply = <&ldo3_reg>;
-+        ti,output-range = <2>;
-+        interrupts = <16>;
-+        interrupt-parent = <&gpio1>;
-+        loaddacs-gpios = <&gpio1 17 GPIO_ACTIVE_LOW>;
-+        reset-gpios = <&gpio1 27 GPIO_ACTIVE_LOW>;
-+      };
-+    };
--- 
-2.23.0
+No, don't do that, I spent a lot of time removing all of these pointless
+checks.
 
+No kernel code shoudl ever care if debugfs is workign or not, just make
+the call and move on.   You can always pass the result of a debugfs call
+into another one with no problems.
+
+> +
+> +	indio_dev->debugfs_dentry = d;
+> +
+> +	d = debugfs_create_file("direct_reg_access", 0644,
+> +				indio_dev->debugfs_dentry, indio_dev,
+> +				&iio_debugfs_reg_fops);
+> +
+> +	if (IS_ERR_OR_NULL(d))
+> +		goto error;
+
+This check isn't even correct :)
+
+So this isn't going to work no matter what, sorry.
+
+just don't do this.
+
+The code is just fine as-is.
+
+thanks,
+
+greg k-h
