@@ -2,541 +2,227 @@ Return-Path: <SRS0=lnue=2I=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71613C43603
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Dec 2019 06:23:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F165C43603
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Dec 2019 16:24:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 24CC120717
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Dec 2019 06:23:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0DCDA227BF
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Dec 2019 16:24:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="e/RAhWAY"
+	dkim=pass (1024-bit key) header.d=microchiptechnology.onmicrosoft.com header.i=@microchiptechnology.onmicrosoft.com header.b="qjM3J37K"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbfLRGXI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Dec 2019 01:23:08 -0500
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:34085 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725881AbfLRGXI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Dec 2019 01:23:08 -0500
-Received: by mail-pl1-f195.google.com with SMTP id x17so518298pln.1;
-        Tue, 17 Dec 2019 22:23:07 -0800 (PST)
+        id S1726987AbfLRQYC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Dec 2019 11:24:02 -0500
+Received: from esa5.microchip.iphmx.com ([216.71.150.166]:32906 "EHLO
+        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726985AbfLRQYC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Dec 2019 11:24:02 -0500
+Received-SPF: Pass (esa5.microchip.iphmx.com: domain of
+  Eugen.Hristev@microchip.com designates 198.175.253.82 as
+  permitted sender) identity=mailfrom;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Eugen.Hristev@microchip.com";
+  x-sender="Eugen.Hristev@microchip.com";
+  x-conformance=spf_only; x-record-type="v=spf1";
+  x-record-text="v=spf1 mx a:ushub1.microchip.com
+  a:smtpout.microchip.com -exists:%{i}.spf.microchip.iphmx.com
+  include:servers.mcsv.net include:mktomail.com
+  include:spf.protection.outlook.com ~all"
+Received-SPF: None (esa5.microchip.iphmx.com: no sender
+  authenticity information available from domain of
+  postmaster@email.microchip.com) identity=helo;
+  client-ip=198.175.253.82; receiver=esa5.microchip.iphmx.com;
+  envelope-from="Eugen.Hristev@microchip.com";
+  x-sender="postmaster@email.microchip.com";
+  x-conformance=spf_only
+Authentication-Results: esa5.microchip.iphmx.com; spf=Pass smtp.mailfrom=Eugen.Hristev@microchip.com; spf=None smtp.helo=postmaster@email.microchip.com; dkim=pass (signature verified) header.i=@microchiptechnology.onmicrosoft.com; dmarc=pass (p=none dis=none) d=microchip.com
+IronPort-SDR: Pj4dhcNBKEnadabKBkLJr6CQTYxW7OjkSOB1cANzjHJsAmlKJ9Qpl88AoCoae1+piF1VYbw+0X
+ Y4Sf+mm81IdiJyAHK2PhBPQ0N2hZCX2Rs2t1EMtI8k6PWA/IaqcD79ries6v8Knu6eSdMvybm1
+ 2+4EXdqc+hZpEqWqnXByMR3PGDoC+L5LrCpcHTes2cVQO4jmEcCMEhOwIvv/YYHa1mss21kxsC
+ i7NEYtCwznZo11l6rUF5kJjCQCg1LExMY64ewX5wuoAZniwqFAvalTMZ5YAAa5djiUW6xvr5px
+ xB0=
+X-IronPort-AV: E=Sophos;i="5.69,330,1571727600"; 
+   d="scan'208";a="59426779"
+Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 18 Dec 2019 09:24:01 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
+ chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1713.5; Wed, 18 Dec 2019 09:23:58 -0700
+Received: from NAM11-BN8-obe.outbound.protection.outlook.com (10.10.215.89) by
+ email.microchip.com (10.10.87.72) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5 via Frontend
+ Transport; Wed, 18 Dec 2019 09:23:58 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=RP/A+6l5W3Si9Lm4L+KmNhsrAiSJXA+PT0Z8jcibzEp4djtcW5QrovElkDbX6V9GM3VCHbxWnmHgAk1HKMevCNKB6rH31L/S57KIYtEAG6IbGKh1mytEXEe/NBn1jEJ1HvsSbg3WifV/2UPR2ewn+M+WLOkUJFA4OTgw3ao5lNm/ZMkKoodJ70Y01SUvPjmbQXOuwM1in1PKdZExyjmJiA44vlol1P9bTHt6uAeDnP6N6jTDDfNeShgpYJEo4S3eGwSJ4i2y14JP26sxDC0X1OH9DWloFZS6RPJ/PHIfeUlf3NJiPabjkkL/+J6wIl28kJ5tw62C69pPffB7IVZ78g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nkbxb1EvYc7ZEC/RY7x0LhCxXUt8pumOzfafB8ahW5s=;
+ b=dGc1194ZqhltYd2KaGUyBmQDF0XeAV/R8A78XHcVWes0zFS69Si1ZEBD7qMke5cMHyyMdhF29y23DJM/x8bClqwchvhYzgYB4rwESiLW60UmSGOkPutQkj8CC/+Sli3HqQz+b+ERL00z50jHVRMR6i1BVveD08AzzAFBwZyElc6fGXG61e1vloxHszNvy9zoCK2QwBpxkJ5bnrQR0yyD3gaCAL6PDpamRdTKamuSfihXpDTiSEafmkQjlakbLdtUhmJi6yY/6KoyE0DZZTNujEL5AEJodNhCw6nnBYVB4GouuCbTIMl4ubDiAjUtr30KTt8xksqPW665J4ePhud8TQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=microchip.com; dmarc=pass action=none
+ header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding;
-        bh=czM9B54wbNNqsSMPd76X6Q4/9vENfHsjae3vBx7yvfM=;
-        b=e/RAhWAYeMKmghcnw+xRD0sBUptlAyTAthj/+cZhBZZgtH3kdFwnfPog+otDCFjEXA
-         NSMxokX22jgq9IJ/MRKvTyiJ11f9OPG+jn9dnQYCAOeNdO6MTULrJnH89aaEAXnPmpKf
-         YkJkSbtlCD5fB4WrgOSnk4lr58io9TG6LdE6FKC3RURnaqx2xOvqzQaN19ml9iQVaOZv
-         QS+IzFtE04VWgw8+syvL/DXCYYYr5CR+Ug56wghF/7DaKzAcAoWri1cp4VJv98pGZMii
-         mi7bAfoCdyDYCHBaUEN5xORxfypZayBDWGSqrx4q8Xs3yxg9G+yrBiiAmYRr4EU5OGxG
-         GBow==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding;
-        bh=czM9B54wbNNqsSMPd76X6Q4/9vENfHsjae3vBx7yvfM=;
-        b=MLTfh+p6FaR/sK+QPo4LbCcHlWzTms53gaPB5WlNqp1iuyhwcT/dkeSH0xZepEisAm
-         8NYb0R+3MozYZ4MTahS1XPTa4+rSzw1yIlrcovHz1MhnHJYze7sZssJ5FVEsXP7VeF48
-         RRd4r7pem3hp4Rdfk+wpZIvu7cA95xWkbANFKDNyKm0oya9TYJKw+Y74AGgeEeD2KePo
-         PYNAUqpCSH3BceK+D0sBt05jwvGey5MS0Va1IXAG4ggjOSvgIGgPEn0gbxrZROXlxiT0
-         yDTzG5RqkfpJzW6Na3Ics5pwgezL9tHngxogrwuZWlkXnlRm5HKRubgIPfcKgWAJnFUN
-         ptEw==
-X-Gm-Message-State: APjAAAWlZ08O52qPAzlzueFqn+iXhGCzPk7S82OpNgJzgT8xdUgLrLru
-        5YnURKkff/tZQALQtn9Yt4+HT5WA
-X-Google-Smtp-Source: APXvYqy5z4iJdiRZwEh6Y7WsIEtt02YePVqxXH4pwK5SrONjbGjqrDLOo5mVbv2ZunjRZaJYnVL0Dw==
-X-Received: by 2002:a17:902:724a:: with SMTP id c10mr924954pll.39.1576650186381;
-        Tue, 17 Dec 2019 22:23:06 -0800 (PST)
-Received: from [0.0.0.0] ([103.103.128.212])
-        by smtp.gmail.com with ESMTPSA id e10sm1346783pfm.3.2019.12.17.22.23.02
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 17 Dec 2019 22:23:05 -0800 (PST)
-Subject: Re: [PATCH v2 1/2] iio: chemical: add support for Dynament Premier
- series single gas sensor
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Tomasz Duszynski <tduszyns@gmail.com>, mike.looijmans@topic.nl,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-References: <3a17c9e1-f916-0cde-3296-70066dccb2b3@gmail.com>
- <FA803BE2-2715-4F63-8F5B-3A57F700AB1B@konsulko.com>
-From:   YuDong Zhang <mtwget@gmail.com>
-Message-ID: <489ccd68-bb73-44c9-77b9-530b35b09999@gmail.com>
-Date:   Wed, 18 Dec 2019 14:22:55 +0800
-User-Agent: Mozilla/5.0 (Windows NT 6.1; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.3.0
+ d=microchiptechnology.onmicrosoft.com;
+ s=selector2-microchiptechnology-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=nkbxb1EvYc7ZEC/RY7x0LhCxXUt8pumOzfafB8ahW5s=;
+ b=qjM3J37Kkb62vMVODHhSHORGb1h9sckkp+O/puCV4dOd7WO6/ISJrO5QB+kPiI5aVyjhQPuktrW1R5bhIir8CKFfA15RExTFlG2WuI2BP36Qy0XgtVlLGKDVTMMnErgyrf8f2ARfQKiImkMN/07BOmEsJr8V6IvESGhDzsVmJAs=
+Received: from DM5PR11MB1242.namprd11.prod.outlook.com (10.168.108.8) by
+ DM5PR11MB1913.namprd11.prod.outlook.com (10.175.87.148) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2559.14; Wed, 18 Dec 2019 16:23:58 +0000
+Received: from DM5PR11MB1242.namprd11.prod.outlook.com
+ ([fe80::9039:e0e8:9032:20c1]) by DM5PR11MB1242.namprd11.prod.outlook.com
+ ([fe80::9039:e0e8:9032:20c1%12]) with mapi id 15.20.2559.012; Wed, 18 Dec
+ 2019 16:23:58 +0000
+From:   <Eugen.Hristev@microchip.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <alexandre.belloni@bootlin.com>
+CC:     <Nicolas.Ferre@microchip.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <linux-rtc@vger.kernel.org>,
+        <a.zummo@towertech.it>, <Ludovic.Desroches@microchip.com>,
+        <Eugen.Hristev@microchip.com>
+Subject: [PATCH 00/10] Enhancements to at91-sama5d2_adc and rtc trigger
+Thread-Topic: [PATCH 00/10] Enhancements to at91-sama5d2_adc and rtc trigger
+Thread-Index: AQHVtb+MrR5owibMB0+1LePacD8d5g==
+Date:   Wed, 18 Dec 2019 16:23:57 +0000
+Message-ID: <1576686157-11939-1-git-send-email-eugen.hristev@microchip.com>
+Accept-Language: en-US, ro-RO
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-mailer: git-send-email 2.7.4
+x-originating-ip: [94.177.32.156]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 80a705b2-8144-4f9d-da0c-08d783d6af27
+x-ms-traffictypediagnostic: DM5PR11MB1913:
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <DM5PR11MB1913D99BDE223D6267EBE2A1E8530@DM5PR11MB1913.namprd11.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 0255DF69B9
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009020)(366004)(39860400002)(346002)(376002)(136003)(396003)(199004)(189003)(2616005)(66556008)(316002)(107886003)(8676002)(71200400001)(8936002)(66476007)(26005)(6506007)(2906002)(64756008)(66446008)(66946007)(81156014)(76116006)(81166006)(5660300002)(478600001)(36756003)(54906003)(186003)(4326008)(86362001)(6512007)(110136005)(91956017)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:DM5PR11MB1913;H:DM5PR11MB1242.namprd11.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: microchip.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kMd3B5gmnN3fqJ49NdX1qCNxxpFCfRvTH3vsBDAA/WJ5z1sPhFvaE3/tCGahu8HSlHRvkchL0BU7x8YeqVNSsGBGd3+U6b63590fTylC5TYLlI/jEsU0GWZ6IbISKy8R115RX3Mb1d8bJn742UD6BlB14vqS1rutCrA8i/O8Wj+T0rUkuMKVfXAbYDCCzsQTc0T+eGBdspDlta0sKoE4hkBJb7rvWXK8OvVM/jzM0Gm8SLWr4WmAlXI0wpRJMc1sElDpgh8oUuvB1z5MQqm0jBEISCgTLSChI2oAJZSUn0do6esVxWrx0F/9WKXc3OmPyJeuZBDyFL1NXY1sE5G4nVvkmw7Y3wcx6e8kkXXpvETL4C13MThm4TMQwEeCE7R9aOoA70XELPtaqI4SuykZ/ZsZ4S5qA5euXUoHsB9ZTfhFZdhdzxvAgCpxAYu46g1M
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-In-Reply-To: <FA803BE2-2715-4F63-8F5B-3A57F700AB1B@konsulko.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 80a705b2-8144-4f9d-da0c-08d783d6af27
+X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Dec 2019 16:23:57.9030
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: lxzwzGRzhd5qNdDoHeVBwY42NsFXqV+qYWTyiux1yXFaof4+LjpdIqkE+/SbGLLECTcfTW7rk1XzoufHgkHvDQB5GnpPGwWpN1jVjPbaTFw=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR11MB1913
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+From: Eugen Hristev <eugen.hristev@microchip.com>
 
-在 2019/12/18 13:17, Matt Ranostay 写道:
->
->> On Dec 17, 2019, at 17:52, ruantu <mtwget@gmail.com> wrote:
->>
->> ﻿On Tue, Dec 17, 2019 at 2:24 AM YuDong Zhang <mtwget@gmail.com> wrote:
->>>> Add support for Dynament Premier series single gas sensor.
->>>>
->>> Just looking the Dynament site and I assume this is for the OEM-1
->>> Development kit? If so you probably should
->>> note that in the documentation because the sensors themselves are
->>> likely to be used in other end products (and not
->>> always the dev kit)
->>>
->>> Also bit of silly question this is an UART device so why not do
->>> processing in userspace? :)
->>>
->>> - Matt
->> This is a driver implemented according to the <Dynamization Sensor Communications protocol>. I think the protocol is standard. This is the idea that emerged after the iio subsystem used serial_bus.
-> Well egg on my face since only got recently back on this mailing list.... looks good over all but the floating point to fixed point stuff maybe has some comments. Also I am on holiday till the New Year but please CC on future changes!
+This series includes support for having the Real Time Clock trigger
+capability for the Analog to Digital Converter in sama5d2-based SoCs
+(RTC ADC Trigger)
 
-premier_float_to_int_clamped is implemented by referring to sps30_float_to_int_clamped in sps30.c
+The first patch of the series has been already submitted on the iio mailing=
+ list
+as
+[PATCH] iio: adc: at91-sama5d2_adc: update for other trigger usage
+But I also include here for reference since the other commits on the driver
+use this as a base commit.
 
->>>> Signed-off-by: YuDong Zhang <mtwget@gmail.com>
->>>> ---
->>>>   MAINTAINERS                    |   5 +
->>>>   drivers/iio/chemical/Kconfig   |  10 +
->>>>   drivers/iio/chemical/Makefile  |   1 +
->>>>   drivers/iio/chemical/premier.c | 366 +++++++++++++++++++++++++++++++++
->>>>   4 files changed, 382 insertions(+)
->>>>   create mode 100644 drivers/iio/chemical/premier.c
->>>>
->>>> diff --git a/MAINTAINERS b/MAINTAINERS
->>>> index a049abccaa26..ae228ac7adc9 100644
->>>> --- a/MAINTAINERS
->>>> +++ b/MAINTAINERS
->>>> @@ -5792,6 +5792,11 @@ S:       Maintained
->>>>   F:     drivers/media/usb/dvb-usb-v2/dvb_usb*
->>>>   F:     drivers/media/usb/dvb-usb-v2/usb_urb.c
->>>>
->>>> +DYNAMENT PREMIER SERIES SINGLE GAS SENSOR DRIVER
->>>> +M:     YuDong Zhang <mtwget@gmail.com>
->>>> +S:     Maintained
->>>> +F:     drivers/iio/chemical/premier.c
->>>> +
->>>>   DYNAMIC DEBUG
->>>>   M:     Jason Baron <jbaron@akamai.com>
->>>>   S:     Maintained
->>>> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
->>>> index fa4586037bb8..93c0c108245b 100644
->>>> --- a/drivers/iio/chemical/Kconfig
->>>> +++ b/drivers/iio/chemical/Kconfig
->>>> @@ -62,6 +62,16 @@ config IAQCORE
->>>>            iAQ-Core Continuous/Pulsed VOC (Volatile Organic Compounds)
->>>>            sensors
->>>>
->>>> +config PREMIER
->>>> +       tristate "Dynament Premier series sensor"
->>>> +       depends on SERIAL_DEV_BUS
->>>> +       help
->>>> +         Say Y here to build support for the Dynament Premier
->>>> +         series sensor.
->>>> +
->>>> +         To compile this driver as a module, choose M here: the module will
->>>> +         be called premier.
->>>> +
->>>>   config PMS7003
->>>>          tristate "Plantower PMS7003 particulate matter sensor"
->>>>          depends on SERIAL_DEV_BUS
->>>> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
->>>> index f97270bc4034..c8e779d7cf4a 100644
->>>> --- a/drivers/iio/chemical/Makefile
->>>> +++ b/drivers/iio/chemical/Makefile
->>>> @@ -10,6 +10,7 @@ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
->>>>   obj-$(CONFIG_BME680_SPI) += bme680_spi.o
->>>>   obj-$(CONFIG_CCS811)           += ccs811.o
->>>>   obj-$(CONFIG_IAQCORE)          += ams-iaq-core.o
->>>> +obj-$(CONFIG_PREMIER)          += premier.o
->>>>   obj-$(CONFIG_PMS7003) += pms7003.o
->>>>   obj-$(CONFIG_SENSIRION_SGP30)  += sgp30.o
->>>>   obj-$(CONFIG_SPS30) += sps30.o
->>>> diff --git a/drivers/iio/chemical/premier.c b/drivers/iio/chemical/premier.c
->>>> new file mode 100644
->>>> index 000000000000..a226dd9d78cb
->>>> --- /dev/null
->>>> +++ b/drivers/iio/chemical/premier.c
->>>> @@ -0,0 +1,366 @@
->>>> +// SPDX-License-Identifier: GPL-2.0
->>>> +/*
->>>> + * Dynament Premier series single gas sensor driver
->>>> + *
->>>> + * Copyright (c) YuDong Zhang <mtwget@gmail.com>
->>>> + */
->>>> +
->>>> +#include <asm/unaligned.h>
->>>> +#include <linux/completion.h>
->>>> +#include <linux/device.h>
->>>> +#include <linux/errno.h>
->>>> +#include <linux/iio/iio.h>
->>>> +#include <linux/jiffies.h>
->>>> +#include <linux/kernel.h>
->>>> +#include <linux/mod_devicetable.h>
->>>> +#include <linux/module.h>
->>>> +#include <linux/mutex.h>
->>>> +#include <linux/of.h>
->>>> +#include <linux/regulator/consumer.h>
->>>> +#include <linux/serdev.h>
->>>> +
->>>> +#define PREMIER_DRIVER_NAME "dynament-premier"
->>>> +
->>>> +#define PREMIER_DLE (0x10)
->>>> +#define PREMIER_CMD_RD (0x13)
->>>> +#define PREMIER_CMD_NAK (0x19)
->>>> +#define PREMIER_CMD_DAT (0x1a)
->>>> +#define PREMIER_EOF (0x1f)
->>>> +
->>>> +#define PREMIER_TIMEOUT msecs_to_jiffies(6000)
->>>> +
->>>> +/*
->>>> + * commands have following format:
->>>> + *
->>>> + * +-----+-----+---------+-----+-----+-----------+-----------+
->>>> + * | DLE | CMD | PAYLOAD | DLE | EOF | CKSUM MSB | CKSUM LSB |
->>>> + * +-----+-----+---------+-----+-----+-----------+-----------+
->>>> + */
->>>> +static const u8 premier_cmd_read_live_data_simple[] = { 0x10, 0x13, 0x06, 0x10,
->>>> +                                                       0x1F, 0x00, 0x58 };
->>>> +
->>>> +struct premier_frame {
->>>> +       u8 state;
->>>> +       u8 is_dat;
->>>> +       u8 is_nak;
->>>> +       u8 data_len;
->>>> +       u8 vi, si, gi, gj;
->>>> +       u8 gas[4];
->>>> +       u8 byte_stuffing;
->>>> +       u8 checksum_received[2];
->>>> +       u16 checksum_calculated;
->>>> +};
->>>> +
->>>> +struct premier_data {
->>>> +       struct serdev_device *serdev;
->>>> +       struct premier_frame frame;
->>>> +       struct completion frame_ready;
->>>> +       struct mutex lock; /* must be held whenever state gets touched */
->>>> +       struct regulator *vcc;
->>>> +};
->>>> +
->>>> +static int premier_do_cmd_read_live_data(struct premier_data *state)
->>>> +{
->>>> +       int ret;
->>>> +
->>>> +       ret = serdev_device_write(state->serdev,
->>>> +                                 premier_cmd_read_live_data_simple,
->>>> +                                 sizeof(premier_cmd_read_live_data_simple),
->>>> +                                 PREMIER_TIMEOUT);
->>>> +       if (ret < sizeof(premier_cmd_read_live_data_simple))
->>>> +               return ret < 0 ? ret : -EIO;
->>>> +
->>>> +       ret = wait_for_completion_interruptible_timeout(&state->frame_ready,
->>>> +                                                       PREMIER_TIMEOUT);
->>>> +
->>>> +       if (!ret)
->>>> +               ret = -ETIMEDOUT;
->>>> +
->>>> +       return ret < 0 ? ret : 0;
->>>> +}
->>>> +
->>>> +static s32 premier_float_to_int_clamped(const u8 *fp)
->>>> +{
->>>> +       int val = get_unaligned_le32(fp);
->>>> +       int mantissa = val & GENMASK(22, 0);
->>>> +       /* this is fine since passed float is always non-negative */
->>>> +       int exp = val >> 23;
->>>> +       int fraction, shift;
->>>> +
->>>> +       /* special case 0 */
->>>> +       if (!exp && !mantissa)
->>>> +               return 0;
->>>> +
->>>> +       exp -= 127;
->>>> +       if (exp < 0) {
->>>> +               /* return values ranging from 1 to 99 */
->>>> +               return ((((1 << 23) + mantissa) * 100) >> 23) >> (-exp);
->>>> +       }
->>>> +
->>>> +       /* return values ranging from 100 to int_max */
->>>> +       shift = 23 - exp;
->>>> +       val = (1 << exp) + (mantissa >> shift);
->>>> +
->>>> +       fraction = mantissa & GENMASK(shift - 1, 0);
->>>> +
->>>> +       return val * 100 + ((fraction * 100) >> shift);
->>>> +}
->>>> +
->>>> +static int premier_read_raw(struct iio_dev *indio_dev,
->>>> +                           struct iio_chan_spec const *chan, int *val,
->>>> +                           int *val2, long mask)
->>>> +{
->>>> +       struct premier_data *state = iio_priv(indio_dev);
->>>> +       struct premier_frame *frame = &state->frame;
->>>> +       int ret;
->>>> +       s32 val_tmp;
->>>> +
->>>> +       switch (mask) {
->>>> +       case IIO_CHAN_INFO_PROCESSED:
->>>> +
->>>> +               mutex_lock(&state->lock);
->>>> +               ret = premier_do_cmd_read_live_data(state);
->>>> +               if (ret) {
->>>> +                       mutex_unlock(&state->lock);
->>>> +                       return ret;
->>>> +               }
->>>> +               val_tmp = premier_float_to_int_clamped(frame->gas);
->>>> +               mutex_unlock(&state->lock);
->>>> +
->>>> +               *val = val_tmp / 100;
->>>> +               *val2 = (val_tmp % 100) * 10000;
->>>> +               return IIO_VAL_INT_PLUS_MICRO;
->>>> +       default:
->>>> +               return -EINVAL;
->>>> +       }
->>>> +
->>>> +       return -EINVAL;
->>>> +}
->>>> +
->>>> +static const struct iio_info premier_info = {
->>>> +       .read_raw = premier_read_raw,
->>>> +};
->>>> +
->>>> +static const struct iio_chan_spec premier_channels[] = {
->>>> +       {
->>>> +               .type = IIO_MASSCONCENTRATION,
->>>> +               .channel = 1,
->>>> +               .channel2 = IIO_MOD_CO2,
->>>> +               .scan_index = -1,
->>>> +               .info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
->>>> +               .modified = 1,
->>>> +       },
->>>> +       IIO_CHAN_SOFT_TIMESTAMP(0),
->>>> +};
->>>> +
->>>> +static int premier_receive_buf(struct serdev_device *serdev,
->>>> +                              const unsigned char *buf, size_t size)
->>>> +{
->>>> +       struct iio_dev *indio_dev = serdev_device_get_drvdata(serdev);
->>>> +       struct premier_data *state = iio_priv(indio_dev);
->>>> +       struct premier_frame *frame = &state->frame;
->>>> +       int i;
->>>> +
->>>> +       for (i = 0; i < size; i++) {
->>>> +               if (frame->state > 0 && frame->state <= 7)
->>>> +                       frame->checksum_calculated += buf[i];
->>>> +
->>>> +               switch (frame->state) {
->>>> +               case 0:
->>>> +                       if (buf[i] == PREMIER_DLE) {
->>>> +                               frame->is_dat = 0;
->>>> +                               frame->is_nak = 0;
->>>> +                               frame->checksum_calculated = buf[i];
->>>> +                               /* We don't initialize checksum_calculated in
->>>> +                                * the last state in case we didn't go
->>>> +                                * there because of noise
->>>> +                                */
->>>> +                               frame->state++;
->>>> +                       }
->>>> +                       break;
->>>> +               case 1:
->>>> +                       /*
->>>> +                        * If noise corrupts a byte in the FSM sequence,
->>>> +                        * we loop between state 0 and 1,
->>>> +                        * until we have a valid sequence of DLE&DAT or DLE&NAK
->>>> +                        */
->>>> +                       if (buf[i] == PREMIER_CMD_DAT) {
->>>> +                               frame->is_dat = 1;
->>>> +                               frame->state++;
->>>> +                       } else if (buf[i] == PREMIER_CMD_NAK) {
->>>> +                               frame->is_nak = 1;
->>>> +                               frame->state++;
->>>> +                       } else
->>>> +                               frame->state = 0;
->>>> +                       break;
->>>> +               case 2:
->>>> +                       if (frame->is_nak)
->>>> +                               frame->state = 0;
->>>> +                       else if (frame->is_dat) {
->>>> +                               frame->data_len = buf[i] - 4;
->>>> +                               /* remove version and status bytes from count */
->>>> +                               if (frame->data_len < 4)
->>>> +                                       frame->state = 0;
->>>> +                               /* we check for the upper limit in state 5 */
->>>> +                               else
->>>> +                                       frame->state++;
->>>> +                       } else
->>>> +                               frame->state = 0;
->>>> +                       break;
->>>> +               case 3:
->>>> +                       /* Just do nothing for 2 rounds to bypass
->>>> +                        * the 2 version bytes
->>>> +                        */
->>>> +                       if (frame->vi < 2 - 1)
->>>> +                               frame->vi++;
->>>> +                       else {
->>>> +                               frame->vi = 0;
->>>> +                               frame->state++;
->>>> +                       }
->>>> +                       break;
->>>> +               case 4:
->>>> +                       if (frame->si < 2 - 1)
->>>> +                               frame->si++;
->>>> +                       else {
->>>> +                               frame->si = 0;
->>>> +                               frame->state++;
->>>> +                       }
->>>> +                       break;
->>>> +               case 5:
->>>> +                       if (frame->gi < frame->data_len - 1) {
->>>> +                               if (buf[i] != PREMIER_DLE ||
->>>> +                                   frame->byte_stuffing) {
->>>> +                                       frame->gas[frame->gj] = buf[i];
->>>> +                                       frame->byte_stuffing = 0;
->>>> +                                       frame->gj++;
->>>> +                                       if (frame->gj >= 4)
->>>> +                                               frame->state = 0;
->>>> +                                       /* Don't violate array limits
->>>> +                                        * if data_len corrupt
->>>> +                                        */
->>>> +                               } else
->>>> +                                       frame->byte_stuffing = 1;
->>>> +                               frame->gi++;
->>>> +                       } else {
->>>> +                               frame->gas[frame->gj] = buf[i];
->>>> +                               frame->byte_stuffing = 0;
->>>> +                               frame->gi = 0;
->>>> +                               frame->gj = 0;
->>>> +                               frame->state++;
->>>> +                       }
->>>> +                       break;
->>>> +               case 6:
->>>> +                       if (buf[i] == PREMIER_DLE)
->>>> +                               frame->state++;
->>>> +                       else
->>>> +                               frame->state = 0;
->>>> +                       break;
->>>> +               case 7:
->>>> +                       if (buf[i] == PREMIER_EOF)
->>>> +                               frame->state++;
->>>> +                       else
->>>> +                               frame->state = 0;
->>>> +                       break;
->>>> +               case 8:
->>>> +                       frame->checksum_received[1] = buf[i];
->>>> +
->>>> +                       frame->state++;
->>>> +                       break;
->>>> +               case 9:
->>>> +                       frame->checksum_received[0] = buf[i];
->>>> +
->>>> +                       if (frame->checksum_calculated ==
->>>> +                           get_unaligned_le16(frame->checksum_received))
->>>> +                               complete(&state->frame_ready);
->>>> +
->>>> +                       frame->state = 0;
->>>> +                       break;
->>>> +               }
->>>> +       }
->>>> +
->>>> +       return size;
->>>> +}
->>>> +
->>>> +static const struct serdev_device_ops premier_serdev_ops = {
->>>> +       .receive_buf = premier_receive_buf,
->>>> +       .write_wakeup = serdev_device_write_wakeup,
->>>> +};
->>>> +
->>>> +static int premier_probe(struct serdev_device *serdev)
->>>> +{
->>>> +       struct premier_data *state;
->>>> +       struct iio_dev *indio_dev;
->>>> +       int ret;
->>>> +
->>>> +       indio_dev = devm_iio_device_alloc(&serdev->dev, sizeof(*state));
->>>> +       if (!indio_dev)
->>>> +               return -ENOMEM;
->>>> +
->>>> +       state = iio_priv(indio_dev);
->>>> +       serdev_device_set_drvdata(serdev, indio_dev);
->>>> +       state->serdev = serdev;
->>>> +       indio_dev->dev.parent = &serdev->dev;
->>>> +       indio_dev->info = &premier_info;
->>>> +       indio_dev->name = PREMIER_DRIVER_NAME;
->>>> +       indio_dev->channels = premier_channels;
->>>> +       indio_dev->num_channels = ARRAY_SIZE(premier_channels);
->>>> +       indio_dev->modes = INDIO_DIRECT_MODE;
->>>> +
->>>> +       mutex_init(&state->lock);
->>>> +       init_completion(&state->frame_ready);
->>>> +
->>>> +       state->vcc = devm_regulator_get(&serdev->dev, "vcc");
->>>> +       if (IS_ERR(state->vcc)) {
->>>> +               ret = PTR_ERR(state->vcc);
->>>> +               return ret;
->>>> +       }
->>>> +
->>>> +       serdev_device_set_client_ops(serdev, &premier_serdev_ops);
->>>> +       ret = devm_serdev_device_open(&serdev->dev, serdev);
->>>> +       if (ret)
->>>> +               return ret;
->>>> +
->>>> +       serdev_device_set_baudrate(serdev, 9600);
->>>> +       serdev_device_set_flow_control(serdev, false);
->>>> +
->>>> +       ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
->>>> +       if (ret)
->>>> +               return ret;
->>>> +
->>>> +       if (state->vcc) {
->>>> +               ret = regulator_enable(state->vcc);
->>>> +               if (ret)
->>>> +                       return ret;
->>>> +       }
->>>> +
->>>> +       return devm_iio_device_register(&serdev->dev, indio_dev);
->>>> +}
->>>> +
->>>> +static void premier_remove(struct serdev_device *serdev)
->>>> +{
->>>> +       struct iio_dev *indio_dev = serdev_device_get_drvdata(serdev);
->>>> +       struct premier_data *state = iio_priv(indio_dev);
->>>> +
->>>> +       if (state->vcc)
->>>> +               regulator_disable(state->vcc);
->>>> +}
->>>> +
->>>> +static const struct of_device_id premier_of_match[] = {
->>>> +       { .compatible = "dynament,premier" },
->>>> +       {}
->>>> +};
->>>> +MODULE_DEVICE_TABLE(of, premier_of_match);
->>>> +
->>>> +static struct serdev_device_driver premier_driver = {
->>>> +       .driver = {
->>>> +               .name = PREMIER_DRIVER_NAME,
->>>> +               .of_match_table = premier_of_match,
->>>> +       },
->>>> +       .probe = premier_probe,
->>>> +       .remove = premier_remove,
->>>> +};
->>>> +module_serdev_device_driver(premier_driver);
->>>> +
->>>> +MODULE_AUTHOR("YuDong Zhang <mtwget@gmail.com>");
->>>> +MODULE_DESCRIPTION("Dynament Premier series single gas sensor driver");
->>>> +MODULE_LICENSE("GPL v2");
->>>> --
->>>> 2.24.1
->>>>
+In short, the RTC block can trigger the ADC block to perform a conversion.
+To solve this, I created a driver named rtc-adc-trigger that shares the
+register map with the RTC. It's done in devicetree as a subnode.
+This driver will register a separate trigger inside the iio subsystem.
+This trigger can then be associated to the ADC driver (sysfs current_trigge=
+r).
+However, this is not enough. The ADC has to be aware that it;s being
+triggered by the RTC (TRGMOD and TRGSEL). So, this hardware link between
+the two IPs has been described as a phandle reference in the ADC node to th=
+e
+RTC trigger node.
+At runtime (trigger selection), the ADC will check if the assigned trigger
+is the RTC one given by the phandle link. If so, it will configure
+accordingly.
+The RTC trigger driver will also register to sysfs two attributes for
+selecting the desired trigger frequency.
+One attribute is RO : list of possible frequencies.
+Another attribute is RW: current set frequency.
+
+To achieve all this, had to make a small patch on the RTC to populate
+child nodes platform data to probe them.
+
+Fixed other issues with the adc driver: unfinished conversions on IRQ in
+triggered mode, and differential channels missing configurations in
+triggered mode.
+
+For exercising this, created DT patches for sama5d2/sama5d2_xplained.
+
+Here is a sample of how it works in sysfs:
+
+ # cat /sys/bus/iio/devices/trigger0/trigger_frequency_hz
+ 1
+ # echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltage4_en
+ # cat /sys/bus/iio/devices/
+ iio:device0/        iio_sysfs_trigger/  trigger0/           trigger1/
+ # cat /sys/bus/iio/devices/trigger0/name
+ f80480b0.at91_rtc_adc
+ # iio_generic_buffer -n fc030000.adc -t f80480b0.at91_rtc_adc -c 5
+ iio device number being used is 0
+ iio trigger number being used is 0
+ /sys/bus/iio/devices/iio:device0 f80480b0.at91_rtc_adc
+ 3298.388672
+ 3294.360352
+ 3291.943359
+ 3294.360352
+ 3291.943359
+
+
+Future work:
+In the future the node would have to be enabled for other sama5d2 based
+boards as well, and MAINTAINERS to be updated if this driver is accepted.
+
+
+Eugen Hristev (10):
+  iio: adc: at91-sama5d2_adc: update for other trigger usage
+  dt-bindings: iio: adc: at91-sama5d2: add rtc-trigger optional property
+  dt-bindings: iio: trigger: at91-rtc-trigger: add bindings
+  rtc: at91rm9200: use of_platform_populate as return value
+  iio: trigger: at91-rtc-trigger: introduce at91 rtc adc trigger driver
+  iio: adc: at91-sama5d2_adc: handle unfinished conversions
+  iio: adc: at91-sama5d2_adc: fix differential channels in triggered
+    mode
+  iio: adc: at91-sama5d2_adc: implement RTC triggering
+  ARM: dts: at91: sama5d2: add rtc_adc_trigger node
+  ARM: dts: at91: sama5d2_xplained: enable rtc_adc_trigger
+
+ .../bindings/iio/adc/at91-sama5d2_adc.txt          |   4 +
+ .../bindings/iio/trigger/at91-rtc-trigger.yaml     |  44 +++
+ arch/arm/boot/dts/at91-sama5d2_xplained.dts        |   4 +
+ arch/arm/boot/dts/sama5d2.dtsi                     |  11 +
+ drivers/iio/adc/at91-sama5d2_adc.c                 | 336 ++++++++++++++++-=
+----
+ drivers/iio/trigger/Kconfig                        |  10 +
+ drivers/iio/trigger/Makefile                       |   1 +
+ drivers/iio/trigger/at91-rtc-trigger.c             | 213 +++++++++++++
+ drivers/rtc/rtc-at91rm9200.c                       |   2 +-
+ 9 files changed, 543 insertions(+), 82 deletions(-)
+ create mode 040000 Documentation/devicetree/bindings/iio/trigger
+ create mode 100644 Documentation/devicetree/bindings/iio/trigger/at91-rtc-=
+trigger.yaml
+ create mode 100644 drivers/iio/trigger/at91-rtc-trigger.c
+
+--=20
+2.7.4
