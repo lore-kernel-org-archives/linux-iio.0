@@ -2,144 +2,140 @@ Return-Path: <SRS0=L16q=2N=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=DATE_IN_PAST_96_XX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A202AC2D0C0
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0018C2D0C0
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7F6D920709
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 935692073A
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1577120469;
+	bh=AcKGxlT3BAZYAUTGHDurlIYesU4U8NPAe5VfcD1zuiY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=IV46CrilYZFZUoVHvfMhk1bdk+P+HZrbQbmx6CTZtYrIMWRum0vqAu9e8eIzKBtxO
+	 1LNTd5NAmLMLhCmoMNQ2CScL+GYLTyHcYF7nRJWdu1qvZ+SwuV3+Va5QVcbNwbtCLN
+	 oRigHopX2rFeCzGdyQnjH+qyYNg5IvGLZ7LJRsz0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726783AbfLWRBB convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Dec 2019 12:01:01 -0500
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:34802 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726766AbfLWRBB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Dec 2019 12:01:01 -0500
+        id S1726756AbfLWRBJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Dec 2019 12:01:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45044 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726718AbfLWRBJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Dec 2019 12:01:09 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 648B79E759C;
-        Mon, 23 Dec 2019 17:00:59 +0000 (GMT)
-Date:   Sun, 1 Dec 2019 12:03:45 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Lars =?UTF-8?B?TcO2bGxlbmRvcmY=?= <lars.moellendorf@plating.de>,
-        linux-iio@vger.kernel.org
-Subject: Re: iio_compute_scan_bytes does not seem to account for alignment
- if first channel uses more storagebits than its successors
-Message-ID: <20191201120345.69160e18@archlinux>
-In-Reply-To: <fef18238-85cc-00e7-ee7d-a52c62509c22@metafoo.de>
-References: <ff5a3ea4-4d15-5be3-9cb8-9fd7c716e2e6@plating.de>
-        <fef18238-85cc-00e7-ee7d-a52c62509c22@metafoo.de>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B34B820709;
+        Mon, 23 Dec 2019 17:01:07 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1577120468;
+        bh=AcKGxlT3BAZYAUTGHDurlIYesU4U8NPAe5VfcD1zuiY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cQv4mTBmO521kFJ2Cx+oF1f9EBlpdwuFXXLCxlnHKpHKxc5dFgjf1dc3wjR0LkwmX
+         SF8fDbf4CD+fmvKnlD77rctUbffalwmc08nQ0GS8DDD9JBKgAVcbIQrbk72CCgaCHq
+         d+WSkydAZXi73YtMSJiiVy4vbQh3uX5kVG8BYm/o=
+Date:   Mon, 23 Dec 2019 16:50:06 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH 1/6] iio: imu: st_lsm6dsx: export max num of slave
+ devices in st_lsm6dsx_shub_settings
+Message-ID: <20191223165006.3ee0be50@archlinux>
+In-Reply-To: <9c4945c59f4ac63d28de6180da2409a95c60aee5.1576341963.git.lorenzo@kernel.org>
+References: <cover.1576341963.git.lorenzo@kernel.org>
+        <9c4945c59f4ac63d28de6180da2409a95c60aee5.1576341963.git.lorenzo@kernel.org>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 29 Nov 2019 18:23:37 +0100
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+On Sat, 14 Dec 2019 17:52:54 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-> On 11/29/19 3:30 PM, Lars Möllendorf wrote:
-> > Hi,
-> > 
-> > I have written a custom kernel module implementing the IIO device API
-> > backed by an IIO triggered buffer.
-> > 
-> > My IIO device provides 3 channels + timestamp. The sizes of the channels are
-> > 
-> > index  | iio_chan_spec.scan_type.storagebits
-> > -------|------------------------------------------------
-> >    0   |  32
-> >    1   |  16
-> >    2   |  16
-> > 
-> > If I select channel 0 (32bit) and one of channel 1 or 2 (16bit)
-> > indio_dev.scan_bytes and iio_buffer.bytes_per_datum have a value of 6
-> > Byte which does not account for any alignment.
-> > 
-> > 
-> > After having a closer look at  `iio_compute_scan_bytes` which is
-> > responsible for calculating both, `indio_dev.scan_bytes` and
-> > `iio_buffer.bytes_per_datum` it seems to me that the order of channels
-> > matter:
-> > 
-> > ```c
-> > 	/* How much space will the demuxed element take? */
-> > 	for_each_set_bit(i, mask,
-> > 			 indio_dev->masklength) {
-> > 		length = iio_storage_bytes_for_si(indio_dev, i);
-> > 		bytes = ALIGN(bytes, length);
-> > 		bytes += length;
-> > 	}
-> > ```
-> > 
-> > I understand that in case the length of each scan element is smaller
-> > then the length of the successive scan elements, this algorithm works
-> > because it aligns the current element to its own length. But if, as in
-> > my case, the length of channel 0's scan elements  is greater then the
-> > size of the samples of the consecutive channels no alignment seems to be
-> > taken into account. Do I miss something here?  
-> [...]
-> > But in my case the latter would bloat the buffer from 16 Byte to 4*16 =
-> > 64 Byte per scan if all channels are selected and timestamp is active.
-> > 
-> > For now, I will work around this by using 32 storagebits for all my
-> > channels. This gives my 4 Bytes of overhead per scan if all elements are
-> > selected and additional 2 Byte if timestamp is active.
-> > 
-> > In "Why do you align the buffer pointer to a multiple of the size of the
-> > current scan element in iio_buffer_foreach_sample()?" on
-> > https://github.com/analogdevicesinc/libiio/issues/324 I have been
-> > pointed to this mailing list.  
+> Export max number of slave devices supported by the i2c master
+> controller in st_lsm6dsx_shub_settings data structure.
+> This is a preliminary patch to support i2c master controller
+> on lsm6dsm sensors
 > 
-> Hi Lars,
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Applied.
+
+Thanks,
+
+J
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      | 2 ++
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 2 ++
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 3 +--
+>  3 files changed, 5 insertions(+), 2 deletions(-)
 > 
-> The way this is supposed to work is that each element is aligned to its
-> own natural alignment. What seems to be missing at the moment is that
-> the total length is also aligned to the size of the first element, so
-> that alignment is preserved for multiple consecutive samples. I feel
-> like we had that at some point, but maybe I'm misremembering.
-> 
-> E.g. putting something like
-> 
->  unsigned int first_index = find_first_bit(mask, indio_dev->masklength);
->  length = iio_storage_bytes_for_si(indio_dev, first_index);
->  bytes = ALIGN(bytes, length);
-> 
-> below the loop should do the trick I believe.
-
-Good find by the way.  Not sure how we never hit this before as there
-are definitely sensors out there with similar mixes to you have.
-Maybe they are always used with the timestamp enabled?  Anyhow, no
-matter it's clearly wrong.
-
-Lars trick doesn't work either (I think) as we can have
-
-u16
-u16 (might be padding or real channel)
-u32
-u16
-
-which should be 4 byte aligned.
-
-I think we need to keep track of the largest element present during
-the loop and use that length afterwards to pad out the end, but only
-the end rather than every element.  In theory we can also have
-larger elements than the timestamp, so should not do special handling
-for that, it's just another element.
-
-I think that ends up effectively a combination of the two suggestions?
-
-Jonathan
-
-> 
-> - Lars
-> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index c605b153be41..fb76e0d6770d 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -176,6 +176,7 @@ struct st_lsm6dsx_hw_ts_settings {
+>   * @pullup_en: i2c controller pull-up register info (addr + mask).
+>   * @aux_sens: aux sensor register info (addr + mask).
+>   * @wr_once: write_once register info (addr + mask).
+> + * @num_ext_dev: max number of slave devices.
+>   * @shub_out: sensor hub first output register info.
+>   * @slv0_addr: slave0 address in secondary page.
+>   * @dw_slv0_addr: slave0 write register address in secondary page.
+> @@ -187,6 +188,7 @@ struct st_lsm6dsx_shub_settings {
+>  	struct st_lsm6dsx_reg pullup_en;
+>  	struct st_lsm6dsx_reg aux_sens;
+>  	struct st_lsm6dsx_reg wr_once;
+> +	u8 num_ext_dev;
+>  	u8 shub_out;
+>  	u8 slv0_addr;
+>  	u8 dw_slv0_addr;
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index a4ed72aef93e..bf995b58c333 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -882,6 +882,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  				.addr = 0x14,
+>  				.mask = BIT(6),
+>  			},
+> +			.num_ext_dev = 3,
+>  			.shub_out = 0x02,
+>  			.slv0_addr = 0x15,
+>  			.dw_slv0_addr = 0x21,
+> @@ -1256,6 +1257,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  				.addr = 0x14,
+>  				.mask = BIT(6),
+>  			},
+> +			.num_ext_dev = 3,
+>  			.shub_out = 0x02,
+>  			.slv0_addr = 0x15,
+>  			.dw_slv0_addr = 0x21,
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+> index fa5d1001a46c..5684e663d0aa 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
+> @@ -30,7 +30,6 @@
+>  
+>  #include "st_lsm6dsx.h"
+>  
+> -#define ST_LSM6DSX_MAX_SLV_NUM			3
+>  #define ST_LSM6DSX_SLV_ADDR(n, base)		((base) + (n) * 3)
+>  #define ST_LSM6DSX_SLV_SUB_ADDR(n, base)	((base) + 1 + (n) * 3)
+>  #define ST_LSM6DSX_SLV_CONFIG(n, base)		((base) + 2 + (n) * 3)
+> @@ -770,7 +769,7 @@ int st_lsm6dsx_shub_probe(struct st_lsm6dsx_hw *hw, const char *name)
+>  		if (err < 0)
+>  			return err;
+>  
+> -		if (++num_ext_dev >= ST_LSM6DSX_MAX_SLV_NUM)
+> +		if (++num_ext_dev >= hw->settings->shub_settings.num_ext_dev)
+>  			break;
+>  		id++;
+>  	}
 
