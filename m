@@ -7,49 +7,49 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A98F5C2D0C0
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 16:17:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7F47C2D0C0
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 16:19:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6F10C20715
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 16:17:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B17BC20715
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 16:19:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1577117873;
-	bh=EqZyoT0Pq4RSflTcB7C0DIpvlETwpWarPeSciI2oghY=;
+	s=default; t=1577117952;
+	bh=7sJfZaUPwVZ9Fwf5zAIOnH3dkIV1hzyV9a4DKTixzwg=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=OVXAncBA1KWWAbV6HXDHL+8Ubssb/bGitfOBQ6hYLeqqfTkpyqqgSfbDx90HPKtEZ
-	 gHkOgNqx0qHneFbE61JleTh2pohMd7kDUOIxcEzZvsRV2CAbtFQc7mQiGhJlXyiojA
-	 MHv/bhXBCZfsysssruUm5S3NQE5bfOFNDfDeopf0=
+	b=acRjdP0ztV+NPB9pR97kzSbubLeXMqoqIRqF4FJnEgFghXBJllufsZBMMy1bA/T0H
+	 hZW+ybOvu+zdLLRtELWAfG/KjIurahvleEyS34G0Eghau0vYs08tz85Sa0wwBnL9iN
+	 1v5xxPELD0KsfaqdtzZ2y4lzCNqNpx33w6hCRTH0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726766AbfLWQRx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Dec 2019 11:17:53 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56222 "EHLO mail.kernel.org"
+        id S1726795AbfLWQTM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Dec 2019 11:19:12 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56630 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726744AbfLWQRx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 23 Dec 2019 11:17:53 -0500
+        id S1726787AbfLWQTM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Dec 2019 11:19:12 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D00320709;
-        Mon, 23 Dec 2019 16:17:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BAEE320709;
+        Mon, 23 Dec 2019 16:19:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577117872;
-        bh=EqZyoT0Pq4RSflTcB7C0DIpvlETwpWarPeSciI2oghY=;
+        s=default; t=1577117951;
+        bh=7sJfZaUPwVZ9Fwf5zAIOnH3dkIV1hzyV9a4DKTixzwg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=sGORiKDceevha0tiWRp37sOcODqwzSvtxWXgl3GDIv8t4ZCZSV6vbOd8Yrbqb4qzG
-         Xhm98KyIltgIiVP1ts8vXKxfUNiy3XwdrNmbcW12fKmo1pp8TW2JKq4XJgWX3O6I5Z
-         3IWJmZn+ZDJ36V3jsRFT2fqfK2Fvk/9wGLafBAGQ=
-Date:   Mon, 23 Dec 2019 16:17:48 +0000
+        b=fTHBogiBBguWcuHCGquCU/YoyAt8LSMCOYs8xGAtlBEdoDfDQ3Iw4LxXPI/JHPrtJ
+         frlA3iwAfiYYoHzviCOniT1gbpJuJv0iBBohaB260EPJdu42DnpW5S7CZW1PpSmOxk
+         fZxfysbPl/oz4W1q/7ajvyJG9ze4nTyEACUo37Vw=
+Date:   Mon, 23 Dec 2019 16:19:07 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1 2/9] iio: accel: st_accel: Drop unnecessary #else
+Subject: Re: [PATCH v1 3/9] iio: pressure: st_press: Drop unnecessary #else
  branch for ACPI
-Message-ID: <20191223161748.66efe3c4@archlinux>
-In-Reply-To: <20191216173853.75797-2-andriy.shevchenko@linux.intel.com>
+Message-ID: <20191223161907.5494dccc@archlinux>
+In-Reply-To: <20191216173853.75797-3-andriy.shevchenko@linux.intel.com>
 References: <20191216173853.75797-1-andriy.shevchenko@linux.intel.com>
-        <20191216173853.75797-2-andriy.shevchenko@linux.intel.com>
+        <20191216173853.75797-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,7 +59,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 16 Dec 2019 19:38:46 +0200
+On Mon, 16 Dec 2019 19:38:47 +0200
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
 > ACPI_PTR() takes care of the argument in case of !CONFIG_ACPI.
@@ -70,22 +70,21 @@ Applied.
 
 Thanks,
 
-J
 > ---
->  drivers/iio/accel/st_accel_i2c.c | 2 --
+>  drivers/iio/pressure/st_pressure_i2c.c | 2 --
 >  1 file changed, 2 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-> index 50fa0fc32baa..0f4aef5448e7 100644
-> --- a/drivers/iio/accel/st_accel_i2c.c
-> +++ b/drivers/iio/accel/st_accel_i2c.c
-> @@ -119,8 +119,6 @@ static const struct acpi_device_id st_accel_acpi_match[] = {
+> diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+> index 71d2ed6b4948..6203bc9d5c2d 100644
+> --- a/drivers/iio/pressure/st_pressure_i2c.c
+> +++ b/drivers/iio/pressure/st_pressure_i2c.c
+> @@ -61,8 +61,6 @@ static const struct acpi_device_id st_press_acpi_match[] = {
 >  	{ },
 >  };
->  MODULE_DEVICE_TABLE(acpi, st_accel_acpi_match);
+>  MODULE_DEVICE_TABLE(acpi, st_press_acpi_match);
 > -#else
-> -#define st_accel_acpi_match NULL
+> -#define st_press_acpi_match NULL
 >  #endif
 >  
->  static const struct i2c_device_id st_accel_id_table[] = {
+>  static const struct i2c_device_id st_press_id_table[] = {
 
