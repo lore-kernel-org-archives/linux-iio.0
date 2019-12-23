@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0018C2D0C0
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CFF1C2D0CF
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 935692073A
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 149032073A
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Dec 2019 17:01:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1577120469;
-	bh=AcKGxlT3BAZYAUTGHDurlIYesU4U8NPAe5VfcD1zuiY=;
+	s=default; t=1577120471;
+	bh=x770dpESEPwRzkbZv3BEF4PpGW3zH/7vwBlJKAdIn+Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=IV46CrilYZFZUoVHvfMhk1bdk+P+HZrbQbmx6CTZtYrIMWRum0vqAu9e8eIzKBtxO
-	 1LNTd5NAmLMLhCmoMNQ2CScL+GYLTyHcYF7nRJWdu1qvZ+SwuV3+Va5QVcbNwbtCLN
-	 oRigHopX2rFeCzGdyQnjH+qyYNg5IvGLZ7LJRsz0=
+	b=uSpw7I3yHBR212vQVa5IX+1BP9oIbcc3aQw5wOdb+VdWZypwGN/gGAQarXZMZXivs
+	 RPoQa8E49myzs/HdufzSWPJ6pzMyduXF+RJR7wgpC7HDbUjcVdui7+SCXylIZtq+fA
+	 hIEnhKtsp7rRAMJ9zsYWJnr2g/ocxWdoHGJ76w4o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726756AbfLWRBJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Dec 2019 12:01:09 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45044 "EHLO mail.kernel.org"
+        id S1726766AbfLWRBK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Dec 2019 12:01:10 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45076 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726718AbfLWRBJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 23 Dec 2019 12:01:09 -0500
+        id S1726718AbfLWRBK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 23 Dec 2019 12:01:10 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B34B820709;
-        Mon, 23 Dec 2019 17:01:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 590D720715;
+        Mon, 23 Dec 2019 17:01:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1577120468;
-        bh=AcKGxlT3BAZYAUTGHDurlIYesU4U8NPAe5VfcD1zuiY=;
+        s=default; t=1577120470;
+        bh=x770dpESEPwRzkbZv3BEF4PpGW3zH/7vwBlJKAdIn+Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=cQv4mTBmO521kFJ2Cx+oF1f9EBlpdwuFXXLCxlnHKpHKxc5dFgjf1dc3wjR0LkwmX
-         SF8fDbf4CD+fmvKnlD77rctUbffalwmc08nQ0GS8DDD9JBKgAVcbIQrbk72CCgaCHq
-         d+WSkydAZXi73YtMSJiiVy4vbQh3uX5kVG8BYm/o=
-Date:   Mon, 23 Dec 2019 16:50:06 +0000
+        b=ZP9m6Jetd7OFoRKwAc3tK9ohw8KavBZ3bIWYKtSl/lTieMesmf+0tBO1QK3a5sR51
+         zK9KfNwk5hBSfTKh9UpALcnixzXGsVaX3sXkjobim1dijV9WqaK0n70GRkkEQW+Efh
+         /BVAku5/vkNofJa2tICjEL7HJaSBPDvKoSOUmXXg=
+Date:   Mon, 23 Dec 2019 16:51:55 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Lorenzo Bianconi <lorenzo@kernel.org>
 Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
-Subject: Re: [PATCH 1/6] iio: imu: st_lsm6dsx: export max num of slave
- devices in st_lsm6dsx_shub_settings
-Message-ID: <20191223165006.3ee0be50@archlinux>
-In-Reply-To: <9c4945c59f4ac63d28de6180da2409a95c60aee5.1576341963.git.lorenzo@kernel.org>
+Subject: Re: [PATCH 3/6] iio: imu: st_lsm6dsx: check if pull_up is located
+ in primary page
+Message-ID: <20191223165155.7179f4cd@archlinux>
+In-Reply-To: <7fbb267c585384fd39c2abe7e6250fd1c207bdd3.1576341963.git.lorenzo@kernel.org>
 References: <cover.1576341963.git.lorenzo@kernel.org>
-        <9c4945c59f4ac63d28de6180da2409a95c60aee5.1576341963.git.lorenzo@kernel.org>
+        <7fbb267c585384fd39c2abe7e6250fd1c207bdd3.1576341963.git.lorenzo@kernel.org>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,85 +57,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 14 Dec 2019 17:52:54 +0100
+On Sat, 14 Dec 2019 17:52:56 +0100
 Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-> Export max number of slave devices supported by the i2c master
-> controller in st_lsm6dsx_shub_settings data structure.
-> This is a preliminary patch to support i2c master controller
-> on lsm6dsm sensors
+> Check if the pull up register is located in the primary or in the
+> secondary memory page. This is a preliminary patch to support i2c master
+> controller on lsm6dsm devices
 > 
 > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Applied.
+Applied,
 
 Thanks,
 
-J
+Jonathan
+
 > ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      | 2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 2 ++
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 3 +--
->  3 files changed, 5 insertions(+), 2 deletions(-)
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  6 +++++-
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 13 +++++++++----
+>  2 files changed, 14 insertions(+), 5 deletions(-)
 > 
 > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> index c605b153be41..fb76e0d6770d 100644
+> index 0f8f3fbde67a..b4bd02df2900 100644
 > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
 > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> @@ -176,6 +176,7 @@ struct st_lsm6dsx_hw_ts_settings {
->   * @pullup_en: i2c controller pull-up register info (addr + mask).
->   * @aux_sens: aux sensor register info (addr + mask).
->   * @wr_once: write_once register info (addr + mask).
-> + * @num_ext_dev: max number of slave devices.
->   * @shub_out: sensor hub first output register info.
->   * @slv0_addr: slave0 address in secondary page.
->   * @dw_slv0_addr: slave0 write register address in secondary page.
-> @@ -187,6 +188,7 @@ struct st_lsm6dsx_shub_settings {
->  	struct st_lsm6dsx_reg pullup_en;
+> @@ -189,7 +189,11 @@ struct st_lsm6dsx_shub_settings {
+>  		u8 addr;
+>  		u8 mask;
+>  	} master_en;
+> -	struct st_lsm6dsx_reg pullup_en;
+> +	struct {
+> +		bool sec_page;
+> +		u8 addr;
+> +		u8 mask;
+> +	} pullup_en;
 >  	struct st_lsm6dsx_reg aux_sens;
 >  	struct st_lsm6dsx_reg wr_once;
-> +	u8 num_ext_dev;
->  	u8 shub_out;
->  	u8 slv0_addr;
->  	u8 dw_slv0_addr;
+>  	u8 num_ext_dev;
 > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index a4ed72aef93e..bf995b58c333 100644
+> index fe1aaaf68a9b..6adfc53ef8d0 100644
 > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
 > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -882,6 +882,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
->  				.addr = 0x14,
->  				.mask = BIT(6),
+> @@ -872,6 +872,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  				.mask = BIT(2),
 >  			},
-> +			.num_ext_dev = 3,
->  			.shub_out = 0x02,
->  			.slv0_addr = 0x15,
->  			.dw_slv0_addr = 0x21,
-> @@ -1256,6 +1257,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  			.pullup_en = {
+> +				.sec_page = true,
 >  				.addr = 0x14,
->  				.mask = BIT(6),
+>  				.mask = BIT(3),
 >  			},
-> +			.num_ext_dev = 3,
->  			.shub_out = 0x02,
->  			.slv0_addr = 0x15,
->  			.dw_slv0_addr = 0x21,
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> index fa5d1001a46c..5684e663d0aa 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> @@ -30,7 +30,6 @@
+> @@ -1248,6 +1249,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+>  				.mask = BIT(2),
+>  			},
+>  			.pullup_en = {
+> +				.sec_page = true,
+>  				.addr = 0x14,
+>  				.mask = BIT(3),
+>  			},
+> @@ -1863,16 +1865,19 @@ static int st_lsm6dsx_init_shub(struct st_lsm6dsx_hw *hw)
+>  	pdata = (struct st_sensors_platform_data *)hw->dev->platform_data;
+>  	if ((np && of_property_read_bool(np, "st,pullups")) ||
+>  	    (pdata && pdata->pullups)) {
+> -		err = st_lsm6dsx_set_page(hw, true);
+> -		if (err < 0)
+> -			return err;
+> +		if (hub_settings->pullup_en.sec_page) {
+> +			err = st_lsm6dsx_set_page(hw, true);
+> +			if (err < 0)
+> +				return err;
+> +		}
 >  
->  #include "st_lsm6dsx.h"
+>  		data = ST_LSM6DSX_SHIFT_VAL(1, hub_settings->pullup_en.mask);
+>  		err = regmap_update_bits(hw->regmap,
+>  					 hub_settings->pullup_en.addr,
+>  					 hub_settings->pullup_en.mask, data);
 >  
-> -#define ST_LSM6DSX_MAX_SLV_NUM			3
->  #define ST_LSM6DSX_SLV_ADDR(n, base)		((base) + (n) * 3)
->  #define ST_LSM6DSX_SLV_SUB_ADDR(n, base)	((base) + 1 + (n) * 3)
->  #define ST_LSM6DSX_SLV_CONFIG(n, base)		((base) + 2 + (n) * 3)
-> @@ -770,7 +769,7 @@ int st_lsm6dsx_shub_probe(struct st_lsm6dsx_hw *hw, const char *name)
+> -		st_lsm6dsx_set_page(hw, false);
+> +		if (hub_settings->pullup_en.sec_page)
+> +			st_lsm6dsx_set_page(hw, false);
+>  
 >  		if (err < 0)
 >  			return err;
->  
-> -		if (++num_ext_dev >= ST_LSM6DSX_MAX_SLV_NUM)
-> +		if (++num_ext_dev >= hw->settings->shub_settings.num_ext_dev)
->  			break;
->  		id++;
->  	}
 
