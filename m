@@ -2,113 +2,111 @@ Return-Path: <SRS0=yVNc=2R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7684C2D0DC
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Dec 2019 02:31:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02699C2D0C6
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Dec 2019 08:47:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A85F220838
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Dec 2019 02:31:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C364120882
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Dec 2019 08:47:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726138AbfL0CbK convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 26 Dec 2019 21:31:10 -0500
-Received: from youngberry.canonical.com ([91.189.89.112]:34131 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726277AbfL0CbK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Dec 2019 21:31:10 -0500
-Received: from mail-wr1-f71.google.com ([209.85.221.71])
-        by youngberry.canonical.com with esmtps (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
-        (Exim 4.86_2)
-        (envelope-from <chia-lin.kao@canonical.com>)
-        id 1ikfP9-0005DS-BL
-        for linux-iio@vger.kernel.org; Fri, 27 Dec 2019 02:31:07 +0000
-Received: by mail-wr1-f71.google.com with SMTP id d8so6752455wrq.12
-        for <linux-iio@vger.kernel.org>; Thu, 26 Dec 2019 18:31:07 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=4dOBVgYzJQQlBZJLMRejwZCloWBaR9zdLSWOBrbs5HQ=;
-        b=hysS5Zg1MkgyW21Vk5TYXpWr2e6WoRikkBkmccQY78iNBsln+8eMkMatqU8ocF/Zav
-         9rtYyK63/4PyIEeQWGMCEF462CEb38obQl7f0lFVYXFo/M9VJzT+Uj6mUtR793X6bZZQ
-         TJaTIgMg1BeC3NTK1nM7FziUPo/St9oKW3X2JUNDyYEwGpRXM/rH9Ixt6K/h5sMIeunQ
-         Gqg0jf9AzrQEUXyf+e0PI1OsyY6+UUNh0T/19bgl6nmz6RzoHDcQckqv09A92z96IGwj
-         ohwuyaKwUoh3HwF2VT++2KIUY+/qPpka2agCe0es+5mQ870BmNNF5RViMm5MDLnvTywm
-         nSNA==
-X-Gm-Message-State: APjAAAXfSi0b5hy/krjatWwP0kM0RzhlJ7gwQkSS6SSgOlsB77S/+JMy
-        uUoNYd+H4veWvAlRK3qdo/lN7l8rlKVfo6JgCNeypnyassx0oNxKRHpvexnQ+mUkDfJWju98Y2V
-        a5/KQ0870RPlEkIFpNzkztqJ1FgZqPElLxEeTWJ8M7JeYqzTxgmTDtw==
-X-Received: by 2002:a5d:6a0f:: with SMTP id m15mr47804871wru.40.1577413867067;
-        Thu, 26 Dec 2019 18:31:07 -0800 (PST)
-X-Google-Smtp-Source: APXvYqyuFPeM4Ub4t48ORJovS5k1GwCHSAOYNZBKpzgCnLP5EZnMrkgJMqhcW1m8fLymTuVusm6+o3jA0mIqd3h9adM=
-X-Received: by 2002:a5d:6a0f:: with SMTP id m15mr47804862wru.40.1577413866872;
- Thu, 26 Dec 2019 18:31:06 -0800 (PST)
+        id S1726169AbfL0Irk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Dec 2019 03:47:40 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:57365 "EHLO
+        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725994AbfL0Irj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Dec 2019 03:47:39 -0500
+Received: from dude02.hi.pengutronix.de ([2001:67c:670:100:1d::28] helo=dude02.lab.pengutronix.de)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1iklHJ-0002Dw-ML; Fri, 27 Dec 2019 09:47:25 +0100
+Received: from mfe by dude02.lab.pengutronix.de with local (Exim 4.92)
+        (envelope-from <mfe@pengutronix.de>)
+        id 1iklHE-0002Re-Do; Fri, 27 Dec 2019 09:47:20 +0100
+Date:   Fri, 27 Dec 2019 09:47:20 +0100
+From:   Marco Felsch <m.felsch@pengutronix.de>
+To:     Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>,
+        Allison Randal <allison@lohutok.net>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: light: vcnl4000: Fix scale for vcnl4040
+Message-ID: <20191227084720.GA6398@pengutronix.de>
+References: <4f2a980d87a7d5ae27d61ed1d35c4f310bfc607c.1577114947.git.agx@sigxcpu.org>
 MIME-Version: 1.0
-References: <CAFv23QmiDdhe+xJw2y7CXiWq4-GK1S-1bcKxEpNhNJu3ZtzA_w@mail.gmail.com>
- <9baeb165eddb4872fb701ff81f11692b7e153bf6.camel@hadess.net>
-In-Reply-To: <9baeb165eddb4872fb701ff81f11692b7e153bf6.camel@hadess.net>
-From:   AceLan Kao <acelan.kao@canonical.com>
-Date:   Fri, 27 Dec 2019 10:30:55 +0800
-Message-ID: <CAFv23Qmj_ZqKs9_tw1Grzzj5unFBLfK0Scy396vcHCEB+fdLOA@mail.gmail.com>
-Subject: Re: Display got wrong rotation after hid_sensor_accel_3d is loaded
-To:     Bastien Nocera <hadess@hadess.net>
-Cc:     Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <4f2a980d87a7d5ae27d61ed1d35c4f310bfc607c.1577114947.git.agx@sigxcpu.org>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 09:42:35 up 119 days, 20:56, 75 users,  load average: 0.06, 0.12,
+ 0.09
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::28
+X-SA-Exim-Mail-From: mfe@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Bastien,
+Hi Guido,
 
-Thanks for your suggestion.
-I just tried to add the following line into
-/lib/udev/hwdb.d/60-sensor.hwdb and got the correct screen rotation.
-But the cursor is still un-rotated, the cursor is drawn upside down,
-and its coordinates are inverted.
+On 19-12-23 16:30, Guido G�nther wrote:
+> According to the data sheet the ambient sensors's scale is 0.12
+> lux/step, not 0.024 lux/step as used by vcnl4200.
 
-#########################################
-# STMicro
-#########################################
-sensor:modalias:platform:platform:HID-SENSOR-200073
- ACCEL_MOUNT_MATRIX=-1, 0, 0; 0, -1, 0; 0, 0, 1
+This is only true if the als_it bits are set to '0'. Is it worth to add
+a comment here?
 
-It looks like we should introduce a quirk into hid_sensor_accel_3d driver.
-There are 3 different scale variables in hid_sensor_accel_3d, but I
-don't see any of them would work the way I want.
-Do you mean to introduce new scale variables?
+> See p. 8 in https://www.vishay.com/docs/84307/designingvcnl4040.pdf
+> 
+> Fixes: 5a441aade5b3 ("light: vcnl4000 add support for the VCNL4040 proximity and light sensor")
+> Signed-off-by: Guido G�nther <agx@sigxcpu.org>
 
-   drivers/iio/accel/hid-sensor-accel-3d.c:34:     int scale_pre_decml;
-   drivers/iio/accel/hid-sensor-accel-3d.c:35:     int scale_post_decml;
-   drivers/iio/accel/hid-sensor-accel-3d.c:36:     int scale_precision;
+Reviewed-by: Marco Felsch <m.felsch@pengutronix.de>
 
-Bastien Nocera <hadess@hadess.net> 於 2019年12月26日 週四 下午11:03寫道：
->
-> On Thu, 2019-12-26 at 17:22 +0800, AceLan Kao wrote:
-> > Hi all,
-> >
-> > I'm working on a new platform which comes with an accelerator meter.
-> > It's a STMicroelectronics LSM6DS3US accelerator meter, it doesn't use
-> > st_sensors driver, but hid_sensor_accel_3d.
-> > After hid_sensor_accel_3d is loaded, the display becomes upside down,
-> > so I tried to add some code to make it become normal.(ACCEL_X should
-> > have the same modification)
-> >
-> > I don't know how to fix this in a correct way, please give me some
-> > hints.
->
-> This needs to be done as a quirk, either by applying a quirk for the
-> HID descriptors (which should have a definition of the scale, which
-> would be negative for this device), or in user-space in systemd's hwdb
-> database, which your user-space consumers need to take care of:
-> https://github.com/systemd/systemd/blob/master/hwdb.d/60-sensor.hwdb
->
-> Cheers
->
+> ---
+>  drivers/iio/light/vcnl4000.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> index 16dacea9eadf..b0e241aaefb4 100644
+> --- a/drivers/iio/light/vcnl4000.c
+> +++ b/drivers/iio/light/vcnl4000.c
+> @@ -163,7 +163,6 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	data->al_scale = 24000;
+>  	data->vcnl4200_al.reg = VCNL4200_AL_DATA;
+>  	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
+>  	switch (id) {
+> @@ -172,11 +171,13 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+>  		/* show 54ms in total. */
+>  		data->vcnl4200_al.sampling_rate = ktime_set(0, 54000 * 1000);
+>  		data->vcnl4200_ps.sampling_rate = ktime_set(0, 4200 * 1000);
+> +		data->al_scale = 24000;
+>  		break;
+>  	case VCNL4040_PROD_ID:
+>  		/* Integration time is 80ms, add 10ms. */
+>  		data->vcnl4200_al.sampling_rate = ktime_set(0, 100000 * 1000);
+>  		data->vcnl4200_ps.sampling_rate = ktime_set(0, 100000 * 1000);
+> +		data->al_scale = 120000;
+>  		break;
+>  	}
+>  	data->vcnl4200_al.last_measurement = ktime_set(0, 0);
+> -- 
+> 2.23.0
