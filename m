@@ -2,90 +2,113 @@ Return-Path: <SRS0=kDgX=22=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79FFFC32771
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 00:10:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C58AAC3F68F
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 10:36:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 515D120866
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 00:10:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9AE91218AC
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 10:36:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578220592;
+	bh=+/iStnPwhP542628pOw3mMn8MnVqED4tQzXbzXKLjX0=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=LWhSxp8VCgnOZpfBGT6vC4PNi2zl3lFYELIDNIq7KnruKPBe1nGiGVL8oFfUq/b/3
+	 Wx+uLLBcD1vL+3VcwhqOJy9LC8lxg50f9gRVKGNVKFWUigfolQvcmZaO+OGjSUgcnv
+	 y5RI0Wtbt8izejQsCnkpwEIjqxvt7p6BH83ELDF0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgAEAKj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 4 Jan 2020 19:10:39 -0500
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:37699 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726191AbgAEAKj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jan 2020 19:10:39 -0500
-X-Originating-IP: 195.189.32.242
-Received: from pc.localdomain (unknown [195.189.32.242])
-        (Authenticated sender: contact@artur-rojek.eu)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 71EC31C0004;
-        Sun,  5 Jan 2020 00:10:35 +0000 (UTC)
-From:   Artur Rojek <contact@artur-rojek.eu>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Paul Cercueil <paul@crapouillou.net>
-Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH 1/5] IIO: Ingenic JZ47xx: Add xlate cb to retrieve correct channel idx
-Date:   Sun,  5 Jan 2020 01:16:35 +0100
-Message-Id: <20200105001639.142061-1-contact@artur-rojek.eu>
-X-Mailer: git-send-email 2.24.1
+        id S1725985AbgAEKgb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 5 Jan 2020 05:36:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40718 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725897AbgAEKgb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 5 Jan 2020 05:36:31 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9FCD520866;
+        Sun,  5 Jan 2020 10:36:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578220590;
+        bh=+/iStnPwhP542628pOw3mMn8MnVqED4tQzXbzXKLjX0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=jgdrO4luZGTN4hh/Bi100t2Ifh8xx+Dfu9snipBpGBvIvFPoD0jqTHFFrmD69mjyN
+         oghPX5cKXINRXRzZi++u6fnogFn8k18nEvesM/YIo6oNZ8tHaJC8VrOFMWRhgk/PnD
+         TG9Jw6rjP60YdIsHGQr7N+JAxul5X7yXoCZHflVQ=
+Date:   Sun, 5 Jan 2020 10:36:24 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-input@vger.kernel.org, Stephan Gerhold <stephan@gerhold.net>,
+        Donggeun Kim <dg77.kim@samsung.com>,
+        Minkyu Kang <mk7.kang@samsung.com>,
+        =?UTF-8?B?UGF3ZcWC?= Chmiel <pawel.mikolaj.chmiel@gmail.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Oskar Andero <oskar.andero@gmail.com>
+Subject: Re: [PATCH 2/2 v1] iio: light: Add a driver for Sharp GP2AP002x00F
+Message-ID: <20200105103624.07b3820c@archlinux>
+In-Reply-To: <20200102221533.GC8314@dtor-ws>
+References: <20191228201109.13635-1-linus.walleij@linaro.org>
+        <20191228201109.13635-2-linus.walleij@linaro.org>
+        <20191230173919.373f4e8a@archlinux>
+        <20200102221533.GC8314@dtor-ws>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Provide an of_xlate callback in order to retrieve the correct channel
-specifier index from the IIO channels array.
+On Thu, 2 Jan 2020 14:15:33 -0800
+Dmitry Torokhov <dmitry.torokhov@gmail.com> wrote:
 
-Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-Tested-by: Paul Cercueil <paul@crapouillou.net>
----
- drivers/iio/adc/ingenic-adc.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+> Hi Jonathan,
+> 
+> On Mon, Dec 30, 2019 at 05:39:19PM +0000, Jonathan Cameron wrote:
+> > On Sat, 28 Dec 2019 21:11:09 +0100
+> > Linus Walleij <linus.walleij@linaro.org> wrote:
+> >   
+> > > +	/* Enable chip and IRQ, disable analog sleep */
+> > > +	ret = regmap_write(gp2ap002->map, GP2AP002_OPMOD,
+> > > +			   OPMOD_SSD_OPERATING | OPMOD_VCON_IRQ);
+> > > +	if (ret < 0) {
+> > > +		dev_err(gp2ap002->dev, "error setting up operation mode\n");
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	/* Interrupt on VOUT enabled */
+> > > +	ret = regmap_write(gp2ap002->map, GP2AP002_CON, CON_OCON_ENABLE);
+> > > +	if (ret < 0) {
+> > > +		dev_err(gp2ap002->dev, "error setting up VOUT control\n");
+> > > +		return ret;  
+> > 
+> > drop this return ret out of the brackets as it's either 0 or negative anyway.  
+> 
+> Not my subsystem, but $0.02 anyways: I like calling the temp as "error"
+> and explicitly return 0 in the success path even if it could be
+> collapsed, as you can easily add more initialization without needing
+> to go and alter previous blocks.
 
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 39c0a609fc94..7a24bc1dabe1 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -383,6 +383,21 @@ static int ingenic_adc_read_raw(struct iio_dev *iio_dev,
- 	}
- }
- 
-+static int ingenic_adc_of_xlate(struct iio_dev *iio_dev,
-+				const struct of_phandle_args *iiospec)
-+{
-+	int i;
-+
-+	if (!iiospec->args_count)
-+		return -EINVAL;
-+
-+	for (i = 0; i < iio_dev->num_channels; ++i)
-+		if (iio_dev->channels[i].channel == iiospec->args[0])
-+			return i;
-+
-+	return -EINVAL;
-+}
-+
- static void ingenic_adc_clk_cleanup(void *data)
- {
- 	clk_unprepare(data);
-@@ -392,6 +407,7 @@ static const struct iio_info ingenic_adc_info = {
- 	.write_raw = ingenic_adc_write_raw,
- 	.read_raw = ingenic_adc_read_raw,
- 	.read_avail = ingenic_adc_read_avail,
-+	.of_xlate = ingenic_adc_of_xlate,
- };
- 
- static const struct iio_chan_spec ingenic_channels[] = {
--- 
-2.24.1
+That's a perfectly valid method as long as ret is only ever an error
+(or good).  We've tended to go with ret in IIO, so better to carry on with
+that. 
+
+I'm not that fussed about dropping the return ret; out, but definitely
+prefer explicit if (ret) to make it clear ret is never positive in the
+good path though.
+
+Thanks,
+
+Jonathan
+
+> 
+> Thanks.
+> 
 
