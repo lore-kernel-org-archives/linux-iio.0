@@ -1,76 +1,43 @@
-Return-Path: <SRS0=twkV=2Z=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=kDgX=22=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 01174C2D0C2
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jan 2020 18:19:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFF1C32767
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 00:10:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C3FAA222C4
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jan 2020 18:19:56 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fz41azXV"
+	by mail.kernel.org (Postfix) with ESMTP id ED645222C4
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Jan 2020 00:10:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726135AbgADST4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 4 Jan 2020 13:19:56 -0500
-Received: from mail-qk1-f193.google.com ([209.85.222.193]:35468 "EHLO
-        mail-qk1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726118AbgADSTz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jan 2020 13:19:55 -0500
-Received: by mail-qk1-f193.google.com with SMTP id z76so36760692qka.2;
-        Sat, 04 Jan 2020 10:19:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QhyegyI0NkF5N69Gtsc0eHuClkM19ers8sxdq08wiaU=;
-        b=fz41azXVTutL8yWhRDakZXb8RpRAJDgWRLwmxcKmG6sDMx2Apak2y2qaodHQsGzZDm
-         3hUfJmiRYjEIl1LxssJrC7xtaEQSM0OLif9cKJ96ikyLcqVZnwmiwKbhbSW3eTTUJsTR
-         1nr8Ft5L0S7yAtRh/9RAy8oq8j1l6xnQHcNZvjEvDgqFUXGCEAhj8xydVzYaIgNbM7Ax
-         k4chErxTrWTMWUPYGStYBZKUmb7p5yPgeJR83lzBcNWAzBFRE8x3GQ/NOvwpZU/2pAih
-         dUSSfJ6J5r69Sk8Bl0fTzhM5fVxKRGrFJoPATaHIaVGLIvW5bpkp/PpbI4FkFumOACRl
-         63EQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :mime-version:content-transfer-encoding;
-        bh=QhyegyI0NkF5N69Gtsc0eHuClkM19ers8sxdq08wiaU=;
-        b=sn8N4AajTii08InUcoN7Dn8YvL6napTV58mUU9HlMK0BnbVRIojhCsjwce18Kmb4+o
-         AMmmOmvs6tqdJH869DPUbVJPj3G8Uel36Sgi9kRmOyvhVAarwQIGST/SDXx0C1kPjmgm
-         QFQVw64ORhZBhAjqXFdccdFBEptduSR3DxCgyLeo8+g020DsRuv0l81a0HuNchjp+l/O
-         BwxXHe/42G3N45IlhOxg1zUe0jtPc3nFHG+Pg5HRIz7ti6LZOLPW+IOaSxwcxIYF3mWM
-         zdvt74Aokqa3is+dUM2zEDSMKfV0y2iYcmMedzlKkAitKr9NnfGxRmkJBZZS5/YU19U0
-         khuQ==
-X-Gm-Message-State: APjAAAXBeldVaEkFaXCLhjUYjvYf4jnHHNNDXKeFJ1KWXUIxR51prNwR
-        88KvLj+a3kcyGF9ZUZx3flU=
-X-Google-Smtp-Source: APXvYqyvI5wVYVPCrglAM9bZR3yiDfm7t7jGPRCU40rm8PVA6VtVUQTkTtmN1tJpY1F/G6QKVmViPA==
-X-Received: by 2002:a05:620a:a5c:: with SMTP id j28mr66434037qka.218.1578161994824;
-        Sat, 04 Jan 2020 10:19:54 -0800 (PST)
-Received: from localhost.localdomain ([194.59.251.176])
-        by smtp.gmail.com with ESMTPSA id m68sm17910801qke.17.2020.01.04.10.19.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 04 Jan 2020 10:19:54 -0800 (PST)
-From:   Kent Gustavsson <kent@minoris.se>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Richard Fontana <rfontana@redhat.com>,
-        Shobhit Kukreti <shobhitkukreti@gmail.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Allison Randal <allison@lohutok.net>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Kent Gustavsson <kent@minoris.se>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: humidity: dht11 remove TODO since it doesn't make sense
-Date:   Sat,  4 Jan 2020 19:19:29 +0100
-Message-Id: <20200104181929.1505510-1-kent@minoris.se>
+        id S1726524AbgAEAKo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 4 Jan 2020 19:10:44 -0500
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:60047 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726478AbgAEAKo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jan 2020 19:10:44 -0500
+X-Originating-IP: 195.189.32.242
+Received: from pc.localdomain (unknown [195.189.32.242])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 88B5D1C0008;
+        Sun,  5 Jan 2020 00:10:41 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Paul Cercueil <paul@crapouillou.net>
+Cc:     linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Artur Rojek <contact@artur-rojek.eu>
+Subject: [PATCH 4/5] dt-bindings: input: Add docs for ADC driven joystick.
+Date:   Sun,  5 Jan 2020 01:16:38 +0100
+Message-Id: <20200105001639.142061-4-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200105001639.142061-1-contact@artur-rojek.eu>
+References: <20200105001639.142061-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -78,26 +45,122 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-DHT11 isn't addressable and will trigger temperature measurement on any
-data sent on the bus.
+Add documentation for the adc-joystick driver, used to provide support
+for joysticks connected over ADC.
 
-Signed-off-by: Kent Gustavsson <kent@minoris.se>
+Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+Tested-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/iio/humidity/dht11.c | 1 -
- 1 file changed, 1 deletion(-)
+ .../bindings/input/adc-joystick.yaml          | 100 ++++++++++++++++++
+ 1 file changed, 100 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/adc-joystick.yaml
 
-diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-index b459600e1a33..d05c6fdb758b 100644
---- a/drivers/iio/humidity/dht11.c
-+++ b/drivers/iio/humidity/dht11.c
-@@ -174,7 +174,6 @@ static irqreturn_t dht11_handle_irq(int irq, void *data)
- 	struct iio_dev *iio = data;
- 	struct dht11 *dht11 = iio_priv(iio);
- 
--	/* TODO: Consider making the handler safe for IRQ sharing */
- 	if (dht11->num_edges < DHT11_EDGES_PER_READ && dht11->num_edges >= 0) {
- 		dht11->edges[dht11->num_edges].ts = ktime_get_boottime_ns();
- 		dht11->edges[dht11->num_edges++].value =
+diff --git a/Documentation/devicetree/bindings/input/adc-joystick.yaml b/Documentation/devicetree/bindings/input/adc-joystick.yaml
+new file mode 100644
+index 000000000000..97ae797348c7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/adc-joystick.yaml
+@@ -0,0 +1,100 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2019-2020 Artur Rojek
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/bindings/input/adc-joystick.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: ADC attached joystick
++
++maintainers:
++  - Artur Rojek <contact@artur-rojek.eu>
++
++description: |
++  Bindings for joystick devices connected to ADC controllers supporting
++  the Industrial I/O subsystem.
++
++properties:
++  compatible:
++    const: adc-joystick
++
++  io-channels:
++    description: |
++      List of phandle and IIO specifier pairs.
++      Each pair defines one ADC channel to which a joystick axis is connected.
++      See Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
++
++required:
++  - compatible
++  - io-channels
++
++additionalProperties: false
++
++patternProperties:
++  "^axis@([0-9])$":
++    type: object
++    description: |
++      Represents a joystick axis bound to the given ADC channel.
++      For each entry in the io-channels list, one axis subnode with a matching
++      index must be specified.
++
++    properties:
++      linux,abs-code:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: EV_ABS specific event code generated by the axis.
++
++      linux,abs-range:
++        $ref: /schemas/types.yaml#/definitions/uint32-array
++        items:
++          - description: minimum value
++          - description: maximum value
++        description: |
++          Minimum and maximum values produced by the axis.
++          For an ABS_X axis this will be the left-most and right-most
++          inclination of the joystick. If min > max, it is left to userspace to
++          treat the axis as inverted.
++          This property is interpreted as two signed 32 bit values.
++
++      linux,abs-fuzz:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: |
++          Amount of noise in the input value.
++          Omitting this property indicates the axis is precise.
++
++      linux,abs-flat:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: |
++          Axial "deadzone", or area around the center position, where the axis
++          is considered to be at rest.
++          Omitting this property indicates the axis always returns to exactly
++          the center position.
++
++    required:
++      - linux,abs-code
++      - linux,abs-range
++
++    additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/iio/adc/ingenic,adc.h>
++    #include <dt-bindings/input/input.h>
++
++    joystick: adc-joystick {
++      compatible = "adc-joystick";
++      io-channels = <&adc INGENIC_ADC_TOUCH_XP>,
++                    <&adc INGENIC_ADC_TOUCH_YP>;
++
++      axis@0 {
++              linux,abs-code = <ABS_X>;
++              linux,abs-range = <3300 0>;
++              linux,abs-fuzz = <4>;
++              linux,abs-flat = <200>;
++      };
++      axis@1 {
++              linux,abs-code = <ABS_Y>;
++              linux,abs-range = <0 3300>;
++              linux,abs-fuzz = <4>;
++              linux,abs-flat = <200>;
++      };
++    };
 -- 
-2.23.0
+2.24.1
 
