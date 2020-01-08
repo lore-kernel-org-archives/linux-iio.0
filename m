@@ -1,145 +1,258 @@
-Return-Path: <SRS0=ERi/=24=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=vtwJ=25=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06913C33C8C
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jan 2020 17:16:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06B5FC33C9E
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 04:13:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CA9942073D
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jan 2020 17:16:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="HgavD/C6"
+	by mail.kernel.org (Postfix) with ESMTP id CFA1A2070A
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 04:13:04 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578456784;
+	bh=alEfFY0lCYdB4Y26dMyX/Cb++SanMropH1U3X1hRKOE=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=daFOQlFZ7CsG+YPmxg+bpa4bFy66/fZcSimZcBlBEwEatsiL4Oqj0oqMYs8ebXaa2
+	 i/RqubUFUggEURJ/+AO6f7yHQo4Ak7gP8N0KS26HdVxBZ1M6/WtlBZZGNFSQte8T5/
+	 C7RYTUc+fYV3GyuSFXA36FyUhF61LjFwfmmkCCgo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728307AbgAGRQG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jan 2020 12:16:06 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:32018 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728262AbgAGRQG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jan 2020 12:16:06 -0500
-Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 007H3kew001693;
-        Tue, 7 Jan 2020 18:15:53 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=ZdllE0Z52H4x4guhjbA8dQk3Mh5olK1KPHIfgCgmdic=;
- b=HgavD/C6uGnl1U0aWLn+F2XXveASexh0qsxQwqzTfILkv4s7dTPS3wJ7bJWSh30iurFc
- 2cyCo7fHS5bGx16UpGNPedY6X0L6KRStaBMHLLCniSkoHFCZGzKJjqc9sKRfP9fCSaFI
- 9U8cwTlMur71kI2a1PmK7LvJGmkNdQdDtKnmTeYqVazThi4IQi2Fq6Zdtrf9WmoB4Yhb
- nREmzBkgQEhyqPtPtGG3T6+UX3GkP88IGE9bwJvZtxTjdXjTXpuqvCFodnVGwej8idVA
- QuGt2iF4nH1Qa4queQizpckiFbYv7wj0YKALXI4G36IDEL4EnCZtt/C0TPfI+PO76nx1 oQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-00178001.pphosted.com with ESMTP id 2xakkaqn9r-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Jan 2020 18:15:53 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 56183100034;
-        Tue,  7 Jan 2020 18:15:50 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 455CE21F729;
-        Tue,  7 Jan 2020 18:15:50 +0100 (CET)
-Received: from [10.48.0.71] (10.75.127.44) by SFHDAG5NODE3.st.com
- (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 7 Jan
- 2020 18:15:49 +0100
-Subject: Re: [PATCH v2] iio: adc: stm32-adc: Use dma_request_chan() instead
- dma_request_slave_channel()
-To:     Peter Ujfalusi <peter.ujfalusi@ti.com>, <jic23@kernel.org>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>
-CC:     <vkoul@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Olivier MOYSAN <olivier.moysan@st.com>
-References: <20200107114125.6095-1-peter.ujfalusi@ti.com>
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <5146b085-d92d-7230-9a05-87926711dafa@st.com>
-Date:   Tue, 7 Jan 2020 18:15:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726263AbgAHENE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jan 2020 23:13:04 -0500
+Received: from mail-ot1-f65.google.com ([209.85.210.65]:46417 "EHLO
+        mail-ot1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726210AbgAHENE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jan 2020 23:13:04 -0500
+Received: by mail-ot1-f65.google.com with SMTP id r9so2253199otp.13
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jan 2020 20:13:03 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bVEmriYX9VcSaqW3+ubpAnBoimQDo1dYPWqbf3v17Hs=;
+        b=l6oDJHMagvqRJ9tXjf+oD6kTKknXi27N46d4Ali4QLp0OGmtoKLvGdv/hHdK45Kdv8
+         z6MvBkW7CGBYE5YqOSGNnBcBsGLq7dag8vV7UPkAAtUvz4nnqdN1tRvmKrfB97rguH6b
+         x9+XqOzfxdE8j91k6N7ICNE46J0yEAe/qynwAAubE5LBmNja2vBr/6hV8Du/k6fuwAzy
+         7RlzVsuey5XxlLxCeDoi01b2XxC1JnT+ZvUp2r0D3GDg1L4bxoEmQTHSHY7QkQzcQkY6
+         whnDqc5YukXx6wOVtLBrvvV6M4PHdtGMsBktdcRVWdiah7dHRFgri7ZQNuSSjVfMoVHK
+         NYcA==
+X-Gm-Message-State: APjAAAWdqDoyQN/3JL+OTbQhedgdgvSJ5oYl9vKq+0a+xjRc+JlPktGj
+        SwNjW1cRhtzp20k+zh7q2Wmfrp0=
+X-Google-Smtp-Source: APXvYqyxEx+b6fdMh2WVzdtSkRHzcdji+jdYtoUYav7z3TvuFJXOSulKwLgBqdp/ab3mIFMi54xm3Q==
+X-Received: by 2002:a9d:6544:: with SMTP id q4mr2787455otl.194.1578456782294;
+        Tue, 07 Jan 2020 20:13:02 -0800 (PST)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 4sm717381otu.0.2020.01.07.20.12.59
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jan 2020 20:13:01 -0800 (PST)
+Received: from rob (uid 1000)
+        (envelope-from rob@rob-hp-laptop)
+        id 220d1c
+        by rob-hp-laptop (DragonFly Mail Agent v0.11);
+        Tue, 07 Jan 2020 22:12:59 -0600
+Date:   Tue, 7 Jan 2020 22:12:59 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Mircea Caprioru <mircea.caprioru@analog.com>
+Cc:     jic23@kernel.org, Michael.Hennerich@analog.com,
+        alexandru.ardelean@analog.com, lars@metafoo.de,
+        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/3] dt-bindings: iio: frequency: Add docs for LTC6952
+Message-ID: <20200108041259.GA30234@bogus>
+References: <20191219134810.6677-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <20200107114125.6095-1-peter.ujfalusi@ti.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.44]
-X-ClientProxiedBy: SFHDAG8NODE2.st.com (10.75.127.23) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-07_05:2020-01-07,2020-01-07 signatures=0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20191219134810.6677-1-mircea.caprioru@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/7/20 12:41 PM, Peter Ujfalusi wrote:
-> dma_request_slave_channel() is a wrapper on top of dma_request_chan()
-> eating up the error code.
+On Thu, Dec 19, 2019 at 03:48:08PM +0200, Mircea Caprioru wrote:
+> Document support for Analog Devices LTC6952 ultralow jitter, 4.5GHz PLL
+> with 11 outputs and JESD204B/C support.
 > 
-> By using dma_request_chan() directly the driver can support deferred
-> probing against DMA.
-> 
-> Signed-off-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 > ---
-> Hi,
+>  .../bindings/iio/frequency/adi,ltc6952.yaml   | 127 ++++++++++++++++++
+>  1 file changed, 127 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,ltc6952.yaml
 > 
-> Changes since v1:
-> - Fall back to IRQ mode only in case of ENODEV
-> 
-> Regards,
-> Peter
-
-Hi Peter,
-
-Thanks for the patch,
-
-In case you send another version... I've just a minor suggestion
-regarding the comment (see after). Apart from that, you can add my:
-
-Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-
-Best Regards,
-Fabrice
-
-> 
->  drivers/iio/adc/stm32-adc.c | 16 ++++++++++++++--
->  1 file changed, 14 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-> index 3b291d72701c..df5f5d61f9f9 100644
-> --- a/drivers/iio/adc/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32-adc.c
-> @@ -1746,9 +1746,21 @@ static int stm32_adc_dma_request(struct iio_dev *indio_dev)
->  	struct dma_slave_config config;
->  	int ret;
->  
-> -	adc->dma_chan = dma_request_slave_channel(&indio_dev->dev, "rx");
-> -	if (!adc->dma_chan)
-> +	adc->dma_chan = dma_request_chan(&indio_dev->dev, "rx");
-> +	if (IS_ERR(adc->dma_chan)) {
-> +		ret = PTR_ERR(adc->dma_chan);
-> +		if (ret != -ENODEV) {
-> +			if (ret != -EPROBE_DEFER)
-> +				dev_err(&indio_dev->dev,
-> +					"DMA channel request failed with %d\n",
-> +					ret);
-> +			return ret;
-> +		}
+> diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,ltc6952.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,ltc6952.yaml
+> new file mode 100644
+> index 000000000000..a28c773c3948
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/frequency/adi,ltc6952.yaml
+> @@ -0,0 +1,127 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +# Copyright 2019 Analog Devices Inc.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/bindings/iio/frequency/adi,ltc6952.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +		/* Ignore errors to fall back to IRQ mode */
-		               ^
-		          error
-alternate suggestion:
-		/* DMA is optional: fall back to IRQ mode */
+> +title: Analog Devices LTC6952 ultralow jitter, JESD204B/C clock generation IC.
+> +
+> +maintainers:
+> +  - Mircea Caprioru <mircea.caprioru@analog.com>
+> +
+> +description: |
+> +  Analog Devices LTC6952 ultralow jitter, JESD204B/C clock generation IC.
+> +  https://www.analog.com/media/en/technical-documentation/data-sheets/ltc6952.pdf 
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ltc6952
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  clock-output-names:
+> +    description: |
+> +      Clock output signal names indexed by the first cell in the clock
+> +      specifier (see clock/clock-bindings.txt)
+> +    maxItems: 1
 
-> +		adc->dma_chan = NULL;
->  		return 0;
-> +	}
->  
->  	adc->rx_buf = dma_alloc_coherent(adc->dma_chan->device->dev,
->  					 STM32_DMA_BUFFER_SIZE,
+Only one string? Then why is this needed?
+
+> +
+> +  adi,vco-frequency-hz:
+> +    description: |
+> +      VCO input frequency. This is fed to the internal distribution path and
+> +      feedback dividers.
+> +    allOf:
+> +      - $ref: /schemas/types.yaml#/definitions/uint32
+
+Standard units already have a type definition.
+
+> +    maxItems: 1
+
+Drop this. Not an array.
+
+> +
+> +  adi,ref-frequency-hz:
+> +    description: |
+> +      Reference input frequency. This is fed in the reference divider.
+> +    allOf:
+> +      - $ref: /schemas/types.yaml#/definitions/uint32
+> +    maxItems: 1
+
+Same comments here.
+
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - clock-output-names
+> +
+> +patternProperties:
+> +  "^channel@[0-9]$":
+> +    type: object
+> +    description: Represents the external channels which are connected to the device.
+> +
+> +    properties:
+> +      reg:
+> +        description: |
+> +          The channel number. It can have up to 11 channels numbered from 0 to 10.
+
+Your unit address above does not allow for 0xa (unit addresses are hex).
+
+> +        maxItems: 1
+> +
+> +      adi,extended-name:
+> +        description: Descriptive channel name.
+> +        maxItems: 1
+
+Needs a type ref.
+
+maxItems is for arrays.
+
+> +
+> +      adi,divider:
+> +        description: |
+> +          Channel divider. This divides the incoming VCO frequency.
+> +        maxItems: 1
+
+type ref.
+
+Range of values?
+
+> +
+> +      adi,digital-delay:
+> +        description: |
+> +          Each output divider can have the start time of the output delayed by
+> +          integer multiples of half of the VCO period after a synchronization
+> +          event.
+> +        allOf:
+> +          - $ref: /schemas/types.yaml#/definitions/uint32
+> +          - minimum: 0
+> +          - maximum: 4095
+
+These 2 need to be grouped together. minimum and maximum can be at the 
+same level as allOf.
+
+
+> +        maxItems: 1
+
+Drop this.
+
+> +
+> +      adi,analog-delay:
+> +        description: |
+> +          Each output has a fine analog delay feature to further adjust its
+> +          output delay time (tADELx) in small steps.
+> +        allOf:
+> +          - $ref: /schemas/types.yaml#/definitions/uint32
+> +          - minimum: 0
+> +          - maximum: 63
+> +        maxItems: 1
+
+Same comments here.
+
+> +
+> +    required:
+> +      - reg
+> +
+> +examples:
+> +   - |
+> +     ltc6952@0 {
+> +       compatible = "adi,ltc6952";
+> +       reg = <0>;
+> +
+> +       #address-cells = <1>;
+> +       #size-cells = <0>;
+> +
+> +       spi-max-frequency = <10000000>;
+> +
+> +       clock-output-names = "ltc6952_out0", "ltc6952_out1", "ltc6952_out2",
+> +         "ltc6952_out3", "ltc6952_out4", "ltc6952_out5", "ltc6952_out6",
+> +         "ltc6952_out7", "ltc6952_out8", "ltc6952_out9", "ltc6952_out10";
+> +       #clock-cells = <1>;
+> +
+> +       adi,vco-frequency-hz = <4000000000>;
+> +       adi,ref-frequency-hz = <100000000>;
+> +
+> +       ltc6952_c0: channel@0 {
+> +         reg = <0>;
+> +         adi,extended-name = "REF_CLK";
+> +         adi,divider = <10>;
+> +         adi,digital-delay = <100>;
+> +         adi,analog-delay = <0>;
+> +       };
+> +
+> +       ltc6952_c1: channel@1 {
+> +         reg = <1>;
+> +         adi,extended-name = "TEST_CLK";
+> +         adi,divider = <10>;
+> +       };
+> +     };
+> -- 
+> 2.17.1
 > 
