@@ -2,27 +2,27 @@ Return-Path: <SRS0=vtwJ=25=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826FBC282DD
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 16:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A5DCC33CA1
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 16:00:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5F4672070E
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 16:00:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C9452073A
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Jan 2020 16:00:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726699AbgAHQA0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 8 Jan 2020 11:00:26 -0500
-Received: from hosting.pavoucek.net ([46.28.107.168]:46210 "EHLO
+        id S1726281AbgAHQA1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 Jan 2020 11:00:27 -0500
+Received: from hosting.pavoucek.net ([46.28.107.168]:46228 "EHLO
         hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbgAHQAZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jan 2020 11:00:25 -0500
+        with ESMTP id S1727135AbgAHQA1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Jan 2020 11:00:27 -0500
 Received: from 176-74-132-138.netdatacomm.cz (176-74-132-138.netdatacomm.cz [176.74.132.138])
         (Authenticated sender: tomas@novotny.cz)
-        by hosting.pavoucek.net (Postfix) with ESMTPSA id F06C1104487;
-        Wed,  8 Jan 2020 17:00:22 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 hosting.pavoucek.net F06C1104487
+        by hosting.pavoucek.net (Postfix) with ESMTPSA id 3AE3D1048F2;
+        Wed,  8 Jan 2020 17:00:25 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 hosting.pavoucek.net 3AE3D1048F2
 From:   Tomas Novotny <tomas@novotny.cz>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -34,29 +34,52 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Marco Felsch <m.felsch@pengutronix.de>,
         Thomas Gleixner <tglx@linutronix.de>,
         =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
-Subject: [PATCH 0/2] iio: light: vcnl4000: update sampling rates
-Date:   Wed,  8 Jan 2020 16:58:50 +0100
-Message-Id: <20200108155852.32702-1-tomas@novotny.cz>
+Subject: [PATCH 1/2] iio: light: vcnl4000: update sampling rates for vcnl4200
+Date:   Wed,  8 Jan 2020 16:58:51 +0100
+Message-Id: <20200108155852.32702-2-tomas@novotny.cz>
 X-Mailer: git-send-email 2.16.4
+In-Reply-To: <20200108155852.32702-1-tomas@novotny.cz>
+References: <20200108155852.32702-1-tomas@novotny.cz>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Vishay has published new information which explain drifts seen in
-experiments. So update the sampling rates for affected variants.
+Vishay has published a new version of "Designing the VCNL4200 Into an
+Application" application note in October 2019. The new version specifies
+that there is +-20% of part to part tolerance. This explains the drift
+seen during experiments. The proximity pulse width is also changed from
+32us to 30us. According to the support, the tolerance also applies to
+ambient light.
 
-Patches are based on iio/fixes-togreg to avoid conflict.
+So update the sampling rates. As the reading is blocking, current users
+may notice slightly longer response time.
 
-Tested on vcnl4200.
+Fixes: be38866fbb97 ("iio: vcnl4000: add support for VCNL4200")
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+---
+ drivers/iio/light/vcnl4000.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Tomas Novotny (2):
-  iio: light: vcnl4000: update sampling rates for vcnl4200
-  iio: light: vcnl4000: update sampling rates for vcnl4040
-
- drivers/iio/light/vcnl4000.c | 15 ++++++++-------
- 1 file changed, 8 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index b0e241aaefb4..98428bf430bd 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -167,10 +167,10 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+ 	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
+ 	switch (id) {
+ 	case VCNL4200_PROD_ID:
+-		/* Integration time is 50ms, but the experiments */
+-		/* show 54ms in total. */
+-		data->vcnl4200_al.sampling_rate = ktime_set(0, 54000 * 1000);
+-		data->vcnl4200_ps.sampling_rate = ktime_set(0, 4200 * 1000);
++		/* Default wait time is 50ms, add 20% tolerance. */
++		data->vcnl4200_al.sampling_rate = ktime_set(0, 60000 * 1000);
++		/* Default wait time is 4.8ms, add 20% tolerance. */
++		data->vcnl4200_ps.sampling_rate = ktime_set(0, 5760 * 1000);
+ 		data->al_scale = 24000;
+ 		break;
+ 	case VCNL4040_PROD_ID:
 -- 
 2.16.4
 
