@@ -1,170 +1,93 @@
-Return-Path: <SRS0=I6or=3B=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=tKUa=3C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD3E6C33CA2
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Jan 2020 20:33:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E9EDC33CA8
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 03:55:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B66C521744
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Jan 2020 20:33:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PR4yTzhW"
+	by mail.kernel.org (Postfix) with ESMTP id 28D462082E
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 03:55:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387424AbgALUda (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Jan 2020 15:33:30 -0500
-Received: from mail-lj1-f195.google.com ([209.85.208.195]:44469 "EHLO
-        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732825AbgALUda (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Jan 2020 15:33:30 -0500
-Received: by mail-lj1-f195.google.com with SMTP id u71so7708590lje.11;
-        Sun, 12 Jan 2020 12:33:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IrLDzyGfd9Y65dDT7UGMmoZnTT7I7zow/6QfstVQ1DA=;
-        b=PR4yTzhWStLUhH3DAX7PztJkvplbspQP1sh3ZPkIxh99aUo16NYjsw1SkMtWfI4QQN
-         1Mr8p/lm6LQjAR4Hf/SWSPJ+lwa31z/0hEylxaAVjvBCV/yQLo0/CxixjrPt1/x07Mj/
-         9NBM8h5sfAVUvaWcyhwiPx5+qOyq/eEhubGuJ/8Q2phD2xh1Dk/kgX7+g4RUp8iFM1V8
-         4LVMop1fLxL8F4T7uv/JKAUI37X+bXeaCVsS0eqsdT3DRSycvCS0xS0O3uZRx5xxIlFA
-         UHtWrys6/cCmbWju3qjsu+jC1bKSbbJl7V5pdtt2pjUjJY0qavSoS8M7uyoWYwuhSGuG
-         KLRg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=IrLDzyGfd9Y65dDT7UGMmoZnTT7I7zow/6QfstVQ1DA=;
-        b=tXLG6ns9J8n5VpPsu7T5XrEukKbqnjOTezrcfBEt7SKZqyrETvseEnOC2TtOiGeRX3
-         Y/YyK84Ce1uHcksqIwTV420wDRbd/nUl4BC8Hgw2KsjF+9m1LIPw9UNUFWKX8jpPm042
-         HBMyw/k4mn0mJqyE/25wSevp/UKynTeC3eSML+HhAN75FH/3P/EpzSKf3yLXjzG8zSfd
-         770SpxIqJkEMpClM7ROvfmnMBnflxTMFopcXg3WU5I+kri0PRi6fTKpasF6wUI/7XASh
-         uROrcPsdNZz2Nz+f25y4Og3j8PhJsl77dMxgbfzRupW5/AGIocq0KQ3jzxenGRbjbA/k
-         MM2Q==
-X-Gm-Message-State: APjAAAWz+fD3VKoluFyigalzVJ6NZZPb4nkA1C+Yu18mHO95aDHII+Wl
-        pTJFzT9KBrKrX6KRCN4i1Xc=
-X-Google-Smtp-Source: APXvYqwBfFAR8OQmBDBjCB3tz+Dj8/kUMmk3fxUvn9wOopBq3+C0Rda9DnZGFOZcSEMrlFNwxHgDKA==
-X-Received: by 2002:a05:651c:1045:: with SMTP id x5mr6601786ljm.266.1578861208532;
-        Sun, 12 Jan 2020 12:33:28 -0800 (PST)
-Received: from localhost.localdomain (79-139-233-37.dynamic.spd-mgts.ru. [79.139.233.37])
-        by smtp.gmail.com with ESMTPSA id u16sm5255192lfi.36.2020.01.12.12.33.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 12 Jan 2020 12:33:27 -0800 (PST)
-From:   Dmitry Osipenko <digetx@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Robert Yang <decatf@gmail.com>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v1 1/2] iio: accel: kxcjk1013: Support orientation matrix
-Date:   Sun, 12 Jan 2020 23:33:00 +0300
-Message-Id: <20200112203301.30235-1-digetx@gmail.com>
-X-Mailer: git-send-email 2.24.0
+        id S2387474AbgAMDzX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Jan 2020 22:55:23 -0500
+Received: from mail02.vodafone.es ([217.130.24.81]:52393 "EHLO
+        mail02.vodafone.es" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387417AbgAMDzX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Jan 2020 22:55:23 -0500
+IronPort-SDR: wc5VbP54JzTqTCarXg4ZxNC4JCrlgQnFb9slLuUKXEwbDRh7JCMLac7bpqQlj6zvCwRqsKjpPj
+ SFLPpKe66LaQ==
+IronPort-PHdr: =?us-ascii?q?9a23=3Aw2N6khZf6gd7D1Ms8aHkfbj/LSx+4OfEezUN45?=
+ =?us-ascii?q?9isYplN5qZr8S9bnLW6fgltlLVR4KTs6sC17ON9fq+CCdevN6oizMrSNR0TR?=
+ =?us-ascii?q?gLiMEbzUQLIfWuLgnFFsPsdDEwB89YVVVorDmROElRH9viNRWJ+iXhpTEdFQ?=
+ =?us-ascii?q?/iOgVrO+/7BpDdj9it1+C15pbffxhEiCCybL9vIhi6txvdu8gSjIdtK6s8yg?=
+ =?us-ascii?q?bCr2dVdehR2W5mP0+YkQzm5se38p5j8iBQtOwk+sVdT6j0fLk2QKJBAjg+PG?=
+ =?us-ascii?q?87+MPktR/YTQuS/XQcSXkZkgBJAwfe8h73WIr6vzbguep83CmaOtD2TawxVD?=
+ =?us-ascii?q?+/4apnVAPkhSEaPDI/923Zl9B/g7heoBOhvhBy3YnUYJuNNPp5ZKPSZ88aSn?=
+ =?us-ascii?q?RYUslPUSxNG5+xb5cTD+UbIelYr5fyp14Qohu4GQmgHf3gyjlRinHx2q061f?=
+ =?us-ascii?q?ouEAHf0AM+GdIFrXDYodvpOKsOVOy4yrTDwzfeYPNMwTrz5ojGcgo/r/+PQL?=
+ =?us-ascii?q?x/ftbex0Y0GgPZjFiftZDpMy+J2ugTtWWQ8upuVfioi24iswx/uCagxtsyhY?=
+ =?us-ascii?q?nTm4kaylfE9SN2wI0oItC4UFB0YcK6H5tKuSCaMI12Qsw5TmFooyY10aEJtY?=
+ =?us-ascii?q?SncygNzZQr3R7fa/+efoWO/xntV/6RLC9miH54er+znQu+/Ea8xuHmSMW530?=
+ =?us-ascii?q?xGoyRFn9TKq3sDzQbc6tKdRft45kqh3DGP2B3N5excOkA0kLbbK4Ymwr4tip?=
+ =?us-ascii?q?ofqUTDETHymEXxlKKWc18r+ums6+T9fLrmooOQOoBuhgHgNaQhh9awAeo/Mg?=
+ =?us-ascii?q?gIQWeX4/qz1Kb78U34RrVFkOE2n7HHvJzHJ8kXvLO1DgFJ3oo59RqyAC2q3d?=
+ =?us-ascii?q?oYkHUfKVJKYhOHj4znO1HUJ/D4CO+yg0yynzd32f/GJLPgApLLLnjMi7rhfa?=
+ =?us-ascii?q?195FVAxwYp0d9f4JdUBqsBIPLwQkPxrsDXDgclMwyoxObqENF91oIYWWKSDa?=
+ =?us-ascii?q?6VKaLSsV6P5u80PemMa5EauCznJ/gm+fHul3k5lkEZfaWz2psXcn+4TbxaJB?=
+ =?us-ascii?q?CdYHzxkpIAEGAioAUzVqrphUeEXDoVYGy9DJgx/jUqNIXzNYrfS5rlv7uH02?=
+ =?us-ascii?q?/vBpBKa3pZDVaDEXTobI+Pc/gJYSOWZMRml2pXe6KmTtoZ2A2jrkfFzLxoZr?=
+ =?us-ascii?q?7M9zEVr43k0tdd5/bZnlc58jkyD8fLgDLFdH19gm5dHmx+56t4u0EokQ/b3A?=
+ =?us-ascii?q?=3D=3D?=
+X-IronPort-Anti-Spam-Filtered: true
+X-IronPort-Anti-Spam-Result: =?us-ascii?q?A2GUIwAv6RtemCMYgtlNGBoBAQEBAQE?=
+ =?us-ascii?q?BAQEDAQEBAREBAQECAgEBAQGBewIBGAEBgS6BTVIgEpNQgU0fg0OLY4EAgx4?=
+ =?us-ascii?q?VhggTDIFbDQEBAQEBNQIBAYRATgEXgQ8kOgQNAgMNAQEFAQEBAQEFBAEBAhA?=
+ =?us-ascii?q?BAQEBAQYNCwYphUqCHQweAQQBAQEBAwMDAQEMAYNdBxkPOUpMAQ4BU4MEgks?=
+ =?us-ascii?q?BATOccgGNBA0NAoUdgkcECoEJgRojgTYBjBgagUE/gSMhgisIAYIBgn8BEgF?=
+ =?us-ascii?q?sgkiCWQSNQhIhgQeIKZgXgkEEdolMjAKCNwEPiAGEMQMQgkUPgQmIA4ROgX2?=
+ =?us-ascii?q?jN1eBDA16cTMagiYagSBPGA2IG44tQIEWEAJPiS6CMgEB?=
+X-IPAS-Result: =?us-ascii?q?A2GUIwAv6RtemCMYgtlNGBoBAQEBAQEBAQEDAQEBAREBA?=
+ =?us-ascii?q?QECAgEBAQGBewIBGAEBgS6BTVIgEpNQgU0fg0OLY4EAgx4VhggTDIFbDQEBA?=
+ =?us-ascii?q?QEBNQIBAYRATgEXgQ8kOgQNAgMNAQEFAQEBAQEFBAEBAhABAQEBAQYNCwYph?=
+ =?us-ascii?q?UqCHQweAQQBAQEBAwMDAQEMAYNdBxkPOUpMAQ4BU4MEgksBATOccgGNBA0NA?=
+ =?us-ascii?q?oUdgkcECoEJgRojgTYBjBgagUE/gSMhgisIAYIBgn8BEgFsgkiCWQSNQhIhg?=
+ =?us-ascii?q?QeIKZgXgkEEdolMjAKCNwEPiAGEMQMQgkUPgQmIA4ROgX2jN1eBDA16cTMag?=
+ =?us-ascii?q?iYagSBPGA2IG44tQIEWEAJPiS6CMgEB?=
+X-IronPort-AV: E=Sophos;i="5.69,427,1571695200"; 
+   d="scan'208";a="323742421"
+Received: from mailrel04.vodafone.es ([217.130.24.35])
+  by mail02.vodafone.es with ESMTP; 13 Jan 2020 04:55:22 +0100
+Received: (qmail 24204 invoked from network); 12 Jan 2020 05:00:20 -0000
+Received: from unknown (HELO 192.168.1.3) (quesosbelda@[217.217.179.17])
+          (envelope-sender <peterwong@hsbc.com.hk>)
+          by mailrel04.vodafone.es (qmail-ldap-1.03) with SMTP
+          for <linux-iio@vger.kernel.org>; 12 Jan 2020 05:00:20 -0000
+Date:   Sun, 12 Jan 2020 06:00:19 +0100 (CET)
+From:   Peter Wong <peterwong@hsbc.com.hk>
+Reply-To: Peter Wong <peterwonghkhsbc@gmail.com>
+To:     linux-iio@vger.kernel.org
+Message-ID: <21884229.460716.1578805219841.JavaMail.cash@217.130.24.55>
+Subject: Investment opportunity
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hardware could be physically mounted in any possible direction and
-userpspace needs to be aware of the mounting orientation in order to
-process sensor's data correctly. In particular this helps iio-sensor-proxy
-to report display's orientation properly on a phone/tablet devices.
+Greetings,
+Please read the attached investment proposal and reply for more details.
+Are you interested in loan?
+Sincerely: Peter Wong
 
-Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
----
- drivers/iio/accel/kxcjk-1013.c       | 27 +++++++++++++++++++++++++--
- include/linux/iio/accel/kxcjk_1013.h |  3 +++
- 2 files changed, 28 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
-index fee535d6e45b..c9924a65c32a 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -130,6 +130,7 @@ struct kxcjk1013_data {
- 	struct i2c_client *client;
- 	struct iio_trigger *dready_trig;
- 	struct iio_trigger *motion_trig;
-+	struct iio_mount_matrix orientation;
- 	struct mutex mutex;
- 	s16 buffer[8];
- 	u8 odr_bits;
-@@ -983,6 +984,20 @@ static const struct iio_event_spec kxcjk1013_event = {
- 				 BIT(IIO_EV_INFO_PERIOD)
- };
- 
-+static const struct iio_mount_matrix *
-+kxcjk1013_get_mount_matrix(const struct iio_dev *indio_dev,
-+			   const struct iio_chan_spec *chan)
-+{
-+	struct kxcjk1013_data *data = iio_priv(indio_dev);
-+
-+	return &data->orientation;
-+}
-+
-+static const struct iio_chan_spec_ext_info kxcjk1013_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, kxcjk1013_get_mount_matrix),
-+	{ }
-+};
-+
- #define KXCJK1013_CHANNEL(_axis) {					\
- 	.type = IIO_ACCEL,						\
- 	.modified = 1,							\
-@@ -999,6 +1014,7 @@ static const struct iio_event_spec kxcjk1013_event = {
- 		.endianness = IIO_LE,					\
- 	},								\
- 	.event_spec = &kxcjk1013_event,				\
-+	.ext_info = kxcjk1013_ext_info,					\
- 	.num_event_specs = 1						\
- }
- 
-@@ -1267,11 +1283,18 @@ static int kxcjk1013_probe(struct i2c_client *client,
- 	data->client = client;
- 
- 	pdata = dev_get_platdata(&client->dev);
--	if (pdata)
-+	if (pdata) {
- 		data->active_high_intr = pdata->active_high_intr;
--	else
-+		data->orientation = pdata->orientation;
-+	} else {
- 		data->active_high_intr = true; /* default polarity */
- 
-+		ret = iio_read_mount_matrix(&client->dev, "mount-matrix",
-+					    &data->orientation);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	if (id) {
- 		data->chipset = (enum kx_chipset)(id->driver_data);
- 		name = id->name;
-diff --git a/include/linux/iio/accel/kxcjk_1013.h b/include/linux/iio/accel/kxcjk_1013.h
-index 8c3c78bc9f91..ea0ecb774371 100644
---- a/include/linux/iio/accel/kxcjk_1013.h
-+++ b/include/linux/iio/accel/kxcjk_1013.h
-@@ -7,8 +7,11 @@
- #ifndef __IIO_KXCJK_1013_H__
- #define __IIO_KXCJK_1013_H__
- 
-+#include <linux/iio/iio.h>
-+
- struct kxcjk_1013_platform_data {
- 	bool active_high_intr;
-+	struct iio_mount_matrix orientation;
- };
- 
- #endif
--- 
-2.24.0
+
+
+----------------------------------------------------
+This email was sent by the shareware version of Postman Professional.
 
