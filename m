@@ -2,104 +2,107 @@ Return-Path: <SRS0=tKUa=3C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D36F0C33CA9
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:23:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4B51C33CA9
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:43:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A34AF2084D
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:23:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AA16D214AF
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:43:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1578951803;
+	bh=5pXMYL26hJICNomi0biZj5KDrYRSotbgIK93VKbdwXc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=sNOGIil4wgnw91f4fhm8zJHuDLKrLk4lvlT3O9Ucc4lU82g17csUQpZ8d+ZyMSU8B
+	 7LkLqsOiNWU38RSNgufAZyuXMvcXVwGrIdkeB65mB6nHtpchwgkD7TPjC3pcqyTAMZ
+	 IqGMc9r7c4oB4+PuRciAfOG4XVwEgoQUBDHD8guY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726878AbgAMVXb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jan 2020 16:23:31 -0500
-Received: from www381.your-server.de ([78.46.137.84]:38710 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726536AbgAMVXb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jan 2020 16:23:31 -0500
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <lars@metafoo.de>)
-        id 1ir6mD-0002hu-Mv; Mon, 13 Jan 2020 21:57:33 +0100
-Received: from [93.104.104.184] (helo=[192.168.178.20])
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.2:ECDHE-RSA-CHACHA20-POLY1305:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1ir6mD-000VBg-Bg; Mon, 13 Jan 2020 21:57:33 +0100
-Subject: Re: [PATCH 1/3] iio: amplifiers: hmc425a: Add support for HMC425A
- step attenuator with gpio interface
-To:     Beniamin Bia <beniamin.bia@analog.com>, jic23@kernel.org
-Cc:     Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        biabeniamin@outlook.com, knaack.h@gmx.de, robh+dt@kernel.org,
-        mark.rutland@arm.com, devicetree@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-References: <20200113141555.16117-1-beniamin.bia@analog.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <5ae63616-5749-da51-b0b2-85cdcaa948f3@metafoo.de>
-Date:   Mon, 13 Jan 2020 21:57:32 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:60.0) Gecko/20100101
- Thunderbird/60.9.0
+        id S1726878AbgAMVnX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jan 2020 16:43:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:33528 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726488AbgAMVnX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 13 Jan 2020 16:43:23 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4AF420CC7;
+        Mon, 13 Jan 2020 21:43:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1578951802;
+        bh=5pXMYL26hJICNomi0biZj5KDrYRSotbgIK93VKbdwXc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uWUjeE+/UI4G2g/wkDCT/oRwL7XQIMEvpN06sNb4xswumR/5UZxL+hLQDXmJGF1cu
+         9DQyCyit5GsXL0MGbMEkBWGHDxPo4nV+uM2A4YNfnwk1rercwIwnLdvnIdYxWAbh7R
+         PsL8MUmUF2rFMeUr7tTKDFkWq1/AfhA/8L6/lzjk=
+Date:   Mon, 13 Jan 2020 21:43:18 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Lorenzo Bianconi <lorenzo@kernel.org>
+Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: check return value from
+ st_lsm6dsx_sensor_set_enable
+Message-ID: <20200113214318.22e40bdb@archlinux>
+In-Reply-To: <3a7c5182cd676230eadb11510aee7317ce1b4e34.1577954098.git.lorenzo@kernel.org>
+References: <3a7c5182cd676230eadb11510aee7317ce1b4e34.1577954098.git.lorenzo@kernel.org>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20200113141555.16117-1-beniamin.bia@analog.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.101.4/25694/Mon Jan 13 14:35:35 2020)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/13/20 3:15 PM, Beniamin Bia wrote:
-[...]
-> +static int hmc425a_write(struct iio_dev *indio_dev, u32 value)
-> +{
-> +	struct hmc425a_state *st = iio_priv(indio_dev);
-> +	int i, *values;
-> +
-> +	values = kmalloc_array(st->chip_info->num_gpios, sizeof(int),
-> +			       GFP_KERNEL);
-> +	if (!values)
-> +		return -ENOMEM;
-> +
-> +	for (i = 0; i < st->chip_info->num_gpios; i++)
-> +		values[i] = (value >> i) & 1;
-> +
-> +	gpiod_set_array_value_cansleep(st->gpios->ndescs, st->gpios->desc,
-> +				       values);
+On Thu,  2 Jan 2020 09:36:29 +0100
+Lorenzo Bianconi <lorenzo@kernel.org> wrote:
 
-This API got changed a while ago in upstream, see
-https://github.com/analogdevicesinc/linux/commit/b9762bebc6332b40c33e03dea03e30fa12d9e3ed
+> Add missing return value check in st_lsm6dsx_read_oneshot disabling the
+> sensor. The issue is reported by coverity with the following error:
+> 
+> Unchecked return value:
+> If the function returns an error value, the error value may be mistaken
+> for a normal value.
+> 
+> Addresses-Coverity-ID: 1446733 ("Unchecked return value")
+> Fixes: b5969abfa8b8 ("iio: imu: st_lsm6dsx: add motion events")
+> Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
 
-> +	kfree(values);
-> +	return 0;
-> +}
-[...]
-> +static int hmc425a_probe(struct platform_device *pdev)
-> +{
-[...]
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
+I'm going to interpret this as a cleanup / warning supression rather
+than a fix and so take it through the togreg branch.  With those fixes
+tags it may well get picked up for stable.  I'm not against that
+but I'm not going to explicitly tag it for stable either.
 
-drvdata is never accessed, no need to set it.
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
-> +	mutex_init(&st->lock);
-> +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = np->name;
+thanks,
 
-I know ADI likes to do this in its non upstream drivers, but the above
-is not IIO ABI compliant. The name is supposed to identify the type of
-the device, which means for this driver should be static "hmc425a".
-Maybe consider adding a field to the hmc425a_chip_info for this.
+Jonathan
 
-> +	indio_dev->info = &hmc425a_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> +}
+> ---
+>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 7 +++++--
+>  1 file changed, 5 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index 0c64e35c7599..a16395598754 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -1534,8 +1534,11 @@ static int st_lsm6dsx_read_oneshot(struct st_lsm6dsx_sensor *sensor,
+>  	if (err < 0)
+>  		return err;
+>  
+> -	if (!hw->enable_event)
+> -		st_lsm6dsx_sensor_set_enable(sensor, false);
+> +	if (!hw->enable_event) {
+> +		err = st_lsm6dsx_sensor_set_enable(sensor, false);
+> +		if (err < 0)
+> +			return err;
+> +	}
+>  
+>  	*val = (s16)le16_to_cpu(data);
+>  
 
