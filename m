@@ -2,163 +2,124 @@ Return-Path: <SRS0=tKUa=3C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D995FC33CAE
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 20:41:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 11DF1C3F68F
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:02:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id ABF1824655
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 20:41:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1578948094;
-	bh=5+/QttMFBTDDwggNuisVLgzB3SWlxubJiVA9nfjskkM=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=n+oqbOFJXlPE2iJ6ISVJzou95PuRIX6DmJxKUXJvc6C+kRbUsrSNnqjzPbKLjMjac
-	 3UM7+3UuzNhot4FdidliVfYsGS9UZAQEDjcN9cdceej1qmzbIKRZ3UZxA3C4iHNHYg
-	 67aAu10hMkujlvbH2xuz/Eax8Lw2trzkppkmnwf8=
+	by mail.kernel.org (Postfix) with ESMTP id D9BF824676
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jan 2020 21:02:14 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WfoTzIcA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726488AbgAMUld (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jan 2020 15:41:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55908 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726494AbgAMUld (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 13 Jan 2020 15:41:33 -0500
-Received: from mail-qv1-f46.google.com (mail-qv1-f46.google.com [209.85.219.46])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EF5A224655;
-        Mon, 13 Jan 2020 20:41:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1578948092;
-        bh=5+/QttMFBTDDwggNuisVLgzB3SWlxubJiVA9nfjskkM=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=cpfntGbdsRS2I6uTn4k8+dkBla5PNezHWPeFDOuKQVaes84OAnAi/zMEP3l2JbRry
-         y2R4sAn45tbCim9mZFk8Ua8iiVdppbOwa46dE566UK71NPZYMhC5iwXzfdw5dRZmsU
-         trCWiLWeEOJzNRlIhLpnYiIQEZ+M1oPJ77apu46M=
-Received: by mail-qv1-f46.google.com with SMTP id n8so4648981qvg.11;
-        Mon, 13 Jan 2020 12:41:31 -0800 (PST)
-X-Gm-Message-State: APjAAAVHOVCyb2/bRHnSWuQm6aFDE/6EWLTQSYs0Ra0MWME4WRbMbxIy
-        6D1/UyPAXEDu0rnkjpadKNlrUnbllbp3+wFzFw==
-X-Google-Smtp-Source: APXvYqwBh8rgbcv6WzjXYOWH4WoTlhfdYVgJpvcmQqGHfiRse1JHvRooPMQAyv3dmdw8NTILDX0JlPQ8wyDZJVjozMc=
-X-Received: by 2002:a0c:f68f:: with SMTP id p15mr12930551qvn.79.1578948091025;
- Mon, 13 Jan 2020 12:41:31 -0800 (PST)
+        id S1726778AbgAMVCO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jan 2020 16:02:14 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:42023 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726488AbgAMVCO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jan 2020 16:02:14 -0500
+Received: by mail-lf1-f68.google.com with SMTP id y19so7984111lfl.9
+        for <linux-iio@vger.kernel.org>; Mon, 13 Jan 2020 13:02:12 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=xCGbHvNw8rM1XTYX5dMZZI/XcJg6Z8xTEJgG0KaNE6Q=;
+        b=WfoTzIcApqDnmbglxDY/A1UCBtcumVTAQtuvp5lA7Py3eVEYXLAcKBSNS3JQbVEiLz
+         Ea9eYCdHy9boMFNN+mSL4Cv/4/npr0DjEVJxbtnQCLMPb/Vtp4z40GTgfGZwcdXWIFOP
+         P6fAO91/NJvtV3jpVkQlfUB1u7ToESlQgTAKsIQp8iF5dCniHybouIcJTeBH+sgav3xB
+         hUwX7z0WEiruc6Yt3a6kYc48Yn/FuThb1rBp1rdxahWC51mg2Zk7fMyIgBfTMMJugotR
+         aEeu4LpTrUv3kO5plLRLUPCqX0f/fCQgRcR8qx64mZiu6Idr3ufUqrgC5vCwzBLuwmHx
+         kiuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=xCGbHvNw8rM1XTYX5dMZZI/XcJg6Z8xTEJgG0KaNE6Q=;
+        b=p9GS1/NJ3ORGTXsWTZqeoeTI6mzuB1LAXIOhoIJYAyfJEIvMDpLLRGTUEsWEamIA9i
+         vE9wU3o+JnSmMF50EwHjobwFVak3cnRYg/GYiEA+GXzGdwRo2ocUTWhvrryuN6eqYNER
+         V1NNIS2mg35QasrMrt9kvr72pxvSlrE+9Yf39Ks+nSZTEn/N1SsqVEXCxPidM5MfRTFf
+         w2VVUX2HqNJXhporLIzpfLw4br7fv0pQcJoVM02BdjU7CnxM1ZwiILJf/FQn5J4WLq+N
+         xP659mnfJJRzBquIgt5S4AKrR/HLdv+Z0SmjY0nuu4VuSN74VMjart1tzajayjm0YfHh
+         lniw==
+X-Gm-Message-State: APjAAAWmub7x5xMhJ0D5ko4sT4X9AmaoEoLgCWTREqnXe5tAhzwWFgZ9
+        JfACYKa1KzknBQihaSM+wsT3+SCaO4pr9dKqKJVIrQ==
+X-Google-Smtp-Source: APXvYqxazGXvDPrS2GaH8GISFT7UvjIUyPI46aCJE43N7AU2npOr36/CMGu5DgUYNLpHNXpBqDmkDCDtW0exQA7M7YA=
+X-Received: by 2002:ac2:5ec3:: with SMTP id d3mr10486729lfq.176.1578949332089;
+ Mon, 13 Jan 2020 13:02:12 -0800 (PST)
 MIME-Version: 1.0
-References: <20200113141555.16117-1-beniamin.bia@analog.com> <20200113141555.16117-2-beniamin.bia@analog.com>
-In-Reply-To: <20200113141555.16117-2-beniamin.bia@analog.com>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 13 Jan 2020 14:41:19 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqKX5X6X72Rq7wY7=RRLnUST+eKTPyEbuXKbFJB0_n5QXQ@mail.gmail.com>
-Message-ID: <CAL_JsqKX5X6X72Rq7wY7=RRLnUST+eKTPyEbuXKbFJB0_n5QXQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: amplifiers: Add docs for HMC425A
- Step Attenuator
-To:     Beniamin Bia <beniamin.bia@analog.com>
+References: <20200112111341.21388-1-linus.walleij@linaro.org>
+ <20200112111341.21388-2-linus.walleij@linaro.org> <20200112165404.GA72221@gerhold.net>
+In-Reply-To: <20200112165404.GA72221@gerhold.net>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Mon, 13 Jan 2020 22:02:00 +0100
+Message-ID: <CACRpkdbDEhCu8LVBT_xjuar1UgCPALJg0V12varZjG-eGqj=2Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2 v4] iio: light: Add a driver for Sharp GP2AP002x00F
+To:     Stephan Gerhold <stephan@gerhold.net>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        biabeniamin@outlook.com, Hartmut Knaack <knaack.h@gmx.de>,
-        Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linux Input <linux-input@vger.kernel.org>,
+        Minkyu Kang <mk7.kang@samsung.com>,
+        =?UTF-8?Q?Pawe=C5=82_Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 13, 2020 at 8:14 AM Beniamin Bia <beniamin.bia@analog.com> wrote:
+On Sun, Jan 12, 2020 at 5:54 PM Stephan Gerhold <stephan@gerhold.net> wrote:
+
+> It seems to work fine on samsung,golden with gp2ap002s00f.
+> There are interrupts being sent when something moves in front of the
+> sensor and iio-event-monitor looks good too:
 >
-> From: Michael Hennerich <michael.hennerich@analog.com>
+> Tested-by: Stephan Gerhold <stephan@gerhold.net>
+
+Thanks! I think I'm up at v7 or something on this driver
+and now it looks good.
+
+> Out of curiosity: I'm not so familiar with the IIO subsystem,
+> is it intended that the sensor is active the whole time?
+> Wouldn't it be better to activate it only when something is reading
+> /dev/iio:device2?
+
+IMO the best way to power manage an IIO sensor is like I do in
+drivers/iio/gyro/mpu3050-core.c
+
+Of course I think it is excellent code since I wrote it. Beware
+of hubris in the driver.
+
+The idea is to take the runtime pm handle on the device
+whenever in use (reading values from the hardware or
+using the trigger), and then use autosuspend to completely
+shut it down (including regulators) when not in use. If the power-up
+time for the sensor is long, then the autosuspend timeout
+should be proportionally longer, like a magnitude or two above.
+
+With the proximity events I have this problem that I don't know
+in the driver if someone had opened the file to read events
+or not, only the core knows, I think. I just emit my events
+and be happy.
+
+Jonathan: is there a way for the driver to know if someone
+is listening on the event interface?
+
+> There is one problem I noticed, although I'm not sure if it is a problem
+> in this driver. Reading one of the files in the sysfs results in:
 >
-> Document support for Analog Devices MC425A Step Attenuator.
->
-> Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
-> ---
->  .../bindings/iio/amplifiers/adi,hmc425a.yaml  | 55 +++++++++++++++++++
->  1 file changed, 55 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
+> $ cat /sys/bus/iio/devices/iio\:device2/events/in_proximity_thresh_either_en
+> Segmentation fault
 
-Check your bindings with 'make dt_binding_check'. It fails:
+That looks like an ordinary bug, but that seems to be for the
+core? Hm...
 
-Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml:
-while scanning a simple key
-  in "<unicode string>", line 24, column 5
-could not find expected ':'
-  in "<unicode string>", line 25, column 5
-
->
-> diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
-> new file mode 100644
-> index 000000000000..6f4a292395e4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
-> @@ -0,0 +1,55 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/amplifiers/adi,hmc425a.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: HMC425A 6-bit Digital Step Attenuator
-> +
-> +maintainers:
-> +- Michael Hennerich <michael.hennerich@analog.com>
-> +
-> +description: |
-> +  Digital Step Attenuator IIO device with gpio interface.
-> +  HMC425A 0.5 dB LSB GaAs MMIC 6-BIT DIGITAL POSITIVE CONTROL ATTENUATOR, 2.2 - 8.0 GHz
-> +  https://www.analog.com/media/en/technical-documentation/data-sheets/hmc425A.pdf
-> +
-> +properties:
-> +compatible:
-> +    enum:
-> +    - adi,hmc425a
-
-nit: this should be indented 2 more spaces.
-
-Or use 'const' instead if there's not more similar parts.
-
-> +
-> +vcc-supply:
-> +    description:
-> +    digital voltage regulator (see regulator/regulator.txt)
-
-Text must be indented under the key.
-
-> +    maxItems: 1
-> +
-> +ctrl-gpios:
-> +    description:
-> +    Must contain an array of 6 GPIO specifiers, referring to the GPIO pins
-> +    connected to the control pins V1-V6.
-> +    maxItems: 6
-> +
-> +required:
-> +- compatible
-> +- ctrl-gpios
-> +
-> +examples:
-> +- |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +
-> +    &gpio {
-> +    #address-cells = <1>;
-> +    #size-cells = <0>;
-> +      gpio_hmc425a: hmc425a {
-> +        compatible = "adi,hmc425a";
-> +        ctrl-gpios = <&gpio 40 GPIO_ACTIVE_HIGH>,
-> +          <&gpio 39 GPIO_ACTIVE_HIGH>,
-> +          <&gpio 38 GPIO_ACTIVE_HIGH>,
-> +          <&gpio 37 GPIO_ACTIVE_HIGH>,
-> +          <&gpio 36 GPIO_ACTIVE_HIGH>,
-> +          <&gpio 35 GPIO_ACTIVE_HIGH>;
-> +
-> +        vcc-supply = <&foo>;
-> +      };
-> +    }
-> --
-> 2.17.1
->
+Yours,
+Linus Walleij
