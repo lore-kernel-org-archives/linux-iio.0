@@ -6,24 +6,24 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A382C33CB1
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jan 2020 09:54:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6ABC33CB1
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jan 2020 09:54:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F02DC24679
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jan 2020 09:54:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A55C524676
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jan 2020 09:54:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729122AbgANJx7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jan 2020 04:53:59 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:53117 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725842AbgANJx7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jan 2020 04:53:59 -0500
+        id S1729238AbgANJyk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jan 2020 04:54:40 -0500
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:58467 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725842AbgANJyk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jan 2020 04:54:40 -0500
 X-Originating-IP: 90.65.102.129
 Received: from localhost (lfbn-lyo-1-1670-129.w90-65.abo.wanadoo.fr [90.65.102.129])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id B138224000A;
-        Tue, 14 Jan 2020 09:53:54 +0000 (UTC)
-Date:   Tue, 14 Jan 2020 10:53:54 +0100
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 2FED2E0003;
+        Tue, 14 Jan 2020 09:54:35 +0000 (UTC)
+Date:   Tue, 14 Jan 2020 10:54:34 +0100
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Claudiu Beznea <claudiu.beznea@microchip.com>
 Cc:     robh+dt@kernel.org, mark.rutland@arm.com,
@@ -40,27 +40,26 @@ Cc:     robh+dt@kernel.org, mark.rutland@arm.com,
         linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
         linux-spi@vger.kernel.org, linux-mtd@lists.infradead.org,
         linux-can@vger.kernel.org, linux-rtc@vger.kernel.org
-Subject: Re: [PATCH v2 08/17] dt-bindings: atmel-nand: add
- microchip,sam9x60-pmecc
-Message-ID: <20200114095354.GH3137@piout.net>
+Subject: Re: [PATCH v2 09/17] dt-bindings: atmel-sysreg: add
+ microchip,sam9x60-ddramc
+Message-ID: <20200114095434.GI3137@piout.net>
 References: <1578673089-3484-1-git-send-email-claudiu.beznea@microchip.com>
- <1578673089-3484-9-git-send-email-claudiu.beznea@microchip.com>
+ <1578673089-3484-10-git-send-email-claudiu.beznea@microchip.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <1578673089-3484-9-git-send-email-claudiu.beznea@microchip.com>
+In-Reply-To: <1578673089-3484-10-git-send-email-claudiu.beznea@microchip.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/01/2020 18:18:00+0200, Claudiu Beznea wrote:
-> Add microchip,sam9x60-pmecc to DT bindings documentation.
+On 10/01/2020 18:18:01+0200, Claudiu Beznea wrote:
+> Add microchip,sam9x60-ddramc to DT bindings documentation.
 > 
 > Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
-> Reviewed-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  Documentation/devicetree/bindings/mtd/atmel-nand.txt | 1 +
+>  Documentation/devicetree/bindings/arm/atmel-sysregs.txt | 1 +
 >  1 file changed, 1 insertion(+)
 Applied, thanks.
 
