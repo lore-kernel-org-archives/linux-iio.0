@@ -2,161 +2,122 @@ Return-Path: <SRS0=v0Lw=3E=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87DA4C32771
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:20:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87C42C32771
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:44:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6501A214AF
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:20:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 69D1D2465A
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:44:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728912AbgAORUz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jan 2020 12:20:55 -0500
-Received: from mga11.intel.com ([192.55.52.93]:9254 "EHLO mga11.intel.com"
+        id S1728904AbgAORo2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jan 2020 12:44:28 -0500
+Received: from mga04.intel.com ([192.55.52.120]:15614 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727016AbgAORUy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 15 Jan 2020 12:20:54 -0500
+        id S1726574AbgAORo2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 15 Jan 2020 12:44:28 -0500
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jan 2020 09:20:54 -0800
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jan 2020 09:44:28 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,323,1574150400"; 
-   d="scan'208";a="226188020"
-Received: from efgreve-mobl2.amr.corp.intel.com ([10.254.8.33])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 15 Jan 2020 09:20:51 -0800
-Message-ID: <df95e688271b4cc0e2313daeeae85507c566fc04.camel@linux.intel.com>
-Subject: Re: [PATCH v1 1/2] iio: accel: kxcjk1013: Support orientation matrix
-From:   Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To:     Dmitry Osipenko <digetx@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
+   d="scan'208";a="248485904"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 15 Jan 2020 09:44:26 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id D1055BD; Wed, 15 Jan 2020 19:44:25 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Robert Yang <decatf@gmail.com>,
-        =?UTF-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Date:   Wed, 15 Jan 2020 09:20:05 -0800
-In-Reply-To: <20200112203301.30235-1-digetx@gmail.com>
-References: <20200112203301.30235-1-digetx@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.34.1-2 
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/2] iio: magnetometer: ak8975: Get rid of platform data
+Date:   Wed, 15 Jan 2020 19:44:24 +0200
+Message-Id: <20200115174425.70728-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.24.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 2020-01-12 at 23:33 +0300, Dmitry Osipenko wrote:
-> Hardware could be physically mounted in any possible direction and
-> userpspace needs to be aware of the mounting orientation in order to
-> process sensor's data correctly. In particular this helps iio-sensor-
-> proxy
-> to report display's orientation properly on a phone/tablet devices.
-> 
-> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+Since IIO framework supports device property API and driver has been moved
+already to the use of GPIO descriptors the logical continuation is to
+get rid of platform data completely. We are on the safe side here since
+there are no users of it in the kernel.
 
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/magnetometer/ak8975.c       | 14 +++-----------
+ include/linux/iio/magnetometer/ak8975.h | 15 ---------------
+ 2 files changed, 3 insertions(+), 26 deletions(-)
+ delete mode 100644 include/linux/iio/magnetometer/ak8975.h
 
-> ---
->  drivers/iio/accel/kxcjk-1013.c       | 27 +++++++++++++++++++++++++-
-> -
->  include/linux/iio/accel/kxcjk_1013.h |  3 +++
->  2 files changed, 28 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxcjk-1013.c
-> b/drivers/iio/accel/kxcjk-1013.c
-> index fee535d6e45b..c9924a65c32a 100644
-> --- a/drivers/iio/accel/kxcjk-1013.c
-> +++ b/drivers/iio/accel/kxcjk-1013.c
-> @@ -130,6 +130,7 @@ struct kxcjk1013_data {
->  	struct i2c_client *client;
->  	struct iio_trigger *dready_trig;
->  	struct iio_trigger *motion_trig;
-> +	struct iio_mount_matrix orientation;
->  	struct mutex mutex;
->  	s16 buffer[8];
->  	u8 odr_bits;
-> @@ -983,6 +984,20 @@ static const struct iio_event_spec
-> kxcjk1013_event = {
->  				 BIT(IIO_EV_INFO_PERIOD)
->  };
->  
-> +static const struct iio_mount_matrix *
-> +kxcjk1013_get_mount_matrix(const struct iio_dev *indio_dev,
-> +			   const struct iio_chan_spec *chan)
-> +{
-> +	struct kxcjk1013_data *data = iio_priv(indio_dev);
-> +
-> +	return &data->orientation;
-> +}
-> +
-> +static const struct iio_chan_spec_ext_info kxcjk1013_ext_info[] = {
-> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE,
-> kxcjk1013_get_mount_matrix),
-> +	{ }
-> +};
-> +
->  #define KXCJK1013_CHANNEL(_axis) {					
-> \
->  	.type = IIO_ACCEL,						
-> \
->  	.modified = 1,							
-> \
-> @@ -999,6 +1014,7 @@ static const struct iio_event_spec
-> kxcjk1013_event = {
->  		.endianness = IIO_LE,					
-> \
->  	},								
-> \
->  	.event_spec = &kxcjk1013_event,				\
-> +	.ext_info = kxcjk1013_ext_info,					
-> \
->  	.num_event_specs = 1						
-> \
->  }
->  
-> @@ -1267,11 +1283,18 @@ static int kxcjk1013_probe(struct i2c_client
-> *client,
->  	data->client = client;
->  
->  	pdata = dev_get_platdata(&client->dev);
-> -	if (pdata)
-> +	if (pdata) {
->  		data->active_high_intr = pdata->active_high_intr;
-> -	else
-> +		data->orientation = pdata->orientation;
-> +	} else {
->  		data->active_high_intr = true; /* default polarity */
->  
-> +		ret = iio_read_mount_matrix(&client->dev, "mount-
-> matrix",
-> +					    &data->orientation);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
->  	if (id) {
->  		data->chipset = (enum kx_chipset)(id->driver_data);
->  		name = id->name;
-> diff --git a/include/linux/iio/accel/kxcjk_1013.h
-> b/include/linux/iio/accel/kxcjk_1013.h
-> index 8c3c78bc9f91..ea0ecb774371 100644
-> --- a/include/linux/iio/accel/kxcjk_1013.h
-> +++ b/include/linux/iio/accel/kxcjk_1013.h
-> @@ -7,8 +7,11 @@
->  #ifndef __IIO_KXCJK_1013_H__
->  #define __IIO_KXCJK_1013_H__
->  
-> +#include <linux/iio/iio.h>
-> +
->  struct kxcjk_1013_platform_data {
->  	bool active_high_intr;
-> +	struct iio_mount_matrix orientation;
->  };
->  
->  #endif
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 55cffaa82456..8e50e073bcbf 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -28,8 +28,6 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ 
+-#include <linux/iio/magnetometer/ak8975.h>
+-
+ /*
+  * Register definitions, as well as various shifts and masks to get at the
+  * individual fields of the registers.
+@@ -857,8 +855,6 @@ static int ak8975_probe(struct i2c_client *client,
+ 	int err;
+ 	const char *name = NULL;
+ 	enum asahi_compass_chipset chipset = AK_MAX_TYPE;
+-	const struct ak8975_platform_data *pdata =
+-		dev_get_platdata(&client->dev);
+ 
+ 	/*
+ 	 * Grab and set up the supplied GPIO.
+@@ -883,13 +879,9 @@ static int ak8975_probe(struct i2c_client *client,
+ 	data->eoc_gpiod = eoc_gpiod;
+ 	data->eoc_irq = 0;
+ 
+-	if (!pdata) {
+-		err = iio_read_mount_matrix(&client->dev, "mount-matrix",
+-					    &data->orientation);
+-		if (err)
+-			return err;
+-	} else
+-		data->orientation = pdata->orientation;
++	err = iio_read_mount_matrix(&client->dev, "mount-matrix", &data->orientation);
++	if (err)
++		return err;
+ 
+ 	/* id will be NULL when enumerated via ACPI */
+ 	if (id) {
+diff --git a/include/linux/iio/magnetometer/ak8975.h b/include/linux/iio/magnetometer/ak8975.h
+deleted file mode 100644
+index df3697183800..000000000000
+--- a/include/linux/iio/magnetometer/ak8975.h
++++ /dev/null
+@@ -1,15 +0,0 @@
+-/* SPDX-License-Identifier: GPL-2.0 */
+-#ifndef __IIO_MAGNETOMETER_AK8975_H__
+-#define __IIO_MAGNETOMETER_AK8975_H__
+-
+-#include <linux/iio/iio.h>
+-
+-/**
+- * struct ak8975_platform_data - AK8975 magnetometer driver platform data
+- * @orientation: mounting matrix relative to main hardware
+- */
+-struct ak8975_platform_data {
+-	struct iio_mount_matrix orientation;
+-};
+-
+-#endif
+-- 
+2.24.1
 
