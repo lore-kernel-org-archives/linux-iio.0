@@ -2,56 +2,27 @@ Return-Path: <SRS0=v0Lw=3E=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 483EDC32771
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:46:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84262C32771
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:59:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1EA522077B
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:46:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=oracle.com header.i=@oracle.com header.b="YCkov1XJ"
+	by mail.kernel.org (Postfix) with ESMTP id 5A8912077B
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jan 2020 17:59:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728931AbgAORqV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jan 2020 12:46:21 -0500
-Received: from aserp2120.oracle.com ([141.146.126.78]:47670 "EHLO
-        aserp2120.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728896AbgAORqV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jan 2020 12:46:21 -0500
-Received: from pps.filterd (aserp2120.oracle.com [127.0.0.1])
-        by aserp2120.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00FHca1q045369;
-        Wed, 15 Jan 2020 17:45:48 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : mime-version : content-type; s=corp-2019-08-05;
- bh=djjnlZwo7Sn8C6YtSHjBV+KDTuecXFJyPA3THNfjWEo=;
- b=YCkov1XJcrulZMhYtohcHFiNrIw6i/PY5GcWzChTUbSrnzP8bIRh5Bv1MC8MhvJNog3B
- d6uls2kLd+KPdOGnu1evKagFcQMYFCOzbNTI6A465lKty6BdrGYOXu5DxkzWLEytK9ER
- YdAhqu+XF5cQXVS/G+Uu32cjvqMhlgoxx4uUOgKCNzjxzX/7qaewBNYA2rczHdg5v5Lb
- tAFNKP22QBNVcUetaF7zxX6eUntdLhEQUgObZP8w9WdIhuJC9bO7Uvg1Y7Ue1faei8O0
- VmnAj2Cq0N9zsnCWlAkjdxVGvxN/Xxgrbb9DNd1F3qmCFBRROZ50swc3DcCyBKfMVhU2 Wg== 
-Received: from aserp3020.oracle.com (aserp3020.oracle.com [141.146.126.70])
-        by aserp2120.oracle.com with ESMTP id 2xf73twka8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jan 2020 17:45:48 +0000
-Received: from pps.filterd (aserp3020.oracle.com [127.0.0.1])
-        by aserp3020.oracle.com (8.16.0.27/8.16.0.27) with SMTP id 00FHd8UU148598;
-        Wed, 15 Jan 2020 17:45:47 GMT
-Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
-        by aserp3020.oracle.com with ESMTP id 2xj1aq3cup-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 15 Jan 2020 17:45:47 +0000
-Received: from abhmp0011.oracle.com (abhmp0011.oracle.com [141.146.116.17])
-        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 00FHjfEt025908;
-        Wed, 15 Jan 2020 17:45:41 GMT
-Received: from kili.mountain (/129.205.23.165)
-        by default (Oracle Beehive Gateway v4.0)
-        with ESMTP ; Wed, 15 Jan 2020 09:45:40 -0800
-Date:   Wed, 15 Jan 2020 20:45:31 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Dan Robertson <dan@dlrobertson.com>
+        id S1726587AbgAOR7z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jan 2020 12:59:55 -0500
+Received: from sender4-op-o18.zoho.com ([136.143.188.18]:17868 "EHLO
+        sender4-op-o18.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726574AbgAOR7z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jan 2020 12:59:55 -0500
+Received: from nessie (pool-173-73-58-202.washdc.fios.verizon.net [173.73.58.202]) by mx.zohomail.com
+        with SMTPS id 1579111161250710.0911969793755; Wed, 15 Jan 2020 09:59:21 -0800 (PST)
+Date:   Wed, 15 Jan 2020 17:43:24 +0000
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Dan Carpenter <dan.carpenter@oracle.com>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -59,51 +30,30 @@ Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio: accel: bma400: integer underflow setting accel scale
-Message-ID: <20200115174531.p623ukjibn6kg6zz@kili.mountain>
+Subject: Re: [PATCH] iio: accel: bma400: integer underflow setting accel scale
+Message-ID: <20200115174324.GA29555@nessie>
+References: <20200115174531.p623ukjibn6kg6zz@kili.mountain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9501 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 malwarescore=0
- phishscore=0 bulkscore=0 spamscore=0 mlxscore=0 mlxlogscore=821
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.0.1-1911140001 definitions=main-2001150135
-X-Proofpoint-Virus-Version: vendor=nai engine=6000 definitions=9501 signatures=668685
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 priorityscore=1501 malwarescore=0
- suspectscore=0 phishscore=0 bulkscore=0 spamscore=0 clxscore=1011
- lowpriorityscore=0 mlxscore=0 impostorscore=0 mlxlogscore=873 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.0.1-1911140001
- definitions=main-2001150135
+In-Reply-To: <20200115174531.p623ukjibn6kg6zz@kili.mountain>
+X-ZohoMailClient: External
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-We put an upper bound on "val2" but we also need to prevent negative
-values.
+Thanks for taking a look at the code and your feedback on the driver!
 
-Fixes: 465c811f1f20 ("iio: accel: Add driver for the BMA400")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/iio/accel/bma400_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On Wed, Jan 15, 2020 at 08:45:31PM +0300, Dan Carpenter wrote:
+> We put an upper bound on "val2" but we also need to prevent negative
+> values.
 
-diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index ab4a158b35af..ffc7b146bbfc 100644
---- a/drivers/iio/accel/bma400_core.c
-+++ b/drivers/iio/accel/bma400_core.c
-@@ -752,7 +752,7 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&data->mutex);
- 		return ret;
- 	case IIO_CHAN_INFO_SCALE:
--		if (val != 0 || val2 > BMA400_SCALE_MAX)
-+		if (val != 0 || val2 < 0 || val2 > BMA400_SCALE_MAX)
- 			return -EINVAL;
- 
- 		mutex_lock(&data->mutex);
--- 
-2.11.0
+"val" is not used past the invalid value check. We only use "val" to make sure
+that it is in fact 0. AFAIK there is no "upper bound" on "val", it should be
+zero or we return -EINVAL. Am I missing something?
+
+Cheers,
+
+ - Dan
 
