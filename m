@@ -2,94 +2,136 @@ Return-Path: <SRS0=zjzt=3F=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E21BC33CB6
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:01:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B441AC33CB3
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:16:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id F16FA217F4
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:01:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579197697;
-	bh=Nl/4LuWz6wnqaAMRmetzu5XfYYSDKGkIzi00bNh4lHs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Xf9AqK/DB6bhjKJR4OnuDXQ8+kaHVBlMmWrl4SdtghagrexKCIb50I/oeFxQAYFod
-	 4Hi1pRU8Icm49juIHb1AM2WvokRBIrkVjAr+MUuj6nooJKZjbeWTnGMiQl3YCnDmNf
-	 YKVtZ5QNj2oL2CmZec+nAG4lRJWh+M1pebu8cPqQ=
+	by mail.kernel.org (Postfix) with ESMTP id 9B81224683
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:16:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2405664AbgAPRl0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Jan 2020 12:41:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57680 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2405280AbgAPRk2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:40:28 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E754F2470F;
-        Thu, 16 Jan 2020 17:40:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579196427;
-        bh=Nl/4LuWz6wnqaAMRmetzu5XfYYSDKGkIzi00bNh4lHs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0Y68BBEc4W0u7TzeNj4Mvn8BoG40pQenyctwYnx+WdS9/55myvUQ5o2FlK18orY/l
-         0MIwP7oo1FiyKb44stlY9BesBUD8RwglIZ0NfSbEiZJbydja4GJf1R7tsrXLuSvp2H
-         70mzlBGTCJUGDpcctGBGYSDTpKL405uZ+jKIP/5I=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 195/251] iio: dac: ad5380: fix incorrect assignment to val
-Date:   Thu, 16 Jan 2020 12:35:44 -0500
-Message-Id: <20200116173641.22137-155-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116173641.22137-1-sashal@kernel.org>
-References: <20200116173641.22137-1-sashal@kernel.org>
+        id S2436466AbgAPSQY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Jan 2020 13:16:24 -0500
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2275 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2405344AbgAPSQX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 16 Jan 2020 13:16:23 -0500
+Received: from lhreml701-cah.china.huawei.com (unknown [172.18.7.108])
+        by Forcepoint Email with ESMTP id EF11B2307849F84166D6;
+        Thu, 16 Jan 2020 18:16:19 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml701-cah.china.huawei.com (10.201.108.42) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 16 Jan 2020 18:16:19 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 16 Jan
+ 2020 18:16:19 +0000
+Date:   Thu, 16 Jan 2020 18:16:18 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Sasha Levin <sashal@kernel.org>
+CC:     <linux-kernel@vger.kernel.org>, <stable@vger.kernel.org>,
+        Chuhong Yuan <hslester96@gmail.com>,
+        Brian Masney <masneyb@onstation.org>,
+        <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH AUTOSEL 4.19 482/671] iio: tsl2772: Use
+ devm_add_action_or_reset for tsl2772_chip_off
+Message-ID: <20200116181618.000063c2@Huawei.com>
+In-Reply-To: <20200116170509.12787-219-sashal@kernel.org>
+References: <20200116170509.12787-1-sashal@kernel.org>
+        <20200116170509.12787-219-sashal@kernel.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Thu, 16 Jan 2020 12:02:00 -0500
+Sasha Levin <sashal@kernel.org> wrote:
 
-[ Upstream commit b1e18768ef1214c0a8048327918a182cabe09f9d ]
+> From: Chuhong Yuan <hslester96@gmail.com>
+> 
+> [ Upstream commit 338084135aeddb103624a6841972fb8588295cc6 ]
+> 
+> Use devm_add_action_or_reset to call tsl2772_chip_off
+> when the device is removed.
+> This also fixes the issue that the chip is turned off
+> before the device is unregistered.
+> 
+> Not marked for stable as fairly hard to hit the bug and
+> this is in the middle of a set making other cleanups
+> to the driver.  Hence will probably need explicit backporting.
 
-Currently the pointer val is being incorrectly incremented
-instead of the value pointed to by val. Fix this by adding
-in the missing * indirection operator.
+Guess I was wrong and it does go on cleanly.  I took a quick
+look at current 4.19 driver and looks like it's fine on it's
+own.
 
-Addresses-Coverity: ("Unused value")
-Fixes: c03f2c536818 ("staging:iio:dac: Add AD5380 driver")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/dac/ad5380.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+We need to be careful with this one in general though.
 
-diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
-index 97d2c5111f43..8bf7fc626a9d 100644
---- a/drivers/iio/dac/ad5380.c
-+++ b/drivers/iio/dac/ad5380.c
-@@ -221,7 +221,7 @@ static int ad5380_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		*val >>= chan->scan_type.shift;
--		val -= (1 << chan->scan_type.realbits) / 2;
-+		*val -= (1 << chan->scan_type.realbits) / 2;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 2 * st->vref;
--- 
-2.20.1
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> for 4.19
+
+> 
+> Signed-off-by: Chuhong Yuan <hslester96@gmail.com>
+> Fixes: c06c4d793584 ("staging: iio: tsl2x7x/tsl2772: move out of staging")
+> Reviewed-by: Brian Masney <masneyb@onstation.org>
+> Tested-by: Brian Masney <masneyb@onstation.org>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Sasha Levin <sashal@kernel.org>
+> ---
+>  drivers/iio/light/tsl2772.c | 16 +++++++++++++---
+>  1 file changed, 13 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+> index df5b2a0da96c..f2e308c6d6d7 100644
+> --- a/drivers/iio/light/tsl2772.c
+> +++ b/drivers/iio/light/tsl2772.c
+> @@ -716,6 +716,13 @@ static int tsl2772_chip_off(struct iio_dev *indio_dev)
+>  	return tsl2772_write_control_reg(chip, 0x00);
+>  }
+>  
+> +static void tsl2772_chip_off_action(void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +
+> +	tsl2772_chip_off(indio_dev);
+> +}
+> +
+>  /**
+>   * tsl2772_invoke_change - power cycle the device to implement the user
+>   *                         parameters
+> @@ -1711,9 +1718,14 @@ static int tsl2772_probe(struct i2c_client *clientp,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> +	ret = devm_add_action_or_reset(&clientp->dev,
+> +					tsl2772_chip_off_action,
+> +					indio_dev);
+> +	if (ret < 0)
+> +		return ret;
+> +
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret) {
+> -		tsl2772_chip_off(indio_dev);
+>  		dev_err(&clientp->dev,
+>  			"%s: iio registration failed\n", __func__);
+>  		return ret;
+> @@ -1740,8 +1752,6 @@ static int tsl2772_remove(struct i2c_client *client)
+>  {
+>  	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>  
+> -	tsl2772_chip_off(indio_dev);
+> -
+>  	iio_device_unregister(indio_dev);
+>  
+>  	return 0;
+
 
