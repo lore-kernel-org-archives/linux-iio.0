@@ -2,94 +2,203 @@ Return-Path: <SRS0=zjzt=3F=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54F97C33CB6
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2944C33CB6
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:21:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 28FF220730
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:17:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579198629;
-	bh=Nl/4LuWz6wnqaAMRmetzu5XfYYSDKGkIzi00bNh4lHs=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=TXoctdVAhRzt0NHIfYh5UQGusj1Me4bdccrZqrNY5LH03d23ddsTf+ybCRFpXL1va
-	 LBXbbZk3y0sYUxFmJfZMwINEPpYe3Zs8eTnL54WNuCK81TnF4hPBURrxBjRKiUbo32
-	 2V73de56QgjOzYKIn/VwkIFR8SC8ekhvkCo7Uric=
+	by mail.kernel.org (Postfix) with ESMTP id 87E0420684
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jan 2020 18:21:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2407020AbgAPSRI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Jan 2020 13:17:08 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41010 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2404310AbgAPR3P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 16 Jan 2020 12:29:15 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 815AE246F4;
-        Thu, 16 Jan 2020 17:29:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579195755;
-        bh=Nl/4LuWz6wnqaAMRmetzu5XfYYSDKGkIzi00bNh4lHs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hKWPGRdO4AoaH5tyfjG9FMGC2LMR3zFkiT4iaP8/5yKi/uxURBOjgHyO0CIU8lBdu
-         AAqTfbTIYHikHDnscNEUOsL0u0UHqZg4pMBWw37n7cWOlTJ8PfDS1d1TosacQ4bFHv
-         il3NjhKnDrfT272fJzD5F9WMZ1MAz8nW9HfN8JBA=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Colin Ian King <colin.king@canonical.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.14 286/371] iio: dac: ad5380: fix incorrect assignment to val
-Date:   Thu, 16 Jan 2020 12:22:38 -0500
-Message-Id: <20200116172403.18149-229-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200116172403.18149-1-sashal@kernel.org>
-References: <20200116172403.18149-1-sashal@kernel.org>
+        id S2392515AbgAPSV2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Jan 2020 13:21:28 -0500
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2276 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2390150AbgAPSV1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 16 Jan 2020 13:21:27 -0500
+Received: from lhreml706-cah.china.huawei.com (unknown [172.18.7.108])
+        by Forcepoint Email with ESMTP id D3F0F750A9DB34BAEAB1;
+        Thu, 16 Jan 2020 18:21:25 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml706-cah.china.huawei.com (10.201.108.47) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Thu, 16 Jan 2020 18:21:25 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Thu, 16 Jan
+ 2020 18:21:25 +0000
+Date:   Thu, 16 Jan 2020 18:21:24 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Matt Ranostay <matt.ranostay@konsulko.com>
+CC:     <linux-iio@vger.kernel.org>, <jic23@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: chemical: consolidate
+ atlas-sensor docs
+Message-ID: <20200116182124.00006e19@Huawei.com>
+In-Reply-To: <20200114022348.8676-4-matt.ranostay@konsulko.com>
+References: <20200114022348.8676-1-matt.ranostay@konsulko.com>
+        <20200114022348.8676-4-matt.ranostay@konsulko.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml733-chm.china.huawei.com (10.201.108.84) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+On Tue, 14 Jan 2020 04:23:48 +0200
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
-[ Upstream commit b1e18768ef1214c0a8048327918a182cabe09f9d ]
+> Since Atlas Scientific device support only varies from the compatible
+> string is ideal all the respective docs are merged into a single doc
+> named atlas,sensor.txt
+> 
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 
-Currently the pointer val is being incorrectly incremented
-instead of the value pointed to by val. Fix this by adding
-in the missing * indirection operator.
+No chance of a yaml conversion whilst you are at it?
 
-Addresses-Coverity: ("Unused value")
-Fixes: c03f2c536818 ("staging:iio:dac: Add AD5380 driver")
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/dac/ad5380.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Maybe dt maintainers will take the view this is step in the right direction and
+let this go, but I will want an Ack for that.
 
-diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
-index 97d2c5111f43..8bf7fc626a9d 100644
---- a/drivers/iio/dac/ad5380.c
-+++ b/drivers/iio/dac/ad5380.c
-@@ -221,7 +221,7 @@ static int ad5380_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		*val >>= chan->scan_type.shift;
--		val -= (1 << chan->scan_type.realbits) / 2;
-+		*val -= (1 << chan->scan_type.realbits) / 2;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 2 * st->vref;
--- 
-2.20.1
+> ---
+>  .../bindings/iio/chemical/atlas,ec-sm.txt     | 21 ------------
+>  .../bindings/iio/chemical/atlas,orp-sm.txt    | 21 ------------
+>  .../bindings/iio/chemical/atlas,ph-sm.txt     | 21 ------------
+>  .../bindings/iio/chemical/atlas,sensor.txt    | 34 +++++++++++++++++++
+>  4 files changed, 34 insertions(+), 63 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+>  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
+>  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,sensor.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+> deleted file mode 100644
+> index f4320595b851..000000000000
+> --- a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
+> +++ /dev/null
+> @@ -1,21 +0,0 @@
+> -* Atlas Scientific EC-SM OEM sensor
+> -
+> -http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
+> -
+> -Required properties:
+> -
+> -  - compatible: must be "atlas,ec-sm"
+> -  - reg: the I2C address of the sensor
+> -  - interrupts: the sole interrupt generated by the device
+> -
+> -  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> -  node bindings.
+> -
+> -Example:
+> -
+> -atlas@64 {
+> -	compatible = "atlas,ec-sm";
+> -	reg = <0x64>;
+> -	interrupt-parent = <&gpio1>;
+> -	interrupts = <16 2>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
+> deleted file mode 100644
+> index af1f5a9aa4da..000000000000
+> --- a/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
+> +++ /dev/null
+> @@ -1,21 +0,0 @@
+> -* Atlas Scientific ORP-SM OEM sensor
+> -
+> -https://www.atlas-scientific.com/_files/_datasheets/_oem/ORP_oem_datasheet.pdf
+> -
+> -Required properties:
+> -
+> -  - compatible: must be "atlas,orp-sm"
+> -  - reg: the I2C address of the sensor
+> -  - interrupts: the sole interrupt generated by the device
+> -
+> -  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> -  node bindings.
+> -
+> -Example:
+> -
+> -atlas@66 {
+> -	compatible = "atlas,orp-sm";
+> -	reg = <0x66>;
+> -	interrupt-parent = <&gpio1>;
+> -	interrupts = <16 2>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+> deleted file mode 100644
+> index 79d90f060327..000000000000
+> --- a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
+> +++ /dev/null
+> @@ -1,21 +0,0 @@
+> -* Atlas Scientific pH-SM OEM sensor
+> -
+> -http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
+> -
+> -Required properties:
+> -
+> -  - compatible: must be "atlas,ph-sm"
+> -  - reg: the I2C address of the sensor
+> -  - interrupts: the sole interrupt generated by the device
+> -
+> -  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> -  node bindings.
+> -
+> -Example:
+> -
+> -atlas@65 {
+> -	compatible = "atlas,ph-sm";
+> -	reg = <0x65>;
+> -	interrupt-parent = <&gpio1>;
+> -	interrupts = <16 2>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.txt
+> new file mode 100644
+> index 000000000000..518327dc71e2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.txt
+> @@ -0,0 +1,34 @@
+> +* Atlas Scientific OEM sensors
+> +
+> +Datasheets:
+> +
+> +  http://www.atlas-scientific.com/_files/_datasheets/_oem/DO_oem_datasheet.pdf
+> +  http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
+> +  http://www.atlas-scientific.com/_files/_datasheets/_oem/ORP_oem_datasheet.pdf
+> +  http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
+> +
+> +Required properties:
+> +
+> +  - compatible: must be one of :
+> +	"atlas,do-sm",
+> +	"atlas,ec-sm",
+> +	"atlas,orp-sm",
+> +	"atlas,ph-sm"
+> +
+> +  - reg: the I2C address of the sensor
+> +
+> +Optional properties:
+> +
+> +  - interrupts: the sole interrupt generated by the device
+> +
+> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> +  node bindings.
+> +
+> +Example:
+> +
+> +atlas@66 {
+> +	compatible = "atlas,orp-sm";
+> +	reg = <0x66>;
+> +	interrupt-parent = <&gpio1>;
+> +	interrupts = <16 2>;
+> +};
+
 
