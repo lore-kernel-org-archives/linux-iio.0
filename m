@@ -4,57 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC0DCC33CB1
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jan 2020 14:27:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F4F1C33CB7
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jan 2020 14:28:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE8102469C
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jan 2020 14:27:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0F1E2469C
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jan 2020 14:28:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1579357634;
-	bh=dAKbZwpE0mv4pSygMb0TooOW0oSCInBqSZmNiUr4MEk=;
+	s=default; t=1579357708;
+	bh=5JmeRbrIpCIS8VAdKp6/Qm6DmGHg+3v869KbQ2bWKVU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=aTAQryJm+t/QDDt8Ba5lVLdXw68OvFgKh4bHwreDiQu5iTPcMi9Ky1pfLdn9CALng
-	 yLKOK/8KwopXahBcpzp9jJg86kS2isDMHHMmGlBzVxcvUXfC1GpiKbppuTDKosob/i
-	 Ma2IYjL0H9knI/pjx73Bg2PTu4bZcqV165Skcjxk=
+	b=m6WjxZ7qMGYKnz/Ma45VUTWWUy/WRRlFYkQIxq09rThOG1qwqDt63k4cRSQzc9l7t
+	 als4xjKHRSr3o+xwMxeHDB9vPDTjmopa05cCuLnQ2YZ0QYm7Jcu6F265WXz7T9IHs+
+	 4k0xH+fADLdvPM6cZjueKbISP2YLk443g31xFJbI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726334AbgARO1O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jan 2020 09:27:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51326 "EHLO mail.kernel.org"
+        id S1726334AbgARO21 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jan 2020 09:28:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51964 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726208AbgARO1O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Jan 2020 09:27:14 -0500
+        id S1726208AbgARO21 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 18 Jan 2020 09:28:27 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E6F662469A;
-        Sat, 18 Jan 2020 14:27:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B95262469A;
+        Sat, 18 Jan 2020 14:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1579357633;
-        bh=dAKbZwpE0mv4pSygMb0TooOW0oSCInBqSZmNiUr4MEk=;
+        s=default; t=1579357706;
+        bh=5JmeRbrIpCIS8VAdKp6/Qm6DmGHg+3v869KbQ2bWKVU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HGmgiR/+ulFgfjII0jI2fy/GjYgueHHN9Fb19hzO1snOMYlS45KudjO8NOBpJpAY1
-         RHVlQuDg0TsQMdOro8TGUZ1AHnc3LP/eIAuLjDVkJQSwNjKcsTl3TnLHzMtBe0A4rE
-         t4091VK98RRqJtMbyF7um7TvUGJ2wA7tNEgYpevo=
-Date:   Sat, 18 Jan 2020 14:27:09 +0000
+        b=Bhj7Y51K/9DBHKC0C0+tSoAwPGJ/hPgZk/kyIQQw99qjOI9o8u2HjexqP6+1ZTWCj
+         GEBtXUWbE1XHiC9aw3Q5hynsHmT3+KPDaZFH6IYyUbUB09oCY3TAAB3N+BO6E+VLHX
+         BZcA6uwIWaNxEWowK894OqE4hNsYn9npf1XZMMn0=
+Date:   Sat, 18 Jan 2020 14:28:21 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Dmitry Osipenko <digetx@gmail.com>
-Cc:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Cc:     Rob Herring <robh@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Robert Yang <decatf@gmail.com>,
-        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v1 1/2] iio: accel: kxcjk1013: Support orientation
- matrix
-Message-ID: <20200118142709.4f411677@archlinux>
-In-Reply-To: <05662b2a-829a-aa0f-d751-05f01bf6535f@gmail.com>
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        =?UTF-8?B?TWlj?= =?UTF-8?B?aGHFgiBNaXJvc8WCYXc=?= 
+        <mirq-linux@rere.qmqm.pl>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v1 2/2] dt-bindings: iio: accel: kxcjk1013: Document
+ mount-matrix property
+Message-ID: <20200118142821.4851166a@archlinux>
+In-Reply-To: <48acb337-5928-975c-e0cb-046278464203@gmail.com>
 References: <20200112203301.30235-1-digetx@gmail.com>
-        <df95e688271b4cc0e2313daeeae85507c566fc04.camel@linux.intel.com>
-        <05662b2a-829a-aa0f-d751-05f01bf6535f@gmail.com>
+        <20200112203301.30235-2-digetx@gmail.com>
+        <20200115153941.GA9685@bogus>
+        <48acb337-5928-975c-e0cb-046278464203@gmail.com>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -64,28 +65,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 18 Jan 2020 05:41:33 +0300
+On Sat, 18 Jan 2020 05:42:01 +0300
 Dmitry Osipenko <digetx@gmail.com> wrote:
 
-> 15.01.2020 20:20, Srinivas Pandruvada =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
-> > On Sun, 2020-01-12 at 23:33 +0300, Dmitry Osipenko wrote: =20
-> >> Hardware could be physically mounted in any possible direction and
-> >> userpspace needs to be aware of the mounting orientation in order to
-> >> process sensor's data correctly. In particular this helps iio-sensor-
-> >> proxy
-> >> to report display's orientation properly on a phone/tablet devices.
+> 15.01.2020 18:39, Rob Herring =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > On Sun, 12 Jan 2020 23:33:01 +0300, Dmitry Osipenko wrote: =20
+> >> The generic IIO mount-matrix property conveys physical orientation of =
+the
+> >> hardware chip.
 > >>
-> >> Signed-off-by: Dmitry Osipenko <digetx@gmail.com> =20
+> >> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> >> ---
+> >>  .../devicetree/bindings/iio/accel/kionix,kxcjk1013.txt     | 7 +++++++
+> >>  1 file changed, 7 insertions(+)
+> >> =20
 > >=20
-> > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> =20
+> > Acked-by: Rob Herring <robh@kernel.org>
+> >  =20
 >=20
 > Thanks!
->=20
-Applied to the togreg branch of iio.git and pushed out as testing
-to let the various automated test systems poke at it before I push
-out as non rebasing.
+Applied.
 
-Thanks,
+thanks,
 
 Jonathan
 
