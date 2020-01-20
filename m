@@ -2,75 +2,137 @@ Return-Path: <SRS0=URlP=3J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A07FEC33CA1
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:25:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75C37C33CA1
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:36:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7E5EB2087F
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:25:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 41F6D207FF
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:36:54 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="A09odEJu";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="W8VPi6vk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726465AbgATJZy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jan 2020 04:25:54 -0500
-Received: from mga01.intel.com ([192.55.52.88]:42830 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725872AbgATJZx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 20 Jan 2020 04:25:53 -0500
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 20 Jan 2020 01:25:53 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,341,1574150400"; 
-   d="scan'208";a="274635744"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga001.fm.intel.com with ESMTP; 20 Jan 2020 01:25:51 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id C395723D; Mon, 20 Jan 2020 11:25:50 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+        id S1726619AbgATJgx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jan 2020 04:36:53 -0500
+Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:5392 "EHLO
+        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725872AbgATJgw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 04:36:52 -0500
+Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
+        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00K9Tq6R007127;
+        Mon, 20 Jan 2020 01:36:48 -0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : content-type :
+ mime-version; s=pfpt1; bh=DrWVSr7Cs3DFBetOePiInj5YUVsHPg01H9tlrc3z8hM=;
+ b=A09odEJuoLFB2tTBnZLKiyW0zUTrJkDfcQtd14lW6og54lgkEHoqV6A/pqvHDK38XcIm
+ wQxHgZXv4EDIhV8ssPaC8FTBoIJxmj/fiOZdhHzZ2Pa7eTWe3VSko600iiKszvCtM7oq
+ p19K6+R3n59bLcdQcv0QsHtfXmublThKgZf4oOQEGK2evS1CgiKuKfJ8v+05SGPUAcHP
+ rTxt/UI+BncNGDZUyvIcvzdhWoKjCcTxH+97kPrSUAMWoWL6Ob5mTRhaFqLttsLSQFdU
+ cE16Bw0mlXbwNVBN6NCIj4PKiLmwUjsWd6cx0wFdJ8eZtAKX9+n7yD7vo6jlhCxRJDEb tA== 
+Received: from nam04-bn3-obe.outbound.protection.outlook.com (mail-bn3nam04lp2055.outbound.protection.outlook.com [104.47.46.55])
+        by mx0a-00328301.pphosted.com with ESMTP id 2xm1gqrmsx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Jan 2020 01:36:48 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=EgFbtGMqaxoTi85+pnrFNesjpVWgO53p5TovXhMPr0eC5CBMe24lMe8SKTQk6miEFQChs9pmku7ER5H2nW5AdbbJcFXFLVVaMe6eOP+pFWTOk8l1nURmfG1PELiL1NSUxMcTukesMRwLEFnyqgqsPt1XtscuROApUWnp7J72fw6K5x47g2dqxjFXVrpDF6AaWOlHJTF2U8m6MTmA99VyQQeQHqzUDpSidQMXMBDfURriyZbePJ8H5uaDtibKEV0DTlBjTnKy/7ePD0z/L92vixfcBNl3tSKvmyGCYDsACsMHsyJIUJDyiUgZuDXCr4JMm4RM1cFV3AatGDBe9PDW0g==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DrWVSr7Cs3DFBetOePiInj5YUVsHPg01H9tlrc3z8hM=;
+ b=Ce4qva6e05BKEzrStmluWZaDo5UINK9wHx8+sHAuircNV5kXPXnB4N/tjGjkvaY1nKH7HzAcmrsAPvPl2FsfBVL9LGX/Hv2g7z78NypW+mTu7rXlO707wquolMsOVLMJ+uSKXVzI5VeU4tXFEvLXMh1OtoWNZ4G1RWq/KlHFZavg1hged+g54X0REMB+d5cT7yk3shtjF7yJ15SrBmUTUJMpINOZqnJSLJbanDQntoGd5sVby42Yxzzhy9WE2vZXVVSNamPh+FYcjlTLMLpJ43Aim9xqxDt9UW5EdplDqeZw1ilywjlHUg2Mrl6NAYeUjje1vfXSbnabKKfHrg5rYw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=invensense.com; dmarc=pass action=none
+ header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=DrWVSr7Cs3DFBetOePiInj5YUVsHPg01H9tlrc3z8hM=;
+ b=W8VPi6vkb7FC6B+jrKMfHl4K7l6Zw2AkjFeEqkYtIZi55r9Ds48+VL54UyvdrjFTijxElgkHpvvDbdOHwFN1uZYLwod1BibH5wSI27N6X7mMmanLnBxRPq+PmeJ9xNLTRfjT77/IAKqSVBAOkb8uz3K1LBbBTWDazZ5XELyqkFQ=
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
+ MN2PR12MB3183.namprd12.prod.outlook.com (20.179.82.85) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.2644.23; Mon, 20 Jan 2020 09:36:47 +0000
+Received: from MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::4028:892b:b405:59fa]) by MN2PR12MB3373.namprd12.prod.outlook.com
+ ([fe80::4028:892b:b405:59fa%6]) with mapi id 15.20.2644.024; Mon, 20 Jan 2020
+ 09:36:47 +0000
+From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1] iio: accel: st_accel: Use st_sensors_dev_name_probe()
-Date:   Mon, 20 Jan 2020 11:25:50 +0200
-Message-Id: <20200120092550.39427-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.24.1
+        devicetree@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [PATCH 1/9] dt-bindings: iio: imu: inv_mpu6050: add missing entry for mpu6000
+Date:   Mon, 20 Jan 2020 10:36:12 +0100
+Message-Id: <20200120093620.9681-2-jmaneyrol@invensense.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200120093620.9681-1-jmaneyrol@invensense.com>
+References: <20200120093620.9681-1-jmaneyrol@invensense.com>
+Content-Type: text/plain
+X-ClientProxiedBy: LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9::14) To MN2PR12MB3373.namprd12.prod.outlook.com
+ (2603:10b6:208:c8::33)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Received: from frgnb-12nlpn2.invcorp.invensense.com (77.157.193.39) by LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Mon, 20 Jan 2020 09:36:44 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [77.157.193.39]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 072fb128-26c7-4879-3a6c-08d79d8c4463
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3183:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3183EBBDC802FD347DF5749EC4320@MN2PR12MB3183.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:374;
+X-Forefront-PRVS: 0288CD37D9
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(39840400004)(396003)(376002)(346002)(136003)(366004)(199004)(189003)(966005)(7696005)(52116002)(6666004)(8936002)(478600001)(186003)(16526019)(8676002)(86362001)(2906002)(26005)(316002)(81156014)(81166006)(54906003)(956004)(107886003)(2616005)(6486002)(1076003)(4744005)(66946007)(36756003)(5660300002)(66556008)(4326008)(66476007)(562404015);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3183;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+Received-SPF: None (protection.outlook.com: invensense.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: cjnOrl9vUajdPaPXPSngrT+epR5Avrct+7zhgT3JwvuEcsy9cMzl9UHJCSqkaQ6WFnewlGNSlCIAZnGcFG18SENnc45n3UweVg06pbGRRjH/p7pQBQ05x8sZfXar58HVzmqCFOro2+z+eLpn9lXkivNIo15/yjWAH9YsE+ADiXuh6TdqlOTlgjH1Xqy8KSK/ahftb6Yp8yPgu7JgurQzJKzCgTn2ue0TQT9IP7XXj5daetDR4YQMICDbJ//9TcqE3okxvHbwF+G7Ig3rrunCnsjoYF+1dctQH6tWZBQLWwxBKWE//cs9HXNqS3Mm6zrFZonRPVP1WILQSVPU0qDCw/4WfBC9sYmCXBQG2AGrScwE6QQvcwAkk3Xktx6idFE8OsC2TzOO63Untaoiik6Kd++wyl+gEbtqH4JVIipw/cC84xsP/FEqVv1U36ivZneyXMqKvS1qNJoaDwwOkyr8Jzxim9/AT0s1qgHJOHSxT+FDNSWntTBhbUrYHzVv3mKVgnb7pvHq2+2ffnD2wkX8pP418xwUWjGLEQeut/nk90+WfNfnFium7cXQ5/MuNROP
+X-OriginatorOrg: invensense.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 072fb128-26c7-4879-3a6c-08d79d8c4463
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2020 09:36:46.9767
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: b0ZOYJ+DtFXzcdPZ1Q49kgFkUh/9gA0I4mAEnCxfrTRz/PznMDh8ECpFZQ80r1yF9mf24MglKRf/5YY3HM6TEXn+Ix1X0ZWDh0cg0Fez5i4=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3183
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-01-20_01:2020-01-16,2020-01-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ bulkscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=883
+ lowpriorityscore=0 phishscore=0 suspectscore=0 impostorscore=0
+ adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001200083
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use st_sensors_dev_name_probe() instead open coded variant.
+mpu6000 is spi only.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- drivers/iio/accel/st_accel_i2c.c | 5 +----
- 1 file changed, 1 insertion(+), 4 deletions(-)
+ Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index 633955d764cc..8c489312f668 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -147,12 +147,9 @@ static int st_accel_i2c_probe(struct i2c_client *client)
- 	const struct st_sensor_settings *settings;
- 	struct st_sensor_data *adata;
- 	struct iio_dev *indio_dev;
--	const char *match;
- 	int ret;
+diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+index c5ee8a20af9f..38483ea31fd4 100644
+--- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
++++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+@@ -4,6 +4,7 @@ http://www.invensense.com/mems/gyro/mpu6050.html
  
--	match = device_get_match_data(&client->dev);
--	if (match)
--		strlcpy(client->name, match, sizeof(client->name));
-+	st_sensors_dev_name_probe(&client->dev, client->name, sizeof(client->name));
- 
- 	settings = st_accel_get_settings(client->name);
- 	if (!settings) {
+ Required properties:
+  - compatible : should be one of
++		"invensense,mpu6000"
+ 		"invensense,mpu6050"
+  		"invensense,mpu6500"
+ 		"invensense,mpu6515"
 -- 
-2.24.1
+2.17.1
 
