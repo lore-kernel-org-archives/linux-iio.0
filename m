@@ -2,213 +2,246 @@ Return-Path: <SRS0=URlP=3J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 634BEC3F68F
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:47:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41A99C2D0DB
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 14:21:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3763A207FF
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:47:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="bFnIGnGT";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="kOZzVrqX"
+	by mail.kernel.org (Postfix) with ESMTP id 15D2622314
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 14:21:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726417AbgATJrk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jan 2020 04:47:40 -0500
-Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:33682 "EHLO
-        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726075AbgATJrk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 04:47:40 -0500
-Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
-        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00K9TH3t026090;
-        Mon, 20 Jan 2020 01:36:50 -0800
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=pfpt1; bh=/5hRh3bqV5FuP/EiZShBt80tAOVBpvt6lGTGyj/Is1U=;
- b=bFnIGnGTMt+N9MYOTf6EC9epBrVeTf8AxRhU7G7tkJZtRBwrc7UHMCEhXGh+vv9Jafm1
- YWgR3vQe9arhrXXDdM0+DfSZgMdpHnd0pZL9LTKQZ+98SMkZCjDhc0fUhAU6oIiQEXb4
- 5A2krvXKufSWCxWlMiMzEzX7ICN0GPuiNsEGgXGnHneZ8DLfbzJxZVUekSn2K1IBG+mp
- B0AEAjMNFXfHQdDADXIo620pqhe6FnDqRguqxp6b5jG9PahJs938RzYliIFnX8ZpgotP
- ciuxct9SIvRM+Y8TkjNDUd+zbyslZG41kQk8Hy59DTH8EDHHrgOgChloMmtzZezmkJlj hA== 
-Received: from nam04-bn3-obe.outbound.protection.outlook.com (mail-bn3nam04lp2052.outbound.protection.outlook.com [104.47.46.52])
-        by mx0b-00328301.pphosted.com with ESMTP id 2xkxuu0mxa-1
+        id S1726942AbgATOVJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jan 2020 09:21:09 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:50510 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726642AbgATOVJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 09:21:09 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00KEHZWX020961;
+        Mon, 20 Jan 2020 09:21:05 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2xkyta4mvh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Jan 2020 01:36:49 -0800
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=EzExk3b/rF6X0ELt9tGDFjTSUxqBYOm7bxMnrIhWN41jEvqpyLC55um/gMGuupqkH6yMmDJYEvj5tBT/6N6JZZCsp2PQPaoyqAOLwFEGXlC10KFR0fa/JhGwOsNYg0Pmd3O9sBwKLtBpazVXksQFb3U2JLXm4ElASBLcONOgkGFaYtFQBVcSbqmBatBqMgyL0ahSrrHsf+9hIFLvzeC+DLKs4jE6FpfR0NLTZ672MtGOjTA7ipHroI0OqsLdiPeXvQsUG3GqmY6bCbq3CdBsE2q+alJSoJfLJMDTWSy0tSf5JxAwgYPw5v88ufMDqekm0LNztVwmEa/BsdjQ98vT0g==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/5hRh3bqV5FuP/EiZShBt80tAOVBpvt6lGTGyj/Is1U=;
- b=aLzDbo1yveqRb559MAimjm+ekpxT1jGWyRyCaxCFkzvPZ4XLwngPIyO05g35NB/6PGio4zFbczQMPPI0rTfmM+EkSv0A3oKkD6sG/2yBiBCJbXqARTxtBURQa6JOL+LXAKwRZrFHiCWZ3+ZL5FeRWE0u3YKmvj2XsBTsIc+22hpG8lqXyvdBBWr9St2g7mU88x86hVSSTcQqylp+Qs680lFa/OTDpQ+zyUl3AzlmlglMP4pSvpkHvnqq5p1zxrw9aklxBj+6bQnmv/UAQA4c3uX8Ve21ywiIOTQw7YQhoVQvCCrfPGMyFndmcF+1WwBE8WlOb+oVLXP5iCuLw1ffJg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=invensense.com; dmarc=pass action=none
- header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=/5hRh3bqV5FuP/EiZShBt80tAOVBpvt6lGTGyj/Is1U=;
- b=kOZzVrqXFEncTQ6J1X7sEH/HHZSikraBHXcRX3EknTfnBRB242De4IJmEEJ8Gl1z3JoyBK1/TiXQj79x3zMC1It+UvrmOXLdCbIgCO6xKalD6mQCEqoJfRd3C29e6F+R9VvpF0yzAvhZlmoHQZ7OjNWwsdFp2LHCQv7npdqYNjc=
-Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
- MN2PR12MB3183.namprd12.prod.outlook.com (20.179.82.85) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.23; Mon, 20 Jan 2020 09:36:49 +0000
-Received: from MN2PR12MB3373.namprd12.prod.outlook.com
- ([fe80::4028:892b:b405:59fa]) by MN2PR12MB3373.namprd12.prod.outlook.com
- ([fe80::4028:892b:b405:59fa%6]) with mapi id 15.20.2644.024; Mon, 20 Jan 2020
- 09:36:49 +0000
-From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH 2/9] iio: imu: inv_mpu6050: cleanup spi support
-Date:   Mon, 20 Jan 2020 10:36:13 +0100
-Message-Id: <20200120093620.9681-3-jmaneyrol@invensense.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200120093620.9681-1-jmaneyrol@invensense.com>
-References: <20200120093620.9681-1-jmaneyrol@invensense.com>
-Content-Type: text/plain
-X-ClientProxiedBy: LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM
- (2603:10a6:600:9::14) To MN2PR12MB3373.namprd12.prod.outlook.com
- (2603:10b6:208:c8::33)
+        Mon, 20 Jan 2020 09:21:05 -0500
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 00KEL3p7040627
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 20 Jan 2020 09:21:04 -0500
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Mon, 20 Jan
+ 2020 06:21:03 -0800
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 20 Jan 2020 06:21:02 -0800
+Received: from saturn.ad.analog.com ([10.48.65.124])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 00KEKwib024435;
+        Mon, 20 Jan 2020 09:20:59 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <devel@driverdev.osuosl.org>, <dragos.bogdan@analog.com>,
+        <nuno.sa@analog.com>, <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/4] iio: imu: adis: Add self_test_reg variable
+Date:   Mon, 20 Jan 2020 16:20:48 +0200
+Message-ID: <20200120142051.28533-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Received: from frgnb-12nlpn2.invcorp.invensense.com (77.157.193.39) by LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Mon, 20 Jan 2020 09:36:47 +0000
-X-Mailer: git-send-email 2.17.1
-X-Originating-IP: [77.157.193.39]
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: de6ac665-5dbe-4601-9f0b-08d79d8c4628
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3183:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB31833238336F540021EA34A4C4320@MN2PR12MB3183.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:3044;
-X-Forefront-PRVS: 0288CD37D9
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(39840400004)(396003)(376002)(346002)(136003)(366004)(199004)(189003)(7696005)(52116002)(6666004)(8936002)(478600001)(186003)(16526019)(8676002)(86362001)(2906002)(26005)(316002)(81156014)(81166006)(54906003)(956004)(107886003)(2616005)(6486002)(1076003)(66946007)(36756003)(5660300002)(66556008)(4326008)(66476007);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB3183;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
-Received-SPF: None (protection.outlook.com: invensense.com does not designate
- permitted sender hosts)
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: b3P8OjdeHi7RJlw59ZcV6xhD5zACxx3FeytrY1J6bsAbzUWxIImF9JjB+nvUE3WQE7eoOsUf9qJUF0rm0iESdtHi7YugOvHuaobr0CCYp3sbwTtGq5detposdwlzwvx6PrnEpgd9pytz8ICmpBhFvZjJQ4oqbgXy5cC3zRa2gDQaPaSdlnApnFNgCBIeqTC9Y9QIXau65D1M/Vz3AP62dZmmjmqjAbPqW/sKEMtSFkgB1hAKPw/+3UW3XAeBwWtVe4P118+o0L8oJiuqp5UO599b0YFchNh30TJv8SHQ6osR7L/+Wjgoq3q/8k37HE1Qwj+NlIzSg3sP+F/4W0WOtoU/5P/UdtBb/xHVeuJ9+ke3Fr99SE/ymc4s2wd/M+YDYCzOMSJZRblMm7dcyIbkZn08agmcWHHBW5V7x57aosu/gsze2UXyTqHSlY5nDOnk
-X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: de6ac665-5dbe-4601-9f0b-08d79d8c4628
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2020 09:36:49.7432
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: SZv/qM+9jtO9aFaGVTAmeZ6KWF4/m5CHfo/HQqdo6JWPDdKLWiZW7rrEaSzVzc9eLXxGcy/BgpdRibj1o8EgCLdqmhZg076IOppUjeWoATo=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3183
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-01-20_01:2020-01-16,2020-01-20 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
- mlxlogscore=999 bulkscore=0 priorityscore=1501 suspectscore=0
- clxscore=1015 adultscore=0 phishscore=0 spamscore=0 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-1910280000 definitions=main-2001200083
+ definitions=2020-01-20_02:2020-01-20,2020-01-20 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 phishscore=0 mlxlogscore=999 mlxscore=0 suspectscore=0
+ impostorscore=0 spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501
+ clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-1910280000 definitions=main-2001200123
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing mpu6515 support and add of match table.
-Reorganize Kconfig to display chips grouped by generations.
+From: Nuno Sá <nuno.sa@analog.com>
 
-Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+This patch adds a dedicated self_test_reg variable. This is also a step
+to let new drivers make use of `adis_initial_startup()`. Some devices
+use MSG_CTRL reg to request a self_test command while others use the
+GLOB_CMD register.
+
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/imu/inv_mpu6050/Kconfig       |  8 +++---
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c | 35 +++++++++++++++++++++++
- 2 files changed, 39 insertions(+), 4 deletions(-)
+ drivers/iio/accel/adis16201.c         | 1 +
+ drivers/iio/accel/adis16209.c         | 1 +
+ drivers/iio/gyro/adis16136.c          | 1 +
+ drivers/iio/gyro/adis16260.c          | 1 +
+ drivers/iio/imu/adis.c                | 6 +++---
+ drivers/iio/imu/adis16400.c           | 1 +
+ drivers/iio/imu/adis16460.c           | 2 ++
+ drivers/iio/imu/adis16480.c           | 3 +++
+ drivers/staging/iio/accel/adis16203.c | 1 +
+ drivers/staging/iio/accel/adis16240.c | 1 +
+ include/linux/iio/imu/adis.h          | 2 ++
+ 11 files changed, 17 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-index 017bc0fcc365..003134734646 100644
---- a/drivers/iio/imu/inv_mpu6050/Kconfig
-+++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-@@ -15,8 +15,8 @@ config INV_MPU6050_I2C
- 	select INV_MPU6050_IIO
- 	select REGMAP_I2C
- 	help
--	  This driver supports the Invensense MPU6050/6500/6515,
--	  MPU9150/9250/9255 and ICM20608/20602 motion tracking devices
-+	  This driver supports the Invensense MPU6050/9150,
-+	  MPU6500/6515/9250/9255, ICM20608 and ICM20602 motion tracking devices
- 	  over I2C.
- 	  This driver can be built as a module. The module will be called
- 	  inv-mpu6050-i2c.
-@@ -27,8 +27,8 @@ config INV_MPU6050_SPI
- 	select INV_MPU6050_IIO
- 	select REGMAP_SPI
- 	help
--	  This driver supports the Invensense MPU6000/6500/6515,
--	  MPU9250/9255 and ICM20608/20602 motion tracking devices
-+	  This driver supports the Invensense MPU6000,
-+	  MPU6500/6515/9250/9255, ICM20608 and ICM20602 motion tracking devices
- 	  over SPI.
- 	  This driver can be built as a module. The module will be called
- 	  inv-mpu6050-spi.
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-index ec102d5a5c77..f7276f9d83fc 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-@@ -74,6 +74,7 @@ static int inv_mpu_probe(struct spi_device *spi)
- static const struct spi_device_id inv_mpu_id[] = {
- 	{"mpu6000", INV_MPU6000},
- 	{"mpu6500", INV_MPU6500},
-+	{"mpu6515", INV_MPU6515},
- 	{"mpu9250", INV_MPU9250},
- 	{"mpu9255", INV_MPU9255},
- 	{"icm20608", INV_ICM20608},
-@@ -83,6 +84,39 @@ static const struct spi_device_id inv_mpu_id[] = {
+diff --git a/drivers/iio/accel/adis16201.c b/drivers/iio/accel/adis16201.c
+index 0f0f27a8184e..4154e7396bbe 100644
+--- a/drivers/iio/accel/adis16201.c
++++ b/drivers/iio/accel/adis16201.c
+@@ -246,6 +246,7 @@ static const struct adis_data adis16201_data = {
+ 	.diag_stat_reg = ADIS16201_DIAG_STAT_REG,
  
- MODULE_DEVICE_TABLE(spi, inv_mpu_id);
+ 	.self_test_mask = ADIS16201_MSC_CTRL_SELF_TEST_EN,
++	.self_test_reg = ADIS16201_MSC_CTRL_REG,
+ 	.self_test_no_autoclear = true,
+ 	.timeouts = &adis16201_timeouts,
  
-+static const struct of_device_id inv_of_match[] = {
-+	{
-+		.compatible = "invensense,mpu6000",
-+		.data = (void *)INV_MPU6000
-+	},
-+	{
-+		.compatible = "invensense,mpu6500",
-+		.data = (void *)INV_MPU6500
-+	},
-+	{
-+		.compatible = "invensense,mpu6515",
-+		.data = (void *)INV_MPU6515
-+	},
-+	{
-+		.compatible = "invensense,mpu9250",
-+		.data = (void *)INV_MPU9250
-+	},
-+	{
-+		.compatible = "invensense,mpu9255",
-+		.data = (void *)INV_MPU9255
-+	},
-+	{
-+		.compatible = "invensense,icm20608",
-+		.data = (void *)INV_ICM20608
-+	},
-+	{
-+		.compatible = "invensense,icm20602",
-+		.data = (void *)INV_ICM20602
-+	},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, inv_of_match);
+diff --git a/drivers/iio/accel/adis16209.c b/drivers/iio/accel/adis16209.c
+index c6dbd2424e10..31d45e7c5485 100644
+--- a/drivers/iio/accel/adis16209.c
++++ b/drivers/iio/accel/adis16209.c
+@@ -256,6 +256,7 @@ static const struct adis_data adis16209_data = {
+ 	.diag_stat_reg = ADIS16209_STAT_REG,
+ 
+ 	.self_test_mask = ADIS16209_MSC_CTRL_SELF_TEST_EN,
++	.self_test_reg = ADIS16209_MSC_CTRL_REG,
+ 	.self_test_no_autoclear = true,
+ 	.timeouts = &adis16209_timeouts,
+ 
+diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+index d5e03a406d4a..e8375d4a408f 100644
+--- a/drivers/iio/gyro/adis16136.c
++++ b/drivers/iio/gyro/adis16136.c
+@@ -472,6 +472,7 @@ static const struct adis_data adis16136_data = {
+ 	.msc_ctrl_reg = ADIS16136_REG_MSC_CTRL,
+ 
+ 	.self_test_mask = ADIS16136_MSC_CTRL_SELF_TEST,
++	.self_test_reg = ADIS16136_REG_MSC_CTRL,
+ 
+ 	.read_delay = 10,
+ 	.write_delay = 10,
+diff --git a/drivers/iio/gyro/adis16260.c b/drivers/iio/gyro/adis16260.c
+index be09b3e5910c..9823573e811a 100644
+--- a/drivers/iio/gyro/adis16260.c
++++ b/drivers/iio/gyro/adis16260.c
+@@ -346,6 +346,7 @@ static const struct adis_data adis16260_data = {
+ 	.diag_stat_reg = ADIS16260_DIAG_STAT,
+ 
+ 	.self_test_mask = ADIS16260_MSC_CTRL_MEM_TEST,
++	.self_test_reg = ADIS16260_MSC_CTRL,
+ 	.timeouts = &adis16260_timeouts,
+ 
+ 	.status_error_msgs = adis1620_status_error_msgs,
+diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
+index 022bb54fb748..d02b1911b0f2 100644
+--- a/drivers/iio/imu/adis.c
++++ b/drivers/iio/imu/adis.c
+@@ -346,8 +346,8 @@ static int adis_self_test(struct adis *adis)
+ 	int ret;
+ 	const struct adis_timeout *timeouts = adis->data->timeouts;
+ 
+-	ret = __adis_write_reg_16(adis, adis->data->msc_ctrl_reg,
+-			adis->data->self_test_mask);
++	ret = __adis_write_reg_16(adis, adis->data->self_test_reg,
++				  adis->data->self_test_mask);
+ 	if (ret) {
+ 		dev_err(&adis->spi->dev, "Failed to initiate self test: %d\n",
+ 			ret);
+@@ -359,7 +359,7 @@ static int adis_self_test(struct adis *adis)
+ 	ret = __adis_check_status(adis);
+ 
+ 	if (adis->data->self_test_no_autoclear)
+-		__adis_write_reg_16(adis, adis->data->msc_ctrl_reg, 0x00);
++		__adis_write_reg_16(adis, adis->data->self_test_reg, 0x00);
+ 
+ 	return ret;
+ }
+diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
+index cfb1c19eb930..a59cd7e0c7ed 100644
+--- a/drivers/iio/imu/adis16400.c
++++ b/drivers/iio/imu/adis16400.c
+@@ -1126,6 +1126,7 @@ static const struct adis_data adis16400_data = {
+ 	.write_delay = 50,
+ 
+ 	.self_test_mask = ADIS16400_MSC_CTRL_MEM_TEST,
++	.self_test_reg = ADIS16400_MSC_CTRL,
+ 
+ 	.status_error_msgs = adis16400_status_error_msgs,
+ 	.status_error_mask = BIT(ADIS16400_DIAG_STAT_ZACCL_FAIL) |
+diff --git a/drivers/iio/imu/adis16460.c b/drivers/iio/imu/adis16460.c
+index 9539cfe4a259..42fa473c6d81 100644
+--- a/drivers/iio/imu/adis16460.c
++++ b/drivers/iio/imu/adis16460.c
+@@ -392,6 +392,8 @@ static const struct adis_timeout adis16460_timeouts = {
+ static const struct adis_data adis16460_data = {
+ 	.diag_stat_reg = ADIS16460_REG_DIAG_STAT,
+ 	.glob_cmd_reg = ADIS16460_REG_GLOB_CMD,
++	.self_test_mask = BIT(2),
++	.self_test_reg = ADIS16460_REG_GLOB_CMD,
+ 	.has_paging = false,
+ 	.read_delay = 5,
+ 	.write_delay = 5,
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index dac87f1001fd..e1de25f18e2e 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -1080,6 +1080,9 @@ static const struct adis_data adis16480_data = {
+ 	.read_delay = 5,
+ 	.write_delay = 5,
+ 
++	.self_test_mask = BIT(1),
++	.self_test_reg = ADIS16480_REG_GLOB_CMD,
 +
- static const struct acpi_device_id inv_acpi_match[] = {
- 	{"INVN6000", INV_MPU6000},
- 	{ },
-@@ -93,6 +127,7 @@ static struct spi_driver inv_mpu_driver = {
- 	.probe		=	inv_mpu_probe,
- 	.id_table	=	inv_mpu_id,
- 	.driver = {
-+		.of_match_table = inv_of_match,
- 		.acpi_match_table = ACPI_PTR(inv_acpi_match),
- 		.name	=	"inv-mpu6000-spi",
- 		.pm     =       &inv_mpu_pmops,
+ 	.status_error_msgs = adis16480_status_error_msgs,
+ 	.status_error_mask = BIT(ADIS16480_DIAG_STAT_XGYRO_FAIL) |
+ 		BIT(ADIS16480_DIAG_STAT_YGYRO_FAIL) |
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index 39dfe3f7f254..fef52d9b5346 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -250,6 +250,7 @@ static const struct adis_data adis16203_data = {
+ 	.diag_stat_reg = ADIS16203_DIAG_STAT,
+ 
+ 	.self_test_mask = ADIS16203_MSC_CTRL_SELF_TEST_EN,
++	.self_test_reg = ADIS16203_MSC_CTRL,
+ 	.self_test_no_autoclear = true,
+ 	.timeouts = &adis16203_timeouts,
+ 
+diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+index 39eb8364aa95..8bd35c6c56a1 100644
+--- a/drivers/staging/iio/accel/adis16240.c
++++ b/drivers/staging/iio/accel/adis16240.c
+@@ -373,6 +373,7 @@ static const struct adis_data adis16240_data = {
+ 	.diag_stat_reg = ADIS16240_DIAG_STAT,
+ 
+ 	.self_test_mask = ADIS16240_MSC_CTRL_SELF_TEST_EN,
++	.self_test_reg = ADIS16240_MSC_CTRL,
+ 	.self_test_no_autoclear = true,
+ 	.timeouts = &adis16240_timeouts,
+ 
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index d2fcf45b4cef..d21a013d1122 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -41,6 +41,7 @@ struct adis_timeout {
+  * @glob_cmd_reg: Register address of the GLOB_CMD register
+  * @msc_ctrl_reg: Register address of the MSC_CTRL register
+  * @diag_stat_reg: Register address of the DIAG_STAT register
++ * @self_test_reg: Register address to request self test command
+  * @status_error_msgs: Array of error messgaes
+  * @status_error_mask:
+  * @timeouts: Chip specific delays
+@@ -55,6 +56,7 @@ struct adis_data {
+ 	unsigned int diag_stat_reg;
+ 
+ 	unsigned int self_test_mask;
++	unsigned int self_test_reg;
+ 	bool self_test_no_autoclear;
+ 	const struct adis_timeout *timeouts;
+ 
 -- 
-2.17.1
+2.20.1
 
