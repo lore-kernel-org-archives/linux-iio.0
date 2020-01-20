@@ -2,109 +2,109 @@ Return-Path: <SRS0=URlP=3J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 296D8C33CAA
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 19:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87BF1C32771
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 21:21:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0287524125
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 19:39:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C3CE22527
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 21:21:30 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="B3MUc2xN"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="AveaRX7I"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726780AbgATTjG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jan 2020 14:39:06 -0500
-Received: from mail-pj1-f66.google.com ([209.85.216.66]:39728 "EHLO
-        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726586AbgATTjF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 14:39:05 -0500
-Received: by mail-pj1-f66.google.com with SMTP id e11so225979pjt.4;
-        Mon, 20 Jan 2020 11:39:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=eLo58FMuGoMdp6w5+M67QbJxYW/QcIQpDswNunuEYsA=;
-        b=B3MUc2xN1OEp3r4FUlX15bbX7A+0DqEcz3mHSO0uGswMgozMs5wAI0Q5IC5O4ckaT3
-         qGZr3G9+Pn5Gff8A6+DUdN+FUr5zY4zKynyBEKgNdBQbMs/4C/MqGeAGGLAcC0X4h/eF
-         UeKu/pI0zu/rYOEOrnawOVASJu/s3Mw7spnGtNhpsqFwx2xoDch5TyOsmpLI9XbRgwMP
-         UC82Wb3kg1IYdVQpYL5EVT12MCAB2waDZdzRhG5t7Qo4KbSdLJSFEFmNLlkoiNpN+y7w
-         QmK492TMklTqnnPrdSZSv4a02xJZK7sBcaIPA5+Jgwxbo1uXmUtLGCjziO1yqv9rUxcu
-         vufg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=eLo58FMuGoMdp6w5+M67QbJxYW/QcIQpDswNunuEYsA=;
-        b=HnUrp6A87V3TmH1Zyz7OrokbZU84D/vXlnFcr5WgQGYnhOSCh3P81P/zeUnbFdFwqD
-         TNohVzY54/il9mR0JGSHofLJnO1qE0SyKJpFTbkXRSBOon3LxwehpKIUU6N/WJEG2nAF
-         mUgmP9JmXFfWE3cQ+bgSJKcV+CBl/7OhMS/zxZFIqcmx4jtLDcKnMdeUUjMxfMDnyjnR
-         oqSg6n9Sv9APsuqcC4gRRUw93AAvO90hjqw1dYgZf0fMQjMmU0Vun3jW453y5bjXDOW9
-         vhL2LhPJwPGg6zsbemUU8Oh7uf+ulTebdIuVfMb9P8QhzRpqITykz8r/4X14qLT97ImH
-         3i8A==
-X-Gm-Message-State: APjAAAUkM0O2s1ONYz6cnrh9QbnbCC9RxhJQZpHWVhxO2/bEj3oMVKoY
-        qKAFD02Bf+KimTGbxVzT35WvJekv
-X-Google-Smtp-Source: APXvYqzfiglB9XCPBri33HNxtDQfYGPxIl6uFmhnlOz6wjpagQnug+4agaHE7QwHfOMn5XRmEUTYFQ==
-X-Received: by 2002:a17:90b:145:: with SMTP id em5mr682423pjb.20.1579549144936;
-        Mon, 20 Jan 2020 11:39:04 -0800 (PST)
-Received: from dtor-ws ([2620:15c:202:201:3adc:b08c:7acc:b325])
-        by smtp.gmail.com with ESMTPSA id b12sm39714158pfi.157.2020.01.20.11.39.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Jan 2020 11:39:04 -0800 (PST)
-Date:   Mon, 20 Jan 2020 11:39:02 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 5/5] input: joystick: Add ADC attached joystick driver.
-Message-ID: <20200120193902.GH47797@dtor-ws>
-References: <20200105001639.142061-1-contact@artur-rojek.eu>
- <20200105001639.142061-5-contact@artur-rojek.eu>
- <20200111115440.35f6cbfd@archlinux>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200111115440.35f6cbfd@archlinux>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1727573AbgATVVT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jan 2020 16:21:19 -0500
+Received: from mail.andi.de1.cc ([85.214.55.253]:38586 "EHLO mail.andi.de1.cc"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726897AbgATVVT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 20 Jan 2020 16:21:19 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=References:In-Reply-To:Message-Id:Date:Subject:
+        To:From:Sender:Reply-To:Cc:MIME-Version:Content-Type:
+        Content-Transfer-Encoding:Content-ID:Content-Description:Resent-Date:
+        Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:
+        List-Help:List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+         bh=qI/5dEJnoRpJ6a+p5KqjUs4RogAXl64fcQgcmH2ETkI=; b=AveaRX7I0CcmbuGLGj36B+qJE
+        4driXHWA3O9ZJ5l6qX2IXPYmaAIA5q7h9n//yi/jbv9MRht0dSf6a7UCDqXMqaOgNVwU/frm3oxAk
+        jraTp2b9tnYpBDK8Z+bQAUSU+T2xMUvoENJYfpoOtJwde4sCGFUdOup6+kYKz+osVs9yU=;
+Received: from p200300ccff0880007ee9d3fffe1fa246.dip0.t-ipconnect.de ([2003:cc:ff08:8000:7ee9:d3ff:fe1f:a246] helo=eeepc)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1iteTo-0006vn-4A; Mon, 20 Jan 2020 22:21:04 +0100
+Received: from andi by eeepc with local (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1iteTn-0007WE-5p; Mon, 20 Jan 2020 22:21:03 +0100
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, lee.jones@linaro.org, b.galvani@gmail.com,
+        linus.walleij@linaro.org, andreas@kemnade.info,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        phh@phh.me, stefan@agner.ch, letux-kernel@openphoenux.org,
+        martin.blumenstingl@googlemail.com
+Subject: [PATCH RFC v2 2/3] mfd: rn5t618: add IRQ definitions for RN5T618
+Date:   Mon, 20 Jan 2020 22:20:55 +0100
+Message-Id: <20200120212056.28806-3-andreas@kemnade.info>
+X-Mailer: git-send-email 2.11.0
+In-Reply-To: <20200120212056.28806-1-andreas@kemnade.info>
+References: <20200120212056.28806-1-andreas@kemnade.info>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Jan 11, 2020 at 11:54:40AM +0000, Jonathan Cameron wrote:
-> On Sun,  5 Jan 2020 01:16:39 +0100
-> Artur Rojek <contact@artur-rojek.eu> wrote:
-> 
-> > Add a driver for joystick devices connected to ADC controllers
-> > supporting the Industrial I/O subsystem.
-> > 
-> > Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-> > Tested-by: Paul Cercueil <paul@crapouillou.net>
-> 
-> Looks pretty good, but I'd like to see a little more sanity checking
-> on probe that the channels are in a format this driver can actually
-> handle.  Given we can check channel size and consistency etc early
-> it would be better to fail to probe than just report error data later.
+Previously, only the definitions for the RC5T619 were
+available.
 
-Artur,
+Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+---
+Untested, IMHO only acceptable with a Tested-By
 
-From my POV it looks decent so as soon as you address Jonathan requests
-you can add
+ drivers/mfd/rn5t618.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-
-assuming you want it to be perged through IIO tree.
-
-Thanks.
-
+diff --git a/drivers/mfd/rn5t618.c b/drivers/mfd/rn5t618.c
+index 321836f78120..6828fd40b0a1 100644
+--- a/drivers/mfd/rn5t618.c
++++ b/drivers/mfd/rn5t618.c
+@@ -58,6 +58,24 @@ static const struct regmap_config rn5t618_regmap_config = {
+ 	.cache_type	= REGCACHE_RBTREE,
+ };
+ 
++static const struct regmap_irq rn5t618_irqs[] = {
++	REGMAP_IRQ_REG(RN5T618_IRQ_SYS, 0, BIT(0)),
++	REGMAP_IRQ_REG(RN5T618_IRQ_DCDC, 0, BIT(1)),
++	REGMAP_IRQ_REG(RN5T618_IRQ_ADC, 0, BIT(3)),
++	REGMAP_IRQ_REG(RN5T618_IRQ_GPIO, 0, BIT(4)),
++	REGMAP_IRQ_REG(RN5T618_IRQ_CHG, 0, BIT(6)),
++};
++
++static const struct regmap_irq_chip rn5t618_irq_chip = {
++	.name = "rn5t618",
++	.irqs = rn5t618_irqs,
++	.num_irqs = ARRAY_SIZE(rn5t618_irqs),
++	.num_regs = 1,
++	.status_base = RN5T618_INTMON,
++	.mask_base = RN5T618_INTEN,
++	.mask_invert = true,
++};
++
+ static const struct regmap_irq rc5t619_irqs[] = {
+ 	REGMAP_IRQ_REG(RN5T618_IRQ_SYS, 0, BIT(0)),
+ 	REGMAP_IRQ_REG(RN5T618_IRQ_DCDC, 0, BIT(1)),
+@@ -92,6 +110,9 @@ static int rn5t618_irq_init(struct rn5t618 *rn5t618)
+ 	case RC5T619:
+ 		irq_chip = &rc5t619_irq_chip;
+ 		break;
++	case RN5T618:
++		irq_chip = &rn5t618_irq_chip;
++		break;
+ 	default:
+ 		irq_chip = NULL;
+ 		break;
 -- 
-Dmitry
+2.11.0
+
