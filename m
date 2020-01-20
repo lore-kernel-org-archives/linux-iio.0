@@ -7,68 +7,68 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52531C33CA1
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:37:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EFF5C33CB8
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:37:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1F5E72073D
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:37:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2556120882
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jan 2020 09:37:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="cXQdVDZQ";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="A0YQk2hn"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="IQcAIT/5";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="bSprz5ku"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726775AbgATJhO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jan 2020 04:37:14 -0500
-Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:21236 "EHLO
+        id S1726752AbgATJhN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jan 2020 04:37:13 -0500
+Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:20370 "EHLO
         mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726642AbgATJhO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 04:37:14 -0500
+        by vger.kernel.org with ESMTP id S1726587AbgATJhN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jan 2020 04:37:13 -0500
 Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
-        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00K9Tq6V007127;
-        Mon, 20 Jan 2020 01:37:10 -0800
+        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 00K9Tq6S007127;
+        Mon, 20 Jan 2020 01:36:59 -0800
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=pfpt1; bh=rh+zaW5OdyfhzfHfWg/qF2BHGMCgbuAeMW82swuobGI=;
- b=cXQdVDZQuvUaPBpqNpNJZzhs6qEJV8mIk7T6hpCf49zhFEDTBaqK4+qJk6PWUa8LbOG/
- gLTvigwDr/R/mZAVlHBXncQ2Oc1W+sPgDj6ph0ytSWxztntYfH1BtTHoG9Zy2Mnx4jnI
- 0Fv0kXVZfYL/ii/1e6QITr4cuiLx0MwkDshVhUI+17tJWvF7ibCHorCIHkiuQG8Y4tXa
- bLcy516N49xOPDDXQJ0dzMNfAfP/8Hhy7b0agC/tugboqbrFDiiShXgudjUrJwRaNsj+
- tF1fPuelQKFb02puplTS93YtEmzHWcUdjrVFKSH1vcWz2XLc7RaXfCQpHH0mt2SBl5Ct yw== 
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2175.outbound.protection.outlook.com [104.47.56.175])
-        by mx0a-00328301.pphosted.com with ESMTP id 2xm1gqrmtb-1
+ mime-version; s=pfpt1; bh=SiWIoTxyDbzRIsUM2KYgSmOydCXzhJ2aoO2pC6/MFxo=;
+ b=IQcAIT/5ibfYLch/J5OPdrvZalJPK2tlGclFhEDE5z/PqdDB1C5x3xpwokXneQQy24o1
+ AryFccxR2zkDbuLV4Pmyb/LJg4XLV58FLKItvAslsz7DaLWaX6hMm2C0cYV71HRgudSl
+ 1tW3Yif+Ve3YKcQ6floBBFDnt4g7EWUjKSdnEFI/8oA5JcvB9rgujCQRAIe6FDRbcZpT
+ Airbl5MJNWTQGBT8wjm/9vH+zXkYLNgiPgdRQhxlu2N7I40E2h5HLWqs697bnM3JzjUH
+ oo/ClDGrRTSfMCe74OmiWOhXj1C6J2RxtNhiPWfYfJVYFuOCAiW8gJD7XINRksYxV7mi Fg== 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2170.outbound.protection.outlook.com [104.47.57.170])
+        by mx0a-00328301.pphosted.com with ESMTP id 2xm1gqrmt6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 20 Jan 2020 01:37:10 -0800
+        Mon, 20 Jan 2020 01:36:59 -0800
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=RFYPzYBKHv9NNVIAYG3u3WvDpeSOF82acVVAwulf6FdragvJg2TGOtlSgETDOAAhv/MjwgOHuq1fLwDzRXzSIu92eDNOhGIiV8CjEwbpniGQuqVCE9qy9JRQwvuaiGnP9hkM2qhgfp7xyJotvxKmo4wLV5TQXmembJpEfVZupMtUb2CsOL+cWzYJdPOzkxeevplfz+Y0mVw4LzDr2fvTqlA66rPZZUCP11EslbBkUTnUt3TesEt2RgSAaCjayaqX6+aHinoC7wmGcwztFABkxzjBbO3EsQsCTGfU8tomYkAaLpYImXWG4Awl5Hl4yP0V/1ZB+XBBtWQfPDp3Qua+SA==
+ b=M6KWQrYJ7T3zgibxuztb1rMLzyeCL9gESsT5vRO/E9EgI/ySLllM7XDO5S3+6cEgcq98TIH2NJ5/AOhWa4niXJSDP0Ac9D4JZGMhRTHJxEqAt8XeEm/oEe9Q6fNhXheZvIJkIhCBdTG+oCOSb7oLnSVjV2jfekN9FozPzzcn5cZTAZ5CwyaDsUArbNsWjTR/6AYpGRjeKz2uNhsBBi6jb22SuSIBhZ4wXUqEMUdo+b0BYn1gmLjDiaUG5gFaU7AulV8cr/oLcooMEe/OM/Is2p8xfY0fu2f1z1BJQDIhr1LXnX++gcdqL5YgqFMDhIFJg1L37G0PWvhUjStrvGfy9Q==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rh+zaW5OdyfhzfHfWg/qF2BHGMCgbuAeMW82swuobGI=;
- b=kjm5DiZsLWqDwoPMJD4G1d5T4G85QHySV40wWRtS4yniovA0SuPAWMhFuBdzibV7/uL/nA41br8pVZMMrZyOqkUUt6U5+xXkPcvJjNkAhRxXe6vyAAir9lkkGpsXdBNwWFZ360m8JSt787mEnxVjKJsy+bldnLobtMHv2XfnPuttW9gBSY8/z3ucvA8V/1mJBN74u0tjiuJq/UkrG7X27tkcZQbu9Ks4V4LpMziG19ttHZ416QN9t5oBrNcoG/3i7tGfP+uY61ZIxZQtFV9NIQAbszJRKc/3b5ASTGFI7QDCZQ6n/yQuSWgEM3vsaSedfK0aLWnoUUNqZxGW4+5I9g==
+ bh=SiWIoTxyDbzRIsUM2KYgSmOydCXzhJ2aoO2pC6/MFxo=;
+ b=lqRf6TG3yz/umLblWyLw8hTQC0yijtbkZy0K2InboLr5RuzmxJ5wl+uNyCtQhYFomNOnGt7pZsMk61W4TNwmvZkRI9FenKmzlj9BDl1FFMO2j+OC+s1LH44vcZXQ6WStf/Y5MKzf1fHu0o6yi7p7NtCeDGKtssMjn1VB/Q34uX8hwEo2V7WuiP19/QF9PA9zvNQYEb2pSP2PIsV5vBW3fkcLl5Hu0c0NKRtmPzBRbTqldhKB2tJFUTOmZjVqtVvdQQh714C7VUTIVzLLuwBiAYhn7VN+I3DbUakHJXt9NvsRy/0/2/EjOFufTqYMvws69BHgMRHVJ524vL4NDvLrog==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=invensense.com; dmarc=pass action=none
  header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=rh+zaW5OdyfhzfHfWg/qF2BHGMCgbuAeMW82swuobGI=;
- b=A0YQk2hnR8cHkVlwm3lx1ayqW+uvfiFSLCcqX6ILUKVG9go3vPtzmsbxaFEom0B5iBSdxcHDp2ECY5JctQbg85kIEGFVGFGO4tIFDKKw6Q8d7sMkhk3ThNJ3x3AbGIVjGVyGMl59Bk4ytza1CJFAI8+898RZXapuAsA7CkH+xwA=
+ bh=SiWIoTxyDbzRIsUM2KYgSmOydCXzhJ2aoO2pC6/MFxo=;
+ b=bSprz5kuzUxb2YBH+OarIeNQI2AwfFYIy7sm5jOeorNjhkMeJaWgCodsxbrEPj+JpxcBKhRY26Fyt3rpkOu2KrsuLl820+bj2uSxkuQStYAiw8jazkm9QJm+iWv3vJmzuzkrr68wxfOeg/q/TvzqxRAgu1UT7oZcyhXCXhWPSsc=
 Received: from MN2PR12MB3373.namprd12.prod.outlook.com (20.178.242.33) by
  MN2PR12MB4048.namprd12.prod.outlook.com (52.135.49.8) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.2644.19; Mon, 20 Jan 2020 09:37:09 +0000
+ 15.20.2644.19; Mon, 20 Jan 2020 09:36:55 +0000
 Received: from MN2PR12MB3373.namprd12.prod.outlook.com
  ([fe80::4028:892b:b405:59fa]) by MN2PR12MB3373.namprd12.prod.outlook.com
  ([fe80::4028:892b:b405:59fa%6]) with mapi id 15.20.2644.024; Mon, 20 Jan 2020
- 09:37:09 +0000
+ 09:36:55 +0000
 From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH 9/9] iio: imu: inv_mpu6050: fix LPF bandwidth setting
-Date:   Mon, 20 Jan 2020 10:36:20 +0100
-Message-Id: <20200120093620.9681-10-jmaneyrol@invensense.com>
+Subject: [PATCH 4/9] dt-bindings: add description for icm20609 and icm20689
+Date:   Mon, 20 Jan 2020 10:36:15 +0100
+Message-Id: <20200120093620.9681-5-jmaneyrol@invensense.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200120093620.9681-1-jmaneyrol@invensense.com>
 References: <20200120093620.9681-1-jmaneyrol@invensense.com>
@@ -77,35 +77,35 @@ X-ClientProxiedBy: LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM
  (2603:10a6:600:9::14) To MN2PR12MB3373.namprd12.prod.outlook.com
  (2603:10b6:208:c8::33)
 MIME-Version: 1.0
-Received: from frgnb-12nlpn2.invcorp.invensense.com (77.157.193.39) by LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Mon, 20 Jan 2020 09:37:06 +0000
+Received: from frgnb-12nlpn2.invcorp.invensense.com (77.157.193.39) by LO2P265CA0146.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::14) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2644.18 via Frontend Transport; Mon, 20 Jan 2020 09:36:52 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [77.157.193.39]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 9645199c-f30f-4133-6994-08d79d8c51a6
+X-MS-Office365-Filtering-Correlation-Id: 28b53587-c0bf-45ee-572a-08d79d8c496c
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4048:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB404862D448217684FD57DE85C4320@MN2PR12MB4048.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-Microsoft-Antispam-PRVS: <MN2PR12MB404862D01379AAF1C9ED15C1C4320@MN2PR12MB4048.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:3968;
 X-Forefront-PRVS: 0288CD37D9
-X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(346002)(396003)(39840400004)(376002)(136003)(366004)(189003)(199004)(66946007)(66476007)(66556008)(7696005)(52116002)(86362001)(36756003)(107886003)(5660300002)(6666004)(2906002)(8676002)(81166006)(186003)(81156014)(54906003)(1076003)(8936002)(478600001)(4326008)(16526019)(316002)(956004)(2616005)(26005)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB4048;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10009020)(346002)(396003)(39840400004)(376002)(136003)(366004)(189003)(199004)(66946007)(66476007)(66556008)(7696005)(52116002)(4744005)(86362001)(36756003)(107886003)(5660300002)(6666004)(2906002)(8676002)(81166006)(186003)(81156014)(54906003)(1076003)(8936002)(478600001)(4326008)(16526019)(316002)(956004)(2616005)(26005)(6486002);DIR:OUT;SFP:1101;SCL:1;SRVR:MN2PR12MB4048;H:MN2PR12MB3373.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;MX:1;A:1;
 Received-SPF: None (protection.outlook.com: invensense.com does not designate
  permitted sender hosts)
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: P17dr1aUavZcG3iaRTeH9Ew4beG27F1Va8pvp0KTwJKpKudSajfal43Pacn+ca9+Jpo3nMFJ/ZgJyfYM6PH6lKxumt/U5XdgxXEFRyro6aPHqIUQG6LIfSGZyAy58q0OF17UReTsKxOspkBl64aMQa3m1Cv5tWUbxh9TU4KM1OPvOAGtAUyh3DKuzE/j06Qeudjh26W5FooCX24EbczoSvQvBZt1Me2RWA19sN3MASrc/34JCQZhvoEujA3hDiVTH9iWN94SFKO4kduEOb01JIjXiJRtIoHaMJfaXqaLuFxjj/XbQff3o95tlrrassh4Q8qCJDbpQ8maQH8ZCaCIBt9mbQvAaW+PJY9kRvR6PjAJF1wcsTH/m1a6qvjbEW7eBlhThZPKiNLtKBUi12TyMwYSih5JcPKaepjL22BTNKud77cYYbniLWpIi9KDMAG1
+X-Microsoft-Antispam-Message-Info: ouRueZZEwcjXOtlyHhCoHD6jBoG+LHJuKJi0rAGS17DQND3ghePHZkT99PYEPz6rUbN3jqb0LkGS2Qdq7OI5PPDlhVO0gWKh7HZvK5zXBhA387p95K8JgZEyjNR4PMHtZlM6og+/iAvv32YWr6XpUWgb1WrA5Zr+F+VqtAlIghxYgZr0oFsvzkQV4UaIijNjWIx4G3aixBZyn8VhoBhCiVd9RM+nvnm9aRFPUSkh7z0DDMa8JXQ1nxcB8cU/e4O8xRsWQvi8nHQuIn3FCDenMxXVnnCCLCRd7AzYlH68stKh1ZwB70Tads1LTxqZj/yOZQWpLqiaCKW8Zhg/hc8nakWgsl8e0tnxDZ1TzjwIKuRl1yPQmAdmpXa6c/KAfQ5CqqcXqGCKIcol3WITJfiWzmMqI+p+RGhY8/5lTE2KuUVeVaETnVZwO8UZ5w9Xlb/F
 X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9645199c-f30f-4133-6994-08d79d8c51a6
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2020 09:37:08.9835
+X-MS-Exchange-CrossTenant-Network-Message-Id: 28b53587-c0bf-45ee-572a-08d79d8c496c
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 20 Jan 2020 09:36:55.2331
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: DILJM+ag6JV905LRKR7vAY8W7xp7Mb8rUgvi49hyICny211zlF/GqHpZhlXU9pCBObWNzrdBtV9WTIfFHKinhlGaqeO7QkjqV8iRzadq4c8=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 2ox57PslQuMkEvHMPXGfVh7YyvSpQ2MKG1AvPL8M4UOITlwCWvE5H2Z08sj2AAs4g1rm5ALnStMYmGFhVvPMgaI4bf79j5d+eNDFAMoNDp8=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4048
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-01-20_01:2020-01-16,2020-01-20 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- bulkscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=999
+ bulkscore=0 priorityscore=1501 mlxscore=0 mlxlogscore=656
  lowpriorityscore=0 phishscore=0 suspectscore=0 impostorscore=0
  adultscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-1910280000 definitions=main-2001200083
@@ -114,91 +114,26 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As every chip has some little variant in LPF bandwidth values,
-use common values that are working for all chips.
-Simplify the LPF setting function.
+New supported chips.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 30 ++++++++++++----------
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 10 ++++----
- 2 files changed, 21 insertions(+), 19 deletions(-)
+ Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-index 9ecc667debbe..c4db9086775c 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-@@ -707,30 +707,32 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
- /**
-  *  inv_mpu6050_set_lpf() - set low pass filer based on fifo rate.
-  *
-- *                  Based on the Nyquist principle, the sampling rate must
-- *                  exceed twice of the bandwidth of the signal, or there
-- *                  would be alising. This function basically search for the
-- *                  correct low pass parameters based on the fifo rate, e.g,
-- *                  sampling frequency.
-+ *                  Based on the Nyquist principle, the bandwidth of the low
-+ *                  pass filter must not exceed the signal sampling rate divided
-+ *                  by 2, or there would be aliasing.
-+ *                  This function basically search for the correct low pass
-+ *                  parameters based on the fifo rate, e.g, sampling frequency.
-  *
-  *  lpf is set automatically when setting sampling rate to avoid any aliases.
-  */
- static int inv_mpu6050_set_lpf(struct inv_mpu6050_state *st, int rate)
- {
--	static const int hz[] = {188, 98, 42, 20, 10, 5};
-+	static const int hz[] = {400, 200, 90, 40, 20, 10};
- 	static const int d[] = {
--		INV_MPU6050_FILTER_188HZ, INV_MPU6050_FILTER_98HZ,
--		INV_MPU6050_FILTER_42HZ, INV_MPU6050_FILTER_20HZ,
-+		INV_MPU6050_FILTER_200HZ, INV_MPU6050_FILTER_100HZ,
-+		INV_MPU6050_FILTER_45HZ, INV_MPU6050_FILTER_20HZ,
- 		INV_MPU6050_FILTER_10HZ, INV_MPU6050_FILTER_5HZ
- 	};
--	int i, h, result;
-+	int i, result;
- 	u8 data;
- 
--	h = (rate >> 1);
--	i = 0;
--	while ((h < hz[i]) && (i < ARRAY_SIZE(d) - 1))
--		i++;
--	data = d[i];
-+	data = INV_MPU6050_FILTER_5HZ;
-+	for (i = 0; i < ARRAY_SIZE(hz); ++i) {
-+		if (rate >= hz[i]) {
-+			data = d[i];
-+			break;
-+		}
-+	}
- 	result = inv_mpu6050_set_lpf_regs(st, data);
- 	if (result)
- 		return result;
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-index 7ae614052210..9a81098a8b4d 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-@@ -370,14 +370,14 @@ enum inv_mpu6050_scan {
- };
- 
- enum inv_mpu6050_filter_e {
--	INV_MPU6050_FILTER_256HZ_NOLPF2 = 0,
--	INV_MPU6050_FILTER_188HZ,
--	INV_MPU6050_FILTER_98HZ,
--	INV_MPU6050_FILTER_42HZ,
-+	INV_MPU6050_FILTER_NOLPF2 = 0,
-+	INV_MPU6050_FILTER_200HZ,
-+	INV_MPU6050_FILTER_100HZ,
-+	INV_MPU6050_FILTER_45HZ,
- 	INV_MPU6050_FILTER_20HZ,
- 	INV_MPU6050_FILTER_10HZ,
- 	INV_MPU6050_FILTER_5HZ,
--	INV_MPU6050_FILTER_2100HZ_NOLPF,
-+	INV_MPU6050_FILTER_NOLPF,
- 	NUM_MPU6050_FILTER
- };
- 
+diff --git a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+index 38483ea31fd4..606daa145975 100644
+--- a/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
++++ b/Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+@@ -12,6 +12,8 @@ Required properties:
+ 		"invensense,mpu9250"
+ 		"invensense,mpu9255"
+ 		"invensense,icm20608"
++		"invensense,icm20609"
++		"invensense,icm20689"
+ 		"invensense,icm20602"
+  - reg : the I2C address of the sensor
+  - interrupts: interrupt mapping for IRQ. It should be configured with flags
 -- 
 2.17.1
 
