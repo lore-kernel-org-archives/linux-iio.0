@@ -6,30 +6,30 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D2BC35243
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17D84C32771
 	for <linux-iio@archiver.kernel.org>; Fri, 24 Jan 2020 22:14:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 177972075D
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jan 2020 22:14:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EAEF22071A
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Jan 2020 22:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728205AbgAXWN7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1727163AbgAXWN7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 24 Jan 2020 17:13:59 -0500
-Received: from ip-78-45-52-129.net.upcbroadband.cz ([78.45.52.129]:33210 "EHLO
+Received: from ip-78-45-52-129.net.upcbroadband.cz ([78.45.52.129]:33214 "EHLO
         ixit.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727590AbgAXWN7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 24 Jan 2020 17:13:59 -0500
+        id S1728205AbgAXWN6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 24 Jan 2020 17:13:58 -0500
 Received: from localhost.localdomain (227.146.230.94.awnet.cz [94.230.146.227])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
         (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 53E37251EB;
-        Fri, 24 Jan 2020 23:04:17 +0100 (CET)
+        by ixit.cz (Postfix) with ESMTPSA id EC73C251E9;
+        Fri, 24 Jan 2020 23:04:16 +0100 (CET)
 From:   David Heidelberg <david@ixit.cz>
 To:     linux-iio@vger.kernel.org
 Cc:     David Heidelberg <david@ixit.cz>
-Subject: [PATCH 6/7] iio: light: al3320a implement suspend support
-Date:   Fri, 24 Jan 2020 23:03:45 +0100
-Message-Id: <20200124220346.2655336-6-david@ixit.cz>
+Subject: [PATCH 4/7] dt-bindings: iio: light: add support for Dyna-Image AL3010
+Date:   Fri, 24 Jan 2020 23:03:43 +0100
+Message-Id: <20200124220346.2655336-4-david@ixit.cz>
 X-Mailer: git-send-email 2.25.0
 In-Reply-To: <20200124220346.2655336-1-david@ixit.cz>
 References: <20200124220346.2655336-1-david@ixit.cz>
@@ -40,83 +40,62 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-AL3320a is fairly simple chip, so for suspend is enough to disable and
-later enable it again.
+The Dyna-Image AL3010 is a 16-bit digital ambient light sensor which
+provides a multiple gain function with linear response over a dynamic
+range 1216/4863/19452/77806.
 
 Signed-off-by: David Heidelberg <david@ixit.cz>
 ---
- drivers/iio/light/al3320a.c | 31 ++++++++++++++++++++++++++-----
- 1 file changed, 26 insertions(+), 5 deletions(-)
+ .../devicetree/bindings/iio/light/al3010.yaml | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/al3010.yaml
 
-diff --git a/drivers/iio/light/al3320a.c b/drivers/iio/light/al3320a.c
-index 613830b7df6e..d99f9d139b5f 100644
---- a/drivers/iio/light/al3320a.c
-+++ b/drivers/iio/light/al3320a.c
-@@ -7,6 +7,9 @@
-  * IIO driver for AL3320A (7-bit I2C slave address 0x1C).
-  *
-  * TODO: interrupt support, thresholds
-+ * When the driver will get support for interrupt handling, then interrupt
-+ * will need to be disabled before turning sensor OFF in order to avoid
-+ * potential races with the interrupt handling.
-  */
- 
- #include <linux/module.h>
-@@ -84,13 +87,19 @@ static const struct attribute_group al3320a_attribute_group = {
- 	.attrs = al3320a_attributes,
- };
- 
-+static int al3320a_set_pwr(struct i2c_client *client, bool pwr)
-+{
-+	u8 val = pwr ? AL3320A_CONFIG_ENABLE : AL3320A_CONFIG_DISABLE;
-+	return i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG, val);
-+}
+diff --git a/Documentation/devicetree/bindings/iio/light/al3010.yaml b/Documentation/devicetree/bindings/iio/light/al3010.yaml
+new file mode 100644
+index 000000000000..9cd1f34a6d63
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/al3010.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: (GPL-2.0-only)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/al3010.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
++title: Dyna-Image AL3010 sensor
 +
- static int al3320a_init(struct al3320a_data *data)
- {
- 	int ret;
- 
--	/* power on */
--	ret = i2c_smbus_write_byte_data(data->client, AL3320A_REG_CONFIG,
--					AL3320A_CONFIG_ENABLE);
-+	ret = al3320a_set_pwr(data->client, true);
++maintainers:
++  - David Heidelberg <david@ixit.cz>
 +
- 	if (ret < 0)
- 		return ret;
- 
-@@ -208,10 +217,21 @@ static int al3320a_probe(struct i2c_client *client,
- 
- static int al3320a_remove(struct i2c_client *client)
- {
--	return i2c_smbus_write_byte_data(client, AL3320A_REG_CONFIG,
--					 AL3320A_CONFIG_DISABLE);
-+	return al3320a_set_pwr(client, false);
-+}
++properties:
++  compatible:
++    const: dynaimage,al3010
 +
-+static int __maybe_unused al3320a_suspend(struct device *dev)
-+{
-+	return al3320a_set_pwr(to_i2c_client(dev), false);
-+}
++  reg:
++    maxItems: 1
 +
-+static int __maybe_unused al3320a_resume(struct device *dev)
-+{
-+	return al3320a_set_pwr(to_i2c_client(dev), true);
- }
- 
-+SIMPLE_DEV_PM_OPS(al3320a_pm_ops, al3320a_suspend, al3320a_resume);
++  interrupts:
++    maxItems: 1
 +
- static const struct i2c_device_id al3320a_id[] = {
- 	{"al3320a", 0},
- 	{}
-@@ -221,6 +241,7 @@ MODULE_DEVICE_TABLE(i2c, al3320a_id);
- static struct i2c_driver al3320a_driver = {
- 	.driver = {
- 		.name = AL3320A_DRV_NAME,
-+		.pm = &al3320a_pm_ops,
- 	},
- 	.probe		= al3320a_probe,
- 	.remove		= al3320a_remove,
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++required:
++  - compatible
++  - reg
++  - interrupt
++  - vdd-supply
++
++examples:
++  - |
++    i2c {
++        al3010@1c {
++            compatible = "dynaimage,al3010";
++            reg = <0x1c>;
++            vdd-supply = <&vdd_reg>;
++            interrupts = <0 99 4>;
++        };
++    };
 -- 
 2.25.0
 
