@@ -1,323 +1,209 @@
-Return-Path: <SRS0=B57L=3N=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=HZRf=3P=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBA65C3F68F
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jan 2020 22:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E1CC35247
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jan 2020 15:05:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C17D62075D
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jan 2020 22:14:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE01C2075D
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jan 2020 15:05:55 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="nDfWJs/D"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728925AbgAXWOA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 24 Jan 2020 17:14:00 -0500
-Received: from ip-78-45-52-129.net.upcbroadband.cz ([78.45.52.129]:33212 "EHLO
-        ixit.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725821AbgAXWN7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 24 Jan 2020 17:13:59 -0500
-Received: from localhost.localdomain (227.146.230.94.awnet.cz [94.230.146.227])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by ixit.cz (Postfix) with ESMTPSA id 9431D251E7;
-        Fri, 24 Jan 2020 23:04:16 +0100 (CET)
-From:   David Heidelberg <david@ixit.cz>
-To:     linux-iio@vger.kernel.org
-Cc:     David Heidelberg <david@ixit.cz>,
-        Dmitry Osipenko <digetx@gmail.com>
-Subject: [PATCH 2/7] iio: light: add Dyna-Image AL3010 driver
-Date:   Fri, 24 Jan 2020 23:03:41 +0100
-Message-Id: <20200124220346.2655336-2-david@ixit.cz>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200124220346.2655336-1-david@ixit.cz>
-References: <20200124220346.2655336-1-david@ixit.cz>
+        id S1725908AbgAZPFz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Jan 2020 10:05:55 -0500
+Received: from mail-lf1-f66.google.com ([209.85.167.66]:41585 "EHLO
+        mail-lf1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725838AbgAZPFz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jan 2020 10:05:55 -0500
+Received: by mail-lf1-f66.google.com with SMTP id m30so4401260lfp.8
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jan 2020 07:05:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+RHTE3nUb5dfPevjsWD1iLezxvXfZXjeHjK9RsRGLMU=;
+        b=nDfWJs/DHHcdQ78FJWwCKFIzFckSaf1JdgHXG5c7veYmpNleLMzAsxp/rn7tJm2ie0
+         jPy9ku4xKj2itbbOvHvrL3Eals8SMZid0kjvrKqqmWta8yrp0gqYHJLpJfHAlXKz2wLZ
+         jE/qtnjDfClb8o7nXGHdDlA/TrRkaWJTRIlHQkXRlIFN0M717I91I80niUr2dSNp6xOr
+         2QhncGWKA5zlg/gnzjxSvHB7gHFxSSOnSywbbcNdRa8fC1aBEV/KC13Vqjnc4AZUFjeK
+         XKQCEqBny+RWYvLEhDphLTrh2uJSpfEP+eFO3/67apS44GOLjlHd3pCRdPArvjFVCLpq
+         icPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=+RHTE3nUb5dfPevjsWD1iLezxvXfZXjeHjK9RsRGLMU=;
+        b=IiX6i64str3vc/UDYZTy4p0BrwuuOpMYxi7I+jkSmOjTQXWNoK4K10zWOxPmnibdhW
+         1OJwCYRvvDtkWdcjUdpBZEgp5wKyZrSpAeBlWDHfCXo5NmGRMdbiObVwkv5f5BhAYBpn
+         txReMIx2EEz6rysI9MquY0ZPFN3Wu8vStAEASqtGLLlgCCbbGnw+QfBnO4AvuSfFzOcr
+         80s+gSH7J/V62NOtV9NT6LWUBkQrrUMq0cfMiaDHVuC+zCxFYQ3tr9qOuh8Wz6ZonzPC
+         jlqQrOGW+VvXimNyXOSUvY5aw6lVqJijLYw6Qyk7VEZuHXhvy8f2R7ji6a6SjRg7tHQu
+         rYmg==
+X-Gm-Message-State: APjAAAU7TLh85E+9jH+p2PgH67ITM5OhpyqMFuPWfaGRwCb1pPdFvjL3
+        YUZZl3DwTzgxj1ff29WAPynOOQ==
+X-Google-Smtp-Source: APXvYqxg6PLPDQ9mjIyqvHGAgo2AyQkQ7ZmShfE1zgLEnjgc2RLw7tCmB4qFkRsL6xY6Kn/2LN7/xA==
+X-Received: by 2002:a19:3f51:: with SMTP id m78mr5726542lfa.70.1580051152251;
+        Sun, 26 Jan 2020 07:05:52 -0800 (PST)
+Received: from localhost.bredbandsbolaget (c-5ac9225c.014-348-6c756e10.bbcust.telenor.se. [92.34.201.90])
+        by smtp.gmail.com with ESMTPSA id l12sm6635870lji.52.2020.01.26.07.05.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 26 Jan 2020 07:05:51 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-input@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Minkyu Kang <mk7.kang@samsung.com>,
+        =?UTF-8?q?Pawe=C5=82=20Chmiel?= <pawel.mikolaj.chmiel@gmail.com>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Oskar Andero <oskar.andero@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        devicetree@vger.kernel.org, Rob Herring <robh@kernel.org>
+Subject: [PATCH 1/2 v6] iio: light: Add DT bindings for GP2AP002
+Date:   Sun, 26 Jan 2020 16:05:47 +0100
+Message-Id: <20200126150548.9168-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.21.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Based on:
-- 3320A in-kernel driver
-- https://www.spinics.net/lists/linux-iio/msg25145.html
-- https://lore.kernel.org/patchwork/patch/684179/
+This adds device tree bindings for the GP2AP002 light
+and proximity sensor.
 
-I decided to keep it aside of AL3320A due to different approach and much
-simpler design of 3010.
+As with other early proximity sensors (~2010) the light
+sensor and proximity sensors were combined into a single
+component.
 
-Tested on Nexus 7 2012 (grouper/tilapia).
-
-Tested-by: David Heidelberg <david@ixit.cz>
-Tested-by: Dmitry Osipenko <digetx@gmail.com>
-Signed-off-by: David Heidelberg <david@ixit.cz>
+Cc: Stephan Gerhold <stephan@gerhold.net>
+Cc: Minkyu Kang <mk7.kang@samsung.com>
+Cc: Paweł Chmiel <pawel.mikolaj.chmiel@gmail.com>
+Cc: Jonathan Bakker <xc-racer2@live.ca>
+Cc: Oskar Andero <oskar.andero@gmail.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: devicetree@vger.kernel.org
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/light/Kconfig  |  10 ++
- drivers/iio/light/Makefile |   1 +
- drivers/iio/light/al3010.c | 218 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 229 insertions(+)
- create mode 100644 drivers/iio/light/al3010.c
+ChangeLog v5->v6:
+- Resending with v6 of the driver.
+ChangeLog v4->v5:
+- Collected Rob's Reviewed-by tag.
+ChangeLog v3->v4:
+- Resend with the changes in the main patch.
+ChangeLog v1->v3:
+- Drop the maxitems on the supplies, it is already 1
+- Drop quotes around "alsout"
+- Limit the sharp hysteresis to 8 bits as it should be
+- Use /bits/ 8 in the example so it is correct
+---
+ .../bindings/iio/light/sharp,gp2ap002.yaml    | 85 +++++++++++++++++++
+ 1 file changed, 85 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 9968f982fbc7..43d9b830279d 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -43,6 +43,16 @@ config ADUX1020
- 	 To compile this driver as a module, choose M here: the
- 	 module will be called adux1020.
- 
-+config AL3010
-+	tristate "AL3010 ambient light sensor"
-+	depends on I2C
-+	help
-+	  Say Y here if you want to build a driver for the Dyna Image AL3010
-+	  ambient light sensor.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called al3010.
-+
- config AL3320A
- 	tristate "AL3320A ambient light sensor"
- 	depends on I2C
-diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-index c98d1cefb861..88bb93550fcc 100644
---- a/drivers/iio/light/Makefile
-+++ b/drivers/iio/light/Makefile
-@@ -7,6 +7,7 @@
- obj-$(CONFIG_ACPI_ALS)		+= acpi-als.o
- obj-$(CONFIG_ADJD_S311)		+= adjd_s311.o
- obj-$(CONFIG_ADUX1020)		+= adux1020.o
-+obj-$(CONFIG_AL3010)		+= al3010.o
- obj-$(CONFIG_AL3320A)		+= al3320a.o
- obj-$(CONFIG_APDS9300)		+= apds9300.o
- obj-$(CONFIG_APDS9960)		+= apds9960.o
-diff --git a/drivers/iio/light/al3010.c b/drivers/iio/light/al3010.c
+diff --git a/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
 new file mode 100644
-index 000000000000..863854415d5d
+index 000000000000..12aa16f24772
 --- /dev/null
-+++ b/drivers/iio/light/al3010.c
-@@ -0,0 +1,218 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * AL3010 - Dyna Image Ambient Light Sensor
-+ *
-+ * Copyright (c) 2014, Intel Corporation.
-+ * Copyright (c) 2016, Dyna-Image Corp.
-+ *
-+ * IIO driver for AL3010 (7-bit I2C slave address 0x1C).
-+ *
-+ * TODO: interrupt support, thresholds
-+ */
++++ b/Documentation/devicetree/bindings/iio/light/sharp,gp2ap002.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/sharp,gp2ap002.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/i2c.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
++title: Sharp GP2AP002A00F and GP2AP002S00F proximity and ambient light sensors
 +
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
++maintainers:
++  - Linus Walleij <linus.walleij@linaro.org>
 +
-+#define AL3010_DRV_NAME "al3010"
++description: |
++  Proximity and ambient light sensor with IR LED for the proximity
++  sensing and an analog output for light intensity. The ambient light
++  sensor output is not available on the GP2AP002S00F variant.
 +
-+#define AL3010_REG_SYSTEM		0x00
-+#define AL3010_REG_DATA_LOW		0x0c
-+#define AL3010_REG_CONFIG		0x10
++properties:
++  compatible:
++    enum:
++      - sharp,gp2ap002a00f
++      - sharp,gp2ap002s00f
 +
-+#define AL3010_CONFIG_DISABLE		0x00
-+#define AL3010_CONFIG_ENABLE		0x01
++  reg:
++    maxItems: 1
 +
-+#define AL3010_GAIN_SHIFT		4
-+#define AL3010_GAIN_MASK		(BIT(6) | BIT(5) | BIT(4))
++  interrupts:
++    maxItems: 1
++    description: an interrupt for proximity, usually a GPIO line
 +
-+#define AL3010_GAIN_READ(g) \
-+	(((g) & AL3010_GAIN_MASK) >> AL3010_GAIN_SHIFT)
++  vdd-supply:
++    description: VDD power supply a phandle to a regulator
 +
-+#define AL3010_GAIN_WRITE(g) \
-+	(((g) << AL3010_GAIN_SHIFT) & AL3010_GAIN_MASK)
++  vio-supply:
++    description: VIO power supply a phandle to a regulator
 +
-+#define AL3010_SCALE_AVAILABLE "1.1872 0.2968 0.0742 0.018"
++  io-channels:
++    maxItems: 1
++    description: ALSOUT ADC channel to read the ambient light
 +
-+enum al3xxxx_range {
-+	AL3XXX_RANGE_1, /* 77806 lx */
-+	AL3XXX_RANGE_2, /* 19542 lx */
-+	AL3XXX_RANGE_3, /*  4863 lx */
-+	AL3XXX_RANGE_4  /*  1216 lx */
-+};
++  io-channel-names:
++    const: alsout
 +
-+static const int al3010_scales[][2] = {
-+	{0, 1187200}, {0, 296800}, {0, 74200}, {0, 18600}
-+};
++  sharp,proximity-far-hysteresis:
++    $ref: /schemas/types.yaml#/definitions/uint8
++    description: |
++      Hysteresis setting for "far" object detection, this setting is
++      device-unique and adjust the optical setting for proximity detection
++      of a "far away" object in front of the sensor.
 +
-+struct al3010_data {
-+	struct i2c_client *client;
-+};
++  sharp,proximity-close-hysteresis:
++    $ref: /schemas/types.yaml#/definitions/uint8
++    description: |
++      Hysteresis setting for "close" object detection, this setting is
++      device-unique and adjust the optical setting for proximity detection
++      of a "close" object in front of the sensor.
 +
-+static const struct iio_chan_spec al3010_channels[] = {
-+	{
-+		.type	= IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+	}
-+};
++required:
++  - compatible
++  - reg
++  - interrupts
++  - sharp,proximity-far-hysteresis
++  - sharp,proximity-close-hysteresis
 +
-+static IIO_CONST_ATTR(in_illuminance_scale_available, AL3010_SCALE_AVAILABLE);
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
 +
-+static struct attribute *al3010_attributes[] = {
-+	&iio_const_attr_in_illuminance_scale_available.dev_attr.attr,
-+	NULL,
-+};
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
 +
-+static const struct attribute_group al3010_attribute_group = {
-+	.attrs = al3010_attributes,
-+};
++      light-sensor@44 {
++        compatible = "sharp,gp2ap002a00f";
++        reg = <0x44>;
++        interrupts = <18 IRQ_TYPE_EDGE_FALLING>;
++        vdd-supply = <&vdd_regulator>;
++        vio-supply = <&vio_regulator>;
++        io-channels = <&adc_channel>;
++        io-channel-names = "alsout";
++        sharp,proximity-far-hysteresis = /bits/ 8 <0x2f>;
++        sharp,proximity-close-hysteresis = /bits/ 8 <0x0f>;
++      };
++    };
 +
-+static int al3010_init(struct al3010_data *data)
-+{
-+	int ret;
-+
-+	/* power on */
-+	ret = i2c_smbus_write_byte_data(data->client, AL3010_REG_SYSTEM,
-+					AL3010_CONFIG_ENABLE);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(data->client, AL3010_REG_CONFIG,
-+					AL3010_GAIN_WRITE(AL3XXX_RANGE_3));
-+	if (ret < 0)
-+		return ret;
-+
-+	return 0;
-+}
-+
-+static int al3010_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan, int *val,
-+			   int *val2, long mask)
-+{
-+	struct al3010_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		/*
-+		 * ALS ADC value is stored in two adjacent registers:
-+		 * - low byte of output is stored at AL3010_REG_DATA_LOW
-+		 * - high byte of output is stored at AL3010_REG_DATA_LOW + 1
-+		 */
-+		ret = i2c_smbus_read_word_data(data->client,
-+					       AL3010_REG_DATA_LOW);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = i2c_smbus_read_byte_data(data->client,
-+					       AL3010_REG_CONFIG);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = AL3010_GAIN_READ(ret);
-+		*val = al3010_scales[ret][0];
-+		*val2 = al3010_scales[ret][1];
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int al3010_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan, int val,
-+			    int val2, long mask)
-+{
-+	struct al3010_data *data = iio_priv(indio_dev);
-+	int i;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		for (i = 0; i < ARRAY_SIZE(al3010_scales); i++) {
-+			if (val != al3010_scales[i][0] ||
-+			    val2 != al3010_scales[i][1])
-+				continue;
-+
-+			return i2c_smbus_write_byte_data(data->client,
-+						AL3010_REG_CONFIG,
-+						AL3010_GAIN_WRITE(i));
-+		}
-+		break;
-+	}
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info al3010_info = {
-+	.read_raw	= al3010_read_raw,
-+	.write_raw	= al3010_write_raw,
-+	.attrs		= &al3010_attribute_group,
-+};
-+
-+static int al3010_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct al3010_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client = client;
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &al3010_info;
-+	indio_dev->name = AL3010_DRV_NAME;
-+	indio_dev->channels = al3010_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(al3010_channels);
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = al3010_init(data);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "al3010 chip init failed\n");
-+		return ret;
-+	}
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static int al3010_remove(struct i2c_client *client)
-+{
-+	return i2c_smbus_write_byte_data(client, AL3010_REG_SYSTEM,
-+					 AL3010_CONFIG_DISABLE);
-+}
-+
-+static const struct i2c_device_id al3010_id[] = {
-+	{"al3010", 0},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, al3010_id);
-+
-+static const struct of_device_id al3010_of_match[] = {
-+	{ .compatible = "dynaimage,al3010", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, al3010_of_match);
-+
-+static struct i2c_driver al3010_driver = {
-+	.driver = {
-+		.name = AL3010_DRV_NAME,
-+		.of_match_table = al3010_of_match,
-+	},
-+	.probe		= al3010_probe,
-+	.remove		= al3010_remove,
-+	.id_table	= al3010_id,
-+};
-+
-+module_i2c_driver(al3010_driver);
-+
-+MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
-+MODULE_DESCRIPTION("AL3010 Ambient Light Sensor driver");
-+MODULE_LICENSE("GPL v2");
++...
 -- 
-2.25.0
+2.21.1
 
