@@ -2,81 +2,99 @@ Return-Path: <SRS0=wtFk=3U=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476A2C2D0DB
-	for <linux-iio@archiver.kernel.org>; Fri, 31 Jan 2020 14:37:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8D72C2D0DB
+	for <linux-iio@archiver.kernel.org>; Fri, 31 Jan 2020 16:56:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 09A5B2067C
-	for <linux-iio@archiver.kernel.org>; Fri, 31 Jan 2020 14:37:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1580481434;
-	bh=ylK95ZjRxTXe3+y7rsfKzJHRJBkVlqUlI6znaz1nTXE=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=d2oZELUk8H+nZCAG945CDOTxrrAHMZ6XL9KXoLBTvZGqooTMGwLup8nROlJIS2aAq
-	 LOq6Z5Sgf86WOdElYp+fQ272oPY87RXVigw+g5hy6lCfK0Iwv6FThBxCtG9PBKGdc3
-	 yRy9kFZGUHOf8nlML7TwBPyDZPZSv1Zni140mKwY=
+	by mail.kernel.org (Postfix) with ESMTP id C0C8F215A4
+	for <linux-iio@archiver.kernel.org>; Fri, 31 Jan 2020 16:56:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728941AbgAaOhN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 31 Jan 2020 09:37:13 -0500
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:43163 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728825AbgAaOhN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jan 2020 09:37:13 -0500
-Received: by mail-oi1-f193.google.com with SMTP id p125so7403079oif.10;
-        Fri, 31 Jan 2020 06:37:12 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=hGvNGrNQh9w/cT7YnGvDepDZTp70ocpHTM/PadWQKDE=;
-        b=eu7QgISFfTs5M61ZcP1CydsN6/NU4PSfjjjJaEQTftb6tg9e8nu1l745mmWQBW5ANX
-         ZxH+xZkRnUHztnm/cnEZ23IEE3QDcoH1WbVHOWAQ1B3qBIOcU5aUTz93GP9buCDMWauL
-         gxPrO5/4Ueh7hLTHhYcHFkIxxku6d35cJKLAyIptzP416J67JJunlrBqvbJArxypiTh0
-         jVmq0Ekx81unOUjuAV9zHkeUyx6cpbIyNflcQuyl/VE+JonKGBF3xw/K9RehO6oWW+ed
-         lkVVdQHVUgIrydmnXPJ7yaqnU8HNIPtusQRD0RSoEDO8haIADkM3YOlA9plHJ4mrIFGS
-         9GyQ==
-X-Gm-Message-State: APjAAAXb+R45WAnoBAS3xokLWNfTz0NumAy/bd8IaFYZRc0gW3tDB0J8
-        6AB+40S3+9fU/DQJjHfrNw==
-X-Google-Smtp-Source: APXvYqxTjk7Xs/oFr2rF2ZYTojPRFhl5+cRH623gMN4PJXVOczIQatGEhe6lRKx4II8dbEJovMQu7Q==
-X-Received: by 2002:a54:410e:: with SMTP id l14mr6398971oic.42.1580481432570;
-        Fri, 31 Jan 2020 06:37:12 -0800 (PST)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id w72sm2663524oie.49.2020.01.31.06.37.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jan 2020 06:37:11 -0800 (PST)
-Received: (nullmailer pid 26729 invoked by uid 1000);
-        Fri, 31 Jan 2020 14:37:11 -0000
-Date:   Fri, 31 Jan 2020 08:37:11 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH 1/9] dt-bindings: iio: imu: inv_mpu6050: add missing
- entry for mpu6000
-Message-ID: <20200131143711.GA24467@bogus>
-References: <20200120093620.9681-1-jmaneyrol@invensense.com>
- <20200120093620.9681-2-jmaneyrol@invensense.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200120093620.9681-2-jmaneyrol@invensense.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1726322AbgAaQ4n convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 31 Jan 2020 11:56:43 -0500
+Received: from smtp111.ord1d.emailsrvr.com ([184.106.54.111]:58110 "EHLO
+        smtp111.ord1d.emailsrvr.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726139AbgAaQ4n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jan 2020 11:56:43 -0500
+X-Greylist: delayed 601 seconds by postgrey-1.27 at vger.kernel.org; Fri, 31 Jan 2020 11:56:42 EST
+X-Auth-ID: nick.burkitt@nanotok.com
+Received: by smtp6.relay.ord1d.emailsrvr.com (Authenticated sender: nick.burkitt-AT-nanotok.com) with ESMTPSA id C4D77E0387;
+        Fri, 31 Jan 2020 11:46:40 -0500 (EST)
+X-Sender-Id: nick.burkitt@nanotok.com
+Received: from [192.168.0.5] (108-88-90-111.lightspeed.sntcca.sbcglobal.net [108.88.90.111])
+        (using TLSv1.2 with cipher DHE-RSA-AES256-GCM-SHA384)
+        by 0.0.0.0:465 (trex/5.7.12);
+        Fri, 31 Jan 2020 11:46:41 -0500
+From:   "Nick Burkitt" <nick.burkitt@nanotok.com>
+To:     "Lars-Peter Clausen" <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: Re[2]: IIO driver module doesn't load automatically on kernel 4.19
+Date:   Fri, 31 Jan 2020 16:46:39 +0000
+Message-Id: <em73402834-5869-442b-96c8-3106fbc29dae@nanotok>
+In-Reply-To: <7f063be8-d81a-19f6-6357-079c0a479d54@metafoo.de>
+References: <em32a58ce6-ecc9-4a0a-b47d-5d9b79f9bcc1@nanotok>
+ <7f063be8-d81a-19f6-6357-079c0a479d54@metafoo.de>
+Reply-To: "Nick Burkitt" <nick.burkitt@nanotok.com>
+User-Agent: eM_Client/7.2.36908.0
+Mime-Version: 1.0
+Content-Type: text/plain; format=flowed; charset=utf-8
+Content-Transfer-Encoding: 8BIT
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 20, 2020 at 10:36:12AM +0100, Jean-Baptiste Maneyrol wrote:
-> mpu6000 is spi only.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-> ---
->  Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt | 1 +
->  1 file changed, 1 insertion(+)
+Hi Lars-Peter.
 
-Just combine all the DT patches if you're only adding new compatible 
-strings.
+Many thanks for your help. I think you've identified where the problem 
+lies. The behavior I'm seeing from the system on boot-up doesn't seem to 
+match that described in the patch, though. Either there have been 
+additional changes, or the description is inaccurate. Specifically, the 
+author writes, "This patch changes the I2C core to report an OF related 
+MODALIAS uevent if  the device was registered via OF," but it appears 
+that an OF MODALIAS event will be reported even if the driver did *not* 
+register via OF. Adding an of_device_id table to the i2c_driver struct 
+seems to cure the problem.
+At any rate, it's definitely not an IIO-related issue. I also found the 
+same problem with the w1/masters/ds2482 driver. I suspect there are more 
+in-tree drivers that have been broken by this change.
+Vielen Dank,
+
+-Nick
+
+------ Original Message ------
+From: "Lars-Peter Clausen" <lars@metafoo.de>
+To: "Nick Burkitt" <nick.burkitt@nanotok.com>; linux-iio@vger.kernel.org
+Sent: 1/30/2020 12:44:22 PM
+Subject: Re: IIO driver module doesn't load automatically on kernel 4.19
+
+>On 1/29/20 9:25 PM, Nick Burkitt wrote:
+>>Hi All.
+>>
+>>Pardon me if I'm in the wrong place, but I have to start somewhere.
+>>I'm using an IIO driver (based on the BNO055 driver proposed by Vlad Dogaru back in 2016).
+>>All was well for a couple of years, but after I updated my kernel from 4.14 to 4.19, my driver will no longer load on boot, but is still happy to be loaded manually with modprobe.
+>>All other drivers load normally.
+>>Has something changed in the way IIO drivers register themselves? Or has some other requirement been added since 4.14 that I have to add to my driver?
+>>If not, any suggestions on where to go next would be appreciated.
+>>
+>>Details:
+>>Xilinx Zynq-7000 (ARM Cortex-A9, 2 cores@866 MHz), 1 GB RAM
+>>Linux v4.19.0 (via Xilinx)
+>>Ubuntu 16.04 and 18.04 (both exhibit the same problem)
+>
+>Hi,
+>
+>There shouldn't really be a IIO specific reason why it does not work anymore.
+>
+>Modules for devices are loaded based on the bus that the device is connected to. For sensors typically the I2C or SPI bus.
+>
+>I had a quick look at what changed in the I2C core that could have broken this and it could maybe be this commit:
+>https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/?id=af503716ac1444db61d80cb6d17cfe62929c21df
+>
+>The commit message warns that the change might break out-of-tree drivers that do not have a OF device table. You can fix the issue by adding such a table.
+>
+>- Lars
+
