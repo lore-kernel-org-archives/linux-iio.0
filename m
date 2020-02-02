@@ -2,405 +2,369 @@ Return-Path: <SRS0=AxjO=3W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
+X-Spam-Status: No, score=-7.2 required=3.0 tests=DATE_IN_PAST_03_06,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4059C35249
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Feb 2020 17:34:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FFD8C35249
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Feb 2020 21:17:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 90BB32067C
-	for <linux-iio@archiver.kernel.org>; Sun,  2 Feb 2020 17:34:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1580664843;
-	bh=88LeKWJOM74/Pbs2Z78JetCzN+L40TIDYZiVpDnXMNk=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=yU1R8CL5kq8YnhNRFvu8NM7Pra4ZzksnqYhdjQ9mrshLhj9dXr7hBZQkQRFzpvHfg
-	 cykVPBFtKk2snj0Dh2r5ICzJGzRzEUAJDb/qn3GPx6OBTPiWQQhWE+IRx08F2HTmei
-	 /16fsarJxYmGNPX0G03H8H/0EBt0iHcmYBdd2eK8=
+	by mail.kernel.org (Postfix) with ESMTP id 5C6FE20658
+	for <linux-iio@archiver.kernel.org>; Sun,  2 Feb 2020 21:17:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726912AbgBBReC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 2 Feb 2020 12:34:02 -0500
-Received: from mail.kernel.org ([198.145.29.99]:57368 "EHLO mail.kernel.org"
+        id S1726971AbgBBVRn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 2 Feb 2020 16:17:43 -0500
+Received: from honk.sigxcpu.org ([24.134.29.49]:59242 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726525AbgBBReC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 2 Feb 2020 12:34:02 -0500
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 45CA420658;
-        Sun,  2 Feb 2020 17:33:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1580664840;
-        bh=88LeKWJOM74/Pbs2Z78JetCzN+L40TIDYZiVpDnXMNk=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=vHN6diPm2xckWM1N2ksYUKDibu2V5oTFuacIQeH7YnIGa2mJYLWNcyRx3Gp5xStOm
-         3Xt6kuoSwMgMNoLTpNJLBJVRZij9w5dKfdpp6QuJFavZdo27hVjfcmwYMSAbS3a5e2
-         ObM1oVtnJAWRl+V/68a27qYNtF7cc+vkTg2m5jrQ=
-Date:   Sun, 2 Feb 2020 17:33:55 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andreas Kemnade <andreas@kemnade.info>
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        lee.jones@linaro.org, b.galvani@gmail.com,
-        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, phh@phh.me, stefan@agner.ch,
-        letux-kernel@openphoenux.org, martin.blumenstingl@googlemail.com
-Subject: Re: [PATCH v2 1/3] iio: adc: rn5t618: Add ADC driver for
- RN5T618/RC5T619
-Message-ID: <20200202173355.1b949a37@archlinux>
-In-Reply-To: <20200120212056.28806-2-andreas@kemnade.info>
-References: <20200120212056.28806-1-andreas@kemnade.info>
-        <20200120212056.28806-2-andreas@kemnade.info>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726967AbgBBVRn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 2 Feb 2020 16:17:43 -0500
+Received: from localhost (localhost [127.0.0.1])
+        by honk.sigxcpu.org (Postfix) with ESMTP id 1119CFB04;
+        Sun,  2 Feb 2020 22:17:41 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
+Received: from honk.sigxcpu.org ([127.0.0.1])
+        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id gTUT2lDnnoBF; Sun,  2 Feb 2020 22:17:38 +0100 (CET)
+Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
+        id BEBFB400E9; Sun,  2 Feb 2020 18:58:51 +0100 (CET)
+Date:   Sun, 2 Feb 2020 18:58:51 +0100
+From:   Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Tomas Novotny <tomas@novotny.cz>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: vncl4000: Enable runtime pm for vcnl4200/4040
+Message-ID: <20200202175851.GA27766@bogon.m.sigxcpu.org>
+References: <cover.1580391472.git.agx@sigxcpu.org>
+ <237488ddf8f2707e905164c0ec81a7979f1fa9a9.1580391472.git.agx@sigxcpu.org>
+ <20200202093408.26bc63b8@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200202093408.26bc63b8@archlinux>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 20 Jan 2020 22:20:54 +0100
-Andreas Kemnade <andreas@kemnade.info> wrote:
-
-> Both chips have an A/D converter capable of measuring
-> things like VBAT, VUSB and analog inputs.
+Hi Jonathan,
+On Sun, Feb 02, 2020 at 09:34:08AM +0000, Jonathan Cameron wrote:
+> On Thu, 30 Jan 2020 14:42:36 +0100
+> Guido Günther <agx@sigxcpu.org> wrote:
 > 
-> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
-Sorry I missed one bigger thing in here around PROCESSED vs RAW.
-See inline.
-
-Thanks,
-
-Jonathan
-
-> ---
-> Changes in v2:
-> - enum for channels
-> - bulk read instead of single byte read for conversion
->   result
-> - fix get_virq error handling
-> - use devm for registering device and requesting IRQ
+> > This is modelled after the vcnl4035 driver. For the vcnl40{0,1,2}0
+> > we don't do anything since they use on demand measurement.
+> > 
+> > Signed-off-by: Guido Günther <agx@sigxcpu.org>
+> Hi Guido,
 > 
->  drivers/iio/adc/Kconfig       |  10 ++
->  drivers/iio/adc/Makefile      |   1 +
->  drivers/iio/adc/rn5t618-adc.c | 253 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 264 insertions(+)
->  create mode 100644 drivers/iio/adc/rn5t618-adc.c
+> A few minor things inline, but otherwise looks good to me.
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index f0af3a42f53c..9ea9489e3f0a 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -735,6 +735,16 @@ config RCAR_GYRO_ADC
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called rcar-gyroadc.
->  
-> +config RN5T618_ADC
-> +	tristate "ADC for the RN5T618/RC5T619 family of chips"
-> +	depends on MFD_RN5T618
-> +	help
-> +	  Say yes here to build support for the integrated ADC inside the
-> +	  RN5T618/619 series PMICs:
-Why :?
-> +
-> +	  This driver can also be built as a module. If so, the module
-> +	  will be called rn5t618-adc.
-> +
->  config ROCKCHIP_SARADC
->  	tristate "Rockchip SARADC driver"
->  	depends on ARCH_ROCKCHIP || (ARM && COMPILE_TEST)
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index ef9cc485fb67..2aea70556ed0 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -69,6 +69,7 @@ obj-$(CONFIG_QCOM_VADC_COMMON) += qcom-vadc-common.o
->  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
->  obj-$(CONFIG_QCOM_PM8XXX_XOADC) += qcom-pm8xxx-xoadc.o
->  obj-$(CONFIG_RCAR_GYRO_ADC) += rcar-gyroadc.o
-> +obj-$(CONFIG_RN5T618_ADC) += rn5t618-adc.o
->  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
->  obj-$(CONFIG_SC27XX_ADC) += sc27xx_adc.o
->  obj-$(CONFIG_SPEAR_ADC) += spear_adc.o
-> diff --git a/drivers/iio/adc/rn5t618-adc.c b/drivers/iio/adc/rn5t618-adc.c
-> new file mode 100644
-> index 000000000000..667bd814569d
-> --- /dev/null
-> +++ b/drivers/iio/adc/rn5t618-adc.c
-> @@ -0,0 +1,253 @@
-> +// SPDX-License-Identifier: GPL-2.0+
-> +/*
-> + * ADC driver for the RICOH RN5T618 power management chip family
-> + *
-> + * Copyright (C) 2019 Andreas Kemnade
-> + */
-> +
-> +#include <linux/kernel.h>
-> +#include <linux/device.h>
-> +#include <linux/errno.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/init.h>
-> +#include <linux/module.h>
-> +#include <linux/mfd/rn5t618.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/completion.h>
-> +#include <linux/regmap.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/slab.h>
-> +#include <linux/irqdomain.h>
-I may be missing something, but I'm not immediately seeing any irq_domain*
-calls?  I suspect the only call is via stuff buried in regmap so we probably
-don't need the header here.
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/light/vcnl4000.c | 135 ++++++++++++++++++++++++++++++++---
+> >  1 file changed, 124 insertions(+), 11 deletions(-)
+> > 
+> > diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+> > index 8f198383626b..1395875d9553 100644
+> > --- a/drivers/iio/light/vcnl4000.c
+> > +++ b/drivers/iio/light/vcnl4000.c
+> > @@ -22,6 +22,7 @@
+> >  #include <linux/i2c.h>
+> >  #include <linux/err.h>
+> >  #include <linux/delay.h>
+> > +#include <linux/pm_runtime.h>
+> >  
+> >  #include <linux/iio/iio.h>
+> >  #include <linux/iio/sysfs.h>
+> > @@ -57,6 +58,8 @@
+> >  #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
+> >  #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
+> >  
+> > +#define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+> > +
+> >  enum vcnl4000_device_ids {
+> >  	VCNL4000,
+> >  	VCNL4010,
+> > @@ -87,6 +90,7 @@ struct vcnl4000_chip_spec {
+> >  	int (*init)(struct vcnl4000_data *data);
+> >  	int (*measure_light)(struct vcnl4000_data *data, int *val);
+> >  	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
+> > +	int (*set_power_state)(struct vcnl4000_data *data, bool on);
+> >  };
+> >  
+> >  static const struct i2c_device_id vcnl4000_id[] = {
+> > @@ -99,6 +103,12 @@ static const struct i2c_device_id vcnl4000_id[] = {
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
+> >  
+> > +static int vcnl4000_set_power_state(struct vcnl4000_data *data, bool on)
+> > +{
+> > +	/* no suspend op */
+> > +	return 0;
+> > +}
+> > +
+> >  static int vcnl4000_init(struct vcnl4000_data *data)
+> >  {
+> >  	int ret, prod_id;
+> > @@ -127,9 +137,31 @@ static int vcnl4000_init(struct vcnl4000_data *data)
+> >  	data->al_scale = 250000;
+> >  	mutex_init(&data->vcnl4000_lock);
+> >  
+> > +	ret = data->chip_spec->set_power_state(data, true);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> >  	return 0;
+> >  };
+> >  
+> > +static int vcnl4200_set_power_state(struct vcnl4000_data *data, bool on)
+> > +{
+> > +	u16 val = on ? 0 /* power on */ : 1 /* shut down */;
+> > +	int ret;
+> > +
+> > +	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, val);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	return i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, val);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	/* Wait at least one integration cycle before fetching data */
+> > +	data->vcnl4200_al.last_measurement = ktime_get();
+> > +	data->vcnl4200_ps.last_measurement = ktime_get();
+> 
+> Hmm.  Feels like these only really make sense if we are turning on?
+> They may do no harm in the off path, but better if the code makes
+> it clear they are irrelevant in that path.
 
-> +
-> +#define RN5T618_ADC_CONVERSION_TIMEOUT   (msecs_to_jiffies(500))
-> +#define REFERENCE_VOLT 2500
+You're right, it doesn't matter in the off path but it's clearer when
+only doing it in the 'on' path.
 
-Please prefix these defines
-RN5T618_* 
+> No return value.
 
-It avoids potential clashes in future with things defined in headers.
+Duh, wonder why gcc didn't warn about that.
 
-> +
-> +/* mask for selecting channels for single conversion */
-> +#define ADCCNT3_CHANNEL_MASK 0x7
-> +/* average 4-time conversion mode */
-> +#define ADCCNT3_AVG BIT(3)
-> +/* set for starting a single conversion, gets cleared by hw when done */
-> +#define ADCCNT3_GODONE BIT(4)
-> +/* automatic conversion, period is in ADCCNT2, selected channels are
-> + * in ADCCNT1
-> + */
-> +#define ADCCNT3_AUTO BIT(5)
-> +#define ADCEND_IRQ BIT(0)
-> +
-> +struct rn5t618_adc_data {
-> +	struct device *dev;
-> +	struct rn5t618 *rn5t618;
-> +	struct completion conv_completion;
-> +	int irq;
-> +};
-> +
-> +struct rn5t618_channel_ratios {
-> +	u16 numerator;
-> +	u16 denominator;
-> +};
-> +
-> +enum rn5t618_channels {
-> +	LIMMON = 0,
-> +	VBAT,
-> +	VADP,
-> +	VUSB,
-> +	VSYS,
-> +	VTHM,
-> +	AIN1,
-> +	AIN0
-> +};
-> +
-> +static const struct rn5t618_channel_ratios rn5t618_ratios[8] = {
-> +	[LIMMON] = {50, 32}, /* measured across 20mOhm, amplified by 32 */
-> +	[VBAT] = {2, 1},
-> +	[VADP] = {3, 1},
-> +	[VUSB] = {3, 1},
-> +	[VSYS] = {3, 1},
-> +	[VTHM] = {1, 1},
-> +	[AIN1] = {1, 1},
-> +	[AIN0] = {1, 1},
-> +};
-> +
-> +static int rn5t618_read_adc_reg(struct rn5t618 *rn5t618, int reg, u16 *val)
-> +{
-> +	u8 data[2];
-> +	int ret;
-> +
-> +	ret = regmap_bulk_read(rn5t618->regmap, reg, data, sizeof(data));
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = (data[0] << 4) | (data[1] & 0xF);
-> +
-> +	return 0;
-> +}
-> +
-> +static irqreturn_t rn5t618_adc_irq(int irq, void *data)
-> +{
-> +	struct rn5t618_adc_data *adc = data;
-> +	unsigned int r = 0;
-> +	int ret;
-> +
-> +	/* clear low & high threshold irqs */
-> +	regmap_write(adc->rn5t618->regmap, RN5T618_IR_ADC1, 0);
-> +	regmap_write(adc->rn5t618->regmap, RN5T618_IR_ADC2, 0);
-> +
-> +	ret = regmap_read(adc->rn5t618->regmap, RN5T618_IR_ADC3, &r);
-> +	if (ret < 0)
-> +		dev_err(adc->dev, "failed to read IRQ status: %d\n", ret);
-> +
-> +	regmap_write(adc->rn5t618->regmap, RN5T618_IR_ADC3, 0);
-> +
-> +	if (r & ADCEND_IRQ)
-> +		complete(&adc->conv_completion);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int rn5t618_adc_read(struct iio_dev *iio_dev,
-> +			    const struct iio_chan_spec *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct rn5t618_adc_data *adc = iio_priv(iio_dev);
-> +	u16 raw;
-> +	int ret;
-> +
-> +	/* select channel */
-> +	ret = regmap_update_bits(adc->rn5t618->regmap, RN5T618_ADCCNT3,
-> +				 ADCCNT3_CHANNEL_MASK,
-> +				 chan->channel);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_write(adc->rn5t618->regmap, RN5T618_EN_ADCIR3, ADCEND_IRQ);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = regmap_update_bits(adc->rn5t618->regmap, RN5T618_ADCCNT3,
-> +				 ADCCNT3_AVG,
-> +				 mask == IIO_CHAN_INFO_AVERAGE_RAW ?
-> +				 ADCCNT3_AVG : 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	init_completion(&adc->conv_completion);
-> +	/* single conversion */
-> +	ret = regmap_update_bits(adc->rn5t618->regmap, RN5T618_ADCCNT3,
-> +				 ADCCNT3_GODONE, ADCCNT3_GODONE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = wait_for_completion_timeout(&adc->conv_completion,
-> +					  RN5T618_ADC_CONVERSION_TIMEOUT);
-> +	if (ret == 0) {
-> +		dev_warn(adc->dev, "timeout waiting for adc result\n");
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	ret = rn5t618_read_adc_reg(adc->rn5t618,
-> +				   RN5T618_ILIMDATAH + 2 * chan->channel,
-> +				   &raw);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	*val = raw;
-> +	if (mask == IIO_CHAN_INFO_PROCESSED)
-> +		*val = *val * REFERENCE_VOLT *
-> +		       rn5t618_ratios[chan->channel].numerator /
-> +		       rn5t618_ratios[chan->channel].denominator / 4095;
+> 
+> i.e. return 0;
+> > +}
+> > +
+> >  static int vcnl4200_init(struct vcnl4000_data *data)
+> >  {
+> >  	int ret, id;
+> > @@ -155,14 +187,6 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+> >  
+> >  	data->rev = (ret >> 8) & 0xf;
+> >  
+> > -	/* Set defaults and enable both channels */
+> > -	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, 0);
+> > -	if (ret < 0)
+> > -		return ret;
+> > -	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, 0);
+> > -	if (ret < 0)
+> > -		return ret;
+> > -
+> >  	data->vcnl4200_al.reg = VCNL4200_AL_DATA;
+> >  	data->vcnl4200_ps.reg = VCNL4200_PS_DATA;
+> >  	switch (id) {
+> > @@ -180,11 +204,13 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+> >  		data->al_scale = 120000;
+> >  		break;
+> >  	}
+> > -	data->vcnl4200_al.last_measurement = ktime_set(0, 0);
+> > -	data->vcnl4200_ps.last_measurement = ktime_set(0, 0);
+> >  	mutex_init(&data->vcnl4200_al.lock);
+> >  	mutex_init(&data->vcnl4200_ps.lock);
+> >  
+> > +	ret = data->chip_spec->set_power_state(data, true);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> >  	return 0;
+> >  };
+> >  
+> > @@ -291,24 +317,28 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+> >  		.init = vcnl4000_init,
+> >  		.measure_light = vcnl4000_measure_light,
+> >  		.measure_proximity = vcnl4000_measure_proximity,
+> > +		.set_power_state = vcnl4000_set_power_state,
+> >  	},
+> >  	[VCNL4010] = {
+> >  		.prod = "VCNL4010/4020",
+> >  		.init = vcnl4000_init,
+> >  		.measure_light = vcnl4000_measure_light,
+> >  		.measure_proximity = vcnl4000_measure_proximity,
+> > +		.set_power_state = vcnl4000_set_power_state,
+> >  	},
+> >  	[VCNL4040] = {
+> >  		.prod = "VCNL4040",
+> >  		.init = vcnl4200_init,
+> >  		.measure_light = vcnl4200_measure_light,
+> >  		.measure_proximity = vcnl4200_measure_proximity,
+> > +		.set_power_state = vcnl4200_set_power_state,
+> >  	},
+> >  	[VCNL4200] = {
+> >  		.prod = "VCNL4200",
+> >  		.init = vcnl4200_init,
+> >  		.measure_light = vcnl4200_measure_light,
+> >  		.measure_proximity = vcnl4200_measure_proximity,
+> > +		.set_power_state = vcnl4200_set_power_state,
+> >  	},
+> >  };
+> >  
+> > @@ -323,6 +353,23 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
+> >  	}
+> >  };
+> >  
+> > +static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
+> > +{
+> > +	struct device *dev = &data->client->dev;
+> > +	int ret;
+> > +
+> > +	if (on) {
+> > +		ret = pm_runtime_get_sync(dev);
+> > +		if (ret < 0)
+> > +			pm_runtime_put_noidle(dev);
+> > +	} else {
+> > +		pm_runtime_mark_last_busy(dev);
+> > +		ret = pm_runtime_put_autosuspend(dev);
+> > +	}
+> > +
+> > +	return ret;
+> > +}
+> > +
+> >  static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+> >  				struct iio_chan_spec const *chan,
+> >  				int *val, int *val2, long mask)
+> > @@ -332,6 +379,10 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+> >  
+> >  	switch (mask) {
+> >  	case IIO_CHAN_INFO_RAW:
+> > +		ret = vcnl4000_set_pm_runtime_state(data, true);
+> > +		if  (ret < 0)
+> > +			return ret;
+> > +
+> >  		switch (chan->type) {
+> >  		case IIO_LIGHT:
+> >  			ret = data->chip_spec->measure_light(data, val);
+> > @@ -346,6 +397,7 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+> >  		default:
+> >  			ret = -EINVAL;
+> >  		}
+> > +		vcnl4000_set_pm_runtime_state(data, false);
+> >  		return ret;
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		if (chan->type != IIO_LIGHT)
+> > @@ -394,7 +446,22 @@ static int vcnl4000_probe(struct i2c_client *client,
+> >  	indio_dev->name = VCNL4000_DRV_NAME;
+> >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> >  
+> > -	return devm_iio_device_register(&client->dev, indio_dev);
+> > +	ret = pm_runtime_set_active(&client->dev);
+> > +	if (ret < 0)
+> > +		goto fail_poweroff;
+> > +
+> > +	ret = iio_device_register(indio_dev);
+> > +	if (ret < 0)
+> > +		goto fail_poweroff;
+> > +
+> > +	pm_runtime_enable(&client->dev);
+> > +	pm_runtime_set_autosuspend_delay(&client->dev, VCNL4000_SLEEP_DELAY_MS);
+> > +	pm_runtime_use_autosuspend(&client->dev);
+> > +
+> > +	return 0;
+> > +fail_poweroff:
+> > +	data->chip_spec->set_power_state(data, false);
+> > +	return ret;
+> >  }
+> >  
+> >  static const struct of_device_id vcnl_4000_of_match[] = {
+> > @@ -422,13 +489,59 @@ static const struct of_device_id vcnl_4000_of_match[] = {
+> >  };
+> >  MODULE_DEVICE_TABLE(of, vcnl_4000_of_match);
+> >  
+> > +static int vcnl4000_remove(struct i2c_client *client)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > +	struct vcnl4000_data *data = iio_priv(indio_dev);
+> > +
+> > +	pm_runtime_dont_use_autosuspend(&client->dev);
+> > +	pm_runtime_disable(&client->dev);
+> > +	iio_device_unregister(indio_dev);
+> > +	pm_runtime_set_suspended(&client->dev);
+> > +
+> > +	return data->chip_spec->set_power_state(data, false);
+> > +}
+> > +
+> > +static int __maybe_unused vcnl4000_runtime_suspend(struct device *dev)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> > +	struct vcnl4000_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	ret = data->chip_spec->set_power_state(data, false);
+> > +
+> > +	return ret;
+> 
+> 	return data->chip_spec...
+> 
+> > +}
+> > +
+> > +static int __maybe_unused vcnl4000_runtime_resume(struct device *dev)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> > +	struct vcnl4000_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	ret = data->chip_spec->set_power_state(data, true);
+> > +	if (ret < 0)
+> > +		return ret;
+> 
+> I would define the set_power_state callback to return only < 0 for error
+> and 0 for no error.  (already true).
+> 
+> then
+> 
+> return data->chip_spec->set_power_state(data, true);
 
-This info should be provided as scale so that userspace can do the maths if
-it wants to rather than handling it in kernel.
+Both returns simplified and also the one in vcnl4000_init.
 
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static const struct iio_info rn5t618_adc_iio_info = {
-> +	.read_raw = &rn5t618_adc_read,
-> +};
-> +
-> +#define RN5T618_ADC_CHANNEL(_channel, _type, _name) { \
-> +	.type = _type, \
-> +	.channel = _channel, \
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-> +			      BIT(IIO_CHAN_INFO_AVERAGE_RAW) | \
-> +			      BIT(IIO_CHAN_INFO_PROCESSED), \
+Thanks for having a look,
+ -- Guido
 
-Sorry, I missed this before. 
-
-As a general rule it makes no sense to expose both RAW and PROCESSED values.
-It should be possible to work one out from the other if the relationship is
-linear and scale is provided.
-
-> +	.datasheet_name = _name, \
-> +	.indexed = 1. \
-> +}
-> +
-> +static const struct iio_chan_spec rn5t618_adc_iio_channels[] = {
-> +	RN5T618_ADC_CHANNEL(LIMMON, IIO_CURRENT, "LIMMON"),
-> +	RN5T618_ADC_CHANNEL(VBAT, IIO_VOLTAGE, "VBAT"),
-> +	RN5T618_ADC_CHANNEL(VADP, IIO_VOLTAGE, "VADP"),
-> +	RN5T618_ADC_CHANNEL(VUSB, IIO_VOLTAGE, "VUSB"),
-> +	RN5T618_ADC_CHANNEL(VSYS, IIO_VOLTAGE, "VSYS"),
-> +	RN5T618_ADC_CHANNEL(VTHM, IIO_VOLTAGE, "VTHM"),
-> +	RN5T618_ADC_CHANNEL(AIN1, IIO_VOLTAGE, "AIN1"),
-> +	RN5T618_ADC_CHANNEL(AIN0, IIO_VOLTAGE, "AIN0")
-> +};
-> +
-> +static int rn5t618_adc_probe(struct platform_device *pdev)
-> +{
-> +	int ret;
-> +	struct iio_dev *iio_dev;
-> +	struct rn5t618_adc_data *adc;
-> +	struct rn5t618 *rn5t618 = dev_get_drvdata(pdev->dev.parent);
-> +
-> +	iio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc));
-> +	if (!iio_dev) {
-> +		dev_err(&pdev->dev, "failed allocating iio device\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	adc = iio_priv(iio_dev);
-> +	adc->dev = &pdev->dev;
-> +	adc->rn5t618 = rn5t618;
-> +
-> +	if (rn5t618->irq_data)
-> +		adc->irq = regmap_irq_get_virq(rn5t618->irq_data,
-> +					       RN5T618_IRQ_ADC);
-> +
-> +	if (adc->irq <= 0) {
-> +		dev_err(&pdev->dev, "get virq failed\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	init_completion(&adc->conv_completion);
-> +
-> +	iio_dev->name = dev_name(&pdev->dev);
-> +	iio_dev->dev.parent = &pdev->dev;
-> +	iio_dev->info = &rn5t618_adc_iio_info;
-> +	iio_dev->modes = INDIO_DIRECT_MODE;
-> +	iio_dev->channels = rn5t618_adc_iio_channels;
-> +	iio_dev->num_channels = ARRAY_SIZE(rn5t618_adc_iio_channels);
-> +
-> +	/* stop any auto-conversion */
-> +	ret = regmap_write(rn5t618->regmap, RN5T618_ADCCNT3, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	platform_set_drvdata(pdev, iio_dev);
-> +
-> +	ret = devm_request_threaded_irq(adc->dev, adc->irq, NULL,
-> +					rn5t618_adc_irq,
-> +					IRQF_ONESHOT, dev_name(adc->dev),
-> +					adc);
-> +	if (ret < 0) {
-> +		dev_err(adc->dev, "request irq %d failed: %d\n", adc->irq, ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_iio_device_register(adc->dev, iio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static struct platform_driver rn5t618_adc_driver = {
-> +	.driver = {
-> +		.name   = "rn5t618-adc",
-> +	},
-> +	.probe = rn5t618_adc_probe,
-> +};
-> +
-> +module_platform_driver(rn5t618_adc_driver);
-> +MODULE_ALIAS("platform:rn5t618-adc");
-> +MODULE_DESCRIPTION("RICOH RN5T618 ADC driver");
-> +MODULE_LICENSE("GPL");
-
+> 
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct dev_pm_ops vcnl4000_pm_ops = {
+> > +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> > +				pm_runtime_force_resume)
+> > +	SET_RUNTIME_PM_OPS(vcnl4000_runtime_suspend,
+> > +			   vcnl4000_runtime_resume, NULL)
+> > +};
+> > +
+> >  static struct i2c_driver vcnl4000_driver = {
+> >  	.driver = {
+> >  		.name   = VCNL4000_DRV_NAME,
+> > +		.pm	= &vcnl4000_pm_ops,
+> >  		.of_match_table = vcnl_4000_of_match,
+> >  	},
+> >  	.probe  = vcnl4000_probe,
+> >  	.id_table = vcnl4000_id,
+> > +	.remove	= vcnl4000_remove,
+> >  };
+> >  
+> >  module_i2c_driver(vcnl4000_driver);
+> 
