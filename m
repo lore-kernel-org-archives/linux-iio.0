@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF75DC33CAC
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Feb 2020 10:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90865C33CAC
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Feb 2020 10:25:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C59AB2082E
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Feb 2020 10:17:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 63DDD20721
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Feb 2020 10:25:20 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uOG4l/EJ"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="KXu8gdqi"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727389AbgBCKR0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Feb 2020 05:17:26 -0500
-Received: from mail-pl1-f193.google.com ([209.85.214.193]:42112 "EHLO
-        mail-pl1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727368AbgBCKRZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2020 05:17:25 -0500
-Received: by mail-pl1-f193.google.com with SMTP id e8so3058625plt.9;
-        Mon, 03 Feb 2020 02:17:25 -0800 (PST)
+        id S1727256AbgBCKZQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Feb 2020 05:25:16 -0500
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:38084 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727223AbgBCKZQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Feb 2020 05:25:16 -0500
+Received: by mail-pg1-f195.google.com with SMTP id a33so7577771pgm.5;
+        Mon, 03 Feb 2020 02:25:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BI5Btq2BdundVSKnBkH4i1TFYWWU2lOLfpEXkz2+34s=;
-        b=uOG4l/EJf8A41gc/jrWj8EHPHycM5dDbt4B75bhhTdoLLLwHOrRFYjwVJm7iW3MmaA
-         DjAAMXUI+hBR2vVQ9OXZ+9Xp7LhNCzKguyxX3oE8IjszizV/Jhr0sHESa/OLqKyBg9+x
-         t8TmgTUUwcdk0G6KVv3Xk13Q5kvka41iQXWwk7F50eyCTaaDYsJvXlfBYL8LzOrBWszR
-         xUgGSsWF5zfk823OiDIDtlAvxCQG+EhsAj7nnETA+Bp7Lq+rOzhVkfKaCBym1UEe/Ra5
-         9P0rRsLjziDh+71Bx9dKNnghPeXSy8yP0ToW30/pmaXLkYtlUJQ7rxDySWKKI/nEdzOB
-         k91Q==
+        bh=x7n8iYbotY1SSWk8040/LMh/zf8OB99iIkxzC9W3j6c=;
+        b=KXu8gdqiB+LLnu0PQxmo71BZx4WS9dIPfHjiaOJd1IfXfU8+pe9Cf96kK87ih9AsP2
+         vcm/eDuPmuBOqw3YNn4Q2EwAPOVXqyeHXDPXFk3hbYnqePM9R4SFHHE/uaT/wOdR6iMa
+         KE8ipJgAsiX6XmR/XybvKtXaD9iwgUx6sRdbH7dLLKcq2FokaQqtMV7IPT7MAnr/ezLf
+         sh9GL5eibY4Tf/899ZUw8MoiZJMNTkYx1SKMD94+ObkEMKCPFH5zYdgEjz8jfocOT0sR
+         tmh54ya/yz63T4ZFBTmGdogHE9jvMhe+Qdg5S/yK8YUMUzpEiqm7xqQyg3EyUO8Z04N7
+         7+zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BI5Btq2BdundVSKnBkH4i1TFYWWU2lOLfpEXkz2+34s=;
-        b=degCOYuNyiMDoRC67xhEgwMWLGIKZcEcQehePhdhcQQTWCdP+G2HvwFCHgbgF3AgTB
-         6ZTun9q9ontChwbYSv+CWJaHVBX1OLWZzVBvGygRAtKj/wPOvR7zkmHH1N0BCW3ot29b
-         +l7f0tcOzfnTN0ErFJIZuZCenlnWxnJ7nSOUA6Z20EidbPZj0n1d/1HMqq6sWendkc6+
-         PJVzJ8MuRcLAlghMQLASaMCkQFXE7NSNqpeVViyec0mtpBdE8hMyfZYSVwbI2eaygiz5
-         Rw0F3nE/9xovqyHhTz2p4bw9y52U4asLrxfhD4kIAb+iO9i+57AfJ4tgQmdZsIUuKTrq
-         NA0g==
-X-Gm-Message-State: APjAAAX5cFEEb+jqJJJhEoD3JVoaKBlFJ1SFM2lNWCoiuJS/fVxt1WRd
-        xGZuN5kOA2b4Tc6xxivMuVLZ9Om+SyNBjU7reQ0=
-X-Google-Smtp-Source: APXvYqzV9MbL08KEx9zQLN9PuY7RQZClzngiq85jd5w3xWNpSBewrq2tMS+iJnHE6y9/aOoQFGFajKLDEHBk7ulmy10=
-X-Received: by 2002:a17:90a:b10b:: with SMTP id z11mr29209552pjq.132.1580725045200;
- Mon, 03 Feb 2020 02:17:25 -0800 (PST)
+        bh=x7n8iYbotY1SSWk8040/LMh/zf8OB99iIkxzC9W3j6c=;
+        b=SStpubXG3iiXThC84kzu5CEeOq41tOopjc6n1+ZDoOtlFcICCssAhNNvI63KpQGoKZ
+         MZFBHoXywzTjqfo9urmOB6rilPI1kmVzyOHi9ZMUV4+5crNuQUau8KbBIpX5FA4mD1Sy
+         mcvdMXnPjt5Na3LdF/1vwifGZZcL5PLJUTIoDoCaPbz0h3iLG3hGcqCLbf15ZM1rI/GD
+         oipXxrjAS2cj8dKh1e2FRNSFYSZzVI6sst/TH9uewZUxm0xU09py0xyefsyNKaohu5dy
+         Sc1k2Lu2TPeuCfil+wdnloLz8R46VaAEMvqdcPVlk2ZIY4iuPneUESIgPTlQ6YRrcPAj
+         XksQ==
+X-Gm-Message-State: APjAAAWVA/kFOh3CfzxHpC4+2Zu1EY1I+aoBbwToukFpoTiuzEx/ZprK
+        0OC+HGycdl9z+63P64MGst5v6T9Eg/HaEJWKA/I=
+X-Google-Smtp-Source: APXvYqwhkAJi3dNYvGMLuTcLfW2vveiQI8JKmhBuUGJiCPGAfcCK3DHpzSoyLf4aqgppIqD9dK7YAyoVXsCVrnPOLJA=
+X-Received: by 2002:a62:1944:: with SMTP id 65mr24861365pfz.151.1580725515953;
+ Mon, 03 Feb 2020 02:25:15 -0800 (PST)
 MIME-Version: 1.0
-References: <20200129084509.20371-1-beniamin.bia@analog.com> <20200129084509.20371-3-beniamin.bia@analog.com>
-In-Reply-To: <20200129084509.20371-3-beniamin.bia@analog.com>
+References: <20200129142301.13918-1-beniamin.bia@analog.com> <20200129142301.13918-6-beniamin.bia@analog.com>
+In-Reply-To: <20200129142301.13918-6-beniamin.bia@analog.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 3 Feb 2020 12:17:17 +0200
-Message-ID: <CAHp75VfbhqvsigBDY_uYsTVwLRGVuBhr0eO1zqSu4ivjd7X-oQ@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] MAINTAINERS: add entry for hmc425a driver.
+Date:   Mon, 3 Feb 2020 12:25:07 +0200
+Message-ID: <CAHp75Vcvr7RTx1D_qZqSvY5A9irE+4_rSnHC3EFDCfB_MwVn7Q@mail.gmail.com>
+Subject: Re: [PATCH v4 5/5] MAINTAINERS: add entry for hmc425a driver.
 To:     Beniamin Bia <beniamin.bia@analog.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -74,7 +74,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Jan 29, 2020 at 10:45 AM Beniamin Bia <beniamin.bia@analog.com> wrote:
+On Wed, Jan 29, 2020 at 4:24 PM Beniamin Bia <beniamin.bia@analog.com> wrote:
 >
 > Add Beniamin Bia and Michael Hennerich as maintainers for HMC425A
 > attenuator.
@@ -90,6 +90,6 @@ On Wed, Jan 29, 2020 at 10:45 AM Beniamin Bia <beniamin.bia@analog.com> wrote:
 
 Had you run parse-maintainers.pl afterwards to see if everything is okay?
 
--- 
+--
 With Best Regards,
 Andy Shevchenko
