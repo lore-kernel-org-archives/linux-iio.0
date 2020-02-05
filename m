@@ -2,61 +2,64 @@ Return-Path: <SRS0=cqhh=3Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C7C3DC35249
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 09:04:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60376C33CA1
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 09:04:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9F6FD217BA
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 09:04:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 37964217BA
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 09:04:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="rbaM0BeT"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="FwFZPr2C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728091AbgBEJEa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Feb 2020 04:04:30 -0500
-Received: from mail-lf1-f67.google.com ([209.85.167.67]:40506 "EHLO
-        mail-lf1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728012AbgBEJEa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 04:04:30 -0500
-Received: by mail-lf1-f67.google.com with SMTP id c23so918527lfi.7
-        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2020 01:04:27 -0800 (PST)
+        id S1727068AbgBEJEb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Feb 2020 04:04:31 -0500
+Received: from mail-lf1-f68.google.com ([209.85.167.68]:39632 "EHLO
+        mail-lf1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727070AbgBEJEb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 04:04:31 -0500
+Received: by mail-lf1-f68.google.com with SMTP id t23so914301lfk.6
+        for <linux-iio@vger.kernel.org>; Wed, 05 Feb 2020 01:04:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qdYS5NxgR6y1CKJqUfGAcA+LkYc13wnDqiTW8OcCXeA=;
-        b=rbaM0BeTd6YCP/xuqK9SPsr7J2104dqiGcCD/vcllAk3mlqYtm5p/N9+kzGkI8VGqG
-         PKobRQyJ0N/gQDEDv221jl7wm79xyn/kGUZ11Rnekpfmsj9UWwj/zKxf+LH5XQrLSn42
-         2zzguvmh3/aBj7gLOMAIauPiQyDU4iGJgj2/I=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9an7fiwpJoV9YjTyVejbkq6+w6Nj3B8gpVIV6VF2yoc=;
+        b=FwFZPr2C5Q8oQGKotYhCVjzQv925g77tP09PVD3Bi+hS72tFM9qoIOEZ7YqQXe6PII
+         EUmhMf2SvY2MEFI/Ujs8U3oF03e9CBr0zGAEN8eT8v7AOd2CEjExeteMp9/EmMeoRPzA
+         WO8J+tgoFl2kPW5yHm5GvDb7+N/8VGjCEGa/8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=qdYS5NxgR6y1CKJqUfGAcA+LkYc13wnDqiTW8OcCXeA=;
-        b=gEde1r62FDI214edY+0zJiyz2k10q46vG5CysVXEbuqIDKtkkTUmouIku4jDzYT9h0
-         SzZnq7WA2YkFIk4+WVYsnM9P/3d5ij5K9vf8C1HlckelSNoQOmH/15hth1blZi4DyUA+
-         /bcV4sr82gL+/uI0iaYe93m3OzdLjjvJxxsA9iWrxrkhewYmqMbOeOtm+cYqeb7vzofh
-         cNkX3wPRzsbKc/sHnAfEZPbSXxmBrfYqU8qAp654VluEgMN4bjbiP1OmM62h/dgbHbgX
-         lXFULRGvKPpBeVAWfyWBLnDWGt28fmmoI6+QAbIJ8TXGbVJfCYn93Idc7GzOO1UoSNb+
-         ZTjg==
-X-Gm-Message-State: APjAAAWvy+VWgJpRuxGx81C9Jcg+MmxASQpGPPLsFk5T+xznUseBOAPg
-        ecbTH4I/b2pWCZlGNmvVh9rX0HGj6C0=
-X-Google-Smtp-Source: APXvYqwyd3DHQAe68+yzabUBgtZf0ZcJsQjgO2pwZFHNwQHVS8v8GqC/dENwswTKRYbeiij2UqB50A==
-X-Received: by 2002:a19:c3ce:: with SMTP id t197mr17210163lff.174.1580893465870;
-        Wed, 05 Feb 2020 01:04:25 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9an7fiwpJoV9YjTyVejbkq6+w6Nj3B8gpVIV6VF2yoc=;
+        b=nEw0ohVKdsCWHROn/EV6lnLEFcH5BIW8HKuksNgzRtekAnvIgEoJ/ayd8CLYSzNRrA
+         il7vK6Kwo2J+s/Dz+59o7cArYJOVEWaW2kyhEdAQWj8mx44C457Ws6vz9PWGwcJoQ0uf
+         QyGZpT9bdAkmmlV2PhMD4qXQVoewn9A9Ye6BP4S4QExVtnilIipPNtSqovKkmhCt5lgD
+         d8KpqS9s4VdvGm5cEHp1n8rr4rhwZZNT3FHiuNYvxGifdGrpqvueI+Eha8IE9H7wy924
+         kJC1TgaKzwDdmNqB11fJt9Z2aPSS/vECcWeJ3fUPyCz/688l3n1zIVTjb82O//tc9VRn
+         O74A==
+X-Gm-Message-State: APjAAAXmIHYsmuSNm3SpbtIDZai1GH4+RYlIYv/bCJXrTtfJNiLFjcIi
+        Pa/Kj7BmkurHmqDI73ZFd93t+xGCex4=
+X-Google-Smtp-Source: APXvYqwJhFowQrzKtMaNlH2wIM/7uhh9E1cuZQce3IX8C1d2zbTxChb1IuToRfb3xuvCU+b+2H6xLw==
+X-Received: by 2002:a19:7401:: with SMTP id v1mr17486626lfe.129.1580893468015;
+        Wed, 05 Feb 2020 01:04:28 -0800 (PST)
 Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
-        by smtp.gmail.com with ESMTPSA id k25sm12684009lji.42.2020.02.05.01.04.24
+        by smtp.gmail.com with ESMTPSA id k25sm12684009lji.42.2020.02.05.01.04.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Feb 2020 01:04:25 -0800 (PST)
+        Wed, 05 Feb 2020 01:04:27 -0800 (PST)
 From:   Matt Ranostay <matt.ranostay@konsulko.com>
 To:     linux-iio@vger.kernel.org
 Cc:     jic23@kernel.org, Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH v3 0/3] iio: chemical: atlas-sensor: add DO support
-Date:   Wed,  5 Feb 2020 11:04:18 +0200
-Message-Id: <20200205090421.18339-1-matt.ranostay@konsulko.com>
+Subject: [PATCH v3 2/3] iio: chemical: atlas-sensor: add DO-SM module support
+Date:   Wed,  5 Feb 2020 11:04:20 +0200
+Message-Id: <20200205090421.18339-3-matt.ranostay@konsulko.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200205090421.18339-1-matt.ranostay@konsulko.com>
+References: <20200205090421.18339-1-matt.ranostay@konsulko.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -64,30 +67,154 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes from v1:
-* combined dt binding docs
-* added making interrupt line is optional patchset
-* broke out dt changes from DO-SM module patchset
+Atlas Scientific DO-SM OEM sensor reads disolved oxygen in
+a solution. This is reported back as mg/L which maps direc
+to ppm and so the IIO_CONCENTRATION channel type can be used.
 
-Change from v2:
-* switch docs to YAML format
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/chemical/atlas-sensor.c | 64 +++++++++++++++++++++++++++--
+ 1 file changed, 60 insertions(+), 4 deletions(-)
 
-Matt Ranostay (3):
-  iio: chemical: atlas-sensor: allow probe without interrupt line
-  iio: chemical: atlas-sensor: add DO-SM module support
-  dt-bindings: iio: chemical: consolidate atlas-sensor docs
-
- .../bindings/iio/chemical/atlas,ec-sm.txt     | 21 -----
- .../bindings/iio/chemical/atlas,orp-sm.txt    | 21 -----
- .../bindings/iio/chemical/atlas,ph-sm.txt     | 21 -----
- .../bindings/iio/chemical/atlas,sensor.yaml   | 53 +++++++++++
- drivers/iio/chemical/atlas-sensor.c           | 91 +++++++++++++++----
- 5 files changed, 125 insertions(+), 82 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml
-
+diff --git a/drivers/iio/chemical/atlas-sensor.c b/drivers/iio/chemical/atlas-sensor.c
+index 2e34c82cb65d..919d408869be 100644
+--- a/drivers/iio/chemical/atlas-sensor.c
++++ b/drivers/iio/chemical/atlas-sensor.c
+@@ -48,6 +48,11 @@
+ #define ATLAS_REG_EC_CALIB_STATUS_LOW		BIT(2)
+ #define ATLAS_REG_EC_CALIB_STATUS_HIGH		BIT(3)
+ 
++#define ATLAS_REG_DO_CALIB_STATUS		0x09
++#define ATLAS_REG_DO_CALIB_STATUS_MASK		0x03
++#define ATLAS_REG_DO_CALIB_STATUS_PRESSURE	BIT(0)
++#define ATLAS_REG_DO_CALIB_STATUS_DO		BIT(1)
++
+ #define ATLAS_REG_PH_TEMP_DATA		0x0e
+ #define ATLAS_REG_PH_DATA		0x16
+ 
+@@ -60,14 +65,19 @@
+ #define ATLAS_REG_ORP_CALIB_STATUS	0x0d
+ #define ATLAS_REG_ORP_DATA		0x0e
+ 
++#define ATLAS_REG_DO_TEMP_DATA		0x12
++#define ATLAS_REG_DO_DATA		0x22
++
+ #define ATLAS_PH_INT_TIME_IN_MS		450
+ #define ATLAS_EC_INT_TIME_IN_MS		650
+ #define ATLAS_ORP_INT_TIME_IN_MS	450
++#define ATLAS_DO_INT_TIME_IN_MS		450
+ 
+ enum {
+ 	ATLAS_PH_SM,
+ 	ATLAS_EC_SM,
+ 	ATLAS_ORP_SM,
++	ATLAS_DO_SM,
+ };
+ 
+ struct atlas_data {
+@@ -121,7 +131,7 @@ static const struct iio_chan_spec atlas_ph_channels[] = {
+ 	},
+ };
+ 
+-#define ATLAS_EC_CHANNEL(_idx, _addr) \
++#define ATLAS_CONCENTRATION_CHANNEL(_idx, _addr) \
+ 	{\
+ 		.type = IIO_CONCENTRATION, \
+ 		.indexed = 1, \
+@@ -152,8 +162,8 @@ static const struct iio_chan_spec atlas_ec_channels[] = {
+ 			.endianness = IIO_BE,
+ 		},
+ 	},
+-	ATLAS_EC_CHANNEL(0, ATLAS_REG_TDS_DATA),
+-	ATLAS_EC_CHANNEL(1, ATLAS_REG_PSS_DATA),
++	ATLAS_CONCENTRATION_CHANNEL(0, ATLAS_REG_TDS_DATA),
++	ATLAS_CONCENTRATION_CHANNEL(1, ATLAS_REG_PSS_DATA),
+ 	IIO_CHAN_SOFT_TIMESTAMP(3),
+ 	{
+ 		.type = IIO_TEMP,
+@@ -182,6 +192,19 @@ static const struct iio_chan_spec atlas_orp_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(1),
+ };
+ 
++static const struct iio_chan_spec atlas_do_channels[] = {
++	ATLAS_CONCENTRATION_CHANNEL(0, ATLAS_REG_DO_DATA),
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++	{
++		.type = IIO_TEMP,
++		.address = ATLAS_REG_DO_TEMP_DATA,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++		.output = 1,
++		.scan_index = -1
++	},
++};
++
+ static int atlas_check_ph_calibration(struct atlas_data *data)
+ {
+ 	struct device *dev = &data->client->dev;
+@@ -262,7 +285,31 @@ static int atlas_check_orp_calibration(struct atlas_data *data)
+ 		dev_warn(dev, "device has not been calibrated\n");
+ 
+ 	return 0;
+-};
++}
++
++static int atlas_check_do_calibration(struct atlas_data *data)
++{
++	struct device *dev = &data->client->dev;
++	int ret;
++	unsigned int val;
++
++	ret = regmap_read(data->regmap, ATLAS_REG_DO_CALIB_STATUS, &val);
++	if (ret)
++		return ret;
++
++	if (!(val & ATLAS_REG_DO_CALIB_STATUS_MASK)) {
++		dev_warn(dev, "device has not been calibrated\n");
++		return 0;
++	}
++
++	if (!(val & ATLAS_REG_DO_CALIB_STATUS_PRESSURE))
++		dev_warn(dev, "device missing atmospheric pressure calibration\n");
++
++	if (!(val & ATLAS_REG_DO_CALIB_STATUS_DO))
++		dev_warn(dev, "device missing dissolved oxygen calibration\n");
++
++	return 0;
++}
+ 
+ struct atlas_device {
+ 	const struct iio_chan_spec *channels;
+@@ -295,6 +342,13 @@ static struct atlas_device atlas_devices[] = {
+ 				.calibration = &atlas_check_orp_calibration,
+ 				.delay = ATLAS_ORP_INT_TIME_IN_MS,
+ 	},
++	[ATLAS_DO_SM] = {
++				.channels = atlas_do_channels,
++				.num_channels = 3,
++				.data_reg = ATLAS_REG_DO_DATA,
++				.calibration = &atlas_check_do_calibration,
++				.delay = ATLAS_DO_INT_TIME_IN_MS,
++	},
+ };
+ 
+ static int atlas_set_powermode(struct atlas_data *data, int on)
+@@ -507,6 +561,7 @@ static const struct i2c_device_id atlas_id[] = {
+ 	{ "atlas-ph-sm", ATLAS_PH_SM},
+ 	{ "atlas-ec-sm", ATLAS_EC_SM},
+ 	{ "atlas-orp-sm", ATLAS_ORP_SM},
++	{ "atlas-do-sm", ATLAS_DO_SM},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, atlas_id);
+@@ -515,6 +570,7 @@ static const struct of_device_id atlas_dt_ids[] = {
+ 	{ .compatible = "atlas,ph-sm", .data = (void *)ATLAS_PH_SM, },
+ 	{ .compatible = "atlas,ec-sm", .data = (void *)ATLAS_EC_SM, },
+ 	{ .compatible = "atlas,orp-sm", .data = (void *)ATLAS_ORP_SM, },
++	{ .compatible = "atlas,do-sm", .data = (void *)ATLAS_DO_SM, },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, atlas_dt_ids);
 -- 
 2.20.1
 
