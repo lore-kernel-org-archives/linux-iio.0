@@ -2,28 +2,27 @@ Return-Path: <SRS0=cqhh=3Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABC6C3F68F
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 10:17:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD496C33CA1
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 10:17:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3E5DF21741
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 10:17:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 810C021927
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 10:17:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727608AbgBEKRF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Feb 2020 05:17:05 -0500
-Received: from hosting.pavoucek.net ([46.28.107.168]:34078 "EHLO
+        id S1727473AbgBEKRH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Feb 2020 05:17:07 -0500
+Received: from hosting.pavoucek.net ([46.28.107.168]:34100 "EHLO
         hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727458AbgBEKRF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 05:17:05 -0500
+        with ESMTP id S1727303AbgBEKRH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 05:17:07 -0500
 Received: from 176-74-132-138.netdatacomm.cz (176-74-132-138.netdatacomm.cz [176.74.132.138])
         (Authenticated sender: tomas@novotny.cz)
-        by hosting.pavoucek.net (Postfix) with ESMTPSA id 0A28B1043AC;
-        Wed,  5 Feb 2020 11:17:03 +0100 (CET)
-DKIM-Filter: OpenDKIM Filter v2.11.0 hosting.pavoucek.net 0A28B1043AC
+        by hosting.pavoucek.net (Postfix) with ESMTPSA id 1D3C51048C0;
+        Wed,  5 Feb 2020 11:17:04 +0100 (CET)
+DKIM-Filter: OpenDKIM Filter v2.11.0 hosting.pavoucek.net 1D3C51048C0
 From:   Tomas Novotny <tomas@novotny.cz>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -35,9 +34,9 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Thomas Gleixner <tglx@linutronix.de>,
         =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
         Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH 1/5] iio: light: vcnl4000: convert to regmap
-Date:   Wed,  5 Feb 2020 11:16:51 +0100
-Message-Id: <20200205101655.11728-2-tomas@novotny.cz>
+Subject: [PATCH 3/5] iio: light: vcnl4000: add proximity integration time for vcnl4040/4200
+Date:   Wed,  5 Feb 2020 11:16:53 +0100
+Message-Id: <20200205101655.11728-4-tomas@novotny.cz>
 X-Mailer: git-send-email 2.16.4
 In-Reply-To: <20200205101655.11728-1-tomas@novotny.cz>
 References: <20200205101655.11728-1-tomas@novotny.cz>
@@ -46,226 +45,310 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-It will be easier to configure various device registers.
+Proximity integration time handling and available values are added. The
+integration time affects sampling rate, so it is computed now. The
+settings should be changed only on the disabled channel. The check is
+performed and user is notified in case of enabled channel. The helper
+function is added as it will be used also for other settings.
 
-No functional change.
+Integration time values are taken from the Vishay's documents "Designing
+the VCNL4200 Into an Application" from Oct-2019 and "Designing the
+VCNL4040 Into an Application" from Nov-2019.
+
+Duty ratio will be made configurable in the next patch.
 
 Signed-off-by: Tomas Novotny <tomas@novotny.cz>
 ---
- drivers/iio/light/Kconfig    |  1 +
- drivers/iio/light/vcnl4000.c | 59 ++++++++++++++++++++++++++++++--------------
- 2 files changed, 42 insertions(+), 18 deletions(-)
+ drivers/iio/light/vcnl4000.c | 188 +++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 183 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-index 4a1a883dc061..ae2b9dafb9f6 100644
---- a/drivers/iio/light/Kconfig
-+++ b/drivers/iio/light/Kconfig
-@@ -475,6 +475,7 @@ config US5182D
- config VCNL4000
- 	tristate "VCNL4000/4010/4020/4200 combined ALS and proximity sensor"
- 	depends on I2C
-+	select REGMAP_I2C
- 	help
- 	  Say Y here if you want to build a driver for the Vishay VCNL4000,
- 	  VCNL4010, VCNL4020, VCNL4200 combined ambient light and proximity
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e5b00a6611ac..9f673e89084a 100644
+index f351b100a165..0bad082d762d 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -22,6 +22,7 @@
- #include <linux/i2c.h>
- #include <linux/err.h>
- #include <linux/delay.h>
-+#include <linux/regmap.h>
+@@ -60,6 +60,8 @@
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -73,6 +74,7 @@ struct vcnl4200_channel {
+ /* Bit masks for various configuration registers */
+ #define VCNL4200_AL_SD		BIT(0) /* Ambient light shutdown */
++#define VCNL4200_PS_IT_MASK	GENMASK(3, 1) /* Proximity integration time */
++#define VCNL4200_PS_IT_SHIFT	1
+ #define VCNL4200_PS_SD		BIT(0) /* Proximity shutdown */
+ 
+ enum vcnl4000_device_ids {
+@@ -74,6 +76,9 @@ struct vcnl4200_channel {
+ 	ktime_t last_measurement;
+ 	ktime_t sampling_rate;
+ 	struct mutex lock;
++	const int *int_time;
++	size_t int_time_size;
++	int ps_duty_ratio;	/* Proximity specific */
+ };
  
  struct vcnl4000_data {
- 	struct i2c_client *client;
-+	struct regmap *regmap;
- 	enum vcnl4000_device_ids id;
- 	int rev;
- 	int al_scale;
-@@ -84,6 +86,7 @@ struct vcnl4000_data {
- 
- struct vcnl4000_chip_spec {
- 	const char *prod;
-+	const struct regmap_config *regmap_config;
- 	int (*init)(struct vcnl4000_data *data);
- 	int (*measure_light)(struct vcnl4000_data *data, int *val);
- 	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
-@@ -99,15 +102,27 @@ static const struct i2c_device_id vcnl4000_id[] = {
+@@ -100,6 +105,10 @@ struct vcnl4000_chip_spec {
+ 			int *val);
+ 	int (*enable)(struct vcnl4000_data *data, enum iio_chan_type type,
+ 			bool val);
++	int (*get_int_time)(struct vcnl4000_data *data, enum iio_chan_type type,
++			    int *val, int *val2);
++	int (*set_int_time)(struct vcnl4000_data *data, enum iio_chan_type type,
++			    int val, int val2);
  };
- MODULE_DEVICE_TABLE(i2c, vcnl4000_id);
  
-+static const struct regmap_config vcnl4000_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+static const struct regmap_config vcnl4200_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 16,
-+	.val_format_endian = REGMAP_ENDIAN_LITTLE,
-+};
-+
- static int vcnl4000_init(struct vcnl4000_data *data)
- {
- 	int ret, prod_id;
-+	unsigned int val;
- 
--	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
-+	ret = regmap_read(data->regmap, VCNL4000_PROD_REV, &val);
- 	if (ret < 0)
- 		return ret;
- 
--	prod_id = ret >> 4;
-+	prod_id = val >> 4;
- 	switch (prod_id) {
- 	case VCNL4000_PROD_ID:
- 		if (data->id != VCNL4000)
-@@ -123,7 +138,7 @@ static int vcnl4000_init(struct vcnl4000_data *data)
- 		return -ENODEV;
+ static const struct i2c_device_id vcnl4000_id[] = {
+@@ -132,10 +141,36 @@ static const struct iio_chan_spec vcnl4200_channels[] = {
+ 	}, {
+ 		.type = IIO_PROXIMITY,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_ENABLE),
++			BIT(IIO_CHAN_INFO_ENABLE) |
++			BIT(IIO_CHAN_INFO_INT_TIME),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_INT_TIME),
  	}
+ };
  
--	data->rev = ret & 0xf;
-+	data->rev = val & 0xf;
- 	data->al_scale = 250000;
- 	mutex_init(&data->vcnl4000_lock);
++/* Values are directly mapped to register values. */
++/* Integration time in us; 1T, 1.5T, 2T, 2.5T, 3T, 3.5T, 4T, 8T */
++static const int vcnl4040_ps_int_time[] = {
++	0, 125,
++	0, 188, /* 187.5 */
++	0, 250,
++	0, 313, /* 312.5 */
++	0, 375,
++	0, 438, /* 437.5 */
++	0, 500,
++	0, 1000
++};
++
++/* Values are directly mapped to register values. */
++/* Integration time in us; 1T, 1.5T, 2T, 4T, 8T, 9T */
++static const int vcnl4200_ps_int_time[] = {
++	0, 30,
++	0, 45,
++	0, 60,
++	0, 120,
++	0, 240,
++	0, 270
++};
++
+ static const struct regmap_config vcnl4000_regmap_config = {
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+@@ -179,6 +214,34 @@ static int vcnl4000_init(struct vcnl4000_data *data)
+ 	return 0;
+ };
  
-@@ -133,19 +148,20 @@ static int vcnl4000_init(struct vcnl4000_data *data)
++static int vcnl4200_set_samp_rate(struct vcnl4000_data *data,
++				  enum iio_chan_type type)
++{
++	int ret;
++	int it_val, it_val2;
++	int duty_ratio;
++
++	switch (type) {
++	case IIO_PROXIMITY:
++		ret = data->chip_spec->get_int_time(data, IIO_PROXIMITY,
++						    &it_val, &it_val2);
++		if (ret < 0)
++			return ret;
++
++		duty_ratio = data->vcnl4200_ps.ps_duty_ratio;
++		/*
++		 * Integration time multiplied by duty ratio.
++		 * Add 20% of part to part tolerance.
++		 */
++		data->vcnl4200_ps.sampling_rate =
++			ktime_set(((it_val * duty_ratio) * 6) / 5,
++				  (((it_val2 * duty_ratio) * 6) / 5) * 1000);
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
  static int vcnl4200_init(struct vcnl4000_data *data)
  {
  	int ret, id;
-+	unsigned int val;
- 
--	ret = i2c_smbus_read_word_data(data->client, VCNL4200_DEV_ID);
-+	ret = regmap_read(data->regmap, VCNL4200_DEV_ID, &val);
- 	if (ret < 0)
- 		return ret;
- 
--	id = ret & 0xff;
-+	id = val & 0xff;
- 
- 	if (id != VCNL4200_PROD_ID) {
--		ret = i2c_smbus_read_word_data(data->client, VCNL4040_DEV_ID);
-+		ret = regmap_read(data->regmap, VCNL4040_DEV_ID, &val);
- 		if (ret < 0)
- 			return ret;
- 
--		id = ret & 0xff;
-+		id = val & 0xff;
- 
- 		if (id != VCNL4040_PROD_ID)
- 			return -ENODEV;
-@@ -156,10 +172,10 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 	data->rev = (ret >> 8) & 0xf;
- 
- 	/* Set defaults and enable both channels */
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_AL_CONF, 0);
-+	ret = regmap_write(data->regmap, VCNL4200_AL_CONF, 0);
- 	if (ret < 0)
- 		return ret;
--	ret = i2c_smbus_write_word_data(data->client, VCNL4200_PS_CONF1, 0);
-+	ret = regmap_write(data->regmap, VCNL4200_PS_CONF1, 0);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -193,22 +209,22 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 				u8 rdy_mask, u8 data_reg, int *val)
- {
- 	int tries = 20;
-+	unsigned int status;
- 	__be16 buf;
- 	int ret;
- 
- 	mutex_lock(&data->vcnl4000_lock);
- 
--	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
--					req_mask);
-+	ret = regmap_write(data->regmap, VCNL4000_COMMAND, req_mask);
- 	if (ret < 0)
- 		goto fail;
- 
- 	/* wait for data to become ready */
- 	while (tries--) {
--		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
-+		ret = regmap_read(data->regmap, VCNL4000_COMMAND, &status);
- 		if (ret < 0)
- 			goto fail;
--		if (ret & rdy_mask)
-+		if (status & rdy_mask)
- 			break;
- 		msleep(20); /* measurement takes up to 100 ms */
+@@ -218,18 +281,25 @@ static int vcnl4200_init(struct vcnl4000_data *data)
+ 	case VCNL4200_PROD_ID:
+ 		/* Default wait time is 50ms, add 20% tolerance. */
+ 		data->vcnl4200_al.sampling_rate = ktime_set(0, 60000 * 1000);
+-		/* Default wait time is 4.8ms, add 20% tolerance. */
+-		data->vcnl4200_ps.sampling_rate = ktime_set(0, 5760 * 1000);
++		data->vcnl4200_ps.int_time = vcnl4200_ps_int_time;
++		data->vcnl4200_ps.int_time_size =
++			ARRAY_SIZE(vcnl4200_ps_int_time);
++		data->vcnl4200_ps.ps_duty_ratio = 160;
+ 		data->al_scale = 24000;
+ 		break;
+ 	case VCNL4040_PROD_ID:
+ 		/* Default wait time is 80ms, add 20% tolerance. */
+ 		data->vcnl4200_al.sampling_rate = ktime_set(0, 96000 * 1000);
+-		/* Default wait time is 5ms, add 20% tolerance. */
+-		data->vcnl4200_ps.sampling_rate = ktime_set(0, 6000 * 1000);
++		data->vcnl4200_ps.int_time = vcnl4040_ps_int_time;
++		data->vcnl4200_ps.int_time_size =
++			ARRAY_SIZE(vcnl4040_ps_int_time);
++		data->vcnl4200_ps.ps_duty_ratio = 40;
+ 		data->al_scale = 120000;
+ 		break;
  	}
-@@ -220,8 +236,8 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 		goto fail;
++	ret = vcnl4200_set_samp_rate(data, IIO_PROXIMITY);
++	if (ret < 0)
++		return ret;
+ 	data->vcnl4200_al.last_measurement = ktime_set(0, 0);
+ 	data->vcnl4200_ps.last_measurement = ktime_set(0, 0);
+ 	mutex_init(&data->vcnl4200_al.lock);
+@@ -368,6 +438,80 @@ static int vcnl4200_enable(struct vcnl4000_data *data, enum iio_chan_type type,
  	}
- 
--	ret = i2c_smbus_read_i2c_block_data(data->client,
--		data_reg, sizeof(buf), (u8 *) &buf);
-+	ret = regmap_bulk_read(data->regmap,
-+			data_reg, (u8 *) &buf, sizeof(buf));
- 	if (ret < 0)
- 		goto fail;
- 
-@@ -253,12 +269,10 @@ static int vcnl4200_measure(struct vcnl4000_data *data,
- 
- 	mutex_unlock(&chan->lock);
- 
--	ret = i2c_smbus_read_word_data(data->client, chan->reg);
-+	ret = regmap_read(data->regmap, chan->reg, val);
- 	if (ret < 0)
- 		return ret;
- 
--	*val = ret;
--
- 	return 0;
  }
  
-@@ -289,24 +303,28 @@ static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
++static int vcnl4200_check_enabled(struct vcnl4000_data *data,
++				  enum iio_chan_type type)
++{
++	int ret, val;
++
++	ret = data->chip_spec->is_enabled(data, type, &val);
++	if (ret < 0)
++		return ret;
++
++	if (val) {
++		dev_warn(&data->client->dev,
++			 "Channel is enabled. Parameter cannot be changed.\n");
++		return -EBUSY;
++	}
++
++	return 0;
++}
++
++static int vcnl4200_get_int_time(struct vcnl4000_data *data,
++				 enum iio_chan_type type, int *val, int *val2)
++{
++	int ret;
++	unsigned int reg;
++
++	switch (type) {
++	case IIO_PROXIMITY:
++		ret = regmap_read(data->regmap, VCNL4200_PS_CONF1, &reg);
++		if (ret < 0)
++			return ret;
++
++		reg &= VCNL4200_PS_IT_MASK;
++		reg >>= VCNL4200_PS_IT_SHIFT;
++
++		*val = data->vcnl4200_ps.int_time[reg * 2];
++		*val2 = data->vcnl4200_ps.int_time[reg * 2 + 1];
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++
++static int vcnl4200_set_int_time(struct vcnl4000_data *data,
++				 enum iio_chan_type type, int val, int val2)
++{
++	int i, ret;
++
++	ret = vcnl4200_check_enabled(data, type);
++	if (ret < 0)
++		return ret;
++
++	switch (type) {
++	case IIO_PROXIMITY:
++		for (i = 0; i < data->vcnl4200_ps.int_time_size; i += 2) {
++			if (val == data->vcnl4200_ps.int_time[i] &&
++			    data->vcnl4200_ps.int_time[i + 1] == val2) {
++				ret = regmap_update_bits(data->regmap,
++							 VCNL4200_PS_CONF1,
++							 VCNL4200_PS_IT_MASK,
++							 (i / 2) <<
++							 VCNL4200_PS_IT_SHIFT);
++				if (ret < 0)
++					return ret;
++				return vcnl4200_set_samp_rate(data,
++							      IIO_PROXIMITY);
++			}
++		}
++		break;
++	default:
++		return -EINVAL;
++	}
++	return -EINVAL;
++}
++
  static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
  	[VCNL4000] = {
  		.prod = "VCNL4000",
-+		.regmap_config = &vcnl4000_regmap_config,
- 		.init = vcnl4000_init,
- 		.measure_light = vcnl4000_measure_light,
- 		.measure_proximity = vcnl4000_measure_proximity,
- 	},
- 	[VCNL4010] = {
- 		.prod = "VCNL4010/4020",
-+		.regmap_config = &vcnl4000_regmap_config,
- 		.init = vcnl4000_init,
- 		.measure_light = vcnl4000_measure_light,
- 		.measure_proximity = vcnl4000_measure_proximity,
- 	},
- 	[VCNL4040] = {
- 		.prod = "VCNL4040",
-+		.regmap_config = &vcnl4200_regmap_config,
- 		.init = vcnl4200_init,
- 		.measure_light = vcnl4200_measure_light,
+@@ -397,6 +541,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
  		.measure_proximity = vcnl4200_measure_proximity,
+ 		.is_enabled = vcnl4200_is_enabled,
+ 		.enable = vcnl4200_enable,
++		.get_int_time = vcnl4200_get_int_time,
++		.set_int_time = vcnl4200_set_int_time,
  	},
  	[VCNL4200] = {
  		.prod = "VCNL4200",
-+		.regmap_config = &vcnl4200_regmap_config,
- 		.init = vcnl4200_init,
- 		.measure_light = vcnl4200_measure_light,
+@@ -408,6 +554,8 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
  		.measure_proximity = vcnl4200_measure_proximity,
-@@ -380,6 +398,11 @@ static int vcnl4000_probe(struct i2c_client *client,
- 	data->id = id->driver_data;
- 	data->chip_spec = &vcnl4000_chip_spec_cfg[data->id];
+ 		.is_enabled = vcnl4200_is_enabled,
+ 		.enable = vcnl4200_enable,
++		.get_int_time = vcnl4200_get_int_time,
++		.set_int_time = vcnl4200_set_int_time,
+ 	},
+ };
  
-+	data->regmap = devm_regmap_init_i2c(client,
-+			data->chip_spec->regmap_config);
-+	if (IS_ERR(data->regmap))
-+		return PTR_ERR(data->regmap);
+@@ -443,6 +591,32 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT_PLUS_MICRO;
+ 	case IIO_CHAN_INFO_ENABLE:
+ 		return data->chip_spec->is_enabled(data, chan->type, val);
++	case IIO_CHAN_INFO_INT_TIME:
++		return data->chip_spec->get_int_time(data, chan->type,
++						     val, val2);
++	default:
++		return -EINVAL;
++	}
++}
 +
- 	ret = data->chip_spec->init(data);
- 	if (ret < 0)
- 		return ret;
++static int vcnl4000_read_avail(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				const int **vals, int *type, int *length,
++				long mask)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			*vals = data->vcnl4200_ps.int_time;
++			*length = data->vcnl4200_ps.int_time_size;
++			*type =  IIO_VAL_INT_PLUS_MICRO;
++			return IIO_AVAIL_LIST;
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -457,6 +631,9 @@ static int vcnl4000_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_ENABLE:
+ 		return data->chip_spec->enable(data, chan->type, val);
++	case IIO_CHAN_INFO_INT_TIME:
++		return data->chip_spec->set_int_time(data, chan->type,
++						     val, val2);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -464,6 +641,7 @@ static int vcnl4000_write_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info vcnl4000_info = {
+ 	.read_raw = vcnl4000_read_raw,
++	.read_avail = vcnl4000_read_avail,
+ 	.write_raw = vcnl4000_write_raw,
+ };
+ 
 -- 
 2.16.4
 
