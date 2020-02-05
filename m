@@ -2,107 +2,147 @@ Return-Path: <SRS0=cqhh=3Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD064C352A2
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 17:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7DF0C35247
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 18:00:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AE10D217F4
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 17:15:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC70A24676
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Feb 2020 18:00:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bk0/Cw3/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727389AbgBERPb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Feb 2020 12:15:31 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:7980 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726957AbgBERPa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 12:15:30 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 015HE6eV022084;
-        Wed, 5 Feb 2020 12:15:29 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2xyhm9280d-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 05 Feb 2020 12:15:29 -0500
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 015HFRTD028178
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 5 Feb 2020 12:15:28 -0500
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 5 Feb 2020
- 09:15:27 -0800
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 5 Feb 2020 09:15:26 -0800
-Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.175])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 015HFNai010661;
-        Wed, 5 Feb 2020 12:15:25 -0500
-From:   Alexandru Tachici <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [PATCH 1/5 V2] staging: iio: adc: ad7192: fail probe on get_voltage
-Date:   Wed, 5 Feb 2020 19:15:07 +0200
-Message-ID: <20200205171511.25912-2-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200205171511.25912-1-alexandru.tachici@analog.com>
-References: <20200202162215.50915c83@archlinux>
- <20200205171511.25912-1-alexandru.tachici@analog.com>
+        id S1727149AbgBESAB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Feb 2020 13:00:01 -0500
+Received: from mail-yw1-f66.google.com ([209.85.161.66]:41180 "EHLO
+        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727122AbgBESAB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Feb 2020 13:00:01 -0500
+Received: by mail-yw1-f66.google.com with SMTP id l22so3182373ywc.8;
+        Wed, 05 Feb 2020 10:00:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=rRgXvPr3SwIij87seHPiKa5mQQ0rdFnyGB2bv1mFSf8=;
+        b=Bk0/Cw3/MqA+hum9NqHHMRRRYzF3xdfomLI5myEg+7tMx0ZRORwJbupYsD5Fcx6/WZ
+         +iTgQCiKWKSaAPUceVbmwxBP3dluyHQ+6itcBpIHPH0q6OoUk1GIhnSIFXyXx8F4s84y
+         1QKv3u2CkJ4vqiaqrL+rDTyQ14PmxhCKsvjK/ky0/EuFW9l1Ze8Vnw29Zc/5/Pr4gVfw
+         +4aXPQpSJi3RqV+SAES3L5WtWJN9Lo1Kz9EuSdnxMjYaE5HgsLMCcoyeqKiMvDaPV+eg
+         t7eXrxmLxe12Pq8r+W4u487E9V0L5qQsikTa3ePAzgAfKaLzIBM8sWyHYe2UKPsCTdfA
+         nL9Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=rRgXvPr3SwIij87seHPiKa5mQQ0rdFnyGB2bv1mFSf8=;
+        b=YY8JS2hmTBhs3xJA1D5HZJyDKluF9XWTA5y0Wxy9O/SenLNvJbdu19EYXef4lr7MiC
+         aI1txX96nua+j8cv+3r9NzaKytPgahSblCiPd9gDO+qT8fQVZZUYMrlrOQZX4VUFc68f
+         +MdscRQu+lA8Mq5GnOevXO9Nv2vtE//r2kxtDLYl0Jk0+jCFttGmP4BPQnPnCsQOOh3M
+         1aWXYBIleO1agxqkpZsRBkdrpChvFbLTvlZw7fhXUKylXe4IncivEPWKq9SF/FaY15sm
+         PediVI27q7OsHUv85U2m4aNNeFcSlS8RViwe+MnpzRqcZ0KRHTlJibqqMBsyOszKUuwt
+         FknA==
+X-Gm-Message-State: APjAAAU98uY82lF0/RxENilhXb81OoqfCRfGx04Gn+J43+PdFcOYWjvz
+        GmxP0Tw4mnI76XgEwIY3maM9fEhjYv0=
+X-Google-Smtp-Source: APXvYqxL/2f5r/cM0VlljtruqTfsVW5vkWvw0UbpVFlDnScpMN99cE8YToUz2/tGE3IbM8NbrZIfaw==
+X-Received: by 2002:a81:11d7:: with SMTP id 206mr11978061ywr.150.1580925600074;
+        Wed, 05 Feb 2020 10:00:00 -0800 (PST)
+Received: from icarus (072-189-064-225.res.spectrum.com. [72.189.64.225])
+        by smtp.gmail.com with ESMTPSA id h203sm216399ywb.98.2020.02.05.09.59.58
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 05 Feb 2020 09:59:59 -0800 (PST)
+Date:   Wed, 5 Feb 2020 12:59:45 -0500
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Fabrice Gasnier <fabrice.gasnier@st.com>, jic23@kernel.org
+Cc:     alexandre.torgue@st.com, mcoquelin.stm32@gmail.com,
+        benjamin.gaignard@st.com, linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] counter: stm32-timer-cnt: add power management support
+Message-ID: <20200205175945.GA57132@icarus>
+References: <1580899678-26393-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-05_05:2020-02-04,2020-02-05 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
- lowpriorityscore=0 phishscore=0 priorityscore=1501 impostorscore=0
- malwarescore=0 suspectscore=0 bulkscore=0 adultscore=0 spamscore=0
- mlxscore=0 mlxlogscore=943 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002050131
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <1580899678-26393-1-git-send-email-fabrice.gasnier@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch makes the ad7192_probe fail in case
-regulator_get_voltage will return an error.
+On Wed, Feb 05, 2020 at 11:47:58AM +0100, Fabrice Gasnier wrote:
+> Add suspend/resume PM sleep ops. When going to low power, enforce the
+> counter isn't active.
+> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/staging/iio/adc/ad7192.c | 8 ++++++--
- 1 file changed, 6 insertions(+), 2 deletions(-)
+These changes are purely for the PM ops and don't involve the Counter
+API, so I don't see any see any issues with this patch from my end.
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index bf3e2a9cc07f..4780ddf99b13 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -899,10 +899,13 @@ static int ad7192_probe(struct spi_device *spi)
- 
- 	voltage_uv = regulator_get_voltage(st->avdd);
- 
--	if (voltage_uv)
-+	if (voltage_uv) {
- 		st->int_vref_mv = voltage_uv / 1000;
--	else
-+	} else {
-+		ret = voltage_uv;
- 		dev_err(&spi->dev, "Device tree error, reference voltage undefined\n");
-+		goto error_disable_avdd;
-+	}
- 
- 	spi_set_drvdata(spi, indio_dev);
- 	st->devid = spi_get_device_id(spi)->driver_data;
-@@ -957,6 +960,7 @@ static int ad7192_probe(struct spi_device *spi)
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0)
- 		goto error_disable_clk;
-+
- 	return 0;
- 
- error_disable_clk:
--- 
-2.20.1
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
+> ---
+>  drivers/counter/stm32-timer-cnt.c | 25 +++++++++++++++++++++++++
+>  1 file changed, 25 insertions(+)
+> 
+> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+> index 3eafcce..3b84503 100644
+> --- a/drivers/counter/stm32-timer-cnt.c
+> +++ b/drivers/counter/stm32-timer-cnt.c
+> @@ -12,6 +12,7 @@
+>  #include <linux/iio/types.h>
+>  #include <linux/mfd/stm32-timers.h>
+>  #include <linux/module.h>
+> +#include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+>  
+>  #define TIM_CCMR_CCXS	(BIT(8) | BIT(0))
+> @@ -358,10 +359,33 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+>  	priv->counter.num_signals = ARRAY_SIZE(stm32_signals);
+>  	priv->counter.priv = priv;
+>  
+> +	platform_set_drvdata(pdev, priv);
+> +
+>  	/* Register Counter device */
+>  	return devm_counter_register(dev, &priv->counter);
+>  }
+>  
+> +static int __maybe_unused stm32_timer_cnt_suspend(struct device *dev)
+> +{
+> +	struct stm32_timer_cnt *priv = dev_get_drvdata(dev);
+> +	u32 cr1;
+> +
+> +	/* Check for active counter */
+> +	regmap_read(priv->regmap, TIM_CR1, &cr1);
+> +	if (cr1 & TIM_CR1_CEN)
+> +		return -EBUSY;
+> +
+> +	return pinctrl_pm_select_sleep_state(dev);
+> +}
+> +
+> +static int __maybe_unused stm32_timer_cnt_resume(struct device *dev)
+> +{
+> +	return pinctrl_pm_select_default_state(dev);
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(stm32_timer_cnt_pm_ops, stm32_timer_cnt_suspend,
+> +			 stm32_timer_cnt_resume);
+> +
+>  static const struct of_device_id stm32_timer_cnt_of_match[] = {
+>  	{ .compatible = "st,stm32-timer-counter", },
+>  	{},
+> @@ -373,6 +397,7 @@ static struct platform_driver stm32_timer_cnt_driver = {
+>  	.driver = {
+>  		.name = "stm32-timer-counter",
+>  		.of_match_table = stm32_timer_cnt_of_match,
+> +		.pm = &stm32_timer_cnt_pm_ops,
+>  	},
+>  };
+>  module_platform_driver(stm32_timer_cnt_driver);
+> -- 
+> 2.7.4
+> 
