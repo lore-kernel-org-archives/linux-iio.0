@@ -4,42 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA9CC352A2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7D81C33CAC
 	for <linux-iio@archiver.kernel.org>; Thu,  6 Feb 2020 15:10:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7DC9921741
+	by mail.kernel.org (Postfix) with ESMTP id C5008218AC
 	for <linux-iio@archiver.kernel.org>; Thu,  6 Feb 2020 15:10:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727581AbgBFPKG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Feb 2020 10:10:06 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:21762 "EHLO
+        id S1727613AbgBFPKN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Feb 2020 10:10:13 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:39270 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727579AbgBFPKE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Feb 2020 10:10:04 -0500
+        by vger.kernel.org with ESMTP id S1727578AbgBFPKN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Feb 2020 10:10:13 -0500
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 016F0MvK011983;
-        Thu, 6 Feb 2020 10:09:43 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2xyhm94w18-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 016F0MvL011983;
+        Thu, 6 Feb 2020 10:09:53 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2xyhm94w1k-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 06 Feb 2020 10:09:43 -0500
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 016F9f25017984
+        Thu, 06 Feb 2020 10:09:52 -0500
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 016F9pB6017037
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 6 Feb 2020 10:09:42 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+        Thu, 6 Feb 2020 10:09:51 -0500
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 6 Feb 2020
- 07:09:40 -0800
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 6 Feb 2020 10:09:40 -0500
+ 07:09:49 -0800
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Thu, 6 Feb 2020 07:09:49 -0800
 Received: from ben-Latitude-E6540.ad.analog.com ([10.48.65.231])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 016F9VRX021605;
-        Thu, 6 Feb 2020 10:09:36 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 016F9VRa021605;
+        Thu, 6 Feb 2020 10:09:45 -0500
 From:   Beniamin Bia <beniamin.bia@analog.com>
 To:     <jic23@kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -48,9 +47,9 @@ CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <knaack.h@gmx.de>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
         <devicetree@vger.kernel.org>,
         Beniamin Bia <beniamin.bia@analog.com>
-Subject: [PATCH v5 2/5] iio: amplifiers: ad8366: Add write_raw_get_fmt function
-Date:   Thu, 6 Feb 2020 17:11:46 +0200
-Message-ID: <20200206151149.32122-2-beniamin.bia@analog.com>
+Subject: [PATCH v5 5/5] MAINTAINERS: add entry for hmc425a driver.
+Date:   Thu, 6 Feb 2020 17:11:49 +0200
+Message-ID: <20200206151149.32122-5-beniamin.bia@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200206151149.32122-1-beniamin.bia@analog.com>
 References: <20200206151149.32122-1-beniamin.bia@analog.com>
@@ -62,51 +61,44 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015
  lowpriorityscore=0 phishscore=0 priorityscore=1501 impostorscore=0
  malwarescore=0 suspectscore=1 bulkscore=0 adultscore=0 spamscore=0
- mlxscore=0 mlxlogscore=892 classifier=spam adjust=0 reason=mlx scancount=1
+ mlxscore=0 mlxlogscore=961 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2001150001 definitions=main-2002060114
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch add write_raw_get_fmt function to specify conversion for
-hardware gain.
+Add Beniamin Bia and Michael Hennerich as maintainers for HMC425A
+attenuator.
 
 Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
 ---
 Changes in v5:
--nothing changed
+-parse_maintainers runned
 
- drivers/iio/amplifiers/ad8366.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ MAINTAINERS | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index 0176d3d8cc9c..95972ab60f42 100644
---- a/drivers/iio/amplifiers/ad8366.c
-+++ b/drivers/iio/amplifiers/ad8366.c
-@@ -180,9 +180,22 @@ static int ad8366_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e699fe378e71..12e39dc0dc93 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1063,6 +1063,15 @@ F:	drivers/iio/adc/ltc249*
+ X:	drivers/iio/*/adjd*
+ F:	drivers/staging/iio/*/ad*
  
-+static int ad8366_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_HARDWAREGAIN:
-+		return IIO_VAL_INT_PLUS_MICRO_DB;
-+	default:
-+		return -EINVAL;
-+	}
-+}
++ANALOG DEVICES INC HMC425A DRIVER
++M:	Beniamin Bia <beniamin.bia@analog.com>
++M:	Michael Hennerich <michael.hennerich@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	http://ez.analog.com/community/linux-device-drivers
++F:	Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
++F:	drivers/iio/amplifiers/hmc425a.c
 +
- static const struct iio_info ad8366_info = {
- 	.read_raw = &ad8366_read_raw,
- 	.write_raw = &ad8366_write_raw,
-+	.write_raw_get_fmt = &ad8366_write_raw_get_fmt,
- };
- 
- #define AD8366_CHAN(_channel) {				\
+ ANALOGBITS PLL LIBRARIES
+ M:	Paul Walmsley <paul.walmsley@sifive.com>
+ S:	Supported
 -- 
 2.17.1
 
