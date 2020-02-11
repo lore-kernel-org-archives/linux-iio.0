@@ -2,57 +2,58 @@ Return-Path: <SRS0=s3vC=37=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E445CC3B187
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Feb 2020 13:13:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8562DC352A3
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Feb 2020 13:13:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BA230208C3
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Feb 2020 13:13:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 52DD320637
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Feb 2020 13:13:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="GWfuVkDE"
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="LcrMHtCU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727567AbgBKNNB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 Feb 2020 08:13:01 -0500
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:41796 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728353AbgBKNNB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Feb 2020 08:13:01 -0500
-Received: by mail-wr1-f67.google.com with SMTP id c9so12341333wrw.8
-        for <linux-iio@vger.kernel.org>; Tue, 11 Feb 2020 05:12:59 -0800 (PST)
+        id S1729072AbgBKNNJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 Feb 2020 08:13:09 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:35292 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729065AbgBKNNG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Feb 2020 08:13:06 -0500
+Received: by mail-wr1-f68.google.com with SMTP id w12so12344426wrt.2
+        for <linux-iio@vger.kernel.org>; Tue, 11 Feb 2020 05:13:05 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=be2U1w8cWMwS1znOLLGvyu9gD3io+mzqfXIBluHdiTA=;
-        b=GWfuVkDEtXOKWb5CKYVmrPobVMV94DGgOuRHpsqw2XWeoGhMbdxDxumKlK9Op5DeDf
-         xN5P/aLKYPIW0lEAyt2mJCnBPsvzDGf1yt2NQ9KLtf4Qn0QjL67LUup7M21qw9ezHC9s
-         7x1iOjCYu7lcLVLRSaHSTmL/fQF4ppIeaxJfYT7EtAHMYIb+Ks62eYtXQeMsGx4goji2
-         273sZ3Bk1Yp//t6wamQJa2QMN559SRkp4uplHKlxyE6ghi7OL49znMiHs4fwNXiz51q8
-         Gj7wusjiQmpRgseNqAXkIQvaWRFnMNDBPUxn6Qs2ct2BTCMuymaDWbnqaYhsn8a/QaNr
-         onbg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=anPiy+Oai5eVC9epbsqPoMEWmUp50/yoIqvuC47WE5o=;
+        b=LcrMHtCUppxeolsKFGx6QsBeDzCgd+5f8d/Oq/d8bQLTe2OeansixpI49rk7VTtwHO
+         TAadngLfrWrhX/Za4qdIf48h7osfj+UtUjkYt8J+GCrXmU3esu+ojHKWvQPt39Cw0EmU
+         8iwhyTdDSKEuJwjPVx2LSG1K+4AZ2eHca+Pt/hpgb3HSE0TJRzk7+/6vxp+A9MQcK2g5
+         WxLqITqfiEcblyk3kcL8wB0WDcrtnF8YEuApH4lNvz2SbbUmBdKrW2BpMVkOXQPlDMzc
+         mPmY3MEo4I7MsTQ6a5JLe7mIygDcVOKtUqN9hKS/JM0sKW02t0qiGKxQ/L81g4zm1bkC
+         blQw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=be2U1w8cWMwS1znOLLGvyu9gD3io+mzqfXIBluHdiTA=;
-        b=UJlL8m1cw7UjgHDP3uZN6ovlaJtrKYqQvjbn/h0fIUbvjZaxnfW2ZclxQVyIHHMRhM
-         iENV2oZqzP1QjkOqusXTQMWVy1cZvt5JDFV55EnUBtb55tSvRGXgAZMAZkjTeuFkDbwj
-         TQT8NSbOw0luqi1jgQF/P7B7UrJ1gZst77D/yrZiyawyEldI7fy45RX6tW/EMDeo4LZX
-         aZbxIV4U9cxBNkRWpqQqlQ0QeLnHt2XPx+T6rwJbfvxShnFwZPahx5cOwdXDnzkKsIU0
-         oOUAZhUJPGRJkN6Qrv4nT5ALLShrUOtXaUvQLB//pAEWziGtfSRFmP/sANI8UkJzI/sn
-         LPsQ==
-X-Gm-Message-State: APjAAAV4W16KXf+7pETGsgnTREQd9bOdqp6/W6Ees092n2+Sl222Sbso
-        OyY2mf8YdJ5Yn/6C3lna2kNubg==
-X-Google-Smtp-Source: APXvYqzpLaJmI7tDPA2tDGvz6dBZ9VXm3sif/kYnoWcVrXtWSXV8CQS0YhFVElrGpct/CZfo4eHAnQ==
-X-Received: by 2002:adf:f581:: with SMTP id f1mr8638594wro.264.1581426778842;
-        Tue, 11 Feb 2020 05:12:58 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=anPiy+Oai5eVC9epbsqPoMEWmUp50/yoIqvuC47WE5o=;
+        b=uQG1Xjsi111OCX7pGoTorbZm2AuW/GTGfkmTNWEiZI8RJL4kX50fg4A0PbNLFKT+yz
+         xbO3YiTWnPyNUAPse15ks/+qJMdym8nJHKTP9fBWYDLeMwMdGAT9CRmZwPkJIvdI7ObO
+         /oj6pd2E/eHk1pn+7QSY5XqtHEw8VWJpcaUbDLK1ID43bYfbE2JnZcH5a1r6tYr+lfK4
+         mCBc/NYFWWngMgbiE6Y/x1KlI1u6VN26UDiKtqR/P49z6QTPnb+WGcfhYdNmnj8Xd37Y
+         uwMnVom7W1Y+Ul9J9VKitxHAupNgw66v4UFDTNxnZfmjORuIGVcIoGZ03Zi0VTzBo/Wx
+         fVyQ==
+X-Gm-Message-State: APjAAAWvRBotRhWRZwxJCHF1TJO+IOzYM/oFR7L/EX3V5PxVv3vYBJma
+        3pWm0pVOF/Iq+iPAaBi5FwhSUL3fsBE=
+X-Google-Smtp-Source: APXvYqzzhUz5QJgJfU2ox7SdgabZbIVUaJl7QIQdgt8cnPmLLHB161BbLwhKlnx0AUyBK9UVc6nz1A==
+X-Received: by 2002:a5d:51c9:: with SMTP id n9mr8771950wrv.334.1581426785134;
+        Tue, 11 Feb 2020 05:13:05 -0800 (PST)
 Received: from localhost.localdomain (lfbn-nic-1-65-232.w2-15.abo.wanadoo.fr. [2.15.156.232])
-        by smtp.gmail.com with ESMTPSA id b21sm3873013wmd.37.2020.02.11.05.12.57
+        by smtp.gmail.com with ESMTPSA id b21sm3873013wmd.37.2020.02.11.05.13.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 11 Feb 2020 05:12:58 -0800 (PST)
+        Tue, 11 Feb 2020 05:13:04 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -65,10 +66,12 @@ To:     Linus Walleij <linus.walleij@linaro.org>,
 Cc:     linux-gpio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v2 0/6] irq/irq_sim: try to improve the API
-Date:   Tue, 11 Feb 2020 14:12:34 +0100
-Message-Id: <20200211131240.15853-1-brgl@bgdev.pl>
+Subject: [PATCH v2 5/6] irq/domain: provide irq_domain_dispose_mappings() helper
+Date:   Tue, 11 Feb 2020 14:12:39 +0100
+Message-Id: <20200211131240.15853-6-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200211131240.15853-1-brgl@bgdev.pl>
+References: <20200211131240.15853-1-brgl@bgdev.pl>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -78,66 +81,64 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-This is my second take at improving the interrupt simulator interface.
-I marked it as v2 but it actually takes a completely different approach.
+Unmapping all interrupts before removing an irq_domain is a common
+use-case. Provide an appropriate helper that can also be used with
+the remove() callback in irq_domain ops.
 
-The interrupt simulator API exposes a lot of custom data structures and
-functions and doesn't reuse the interfaces already exposed by the irq
-subsystem. This series tries to address it.
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ include/linux/irqdomain.h |  2 ++
+ kernel/irq/irqdomain.c    | 17 +++++++++++++++++
+ 2 files changed, 19 insertions(+)
 
-First, we make irq_domain_reset_irq_data() available to non-V2 domain API
-users - that'll be used in the subsequent patch. Next we overhaul the
-public interfaces - we hide all specific data structures and instead
-rely on the irq_domain struct and virtual interrupt numberspace.
-
-Next four patches simplify the interface even more, but since the change
-may be a bit more controversial due to modification of the irq_domain
-I decided to split them out of the second patch.
-
-In patch 3/6 we're adding a new callback to irq_domain_ops that is called
-right before all the other code in irq_domain_remove(). Next we use it to
-remove the simulator-specific cleanup function from irq_sim.h - users now
-can simply use the regular irq_domain_remove().
-
-Last two patches show that the new callback isn't limited to the interrupt
-simulator and can be used to shrink code in real driver too. We introduce
-a new helper for a common use case of disposing of all mappings before
-removing the irq_domain and use it in the keystone irqchip driver.
-
-The end effect is that we limit the interrupt simulator API to two
-functions (plus one device managed variant) and zero new structures.
-
-v1: https://lkml.org/lkml/2019/8/12/558
-
-v1 -> v2:
-- instead of just making the new data structures opaque for users, remove
-  them entirely in favor of irq_domain
-- call irq_set_handler() & irq_domain_reset_irq_data() when unmapping
-  the simulated interrupt
-- fix a memory leak in error path
-- make it possible to use irq_find_matching_fwnode() with the simulator
-  domain
-- correctly use irq_create_mapping() and irq_find_mapping(): only use the
-  former at init-time and the latter at interrupt-time
-
-Bartosz Golaszewski (6):
-  irq: make irq_domain_reset_irq_data() available even for non-V2 users
-  irq/irq_sim: simplify the API
-  irq/domain: add a new callback to domain ops
-  irq/irq_sim: remove irq_domain_remove_sim()
-  irq/domain: provide irq_domain_dispose_mappings() helper
-  irqchip: keystone: use irq_domain_dispose_mappings()
-
- drivers/gpio/gpio-mockup.c          |  47 ++++--
- drivers/iio/dummy/iio_dummy_evgen.c |  32 ++--
- drivers/irqchip/irq-keystone.c      |   5 +-
- include/linux/irq_sim.h             |  33 ++--
- include/linux/irqdomain.h           |   9 +-
- kernel/irq/Kconfig                  |   1 +
- kernel/irq/irq_sim.c                | 225 ++++++++++++++++------------
- kernel/irq/irqdomain.c              |  44 ++++--
- 8 files changed, 238 insertions(+), 158 deletions(-)
-
+diff --git a/include/linux/irqdomain.h b/include/linux/irqdomain.h
+index fbc25f464f62..8fd27614dafd 100644
+--- a/include/linux/irqdomain.h
++++ b/include/linux/irqdomain.h
+@@ -390,6 +390,7 @@ extern unsigned int irq_create_mapping(struct irq_domain *host,
+ 				       irq_hw_number_t hwirq);
+ extern unsigned int irq_create_fwspec_mapping(struct irq_fwspec *fwspec);
+ extern void irq_dispose_mapping(unsigned int virq);
++extern void irq_domain_dispose_mappings(struct irq_domain *domain);
+ 
+ /**
+  * irq_linear_revmap() - Find a linux irq from a hw irq number.
+@@ -594,6 +595,7 @@ irq_domain_hierarchical_is_msi_remap(struct irq_domain *domain)
+ 
+ #else /* CONFIG_IRQ_DOMAIN */
+ static inline void irq_dispose_mapping(unsigned int virq) { }
++static inline void irq_domain_dispose_mappings(struct irq_domain *domain) { }
+ static inline struct irq_domain *irq_find_matching_fwnode(
+ 	struct fwnode_handle *fwnode, enum irq_domain_bus_token bus_token)
+ {
+diff --git a/kernel/irq/irqdomain.c b/kernel/irq/irqdomain.c
+index b391d2e65bdd..d09de9f2411a 100644
+--- a/kernel/irq/irqdomain.c
++++ b/kernel/irq/irqdomain.c
+@@ -888,6 +888,23 @@ void irq_dispose_mapping(unsigned int virq)
+ }
+ EXPORT_SYMBOL_GPL(irq_dispose_mapping);
+ 
++/**
++ * irq_domain_dispose_mappings() - Unmap all interrupts
++ * @domain: domain for which to unmap all interrupts
++ */
++void irq_domain_dispose_mappings(struct irq_domain *domain)
++{
++	unsigned int virq;
++	int i;
++
++	for (i = 0; i < domain->hwirq_max; i++) {
++		virq = irq_find_mapping(domain, i);
++		if (virq)
++			irq_dispose_mapping(virq);
++	}
++}
++EXPORT_SYMBOL_GPL(irq_domain_dispose_mappings);
++
+ /**
+  * irq_find_mapping() - Find a linux irq from a hw irq number.
+  * @domain: domain owning this hardware interrupt
 -- 
 2.25.0
 
