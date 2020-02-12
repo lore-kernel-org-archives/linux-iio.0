@@ -2,54 +2,51 @@ Return-Path: <SRS0=alZ4=4A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D099C3B186
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Feb 2020 16:18:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB653C352A4
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Feb 2020 16:18:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0FE0721569
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Feb 2020 16:18:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD53D20714
+	for <linux-iio@archiver.kernel.org>; Wed, 12 Feb 2020 16:18:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728606AbgBLQSE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1728523AbgBLQSE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 12 Feb 2020 11:18:04 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:36876 "EHLO
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:39038 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726728AbgBLQSC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Feb 2020 11:18:02 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01CGENMI001203;
-        Wed, 12 Feb 2020 11:18:01 -0500
+        by vger.kernel.org with ESMTP id S1727007AbgBLQSD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Feb 2020 11:18:03 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01CGEZ4F030718;
+        Wed, 12 Feb 2020 11:18:02 -0500
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2y1udmyfnc-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 2y1tyqfpjm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 12 Feb 2020 11:18:01 -0500
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01CGHxhP052876
+        Wed, 12 Feb 2020 11:18:02 -0500
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01CGI1xL052882
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 12 Feb 2020 11:18:00 -0500
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 12 Feb 2020 08:17:58 -0800
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 12 Feb 2020 08:17:34 -0800
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 12 Feb 2020 08:17:58 -0800
+        Wed, 12 Feb 2020 11:18:01 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 12 Feb
+ 2020 11:18:00 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 12 Feb 2020 11:18:00 -0500
 Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.175])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01CGHsf7001230;
-        Wed, 12 Feb 2020 11:17:56 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01CGHsf9001230;
+        Wed, 12 Feb 2020 11:17:58 -0500
 From:   Alexandru Tachici <alexandru.tachici@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC:     <jic23@kernel.org>,
         Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [PATCH v3 1/5] staging: iio: adc: ad7192: fail probe on get_voltage
-Date:   Wed, 12 Feb 2020 18:17:17 +0200
-Message-ID: <20200212161721.16200-2-alexandru.tachici@analog.com>
+Subject: [PATCH 3/5] staging: iio: adc: ad7192: removed spi_device_id
+Date:   Wed, 12 Feb 2020 18:17:19 +0200
+Message-ID: <20200212161721.16200-4-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200212161721.16200-1-alexandru.tachici@analog.com>
 References: <20200212161721.16200-1-alexandru.tachici@analog.com>
@@ -59,45 +56,97 @@ Content-Type:   text/plain; charset=US-ASCII
 X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
  definitions=2020-02-12_08:2020-02-11,2020-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 bulkscore=0 adultscore=0 mlxlogscore=928 lowpriorityscore=0
- clxscore=1015 mlxscore=0 impostorscore=0 spamscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0
+ priorityscore=1501 malwarescore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 mlxlogscore=999 bulkscore=0 impostorscore=0 clxscore=1015
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2001150001 definitions=main-2002120125
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch makes the ad7192_probe fail in case
-regulator_get_voltage will return an error or voltage
-is set to 0.
+This patch removes spi_device_id table and moves the
+init data (id of the chip) in the .data field
+of of_device_id table.
 
 Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
 ---
- drivers/staging/iio/adc/ad7192.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7192.c | 33 +++++++++++---------------------
+ 1 file changed, 11 insertions(+), 22 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index bf3e2a9cc07f..41da8b4cdc48 100644
+index 8fca8915543d..8ec28aa8fa8a 100644
 --- a/drivers/staging/iio/adc/ad7192.c
 +++ b/drivers/staging/iio/adc/ad7192.c
-@@ -899,10 +899,13 @@ static int ad7192_probe(struct spi_device *spi)
+@@ -16,6 +16,7 @@
+ #include <linux/err.h>
+ #include <linux/sched.h>
+ #include <linux/delay.h>
++#include <linux/of_device.h>
  
- 	voltage_uv = regulator_get_voltage(st->avdd);
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -876,6 +877,15 @@ static int ad7192_channels_config(struct iio_dev *indio_dev)
+ 	return 0;
+ }
  
--	if (voltage_uv)
-+	if (voltage_uv > 0) {
- 		st->int_vref_mv = voltage_uv / 1000;
--	else
-+	} else {
-+		ret = voltage_uv;
- 		dev_err(&spi->dev, "Device tree error, reference voltage undefined\n");
-+		goto error_disable_avdd;
-+	}
++static const struct of_device_id ad7192_of_match[] = {
++	{ .compatible = "adi,ad7190", .data = (void *)ID_AD7190 },
++	{ .compatible = "adi,ad7192", .data = (void *)ID_AD7192 },
++	{ .compatible = "adi,ad7193", .data = (void *)ID_AD7193 },
++	{ .compatible = "adi,ad7195", .data = (void *)ID_AD7195 },
++	{}
++};
++MODULE_DEVICE_TABLE(of, ad7192_of_match);
++
+ static int ad7192_probe(struct spi_device *spi)
+ {
+ 	struct ad7192_state *st;
+@@ -928,7 +938,7 @@ static int ad7192_probe(struct spi_device *spi)
+ 	}
  
  	spi_set_drvdata(spi, indio_dev);
- 	st->devid = spi_get_device_id(spi)->driver_data;
+-	st->devid = spi_get_device_id(spi)->driver_data;
++	st->devid = (unsigned long)of_device_get_match_data(&spi->dev);
+ 	indio_dev->dev.parent = &spi->dev;
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -1009,26 +1019,6 @@ static int ad7192_remove(struct spi_device *spi)
+ 	return 0;
+ }
+ 
+-static const struct spi_device_id ad7192_id[] = {
+-	{"ad7190", ID_AD7190},
+-	{"ad7192", ID_AD7192},
+-	{"ad7193", ID_AD7193},
+-	{"ad7195", ID_AD7195},
+-	{}
+-};
+-
+-MODULE_DEVICE_TABLE(spi, ad7192_id);
+-
+-static const struct of_device_id ad7192_of_match[] = {
+-	{ .compatible = "adi,ad7190" },
+-	{ .compatible = "adi,ad7192" },
+-	{ .compatible = "adi,ad7193" },
+-	{ .compatible = "adi,ad7195" },
+-	{}
+-};
+-
+-MODULE_DEVICE_TABLE(of, ad7192_of_match);
+-
+ static struct spi_driver ad7192_driver = {
+ 	.driver = {
+ 		.name	= "ad7192",
+@@ -1036,7 +1026,6 @@ static struct spi_driver ad7192_driver = {
+ 	},
+ 	.probe		= ad7192_probe,
+ 	.remove		= ad7192_remove,
+-	.id_table	= ad7192_id,
+ };
+ module_spi_driver(ad7192_driver);
+ 
 -- 
 2.20.1
 
