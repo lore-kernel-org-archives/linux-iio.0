@@ -2,821 +2,295 @@ Return-Path: <SRS0=0geU=4B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CF39CC3F68F
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Feb 2020 11:39:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12368C2BA83
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Feb 2020 14:57:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8F65424649
-	for <linux-iio@archiver.kernel.org>; Thu, 13 Feb 2020 11:39:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C4C7C2073C
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Feb 2020 14:57:16 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="ASHeKd4G"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729888AbgBMLju (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 Feb 2020 06:39:50 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:45648 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729559AbgBMLjt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Feb 2020 06:39:49 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01DBcPMd011147;
-        Thu, 13 Feb 2020 06:39:46 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2y1udn1vc3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 13 Feb 2020 06:39:46 -0500
-Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01DBdjAq049357
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 13 Feb 2020 06:39:45 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 13 Feb
- 2020 06:39:44 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 13 Feb 2020 06:39:44 -0500
-Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.175])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01DBdewh012141;
-        Thu, 13 Feb 2020 06:39:42 -0500
-From:   Alexandru Tachici <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Mircea Caprioru <mircea.caprioru@analog.com>
-Subject: [PATCH v3 1/2] iio: dac: ad5770r: Add AD5770R support
-Date:   Thu, 13 Feb 2020 13:39:15 +0200
-Message-ID: <20200213113916.28070-2-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200213113916.28070-1-alexandru.tachici@analog.com>
-References: <20200213113916.28070-1-alexandru.tachici@analog.com>
+        id S1727347AbgBMO5Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 Feb 2020 09:57:16 -0500
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:34491 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726282AbgBMO5Q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 Feb 2020 09:57:16 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1581605835;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=OG+hnrSnkCgWf7UG021Y7MWPAq7aPjND81Zb6RKMks0=;
+        b=ASHeKd4G1NISrcqezwbZKd03mykmxNrIwZmAS8pcNlP3CTA3lrKKvoHugX3O7xQ45kItx+
+        9mpbLSFFWGpq1U5h629HwG1vCRGQKToZ164D534hiQ2uJfZ3QtUC055XUBKznyo7DBCYBC
+        jVU6THMIBz0+GosFWpaFGcgtkJWlqYg=
+Received: from mail-qv1-f70.google.com (mail-qv1-f70.google.com
+ [209.85.219.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-25-rK1ZwMiUPxWVUElrFvGr-A-1; Thu, 13 Feb 2020 09:57:08 -0500
+X-MC-Unique: rK1ZwMiUPxWVUElrFvGr-A-1
+Received: by mail-qv1-f70.google.com with SMTP id e26so3660805qvb.4
+        for <linux-iio@vger.kernel.org>; Thu, 13 Feb 2020 06:57:08 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=OG+hnrSnkCgWf7UG021Y7MWPAq7aPjND81Zb6RKMks0=;
+        b=i8E3GhctqpCIzZ1BeAL9s30RewEwO+c9qvIa+z4HJCi28ReCsDGayIQyBxFszubPdY
+         Wr5HfLKUbShEEPfMDwiE6jTZl0X7OXIQ93fxhli7pcny7KoUDHLNXcZos66qCZeSt+ad
+         Wc8mVyELwUPR/wcV4r0YZdxGbFHm2da0owCP5Ck98knm2WhihsBXteumR2Apx+5RxIqs
+         t9znpoYhPUtSInn+3Z/00wdhVMszQRB7feBselquLaINhwlZhDfU1z8gTkNGAYhvIdHa
+         1yITEDgdwEukPmqgzzhrSN2LMDRi4QuwIUpXuyb/g9w9suGyuQMFSVLFXS/hOGWx3Tqx
+         ESQA==
+X-Gm-Message-State: APjAAAWZnyVXKOOE3jtyz4sXJkWvkeu5bfGA3EKSMlu1fattN8nJ7de0
+        TxAoDNT1XsruAAMkVWlQ90JVe+q45A+yFYWz/9RYUMwFTMF/gATn8etvyOtO65yDq2U5DSUqeJd
+        axqhoEYKAR8w2POPtuKty4m96IEEq73bljEfx
+X-Received: by 2002:a0c:b61c:: with SMTP id f28mr12127451qve.101.1581605828172;
+        Thu, 13 Feb 2020 06:57:08 -0800 (PST)
+X-Google-Smtp-Source: APXvYqw79GfvtUnCv32Ralzh9mb3Ib+MuApX3vGAqTZi5554x+i/wsufiurBMmJpzi5QIWYX18IaVCdLBTvAhDT4Dq0=
+X-Received: by 2002:a0c:b61c:: with SMTP id f28mr12127419qve.101.1581605827808;
+ Thu, 13 Feb 2020 06:57:07 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-13_03:2020-02-12,2020-02-13 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- suspectscore=0 bulkscore=0 adultscore=0 mlxlogscore=999 lowpriorityscore=0
- clxscore=1015 mlxscore=0 impostorscore=0 spamscore=0 phishscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002130092
+References: <1581476197-25854-1-git-send-email-Sandeep.Singh@amd.com> <1ce6f591-1e8b-8291-7f18-48876fd70e10@redhat.com>
+In-Reply-To: <1ce6f591-1e8b-8291-7f18-48876fd70e10@redhat.com>
+From:   Benjamin Tissoires <benjamin.tissoires@redhat.com>
+Date:   Thu, 13 Feb 2020 15:56:56 +0100
+Message-ID: <CAO-hwJJkWkpApB-i0tHxEb0BeWcMpFLwSsOWKKdzGKnJEbHA_A@mail.gmail.com>
+Subject: Re: [PATCH v3 0/5] SFH: Add Support for AMD Sensor Fusion Hub
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Sandeep Singh <Sandeep.Singh@amd.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:HID CORE LAYER" <linux-input@vger.kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Nehal-bakulchandra.Shah@amd.com, Shyam-sundar.S-k@amd.com
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The AD5770R is a 6-channel, 14-bit resolution, low noise, programmable
-current output digital-to-analog converter (DAC) for photonics control
-applications.
+Hi,
 
-It contains five 14-bit resolution current sourcing DAC channels and one
-14-bit resolution current sourcing/sinking DAC channel.
+On Wed, Feb 12, 2020 at 3:45 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> On 2/12/20 3:56 AM, Sandeep Singh wrote:
+> > From: Sandeep Singh <sandeep.singh@amd.com>
+> >
+> > AMD SFH(Sensor Fusion Hub) is HID based driver.SFH FW
+> > is part of MP2 processor (MP2 which is an ARM=C2=AE Cortex-M4
+> > core based co-processor to x86) and it runs on MP2 where
+> > in driver resides on X86.The driver functionalities are
+> > divided  into three parts:-
+> >
+> > 1: amd-mp2-pcie:-       This module will communicate with MP2 FW and
+> >                          provide that data into DRAM.
+> > 2: Client driver :-     This part for driver will use dram data and
+> >                          convert that data into HID format based on
+> >                          HID reports.
+> > 3: Transport driver :-  This part of driver will communicate with
+> >                          HID core. Communication between devices and
+> >                          HID core is mostly done via HID reports
+> >
+> > In terms of architecture it is much more reassembles like
+> > ISH(Intel Integrated Sensor Hub). However the major difference
+> > is all the hid reports are generated as part of kernel driver.
+> > AMD SFH driver taken reference from ISH in terms of
+> > design and functionalities at fewer location.
+> >
+> > AMD sensor fusion Hub is part of a SOC 17h family based platforms.
+> > The solution is working well on several OEM products.
+> > AMD SFH uses HID over PCIe bus.
+>
+> I started looking at this patch because of the phoronix' news item on it.
+>
+> First of all I want to say that it is great that AMD is working on
+> getting the Sensor Fusion Hub supported on Linux and that you are
+> working on a driver for this.
 
-Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/iio/dac/Kconfig   |  10 +
- drivers/iio/dac/Makefile  |   1 +
- drivers/iio/dac/ad5770r.c | 695 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 706 insertions(+)
- create mode 100644 drivers/iio/dac/ad5770r.c
+Yep, couldn't agree more :)
 
-diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index 979070196da9..c74f2151ee42 100644
---- a/drivers/iio/dac/Kconfig
-+++ b/drivers/iio/dac/Kconfig
-@@ -208,6 +208,16 @@ config AD5764
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad5764.
- 
-+config AD5770R
-+	tristate "Analog Devices AD5770R IDAC driver"
-+	depends on SPI_MASTER
-+	help
-+	  Say yes here to build support for Analog Devices AD5770R Digital to
-+	  Analog Converter.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad5770r.
-+
- config AD5791
- 	tristate "Analog Devices AD5760/AD5780/AD5781/AD5790/AD5791 DAC SPI driver"
- 	depends on SPI
-diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-index 1369fa1d2f0e..2fc481167724 100644
---- a/drivers/iio/dac/Makefile
-+++ b/drivers/iio/dac/Makefile
-@@ -19,6 +19,7 @@ obj-$(CONFIG_AD5755) += ad5755.o
- obj-$(CONFIG_AD5755) += ad5758.o
- obj-$(CONFIG_AD5761) += ad5761.o
- obj-$(CONFIG_AD5764) += ad5764.o
-+obj-$(CONFIG_AD5770R) += ad5770r.o
- obj-$(CONFIG_AD5791) += ad5791.o
- obj-$(CONFIG_AD5686) += ad5686.o
- obj-$(CONFIG_AD5686_SPI) += ad5686-spi.o
-diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
-new file mode 100644
-index 000000000000..7765310b074a
---- /dev/null
-+++ b/drivers/iio/dac/ad5770r.c
-@@ -0,0 +1,695 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * AD5770R Digital to analog converters driver
-+ *
-+ * Copyright 2018 Analog Devices Inc.
-+ */
-+
-+#include <linux/bits.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/iio/common/adi_spi_regs.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/property.h>
-+#include <linux/regmap.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+
-+#define ADI_SPI_IF_CONFIG_A		0x00
-+#define ADI_SPI_IF_CONFIG_B		0x01
-+#define ADI_SPI_IF_DEVICE_CONFIG	0x02
-+#define ADI_SPI_IF_CHIP_TYPE		0x03
-+#define ADI_SPI_IF_PRODUCT_ID_L		0x04
-+#define ADI_SPI_IF_PRODUCT_ID_H		0x05
-+#define ADI_SPI_IF_CHIP_GRADE		0x06
-+#define ADI_SPI_IF_SCRACTH_PAD		0x0A
-+#define ADI_SPI_IF_SPI_REVISION		0x0B
-+#define ADI_SPI_IF_SPI_VENDOR_L		0x0C
-+#define ADI_SPI_IF_SPI_VENDOR_H		0x0D
-+#define ADI_SPI_IF_SPI_STREAM_MODE	0x0E
-+#define ADI_SPI_IF_CONFIG_C		0x10
-+#define ADI_SPI_IF_STATUS_A		0x11
-+
-+/* ADI_SPI_IF_CONFIG_A */
-+#define ADI_SPI_IF_SW_RESET_MSK		(BIT(0) | BIT(7))
-+#define ADI_SPI_IF_SW_RESET_SEL(x)	((x) & ADI_SPI_IF_SW_RESET_MSK)
-+#define ADI_SPI_IF_ADDR_ASC_MSK		(BIT(2) | BIT(5))
-+#define ADI_SPI_IF_ADDR_ASC_SEL(x)	(((x) << 2) & ADI_SPI_IF_ADDR_ASC_MSK)
-+
-+/* ADI_SPI_IF_CONFIG_B */
-+#define ADI_SPI_IF_SINGLE_INS_MSK	BIT(7)
-+#define ADI_SPI_IF_SINGLE_INS_SEL(x)	FIELD_PREP(ADI_SPI_IF_SINGLE_INS_MSK, x)
-+#define ADI_SPI_IF_SHORT_INS_MSK	BIT(7)
-+#define ADI_SPI_IF_SHORT_INS_SEL(x)	FIELD_PREP(ADI_SPI_IF_SINGLE_INS_MSK, x)
-+
-+/* ADI_SPI_IF_CONFIG_C */
-+#define ADI_SPI_IF_STRICT_REG_MSK	BIT(5)
-+#define ADI_SPI_IF_STRICT_REG_GET(x)	FIELD_GET(ADI_SPI_IF_STRICT_REG_MSK, x)
-+
-+/* AD5770R configuration registers */
-+#define AD5770R_CHANNEL_CONFIG		0x14
-+#define AD5770R_OUTPUT_RANGE(ch)	(0x15 + (ch))
-+#define AD5770R_FILTER_RESISTOR(ch)	(0x1D + (ch))
-+#define AD5770R_REFERENCE		0x1B
-+#define AD5770R_DAC_LSB(ch)		(0x26 + 2 * (ch))
-+#define AD5770R_DAC_MSB(ch)		(0x27 + 2 * (ch))
-+#define AD5770R_CH_SELECT		0x34
-+#define AD5770R_CH_ENABLE		0x44
-+
-+/* AD5770R_CHANNEL_CONFIG */
-+#define AD5770R_CFG_CH0_SINK_EN(x)		(((x) & 0x1) << 7)
-+#define AD5770R_CFG_SHUTDOWN_B(x, ch)		(((x) & 0x1) << (ch))
-+
-+/* AD5770R_OUTPUT_RANGE */
-+#define AD5770R_RANGE_OUTPUT_SCALING(x)		(((x) & 0x3F) << 2)
-+#define AD5770R_RANGE_MODE(x)			((x) & 0x03)
-+
-+/* AD5770R_REFERENCE */
-+#define AD5770R_REF_RESISTOR_SEL(x)		(((x) & 0x1) << 2)
-+#define AD5770R_REF_SEL(x)			(((x) & 0x3) << 0)
-+
-+/* AD5770R_CH_ENABLE */
-+#define AD5770R_CH_SET(x, channel)		(((x) & 0x1) << (channel))
-+
-+#define AD5770R_MAX_CHANNELS	6
-+#define AD5770R_MAX_CH_MODES	14
-+#define AD5770R_LOW_VREF_mV	1250
-+#define AD5770R_HIGH_VREF_mV	2500
-+
-+enum ad5770r_ch0_modes {
-+	AD5770R_CH0_0_300 = 0,
-+	AD5770R_CH0_NEG_60_0,
-+	AD5770R_CH0_NEG_60_300
-+};
-+
-+enum ad5770r_ch1_modes {
-+	AD5770R_CH1_0_140_LOW_HEAD = 1,
-+	AD5770R_CH1_0_140_LOW_NOISE,
-+	AD5770R_CH1_0_250
-+};
-+
-+enum ad5770r_ch2_5_modes {
-+	AD5770R_CH_LOW_RANGE = 0,
-+	AD5770R_CH_HIGH_RANGE
-+};
-+
-+enum ad5770r_ref_v {
-+	AD5770R_EXT_2_5_V = 0,
-+	AD5770R_INT_1_25_V_OUT_ON,
-+	AD5770R_EXT_1_25_V,
-+	AD5770R_INT_1_25_V_OUT_OFF
-+};
-+
-+enum ad5770r_output_filter_resistor {
-+	AD5770R_FILTER_60_OHM = 0x0,
-+	AD5770R_FILTER_5_6_KOHM = 0x5,
-+	AD5770R_FILTER_11_2_KOHM,
-+	AD5770R_FILTER_22_2_KOHM,
-+	AD5770R_FILTER_44_4_KOHM,
-+	AD5770R_FILTER_104_KOHM,
-+};
-+
-+struct ad5770r_out_range {
-+	u8	out_scale;
-+	u8	out_range_mode;
-+};
-+
-+/**
-+ * struct ad5770R_state - driver instance specific data
-+ * @spi:		spi_device
-+ * @regmap:		regmap
-+ * @vref_reg:		fixed regulator for reference configuration
-+ * @gpio_reset:		gpio descriptor
-+ * @output_mode:		array contains channels output ranges
-+ * @vref:		reference value
-+ * @ch_pwr_down:		powerdown flags
-+ * @internal_ref:	internal reference flag
-+ * @external_res:	external 2.5k resistor flag
-+ */
-+struct ad5770r_state {
-+	struct spi_device		*spi;
-+	struct regmap			*regmap;
-+	struct regulator		*vref_reg;
-+	struct gpio_desc		*gpio_reset;
-+	struct ad5770r_out_range	output_mode[AD5770R_MAX_CHANNELS];
-+	int				vref;
-+	bool				ch_pwr_down[AD5770R_MAX_CHANNELS];
-+	bool				internal_ref;
-+	bool				external_res;
-+};
-+
-+static const struct regmap_config ad5770r_spi_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.read_flag_mask = BIT(7),
-+};
-+
-+struct ad5770r_output_modes {
-+	unsigned int ch;
-+	u8 mode;
-+	int min;
-+	int max;
-+};
-+
-+static struct ad5770r_output_modes ad5770r_rng_tbl[] = {
-+	{ 0, AD5770R_CH0_0_300, 0, 300 },
-+	{ 0, AD5770R_CH0_NEG_60_0, -60, 0 },
-+	{ 0, AD5770R_CH0_NEG_60_300, -60, 300 },
-+	{ 1, AD5770R_CH1_0_140_LOW_HEAD, 0, 140 },
-+	{ 1, AD5770R_CH1_0_140_LOW_NOISE, 0, 140 },
-+	{ 1, AD5770R_CH1_0_250, 0, 250 },
-+	{ 2, AD5770R_CH_LOW_RANGE, 0, 55 },
-+	{ 2, AD5770R_CH_HIGH_RANGE, 0, 150 },
-+	{ 3, AD5770R_CH_LOW_RANGE, 0, 45 },
-+	{ 3, AD5770R_CH_HIGH_RANGE, 0, 100 },
-+	{ 4, AD5770R_CH_LOW_RANGE, 0, 45 },
-+	{ 4, AD5770R_CH_HIGH_RANGE, 0, 100 },
-+	{ 5, AD5770R_CH_LOW_RANGE, 0, 45 },
-+	{ 5, AD5770R_CH_HIGH_RANGE, 0, 100 },
-+};
-+
-+static const unsigned int ad5770r_filter_freqs[] = {
-+	153, 357, 715, 1400, 2800, 262000,
-+};
-+
-+static const unsigned int ad5770r_filter_reg_vals[] = {
-+	AD5770R_FILTER_104_KOHM,
-+	AD5770R_FILTER_44_4_KOHM,
-+	AD5770R_FILTER_22_2_KOHM,
-+	AD5770R_FILTER_11_2_KOHM,
-+	AD5770R_FILTER_5_6_KOHM,
-+	AD5770R_FILTER_60_OHM
-+};
-+
-+static int ad5770r_set_output_mode(struct ad5770r_state *st,
-+				   const struct ad5770r_out_range *out_mode,
-+				   int channel)
-+{
-+	unsigned int regval;
-+
-+	regval = AD5770R_RANGE_OUTPUT_SCALING(out_mode->out_scale) |
-+		 AD5770R_RANGE_MODE(out_mode->out_range_mode);
-+
-+	return regmap_write(st->regmap,
-+			    AD5770R_OUTPUT_RANGE(channel), regval);
-+}
-+
-+static int ad5770r_set_reference(struct ad5770r_state *st)
-+{
-+	unsigned int regval;
-+
-+	regval = AD5770R_REF_RESISTOR_SEL(st->external_res);
-+
-+	if (st->internal_ref) {
-+		regval |= AD5770R_REF_SEL(AD5770R_INT_1_25_V_OUT_OFF);
-+	} else {
-+		switch (st->vref) {
-+		case AD5770R_LOW_VREF_mV:
-+			regval |= AD5770R_REF_SEL(AD5770R_EXT_1_25_V);
-+			break;
-+		case AD5770R_HIGH_VREF_mV:
-+			regval |= AD5770R_REF_SEL(AD5770R_EXT_2_5_V);
-+			break;
-+		default:
-+			regval = AD5770R_REF_SEL(AD5770R_INT_1_25_V_OUT_OFF);
-+			break;
-+		}
-+	}
-+
-+	return regmap_write(st->regmap, AD5770R_REFERENCE, regval);
-+}
-+
-+static int ad5770r_soft_reset(struct ad5770r_state *st)
-+{
-+	return regmap_write(st->regmap, ADI_SPI_IF_CONFIG_A,
-+			    ADI_SPI_IF_SW_RESET_SEL(1));
-+}
-+
-+static int ad5770r_reset(struct ad5770r_state *st)
-+{
-+	/* Perform software reset if no GPIO provided */
-+	if (!st->gpio_reset)
-+		return ad5770r_soft_reset(st);
-+
-+	gpiod_set_value_cansleep(st->gpio_reset, 0);
-+	usleep_range(10, 20);
-+	gpiod_set_value_cansleep(st->gpio_reset, 1);
-+
-+	/* data must not be written during reset timeframe */
-+	usleep_range(100, 200);
-+
-+	return 0;
-+}
-+
-+static int ad5770r_get_range(struct ad5770r_state *st,
-+			     int ch, int *min, int *max)
-+{
-+	int i;
-+	u8 tbl_ch, tbl_mode, out_range;
-+
-+	out_range = st->output_mode[ch].out_range_mode;
-+
-+	for (i = 0; i < AD5770R_MAX_CH_MODES; i++) {
-+		tbl_ch = ad5770r_rng_tbl[i].ch;
-+		tbl_mode = ad5770r_rng_tbl[i].mode;
-+		if (tbl_ch == ch && tbl_mode == out_range) {
-+			*min = ad5770r_rng_tbl[i].min;
-+			*max = ad5770r_rng_tbl[i].max;
-+			return 0;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad5770r_get_filter_freq(struct iio_dev *indio_dev,
-+				   const struct iio_chan_spec *chan, int *freq)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+	int ret;
-+	unsigned int regval, i;
-+
-+	ret = regmap_read(st->regmap,
-+			  AD5770R_FILTER_RESISTOR(chan->channel), &regval);
-+	if (ret < 0)
-+		return ret;
-+
-+	for (i = 0; i < ARRAY_SIZE(ad5770r_filter_reg_vals); i++)
-+		if (regval == ad5770r_filter_reg_vals[i])
-+			break;
-+	if (i == ARRAY_SIZE(ad5770r_filter_reg_vals))
-+		return -EINVAL;
-+
-+	*freq = ad5770r_filter_freqs[i];
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int ad5770r_set_filter_freq(struct iio_dev *indio_dev,
-+				   const struct iio_chan_spec *chan,
-+				   unsigned int freq)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+	unsigned int regval, i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ad5770r_filter_freqs); i++)
-+		if (ad5770r_filter_freqs[i] >= freq)
-+			break;
-+	if (i == ARRAY_SIZE(ad5770r_filter_freqs))
-+		return -EINVAL;
-+
-+	regval = ad5770r_filter_reg_vals[i];
-+
-+	return regmap_write(st->regmap, AD5770R_FILTER_RESISTOR(chan->channel),
-+			    regval);
-+}
-+
-+static int ad5770r_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long info)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+	int max, min, ret;
-+	__le16 buf16;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = regmap_bulk_read(st->regmap,
-+				       chan->address,
-+				       &buf16, 2);
-+		if (ret)
-+			return 0;
-+		*val = le16_to_cpu(buf16) >> 2;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = ad5770r_get_range(st, chan->channel, &min, &max);
-+		if (ret < 0)
-+			return ret;
-+		*val = max - min;
-+		/* There is no sign bit. (negative current is mapped from 0)
-+		 * (sourced/sinked) current = raw * scale + offset
-+		 * where offset in case of CH0 can be negative.
-+		 */
-+		*val2 = 14;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		return ad5770r_get_filter_freq(indio_dev, chan, val);
-+	case IIO_CHAN_INFO_OFFSET:
-+		ret = ad5770r_get_range(st, chan->channel, &min, &max);
-+		if (ret < 0)
-+			return ret;
-+		*val = min;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5770r_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long info)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+	u8 buf[2];
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		buf[0] = ((u16)val >> 6);
-+		buf[1] = (val & 0x3F) << 2;
-+		return regmap_bulk_write(st->regmap, chan->address,
-+					 buf, ARRAY_SIZE(buf));
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		return ad5770r_set_filter_freq(indio_dev, chan, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad5770r_read_freq_avail(struct iio_dev *indio_dev,
-+				   struct iio_chan_spec const *chan,
-+				   const int **vals, int *type, int *length,
-+				   long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		*type = IIO_VAL_INT;
-+		*vals = ad5770r_filter_freqs;
-+		*length = ARRAY_SIZE(ad5770r_filter_freqs);
-+		return IIO_AVAIL_LIST;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad5770r_reg_access(struct iio_dev *indio_dev,
-+			      unsigned int reg,
-+			      unsigned int writeval,
-+			      unsigned int *readval)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+
-+	if (readval)
-+		return regmap_read(st->regmap, reg, readval);
-+	else
-+		return regmap_write(st->regmap, reg, writeval);
-+}
-+
-+static const struct iio_info ad5770r_info = {
-+	.read_raw = ad5770r_read_raw,
-+	.write_raw = ad5770r_write_raw,
-+	.read_avail = ad5770r_read_freq_avail,
-+	.debugfs_reg_access = &ad5770r_reg_access,
-+};
-+
-+static int ad5770r_store_output_range(struct ad5770r_state *st,
-+				      int min, int max, int index)
-+{
-+	int i;
-+
-+	for (i = 0; i < AD5770R_MAX_CH_MODES; i++) {
-+		if (ad5770r_rng_tbl[i].ch != index)
-+			continue;
-+		if (ad5770r_rng_tbl[i].min != min ||
-+		    ad5770r_rng_tbl[i].max != max)
-+			continue;
-+		st->output_mode[index].out_range_mode = ad5770r_rng_tbl[i].mode;
-+
-+		return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static ssize_t ad5770r_read_dac_powerdown(struct iio_dev *indio_dev,
-+					  uintptr_t private,
-+					  const struct iio_chan_spec *chan,
-+					  char *buf)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n", st->ch_pwr_down[chan->channel]);
-+}
-+
-+static ssize_t ad5770r_write_dac_powerdown(struct iio_dev *indio_dev,
-+					   uintptr_t private,
-+					   const struct iio_chan_spec *chan,
-+					   const char *buf, size_t len)
-+{
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+	unsigned int regval;
-+	unsigned int mask;
-+	bool readin;
-+	int ret;
-+
-+	ret = kstrtobool(buf, &readin);
-+	if (ret)
-+		return ret;
-+
-+	readin = !readin;
-+
-+	regval = AD5770R_CFG_SHUTDOWN_B(readin, chan->channel);
-+	if (chan->channel == 0 &&
-+	    st->output_mode[0].out_range_mode > AD5770R_CH0_0_300) {
-+		regval |= AD5770R_CFG_CH0_SINK_EN(readin);
-+		mask = BIT(chan->channel) + BIT(7);
-+	} else {
-+		mask = BIT(chan->channel);
-+	}
-+	ret = regmap_update_bits(st->regmap, AD5770R_CHANNEL_CONFIG, mask,
-+				 regval);
-+	if (ret)
-+		return ret;
-+
-+	regval = AD5770R_CH_SET(readin, chan->channel);
-+	ret = regmap_update_bits(st->regmap, AD5770R_CH_ENABLE,
-+				 BIT(chan->channel), regval);
-+	if (ret)
-+		return ret;
-+
-+	st->ch_pwr_down[chan->channel] = !readin;
-+
-+	return len;
-+}
-+
-+static const struct iio_chan_spec_ext_info ad5770r_ext_info[] = {
-+	{
-+		.name = "powerdown",
-+		.read = ad5770r_read_dac_powerdown,
-+		.write = ad5770r_write_dac_powerdown,
-+		.shared = IIO_SEPARATE,
-+	},
-+	{ }
-+};
-+
-+#define AD5770R_IDAC_CHANNEL(index, reg) {				\
-+	.type = IIO_CURRENT,						\
-+	.address = reg,							\
-+	.indexed = 1,							\
-+	.channel = index,						\
-+	.output = 1,							\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
-+		BIT(IIO_CHAN_INFO_SCALE) |				\
-+		BIT(IIO_CHAN_INFO_OFFSET) |				\
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-+	.info_mask_shared_by_type_available =				\
-+		BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),	\
-+	.ext_info = ad5770r_ext_info,					\
-+}
-+
-+static const struct iio_chan_spec ad5770r_channels[] = {
-+	AD5770R_IDAC_CHANNEL(0, AD5770R_DAC_MSB(0)),
-+	AD5770R_IDAC_CHANNEL(1, AD5770R_DAC_MSB(1)),
-+	AD5770R_IDAC_CHANNEL(2, AD5770R_DAC_MSB(2)),
-+	AD5770R_IDAC_CHANNEL(3, AD5770R_DAC_MSB(3)),
-+	AD5770R_IDAC_CHANNEL(4, AD5770R_DAC_MSB(4)),
-+	AD5770R_IDAC_CHANNEL(5, AD5770R_DAC_MSB(5)),
-+};
-+
-+static int ad5770r_channel_config(struct ad5770r_state *st)
-+{
-+	int ret, tmp[2], min, max;
-+	unsigned int num;
-+	struct fwnode_handle *child;
-+
-+	num = device_get_child_node_count(&st->spi->dev);
-+	if (num != AD5770R_MAX_CHANNELS)
-+		return -EINVAL;
-+
-+	device_for_each_child_node(&st->spi->dev, child) {
-+		ret = fwnode_property_read_u32(child, "num", &num);
-+		if (ret)
-+			return ret;
-+		if (num > AD5770R_MAX_CHANNELS)
-+			return -EINVAL;
-+
-+		ret = fwnode_property_read_u32_array(child,
-+						     "adi,range-microamp",
-+						     tmp, 2);
-+		if (ret)
-+			return ret;
-+
-+		min = tmp[0] / 1000;
-+		max = tmp[1] / 1000;
-+		ret = ad5770r_store_output_range(st, min, max, num);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return ret;
-+}
-+
-+static int ad5770r_init(struct ad5770r_state *st)
-+{
-+	int ret, i;
-+
-+	st->gpio_reset = devm_gpiod_get_optional(&st->spi->dev, "reset",
-+						 GPIOD_OUT_HIGH);
-+	if (IS_ERR(st->gpio_reset))
-+		return PTR_ERR(st->gpio_reset);
-+
-+	/* Perform a reset */
-+	ret = ad5770r_reset(st);
-+	if (ret)
-+		return ret;
-+
-+	/* Set output range */
-+	ret = ad5770r_channel_config(st);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < AD5770R_MAX_CHANNELS; i++) {
-+		ret = ad5770r_set_output_mode(st,  &st->output_mode[i], i);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	st->external_res = fwnode_property_read_bool(st->spi->dev.fwnode,
-+						     "adi,external-resistor");
-+
-+	ret = ad5770r_set_reference(st);
-+	if (ret)
-+		return ret;
-+
-+	/* Set outputs off */
-+	ret = regmap_write(st->regmap, AD5770R_CHANNEL_CONFIG, 0x00);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_write(st->regmap, AD5770R_CH_ENABLE, 0x00);
-+	if (ret)
-+		return ret;
-+
-+	for (i = 0; i < AD5770R_MAX_CHANNELS; i++)
-+		st->ch_pwr_down[i] = true;
-+
-+	return ret;
-+}
-+
-+static void ad5770r_disable_regulator(void *data)
-+{
-+	struct spi_device *spi = (struct spi_device *)data;
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ad5770r_state *st = iio_priv(indio_dev);
-+
-+	if (st->vref_reg)
-+		regulator_disable(st->vref_reg);
-+}
-+
-+static int ad5770r_probe(struct spi_device *spi)
-+{
-+	struct ad5770r_state *st;
-+	struct iio_dev *indio_dev;
-+	struct regmap *regmap;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	st->spi = spi;
-+
-+	regmap = devm_regmap_init_spi(spi, &ad5770r_spi_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "Error initializing spi regmap: %ld\n",
-+			PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+	st->regmap = regmap;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, ad5770r_disable_regulator,
-+				       st);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->vref_reg = devm_regulator_get_optional(&spi->dev, "vref");
-+	if (!IS_ERR(st->vref_reg)) {
-+		ret = regulator_enable(st->vref_reg);
-+		if (ret) {
-+			dev_err(&spi->dev,
-+				"Failed to enable vref regulators: %d\n", ret);
-+			return ret;
-+		}
-+
-+		ret = regulator_get_voltage(st->vref_reg);
-+		if (ret < 0)
-+			return ret;
-+
-+		st->vref = ret / 1000;
-+	} else {
-+		if (PTR_ERR(st->vref_reg) == -ENODEV) {
-+			st->vref = AD5770R_LOW_VREF_mV;
-+			st->internal_ref = true;
-+		} else {
-+			return PTR_ERR(st->vref_reg);
-+		}
-+	}
-+
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->info = &ad5770r_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = ad5770r_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(ad5770r_channels);
-+
-+	ret = ad5770r_init(st);
-+	if (ret < 0) {
-+		dev_err(&spi->dev, "AD5770R init failed\n");
-+		return ret;
-+	}
-+
-+	return devm_iio_device_register(&st->spi->dev, indio_dev);
-+}
-+
-+static const struct of_device_id ad5770r_of_id[] = {
-+	{ .compatible = "adi,ad5770r", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, ad5770r_of_id);
-+
-+static const struct spi_device_id ad5770r_id[] = {
-+	{ "ad5770r", 0 },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, ad5770r_id);
-+
-+static struct spi_driver ad5770r_driver = {
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = of_match_ptr(ad5770r_of_id),
-+	},
-+	.probe = ad5770r_probe,
-+	.id_table = ad5770r_id,
-+};
-+
-+module_spi_driver(ad5770r_driver);
-+
-+MODULE_AUTHOR("Mircea Caprioru <mircea.caprioru@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD5770R IDAC");
-+MODULE_LICENSE("GPL v2");
--- 
-2.20.1
+>
+> But, I've taken a quick look, mainly at the
+> "[PATCH v3 5/5] SFH: Create HID report to Enable support of AMD sensor fu=
+sion Hub (SFH)"
+> patch.
+>
+> AFAIK with the Intel ISH the sensor-hub itself is actually providing
+> HID descriptors and HID input reports.
+>
+> Looking at the AMD code, that does not seem to be the case, it seems
+> the values come directly from the AMD sensor-hub without being in any
+> HID specific form, e.g.:
+>
+> +u8 get_input_report(int sensor_idx, int report_id,
+> +                   u8 *input_report, u32 *sensor_virt_addr)
+> +{
+> +       u8 report_size =3D 0;
+> +       struct accel3_input_report acc_input;
+> +       struct gyro_input_report gyro_input;
+> +       struct magno_input_report magno_input;
+> +       struct als_input_report als_input;
+> +
+> +       if (!sensor_virt_addr || !input_report)
+> +               return report_size;
+> +
+> +       switch (sensor_idx) {
+> +       case ACCEL_IDX: /* accel */
+> +               acc_input.common_property.report_id =3D report_id;
+> +               acc_input.common_property.sensor_state =3D
+> +                                       HID_USAGE_SENSOR_STATE_READY_ENUM=
+;
+> +               acc_input.common_property.event_type =3D
+> +                               HID_USAGE_SENSOR_EVENT_DATA_UPDATED_ENUM;
+> +               acc_input.in_accel_x_value =3D (int)sensor_virt_addr[0] /
+> +                                               AMD_SFH_FIRMWARE_MULTIPLI=
+ER;
+> +               acc_input.in_accel_y_value =3D (int)sensor_virt_addr[1] /
+> +                                               AMD_SFH_FIRMWARE_MULTIPLI=
+ER;
+> +               acc_input.in_accel_z_value =3D  (int)sensor_virt_addr[2] =
+/
+> +                                               AMD_SFH_FIRMWARE_MULTIPLI=
+ER;
+> +               memcpy(input_report, &acc_input, sizeof(acc_input));
+> +               report_size =3D sizeof(acc_input);
+> +               break;
+>
+> And the descriptors are hardcoded in the driver so as to fake a HID
+> device.
+>
+> So going through the HID subsystem seems like an unnecessary detour,
+> which just makes things needlessly complex and harder to debug
+> (and extend).
+>
+> The HID devices which the current patch-set is creating ultimately
+> will result in a number of devices being created under
+>
+> /sys/bus/iio/devices
+>
+> And this are the devices which userspace uses to get the sensor data.
+>
+> IMHO instead of going through the HID subsys the AMD Sensor Fusion Hub
+> driver should simply register 4 (*) iio-devices itself and directly
+> pass the data through at the iio subsys level rather then going the
+> long way around by creating a fake HID device which then gets
+> attached to by the hid-sensor driver to ultimately create the same
+> iio-devices.
+>
+> There are examples of e.g. various iio accel drivers under:
+> drivers/iio/accel/ you could start with a simple driver supporting
+> just the accelerometer bits and then extend things from there.
+>
+> Benjamin, Jiri, Jonathan, what is your take on this?
+
+Hard to say without knowing AMD roadmap for that. If they intend to
+have an ISH-like approach in the end with reports and descriptors
+provided by the firmwares, then it makes sense to keep this
+architecture for the first revision of devices.
+If not, then yes, this is probably overkill compared to what needs to be do=
+ne.
+
+Sandeep, can you explain to us why you think using HID is the best way?
+
+On a side note, I don't necessarily like patch 4/5 with the debugfs
+interface. It's adding a kernel API for no gain, and we should already
+have the debug API available in the various subsystems involved.
+
+Cheers,
+Benjamin
+
+
+
+
+>
+> Regards,
+>
+> Hans
+>
+>
+> *) One for accel, gyra, magneto and light each
+>
+>
+> > Sandeep Singh (5):
+> >    SFH: Add maintainers and documentation for AMD SFH based on HID
+> >      framework
+> >    SFH: PCI driver to add support of AMD sensor fusion Hub using HID
+> >      framework
+> >    SFH: Transport Driver to add support of AMD Sensor Fusion Hub (SFH)
+> >    SFH: Add debugfs support to AMD Sensor Fusion Hub
+> >    SFH: Create HID report to Enable support of AMD sensor fusion Hub
+> >      (SFH)
+> >
+> > Changes since v1:
+> >          -Fix auto build test warnings
+> >          -Fix warnings captured using smatch
+> >          -Changes suggested by Dan Carpenter
+> >
+> > Links of the review comments for v1:
+> >          [1] https://patchwork.kernel.org/patch/11325163/
+> >          [2] https://patchwork.kernel.org/patch/11325167/
+> >          [3] https://patchwork.kernel.org/patch/11325171/
+> >          [4] https://patchwork.kernel.org/patch/11325187/
+> >
+> >
+> > Changes since v2:
+> >          -Debugfs divided into another patch
+> >          -Fix some cosmetic changes
+> >          -Fix for review comments
+> >           Reported and Suggested by:-  Srinivas Pandruvada
+> >
+> > Links of the review comments for v2:
+> >          [1] https://patchwork.kernel.org/patch/11355491/
+> >          [2] https://patchwork.kernel.org/patch/11355495/
+> >          [3] https://patchwork.kernel.org/patch/11355499/
+> >          [4] https://patchwork.kernel.org/patch/11355503/
+> >
+> >
+> >   Documentation/hid/amd-sfh-hid.rst                  | 160 +++++
+> >   MAINTAINERS                                        |   8 +
+> >   drivers/hid/Kconfig                                |   2 +
+> >   drivers/hid/Makefile                               |   1 +
+> >   drivers/hid/amd-sfh-hid/Kconfig                    |  20 +
+> >   drivers/hid/amd-sfh-hid/Makefile                   |  17 +
+> >   drivers/hid/amd-sfh-hid/amd_mp2_pcie.c             | 243 ++++++++
+> >   drivers/hid/amd-sfh-hid/amd_mp2_pcie.h             | 177 ++++++
+> >   drivers/hid/amd-sfh-hid/amdsfh-debugfs.c           | 250 ++++++++
+> >   drivers/hid/amd-sfh-hid/amdsfh-debugfs.h           |  14 +
+> >   drivers/hid/amd-sfh-hid/amdsfh-hid-client.c        | 260 +++++++++
+> >   drivers/hid/amd-sfh-hid/amdsfh-hid.c               | 179 ++++++
+> >   drivers/hid/amd-sfh-hid/amdsfh-hid.h               |  85 +++
+> >   .../hid_descriptor/amd_sfh_hid_descriptor.c        | 275 +++++++++
+> >   .../hid_descriptor/amd_sfh_hid_descriptor.h        | 125 ++++
+> >   .../hid_descriptor/amd_sfh_hid_report_descriptor.h | 642 ++++++++++++=
++++++++++
+> >   16 files changed, 2458 insertions(+)
+> >   create mode 100644 Documentation/hid/amd-sfh-hid.rst
+> >   create mode 100644 drivers/hid/amd-sfh-hid/Kconfig
+> >   create mode 100644 drivers/hid/amd-sfh-hid/Makefile
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amd_mp2_pcie.c
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amd_mp2_pcie.h
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amdsfh-debugfs.c
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amdsfh-debugfs.h
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amdsfh-hid-client.c
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amdsfh-hid.c
+> >   create mode 100644 drivers/hid/amd-sfh-hid/amdsfh-hid.h
+> >   create mode 100644 drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid=
+_descriptor.c
+> >   create mode 100644 drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid=
+_descriptor.h
+> >   create mode 100644 drivers/hid/amd-sfh-hid/hid_descriptor/amd_sfh_hid=
+_report_descriptor.h
+> >
+>
 
