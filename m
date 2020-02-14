@@ -2,55 +2,57 @@ Return-Path: <SRS0=TOo6=4C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BBFFC2BA83
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 14:14:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94DE7C2BA83
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 14:14:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5ED902187F
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 14:14:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 635D6217F4
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 14:14:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581689658;
-	bh=aGy3vRwDnfElh7WcX6W3vs4JKizJixxKi32nDEI0dJ4=;
+	s=default; t=1581689679;
+	bh=MdUO0h05smc5KdaA/ZHU+8UH3vmdkaFGEznUM+x2ln0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=iypG2sxhAgBBHLKpsdADsCgLYUE8LI8h0sFFVzq9hrna/IkhGukAPgzml8eJF9Wj6
-	 t58JoiVafoWA1qMALSKm0RoZymaaTWIQPrnVpbrY138IE48bbv43vm7KiYdgMaa2lf
-	 58cfHdJHxp0nvlQ5pUEJixRb24NwEpbiEZKI1DOo=
+	b=EzwWX1k2NNbF8HP5Kmp0DToIo47RH7E5KhEAv1WwJ2X0nOs/crCXAUMgfLYKLFIve
+	 iHFo5CSUuZTb0hPOZ6fEq3RuTRxq7rkU5W6CHT7KViLqqIrFbBGLFOnS3T5F9pByM+
+	 a5080LBThmb07ifDJMqC+dUdbX7/Nj/3T7shThyc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729372AbgBNOOO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Feb 2020 09:14:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48062 "EHLO mail.kernel.org"
+        id S1729314AbgBNOOg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Feb 2020 09:14:36 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729102AbgBNOON (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 14 Feb 2020 09:14:13 -0500
+        id S1726191AbgBNOOg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 14 Feb 2020 09:14:36 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F12E5217F4;
-        Fri, 14 Feb 2020 14:14:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8BD9622314;
+        Fri, 14 Feb 2020 14:14:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581689653;
-        bh=aGy3vRwDnfElh7WcX6W3vs4JKizJixxKi32nDEI0dJ4=;
+        s=default; t=1581689675;
+        bh=MdUO0h05smc5KdaA/ZHU+8UH3vmdkaFGEznUM+x2ln0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wYj1fU2fcpZOOppAhcRP2/WLzPvuTE5E6JqO6qCezPEiY+ceTH1FpRH643+JFYa25
-         mcfp5pP3eNxC4b1WRD3wWdmVw0uxk3BxGy9J1U9wVDtHBm38RY9rhzHZ1Pca5goYir
-         MY/MSiOTOnpQIKBi0GD2VlznkKKEqPRMxs5R0fL0=
-Date:   Fri, 14 Feb 2020 14:14:07 +0000
+        b=1TQuwJkyrEDG4Zr88Ezq/kTRwslgZb2nVK7InN9NPN/GVvirKoPCthI2W0DFt1Ox7
+         U8nrLVd70NwvueEgl07oC+54n8P6vV1pkCUXG+Quxa4yr5AGLUhKugb9Ml4w3knVYX
+         48hBBtliu6D9hHX/2PcamWgsyd+F+Rgj0syqUguk=
+Date:   Fri, 14 Feb 2020 14:14:30 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Beniamin Bia <beniamin.bia@analog.com>
-Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <pmeerw@pmeerw.net>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <biabeniamin@outlook.com>,
-        <knaack.h@gmx.de>, <robh+dt@kernel.org>, <mark.rutland@arm.com>,
-        <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v5 5/5] MAINTAINERS: add entry for hmc425a driver.
-Message-ID: <20200214141407.22d0cbf5@archlinux>
-In-Reply-To: <20200206151149.32122-5-beniamin.bia@analog.com>
+To:     Rob Herring <robh@kernel.org>
+Cc:     Beniamin Bia <beniamin.bia@analog.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        biabeniamin@outlook.com, knaack.h@gmx.de, mark.rutland@arm.com,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v5 4/5] dt-bindings: iio: amplifiers: Add docs for
+ HMC425A Step Attenuator
+Message-ID: <20200214141430.2a3780c8@archlinux>
+In-Reply-To: <20200206213427.GA12507@bogus>
 References: <20200206151149.32122-1-beniamin.bia@analog.com>
-        <20200206151149.32122-5-beniamin.bia@analog.com>
+        <20200206151149.32122-4-beniamin.bia@analog.com>
+        <20200206213427.GA12507@bogus>
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,44 +62,26 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 6 Feb 2020 17:11:49 +0200
-Beniamin Bia <beniamin.bia@analog.com> wrote:
+On Thu, 6 Feb 2020 14:34:27 -0700
+Rob Herring <robh@kernel.org> wrote:
 
-> Add Beniamin Bia and Michael Hennerich as maintainers for HMC425A
-> attenuator.
+> On Thu, Feb 06, 2020 at 05:11:48PM +0200, Beniamin Bia wrote:
+> > From: Michael Hennerich <michael.hennerich@analog.com>
+> > 
+> > Document support for Analog Devices MC425A Step Attenuator.
+> > 
+> > Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
+> > Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
+> > ---
+> > Changes in v5:
+> > -minItems added for ctrl_gpios
+> > 
+> >  .../bindings/iio/amplifiers/adi,hmc425a.yaml  | 49 +++++++++++++++++++
+> >  1 file changed, 49 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml  
 > 
-> Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
-Applied.
+> Reviewed-by: Rob Herring <robh@kernel.org>
 
-Thanks,
+Applied.  Thanks,
 
 Jonathan
-
-> ---
-> Changes in v5:
-> -parse_maintainers runned
-> 
->  MAINTAINERS | 9 +++++++++
->  1 file changed, 9 insertions(+)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index e699fe378e71..12e39dc0dc93 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -1063,6 +1063,15 @@ F:	drivers/iio/adc/ltc249*
->  X:	drivers/iio/*/adjd*
->  F:	drivers/staging/iio/*/ad*
->  
-> +ANALOG DEVICES INC HMC425A DRIVER
-> +M:	Beniamin Bia <beniamin.bia@analog.com>
-> +M:	Michael Hennerich <michael.hennerich@analog.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Supported
-> +W:	http://ez.analog.com/community/linux-device-drivers
-> +F:	Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
-> +F:	drivers/iio/amplifiers/hmc425a.c
-> +
->  ANALOGBITS PLL LIBRARIES
->  M:	Paul Walmsley <paul.walmsley@sifive.com>
->  S:	Supported
-
