@@ -2,101 +2,220 @@ Return-Path: <SRS0=TOo6=4C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF65C47409
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 18:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 693A2C3B1B5
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 18:26:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A53FA22314
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 18:19:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A8022086A
+	for <linux-iio@archiver.kernel.org>; Fri, 14 Feb 2020 18:26:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1581704380;
-	bh=2a+zUaID5zALeOpO/fqjSjJWxrxS49+DTJaNZxvO+2Y=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=qv4RA6tx425MWUOQ3WTdfV/a/uv8B/RH02BrJyYcqiMlvxU8/fpIDAKzfdQqkcnaI
-	 VonRYqkkYXcZmPLr1A/m/gL0HquZ5IBmjMKVFyG7hHB2MDFXrvZ3DAM7nYSfroxojM
-	 jWStKXWkkz6YO05jVJrSs8xpzK8IfWyHwKEs3nL0=
+	s=default; t=1581704760;
+	bh=iPSMz9m+b6TUU1rBeRiiINPLup/BJ2uTJt5Gu19G7Ts=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=RWNHLSETWRKEZN1qNoix5Waz6wYAEWfLVZtK3bow/jXim+fn1TDlIB64m6owB3aHF
+	 8dasVXv2uW+fW8tjsrCyeSZxTeLbmGcccFDzkWr7YN3S4O1dQ2DgoNKBJ6jydeAXrl
+	 E7vJUnPug27iS6M835xkUxAIrbL050crhq7uLTds=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390389AbgBNSTg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Feb 2020 13:19:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:54444 "EHLO mail.kernel.org"
+        id S1729626AbgBNPtD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 Feb 2020 10:49:03 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730451AbgBNPuY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 14 Feb 2020 10:50:24 -0500
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1729661AbgBNPtC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 14 Feb 2020 10:49:02 -0500
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B45E24684;
-        Fri, 14 Feb 2020 15:50:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D0E4722314;
+        Fri, 14 Feb 2020 15:49:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1581695424;
-        bh=2a+zUaID5zALeOpO/fqjSjJWxrxS49+DTJaNZxvO+2Y=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Kf8MMhCdtosTqTAYCpyjD7+JWpMIYP/a+DdipeqfGCsMVDhSNgxmayEVsRvWMWhEC
-         Iey2b8YcxkGZmvHHHUBsTfBW2PbQW/9IN667ceCw/51QixtNI4xoi0RbHaNolTzHs6
-         U9JTkN52EaEsuQuHil5j492MtD8kaNDCY0PiMWbY=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.5 068/542] iio: imu: st_lsm6dsx: check return value from st_lsm6dsx_sensor_set_enable
-Date:   Fri, 14 Feb 2020 10:41:00 -0500
-Message-Id: <20200214154854.6746-68-sashal@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200214154854.6746-1-sashal@kernel.org>
-References: <20200214154854.6746-1-sashal@kernel.org>
+        s=default; t=1581695341;
+        bh=iPSMz9m+b6TUU1rBeRiiINPLup/BJ2uTJt5Gu19G7Ts=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=XOlOtbYN91NTX5WQtG7fSL9pK17AEigsLWFVC3TJd5igmif76Upsz7OR9d8zNfCIF
+         2NmiiQTvlPqirtxwTVxkMiGH2MdyTFsO+cUV+xGpE52QnnaTFf5Ryzsf7IGvYnkcbV
+         oaKuCWEGKACKRRlJlS1Wfb+UnP1PYFCtRGxLTJRs=
+Date:   Fri, 14 Feb 2020 15:47:48 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Alexandru Tachici <alexandru.tachici@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 2/5] staging: iio: adc: ad7192: modify iio_chan_spec
+ array
+Message-ID: <20200214154748.3f977906@archlinux>
+In-Reply-To: <20200212161721.16200-3-alexandru.tachici@analog.com>
+References: <20200212161721.16200-1-alexandru.tachici@analog.com>
+        <20200212161721.16200-3-alexandru.tachici@analog.com>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+On Wed, 12 Feb 2020 18:17:18 +0200
+Alexandru Tachici <alexandru.tachici@analog.com> wrote:
 
-[ Upstream commit a2dd9bd9334efb8dc0bdc0109abff3a7b57effb1 ]
+> This patch changes the static const struct iio_chan_spec arrays
+> in a way that all the necessary attributes are set at
+> compile time. Now ad7192_channels_config only makes the
+> channels attribute of iio_dev point to the right array depending
+> on the chip.
+> 
+> Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Applied, thanks
 
-Add missing return value check in st_lsm6dsx_read_oneshot disabling the
-sensor. The issue is reported by coverity with the following error:
 
-Unchecked return value:
-If the function returns an error value, the error value may be mistaken
-for a normal value.
-
-Addresses-Coverity-ID: 1446733 ("Unchecked return value")
-Fixes: b5969abfa8b8 ("iio: imu: st_lsm6dsx: add motion events")
-Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index b921dd9e108fa..e45123d8d2812 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -1506,8 +1506,11 @@ static int st_lsm6dsx_read_oneshot(struct st_lsm6dsx_sensor *sensor,
- 	if (err < 0)
- 		return err;
- 
--	if (!hw->enable_event)
--		st_lsm6dsx_sensor_set_enable(sensor, false);
-+	if (!hw->enable_event) {
-+		err = st_lsm6dsx_sensor_set_enable(sensor, false);
-+		if (err < 0)
-+			return err;
-+	}
- 
- 	*val = (s16)le16_to_cpu(data);
- 
--- 
-2.20.1
+> ---
+>  drivers/staging/iio/adc/ad7192.c | 112 ++++++++++++++++++-------------
+>  1 file changed, 66 insertions(+), 46 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index 41da8b4cdc48..8fca8915543d 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -786,73 +786,93 @@ static const struct iio_info ad7195_info = {
+>  	.validate_trigger = ad_sd_validate_trigger,
+>  };
+>  
+> +#define __AD719x_CHANNEL(_si, _channel1, _channel2, _address, _extend_name, \
+> +	_type, _mask_type_av, _ext_info) \
+> +	{ \
+> +		.type = (_type), \
+> +		.differential = ((_channel2) == -1 ? 0 : 1), \
+> +		.indexed = 1, \
+> +		.channel = (_channel1), \
+> +		.channel2 = (_channel2), \
+> +		.address = (_address), \
+> +		.extend_name = (_extend_name), \
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> +			BIT(IIO_CHAN_INFO_OFFSET), \
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
+> +			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY), \
+> +		.info_mask_shared_by_type_available = (_mask_type_av), \
+> +		.ext_info = (_ext_info), \
+> +		.scan_index = (_si), \
+> +		.scan_type = { \
+> +			.sign = 'u', \
+> +			.realbits = 24, \
+> +			.storagebits = 32, \
+> +			.endianness = IIO_BE, \
+> +		}, \
+> +	}
+> +
+> +#define AD719x_DIFF_CHANNEL(_si, _channel1, _channel2, _address) \
+> +	__AD719x_CHANNEL(_si, _channel1, _channel2, _address, NULL, \
+> +		IIO_VOLTAGE, BIT(IIO_CHAN_INFO_SCALE), \
+> +		ad7192_calibsys_ext_info)
+> +
+> +#define AD719x_CHANNEL(_si, _channel1, _address) \
+> +	__AD719x_CHANNEL(_si, _channel1, -1, _address, NULL, IIO_VOLTAGE, \
+> +		BIT(IIO_CHAN_INFO_SCALE), ad7192_calibsys_ext_info)
+> +
+> +#define AD719x_SHORTED_CHANNEL(_si, _channel1, _address) \
+> +	__AD719x_CHANNEL(_si, _channel1, -1, _address, "shorted", IIO_VOLTAGE, \
+> +		BIT(IIO_CHAN_INFO_SCALE), ad7192_calibsys_ext_info)
+> +
+> +#define AD719x_TEMP_CHANNEL(_si, _address) \
+> +	__AD719x_CHANNEL(_si, 0, -1, _address, NULL, IIO_TEMP, 0, NULL)
+> +
+>  static const struct iio_chan_spec ad7192_channels[] = {
+> -	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M, 24, 32, 0),
+> -	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M, 24, 32, 0),
+> -	AD_SD_TEMP_CHANNEL(2, AD7192_CH_TEMP, 24, 32, 0),
+> -	AD_SD_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M, 24, 32, 0),
+> -	AD_SD_CHANNEL(4, 1, AD7192_CH_AIN1, 24, 32, 0),
+> -	AD_SD_CHANNEL(5, 2, AD7192_CH_AIN2, 24, 32, 0),
+> -	AD_SD_CHANNEL(6, 3, AD7192_CH_AIN3, 24, 32, 0),
+> -	AD_SD_CHANNEL(7, 4, AD7192_CH_AIN4, 24, 32, 0),
+> +	AD719x_DIFF_CHANNEL(0, 1, 2, AD7192_CH_AIN1P_AIN2M),
+> +	AD719x_DIFF_CHANNEL(1, 3, 4, AD7192_CH_AIN3P_AIN4M),
+> +	AD719x_TEMP_CHANNEL(2, AD7192_CH_TEMP),
+> +	AD719x_SHORTED_CHANNEL(3, 2, AD7192_CH_AIN2P_AIN2M),
+> +	AD719x_CHANNEL(4, 1, AD7192_CH_AIN1),
+> +	AD719x_CHANNEL(5, 2, AD7192_CH_AIN2),
+> +	AD719x_CHANNEL(6, 3, AD7192_CH_AIN3),
+> +	AD719x_CHANNEL(7, 4, AD7192_CH_AIN4),
+>  	IIO_CHAN_SOFT_TIMESTAMP(8),
+>  };
+>  
+>  static const struct iio_chan_spec ad7193_channels[] = {
+> -	AD_SD_DIFF_CHANNEL(0, 1, 2, AD7193_CH_AIN1P_AIN2M, 24, 32, 0),
+> -	AD_SD_DIFF_CHANNEL(1, 3, 4, AD7193_CH_AIN3P_AIN4M, 24, 32, 0),
+> -	AD_SD_DIFF_CHANNEL(2, 5, 6, AD7193_CH_AIN5P_AIN6M, 24, 32, 0),
+> -	AD_SD_DIFF_CHANNEL(3, 7, 8, AD7193_CH_AIN7P_AIN8M, 24, 32, 0),
+> -	AD_SD_TEMP_CHANNEL(4, AD7193_CH_TEMP, 24, 32, 0),
+> -	AD_SD_SHORTED_CHANNEL(5, 2, AD7193_CH_AIN2P_AIN2M, 24, 32, 0),
+> -	AD_SD_CHANNEL(6, 1, AD7193_CH_AIN1, 24, 32, 0),
+> -	AD_SD_CHANNEL(7, 2, AD7193_CH_AIN2, 24, 32, 0),
+> -	AD_SD_CHANNEL(8, 3, AD7193_CH_AIN3, 24, 32, 0),
+> -	AD_SD_CHANNEL(9, 4, AD7193_CH_AIN4, 24, 32, 0),
+> -	AD_SD_CHANNEL(10, 5, AD7193_CH_AIN5, 24, 32, 0),
+> -	AD_SD_CHANNEL(11, 6, AD7193_CH_AIN6, 24, 32, 0),
+> -	AD_SD_CHANNEL(12, 7, AD7193_CH_AIN7, 24, 32, 0),
+> -	AD_SD_CHANNEL(13, 8, AD7193_CH_AIN8, 24, 32, 0),
+> +	AD719x_DIFF_CHANNEL(0, 1, 2, AD7193_CH_AIN1P_AIN2M),
+> +	AD719x_DIFF_CHANNEL(1, 3, 4, AD7193_CH_AIN3P_AIN4M),
+> +	AD719x_DIFF_CHANNEL(2, 5, 6, AD7193_CH_AIN5P_AIN6M),
+> +	AD719x_DIFF_CHANNEL(3, 7, 8, AD7193_CH_AIN7P_AIN8M),
+> +	AD719x_TEMP_CHANNEL(4, AD7193_CH_TEMP),
+> +	AD719x_SHORTED_CHANNEL(5, 2, AD7193_CH_AIN2P_AIN2M),
+> +	AD719x_CHANNEL(6, 1, AD7193_CH_AIN1),
+> +	AD719x_CHANNEL(7, 2, AD7193_CH_AIN2),
+> +	AD719x_CHANNEL(8, 3, AD7193_CH_AIN3),
+> +	AD719x_CHANNEL(9, 4, AD7193_CH_AIN4),
+> +	AD719x_CHANNEL(10, 5, AD7193_CH_AIN5),
+> +	AD719x_CHANNEL(11, 6, AD7193_CH_AIN6),
+> +	AD719x_CHANNEL(12, 7, AD7193_CH_AIN7),
+> +	AD719x_CHANNEL(13, 8, AD7193_CH_AIN8),
+>  	IIO_CHAN_SOFT_TIMESTAMP(14),
+>  };
+>  
+>  static int ad7192_channels_config(struct iio_dev *indio_dev)
+>  {
+>  	struct ad7192_state *st = iio_priv(indio_dev);
+> -	const struct iio_chan_spec *channels;
+> -	struct iio_chan_spec *chan;
+> -	int i;
+>  
+>  	switch (st->devid) {
+>  	case ID_AD7193:
+> -		channels = ad7193_channels;
+> +		indio_dev->channels = ad7193_channels;
+>  		indio_dev->num_channels = ARRAY_SIZE(ad7193_channels);
+>  		break;
+>  	default:
+> -		channels = ad7192_channels;
+> +		indio_dev->channels = ad7192_channels;
+>  		indio_dev->num_channels = ARRAY_SIZE(ad7192_channels);
+>  		break;
+>  	}
+>  
+> -	chan = devm_kcalloc(indio_dev->dev.parent, indio_dev->num_channels,
+> -			    sizeof(*chan), GFP_KERNEL);
+> -	if (!chan)
+> -		return -ENOMEM;
+> -
+> -	indio_dev->channels = chan;
+> -
+> -	for (i = 0; i < indio_dev->num_channels; i++) {
+> -		*chan = channels[i];
+> -		chan->info_mask_shared_by_all |=
+> -			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY);
+> -		if (chan->type != IIO_TEMP) {
+> -			chan->info_mask_shared_by_type_available |=
+> -				BIT(IIO_CHAN_INFO_SCALE);
+> -			chan->ext_info = ad7192_calibsys_ext_info;
+> -		}
+> -		chan++;
+> -	}
+> -
+>  	return 0;
+>  }
+>  
 
