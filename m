@@ -2,65 +2,56 @@ Return-Path: <SRS0=ao10=4G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7A71C34035
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Feb 2020 03:43:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E7CC34031
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Feb 2020 06:20:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 78C3820801
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Feb 2020 03:43:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 43C9121D56
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Feb 2020 06:20:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="ihYdnOQT"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="RHBmr/rj"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726383AbgBRDnA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Feb 2020 22:43:00 -0500
-Received: from mail-wm1-f52.google.com ([209.85.128.52]:53002 "EHLO
-        mail-wm1-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726166AbgBRDnA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Feb 2020 22:43:00 -0500
-Received: by mail-wm1-f52.google.com with SMTP id p9so1286571wmc.2
-        for <linux-iio@vger.kernel.org>; Mon, 17 Feb 2020 19:42:56 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=yjL8iTn4/cjQGFH5hZGo9k1hNnc6kDqKI1DkYfGTOis=;
-        b=ihYdnOQTYbfBPceQLYwzC5A3iEbPh0JGVL7RFfAHBviLXYsKpdOGXY9bUrfR659SHC
-         gnl04lHKdo51rOs890gv4B2KVggzep+6lZ/ySGX2sfC8v7FgBoUsXaHi7uH0uDxQoUYs
-         MDzOFuP1L4eJlBKNoBLoP3JShoUaH18vvzXxU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=yjL8iTn4/cjQGFH5hZGo9k1hNnc6kDqKI1DkYfGTOis=;
-        b=WEFdsSSp24gBAo97KRFloNE0KzCkJFB7nF0xObMSgstxeevdr+ZbuJ+TgclXSwFoD/
-         ussj7bn3Wr+NA2ZtwOBTCN3L5midtbWbgga8LwzMSLhTUKRk5O/sXXcYhNDtjVt7SswC
-         Q4kBigyMTdi8pOh7ty0z3OeJltHkrlxmE3kHfOwNjHJALqJxipjw5IxaCGL+giDnYx+F
-         J1v9kIKyL7QjhxsuwciCAct196W45LSivHkJ5nFB1IzzSHyBCb0EtoaUWZ5670bsNKR0
-         Oj/qTx6yWU73IT5/2UzDpLwVGQBpS0Vo6TeJGfaoeazUqzqslDb7InnYYU/Y/p5gWkvS
-         blrA==
-X-Gm-Message-State: APjAAAX76djHpJwanbIZMO3q9/0vBWWYohZw2eYayR4x4Agw919e3iOP
-        fUFBXgRdm95lm10GOQS7FkbAvGetB+xrvr7B
-X-Google-Smtp-Source: APXvYqxQLe/PsjykvFusq0zv6XRKgmbr5YiG3Jc2a2+vQ74F1uOlM5loyptdOU9mxMGTcsRdeQwPmw==
-X-Received: by 2002:a1c:1dc7:: with SMTP id d190mr228168wmd.48.1581997375429;
-        Mon, 17 Feb 2020 19:42:55 -0800 (PST)
-Received: from virtualbox.ipredator.se (anon-49-213.vpn.ipredator.se. [46.246.49.213])
-        by smtp.gmail.com with ESMTPSA id s22sm1816901wmh.4.2020.02.17.19.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 17 Feb 2020 19:42:55 -0800 (PST)
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-To:     linux-iio@vger.kernel.org
-Cc:     jic23@kernel.org, Matt Ranostay <matt.ranostay@konsulko.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v7 3/3] dt-bindings: iio: chemical: consolidate atlas-sensor docs
-Date:   Mon, 17 Feb 2020 19:42:39 -0800
-Message-Id: <20200218034239.135619-4-matt.ranostay@konsulko.com>
-X-Mailer: git-send-email 2.25.0
-In-Reply-To: <20200218034239.135619-1-matt.ranostay@konsulko.com>
-References: <20200218034239.135619-1-matt.ranostay@konsulko.com>
+        id S1726199AbgBRGUu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Feb 2020 01:20:50 -0500
+Received: from mail.andi.de1.cc ([85.214.55.253]:58022 "EHLO mail.andi.de1.cc"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726109AbgBRGUu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 18 Feb 2020 01:20:50 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=nmY2tjaMWRwVLTyGzwjeXNSRFboYF38fEHLRyvhHHzA=; b=RHBmr/rjCFx1xxay/NykFECKA7
+        GOquwGZj8aEAYoe6td91EuHQYFzOyq/E4/+zDlm0ewsYmbYXC9G/tHKDvdfZUd478prGNDL0WoJS5
+        rqEUTniMFtU5GNB20FRZN0FDMzF6BSau5o2Mu+Tbegt3aCB6oZJvgCWVIpL07+9lU8JU=;
+Received: from [77.247.85.102] (helo=localhost)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j3wFM-0000on-I9; Tue, 18 Feb 2020 07:20:41 +0100
+Received: from andi by localhost with local (Exim 4.92)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j3wF5-0005rM-OK; Tue, 18 Feb 2020 07:20:23 +0100
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org, b.galvani@gmail.com,
+        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, phh@phh.me, stefan@agner.ch,
+        letux-kernel@openphoenux.org, martin.blumenstingl@googlemail.com,
+        jic23@kernel.org
+Cc:     Andreas Kemnade <andreas@kemnade.info>
+Subject: [PATCH RFC v3 4/4] mfd: rn5t618: add ADC subdevice for RN5T618
+Date:   Tue, 18 Feb 2020 07:17:25 +0100
+Message-Id: <20200218061725.22420-5-andreas@kemnade.info>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200218061725.22420-1-andreas@kemnade.info>
+References: <20200218061725.22420-1-andreas@kemnade.info>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -68,163 +59,77 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since Atlas Scientific device support only varies from the compatible
-string is ideal all the respective docs are merged into a single doc
-named atlas,sensor.yaml
+RN5T618 has an ADC but RN5T567 has not, so
+we need separate subdevice lists for both.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
 ---
- .../bindings/iio/chemical/atlas,ec-sm.txt     | 21 --------
- .../bindings/iio/chemical/atlas,orp-sm.txt    | 21 --------
- .../bindings/iio/chemical/atlas,ph-sm.txt     | 21 --------
- .../bindings/iio/chemical/atlas,sensor.yaml   | 53 +++++++++++++++++++
- 4 files changed, 53 insertions(+), 63 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml
+Untested, IMHO only acceptable with a Tested-By.
+Not needed for the RC5T619, feel free to ignore them if the whole series
+would be delayed just because of missing Tested-By for this.
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-deleted file mode 100644
-index f4320595b851..000000000000
---- a/Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-+++ /dev/null
-@@ -1,21 +0,0 @@
--* Atlas Scientific EC-SM OEM sensor
--
--http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
--
--Required properties:
--
--  - compatible: must be "atlas,ec-sm"
--  - reg: the I2C address of the sensor
--  - interrupts: the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--atlas@64 {
--	compatible = "atlas,ec-sm";
--	reg = <0x64>;
--	interrupt-parent = <&gpio1>;
--	interrupts = <16 2>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
-deleted file mode 100644
-index af1f5a9aa4da..000000000000
---- a/Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
-+++ /dev/null
-@@ -1,21 +0,0 @@
--* Atlas Scientific ORP-SM OEM sensor
--
--https://www.atlas-scientific.com/_files/_datasheets/_oem/ORP_oem_datasheet.pdf
--
--Required properties:
--
--  - compatible: must be "atlas,orp-sm"
--  - reg: the I2C address of the sensor
--  - interrupts: the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--atlas@66 {
--	compatible = "atlas,orp-sm";
--	reg = <0x66>;
--	interrupt-parent = <&gpio1>;
--	interrupts = <16 2>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt b/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
-deleted file mode 100644
-index 79d90f060327..000000000000
---- a/Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
-+++ /dev/null
-@@ -1,21 +0,0 @@
--* Atlas Scientific pH-SM OEM sensor
--
--http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
--
--Required properties:
--
--  - compatible: must be "atlas,ph-sm"
--  - reg: the I2C address of the sensor
--  - interrupts: the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--atlas@65 {
--	compatible = "atlas,ph-sm";
--	reg = <0x65>;
--	interrupt-parent = <&gpio1>;
--	interrupts = <16 2>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml b/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml
-new file mode 100644
-index 000000000000..edcd2904d50e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml
-@@ -0,0 +1,53 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/chemical/atlas,sensor.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+ drivers/mfd/rn5t618.c | 26 ++++++++++++++++++++++++--
+ 1 file changed, 24 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/mfd/rn5t618.c b/drivers/mfd/rn5t618.c
+index 6828fd40b0a1..d37d7a31cf26 100644
+--- a/drivers/mfd/rn5t618.c
++++ b/drivers/mfd/rn5t618.c
+@@ -21,6 +21,7 @@
+ static const struct mfd_cell rn5t618_cells[] = {
+ 	{ .name = "rn5t618-regulator" },
+ 	{ .name = "rn5t618-wdt" },
++	{ .name = "rn5t618-adc" },
+ };
+ 
+ static const struct mfd_cell rc5t619_cells[] = {
+@@ -30,6 +31,11 @@ static const struct mfd_cell rc5t619_cells[] = {
+ 	{ .name = "rn5t618-wdt" },
+ };
+ 
++static const struct mfd_cell rn5t567_cells[] = {
++	{ .name = "rn5t618-regulator" },
++	{ .name = "rn5t618-wdt" },
++};
 +
-+title: Atlas Scientific OEM sensors
-+
-+maintainers:
-+  - Matt Ranostay <matt.ranostay@konsulko.com>
-+
-+description: |
-+  Atlas Scientific OEM sensors connected via I2C
-+
-+  Datasheets:
-+    http://www.atlas-scientific.com/_files/_datasheets/_oem/DO_oem_datasheet.pdf
-+    http://www.atlas-scientific.com/_files/_datasheets/_oem/EC_oem_datasheet.pdf
-+    http://www.atlas-scientific.com/_files/_datasheets/_oem/ORP_oem_datasheet.pdf
-+    http://www.atlas-scientific.com/_files/_datasheets/_oem/pH_oem_datasheet.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - atlas,do-sm
-+      - atlas,ec-sm
-+      - atlas,orp-sm
-+      - atlas,ph-sm
-+
-+  reg:
-+     maxItems: 1
-+
-+  interrupts:
-+     maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      atlas@66 {
-+        compatible = "atlas,orp-sm";
-+        reg = <0x66>;
-+        interrupt-parent = <&gpio1>;
-+        interrupts = <16 2>;
-+      };
-+    };
+ static bool rn5t618_volatile_reg(struct device *dev, unsigned int reg)
+ {
+ 	switch (reg) {
+@@ -203,16 +209,32 @@ static int rn5t618_i2c_probe(struct i2c_client *i2c,
+ 		return ret;
+ 	}
+ 
+-	if (priv->variant == RC5T619)
++	switch (priv->variant) {
++	case RC5T619:
+ 		ret = devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_NONE,
+ 					   rc5t619_cells,
+ 					   ARRAY_SIZE(rc5t619_cells),
+ 					   NULL, 0, NULL);
+-	else
++		break;
++	case RN5T618:
+ 		ret = devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_NONE,
+ 					   rn5t618_cells,
+ 					   ARRAY_SIZE(rn5t618_cells),
+ 					   NULL, 0, NULL);
++		break;
++	case RN5T567:
++		ret = devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_NONE,
++					   rn5t567_cells,
++					   ARRAY_SIZE(rn5t567_cells),
++					   NULL, 0, NULL);
++		break;
++	/*
++	 * Should not happen because we come here only with a valid device
++	 * tree match, so variant contains any of the above.
++	 */
++	default:
++		return -ENOENT;
++	}
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "failed to add sub-devices: %d\n", ret);
+ 		return ret;
 -- 
-2.25.0
+2.20.1
 
