@@ -2,103 +2,88 @@ Return-Path: <SRS0=hvf3=4H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98580C34047
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Feb 2020 10:32:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3AE9C34047
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Feb 2020 14:32:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6C1F9208E4
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Feb 2020 10:32:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 75D2524670
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Feb 2020 14:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726469AbgBSKck (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Feb 2020 05:32:40 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:57909 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726453AbgBSKcj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Feb 2020 05:32:39 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j4Meh-0000nA-Tr; Wed, 19 Feb 2020 11:32:35 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j4Meh-0008SQ-2y; Wed, 19 Feb 2020 11:32:35 +0100
-Date:   Wed, 19 Feb 2020 11:32:35 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Frank Rowand <frowand.list@gmail.com>
-Cc:     kernel@pengutronix.de, Geert Uytterhoeven <geert@glider.be>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: enabling a regulator before doing an ADC measurement
-Message-ID: <20200219103235.u2roy3uchlrxqgqw@pengutronix.de>
+        id S1727720AbgBSOcQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 19 Feb 2020 09:32:16 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:38870 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727434AbgBSOcP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Feb 2020 09:32:15 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01JENarr019384;
+        Wed, 19 Feb 2020 09:32:14 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2y8ucu1kgq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 19 Feb 2020 09:32:13 -0500
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01JEWCuO038939
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 19 Feb 2020 09:32:13 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 19 Feb
+ 2020 09:32:11 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 19 Feb 2020 09:32:11 -0500
+Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.175])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01JEW9WC027724;
+        Wed, 19 Feb 2020 09:32:09 -0500
+From:   Alexandru Tachici <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [PATCH] iio: accel: adxl372: Set iio_chan BE
+Date:   Wed, 19 Feb 2020 16:31:12 +0200
+Message-ID: <20200219143112.25976-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-19_03:2020-02-19,2020-02-19 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 spamscore=0
+ suspectscore=0 mlxscore=0 clxscore=1015 phishscore=0 priorityscore=1501
+ mlxlogscore=829 lowpriorityscore=0 adultscore=0 malwarescore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002190111
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+Data stored in the iio-buffer is BE and this
+should be specified in the iio_chan_spec struct.
 
-I have a hardware setup that looks as follows:
+Fixes: f4f55ce38e5f8 ("iio:adxl372: Add FIFO and interrupts support")
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ drivers/iio/accel/adxl372.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-                                ,-------------------.
- ,---------.       ,---/ -------| current-regulator |
- |  ADC    |       |            `-------------------'
- |      CH0--------+
- |         |       |
- `.........'    ,-----.
-                |PT100|
-		`-----'
-		   |
-		   ⏚
-
-So the idea is that I enable the regulator and then measure the adc's
-input to determine the resistance of the PT100 and so its temperature.
-
-I wonder if/how I should represent that in my device's device tree. I
-discussed this already a bit with Geert on irc and he came up with
-something like:
-
-	adc {
-		...
-		channel@0 {
-			reg = <0>;
-			supply = <&myregulator>;
-		};
-	};
-
-with the intention that the adc driver enables myregulator before
-starting a measurement on channel 0.
-
-Does this sound sensible? Does something like this maybe even already
-exist and I missed it?
-
-What is a bit special here is that usually a regulator is used to supply
-a device and it's just enabled at probe time (or when the device is
-started to be used) and disabled when done. Here the regulator is
-supposed to be enabled only during a measurement[1] to yield the reference
-current and doesn't supply a device. So maybe better use another
-property name instead of plain "supply", maybe "reference-supply"?
-
-Best regards
-Uwe
-
-[1] When the current measurement is done, the regulator must be swiched
-off again to not warm up the PT100 and so fudge future measurements.
-
+diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
+index 9c6eebf379ca..3eb413df3c8d 100644
+--- a/drivers/iio/accel/adxl372.c
++++ b/drivers/iio/accel/adxl372.c
+@@ -237,6 +237,7 @@ static const struct adxl372_axis_lookup adxl372_axis_lookup_table[] = {
+ 		.realbits = 12,						\
+ 		.storagebits = 16,					\
+ 		.shift = 4,						\
++		.endianness = IIO_BE,					\
+ 	},								\
+ }
+ 
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.20.1
+
