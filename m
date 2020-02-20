@@ -6,47 +6,47 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D629C11D0D
-	for <linux-iio@archiver.kernel.org>; Thu, 20 Feb 2020 15:00:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DAD6AC11D05
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Feb 2020 15:00:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 5D81F20679
-	for <linux-iio@archiver.kernel.org>; Thu, 20 Feb 2020 15:00:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BDA3E24673
+	for <linux-iio@archiver.kernel.org>; Thu, 20 Feb 2020 15:00:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728451AbgBTPAm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 20 Feb 2020 10:00:42 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32228 "EHLO
+        id S1728463AbgBTPAq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 20 Feb 2020 10:00:46 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:42226 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727761AbgBTPAl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Feb 2020 10:00:41 -0500
+        by vger.kernel.org with ESMTP id S1727761AbgBTPAq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Feb 2020 10:00:46 -0500
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01KEhvIr010963;
-        Thu, 20 Feb 2020 10:00:39 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2y8ucu4ekm-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01KEhtlN010953;
+        Thu, 20 Feb 2020 10:00:44 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2y8ucu4ekx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 20 Feb 2020 10:00:39 -0500
-Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01KF0cLb001162
+        Thu, 20 Feb 2020 10:00:44 -0500
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01KF0gaU031870
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 20 Feb 2020 10:00:38 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 20 Feb
- 2020 10:00:37 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 20 Feb 2020 10:00:37 -0500
+        Thu, 20 Feb 2020 10:00:43 -0500
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Thu, 20 Feb 2020 07:00:41 -0800
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Thu, 20 Feb 2020 07:00:41 -0800
 Received: from saturn.ad.analog.com ([10.48.65.124])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01KF0UqA025958;
-        Thu, 20 Feb 2020 10:00:34 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01KF0UqC025958;
+        Thu, 20 Feb 2020 10:00:38 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <devicetree@vger.kernel.org>
 CC:     <robh+dt@kernel.org>, <jic23@kernel.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 3/5] dt-bindings: iio: adc: add bindings doc for AXI ADC driver
-Date:   Thu, 20 Feb 2020 17:03:15 +0200
-Message-ID: <20200220150317.1864-3-alexandru.ardelean@analog.com>
+Subject: [PATCH 5/5] dt-bindings: iio: adc: add bindings doc for AD9467 ADC
+Date:   Thu, 20 Feb 2020 17:03:17 +0200
+Message-ID: <20200220150317.1864-5-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200220150317.1864-1-alexandru.ardelean@analog.com>
 References: <20200220150317.1864-1-alexandru.ardelean@analog.com>
@@ -66,87 +66,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change adds the bindings documentation for the AXI ADC driver.
+This change adds the binding doc for the AD9467 ADC.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../bindings/iio/adc/adi,axi-adc.yaml         | 70 +++++++++++++++++++
- 1 file changed, 70 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
+ .../bindings/iio/adc/adi,ad9467.yaml          | 63 +++++++++++++++++++
+ 1 file changed, 63 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
 new file mode 100644
-index 000000000000..a1c2630c6840
+index 000000000000..e94d9ba294d8
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
-@@ -0,0 +1,70 @@
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+@@ -0,0 +1,63 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/adi,axi-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/adi,ad9467.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Analog Devices AXI ADC IP core
++title: Analog Devices AD9467 High-Speed ADC
 +
 +maintainers:
 +  - Michael Hennerich <michael.hennerich@analog.com>
 +  - Alexandru Ardelean <alexandru.ardelean@analog.com>
 +
 +description: |
-+  Analog Devices Generic AXI ADC IP core for interfacing an ADC device
-+  with a high speed serial (JESD204B/C) or source synchronous parallel
-+  interface (LVDS/CMOS).
-+  Usually, some other interface type (i.e SPI) is used as a control
-+  interface for the actual ADC, while this IP core will interface
-+  to the data-lines of the ADC and handle the streaming of data into
-+  memory via DMA.
++  The AD9467 is a 16-bit, monolithic, IF sampling analog-to-digital
++  converter (ADC).
 +
-+  https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
++  https://www.analog.com/media/en/technical-documentation/data-sheets/AD9467.pdf
 +
 +properties:
 +  compatible:
 +    enum:
-+      - adi,axi-adc-10.0.a
++      - adi,ad9467
 +
 +  reg:
 +    maxItems: 1
 +
-+  dmas:
-+    description:
-+      A reference to a DMA channel channel specifier.
++  clocks:
 +    maxItems: 1
 +
-+  dmas-names:
++  clocks:
++    items:
++      - const: sample-clock
++
++  powerdown-gpios:
 +    description:
-+      The name of the DMA channel.
++      Pin that controls the powerdown mode of the device.
 +    maxItems: 1
 +
-+  axi-adc-client:
++  reset-gpios:
 +    description:
-+      A reference to a the actual ADC to which this FPGA ADC interfaces to.
++      Reset pin for the device.
 +    maxItems: 1
 +
 +required:
 +  - compatible
-+  - dmas
 +  - reg
-+  - axi-adc-client
++  - clocks
++  - clock-names
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    fpga_axi {
++    spi {
 +        #address-cells = <1>;
-+        #size-cells = <1>;
++        #size-cells = <0>;
 +
-+        axi-adc@44a00000 {
-+          compatible = "adi,axi-adc-10.0.a";
-+          reg = <0x44a00000 0x10000>;
-+          dmas = <&rx_dma 0>;
-+          dma-names = "rx";
-+
-+          axi-adc-client = <&spi_adc>;
++        adc@0 {
++          compatible = "adi,ad9467";
++          reg = <0>;
 +        };
 +    };
 +...
