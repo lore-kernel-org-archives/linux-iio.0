@@ -2,99 +2,104 @@ Return-Path: <SRS0=70H6=4J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8174C35646
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Feb 2020 11:38:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54BA9C35646
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Feb 2020 11:47:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id AF907222C4
-	for <linux-iio@archiver.kernel.org>; Fri, 21 Feb 2020 11:38:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1582285128;
-	bh=RSMXqVcGin1yqLClW26qzEGob5OcGyIIeUPKo30/GbY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=uXY2KDdkjbHx70v50cdOLTc92R5e8jB7Nq3aXWdIEl9+BYiGWn4GwZiuxmpeoYLoX
-	 FX2vZDzZRKguQe9fHs6SFSDBeM5ExtiqbqmorI1tym2oHOU9N4jyAuE/9OZsoOGZtQ
-	 w4VGyiG9ITqaF117hZgNdz3tb7JskN6N61DZhYcE=
+	by mail.kernel.org (Postfix) with ESMTP id 3208E24653
+	for <linux-iio@archiver.kernel.org>; Fri, 21 Feb 2020 11:47:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgBULis (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 Feb 2020 06:38:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:41466 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726976AbgBULis (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 21 Feb 2020 06:38:48 -0500
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BBE0F24650;
-        Fri, 21 Feb 2020 11:38:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1582285127;
-        bh=RSMXqVcGin1yqLClW26qzEGob5OcGyIIeUPKo30/GbY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HLv60fzlj4OdZLgW5FfEiVmdH6jvSr4q6yFm4ZcFBSA3Q8PZ0mZfJeo1hYNX9/NHm
-         i+EYEHwA9wxRJANNDOglhcS1QJ4E+5XXFzvduSLWTqpjdxe9w4Sepfn4t5JkvXPDBw
-         v/PfmMP6zwiXP+p1Ktsktq9VDj+UHxErKaRRn9eo=
-Date:   Fri, 21 Feb 2020 11:38:43 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 11/13] iio: imu: inv_mpu6050: dynamic sampling rate
- change
-Message-ID: <20200221113843.07374e4d@archlinux>
-In-Reply-To: <20200219143958.3548-12-jmaneyrol@invensense.com>
-References: <20200219143958.3548-1-jmaneyrol@invensense.com>
-        <20200219143958.3548-12-jmaneyrol@invensense.com>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727683AbgBULrG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 Feb 2020 06:47:06 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:7090 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726989AbgBULrG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Feb 2020 06:47:06 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01LBiJKk027029;
+        Fri, 21 Feb 2020 06:47:05 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2y8udupy15-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 21 Feb 2020 06:47:05 -0500
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01LBl4op029355
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 21 Feb 2020 06:47:04 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Fri, 21 Feb
+ 2020 06:47:01 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Fri, 21 Feb 2020 06:47:01 -0500
+Received: from saturn.ad.analog.com ([10.48.65.124])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01LBku5O017142;
+        Fri, 21 Feb 2020 06:46:59 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 3/3] iio: imu: adis: add a note better explaining state_lock
+Date:   Fri, 21 Feb 2020 13:49:43 +0200
+Message-ID: <20200221114943.2056-3-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200221114943.2056-1-alexandru.ardelean@analog.com>
+References: <20200221114943.2056-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-21_03:2020-02-19,2020-02-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 impostorscore=0 spamscore=0 suspectscore=0 mlxlogscore=890
+ phishscore=0 mlxscore=0 priorityscore=1501 clxscore=1015 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002210090
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 19 Feb 2020 15:39:56 +0100
-Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
+The 'state_lock' mutex was renamed from 'txrx_lock' in a previous patch and
+is intended to be used by ADIS drivers to protect the state of devices
+during consecutive R/W ops.
+The initial patch that introduced this change did not do a good [well, any]
+job at explaining this. This patch adds a comment to the 'state_lock'
+better explaining it's use.
 
-> Sampling rate can be changed while the chip is running. It can
-> be useful thus do not prevent it.
-> 
-> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Applied.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ include/linux/iio/imu/adis.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 5 -----
->  1 file changed, 5 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index aeee39696d3a..9076b6bb099c 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -910,10 +910,6 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
->  	    fifo_rate > INV_MPU6050_MAX_FIFO_RATE)
->  		return -EINVAL;
->  
-> -	result = iio_device_claim_direct_mode(indio_dev);
-> -	if (result)
-> -		return result;
-> -
->  	/* compute the chip sample rate divider */
->  	d = INV_MPU6050_FIFO_RATE_TO_DIVIDER(fifo_rate);
->  	/* compute back the fifo rate to handle truncation cases */
-> @@ -946,7 +942,6 @@ inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
->  	result |= inv_mpu6050_set_power_itg(st, false);
->  fifo_rate_fail_unlock:
->  	mutex_unlock(&st->lock);
-> -	iio_device_release_direct_mode(indio_dev);
->  	if (result)
->  		return result;
->  
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index 11c915b61ae2..a3110c097fa1 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -98,6 +98,17 @@ struct adis {
+ 	const struct adis_data	*data;
+ 	struct adis_burst	*burst;
+ 
++	/**
++	 * The state_lock is meant to be used during operations that require
++	 * a sequence of SPI R/W in order to protect the SPI transfer
++	 * information (fields 'xfer', 'msg' & 'current_page') between
++	 * potential concurrent accesses.
++	 * This lock is used by all "adis_{functions}" that have to read/write
++	 * registers. These functions also have unlocked variants
++	 * (see "__adis_{functions}"), which don't hold this lock.
++	 * This allows users of the ADIS library to group SPI R/W into
++	 * the drivers, but they also must manage this lock themselves.
++	 */
+ 	struct mutex		state_lock;
+ 	struct spi_message	msg;
+ 	struct spi_transfer	*xfer;
+-- 
+2.20.1
 
