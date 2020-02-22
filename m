@@ -2,67 +2,53 @@ Return-Path: <SRS0=IaIx=4K=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0FCBC35666
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Feb 2020 16:50:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6717FC35671
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Feb 2020 22:46:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BB245206EF
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Feb 2020 16:50:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0F01F20702
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Feb 2020 22:46:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="fov6amsM"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="jfIEtAZE"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726550AbgBVQuQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Feb 2020 11:50:16 -0500
-Received: from mail-yw1-f66.google.com ([209.85.161.66]:38921 "EHLO
-        mail-yw1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726044AbgBVQuQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Feb 2020 11:50:16 -0500
-Received: by mail-yw1-f66.google.com with SMTP id h126so3121298ywc.6;
-        Sat, 22 Feb 2020 08:50:15 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9CEtPQwqb2jRT0+JdcJwq9ByMA6NE9XRRq10JDdwV54=;
-        b=fov6amsMb71SraLpdll6TXLXhCsbsUDPsGPGict5Ib4uEKHqaG9PHoVbXgGaDbpcuf
-         5RcGJJHZ/7gDwRFtfjQexAH/AYfCI9AdrjDtRogEcRckbLs7QC0TrUTivyo7QwFFDtnA
-         N797tBSmOPt2AnuXPdc7j9oXGzSoDssszcVGMjI5be+ioKslIob9r3IUfQJLBOpF9l93
-         S7M2TPVODqo1cktkfrz/uwZ1JvrrqYgWss3mWArICThlLsCDfQTBNfEoziwy9ewA558t
-         8tzID89xnXTjx1g7EAtH++A9AoxE4/UfBwR59P3fAAngvAbIOWPbHrKIZDG/eyh69jPH
-         lF1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=9CEtPQwqb2jRT0+JdcJwq9ByMA6NE9XRRq10JDdwV54=;
-        b=Ejj4vwOxvJykT+YLXijDwlsCVzU1eG4Pq/Is8MQ+8MxSizlzbchN4GUlRsMoHT+csT
-         VuX5W1xa0x0RffAZFgSgAFHG4kr7akI0fMorlhmJsDDhJGYfA795uaOc76V3Has3UTZY
-         smBy2JBQvcQBP5L7D6a3RKGRZ+PFXPloePVIVnIVendlKIAxB8sbq3duIs3griZuMtsa
-         o2uSku9gyb50iF71QJa9hcDqIUbPylK9PohVeR9x1Lbohx6JQoEAUmyGjrOSogL/2VPF
-         egly16DEoL0gIAEY4M+fCMStqFp5/FrBjwWfMl7BaxhDvI/q9TTseFVGawriq3p10lmG
-         G9qA==
-X-Gm-Message-State: APjAAAW/KXFv1vu0RZWy5kNMj2RVzAJf9ZLU96SG4c5nIMHA3xghsZrl
-        G1g+qsXhsEH4DuwRyTJuZ2U=
-X-Google-Smtp-Source: APXvYqx6ZZYFdxmQ/GlIOciTe2UWdxrHrhPWQmtMGP/bnwtUjCFzk3NCQGw3D+/Msys4oStUCC97eg==
-X-Received: by 2002:a81:a189:: with SMTP id y131mr36078889ywg.329.1582390214706;
-        Sat, 22 Feb 2020 08:50:14 -0800 (PST)
-Received: from localhost.localdomain (072-189-064-225.res.spectrum.com. [72.189.64.225])
-        by smtp.gmail.com with ESMTPSA id c84sm2997249ywa.1.2020.02.22.08.50.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 22 Feb 2020 08:50:14 -0800 (PST)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH] counter: 104-quad-8: Support Filter Clock Prescaler
-Date:   Sat, 22 Feb 2020 11:49:58 -0500
-Message-Id: <20200222164958.105288-1-vilhelm.gray@gmail.com>
-X-Mailer: git-send-email 2.24.1
+        id S1726865AbgBVWqP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Feb 2020 17:46:15 -0500
+Received: from mail.andi.de1.cc ([85.214.55.253]:46988 "EHLO mail.andi.de1.cc"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726853AbgBVWqP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Feb 2020 17:46:15 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=fQVN1Sdm8ne/62EI+E621DP/kcvj/V1goR5+XSu89jw=; b=jfIEtAZEmNc9FCp2CrCrq5+HmH
+        PYCktzJHUGSW56qL3Jw7/O9udGIFNVr/I86GglrDPnDA/l54sPp+ZcTUVeDjqoVgxJDdiYVAF1jVr
+        Q9PKnzPklBUn09E2FL7cwTJ8IdA9VqdlerDmqco58AuqO3h6sl1hxcUbcgbd9hcMkhAA=;
+Received: from p200300ccff354600e2cec3fffe93fc31.dip0.t-ipconnect.de ([2003:cc:ff35:4600:e2ce:c3ff:fe93:fc31] helo=eeepc)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j5dXF-0007uH-Q4; Sat, 22 Feb 2020 23:46:09 +0100
+Received: from andi by eeepc with local (Exim 4.92)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j5dXF-0002yp-78; Sat, 22 Feb 2020 23:46:09 +0100
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org, b.galvani@gmail.com,
+        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, phh@phh.me, stefan@agner.ch,
+        letux-kernel@openphoenux.org, martin.blumenstingl@googlemail.com,
+        jic23@kernel.org
+Cc:     Andreas Kemnade <andreas@kemnade.info>
+Subject: [PATCH v4 0/2] mfd: rn5t618: add ADC support
+Date:   Sat, 22 Feb 2020 23:46:00 +0100
+Message-Id: <20200222224602.11413-1-andreas@kemnade.info>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -70,131 +56,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ACCES 104-QUAD-8 series does active filtering on the quadrature
-input signals via the PC/104 bus clock (OSC 14.318 MHz). This patch
-exposes the filter clock prescaler available on each channel.
+This series adds support for the ADC in the RN5T618/RC5T619.
+It depends on the IRQ support added in the RTC support series here:
+https://lore.kernel.org/lkml/20191220122416.31881-1-andreas@kemnade.info/
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- .../ABI/testing/sysfs-bus-counter-104-quad-8  |  7 +++
- drivers/counter/104-quad-8.c                  | 61 ++++++++++++++++++-
- 2 files changed, 65 insertions(+), 3 deletions(-)
+I tested the driver only with the RC5T619 but it should work with the with 
+the RN5T618 as well based on these facts:
+- The corresponding register definitions originally went into the kernel
+  for the RN5T618
+- Public datasheet sections about the ADC look same.
+- Out-of-tree code for these chips look same regarding to ADC
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-index 46b1f33b2fce..3c905d3cf5d7 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-+++ b/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-@@ -1,3 +1,10 @@
-+What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Filter clock factor for input Signal Y. This prescaler value
-+		affects the inputs of both quadrature pair signals.
-+
- What:		/sys/bus/counter/devices/counterX/signalY/index_polarity
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 17e67a84777d..0cfc813ee2cb 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -43,6 +43,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
-  */
- struct quad8_iio {
- 	struct counter_device counter;
-+	unsigned int fck_prescaler[QUAD8_NUM_COUNTERS];
- 	unsigned int preset[QUAD8_NUM_COUNTERS];
- 	unsigned int count_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int quadrature_mode[QUAD8_NUM_COUNTERS];
-@@ -84,6 +85,8 @@ struct quad8_iio {
- #define QUAD8_RLD_PRESET_CNTR 0x08
- /* Transfer Counter to Output Latch */
- #define QUAD8_RLD_CNTR_OUT 0x10
-+/* Transfer Preset Register LSB to FCK Prescaler */
-+#define QUAD8_RLD_PRESET_PSC 0x18
- #define QUAD8_CHAN_OP_ENABLE_COUNTERS 0x00
- #define QUAD8_CHAN_OP_RESET_COUNTERS 0x01
- #define QUAD8_CMR_QUADRATURE_X1 0x08
-@@ -1140,6 +1143,50 @@ static ssize_t quad8_count_preset_enable_write(struct counter_device *counter,
- 	return len;
- }
- 
-+static ssize_t quad8_signal_fck_prescaler_read(struct counter_device *counter,
-+	struct counter_signal *signal, void *private, char *buf)
-+{
-+	const struct quad8_iio *const priv = counter->priv;
-+	const size_t channel_id = signal->id / 2;
-+
-+	return sprintf(buf, "%u\n", priv->fck_prescaler[channel_id]);
-+}
-+
-+static ssize_t quad8_signal_fck_prescaler_write(struct counter_device *counter,
-+	struct counter_signal *signal, void *private, const char *buf,
-+	size_t len)
-+{
-+	struct quad8_iio *const priv = counter->priv;
-+	const size_t channel_id = signal->id / 2;
-+	const int base_offset = priv->base + 2 * channel_id;
-+	u8 prescaler;
-+	int ret;
-+
-+	ret = kstrtou8(buf, 0, &prescaler);
-+	if (ret)
-+		return ret;
-+
-+	priv->fck_prescaler[channel_id] = prescaler;
-+
-+	/* Reset Byte Pointer */
-+	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+
-+	/* Set filter clock factor */
-+	outb(prescaler, base_offset);
-+	outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
-+	     base_offset + 1);
-+
-+	return len;
-+}
-+
-+static const struct counter_signal_ext quad8_signal_ext[] = {
-+	{
-+		.name = "filter_clock_prescaler",
-+		.read = quad8_signal_fck_prescaler_read,
-+		.write = quad8_signal_fck_prescaler_write
-+	}
-+};
-+
- static const struct counter_signal_ext quad8_index_ext[] = {
- 	COUNTER_SIGNAL_ENUM("index_polarity", &quad8_index_pol_enum),
- 	COUNTER_SIGNAL_ENUM_AVAILABLE("index_polarity",	&quad8_index_pol_enum),
-@@ -1147,9 +1194,11 @@ static const struct counter_signal_ext quad8_index_ext[] = {
- 	COUNTER_SIGNAL_ENUM_AVAILABLE("synchronous_mode", &quad8_syn_mode_enum)
- };
- 
--#define	QUAD8_QUAD_SIGNAL(_id, _name) {	\
--	.id = (_id),			\
--	.name = (_name)			\
-+#define QUAD8_QUAD_SIGNAL(_id, _name) {		\
-+	.id = (_id),				\
-+	.name = (_name),			\
-+	.ext = quad8_signal_ext,		\
-+	.num_ext = ARRAY_SIZE(quad8_signal_ext)	\
- }
- 
- #define	QUAD8_INDEX_SIGNAL(_id, _name) {	\
-@@ -1314,6 +1363,12 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 		base_offset = base[id] + 2 * i;
- 		/* Reset Byte Pointer */
- 		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+		/* Reset filter clock factor */
-+		outb(0, base_offset);
-+		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
-+		     base_offset + 1);
-+		/* Reset Byte Pointer */
-+		outb(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
- 		/* Reset Preset Register */
- 		for (j = 0; j < 3; j++)
- 			outb(0x00, base_offset);
+But due to missing hardware I cannot test the patches 2/3 and 3/3 which
+add support for the RN5T618 ADC.
+I marked these untested patches as RFC, and IMHO they require a Tested-By.
+Feel free to ignore them if the whole series would be delayed just because
+of missing Tested-By for those.
+
+Changes in v4:
+- drop RFC patches, seems nobody finds time to test now
+- added trivial change and Reviewed-By
+
+Changes in v3:
+- re-included former 2/5 of these patches, since it was not applied
+
+Changes in v2:
+- got an "Applied, thanks" message for the first two, so I do not include
+  them anymore
+- some cleanups for the ADC driver itself
+
+Andreas Kemnade (2):
+  mfd: rn5t618: add ADC subdevice for RC5T619
+  iio: adc: rn5t618: Add ADC driver for RN5T618/RC5T619
+
+ drivers/iio/adc/Kconfig       |  10 ++
+ drivers/iio/adc/Makefile      |   1 +
+ drivers/iio/adc/rn5t618-adc.c | 256 ++++++++++++++++++++++++++++++++++
+ drivers/mfd/rn5t618.c         |   1 +
+ 4 files changed, 268 insertions(+)
+ create mode 100644 drivers/iio/adc/rn5t618-adc.c
+
 -- 
-2.24.1
+2.20.1
 
