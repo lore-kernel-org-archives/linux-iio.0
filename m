@@ -2,87 +2,89 @@ Return-Path: <SRS0=vp5C=4L=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A52AC35670
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Feb 2020 09:06:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99EC5C35666
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Feb 2020 13:17:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C75C20656
-	for <linux-iio@archiver.kernel.org>; Sun, 23 Feb 2020 09:06:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 505E0206ED
+	for <linux-iio@archiver.kernel.org>; Sun, 23 Feb 2020 13:17:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nZIyIvxp"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="PAozG3T0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726208AbgBWJGR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 23 Feb 2020 04:06:17 -0500
-Received: from mail-pj1-f43.google.com ([209.85.216.43]:39238 "EHLO
-        mail-pj1-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725980AbgBWJGQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Feb 2020 04:06:16 -0500
-Received: by mail-pj1-f43.google.com with SMTP id e9so2729304pjr.4
-        for <linux-iio@vger.kernel.org>; Sun, 23 Feb 2020 01:06:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
-         :user-agent;
-        bh=fHCAu6BWzWw7+SchjVk5/ayrQae6BucF6ZJxZBKEH7s=;
-        b=nZIyIvxprDc4z7A/3y1YEGkT2oqG4lnQhsiJUjajQvq16NJX7/0Y9baiyi8UyT+c75
-         BRgIhpGjFBbBSOfHltctLqN0Fofc+5+mD8jArkGcXfmKiu0drrQmxTiFdjnvD8//DCOo
-         rKkxDEPXA5mKJ1asiKWAXnnovcrv89SYzPsB3gsZCf+T8u5WX4QAlxBwrGC44FQ11anc
-         g2XBgKxvnKuCMNJ3ftnIEnO1YpAlhf+rKgAAGGHukuoEoNK3S+OwS6Dw7jCOe3rWKacC
-         qDAOIAiaCniORdMvFH8U8a1BtInYH9yNDP5KQS3t8bLS3sXpp3GrMjuF8i0DUfUgtqz2
-         X9Ug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition:user-agent;
-        bh=fHCAu6BWzWw7+SchjVk5/ayrQae6BucF6ZJxZBKEH7s=;
-        b=msfR85EMP57dx60gMCc/UXNvzG2ZFntJp8ukrzHBzu+U6E9sbUxiW6603x9QdLU1k3
-         drE8LmeKJUvKUPhF9ifrMdkAx014eGkt2gt0lLlKtIg9rJm0MoZsduCFFXnBc7B8XNOq
-         0AgPoRjRGs0a/bLzY80SrrhebjP2M35VC4xv98V1nHrmvljej3Hvbp7I22H1VEpiYWIk
-         75vAVNjme+pTPIXZrk996jWrlzalYZ2R3Z8gL6R2Stk7nv1pgVT1PqJxV4iAyIASGTjs
-         JRxDGQuavcVTeedtLkWQoyi82ZAT40hC5XjGi3/OfYin2XcE/q9imQpjdufh2Ox0if++
-         VjyQ==
-X-Gm-Message-State: APjAAAUeKRdaUC/DfRwBHpDv4j8YWt8VJ3xaGj5yJJlPex97Rfjf6A+K
-        n4et/sGt8URmYHwRBfpx8SVm/Ne1thM=
-X-Google-Smtp-Source: APXvYqzS6r8qTnPXtfbY015x5EQQv60qJnLD+AKcMErToECC3q9vJ3pUEjzU8My/GUgJvWAsSPoHwA==
-X-Received: by 2002:a17:90a:868b:: with SMTP id p11mr13749960pjn.60.1582448773529;
-        Sun, 23 Feb 2020 01:06:13 -0800 (PST)
-Received: from SARKAR ([49.207.56.215])
-        by smtp.gmail.com with ESMTPSA id k29sm8703454pfh.77.2020.02.23.01.06.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 23 Feb 2020 01:06:12 -0800 (PST)
-Date:   Sun, 23 Feb 2020 14:36:09 +0530
-From:   Rohit Sarkar <rohitsarkar5398@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     device-drivers-devel@blackfin.uclinux.org
-Subject: IIO staging TODO
-Message-ID: <20200223090609.GA5222@SARKAR>
+        id S1726884AbgBWNRA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 23 Feb 2020 08:17:00 -0500
+Received: from mail.andi.de1.cc ([85.214.55.253]:60222 "EHLO mail.andi.de1.cc"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726302AbgBWNRA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 23 Feb 2020 08:17:00 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
+        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=wnHJQJvBatsB22ok1MvEGsozkXOklyo04LvIQ6utxAE=; b=PAozG3T0/o8TO02AAh30KQzj+I
+        byVBt9VsXZoK86U2Dn4EfxEhUNBehQ4+YiHudy5PJ7LYmW1+qDGG8KbMIHD9AMI7A/NJwrcAIayP/
+        CvSPfEWpT1ToyfbJTyf4ujUIaFWxbG9DvmWXuUxkIiuYTeHXfvckB2S1j6qlVdevb9B4=;
+Received: from p200300ccff47d700e2cec3fffe93fc31.dip0.t-ipconnect.de ([2003:cc:ff47:d700:e2ce:c3ff:fe93:fc31] helo=eeepc)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j5r7q-0007HZ-Sg; Sun, 23 Feb 2020 14:16:51 +0100
+Received: from andi by eeepc with local (Exim 4.92)
+        (envelope-from <andreas@kemnade.info>)
+        id 1j5r7i-0003AS-U6; Sun, 23 Feb 2020 14:16:42 +0100
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org, b.galvani@gmail.com,
+        linus.walleij@linaro.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, phh@phh.me, stefan@agner.ch,
+        letux-kernel@openphoenux.org, jic23@kernel.org
+Cc:     Andreas Kemnade <andreas@kemnade.info>
+Subject: [PATCH v5 1/2] mfd: rn5t618: add ADC subdevice for RC5T619
+Date:   Sun, 23 Feb 2020 14:16:37 +0100
+Message-Id: <20200223131638.12130-2-andreas@kemnade.info>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200223131638.12130-1-andreas@kemnade.info>
+References: <20200223131638.12130-1-andreas@kemnade.info>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hey,
-I was going through the TODO in staging/iio.
+This adds a subdevice for the ADC in the RC5T619
 
-"
-Convert all uses of the old GPIO API from <linux/gpio.h> to the
-GPIO descriptor API in <linux/gpio/consumer.h> and look up GPIO
-lines from device tree, ACPI or board files, board files should
-use <linux/gpio/machine.h>.
-"
+Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+---
+depends on:
+https://lore.kernel.org/lkml/20191220122416.31881-1-andreas@kemnade.info/
 
-I couldn't find any usages of the old gpio API in iio staging. We can
-probably update the TODO to remove this item.
+Changes in v3:
+re-added it to the series because of
+"Oh, it looks like there was a conflict.  Could you collect any Acks
+(including mine) rebase and resend please?"
 
-Was wondering if there is any other TODO/ low hanging fruit in IIO?
+ drivers/mfd/rn5t618.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Thanks,
-Rohit
+diff --git a/drivers/mfd/rn5t618.c b/drivers/mfd/rn5t618.c
+index 073de8e0e78b..321836f78120 100644
+--- a/drivers/mfd/rn5t618.c
++++ b/drivers/mfd/rn5t618.c
+@@ -24,6 +24,7 @@ static const struct mfd_cell rn5t618_cells[] = {
+ };
+ 
+ static const struct mfd_cell rc5t619_cells[] = {
++	{ .name = "rn5t618-adc" },
+ 	{ .name = "rn5t618-regulator" },
+ 	{ .name = "rc5t619-rtc" },
+ 	{ .name = "rn5t618-wdt" },
+-- 
+2.20.1
+
