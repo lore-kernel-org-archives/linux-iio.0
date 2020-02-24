@@ -2,166 +2,115 @@ Return-Path: <SRS0=Eujp=4M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_RHS_DOB,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D993C11D31
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Feb 2020 11:14:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21E64C11D2F
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Feb 2020 18:00:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4EB6B20828
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Feb 2020 11:14:22 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Y2SB6Ot1"
+	by mail.kernel.org (Postfix) with ESMTP id 003AC20836
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Feb 2020 18:00:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727183AbgBXLOV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Feb 2020 06:14:21 -0500
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:36325 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727185AbgBXLOV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Feb 2020 06:14:21 -0500
-Received: by mail-wm1-f68.google.com with SMTP id p17so8932077wma.1
-        for <linux-iio@vger.kernel.org>; Mon, 24 Feb 2020 03:14:19 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to
-         :user-agent;
-        bh=rEL57opEJN8/M1hHG6RBhacoGA9dbpZI+caSv19yBPg=;
-        b=Y2SB6Ot1NpA4yEtYlNlGVS6WbbYy62GylUKjUPQ9jAQ5GDwkSw/7FzCVsSoKPfcCsg
-         VgStUYDM9NJEfKHihK4r/mgnsJtAhKNvw8ImGDx1p+kW1l7PWONzHMwtcK0p04PnOI+k
-         DYBtasmbocFV3+GWMMUwzLg5E39R6/neBgial1l2jN5cMSC6aUNPmaGb7ytsYwEMOenL
-         sXCVQtR42MbPQgo811lhsruXf2x84ZVoVB4C20djzpEc1k9amNtHyLK60FArjQ0TjLcl
-         egt2/DenXPKPfCl9gWypKExnmSXDTJ/bBABMEWP2jBIvWDY1IfnF/JOlFG5PMLg1wHG8
-         ZWAQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to:user-agent;
-        bh=rEL57opEJN8/M1hHG6RBhacoGA9dbpZI+caSv19yBPg=;
-        b=S24DooyTx5izm6oLevsILLxUlMt1s+pJVk7+ozX6/7X7rinqckHHPDb27pEW2SgbOt
-         lpRorkH2MtqyQDqG35u+dI5oyFeCiHH7FaWUDoeUyzdUEpSDjOJ8KoL/laXU4aXtlxpb
-         1mF2imSXVfrnuVkM14fkd2Q/JHo2c61UXFBv6ct+BoWjPvn4dvcvAjlUPo/B/J3efgMb
-         8aVPiPtNLi61Z6Sgq2596uP+5t09m3DC5+Y62rjW8XexoXx06CjBn4M65jupODzueEji
-         Wt8kWYFINWGRq4zedSi4cmndCscq634Nglwxqks45Cb1ZUbK/zzpLuYJwj4SOO65GzKd
-         lHbg==
-X-Gm-Message-State: APjAAAV2Rkq+5EslIUpS3bGQ7OsGrNGzIOzjddJJ18mUR5Tq4w/+8eLr
-        bH8zRjbdMLd8URBgAW9fwDjISw==
-X-Google-Smtp-Source: APXvYqyYDybLl6oJArR1E7Ob1XgcUlj3eWE/hkbMJ5C6QLsbf6VZzxRxzRyzLqwVHI9YWmytlHTlxw==
-X-Received: by 2002:a1c:44d:: with SMTP id 74mr22455122wme.53.1582542858178;
-        Mon, 24 Feb 2020 03:14:18 -0800 (PST)
-Received: from dell ([2.31.163.122])
-        by smtp.gmail.com with ESMTPSA id r5sm17483330wrt.43.2020.02.24.03.14.17
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 24 Feb 2020 03:14:17 -0800 (PST)
-Date:   Mon, 24 Feb 2020 11:14:48 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Jeff LaBundy <jeff@labundy.com>
-Cc:     dmitry.torokhov@gmail.com, thierry.reding@gmail.com,
-        jic23@kernel.org, devicetree@vger.kernel.org,
-        linux-input@vger.kernel.org, u.kleine-koenig@pengutronix.de,
-        linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org, robh+dt@kernel.org,
-        mark.rutland@arm.com
-Subject: Re: [PATCH v5 2/7] mfd: Add support for Azoteq
- IQS620A/621/622/624/625
-Message-ID: <20200224111448.GS3494@dell>
-References: <1581895931-6056-1-git-send-email-jeff@labundy.com>
- <1581895931-6056-3-git-send-email-jeff@labundy.com>
+        id S1727426AbgBXSAJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Feb 2020 13:00:09 -0500
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2460 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726208AbgBXSAJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 24 Feb 2020 13:00:09 -0500
+Received: from lhreml701-cah.china.huawei.com (unknown [172.18.7.108])
+        by Forcepoint Email with ESMTP id 48F3698E909D9259F339;
+        Mon, 24 Feb 2020 18:00:07 +0000 (GMT)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ lhreml701-cah.china.huawei.com (10.201.108.42) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Mon, 24 Feb 2020 18:00:06 +0000
+Received: from localhost (10.202.226.57) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1713.5; Mon, 24 Feb
+ 2020 18:00:06 +0000
+Date:   Mon, 24 Feb 2020 18:00:03 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Rohit Sarkar <rohitsarkar5398@gmail.com>
+CC:     <linux-iio@vger.kernel.org>,
+        <device-drivers-devel@blackfin.uclinux.org>
+Subject: Re: IIO staging TODO
+Message-ID: <20200224180003.00007d63@Huawei.com>
+In-Reply-To: <20200223090609.GA5222@SARKAR>
+References: <20200223090609.GA5222@SARKAR>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <1581895931-6056-3-git-send-email-jeff@labundy.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.57]
+X-ClientProxiedBy: lhreml740-chm.china.huawei.com (10.201.108.190) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 16 Feb 2020, Jeff LaBundy wrote:
+On Sun, 23 Feb 2020 14:36:09 +0530
+Rohit Sarkar <rohitsarkar5398@gmail.com> wrote:
 
-> This patch adds core support for the Azoteq IQS620A, IQS621, IQS622,
-> IQS624 and IQS625 multi-function sensors.
+> Hey,
+> I was going through the TODO in staging/iio.
 > 
-> Signed-off-by: Jeff LaBundy <jeff@labundy.com>
-> ---
-> Changes in v5:
->   - Merged iqs62x-core.c and iqs62x-tables.c into a single iqs62x.c
->   - Corrected spelling of "data sheet" to "datasheet"
->   - Added one line of whitespace in various places to improve readability
->   - Replaced iqs62x->map with iqs62x->regmap throughout
->   - Added the prox_settings member to the iqs62x_dev_desc struct and eliminated
->     the ternary operator in iqs62x_dev_init to determine SAR UI enable register
->     address
->   - Added a comment in iqs62x_dev_init to explain the background for the bounds
->     checking done on the IQS624/625 interval divider
->   - Added #defines for the delays used within iqs62x_dev_init
->   - Renamed iqs62x_fw_prs and iqs62x_fw_cb to iqs62x_firmware_parse and
->     iqs62x_firmware_load, respectively
->   - Updated the call to devm_mfd_add_devices to use PLATFORM_DEVID_NONE instead
->     of -1 and printed "sub-devices" instead of "devices" in the error message
->   - Dropped #defines for mfd_cell names in favor of the actual string names and
->     collapsed mfd_cells with no other members into one line
->   - Demoted iqs62x_devs to a static array as it is not used by any sub-devices
->   - Removed unnecessary { IQS620A_DEV, ... } enum and IQS62X_NUM_DEV #define
->   - Removed the soft reset and associated delay in iqs62x_probe to preserve any
->     PWM-related changes made by a bootloader
->   - Updated the comments in iqs62x_probe to highlight the significance of blank
->     calibration registers and why the outer loop may be exited early
->   - Made the first call to regmap_update_bits in iqs62x_suspend consistent with
->     other instances in the series that set a single bit by passing all ones for
->     the value instead of the mask
+> "
+> Convert all uses of the old GPIO API from <linux/gpio.h> to the
+> GPIO descriptor API in <linux/gpio/consumer.h> and look up GPIO
+> lines from device tree, ACPI or board files, board files should
+> use <linux/gpio/machine.h>.
+> "
 > 
-> Changes in v4:
->   - None
-> 
-> Changes in v3:
->   - None
-> 
-> Changes in v2:
->   - Merged 'Copyright' and 'Author' lines into one in introductory comments
->   - Replaced 'error' with 'ret' throughout
->   - Updated iqs62x_dev_init to account for 4/8/16-MHz clock divider in start-up
->     delays and replaced ATI timeout routine with regmap_read_poll_timeout
->   - Added an error message to iqs62x_irq in case device status fails to be read
->   - Replaced sw_num member of iqs62x_core with a local variable in iqs62x_probe
->     as the former was unused anywhere else
->   - Added comments throughout iqs62x_probe to clarify how devices are matched
->     based on the presence of calibration data
->   - Inverted the product and software number comparison logic in iqs62x_probe
->     to avoid an else...continue branch
->   - Changed iqs62x_probe from .probe callback to .probe_new callback, thereby
->     eliminating the otherwise unused iqs62x_id array
->   - Moved iqs62x_suspend and iqs62x_resume below iqs62x_remove
->   - Eliminated tabbed alignment of regmap_config and i2c_driver struct members
->   - Added register definitions for register addresses used in iqs621_cal_regs,
->     iqs620at_cal_regs and iqs62x_devs arrays
->   - Removed of_compatible string from IQS622 mfd_cell struct as its proximity
->     (now ambient light) sensing functionality need not be represented using a
->     child node
->   - Dissolved union in iqs62x_event_data to allow simultaneous use of ir_flags
->     and als_flags
->   - Removed temp_flags member of iqs62x_event_data, IQS62X_EVENT_TEMP register
->     enumeration and IQS62X_EVENT_UI_HI/LO from iqs620a_event_regs (thereby re-
->     ducing IQS62X_EVENT_SIZE to 10) as they were unused
-> 
->  drivers/mfd/Kconfig        |   13 +
->  drivers/mfd/Makefile       |    1 +
->  drivers/mfd/iqs62x.c       | 1063 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/iqs62x.h |  139 ++++++
->  4 files changed, 1216 insertions(+)
->  create mode 100644 drivers/mfd/iqs62x.c
->  create mode 100644 include/linux/mfd/iqs62x.h
+> I couldn't find any usages of the old gpio API in iio staging. We can
+> probably update the TODO to remove this item.
 
-Well done Jeff.  Good job.
+Cool. Patches to the TODO welcome :) I guess the last of these got killed off.
 
-Applied, thanks.
+> 
+> Was wondering if there is any other TODO/ low hanging fruit in IIO?
 
--- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+If you want to take a look at device tree bindings there is definitely work
+to be done there.
+
+* Missing binding docs for devices that are obviously used via device tree.
+* Yaml conversions of abandoned drivers. 
+
+I'd mostly like to leave actually doing yaml conversions of actively
+maintained drivers to their maintainers but I suspect we have quite a few
+where no one has touched them in years.
+
+Another area is missing ABI documentation.
+
+Reviewing if there is anything worth keeping in drivers/staging/iio/Documentation
+and putting it in the right place if so is also useful.
+
+For code related stuff, I suspect the remaining staging drivers are still
+there for a reason (often a hard problem to be resolved).
+
+One task we often ask people to look at is uses of iio_dev->mlock.
+That lock should never be used directly but we were less than careful
+about it in the early days of IIO so there are still a few instances
+in drivers.  My max1363 driver for example :)
+
+Moving to either a local lock, or to using the iio_claim_direct etc
+functions to manage this in a race free way tidies this bit of implementation
+mess up.  It requires careful analysis of 'what' the lock is there for and
+patches need to state your conclusions on that clearly so others can
+verify you are correct!
+
+One thing to note is never send too many patches of the same type out
+until you have reviews back.  It's too easy to have the same issue repeated
+many times over, so better to send things out slower.
+
+Thanks and good luck,
+
+Jonathan
+
+> 
+> Thanks,
+> Rohit
+
+
