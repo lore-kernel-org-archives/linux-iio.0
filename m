@@ -2,54 +2,49 @@ Return-Path: <SRS0=5MmI=4N=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E765DC35DF9
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 10:33:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0583C35DE1
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 12:09:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C86E721D7E
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 10:33:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD8512084E
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 12:09:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730309AbgBYKdf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Feb 2020 05:33:35 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:5482 "EHLO
+        id S1729670AbgBYMJa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Feb 2020 07:09:30 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6366 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730292AbgBYKde (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2020 05:33:34 -0500
+        by vger.kernel.org with ESMTP id S1726867AbgBYMJa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2020 07:09:30 -0500
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PATLEI007210;
-        Tue, 25 Feb 2020 05:33:33 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2yb23ag9g4-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PC71cx010548;
+        Tue, 25 Feb 2020 07:09:28 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2yb23agfxd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 25 Feb 2020 05:33:33 -0500
-Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01PAXW2X065414
+        Tue, 25 Feb 2020 07:09:28 -0500
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01PC9Qcd058795
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 25 Feb 2020 05:33:32 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+        Tue, 25 Feb 2020 07:09:27 -0500
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 25 Feb 2020 05:33:25 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 25 Feb 2020 05:33:25 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 25 Feb 2020 05:33:25 -0500
-Received: from saturn.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01PAXM28029020;
-        Tue, 25 Feb 2020 05:33:23 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+ 15.1.1779.2; Tue, 25 Feb 2020 04:09:25 -0800
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 25 Feb 2020 04:09:25 -0800
+Received: from tachici-Precision-5530.ad.analog.com ([10.48.65.175])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01PC9N1C003238;
+        Tue, 25 Feb 2020 07:09:24 -0500
+From:   Alexandru Tachici <alexandru.tachici@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 1/3] iio: imu: adis: add doc-string for 'adis' struct
-Date:   Tue, 25 Feb 2020 12:33:17 +0200
-Message-ID: <20200225103319.20751-1-alexandru.ardelean@analog.com>
+CC:     <jic23@kernel.org>
+Subject: [PATCH v2 0/6] iio: accel: adxl372: add peak mode 
+Date:   Tue, 25 Feb 2020 14:09:03 +0200
+Message-ID: <20200225120909.12629-1-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
@@ -61,53 +56,61 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowprio
  malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=999 adultscore=0
  mlxscore=0 bulkscore=0 priorityscore=1501 suspectscore=0 spamscore=0
  phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002250084
+ engine=8.12.0-2001150001 definitions=main-2002250098
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change adds a doc-string for the 'adis' struct. It details the fields
-and their roles.
+This series adds the posibility to configure
+the device, from sysfs, to work in peak mode. This enables
+adxl372 to capture only over threshold accelerations.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
+1. Create sysfs files for falling_period and rising_period
+in events/ dir.
 
-Changelog v1 -> v2:
-* changed tx/rx descriptions to
-  ```
-  @tx: DMA safe TX buffer for SPI transfers
-  @rx: DMA safe RX buffer for SPI transfers
-  ```
+2. Create sysfs files for thresh_falling_value and
+thresh_rising_value for each axis.
 
- include/linux/iio/imu/adis.h | 14 ++++++++++++++
- 1 file changed, 14 insertions(+)
+3. Set INT1 reg for acitivity/inactivity and push
+event code in events fifo on irq.
 
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index ac7cfd073804..63e456aa5c8a 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -73,6 +73,20 @@ struct adis_data {
- 	bool has_paging;
- };
- 
-+/**
-+ * struct adis - ADIS device instance data
-+ * @spi: Reference to SPI device which owns this ADIS IIO device
-+ * @trig: IIO trigger object data
-+ * @data: ADIS chip variant specific data
-+ * @burst: ADIS burst transfer information
-+ * @state_lock: Lock used by the device to protect state
-+ * @msg: SPI message object
-+ * @xfer: SPI transfer objects to be used for a @msg
-+ * @current_page: Some ADIS devices have registers, this selects current page
-+ * @buffer: Data buffer for information read from the device
-+ * @tx: DMA safe TX buffer for SPI transfers
-+ * @rx: DMA safe RX buffer for SPI transfers
-+ */
- struct adis {
- 	struct spi_device	*spi;
- 	struct iio_trigger	*trig;
+4. Add additional ABIs in order to explain the
+user that setting values in the events/ sysfs files
+also changes device behaviour.
+
+5. Update sysfs docs: renames, added two new
+entries for the activity_detect_event/
+inactivity_detect_event
+
+Alexandru Tachici (5):
+  iio: accel: adxl372: add sysfs for time registers
+  iio: accel: adxl372: Add sysfs for g thresholds
+  iio: accel: adxl372: add iio events
+  iio: accel: adxl372: add additional events ABIs
+  iio: accel: adxl372: Update sysfs docs
+
+Stefan Popa (1):
+  iio: accel: adxl372: Add support for FIFO peak mode
+
+1. Device FIFO can now be set in peak mode and only over the
+threshold accelerations will be stored.
+
+Changelog V1 -> V2:
+- switched from custom sysfs for setting the accel thres/timings
+to standard events interface.
+- renamed fifo_peak_mode_enable to buffer_peak_mode_enable
+- on activity/inactivity, event codes are now pushed in
+the events FIFO
+- added additional custom sysfs for explaining that setting
+values in the events/ sysfs files will change the device's
+behaviour.
+
+ .../ABI/testing/sysfs-bus-iio-accel-adxl372   |  30 ++
+ drivers/iio/accel/adxl372.c                   | 265 +++++++++++++++++-
+ 2 files changed, 293 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-adxl372
+
 -- 
 2.20.1
 
