@@ -2,99 +2,107 @@ Return-Path: <SRS0=5MmI=4N=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7FDC35DF9
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 09:33:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2110C35DF5
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 10:33:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A9EBF21556
-	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 09:33:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8EE9820726
+	for <linux-iio@archiver.kernel.org>; Tue, 25 Feb 2020 10:33:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729274AbgBYJdG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 25 Feb 2020 04:33:06 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:53747 "EHLO
-        metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727114AbgBYJdG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2020 04:33:06 -0500
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j6WaM-0002OS-Ku; Tue, 25 Feb 2020 10:33:02 +0100
-Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1j6WaJ-0003ut-7G; Tue, 25 Feb 2020 10:32:59 +0100
-Date:   Tue, 25 Feb 2020 10:32:59 +0100
-From:   Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Silvan Murer <silvan.murer@gmail.com>,
-        linux-iio@vger.kernel.org,
-        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>, kernel@pengutronix.de
-Subject: Re: [PATCH 4/3] iio: dac: ltc2632: remove some unused defines
-Message-ID: <20200225093259.rx34tfu4yscfbmwq@pengutronix.de>
-References: <20200130131549.1170-1-u.kleine-koenig@pengutronix.de>
- <20200203203126.7003-1-u.kleine-koenig@pengutronix.de>
- <20200206102915.2e32cb5e@archlinux>
- <20200206103443.hki3hxeiigowjlxj@pengutronix.de>
- <20200206104418.2272c18c@archlinux>
+        id S1730234AbgBYKdb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 25 Feb 2020 05:33:31 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:2178 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730186AbgBYKda (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Feb 2020 05:33:30 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01PATLEH007210;
+        Tue, 25 Feb 2020 05:33:29 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2yb23ag9fx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 25 Feb 2020 05:33:28 -0500
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01PAXREI065399
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 25 Feb 2020 05:33:27 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 25 Feb 2020 05:33:26 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 25 Feb 2020 05:33:26 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 25 Feb 2020 05:33:26 -0500
+Received: from saturn.ad.analog.com ([10.48.65.109])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01PAXM2A029020;
+        Tue, 25 Feb 2020 05:33:25 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 3/3] iio: imu: adis: add a note better explaining state_lock
+Date:   Tue, 25 Feb 2020 12:33:19 +0200
+Message-ID: <20200225103319.20751-3-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200225103319.20751-1-alexandru.ardelean@analog.com>
+References: <20200225103319.20751-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200206104418.2272c18c@archlinux>
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-02-25_03:2020-02-21,2020-02-25 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 clxscore=1015 impostorscore=0 mlxlogscore=876 adultscore=0
+ mlxscore=0 bulkscore=0 priorityscore=1501 suspectscore=0 spamscore=0
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2002250084
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Feb 06, 2020 at 10:44:18AM +0000, Jonathan Cameron wrote:
-> On Thu, 6 Feb 2020 11:34:43 +0100
-> Uwe Kleine-König         <u.kleine-koenig@pengutronix.de> wrote:
-> 
-> > On Thu, Feb 06, 2020 at 10:29:15AM +0000, Jonathan Cameron wrote:
-> > > On Mon,  3 Feb 2020 21:31:26 +0100
-> > > Uwe Kleine-König         <u.kleine-koenig@pengutronix.de> wrote:
-> > >   
-> > > > These two defines are unused since the driver was introduced in commit
-> > > > 02b829f9e11f ("iio: dac: Add support for ltc2632 DACs").
-> > > > 
-> > > > Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>  
-> > > A bit of fuzz and the mysterious bit of this being patch 4 of 3 aside all good.
-> > > 
-> > > Applied to the togreg branch of iio.git and pushed out as testing.  
-> > 
-> > If you applied patches 2 and 3 of the series before, the fuzz should
-> > disappear. I assume the threading didn't work as intended for you and
-> > you don't have the original patch series grouped with my patch 4/3?
-> Yup.  Just realised that after sending :)  
-> 
-> I'll apply them in the right order.
+The 'state_lock' mutex was renamed from 'txrx_lock' in a previous patch and
+is intended to be used by ADIS drivers to protect the state of devices
+during consecutive R/W ops.
+The initial patch that introduced this change did not do a good [well, any]
+job at explaining this. This patch adds a comment to the 'state_lock'
+better explaining it's use.
 
-Last time I already wondered why patches you applied don't appear in
-next. This had something to do with the workflow how patches go from you
-over Greg to Linus.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ include/linux/iio/imu/adis.h | 11 +++++++++++
+ 1 file changed, 11 insertions(+)
 
-Given that next is different and in my experience it is possible to get
-a tree into next even as a "second-level" maintainer, I wonder if adding
-your tree would be beneficial. You applied the patch more than two weeks
-ago and there is still no exposure to next. :-|
-
-Best regards
-Uwe
-
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index 20339025c75f..dd8219138c2e 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -98,6 +98,17 @@ struct adis {
+ 	const struct adis_data	*data;
+ 	struct adis_burst	*burst;
+ 
++	/**
++	 * The state_lock is meant to be used during operations that require
++	 * a sequence of SPI R/W in order to protect the SPI transfer
++	 * information (fields 'xfer', 'msg' & 'current_page') between
++	 * potential concurrent accesses.
++	 * This lock is used by all "adis_{functions}" that have to read/write
++	 * registers. These functions also have unlocked variants
++	 * (see "__adis_{functions}"), which don't hold this lock.
++	 * This allows users of the ADIS library to group SPI R/W into
++	 * the drivers, but they also must manage this lock themselves.
++	 */
+ 	struct mutex		state_lock;
+ 	struct spi_message	msg;
+ 	struct spi_transfer	*xfer;
 -- 
-Pengutronix e.K.                           | Uwe Kleine-König            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+2.20.1
+
