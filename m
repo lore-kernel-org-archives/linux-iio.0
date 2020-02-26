@@ -2,92 +2,121 @@ Return-Path: <SRS0=Gf7R=4O=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3477C4BA12
-	for <linux-iio@archiver.kernel.org>; Wed, 26 Feb 2020 15:06:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A42B5C4BA13
+	for <linux-iio@archiver.kernel.org>; Wed, 26 Feb 2020 15:40:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CA633206E6
-	for <linux-iio@archiver.kernel.org>; Wed, 26 Feb 2020 15:06:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7B88324689
+	for <linux-iio@archiver.kernel.org>; Wed, 26 Feb 2020 15:40:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="aLK6sFkL"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727922AbgBZPFr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 26 Feb 2020 10:05:47 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:41740 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726148AbgBZPFq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2020 10:05:46 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01QEnM3Q024167;
-        Wed, 26 Feb 2020 10:05:45 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ydtrx01jt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 26 Feb 2020 10:05:45 -0500
-Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01QF5iIx060230
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 26 Feb 2020 10:05:44 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 26 Feb
- 2020 10:05:43 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 26 Feb 2020 10:05:43 -0500
-Received: from saturn.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01QF5c9J003536;
-        Wed, 26 Feb 2020 10:05:40 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 2/7] include: fpga: adi-axi-common.h: add version helper macros
-Date:   Wed, 26 Feb 2020 17:08:30 +0200
-Message-ID: <20200226150835.19649-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200226150835.19649-1-alexandru.ardelean@analog.com>
-References: <20200226150835.19649-1-alexandru.ardelean@analog.com>
+        id S1728060AbgBZPk0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 26 Feb 2020 10:40:26 -0500
+Received: from mail-wm1-f68.google.com ([209.85.128.68]:36867 "EHLO
+        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728174AbgBZPk0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Feb 2020 10:40:26 -0500
+Received: by mail-wm1-f68.google.com with SMTP id a141so2878210wme.2
+        for <linux-iio@vger.kernel.org>; Wed, 26 Feb 2020 07:40:23 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=B52/TzLFaZ8ELTIpZ/2PQuvnXdlCL7Qyj/3+GDpbM98=;
+        b=aLK6sFkLCKZDv+4r78ATZHhLeXxZmMm4tfcUeHBksjhvUxB4GDL09kT6PvaIc5m3vB
+         +V8MqGfsdyk2Ggc+D0toIGzmxLfBMYQzFdrIoTZBjj8KCqJqTTSEdo/8i+J/DYJSIaEJ
+         x5dzLhZe8GfdDvYeOiHugLFp4g1rVA4A7W90tW+DqyLSHtgKfmgDdUTj7KCDuFuWM1Qn
+         h8gCtcE3l372dJ+Io2d9uEPhb89+f8r98iRCxmfE6Dn0h7E2r3f+HZ7rkpngAZG0GF+8
+         iV7t9Ndgc5uu3+bxNGjpnQtfVFEzwWRlT/7S7qzHOtOh4jCHhy4rokSTf7PgXK/sCAbf
+         g12g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=B52/TzLFaZ8ELTIpZ/2PQuvnXdlCL7Qyj/3+GDpbM98=;
+        b=M7JwTV+yPW5nwdWrCyWGB9Ed/srFTkkeDWCpASsfGW4hxM+XoDpIpnr0cSaVIfkq1A
+         05BN+yJxMb4QHORMWhKW/uCPSZlPIQ/VW9NtvKRjafiFQV8MyoUaZvT8jDcY4iapdlgV
+         R7Vig4rHUOJzrRuAIgIkbmriY25G2qI8pkva6tOe+yhlpx1wfHHWuRSIZQhKYw1SM4Zx
+         UsueU3xykjwWCunicSnvGZpXmANWPjfSzrxBTQYpN3ja3IE8K+PBi89kRnD/A2wVUX75
+         IJslWWfKo0V1fvkvpxtR79WDKzLrwWqxPhmIgRROpaV06R3kOEmYjbMwjdNWp3xxBd0q
+         kyqA==
+X-Gm-Message-State: APjAAAXeDCOERGyF2khShykjUl4nQXjtaOxipBlxVTl4lUxPRu8rDlvj
+        SMvpjv2iSkY8oUXXrjCwDeHBvQ==
+X-Google-Smtp-Source: APXvYqzQb4v6YIq/tH4gM9y8z9QC4YTU4AuGr+vaNK4P35wsrvLN41M9n96t5xpMi8l9wtu8Y1AvPg==
+X-Received: by 2002:a05:600c:54e:: with SMTP id k14mr5919562wmc.115.1582731622867;
+        Wed, 26 Feb 2020 07:40:22 -0800 (PST)
+Received: from dell ([2.31.163.122])
+        by smtp.gmail.com with ESMTPSA id i2sm3259433wmb.28.2020.02.26.07.40.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 26 Feb 2020 07:40:22 -0800 (PST)
+Date:   Wed, 26 Feb 2020 15:40:55 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andreas Kemnade <andreas@kemnade.info>
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        b.galvani@gmail.com, linus.walleij@linaro.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        phh@phh.me, stefan@agner.ch, letux-kernel@openphoenux.org,
+        jic23@kernel.org
+Subject: Re: [PATCH v5 1/2] mfd: rn5t618: add ADC subdevice for RC5T619
+Message-ID: <20200226154055.GQ3494@dell>
+References: <20200223131638.12130-1-andreas@kemnade.info>
+ <20200223131638.12130-2-andreas@kemnade.info>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-26_05:2020-02-26,2020-02-26 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- malwarescore=0 impostorscore=0 clxscore=1015 priorityscore=1501
- lowpriorityscore=0 phishscore=0 spamscore=0 adultscore=0 mlxlogscore=823
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002260108
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200223131638.12130-2-andreas@kemnade.info>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The format for all ADI AXI IP cores is the same.
-i.e. 'major.minor.patch'.
+On Sun, 23 Feb 2020, Andreas Kemnade wrote:
 
-This patch adds the helper macros to be re-used in ADI AXI drivers.
+> This adds a subdevice for the ADC in the RC5T619
+> 
+> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+> ---
+> depends on:
+> https://lore.kernel.org/lkml/20191220122416.31881-1-andreas@kemnade.info/
+> 
+> Changes in v3:
+> re-added it to the series because of
+> "Oh, it looks like there was a conflict.  Could you collect any Acks
+> (including mine) rebase and resend please?"
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- include/linux/fpga/adi-axi-common.h | 4 ++++
- 1 file changed, 4 insertions(+)
+Looks like there is still a conflict.  Sure, it's not a complicated
+fix, but that's beside the point.  What tree is this set based on?
 
-diff --git a/include/linux/fpga/adi-axi-common.h b/include/linux/fpga/adi-axi-common.h
-index ebd4e07ae3d8..141ac3f251e6 100644
---- a/include/linux/fpga/adi-axi-common.h
-+++ b/include/linux/fpga/adi-axi-common.h
-@@ -16,4 +16,8 @@
- #define ADI_AXI_PCORE_VER(major, minor, patch)	\
- 	(((major) << 16) | ((minor) << 8) | (patch))
- 
-+#define ADI_AXI_PCORE_VER_MAJOR(version)	(((version) >> 16) & 0xff)
-+#define ADI_AXI_PCORE_VER_MINOR(version)	(((version) >> 8) & 0xff)
-+#define ADI_AXI_PCORE_VER_PATCH(version)	((version) & 0xff)
-+
- #endif /* ADI_AXI_COMMON_H_ */
+>  drivers/mfd/rn5t618.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/mfd/rn5t618.c b/drivers/mfd/rn5t618.c
+> index 073de8e0e78b..321836f78120 100644
+> --- a/drivers/mfd/rn5t618.c
+> +++ b/drivers/mfd/rn5t618.c
+> @@ -24,6 +24,7 @@ static const struct mfd_cell rn5t618_cells[] = {
+>  };
+>  
+>  static const struct mfd_cell rc5t619_cells[] = {
+> +	{ .name = "rn5t618-adc" },
+>  	{ .name = "rn5t618-regulator" },
+>  	{ .name = "rc5t619-rtc" },
+
+In what upstream tree is this line present?
+
+>  	{ .name = "rn5t618-wdt" },
+
 -- 
-2.20.1
-
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
