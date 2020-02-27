@@ -2,139 +2,71 @@ Return-Path: <SRS0=eOSc=4P=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6B31C35677
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 14:43:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E2888C11D3D
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 16:35:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 973CD24691
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 14:43:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C03F1246A1
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 16:35:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731065AbgB0Nti (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Feb 2020 08:49:38 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:11858 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1731058AbgB0Nti (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Feb 2020 08:49:38 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01RDlNvm009712;
-        Thu, 27 Feb 2020 08:49:36 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ydtrwka5m-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Feb 2020 08:49:36 -0500
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 01RDnYPK017467
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 27 Feb 2020 08:49:34 -0500
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 27 Feb
- 2020 05:49:33 -0800
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 27 Feb 2020 05:49:33 -0800
-Received: from saturn.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01RDnVoi027892;
-        Thu, 27 Feb 2020 08:49:31 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 1/8] iio: core: drop devm_iio_device_unregister() API call
-Date:   Thu, 27 Feb 2020 15:52:20 +0200
-Message-ID: <20200227135227.12433-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
+        id S1730046AbgB0QfO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Feb 2020 11:35:14 -0500
+Received: from smtp-out.xnet.cz ([178.217.244.18]:22715 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730295AbgB0QfO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 27 Feb 2020 11:35:14 -0500
+X-Greylist: delayed 447 seconds by postgrey-1.27 at vger.kernel.org; Thu, 27 Feb 2020 11:35:12 EST
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 2E4B43D9E;
+        Thu, 27 Feb 2020 17:27:44 +0100 (CET)
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id 3bf5d2ef;
+        Thu, 27 Feb 2020 17:27:30 +0100 (CET)
+From:   =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Tomasz Duszynski <tduszyns@gmail.com>
+Cc:     =?UTF-8?q?Petr=20=C5=A0tetiar?= <ynezz@true.cz>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: chemical: sps30: fix missing triggered buffer dependency
+Date:   Thu, 27 Feb 2020 17:27:34 +0100
+Message-Id: <20200227162734.604-1-ynezz@true.cz>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_04:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- phishscore=0 adultscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=2 clxscore=1015 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002270109
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-It's unused so far, so it can't be removed. Also makes sense to remove it
-to discourage weird uses of this call during review.
+SPS30 uses triggered buffer, but the dependency is not specified in the
+Kconfig file.  Fix this by selecting IIO_BUFFER and IIO_TRIGGERED_BUFFER
+config symbols.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc: stable@vger.kernel.org
+Fixes: 232e0f6ddeae ("iio: chemical: add support for Sensirion SPS30 sensor")
+Signed-off-by: Petr Štetiar <ynezz@true.cz>
 ---
- .../driver-api/driver-model/devres.rst          |  1 -
- drivers/iio/industrialio-core.c                 | 17 -----------------
- include/linux/iio/iio.h                         |  4 ----
- 3 files changed, 22 deletions(-)
+ drivers/iio/chemical/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
-index 46c13780994c..0580c64ebdfd 100644
---- a/Documentation/driver-api/driver-model/devres.rst
-+++ b/Documentation/driver-api/driver-model/devres.rst
-@@ -286,7 +286,6 @@ IIO
-   devm_iio_device_alloc()
-   devm_iio_device_free()
-   devm_iio_device_register()
--  devm_iio_device_unregister()
-   devm_iio_kfifo_allocate()
-   devm_iio_kfifo_free()
-   devm_iio_triggered_buffer_setup()
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 0b14666dff09..e4011f8431f9 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1823,23 +1823,6 @@ int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
- }
- EXPORT_SYMBOL_GPL(__devm_iio_device_register);
- 
--/**
-- * devm_iio_device_unregister - Resource-managed iio_device_unregister()
-- * @dev:	Device this iio_dev belongs to
-- * @indio_dev:	the iio_dev associated with the device
-- *
-- * Unregister iio_dev registered with devm_iio_device_register().
-- */
--void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev)
--{
--	int rc;
--
--	rc = devres_release(dev, devm_iio_device_unreg,
--			    devm_iio_device_match, indio_dev);
--	WARN_ON(rc);
--}
--EXPORT_SYMBOL_GPL(devm_iio_device_unregister);
--
- /**
-  * iio_device_claim_direct_mode - Keep device in direct mode
-  * @indio_dev:	the iio_dev associated with the device
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 862ce0019eba..0eb9e8d7ec68 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -591,9 +591,6 @@ void iio_device_unregister(struct iio_dev *indio_dev);
-  * calls iio_device_register() internally. Refer to that function for more
-  * information.
-  *
-- * If an iio_dev registered with this function needs to be unregistered
-- * separately, devm_iio_device_unregister() must be used.
-- *
-  * RETURNS:
-  * 0 on success, negative error number on failure.
-  */
-@@ -601,7 +598,6 @@ void iio_device_unregister(struct iio_dev *indio_dev);
- 	__devm_iio_device_register((dev), (indio_dev), THIS_MODULE);
- int __devm_iio_device_register(struct device *dev, struct iio_dev *indio_dev,
- 			       struct module *this_mod);
--void devm_iio_device_unregister(struct device *dev, struct iio_dev *indio_dev);
- int iio_push_event(struct iio_dev *indio_dev, u64 ev_code, s64 timestamp);
- int iio_device_claim_direct_mode(struct iio_dev *indio_dev);
- void iio_device_release_direct_mode(struct iio_dev *indio_dev);
--- 
-2.20.1
-
+diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+index 0b91de4df8f4..a7e65a59bf42 100644
+--- a/drivers/iio/chemical/Kconfig
++++ b/drivers/iio/chemical/Kconfig
+@@ -91,6 +91,8 @@ config SPS30
+ 	tristate "SPS30 particulate matter sensor"
+ 	depends on I2C
+ 	select CRC8
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say Y here to build support for the Sensirion SPS30 particulate
+ 	  matter sensor.
