@@ -2,581 +2,161 @@ Return-Path: <SRS0=eOSc=4P=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.4 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A539EC4BA3E
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 08:25:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0748AC4BA3D
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 09:39:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 70F0A24656
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 08:25:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D1EAA24680
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Feb 2020 09:39:37 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="fLazak1c"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728680AbgB0IY4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Feb 2020 03:24:56 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6936 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728517AbgB0IYz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Feb 2020 03:24:55 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 01R8NDht009147;
-        Thu, 27 Feb 2020 03:24:40 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ydtrwje2k-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 27 Feb 2020 03:24:39 -0500
-Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 01R8OcEM011653
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 27 Feb 2020 03:24:38 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 27 Feb 2020 03:24:38 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 27 Feb 2020 03:24:37 -0500
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 27 Feb 2020 03:24:37 -0500
-Received: from saturn.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 01R8OPtu013107;
-        Thu, 27 Feb 2020 03:24:34 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 7/8] iio: adc: ad9467: add support AD9467 ADC
-Date:   Thu, 27 Feb 2020 10:27:18 +0200
-Message-ID: <20200227082719.6343-8-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200227082719.6343-1-alexandru.ardelean@analog.com>
-References: <20200227082719.6343-1-alexandru.ardelean@analog.com>
+        id S1728646AbgB0Jjh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Feb 2020 04:39:37 -0500
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:42377 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728555AbgB0Jjg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Feb 2020 04:39:36 -0500
+Received: by mail-wr1-f68.google.com with SMTP id p18so2408878wre.9
+        for <linux-iio@vger.kernel.org>; Thu, 27 Feb 2020 01:39:34 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to
+         :user-agent;
+        bh=TEQSjnIQxM1VtgQo9ixFuHUcsHPXNxUSWJy38z7yyCk=;
+        b=fLazak1ceSbh9cl2KSW8RUZXXlnNgA7sMBzwXBpDHLH0ku1kK6pT4Mk0hocAJAd2W7
+         tbQpHVo30+YP4Nq6OnPFVu60l8U1iHOj7fvUL/fZm83UrHWE7j/ViVqzzM5rDD21/GOj
+         ttOyYnJg5xDnE/OLXU5O+b0q9gpDa22/11FhY7qMzDW1Jv/DS06NPOLy0nnEGTuBzZnU
+         BTZoL5jmChUs1fNL/nrCgbFDGCoOPKw+H4RrLXNdvDG8EHVzlYfyJpDBA7Vnbas05s+2
+         j1i12eaEY4b5cf55efbBdcoFmluOMrkvCVPEITtrQ36jwCK0kU3cZSrqJ3KJjQ7bWZmU
+         sWog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to:user-agent;
+        bh=TEQSjnIQxM1VtgQo9ixFuHUcsHPXNxUSWJy38z7yyCk=;
+        b=t7S0rNBbrQLmutO2FHBp20V71qyzsM4/mjoh+mBXVYWJI6wOUt4LYmh2s+/UY+jtO/
+         qg/NIuB+Z+AQuuik7Ih4zALceNhXE/TWTdONg4toDcgtq0PpvRLNlVitO9VhHK3gJmkE
+         qYNkZ4nHY7NEWa+Z9CACJnjseOney10PTbLBMICuvxzfbGDXeXySPAq1tVp3PKU1+0jd
+         jkYYmQssoRBeFifdBNcu1bvP+vCHbZmWIh0DGIdKP5b3B/ZEXYniV24FXwD5T1j8dmxj
+         ihgeeGWC5amHzyPxlbKn+GmEgntQX/fLSXmEyVD8iANa/wfTgeYihlmPnT8XaiSEvcjp
+         KovQ==
+X-Gm-Message-State: APjAAAVIvFMf7uTc/zXXs0zFpfmcC0+Nin3GTG/2Zo8aqkeyr/E6/xwi
+        F6Tamwe64YR1mu8ZgNwfBUxLFQ==
+X-Google-Smtp-Source: APXvYqwyo9YBUm97LulROFQKlNIsaZHsT++CMBKTQZorQHur+Ruk+7la2C7a4CNxjFmCXhbUllE01A==
+X-Received: by 2002:adf:f588:: with SMTP id f8mr3949793wro.188.1582796373705;
+        Thu, 27 Feb 2020 01:39:33 -0800 (PST)
+Received: from dell ([2.31.163.122])
+        by smtp.gmail.com with ESMTPSA id t133sm7065652wmf.31.2020.02.27.01.39.32
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 27 Feb 2020 01:39:32 -0800 (PST)
+Date:   Thu, 27 Feb 2020 09:40:06 +0000
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andreas Kemnade <andreas@kemnade.info>
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        b.galvani@gmail.com, linus.walleij@linaro.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        phh@phh.me, stefan@agner.ch, letux-kernel@openphoenux.org,
+        jic23@kernel.org
+Subject: Re: [PATCH v5 1/2] mfd: rn5t618: add ADC subdevice for RC5T619
+Message-ID: <20200227094006.GV3494@dell>
+References: <20200223131638.12130-1-andreas@kemnade.info>
+ <20200223131638.12130-2-andreas@kemnade.info>
+ <20200226154055.GQ3494@dell>
+ <20200226174914.047667d5@kemnade.info>
+ <20200226174640.GR3494@dell>
+ <20200226190028.0de5c095@kemnade.info>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
- definitions=2020-02-27_02:2020-02-26,2020-02-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- phishscore=0 adultscore=0 spamscore=0 mlxscore=0 mlxlogscore=999
- suspectscore=0 clxscore=1015 lowpriorityscore=0 priorityscore=1501
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2001150001 definitions=main-2002270067
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20200226190028.0de5c095@kemnade.info>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+On Wed, 26 Feb 2020, Andreas Kemnade wrote:
 
-The AD9467 is a 16-bit, monolithic, IF sampling analog-to-digital converter
-(ADC). It is optimized for high performanceover wide bandwidths and ease of
-use. The product operates at a 250 MSPS conversion rate and is designed for
-wireless receivers, instrumentation, and test equipment that require a high
-dynamic range. The ADC requires 1.8 V and 3.3 V power supplies and a low
-voltage differential input clock for full performance operation. No
-external reference or driver components are required for many applications.
-Data outputs are LVDS compatible (ANSI-644 compatible) and include the
-means to reduce the overall current needed for short trace distances.
+> On Wed, 26 Feb 2020 17:46:40 +0000
+> Lee Jones <lee.jones@linaro.org> wrote:
+> 
+> > On Wed, 26 Feb 2020, Andreas Kemnade wrote:
+> > 
+> > > On Wed, 26 Feb 2020 15:40:55 +0000
+> > > Lee Jones <lee.jones@linaro.org> wrote:
+> > >   
+> > > > On Sun, 23 Feb 2020, Andreas Kemnade wrote:
+> > > >   
+> > > > > This adds a subdevice for the ADC in the RC5T619
+> > > > > 
+> > > > > Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+> > > > > ---
+> > > > > depends on:
+> > > > > https://lore.kernel.org/lkml/20191220122416.31881-1-andreas@kemnade.info/
+> > > > > 
+> > > > > Changes in v3:
+> > > > > re-added it to the series because of
+> > > > > "Oh, it looks like there was a conflict.  Could you collect any Acks
+> > > > > (including mine) rebase and resend please?"    
+> > > > 
+> > > > Looks like there is still a conflict.  Sure, it's not a complicated
+> > > > fix, but that's beside the point.  What tree is this set based on?
+> > > >   
+> > > It must be applied on top of my rc5t619 rtc series here:
+> > > https://lore.kernel.org/lkml/20191220122416.31881-1-andreas@kemnade.info/
+> > > 
+> > > I expected it to make it into 5.6 and when I first sent the RTC series
+> > >  (in October) I had no idea when I will continue with other stuff.
+> > > 
+> > > That is why I sent this ADC series separately, also to give the IIO
+> > > maintainer plenty of time to review.   
+> > 
+> > If a patch-set can or should be applied on its own, you should send it
+> > based on an upstream commit, or else things like this happen.
+> > 
+> It cannot without breaking bisectability. The RTC series adds IRQ support in
+> the PMIC which is used here.
 
-Since the chip can operate at such high sample-rates (much higher than
-classical interfaces), it requires that a DMA controller be used to
-interface directly to the chip and push data into memory.
-Typically, the AXI ADC IP core is used to interface with it.
+Then Kconfig should reflect that.
 
-Link: https://www.analog.com/media/en/technical-documentation/data-sheets/AD9467.pdf
+Or, if that's not possible, then you should not break-up and submit
+sets which cannot be applied by themselves.  Either submit the whole
+set together, or submit them piece by piece, not submitting the next
+part until it's predecessor has been applied.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/adc/Kconfig  |  15 ++
- drivers/iio/adc/Makefile |   1 +
- drivers/iio/adc/ad9467.c | 432 +++++++++++++++++++++++++++++++++++++++
- 3 files changed, 448 insertions(+)
- create mode 100644 drivers/iio/adc/ad9467.c
+> > My advice would be to maintain topic branches, each based on an
+> > upstream release, which you can merge together into an integration
+> > branch for full coverage testing.
+> > 
+> > > Do you want me to resend all that pending stuff together in one series?
+> > > I have little experience with this multi-subdevice process.  
+> > 
+> > It makes more sense to rebase this set onto the latest full release
+> > and resubmit this set on its own.
+> > 
+> So, I resend the RC5T619 RTC series mentioned above as you answered
+> upont Nikolaus question and wait with this series until review is
+> through.
+> Ok, so wait and rebase it onto 5.7-rc1 or 5.8-rc1 or whatever release
+> the RTC stuff will appear.
+> So you are not going to create an ib-mfd-rtc-iio branch.
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 11bfc079c543..3362ff8d22b7 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -246,6 +246,21 @@ config AD799X
- 	  To compile this driver as a module, choose M here: the module will be
- 	  called ad799x.
- 
-+config AD9467
-+	tristate "Analog Devices AD9467 High Speed ADC driver"
-+	depends on SPI
-+	select ADI_AXI_ADC
-+	help
-+	  Say yes here to build support for Analog Devices:
-+	  * AD9467 16-Bit, 200 MSPS/250 MSPS Analog-to-Digital Converter
-+
-+	  The driver requires the assistance of the AXI ADC IP core to operate,
-+	  since SPI is used for configuration only, while data has to be
-+	  streamed into memory via DMA.
-+
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called ad9467.
-+
- config ADI_AXI_ADC
- 	tristate "Analog Devices Generic AXI ADC IP core driver"
- 	select IIO_BUFFER
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 7c6594d049f9..59722770a654 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -26,6 +26,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
- obj-$(CONFIG_AD7887) += ad7887.o
- obj-$(CONFIG_AD7949) += ad7949.o
- obj-$(CONFIG_AD799X) += ad799x.o
-+obj-$(CONFIG_AD9467) += ad9467.o
- obj-$(CONFIG_ADI_AXI_ADC) += adi-axi-adc.o
- obj-$(CONFIG_ASPEED_ADC) += aspeed_adc.o
- obj-$(CONFIG_AT91_ADC) += at91_adc.o
-diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-new file mode 100644
-index 000000000000..35324bd1f0ee
---- /dev/null
-+++ b/drivers/iio/adc/ad9467.c
-@@ -0,0 +1,432 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * Analog Devices AD9467 SPI ADC driver
-+ *
-+ * Copyright 2012-2020 Analog Devices Inc.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/slab.h>
-+#include <linux/spi/spi.h>
-+#include <linux/err.h>
-+#include <linux/delay.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/of.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+#include <linux/clk.h>
-+
-+#include <linux/iio/adc/adi-axi-adc.h>
-+
-+/*
-+ * ADI High-Speed ADC common spi interface registers
-+ * See Application-Note AN-877:
-+ *   https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf
-+ */
-+
-+#define AN877_ADC_REG_CHIP_PORT_CONF		0x00
-+#define AN877_ADC_REG_CHIP_ID			0x01
-+#define AN877_ADC_REG_CHIP_GRADE		0x02
-+#define AN877_ADC_REG_CHAN_INDEX		0x05
-+#define AN877_ADC_REG_TRANSFER			0xFF
-+#define AN877_ADC_REG_MODES			0x08
-+#define AN877_ADC_REG_TEST_IO			0x0D
-+#define AN877_ADC_REG_ADC_INPUT			0x0F
-+#define AN877_ADC_REG_OFFSET			0x10
-+#define AN877_ADC_REG_OUTPUT_MODE		0x14
-+#define AN877_ADC_REG_OUTPUT_ADJUST		0x15
-+#define AN877_ADC_REG_OUTPUT_PHASE		0x16
-+#define AN877_ADC_REG_OUTPUT_DELAY		0x17
-+#define AN877_ADC_REG_VREF			0x18
-+#define AN877_ADC_REG_ANALOG_INPUT		0x2C
-+
-+/* AN877_ADC_REG_TEST_IO */
-+#define AN877_ADC_TESTMODE_OFF			0x0
-+#define AN877_ADC_TESTMODE_MIDSCALE_SHORT	0x1
-+#define AN877_ADC_TESTMODE_POS_FULLSCALE	0x2
-+#define AN877_ADC_TESTMODE_NEG_FULLSCALE	0x3
-+#define AN877_ADC_TESTMODE_ALT_CHECKERBOARD	0x4
-+#define AN877_ADC_TESTMODE_PN23_SEQ		0x5
-+#define AN877_ADC_TESTMODE_PN9_SEQ		0x6
-+#define AN877_ADC_TESTMODE_ONE_ZERO_TOGGLE	0x7
-+#define AN877_ADC_TESTMODE_USER			0x8
-+#define AN877_ADC_TESTMODE_BIT_TOGGLE		0x9
-+#define AN877_ADC_TESTMODE_SYNC			0xA
-+#define AN877_ADC_TESTMODE_ONE_BIT_HIGH		0xB
-+#define AN877_ADC_TESTMODE_MIXED_BIT_FREQUENCY	0xC
-+#define AN877_ADC_TESTMODE_RAMP			0xF
-+
-+/* AN877_ADC_REG_TRANSFER */
-+#define AN877_ADC_TRANSFER_SYNC			0x1
-+
-+/* AN877_ADC_REG_OUTPUT_MODE */
-+#define AN877_ADC_OUTPUT_MODE_OFFSET_BINARY	0x0
-+#define AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT	0x1
-+#define AN877_ADC_OUTPUT_MODE_GRAY_CODE		0x2
-+
-+/* AN877_ADC_REG_OUTPUT_PHASE */
-+#define AN877_ADC_OUTPUT_EVEN_ODD_MODE_EN	0x20
-+#define AN877_ADC_INVERT_DCO_CLK		0x80
-+
-+/* AN877_ADC_REG_OUTPUT_DELAY */
-+#define AN877_ADC_DCO_DELAY_ENABLE		0x80
-+
-+/*
-+ * Analog Devices AD9467 16-Bit, 200/250 MSPS ADC
-+ */
-+
-+#define CHIPID_AD9467			0x50
-+#define AD9467_DEF_OUTPUT_MODE		0x08
-+#define AD9467_REG_VREF_MASK		0x0F
-+
-+enum {
-+	ID_AD9467,
-+};
-+
-+struct ad9467_state {
-+	struct spi_device		*spi;
-+	struct clk			*clk;
-+	unsigned int			output_mode;
-+
-+	struct gpio_desc		*pwrdown_gpio;
-+	struct gpio_desc		*reset_gpio;
-+};
-+
-+static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
-+{
-+	unsigned char buf[3];
-+	int ret;
-+
-+	buf[0] = 0x80 | (reg >> 8);
-+	buf[1] = reg & 0xFF;
-+
-+	ret = spi_write_then_read(spi, &buf[0], 2, &buf[2], 1);
-+
-+	if (ret < 0)
-+		return ret;
-+
-+	return buf[2];
-+}
-+
-+static int ad9467_spi_write(struct spi_device *spi, unsigned int reg,
-+			    unsigned int val)
-+{
-+	unsigned char buf[3];
-+
-+	buf[0] = reg >> 8;
-+	buf[1] = reg & 0xFF;
-+	buf[2] = val;
-+
-+	return spi_write(spi, buf, ARRAY_SIZE(buf));
-+}
-+
-+static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
-+			     unsigned int writeval, unsigned int *readval)
-+{
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+	struct spi_device *spi = st->spi;
-+	int ret;
-+
-+	if (readval == NULL) {
-+		ret = ad9467_spi_write(spi, reg, writeval);
-+		ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
-+				 AN877_ADC_TRANSFER_SYNC);
-+		return ret;
-+	}
-+
-+	ret = ad9467_spi_read(spi, reg);
-+	if (ret < 0)
-+		return ret;
-+	*readval = ret;
-+
-+	return 0;
-+}
-+
-+static const unsigned int ad9467_scale_table[][2] = {
-+	{2000, 0}, {2100, 6}, {2200, 7},
-+	{2300, 8}, {2400, 9}, {2500, 10},
-+};
-+
-+static void __ad9467_get_scale(struct adi_axi_adc_conv *conv, int index,
-+			       unsigned int *val, unsigned int *val2)
-+{
-+	const struct adi_axi_adc_chip_info *info = conv->chip_info;
-+	const struct iio_chan_spec *chan = &info->channels[0];
-+	unsigned int tmp;
-+
-+	tmp = (info->scale_table[index][0] * 1000000ULL) >>
-+			chan->scan_type.realbits;
-+	*val = tmp / 1000000;
-+	*val2 = tmp % 1000000;
-+}
-+
-+#define AD9467_CHAN(_chan, _si, _bits, _sign)				\
-+{									\
-+	.type = IIO_VOLTAGE,						\
-+	.indexed = 1,							\
-+	.channel = _chan,						\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
-+	.scan_index = _si,						\
-+	.scan_type = {							\
-+		.sign = _sign,						\
-+		.realbits = _bits,					\
-+		.storagebits = 16,					\
-+	},								\
-+}
-+
-+static const struct iio_chan_spec ad9467_channels[] = {
-+	AD9467_CHAN(0, 0, 16, 'S'),
-+};
-+
-+static const struct adi_axi_adc_chip_info ad9467_chip_info_tbl[] = {
-+	[ID_AD9467] = {
-+		.id = CHIPID_AD9467,
-+		.max_rate = 250000000UL,
-+		.scale_table = ad9467_scale_table,
-+		.num_scales = ARRAY_SIZE(ad9467_scale_table),
-+		.channels = ad9467_channels,
-+		.num_channels = ARRAY_SIZE(ad9467_channels),
-+	},
-+};
-+
-+static int ad9467_get_scale(struct adi_axi_adc_conv *conv, int *val, int *val2)
-+{
-+	const struct adi_axi_adc_chip_info *info = conv->chip_info;
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+	unsigned int i, vref_val, vref_mask;
-+
-+	vref_val = ad9467_spi_read(st->spi, AN877_ADC_REG_VREF);
-+
-+	switch (info->id) {
-+	case CHIPID_AD9467:
-+		vref_mask = AD9467_REG_VREF_MASK;
-+		break;
-+	default:
-+		vref_mask = 0xFFFF;
-+		break;
-+	}
-+
-+	vref_val &= vref_mask;
-+
-+	for (i = 0; i < info->num_scales; i++) {
-+		if (vref_val == info->scale_table[i][1])
-+			break;
-+	}
-+
-+	if (i == info->num_scales)
-+		return -ERANGE;
-+
-+	__ad9467_get_scale(conv, i, val, val2);
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
-+{
-+	const struct adi_axi_adc_chip_info *info = conv->chip_info;
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+	unsigned int scale_val[2];
-+	unsigned int i;
-+
-+	if (val != 0)
-+		return -EINVAL;
-+
-+	for (i = 0; i < info->num_scales; i++) {
-+		__ad9467_get_scale(conv, i, &scale_val[0], &scale_val[1]);
-+		if (scale_val[0] != val || scale_val[1] != val2)
-+			continue;
-+
-+		ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
-+				 info->scale_table[i][1]);
-+		ad9467_spi_write(st->spi, AN877_ADC_REG_TRANSFER,
-+				 AN877_ADC_TRANSFER_SYNC);
-+		return 0;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int ad9467_read_raw(struct adi_axi_adc_conv *conv,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2, long m)
-+{
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return ad9467_get_scale(conv, val, val2);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (!st->clk)
-+			return -ENODEV;
-+
-+		*val = clk_get_rate(st->clk);
-+
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad9467_write_raw(struct adi_axi_adc_conv *conv,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	const struct adi_axi_adc_chip_info *info = conv->chip_info;
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+	unsigned long r_clk;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return ad9467_set_scale(conv, val, val2);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (!st->clk)
-+			return -ENODEV;
-+
-+		if (chan->extend_name)
-+			return -ENODEV;
-+
-+		r_clk = clk_round_rate(st->clk, val);
-+		if (r_clk < 0 || r_clk > info->max_rate) {
-+			dev_warn(&st->spi->dev,
-+				 "Error setting ADC sample rate %ld", r_clk);
-+			return -EINVAL;
-+		}
-+
-+		return clk_set_rate(st->clk, r_clk);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int ad9467_outputmode_set(struct spi_device *spi, unsigned int mode)
-+{
-+	int ret;
-+
-+	ret = ad9467_spi_write(spi, AN877_ADC_REG_OUTPUT_MODE, mode);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
-+				AN877_ADC_TRANSFER_SYNC);
-+}
-+
-+static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
-+{
-+	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
-+
-+	return ad9467_outputmode_set(st->spi, st->output_mode);
-+}
-+
-+static int ad9467_setup(struct ad9467_state *st, unsigned int chip_id)
-+{
-+	switch (chip_id) {
-+	case CHIPID_AD9467:
-+		st->output_mode = AD9467_DEF_OUTPUT_MODE |
-+				  AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static void ad9467_clk_disable(void *data)
-+{
-+	struct ad9467_state *st = data;
-+
-+	clk_disable_unprepare(st->clk);
-+}
-+
-+static const struct of_device_id ad9467_of_match[] = {
-+	{ .compatible = "adi,ad9467", .data = (void *)ID_AD9467, },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, ad9467_of_match);
-+
-+static int ad9467_probe(struct spi_device *spi)
-+{
-+	const struct of_device_id *oid;
-+	struct adi_axi_adc_conv *conv;
-+	struct ad9467_state *st;
-+	unsigned int id;
-+	int ret;
-+
-+	if (!spi->dev.of_node) {
-+		dev_err(&spi->dev, "DT node is null\n");
-+		return -ENODEV;
-+	}
-+
-+	oid = of_match_node(ad9467_of_match, spi->dev.of_node);
-+	if (!oid)
-+		return -ENODEV;
-+
-+	conv = devm_adi_axi_adc_conv_register(&spi->dev, sizeof(*st));
-+	if (IS_ERR(conv))
-+		return PTR_ERR(conv);
-+
-+	st = adi_axi_adc_conv_priv(conv);
-+	st->spi = spi;
-+
-+	st->clk = devm_clk_get(&spi->dev, "adc-clk");
-+	if (IS_ERR(st->clk))
-+		return PTR_ERR(st->clk);
-+
-+	ret = clk_prepare_enable(st->clk);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, ad9467_clk_disable, st);
-+	if (ret)
-+		return ret;
-+
-+	st->pwrdown_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
-+						   GPIOD_OUT_LOW);
-+	if (IS_ERR(st->pwrdown_gpio))
-+		return PTR_ERR(st->pwrdown_gpio);
-+
-+	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
-+						 GPIOD_OUT_LOW);
-+	if (IS_ERR(st->reset_gpio))
-+		return PTR_ERR(st->reset_gpio);
-+
-+	if (st->reset_gpio) {
-+		udelay(1);
-+		ret = gpiod_direction_output(st->reset_gpio, 1);
-+		mdelay(10);
-+	}
-+
-+	spi_set_drvdata(spi, st);
-+
-+	id = (unsigned int)oid->data;
-+	conv->chip_info = &ad9467_chip_info_tbl[id];
-+
-+	id = ad9467_spi_read(spi, AN877_ADC_REG_CHIP_ID);
-+	if (id != conv->chip_info->id) {
-+		dev_err(&spi->dev, "Unrecognized CHIP_ID 0x%X\n", id);
-+		return -ENODEV;
-+	}
-+
-+	conv->reg_access = ad9467_reg_access;
-+	conv->write_raw = ad9467_write_raw;
-+	conv->read_raw = ad9467_read_raw;
-+	conv->preenable_setup = ad9467_preenable_setup;
-+
-+	return ad9467_setup(st, id);
-+}
-+
-+static struct spi_driver ad9467_driver = {
-+	.driver = {
-+		.name = "ad9467",
-+		.of_match_table = ad9467_of_match,
-+	},
-+	.probe = ad9467_probe,
-+};
-+module_spi_driver(ad9467_driver);
-+
-+MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD9467 ADC driver");
-+MODULE_LICENSE("GPL v2");
+As above.
+
+If you go the whole-patch-set route, yes, either myself or someone
+else would have to create an immutable pull-request, but you don't
+have to concern yourself with that.
+
 -- 
-2.20.1
-
+Lee Jones [李琼斯]
+Linaro Services Technical Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
