@@ -2,69 +2,71 @@ Return-Path: <SRS0=unW9=4W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 893D7C3F2D1
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 10:34:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38B98C3F2D1
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 10:39:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 31E242073D
-	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 10:34:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0503208CD
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 10:39:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="jldVkt3Q"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="lwLirqkB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725946AbgCEKeL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 Mar 2020 05:34:11 -0500
-Received: from www381.your-server.de ([78.46.137.84]:37700 "EHLO
+        id S1725912AbgCEKjn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Mar 2020 05:39:43 -0500
+Received: from www381.your-server.de ([78.46.137.84]:40998 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725937AbgCEKeL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Mar 2020 05:34:11 -0500
+        with ESMTP id S1725903AbgCEKjn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Mar 2020 05:39:43 -0500
+X-Greylist: delayed 331 seconds by postgrey-1.27 at vger.kernel.org; Thu, 05 Mar 2020 05:39:41 EST
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
         MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=IZDIDcAsD/+MtQ6OgW2dCs7MZLssCvVkDO7Sf2CJc+M=; b=jldVkt3Q96LJnbhNrSNoZdiOAT
-        C3qeSKqNB46A5kK4gqEn+U7VaTLbSkBmJtuRcmPQAv8Z2XqEu7SFOzA3OJzpiw5fSR43wmVF3HjEv
-        kFiTSNpqvR/Hwe/W7D8642kLIo5F2+6zTi8lkPFQLhDnqPx3gzN9Kf1GlWtXqv1tp4E8NtNoKQaie
-        5nGSE89xltJeioo+i5WRjyvC7yy1a1/PTFBaTlYRrQ3f2C8i086JIAnQESoe+MqwjOsV8OWCvJrXa
-        ibW+q3wwe6N83K1OjbMdym8Pnm35fPR9ZKgoRoE0Bfbj4RSd2FMT2bmUsKYEh62LPCvrRp5489Utq
-        1k1f0sOA==;
+        bh=8q71XZNrwfP+jSHQpdHpaiaYFsstKdd+i5beX4xklPQ=; b=lwLirqkBOMY5IvP4vywa+tw5dM
+        GigArhYaphSQ4fPrgzt/RnqozMkAn3BqvyMtGNfCfFYWY6RdN78wHUMQefNRhicHRnOVgmK3Gxnmr
+        H3cg7OaW/CsTl7ziUQXgs4mjOY9USLo5kpupIKgn3/DHRJd5J/XPqTLCnAL4Osz5I6eUEGY7T9/YC
+        SRZsgu3kiwFhAvsylhOrwDwF+lNxesGhU1w2N88QYLIlHiGX8REQf++C5irM8sRkbkMebYBrVGAwK
+        ZtGYA/eB6qICZDQwtKAk902dHPtNv5bW8tm7BnN39hHq5PdT06ST1HXtA1UYvFs7DkYBt/KfHmLZI
+        Z6TcAXuA==;
 Received: from sslproxy02.your-server.de ([78.47.166.47])
         by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <lars@metafoo.de>)
-        id 1j9npO-0007m7-1m; Thu, 05 Mar 2020 11:34:06 +0100
+        id 1j9nuj-00084o-LL; Thu, 05 Mar 2020 11:39:37 +0100
 Received: from [93.104.100.159] (helo=[192.168.178.20])
         by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1j9npN-000TFJ-K0; Thu, 05 Mar 2020 11:34:05 +0100
-Subject: Re: [PATCH 5/5] dt-bindings: iio: Add adis16475 documentation
+        id 1j9nuj-00016L-5o; Thu, 05 Mar 2020 11:39:37 +0100
+Subject: Re: [PATCH 4/5] iio: imu: Add support for adis16475
 To:     "Sa, Nuno" <Nuno.Sa@analog.com>,
         "jic23@kernel.org" <jic23@kernel.org>
 Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>,
-        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "mark.rutland@arm.com" <mark.rutland@arm.com>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>
 References: <20200225124152.270914-1-nuno.sa@analog.com>
- <20200225124152.270914-6-nuno.sa@analog.com>
- <20200303211045.31f977bb@archlinux>
- <9b9e18f279edbcb60122a0b0d4c067975868194a.camel@analog.com>
+ <20200225124152.270914-5-nuno.sa@analog.com>
+ <20200303210814.1057fbbb@archlinux>
+ <0021fdd0f92a30209bd798c761add8e67a8df5db.camel@analog.com>
+ <f1f14ed4f13c41be728cee976b969192af95e61c.camel@analog.com>
 From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <63b5c766-78a2-59c4-6efb-3eb35031a351@metafoo.de>
-Date:   Thu, 5 Mar 2020 11:34:04 +0100
+Message-ID: <8581ed92-e00e-c606-8890-85fd5ef11cb8@metafoo.de>
+Date:   Thu, 5 Mar 2020 11:39:36 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.5.0
 MIME-Version: 1.0
-In-Reply-To: <9b9e18f279edbcb60122a0b0d4c067975868194a.camel@analog.com>
+In-Reply-To: <f1f14ed4f13c41be728cee976b969192af95e61c.camel@analog.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Content-Language: en-US
@@ -75,195 +77,462 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 3/4/20 7:00 PM, Sa, Nuno wrote:
-> On Tue, 2020-03-03 at 21:10 +0000, Jonathan Cameron wrote:
+On 3/5/20 10:58 AM, Sa, Nuno wrote:
+> On Wed, 2020-03-04 at 17:59 +0000, Sa, Nuno wrote:
 >> [External]
 >>
->> On Tue, 25 Feb 2020 13:41:52 +0100
->> Nuno Sá <nuno.sa@analog.com> wrote:
->>
->>> Document the ADIS16475 device devicetree bindings.
+>> On Tue, 2020-03-03 at 21:08 +0000, Jonathan Cameron wrote:
+>>> [External]
 >>>
->>> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
->> One thing inline on the burst mode stuff.
->>
->> Thanks,
->>
->> Jonathan
->>
->>> ---
->>>   .../bindings/iio/imu/adi,adis16475.yaml       | 130
->>> ++++++++++++++++++
->>>   MAINTAINERS                                   |   1 +
->>>   2 files changed, 131 insertions(+)
->>>   create mode 100644
->>> Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
+>>> On Tue, 25 Feb 2020 13:41:51 +0100
+>>> Nuno Sá <nuno.sa@analog.com> wrote:
 >>>
->>> diff --git
->>> a/Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
->>> b/Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
->>> new file mode 100644
->>> index 000000000000..c0f2146e000c
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
->>> @@ -0,0 +1,130 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/iio/imu/adi,adis16475.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: Analog Devices ADIS16475 and similar IMUs
->>> +
->>> +maintainers:
->>> +  - Nuno Sá <nuno.sa@analog.com>
->>> +
->>> +description: |
->>> +  Analog Devices ADIS16475 and similar IMUs
->>> +
->>> https://www.analog.com/media/en/technical-documentation/data-sheets/ADIS16475.pdf
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - adi,adis16475-1
->>> +      - adi,adis16475-2
->>> +      - adi,adis16475-3
->>> +      - adi,adis16477-1
->>> +      - adi,adis16477-2
->>> +      - adi,adis16477-3
->>> +      - adi,adis16470
->>> +      - adi,adis16465-1
->>> +      - adi,adis16465-2
->>> +      - adi,adis16465-3
->>> +      - adi,adis16467-1
->>> +      - adi,adis16467-2
->>> +      - adi,adis16467-3
->>> +      - adi,adis16500
->>> +      - adi,adis16505-1
->>> +      - adi,adis16505-2
->>> +      - adi,adis16505-3
->>> +      - adi,adis16507-1
->>> +      - adi,adis16507-2
->>> +      - adi,adis16507-3
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  spi-cpha: true
->>> +
->>> +  spi-cpol: true
->>> +
->>> +  spi-max-frequency:
->>> +    maximum: 2000000
->>> +
->>> +  interrupts:
->>> +    maxItems: 1
->>> +
->>> +  clocks:
->>> +    maxItems: 1
->>> +
->>> +  clock-names:
->>> +    oneOf:
->>> +      - const: sync
->>> +      - const: direct-sync
->>> +      - const: pulse-sync
->>> +      - const: scaled-sync
->>> +
->>> +  reset-gpios:
->>> +    description:
->>> +      Must be the device tree identifier of the RESET pin. If
->>> specified,
->>> +      it will be asserted during driver probe. As the line is
->>> active low,
->>> +      it should be marked GPIO_ACTIVE_LOW.
->>> +    maxItems: 1
->>> +
->>> +  adi,scaled-output-hz:
->>> +    description:
->>> +      This property must be present if the clock mode is scaled-
->>> sync through
->>> +      clock-names property. In this mode, the input clock can have
->>> a range
->>> +      of 1Hz to 128HZ which must be scaled to originate an
->>> allowable sample
->>> +      rate. This property specifies that rate.
->>> +    minimum: 1900
->>> +    maximum: 2100
->>> +
->>> +required:
->>> +  - compatible
->>> +  - reg
->>> +  - interrupts
->>> +  - spi-cpha
->>> +  - spi-cpol
->>> +
->>> +if:
->>> +  properties:
->>> +    compatible:
->>> +      contains:
->>> +        enum:
->>> +          - adi,adis16500
->>> +          - adi,adis16505-1
->>> +          - adi,adis16505-2
->>> +          - adi,adis16505-3
->>> +          - adi,adis16507-1
->>> +          - adi,adis16507-2
->>> +          - adi,adis16507-3
->>> +
->>> +then:
->>> +  properties:
->>> +    clock-names:
->>> +      oneOf:
->>> +        - const: sync
->>> +        - const: direct-sync
->>> +        - const: scaled-sync
->>> +
->>> +    adi,burst32-enable:
->>> +      description:
->>> +        Enable burst32 mode. In this mode, a burst reading
->>> contains calibrated
->>> +        gyroscope and accelerometer data in 32-bit format.
->> Why is this in DT?  Is it not a runtime decision
->> (ideally automatically selected)
-> So, you mean just have this mode by default on parts that support it?
+>>>> Support ADIS16475 and similar IMU devices. These devices are
+>>>> a precision, miniature MEMS inertial measurement unit (IMU) that
+>>>> includes a triaxial gyroscope and a triaxial accelerometer. Each
+>>>> inertial sensor combines with signal conditioning that optimizes
+>>>> dynamic performance.
+>>>>
+>>>> The driver adds support for the following devices:
+>>>>   * adis16470, adis16475, adis16477, adis16465, adis16467,
+>>>> adis16500,
+>>>>     adis16505, adis16507.
+>>>>
+>>>> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+>>> A few bits and pieces inline.
+>>>
+>>> Thanks,
+>>>
+>>> Jonathan
+>>>
+>>>
+>>>> ---
+>>>>   .../ABI/testing/sysfs-bus-iio-imu-adis16475   |    7 +
+>>>>   MAINTAINERS                                   |    8 +
+>>>>   drivers/iio/imu/Kconfig                       |   13 +
+>>>>   drivers/iio/imu/Makefile                      |    1 +
+>>>>   drivers/iio/imu/adis16475.c                   | 1304
+>>>> +++++++++++++++++
+>>>>   5 files changed, 1333 insertions(+)
+>>>>   create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-imu-
+>>>> adis16475
+>>>>   create mode 100644 drivers/iio/imu/adis16475.c
+>>>>
+>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-imu-
+>>>> adis16475
+>>>> b/Documentation/ABI/testing/sysfs-bus-iio-imu-adis16475
+>>>> new file mode 100644
+>>>> index 000000000000..e2c3776035ea
+>>>> --- /dev/null
+>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-imu-adis16475
+>>>> @@ -0,0 +1,7 @@
+>>>> +What:		/sys/bus/iio/devices/iio:deviceX/burst_mode_ena
+>>>> ble
+>>>> +KernelVersion:
+>>>> +Contact:	linux-iio@vger.kernel.org
+>>>> +Description:
+>>>> +		Use the device burst read mode when reading buffered
+>>>> +		data. This mode provides a way to read a batch of
+>>>> +		output data registers, using a continuous stream of
+>>>> bits.
+>>> See comment on this below.  I'm not keen on this being exposed to
+>>> userspace
+>>> because it will rarely have any idea how to set it.
+>>>
+>>>> diff --git a/MAINTAINERS b/MAINTAINERS
+>>>> index 8fa40c3eb72a..f11262f1f3bb 100644
+>>>> --- a/MAINTAINERS
+>>>> +++ b/MAINTAINERS
+>>>> @@ -1008,6 +1008,14 @@ W:	
+>>>> http://ez.analog.com/community/linux-device-drivers
+>>>>   F:	drivers/iio/imu/adis16460.c
+>>>>   F:	Documentation/devicetree/bindings/iio/imu/adi,adis16460
+>>>> .yaml
+>>>>   
+>>>> +ANALOG DEVICES INC ADIS16475 DRIVER
+>>>> +M:	Nuno Sa <nuno.sa@analog.com>
+>>>> +L:	linux-iio@vger.kernel.org
+>>>> +W:	http://ez.analog.com/community/linux-device-drivers
+>>>> +S:	Supported
+>>>> +F:	drivers/iio/imu/adis16475.c
+>>>> +F:	Documentation/ABI/testing/sysfs-bus-iio-imu-adis16475
+>>>> +
+>>>>   ANALOG DEVICES INC ADM1177 DRIVER
+>>>>   M:	Beniamin Bia <beniamin.bia@analog.com>
+>>>>   M:	Michael Hennerich <Michael.Hennerich@analog.com>
+>>>> diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+>>>> index 60bb1029e759..fc4123d518bc 100644
+>>>> --- a/drivers/iio/imu/Kconfig
+>>>> +++ b/drivers/iio/imu/Kconfig
+>>>> @@ -29,6 +29,19 @@ config ADIS16460
+>>>>   	  To compile this driver as a module, choose M here: the module
+>>>> will be
+>>>>   	  called adis16460.
+>>>>   
+>>>> +config ADIS16475
+>>>> +	tristate "Analog Devices ADIS16475 and similar IMU driver"
+>>>> +	depends on SPI
+>>>> +	select IIO_ADIS_LIB
+>>>> +	select IIO_ADIS_LIB_BUFFER if IIO_BUFFER
+>>>> +	help
+>>>> +	  Say yes here to build support for Analog Devices ADIS16470,
+>>>> ADIS16475,
+>>>> +	  ADIS16477, ADIS16465, ADIS16467, ADIS16500, ADIS16505,
+>>>> ADIS16507 inertial
+>>>> +	  sensors.
+>>>> +
+>>>> +	  To compile this driver as a module, choose M here: the module
+>>>> will be
+>>>> +	  called adis16475.
+>>>> +
+>>>>   config ADIS16480
+>>>>   	tristate "Analog Devices ADIS16480 and similar IMU driver"
+>>>>   	depends on SPI
+>>>> diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+>>>> index 5237fd4bc384..88b2c4555230 100644
+>>>> --- a/drivers/iio/imu/Makefile
+>>>> +++ b/drivers/iio/imu/Makefile
+>>>> @@ -6,6 +6,7 @@
+>>>>   # When adding new entries keep the list in alphabetical order
+>>>>   obj-$(CONFIG_ADIS16400) += adis16400.o
+>>>>   obj-$(CONFIG_ADIS16460) += adis16460.o
+>>>> +obj-$(CONFIG_ADIS16475) += adis16475.o
+>>>>   obj-$(CONFIG_ADIS16480) += adis16480.o
+>>>>   
+>>>>   adis_lib-y += adis.o
+>>>> diff --git a/drivers/iio/imu/adis16475.c
+>>>> b/drivers/iio/imu/adis16475.c
+>>>> new file mode 100644
+>>>> index 000000000000..f7c637734ec8
+>>>> --- /dev/null
+>>>> +++ b/drivers/iio/imu/adis16475.c
+>>>> @@ -0,0 +1,1304 @@
+>>>> +// SPDX-License-Identifier: GPL-2.0
+>>>> +/*
+>>>> + * ADIS16475 IMU driver
+>>>> + *
+>>>> + * Copyright 2019 Analog Devices Inc.
+>>>> + */
+>>>> +#include <asm/unaligned.h>
+>>>> +#include <linux/bitfield.h>
+>>>> +#include <linux/bitops.h>
+>>>> +#include <linux/clk.h>
+>>>> +#include <linux/debugfs.h>
+>>>> +#include <linux/delay.h>
+>>>> +#include <linux/device.h>
+>>>> +#include <linux/kernel.h>
+>>>> +#include <linux/iio/buffer.h>
+>>>> +#include <linux/iio/iio.h>
+>>>> +#include <linux/iio/imu/adis.h>
+>>>> +#include <linux/iio/sysfs.h>
+>>>> +#include <linux/iio/trigger_consumer.h>
+>>>> +#include <linux/irq.h>
+>>>> +#include <linux/module.h>
+>>>> +#include <linux/spi/spi.h>
+>>>> +
+>>>> +#define ADIS16475_REG_DIAG_STAT		0x02
+>>>> +#define ADIS16475_REG_X_GYRO_L		0x04
+>>>> +#define ADIS16475_REG_Y_GYRO_L		0x08
+>>>> +#define ADIS16475_REG_Z_GYRO_L		0x0C
+>>>> +#define ADIS16475_REG_X_ACCEL_L		0x10
+>>>> +#define ADIS16475_REG_Y_ACCEL_L		0x14
+>>>> +#define ADIS16475_REG_Z_ACCEL_L		0x18
+>>>> +#define ADIS16475_REG_TEMP_OUT		0x1c
+>>>> +#define ADIS16475_REG_X_GYRO_BIAS_L	0x40
+>>>> +#define ADIS16475_REG_Y_GYRO_BIAS_L	0x44
+>>>> +#define ADIS16475_REG_Z_GYRO_BIAS_L	0x48
+>>>> +#define ADIS16475_REG_X_ACCEL_BIAS_L	0x4c
+>>>> +#define ADIS16475_REG_Y_ACCEL_BIAS_L	0x50
+>>>> +#define ADIS16475_REG_Z_ACCEL_BIAS_L	0x54
+>>>> +#define ADIS16475_REG_FILT_CTRL		0x5c
+>>>> +#define ADIS16475_FILT_CTRL_MASK	GENMASK(2, 0)
+>>>> +#define ADIS16475_FILT_CTRL(x)		FIELD_PREP(ADIS16475_FI
+>>>> LT_CTRL_MASK, x)
+>>>> +#define ADIS16475_REG_MSG_CTRL		0x60
+>>>> +#define ADIS16475_MSG_CTRL_DR_POL_MASK	BIT(0)
+>>>> +#define ADIS16475_MSG_CTRL_DR_POL(x) \
+>>>> +				FIELD_PREP(ADIS16475_MSG_CTRL_DR_POL_MA
+>>>> SK, x)
+>>>> +#define ADIS16475_EXT_CLK_MASK		GENMASK(4, 2)
+>>>> +#define ADIS16475_EXT_CLK(x)		FIELD_PREP(ADIS16475_EX
+>>>> T_CLK_MASK, x)
+>>>> +#define ADIS16475_REG_UP_SCALE		0x62
+>>>> +#define ADIS16475_REG_DEC_RATE		0x64
+>>>> +#define ADIS16475_REG_GLOB_CMD		0x68
+>>>> +#define ADIS16475_REG_FIRM_REV		0x6c
+>>>> +#define ADIS16475_REG_FIRM_DM		0x6e
+>>>> +#define ADIS16475_REG_FIRM_Y		0x70
+>>>> +#define ADIS16475_REG_PROD_ID		0x72
+>>>> +#define ADIS16475_REG_SERIAL_NUM	0x74
+>>>> +#define ADIS16475_REG_FLASH_CNT		0x7c
+>>>> +#define ADIS16500_BURST32_MASK		BIT(9)
+>>>> +#define ADIS16500_BURST32(x)		FIELD_PREP(ADIS16500_BU
+>>>> RST32_MASK, x)
+>>>> +/* number of data elements in burst mode */
+>>>> +#define ADIS16475_BURST_MAX_DATA	10
+>>>> +#define ADIS16475_MAX_SCAN_DATA		15
+>>>> +
+>>>> +enum clk_mode {
+>>>> +	ADIS16475_CLK_DIRECT = 1,
+>>>> +	ADIS16475_CLK_SCALED,
+>>>> +	ADIS16475_CLK_OUTPUT,
+>>>> +	ADIS16475_CLK_PULSE = 5,
+>>>> +};
+>>>> +
+>>>> +struct adis16475_clks {
+>>>> +	const char *name;
+>>>> +	enum clk_mode clk_mode;
+>>>> +	u16 min_rate;
+>>>> +	u16 max_rate;
+>>>> +};
+>>>> +
+>>>> +struct adis16475_chip_info {
+>>>> +	const struct iio_chan_spec *channels;
+>>>> +	const struct adis16475_clks *clks;
+>>>> +	const struct adis_data adis_data;
+>>>> +	u32 num_channels;
+>>>> +	u32 gyro_max_val;
+>>>> +	u32 gyro_max_scale;
+>>>> +	u32 accel_max_val;
+>>>> +	u32 accel_max_scale;
+>>>> +	u32 temp_scale;
+>>>> +	u32 int_clk;
+>>>> +	u16 max_dec;
+>>>> +	u8 num_clks;
+>>>> +	bool has_burst32;
+>>>> +};
+>>>> +
+>>>> +struct adis16475 {
+>>>> +	const struct adis16475_chip_info *info;
+>>>> +	struct adis adis;
+>>>> +	u32 clk_freq;
+>>>> +	u32 cached_spi_speed_hz;
+>>>> +	bool burst32;
+>>>> +};
+>>>> +
+>>>> +enum {
+>>>> +	ADIS16475_SCAN_GYRO_X,
+>>>> +	ADIS16475_SCAN_GYRO_Y,
+>>>> +	ADIS16475_SCAN_GYRO_Z,
+>>>> +	ADIS16475_SCAN_ACCEL_X,
+>>>> +	ADIS16475_SCAN_ACCEL_Y,
+>>>> +	ADIS16475_SCAN_ACCEL_Z,
+>>>> +	ADIS16475_SCAN_TEMP,
+>>>> +	ADIS16475_SCAN_DIAG_S_FLAGS,
+>>>> +	ADIS16475_SCAN_CRC_FAILURE,
+>>>> +};
+>>>> +
+>>>> +#ifdef CONFIG_DEBUG_FS
+>>>> +static ssize_t adis16475_show_firmware_revision(struct file
+>>>> *file,
+>>>> +						char __user *userbuf,
+>>>> +						size_t count, loff_t
+>>>> *ppos)
+>>>> +{
+>>>> +	struct adis16475 *st = file->private_data;
+>>>> +	char buf[7];
+>>>> +	size_t len;
+>>>> +	u16 rev;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = adis_read_reg_16(&st->adis, ADIS16475_REG_FIRM_REV,
+>>>> &rev);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	len = scnprintf(buf, sizeof(buf), "%x.%x\n", rev >> 8, rev &
+>>>> 0xff);
+>>>> +
+>>>> +	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
+>>>> +}
+>>>> +
+>>>> +static const struct file_operations
+>>>> adis16475_firmware_revision_fops = {
+>>>> +	.open = simple_open,
+>>>> +	.read = adis16475_show_firmware_revision,
+>>>> +	.llseek = default_llseek,
+>>>> +	.owner = THIS_MODULE,
+>>>> +};
+>>>> +
+>>>> +static ssize_t adis16475_show_firmware_date(struct file *file,
+>>>> +					    char __user *userbuf,
+>>>> +					    size_t count, loff_t *ppos)
+>>>> +{
+>>>> +	struct adis16475 *st = file->private_data;
+>>>> +	u16 md, year;
+>>>> +	char buf[12];
+>>>> +	size_t len;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = adis_read_reg_16(&st->adis, ADIS16475_REG_FIRM_Y, &year);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	ret = adis_read_reg_16(&st->adis, ADIS16475_REG_FIRM_DM, &md);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	len = snprintf(buf, sizeof(buf), "%.2x-%.2x-%.4x\n", md >> 8,
+>>>> md & 0xff,
+>>>> +		       year);
+>>>> +
+>>>> +	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
+>>>> +}
+>>>> +
+>>>> +static const struct file_operations adis16475_firmware_date_fops
+>>>> =
+>>>> {
+>>>> +	.open = simple_open,
+>>>> +	.read = adis16475_show_firmware_date,
+>>>> +	.llseek = default_llseek,
+>>>> +	.owner = THIS_MODULE,
+>>>> +};
+>>>> +
+>>>> +static int adis16475_show_serial_number(void *arg, u64 *val)
+>>>> +{
+>>>> +	struct adis16475 *st = arg;
+>>>> +	u16 serial;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = adis_read_reg_16(&st->adis, ADIS16475_REG_SERIAL_NUM,
+>>>> &serial);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	*val = serial;
+>>>> +
+>>>> +	return 0;
+>>>> +}
+>>>> +DEFINE_SIMPLE_ATTRIBUTE(adis16475_serial_number_fops,
+>>>> +			adis16475_show_serial_number, NULL,
+>>>> "0x%.4llx\n");
+>>>> +
+>>>> +static int adis16475_show_product_id(void *arg, u64 *val)
+>>>> +{
+>>>> +	struct adis16475 *st = arg;
+>>>> +	u16 prod_id;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = adis_read_reg_16(&st->adis, ADIS16475_REG_PROD_ID,
+>>>> &prod_id);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	*val = prod_id;
+>>>> +
+>>>> +	return 0;
+>>>> +}
+>>>> +DEFINE_SIMPLE_ATTRIBUTE(adis16475_product_id_fops,
+>>>> +			adis16475_show_product_id, NULL, "%llu\n");
+>>>> +
+>>>> +static int adis16475_show_flash_count(void *arg, u64 *val)
+>>>> +{
+>>>> +	struct adis16475 *st = arg;
+>>>> +	u32 flash_count;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = adis_read_reg_32(&st->adis, ADIS16475_REG_FLASH_CNT,
+>>>> +			       &flash_count);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	*val = flash_count;
+>>>> +
+>>>> +	return 0;
+>>>> +}
+>>>> +DEFINE_SIMPLE_ATTRIBUTE(adis16475_flash_count_fops,
+>>>> +			adis16475_show_flash_count, NULL, "%lld\n");
+>>>> +
+>>>> +static int adis16475_debugfs_init(struct iio_dev *indio_dev)
+>>>> +{
+>>>> +	struct adis16475 *st = iio_priv(indio_dev);
+>>>> +
+>>>> +	debugfs_create_file("serial_number", 0400, indio_dev-
+>>>>> debugfs_dentry,
+>>>> +			    st, &adis16475_serial_number_fops);
+>>>> +	debugfs_create_file("product_id", 0400, indio_dev-
+>>>>> debugfs_dentry, st,
+>>>> +			    &adis16475_product_id_fops);
+>>>> +	debugfs_create_file("flash_count", 0400, indio_dev-
+>>>>> debugfs_dentry, st,
+>>>> +			    &adis16475_flash_count_fops);
+>>>> +	debugfs_create_file("firmware_revision", 0400,
+>>>> +			    indio_dev->debugfs_dentry, st,
+>>>> +			    &adis16475_firmware_revision_fops);
+>>>> +	debugfs_create_file("firmware_date", 0400, indio_dev-
+>>>>> debugfs_dentry,
+>>>> +			    st, &adis16475_firmware_date_fops);
+>>>> +	return 0;
+>>>> +}
+>>>> +#else
+>>>> +static int adis16475_debugfs_init(struct iio_dev *indio_dev)
+>>>> +{
+>>>> +	return 0;
+>>>> +}
+>>>> +#endif
+>>>> +
+>>>> +static ssize_t adis16475_burst_mode_enable_get(struct device
+>>>> *dev,
+>>>> +					       struct device_attribute
+>>>> *attr,
+>>>> +					       char *buf)
+>>>> +{
+>>>> +	struct adis16475 *st = iio_priv(dev_to_iio_dev(dev));
+>>>> +
+>>>> +	return sprintf(buf, "%d\n", st->adis.burst->en);
+>>>> +}
+>>>> +
+>>>> +static ssize_t adis16475_burst_mode_enable_set(struct device
+>>>> *dev,
+>>>> +					       struct device_attribute
+>>>> *attr,
+>>>> +					       const char *buf, size_t
+>>>> len)
+>>>> +{
+>>>> +	struct adis16475 *st = iio_priv(dev_to_iio_dev(dev));
+>>>> +	bool val;
+>>>> +	int ret;
+>>>> +
+>>>> +	ret = kstrtobool(buf, &val);
+>>>> +	if (ret)
+>>>> +		return ret;
+>>>> +
+>>>> +	if (val)
+>>>> +		/* 1MHz max in burst mode */
+>>>> +		st->adis.spi->max_speed_hz = 1000000;
+>>>> +	else
+>>>> +		st->adis.spi->max_speed_hz = st->cached_spi_speed_hz;
+>>>> +
+>>>> +	st->adis.burst->en = val;
+>>>> +
+>>>> +	return len;
+>>>> +}
+>>>> +
+>>>> +static IIO_DEVICE_ATTR(burst_mode_enable, 0644,
+>>>> +		       adis16475_burst_mode_enable_get,
+>>>> +		       adis16475_burst_mode_enable_set, 0);
+>>>> +
+>>>> +static struct attribute *adis16475_attributes[] = {
+>>>> +	&iio_dev_attr_burst_mode_enable.dev_attr.attr,
+>>> Hmm.  Normally we try to avoid exposing this and make the decision
+>>> automatically based on which channels are enabled.
+>> Hmm. In that case, the decision would probably have to go to the
+>> library since it is there that the "preparations" for buffered mode
+>> are
+>> done. Mostly, the data we are interested in the burst data is gyro,
+>> accel and temp. So to make the decision based on which channels are
+>> enabled is not that straight. Should we enable it only when all
+>> channels are enabled? Some of them (and which)?
+> I thought a little bit more about it and we could do some math in the
+> lib to know when using burst mode becomes faster (depending on enabled
+> scan elements). The library would need to know about the burst max spi
+> frequency and also some minor changes in how burst_len is being
+> calculated (drivers should explicitly set this rather than the
+> library). The question is, is it worth it to go with this extra work
+> :)?
 
-Maybe lets start with explaining what burst32 mode is, so everybody is 
-on the same page.
-
-The way registers are usually accessed for this chip is that you first 
-write the address you want to read on the SPI bus and then read the 
-selected register. This can be quite slow though if you want to read 
-multiple registers and is too slow to be able to read all the data at 
-full data rate. So there is a special burst mode which allows to read 
-all the data registers in one go.
-
-Now by default the data registers are 16-bit. But there is an internal 
-decimation filter and the extra bits produced by the decimation filter 
-go into additional data registers making the data 32-bit wide. The chip 
-allows to configure whether to read the only 16-bit MSBs or the full 
-32-bit register.
-
-So the decision whether a user wants to use 32-bit or 16-bit depends on 
-whether the extra 16-bit are needed or if they are even available. E.g. 
-if the decimation filter is off there wont be any extra bits.
-
-This means ideally it would be user configurable whether to use 16-bit 
-or 32-bit burst mode, since it is application specific. The problem is 
-we don't have an interface for changing the bit width of a buffer 
-channel. Adding such an interface would require quite a bit of effort 
-since the assumption currently is that the bit width does not chance. 
-E.g. libiio assumes this and would stop working if it did change.
-
-Maybe as a compromise for now. Use 32-bit burst when there is actually 
-meaningful data is the LSBs, i.e. the decimation filter is used and 
-disable it otherwise. And then think about how to make it configurable 
-as a follow up action.
-
-In my opinion there is should not be a difference in the userspace 
-interface for chips that do support 32-bit burst and those that don't. 
-For devices that don't support 32-bit burst it should be emulated by 
-reading the LSB bits registers manually.
+You can leave it out of the initial version and always use burst mode 
+and then add support for this in a follow up patch if it is worth it.
 
 - Lars
 
