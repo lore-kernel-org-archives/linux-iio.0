@@ -1,147 +1,156 @@
-Return-Path: <SRS0=m/X7=4V=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=unW9=4W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 545F6C3F2D1
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Mar 2020 21:18:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C42C3F2D1
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 08:31:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2B84320732
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Mar 2020 21:18:14 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HrgFjRhW"
+	by mail.kernel.org (Postfix) with ESMTP id D915721D56
+	for <linux-iio@archiver.kernel.org>; Thu,  5 Mar 2020 08:31:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728614AbgCDVSN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 4 Mar 2020 16:18:13 -0500
-Received: from mail-ot1-f67.google.com ([209.85.210.67]:45519 "EHLO
-        mail-ot1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726440AbgCDVSN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Mar 2020 16:18:13 -0500
-Received: by mail-ot1-f67.google.com with SMTP id f21so3502986otp.12;
-        Wed, 04 Mar 2020 13:18:13 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=btFxI1AY902XfnaAbQ65M1jnLtqbJ2OeOdebXmzbiT8=;
-        b=HrgFjRhWzaQHkAI3vNc7+HytZ01Wr0Dz4sMaw2UVaZFnuBjfR4TEcv4rhqM+ZLsI5/
-         GK7CHt4XYQmlabtfqTHhMAPpOZYDA2eS35+9dNCJumVMrzQLUFhd7dpT1tiIDpgWxtkE
-         zRNGmLDrwoO5x1UCOvcv/V25aCRb2Gt3Mzu/RPFKdNdviZG1/jdfdeAbYPlxefCuItpY
-         74508y7QtZUQx04AmAbPC6ss1g/skvPHZAWGznrEaME1lAba508HB+N0xH4pMLb5jC3l
-         QBXyTyDIV4jJyxDlL9CBJQZG9xamQCVxNVETHIOFBx41eWFzSotNemL9TB9D2O7Ts8l1
-         RDBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=btFxI1AY902XfnaAbQ65M1jnLtqbJ2OeOdebXmzbiT8=;
-        b=uDI1uAcxgJVB59oYUJ2dnw0shkHn92toW/27BGH9gN/KkXo4ZSBdIfmjdDXSKEhLVW
-         Ti/H8CVPIJuTwC6DyrB5XxSfrL5s76AkNh5AeWUO5oVzDwZGLBY0gWagybkBlLKXXY6v
-         fNIaP8akUop+CP0KK5ks4fMk12m803Vp0tvnL4mffeHhoV3eYQSCKhs07G5sd11rtAqn
-         eT0IQTRg/qHPwDiRw4IvzveyvgbZTCF4hnkPzHaSddEPo3y3w6ohFH7XJWd/8OzEmbuV
-         6kKMyqzkkoOuQIf555reStNGGrV7iUtrL1Hyo5kIhmHFgBP1ANoYeM1rDQREWQG/pgXS
-         os8g==
-X-Gm-Message-State: ANhLgQ1C4c9/2qNZyeZBuNNu0F2/AePOUbWuNz2L3tMVJ4Gns0huIncN
-        x+AhU5TP3uY1WrJqdJZduXHQXee4FuKRyfC/ATriV/b1
-X-Google-Smtp-Source: ADFU+vuKMWo98jcRpBlk+SPgl3sQeKW2MIMB3GnOgWY1Yk1k25I+PGlDa50ZrasHDUNpJAgCWqru+lt2za3rFdN3HHM=
-X-Received: by 2002:a9d:6a06:: with SMTP id g6mr3674841otn.305.1583356692708;
- Wed, 04 Mar 2020 13:18:12 -0800 (PST)
+        id S1725937AbgCEIbW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 Mar 2020 03:31:22 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:34590 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725924AbgCEIbW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Mar 2020 03:31:22 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0258SaWg015426;
+        Thu, 5 Mar 2020 03:31:20 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2yfnrasm3b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 05 Mar 2020 03:31:20 -0500
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 0258VJTG001826
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 5 Mar 2020 03:31:19 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Thu, 5 Mar 2020 03:31:18 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Thu, 5 Mar 2020 03:31:17 -0500
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Thu, 5 Mar 2020 03:31:17 -0500
+Received: from saturn.ad.analog.com ([10.48.65.112])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0258VDI1018004;
+        Thu, 5 Mar 2020 03:31:14 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v7 0/8] iio: adi-axi-adc,ad9647: Add support for AD9467 ADC
+Date:   Thu, 5 Mar 2020 10:33:47 +0200
+Message-ID: <20200305083355.8570-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-References: <20200304093633.32264-1-alexandru.ardelean@analog.com> <20200304094105.2586-1-alexandru.ardelean@analog.com>
-In-Reply-To: <20200304094105.2586-1-alexandru.ardelean@analog.com>
-From:   Matt Ranostay <mranostay@gmail.com>
-Date:   Wed, 4 Mar 2020 13:17:36 -0800
-Message-ID: <CAKzfze8KMLG=GbMvZ9eydOer5wZw-i7_5fJVjpFcZ6fqyoHgJQ@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: potentiostat: lmp9100: fix iio_triggered_buffer_{predisable,postenable}
- positions
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>, matt.ranostay@konsulko.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-05_02:2020-03-04,2020-03-05 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
+ adultscore=0 priorityscore=1501 lowpriorityscore=0 impostorscore=0
+ malwarescore=0 clxscore=1015 spamscore=0 phishscore=0 mlxscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003050054
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Mar 4, 2020 at 1:38 AM Alexandru Ardelean
-<alexandru.ardelean@analog.com> wrote:
->
-> The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-> the poll functions.
->
-> For the predisable hook, the disable code should occur before detaching
-> the poll func, and for the postenable hook, the poll func should be
-> attached before the enable code.
->
-> The lmp9100 was attaching a poll function but never detaching it via any
-> IIO disable hook.
->
-> This change adds the detaching of the poll function, and moves/renames
-> lmp91000_buffer_preenable() function to lmp91000_buffer_postenable().
-> The idea is to make it more symmetrical, so that when the
-> iio_triggered_buffer_{predisable,postenable} functions get removed, it's
-> easier to see.
->
-> Fixes: 67e17300dc1d7 ("iio: potentiostat: add LMP91000 support")
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+This changeset adds support for the AD9467 LVDS High-Speed ADC.
+In order to support it, support for an FPGA ADI AXI ADC is added in this
+set.
+This uses the current support for IIO buffer DMAEngine.
 
-Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Changelog v6 -> v7:
+* Fixed dt-schema build for adi,axi-adc.yaml based on Rob's suggestion
+  - added '$ref: /schemas/types.yaml#/definitions/phandle' to 'adi,adc-dev'
+  - dropped 'maxItems' from 'adi,adc-dev'
 
-> ---
->
-> Changelog v1 -> v2:
-> * forgot to call iio_triggered_buffer_postenable() in
->   lmp91000_buffer_postenable() in v1
->
->  drivers/iio/potentiostat/lmp91000.c | 18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-> index a0e5f530faa9..2cb11da18e0f 100644
-> --- a/drivers/iio/potentiostat/lmp91000.c
-> +++ b/drivers/iio/potentiostat/lmp91000.c
-> @@ -275,11 +275,20 @@ static int lmp91000_buffer_cb(const void *val, void *private)
->  static const struct iio_trigger_ops lmp91000_trigger_ops = {
->  };
->
-> -static int lmp91000_buffer_preenable(struct iio_dev *indio_dev)
-> +static int lmp91000_buffer_postenable(struct iio_dev *indio_dev)
->  {
->         struct lmp91000_data *data = iio_priv(indio_dev);
-> +       int err;
->
-> -       return iio_channel_start_all_cb(data->cb_buffer);
-> +       err = iio_triggered_buffer_postenable(indio_dev);
-> +       if (err)
-> +               return err;
-> +
-> +       err = iio_channel_start_all_cb(data->cb_buffer);
-> +       if (err)
-> +               iio_triggered_buffer_predisable(indio_dev);
-> +
-> +       return err;
->  }
->
->  static int lmp91000_buffer_predisable(struct iio_dev *indio_dev)
-> @@ -288,12 +297,11 @@ static int lmp91000_buffer_predisable(struct iio_dev *indio_dev)
->
->         iio_channel_stop_all_cb(data->cb_buffer);
->
-> -       return 0;
-> +       return iio_triggered_buffer_predisable(indio_dev);
->  }
->
->  static const struct iio_buffer_setup_ops lmp91000_buffer_setup_ops = {
-> -       .preenable = lmp91000_buffer_preenable,
-> -       .postenable = iio_triggered_buffer_postenable,
-> +       .postenable = lmp91000_buffer_postenable,
->         .predisable = lmp91000_buffer_predisable,
->  };
->
-> --
-> 2.20.1
->
+Changelog v5 -> v6
+* fix URLs; got changed during rename
+   https://wiki.analog.com/resources/fpga/docs/adi_axi_adc_ip ->
+   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
+  - noticed while working on the AXI DAC driver
+
+Changelog v4 -> v5:
+* update drivers/iio/adc/Kconfig note about module name; omitted during first rename
+   - 'module will be called axi-adc.' -> 'module will be called adi-axi-adc.'
+
+Changelog v3 -> v4:
+* addressed Rob's dt-remarks
+   - change 'adi-axi-adc-client' prop to 'adi,adc-dev'
+
+Changelog v2 -> v3:
+* addressed compiler warning
+
+Changelog v1 -> v2:
+* first series was added a bit hastily
+* addressed  'make dt_binding_check' complaints; seems I missed a few when running the check; 
+* added missing patches to include/linux/fpga/adi-axi-common.h
+   - 'include: fpga: adi-axi-common.h: fixup whitespace tab -> space'
+   - 'include: fpga: adi-axi-common.h: add version helper macros'
+* patch 'iio: buffer-dmaengine: add dev-managed calls for buffer alloc/free'
+   - remove copy+pasted comment for 'devm_iio_dmaengine_buffer_alloc()'
+   - removed devm_iio_dmaengine_buffer_free() ; hopefully it might never be needed
+   - fix-up alignment for devm_iio_dmaengine_buffer_alloc() in header
+* patch 'iio: adc: adi-axi-adc: add support for AXI ADC IP core'
+   - renamed axi-adc.c -> adi-axi-adc.c & Kconfig symbol
+   - prefix all axi_adc -> adi_axi_adc
+   - removed switch statement in axi_adc_read_raw() & axi_adc_write_raw()
+   - remove axi_adc_chan_spec ; replaced with iio_chan_spec directly ; will think of a simpler solution for extra chan params
+   - removed left-over 'struct axi_adc_cleanup_data'
+   - moved 'devm_add_action_or_reset()' call right after 'adi_axi_adc_attach_client()'
+   - switched to using 'devm_platform_ioremap_resource()'
+* patch 'iio: adc: ad9467: add support AD9467 ADC'
+  - renamed ADI_ADC reg prefixes to AN877_ADC
+  - dropped 'info_mask_separate' field in AD9467_CHAN - will be re-added later when driver gets more features; was left-over from the initial ref driver
+  - remove .shift = 0,  in AD9467_CHAN
+  - renamed 'sample-clock' -> 'adc-clock'
+  - direct returns in ad9467_read_raw() & ad9467_write_raw() & ad9467_setup() switch statements
+  - removed blank line after devm_axi_adc_conv_register()
+  - removed ad9467_id & reworked to use ad9467_of_match
+
+Alexandru Ardelean (6):
+  include: fpga: adi-axi-common.h: fixup whitespace tab -> space
+  include: fpga: adi-axi-common.h: add version helper macros
+  iio: buffer-dmaengine: use %zu specifier for sprintf(align)
+  iio: buffer-dmaengine: add dev-managed calls for buffer alloc
+  dt-bindings: iio: adc: add bindings doc for AXI ADC driver
+  dt-bindings: iio: adc: add bindings doc for AD9467 ADC
+
+Michael Hennerich (2):
+  iio: adc: adi-axi-adc: add support for AXI ADC IP core
+  iio: adc: ad9467: add support AD9467 ADC
+
+ .../bindings/iio/adc/adi,ad9467.yaml          |  65 ++
+ .../bindings/iio/adc/adi,axi-adc.yaml         |  63 ++
+ drivers/iio/adc/Kconfig                       |  35 ++
+ drivers/iio/adc/Makefile                      |   2 +
+ drivers/iio/adc/ad9467.c                      | 432 +++++++++++++
+ drivers/iio/adc/adi-axi-adc.c                 | 566 ++++++++++++++++++
+ .../buffer/industrialio-buffer-dmaengine.c    |  41 +-
+ include/linux/fpga/adi-axi-common.h           |   6 +-
+ include/linux/iio/adc/adi-axi-adc.h           |  63 ++
+ include/linux/iio/buffer-dmaengine.h          |   3 +
+ 10 files changed, 1274 insertions(+), 2 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,axi-adc.yaml
+ create mode 100644 drivers/iio/adc/ad9467.c
+ create mode 100644 drivers/iio/adc/adi-axi-adc.c
+ create mode 100644 include/linux/iio/adc/adi-axi-adc.h
+
+-- 
+2.20.1
+
