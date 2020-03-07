@@ -2,293 +2,325 @@ Return-Path: <SRS0=wTBL=4Y=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8E7C3F2C6
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Mar 2020 21:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DE63C10F25
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Mar 2020 22:32:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DA2422073D
-	for <linux-iio@archiver.kernel.org>; Sat,  7 Mar 2020 21:06:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BBFAD20684
+	for <linux-iio@archiver.kernel.org>; Sat,  7 Mar 2020 22:32:24 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=synopsys.com header.i=@synopsys.com header.b="PzBqlgFw";
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=synopsys.onmicrosoft.com header.i=@synopsys.onmicrosoft.com header.b="KTzjfeus"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726333AbgCGVGe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 Mar 2020 16:06:34 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:48755 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726307AbgCGVGd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Mar 2020 16:06:33 -0500
-X-Originating-IP: 195.189.32.242
-Received: from pc.localdomain (unknown [195.189.32.242])
-        (Authenticated sender: contact@artur-rojek.eu)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id ED67340005;
-        Sat,  7 Mar 2020 21:06:28 +0000 (UTC)
-From:   Artur Rojek <contact@artur-rojek.eu>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>
-Cc:     Heiko Stuebner <heiko@sntech.de>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v4 3/5] IIO: Ingenic JZ47xx: Add touchscreen mode.
-Date:   Sat,  7 Mar 2020 22:14:10 +0100
-Message-Id: <20200307211412.44148-3-contact@artur-rojek.eu>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200307211412.44148-1-contact@artur-rojek.eu>
-References: <20200307211412.44148-1-contact@artur-rojek.eu>
+        id S1726264AbgCGWcY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Mar 2020 17:32:24 -0500
+Received: from smtprelay-out1.synopsys.com ([149.117.87.133]:53224 "EHLO
+        smtprelay-out1.synopsys.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726259AbgCGWcX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Mar 2020 17:32:23 -0500
+Received: from mailhost.synopsys.com (badc-mailhost1.synopsys.com [10.192.0.17])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtprelay-out1.synopsys.com (Postfix) with ESMTPS id 36B0CC00F7;
+        Sat,  7 Mar 2020 22:32:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=synopsys.com; s=mail;
+        t=1583620341; bh=KLGUn4weS47moSQ1rNvnTKufufUGKRw1PKuXwNmFx1M=;
+        h=From:To:CC:Subject:Date:References:In-Reply-To:From;
+        b=PzBqlgFwE8NpovFTIB/EU6w3sHSejGIYixMl0Q1CRLWlxfo+AI/r+qEcuTixqJOZ+
+         B3IZUHYjxocaME/y4OD1CwUtaJloqleKX/WLcD14vRn5RoUHJ2pBJQhbO8j90EH+5v
+         BIoBxELjBPaRqLjp75lhic2v6gQ0kFggfSpTL8LAmnrLAgDM+FjvEwkSY5tHf9EUol
+         w8wPcmzHu6z644jK4fnZPQoraPvZqBEs53V91zSDMAype/SEBzzMMjcwI3OIW1UUBE
+         9nytiqP6rgbF9vqrCfLQMRTg5AaA2LZ8IkDwVoUd/n70IlrLgcM1vyHsiGLjEaTbKO
+         RqqdBYRJfWOZQ==
+Received: from US01WEHTC3.internal.synopsys.com (us01wehtc3.internal.synopsys.com [10.15.84.232])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mailhost.synopsys.com (Postfix) with ESMTPS id 217EFA008A;
+        Sat,  7 Mar 2020 22:32:20 +0000 (UTC)
+Received: from us01hybrid1.internal.synopsys.com (10.200.27.51) by
+ US01WEHTC3.internal.synopsys.com (10.15.84.232) with Microsoft SMTP Server
+ (TLS) id 14.3.408.0; Sat, 7 Mar 2020 14:32:19 -0800
+Received: from NAM04-BN3-obe.outbound.protection.outlook.com (10.202.3.67) by
+ mrs.synopsys.com (10.200.27.51) with Microsoft SMTP Server (TLS) id
+ 14.3.408.0; Sat, 7 Mar 2020 14:32:19 -0800
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=XpLRqGPlDqXXkuDR6S6JaEuSFvjygLput4lRq2r4ZpGh/sWlcRz/mV8ialwTrNsJXRA1XEe9IqFMu4FToXLCag9lzh+SAMFGqXEzX92oeABbIKtburgcSLsQS5QDnF1Wu6LcXf0vC+XiI8EZ5vd81827lfAYBbL7PVUno8aNXde18r+0bZTAa/e6qm4tV1OgxnpKlh1aeJOaIQZ2V6MGZHEIUQ9/hookfa884PXRwaASqpw+k+2HeYFlb2bBMReCTbWbEIe8e1xv58CkBQmQlUX4slSOVFjsfnD2OSCknR/Jgroi5a1UjQWTOCA5wTE1LCd5TybCooKBWOGhjzdJkg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KLGUn4weS47moSQ1rNvnTKufufUGKRw1PKuXwNmFx1M=;
+ b=nQjh/lKM8KfgpCExfh/pLJTI8XUzHnZYUqX7nKmn2f+iC6zJh9UejIJFVcRZmGNjomRuDpF3+1hBIvcrIA6+lgo2Vv7AR8jfhcXNWNi/UfXVzRZNZcqN9VnaRPRvH5DuMAtgTh5Dyo+LeifXGyKugyTWQ3gj2eGKMMz1VPju/Z+rkw8YzHrg55rD0aM2ybcb/kU9SUmEQ2IVMB5KS7uByF4/35iHWmWOU7t0HKzBrIy31uQ4BHet9VDseKwMFR1khKfm0in8Fs1V8K9rJtkoIXlyE7JliV71gXgDCKhHR3yrmBPJNCerg+i/StqmUHBP3o4qzjMdZcXOF6Rv6JTvSA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=synopsys.com; dmarc=pass action=none header.from=synopsys.com;
+ dkim=pass header.d=synopsys.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=synopsys.onmicrosoft.com; s=selector2-synopsys-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=KLGUn4weS47moSQ1rNvnTKufufUGKRw1PKuXwNmFx1M=;
+ b=KTzjfeus+x30bNMh609kWg2Q622saP/n8ldKC+GBOhLLDYpudGdFEG/L1uNsp6eywHqTm42OSx1a38zD5nDA8Ty7Wm0WfGcBquQh8az7LtFhcq1MZB0JmLrGlmoO2b+8B9xZaBoiAliZq9x2JdnmUNR6ODXCzoXHTrEgnH29s6Q=
+Received: from CH2PR12MB4216.namprd12.prod.outlook.com (2603:10b6:610:a8::23)
+ by CH2PR12MB4296.namprd12.prod.outlook.com (2603:10b6:610:af::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2793.17; Sat, 7 Mar
+ 2020 22:32:11 +0000
+Received: from CH2PR12MB4216.namprd12.prod.outlook.com
+ ([fe80::c8d1:bea7:c855:bcfe]) by CH2PR12MB4216.namprd12.prod.outlook.com
+ ([fe80::c8d1:bea7:c855:bcfe%5]) with mapi id 15.20.2793.013; Sat, 7 Mar 2020
+ 22:32:10 +0000
+From:   Vitor Soares <Vitor.Soares@synopsys.com>
+To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>,
+        Jonathan Cameron <jic23@kernel.org>
+CC:     Lorenzo Bianconi <lorenzo@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "mario.tesi@st.com" <mario.tesi@st.com>
+Subject: RE: [PATCH] iio: imu: st_lsm6dsx: disable I3C support during device
+ reset
+Thread-Topic: [PATCH] iio: imu: st_lsm6dsx: disable I3C support during device
+ reset
+Thread-Index: AQHV7/+b//XBztcpbEiuT+HpJ9P6iag9IVQAgAAItoCAAJSR4A==
+Date:   Sat, 7 Mar 2020 22:32:10 +0000
+Message-ID: <CH2PR12MB4216186A9417754287B06AAFAEE00@CH2PR12MB4216.namprd12.prod.outlook.com>
+References: <7444ee821dd9b1210ce126c317edc3b0c36f9f84.1583090369.git.lorenzo@kernel.org>
+ <20200307130232.3baf4c89@archlinux>
+ <CAJ0CqmWayoApMahU63UcqO-bEygYiTwzyAyOeaRi_0CRordKig@mail.gmail.com>
+In-Reply-To: <CAJ0CqmWayoApMahU63UcqO-bEygYiTwzyAyOeaRi_0CRordKig@mail.gmail.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: =?utf-8?B?UEcxbGRHRStQR0YwSUc1dFBTSmliMlI1TG5SNGRDSWdjRDBpWXpwY2RYTmxj?=
+ =?utf-8?B?bk5jYzI5aGNtVnpYR0Z3Y0dSaGRHRmNjbTloYldsdVoxd3dPV1E0TkRsaU5p?=
+ =?utf-8?B?MHpNbVF6TFRSaE5EQXRPRFZsWlMwMllqZzBZbUV5T1dVek5XSmNiWE5uYzF4?=
+ =?utf-8?B?dGMyY3ROemt6Tm1ZeVpXTXROakJqTXkweE1XVmhMVGd5T1RRdFlqZ3dPR05t?=
+ =?utf-8?B?TlRsa04yWmpYR0Z0WlMxMFpYTjBYRGM1TXpabU1tVmtMVFl3WXpNdE1URmxZ?=
+ =?utf-8?B?UzA0TWprMExXSTRNRGhqWmpVNVpEZG1ZMkp2WkhrdWRIaDBJaUJ6ZWowaU5U?=
+ =?utf-8?B?WXdNeUlnZEQwaU1UTXlNamd3T1RNNU1qZ3lNVGs0TkRZNUlpQm9QU0pRTTJk?=
+ =?utf-8?B?RlEzSjVlV2gwYm5sUmJHZHlMMFJrYUZKQlFqUnVOVTA5SWlCcFpEMGlJaUJp?=
+ =?utf-8?B?YkQwaU1DSWdZbTg5SWpFaUlHTnBQU0pqUVVGQlFVVlNTRlV4VWxOU1ZVWk9R?=
+ =?utf-8?B?MmRWUVVGQ1VVcEJRVVJHWWpObk9EQlFWRlpCWldvd2REVk5UMVp2U0ZnMlVG?=
+ =?utf-8?B?TXphM2MxVjJka1kwOUJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlNFRkJRVUZEYTBOQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UlVGQlVVRkNRVUZCUVhOUWNGSkhVVUZCUVVGQlFVRkJRVUZCUVVGQlFVbzBR?=
+ =?utf-8?B?VUZCUW0xQlIydEJZbWRDYUVGSE5FRlpkMEpzUVVZNFFXTkJRbk5CUjBWQllt?=
+ =?utf-8?B?ZENkVUZIYTBGaVowSnVRVVk0UVdSM1FtaEJTRkZCV2xGQ2VVRkhNRUZaVVVK?=
+ =?utf-8?B?NVFVZHpRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZGUVVGQlFVRkJRVUZCUVdk?=
+ =?utf-8?B?QlFVRkJRVUZ1WjBGQlFVZFpRV0ozUWpGQlJ6UkJXa0ZDZVVGSWEwRllkMEoz?=
+ =?utf-8?B?UVVkRlFXTm5RakJCUnpSQldsRkNlVUZJVFVGWWQwSnVRVWRaUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlVVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVTkJRVUZCUVVGRFpVRkJRVUZhWjBKMlFVaFZRV0puUW10QlNF?=
+ =?utf-8?B?bEJaVkZDWmtGSVFVRlpVVUo1UVVoUlFXSm5RbXhCU0VsQlkzZENaa0ZJVFVG?=
+ =?utf-8?B?WlVVSjBRVWhOUVdSUlFuVkJSMk5CV0hkQ2FrRkhPRUZpWjBKdFFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRa0ZCUVVGQlFVRkJRVUZKUVVGQlFVRkJTalJCUVVGQ2JVRkhPRUZr?=
+ =?utf-8?B?VVVKMVFVZFJRV05uUWpWQlJqaEJZMEZDYUVGSVNVRmtRVUoxUVVkVlFXTm5R?=
+ =?utf-8?B?bnBCUmpoQlkzZENhRUZITUVGamQwSXhRVWMwUVZwM1FtWkJTRWxCV2xGQ2Vr?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVWQlFVRkJRVUZCUVVGQlowRkJRVUZCUVc1blFV?=
+ =?utf-8?B?RkJSMWxCWW5kQ01VRkhORUZhUVVKNVFVaHJRVmgzUW5kQlIwVkJZMmRDTUVG?=
+ =?utf-8?B?SE5FRmFVVUo1UVVoTlFWaDNRbnBCUnpCQllWRkNha0ZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRlJRVUZCUVVGQlFVRkJRMEZC?=
+ =?utf-8?B?UVVGQlFVTmxRVUZCUVZwblFuWkJTRlZCWW1kQ2EwRklTVUZsVVVKbVFVaEJR?=
+ =?utf-8?B?VmxSUW5sQlNGRkJZbWRDYkVGSVNVRmpkMEptUVVoTlFXUkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZDUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVsQlFVRkJRVUZLTkVGQlFVSnRRVWM0UVdSUlFuVkJSMUZCWTJk?=
+ =?utf-8?B?Q05VRkdPRUZqUVVKb1FVaEpRV1JCUW5WQlIxVkJZMmRDZWtGR09FRmtRVUo2?=
+ =?utf-8?B?UVVjd1FWbDNRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlJVRkJRVUZCUVVGQlFVRm5RVUZCUVVGQmJtZEJRVUZIV1VGaWQwSXhR?=
+ =?utf-8?B?VWMwUVZwQlFubEJTR3RCV0hkQ2QwRkhSVUZqWjBJd1FVYzBRVnBSUW5sQlNF?=
+ =?utf-8?B?MUJXSGRDTVVGSE1FRlpkMEZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVkZCUVVGQlFVRkJRVUZEUVVGQlFVRkJRMlZCUVVG?=
+ =?utf-8?B?QlduZENNRUZJVFVGWWQwSjNRVWhKUVdKM1FtdEJTRlZCV1hkQ01FRkdPRUZr?=
+ =?utf-8?B?UVVKNVFVZEZRV0ZSUW5WQlIydEJZbWRDYmtGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVKQlFVRkJRVUZCUVVGQlNVRkJR?=
+ =?utf-8?B?VUZCUVVvMFFVRkJRbnBCUjBWQllrRkNiRUZJVFVGWWQwSm9RVWROUVZsM1Fu?=
+ =?utf-8?B?WkJTRlZCWW1kQ01FRkdPRUZqUVVKelFVZEZRV0puUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkZRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRV2RCUVVGQlFVRnVaMEZCUVVoTlFWbFJRbk5CUjFWQlkzZENaa0ZJ?=
+ =?utf-8?B?UlVGa1VVSjJRVWhSUVZwUlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCVVVGQlFVRkJRVUZCUVVOQlFVRkJRVUZEWlVGQlFVRmpkMEoxUVVoQlFX?=
+ =?utf-8?B?TjNRbVpCUjNkQllWRkNha0ZIVlVGaVowSjZRVWRWUVZoM1FqQkJSMVZCWTJk?=
+ =?utf-8?B?Q2RFRkdPRUZOVVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFrRkJRVUZCUVVGQlFVRkpRVUZCUVVGQlNqUkJRVUZD?=
+ =?utf-8?B?ZWtGSE5FRmpRVUo2UVVZNFFXSkJRbkJCUjAxQldsRkNkVUZJVFVGYVVVSm1R?=
+ =?utf-8?B?VWhSUVZwUlFubEJSekJCV0hkQ2VrRklVVUZrVVVKclFVZFZRV0puUWpCQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVVZCUVVGQlFVRkJRVUZCWjBGQlFV?=
+ =?utf-8?B?RkJRVzVuUVVGQlNGbEJXbmRDWmtGSGMwRmFVVUkxUVVoalFXSjNRbmxCUjFG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJR?=
+ =?utf-8?B?VUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFV?=
+ =?utf-8?B?RkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVG?=
+ =?utf-8?B?QlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGQlFVRkJRVUZCUVVGUlFVRkJRVUZC?=
+ =?utf-8?B?UVVGQlEwRkJRVUZCUVVFOUlpOCtQQzl0WlhSaFBnPT0=?=
+authentication-results: spf=none (sender IP is )
+ smtp.mailfrom=soares@synopsys.com; 
+x-originating-ip: [2.82.68.230]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 420b8e2c-34d7-4d7a-e4f8-08d7c2e76085
+x-ms-traffictypediagnostic: CH2PR12MB4296:
+x-microsoft-antispam-prvs: <CH2PR12MB42963569254F5C379C5BECE3AEE00@CH2PR12MB4296.namprd12.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:9508;
+x-forefront-prvs: 03355EE97E
+x-forefront-antispam-report: SFV:NSPM;SFS:(10009001)(6009001)(428001)(51704005)(24454002)(199002)(189002)(20776003)(69226001)(63696002)(74876001)(74706001)(54606006)(33656001)(77096001)(76786001)(76796001)(81542001)(54356001)(93136001)(92566001)(46102001)(64706001)(76576001)(81342001)(92726001)(77982001)(59766001)(56816005)(80022001)(66066001)(76482001)(74316001)(90146001)(65816001)(87936001)(56776001)(54316002)(74366001)(44376005)(87266001)(54206007)(2656002)(4396001)(47976001)(50986001)(95666003)(49866001)(47736001)(51856001)(85306002)(79102001)(85852003)(83072002)(21056001)(97336001)(94946001)(93516002)(95416001)(94316002)(86362001)(97186001)(80976001)(81686001)(83322001)(19580405001)(81816001)(31966008)(74662001)(19580395003)(53806001)(74502001)(47446002);DIR:OUT;SFP:1101;SCL:1;SRVR:CH2PR12MB4296;H:CH2PR12MB4216.namprd12.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;MX:1;
+received-spf: None (protection.outlook.com: synopsys.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: GUiYmhyHhhowpO0ibTsmvugC9FXGgdV63J3Wozu10Xrj7kOueC88EeKwPTtTKu1DyOk+6d4NYRRIcIXOT4CA6DB+nueM5vedjx3uHOB/xB5AG/b0Z+0BvuaSfaG9PANevv5nP9+aV6OM8SdJU8onDKG7i+IHTEyjOkC2lwWoXincnRWLzIN24bECrJ+0ThiW6fVy+qgcsM0hqaApqF9BXwOUCO8ZmJG0ohvbVrU0WNXfv8ENnqvqD9mCWSFR1ZyyZJLO2ih9wuO7NmSKjxj/fS8eYW6WsLo1SHoA2HjPGcQYx/viJdao1xXLiGq3TLgJzUZhRwJgKtRZnTiNiaIUqZHCb0fldpURd76TvHtls7XbGWGfXx6pOP1CS08AZU7LTOIvwBn3/WbqSNxHb/S2Xb1pdVtDC/QOkAhybBvi82KXved1s0vnNtRwPcdI5Sm4LCagHGmDVnmQT4BG/J7l9al8KYSpyIjc+U3ls2v6L1f95jk4BVB+GMPSyrJlYMLTyudibxFKoiq4k15RwQ0ODw==
+x-ms-exchange-antispam-messagedata: Gm1ZJ9AljF5oMKKMgHFU7zOG8B+FPVmBwR6Rmz3+rNAhCOJcjsYOz6/p/yENFq9VNQYlM8KwO+8SL8j7Fu0w1VWi3XxMtQuqc2mOoFNg0nyVFFtUj7HgjcJGj9KbUsBk6uBY3NpMH+SO2E3vsciftA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-CrossTenant-Network-Message-Id: 420b8e2c-34d7-4d7a-e4f8-08d7c2e76085
+X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Mar 2020 22:32:10.7193
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: c33c9f88-1eb7-4099-9700-16013fd9e8aa
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: BInmmxZxO8orQAdHbi4nIboxdZ10FVPbvKy+I7uE+c9xdBZBS3XbsyhjOZ0ImNMgXn8Zs5sATca+bn4vO5QXhw==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR12MB4296
+X-OriginatorOrg: synopsys.com
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The SADC component in JZ47xx SoCs provides support for touchscreen
-operations (pen position and pen down pressure) in single-ended and
-differential modes.
-
-Of the known hardware to use this controller, GCW Zero and Anbernic RG-350
-utilize the touchscreen mode by having their joystick(s) attached to the
-X/Y positive/negative input pins.
-GCW Zero comes with a single joystick and is sufficiently handled with the
-currently implemented single-ended mode. Support for boards with two
-joysticks, where one is hooked up to Xn/Yn and the other to Xp/Yp channels
-will need to be provided in the future.
-
-The touchscreen component of SADC takes a significant time to stabilize
-after first receiving the clock and a delay of 50ms has been empirically
-proven to be a safe value before data sampling can begin.
-
-All the boards which probe this driver have the interrupt provided from
-devicetree, with no need to handle a case where the irq was not provided.
-
-Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-Tested-by: Paul Cercueil <paul@crapouillou.net>
----
-
- Changes:
-
- v2: - improve description of the touchscreen mode,
-     - get rid of the unneeded kfifo,
-     - drop IIO_BUFFER_CB from Kconfig,
-     - remove extended names from the touchscreen channels
-
- v3: remove unneeded `linux/iio/kfifo_buf.h` include
-
- v4: clarify irq provider source in the patch description
-
- drivers/iio/adc/Kconfig       |   1 +
- drivers/iio/adc/ingenic-adc.c | 109 +++++++++++++++++++++++++++++++++-
- 2 files changed, 108 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 82e33082958c..d3fd4b6e2d47 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -453,6 +453,7 @@ config INA2XX_ADC
- config INGENIC_ADC
- 	tristate "Ingenic JZ47xx SoCs ADC driver"
- 	depends on MIPS || COMPILE_TEST
-+	select IIO_BUFFER
- 	help
- 	  Say yes here to build support for the Ingenic JZ47xx SoCs ADC unit.
- 
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 7a24bc1dabe1..0dafc8d5d0d8 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -8,7 +8,9 @@
- 
- #include <dt-bindings/iio/adc/ingenic,adc.h>
- #include <linux/clk.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
-+#include <linux/interrupt.h>
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/kernel.h>
-@@ -20,6 +22,8 @@
- #define JZ_ADC_REG_CFG			0x04
- #define JZ_ADC_REG_CTRL			0x08
- #define JZ_ADC_REG_STATUS		0x0c
-+#define JZ_ADC_REG_ADSAME		0x10
-+#define JZ_ADC_REG_ADWAIT		0x14
- #define JZ_ADC_REG_ADTCH		0x18
- #define JZ_ADC_REG_ADBDAT		0x1c
- #define JZ_ADC_REG_ADSDAT		0x20
-@@ -28,6 +32,9 @@
- #define JZ_ADC_REG_ENABLE_PD		BIT(7)
- #define JZ_ADC_REG_CFG_AUX_MD		(BIT(0) | BIT(1))
- #define JZ_ADC_REG_CFG_BAT_MD		BIT(4)
-+#define JZ_ADC_REG_CFG_PULL_UP(n)	((n) << 16)
-+#define JZ_ADC_REG_CFG_SAMPLE_NUM(n)	((n) << 10)
-+#define JZ_ADC_REG_CFG_TOUCH_OPS_MASK	(BIT(31) | GENMASK(23, 10))
- #define JZ_ADC_REG_ADCLK_CLKDIV_LSB	0
- #define JZ4725B_ADC_REG_ADCLK_CLKDIV10US_LSB	16
- #define JZ4770_ADC_REG_ADCLK_CLKDIV10US_LSB	8
-@@ -44,6 +51,14 @@
- #define JZ4770_ADC_BATTERY_VREF			6600
- #define JZ4770_ADC_BATTERY_VREF_BITS		12
- 
-+#define JZ_ADC_IRQ_AUX			BIT(0)
-+#define JZ_ADC_IRQ_BATTERY		BIT(1)
-+#define JZ_ADC_IRQ_TOUCH		BIT(2)
-+#define JZ_ADC_IRQ_PEN_DOWN		BIT(3)
-+#define JZ_ADC_IRQ_PEN_UP		BIT(4)
-+#define JZ_ADC_IRQ_PEN_DOWN_SLEEP	BIT(5)
-+#define JZ_ADC_IRQ_SLEEP		BIT(7)
-+
- struct ingenic_adc;
- 
- struct ingenic_adc_soc_data {
-@@ -411,6 +426,28 @@ static const struct iio_info ingenic_adc_info = {
- };
- 
- static const struct iio_chan_spec ingenic_channels[] = {
-+	{
-+		.type = IIO_POSITIONRELATIVE,
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_TOUCH_XP,
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16
-+		},
-+	},
-+	{
-+		.type = IIO_POSITIONRELATIVE,
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_TOUCH_YP,
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 'u',
-+			.realbits = 12,
-+			.storagebits = 16
-+		},
-+	},
- 	{
- 		.extend_name = "aux",
- 		.type = IIO_VOLTAGE,
-@@ -418,6 +455,7 @@ static const struct iio_chan_spec ingenic_channels[] = {
- 				      BIT(IIO_CHAN_INFO_SCALE),
- 		.indexed = 1,
- 		.channel = INGENIC_ADC_AUX,
-+		.scan_index = -1
- 	},
- 	{
- 		.extend_name = "battery",
-@@ -428,6 +466,7 @@ static const struct iio_chan_spec ingenic_channels[] = {
- 						BIT(IIO_CHAN_INFO_SCALE),
- 		.indexed = 1,
- 		.channel = INGENIC_ADC_BATTERY,
-+		.scan_index = -1
- 	},
- 	{ /* Must always be last in the array. */
- 		.extend_name = "aux2",
-@@ -436,16 +475,69 @@ static const struct iio_chan_spec ingenic_channels[] = {
- 				      BIT(IIO_CHAN_INFO_SCALE),
- 		.indexed = 1,
- 		.channel = INGENIC_ADC_AUX2,
-+		.scan_index = -1
- 	},
- };
- 
-+static int ingenic_adc_buffer_enable(struct iio_dev *iio_dev)
-+{
-+	struct ingenic_adc *adc = iio_priv(iio_dev);
-+
-+	clk_enable(adc->clk);
-+	/* It takes significant time for the touchscreen hw to stabilize. */
-+	msleep(50);
-+	ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_TOUCH_OPS_MASK,
-+			       JZ_ADC_REG_CFG_SAMPLE_NUM(4) |
-+			       JZ_ADC_REG_CFG_PULL_UP(4));
-+	writew(80, adc->base + JZ_ADC_REG_ADWAIT);
-+	writew(2, adc->base + JZ_ADC_REG_ADSAME);
-+	writeb((u8)~JZ_ADC_IRQ_TOUCH, adc->base + JZ_ADC_REG_CTRL);
-+	writel(0, adc->base + JZ_ADC_REG_ADTCH);
-+	ingenic_adc_enable(adc, 2, true);
-+
-+	return 0;
-+}
-+
-+static int ingenic_adc_buffer_disable(struct iio_dev *iio_dev)
-+{
-+	struct ingenic_adc *adc = iio_priv(iio_dev);
-+
-+	ingenic_adc_enable(adc, 2, false);
-+	writeb(0xff, adc->base + JZ_ADC_REG_CTRL);
-+	writeb(0xff, adc->base + JZ_ADC_REG_STATUS);
-+	ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_TOUCH_OPS_MASK, 0);
-+	writew(0, adc->base + JZ_ADC_REG_ADSAME);
-+	writew(0, adc->base + JZ_ADC_REG_ADWAIT);
-+	clk_disable(adc->clk);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops ingenic_buffer_setup_ops = {
-+	.postenable = &ingenic_adc_buffer_enable,
-+	.predisable = &ingenic_adc_buffer_disable
-+};
-+
-+static irqreturn_t ingenic_adc_irq(int irq, void *data)
-+{
-+	struct iio_dev *iio_dev = data;
-+	struct ingenic_adc *adc = iio_priv(iio_dev);
-+	u32 tdat;
-+
-+	tdat = readl(adc->base + JZ_ADC_REG_ADTCH);
-+	iio_push_to_buffers(iio_dev, &tdat);
-+	writeb(JZ_ADC_IRQ_TOUCH, adc->base + JZ_ADC_REG_STATUS);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int ingenic_adc_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct iio_dev *iio_dev;
- 	struct ingenic_adc *adc;
- 	const struct ingenic_adc_soc_data *soc_data;
--	int ret;
-+	int irq, ret;
- 
- 	soc_data = device_get_match_data(dev);
- 	if (!soc_data)
-@@ -460,6 +552,18 @@ static int ingenic_adc_probe(struct platform_device *pdev)
- 	mutex_init(&adc->aux_lock);
- 	adc->soc_data = soc_data;
- 
-+	irq = platform_get_irq(pdev, 0);
-+	if (irq < 0) {
-+		dev_err(dev, "Failed to get irq: %d\n", irq);
-+		return irq;
-+	}
-+	ret = devm_request_irq(dev, irq, ingenic_adc_irq, 0,
-+			       dev_name(dev), iio_dev);
-+	if (ret < 0) {
-+		dev_err(dev, "Failed to request irq: %d\n", ret);
-+		return ret;
-+	}
-+
- 	adc->base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(adc->base))
- 		return PTR_ERR(adc->base);
-@@ -499,7 +603,8 @@ static int ingenic_adc_probe(struct platform_device *pdev)
- 
- 	iio_dev->dev.parent = dev;
- 	iio_dev->name = "jz-adc";
--	iio_dev->modes = INDIO_DIRECT_MODE;
-+	iio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
-+	iio_dev->setup_ops = &ingenic_buffer_setup_ops;
- 	iio_dev->channels = ingenic_channels;
- 	iio_dev->num_channels = ARRAY_SIZE(ingenic_channels);
- 	/* Remove AUX2 from the list of supported channels. */
--- 
-2.25.1
-
+SGksDQoNCkZyb206IExvcmVuem8gQmlhbmNvbmkgPGxvcmVuem8uYmlhbmNvbmlAcmVkaGF0LmNv
+bT4NCkRhdGU6IFNhdCwgTWFyIDA3LCAyMDIwIGF0IDEzOjMzOjQzDQoNCj4gPg0KPiA+IE9uIFN1
+biwgIDEgTWFyIDIwMjAgMjA6Mjg6MDMgKzAxMDANCj4gPiBMb3JlbnpvIEJpYW5jb25pIDxsb3Jl
+bnpvQGtlcm5lbC5vcmc+IHdyb3RlOg0KPiA+DQo+ID4gPiBEaXNhYmxlIE1JUEkgSTNDIGR1cmlu
+ZyBkZXZpY2UgcmVzZXQgaW4gb3JkZXIgdG8gYXZvaWQNCj4gPiA+IHBvc3NpYmxlIHJhY2VzIG9u
+IGludGVycnVwdCBsaW5lIDEuIElmIHRoZSBmaXJzdCBpbnRlcnJ1cHQNCj4gPiA+IGxpbmUgaXMg
+YXNzZXJ0ZWQgZHVyaW5nIGh3IHJlc2V0IHRoZSBkZXZpY2Ugd2lsbCB3b3JrIGluDQo+ID4gPiBJ
+M0Mtb25seSBtb2RlDQo+ID4gPg0KPiA+ID4gUmVwb3J0ZWQtYnk6IE1hcmlvIFRlc2kgPG1hcmlv
+LnRlc2lAc3QuY29tPg0KPiA+ID4gU2lnbmVkLW9mZi1ieTogTG9yZW56byBCaWFuY29uaSA8bG9y
+ZW56b0BrZXJuZWwub3JnPg0KPiA+DQo+ID4gRml4ZXMgdGFnPw0KPiANCj4gSGkgSm9uYXRoYW4s
+DQo+IA0KPiBJIGFtIG5vdCBzdXJlIHNpbmNlIE1hcmlvIGp1c3QgcmVwb3J0ZWQgbWUgdGhpcyBp
+c3N1ZSBjYW4gb2NjdXIuDQo+IE1heWJlIHRoaXMgb25lOg0KPiANCj4gMjY2MGIwMDgwYmIyICgi
+aWlvOiBpbXU6IHN0X2xzbTZkc3g6IGFkZCBpM2MgYmFzaWMgc3VwcG9ydCBmb3IgTFNNNkRTTw0K
+PiBhbmQgTFNNNkRTUiIpDQo+IA0KPiA+DQo+ID4gT25lIHRyaXZpYWwgdGhpbmcgaW5saW5lLg0K
+PiA+DQo+IA0KPiBhY2ssIEkgd2lsbCBmaXggaXQgKEkgYW0gdXNlIHRvIG5ldHdvcmsgY29tbWVu
+dCBzeW50YXggbm93IDopKQ0KPiANCj4gPiBJcyB0aGlzIHNvbWV0aGluZyB3ZSBzaG91bGQgYmUg
+bG9va2luZyB0byBoYXZlIGFwcGxpZWQgdG8gc3RhYmxlPw0KPiA+DQo+IA0KPiBOb3Qgc3VyZS4N
+Cj4gQFZpdG9yOiBoYXZlIHlvdSBldmVyIGZhY2VkIHRoZSBpc3N1ZT8NCg0KSSB1c2Ugb25seSB3
+aXRoIEkzQyBtb2RlIGFjdGl2ZSAoSU5UMSBwaW4gY29ubmVjdGVkIHRvIFZERF9JTyksIEkgdGhp
+bmsgDQp0aGlzIG9ubHkgYXBwbHkgd2hlbiBJTlQxIGlzIG5vdCBjb25uZWN0ZWQgYW5kIEkyQyBp
+bnRlcmZhY2Ugc3RpbGwgDQphY3RpdmUsIHJpZ2h0Pw0KDQo+IA0KPiBSZWdhcmRzLA0KPiBMb3Jl
+bnpvDQo+IA0KPiA+IEpvbmF0aGFuDQo+ID4NCj4gPiA+IC0tLQ0KPiA+ID4gSSBoYXZlIG5vdCBi
+ZWVuIGFibGUgdG8gdGVzdCB0aGlzIHBhdGNoIG9uIGEgSTNDIGRldmljZSwganVzdCBTUEkvSTJD
+DQo+ID4gPiAtLS0NCj4gPiA+ICBkcml2ZXJzL2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4
+LmggICAgICB8ICAyICsrDQo+ID4gPiAgZHJpdmVycy9paW8vaW11L3N0X2xzbTZkc3gvc3RfbHNt
+NmRzeF9jb3JlLmMgfCAzMCArKysrKysrKysrKysrKysrKysrKw0KPiA+ID4gIDIgZmlsZXMgY2hh
+bmdlZCwgMzIgaW5zZXJ0aW9ucygrKQ0KPiA+ID4NCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJz
+L2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4LmggYi9kcml2ZXJzL2lpby9pbXUvc3RfbHNt
+NmRzeC9zdF9sc202ZHN4LmgNCj4gPiA+IGluZGV4IGYyMTEzYTYzNzIxYS4uZGZjYmU3YzQyNDkz
+IDEwMDY0NA0KPiA+ID4gLS0tIGEvZHJpdmVycy9paW8vaW11L3N0X2xzbTZkc3gvc3RfbHNtNmRz
+eC5oDQo+ID4gPiArKysgYi9kcml2ZXJzL2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4LmgN
+Cj4gPiA+IEBAIC0yNjYsNiArMjY2LDcgQEAgc3RydWN0IHN0X2xzbTZkc3hfZXh0X2Rldl9zZXR0
+aW5ncyB7DQo+ID4gPiAgICogQHdhaTogU2Vuc29yIFdob0FtSSBkZWZhdWx0IHZhbHVlLg0KPiA+
+ID4gICAqIEByZXNldDogcmVnaXN0ZXIgYWRkcmVzcyBmb3IgcmVzZXQuDQo+ID4gPiAgICogQGJv
+b3Q6IHJlZ2lzdGVyIGFkZHJlc3MgZm9yIGJvb3QuDQo+ID4gPiArICogQGkzY19kaXNhYmxlOiAg
+cmVnaXN0ZXIgYWRkcmVzcyBmb3IgZW5hYmxpbmcvZGlzYWJsaW5nIEkzQyAoYWRkciArIG1hc2sp
+Lg0KPiA+ID4gICAqIEBiZHU6IHJlZ2lzdGVyIGFkZHJlc3MgZm9yIEJsb2NrIERhdGEgVXBkYXRl
+Lg0KPiA+ID4gICAqIEBtYXhfZmlmb19zaXplOiBTZW5zb3IgbWF4IGZpZm8gbGVuZ3RoIGluIEZJ
+Rk8gd29yZHMuDQo+ID4gPiAgICogQGlkOiBMaXN0IG9mIGh3IGlkL2RldmljZSBuYW1lIHN1cHBv
+cnRlZCBieSB0aGUgZHJpdmVyIGNvbmZpZ3VyYXRpb24uDQo+ID4gPiBAQCAtMjg0LDYgKzI4NSw3
+IEBAIHN0cnVjdCBzdF9sc202ZHN4X3NldHRpbmdzIHsNCj4gPiA+ICAgICAgIHU4IHdhaTsNCj4g
+PiA+ICAgICAgIHN0cnVjdCBzdF9sc202ZHN4X3JlZyByZXNldDsNCj4gPiA+ICAgICAgIHN0cnVj
+dCBzdF9sc202ZHN4X3JlZyBib290Ow0KPiA+ID4gKyAgICAgc3RydWN0IHN0X2xzbTZkc3hfcmVn
+IGkzY19kaXNhYmxlOw0KPiA+ID4gICAgICAgc3RydWN0IHN0X2xzbTZkc3hfcmVnIGJkdTsNCj4g
+PiA+ICAgICAgIHUxNiBtYXhfZmlmb19zaXplOw0KPiA+ID4gICAgICAgc3RydWN0IHsNCj4gPiA+
+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4X2NvcmUu
+YyBiL2RyaXZlcnMvaWlvL2ltdS9zdF9sc202ZHN4L3N0X2xzbTZkc3hfY29yZS5jDQo+ID4gPiBp
+bmRleCA4NGQyMTlhZTZhZWUuLmIxNDM1YzVkMmQ2ZCAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZl
+cnMvaWlvL2ltdS9zdF9sc202ZHN4L3N0X2xzbTZkc3hfY29yZS5jDQo+ID4gPiArKysgYi9kcml2
+ZXJzL2lpby9pbXUvc3RfbHNtNmRzeC9zdF9sc202ZHN4X2NvcmUuYw0KPiA+ID4gQEAgLTc1MSw2
+ICs3NTEsMTAgQEAgc3RhdGljIGNvbnN0IHN0cnVjdCBzdF9sc202ZHN4X3NldHRpbmdzIHN0X2xz
+bTZkc3hfc2Vuc29yX3NldHRpbmdzW10gPSB7DQo+ID4gPiAgICAgICAgICAgICAgICAgICAgICAg
+LmFkZHIgPSAweDEyLA0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgIC5tYXNrID0gQklUKDcp
+LA0KPiA+ID4gICAgICAgICAgICAgICB9LA0KPiA+ID4gKyAgICAgICAgICAgICAuaTNjX2Rpc2Fi
+bGUgPSB7DQo+ID4gPiArICAgICAgICAgICAgICAgICAgICAgLmFkZHIgPSAweDE4LA0KPiA+ID4g
+KyAgICAgICAgICAgICAgICAgICAgIC5tYXNrID0gQklUKDEpLA0KPiA+ID4gKyAgICAgICAgICAg
+ICB9LA0KPiA+ID4gICAgICAgICAgICAgICAuYmR1ID0gew0KPiA+ID4gICAgICAgICAgICAgICAg
+ICAgICAgIC5hZGRyID0gMHgxMiwNCj4gPiA+ICAgICAgICAgICAgICAgICAgICAgICAubWFzayA9
+IEJJVCg2KSwNCj4gPiA+IEBAIC0xMTI4LDYgKzExMzIsMTAgQEAgc3RhdGljIGNvbnN0IHN0cnVj
+dCBzdF9sc202ZHN4X3NldHRpbmdzIHN0X2xzbTZkc3hfc2Vuc29yX3NldHRpbmdzW10gPSB7DQo+
+ID4gPiAgICAgICAgICAgICAgICAgICAgICAgLmFkZHIgPSAweDEyLA0KPiA+ID4gICAgICAgICAg
+ICAgICAgICAgICAgIC5tYXNrID0gQklUKDcpLA0KPiA+ID4gICAgICAgICAgICAgICB9LA0KPiA+
+ID4gKyAgICAgICAgICAgICAuaTNjX2Rpc2FibGUgPSB7DQo+ID4gPiArICAgICAgICAgICAgICAg
+ICAgICAgLmFkZHIgPSAweDE4LA0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIC5tYXNrID0g
+QklUKDEpLA0KPiA+ID4gKyAgICAgICAgICAgICB9LA0KPiA+ID4gICAgICAgICAgICAgICAuYmR1
+ID0gew0KPiA+ID4gICAgICAgICAgICAgICAgICAgICAgIC5hZGRyID0gMHgxMiwNCj4gPiA+ICAg
+ICAgICAgICAgICAgICAgICAgICAubWFzayA9IEJJVCg2KSwNCj4gPiA+IEBAIC0yMDQxLDYgKzIw
+NDksMTkgQEAgc3RhdGljIGludCBzdF9sc202ZHN4X2luaXRfZGV2aWNlKHN0cnVjdCBzdF9sc202
+ZHN4X2h3ICpodykNCj4gPiA+ICAgICAgIGNvbnN0IHN0cnVjdCBzdF9sc202ZHN4X3JlZyAqcmVn
+Ow0KPiA+ID4gICAgICAgaW50IGVycjsNCj4gPiA+DQo+ID4gPiArICAgICAvKiBkaXNhYmxlIE1J
+UEkgSTNDIGR1cmluZyBkZXZpY2UgcmVzZXQgaW4gb3JkZXIgdG8gYXZvaWQNCj4gPg0KPiA+IGNv
+bW1lbnQgc3ludGF4DQo+ID4gLyoNCj4gPiAgKiBkaXNhYmxlLi4uDQo+ID4NCj4gPiA+ICsgICAg
+ICAqIHBvc3NpYmxlIHJhY2VzIG9uIGludGVycnVwdCBsaW5lIDEuIElmIHRoZSBmaXJzdCBpbnRl
+cnJ1cHQNCj4gPiA+ICsgICAgICAqIGxpbmUgaXMgYXNzZXJ0ZWQgZHVyaW5nIGh3IHJlc2V0IHRo
+ZSBkZXZpY2Ugd2lsbCB3b3JrIGluDQo+ID4gPiArICAgICAgKiBJM0Mtb25seSBtb2RlDQo+ID4g
+PiArICAgICAgKi8NCj4gPiA+ICsgICAgIGlmIChody0+c2V0dGluZ3MtPmkzY19kaXNhYmxlLmFk
+ZHIpIHsNCj4gPiA+ICsgICAgICAgICAgICAgcmVnID0gJmh3LT5zZXR0aW5ncy0+aTNjX2Rpc2Fi
+bGU7DQo+ID4gPiArICAgICAgICAgICAgIGVyciA9IHJlZ21hcF91cGRhdGVfYml0cyhody0+cmVn
+bWFwLCByZWctPmFkZHIsIHJlZy0+bWFzaywNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgICAgIFNUX0xTTTZEU1hfU0hJRlRfVkFMKDEsIHJlZy0+bWFzaykpOw0KPiA+
+ID4gKyAgICAgICAgICAgICBpZiAoZXJyIDwgMCkNCj4gPiA+ICsgICAgICAgICAgICAgICAgICAg
+ICByZXR1cm4gZXJyOw0KPiA+ID4gKyAgICAgfQ0KPiA+ID4gKw0KPiA+ID4gICAgICAgLyogZGV2
+aWNlIHN3IHJlc2V0ICovDQo+ID4gPiAgICAgICByZWcgPSAmaHctPnNldHRpbmdzLT5yZXNldDsN
+Cj4gPiA+ICAgICAgIGVyciA9IHJlZ21hcF91cGRhdGVfYml0cyhody0+cmVnbWFwLCByZWctPmFk
+ZHIsIHJlZy0+bWFzaywNCj4gPiA+IEBAIC0yMDU5LDYgKzIwODAsMTUgQEAgc3RhdGljIGludCBz
+dF9sc202ZHN4X2luaXRfZGV2aWNlKHN0cnVjdCBzdF9sc202ZHN4X2h3ICpodykNCj4gPiA+DQo+
+ID4gPiAgICAgICBtc2xlZXAoNTApOw0KPiA+ID4NCj4gPiA+ICsgICAgIC8qIGVuYWJsZSBNSVBJ
+IEkzQyAqLw0KPiA+ID4gKyAgICAgaWYgKGh3LT5zZXR0aW5ncy0+aTNjX2Rpc2FibGUuYWRkcikg
+ew0KPiA+ID4gKyAgICAgICAgICAgICByZWcgPSAmaHctPnNldHRpbmdzLT5pM2NfZGlzYWJsZTsN
+Cj4gPiA+ICsgICAgICAgICAgICAgZXJyID0gcmVnbWFwX3VwZGF0ZV9iaXRzKGh3LT5yZWdtYXAs
+IHJlZy0+YWRkciwgcmVnLT5tYXNrLA0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICAgU1RfTFNNNkRTWF9TSElGVF9WQUwoMCwgcmVnLT5tYXNrKSk7DQo+ID4gPiAr
+ICAgICAgICAgICAgIGlmIChlcnIgPCAwKQ0KPiA+ID4gKyAgICAgICAgICAgICAgICAgICAgIHJl
+dHVybiBlcnI7DQo+ID4gPiArICAgICB9DQo+ID4gPiArDQo+ID4gPiAgICAgICAvKiBlbmFibGUg
+QmxvY2sgRGF0YSBVcGRhdGUgKi8NCj4gPiA+ICAgICAgIHJlZyA9ICZody0+c2V0dGluZ3MtPmJk
+dTsNCj4gPiA+ICAgICAgIGVyciA9IHJlZ21hcF91cGRhdGVfYml0cyhody0+cmVnbWFwLCByZWct
+PmFkZHIsIHJlZy0+bWFzaywNCj4gPg0KDQoNCg==
