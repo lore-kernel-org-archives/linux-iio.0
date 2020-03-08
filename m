@@ -2,107 +2,205 @@ Return-Path: <SRS0=q4eL=4Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86197C10F27
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Mar 2020 17:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E83E3C10DCE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Mar 2020 18:41:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 65CC7206D5
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Mar 2020 17:59:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AF90A2080C
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Mar 2020 18:41:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="OILKpkCV"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UxrNIrVU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726360AbgCHR7T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 Mar 2020 13:59:19 -0400
-Received: from mail-il1-f196.google.com ([209.85.166.196]:42543 "EHLO
-        mail-il1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726359AbgCHR7T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2020 13:59:19 -0400
-Received: by mail-il1-f196.google.com with SMTP id x2so6606283ila.9
-        for <linux-iio@vger.kernel.org>; Sun, 08 Mar 2020 10:59:17 -0700 (PDT)
+        id S1726330AbgCHSlS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 Mar 2020 14:41:18 -0400
+Received: from mail-pf1-f196.google.com ([209.85.210.196]:34712 "EHLO
+        mail-pf1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726297AbgCHSlS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Mar 2020 14:41:18 -0400
+Received: by mail-pf1-f196.google.com with SMTP id 23so1992714pfj.1;
+        Sun, 08 Mar 2020 11:41:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=CqnIXBKwcZ7eK7jSIB3TeSK6nKBkp//odaCbAVz4mrM=;
-        b=OILKpkCVdg8fJb0oDu2UMkd8DzkoYGlQE0ZHzfYXS+P/oDPCnEJWEOoQSpbQ/FZ1pU
-         s4w5LRDYWmrjH5UORCgcYMTdjCUFIipv44M0fIFyn8erlVwOT3VyLLqArSnayaUtbcZp
-         rmhPMOQOjLRjvFH/qWU6BNz6pUhgNl05tREKTjJPCIuhHRigsXiaU6ssD+EcOBnYt6Oi
-         /s9NNwUaOaPt2D2WVCIUk0FOKZqjwVyd7iR1wZ9GXPK3q5kRNyHREFc+o5LCABjrXODk
-         gexACTfnFUMKORrBh/NrthZHFd7el7fN7dSUYJEn7UC3GvWsRxkEHH0Ca1bGkdKBQVM2
-         tTAg==
+        d=gmail.com; s=20161025;
+        h=message-id:date:from:to:subject:mime-version:content-disposition
+         :user-agent;
+        bh=LUkL2Bm9LguTk5TSjJvZx4OknMnOSkCX4oPxPKE2DT0=;
+        b=UxrNIrVUpPQly9uWASaPqBmeqq2fswqiF54yU6fq29VOlCkC7s0VYQsv3DLEfGP4kg
+         r9MjbGYBDmY9FAsoliAeIQHOGpy6qGthYkmWbpAf9ER6enn4+RLK8XUNNfApM1/3Uk3O
+         Pc1Zp0b6LM2GNHZhy5+zKOQh2Arq63HcFtnRED8DpEX/oupyw2hhpoQI73xJ0+OdlIa1
+         OofjlNKUpbfiBuQU+XjXmXRXkFvVebmuWJPepzgKZDkQaSJdQW7UzFivRnDkgWvtPcQo
+         jT/cTbBmKYh1aCTJrzrsjHFOLiUCuzLdE4YJNEtVwUukuryyZM/6uw8PJIwZ6N9vC/8n
+         KvkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=CqnIXBKwcZ7eK7jSIB3TeSK6nKBkp//odaCbAVz4mrM=;
-        b=ma39jVNQn0j6Juu+UnCMfb13IQiJcPlG3PjnE3iMea/eNGRckCIE84KJyT1xQinHfB
-         8dKvW9HBa6GCr8SOyGf4Z7caEGAGYAOxRW5kief0l/osDXu3QavhVXX8U6j5OB41Sibu
-         c7L758xdb3CYnbpZBpIo+3cuhoXe08brIrOoGXKdTPcdx3msWP2QdavR9SQCUr+4phKr
-         OOgGCHRRVosQ6SXX65EdOQU+msuCDpq4n3gkaDVjilcNAhl4mzZ+ZSCmeUJdIb1hRCRk
-         fdAD+CwWZW1zx40I9k6lw29Qb2cdcTzAoThl4YjShI+U82zX9Pn8sTvHiQNqbZPnHqoi
-         Qagw==
-X-Gm-Message-State: ANhLgQ3aqw/XKjQphw5JTLtlmbrGSHmsN8GIXEPCL5TBSq8g2mmQ/3oV
-        cp3THRL3N5J3Jt3CAM8tssKiPsfh8gAZc7RRkOUivjCi1JA=
-X-Google-Smtp-Source: ADFU+vv543P2xAwcLKM9MTNCTIo21RVeWOWTYLKYntTFO48vO1ITYvWyJde7QMpPjSisz2LnrlmQXZrwV8Sv8gT5JuI=
-X-Received: by 2002:a05:6e02:10d3:: with SMTP id s19mr5352844ilj.220.1583690357253;
- Sun, 08 Mar 2020 10:59:17 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:from:to:subject:mime-version
+         :content-disposition:user-agent;
+        bh=LUkL2Bm9LguTk5TSjJvZx4OknMnOSkCX4oPxPKE2DT0=;
+        b=Kz4m38YTjb7KnyL1ZTMF7Hh3mMDIoTzqxzgVqmV0muOtu7OzhG1EVgSNv5CKWa8Tsq
+         GqBlXGn3XzySFkdxcA1o2zi444jsTaNYvrvmn5zm34z1zX+FCwB8gZOg/JkQgjFcfXd7
+         PYyNYCKA7ThTDjrJYU3lDlRCI2BQse+hNwbkfBn6a2VlfUqF4LGOGFZV9JSwphJI3XAv
+         Nkfz1Hnnrzh0hAnaU+iiPxQtsEHZd7W9fm8RuH3aqlY8LYJEEsr4LWsZho89QLZSFLIH
+         Qn2TBoBDC0bRDPNBODm55Nf/KftuiLGImDCaDFO5r0UfHPDMPyCWZ9nna5fbvWgX2VqY
+         ODZQ==
+X-Gm-Message-State: ANhLgQ2RCXHEbmj0Ld6vBEDEuSNa9WXMa6gpCLkdG/u/bumTB2Nf+ktB
+        VT7ccInny9g8J/zVSkHf7Ab5fTU44DU=
+X-Google-Smtp-Source: ADFU+vvgjMHUB8GjD5fSVxbQZ9ZfxbDBEEmaID+ePu5DnyjVC0ZkiKRnGLJOEPjS+BkvRw/icA1alQ==
+X-Received: by 2002:a65:6843:: with SMTP id q3mr13160078pgt.269.1583692875104;
+        Sun, 08 Mar 2020 11:41:15 -0700 (PDT)
+Received: from SARKAR ([2401:4900:16eb:14aa:399a:a833:fab3:83b])
+        by smtp.gmail.com with ESMTPSA id f19sm34187749pgf.33.2020.03.08.11.41.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 08 Mar 2020 11:41:14 -0700 (PDT)
+Message-ID: <5e653c4a.1c69fb81.e805f.b62a@mx.google.com>
+X-Google-Original-Message-ID: <20200308184106.GA7869@rohitsarkar5398@gmail.com>
+Date:   Mon, 9 Mar 2020 00:11:06 +0530
+From:   Rohit Sarkar <rohitsarkar5398@gmail.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5] iio: adc: max1363: replace uses of mlock
 MIME-Version: 1.0
-References: <20200211131240.15853-1-brgl@bgdev.pl> <20200211131240.15853-4-brgl@bgdev.pl>
- <20200308135117.7c60c881@why>
-In-Reply-To: <20200308135117.7c60c881@why>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Sun, 8 Mar 2020 18:59:06 +0100
-Message-ID: <CAMRc=Me0AE7OgEVjiUfRUNODYoGj+LYy+1zGsGkXKput9AeKrA@mail.gmail.com>
-Subject: Re: [PATCH v2 3/6] irq/domain: add a new callback to domain ops
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-niedz., 8 mar 2020 o 14:51 Marc Zyngier <maz@kernel.org> napisa=C5=82(a):
->
-> On Tue, 11 Feb 2020 14:12:37 +0100
-> Bartosz Golaszewski <brgl@bgdev.pl> wrote:
->
-> > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> >
-> > Add the remove() callback to irq_domain_ops which can be used to
-> > automatically dispose of any host data associated with the domain when
-> > irq_domain_remove() is called.
->
-> I have a hard time buying this. Whatever data that is associated to the
-> domain is already owned known by whoever created the domain the first
-> place.
->
-> Since the expected use case is that whoever created the domain also
-> destroys it, the caller is already in a position to do its own cleanup,
-> and we don't need any of this.
->
-> So please explain what you are trying to achieve here.
->
+Replace usage indio_dev's mlock with either local lock or
+iio_device_claim_direct_mode.
 
-I'm mainly trying to remove irq_domain_remove_sim() and make it
-possible to destroy the interrupt simulator domain with regular
-irq_domain_remove(). If you prefer that we retain this routine as is,
-I can limit this series to the first two patches, but I assumed the
-fewer functions in the interface, the better. If you have a different
-idea on how to do this - please let me know too.
+Signed-off-by: Rohit Sarkar <rohitsarkar5398@gmail.com>
+---
+Changelog v4 -> v5
+Use local lock too at places where driver state needs to be protected.
 
-Bartosz
+Changelog v3 -> v4
+* Fix indentation
+
+Changelog v2 -> v3
+* use iio_device_claim_direct when switching modes
+* replace mlock usage in max1363_write_event_config
+
+Changelog v1 -> v2
+* Fix indentation
+
+ drivers/iio/adc/max1363.c | 30 +++++++++++++++++++++---------
+ 1 file changed, 21 insertions(+), 9 deletions(-)
+
+diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
+index 5c2cc61b666e..856f523e7018 100644
+--- a/drivers/iio/adc/max1363.c
++++ b/drivers/iio/adc/max1363.c
+@@ -150,6 +150,7 @@ struct max1363_chip_info {
+  * @current_mode:	the scan mode of this chip
+  * @requestedmask:	a valid requested set of channels
+  * @reg:		supply regulator
++ * @lock		lock to ensure state is consistent
+  * @monitor_on:		whether monitor mode is enabled
+  * @monitor_speed:	parameter corresponding to device monitor speed setting
+  * @mask_high:		bitmask for enabled high thresholds
+@@ -169,6 +170,7 @@ struct max1363_state {
+ 	const struct max1363_mode	*current_mode;
+ 	u32				requestedmask;
+ 	struct regulator		*reg;
++	struct mutex			lock;
+ 
+ 	/* Using monitor modes and buffer at the same time is
+ 	   currently not supported */
+@@ -364,7 +366,11 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
+ 	struct max1363_state *st = iio_priv(indio_dev);
+ 	struct i2c_client *client = st->client;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	ret = iio_device_claim_direct_mode(indio_dev);
++	mutex_lock(&st->lock);
++
++	if (ret < 0)
++		goto error_ret;
+ 	/*
+ 	 * If monitor mode is enabled, the method for reading a single
+ 	 * channel will have to be rather different and has not yet
+@@ -372,7 +378,7 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
+ 	 *
+ 	 * Also, cannot read directly if buffered capture enabled.
+ 	 */
+-	if (st->monitor_on || iio_buffer_enabled(indio_dev)) {
++	if (st->monitor_on) {
+ 		ret = -EBUSY;
+ 		goto error_ret;
+ 	}
+@@ -404,8 +410,10 @@ static int max1363_read_single_chan(struct iio_dev *indio_dev,
+ 		data = rxbuf[0];
+ 	}
+ 	*val = data;
++
+ error_ret:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
++	iio_device_release_direct_mode(indio_dev);
+ 	return ret;
+ 
+ }
+@@ -705,9 +713,9 @@ static ssize_t max1363_monitor_store_freq(struct device *dev,
+ 	if (!found)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	st->monitor_speed = i;
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return 0;
+ }
+@@ -810,12 +818,12 @@ static int max1363_read_event_config(struct iio_dev *indio_dev,
+ 	int val;
+ 	int number = chan->channel;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 	if (dir == IIO_EV_DIR_FALLING)
+ 		val = (1 << number) & st->mask_low;
+ 	else
+ 		val = (1 << number) & st->mask_high;
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return val;
+ }
+@@ -962,7 +970,9 @@ static int max1363_write_event_config(struct iio_dev *indio_dev,
+ 	u16 unifiedmask;
+ 	int number = chan->channel;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	iio_device_claim_direct_mode(indio_dev);
++	mutex_lock(&st->lock);
++
+ 	unifiedmask = st->mask_low | st->mask_high;
+ 	if (dir == IIO_EV_DIR_FALLING) {
+ 
+@@ -989,7 +999,8 @@ static int max1363_write_event_config(struct iio_dev *indio_dev,
+ 
+ 	max1363_monitor_mode_update(st, !!(st->mask_high | st->mask_low));
+ error_ret:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
++	iio_device_release_direct_mode(indio_dev);
+ 
+ 	return ret;
+ }
+@@ -1587,6 +1598,7 @@ static int max1363_probe(struct i2c_client *client,
+ 
+ 	st = iio_priv(indio_dev);
+ 
++	mutex_init(&st->lock);
+ 	st->reg = devm_regulator_get(&client->dev, "vcc");
+ 	if (IS_ERR(st->reg)) {
+ 		ret = PTR_ERR(st->reg);
+-- 
+2.23.0.385.gbc12974a89
+
