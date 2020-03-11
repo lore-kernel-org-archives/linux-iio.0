@@ -6,156 +6,150 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48F66C10F27
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Mar 2020 07:43:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5547C10F27
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Mar 2020 08:40:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 2994020873
-	for <linux-iio@archiver.kernel.org>; Wed, 11 Mar 2020 07:43:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B3C6220637
+	for <linux-iio@archiver.kernel.org>; Wed, 11 Mar 2020 08:40:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728378AbgCKHn3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 Mar 2020 03:43:29 -0400
-Received: from mx2.suse.de ([195.135.220.15]:48200 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728126AbgCKHn3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 11 Mar 2020 03:43:29 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id DA698AEAC;
-        Wed, 11 Mar 2020 07:43:27 +0000 (UTC)
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH 1/2] iio: core: Use scnprintf() for avoiding potential buffer overflow
-Date:   Wed, 11 Mar 2020 08:43:24 +0100
-Message-Id: <20200311074325.7922-2-tiwai@suse.de>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20200311074325.7922-1-tiwai@suse.de>
-References: <20200311074325.7922-1-tiwai@suse.de>
+        id S1728339AbgCKIko (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 Mar 2020 04:40:44 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:28508 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728242AbgCKIko (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Mar 2020 04:40:44 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02B8dgfN004402;
+        Wed, 11 Mar 2020 04:40:34 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 2yp9x3bwfj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 Mar 2020 04:40:34 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 02B8eXsr032248
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 11 Mar 2020 04:40:33 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 11 Mar 2020 04:40:32 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 11 Mar 2020 04:40:32 -0400
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 11 Mar 2020 04:40:32 -0400
+Received: from ben-Latitude-E6540.ad.analog.com ([10.48.65.231])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 02B8eSGI028151;
+        Wed, 11 Mar 2020 04:40:29 -0400
+From:   Beniamin Bia <beniamin.bia@analog.com>
+To:     <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <Michael.Hennerich@analog.com>, <biabeniamin@outlook.com>,
+        Dragos Bogdan <dragos.bogdan@analog.com>,
+        "Beniamin Bia" <beniamin.bia@analog.com>
+Subject: [PATCH 1/4] iio: adc: ad7476: Generate CONVST signal internally
+Date:   Wed, 11 Mar 2020 10:43:25 +0200
+Message-ID: <20200311084328.17680-1-beniamin.bia@analog.com>
+X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.572
+ definitions=2020-03-11_02:2020-03-10,2020-03-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ suspectscore=1 adultscore=0 mlxlogscore=999 phishscore=0 impostorscore=0
+ mlxscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015 spamscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2001150001 definitions=main-2003110056
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since snprintf() returns the would-be-output size instead of the
-actual output size, the succeeding calls may go beyond the given
-buffer limit.  Fix it by replacing with scnprintf().
+From: Dragos Bogdan <dragos.bogdan@analog.com>
 
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Compared to the other supported parts, AD7091R are dependent of
+a CONVST signal that initiates the conversion. At this moment, only
+sampling in buffered mode is supported for AD7091R and the only
+option until now was to generate this signal externally using an
+IIO trigger. This patch adds the option of generating it internally,
+more compatible triggers being available in this case.
+
+Also, it is an intermiate step of adding support more devices.
+
+Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
+Signed-off-by: Beniamin Bia <beniamin.bia@analog.com>
 ---
- drivers/iio/industrialio-core.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/iio/adc/ad7476.c | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 65ff0d067018..197006b5d5c2 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -559,46 +559,46 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 76747488044b..32e857dfec9c 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -12,9 +12,11 @@
+ #include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/gpio/consumer.h>
+ #include <linux/err.h>
+ #include <linux/module.h>
+ #include <linux/bitops.h>
++#include <linux/delay.h>
  
- 	switch (type) {
- 	case IIO_VAL_INT:
--		return snprintf(buf, len, "%d", vals[0]);
-+		return scnprintf(buf, len, "%d", vals[0]);
- 	case IIO_VAL_INT_PLUS_MICRO_DB:
- 		scale_db = true;
- 		/* fall through */
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (vals[1] < 0)
--			return snprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
-+			return scnprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
- 					-vals[1], scale_db ? " dB" : "");
- 		else
--			return snprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
-+			return scnprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
- 					scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
- 		if (vals[1] < 0)
--			return snprintf(buf, len, "-%d.%09u", abs(vals[0]),
-+			return scnprintf(buf, len, "-%d.%09u", abs(vals[0]),
- 					-vals[1]);
- 		else
--			return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
-+			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL:
- 		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
- 		tmp1 = vals[1];
- 		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
--		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-+		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
- 		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
--		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-+		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_INT_MULTIPLE:
- 	{
- 		int i;
- 		int l = 0;
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -34,6 +36,7 @@ struct ad7476_state {
+ 	struct spi_device		*spi;
+ 	const struct ad7476_chip_info	*chip_info;
+ 	struct regulator		*reg;
++	struct gpio_desc		*convst_gpio;
+ 	struct spi_transfer		xfer;
+ 	struct spi_message		msg;
+ 	/*
+@@ -64,6 +67,17 @@ enum ad7476_supported_device_ids {
+ 	ID_ADS7868,
+ };
  
- 		for (i = 0; i < size; ++i) {
--			l += snprintf(&buf[l], len - l, "%d ", vals[i]);
-+			l += scnprintf(&buf[l], len - l, "%d ", vals[i]);
- 			if (l >= len)
- 				break;
- 		}
- 		return l;
- 	}
- 	case IIO_VAL_CHAR:
--		return snprintf(buf, len, "%c", (char)vals[0]);
-+		return scnprintf(buf, len, "%c", (char)vals[0]);
- 	default:
- 		return 0;
- 	}
-@@ -669,10 +669,10 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < length - 1)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -685,10 +685,10 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < length / 2 - 1)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -712,10 +712,10 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < 2)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"]\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -728,10 +728,10 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < 2)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"]\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
++static void ad7091_convst(struct ad7476_state *st)
++{
++	if (!st->convst_gpio)
++		return;
++
++	gpiod_set_value(st->convst_gpio, 0);
++	udelay(1); /* CONVST pulse width: 10 ns min */
++	gpiod_set_value(st->convst_gpio, 1);
++	udelay(1); /* Conversion time: 650 ns max */
++}
++
+ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -71,6 +85,8 @@ static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
+ 	struct ad7476_state *st = iio_priv(indio_dev);
+ 	int b_sent;
+ 
++	ad7091_convst(st);
++
+ 	b_sent = spi_sync(st->spi, &st->msg);
+ 	if (b_sent < 0)
+ 		goto done;
+@@ -254,6 +270,12 @@ static int ad7476_probe(struct spi_device *spi)
+ 	if (ret)
+ 		return ret;
+ 
++	st->convst_gpio = devm_gpiod_get_optional(&spi->dev,
++						  "adi,conversion-start",
++						  GPIOD_OUT_LOW);
++	if (IS_ERR(st->convst_gpio))
++		return PTR_ERR(st->convst_gpio);
++
+ 	spi_set_drvdata(spi, indio_dev);
+ 
+ 	st->spi = spi;
 -- 
-2.16.4
+2.17.1
 
