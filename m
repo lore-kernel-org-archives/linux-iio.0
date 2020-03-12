@@ -2,104 +2,101 @@ Return-Path: <SRS0=GyPt=45=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC6CDC4CECE
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 12:19:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A773C10DCE
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 14:27:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9056E2071C
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 12:19:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1E2F32067C
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 14:27:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=seas-upenn-edu.20150623.gappssmtp.com header.i=@seas-upenn-edu.20150623.gappssmtp.com header.b="MPJNhViy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726591AbgCLMTn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 Mar 2020 08:19:43 -0400
-Received: from mga03.intel.com ([134.134.136.65]:22023 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726390AbgCLMTm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 12 Mar 2020 08:19:42 -0400
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 12 Mar 2020 05:19:42 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,544,1574150400"; 
-   d="scan'208";a="243004379"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 12 Mar 2020 05:19:40 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 76B039C; Thu, 12 Mar 2020 14:19:39 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S1727390AbgCLO10 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 Mar 2020 10:27:26 -0400
+Received: from mail-ot1-f68.google.com ([209.85.210.68]:42128 "EHLO
+        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727340AbgCLO10 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Mar 2020 10:27:26 -0400
+Received: by mail-ot1-f68.google.com with SMTP id 66so6398082otd.9
+        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2020 07:27:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=seas-upenn-edu.20150623.gappssmtp.com; s=20150623;
+        h=date:from:to:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=0OR79l8awnCWEsFtkKq9JgDzwwDGvBfUvW5RRWKJYms=;
+        b=MPJNhViyHf9HE1gryTmtKi7mxV8tbDG25XOMje9/qAV+r6nMXYwuKYEqgTWecP2/Y4
+         FnZo62MbkhX35o0qRRXQLjkckMqpAwSRqdrppkrOhhy0NVd6AI2jD96UUSNUX0JlZJc1
+         hg6cWmpfKCa4j8gSpvCx2slTQRg/HHzgA4MB2TRUVfZJfWJJPUHJMIGDH2RFtOHdGjLQ
+         6C9pU0cX96Xuu/wYKXlFK/+6Zk9AguKil1kqD10N4BG4xvh7a8Fvt2k+3Dj/HuHmYWpI
+         Cdv6PfXjK9LbpMCcRgVAGiWSI4JKaP19LatsAezu9d3UxW+b/dIah88KY6gMzVh2uNZY
+         lT5g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=0OR79l8awnCWEsFtkKq9JgDzwwDGvBfUvW5RRWKJYms=;
+        b=kuhGtycDvlOV8jTrPjneWuW9jjQoNUGZsquCPC2VMUYET09gA35EgDa7EPywOWVjhh
+         qhaLUZ3odOd4lvrIuU0Rrvu0RkT8/VpmLQdMwHcehUfVgsCI9HGwU/vQGFcNUyfJ4LuI
+         9/CW4jlDgyUOwgviGyqbM0JjHm+h9vOLOCTOOx4yc6iQ5g/JWM2BBSrNKuPM11W40R8d
+         gKFMdm3jYHbQH9dm/eyDmh1lVF9d9zEyzz3UZpfxbQX08otIeTPmA43cMnYuS656mdT3
+         x6m4ET1Jpw2VtfwYIdVL9EO+dxELInPlx8fB11oTJO2M+q5pssu57VqoR9dL9OygT77c
+         4Bpg==
+X-Gm-Message-State: ANhLgQ0rkjU0w3xNLLGJ1lvPOfaTAXhyDRQJweCiS5zu1HfaecHLlD2H
+        taTJYfiaWJOdrXYGrM2yrcqgBA==
+X-Google-Smtp-Source: ADFU+vvKnysPIT/QxyFt4oa1+JxsoHWx+EwSP1lm0u5UgDxNx2LQIvE8osGf1AqG4k1YIcMpQp4Wxw==
+X-Received: by 2002:a9d:ac5:: with SMTP id 63mr1923598otq.239.1584023245493;
+        Thu, 12 Mar 2020 07:27:25 -0700 (PDT)
+Received: from evX1 ([189.172.48.149])
+        by smtp.gmail.com with ESMTPSA id s128sm6654990oia.4.2020.03.12.07.27.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2020 07:27:25 -0700 (PDT)
+Date:   Thu, 12 Mar 2020 08:27:21 -0600
+From:   Enrique Vargas <jevargas@seas.upenn.edu>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 2/5] iio: st_sensors: Use dev_get_platdata() to get platform_data
-Date:   Thu, 12 Mar 2020 14:19:35 +0200
-Message-Id: <20200312121938.45608-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200312121938.45608-1-andriy.shevchenko@linux.intel.com>
-References: <20200312121938.45608-1-andriy.shevchenko@linux.intel.com>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [PATCH] Staging: iio: adc: align multi-line function argument with
+ open parenthesis
+Message-ID: <20200312142721.GA2748@evX1>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use dev_get_platdata() to get the platform_data instead of
-referencing it directly.
+Eliminate WARNING found with checkpatch.pl for argument split in two
+lines not matching coding conventions identation.
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Enrique Vargas <jevargas@seas.upenn.edu>
 ---
- drivers/iio/accel/st_accel_core.c              | 3 +--
- drivers/iio/common/st_sensors/st_sensors_spi.c | 2 +-
- drivers/iio/pressure/st_pressure_core.c        | 3 +--
- 3 files changed, 3 insertions(+), 5 deletions(-)
+ drivers/staging/iio/adc/ad7192.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 7320275c7e56..5f7bdb1f55d1 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -1170,8 +1170,7 @@ EXPORT_SYMBOL(st_accel_get_settings);
- int st_accel_common_probe(struct iio_dev *indio_dev)
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 51b1cd3ad1de..5f65d084e320 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -477,7 +477,7 @@ static ssize_t ad7192_set(struct device *dev,
+ }
+ 
+ static void ad7192_get_available_filter_freq(struct ad7192_state *st,
+-						    int *freq)
++					     int *freq)
  {
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
--	struct st_sensors_platform_data *pdata =
--		(struct st_sensors_platform_data *)adata->dev->platform_data;
-+	struct st_sensors_platform_data *pdata = dev_get_platdata(adata->dev);
- 	struct iio_chan_spec *channels;
- 	size_t channels_size;
- 	int err;
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 1275fb0eda31..dcbdef4a77f8 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -44,7 +44,7 @@ static bool st_sensors_is_spi_3_wire(struct spi_device *spi)
- 	if (device_property_read_bool(dev, "spi-3wire"))
- 		return true;
+ 	unsigned int fadc;
  
--	pdata = (struct st_sensors_platform_data *)dev->platform_data;
-+	pdata = dev_get_platdata(dev);
- 	if (pdata && pdata->spi_3wire)
- 		return true;
- 
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index bd972cec4830..8bb47c3b4d6b 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -683,8 +683,7 @@ EXPORT_SYMBOL(st_press_get_settings);
- int st_press_common_probe(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *press_data = iio_priv(indio_dev);
--	struct st_sensors_platform_data *pdata =
--		(struct st_sensors_platform_data *)press_data->dev->platform_data;
-+	struct st_sensors_platform_data *pdata = dev_get_platdata(press_data->dev);
- 	int err;
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
 -- 
-2.25.1
+2.17.1
 
