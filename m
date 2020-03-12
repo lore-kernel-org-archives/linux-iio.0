@@ -2,116 +2,104 @@ Return-Path: <SRS0=GyPt=45=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFE24C2BB1D
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 08:15:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEDE4C2BB1D
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 08:35:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id CDF59206F1
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 08:15:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A7566206B7
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Mar 2020 08:35:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="HW/3yzeG"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="cBt/nf07"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726395AbgCLIPu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 Mar 2020 04:15:50 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:46160 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726423AbgCLIPu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Mar 2020 04:15:50 -0400
-Received: by mail-io1-f67.google.com with SMTP id v3so4714605iom.13
-        for <linux-iio@vger.kernel.org>; Thu, 12 Mar 2020 01:15:48 -0700 (PDT)
+        id S1726438AbgCLIfX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 Mar 2020 04:35:23 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:44648 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726023AbgCLIfX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Mar 2020 04:35:23 -0400
+Received: by mail-wr1-f65.google.com with SMTP id l18so6214645wru.11;
+        Thu, 12 Mar 2020 01:35:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=SbKHysQUbZ/dh7ia72ifq4ypokfVjTOV8KRXEk2mm6E=;
-        b=HW/3yzeGLwYUzKgBotCvQil10b5k3PMgnqNLNwh4LYMxBBipDNZnTparjCBsw75jmT
-         LR9bPRQUyiMcBVQ35pZ+4gCO0TFQgxHSKGUJ4J6wd1Muuemsw5Rv5KJk4mRF4r/spil1
-         kQ8MTVoYKrKO+mokZ0szhFARBQvPl5m6Mld7cpaKjIh9gSb1g3NlBBOgjynzb2UJlx2u
-         Wnaiv/p6g90hBTsTSECFMiuM/twzlKLd/W9nDKBjg82bdFJvQB28bdn5t69t6p861hjA
-         CuscM4BElkTTRIkaN0VRMuHvM/RMrtXYwHOo9RFcCGDj3w+tzVDHE75cJvEgoBVQWMPC
-         4zbA==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Sc+ZcHvv4+8Y0JehjCkVMYBTnshyW1dRffEc1sDr2kY=;
+        b=cBt/nf07cfPvPHFHC9IdWDrxvDOJRqwBlGQE5eFmFXv/bzoBVSChf3BLbYu/Zp5ygf
+         uesy7OOJKb23uz7xctfhdY7Dk1pE05o+lOrWczNdnXV5XvWlqxCcBnP7oU4Iz+qoIICg
+         F6oAQtqxivabsR+F2f5kwesho0Jty1nUDcjL6+keOlj1CN8NEHRC6yiXHlycJI0ZEcoU
+         EQlvrEbDMxXhiCRfB+nZyaQugTK9KS0escIJgVJBDOUw7T74VdakviLO3aZ82VTUHyZq
+         +5cDY5z84hJWAN+WEIaZ8OFm7qKiyn79561sJ53m4JCzroe+DtCoFdYsyXC5ktBLmOgz
+         5uyA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=SbKHysQUbZ/dh7ia72ifq4ypokfVjTOV8KRXEk2mm6E=;
-        b=pfidZJmMA8mnAFkI/wNMSdRtkf7AzNVQXo2Y1KQD1wzNujD5PcTmQ2jNM2Hx6WafIu
-         AzJ/98LgS0KOlKE8wJHGOfuYmsohEa7HoZhRkfP1G95mz/l4iShwOTROEC3jEp3JPyrU
-         J3D2G+eM8CiQpVopm4ZfjEyfFgBP7U3WaeXTlWoPBgS3ZzBKUR0BJ7alaNF9haG8AsbD
-         Vfatv4e2UwNUMuufF9rpIRPR3EoLYS8J5X3qNHlXDYNRsLQUba2xZe/SOBQyt3c35Ub9
-         hUytRN5xiXs4Sc3Li2Kl1xxgJcUmsQ4MkjnCoygxLiTe9FadZSe+Ttwa2rhRTFOf2Y8V
-         UCAA==
-X-Gm-Message-State: ANhLgQ37JHMIr80jcuwSYRlMVAr7JRa42p8fRDIIlt0c5KnxUmpXN/Oh
-        vkbiPl5c029Au5akSkYoqiNZPDOEtR/t01HYAgjvCKYV
-X-Google-Smtp-Source: ADFU+vsJK2Pg25haw7j27ecIOeODy3FgQxTo1Tl+FnV3LFLR4OX/Io9NTwxxprxHSAuuuRB9Jd4i/CNZrzCHWMxnj0M=
-X-Received: by 2002:a5e:c70c:: with SMTP id f12mr6552071iop.130.1584000947547;
- Thu, 12 Mar 2020 01:15:47 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Sc+ZcHvv4+8Y0JehjCkVMYBTnshyW1dRffEc1sDr2kY=;
+        b=WkcWgh1F9OZByCPXauZrcA7BnBJTQeV46brp1rA/awjArsQZj0cT5BRmXHl+r/FZbu
+         R3cLkJn2HTzRdlQ0Xs2H2WpWTsZE58oh8yiSni/vg0FnvwqWv+515ROybgBRHNry03zB
+         GJvCsNRLVGMQTHOMI8SYG4fr/klXtVWw0om9+UiXO8xZviY2Lf3TTLfl8Qe0cljDESyy
+         wyAYzbIOJCn7+zf+ablUTvzBFmF3UGYht8dHgL+sNQJZFZMTiJaEWw7I0mspWF2Orlgq
+         zqFxiks9mCRYsKczUeaYICGMOxIh4/Imt0YXhZIRc0RK0+xGMCABDqDSZW/qsr4KaBoo
+         jytw==
+X-Gm-Message-State: ANhLgQ3teMRnH+zshypxQbObTd/7T7kMCOmbQKLJArK8ixbARBtKgdw+
+        I7FKLds7Rtp5J75zGp57Jc3wMcc7pU0=
+X-Google-Smtp-Source: ADFU+vsE7CKw0z7E9j255GcPqiZnSdEVpBlkVnUDYIzlFyBHlAwhZIDYsfICUgS9rb+0R59WlO0poA==
+X-Received: by 2002:adf:b317:: with SMTP id j23mr9713915wrd.413.1584002120044;
+        Thu, 12 Mar 2020 01:35:20 -0700 (PDT)
+Received: from localhost.localdomain ([188.26.73.247])
+        by smtp.gmail.com with ESMTPSA id 9sm11543334wmo.38.2020.03.12.01.35.18
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Mar 2020 01:35:19 -0700 (PDT)
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Cc:     jic23@kernel.org, robh+dt@kernel.org, Laszlo.Nagy@analog.com,
+        Andrei.Grozav@analog.com, Michael.Hennerich@analog.com,
+        Istvan.Csomortani@analog.com, Adrian.Costina@analog.com,
+        Dragos.Bogdan@analog.com,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Moritz Fischer <mdf@kernel.org>
+Subject: [PATCH v9 1/8] include: fpga: adi-axi-common.h: fixup whitespace tab -> space
+Date:   Thu, 12 Mar 2020 10:35:04 +0200
+Message-Id: <20200312083511.28832-2-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200312083511.28832-1-alexandru.ardelean@analog.com>
+References: <20200312083511.28832-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-References: <20200211131240.15853-1-brgl@bgdev.pl> <20200211131240.15853-4-brgl@bgdev.pl>
- <20200308135117.7c60c881@why> <CAMRc=Me0AE7OgEVjiUfRUNODYoGj+LYy+1zGsGkXKput9AeKrA@mail.gmail.com>
-In-Reply-To: <CAMRc=Me0AE7OgEVjiUfRUNODYoGj+LYy+1zGsGkXKput9AeKrA@mail.gmail.com>
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-Date:   Thu, 12 Mar 2020 09:15:36 +0100
-Message-ID: <CAMRc=MdsQbm=L8sjJhnCcW+kb3UHHneSGqgCbTvWwsenCeMwxw@mail.gmail.com>
-Subject: Re: [PATCH v2 3/6] irq/domain: add a new callback to domain ops
-To:     Marc Zyngier <maz@kernel.org>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jason Cooper <jason@lakedaemon.net>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-niedz., 8 mar 2020 o 18:59 Bartosz Golaszewski <brgl@bgdev.pl> napisa=C5=82=
-(a):
->
-> niedz., 8 mar 2020 o 14:51 Marc Zyngier <maz@kernel.org> napisa=C5=82(a):
-> >
-> > On Tue, 11 Feb 2020 14:12:37 +0100
-> > Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> >
-> > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > >
-> > > Add the remove() callback to irq_domain_ops which can be used to
-> > > automatically dispose of any host data associated with the domain whe=
-n
-> > > irq_domain_remove() is called.
-> >
-> > I have a hard time buying this. Whatever data that is associated to the
-> > domain is already owned known by whoever created the domain the first
-> > place.
-> >
-> > Since the expected use case is that whoever created the domain also
-> > destroys it, the caller is already in a position to do its own cleanup,
-> > and we don't need any of this.
-> >
-> > So please explain what you are trying to achieve here.
-> >
->
-> I'm mainly trying to remove irq_domain_remove_sim() and make it
-> possible to destroy the interrupt simulator domain with regular
-> irq_domain_remove(). If you prefer that we retain this routine as is,
-> I can limit this series to the first two patches, but I assumed the
-> fewer functions in the interface, the better. If you have a different
-> idea on how to do this - please let me know too.
->
-> Bartosz
+The initial version use a tab between '#define' & 'ADI_AXI_REG_VERSION'.
+This changes it to space. The change is purely cosmetic.
 
-While this is being discussed - are the first two patches
-uncontroversial enough to make it into v5.7?
+Acked-by: Moritz Fischer <mdf@kernel.org>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ include/linux/fpga/adi-axi-common.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Bartosz
+diff --git a/include/linux/fpga/adi-axi-common.h b/include/linux/fpga/adi-axi-common.h
+index 7fc95d5c95bb..ebd4e07ae3d8 100644
+--- a/include/linux/fpga/adi-axi-common.h
++++ b/include/linux/fpga/adi-axi-common.h
+@@ -11,7 +11,7 @@
+ #ifndef ADI_AXI_COMMON_H_
+ #define ADI_AXI_COMMON_H_
+ 
+-#define	ADI_AXI_REG_VERSION			0x0000
++#define ADI_AXI_REG_VERSION			0x0000
+ 
+ #define ADI_AXI_PCORE_VER(major, minor, patch)	\
+ 	(((major) << 16) | ((minor) << 8) | (patch))
+-- 
+2.20.1
+
