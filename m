@@ -6,29 +6,29 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6094C4CECE
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFDA9C5ACC2
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C996A2074E
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A7C102074E
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726387AbgCMKuA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 13 Mar 2020 06:50:00 -0400
-Received: from mga17.intel.com ([192.55.52.151]:32771 "EHLO mga17.intel.com"
+        id S1726551AbgCMKuC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 13 Mar 2020 06:50:02 -0400
+Received: from mga05.intel.com ([192.55.52.43]:41875 "EHLO mga05.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726492AbgCMKuA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 13 Mar 2020 06:50:00 -0400
+        id S1726364AbgCMKuB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 13 Mar 2020 06:50:01 -0400
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga005.jf.intel.com ([10.7.209.41])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Mar 2020 03:49:59 -0700
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Mar 2020 03:50:01 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.70,548,1574150400"; 
-   d="scan'208";a="416260647"
+   d="scan'208";a="442379998"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga005.jf.intel.com with ESMTP; 13 Mar 2020 03:49:57 -0700
+  by fmsmga005.fm.intel.com with ESMTP; 13 Mar 2020 03:49:59 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id B437794; Fri, 13 Mar 2020 12:49:56 +0200 (EET)
+        id D9BC64A9; Fri, 13 Mar 2020 12:49:56 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -36,9 +36,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 2/8] iio: st_sensors: Use dev_get_platdata() to get platform_data
-Date:   Fri, 13 Mar 2020 12:49:49 +0200
-Message-Id: <20200313104955.30423-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 6/8] iio: humidity: hts221: Use dev_get_platdata() to get platform_data
+Date:   Fri, 13 Mar 2020 12:49:53 +0200
+Message-Id: <20200313104955.30423-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200313104955.30423-1-andriy.shevchenko@linux.intel.com>
 References: <20200313104955.30423-1-andriy.shevchenko@linux.intel.com>
@@ -54,53 +54,34 @@ referencing it directly.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v2: no change
- drivers/iio/accel/st_accel_core.c              | 3 +--
- drivers/iio/common/st_sensors/st_sensors_spi.c | 2 +-
- drivers/iio/pressure/st_pressure_core.c        | 3 +--
- 3 files changed, 3 insertions(+), 5 deletions(-)
+v2: new patch
+ drivers/iio/humidity/hts221_buffer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 7320275c7e56..5f7bdb1f55d1 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -1170,8 +1170,7 @@ EXPORT_SYMBOL(st_accel_get_settings);
- int st_accel_common_probe(struct iio_dev *indio_dev)
- {
- 	struct st_sensor_data *adata = iio_priv(indio_dev);
--	struct st_sensors_platform_data *pdata =
--		(struct st_sensors_platform_data *)adata->dev->platform_data;
-+	struct st_sensors_platform_data *pdata = dev_get_platdata(adata->dev);
- 	struct iio_chan_spec *channels;
- 	size_t channels_size;
- 	int err;
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 1275fb0eda31..dcbdef4a77f8 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -44,7 +44,7 @@ static bool st_sensors_is_spi_3_wire(struct spi_device *spi)
- 	if (device_property_read_bool(dev, "spi-3wire"))
- 		return true;
+diff --git a/drivers/iio/humidity/hts221_buffer.c b/drivers/iio/humidity/hts221_buffer.c
+index 81d50a861c22..5f142a44c1dd 100644
+--- a/drivers/iio/humidity/hts221_buffer.c
++++ b/drivers/iio/humidity/hts221_buffer.c
+@@ -74,10 +74,10 @@ static irqreturn_t hts221_trigger_handler_thread(int irq, void *private)
  
--	pdata = (struct st_sensors_platform_data *)dev->platform_data;
-+	pdata = dev_get_platdata(dev);
- 	if (pdata && pdata->spi_3wire)
- 		return true;
- 
-diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-index bd972cec4830..8bb47c3b4d6b 100644
---- a/drivers/iio/pressure/st_pressure_core.c
-+++ b/drivers/iio/pressure/st_pressure_core.c
-@@ -683,8 +683,7 @@ EXPORT_SYMBOL(st_press_get_settings);
- int st_press_common_probe(struct iio_dev *indio_dev)
+ int hts221_allocate_trigger(struct hts221_hw *hw)
  {
- 	struct st_sensor_data *press_data = iio_priv(indio_dev);
--	struct st_sensors_platform_data *pdata =
--		(struct st_sensors_platform_data *)press_data->dev->platform_data;
-+	struct st_sensors_platform_data *pdata = dev_get_platdata(press_data->dev);
++	struct st_sensors_platform_data *pdata = dev_get_platdata(hw->dev);
+ 	struct iio_dev *iio_dev = iio_priv_to_dev(hw);
+ 	bool irq_active_low = false, open_drain = false;
+ 	struct device_node *np = hw->dev->of_node;
+-	struct st_sensors_platform_data *pdata;
+ 	unsigned long irq_type;
  	int err;
  
- 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -106,7 +106,6 @@ int hts221_allocate_trigger(struct hts221_hw *hw)
+ 	if (err < 0)
+ 		return err;
+ 
+-	pdata = (struct st_sensors_platform_data *)hw->dev->platform_data;
+ 	if ((np && of_property_read_bool(np, "drive-open-drain")) ||
+ 	    (pdata && pdata->open_drain)) {
+ 		irq_type |= IRQF_SHARED;
 -- 
 2.25.1
 
