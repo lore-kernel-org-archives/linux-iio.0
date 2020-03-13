@@ -7,19 +7,19 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B4EC5ACC1
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 06:46:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BC54C5ACD8
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 06:46:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0C39E2074B
+	by mail.kernel.org (Postfix) with ESMTP id CB6AF2074B
 	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 06:46:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="ALqDg+ay"
+	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="Yal9W1k8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726514AbgCMGqL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726504AbgCMGqL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 13 Mar 2020 02:46:11 -0400
-Received: from mail.andi.de1.cc ([85.214.55.253]:55976 "EHLO mail.andi.de1.cc"
+Received: from mail.andi.de1.cc ([85.214.55.253]:55940 "EHLO mail.andi.de1.cc"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726364AbgCMGqK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726331AbgCMGqK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Fri, 13 Mar 2020 02:46:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
@@ -27,17 +27,17 @@ DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=3Bz2vR2Tg5c+O+QNTGdqbIUhPXuM0m6WC7tdqcFYb6M=; b=ALqDg+ayCRBaYNP9MkESeD7VsK
-        ZNrAE2fQJs3bFQnQ7+xjEqHhy/mVgJxS65akxejk4v6M4Cja0Ny8txbp1xSbVdi3cnT7ODLNVq8MQ
-        6a+a8O6AyWkREURrW4kLsLNEugEGQeFoxAcB/mXsnoqu3Q9DL0k9Sg48kAw8RoFADKNw=;
+        bh=KJSvEB5GYx0NMRbbOsFK/DkUQp3KkBqyuRsPuE4sghw=; b=Yal9W1k8kM3pVZzT7fC7nBi4gn
+        Ug8bHIqPnkSR6Y7gzYoXtzMncvN597X7+eaxvjNR3nVq3L6JhENT9a38Fw6jktwCLYS8eVNlKOabR
+        t665oWn/YYF26Ewef0QRxo6tHDNRvfh0W+Lh1NCzx2snG2W2CyNMl/IGE5brjrlLHZJM=;
 Received: from p200300ccff096400e2cec3fffe93fc31.dip0.t-ipconnect.de ([2003:cc:ff09:6400:e2ce:c3ff:fe93:fc31] helo=eeepc)
         by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.89)
         (envelope-from <andreas@kemnade.info>)
-        id 1jCe4w-0002pn-Im; Fri, 13 Mar 2020 07:45:55 +0100
+        id 1jCe4v-0002pB-5A; Fri, 13 Mar 2020 07:45:53 +0100
 Received: from andi by eeepc with local (Exim 4.92)
         (envelope-from <andreas@kemnade.info>)
-        id 1jCe4w-0008DB-2U; Fri, 13 Mar 2020 07:45:54 +0100
+        id 1jCe4u-0008Ct-Fq; Fri, 13 Mar 2020 07:45:52 +0100
 From:   Andreas Kemnade <andreas@kemnade.info>
 To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         a.zummo@towertech.it, alexandre.belloni@bootlin.com,
@@ -46,10 +46,11 @@ To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
         phh@phh.me, letux-kernel@openphoenux.org, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
         jic23@kernel.org
-Cc:     Andreas Kemnade <andreas@kemnade.info>
-Subject: [PATCH RESEND v6 7/7] mfd: rn5t618: cleanup i2c_device_id
-Date:   Fri, 13 Mar 2020 07:45:34 +0100
-Message-Id: <20200313064535.31503-8-andreas@kemnade.info>
+Cc:     Andreas Kemnade <andreas@kemnade.info>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH RESEND v6 1/7] dt-bindings: mfd: rn5t618: Document optional property interrupts
+Date:   Fri, 13 Mar 2020 07:45:28 +0100
+Message-Id: <20200313064535.31503-2-andreas@kemnade.info>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200313064535.31503-1-andreas@kemnade.info>
 References: <20200313064535.31503-1-andreas@kemnade.info>
@@ -60,54 +61,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-That list was just empty, so it can be removed if .probe_new
-instead of .probe is used
+These chips use interrupts for various things like RTC alarm.
 
-Suggested-by: Lee Jones <lee.jones@linaro.org>
 Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
-Functional independent from the other patches, but since they are
-touching similar areas, commit/merge conflicts would occur.
- drivers/mfd/rn5t618.c | 11 ++---------
- 1 file changed, 2 insertions(+), 9 deletions(-)
+Changes in v4: add refernce to interrupt binding
+documentation
+ Documentation/devicetree/bindings/mfd/rn5t618.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/drivers/mfd/rn5t618.c b/drivers/mfd/rn5t618.c
-index 321836f78120..b8033e2d650f 100644
---- a/drivers/mfd/rn5t618.c
-+++ b/drivers/mfd/rn5t618.c
-@@ -153,8 +153,7 @@ static const struct of_device_id rn5t618_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rn5t618_of_match);
+diff --git a/Documentation/devicetree/bindings/mfd/rn5t618.txt b/Documentation/devicetree/bindings/mfd/rn5t618.txt
+index b74e5e94d1cb..16778ea00dbc 100644
+--- a/Documentation/devicetree/bindings/mfd/rn5t618.txt
++++ b/Documentation/devicetree/bindings/mfd/rn5t618.txt
+@@ -15,6 +15,8 @@ Required properties:
+  - reg: the I2C slave address of the device
  
--static int rn5t618_i2c_probe(struct i2c_client *i2c,
--			     const struct i2c_device_id *id)
-+static int rn5t618_i2c_probe(struct i2c_client *i2c)
- {
- 	const struct of_device_id *of_id;
- 	struct rn5t618 *priv;
-@@ -256,11 +255,6 @@ static int __maybe_unused rn5t618_i2c_resume(struct device *dev)
- 	return 0;
- }
+ Optional properties:
++ - interrupts: interrupt mapping for IRQ
++   See Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+  - system-power-controller:
+    See Documentation/devicetree/bindings/power/power-controller.txt
  
--static const struct i2c_device_id rn5t618_i2c_id[] = {
--	{ }
--};
--MODULE_DEVICE_TABLE(i2c, rn5t618_i2c_id);
--
- static SIMPLE_DEV_PM_OPS(rn5t618_i2c_dev_pm_ops,
- 			rn5t618_i2c_suspend,
- 			rn5t618_i2c_resume);
-@@ -271,9 +265,8 @@ static struct i2c_driver rn5t618_i2c_driver = {
- 		.of_match_table = of_match_ptr(rn5t618_of_match),
- 		.pm = &rn5t618_i2c_dev_pm_ops,
- 	},
--	.probe = rn5t618_i2c_probe,
-+	.probe_new = rn5t618_i2c_probe,
- 	.remove = rn5t618_i2c_remove,
--	.id_table = rn5t618_i2c_id,
- };
+@@ -32,6 +34,8 @@ Example:
+ 	pmic@32 {
+ 		compatible = "ricoh,rn5t618";
+ 		reg = <0x32>;
++		interrupt-parent = <&gpio5>;
++		interrupts = <11 IRQ_TYPE_EDGE_FALLING>;
+ 		system-power-controller;
  
- module_i2c_driver(rn5t618_i2c_driver);
+ 		regulators {
 -- 
 2.20.1
 
