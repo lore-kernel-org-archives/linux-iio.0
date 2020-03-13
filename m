@@ -2,54 +2,44 @@ Return-Path: <SRS0=K2ZU=46=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D42BC5ACC1
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 06:46:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CCEAC2BB1D
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 454912074B
-	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 06:46:41 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=kemnade.info header.i=@kemnade.info header.b="MQ8zVt1j"
+	by mail.kernel.org (Postfix) with ESMTP id 7C4AB2074D
+	for <linux-iio@archiver.kernel.org>; Fri, 13 Mar 2020 10:50:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726365AbgCMGqK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 13 Mar 2020 02:46:10 -0400
-Received: from mail.andi.de1.cc ([85.214.55.253]:55942 "EHLO mail.andi.de1.cc"
+        id S1726479AbgCMKt7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 13 Mar 2020 06:49:59 -0400
+Received: from mga01.intel.com ([192.55.52.88]:5285 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726216AbgCMGqJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 13 Mar 2020 02:46:09 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=yQkfOLNuqw0s/C4iIr73jm/g+t03fJKekg1eS9M/yZg=; b=MQ8zVt1jf+3E8VFEr9vHXAwzRP
-        EEpNOjG0j9PXkkpwioOIl1s3ss5UcmCWbUmkf3Lu2/xhN0+0ruZHagfHuVB+NaQVla6w5oLLiutBU
-        QIbBfQv1x+4Q5mzzzwC1GAgSEtF9O3syxxI/jfsgzlEy8/kSht1I7X3a1yCv0EclzO9k=;
-Received: from p200300ccff096400e2cec3fffe93fc31.dip0.t-ipconnect.de ([2003:cc:ff09:6400:e2ce:c3ff:fe93:fc31] helo=eeepc)
-        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <andreas@kemnade.info>)
-        id 1jCe4u-0002p9-GB; Fri, 13 Mar 2020 07:45:52 +0100
-Received: from andi by eeepc with local (Exim 4.92)
-        (envelope-from <andreas@kemnade.info>)
-        id 1jCe4t-0008Cq-SM; Fri, 13 Mar 2020 07:45:51 +0100
-From:   Andreas Kemnade <andreas@kemnade.info>
-To:     lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        a.zummo@towertech.it, alexandre.belloni@bootlin.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-rtc@vger.kernel.org, stefan@agner.ch, b.galvani@gmail.com,
-        phh@phh.me, letux-kernel@openphoenux.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        jic23@kernel.org
-Cc:     Andreas Kemnade <andreas@kemnade.info>
-Subject: [PATCH RESEND v6 0/7] mfd: rn5t618: Add RTC/ADC support
-Date:   Fri, 13 Mar 2020 07:45:27 +0100
-Message-Id: <20200313064535.31503-1-andreas@kemnade.info>
-X-Mailer: git-send-email 2.20.1
+        id S1726364AbgCMKt7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 13 Mar 2020 06:49:59 -0400
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 13 Mar 2020 03:49:59 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.70,548,1574150400"; 
+   d="scan'208";a="266689347"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga004.fm.intel.com with ESMTP; 13 Mar 2020 03:49:57 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id A653E1C9; Fri, 13 Mar 2020 12:49:56 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Denis Ciocca <denis.ciocca@st.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/8] iio: light: st_uvis25: Drop unneeded casting when print error code
+Date:   Fri, 13 Mar 2020 12:49:48 +0200
+Message-Id: <20200313104955.30423-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -57,64 +47,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In the variant RC5T619 the mfd has an RTC. This patchset adds
-support for it. To do so it adds the missing register defines in 
-rn5t618.h and general irq handling for that.
-It seems that the IRQ definitions are the same except missing RTC
-for the RN5T618 but due to missing ability to test that they are
-not added here.
-It also adds support for the ADC, it is available in both the
-RN5T618 and RC5T619 but due to missing ability to test that,
-the subdevice is only added for the RN5T618.
+Explicit casting in printf() usually shows that something is not okay.
+Here, we really don't need it by providing correct specifier.
 
-It was tested on the Kobo Clara HD.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: no change
+ drivers/iio/light/st_uvis25_i2c.c | 4 ++--
+ drivers/iio/light/st_uvis25_spi.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-Changes in v6:
-- put together with ADC series
-- also added cleanup i2_device_id patch to avoid merge
-  conflicts
-
-Changes in v5:
-- static rn5t618_irq_init
-- PLATFORM_DEVID_NONE
-- added some Acked-Bys
-
-Changes in v4:
-- use macros for IRQ definitions
-- merge rn5t618-core.c and rn5t618-irq.c
-
-Changes in v3:
-- alignment cleanup
-- output cleanup, remove useless toggling of alarm flag in rtc probe
-- updated bindings description, so patch 1/5 becomes 2/6 and so on
-
-Changes in v2:
-- no dead code in irq code
-- various improvements and cleanups in rtc driver itself
+diff --git a/drivers/iio/light/st_uvis25_i2c.c b/drivers/iio/light/st_uvis25_i2c.c
+index 4889bbeb0c73..400724069d19 100644
+--- a/drivers/iio/light/st_uvis25_i2c.c
++++ b/drivers/iio/light/st_uvis25_i2c.c
+@@ -31,8 +31,8 @@ static int st_uvis25_i2c_probe(struct i2c_client *client,
  
-Andreas Kemnade (7):
-  dt-bindings: mfd: rn5t618: Document optional property interrupts
-  mfd: rn5t618: add IRQ support
-  mfd: rn5t618: add RTC related registers
-  mfd: rn5t618: add more subdevices
-  rtc: rc5t619: add Ricoh RC5T619 RTC driver
-  iio: adc: rn5t618: Add ADC driver for RN5T618/RC5T619
-  mfd: rn5t618: cleanup i2c_device_id
-
- .../devicetree/bindings/mfd/rn5t618.txt       |   4 +
- drivers/iio/adc/Kconfig                       |  10 +
- drivers/iio/adc/Makefile                      |   1 +
- drivers/iio/adc/rn5t618-adc.c                 | 256 ++++++++++
- drivers/mfd/Kconfig                           |   1 +
- drivers/mfd/rn5t618.c                         | 119 ++++-
- drivers/rtc/Kconfig                           |  10 +
- drivers/rtc/Makefile                          |   1 +
- drivers/rtc/rtc-rc5t619.c                     | 444 ++++++++++++++++++
- include/linux/mfd/rn5t618.h                   |  26 +
- 10 files changed, 862 insertions(+), 10 deletions(-)
- create mode 100644 drivers/iio/adc/rn5t618-adc.c
- create mode 100644 drivers/rtc/rtc-rc5t619.c
-
+ 	regmap = devm_regmap_init_i2c(client, &st_uvis25_i2c_regmap_config);
+ 	if (IS_ERR(regmap)) {
+-		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+-			(int)PTR_ERR(regmap));
++		dev_err(&client->dev, "Failed to register i2c regmap %ld\n",
++			PTR_ERR(regmap));
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+diff --git a/drivers/iio/light/st_uvis25_spi.c b/drivers/iio/light/st_uvis25_spi.c
+index a9ceae4f58b3..cd3761a3ee3f 100644
+--- a/drivers/iio/light/st_uvis25_spi.c
++++ b/drivers/iio/light/st_uvis25_spi.c
+@@ -31,8 +31,8 @@ static int st_uvis25_spi_probe(struct spi_device *spi)
+ 
+ 	regmap = devm_regmap_init_spi(spi, &st_uvis25_spi_regmap_config);
+ 	if (IS_ERR(regmap)) {
+-		dev_err(&spi->dev, "Failed to register spi regmap %d\n",
+-			(int)PTR_ERR(regmap));
++		dev_err(&spi->dev, "Failed to register spi regmap %ld\n",
++			PTR_ERR(regmap));
+ 		return PTR_ERR(regmap);
+ 	}
+ 
 -- 
-2.20.1
+2.25.1
 
