@@ -2,240 +2,101 @@ Return-Path: <SRS0=tzPa=5A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68578C1975A
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72F01C10DCE
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 09:17:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 3DF11205C9
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 02:24:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 45B58206E9
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 09:17:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584239083;
-	bh=s+DVVL/CD/ul017C1x0WgjNP69Azrx4HmZjCS9kYjFA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=OB9ckT8Z+oq9SvaXhj0dJJAFpfhVNkd+fZ4wEXoli/+ll/GimPdVe+MEF4ai5rpnw
-	 z8zihLpY/nL0A6vp6FxRhTkjzZ8oo8LoxEMZBajBpa47+n8kXaF7fNZigYVVZDK8rp
-	 mXmrbzOVGJOzcGgVzQksZRx2MjH0XNQFe6Sm2J7I=
+	s=default; t=1584263865;
+	bh=M3gQDpipo5zEV/yucmJMkSori8mdYECFiTGbqY+cERQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=wrHbmJ9cmx/Z+6M54+yvxhb06IbVCB5wCapNlnIlY/OYXGtm/PFIWIQP3JY7HTwje
+	 dRw22Je3+ZbDIxN1sDqZK/vfreY1aAKlVCYmCgfWN1EY0KPxlNbhQf5Bo2UEJC58Rn
+	 /UVVcbFz/P7p5LWOa9Mt8UX7o806xBAEgZE5dh4E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727916AbgCOCYO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 Mar 2020 22:24:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39106 "EHLO mail.kernel.org"
+        id S1728083AbgCOJRo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Mar 2020 05:17:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39126 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727920AbgCOCYO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 14 Mar 2020 22:24:14 -0400
-Received: from lore-desk-wlan (unknown [151.48.128.122])
+        id S1728065AbgCOJRo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 15 Mar 2020 05:17:44 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2944A20772;
-        Sat, 14 Mar 2020 12:43:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C5EB205ED;
+        Sun, 15 Mar 2020 09:17:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584189809;
-        bh=s+DVVL/CD/ul017C1x0WgjNP69Azrx4HmZjCS9kYjFA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BhndStzMN8gxCZIydoYSFP7zxD2Dm7eJP5rnIt3HNKuleER55lXIu1VSLgjyBxs3p
-         hnNVUR2klLKLQkaH8yy7OAsJmAABPESDqHdE9PR2+G1BAmhhwBMu15fvvx3Cui905p
-         6FzzCdeCJMopTp5PZYcdouuoyhVUUjE72q4wfzdM=
-Date:   Sat, 14 Mar 2020 13:43:24 +0100
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jimmy Assarsson <jimmyassarsson@gmail.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: Use LIS3MDL with LSM6DSM sensor-hub
-Message-ID: <20200314124324.GA144176@lore-desk-wlan>
-References: <f8489de0-c6a4-f786-b936-679eba6d6804@gmail.com>
+        s=default; t=1584263863;
+        bh=M3gQDpipo5zEV/yucmJMkSori8mdYECFiTGbqY+cERQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R0BstTd1ON4oodAY0pWQJkF40ciLG5q/ilX/Zux1zXD/wd3U+dYsUVpMe63JZNSe5
+         aU6mgOLtT8+uTm8Mb3ajal7L7cvnlFSUD9VGWZtHsh9dvl9W+ZgJFJkXZLND69pGUF
+         1Vtb3i6ocCZ+s56crTxbO5Rnn00XqG6ycbJ/RDh8=
+Date:   Sun, 15 Mar 2020 09:17:38 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     YueHaibing <yuehaibing@huawei.com>
+Cc:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <stefan.popa@analog.com>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio:ad7797: Use correct attribute_group
+Message-ID: <20200315091738.71f9dddf@archlinux>
+In-Reply-To: <20200310141654.7188-1-yuehaibing@huawei.com>
+References: <9c53e05a-294a-c2d1-8808-605b10c964a9@metafoo.de>
+        <20200310141654.7188-1-yuehaibing@huawei.com>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="GvXjxJ+pjyke8COw"
-Content-Disposition: inline
-In-Reply-To: <f8489de0-c6a4-f786-b936-679eba6d6804@gmail.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, 10 Mar 2020 22:16:54 +0800
+YueHaibing <yuehaibing@huawei.com> wrote:
 
---GvXjxJ+pjyke8COw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> It should use ad7797_attribute_group in ad7797_info,
+> according to commit ("iio:ad7793: Add support for the ad7796 and ad7797").
+> 
+> Scale is fixed for the ad7796 and not programmable, hence
+> should not have the scale_available attribute.
+> 
+> Fixes: fd1a8b912841 ("iio:ad7793: Add support for the ad7796 and ad7797")
+> Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Thanks,
 
-On Mar 11, Jimmy Assarsson wrote:
-> Hi,
->=20
-> We are working on a project where we want to connect LS6DSM (via SPI), and
-> connect LIS3MDL via the sensor hub, as I2C slave device.
->=20
-> We would like to add settings/configuration for LIS3MDL, to the shub
-> source, since currently only LIS2MDL is supported. We've made an attempt,
-> see diff at end of this mail.
->=20
-> 1. LIS2MDL only got a single full scale setting, hence it is not possible
->    to change. While LIS3MDL got four possible settings. Is it enough to a=
-dd
->    a corresponding function like st_lsm6dsx_shub_set_fs_val() and call it
->    from st_lsm6dsx_shub_write_raw(), when mask =3D=3D IIO_CHAN_INFO_SCALE?
-> 2. LIS3MDL got 8 possible ODR settings, however ST_LSM6DSX_ODR_LIST_SIZE =
-is
->    defined to 6 (st_lsm6dsx.h). Is it fine to increase
->    ST_LSM6DSX_ODR_LIST_SIZE to 8? This will also affect odr_table in
->    struct st_lsm6dsx_settings.
-> 3. In the patch, we've tried to copy the correct registers and values from
->    magnetometer/st_magn_core.c, does it look ok?
->=20
-> The IIO subsystem is new to use, we possibly miss fundamental knowledge.
->=20
-> Regards,
-> jimmy
+I've queued this up.  Won't push out just yet as I'm waiting for
+Greg to pick up a pull request after which I'd like to fast forward
+the fixes branch.
 
-Hi Jimmy,
+Thanks,
 
-in order to set the full scale on LIS3MDL you can try the following patch (=
-just
-compiled, not tested)
+Jonathan
 
-Regards,
-Lorenzo
-
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu=
-/st_lsm6dsx/st_lsm6dsx_shub.c
-index 64ef07a30726..fec1dbd5f00d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-@@ -518,6 +518,36 @@ st_lsm6dsx_shub_read_raw(struct iio_dev *iio_dev,
- 	return ret;
- }
-=20
-+static int
-+st_lsm6dsx_shub_set_full_scale(struct st_lsm6dsx_sensor *sensor,
-+			       u32 gain)
-+{
-+	const struct st_lsm6dsx_fs_table_entry *fs_table;
-+	int i, err;
-+
-+	fs_table =3D &sensor->ext_info.settings->fs_table;
-+	if (!fs_table->reg.addr)
-+		return -ENOTSUPP;
-+
-+	for (i =3D 0; i < fs_table->fs_len; i++) {
-+		if (fs_table->fs_avl[i].gain =3D=3D gain)
-+			break;
-+	}
-+
-+	if (i =3D=3D fs_table->fs_len)
-+		return -EINVAL;
-+
-+	err =3D st_lsm6dsx_shub_write_with_mask(sensor, fs_table->reg.addr,
-+					      fs_table->reg.mask,
-+					      fs_table->fs_avl[i].val);
-+	if (err < 0)
-+		return err;
-+
-+	sensor->gain =3D gain;
-+
-+	return 0;
-+}
-+
- static int
- st_lsm6dsx_shub_write_raw(struct iio_dev *iio_dev,
- 			  struct iio_chan_spec const *chan,
-@@ -552,6 +582,9 @@ st_lsm6dsx_shub_write_raw(struct iio_dev *iio_dev,
- 		}
- 		break;
- 	}
-+	case IIO_CHAN_INFO_SCALE:
-+		err =3D st_lsm6dsx_shub_set_full_scale(sensor, val2);
-+		break;
- 	default:
- 		err =3D -EINVAL;
- 		break;
-
->=20
 > ---
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/i=
-mu/st_lsm6dsx/st_lsm6dsx_shub.c
-> index eea5556..8621dba 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-> @@ -88,6 +88,69 @@ static const struct st_lsm6dsx_ext_dev_settings st_lsm=
-6dsx_ext_dev_table[] =3D {
->  			.len =3D 6,
->  		},
->  	},
-> +	/* LIS3MDL */
-> +	{
-> +		.i2c_addr =3D { 0x1e },
-> +		.wai =3D {
-> +			.addr =3D 0x0f,
-> +			.val =3D 0x3d,
-> +		},
-> +		.id =3D ST_LSM6DSX_ID_MAGN,
-> +		.odr_table =3D {
-> +			.reg =3D {
-> +				.addr =3D 0x20,
-> +				.mask =3D GENMASK(4, 2),
-> +			},
-> +			.odr_avl[0] =3D {  1000, 0x0 },
-> +			.odr_avl[1] =3D {  2000, 0x1 },
-> +			.odr_avl[2] =3D {  3000, 0x2 },
-> +			.odr_avl[3] =3D {  5000, 0x3 },
-> +			.odr_avl[4] =3D { 10000, 0x4 },
-> +			.odr_avl[5] =3D { 20000, 0x5 },
-> +			.odr_avl[6] =3D { 40000, 0x6 },
-> +			.odr_avl[7] =3D { 80000, 0x7 },
-> +			.odr_len =3D 8,
-> +		},
-> +		.fs_table =3D {
-> +			.reg =3D {
-> +				.addr =3D 0x21,
-> +				.mask =3D GENMASK(6, 5),
-> +			},
-> +			.fs_avl[0] =3D {
-> +				.gain =3D 146,
-> +				.val =3D 0x00,
-> +			}, /* 4000 uG/LSB */
-> +			.fs_avl[1] =3D {
-> +				.gain =3D 292,
-> +				.val =3D 0x01,
-> +			}, /* 8000 uG/LSB */
-> +			.fs_avl[2] =3D {
-> +				.gain =3D 438,
-> +				.val =3D 0x02,
-> +			}, /* 12000 uG/LSB */
-> +			.fs_avl[3] =3D {
-> +				.gain =3D 584,
-> +				.val =3D 0x03,
-> +			}, /* 16000 uG/LSB */
-> +			.fs_len =3D 4,
-> +		},
-> +		.pwr_table =3D {
-> +			.reg =3D {
-> +				.addr =3D 0x22,
-> +				.mask =3D GENMASK(1, 0),
-> +			},
-> +			.off_val =3D 0x2,
-> +			.on_val =3D 0x0,
-> +		},
-> +		.bdu =3D {
-> +			.addr =3D 0x24,
-> +			.mask =3D BIT(6),
-> +		},
-> +		.out =3D {
-> +			.addr =3D 0x28,
-> +			.len =3D 6,
-> +		},
-> +	},
+> v2: renew log as Lars-Peter's comment
+> 
+>  drivers/iio/adc/ad7793.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+> index b747db9..e5691e3 100644
+> --- a/drivers/iio/adc/ad7793.c
+> +++ b/drivers/iio/adc/ad7793.c
+> @@ -542,7 +542,7 @@ static const struct iio_info ad7797_info = {
+>  	.read_raw = &ad7793_read_raw,
+>  	.write_raw = &ad7793_write_raw,
+>  	.write_raw_get_fmt = &ad7793_write_raw_get_fmt,
+> -	.attrs = &ad7793_attribute_group,
+> +	.attrs = &ad7797_attribute_group,
+>  	.validate_trigger = ad_sd_validate_trigger,
 >  };
+>  
 
---GvXjxJ+pjyke8COw
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYIAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCXmzRaQAKCRA6cBh0uS2t
-rCuWAQCeg0hs5KJyKraqQIstondi84jSbv92faPgYQh+jvsTZAD6Ay5nLyEqZXEv
-+Jhw3OZ/ecbSUTPXpRP85vEYfmIAhwA=
-=AAjp
------END PGP SIGNATURE-----
-
---GvXjxJ+pjyke8COw--
