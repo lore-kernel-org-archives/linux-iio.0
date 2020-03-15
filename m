@@ -5,166 +5,332 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75839C0044D
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 01:51:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB3DEC0044D
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 01:52:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4DA802076E
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 01:51:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B4B8D206D5
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 01:52:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="YXFjcvBe"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Jca2q4Uc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726847AbgCOBv1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 Mar 2020 21:51:27 -0400
-Received: from mail-oi1-f196.google.com ([209.85.167.196]:42600 "EHLO
-        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726643AbgCOBv1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Mar 2020 21:51:27 -0400
-Received: by mail-oi1-f196.google.com with SMTP id 13so4989440oiy.9;
-        Sat, 14 Mar 2020 18:51:26 -0700 (PDT)
+        id S1726991AbgCOBwx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 14 Mar 2020 21:52:53 -0400
+Received: from mail-lj1-f195.google.com ([209.85.208.195]:37772 "EHLO
+        mail-lj1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726881AbgCOBwx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Mar 2020 21:52:53 -0400
+Received: by mail-lj1-f195.google.com with SMTP id r24so14778511ljd.4;
+        Sat, 14 Mar 2020 18:52:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=35XhdiPf7N2b+kAbuAAdXV42xW5hub0L667+H4IKlmk=;
-        b=YXFjcvBeV6V4LELDQyU58eupJBzeXQnfnsR6yFHR/maxum8Vs72anKO6WdFh/Z/Qek
-         pR6wsEdmurMvkQg0FTAkBdskTO+SOovm+V0vgm8TPwEfYdOff7Us85puFuAtoaa+9d3R
-         6uV4gsymxTnUJsWtXy6OqXtug5iXGH8CEG8XXZrUf9f6qIdAeW9QIQD5AfWg0YT3MhXr
-         6L05Wj/4Bo+kxXcJojXlQcsl1vBGa8whfWQ3dZgyaakzt09KYB831bTUB141MkOzT+BX
-         rrPj1RFcL6QnFjk8lzrKtwMRGqS02I8zJYmyip02DSzSL4Y5UuemFq+tQy7fim/zzF2T
-         YhWg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=nSN+cBvHkoAaA8VtZH6+OxePHjD6oII24b4dpxT0Avc=;
+        b=Jca2q4Uc539HIR5V0IiQPguYFL6NmgWk6ENovpXMFW2f1GK1ofFej/vjZd3j6K50Yn
+         0ShTjqTvMQS4qT4CEA9qpr1ElH3Htp+bbNR+GUn/GhZDc7IjAblw1VqfQFSegO9gHDZJ
+         uOpzSVsTqdjVveBKeZ/YTL5O/+AT9511T0YC+m3WGfcBUt3D5Hp9imIkjlqN7kenXt4X
+         pz3/oobCVCvDITX24kH3ARSvs7brd0+9jEG20lSIkKqQSqrUAPo7fB41kvHvYeCN23Kv
+         SwnhEEoCknheOY+gkFX/TPOhcmJvOtnYfLIsrijFi9PklFKq8bBh2ZJC9Qe/bczK9RSa
+         QYOw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=35XhdiPf7N2b+kAbuAAdXV42xW5hub0L667+H4IKlmk=;
-        b=GoUi0VcTjOdRvF24ReovgkpQgiOHig8MIxsftsMFT3jPdc9q9uvhIkUCWw11SNt/bt
-         Q30YdxKvQe32zgVFaiX7J8rMwM1ZLbahO5yyIsEo3T8siPtlOgx3SaXHtQfuVPIz8MrL
-         y8SJ+s5ZDA2CXY8FN9/rGM/CQ1SLd6vT4vEcXSZ8T10C/1S80a9yCWd61LNF96XVjkSb
-         4rYyJliDKydQ9vBrLu1EUZfgW1/AF02hz6gE1DeTFgJ3UKNep6T2/U3bJf7xDE84v0Bl
-         jt2FcdyXVl/hB1vhl/UccxaFDZ9klFyxuSKgzjQgXxezpSv1J2K7hflcRXWcntXHxJ3G
-         xHGg==
-X-Gm-Message-State: ANhLgQ1SZzV8hBatpiv+KlAYdBgg365o9y0oetQtyO92MRLgMLMSHGO0
-        P5bxrbFfY1rVRVZAZqmLlWpHksUw
-X-Google-Smtp-Source: ADFU+vsfG2YRIywLZtaTGNFY5QnxtFNloA653nmIEte+/glxpF5LNbpsrXEPBg5BD0BeozWHLv5KUA==
-X-Received: by 2002:a17:90a:a48b:: with SMTP id z11mr15529796pjp.1.1584193385623;
-        Sat, 14 Mar 2020 06:43:05 -0700 (PDT)
-Received: from nish-HP-Pavilion ([113.30.156.69])
-        by smtp.gmail.com with ESMTPSA id md20sm14771530pjb.15.2020.03.14.06.43.04
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=nSN+cBvHkoAaA8VtZH6+OxePHjD6oII24b4dpxT0Avc=;
+        b=GjjFz9xYz5JjZXUPzUqM6lhO7y6wFnksPYuW9IHeaF7368Tfd33vbSyKw2roTluA2Q
+         Tcsa4ITHgZ2QXy0jpdqqo7MzEFH2WlCh1pueQ3r9VQgX1F8SFB9naRR5+vVaNoQrKVso
+         /0nOn9IIaxMYdwniqH90pbF7uHfBGGyAMw5cq6xI3XMz9ffZ8WkFn1o5V52VqntO/uP2
+         V1x331Bbr6omOJaVrcxGTl1Lf3pN5ohJ5ebCzwB/1vr68HVAU8TPNgKnHuuGpHwCA8cC
+         fiISTTkB29PPb48I0sPNwyXUxLcJAQCiW0Mn3CY+lGy6z/XA+xLKUoiiCGf9r7DF8Wym
+         K6/A==
+X-Gm-Message-State: ANhLgQ0+hO7V/3I/xBNMen+Tx4Ssf2ni1/8B8N2I5p5qVDU55Ebg+LyQ
+        zfneJVtZ9jwapOWXz8j+wyY1TdbqvYg=
+X-Google-Smtp-Source: ADFU+vvEsn8Gq1RXyYN5iSpe6DvsvvFGPlRYTjTLOHsOzS0k2Hg7+SObQASmSBopKamek23KaQEEnA==
+X-Received: by 2002:adf:ed42:: with SMTP id u2mr21095876wro.226.1584230429534;
+        Sat, 14 Mar 2020 17:00:29 -0700 (PDT)
+Received: from localhost.localdomain (p5B3F731E.dip0.t-ipconnect.de. [91.63.115.30])
+        by smtp.gmail.com with ESMTPSA id 7sm11394469wmf.20.2020.03.14.17.00.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 14 Mar 2020 06:43:05 -0700 (PDT)
-From:   Nishant Malpani <nish.malpani25@gmail.com>
-To:     jic23@kernel.org, robh+dt@kernel.org
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        mark.rutland@arm.com, nish.malpani25@gmail.com, sre@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: iio: tsl2563: convert bindings to YAML
-Date:   Sat, 14 Mar 2020 19:12:37 +0530
-Message-Id: <20200314134237.12187-1-nish.malpani25@gmail.com>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Sat, 14 Mar 2020 17:00:28 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     lee.jones@linaro.org, robh+dt@kernel.org, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+        Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v2 3/5] iio: adc: mp2629: Add support for mp2629 ADC driver
+Date:   Sun, 15 Mar 2020 01:00:11 +0100
+Message-Id: <20200315000013.4440-4-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200315000013.4440-1-sravanhome@gmail.com>
+References: <20200315000013.4440-1-sravanhome@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the TSL2563 device tree bindings to the new YAML format.
+Add support for 8-bit resolution ADC readings for input power
+supply and battery charging measurement. Provides voltage, current
+readings to mp2629 power supply driver.
 
-Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
 ---
+ drivers/iio/adc/Kconfig      |  10 ++
+ drivers/iio/adc/Makefile     |   1 +
+ drivers/iio/adc/mp2629_adc.c | 209 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 220 insertions(+)
+ create mode 100644 drivers/iio/adc/mp2629_adc.c
 
-The link for the datasheet is not attached in the binding document
-because it was not available on the manufacturer's (AMS) website [1].
-
-[1] https://ams.com/ambient-light-sensors
----
- .../devicetree/bindings/iio/light/tsl2563.txt | 19 --------
- .../bindings/iio/light/tsl2563.yaml           | 46 +++++++++++++++++++
- 2 files changed, 46 insertions(+), 19 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2563.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2563.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2563.txt b/Documentation/devicetree/bindings/iio/light/tsl2563.txt
-deleted file mode 100644
-index f91e809e736e..000000000000
---- a/Documentation/devicetree/bindings/iio/light/tsl2563.txt
-+++ /dev/null
-@@ -1,19 +0,0 @@
--* AMS TAOS TSL2563 ambient light sensor
--
--Required properties:
--
--  - compatible : should be "amstaos,tsl2563"
--  - reg : the I2C address of the sensor
--
--Optional properties:
--
--  - amstaos,cover-comp-gain : integer used as multiplier for gain
--                              compensation (default = 1)
--
--Example:
--
--tsl2563@29 {
--	compatible = "amstaos,tsl2563";
--	reg = <0x29>;
--	amstaos,cover-comp-gain = <16>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/light/tsl2563.yaml b/Documentation/devicetree/bindings/iio/light/tsl2563.yaml
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 82e33082958c..ef0c0cd31855 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -680,6 +680,16 @@ config MESON_SARADC
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called meson_saradc.
+ 
++config MP2629_ADC
++	tristate "Monolithic MP2629 ADC driver"
++	depends on MFD_MP2629
++	help
++	  Say yes to have support for battery charger IC MP2629 ADC device
++	  accessed over I2C.
++
++	  This driver provides ADC conversion of system, input power supply
++	  and battery voltage & current information.
++
+ config NAU7802
+ 	tristate "Nuvoton NAU7802 ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 919228900df9..f14416c245a6 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -64,6 +64,7 @@ obj-$(CONFIG_MCP3911) += mcp3911.o
+ obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
+ obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
++obj-$(CONFIG_MP2629_ADC) += mp2629_adc.o
+ obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_NPCM_ADC) += npcm_adc.o
+diff --git a/drivers/iio/adc/mp2629_adc.c b/drivers/iio/adc/mp2629_adc.c
 new file mode 100644
-index 000000000000..2a70b8d62760
+index 000000000000..1a99196624ed
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/tsl2563.yaml
-@@ -0,0 +1,46 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/tsl2563.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/adc/mp2629_adc.c
+@@ -0,0 +1,209 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * MP2629 Driver for ADC
++ *
++ * Copyright 2020 Monolithic Power Systems, Inc
++ *
++ * Author: Saravanan Sekar <sravanhome@gmail.com>
++ */
 +
-+title: AMS TAOS TSL2563 ambient light sensor
++#include <linux/platform_device.h>
++#include <linux/of_device.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/regulator/consumer.h>
++#include <linux/sysfs.h>
++#include <linux/regmap.h>
 +
-+maintainers:
-+  - Sebastian Reichel <sre@kernel.org>
++#include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
++#include <linux/mfd/mp2629.h>
 +
-+description: |
-+  Ambient light sensor with an i2c interface.
++#define	MP2629_REG_ADC_CTRL		0x03
++#define	MP2629_REG_BATT_VOLT		0x0e
++#define	MP2629_REG_SYSTEM_VOLT		0x0f
++#define	MP2629_REG_INPUT_VOLT		0x11
++#define	MP2629_REG_BATT_CURRENT		0x12
++#define	MP2629_REG_INPUT_CURRENT	0x13
 +
-+properties:
-+  compatible:
-+    enum:
-+      - amstaos,tsl2563
++#define	MP2629_ADC_START		BIT(7)
++#define MP2629_ADC_CONTINUOUS		BIT(6)
 +
-+  reg:
-+    maxItems: 1
++#define MP2629_MAP(_mp, _mpc) IIO_MAP(#_mp, "mp2629_charger", "mp2629-"_mpc)
 +
-+  amstaos,cover-comp-gain:
-+    description: Multiplier for gain compensation
-+    allOf:
-+      - $ref: /schemas/types.yaml#/definitions/uint32
-+      - enum: [1, 16]
++#define MP2629_ADC_CHAN(_ch, _type) {				\
++	.type = _type,						\
++	.indexed = 1,						\
++	.datasheet_name = #_ch,					\
++	.channel = MP2629_ ## _ch,				\
++	.address = MP2629_REG_ ## _ch,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
 +
-+required:
-+  - compatible
-+  - reg
++static struct iio_chan_spec mp2629_channels[] = {
++	MP2629_ADC_CHAN(BATT_VOLT, IIO_VOLTAGE),
++	MP2629_ADC_CHAN(SYSTEM_VOLT, IIO_VOLTAGE),
++	MP2629_ADC_CHAN(INPUT_VOLT, IIO_VOLTAGE),
++	MP2629_ADC_CHAN(BATT_CURRENT, IIO_CURRENT),
++	MP2629_ADC_CHAN(INPUT_CURRENT, IIO_CURRENT)
++};
 +
-+examples:
-+  - |
-+    i2c {
++struct mp2629_adc {
++	struct mp2629_info *info;
++	struct device *dev;
++};
 +
-+      #address-cells = <1>;
-+      #size-cells = <0>;
++static struct iio_map mp2629_adc_maps[] = {
++	MP2629_MAP(BATT_VOLT, "batt-volt"),
++	MP2629_MAP(SYSTEM_VOLT, "system-volt"),
++	MP2629_MAP(INPUT_VOLT, "input-volt"),
++	MP2629_MAP(BATT_CURRENT, "batt-current"),
++	MP2629_MAP(INPUT_CURRENT, "input-current")
++};
 +
-+      light-sensor@29 {
-+        compatible = "amstaos,tsl2563";
-+        reg = <0x29>;
-+        amstaos,cover-comp-gain = <16>;
-+      };
-+    };
-+...
++static int mp2629_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct mp2629_adc *adc_info = iio_priv(indio_dev);
++	struct mp2629_info *info = adc_info->info;
++	unsigned int rval;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = regmap_read(info->regmap, chan->address, &rval);
++		if (ret < 0)
++			return ret;
++
++		if (chan->address == MP2629_INPUT_VOLT)
++			rval &= 0x7f;
++		*val = rval;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->channel) {
++		case MP2629_BATT_VOLT:
++		case MP2629_SYSTEM_VOLT:
++			*val = 20;
++			return IIO_VAL_INT;
++
++		case MP2629_INPUT_VOLT:
++			*val = 60;
++			return IIO_VAL_INT;
++
++		case MP2629_BATT_CURRENT:
++			*val = 175;
++			*val2 = 10;
++			return IIO_VAL_FRACTIONAL;
++
++		case MP2629_INPUT_CURRENT:
++			*val = 133;
++			*val2 = 10;
++			return IIO_VAL_FRACTIONAL;
++
++		default:
++			return -EINVAL;
++		}
++
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct iio_info mp2629_adc_info = {
++	.read_raw = &mp2629_read_raw,
++};
++
++static int mp2629_adc_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mp2629_info *info = dev_get_drvdata(dev->parent);
++	struct mp2629_adc *adc_info;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*adc_info));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	adc_info = iio_priv(indio_dev);
++	platform_set_drvdata(pdev, indio_dev);
++	adc_info->info = info;
++	adc_info->dev = dev;
++
++	ret = iio_map_array_register(indio_dev, mp2629_adc_maps);
++	if (ret) {
++		dev_err(dev, "IIO maps register fail: %d\n", ret);
++		return ret;
++	}
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->channels = mp2629_channels;
++	indio_dev->num_channels = ARRAY_SIZE(mp2629_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &mp2629_adc_info;
++
++	ret = regmap_update_bits(info->regmap, MP2629_REG_ADC_CTRL,
++				MP2629_ADC_START | MP2629_ADC_CONTINUOUS,
++				MP2629_ADC_START | MP2629_ADC_CONTINUOUS);
++	if (ret) {
++		dev_err(dev, "adc enable fail: %d\n", ret);
++		goto fail_unmap;
++	}
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "IIO device register fail: %d\n", ret);
++		goto fail_unmap;
++	}
++
++	return 0;
++
++fail_unmap:
++	iio_map_array_unregister(indio_dev);
++	return ret;
++}
++
++static int mp2629_adc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct mp2629_adc *adc_info = iio_priv(indio_dev);
++	struct mp2629_info *info = adc_info->info;
++
++	regmap_update_bits(info->regmap, MP2629_REG_ADC_CTRL,
++					 MP2629_ADC_CONTINUOUS, 0);
++	regmap_update_bits(info->regmap, MP2629_REG_ADC_CTRL,
++					 MP2629_ADC_START, 0);
++
++	iio_map_array_unregister(indio_dev);
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct of_device_id mp2629_adc_of_match[] = {
++	{ .compatible = "mps,mp2629_adc"},
++	{}
++};
++MODULE_DEVICE_TABLE(of, mp2629_adc_of_match);
++
++static struct platform_driver mp2629_adc_driver = {
++	.driver = {
++		.name = "mp2629_adc",
++		.of_match_table = mp2629_adc_of_match,
++	},
++	.probe		= mp2629_adc_probe,
++	.remove		= mp2629_adc_remove,
++};
++module_platform_driver(mp2629_adc_driver);
++
++MODULE_AUTHOR("Saravanan Sekar <sravanhome@gmail.com>");
++MODULE_DESCRIPTION("MP2629 ADC driver");
++MODULE_LICENSE("GPL");
 -- 
-2.20.1
+2.17.1
 
