@@ -2,149 +2,123 @@ Return-Path: <SRS0=tzPa=5A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C48F5C4CECE
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 10:21:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D23D0C10DCE
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 10:25:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9875020724
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 10:21:16 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584267676;
-	bh=qSrdTdk+Bozzx6kRvjzqGnSnWYLTir83lwA0ikq8NP8=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=h16H0Fbtm9FgBIf4NbaLo8p7hcSv9ZXtFUL/W0RqQZHa93fg3LKRtaksq7jY/uFmR
-	 eSOFYU5l5TpLebs2uuRTMeTqkbpZ/7LvKquM3MYE10zAr4AO9RsoLmYj5RPQME/e67
-	 R06OsPTFCzJkeKasSomFCfZzMV6/Lg8ysYuzXMio=
+	by mail.kernel.org (Postfix) with ESMTP id 9881C20578
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Mar 2020 10:25:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728227AbgCOKVN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Mar 2020 06:21:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48510 "EHLO mail.kernel.org"
+        id S1728209AbgCOKZO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Mar 2020 06:25:14 -0400
+Received: from mx2.suse.de ([195.135.220.15]:41692 "EHLO mx2.suse.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728141AbgCOKVN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Mar 2020 06:21:13 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1ACB720578;
-        Sun, 15 Mar 2020 10:21:10 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584267672;
-        bh=qSrdTdk+Bozzx6kRvjzqGnSnWYLTir83lwA0ikq8NP8=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KKGydK0cx0rTn8tjYeYi2WvlhSlF54CgzfR17XqNMjbHbZOYRmFKMLCw6vDQzPpPB
-         ElCG+Qo7LqS7Aek/8dBcIBiAb/Mr/fjjPBkMxTUGfCvj+5PsvebTKRH5orPr4jwEu1
-         qmDZ74IV1bi+WwHdy3mJdiNNVBKdyDgiaj+2tkqg=
-Date:   Sun, 15 Mar 2020 10:21:07 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Saravanan Sekar <sravanhome@gmail.com>
-Cc:     lee.jones@linaro.org, robh+dt@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v2 1/5] dt-bindings: mfd: add document bindings for
- mp2629
-Message-ID: <20200315102107.5c174611@archlinux>
-In-Reply-To: <20200315000013.4440-2-sravanhome@gmail.com>
-References: <20200315000013.4440-1-sravanhome@gmail.com>
-        <20200315000013.4440-2-sravanhome@gmail.com>
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
+        id S1728141AbgCOKZN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 15 Mar 2020 06:25:13 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 1B92CAD48;
+        Sun, 15 Mar 2020 10:25:12 +0000 (UTC)
+Date:   Sun, 15 Mar 2020 11:25:11 +0100
+Message-ID: <s5hh7yp29vc.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Brian Masney <masneyb@onstation.org>
+Subject: Re: [PATCH 2/2] iio: tsl2772: Use scnprintf() for avoiding potential buffer overflow
+In-Reply-To: <20200315095834.76f50454@archlinux>
+References: <20200311074325.7922-1-tiwai@suse.de>
+        <20200311074325.7922-3-tiwai@suse.de>
+        <20200315095834.76f50454@archlinux>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 15 Mar 2020 01:00:09 +0100
-Saravanan Sekar <sravanhome@gmail.com> wrote:
-
-> Add device tree binding information for mp2629 mfd driver.
+On Sun, 15 Mar 2020 10:58:34 +0100,
+Jonathan Cameron wrote:
 > 
-> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-Trivial inline.
-
-> ---
->  .../devicetree/bindings/mfd/mps,mp2629.yaml   | 62 +++++++++++++++++++
->  1 file changed, 62 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+> On Wed, 11 Mar 2020 08:43:25 +0100
+> Takashi Iwai <tiwai@suse.de> wrote:
 > 
-> diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-> new file mode 100644
-> index 000000000000..f5b8c73123c6
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-> @@ -0,0 +1,62 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/mfd/mps,mp2629.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: MP2629 Battery Charger PMIC from Monolithic Power System.
-> +
-> +maintainers:
-> +  - Saravanan Sekar <sravanhome@gmail.com>
-> +
-> +description: |
-> +  MP2629 is an PMIC providing battery charging and power supply for smartphones,
-> +  Wireless camera and portable devices. Chip is contrlled over I2C.
+> > Since snprintf() returns the would-be-output size instead of the
+> > actual output size, the succeeding calls may go beyond the given
+> > buffer limit.  Fix it by replacing with scnprintf().
+> > 
+> > Signed-off-by: Takashi Iwai <tiwai@suse.de>
+> 
+> This one is printing a short well defined list of values.  No way they go
+> anywhere near the smallest possible PAGE_SIZE buffer that it's printing
+> into.
+> 
+> Which is handy given the remaining space isn't adjusted as we add items
+> to the string.  Hence even with scnprintf it would overflow.
 
-wireless (odd capitalization)
+Well, the issue handled here isn't whether the string is truncated.
+Rather whether the pointer passed to the function go beyond the
+boundary.
 
-> +
-> +  The MFD device handles battery charger controller and ADC IIO device for
-> +  battery, system voltage
-> +
-> +properties:
-> +  compatible:
-> +    const: mps,mp2629
-> +
-> +  reg:
-> +    description:
-> +      I2C device address.
+In short, the call pattern like
 
-Could drop the description. It's a standard element for an i2c device.
+	pos += snprintf(buf, limit - pos, ...);
 
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  interrupt-controller: true
-> +
-> +  "#interrupt-cells":
-> +    const: 2
-> +    description:
-> +      The first cell is the IRQ number, the second cell is the trigger type.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - interrupt-controller
-> +  - "#interrupt-cells"
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/input/linux-event-codes.h>
-> +    i2c {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        pmic@4b {
-> +            compatible = "mps,mp2629";
-> +            reg = <0x4b>;
-> +
-> +            interrupt-controller;
-> +            interrupt-parent = <&gpio2>;
-> +            #interrupt-cells = <2>;
-> +            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-> +        };
-> +    };
+is wrong per design of snprintf(), unless you check the return value
+at each time.  snprintf() doesn't return the actually truncated length
+but the length that would be.  So, concatenating with snprintf() can
+go beyond the limit.
 
+Meanwhile, simply replacing it with scnprintf() avoids the wrong
+pointer increment effectively, as it returns the actual output size,
+so it'd return zero if it's all truncated.
+
+Practically seen, the current code should "work", but it's a wrong
+usage of snprintf(), as found in many other places.  I've already
+submitted the patches to each subsystem to cover at least the
+concatenating cases like the above, and this is one of them.
+
+
+thanks,
+
+Takashi
+
+> 
+> Brian, can you take a look at this when you get a moment?
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  drivers/iio/light/tsl2772.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/iio/light/tsl2772.c b/drivers/iio/light/tsl2772.c
+> > index be37fcbd4654..44a0b56a558c 100644
+> > --- a/drivers/iio/light/tsl2772.c
+> > +++ b/drivers/iio/light/tsl2772.c
+> > @@ -986,7 +986,7 @@ static ssize_t in_illuminance0_lux_table_show(struct device *dev,
+> >  	int offset = 0;
+> >  
+> >  	while (i < TSL2772_MAX_LUX_TABLE_SIZE) {
+> > -		offset += snprintf(buf + offset, PAGE_SIZE, "%u,%u,",
+> > +		offset += scnprintf(buf + offset, PAGE_SIZE, "%u,%u,",
+> >  			chip->tsl2772_device_lux[i].ch0,
+> >  			chip->tsl2772_device_lux[i].ch1);
+> >  		if (chip->tsl2772_device_lux[i].ch0 == 0) {
+> > @@ -1000,7 +1000,7 @@ static ssize_t in_illuminance0_lux_table_show(struct device *dev,
+> >  		i++;
+> >  	}
+> >  
+> > -	offset += snprintf(buf + offset, PAGE_SIZE, "\n");
+> > +	offset += scnprintf(buf + offset, PAGE_SIZE, "\n");
+> >  	return offset;
+> >  }
+> >  
+> 
