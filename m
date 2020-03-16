@@ -2,169 +2,141 @@ Return-Path: <SRS0=e0QT=5B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA218C3F2CE
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 12:49:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02A7CC0044D
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 12:50:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 8C17920658
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 12:49:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C6C2520719
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 12:50:12 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BIgHvYml"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731086AbgCPMtq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Mar 2020 08:49:46 -0400
-Received: from mx2.suse.de ([195.135.220.15]:33952 "EHLO mx2.suse.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730970AbgCPMtp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Mar 2020 08:49:45 -0400
-X-Virus-Scanned: by amavisd-new at test-mx.suse.de
-Received: from relay2.suse.de (unknown [195.135.220.254])
-        by mx2.suse.de (Postfix) with ESMTP id 6DC2DAC66;
-        Mon, 16 Mar 2020 12:49:43 +0000 (UTC)
-From:   Takashi Iwai <tiwai@suse.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-Subject: [PATCH v2 1/2] iio: core: Use scnprintf() for avoiding potential buffer overflow
-Date:   Mon, 16 Mar 2020 13:49:40 +0100
-Message-Id: <20200316124941.8010-2-tiwai@suse.de>
-X-Mailer: git-send-email 2.16.4
-In-Reply-To: <20200316124941.8010-1-tiwai@suse.de>
-References: <20200316124941.8010-1-tiwai@suse.de>
+        id S1731007AbgCPMuM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Mar 2020 08:50:12 -0400
+Received: from mail-pg1-f194.google.com ([209.85.215.194]:40053 "EHLO
+        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730970AbgCPMuM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Mar 2020 08:50:12 -0400
+Received: by mail-pg1-f194.google.com with SMTP id t24so9696868pgj.7;
+        Mon, 16 Mar 2020 05:50:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :user-agent;
+        bh=yQQRBR3UCe1qFAx8WTjG74chuD0+CqzV1dqAc0ruQoA=;
+        b=BIgHvYmlSE6AOKfBu9BXFcE/GbdLe5qPUTNF7It4xxB7VJ3yOfWCFmZ4EQIuqykMdX
+         Wp/wojkEkcSsF5KmMCLYoiJaSqEnQaAPxehCyF+dod/K9ulofLfsaMZHQP8TeULL/7iT
+         M51UUcMgH8TUWXrNR8mW0AlRRBluT5y0LE5zkKWJ0GKG1PVHMDjhwlBhp4DPkeFw4F3Q
+         K9x7qOMM7y6tXrXeqI/vEv/i/qmldjytstAz5zZGcIIRBfumb4S8hWcMML/MiKlPYumV
+         +nYOQnkEr3uCFFlwjy6wx60iHwnaCNG61uKXePEQ7k0Px4W9gNhEQKUWaQp1uxf7nO/G
+         U7kA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:user-agent;
+        bh=yQQRBR3UCe1qFAx8WTjG74chuD0+CqzV1dqAc0ruQoA=;
+        b=uM32O9hqR3AG61poIlpTynWWQ1sDvXt+v4c/KCW5srr7hbdL/l2Zy/9p06F8ny7vbk
+         zttSP/rrLaS4/87uJRCBWfBhxirwBg7JNymMH/yEIlmxzYEbooRwJ4yLD1VQyXhf1SEE
+         sS34fR97cFwxWkvOMf9eU29FWy3KXYf+HjtB2QlIUj/dS+pZ+oluBuscNe6SsA4TQv0K
+         L89qPMUbmxjHlik4Gkeglic0BMrOY4yodWuXY3Rp5DJMqI1NTju2fsbsS8aSHg3SP9Tb
+         PTvxorSDaTsm1WliUKLpWpWEntNPnWnV0+ou3Pi6WOEzmqDUiywj89SDsCc+rYmg6HGn
+         KDlw==
+X-Gm-Message-State: ANhLgQ0Kr0NVlzKvbkZsXpjA75ouf8ssnZtHTpAx7EaA2g6+q8jsxZ9q
+        vwt3llmLlWiBawIg46gC2i8=
+X-Google-Smtp-Source: ADFU+vtvHKaZuwCfss780zR+3XbBpQD+Epnuh5nt9MyiUc0PzY16d5ELEBghO9Cr/SzGtJzKK+CoFw==
+X-Received: by 2002:a63:2:: with SMTP id 2mr26113109pga.102.1584363011205;
+        Mon, 16 Mar 2020 05:50:11 -0700 (PDT)
+Received: from syed.domain.name ([103.201.127.108])
+        by smtp.gmail.com with ESMTPSA id x18sm55976328pfo.148.2020.03.16.05.50.08
+        (version=TLS1_2 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 16 Mar 2020 05:50:10 -0700 (PDT)
+Date:   Mon, 16 Mar 2020 18:20:06 +0530
+From:   Syed Nayyar Waris <syednwaris@gmail.com>
+To:     vilhelm.gray@gmail.com
+Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v5 2/3] counter: 104-quad-8: Add lock guards - differential
+ encoder
+Message-ID: <20200316125006.GA415@syed.domain.name>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.24 (2015-08-30)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-snprintf() is a hard-to-use function, it's especially difficult to use
-it for concatenating substrings in a buffer with a limited size.
-Since snprintf() returns the would-be-output size, not the actual
-size, the subsequent use of snprintf() may go beyond the given limit
-easily.  Although the current code doesn't actually overflow the
-buffer, it's an incorrect usage.
+Add lock protection from race conditions to 104-quad-8 counter driver
+for differential encoder status code changes. Mutex lock calls used for
+protection.
 
-This patch replaces such snprintf() calls with a safer version,
-scnprintf().
-
-Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Signed-off-by: Syed Nayyar Waris <syednwaris@gmail.com>
 ---
-v1->v2: Rephrase the changelog
+Changes in v5:
+ - Change spin lock calls to mutex lock calls.
+ - Modify the title description.
 
- drivers/iio/industrialio-core.c | 34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/counter/104-quad-8.c | 18 +++++++++++++++---
+ 1 file changed, 15 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 65ff0d067018..197006b5d5c2 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -559,46 +559,46 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 9dab190..21b2e3e 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -1151,18 +1151,26 @@ static ssize_t quad8_signal_cable_fault_read(struct counter_device *counter,
+ 					     struct counter_signal *signal,
+ 					     void *private, char *buf)
+ {
+-	const struct quad8_iio *const priv = counter->priv;
++	struct quad8_iio *const priv = counter->priv;
+ 	const size_t channel_id = signal->id / 2;
+-	const bool disabled = !(priv->cable_fault_enable & BIT(channel_id));
++	bool disabled;
+ 	unsigned int status;
+ 	unsigned int fault;
  
- 	switch (type) {
- 	case IIO_VAL_INT:
--		return snprintf(buf, len, "%d", vals[0]);
-+		return scnprintf(buf, len, "%d", vals[0]);
- 	case IIO_VAL_INT_PLUS_MICRO_DB:
- 		scale_db = true;
- 		/* fall through */
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (vals[1] < 0)
--			return snprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
-+			return scnprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
- 					-vals[1], scale_db ? " dB" : "");
- 		else
--			return snprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
-+			return scnprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
- 					scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
- 		if (vals[1] < 0)
--			return snprintf(buf, len, "-%d.%09u", abs(vals[0]),
-+			return scnprintf(buf, len, "-%d.%09u", abs(vals[0]),
- 					-vals[1]);
- 		else
--			return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
-+			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL:
- 		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
- 		tmp1 = vals[1];
- 		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
--		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-+		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
- 		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
--		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
-+		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_INT_MULTIPLE:
- 	{
- 		int i;
- 		int l = 0;
+-	if (disabled)
++	mutex_lock(&priv->lock);
++
++	disabled = !(priv->cable_fault_enable & BIT(channel_id));
++
++	if (disabled) {
++		mutex_unlock(&priv->lock);
+ 		return -EINVAL;
++	}
  
- 		for (i = 0; i < size; ++i) {
--			l += snprintf(&buf[l], len - l, "%d ", vals[i]);
-+			l += scnprintf(&buf[l], len - l, "%d ", vals[i]);
- 			if (l >= len)
- 				break;
- 		}
- 		return l;
- 	}
- 	case IIO_VAL_CHAR:
--		return snprintf(buf, len, "%c", (char)vals[0]);
-+		return scnprintf(buf, len, "%c", (char)vals[0]);
- 	default:
- 		return 0;
- 	}
-@@ -669,10 +669,10 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < length - 1)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -685,10 +685,10 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < length / 2 - 1)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -712,10 +712,10 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < 2)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"]\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
-@@ -728,10 +728,10 @@ static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
- 			if (i < 2)
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						" ");
- 			else
--				len += snprintf(buf + len, PAGE_SIZE - len,
-+				len += scnprintf(buf + len, PAGE_SIZE - len,
- 						"]\n");
- 			if (len >= PAGE_SIZE)
- 				return -EFBIG;
+ 	/* Logic 0 = cable fault */
+ 	status = inb(priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
+ 
++	mutex_unlock(&priv->lock);
++
+ 	/* Mask respective channel and invert logic */
+ 	fault = !(status & BIT(channel_id));
+ 
+@@ -1194,6 +1202,8 @@ static ssize_t quad8_signal_cable_fault_enable_write(
+ 	if (ret)
+ 		return ret;
+ 
++	mutex_lock(&priv->lock);
++
+ 	if (enable)
+ 		priv->cable_fault_enable |= BIT(channel_id);
+ 	else
+@@ -1204,6 +1214,8 @@ static ssize_t quad8_signal_cable_fault_enable_write(
+ 
+ 	outb(cable_fault_enable, priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
+ 
++	mutex_unlock(&priv->lock);
++
+ 	return len;
+ }
+ 
 -- 
-2.16.4
+2.7.4
 
