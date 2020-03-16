@@ -5,56 +5,56 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30339C0044D
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 406EEC18E5B
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id DE11320724
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 073F120719
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SaPgLNZ+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ipwXrj2A"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732076AbgCPPvH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Mar 2020 11:51:07 -0400
-Received: from mail-wm1-f66.google.com ([209.85.128.66]:34865 "EHLO
-        mail-wm1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732057AbgCPPvG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Mar 2020 11:51:06 -0400
-Received: by mail-wm1-f66.google.com with SMTP id m3so18652730wmi.0;
-        Mon, 16 Mar 2020 08:51:02 -0700 (PDT)
+        id S1732085AbgCPPvJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Mar 2020 11:51:09 -0400
+Received: from mail-wr1-f65.google.com ([209.85.221.65]:46050 "EHLO
+        mail-wr1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732067AbgCPPvJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Mar 2020 11:51:09 -0400
+Received: by mail-wr1-f65.google.com with SMTP id t2so11806200wrx.12;
+        Mon, 16 Mar 2020 08:51:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=vktn6bELFJnnoDTfzXI8Av+IrXtg31K+aiZNHwqVW9g=;
-        b=SaPgLNZ+MQz4wz51QhUpiDSWuLLEfydiQV/LkpTU6xKRNkzlbOKKEHKicA3TEChGtM
-         zVxB1sLqcd4xoIoE3ODEeInKAyE2oYRUQwqt04eBDzXR9eHFLpC4k3PMX1gXtmx+DlA+
-         /iG80Ta41OBuCVFntnBNBVQlOixDB0Md/sTG1HbGkaznrpWwdrIrLKWTIqb2buCYpROd
-         NhybFXuvRz8Fh+UiSpI0uyd3cAZuOrvlrqbKCVSqPWo/JljWc96UX1K0XFuVJ9yqrCkq
-         CbVNWokUpaINE2B3aC7ntBMCJmHdRynBc72kOzYqL+vxp6uq73w2VwtvQXgISNaazjBz
-         LYig==
+        bh=vJwDxDvqJl08b1UnMtHcDNN8K1pN6vTUHfc25Nvmk0M=;
+        b=ipwXrj2AMLLERm14AzUv1+rwh1Sk6LoRv7NAZij+J2c+3ny/uQdM5pikxiYXEhxRN7
+         MTqHJ/v5lN4gsPXLBWim1XCt2b5C5HZubAR3ful6YHKDYOWG1XkiEuCQXD3sKE6DMC0v
+         g4bFqb+WaILj9/X0LdsAbbe+JxpFjOlBJgwq26wCDbXIeN1gTnPg8GUctRegmHN0npTJ
+         aBZvZTTcgj1+bkN10LfXWowiqRe4dwuYx8esdfuoAOHUktKtCZ9ButzAbVnYDaJYP9nn
+         GtMyn7eL3PojrTtUXAwIqbY4UNfLpoq0Hdj0tapmw1wC7G8OuIk3YXbyIiNGnPVLLtE9
+         7qMA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=vktn6bELFJnnoDTfzXI8Av+IrXtg31K+aiZNHwqVW9g=;
-        b=jEOa4abqObrhSVb3DcUSiCL3LEcQ8qPbsd13WDwwo40wM58lMTa6PSy0O3VNz9gjNv
-         0CaJH4qWmTULCIg76y2MM836K1V54Xhpwc6lsBMwm8u3wZWUNVQga5W5NS+Xh3j3uT/m
-         DOT2nf6xZXO24hC5318amcVv3TiTH+5HSBPBpiPkhfvXZhbqxq4oknaRk/yUqK41UwKG
-         T3W3H24ITnF6bfu900cF6IQkiDKM6uHNu1GrVPZc4TPWY+PoB50v58up1CMjVT0yhMrg
-         dAvjcwSQ7u49UkCo/2Vr4wdIgEpb+kqEKJOI2+JvXE5E/VJe/oXqr+EPHMEwpakxSu0c
-         dqHA==
-X-Gm-Message-State: ANhLgQ2/2TvMdqosBx0sC4y25qctkSERsLEYRaQ5n1EqaZVnnymunX1V
-        nPlHe3D7JXOAJjBUjBcpCO3Qofev
-X-Google-Smtp-Source: ADFU+vvAX0WMdjDuUJ1VxbWUd4OBN6Qx530v1YjRBQr6JVdnkozivkPCsCsBAwFPoBLayn/OO1WrNQ==
-X-Received: by 2002:a1c:9a88:: with SMTP id c130mr29835581wme.73.1584373860696;
-        Mon, 16 Mar 2020 08:51:00 -0700 (PDT)
+        bh=vJwDxDvqJl08b1UnMtHcDNN8K1pN6vTUHfc25Nvmk0M=;
+        b=qsRwb/zdQMVqOuIAitMLOrmGTDvVRRLjNavNyy1wdVD9TFiu4ZOuVh+ge7Q1I9+Cns
+         NmzL/nTzNZgCvGobFnrL8Jc5f/zInMCSIHpFcaZ3uSsKh/aPNRq+Wfl7bDmPUJM1y8AP
+         Pl8tTL0gfR9UVR5vI2sI53onRK0jHZao+W56JXuOr4CeFNAPjsoLtzVRoy4iEyi1qHyA
+         krxWB/2EIg9d1McC7TLIK/wH6o7lUuqmBes3m7YaVLS/HXprw7qKDTgQa1/lQGEjPldW
+         zlgLKv7Fbm/8mrKCWyGt0izFiMQjV7unV6L+Joc1wr3U+OjFkwnkmQ9syZiNUn5s98d2
+         eL9Q==
+X-Gm-Message-State: ANhLgQ0F/WWvzbu0/6uW2YhgFQI5l4Lqjs7LT04na28sf1w5sB68EMTk
+        ustZtrDwNt80mQwE7ri2/bZMLo0Q
+X-Google-Smtp-Source: ADFU+vs9ydTPPFpbxTlTs5v4hiWVeac14NbNUz8BTTAYMRsdc4uU6pKDMslXZC/MpTrrR0riuLZJqA==
+X-Received: by 2002:a5d:6591:: with SMTP id q17mr46099wru.22.1584373864075;
+        Mon, 16 Mar 2020 08:51:04 -0700 (PDT)
 Received: from saturn.lan ([188.26.73.247])
-        by smtp.gmail.com with ESMTPSA id n14sm153558wmi.19.2020.03.16.08.50.59
+        by smtp.gmail.com with ESMTPSA id n14sm153558wmi.19.2020.03.16.08.51.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2020 08:51:00 -0700 (PDT)
+        Mon, 16 Mar 2020 08:51:03 -0700 (PDT)
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
 X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -66,9 +66,9 @@ Cc:     jic23@kernel.org, robh+dt@kernel.org, Laszlo.Nagy@analog.com,
         Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v10 5/8] iio: adc: adi-axi-adc: add support for AXI ADC IP core
-Date:   Mon, 16 Mar 2020 17:50:32 +0200
-Message-Id: <20200316155035.25500-6-alexandru.ardelean@analog.com>
+Subject: [PATCH v10 7/8] iio: adc: ad9467: add support AD9467 ADC
+Date:   Mon, 16 Mar 2020 17:50:34 +0200
+Message-Id: <20200316155035.25500-8-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200316155035.25500-1-alexandru.ardelean@analog.com>
 References: <20200316155035.25500-1-alexandru.ardelean@analog.com>
@@ -81,654 +81,497 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Michael Hennerich <michael.hennerich@analog.com>
 
-This change adds support for the Analog Devices Generic AXI ADC IP core.
-The IP core is used for interfacing with analog-to-digital (ADC) converters
-that require either a high-speed serial interface (JESD204B/C) or a source
-synchronous parallel interface (LVDS/CMOS).
+The AD9467 is a 16-bit, monolithic, IF sampling analog-to-digital converter
+(ADC). It is optimized for high performanceover wide bandwidths and ease of
+use. The product operates at a 250 MSPS conversion rate and is designed for
+wireless receivers, instrumentation, and test equipment that require a high
+dynamic range. The ADC requires 1.8 V and 3.3 V power supplies and a low
+voltage differential input clock for full performance operation. No
+external reference or driver components are required for many applications.
+Data outputs are LVDS compatible (ANSI-644 compatible) and include the
+means to reduce the overall current needed for short trace distances.
 
-Usually, some other interface type (i.e SPI) is used as a control interface
-for the actual ADC, while the IP core (controlled via this driver), will
-interface to the data-lines of the ADC and handle  the streaming of data
-into memory via DMA.
+Since the chip can operate at such high sample-rates (much higher than
+classical interfaces), it requires that a DMA controller be used to
+interface directly to the chip and push data into memory.
+Typically, the AXI ADC IP core is used to interface with it.
 
-Because of this, the AXI ADC driver needs the other SPI-ADC driver to
-register with it. The SPI-ADC needs to be register via the SPI framework,
-while the AXI ADC registers as a platform driver. The two cannot be ordered
-in a hierarchy as both drivers have their own registers, and trying to
-organize this [in a hierarchy becomes] problematic when trying to map
-memory/registers.
+Link: https://www.analog.com/media/en/technical-documentation/data-sheets/AD9467.pdf
 
-There are some modes where the AXI ADC can operate as standalone ADC, but
-those will be implemented at a later point in time.
-
-Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/adc/Kconfig             |  20 ++
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/adi-axi-adc.c       | 495 ++++++++++++++++++++++++++++
- include/linux/iio/adc/adi-axi-adc.h |  64 ++++
- 4 files changed, 580 insertions(+)
- create mode 100644 drivers/iio/adc/adi-axi-adc.c
- create mode 100644 include/linux/iio/adc/adi-axi-adc.h
+ drivers/iio/adc/Kconfig  |  15 ++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/ad9467.c | 420 +++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 436 insertions(+)
+ create mode 100644 drivers/iio/adc/ad9467.c
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index f4da821c4022..445070abf376 100644
+index 445070abf376..a0796510f9d4 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -246,6 +246,26 @@ config AD799X
+@@ -246,6 +246,21 @@ config AD799X
  	  To compile this driver as a module, choose M here: the module will be
  	  called ad799x.
  
-+config ADI_AXI_ADC
-+	tristate "Analog Devices Generic AXI ADC IP core driver"
-+	select IIO_BUFFER
-+	select IIO_BUFFER_HW_CONSUMER
-+	select IIO_BUFFER_DMAENGINE
++config AD9467
++	tristate "Analog Devices AD9467 High Speed ADC driver"
++	depends on SPI
++	select ADI_AXI_ADC
 +	help
-+	  Say yes here to build support for Analog Devices Generic
-+	  AXI ADC IP core. The IP core is used for interfacing with
-+	  analog-to-digital (ADC) converters that require either a high-speed
-+	  serial interface (JESD204B/C) or a source synchronous parallel
-+	  interface (LVDS/CMOS).
-+	  Typically (for such devices) SPI will be used for configuration only,
-+	  while this IP core handles the streaming of data into memory via DMA.
++	  Say yes here to build support for Analog Devices:
++	  * AD9467 16-Bit, 200 MSPS/250 MSPS Analog-to-Digital Converter
 +
-+	  Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-+	  If unsure, say N (but it's safe to say "Y").
++	  The driver requires the assistance of the AXI ADC IP core to operate,
++	  since SPI is used for configuration only, while data has to be
++	  streamed into memory via DMA.
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called adi-axi-adc.
++	  To compile this driver as a module, choose M here: the module will be
++	  called ad9467.
 +
- config ASPEED_ADC
- 	tristate "Aspeed ADC"
- 	depends on ARCH_ASPEED || COMPILE_TEST
+ config ADI_AXI_ADC
+ 	tristate "Analog Devices Generic AXI ADC IP core driver"
+ 	select IIO_BUFFER
 diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 8462455b4228..7c6594d049f9 100644
+index 7c6594d049f9..59722770a654 100644
 --- a/drivers/iio/adc/Makefile
 +++ b/drivers/iio/adc/Makefile
 @@ -26,6 +26,7 @@ obj-$(CONFIG_AD7793) += ad7793.o
  obj-$(CONFIG_AD7887) += ad7887.o
  obj-$(CONFIG_AD7949) += ad7949.o
  obj-$(CONFIG_AD799X) += ad799x.o
-+obj-$(CONFIG_ADI_AXI_ADC) += adi-axi-adc.o
++obj-$(CONFIG_AD9467) += ad9467.o
+ obj-$(CONFIG_ADI_AXI_ADC) += adi-axi-adc.o
  obj-$(CONFIG_ASPEED_ADC) += aspeed_adc.o
  obj-$(CONFIG_AT91_ADC) += at91_adc.o
- obj-$(CONFIG_AT91_SAMA5D2_ADC) += at91-sama5d2_adc.o
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
 new file mode 100644
-index 000000000000..8d966b47edc9
+index 000000000000..362993daedaf
 --- /dev/null
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -0,0 +1,495 @@
++++ b/drivers/iio/adc/ad9467.c
+@@ -0,0 +1,420 @@
 +// SPDX-License-Identifier: GPL-2.0-only
 +/*
-+ * Analog Devices Generic AXI ADC IP core
-+ * Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
++ * Analog Devices AD9467 SPI ADC driver
 + *
 + * Copyright 2012-2020 Analog Devices Inc.
 + */
 +
-+#include <linux/bitfield.h>
-+#include <linux/clk.h>
-+#include <linux/io.h>
-+#include <linux/delay.h>
 +#include <linux/module.h>
-+#include <linux/platform_device.h>
++#include <linux/device.h>
++#include <linux/kernel.h>
 +#include <linux/slab.h>
++#include <linux/spi/spi.h>
++#include <linux/err.h>
++#include <linux/delay.h>
++#include <linux/gpio/consumer.h>
++#include <linux/of_device.h>
++
 +
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/buffer-dmaengine.h>
 +
-+#include <linux/fpga/adi-axi-common.h>
++#include <linux/clk.h>
++
 +#include <linux/iio/adc/adi-axi-adc.h>
 +
-+/**
-+ * Register definitions:
-+ *   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip#register_map
++/*
++ * ADI High-Speed ADC common spi interface registers
++ * See Application-Note AN-877:
++ *   https://www.analog.com/media/en/technical-documentation/application-notes/AN-877.pdf
 + */
 +
-+/* ADC controls */
++#define AN877_ADC_REG_CHIP_PORT_CONF		0x00
++#define AN877_ADC_REG_CHIP_ID			0x01
++#define AN877_ADC_REG_CHIP_GRADE		0x02
++#define AN877_ADC_REG_CHAN_INDEX		0x05
++#define AN877_ADC_REG_TRANSFER			0xFF
++#define AN877_ADC_REG_MODES			0x08
++#define AN877_ADC_REG_TEST_IO			0x0D
++#define AN877_ADC_REG_ADC_INPUT			0x0F
++#define AN877_ADC_REG_OFFSET			0x10
++#define AN877_ADC_REG_OUTPUT_MODE		0x14
++#define AN877_ADC_REG_OUTPUT_ADJUST		0x15
++#define AN877_ADC_REG_OUTPUT_PHASE		0x16
++#define AN877_ADC_REG_OUTPUT_DELAY		0x17
++#define AN877_ADC_REG_VREF			0x18
++#define AN877_ADC_REG_ANALOG_INPUT		0x2C
 +
-+#define ADI_AXI_REG_RSTN			0x0040
-+#define   ADI_AXI_REG_RSTN_CE_N			BIT(2)
-+#define   ADI_AXI_REG_RSTN_MMCM_RSTN		BIT(1)
-+#define   ADI_AXI_REG_RSTN_RSTN			BIT(0)
++/* AN877_ADC_REG_TEST_IO */
++#define AN877_ADC_TESTMODE_OFF			0x0
++#define AN877_ADC_TESTMODE_MIDSCALE_SHORT	0x1
++#define AN877_ADC_TESTMODE_POS_FULLSCALE	0x2
++#define AN877_ADC_TESTMODE_NEG_FULLSCALE	0x3
++#define AN877_ADC_TESTMODE_ALT_CHECKERBOARD	0x4
++#define AN877_ADC_TESTMODE_PN23_SEQ		0x5
++#define AN877_ADC_TESTMODE_PN9_SEQ		0x6
++#define AN877_ADC_TESTMODE_ONE_ZERO_TOGGLE	0x7
++#define AN877_ADC_TESTMODE_USER			0x8
++#define AN877_ADC_TESTMODE_BIT_TOGGLE		0x9
++#define AN877_ADC_TESTMODE_SYNC			0xA
++#define AN877_ADC_TESTMODE_ONE_BIT_HIGH		0xB
++#define AN877_ADC_TESTMODE_MIXED_BIT_FREQUENCY	0xC
++#define AN877_ADC_TESTMODE_RAMP			0xF
 +
-+/* ADC Channel controls */
++/* AN877_ADC_REG_TRANSFER */
++#define AN877_ADC_TRANSFER_SYNC			0x1
 +
-+#define ADI_AXI_REG_CHAN_CTRL(c)		(0x0400 + (c) * 0x40)
-+#define   ADI_AXI_REG_CHAN_CTRL_LB_OWR		BIT(11)
-+#define   ADI_AXI_REG_CHAN_CTRL_PN_SEL_OWR	BIT(10)
-+#define   ADI_AXI_REG_CHAN_CTRL_IQCOR_EN	BIT(9)
-+#define   ADI_AXI_REG_CHAN_CTRL_DCFILT_EN	BIT(8)
-+#define   ADI_AXI_REG_CHAN_CTRL_FMT_SIGNEXT	BIT(6)
-+#define   ADI_AXI_REG_CHAN_CTRL_FMT_TYPE	BIT(5)
-+#define   ADI_AXI_REG_CHAN_CTRL_FMT_EN		BIT(4)
-+#define   ADI_AXI_REG_CHAN_CTRL_PN_TYPE_OWR	BIT(1)
-+#define   ADI_AXI_REG_CHAN_CTRL_ENABLE		BIT(0)
++/* AN877_ADC_REG_OUTPUT_MODE */
++#define AN877_ADC_OUTPUT_MODE_OFFSET_BINARY	0x0
++#define AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT	0x1
++#define AN877_ADC_OUTPUT_MODE_GRAY_CODE		0x2
 +
-+#define ADI_AXI_REG_CHAN_CTRL_DEFAULTS		\
-+	(ADI_AXI_REG_CHAN_CTRL_FMT_SIGNEXT |	\
-+	 ADI_AXI_REG_CHAN_CTRL_FMT_EN |		\
-+	 ADI_AXI_REG_CHAN_CTRL_ENABLE)
++/* AN877_ADC_REG_OUTPUT_PHASE */
++#define AN877_ADC_OUTPUT_EVEN_ODD_MODE_EN	0x20
++#define AN877_ADC_INVERT_DCO_CLK		0x80
 +
-+struct adi_axi_adc_core_info {
-+	unsigned int				version;
-+};
++/* AN877_ADC_REG_OUTPUT_DELAY */
++#define AN877_ADC_DCO_DELAY_ENABLE		0x80
 +
-+struct adi_axi_adc_state {
-+	struct mutex				lock;
++/*
++ * Analog Devices AD9467 16-Bit, 200/250 MSPS ADC
++ */
 +
-+	struct adi_axi_adc_client		*client;
-+	void __iomem				*regs;
-+};
-+
-+struct adi_axi_adc_client {
-+	struct list_head			entry;
-+	struct adi_axi_adc_conv			conv;
-+	struct adi_axi_adc_state		*state;
-+	struct device				*dev;
-+	const struct adi_axi_adc_core_info	*info;
-+};
-+
-+static LIST_HEAD(registered_clients);
-+static DEFINE_MUTEX(registered_clients_lock);
-+
-+static struct adi_axi_adc_client *conv_to_client(struct adi_axi_adc_conv *conv)
-+{
-+	if (!conv)
-+		return NULL;
-+	return container_of(conv, struct adi_axi_adc_client, conv);
-+}
-+
-+void *adi_axi_adc_conv_priv(struct adi_axi_adc_conv *conv)
-+{
-+	struct adi_axi_adc_client *cl = conv_to_client(conv);
-+
-+	if (!cl)
-+		return NULL;
-+
-+	return (char *)cl + ALIGN(sizeof(struct adi_axi_adc_client), IIO_ALIGN);
-+}
-+EXPORT_SYMBOL_GPL(adi_axi_adc_conv_priv);
-+
-+static void adi_axi_adc_write(struct adi_axi_adc_state *st,
-+			      unsigned int reg,
-+			      unsigned int val)
-+{
-+	iowrite32(val, st->regs + reg);
-+}
-+
-+static unsigned int adi_axi_adc_read(struct adi_axi_adc_state *st,
-+				     unsigned int reg)
-+{
-+	return ioread32(st->regs + reg);
-+}
-+
-+static int adi_axi_adc_config_dma_buffer(struct device *dev,
-+					 struct iio_dev *indio_dev)
-+{
-+	struct iio_buffer *buffer;
-+	const char *dma_name;
-+
-+	if (!device_property_present(dev, "dmas"))
-+		return 0;
-+
-+	if (device_property_read_string(dev, "dma-names", &dma_name))
-+		dma_name = "rx";
-+
-+	buffer = devm_iio_dmaengine_buffer_alloc(indio_dev->dev.parent,
-+						 dma_name);
-+	if (IS_ERR(buffer))
-+		return PTR_ERR(buffer);
-+
-+	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
-+	iio_device_attach_buffer(indio_dev, buffer);
-+
-+	return 0;
-+}
-+
-+static int adi_axi_adc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct adi_axi_adc_state *st = iio_priv(indio_dev);
-+	struct adi_axi_adc_conv *conv = &st->client->conv;
-+
-+	if (!conv->read_raw)
-+		return -EOPNOTSUPP;
-+
-+	return conv->read_raw(conv, chan, val, val2, mask);
-+}
-+
-+static int adi_axi_adc_write_raw(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan,
-+				 int val, int val2, long mask)
-+{
-+	struct adi_axi_adc_state *st = iio_priv(indio_dev);
-+	struct adi_axi_adc_conv *conv = &st->client->conv;
-+
-+	if (!conv->write_raw)
-+		return -EOPNOTSUPP;
-+
-+	return conv->write_raw(conv, chan, val, val2, mask);
-+}
-+
-+static int adi_axi_adc_update_scan_mode(struct iio_dev *indio_dev,
-+					const unsigned long *scan_mask)
-+{
-+	struct adi_axi_adc_state *st = iio_priv(indio_dev);
-+	struct adi_axi_adc_conv *conv = &st->client->conv;
-+	unsigned int i, ctrl;
-+
-+	for (i = 0; i < conv->chip_info->num_channels; i++) {
-+		ctrl = adi_axi_adc_read(st, ADI_AXI_REG_CHAN_CTRL(i));
-+
-+		if (test_bit(i, scan_mask))
-+			ctrl |= ADI_AXI_REG_CHAN_CTRL_ENABLE;
-+		else
-+			ctrl &= ~ADI_AXI_REG_CHAN_CTRL_ENABLE;
-+
-+		adi_axi_adc_write(st, ADI_AXI_REG_CHAN_CTRL(i), ctrl);
-+	}
-+
-+	return 0;
-+}
-+
-+static struct adi_axi_adc_conv *adi_axi_adc_conv_register(struct device *dev,
-+							  int sizeof_priv)
-+{
-+	struct adi_axi_adc_client *cl;
-+	size_t alloc_size;
-+
-+	alloc_size = sizeof(struct adi_axi_adc_client);
-+	if (sizeof_priv) {
-+		alloc_size = ALIGN(alloc_size, IIO_ALIGN);
-+		alloc_size += sizeof_priv;
-+	}
-+	alloc_size += IIO_ALIGN - 1;
-+
-+	cl = kzalloc(alloc_size, GFP_KERNEL);
-+	if (!cl)
-+		return ERR_PTR(-ENOMEM);
-+
-+	mutex_lock(&registered_clients_lock);
-+
-+	get_device(dev);
-+	cl->dev = dev;
-+
-+	list_add_tail(&cl->entry, &registered_clients);
-+
-+	mutex_unlock(&registered_clients_lock);
-+
-+	return &cl->conv;
-+}
-+
-+static void adi_axi_adc_conv_unregister(struct adi_axi_adc_conv *conv)
-+{
-+	struct adi_axi_adc_client *cl = conv_to_client(conv);
-+
-+	if (!cl)
-+		return;
-+
-+	mutex_lock(&registered_clients_lock);
-+
-+	list_del(&cl->entry);
-+	put_device(cl->dev);
-+
-+	mutex_unlock(&registered_clients_lock);
-+
-+	kfree(cl);
-+}
-+
-+static void devm_adi_axi_adc_conv_release(struct device *dev, void *res)
-+{
-+	adi_axi_adc_conv_unregister(*(struct adi_axi_adc_conv **)res);
-+}
-+
-+struct adi_axi_adc_conv *devm_adi_axi_adc_conv_register(struct device *dev,
-+							int sizeof_priv)
-+{
-+	struct adi_axi_adc_conv **ptr, *conv;
-+
-+	ptr = devres_alloc(devm_adi_axi_adc_conv_release, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	conv = adi_axi_adc_conv_register(dev, sizeof_priv);
-+	if (IS_ERR(conv)) {
-+		devres_free(ptr);
-+		return ERR_CAST(conv);
-+	}
-+
-+	*ptr = conv;
-+	devres_add(dev, ptr);
-+
-+	return conv;
-+}
-+EXPORT_SYMBOL_GPL(devm_adi_axi_adc_conv_register);
-+
-+static ssize_t in_voltage_scale_available_show(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adi_axi_adc_state *st = iio_priv(indio_dev);
-+	struct adi_axi_adc_conv *conv = &st->client->conv;
-+	size_t len = 0;
-+	int i;
-+
-+	for (i = 0; i < conv->chip_info->num_scales; i++) {
-+		const unsigned int *s = conv->chip_info->scale_table[i];
-+
-+		len += scnprintf(buf + len, PAGE_SIZE - len,
-+				 "%u.%06u ", s[0], s[1]);
-+	}
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static IIO_DEVICE_ATTR_RO(in_voltage_scale_available, 0);
++#define CHIPID_AD9467			0x50
++#define AD9467_DEF_OUTPUT_MODE		0x08
++#define AD9467_REG_VREF_MASK		0x0F
 +
 +enum {
-+	ADI_AXI_ATTR_SCALE_AVAIL,
++	ID_AD9467,
 +};
 +
-+#define ADI_AXI_ATTR(_en_, _file_)			\
-+	[ADI_AXI_ATTR_##_en_] = &iio_dev_attr_##_file_.dev_attr.attr
++struct ad9467_state {
++	struct spi_device		*spi;
++	struct clk			*clk;
++	unsigned int			output_mode;
 +
-+static struct attribute *adi_axi_adc_attributes[] = {
-+	ADI_AXI_ATTR(SCALE_AVAIL, in_voltage_scale_available),
-+	NULL,
++	struct gpio_desc		*pwrdown_gpio;
++	struct gpio_desc		*reset_gpio;
 +};
 +
-+static umode_t axi_adc_attr_is_visible(struct kobject *kobj,
-+				       struct attribute *attr, int n)
++static int ad9467_spi_read(struct spi_device *spi, unsigned int reg)
 +{
-+	struct device *dev = container_of(kobj, struct device, kobj);
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct adi_axi_adc_state *st = iio_priv(indio_dev);
-+	struct adi_axi_adc_conv *conv = &st->client->conv;
++	unsigned char tbuf[2], rbuf[1];
++	int ret;
 +
-+	switch (n) {
-+	case ADI_AXI_ATTR_SCALE_AVAIL:
-+		if (!conv->chip_info->num_scales)
-+			return 0;
-+		return attr->mode;
-+	default:
-+		return attr->mode;
-+	}
++	tbuf[0] = 0x80 | (reg >> 8);
++	tbuf[1] = reg & 0xFF;
++
++	ret = spi_write_then_read(spi,
++				  tbuf, ARRAY_SIZE(tbuf),
++				  rbuf, ARRAY_SIZE(rbuf));
++
++	if (ret < 0)
++		return ret;
++
++	return rbuf[0];
 +}
 +
-+static const struct attribute_group adi_axi_adc_attribute_group = {
-+	.attrs = adi_axi_adc_attributes,
-+	.is_visible = axi_adc_attr_is_visible,
-+};
-+
-+static const struct iio_info adi_axi_adc_info = {
-+	.read_raw = &adi_axi_adc_read_raw,
-+	.write_raw = &adi_axi_adc_write_raw,
-+	.attrs = &adi_axi_adc_attribute_group,
-+	.update_scan_mode = &adi_axi_adc_update_scan_mode,
-+};
-+
-+static const struct adi_axi_adc_core_info adi_axi_adc_10_0_a_info = {
-+	.version = ADI_AXI_PCORE_VER(10, 0, 'a'),
-+};
-+
-+/* Match table for of_platform binding */
-+static const struct of_device_id adi_axi_adc_of_match[] = {
-+	{ .compatible = "adi,axi-adc-10.0.a", .data = &adi_axi_adc_10_0_a_info },
-+	{ /* end of list */ },
-+};
-+MODULE_DEVICE_TABLE(of, adi_axi_adc_of_match);
-+
-+struct adi_axi_adc_client *adi_axi_adc_attach_client(struct device *dev)
++static int ad9467_spi_write(struct spi_device *spi, unsigned int reg,
++			    unsigned int val)
 +{
-+	const struct of_device_id *id;
-+	struct adi_axi_adc_client *cl;
-+	struct device_node *cln;
++	unsigned char buf[3];
 +
-+	if (!dev->of_node) {
-+		dev_err(dev, "DT node is null\n");
-+		return ERR_PTR(-ENODEV);
-+	}
++	buf[0] = reg >> 8;
++	buf[1] = reg & 0xFF;
++	buf[2] = val;
 +
-+	id = of_match_node(adi_axi_adc_of_match, dev->of_node);
-+	if (!id)
-+		return ERR_PTR(-ENODEV);
-+
-+	cln = of_parse_phandle(dev->of_node, "adi,adc-dev", 0);
-+	if (!cln) {
-+		dev_err(dev, "No 'adi,adc-dev' node defined\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+
-+	mutex_lock(&registered_clients_lock);
-+
-+	list_for_each_entry(cl, &registered_clients, entry) {
-+		if (!cl->dev)
-+			continue;
-+		if (cl->dev->of_node == cln) {
-+			if (!try_module_get(dev->driver->owner)) {
-+				mutex_unlock(&registered_clients_lock);
-+				return ERR_PTR(-ENODEV);
-+			}
-+			get_device(dev);
-+			cl->info = id->data;
-+			mutex_unlock(&registered_clients_lock);
-+			return cl;
-+		}
-+	}
-+
-+	mutex_unlock(&registered_clients_lock);
-+
-+	return ERR_PTR(-EPROBE_DEFER);
++	return spi_write(spi, buf, ARRAY_SIZE(buf));
 +}
 +
-+static int adi_axi_adc_setup_channels(struct device *dev,
-+				      struct adi_axi_adc_state *st)
++static int ad9467_reg_access(struct adi_axi_adc_conv *conv, unsigned int reg,
++			     unsigned int writeval, unsigned int *readval)
 +{
-+	struct adi_axi_adc_conv *conv = conv = &st->client->conv;
-+	int i, ret;
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++	struct spi_device *spi = st->spi;
++	int ret;
 +
-+	if (conv->preenable_setup) {
-+		ret = conv->preenable_setup(conv);
-+		if (ret)
-+			return ret;
++	if (readval == NULL) {
++		ret = ad9467_spi_write(spi, reg, writeval);
++		ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
++				 AN877_ADC_TRANSFER_SYNC);
++		return ret;
 +	}
 +
-+	for (i = 0; i < conv->chip_info->num_channels; i++) {
-+		adi_axi_adc_write(st, ADI_AXI_REG_CHAN_CTRL(i),
-+				  ADI_AXI_REG_CHAN_CTRL_DEFAULTS);
-+	}
++	ret = ad9467_spi_read(spi, reg);
++	if (ret < 0)
++		return ret;
++	*readval = ret;
 +
 +	return 0;
 +}
 +
-+static void axi_adc_reset(struct adi_axi_adc_state *st)
++static const unsigned int ad9467_scale_table[][2] = {
++	{2000, 0}, {2100, 6}, {2200, 7},
++	{2300, 8}, {2400, 9}, {2500, 10},
++};
++
++static void __ad9467_get_scale(struct adi_axi_adc_conv *conv, int index,
++			       unsigned int *val, unsigned int *val2)
 +{
-+	adi_axi_adc_write(st, ADI_AXI_REG_RSTN, 0);
-+	mdelay(10);
-+	adi_axi_adc_write(st, ADI_AXI_REG_RSTN, ADI_AXI_REG_RSTN_MMCM_RSTN);
-+	mdelay(10);
-+	adi_axi_adc_write(st, ADI_AXI_REG_RSTN,
-+			  ADI_AXI_REG_RSTN_RSTN | ADI_AXI_REG_RSTN_MMCM_RSTN);
++	const struct adi_axi_adc_chip_info *info = conv->chip_info;
++	const struct iio_chan_spec *chan = &info->channels[0];
++	unsigned int tmp;
++
++	tmp = (info->scale_table[index][0] * 1000000ULL) >>
++			chan->scan_type.realbits;
++	*val = tmp / 1000000;
++	*val2 = tmp % 1000000;
 +}
 +
-+static void adi_axi_adc_cleanup(void *data)
-+{
-+	struct adi_axi_adc_client *cl = data;
-+
-+	put_device(cl->dev);
-+	module_put(cl->dev->driver->owner);
++#define AD9467_CHAN(_chan, _si, _bits, _sign)				\
++{									\
++	.type = IIO_VOLTAGE,						\
++	.indexed = 1,							\
++	.channel = _chan,						\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++		BIT(IIO_CHAN_INFO_SAMP_FREQ),				\
++	.scan_index = _si,						\
++	.scan_type = {							\
++		.sign = _sign,						\
++		.realbits = _bits,					\
++		.storagebits = 16,					\
++	},								\
 +}
 +
-+static int adi_axi_adc_probe(struct platform_device *pdev)
++static const struct iio_chan_spec ad9467_channels[] = {
++	AD9467_CHAN(0, 0, 16, 'S'),
++};
++
++static const struct adi_axi_adc_chip_info ad9467_chip_tbl[] = {
++	[ID_AD9467] = {
++		.id = CHIPID_AD9467,
++		.max_rate = 250000000UL,
++		.scale_table = ad9467_scale_table,
++		.num_scales = ARRAY_SIZE(ad9467_scale_table),
++		.channels = ad9467_channels,
++		.num_channels = ARRAY_SIZE(ad9467_channels),
++	},
++};
++
++static int ad9467_get_scale(struct adi_axi_adc_conv *conv, int *val, int *val2)
 +{
-+	struct adi_axi_adc_conv *conv;
-+	struct iio_dev *indio_dev;
-+	struct adi_axi_adc_client *cl;
-+	struct adi_axi_adc_state *st;
-+	unsigned int ver;
++	const struct adi_axi_adc_chip_info *info = conv->chip_info;
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++	unsigned int i, vref_val, vref_mask;
++
++	vref_val = ad9467_spi_read(st->spi, AN877_ADC_REG_VREF);
++
++	switch (info->id) {
++	case CHIPID_AD9467:
++		vref_mask = AD9467_REG_VREF_MASK;
++		break;
++	default:
++		vref_mask = 0xFFFF;
++		break;
++	}
++
++	vref_val &= vref_mask;
++
++	for (i = 0; i < info->num_scales; i++) {
++		if (vref_val == info->scale_table[i][1])
++			break;
++	}
++
++	if (i == info->num_scales)
++		return -ERANGE;
++
++	__ad9467_get_scale(conv, i, val, val2);
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
++static int ad9467_set_scale(struct adi_axi_adc_conv *conv, int val, int val2)
++{
++	const struct adi_axi_adc_chip_info *info = conv->chip_info;
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++	unsigned int scale_val[2];
++	unsigned int i;
++
++	if (val != 0)
++		return -EINVAL;
++
++	for (i = 0; i < info->num_scales; i++) {
++		__ad9467_get_scale(conv, i, &scale_val[0], &scale_val[1]);
++		if (scale_val[0] != val || scale_val[1] != val2)
++			continue;
++
++		ad9467_spi_write(st->spi, AN877_ADC_REG_VREF,
++				 info->scale_table[i][1]);
++		ad9467_spi_write(st->spi, AN877_ADC_REG_TRANSFER,
++				 AN877_ADC_TRANSFER_SYNC);
++		return 0;
++	}
++
++	return -EINVAL;
++}
++
++static int ad9467_read_raw(struct adi_axi_adc_conv *conv,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long m)
++{
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++
++	switch (m) {
++	case IIO_CHAN_INFO_SCALE:
++		return ad9467_get_scale(conv, val, val2);
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = clk_get_rate(st->clk);
++
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9467_write_raw(struct adi_axi_adc_conv *conv,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	const struct adi_axi_adc_chip_info *info = conv->chip_info;
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++	unsigned long r_clk;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		return ad9467_set_scale(conv, val, val2);
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		r_clk = clk_round_rate(st->clk, val);
++		if (r_clk < 0 || r_clk > info->max_rate) {
++			dev_warn(&st->spi->dev,
++				 "Error setting ADC sample rate %ld", r_clk);
++			return -EINVAL;
++		}
++
++		return clk_set_rate(st->clk, r_clk);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ad9467_outputmode_set(struct spi_device *spi, unsigned int mode)
++{
 +	int ret;
 +
-+	cl = adi_axi_adc_attach_client(&pdev->dev);
-+	if (IS_ERR(cl))
-+		return PTR_ERR(cl);
++	ret = ad9467_spi_write(spi, AN877_ADC_REG_OUTPUT_MODE, mode);
++	if (ret < 0)
++		return ret;
 +
-+	ret = devm_add_action_or_reset(&pdev->dev, adi_axi_adc_cleanup, cl);
++	return ad9467_spi_write(spi, AN877_ADC_REG_TRANSFER,
++				AN877_ADC_TRANSFER_SYNC);
++}
++
++static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
++{
++	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
++
++	return ad9467_outputmode_set(st->spi, st->output_mode);
++}
++
++static int ad9467_setup(struct ad9467_state *st, unsigned int chip_id)
++{
++	switch (chip_id) {
++	case CHIPID_AD9467:
++		st->output_mode = AD9467_DEF_OUTPUT_MODE |
++				  AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
++static void ad9467_clk_disable(void *data)
++{
++	struct ad9467_state *st = data;
++
++	clk_disable_unprepare(st->clk);
++}
++
++static const struct of_device_id ad9467_of_match[] = {
++	{ .compatible = "adi,ad9467", .data = &ad9467_chip_tbl[ID_AD9467], },
++	{}
++};
++MODULE_DEVICE_TABLE(of, ad9467_of_match);
++
++static int ad9467_probe(struct spi_device *spi)
++{
++	const struct adi_axi_adc_chip_info *info;
++	struct adi_axi_adc_conv *conv;
++	struct ad9467_state *st;
++	unsigned int id;
++	int ret;
++
++	info = of_device_get_match_data(&spi->dev);
++	if (!info)
++		return -ENODEV;
++
++	conv = devm_adi_axi_adc_conv_register(&spi->dev, sizeof(*st));
++	if (IS_ERR(conv))
++		return PTR_ERR(conv);
++
++	st = adi_axi_adc_conv_priv(conv);
++	st->spi = spi;
++
++	st->clk = devm_clk_get(&spi->dev, "adc-clk");
++	if (IS_ERR(st->clk))
++		return PTR_ERR(st->clk);
++
++	ret = clk_prepare_enable(st->clk);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_add_action_or_reset(&spi->dev, ad9467_clk_disable, st);
 +	if (ret)
 +		return ret;
 +
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
-+	if (indio_dev == NULL)
-+		return -ENOMEM;
++	st->pwrdown_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
++						   GPIOD_OUT_LOW);
++	if (IS_ERR(st->pwrdown_gpio))
++		return PTR_ERR(st->pwrdown_gpio);
 +
-+	st = iio_priv(indio_dev);
-+	st->client = cl;
-+	cl->state = st;
-+	mutex_init(&st->lock);
++	st->reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset",
++						 GPIOD_OUT_LOW);
++	if (IS_ERR(st->reset_gpio))
++		return PTR_ERR(st->reset_gpio);
 +
-+	st->regs = devm_platform_ioremap_resource(pdev, 0);
-+	if (IS_ERR(st->regs))
-+		return PTR_ERR(st->regs);
++	if (st->reset_gpio) {
++		udelay(1);
++		ret = gpiod_direction_output(st->reset_gpio, 1);
++		mdelay(10);
++	}
 +
-+	conv = &st->client->conv;
++	spi_set_drvdata(spi, st);
 +
-+	axi_adc_reset(st);
++	conv->chip_info = info;
 +
-+	ver = adi_axi_adc_read(st, ADI_AXI_REG_VERSION);
-+
-+	if (cl->info->version > ver) {
-+		dev_err(&pdev->dev,
-+			"IP core version is too old. Expected %d.%.2d.%c, Reported %d.%.2d.%c\n",
-+			ADI_AXI_PCORE_VER_MAJOR(cl->info->version),
-+			ADI_AXI_PCORE_VER_MINOR(cl->info->version),
-+			ADI_AXI_PCORE_VER_PATCH(cl->info->version),
-+			ADI_AXI_PCORE_VER_MAJOR(ver),
-+			ADI_AXI_PCORE_VER_MINOR(ver),
-+			ADI_AXI_PCORE_VER_PATCH(ver));
++	id = ad9467_spi_read(spi, AN877_ADC_REG_CHIP_ID);
++	if (id != conv->chip_info->id) {
++		dev_err(&spi->dev, "Unrecognized CHIP_ID 0x%X\n", id);
 +		return -ENODEV;
 +	}
 +
-+	indio_dev->info = &adi_axi_adc_info;
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->name = "adi-axi-adc";
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->num_channels = conv->chip_info->num_channels;
-+	indio_dev->channels = conv->chip_info->channels;
++	conv->reg_access = ad9467_reg_access;
++	conv->write_raw = ad9467_write_raw;
++	conv->read_raw = ad9467_read_raw;
++	conv->preenable_setup = ad9467_preenable_setup;
 +
-+	ret = adi_axi_adc_config_dma_buffer(&pdev->dev, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = adi_axi_adc_setup_channels(&pdev->dev, st);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	dev_info(&pdev->dev, "AXI ADC IP core (%d.%.2d.%c) probed\n",
-+		 ADI_AXI_PCORE_VER_MAJOR(ver),
-+		 ADI_AXI_PCORE_VER_MINOR(ver),
-+		 ADI_AXI_PCORE_VER_PATCH(ver));
-+
-+	return 0;
++	return ad9467_setup(st, id);
 +}
 +
-+static struct platform_driver adi_axi_adc_driver = {
++static struct spi_driver ad9467_driver = {
 +	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = adi_axi_adc_of_match,
++		.name = "ad9467",
++		.of_match_table = ad9467_of_match,
 +	},
-+	.probe = adi_axi_adc_probe,
++	.probe = ad9467_probe,
 +};
-+module_platform_driver(adi_axi_adc_driver);
++module_spi_driver(ad9467_driver);
 +
 +MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices Generic AXI ADC IP core driver");
++MODULE_DESCRIPTION("Analog Devices AD9467 ADC driver");
 +MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/iio/adc/adi-axi-adc.h b/include/linux/iio/adc/adi-axi-adc.h
-new file mode 100644
-index 000000000000..2ae9a99965e6
---- /dev/null
-+++ b/include/linux/iio/adc/adi-axi-adc.h
-@@ -0,0 +1,64 @@
-+/* SPDX-License-Identifier: GPL-2.0 */
-+/*
-+ * Analog Devices Generic AXI ADC IP core driver/library
-+ * Link: https://wiki.analog.com/resources/fpga/docs/axi_adc_ip
-+ *
-+ * Copyright 2012-2020 Analog Devices Inc.
-+ */
-+#ifndef __ADI_AXI_ADC_H__
-+#define __ADI_AXI_ADC_H__
-+
-+struct device;
-+struct iio_chan_spec;
-+
-+/**
-+ * struct adi_axi_adc_chip_info - Chip specific information
-+ * @name		Chip name
-+ * @id			Chip ID (usually product ID)
-+ * @channels		Channel specifications of type @struct axi_adc_chan_spec
-+ * @num_channels	Number of @channels
-+ * @scale_table		Supported scales by the chip; tuples of 2 ints
-+ * @num_scales		Number of scales in the table
-+ * @max_rate		Maximum sampling rate supported by the device
-+ */
-+struct adi_axi_adc_chip_info {
-+	const char			*name;
-+	unsigned int			id;
-+
-+	const struct iio_chan_spec	*channels;
-+	unsigned int			num_channels;
-+
-+	const unsigned int		(*scale_table)[2];
-+	int				num_scales;
-+
-+	unsigned long			max_rate;
-+};
-+
-+/**
-+ * struct adi_axi_adc_conv - data of the ADC attached to the AXI ADC
-+ * @chip_info		chip info details for the client ADC
-+ * @preenable_setup	op to run in the client before enabling the AXI ADC
-+ * @reg_access		IIO debugfs_reg_access hook for the client ADC
-+ * @read_raw		IIO read_raw hook for the client ADC
-+ * @write_raw		IIO write_raw hook for the client ADC
-+ */
-+struct adi_axi_adc_conv {
-+	const struct adi_axi_adc_chip_info		*chip_info;
-+
-+	int (*preenable_setup)(struct adi_axi_adc_conv *conv);
-+	int (*reg_access)(struct adi_axi_adc_conv *conv, unsigned int reg,
-+			  unsigned int writeval, unsigned int *readval);
-+	int (*read_raw)(struct adi_axi_adc_conv *conv,
-+			struct iio_chan_spec const *chan,
-+			int *val, int *val2, long mask);
-+	int (*write_raw)(struct adi_axi_adc_conv *conv,
-+			 struct iio_chan_spec const *chan,
-+			 int val, int val2, long mask);
-+};
-+
-+struct adi_axi_adc_conv *devm_adi_axi_adc_conv_register(struct device *dev,
-+							int sizeof_priv);
-+
-+void *adi_axi_adc_conv_priv(struct adi_axi_adc_conv *conv);
-+
-+#endif
 -- 
 2.20.1
 
