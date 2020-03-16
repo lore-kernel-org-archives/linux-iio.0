@@ -2,104 +2,66 @@ Return-Path: <SRS0=e0QT=5B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 255BAC18E5B
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51534C0044D
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 16:19:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EB5FC20679
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 15:51:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2779B20679
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 16:19:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dTDLtXVy"
+	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="fCr3kN1Q"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731996AbgCPPu5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Mar 2020 11:50:57 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:46758 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731952AbgCPPu4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Mar 2020 11:50:56 -0400
-Received: by mail-wr1-f68.google.com with SMTP id w16so5444170wrv.13;
-        Mon, 16 Mar 2020 08:50:53 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Sc+ZcHvv4+8Y0JehjCkVMYBTnshyW1dRffEc1sDr2kY=;
-        b=dTDLtXVydfEWfNwQPdHS/TVXS8K4X5b2dyAgi+PH83Yy1orjNvReI6XewzPcpM9F4Z
-         leif+mmesRlNXmcGW1SQBHx9V55uFWBhV2dmkRyNi3BilFufwnCNcIqETbXLbrIBtwSe
-         qk/IVL3F0z37sBFDrOFnBkWX29Ngwv7zrMtPjhH+HuC1XI04osdwaJfLWhzgd5YII1sX
-         7S1DQZ7PvMKEVr1Dm11WNTNmwKPWIWclMU2OnlCaS5s/TPpdHH0lhxL6t1VcAUNPWBCf
-         3Y5o02Masm+xUNZmVfLGKrmsVK9SX8JCX5tGH/D32m0/yra6slQO8La0oPj4WA3yegU1
-         dVYw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Sc+ZcHvv4+8Y0JehjCkVMYBTnshyW1dRffEc1sDr2kY=;
-        b=Mb85z0+DDJNNxuOZ7Vjxww8sYfWjMga2NXwxw9jke2HNDm4b5PXBpqy0Fb5xLsEKI7
-         4l6ckAMtILueSiFNpIt+SENa0rhi6tBuadjBEWsFEw1upMNJ02Fd7wooSDTyUvSDwca5
-         WfzY3+s7ZSYyqOwP3dqxAK47ih1vG0h5GcUic/Vq2dXmgz8zvZzXEKjez/AGuk5VZ6pp
-         7Q2ctrHa0Zu6acZRJrnF1GN2QacT5h5NFq6u3qeKXQoDN0D9PlI5pFiHWr30xWlUcxa2
-         U8XS0BtSCBduOdavW5bVaniNw3a8ZZBenYHXwJdgBJkhXF5jIEpq5BHdbAiFx3ygQHdH
-         u7lw==
-X-Gm-Message-State: ANhLgQ3/8TRlhcVoer9IbJNS7DpYfWUfqt6LwXcN1uW9Bpipx+3DjFqJ
-        8WRi4k0L0El0wntn3bIoJVDjoozX
-X-Google-Smtp-Source: ADFU+vsUuW/mW+LXvQ6EtgDJhs7hvA0yq36iEyxmu9lHhYAL0Mh+a/fvtn5Xr3CYJEYL/zfrBz9Ofg==
-X-Received: by 2002:adf:80af:: with SMTP id 44mr37122427wrl.241.1584373852848;
-        Mon, 16 Mar 2020 08:50:52 -0700 (PDT)
-Received: from saturn.lan ([188.26.73.247])
-        by smtp.gmail.com with ESMTPSA id n14sm153558wmi.19.2020.03.16.08.50.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 Mar 2020 08:50:52 -0700 (PDT)
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     jic23@kernel.org, robh+dt@kernel.org, Laszlo.Nagy@analog.com,
-        Andrei.Grozav@analog.com, Michael.Hennerich@analog.com,
-        Istvan.Csomortani@analog.com, Adrian.Costina@analog.com,
-        Dragos.Bogdan@analog.com,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Moritz Fischer <mdf@kernel.org>
-Subject: [PATCH v10 1/8] include: fpga: adi-axi-common.h: fixup whitespace tab -> space
-Date:   Mon, 16 Mar 2020 17:50:28 +0200
-Message-Id: <20200316155035.25500-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200316155035.25500-1-alexandru.ardelean@analog.com>
-References: <20200316155035.25500-1-alexandru.ardelean@analog.com>
+        id S1732104AbgCPQTg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Mar 2020 12:19:36 -0400
+Received: from onstation.org ([52.200.56.107]:41404 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1732100AbgCPQTg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Mar 2020 12:19:36 -0400
+Received: from localhost (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: masneyb)
+        by onstation.org (Postfix) with ESMTPSA id 97BEC3E9F8;
+        Mon, 16 Mar 2020 16:19:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
+        s=default; t=1584375575;
+        bh=Mf7HG6B1TGFwaN4IXUUDmvzUPEtOx7DtigM/kGDo2TU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=fCr3kN1QF5eIotkAwTbzbStxz7YfwK+zooFSWJFW/HVOJfFwwDSA4iBo30/kdy3Ps
+         IUz+49ABDm5A/7hJMrkLR54b6QLVvQgxY4ojl4vKoNPYsB1SDtiXYPyC4Z4YrVrYNv
+         4aIPLY5tOzonc8KgQG0a8M//Oqs/MG9QoGH5ZsTA=
+Date:   Mon, 16 Mar 2020 12:19:35 -0400
+From:   Brian Masney <masneyb@onstation.org>
+To:     Takashi Iwai <tiwai@suse.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] iio: core: Use scnprintf() for avoiding potential
+ buffer overflow
+Message-ID: <20200316161935.GA1526@onstation.org>
+References: <20200316124941.8010-1-tiwai@suse.de>
+ <20200316124941.8010-2-tiwai@suse.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200316124941.8010-2-tiwai@suse.de>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The initial version use a tab between '#define' & 'ADI_AXI_REG_VERSION'.
-This changes it to space. The change is purely cosmetic.
+On Mon, Mar 16, 2020 at 01:49:40PM +0100, Takashi Iwai wrote:
+> snprintf() is a hard-to-use function, it's especially difficult to use
+> it for concatenating substrings in a buffer with a limited size.
+> Since snprintf() returns the would-be-output size, not the actual
+> size, the subsequent use of snprintf() may go beyond the given limit
+> easily.  Although the current code doesn't actually overflow the
+> buffer, it's an incorrect usage.
+> 
+> This patch replaces such snprintf() calls with a safer version,
+> scnprintf().
+> 
+> Signed-off-by: Takashi Iwai <tiwai@suse.de>
 
-Acked-by: Moritz Fischer <mdf@kernel.org>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- include/linux/fpga/adi-axi-common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/include/linux/fpga/adi-axi-common.h b/include/linux/fpga/adi-axi-common.h
-index 7fc95d5c95bb..ebd4e07ae3d8 100644
---- a/include/linux/fpga/adi-axi-common.h
-+++ b/include/linux/fpga/adi-axi-common.h
-@@ -11,7 +11,7 @@
- #ifndef ADI_AXI_COMMON_H_
- #define ADI_AXI_COMMON_H_
- 
--#define	ADI_AXI_REG_VERSION			0x0000
-+#define ADI_AXI_REG_VERSION			0x0000
- 
- #define ADI_AXI_PCORE_VER(major, minor, patch)	\
- 	(((major) << 16) | ((minor) << 8) | (patch))
--- 
-2.20.1
-
+Reviewed-by: Brian Masney <masneyb@onstation.org>
