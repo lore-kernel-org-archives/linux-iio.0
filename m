@@ -2,70 +2,148 @@ Return-Path: <SRS0=e0QT=5B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19241C0044D
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 16:20:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A98DC3F2CE
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 17:46:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C608020679
-	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 16:20:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=onstation.org header.i=@onstation.org header.b="kF+76w+F"
+	by mail.kernel.org (Postfix) with ESMTP id 3D1DD20674
+	for <linux-iio@archiver.kernel.org>; Mon, 16 Mar 2020 17:46:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732030AbgCPQU1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 Mar 2020 12:20:27 -0400
-Received: from onstation.org ([52.200.56.107]:41414 "EHLO onstation.org"
+        id S1732212AbgCPRq1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 Mar 2020 13:46:27 -0400
+Received: from honk.sigxcpu.org ([24.134.29.49]:54096 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732011AbgCPQU1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Mar 2020 12:20:27 -0400
-Received: from localhost (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id 790173E9F8;
-        Mon, 16 Mar 2020 16:20:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onstation.org;
-        s=default; t=1584375626;
-        bh=HkHcO6dlYtdIjG3i9gGYpV+CJ3ZiBqfycIVzDQRtYdo=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=kF+76w+F8PLSCwPHN0tKqP2gSyXGWVb3MjQq/yqRNUxdsNyiz/9E+l6aks925k96C
-         j1N5JXiWNaLRJ3bYa7ahjVRUs3lvqTdXbcG2xpUWj5nZdideAU+bMIbNxM4UefunCC
-         A1xLODhPKsCgP1GtVp2cBeX+VbWgs50UraqnwK7s=
-Date:   Mon, 16 Mar 2020 12:20:26 -0400
-From:   Brian Masney <masneyb@onstation.org>
-To:     Takashi Iwai <tiwai@suse.de>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: tsl2772: Use scnprintf() for avoiding
- potential buffer overflow
-Message-ID: <20200316162026.GB1526@onstation.org>
-References: <20200316124941.8010-1-tiwai@suse.de>
- <20200316124941.8010-3-tiwai@suse.de>
+        id S1732161AbgCPRq1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Mar 2020 13:46:27 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by honk.sigxcpu.org (Postfix) with ESMTP id 08DACFB02;
+        Mon, 16 Mar 2020 18:46:25 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
+Received: from honk.sigxcpu.org ([127.0.0.1])
+        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id jDHNVtI2q1gO; Mon, 16 Mar 2020 18:46:23 +0100 (CET)
+Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
+        id CBDD640847; Mon, 16 Mar 2020 18:46:20 +0100 (CET)
+From:   =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
+To:     Tomas Novotny <tomas@novotny.cz>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>,
+        =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 1/4] dt-bindings: iio: vcnl4000: convert bindings to YAML format
+Date:   Mon, 16 Mar 2020 18:46:17 +0100
+Message-Id: <6182053bb8c442e0b4d72b34c83c7f1565f4a258.1584380360.git.agx@sigxcpu.org>
+X-Mailer: git-send-email 2.23.0
+In-Reply-To: <cover.1584380360.git.agx@sigxcpu.org>
+References: <cover.1584380360.git.agx@sigxcpu.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200316124941.8010-3-tiwai@suse.de>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Mar 16, 2020 at 01:49:41PM +0100, Takashi Iwai wrote:
-> snprintf() is a hard-to-use function, it's especially difficult to use
-> it for concatenating substrings in a buffer with a limited size.
-> Since snprintf() returns the would-be-output size, not the actual
-> size, the subsequent use of snprintf() may go beyond the given limit
-> easily.  Although the current code doesn't actually overflow the
-> buffer, it's an incorrect usage.
-> 
-> This patch replaces such snprintf() calls with a safer version,
-> scnprintf().
-> 
-> Also this fixes the incorrect argument of the buffer limit size passed
-> to snprintf(), too.  The size has to be decremented for the remaining
-> length.
-> 
-> Signed-off-by: Takashi Iwai <tiwai@suse.de>
+Convert the vcnl4000 device tree bindings to the new YAML format.
 
-Reviewed-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Guido Günther <agx@sigxcpu.org>
+---
+ .../bindings/iio/light/vcnl4000.txt           | 24 ----------
+ .../bindings/iio/light/vcnl4000.yaml          | 45 +++++++++++++++++++
+ 2 files changed, 45 insertions(+), 24 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/light/vcnl4000.txt b/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
+deleted file mode 100644
+index 955af4555c90..000000000000
+--- a/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
++++ /dev/null
+@@ -1,24 +0,0 @@
+-VISHAY VCNL4000 -  Ambient Light and proximity sensor
+-
+-This driver supports the VCNL4000/10/20/40 and VCNL4200 chips
+-
+-Required properties:
+-
+-	-compatible: must be one of :
+-        vishay,vcnl4000
+-        vishay,vcnl4010
+-        vishay,vcnl4020
+-        vishay,vcnl4040
+-        vishay,vcnl4200
+-
+-	-reg: I2C address of the sensor, should be one from below based on the model:
+-        0x13
+-        0x51
+-        0x60
+-
+-Example:
+-
+-light-sensor@51 {
+-	compatible = "vishay,vcnl4200";
+-	reg = <0x51>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/light/vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vcnl4000.yaml
+new file mode 100644
+index 000000000000..74d53cfbeb85
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/vcnl4000.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/vcnl4000.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: VISHAY VCNL4000 ambient light and proximity sensor
++
++maintainers:
++  - Peter Meerwald <pmeerw@pmeerw.net>
++
++description: |
++  Ambient light sensing with proximity detection over an i2c
++  interface.
++
++properties:
++  compatible:
++    enum:
++      - vishay,vcnl4000
++      - vishay,vcnl4010
++      - vishay,vcnl4020
++      - vishay,vcnl4040
++      - vishay,vcnl4200
++
++  reg:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++- |
++  i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      light-sensor@51 {
++              compatible = "vishay,vcnl4200";
++              reg = <0x51>;
++      };
++  };
++...
+-- 
+2.23.0
+
