@@ -2,79 +2,124 @@ Return-Path: <SRS0=pulz=5C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22526C5ACC0
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 10:18:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 826C7C18E5B
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:05:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id D697520757
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 10:18:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6339C20724
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:05:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726416AbgCQKST (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Mar 2020 06:18:19 -0400
-Received: from mga04.intel.com ([192.55.52.120]:56031 "EHLO mga04.intel.com"
+        id S1726478AbgCQMFk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Mar 2020 08:05:40 -0400
+Received: from honk.sigxcpu.org ([24.134.29.49]:49552 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726077AbgCQKSR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Mar 2020 06:18:17 -0400
-IronPort-SDR: zaXP5PnfHtxznsYlP1xIOw/giJ8T1+FBD/ndyGfstud32ZViw2YDSdBlSSnp4xjjB4IhgrVbnL
- fmqOjWYruo1A==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 17 Mar 2020 03:18:17 -0700
-IronPort-SDR: 4p8dyT05L0WoVBKRSPo2LtHrsFjTiUqOlJEhfJKbPLu55TbAUUbSA9WHy+f6oE6Vhkmdm5Vr/N
- /noXgwroSSNA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.70,564,1574150400"; 
-   d="scan'208";a="323785168"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga001.jf.intel.com with ESMTP; 17 Mar 2020 03:18:15 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4886418B; Tue, 17 Mar 2020 12:18:14 +0200 (EET)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        id S1725962AbgCQMFk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Mar 2020 08:05:40 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by honk.sigxcpu.org (Postfix) with ESMTP id 17C74FB03;
+        Tue, 17 Mar 2020 13:05:38 +0100 (CET)
+X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
+Received: from honk.sigxcpu.org ([127.0.0.1])
+        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id LQVffm-bFDdy; Tue, 17 Mar 2020 13:05:36 +0100 (CET)
+Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
+        id 0B565412BE; Tue, 17 Mar 2020 13:05:35 +0100 (CET)
+Date:   Tue, 17 Mar 2020 13:05:35 +0100
+From:   Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Tomas Novotny <tomas@novotny.cz>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/5] iio: pressure: bmp280: Explicitly mark GPIO optional
-Date:   Tue, 17 Mar 2020 12:18:11 +0200
-Message-Id: <20200317101813.30829-3-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200317101813.30829-1-andriy.shevchenko@linux.intel.com>
-References: <20200317101813.30829-1-andriy.shevchenko@linux.intel.com>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "Angus Ainslie (Purism)" <angus@akkea.ca>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] iio: vcnl4000: Export near level property for
+ proximity sensor
+Message-ID: <20200317120535.GA16807@bogon.m.sigxcpu.org>
+References: <cover.1584380360.git.agx@sigxcpu.org>
+ <5566fe01df933d3281f058666e2147cb97b38126.1584380360.git.agx@sigxcpu.org>
+ <c787921f-c412-4986-14ea-e31b531d3d5b@metafoo.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <c787921f-c412-4986-14ea-e31b531d3d5b@metafoo.de>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Show by using a corresponding API call that GPIO is optional.
+Hi,
+On Mon, Mar 16, 2020 at 07:23:01PM +0100, Lars-Peter Clausen wrote:
+> On 3/16/20 6:46 PM, Guido Günther wrote:
+> > [...]
+> > +static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
+> > +					uintptr_t priv,
+> > +					const struct iio_chan_spec *chan,
+> > +					char *buf)
+> > +{
+> > +	struct vcnl4000_data *data = iio_priv(indio_dev);
+> > +
+> > +	return sprintf(buf, "%u\n", data->near_level);
+> > +}
+> > +
+> > +static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
+> > +	{
+> > +		.name = "near_level",
+> 
+> Generally having properties with a underscore in them breaks generic parsing
+> of the property name by userspace applications. This is because we use
+> underscores to separate different components (type, modifier, etc.) of the
+> attribute from each other.
+> 
+> Do you think calling this "nearlevel" would work?
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/pressure/bmp280-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+That works as well. I'll change that for v3.
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 25be3ff1a6ab..6c2e47d92a11 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1080,9 +1080,9 @@ int bmp280_common_probe(struct device *dev,
- 	usleep_range(data->start_up_time, data->start_up_time + 100);
- 
- 	/* Bring chip out of reset if there is an assigned GPIO line */
--	gpiod = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
-+	gpiod = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
- 	/* Deassert the signal */
--	if (!IS_ERR(gpiod)) {
-+	if (gpiod) {
- 		dev_info(dev, "release reset\n");
- 		gpiod_set_value(gpiod, 0);
- 	}
--- 
-2.25.1
+For my education: Is the type, modifier policy written down somewhere
+(similar to
+https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/leds/leds-class.rst#n44
+)?
 
+Cheers,
+ -- Guido
+
+> 
+> I know there are existing bad examples of properties that use an underscore,
+> but we should try to limit introducing new ones.
+> 
+> > +		.shared = IIO_SEPARATE,
+> > +		.read = vcnl4000_read_near_level,
+> > +	},
+> > +	{ /* sentinel */ }
+> > +};
+> > +
+> >   static const struct iio_chan_spec vcnl4000_channels[] = {
+> >   	{
+> >   		.type = IIO_LIGHT,
+> > @@ -350,6 +371,7 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
+> >   	}, {
+> >   		.type = IIO_PROXIMITY,
+> >   		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> > +		.ext_info = vcnl4000_ext_info,
+> >   	}
+> >   };
+> > @@ -439,6 +461,10 @@ static int vcnl4000_probe(struct i2c_client *client,
+> >   	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
+> >   		data->chip_spec->prod, data->rev);
+> > +	if (device_property_read_u32(&client->dev, "near-level",
+> > +				     &data->near_level) < 0)
+> > +		data->near_level = 0;
+> > +
+> >   	indio_dev->dev.parent = &client->dev;
+> >   	indio_dev->info = &vcnl4000_info;
+> >   	indio_dev->channels = vcnl4000_channels;
+> 
+> 
