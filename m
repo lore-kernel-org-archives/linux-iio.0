@@ -2,124 +2,103 @@ Return-Path: <SRS0=pulz=5C=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 826C7C18E5B
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:05:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17B7AC10F29
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:36:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 6339C20724
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:05:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DBC3A20768
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Mar 2020 12:36:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aII4WxDC"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726478AbgCQMFk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Mar 2020 08:05:40 -0400
-Received: from honk.sigxcpu.org ([24.134.29.49]:49552 "EHLO honk.sigxcpu.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725962AbgCQMFk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Mar 2020 08:05:40 -0400
-Received: from localhost (localhost [127.0.0.1])
-        by honk.sigxcpu.org (Postfix) with ESMTP id 17C74FB03;
-        Tue, 17 Mar 2020 13:05:38 +0100 (CET)
-X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
-Received: from honk.sigxcpu.org ([127.0.0.1])
-        by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id LQVffm-bFDdy; Tue, 17 Mar 2020 13:05:36 +0100 (CET)
-Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
-        id 0B565412BE; Tue, 17 Mar 2020 13:05:35 +0100 (CET)
-Date:   Tue, 17 Mar 2020 13:05:35 +0100
-From:   Guido =?iso-8859-1?Q?G=FCnther?= <agx@sigxcpu.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Tomas Novotny <tomas@novotny.cz>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Angus Ainslie (Purism)" <angus@akkea.ca>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 3/4] iio: vcnl4000: Export near level property for
- proximity sensor
-Message-ID: <20200317120535.GA16807@bogon.m.sigxcpu.org>
-References: <cover.1584380360.git.agx@sigxcpu.org>
- <5566fe01df933d3281f058666e2147cb97b38126.1584380360.git.agx@sigxcpu.org>
- <c787921f-c412-4986-14ea-e31b531d3d5b@metafoo.de>
+        id S1725916AbgCQMgc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Mar 2020 08:36:32 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:33899 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725906AbgCQMgc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Mar 2020 08:36:32 -0400
+Received: by mail-wr1-f67.google.com with SMTP id z15so25403289wrl.1;
+        Tue, 17 Mar 2020 05:36:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o3qXPaTU6PrsJxaBR+W/miPqJdXIPm3n5FrZLJ/cohk=;
+        b=aII4WxDC2xPoJw6uOldC//Wh7pC7AuhV8vqxZjipKLGzQVgPN8B//5CIxStHerKRVx
+         iHo22AxANVinBFsI+BUr+gpqalB1s0ESHlWZqnoVEQpNPCANZVmQC7K+3X/J8ls3mBk8
+         eWVhZY7A+XWvvVgl99TUxhyOpCP1qKfWcFnCD3v6onHtyqDTwXkKlDv/0nnrPrv1FACm
+         dADRmY3AolNspK/vCAsLE71krGiBzQj5Yd6Tmx4Jadi0GsCd40gyHQEH+j6KIItL8lLl
+         bxH1m8bQy7WUHD9GMVANFv/eb1DQg5aE2VvFpZw8wvyH06VXK5GJ8JmdHLMb1SmMdalD
+         lPHw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o3qXPaTU6PrsJxaBR+W/miPqJdXIPm3n5FrZLJ/cohk=;
+        b=oZ+deYdNlaRdfQpNyjNtFEJDsPHxMkBVCV4PHCLTJejM8se1o9JHPe2rUv/rwlzflK
+         oT8MP/ZxGznMrVY/D5NPB98wzOpr716tWwv1NskhRyB5HfRIpjuGAdZSfcyfXoy8XTgC
+         QkiqN1mJhNUFw4gqNkYLOJwVAhOJXiXZIX9LOVF0dl0DkA8rtw1lUxfqABRoM/b4829R
+         81Reba77MxOrIt01p5Rffm6Dh0TydLjmsf+aT08ncbqkw7806sGAFZ1AS7oJBL/WIWHQ
+         RZynXN60zdlbThOJtrAJZ8RDuibFX7kbd3lp/P5x4c9iuMb0uBHOIJkw6W5WQ6ziRbxY
+         lwtQ==
+X-Gm-Message-State: ANhLgQ0QY8+wQ0QF7VAAfZ54PdRWaouOy3MbnQLhV2+sLSXymzSVOTod
+        gQfwczOhgCfKZ4oaeaDf4HK8fzFL
+X-Google-Smtp-Source: ADFU+vs1G4RxuyQdAwdPDAYcwg0CpbROQCXwC93f1yUlLtoWWfR7HwqM40WwmRmfUDEjloqYdmijAQ==
+X-Received: by 2002:a5d:6ca7:: with SMTP id a7mr6351863wra.157.1584448589815;
+        Tue, 17 Mar 2020 05:36:29 -0700 (PDT)
+Received: from saturn.lan ([188.26.73.247])
+        by smtp.gmail.com with ESMTPSA id a184sm3961194wmf.29.2020.03.17.05.36.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Mar 2020 05:36:29 -0700 (PDT)
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jic23@kernel.org, andriy.shevchenko@linux.intel.com,
+        lars@metafoo.de, Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: buffer: re-introduce bitmap_zalloc() for trialmask
+Date:   Tue, 17 Mar 2020 14:36:21 +0200
+Message-Id: <20200317123621.27722-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <c787921f-c412-4986-14ea-e31b531d3d5b@metafoo.de>
-User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-On Mon, Mar 16, 2020 at 07:23:01PM +0100, Lars-Peter Clausen wrote:
-> On 3/16/20 6:46 PM, Guido Günther wrote:
-> > [...]
-> > +static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
-> > +					uintptr_t priv,
-> > +					const struct iio_chan_spec *chan,
-> > +					char *buf)
-> > +{
-> > +	struct vcnl4000_data *data = iio_priv(indio_dev);
-> > +
-> > +	return sprintf(buf, "%u\n", data->near_level);
-> > +}
-> > +
-> > +static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
-> > +	{
-> > +		.name = "near_level",
-> 
-> Generally having properties with a underscore in them breaks generic parsing
-> of the property name by userspace applications. This is because we use
-> underscores to separate different components (type, modifier, etc.) of the
-> attribute from each other.
-> 
-> Do you think calling this "nearlevel" would work?
+Commit 3862828a903d3 ("iio: buffer: Switch to bitmap_zalloc()") introduced
+bitmap_alloc(), but commit 20ea39ef9f2f9 ("iio: Fix scan mask selection")
+reverted it.
 
-That works as well. I'll change that for v3.
+This change adds it back. The only difference is that it's adding
+bitmap_zalloc(). There might be some changes later that would require
+initializing it to zero. In any case, now it's already zero-ing the
+trialmask.
 
-For my education: Is the type, modifier policy written down somewhere
-(similar to
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/Documentation/leds/leds-class.rst#n44
-)?
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/industrialio-buffer.c | 3 +--
+ 1 file changed, 1 insertion(+), 2 deletions(-)
 
-Cheers,
- -- Guido
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 4ada5592aa2b..5ff34ce8b6a2 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -316,8 +316,7 @@ static int iio_scan_mask_set(struct iio_dev *indio_dev,
+ 	const unsigned long *mask;
+ 	unsigned long *trialmask;
+ 
+-	trialmask = kcalloc(BITS_TO_LONGS(indio_dev->masklength),
+-			    sizeof(*trialmask), GFP_KERNEL);
++	trialmask = bitmap_zalloc(indio_dev->masklength, GFP_KERNEL);
+ 	if (trialmask == NULL)
+ 		return -ENOMEM;
+ 	if (!indio_dev->masklength) {
+-- 
+2.20.1
 
-> 
-> I know there are existing bad examples of properties that use an underscore,
-> but we should try to limit introducing new ones.
-> 
-> > +		.shared = IIO_SEPARATE,
-> > +		.read = vcnl4000_read_near_level,
-> > +	},
-> > +	{ /* sentinel */ }
-> > +};
-> > +
-> >   static const struct iio_chan_spec vcnl4000_channels[] = {
-> >   	{
-> >   		.type = IIO_LIGHT,
-> > @@ -350,6 +371,7 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
-> >   	}, {
-> >   		.type = IIO_PROXIMITY,
-> >   		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> > +		.ext_info = vcnl4000_ext_info,
-> >   	}
-> >   };
-> > @@ -439,6 +461,10 @@ static int vcnl4000_probe(struct i2c_client *client,
-> >   	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
-> >   		data->chip_spec->prod, data->rev);
-> > +	if (device_property_read_u32(&client->dev, "near-level",
-> > +				     &data->near_level) < 0)
-> > +		data->near_level = 0;
-> > +
-> >   	indio_dev->dev.parent = &client->dev;
-> >   	indio_dev->info = &vcnl4000_info;
-> >   	indio_dev->channels = vcnl4000_channels;
-> 
-> 
