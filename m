@@ -2,66 +2,66 @@ Return-Path: <SRS0=l2Gr=5D=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC78CC10DCE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14938C10DCE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A411020767
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D789420767
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dTYuvhIl"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UmSjnosX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727532AbgCRJKN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 05:10:13 -0400
-Received: from mail-wm1-f68.google.com ([209.85.128.68]:38167 "EHLO
-        mail-wm1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727441AbgCRJKF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 05:10:05 -0400
-Received: by mail-wm1-f68.google.com with SMTP id t13so2317167wmi.3;
-        Wed, 18 Mar 2020 02:10:04 -0700 (PDT)
+        id S1727453AbgCRJKE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 05:10:04 -0400
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:37716 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727177AbgCRJKE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 05:10:04 -0400
+Received: by mail-wr1-f66.google.com with SMTP id w10so433161wrm.4;
+        Wed, 18 Mar 2020 02:10:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1qY8BT7NEM8WO/54r+PXheg5D2wrkRuhnMEwuwFmHY0=;
-        b=dTYuvhIl6cMRpnG0aqsXBF2Iqh6KWdOu8Ngcmw+wAKAmnNvehNz5F+/bbgSi7OJKJF
-         pk1iztncDKAutvsxu4y0xOExsFkpVDOUklQ8cAwJNwYKNhb7R30tRgWW1apTzdpUPxMn
-         mFTkhq7wJjOMdASyhROeGWcIR06/GlKhOfDqE9s8/HUGVqtJT+ZeEE6k888W8qwfG4uo
-         +/ei75yb3Tj4HGUlWf7rKHRfZGgsTG8R3H4SJd+zSzs1NUVd1wtS4YEZqYs2UMpb3NMD
-         7sXa+K1NjryJ+OQbROF15toMn2T4kicMbNdI0E6xsnZPTwycsYmKYu+HEAB7i7MEjAKK
-         dqnQ==
+        bh=Ld4erb9oJVZGRzDLHfUzNBJ8XB/21Y+k8y5pdjhuegA=;
+        b=UmSjnosXBMRMEVNUiV+w47Fn+TtFcgbfVg6gGB2e4xP0vstZIuu4zLALa0KrO5Oa/J
+         0y6cwX2d6HZMOIYdjw5BjxDZ4Fl0Ha8HCbcVw++bde+lPFYdpC96roMAL4/cubo6mZGN
+         jpSlf30hJQGZo//UBpscqa4ZCPZlLFdX/ooBtOXVoU2W3m30p3G3zwbPUQYe8iuahwT0
+         YCKru+arf2zpmrdyd7Z2azofqDuXmGwMfcwjoC2t5PoNnW7arvKQj8XrAx2Ih2YJCr90
+         9KV81D5jerUMwPwy8F44wiPN7gYhX44HMffRfk147nzV3gkXe8QN5rdv9G93itjJde/w
+         gtqg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1qY8BT7NEM8WO/54r+PXheg5D2wrkRuhnMEwuwFmHY0=;
-        b=lllpvn9ZTApxJbGbZKIuTQvzwqkQkc7OlkbhwJ1HmZ+bfr38+nccoIH6AAKqTFRE1y
-         qMqtzU68RaR+F/nn4w+ZcDRMF6WiUyd4PpviYJer+A9p7Pt8yXl1sHYz8Igc/gg39C3P
-         Yyf4jL9t/ffYEimzJ4cSCnXuoOXdzFDgDSv24EGWsb/ZOoGWWn9dQuHoFCudPVbbvGr4
-         rGIBBzw6+5yAF4iHzqchQMNcMbXCSZYo6+voo9yHfrH2YyZPCIrMCEmO2nwm83lx1b5c
-         gub11SdEaoG1CWZQgjx5QYvgibZmxmDDsoxcgne2qLx89nzzpY08VoybXTnN7ca2m6+D
-         LSuw==
-X-Gm-Message-State: ANhLgQ3XNdp6xw4zV4ZVIXAZoYAHexJZyZopEzepyPZ0PnxzLDVzsDcB
-        PF/uhCfNkUzmNSuhUOvBH92LWIsP/DQ=
-X-Google-Smtp-Source: ADFU+vtw4K9zgs6h2h2IKqVcow3L3BdgbwiQHBcjCX5xIaLCpTkSgR9IPGbBhMNvhT7TXA61WXnkiA==
-X-Received: by 2002:a1c:6745:: with SMTP id b66mr4124850wmc.30.1584522603669;
-        Wed, 18 Mar 2020 02:10:03 -0700 (PDT)
+        bh=Ld4erb9oJVZGRzDLHfUzNBJ8XB/21Y+k8y5pdjhuegA=;
+        b=WSlYkyhE7/fQMTv462GgixGfQedf+1uMPLNtXzZuM0Bt3gDmHSijkKyX4Yw9gAg8mD
+         eDdiRwl2Hv5iQaE6IBu6cqDRfhHf32zra7EifHlAOsxOig11kCiS2h9tvHMR5PLTbrbi
+         FTUb5n/pqdgZeWwkVsLOljen0k+cYxKaXMsoUDYCgCT1jyfQPWWPC4OKTzryQvRShm/A
+         8bgGYi9QfqlbM3ox5PL9EMPfmXYWn3kmFfp0sQuB0u/EHd0fVQjXLmGNFjGgiVv7l+26
+         8GKoX9o+/ty08AkLLN7gYR7UF4wo09O1fNgGLLtih6sIzkaZXITQUJkA8AkBUH557IgY
+         ZJgg==
+X-Gm-Message-State: ANhLgQ1c7I2vLPSE+KPmQYOE2Ltl8Wq4K1qBIh3r7HW7qQfyAUB/qi3t
+        MNOxeR6zB0RvMtVL8dcOGcDKuqBQyaE=
+X-Google-Smtp-Source: ADFU+vugHCq2eOE3QDWWy2QPYfJkW8SmQieTaibLPcHUC/ZZmOjy65ef/y2kbJSvRvdp7prZT31pBQ==
+X-Received: by 2002:adf:9796:: with SMTP id s22mr4278161wrb.31.1584522601365;
+        Wed, 18 Mar 2020 02:10:01 -0700 (PDT)
 Received: from localhost.localdomain ([95.77.248.51])
-        by smtp.gmail.com with ESMTPSA id w1sm2823986wmc.11.2020.03.18.02.10.02
+        by smtp.gmail.com with ESMTPSA id w1sm2823986wmc.11.2020.03.18.02.10.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 02:10:02 -0700 (PDT)
+        Wed, 18 Mar 2020 02:10:00 -0700 (PDT)
 From:   Alexandru Tachici <tachicialex@gmail.com>
 X-Google-Original-From: Alexandru Tachici <alexandru.tachici@analog.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     jic23@kernel.org
-Subject: [PATCH v3 3/4] iio: accel: adxl372: add additional events ABIs
-Date:   Wed, 18 Mar 2020 13:09:57 +0200
-Message-Id: <20200318110958.8621-4-alexandru.tachici@analog.com>
+Subject: [PATCH v3 1/4] iio: accel: adxl372: Add support for FIFO peak mode
+Date:   Wed, 18 Mar 2020 13:09:55 +0200
+Message-Id: <20200318110958.8621-2-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318110958.8621-1-alexandru.tachici@analog.com>
 References: <20200318110958.8621-1-alexandru.tachici@analog.com>
@@ -72,60 +72,161 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adxl372 uses the standard event interface. The additional
-ABIs aim to explain to the user that the values set in
-./events/thresh_falling_period and ./events/thresh_rising_period
-control the state of the device, not just the events timings.
+From: Stefan Popa <stefan.popa@analog.com>
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+By default, if all three channels (x, y, z) are enabled, sample sets of
+concurrent 3-axis data is stored in the FIFO. This patch adds the option
+to configure the FIFO to store peak acceleration (x, y and z) of every
+over-threshold event. When pushing to iio buffer we push only enabled
+axis data.
+
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
 ---
- drivers/iio/accel/adxl372.c | 26 +++++++++++++++++++++++++-
- 1 file changed, 25 insertions(+), 1 deletion(-)
+ drivers/iio/accel/adxl372.c | 74 ++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 73 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/accel/adxl372.c b/drivers/iio/accel/adxl372.c
-index d8f95c9f9587..1122c27fc37e 100644
+index 67b8817995c0..90c37d6f10d3 100644
 --- a/drivers/iio/accel/adxl372.c
 +++ b/drivers/iio/accel/adxl372.c
-@@ -239,6 +239,29 @@ static const struct adxl372_axis_lookup adxl372_axis_lookup_table[] = {
- 	{ BIT(0) | BIT(1) | BIT(2), ADXL372_XYZ_FIFO },
+@@ -133,6 +133,9 @@
+ 
+ /* The ADXL372 includes a deep, 512 sample FIFO buffer */
+ #define ADXL372_FIFO_SIZE			512
++#define ADXL372_X_AXIS_EN(x)			(((x) >> 0) & 0x1)
++#define ADXL372_Y_AXIS_EN(x)			(((x) >> 1) & 0x1)
++#define ADXL372_Z_AXIS_EN(x)			(((x) >> 2) & 0x1)
+ 
+ /*
+  * At +/- 200g with 12-bit resolution, scale is computed as:
+@@ -253,6 +256,7 @@ struct adxl372_state {
+ 	struct iio_trigger		*dready_trig;
+ 	enum adxl372_fifo_mode		fifo_mode;
+ 	enum adxl372_fifo_format	fifo_format;
++	unsigned int			fifo_axis_mask;
+ 	enum adxl372_op_mode		op_mode;
+ 	enum adxl372_act_proc_mode	act_proc_mode;
+ 	enum adxl372_odr		odr;
+@@ -264,6 +268,7 @@ struct adxl372_state {
+ 	u8				int2_bitmask;
+ 	u16				watermark;
+ 	__be16				fifo_buf[ADXL372_FIFO_SIZE];
++	bool				peak_fifo_mode_en;
  };
  
-+static ssize_t adxl372_read_detect_event(struct iio_dev *indio_dev, uintptr_t p,
-+					 const struct iio_chan_spec *chan,
-+					 char *buf)
-+{
-+	return sprintf(buf, "%s", (const char *)p);
-+}
-+
-+static const struct iio_chan_spec_ext_info adxl372_ext_info[] = {
-+	{
-+		.name = "activity_detect_event",
-+		.shared = IIO_SHARED_BY_ALL,
-+		.read = adxl372_read_detect_event,
-+		.private = (uintptr_t)"in_accel_thresh_x_rising\n",
-+	},
-+	{
-+		.name = "inactivity_detect_event",
-+		.shared = IIO_SHARED_BY_ALL,
-+		.read = adxl372_read_detect_event,
-+		.private = (uintptr_t)"in_accel_thresh_x_falling\n",
-+	},
-+	{},
-+};
-+
- static const struct iio_event_spec adxl372_events[] = {
- 	{
- 		.type = IIO_EV_TYPE_THRESH,
-@@ -272,7 +295,8 @@ static const struct iio_event_spec adxl372_events[] = {
- 		.shift = 4,						\
- 	},								\
- 	.event_spec = adxl372_events,					\
--	.num_event_specs = 2						\
-+	.num_event_specs = 2,						\
-+	.ext_info = adxl372_ext_info,					\
+ static const unsigned long adxl372_channel_masks[] = {
+@@ -522,6 +527,22 @@ static int adxl372_get_status(struct adxl372_state *st,
+ 	return ret;
  }
  
- static const struct iio_chan_spec adxl372_channels[] = {
++static void adxl372_arrange_axis_data(struct adxl372_state *st, __be16 *sample)
++{
++	__be16	axis_sample[3];
++	int i = 0;
++
++	memset(axis_sample, 0, 3 * sizeof(__be16));
++	if (ADXL372_X_AXIS_EN(st->fifo_axis_mask))
++		axis_sample[i++] = sample[0];
++	if (ADXL372_Y_AXIS_EN(st->fifo_axis_mask))
++		axis_sample[i++] = sample[1];
++	if (ADXL372_Z_AXIS_EN(st->fifo_axis_mask))
++		axis_sample[i++] = sample[2];
++
++	memcpy(sample, axis_sample, 3 * sizeof(__be16));
++}
++
+ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
+ {
+ 	struct iio_poll_func *pf = p;
+@@ -553,8 +574,12 @@ static irqreturn_t adxl372_trigger_handler(int irq, void  *p)
+ 			goto err;
+ 
+ 		/* Each sample is 2 bytes */
+-		for (i = 0; i < fifo_entries; i += st->fifo_set_size)
++		for (i = 0; i < fifo_entries; i += st->fifo_set_size) {
++			/* filter peak detection data */
++			if (st->peak_fifo_mode_en)
++				adxl372_arrange_axis_data(st, &st->fifo_buf[i]);
+ 			iio_push_to_buffers(indio_dev, &st->fifo_buf[i]);
++		}
+ 	}
+ err:
+ 	iio_trigger_notify_done(indio_dev->trig);
+@@ -722,6 +747,43 @@ static int adxl372_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static ssize_t adxl372_peak_fifo_en_get(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct adxl372_state *st = iio_priv(dev_to_iio_dev(dev));
++
++	return sprintf(buf, "%d\n", st->peak_fifo_mode_en);
++}
++
++static ssize_t adxl372_peak_fifo_en_set(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct adxl372_state *st = iio_priv(indio_dev);
++	bool val;
++	int ret;
++
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret < 0)
++		return ret;
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	st->peak_fifo_mode_en = val;
++
++	iio_device_release_direct_mode(indio_dev);
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(hwfifo_peak_mode_enable, 0644,
++		       adxl372_peak_fifo_en_get,
++		       adxl372_peak_fifo_en_set, 0);
++
+ static ssize_t adxl372_show_filter_freq_avail(struct device *dev,
+ 					      struct device_attribute *attr,
+ 					      char *buf)
+@@ -815,13 +877,22 @@ static int adxl372_buffer_postenable(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	st->fifo_format = adxl372_axis_lookup_table[i].fifo_format;
++	st->fifo_axis_mask = adxl372_axis_lookup_table[i].bits;
+ 	st->fifo_set_size = bitmap_weight(indio_dev->active_scan_mask,
+ 					  indio_dev->masklength);
++
++	/* Configure the FIFO to store sets of impact event peak. */
++	if (st->peak_fifo_mode_en) {
++		st->fifo_set_size = 3;
++		st->fifo_format = ADXL372_XYZ_PEAK_FIFO;
++	}
++
+ 	/*
+ 	 * The 512 FIFO samples can be allotted in several ways, such as:
+ 	 * 170 sample sets of concurrent 3-axis data
+ 	 * 256 sample sets of concurrent 2-axis data (user selectable)
+ 	 * 512 sample sets of single-axis data
++	 * 170 sets of impact event peak (x, y, z)
+ 	 */
+ 	if ((st->watermark * st->fifo_set_size) > ADXL372_FIFO_SIZE)
+ 		st->watermark = (ADXL372_FIFO_SIZE  / st->fifo_set_size);
+@@ -894,6 +965,7 @@ static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
+ static struct attribute *adxl372_attributes[] = {
+ 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+ 	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
++	&iio_dev_attr_hwfifo_peak_mode_enable.dev_attr.attr,
+ 	NULL,
+ };
+ 
 -- 
 2.20.1
 
