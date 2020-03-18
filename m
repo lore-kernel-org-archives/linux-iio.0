@@ -2,66 +2,69 @@ Return-Path: <SRS0=l2Gr=5D=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F94DC10DCE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 558F9C5ACDA
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0038E2076E
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C9EF20767
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 09:10:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tIR0IDHB"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TkrZVAhT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727324AbgCRJKC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 05:10:02 -0400
-Received: from mail-wr1-f49.google.com ([209.85.221.49]:42107 "EHLO
-        mail-wr1-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726994AbgCRJKC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 05:10:02 -0400
-Received: by mail-wr1-f49.google.com with SMTP id v11so29302554wrm.9;
-        Wed, 18 Mar 2020 02:10:01 -0700 (PDT)
+        id S1726994AbgCRJKJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 05:10:09 -0400
+Received: from mail-wr1-f68.google.com ([209.85.221.68]:33973 "EHLO
+        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727507AbgCRJKI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 05:10:08 -0400
+Received: by mail-wr1-f68.google.com with SMTP id z15so29219175wrl.1;
+        Wed, 18 Mar 2020 02:10:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e28C2S//kHe4jqdKcjRXGdpKD49/Om53s4eGmBh94Do=;
-        b=tIR0IDHBHKC6djjyI1kGXHehoxutDOa482BqmdeOHL/090CxLNG0+GoZCvJ8b7oCSq
-         Sw6uYnWpQN6lw0TIz8Zt7f4dJ/ukGe774ZMKQh4s4Q3DofLKrYQ9xytKXJAInyRF6BVh
-         TKHQ6DxEzVikhnWUK9iEdrz/c1Mkz5UZv7ciP0g2E46GB9TZ4OUZkRhtS7fF9lUqtMVE
-         HpKEauJtfAbIqnWqu7weGcEVP1XhiPuHepKTU8ekZAV010He6AWlN1wq/xfLabtIToO9
-         EowK/bdDL769lDYG8n7P8lWlh1fK5MOZUO6dzCLdQcD4ZohmtI6Q267JfKFKecB+1pEe
-         /SRA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8SHhQHnZIi/4h72keeEYbIQCzJGcDZElFf3IKhgnUxo=;
+        b=TkrZVAhTpmSLvxXG8PNb1s/QVm9yH0NxI8vT+wlsjjnZsErMbQ1Lc1jUtX+FmZZ2bs
+         gyE9oFnewvEX9sshYdB5Y6lo19QDH87gIA0Y9sqwmMIQNumCXE9v80NSXBYtSusU/5dt
+         MT6WlmCkhb40oTLqg7OtH5npaWpQTDD/spi6fR2w60b8YfbVoUPgSSWqSKLXeiB4pyp+
+         +7ox0YTj0qVjHTn889ZpHeZvVcr1g0wxJ59NHC4cO1H5QQoa6tSrtnkFkY15fNr/hEXs
+         WjAklpTNdC+WKqjO/gSH9dl6pzEWXxVRKxleybvuKDCbo+LiU2LgH0gBHToaKtDZtBnQ
+         QJYg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e28C2S//kHe4jqdKcjRXGdpKD49/Om53s4eGmBh94Do=;
-        b=uIvEw2zb8ibGgRmeqX49CqM2kDhtuCfSq/pWk8nSP7F49xGu9Ed6l4okOvwQz4Ma5F
-         k2L6OrpKKYmoJbG95dgtqmTs8WHSEpwxyZMvxU1YCQCSNrNl0YAALZqnnCIuJAcHezhb
-         c6TgcCu37YUmPm6wOkC0UPOd7bnWOo5OlrfPqYh8+w6xZ2QttFtxgpB0gE2MoSzZOY5Y
-         tMy8z/IX6U7s4dUMLOMEB2hsF5hyJJhDAbndkfjK4zngXoIe9Cei8GUc/KwiGawbIBYb
-         OY7pAR/HBxoM+tJLEwVmtXwKcjBl86oOunD6o7X62y+fgga+agUhbBoLk2kNf8ECx3Oj
-         Uvow==
-X-Gm-Message-State: ANhLgQ0Mrk3KCIQBkTaLssCxRBuCViwzbmKJPRoMUm8pjn16kG8XXQyF
-        A2qNBdXFQqVaD/+R5cKNMXIrjjPRnYg=
-X-Google-Smtp-Source: ADFU+vutDa5mYogUhh5sFGje8oF34MGpF16NSRZLFE1xAPgVs7vmd/Qon8vHoEsaBXhRvgRehCqsbA==
-X-Received: by 2002:adf:ea03:: with SMTP id q3mr4304859wrm.267.1584522600362;
-        Wed, 18 Mar 2020 02:10:00 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8SHhQHnZIi/4h72keeEYbIQCzJGcDZElFf3IKhgnUxo=;
+        b=OTDKq1fEecs+hSb5rnxQh0KNDLcePi9dpZjNlvLCTBcR/8shqAe9vE07lnohtYlPM1
+         hIDnDkvk+V05GHWnBBvja7ACdLH2uOL597jJaw+X6YT+Sg1+BwIcXsTPU0pzdJ/ODn4i
+         3Dv05JdHXQn8BCkG7kGuiGO7aa3s7odpwY4wsmzBitZ1/UA1bxfTz8IWK8DrX1eIdb2t
+         HnYI466HJBwhVU1P/KHFdca1LrT8f3doyUfzSHijbj0YKMFit1BLJIXCjTWflkIYAm/X
+         ve5d7gy3xnx+ceGnWnxm9oagXgXS/V/nFz1zhFnIz3O5/SYhTw/n4/GMg+jbcYSTpcZE
+         M8vQ==
+X-Gm-Message-State: ANhLgQ3tmHygEA1dPl3jcMZ+YlnLxApR+DPYxDLXECLC2Icld4XmLjpQ
+        jb32nIicviaPO7lCapAUaVhHDXmP
+X-Google-Smtp-Source: ADFU+vvvNSCJU5tc7gOt2zbuF5QA+mySFbKRI3UHthp1OTZhSsyojL0Ly6/YWVissb/GdhcDb7wBPQ==
+X-Received: by 2002:adf:ab1d:: with SMTP id q29mr4191474wrc.233.1584522604847;
+        Wed, 18 Mar 2020 02:10:04 -0700 (PDT)
 Received: from localhost.localdomain ([95.77.248.51])
-        by smtp.gmail.com with ESMTPSA id w1sm2823986wmc.11.2020.03.18.02.09.59
+        by smtp.gmail.com with ESMTPSA id w1sm2823986wmc.11.2020.03.18.02.10.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 02:09:59 -0700 (PDT)
+        Wed, 18 Mar 2020 02:10:04 -0700 (PDT)
 From:   Alexandru Tachici <tachicialex@gmail.com>
 X-Google-Original-From: Alexandru Tachici <alexandru.tachici@analog.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     jic23@kernel.org
-Subject: [PATCH v3 0/6] iio: accel: adxl372: add peak mode
-Date:   Wed, 18 Mar 2020 13:09:54 +0200
-Message-Id: <20200318110958.8621-1-alexandru.tachici@analog.com>
+Subject: [PATCH v3 4/4] iio: accel: adxl372: Update sysfs docs
+Date:   Wed, 18 Mar 2020 13:09:58 +0200
+Message-Id: <20200318110958.8621-5-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200318110958.8621-1-alexandru.tachici@analog.com>
+References: <20200318110958.8621-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -69,47 +72,51 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series adds the possibility to configure
-the device, from sysfs, to work in peak mode. This enables
-adxl372 to capture only over threshold accelerations.
+This patch adds entries in the syfs docs of ADXL372.
 
-1. Create sysfs files for falling_period/rising_period
-and thresh_falling_value/thresh_rising_value in events/ dir.
-Set INT1 reg for activity/inactivity and push
-event code in events fifo on irq.
-
-2. Add additional ABIs in order to explain the
-user that setting values in the events/ sysfs files
-also changes devices behaviour.
-
-3. Update sysfs docs: renames, added two new
-entries for the activity_detect_event/
-inactivity_detect_event
-
-Alexandru Tachici (3):
-  iio: accel: adxl372: add event interface
-  iio: accel: adxl372: add additional events ABIs
-  iio: accel: adxl372: Update sysfs docs
-
-1. Device FIFO can now be set in peak mode and only over the
-threshold accelerations will be stored.
-
-Stefan Popa (1):
-  iio: accel: adxl372: Add support for FIFO peak mode
-
-Changelog v2 -> v3:
-- now use iio_device_claim_direct_mode before setting peak mode
-- if peak mode is enabled and not all axis are enabled, filter out disabled axis
-data before iio_push_to_buffers
-- add events enable attributes: (thresh_rising_en/thresh_falling_en)
-- renamed attr: buffer_peak_mode_enable to hwfifo_peak_mode_enable
-- squashed event interface related commits into one
-
- .../ABI/testing/sysfs-bus-iio-accel-adxl372   |  30 ++
- drivers/iio/accel/adxl372.c                   | 345 +++++++++++++++++-
- 2 files changed, 368 insertions(+), 7 deletions(-)
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+---
+ .../ABI/testing/sysfs-bus-iio-accel-adxl372   | 30 +++++++++++++++++++
+ 1 file changed, 30 insertions(+)
  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-accel-adxl372
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-accel-adxl372 b/Documentation/ABI/testing/sysfs-bus-iio-accel-adxl372
+new file mode 100644
+index 000000000000..6be4f57f9520
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-accel-adxl372
+@@ -0,0 +1,30 @@
++What:		/sys/bus/iio/devices/iio:deviceX/hwfifo_peak_mode_enable
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute allows to configure the FIFO to store sample
++		sets of impact event peak (x, y, z). As a precondition, all
++		three channels (x, y, z) need to be enabled.
++		Writing 1, peak fifo mode will be enabled, if cleared and
++		all three channels are enabled, sample sets of concurrent
++		3-axis data will be stored in the FIFO.
++
++What:		/sys/bus/iio/devices/iio:deviceX/activity_detect_event
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		adxl372 works in loop mode. It will loop  between activity
++		and inactivity detection mode. The thresh_rising sysfs files
++		found in events/ need to be configured in order to define when
++		the device will mark a sensed acceleration over a period of
++		time as activity. Reads "in_accel_thresh_x_rising".
++
++What:		/sys/bus/iio/devices/iio:deviceX/inactivity_detect_event
++KernelVersion:
++Contact:	linux-iio@vger.kernel.org
++Description:
++		adxl372 works in loop mode. It will loop  between activity
++		and inactivity detection mode. The thresh_falling sysfs files
++		found in events/ need to be configured in order to define when
++		the device will mark a sensed acceleration over a period of
++		time as inactivity. Reads "in_accel_thresh_x_falling".
 -- 
 2.20.1
 
