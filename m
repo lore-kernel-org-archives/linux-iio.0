@@ -8,62 +8,62 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4590DC5ACD7
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 025A3C10DCE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 1C81520775
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C735520777
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:54 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aRzNxqUC"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z1MxHCUG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727061AbgCRNhl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 09:37:41 -0400
-Received: from mail-wm1-f67.google.com ([209.85.128.67]:33264 "EHLO
-        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726796AbgCRNhl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 09:37:41 -0400
-Received: by mail-wm1-f67.google.com with SMTP id r7so2342354wmg.0;
-        Wed, 18 Mar 2020 06:37:39 -0700 (PDT)
+        id S1727048AbgCRNhk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 09:37:40 -0400
+Received: from mail-wm1-f65.google.com ([209.85.128.65]:35673 "EHLO
+        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727024AbgCRNhi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 09:37:38 -0400
+Received: by mail-wm1-f65.google.com with SMTP id m3so3408719wmi.0;
+        Wed, 18 Mar 2020 06:37:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=43EnDEqOvNTQaVElWki6b7aWJraaV8Mamxc/TOhHBBk=;
-        b=aRzNxqUCydwgpzyK/GwX4T+mHGnkjYP0xR4jHIHopGjMT7BELNt+DPc9vclxAdej4m
-         smSA9VfUVrLVxQKylwNgVriXkSgfCPJqGN+Kdc+Z60DI7Muvw29N/bH/A/xcee1QsFup
-         oxl++PURjVPGd6B4cCVfD6kHN7JN9MwOhhbQZCx0eztXbT4k/4eLMWrUktL3utfb6yuF
-         xe/n6GkeSYH2Sd9NkrcwBkO7fI0+6rizznypGJKB51LoPNxl7XGyPtgk79JiS+aeUk+O
-         aWWZF6trVp9ftVLIoLXFZrgHw0f4zo51F3ZDDorxIHyq3mkUUgqz2Wo2vvYcDJHescpv
-         cYjg==
+        bh=O3t2fRa2PJe34Peod55apFClQDGZv5u9o9GW8ycI9VA=;
+        b=Z1MxHCUG7EwfhY5eR75sRxLc8oEd2odfeRlFX++H4ApBql1MNNQrNqBv15ybNQSkLz
+         L80V4D+N8TgqpHHO1AnZH7QLUN0XJFPIps1LS9Z/5aSn90pTwD71vTiiGgLMiwOhaVNl
+         H6KuXqn7fg5NYPzpwFtmE1dt2MWwqpWhg1DQN5c+m/urPTBlZmOix2qsbGdQsnS7OaIy
+         qqd2TZMAalB7UNZR8fp9Yxm1lNKG2VAF7lP33Y2y2AAoDf+luGeuq4hwPWS6ePamcxvn
+         MfJ0oYEyCyaQJgoEPVl9Q25JtSRTLjEQ959l1MwSdAdZwU3eWa4acbKAYfe5b5ZrdPYO
+         ZnCQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=43EnDEqOvNTQaVElWki6b7aWJraaV8Mamxc/TOhHBBk=;
-        b=tWeR3QBIwuWVwH9ZDmiyB/6NuefB6zMW672nXb+lIye5fqN9VtLkD6oZ/Suarp5+v3
-         0FdZjIZG9szz92EdZj0NLHrDpw5BJauLI1UC2a+kCS0RtcoLBmQ+/Pigcdy8wkgj9J1C
-         nlyrB4D7b1uQ1qSjwhhvB7+2RQqPbw5Qw2PEq0IJRC7JxOLZKDIZ3loX9H1xrfo1VOck
-         G6b8ApqxRMJlk6ikAm54Cv3OPH3Uj6COyO4sFMdLRGJCUYl0PoM6pJ+hMTqamBE2eHdi
-         exwWfCXV7Vr/QcqJ1V1OpsRa00PpNoD/P9PjyCDRkJ3GnVmuSgdtihiCfHmp9hEyteY6
-         dDiA==
-X-Gm-Message-State: ANhLgQ3792z7CL2RjiQ3UfbkRFfR1tcFNIcuAHOptEPwXk//nWZ5kTkP
-        Y4/buSL3pIVUrpLOzbgzQfieZAeY
-X-Google-Smtp-Source: ADFU+vslQnXxRNxVxe1fbt8lNLd1lnms6YrH2kzqbvyZKJknR2fsU37c2fg0WFgVgmhG7dTbv6QW7Q==
-X-Received: by 2002:a05:600c:2244:: with SMTP id a4mr4995330wmm.147.1584538658482;
-        Wed, 18 Mar 2020 06:37:38 -0700 (PDT)
+        bh=O3t2fRa2PJe34Peod55apFClQDGZv5u9o9GW8ycI9VA=;
+        b=bsesBzSpT3TVhFg4hZwPZxL8BOLrZbOPlAd1hudk+H/yXK23BzetDqK23n+rT9Cefs
+         zbI/6T+0zREc+/WLgLeHreN4USq1C08DMjq0dyW4xANLLamJGSEO3/9mzIaH3JPcu5zr
+         ZGtxkWS1+KP1IZQbe+QwmM97Q3OD2yEYZ5X0Y2B/NhouRY7YJIZoawFz2EhB4fI4rfkh
+         ecnj6pBQwrL3fNno4DL7b8uHmpRE3ndckk39KyI5WljJbcxGHDY4lA7QAlVix1MFZfjA
+         B1IzRf1YCozqdR91IcAkR/qRgUo2sBYk+n4K8jZ77O6pZuxT+LXMHFouXWwzFdKqbZjl
+         kPbw==
+X-Gm-Message-State: ANhLgQ0Fn2V5JmCqtvYQbGrx7g7vxFolb9DCxsE5pZxi+qY1d5u/NYfQ
+        F5M0hWfca45wwLSHGPkvLOVNnLaM
+X-Google-Smtp-Source: ADFU+vsrTPl1ovbosq+edlNKHjrEkZ9r0ThJJa6t2k7mvNxZguILmAK3mlj2yvPd/auY3dYqb3bXeA==
+X-Received: by 2002:a1c:23c8:: with SMTP id j191mr3719141wmj.117.1584538656208;
+        Wed, 18 Mar 2020 06:37:36 -0700 (PDT)
 Received: from saturn.lan ([188.26.73.247])
-        by smtp.gmail.com with ESMTPSA id f15sm9444002wru.83.2020.03.18.06.37.37
+        by smtp.gmail.com with ESMTPSA id f15sm9444002wru.83.2020.03.18.06.37.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 06:37:38 -0700 (PDT)
+        Wed, 18 Mar 2020 06:37:35 -0700 (PDT)
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
 X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Michael.Hennerich@analog.com, renatogeh@gmail.com, lars@metafoo.de,
         jic23@kernel.org, mircea.caprioru@analog.com,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 4/5] iio: ad_sigma_delta: remove unused IIO channel macros
-Date:   Wed, 18 Mar 2020 15:40:41 +0200
-Message-Id: <20200318134042.30133-5-alexandru.ardelean@analog.com>
+Subject: [PATCH 2/5] iio: adc: ad7791: define/use own IIO channel macros
+Date:   Wed, 18 Mar 2020 15:40:39 +0200
+Message-Id: <20200318134042.30133-3-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.20.1
 In-Reply-To: <20200318134042.30133-1-alexandru.ardelean@analog.com>
 References: <20200318134042.30133-1-alexandru.ardelean@analog.com>
@@ -74,81 +74,100 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Now that all channel SigmaDelta IIO channel macros have been localized,
-remove the generic ones.
+This driver seems to use most of the AD_SD_*_CHANNEL. This change will move
+them in the driver. The intent is that if a new part comes along which
+would require tweaks per IIO channel, these should be doable in the driver.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- include/linux/iio/adc/ad_sigma_delta.h | 58 --------------------------
- 1 file changed, 58 deletions(-)
+ drivers/iio/adc/ad7791.c | 62 +++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 55 insertions(+), 7 deletions(-)
 
-diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-index 5a127c0ed200..a3a838dcf8e4 100644
---- a/include/linux/iio/adc/ad_sigma_delta.h
-+++ b/include/linux/iio/adc/ad_sigma_delta.h
-@@ -133,62 +133,4 @@ void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
+index abb239392631..ba22808507d0 100644
+--- a/drivers/iio/adc/ad7791.c
++++ b/drivers/iio/adc/ad7791.c
+@@ -64,25 +64,73 @@
+ #define AD7791_MODE_SEL_MASK		(0x3 << 6)
+ #define AD7791_MODE_SEL(x)		((x) << 6)
  
- int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
++#define __AD7991_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++	_storagebits, _shift, _extend_name, _type, _mask_all) \
++	{ \
++		.type = (_type), \
++		.differential = (_channel2 == -1 ? 0 : 1), \
++		.indexed = 1, \
++		.channel = (_channel1), \
++		.channel2 = (_channel2), \
++		.address = (_address), \
++		.extend_name = (_extend_name), \
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++			BIT(IIO_CHAN_INFO_OFFSET), \
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
++		.info_mask_shared_by_all = _mask_all, \
++		.scan_index = (_si), \
++		.scan_type = { \
++			.sign = 'u', \
++			.realbits = (_bits), \
++			.storagebits = (_storagebits), \
++			.shift = (_shift), \
++			.endianness = IIO_BE, \
++		}, \
++	}
++
++#define AD7991_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
++	_storagebits, _shift) \
++	__AD7991_CHANNEL(_si, _channel, _channel, _address, _bits, \
++		_storagebits, _shift, "shorted", IIO_VOLTAGE, \
++		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++
++#define AD7991_CHANNEL(_si, _channel, _address, _bits, \
++	_storagebits, _shift) \
++	__AD7991_CHANNEL(_si, _channel, -1, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_VOLTAGE, \
++		 BIT(IIO_CHAN_INFO_SAMP_FREQ))
++
++#define AD7991_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++	_storagebits, _shift) \
++	__AD7991_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
++		_storagebits, _shift, NULL, IIO_VOLTAGE, \
++		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++
++#define AD7991_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
++	_shift) \
++	__AD7991_CHANNEL(_si, _channel, -1, _address, _bits, \
++		_storagebits, _shift, "supply", IIO_VOLTAGE, \
++		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++
+ #define DECLARE_AD7787_CHANNELS(name, bits, storagebits) \
+ const struct iio_chan_spec name[] = { \
+-	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
++	AD7991_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
+ 		(bits), (storagebits), 0), \
+-	AD_SD_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
+-	AD_SD_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
++	AD7991_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
++	AD7991_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
+ 		(bits), (storagebits), 0), \
+-	AD_SD_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
++	AD7991_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
+ 		(bits), (storagebits), 0), \
+ 	IIO_CHAN_SOFT_TIMESTAMP(4), \
+ }
  
--#define __AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--	_storagebits, _shift, _extend_name, _type, _mask_all) \
--	{ \
--		.type = (_type), \
--		.differential = (_channel2 == -1 ? 0 : 1), \
--		.indexed = 1, \
--		.channel = (_channel1), \
--		.channel2 = (_channel2), \
--		.address = (_address), \
--		.extend_name = (_extend_name), \
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
--			BIT(IIO_CHAN_INFO_OFFSET), \
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
--		.info_mask_shared_by_all = _mask_all, \
--		.scan_index = (_si), \
--		.scan_type = { \
--			.sign = 'u', \
--			.realbits = (_bits), \
--			.storagebits = (_storagebits), \
--			.shift = (_shift), \
--			.endianness = IIO_BE, \
--		}, \
--	}
--
--#define AD_SD_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--	_storagebits, _shift) \
--	__AD_SD_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_VOLTAGE, \
--		BIT(IIO_CHAN_INFO_SAMP_FREQ))
--
--#define AD_SD_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
--	_storagebits, _shift) \
--	__AD_SD_CHANNEL(_si, _channel, _channel, _address, _bits, \
--		_storagebits, _shift, "shorted", IIO_VOLTAGE, \
--		BIT(IIO_CHAN_INFO_SAMP_FREQ))
--
--#define AD_SD_CHANNEL(_si, _channel, _address, _bits, \
--	_storagebits, _shift) \
--	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_VOLTAGE, \
--		 BIT(IIO_CHAN_INFO_SAMP_FREQ))
--
--#define AD_SD_CHANNEL_NO_SAMP_FREQ(_si, _channel, _address, _bits, \
--	_storagebits, _shift) \
--	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_VOLTAGE, 0)
--
--#define AD_SD_TEMP_CHANNEL(_si, _address, _bits, _storagebits, _shift) \
--	__AD_SD_CHANNEL(_si, 0, -1, _address, _bits, \
--		_storagebits, _shift, NULL, IIO_TEMP, \
--		BIT(IIO_CHAN_INFO_SAMP_FREQ))
--
--#define AD_SD_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
--	_shift) \
--	__AD_SD_CHANNEL(_si, _channel, -1, _address, _bits, \
--		_storagebits, _shift, "supply", IIO_VOLTAGE, \
--		BIT(IIO_CHAN_INFO_SAMP_FREQ))
--
- #endif
+ #define DECLARE_AD7791_CHANNELS(name, bits, storagebits) \
+ const struct iio_chan_spec name[] = { \
+-	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
++	AD7991_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
+ 		(bits), (storagebits), 0), \
+-	AD_SD_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
++	AD7991_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
+ 		(bits), (storagebits), 0), \
+-	AD_SD_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
++	AD7991_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
+ 		(bits), (storagebits), 0), \
+ 	IIO_CHAN_SOFT_TIMESTAMP(3), \
+ }
 -- 
 2.20.1
 
