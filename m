@@ -2,101 +2,193 @@ Return-Path: <SRS0=l2Gr=5D=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33623C5ACD7
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 16:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EA65C10DCE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 16:21:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0B06F20719
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 16:11:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EE99620768
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 16:21:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hJ7/Anym"
+	dkim=pass (1024-bit key) header.d=nio365.onmicrosoft.com header.i=@nio365.onmicrosoft.com header.b="AVsHbsGs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726765AbgCRQL6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 12:11:58 -0400
-Received: from mail-pg1-f194.google.com ([209.85.215.194]:38305 "EHLO
-        mail-pg1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726733AbgCRQL6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 12:11:58 -0400
-Received: by mail-pg1-f194.google.com with SMTP id x7so13947099pgh.5;
-        Wed, 18 Mar 2020 09:11:57 -0700 (PDT)
+        id S1726801AbgCRQVs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 12:21:48 -0400
+Received: from mx0a-00010702.pphosted.com ([148.163.156.75]:34098 "EHLO
+        mx0b-00010702.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726647AbgCRQVs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 12:21:48 -0400
+X-Greylist: delayed 2795 seconds by postgrey-1.27 at vger.kernel.org; Wed, 18 Mar 2020 12:21:47 EDT
+Received: from pps.filterd (m0098781.ppops.net [127.0.0.1])
+        by mx0a-00010702.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02IFOLf4026838;
+        Wed, 18 Mar 2020 10:34:52 -0500
+Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2057.outbound.protection.outlook.com [104.47.37.57])
+        by mx0a-00010702.pphosted.com with ESMTP id 2yua4ha91r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 Mar 2020 10:34:52 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BGuqRKWK7n2hYcu+XfnzAI/lGatTqhMSjKvZUIVD+HIVc5UhAqgJPf+p6XoOWEIc1t8Q6g+U6T4YWHGdqhlvYBCPJ0AqZ0d+9BfAACUW4OolXBopE0QM/7ATpL4gU8fU8yEhBFsnHrrvTNxdzDGLgzOxEOaeh3cDgZiVjKM9LQZm0Phjawr3V1eNapISv1SLDMKCwSXPVfRod4nR2Ns3TiaNPYvUqziw8liUsVf5ENZkslQ2wbXGAcfa+FLPZwxPqHrJtEdstcKQMw7RBz69XsscT07VhMrPEotA4mjm53iKF4ZEd3yYc8P1cbCWkTIST/YE3M+4LN0snpD8/qRMxw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yDnFnkMX9vIGiWG8S9fUYcwhbKfMJZhAl7P3oDnd1Qg=;
+ b=TLKn9E7S7CJE8cJw9GLPxi/s0Oy6gsP2zKUndwBgX3mdE4AI98rr6dHuixRHEbRF6D8+ERC0+JRyqkenzwD4MOlXDjMZD3r7bbiqOSswLJnXSSuUf/b/0Cx34c3OqlZUzfCraOvlAS5Jb0/m0mr3LzlFRCR8WjDnVjRWJTOj7yO8nwkYyH8WhpvfGvtlgwbBpVYQRFTqqw46xpcJWIOWig6PwjvgdS5rZTETQlo+eR28eVI9NSTUn3tZzOfl+tYX4ArD3c3/vuctLKCBpb8e6DthL6mD7SBwcQPnjphpLRby830vSpp5z86PVK4S9nhP9Fz9zU8x8xknZTUKbPFksA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=ni.com; dmarc=pass action=none header.from=ni.com; dkim=pass
+ header.d=ni.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:date:from:to:cc:subject:mime-version:content-disposition
-         :user-agent;
-        bh=LWuGqqiVZStjA49iRqkB2ECGeP11khRAviVxRIQYens=;
-        b=hJ7/AnymbJqEL9fDuUD1UXa4a8M+PhkAlkiJxpd/HpgvsQN9ycgElBYdD2wF6KqzQi
-         9l4eprE+HBCuCqsilh4rJEN/+DOAhV7icJNaBCoFdX9BLt5s6C9ogqCVmb1jnojQ+NfE
-         oK52vugCG2BeY3o4AR0/dwv0PmmCzV9RhSpYUg0gmAAYnQijiFUck2kqJdGA4jQ7iKtW
-         S0riliFEbzOm5WuHnyI/o9Et9bnZhBB/+/3ZPNYyfhgyhEpTudH6rQJm7WlE3651vlx5
-         93Sb5qubnCm9StZFeETTMrg7ytES7wN5+ZNy/S+XWwc3+32R7lbZKDMXZm0WhJYBRG12
-         kKDw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:mime-version
-         :content-disposition:user-agent;
-        bh=LWuGqqiVZStjA49iRqkB2ECGeP11khRAviVxRIQYens=;
-        b=pObCP0KvNXY+c8FOOmD5KFr8Y1K7+BDeMXC5nXO3/DyMe+JOu2YJeKZgbpf+zlC16Z
-         kHyUQRIaxkOyw8SemHz1XslIBDas2/yYB3KLTGW1H1ard8njyF5NlY0K4NEr9n3Un392
-         Ex+aUrssHSkXV09LdE0xUWV0ScAAsEIqr3RyhkkZgzdo6o3jGVhuKQZdsYk1xR8mY3cI
-         Ml2zURscZzMc8p//4nEbjPcvf8XU1UJeQFT9BL16yNI8bnzZTdFsiKxLeXREo52jyjDx
-         6yXyoejdgV3ctWRt0ek172rX18zc2wwIjfmycX6zLSnIJ+rTfo91HUbo6+aWK277GzZ9
-         ptkQ==
-X-Gm-Message-State: ANhLgQ0xesU/dZ/uEw3hp9rrz7dD9MhOfjpv9+pjibMTXV67hUE0cFRi
-        UpiygJ9tw5csH6xgzNP1Bdwf5hvjMoA=
-X-Google-Smtp-Source: ADFU+vsO9tap4oeyRWVuzA9XlsiET4/dRMS4Pk/tQwU5/YnV0jOhKwCBCopromTwiUxlYpEq3zes6A==
-X-Received: by 2002:a63:7c02:: with SMTP id x2mr5576113pgc.236.1584547916442;
-        Wed, 18 Mar 2020 09:11:56 -0700 (PDT)
-Received: from SARKAR ([43.224.157.42])
-        by smtp.gmail.com with ESMTPSA id f19sm6356308pgf.33.2020.03.18.09.11.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 09:11:55 -0700 (PDT)
-Message-ID: <5e72484b.1c69fb81.53f77.5a16@mx.google.com>
-X-Google-Original-Message-ID: <20200318161151.GA31012@rohitsarkar5398@gmail.com>
-Date:   Wed, 18 Mar 2020 21:41:51 +0530
-From:   Rohit Sarkar <rohitsarkar5398@gmail.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+ d=nio365.onmicrosoft.com; s=selector2-nio365-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=yDnFnkMX9vIGiWG8S9fUYcwhbKfMJZhAl7P3oDnd1Qg=;
+ b=AVsHbsGsvViikQ8SnbvbPxOwbqPHfF4SlZw8NrClDn16LYJNPWHJ8AXe1ubSRsa8GRoXkqz7Sia6teDMsgoeQQ1BMT4U2yqFx8xznvO886UAMi7VbzumI7iocU7C1lQ+/4ebTovVbCfNCzuub5r8WILOfMfgNlGXPCnrGnf7LBY=
+Received: from SN4PR0401MB3646.namprd04.prod.outlook.com
+ (2603:10b6:803:4b::29) by SN4PR0401MB3709.namprd04.prod.outlook.com
+ (2603:10b6:803:48::11) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.16; Wed, 18 Mar
+ 2020 15:34:51 +0000
+Received: from SN4PR0401MB3646.namprd04.prod.outlook.com
+ ([fe80::d05b:1953:4111:38e4]) by SN4PR0401MB3646.namprd04.prod.outlook.com
+ ([fe80::d05b:1953:4111:38e4%5]) with mapi id 15.20.2793.023; Wed, 18 Mar 2020
+ 15:34:51 +0000
+From:   Michael Auchter <michael.auchter@ni.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: core: Make mlock internal to the iio core
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc:     Michael Auchter <michael.auchter@ni.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 3/3] dt-bindings: iio: dac: ad5686: add binding
+Date:   Wed, 18 Mar 2020 10:34:34 -0500
+Message-Id: <20200318153434.62833-3-michael.auchter@ni.com>
+X-Mailer: git-send-email 2.24.1
+In-Reply-To: <20200318153434.62833-1-michael.auchter@ni.com>
+References: <20200318153434.62833-1-michael.auchter@ni.com>
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ClientProxiedBy: DM3PR14CA0146.namprd14.prod.outlook.com
+ (2603:10b6:0:53::30) To SN4PR0401MB3646.namprd04.prod.outlook.com
+ (2603:10b6:803:4b::29)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from xaphan.phire.org (66.90.216.181) by DM3PR14CA0146.namprd14.prod.outlook.com (2603:10b6:0:53::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2814.19 via Frontend Transport; Wed, 18 Mar 2020 15:34:50 +0000
+X-Mailer: git-send-email 2.24.1
+X-Originating-IP: [66.90.216.181]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: baa99a74-bc59-41f5-bef0-08d7cb51e62e
+X-MS-TrafficTypeDiagnostic: SN4PR0401MB3709:|SN4PR0401MB3709:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <SN4PR0401MB370950BD942A9B0C882BBCE187F70@SN4PR0401MB3709.namprd04.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:1388;
+X-Forefront-PRVS: 03468CBA43
+X-Forefront-Antispam-Report: SFV:NSPM;SFS:(10019020)(4636009)(136003)(396003)(346002)(39860400002)(366004)(376002)(199004)(66556008)(66476007)(8676002)(2906002)(81166006)(81156014)(66946007)(2616005)(36756003)(6506007)(44832011)(966005)(6512007)(6486002)(5660300002)(110136005)(478600001)(16526019)(316002)(52116002)(956004)(4326008)(8936002)(6666004)(26005)(186003)(1076003)(86362001);DIR:OUT;SFP:1102;SCL:1;SRVR:SN4PR0401MB3709;H:SN4PR0401MB3646.namprd04.prod.outlook.com;FPR:;SPF:None;LANG:en;PTR:InfoNoRecords;A:1;
+Received-SPF: None (protection.outlook.com: ni.com does not designate
+ permitted sender hosts)
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: juarWr5oX1TPTk5iel+G485b0dI0w/JQ7iPfrvuuS1hIebgxDbRN8P5usDUpB8jLJEdVadO+MKs2SmksZ7yuEX6nE0CCTjew7GfYoeHNxx4iPKwg3+xSQ+GK2QGdlEykMgTG/vWwafZocgOQYQiPuhhJ83t6FxS4SWM5Fkwv6yBUOdEww5nMbIR5KPqIIm9Y2iKEvsd48ejpP9O4LRCa1OUHGS68uhJqK33iFtE8T7dqfUO65pocZntuIbKhVDl3W022wfl6dC+Frjr3yNNf/dBXfP5yDH5PvE8G90qzLUGSApG0M2+Ja78QILvmjBEjlRPa5KI4WQN+Xpt0BmgHxSy/L3yJyfwKWtGnv7gHQH3oJiaaoVwPs5I4e8Pn5av6gMriMO9tEz11KX8ANGJf2Am4ph19mGOmYMweV+BXmncydxcu5WaUtcZAJz6Ucc4pDUN+dTJGqaNSsmlAIG1Cqs/DqOS1sOXUUWTBd65BniyioFWenIkccpizLK8uKP7mYAwlS0FIFG5mwAOCtTHc2w==
+X-MS-Exchange-AntiSpam-MessageData: C67PBI+qn/Zfc25DPufZjI6sj3Zx7mhJqXuv4GuC1KQO6jPXnn1oPou47J1htX3ZWyLRP88piCloI4VBOnLew+1u5DXWdxNnmpA7FiiA5pcC2Cz3pV6iP2XBvnQfQczbJI45uqXcohqeG2y6mea0RQ==
+X-OriginatorOrg: ni.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: baa99a74-bc59-41f5-bef0-08d7cb51e62e
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 Mar 2020 15:34:51.2436
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 87ba1f9a-44cd-43a6-b008-6fdb45a5204e
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: LWWDnkMKgpsL1ftPEtvUp0tef8AH6bM+6yrGPh6cO3laKwlZ1VgQ3ioJ2stKI8fMSXsAmV+2kSwCeiTjwJio0w==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN4PR0401MB3709
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-18_07:2020-03-18,2020-03-18 signatures=0
+X-Proofpoint-Spam-Details: rule=inbound_policy_notspam policy=inbound_policy score=30 impostorscore=0
+ mlxscore=0 malwarescore=0 suspectscore=0 phishscore=0 adultscore=0
+ priorityscore=1501 bulkscore=0 clxscore=1015 spamscore=0 mlxlogscore=999
+ lowpriorityscore=0 classifier=spam adjust=30 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003180073
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-"mlock" should ideally only be used by the iio core. The mlock
-implementation may change in the future which means that no driver
-should be explicitly using mlock.
+Add a binding for AD5686
 
-Signed-off-by: Rohit Sarkar <rohitsarkar5398@gmail.com>
+Signed-off-by: Michael Auchter <michael.auchter@ni.com>
 ---
- include/linux/iio/iio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ .../bindings/iio/dac/adi,ad5686.yaml          | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index eed58ed2f368..e975020abaa6 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -492,7 +492,7 @@ struct iio_buffer_setup_ops {
-  * @buffer:		[DRIVER] any buffer present
-  * @buffer_list:	[INTERN] list of all buffers currently attached
-  * @scan_bytes:		[INTERN] num bytes captured to be fed to buffer demux
-- * @mlock:		[DRIVER] lock used to prevent simultaneous device state
-+ * @mlock:		[INTERN] lock used to prevent simultaneous device state
-  *			changes
-  * @available_scan_masks: [DRIVER] optional array of allowed bitmasks
-  * @masklength:		[INTERN] the length of the mask established from
+diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+new file mode 100644
+index 000000000000..4bd379720e99
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad5686.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD5686 and similar multi-channel DACs
++
++maintainers:
++  - Michael Auchter <michael.auchter@ni.com>
++
++description: |
++  Binding for Analog Devices AD5686 and similar multi-channel DACs
++
++properties:
++  compatible:
++    enum:
++      - adi,ad5311r
++      - adi,ad5671r
++      - adi,ad5675r
++      - adi,ad5691r
++      - adi,ad5692r
++      - adi,ad5693
++      - adi,ad5693r
++      - adi,ad5694
++      - adi,ad5694r
++      - adi,ad5695r
++      - adi,ad5696
++      - adi,ad5696r
++      - adi,ad5338r
++
++  reg:
++    maxItems: 1
++
++  vcc-supply:
++    description: |
++      The regulator supply for DAC reference voltage.
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      ad5686: dac@0 {
++        compatible = "adi,ad5686";
++        reg = <0>;
++        vcc-supply = <&dac_vref>;
++      };
++    };
++
 -- 
-2.23.0.385.gbc12974a89
+2.24.1
 
