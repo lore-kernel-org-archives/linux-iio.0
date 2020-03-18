@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EA1C10DCE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 06:00:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A119C10DCE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 06:00:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 427062076A
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 06:00:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CA75E2076D
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 06:00:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1584511208;
-	bh=LiiC0hJRBqCby/UhdJHICZhXIqqhTkN7s3GPqfZIqgs=;
+	s=default; t=1584511242;
+	bh=Mrp1ZWa1/1//Q7ikRp0WQlifb4RVW51A5g2NkRUbeyo=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Ty+ORDCn11QB0Kg3BOI6AY+sruZ/Zvi697s4riCThohYVpl8KNWzOzp+nLppX+tdK
-	 yXW60yKsxhiJYxxBFUjWroh5yl0AkvmTrbvn4XLvewBzypAW0BH9P9L7kLQzoCrZ3p
-	 76Vh+dsXQ1nLKl1lHn0JdNm6E315Mn6DlA5VeJmo=
+	b=prvpIIGmA/ztoumsYwftB5UZqVBV0K0RjJsJnOv3WZ1QAw1wzfeoWGLVLIQnqahdC
+	 otLkr6mPKcURRGc8dRzrLDzeR0QpPOzkHdyQm2qcqopMATtJxWexowIW5KPuA9GIt3
+	 NCVygKI0pWqlf/G119qMOWmA/BSppGloQGkrEAJc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726553AbgCRGAH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 02:00:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36154 "EHLO mail.kernel.org"
+        id S1727078AbgCRGAl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 02:00:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36408 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726478AbgCRGAH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 18 Mar 2020 02:00:07 -0400
+        id S1727029AbgCRGAl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Mar 2020 02:00:41 -0400
 Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6142820663;
-        Wed, 18 Mar 2020 06:00:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F2B620663;
+        Wed, 18 Mar 2020 06:00:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1584511206;
-        bh=LiiC0hJRBqCby/UhdJHICZhXIqqhTkN7s3GPqfZIqgs=;
+        s=default; t=1584511240;
+        bh=Mrp1ZWa1/1//Q7ikRp0WQlifb4RVW51A5g2NkRUbeyo=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=stAnY+Cs1wUIw0on4u4WWcgBEcrn19jZyu11TFasGSR6zeZWRsPTbZytON+f+8bsg
-         pZ+TnhvpOcxxVxVX/XcakqTJBU1Xd6MeHma/koZ6UO9wwhKLMJlNopNavB8T8JdsBs
-         H6kKZpOheMBNlC+VOOlo5R68W9QpnjtV6hkZQxl4=
-Date:   Wed, 18 Mar 2020 07:00:04 +0100
+        b=iRk7MYaX69a/Zb8xfs5T26yfQsXKT30FRO/ctgQl9JwUfIXvSALOQtGq3ZslH2UBE
+         lSk2gl59jhCJxf+x8j+6WVEgZ5/msclaOMn4buewe6oS9Ucr3m9qaJAwdLWxIPGOIb
+         ThQ8EINJgHQXYQWbDD7VXQAwPE6HhayJnoDkBrnI=
+Date:   Wed, 18 Mar 2020 07:00:38 +0100
 From:   Greg KH <gregkh@linuxfoundation.org>
 To:     Deepak R Varma <mh12gx2825@gmail.com>
 Cc:     outreachy-kernel@googlegroups.com, daniel.baluta@gmail.com,
@@ -46,55 +46,53 @@ Cc:     outreachy-kernel@googlegroups.com, daniel.baluta@gmail.com,
         Michael.Hennerich@analog.com, stefan.popa@analog.com,
         jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] staging: iio: adc: ad7192: Reformat lines crossing
- 80 columns
-Message-ID: <20200318060004.GA1594471@kroah.com>
+Subject: Re: [PATCH 2/2] staging: iio: adc: ad7280a: Add spaces around
+ operators
+Message-ID: <20200318060038.GB1594471@kroah.com>
 References: <cover.1584505215.git.mh12gx2825@gmail.com>
- <50419988d636c90511a07da256c91aa3b3e33bff.1584505215.git.mh12gx2825@gmail.com>
+ <6703668c512dd665a2299a1f5bf14d99262314f8.1584505215.git.mh12gx2825@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <50419988d636c90511a07da256c91aa3b3e33bff.1584505215.git.mh12gx2825@gmail.com>
+In-Reply-To: <6703668c512dd665a2299a1f5bf14d99262314f8.1584505215.git.mh12gx2825@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Mar 18, 2020 at 09:56:59AM +0530, Deepak R Varma wrote:
-> Macro arguments are computed at the time of macro invocation. This makes
-> the lines cross 80 column width. Add variables to perform the
-> calculations before hand and use these new variable in the macro calls
-> instead.
-> 
-> Also re-indent enum members to address checkpatch warning / check messages.
-
-When you say "also" in a changelog description, that's a huge hint the
-patch needs to be broken up.
-
-And that is what needs to happen here.
-
+On Wed, Mar 18, 2020 at 09:58:13AM +0530, Deepak R Varma wrote:
+> Add spaces around operator symbols to improve readability. Warning
+> flagged by checkpatch script.
 > 
 > Signed-off-by: Deepak R Varma <mh12gx2825@gmail.com>
 > ---
->  drivers/staging/iio/adc/ad7192.c | 15 ++++++++-------
->  1 file changed, 8 insertions(+), 7 deletions(-)
+>  drivers/staging/iio/adc/ad7280a.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index bf3e2a9cc07f..0265f6607d75 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -156,8 +156,8 @@
->   */
+> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> index 19a5f244dcae..34ca0d09db85 100644
+> --- a/drivers/staging/iio/adc/ad7280a.c
+> +++ b/drivers/staging/iio/adc/ad7280a.c
+> @@ -825,14 +825,14 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+>  }
 >  
->  enum {
-> -   AD7192_SYSCALIB_ZERO_SCALE,
-> -   AD7192_SYSCALIB_FULL_SCALE,
-> +	AD7192_SYSCALIB_ZERO_SCALE,
-> +	AD7192_SYSCALIB_FULL_SCALE,
+>  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
+> -			     in_voltage-voltage_thresh_low_value,
+> +			     in_voltage - voltage_thresh_low_value,
+>  			     0644,
+>  			     ad7280_read_channel_config,
+>  			     ad7280_write_channel_config,
+>  			     AD7280A_CELL_UNDERVOLTAGE);
+>  
+>  static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
+> -			     in_voltage-voltage_thresh_high_value,
+> +			     in_voltage - voltage_thresh_high_value,
+>  			     0644,
+>  			     ad7280_read_channel_config,
+>  			     ad7280_write_channel_config,
 
-Because this has nothing to do with the subject, please make it a
-separate patch.
+Did you try building this code?
 
-thanks,
+It catches everyone...
 
 greg k-h
