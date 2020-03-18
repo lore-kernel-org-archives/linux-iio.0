@@ -3,171 +3,269 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 025A3C10DCE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 891ECC10DCE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 14:51:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C735520777
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 13:37:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4DB2B20775
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 14:51:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z1MxHCUG"
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="yflygsXu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727048AbgCRNhk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 09:37:40 -0400
-Received: from mail-wm1-f65.google.com ([209.85.128.65]:35673 "EHLO
-        mail-wm1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727024AbgCRNhi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 09:37:38 -0400
-Received: by mail-wm1-f65.google.com with SMTP id m3so3408719wmi.0;
-        Wed, 18 Mar 2020 06:37:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=O3t2fRa2PJe34Peod55apFClQDGZv5u9o9GW8ycI9VA=;
-        b=Z1MxHCUG7EwfhY5eR75sRxLc8oEd2odfeRlFX++H4ApBql1MNNQrNqBv15ybNQSkLz
-         L80V4D+N8TgqpHHO1AnZH7QLUN0XJFPIps1LS9Z/5aSn90pTwD71vTiiGgLMiwOhaVNl
-         H6KuXqn7fg5NYPzpwFtmE1dt2MWwqpWhg1DQN5c+m/urPTBlZmOix2qsbGdQsnS7OaIy
-         qqd2TZMAalB7UNZR8fp9Yxm1lNKG2VAF7lP33Y2y2AAoDf+luGeuq4hwPWS6ePamcxvn
-         MfJ0oYEyCyaQJgoEPVl9Q25JtSRTLjEQ959l1MwSdAdZwU3eWa4acbKAYfe5b5ZrdPYO
-         ZnCQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=O3t2fRa2PJe34Peod55apFClQDGZv5u9o9GW8ycI9VA=;
-        b=bsesBzSpT3TVhFg4hZwPZxL8BOLrZbOPlAd1hudk+H/yXK23BzetDqK23n+rT9Cefs
-         zbI/6T+0zREc+/WLgLeHreN4USq1C08DMjq0dyW4xANLLamJGSEO3/9mzIaH3JPcu5zr
-         ZGtxkWS1+KP1IZQbe+QwmM97Q3OD2yEYZ5X0Y2B/NhouRY7YJIZoawFz2EhB4fI4rfkh
-         ecnj6pBQwrL3fNno4DL7b8uHmpRE3ndckk39KyI5WljJbcxGHDY4lA7QAlVix1MFZfjA
-         B1IzRf1YCozqdR91IcAkR/qRgUo2sBYk+n4K8jZ77O6pZuxT+LXMHFouXWwzFdKqbZjl
-         kPbw==
-X-Gm-Message-State: ANhLgQ0Fn2V5JmCqtvYQbGrx7g7vxFolb9DCxsE5pZxi+qY1d5u/NYfQ
-        F5M0hWfca45wwLSHGPkvLOVNnLaM
-X-Google-Smtp-Source: ADFU+vsrTPl1ovbosq+edlNKHjrEkZ9r0ThJJa6t2k7mvNxZguILmAK3mlj2yvPd/auY3dYqb3bXeA==
-X-Received: by 2002:a1c:23c8:: with SMTP id j191mr3719141wmj.117.1584538656208;
-        Wed, 18 Mar 2020 06:37:36 -0700 (PDT)
-Received: from saturn.lan ([188.26.73.247])
-        by smtp.gmail.com with ESMTPSA id f15sm9444002wru.83.2020.03.18.06.37.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 06:37:35 -0700 (PDT)
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-X-Google-Original-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Michael.Hennerich@analog.com, renatogeh@gmail.com, lars@metafoo.de,
-        jic23@kernel.org, mircea.caprioru@analog.com,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 2/5] iio: adc: ad7791: define/use own IIO channel macros
-Date:   Wed, 18 Mar 2020 15:40:39 +0200
-Message-Id: <20200318134042.30133-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200318134042.30133-1-alexandru.ardelean@analog.com>
-References: <20200318134042.30133-1-alexandru.ardelean@analog.com>
+        id S1726671AbgCROvq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 10:51:46 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:36916 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726638AbgCROvq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 10:51:46 -0400
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02IEcWpY031412;
+        Wed, 18 Mar 2020 15:51:21 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=STMicroelectronics;
+ bh=AtAQ6Omp1kqvN3R2P3Ojq/dUkGTPHDTP71rAjUnsU+g=;
+ b=yflygsXu04iS8mLX+60UttjdYpPiJKyzWBEm3v0ejRG2+CyZykKK438rf0MPYBFVUn5S
+ xVwFRl3IiFHH4EqdKie/Zx/GEbimNiSf4jv4jZBgjWY6elmjJU3GMq4FQTlNHSKF5AyD
+ cWgZZdUtdcpUvRKPKe4v1MW3k2qLxPkKVbqediBQlB9P7yWn9b0dePUyb4mkavF69xjm
+ VxMpgDs9PZ7yEzpO2vqm7ZWdeKVcDvdKbcnCq3xD5VysVXcSSE3Yfc0qGtrNNx9YqA+6
+ e453O+qAQjlyAFfCBDGs11drAWv30u6NoRI5cbIYkETCBvlZdRfWgnigfIn0Ny0VTVqT Hg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 2yu95um43b-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 Mar 2020 15:51:21 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 3C62C10002A;
+        Wed, 18 Mar 2020 15:51:20 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1FDE42AE6B7;
+        Wed, 18 Mar 2020 15:51:20 +0100 (CET)
+Received: from localhost (10.75.127.44) by SFHDAG5NODE3.st.com (10.75.127.15)
+ with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 18 Mar 2020 15:51:19
+ +0100
+From:   Fabrice Gasnier <fabrice.gasnier@st.com>
+To:     <robh+dt@kernel.org>, <jic23@kernel.org>
+CC:     <alexandre.torgue@st.com>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>,
+        <olivier.moysan@st.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] dt-bindings: iio: dac: stm32-dac: convert bindings to json-schema
+Date:   Wed, 18 Mar 2020 15:50:37 +0100
+Message-ID: <1584543037-32095-1-git-send-email-fabrice.gasnier@st.com>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG4NODE2.st.com (10.75.127.11) To SFHDAG5NODE3.st.com
+ (10.75.127.15)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
+ definitions=2020-03-18_06:2020-03-18,2020-03-18 signatures=0
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This driver seems to use most of the AD_SD_*_CHANNEL. This change will move
-them in the driver. The intent is that if a new part comes along which
-would require tweaks per IIO channel, these should be doable in the driver.
+Convert the STM32 DAC binding to DT schema format using json-schema
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/iio/adc/ad7791.c | 62 +++++++++++++++++++++++++++++++++++-----
- 1 file changed, 55 insertions(+), 7 deletions(-)
+ .../devicetree/bindings/iio/dac/st,stm32-dac.txt   |  63 ------------
+ .../devicetree/bindings/iio/dac/st,stm32-dac.yaml  | 110 +++++++++++++++++++++
+ 2 files changed, 110 insertions(+), 63 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
 
-diff --git a/drivers/iio/adc/ad7791.c b/drivers/iio/adc/ad7791.c
-index abb239392631..ba22808507d0 100644
---- a/drivers/iio/adc/ad7791.c
-+++ b/drivers/iio/adc/ad7791.c
-@@ -64,25 +64,73 @@
- #define AD7791_MODE_SEL_MASK		(0x3 << 6)
- #define AD7791_MODE_SEL(x)		((x) << 6)
- 
-+#define __AD7991_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
-+	_storagebits, _shift, _extend_name, _type, _mask_all) \
-+	{ \
-+		.type = (_type), \
-+		.differential = (_channel2 == -1 ? 0 : 1), \
-+		.indexed = 1, \
-+		.channel = (_channel1), \
-+		.channel2 = (_channel2), \
-+		.address = (_address), \
-+		.extend_name = (_extend_name), \
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
-+			BIT(IIO_CHAN_INFO_OFFSET), \
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+		.info_mask_shared_by_all = _mask_all, \
-+		.scan_index = (_si), \
-+		.scan_type = { \
-+			.sign = 'u', \
-+			.realbits = (_bits), \
-+			.storagebits = (_storagebits), \
-+			.shift = (_shift), \
-+			.endianness = IIO_BE, \
-+		}, \
-+	}
+diff --git a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
+deleted file mode 100644
+index bf2925c..00000000
+--- a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.txt
++++ /dev/null
+@@ -1,63 +0,0 @@
+-STMicroelectronics STM32 DAC
+-
+-The STM32 DAC is a 12-bit voltage output digital-to-analog converter. The DAC
+-may be configured in 8 or 12-bit mode. It has two output channels, each with
+-its own converter.
+-It has built-in noise and triangle waveform generator and supports external
+-triggers for conversions. The DAC's output buffer allows a high drive output
+-current.
+-
+-Contents of a stm32 dac root node:
+------------------------------------
+-Required properties:
+-- compatible: Should be one of:
+-  "st,stm32f4-dac-core"
+-  "st,stm32h7-dac-core"
+-- reg: Offset and length of the device's register set.
+-- clocks: Must contain an entry for pclk (which feeds the peripheral bus
+-  interface)
+-- clock-names: Must be "pclk".
+-- vref-supply: Phandle to the vref+ input analog reference supply.
+-- #address-cells = <1>;
+-- #size-cells = <0>;
+-
+-Optional properties:
+-- resets: Must contain the phandle to the reset controller.
+-- A pinctrl state named "default" for each DAC channel may be defined to set
+-  DAC_OUTx pin in mode of operation for analog output on external pin.
+-
+-Contents of a stm32 dac child node:
+------------------------------------
+-DAC core node should contain at least one subnode, representing a
+-DAC instance/channel available on the machine.
+-
+-Required properties:
+-- compatible: Must be "st,stm32-dac".
+-- reg: Must be either 1 or 2, to define (single) channel in use
+-- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers" in
+-  Documentation/devicetree/bindings/iio/iio-bindings.txt
+-
+-Example:
+-	dac: dac@40007400 {
+-		compatible = "st,stm32h7-dac-core";
+-		reg = <0x40007400 0x400>;
+-		clocks = <&clk>;
+-		clock-names = "pclk";
+-		vref-supply = <&reg_vref>;
+-		pinctrl-names = "default";
+-		pinctrl-0 = <&dac_out1 &dac_out2>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		dac1: dac@1 {
+-			compatible = "st,stm32-dac";
+-			#io-channels-cells = <1>;
+-			reg = <1>;
+-		};
+-
+-		dac2: dac@2 {
+-			compatible = "st,stm32-dac";
+-			#io-channels-cells = <1>;
+-			reg = <2>;
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
+new file mode 100644
+index 00000000..2b4a955
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/st,stm32-dac.yaml
+@@ -0,0 +1,110 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/bindings/iio/dac/st,stm32-dac.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
-+#define AD7991_SHORTED_CHANNEL(_si, _channel, _address, _bits, \
-+	_storagebits, _shift) \
-+	__AD7991_CHANNEL(_si, _channel, _channel, _address, _bits, \
-+		_storagebits, _shift, "shorted", IIO_VOLTAGE, \
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++title: STMicroelectronics STM32 DAC bindings
 +
-+#define AD7991_CHANNEL(_si, _channel, _address, _bits, \
-+	_storagebits, _shift) \
-+	__AD7991_CHANNEL(_si, _channel, -1, _address, _bits, \
-+		_storagebits, _shift, NULL, IIO_VOLTAGE, \
-+		 BIT(IIO_CHAN_INFO_SAMP_FREQ))
++description: |
++  The STM32 DAC is a 12-bit voltage output digital-to-analog converter. The DAC
++  may be configured in 8 or 12-bit mode. It has two output channels, each with
++  its own converter.
++  It has built-in noise and triangle waveform generator and supports external
++  triggers for conversions. The DAC's output buffer allows a high drive output
++  current.
 +
-+#define AD7991_DIFF_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
-+	_storagebits, _shift) \
-+	__AD7991_CHANNEL(_si, _channel1, _channel2, _address, _bits, \
-+		_storagebits, _shift, NULL, IIO_VOLTAGE, \
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++maintainers:
++  - Fabrice Gasnier <fabrice.gasnier@st.com>
 +
-+#define AD7991_SUPPLY_CHANNEL(_si, _channel, _address, _bits, _storagebits, \
-+	_shift) \
-+	__AD7991_CHANNEL(_si, _channel, -1, _address, _bits, \
-+		_storagebits, _shift, "supply", IIO_VOLTAGE, \
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ))
++properties:
++  compatible:
++    enum:
++      - st,stm32f4-dac-core
++      - st,stm32h7-dac-core
 +
- #define DECLARE_AD7787_CHANNELS(name, bits, storagebits) \
- const struct iio_chan_spec name[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
-+	AD7991_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
- 		(bits), (storagebits), 0), \
--	AD_SD_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
--	AD_SD_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
-+	AD7991_CHANNEL(1, 1, AD7791_CH_AIN2, (bits), (storagebits), 0), \
-+	AD7991_SHORTED_CHANNEL(2, 0, AD7791_CH_AIN1N_AIN1N, \
- 		(bits), (storagebits), 0), \
--	AD_SD_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
-+	AD7991_SUPPLY_CHANNEL(3, 2, AD7791_CH_AVDD_MONITOR,  \
- 		(bits), (storagebits), 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(4), \
- }
- 
- #define DECLARE_AD7791_CHANNELS(name, bits, storagebits) \
- const struct iio_chan_spec name[] = { \
--	AD_SD_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
-+	AD7991_DIFF_CHANNEL(0, 0, 0, AD7791_CH_AIN1P_AIN1N, \
- 		(bits), (storagebits), 0), \
--	AD_SD_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
-+	AD7991_SHORTED_CHANNEL(1, 0, AD7791_CH_AIN1N_AIN1N, \
- 		(bits), (storagebits), 0), \
--	AD_SD_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
-+	AD7991_SUPPLY_CHANNEL(2, 1, AD7791_CH_AVDD_MONITOR, \
- 		(bits), (storagebits), 0), \
- 	IIO_CHAN_SOFT_TIMESTAMP(3), \
- }
++  reg:
++    maxItems: 1
++
++  resets:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: pclk
++
++  vref-supply:
++    description: Phandle to the vref input analog reference voltage.
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - vref-supply
++  - '#address-cells'
++  - '#size-cells'
++
++patternProperties:
++  "^dac@[1-2]+$":
++    type: object
++    description:
++      A DAC block node should contain at least one subnode, representing an
++      DAC instance/channel available on the machine.
++
++    properties:
++      compatible:
++        const: st,stm32-dac
++
++      reg:
++        description: Must be either 1 or 2, to define (single) channel in use
++        enum: [1, 2]
++
++      '#io-channel-cells':
++        const: 1
++
++    additionalProperties: false
++
++    required:
++      - compatible
++      - reg
++      - '#io-channel-cells'
++
++examples:
++  - |
++    // Example on stm32mp157c
++    #include <dt-bindings/clock/stm32mp1-clks.h>
++    dac: dac@40017000 {
++      compatible = "st,stm32h7-dac-core";
++      reg = <0x40017000 0x400>;
++      clocks = <&rcc DAC12>;
++      clock-names = "pclk";
++      vref-supply = <&vref>;
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      dac@1 {
++        compatible = "st,stm32-dac";
++        #io-channel-cells = <1>;
++        reg = <1>;
++      };
++
++      dac@2 {
++        compatible = "st,stm32-dac";
++        #io-channel-cells = <1>;
++        reg = <2>;
++      };
++    };
++
++...
 -- 
-2.20.1
+2.7.4
 
