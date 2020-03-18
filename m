@@ -8,99 +8,126 @@ X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F2E1C10DCE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 14:55:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8413FC5ACD9
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 15:09:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 73C6520752
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 14:55:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A01C20777
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Mar 2020 15:09:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dkLLYf1X"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sxCMnEaK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726647AbgCROzh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Mar 2020 10:55:37 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:36134 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726473AbgCROzg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 10:55:36 -0400
-Received: by mail-pl1-f195.google.com with SMTP id g2so8783724plo.3;
-        Wed, 18 Mar 2020 07:55:35 -0700 (PDT)
+        id S1727492AbgCRPJt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Mar 2020 11:09:49 -0400
+Received: from mail-pg1-f196.google.com ([209.85.215.196]:42454 "EHLO
+        mail-pg1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727499AbgCRPJs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Mar 2020 11:09:48 -0400
+Received: by mail-pg1-f196.google.com with SMTP id h8so13834180pgs.9
+        for <linux-iio@vger.kernel.org>; Wed, 18 Mar 2020 08:09:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=message-id:date:from:to:cc:subject:mime-version:content-disposition
-         :user-agent;
-        bh=K/Y339cjUVl/X/gAfLYDhApN5kiIl0QX/F4UwUPxkPo=;
-        b=dkLLYf1XuBtBB0cr+RAmVC2P30NOhT0B9wQTmx6gLUZ4ZIW+fqxffEdI5wtPsMvN6b
-         LarULhRV2iou62gQ+/KsPgVjNk4bjRk4JOojhfToE7utMecARpXRCwKn/QEIABAVApec
-         GlEtyWd3fk9lUrDZIOXgZcjXF2Kc/LfC6KLyFqk8nT0FZ9nj5Jbmw+US1n4zNJGoDTVK
-         dKUH9/8XmdPgQKro0Ad9203CL52+lh/zb9o9BlpEmv+CMiO+KhwuESVFyiVzsWbrrHqA
-         58HLZVpeaOIqZzWbzrfbiWvmzPzM97DZynJTXNueLTZx96bDrjUJFZslhr+6Cf4rI9qg
-         XGMA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=a5+eGpLd/ZyNdymY7en9Tb95ipkb72Q/3sFZJa0Gpyg=;
+        b=sxCMnEaKy87cE/ac1DmsV4CXX/Ik2LiAhg8nPj5rDgx4ia2rQsuRbmWpg0dIfQ0AiV
+         UFaWAG80VbqAv1JV8Y/lpRvYSAMBZDIpjzm+pyR8koyNcG5Lgws2xPBh23NHXMx3VgRM
+         tsK/Ynf4tocyQECrvFB2HaoXqARZRJlnXgQXEM9nFdRT/qwkDtHTUAn5lLBLy2mOekQ7
+         XTLZ1G8GVU/5CgB6XY74V6I8kQ/pdQvSdp9SCRmiAZHgk6aj2WKotCym/++nwnUIF26u
+         Wy18v7CzybbGDWCdpfSznOFsl72NL7XjVLixOU9v5L+0g+ZOuQomV1xicSXWreFXx21g
+         dS9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:date:from:to:cc:subject:mime-version
-         :content-disposition:user-agent;
-        bh=K/Y339cjUVl/X/gAfLYDhApN5kiIl0QX/F4UwUPxkPo=;
-        b=gjbLY20ycW+hW2Cwbvstt0K8llSLByijJwM1+p33CXpMlWGb+roegy6/LAQl77ngAE
-         lk3VcWrfdf0S1Dl7QaRwlD6qdRZvLK4/pwFIO9rbiwyPdG++pZh+QJ9sJv5w1BwPCajD
-         dOaD3zQ/siYzRptv8lRmOwlKJWCRNyX+HB8/UzfQlcgBc/w8A2KioFXQHrmNusw7lKZ9
-         YvuWvZUmLIff7TxeqLbWbI8KSPSI6GauObfjNnqvnnNV1dZ8LbysGkrulUGlGnXQMAQQ
-         GGXn2q3pMmCuxN33zOhW9FPCJalKLtkviIAsapAZsHEwopwx/t3CEoOYbD4R086oyqn7
-         CGZw==
-X-Gm-Message-State: ANhLgQ3khnwFhkNxjq+lmY6QWuHcGaFFmCPsJZfDDCG/H2M9TIojdDj+
-        qsTrg6g1cbmRQz0MjqZN4n4=
-X-Google-Smtp-Source: ADFU+vvEiYfnwlDKHhp+F7QPB5wCfOW2vxUzhH1bpBEv4VpKvvSLT2X3ZJj2LES6gmmfXqeif0E+7Q==
-X-Received: by 2002:a17:90a:32d0:: with SMTP id l74mr5154984pjb.61.1584543335235;
-        Wed, 18 Mar 2020 07:55:35 -0700 (PDT)
-Received: from SARKAR ([43.224.157.42])
-        by smtp.gmail.com with ESMTPSA id x16sm6532676pfn.42.2020.03.18.07.55.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 18 Mar 2020 07:55:34 -0700 (PDT)
-Message-ID: <5e723666.1c69fb81.3545b.79c3@mx.google.com>
-X-Google-Original-Message-ID: <20200318145522.GA21528@rohitsarkar5398@gmail.com>
-Date:   Wed, 18 Mar 2020 20:25:22 +0530
-From:   Rohit Sarkar <rohitsarkar5398@gmail.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     jic23@kernel.org, rohitsarkar5398@gmail.com,
-        dragos.bogdan@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>, knaack.h@gmx.de,
-        pmeerw@pmeerw.net
-Subject: [PATCH] iio: gyro: adis16136: use scnprintf instead of snprintf
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=a5+eGpLd/ZyNdymY7en9Tb95ipkb72Q/3sFZJa0Gpyg=;
+        b=LC+Ft9kOKGESAnCws01YzEGJD9dwTlPnkg7xzs/HTjI3bYSAJ1X0TP1K3tTjEVw7Xe
+         i62e5EbQttasoSYcKgEssILDQCj0kqK5IvCE4hisiCn8vUmYW1Ud4JBbipOu7qp5dyGq
+         bdBPVVJuY9QHa+QY8shFFDPbqkbqfxUBF1J4Lp3ECalS1ELVlPNkbqCnpz3aIQhrw/ER
+         VHtv4dph+ItOuKvBfwN1ZrOlY6HryD9AqK8UoRsYBhAjMeDM8oMxi9gI1+FPFDPxXoES
+         NO2ch1BLne7Q+REOFafCY7ONcO9SvnJ824KBc/tFb1TyZNL7wKqG22ZJgf00H7fmq40M
+         hbqA==
+X-Gm-Message-State: ANhLgQ1kiplsJNcxoQGWw/+Sf27RWJk9GUl5xx4HcAXFyNftNPPqIrvr
+        POkaXMoUr0stsT1+pm5KYBc=
+X-Google-Smtp-Source: ADFU+vtlZmsdpIRZXNX1wTb4aGLOwsmPNX60PHksnOn9InUaZdvaR4k0kq5LPtVQn6tl/O1KJOGgTA==
+X-Received: by 2002:a63:d658:: with SMTP id d24mr5203839pgj.340.1584544185875;
+        Wed, 18 Mar 2020 08:09:45 -0700 (PDT)
+Received: from deeUbuntu ([103.241.226.97])
+        by smtp.gmail.com with ESMTPSA id j4sm7038445pfg.133.2020.03.18.08.09.42
+        (version=TLS1_2 cipher=ECDHE-RSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 18 Mar 2020 08:09:45 -0700 (PDT)
+Date:   Wed, 18 Mar 2020 20:39:39 +0530
+From:   DEEPAK VARMA <mh12gx2825@gmail.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     outreachy-kernel@googlegroups.com, daniel.baluta@gmail.com,
+        kieran.bingham@ideasonboard.com, lars@metafoo.de,
+        Michael.Hennerich@analog.com, stefan.popa@analog.com,
+        jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] staging: iio: adc: ad7280a: Add spaces around
+ operators
+Message-ID: <20200318150937.GA22841@deeUbuntu>
+References: <cover.1584505215.git.mh12gx2825@gmail.com>
+ <6703668c512dd665a2299a1f5bf14d99262314f8.1584505215.git.mh12gx2825@gmail.com>
+ <20200318060038.GB1594471@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
+In-Reply-To: <20200318060038.GB1594471@kroah.com>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-scnprintf returns the actual number of bytes written into the buffer as
-opposed to snprintf which returns the number of bytes that would have
-been written if the buffer was big enough. Using the output of snprintf
-may lead to difficult to detect bugs.
+On Wed, Mar 18, 2020 at 07:00:38AM +0100, Greg KH wrote:
+> On Wed, Mar 18, 2020 at 09:58:13AM +0530, Deepak R Varma wrote:
+> > Add spaces around operator symbols to improve readability. Warning
+> > flagged by checkpatch script.
+> > 
+> > Signed-off-by: Deepak R Varma <mh12gx2825@gmail.com>
+> > ---
+> >  drivers/staging/iio/adc/ad7280a.c | 4 ++--
+> >  1 file changed, 2 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+> > index 19a5f244dcae..34ca0d09db85 100644
+> > --- a/drivers/staging/iio/adc/ad7280a.c
+> > +++ b/drivers/staging/iio/adc/ad7280a.c
+> > @@ -825,14 +825,14 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+> >  }
+> >  
+> >  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
+> > -			     in_voltage-voltage_thresh_low_value,
+> > +			     in_voltage - voltage_thresh_low_value,
+> >  			     0644,
+> >  			     ad7280_read_channel_config,
+> >  			     ad7280_write_channel_config,
+> >  			     AD7280A_CELL_UNDERVOLTAGE);
+> >  
+> >  static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
+> > -			     in_voltage-voltage_thresh_high_value,
+> > +			     in_voltage - voltage_thresh_high_value,
+> >  			     0644,
+> >  			     ad7280_read_channel_config,
+> >  			     ad7280_write_channel_config,
+> 
+> Did you try building this code?
+> 
+> It catches everyone...
 
-Thanks,
-Rohit
+yes sir, I did. See this:
 
-Signed-off-by: Rohit Sarkar <rohitsarkar5398@gmail.com>
----
- drivers/iio/gyro/adis16136.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  CC [M]  drivers/staging/fbtft/fbtft.mod.o
+  CC [M]  drivers/staging/iio/adc/ad7192.mod.o
+  LD [M]  drivers/staging/iio/adc/ad7280a.ko
+  LD [M]  drivers/staging/media/ipu3/ipu3-imgu.ko
+  LD [M]  drivers/staging/fbtft/fbtft.ko
+  LD [M]  drivers/staging/iio/adc/ad7192.ko
 
-diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
-index a4c967a5fc5c..0a8bb02dc4b9 100644
---- a/drivers/iio/gyro/adis16136.c
-+++ b/drivers/iio/gyro/adis16136.c
-@@ -96,7 +96,7 @@ static ssize_t adis16136_show_serial(struct file *file,
- 	if (ret)
- 		return ret;
- 
--	len = snprintf(buf, sizeof(buf), "%.4x%.4x%.4x-%.4x\n", lot1, lot2,
-+	len = scnprintf(buf, sizeof(buf), "%.4x%.4x%.4x-%.4x\n", lot1, lot2,
- 		lot3, serial);
- 
- 	return simple_read_from_buffer(userbuf, count, ppos, buf, len);
--- 
-2.23.0.385.gbc12974a89
+Let me know if I missed something.
 
+Thank you,
+Deepak.
+
+> 
+> greg k-h
