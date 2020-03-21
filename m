@@ -2,174 +2,119 @@ Return-Path: <SRS0=UYdU=5G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E514DC4332D
-	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 21:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB1A5C4332D
+	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 23:46:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id BCBF220754
-	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 21:56:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81CD920782
+	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 23:46:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="RWYTwADM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727039AbgCUV4a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 21 Mar 2020 17:56:30 -0400
-Received: from mga07.intel.com ([134.134.136.100]:52636 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726813AbgCUV4a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Mar 2020 17:56:30 -0400
-IronPort-SDR: TpR6iY2wseZt+2/PQmzTfMLcfIkHGREpXlMpmotomSRAltSbaoRQlZN4hIpw2s9wG81HJ0yvFr
- 833tH8gWYhwg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Mar 2020 14:56:29 -0700
-IronPort-SDR: cgTcSgZrPiurxit+x25KUlqG1UBg26PwgbfjGoi45zQyUDXcXkcb/Ekr58mapPHUsd54tmBDgc
- XgGkMadd7jrA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,290,1580803200"; 
-   d="scan'208";a="325206721"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by orsmga001.jf.intel.com with ESMTP; 21 Mar 2020 14:56:26 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1jFm6W-00BpXb-S8; Sat, 21 Mar 2020 23:56:28 +0200
-Date:   Sat, 21 Mar 2020 23:56:28 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     Alexandru Lazar <alazar@startmail.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH v4 2/2] iio: adc: Add MAX1241 driver
-Message-ID: <20200321215628.GA2819421@smile.fi.intel.com>
-References: <20200320150114.9297-1-alazar@startmail.com>
- <20200320150114.9297-3-alazar@startmail.com>
+        id S1728132AbgCUXqe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 21 Mar 2020 19:46:34 -0400
+Received: from mail-pg1-f193.google.com ([209.85.215.193]:36185 "EHLO
+        mail-pg1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728056AbgCUXqe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2020 19:46:34 -0400
+Received: by mail-pg1-f193.google.com with SMTP id z72so5138197pgz.3;
+        Sat, 21 Mar 2020 16:46:33 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=n9metYm6s3YaJ3/ZpWocgeR+36BfZbh9vZcxH9YLqhQ=;
+        b=RWYTwADMv+A/J38l0sD9mzA8pLC6AZPex1ResDj34HPdpL7xsBD9LFn8TNthBELoK/
+         pl8jMIhcgFav4787w9aCPwbDz6k1VjWIwt+VTS8X0/vmQ5LyA3uVV8vGbScyyL6f8w/e
+         kCmro/1Xcr90aQRrYjkrjKET6tLmMsR4M9dvCv01G5g2lEGAd+loYahtubNPZ5Ra5P2d
+         6403CIBtIKpJ1lXyaCuwlA7CEvem2quVixBojH6/3NgXOVbkQXAWvz9zO0rQQ60Tw18Y
+         JidI4EAoX0+TvEakQPcJ7cDahbNTx7H0zOTdaBSJPDxbCaowdXMidXINS+kpNJC9Xx+u
+         cmmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=n9metYm6s3YaJ3/ZpWocgeR+36BfZbh9vZcxH9YLqhQ=;
+        b=iNLL9PA6Vtd/LMelIJvCUiDIlSPfEQLLnP9luit8zmY7iS9H1BWIZ06h6NR4i+ktbU
+         2y0llg500ofFPSpXxM91aPNsjmh5VrRAOueidZXI6z5XJDU+8c74ld4TCO4lLfELvrkx
+         rOcAvvbLPPkI1YpFjEx6ZfFSfCmP1HIpYXMPbBMi9iJTXW0IP8+HQkCIbg/bGeB42J/S
+         DwjHTaiLa1hBlYB3I+8pZtlIEtK7x7Cur1WDM6irncgRBFmqvpZSTmFHMYCAgg9oZOU+
+         tLKU2I335VZCciSo6jSwGjHhkb+G25kt0afor7HGNpkRt+XHBp2B/R+5hhjCDkqAzUZj
+         amUw==
+X-Gm-Message-State: ANhLgQ0WJsow0WUgyPh0aj+3f+2+s/z3USgXOvNIjzruo226dP4FMPvR
+        +NS8GqW+2rqe4x6FfeXnrfauAJehB0F8nhesI0k=
+X-Google-Smtp-Source: ADFU+vt+H219tQ2mBEOX37saN+D653nyAXnJlOi1NauFfeSanfWKl/R5MXuCfLEicw6KCg5p6lT1s0j9dJyeS8TzoPQ=
+X-Received: by 2002:a05:6a00:2b4:: with SMTP id q20mr5566713pfs.36.1584834393200;
+ Sat, 21 Mar 2020 16:46:33 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200320150114.9297-3-alazar@startmail.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20200317135649.8876-1-michael.auchter@ni.com> <20200317145113.12413-1-michael.auchter@ni.com>
+In-Reply-To: <20200317145113.12413-1-michael.auchter@ni.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 22 Mar 2020 01:46:21 +0200
+Message-ID: <CAHp75Veh3QRfqVFOpYbuuxcPqirc1_YrF-iZfRjNsYk7DWqYpQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] iio: adc: ad7291: convert to device tree
+To:     Michael Auchter <michael.auchter@ni.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Mar 20, 2020 at 05:01:15PM +0200, Alexandru Lazar wrote:
-> Add driver for the Maxim MAX1241 12-bit, single-channel ADC. The driver
-> includes support for this device's low-power operation mode.
+On Tue, Mar 17, 2020 at 4:53 PM Michael Auchter <michael.auchter@ni.com> wrote:
+>
+> There are no in-tree users of the platform data for this driver, so
+> remove it and convert the driver to use device tree instead.
 
 ...
 
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/delay.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/module.h>
-> +#include <linux/spi/spi.h>
+> +       chip->reg = devm_regulator_get_optional(&client->dev, "vref");
+> +       if (!IS_ERR(chip->reg)) {
 
-I think you can keep them sorted.
+Why not to go with usual positive conditional?
 
-...
-
-> +#define MAX1241_VAL_MASK 0xFFF
-
-GENMASK() ?
-
-...
-
-> +		if (adc->shdn) {
-> +			gpiod_set_value(adc->shdn, 0);
-> +			udelay(MAX1241_SHDN_DELAY_USEC);
-> +		}
+> +               ret = regulator_enable(chip->reg);
+> +               if (ret)
+> +                       return ret;
 > +
-> +		ret = max1241_read(adc);
+>                 chip->command |= AD7291_EXT_REF;
+> +       } else {
+> +               if (PTR_ERR(chip->reg) != -ENODEV)
+> +                       return PTR_ERR(chip->reg);
 > +
-> +		if (adc->shdn)
-> +			gpiod_set_value(adc->shdn, 1);
-
-I guess easier to read in a way
-
-		if () {
-			gpio...
-			read();
-			gpio...
-		} else {
-			read();
-		}
-
-Or actually introduce runtime PM and move these gpio calls there.
-
+> +               chip->reg = NULL;
+> +       }
 
 ...
 
-> +static int max1241_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct max1241 *adc;
+> +static const struct of_device_id ad7291_of_match[] = {
+> +       { .compatible = "adi,ad7291", },
 
-> +	int ret = 0;
+> +       {},
 
-Redundant assignment.
-
-> +	ret = regulator_enable(adc->reg);
-> +	if (ret)
-> +		return ret;
-> +
-
-> +	ret = devm_add_action_or_reset(&spi->dev, max1241_disable_reg_action,
-> +					adc);
-
-Introducing
-	struct device *dev = &spi->dev;
-will simplifies such lines like above by making them on one line.
-
-> +	if (ret) {
-> +		dev_err(&spi->dev, "could not set up regulator cleanup action!\n");
-> +		return ret;
-> +	}
-
-> +	adc->shdn = devm_gpiod_get_optional(&spi->dev, "shdn", GPIOD_OUT_HIGH);
-
-> +
-
-Redundant blank line.
-
-> +	if (IS_ERR(adc->shdn))
-> +		return PTR_ERR(adc->shdn);
-
-> +	if (!adc->shdn)
-
-Why not to use positive conditional?
-
-> +		dev_dbg(&spi->dev, "no shdn pin passed, low-power mode disabled");
-> +	else
-> +		dev_dbg(&spi->dev, "shdn pin passed, low-power mode enabled");
-
-> +}
-
-...
-
-> +static const struct spi_device_id max1241_id[] = {
-> +	{ "max1241", max1241 },
-
-> +	{},
-
-Terminators better w/o comma.
+No need for comma.
 
 > +};
-> +
-> +static const struct of_device_id max1241_dt_ids[] = {
-> +	{ .compatible = "maxim,max1241" },
 
-> +	{},
+...
 
-Ditto.
+> +               .of_match_table = of_match_ptr(ad7291_of_match),
 
-> +};
+No need to use of_match_ptr(). Haven't you got a compiler warning in !OF case?
 
 -- 
 With Best Regards,
 Andy Shevchenko
-
-
