@@ -4,45 +4,41 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D336CC43332
-	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 08:54:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38575C4332B
+	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 08:54:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id B2E9620753
-	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 08:54:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 19B7220753
+	for <linux-iio@archiver.kernel.org>; Sat, 21 Mar 2020 08:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728275AbgCUIx5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 21 Mar 2020 04:53:57 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:18288 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728012AbgCUIx4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2020 04:53:56 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02L8j1wu028541;
-        Sat, 21 Mar 2020 04:53:55 -0400
+        id S1728308AbgCUIyH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 21 Mar 2020 04:54:07 -0400
+Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:47106 "EHLO
+        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728300AbgCUIyG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Mar 2020 04:54:06 -0400
+Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02L8s3RA016533;
+        Sat, 21 Mar 2020 04:54:03 -0400
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ywcs5rcw5-1
+        by mx0b-00128a01.pphosted.com with ESMTP id 2ywfj6g19c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sat, 21 Mar 2020 04:53:55 -0400
+        Sat, 21 Mar 2020 04:54:03 -0400
 Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 02L8rrBM007350
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 02L8s1ck007376
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Sat, 21 Mar 2020 04:53:53 -0400
-Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sat, 21 Mar 2020 01:53:52 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sat, 21 Mar 2020 01:53:52 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Sat, 21 Mar 2020 01:53:51 -0700
+        Sat, 21 Mar 2020 04:54:02 -0400
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Sat, 21 Mar
+ 2020 01:54:00 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Sat, 21 Mar 2020 01:54:00 -0700
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 02L8rdem008553;
-        Sat, 21 Mar 2020 04:53:48 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 02L8rdeq008553;
+        Sat, 21 Mar 2020 04:53:57 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         <devicetree@vger.kernel.org>
@@ -51,9 +47,9 @@ CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <Laszlo.Nagy@analog.com>,
         <Istvan.Csomortani@analog.com>, <Adrian.Costina@analog.com>,
         <Dragos.Bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v11 4/8] iio: buffer-dmaengine: add dev-managed calls for buffer alloc
-Date:   Sat, 21 Mar 2020 10:53:11 +0200
-Message-ID: <20200321085315.11030-5-alexandru.ardelean@analog.com>
+Subject: [PATCH v11 8/8] dt-bindings: iio: adc: add bindings doc for AD9467 ADC
+Date:   Sat, 21 Mar 2020 10:53:15 +0200
+Message-ID: <20200321085315.11030-9-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200321085315.11030-1-alexandru.ardelean@analog.com>
 References: <20200321085315.11030-1-alexandru.ardelean@analog.com>
@@ -63,90 +59,94 @@ X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
  definitions=2020-03-21_02:2020-03-20,2020-03-21 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 adultscore=0 phishscore=0 priorityscore=1501 impostorscore=0
- malwarescore=0 clxscore=1015 suspectscore=2 spamscore=0 mlxlogscore=999
- mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2003210050
+ mlxlogscore=999 malwarescore=0 clxscore=1015 phishscore=0
+ priorityscore=1501 mlxscore=0 impostorscore=0 adultscore=0 spamscore=0
+ bulkscore=0 suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003210051
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Currently, when using a 'iio_dmaengine_buffer_alloc()', an matching call to
-'iio_dmaengine_buffer_free()' must be made.
-
-With this change, this can be avoided by using
-'devm_iio_dmaengine_buffer_alloc()'. The buffer will get free'd via the
-device's devres handling.
+This change adds the binding doc for the AD9467 ADC.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../buffer/industrialio-buffer-dmaengine.c    | 39 +++++++++++++++++++
- include/linux/iio/buffer-dmaengine.h          |  3 ++
- 2 files changed, 42 insertions(+)
+ .../bindings/iio/adc/adi,ad9467.yaml          | 65 +++++++++++++++++++
+ 1 file changed, 65 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index 94da3b1ca3a2..6dedf12b69a4 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -229,6 +229,45 @@ void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
- }
- EXPORT_SYMBOL_GPL(iio_dmaengine_buffer_free);
- 
-+static void __devm_iio_dmaengine_buffer_free(struct device *dev, void *res)
-+{
-+	iio_dmaengine_buffer_free(*(struct iio_buffer **)res);
-+}
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+new file mode 100644
+index 000000000000..c4f57fa6aad1
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad9467.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+/**
-+ * devm_iio_dmaengine_buffer_alloc() - Resource-managed iio_dmaengine_buffer_alloc()
-+ * @dev: Parent device for the buffer
-+ * @channel: DMA channel name, typically "rx".
-+ *
-+ * This allocates a new IIO buffer which internally uses the DMAengine framework
-+ * to perform its transfers. The parent device will be used to request the DMA
-+ * channel.
-+ *
-+ * The buffer will be automatically de-allocated once the device gets destroyed.
-+ */
-+struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
-+	const char *channel)
-+{
-+	struct iio_buffer **bufferp, *buffer;
++title: Analog Devices AD9467 High-Speed ADC
 +
-+	bufferp = devres_alloc(__devm_iio_dmaengine_buffer_free,
-+			       sizeof(*bufferp), GFP_KERNEL);
-+	if (!bufferp)
-+		return ERR_PTR(-ENOMEM);
++maintainers:
++  - Michael Hennerich <michael.hennerich@analog.com>
++  - Alexandru Ardelean <alexandru.ardelean@analog.com>
 +
-+	buffer = iio_dmaengine_buffer_alloc(dev, channel);
-+	if (IS_ERR(buffer)) {
-+		devres_free(bufferp);
-+		return buffer;
-+	}
++description: |
++  The AD9467 is a 16-bit, monolithic, IF sampling analog-to-digital
++  converter (ADC).
 +
-+	*bufferp = buffer;
-+	devres_add(dev, bufferp);
++  https://www.analog.com/media/en/technical-documentation/data-sheets/AD9467.pdf
 +
-+	return buffer;
-+}
-+EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_alloc);
++properties:
++  compatible:
++    enum:
++      - adi,ad9467
 +
- MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
- MODULE_DESCRIPTION("DMA buffer for the IIO framework");
- MODULE_LICENSE("GPL");
-diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
-index b3a57444a886..0e503db71289 100644
---- a/include/linux/iio/buffer-dmaengine.h
-+++ b/include/linux/iio/buffer-dmaengine.h
-@@ -14,4 +14,7 @@ struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
- 	const char *channel);
- void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
- 
-+struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
-+						   const char *channel);
++  reg:
++    maxItems: 1
 +
- #endif
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: adc-clk
++
++  powerdown-gpios:
++    description:
++      Pin that controls the powerdown mode of the device.
++    maxItems: 1
++
++  reset-gpios:
++    description:
++      Reset pin for the device.
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++          compatible = "adi,ad9467";
++          reg = <0>;
++          clocks = <&adc_clk>;
++          clock-names = "adc-clk";
++        };
++    };
++...
 -- 
 2.17.1
 
