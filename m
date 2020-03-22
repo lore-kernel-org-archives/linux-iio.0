@@ -2,274 +2,329 @@ Return-Path: <SRS0=ud0C=5H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C60E8C1975A
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:46:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0415C54FCF
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 23:26:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 96F1E20637
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:46:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D3B32072D
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 23:26:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PbOLnQNH"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Mv5Fi2wt"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726962AbgCVWql (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 22 Mar 2020 18:46:41 -0400
-Received: from mail-wr1-f66.google.com ([209.85.221.66]:35399 "EHLO
-        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726913AbgCVWqk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Mar 2020 18:46:40 -0400
-Received: by mail-wr1-f66.google.com with SMTP id d5so2338011wrn.2;
-        Sun, 22 Mar 2020 15:46:37 -0700 (PDT)
+        id S1726836AbgCVX0O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 22 Mar 2020 19:26:14 -0400
+Received: from mail-pj1-f66.google.com ([209.85.216.66]:34274 "EHLO
+        mail-pj1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726814AbgCVX0O (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Mar 2020 19:26:14 -0400
+Received: by mail-pj1-f66.google.com with SMTP id q16so5059761pje.1;
+        Sun, 22 Mar 2020 16:26:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=7L2CBqTjvM9wYs+Z3QFtVjHPDIhyV3wfUCu4c1Jf0Nc=;
-        b=PbOLnQNHoY6uUvdV9CDM8U9fHgVry4lyji4XWFx7qOLyl8c1HLpHkj3bF3RV4IPIUV
-         lwMZcMeq0yLBiIed7JZ4anHBFw7jjx3HBxldaQfzKiE1wXsbJzntovUIs3SY7uCGzKcQ
-         mYV99muBc+U1Ntnr0LoLi6FGAvdLJSQ4VT9NdE5O+miiC0oKn0mq61RRHVOgHCZQYiNI
-         wLv5n2XWUJLPSBNwQ4PMB2W6dCiB6Vn7fw5r/d7BsBPdu0xCLFeNHSRCYJbDDGSoYJnJ
-         sAsLtwGsuZw0a38QowTuhZVp5CTmGbjBh29k6PMlmB7r+uJQrs31CBv0IUAE+eaJ1ymV
-         AtlQ==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ZDKQMZnLV2Qxu2G2wWsWQEZI3Xmwo2zYfXZksiF4wOY=;
+        b=Mv5Fi2wtUcS1EUcl7QT0VXTLjfoS4onO9OZbnEUT04S9/8ccgjdFiycWWn52Ydw/iF
+         yItaI8TiAWHFHOhM+9ga/M2EiSZTn4DuR6pMfmmJ5QjUfsvG3G8oNKigZYCjbkju4Qs1
+         BfimpVE9iFttTgJaeziTWulobv1XKLxmhnl7+HF0qhQ4c9C8vqyLfFqrlsEwg58bL7xu
+         cUbThefH40SQSSrIkjr3N/s6TotsVqXy/QN4Vjo95a0M6k3Tor1QLvClkR5YKP+LLvBK
+         y3pzJwob7QPVinRXQMY/HJVv1vbBSBeLf8Pbj8nmzapGsmUsrk6EQnk9HRZezxS4cpNy
+         rsKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=7L2CBqTjvM9wYs+Z3QFtVjHPDIhyV3wfUCu4c1Jf0Nc=;
-        b=hFvEL+UVYF/v+Cf6XkXyjBXNXFKe4+i7c2oi7M8fusE893WUWtADzvTyZNVlCETGrA
-         H+zCrTSqxetUZtoVA/BJgCF8dz/sGy3r3YYAFqeJOjvEMJLtusSJCBSuRpXyU1WzG+l7
-         IXo+zbjJuX8InoJsYAxJsPIOqsGqjsIDinrUl3VzpH1t+nFvo60v/VH5yZrBzmR3DHfZ
-         Dg1+DCDPlf2ThCEt2UzIdmesGrvLf3QEFaM7lawf4Vmwk0hP8LvrqnEMCYeecoVf7kUK
-         U77v2usEKlJd/9OX4a77+8i4YjpTh2PcamrKTeHBasmAJ0crY4e3m/UXDl4MouwVoTAQ
-         kGnQ==
-X-Gm-Message-State: ANhLgQ07duVPUhAHdWqec4FGN5BadVVeLj9ohIkAponPHsVHupa8Fl0J
-        1jG6WkYmhs5GmU2PSYVisQo=
-X-Google-Smtp-Source: ADFU+vt1NlLuYBZapiOMecPQcCS5B95HZ2/byiBlED3pyVC5zcj6rJs1PwonnDuWSnxAX95ciTIvDg==
-X-Received: by 2002:adf:e891:: with SMTP id d17mr25775108wrm.348.1584917196599;
-        Sun, 22 Mar 2020 15:46:36 -0700 (PDT)
-Received: from localhost.localdomain (p5DCFFFE5.dip0.t-ipconnect.de. [93.207.255.229])
-        by smtp.gmail.com with ESMTPSA id r9sm19158549wma.47.2020.03.22.15.46.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 22 Mar 2020 15:46:35 -0700 (PDT)
-From:   Saravanan Sekar <sravanhome@gmail.com>
-To:     lee.jones@linaro.org, robh+dt@kernel.org, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        Saravanan Sekar <sravanhome@gmail.com>
-Subject: [PATCH v4 2/5] mfd: mp2629: Add support for mps battery charger
-Date:   Sun, 22 Mar 2020 23:46:23 +0100
-Message-Id: <20200322224626.13160-3-sravanhome@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200322224626.13160-1-sravanhome@gmail.com>
-References: <20200322224626.13160-1-sravanhome@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ZDKQMZnLV2Qxu2G2wWsWQEZI3Xmwo2zYfXZksiF4wOY=;
+        b=GI6XFfwZbDVyiL6FxIsywY24KohmaYZMiNCOhofVF71UvYZDb0LPuhQAibnYIMz5Gf
+         XD++i7Dwu1o9+GeqosbC0MXJNjuAHpReNOo86yzUUOBtxRBY/gQdTByGK5WQWzgPs/Z6
+         sRpf3TRjrT+hMx8oO5n3Fj1JHDseo733uJBojRvvCI/2cbsqH+NrMZP1CB8rc9+0SAO2
+         KHnfMOf2NObjePZbpXaiLBWQ30euJB2FxId1eMc4BkI7E5haGuBqJVPhXSDmnC3WPR1e
+         vymEtzxW6jKSQcV4DvKtBybXNbUKPB/eisi2JY/p8Vl9YD0zOVtVttb3i2yZLDKpCyUZ
+         xEtg==
+X-Gm-Message-State: ANhLgQ1T5jpC9S6C0uHni6JiHwlxsjN8C6e5n/jZetT8iyuH2rI0549W
+        iAqJLFQ9legIY5Q/UxuRkA0r9C2hmBC+jRB2LBg=
+X-Google-Smtp-Source: ADFU+vvW2kjUDse5l5NFdqxGMDTjhGi14s5N4SJUT/TVrlYDd6CZNBX+yJSMVIfRDYpLBRnaYmLavSvnN5U2StVAm5w=
+X-Received: by 2002:a17:90a:8403:: with SMTP id j3mr22305527pjn.8.1584919572031;
+ Sun, 22 Mar 2020 16:26:12 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200322224626.13160-1-sravanhome@gmail.com> <20200322224626.13160-5-sravanhome@gmail.com>
+In-Reply-To: <20200322224626.13160-5-sravanhome@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 23 Mar 2020 01:26:00 +0200
+Message-ID: <CAHp75Vf0iAV1g5GV8XoewNEMnGee=_Wkgz=8Y_ym8UPdsb6eFQ@mail.gmail.com>
+Subject: Re: [PATCH v4 4/5] power: supply: Add support for mps mp2629 battery charger
+To:     Saravanan Sekar <sravanhome@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-mp2629 is a highly-integrated switching-mode battery charge management
-device for single-cell Li-ion or Li-polymer battery.
+On Mon, Mar 23, 2020 at 12:47 AM Saravanan Sekar <sravanhome@gmail.com> wrote:
+>
+> The mp2629 provides switching-mode battery charge management for
+> single-cell Li-ion or Li-polymer battery. Driver supports the
+> access/control input source and battery charging parameters.
 
-Add MFD core enables chip access for ADC driver for battery readings,
-and a power supply battery-charger driver
+...
 
-Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
----
- drivers/mfd/Kconfig        |   9 +++
- drivers/mfd/Makefile       |   2 +
- drivers/mfd/mp2629.c       | 116 +++++++++++++++++++++++++++++++++++++
- include/linux/mfd/mp2629.h |  22 +++++++
- 4 files changed, 149 insertions(+)
- create mode 100644 drivers/mfd/mp2629.c
- create mode 100644 include/linux/mfd/mp2629.h
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 3c547ed575e6..6614e5cff881 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -434,6 +434,15 @@ config MFD_MC13XXX_I2C
- 	help
- 	  Select this if your MC13xxx is connected via an I2C bus.
- 
-+config MFD_MP2629
-+	bool "Monolithic power system MP2629 ADC and Battery charger"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  Select this option to enable support for monolithic power system
-+	  battery charger. This provides ADC, thermal, battery charger power
-+	  management functions on the systems.
-+
- config MFD_MXS_LRADC
- 	tristate "Freescale i.MX23/i.MX28 LRADC"
- 	depends on ARCH_MXS || COMPILE_TEST
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index f935d10cbf0f..d6c210f96d02 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -170,6 +170,8 @@ obj-$(CONFIG_MFD_MAX8925)	+= max8925.o
- obj-$(CONFIG_MFD_MAX8997)	+= max8997.o max8997-irq.o
- obj-$(CONFIG_MFD_MAX8998)	+= max8998.o max8998-irq.o
- 
-+obj-$(CONFIG_MFD_MP2629)	+= mp2629.o
-+
- pcf50633-objs			:= pcf50633-core.o pcf50633-irq.o
- obj-$(CONFIG_MFD_PCF50633)	+= pcf50633.o
- obj-$(CONFIG_PCF50633_ADC)	+= pcf50633-adc.o
-diff --git a/drivers/mfd/mp2629.c b/drivers/mfd/mp2629.c
-new file mode 100644
-index 000000000000..41a4082387ce
---- /dev/null
-+++ b/drivers/mfd/mp2629.c
-@@ -0,0 +1,116 @@
-+// SPDX-License-Identifier: GPL-2.0+
-+/*
-+ * MP2629 MFD Driver for ADC and battery charger
-+ *
-+ * Copyright 2020 Monolithic Power Systems, Inc
-+ *
-+ * Author: Saravanan Sekar <sravanhome@gmail.com>
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/i2c.h>
-+#include <linux/regmap.h>
-+#include <linux/slab.h>
-+#include <linux/irq.h>
-+#include <linux/interrupt.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/mp2629.h>
-+
-+enum {
-+	MP2629_MFD_ADC,
-+	MP2629_MFD_CHARGER,
-+	MP2629_MFD_MAX
-+};
-+
-+static struct resource mp2629_irq_rsrc[] = {
-+	{
-+		.flags = IORESOURCE_IRQ,
-+	},
-+};
-+
-+static struct mfd_cell mp2629mfd[] = {
-+	[MP2629_MFD_ADC] = {
-+		.name = "mp2629_adc",
-+		.of_compatible = "mps,mp2629_adc",
-+	},
-+	[MP2629_MFD_CHARGER] = {
-+		.name = "mp2629_charger",
-+		.of_compatible = "mps,mp2629_charger",
-+		.resources = mp2629_irq_rsrc,
-+		.num_resources = ARRAY_SIZE(mp2629_irq_rsrc),
-+	}
-+};
-+
-+static const struct regmap_config mp2629_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	.max_register = 0x17,
-+};
-+
-+static int mp2629_probe(struct i2c_client *client)
-+{
-+	struct mp2629_info *info;
-+	struct resource	*resources;
-+	int ret;
-+	int i;
-+
-+	info = devm_kzalloc(&client->dev, sizeof(*info), GFP_KERNEL);
-+	if (!info)
-+		return -ENOMEM;
-+
-+	info->dev = &client->dev;
-+	i2c_set_clientdata(client, info);
-+
-+	info->regmap = devm_regmap_init_i2c(client, &mp2629_regmap_config);
-+	if (IS_ERR(info->regmap)) {
-+		dev_err(info->dev, "Failed to allocate regmap!\n");
-+		return PTR_ERR(info->regmap);
-+	}
-+
-+	for (i = 0; i < MP2629_MFD_MAX; i++) {
-+		mp2629mfd[i].platform_data = &info->regmap;
-+		mp2629mfd[i].pdata_size = sizeof(info->regmap);
-+
-+		resources = (struct resource *)mp2629mfd[i].resources;
-+		if (resources) {
-+			resources[0].start = client->irq;
-+			resources[0].end = client->irq;
-+		}
-+	}
-+
-+	ret = devm_mfd_add_devices(info->dev, PLATFORM_DEVID_NONE, mp2629mfd,
-+				ARRAY_SIZE(mp2629mfd), NULL,
-+				0, NULL);
-+	if (ret)
-+		dev_err(info->dev, "Failed to add mfd %d\n", ret);
-+
-+	return ret;
-+}
-+
-+static const struct of_device_id mp2629_of_match[] = {
-+	{ .compatible = "mps,mp2629"},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, mp2629_of_match);
-+
-+static const struct i2c_device_id mp2629_id[] = {
-+	{ "mp2629", },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, mp2629_id);
-+
-+static struct i2c_driver mp2629_driver = {
-+	.driver = {
-+		.name = "mp2629",
-+		.of_match_table = mp2629_of_match,
-+	},
-+	.probe_new	= mp2629_probe,
-+	.id_table	= mp2629_id,
-+};
-+module_i2c_driver(mp2629_driver);
-+
-+MODULE_AUTHOR("Saravanan Sekar <sravanhome@gmail.com>");
-+MODULE_DESCRIPTION("MP2629 Battery charger mfd driver");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/mp2629.h b/include/linux/mfd/mp2629.h
-new file mode 100644
-index 000000000000..371e44330ba8
---- /dev/null
-+++ b/include/linux/mfd/mp2629.h
-@@ -0,0 +1,22 @@
-+/* SPDX-License-Identifier: GPL-2.0+ */
-+/*
-+ * mp2629.h  - register definitions for mp2629 charger
-+ *
-+ * Copyright 2020 Monolithic Power Systems, Inc
-+ *
-+ */
-+
-+#ifndef __MP2629_H__
-+#define __MP2629_H__
-+
-+#include <linux/types.h>
-+
-+struct device;
-+struct regmap;
-+
-+struct mp2629_info {
-+	struct device *dev;
-+	struct regmap *regmap;
-+};
-+
-+#endif
--- 
-2.17.1
+> +#include <linux/of_device.h>
 
+Do you need this one?
+
+> +#include <linux/interrupt.h>
+> +#include <linux/iio/consumer.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/power_supply.h>
+> +#include <linux/workqueue.h>
+> +#include <linux/regmap.h>
+
+Perhaps put them in order?
+
+> +#include <linux/mfd/core.h>
+
+How this is being used?
+
+> +#include <linux/mfd/mp2629.h>
+
+...
+
+> +#define MP2629_MASK_INPUT_TYPE         0xe0
+> +#define MP2629_MASK_CHARGE_TYPE                0x18
+> +#define MP2629_MASK_CHARGE_CTRL                0x30
+> +#define MP2629_MASK_WDOG_CTRL          0x30
+> +#define MP2629_MASK_IMPEDANCE          0xf0
+
+GENMASK()?
+
+...
+
+> +       struct regmap_field *regmap_fields[TERM_CURRENT + 1];
+
+Hmm... Why not to have a definition to cover + 1?
+
+...
+
+> +static int mp2629_get_prop(struct mp2629_charger *charger,
+> +                          enum mp2629_field fld,
+> +                          union power_supply_propval *val)
+> +{
+> +       int ret;
+> +       unsigned int rval;
+> +
+
+> +       ret = regmap_field_read(charger->regmap_fields[fld], &rval);
+> +       if (!ret)
+> +               val->intval = (rval * props[fld].step) + props[fld].min;
+> +
+> +       return ret;
+
+Why not to use standard pattern, i.e.
+
+  if (ret)
+    return ret;
+  ...
+  return 0;
+
+?
+
+> +}
+
+...
+
+> +static int mp2629_charger_battery_set_prop(struct power_supply *psy,
+> +                                       enum power_supply_property psp,
+> +                                       const union power_supply_propval *val)
+> +{
+> +       struct mp2629_charger *charger = dev_get_drvdata(psy->dev.parent);
+
+> +       int ret;
+
+You may replace it with in-place return statements.
+
+> +
+> +       switch (psp) {
+> +       case POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT:
+> +               ret = mp2629_set_prop(charger, TERM_CURRENT, val);
+> +               break;
+> +
+> +       case POWER_SUPPLY_PROP_PRECHARGE_CURRENT:
+> +               ret = mp2629_set_prop(charger, PRECHARGE, val);
+> +               break;
+> +
+> +       case POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE:
+> +               ret = mp2629_set_prop(charger, CHARGE_VLIM, val);
+> +               break;
+> +
+> +       case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT:
+> +               ret = mp2629_set_prop(charger, CHARGE_ILIM, val);
+> +               break;
+> +
+> +       default:
+> +               return -EINVAL;
+> +       }
+
+> +
+> +       return ret;
+
+...and drop this completely.
+
+> +}
+
+...
+
+> +       case POWER_SUPPLY_PROP_ONLINE:
+> +               ret = regmap_read(charger->regmap, MP2629_REG_STATUS, &rval);
+> +               if (!ret)
+> +                       val->intval = !!(rval & MP2629_MASK_INPUT_TYPE);
+> +               break;
+
+Traditional pattern?
+
+...
+
+> +static int mp2629_charger_usb_set_prop(struct power_supply *psy,
+> +                               enum power_supply_property psp,
+> +                               const union power_supply_propval *val)
+> +{
+> +       struct mp2629_charger *charger = dev_get_drvdata(psy->dev.parent);
+
+> +       int ret;
+
+No need to have it.
+
+> +       switch (psp) {
+> +       case POWER_SUPPLY_PROP_INPUT_VOLTAGE_LIMIT:
+> +               ret = mp2629_set_prop(charger, INPUT_VLIM, val);
+> +               break;
+> +
+> +       case POWER_SUPPLY_PROP_INPUT_CURRENT_LIMIT:
+> +               ret = mp2629_set_prop(charger, INPUT_ILIM, val);
+> +               break;
+> +
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +
+> +       return ret;
+> +}
+
+...
+
+> +       return (psp == POWER_SUPPLY_PROP_PRECHARGE_CURRENT ||
+> +               psp == POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT ||
+> +               psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT ||
+> +               psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE);
+
+Redundant parentheses.
+Ditto for similar cases in the driver.
+
+...
+
+> +static ssize_t batt_impedance_compensation_show(struct device *dev,
+> +                                          struct device_attribute *attr,
+> +                                          char *buf)
+> +{
+> +       struct mp2629_charger *charger = dev_get_drvdata(dev->parent);
+> +       unsigned int rval;
+> +       int ret;
+> +
+> +       ret = regmap_read(charger->regmap, MP2629_REG_IMPEDANCE_COMP, &rval);
+
+> +       if (ret < 0)
+
+' < 0' is not needed.
+Ditto for other cases.
+
+> +               return ret;
+> +
+> +       rval = (rval >> 4) * 10;
+> +
+
+> +       return scnprintf(buf, PAGE_SIZE, "%d mohm\n", rval);
+
+Simple sprintf().
+
+> +}
+
+...
+
+> +static ssize_t batt_impedance_compensation_store(struct device *dev,
+> +                                           struct device_attribute *attr,
+> +                                           const char *buf,
+> +                                           size_t count)
+> +{
+> +       struct mp2629_charger *charger = dev_get_drvdata(dev->parent);
+> +       long val;
+> +       int ret;
+> +
+> +       ret = kstrtol(buf, 10, &val);
+
+> +       if (ret < 0)
+
+No need to check for negative only.
+
+> +               return ret;
+> +
+> +       if (val < 0 && val > 140)
+> +               return -ERANGE;
+
+And what the point then to use l instead of ul or even uint variant of
+the conversion above?
+
+> +       /* multiples of 10 mohm so round off */
+> +       val = val / 10;
+> +       ret = regmap_update_bits(charger->regmap, MP2629_REG_IMPEDANCE_COMP,
+> +                                       MP2629_MASK_IMPEDANCE, val << 4);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       return count;
+> +}
+
+...
+
+> +static int mp2629_charger_probe(struct platform_device *pdev)
+> +{
+> +       struct device *dev = &pdev->dev;
+
+> +       void **pdata = pdev->dev.platform_data;
+
+Why void?
+Why **?
+Why not to use dev_get_platdata()?
+Why do we need platform data at all?
+
+> +       struct mp2629_charger *charger;
+> +       struct power_supply_config psy_cfg = {0};
+> +       int ret, i;
+
+> +       charger->regmap = *pdata;
+
+> +       regmap_update_bits(charger->regmap, MP2629_REG_INTERRUPT,
+> +                               GENMASK(6, 5), (BIT(6) | BIT(5)));
+
+Too many parentheses.
+
+> +}
+
+--
+With Best Regards,
+Andy Shevchenko
