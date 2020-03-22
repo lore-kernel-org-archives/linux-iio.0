@@ -2,92 +2,151 @@ Return-Path: <SRS0=ud0C=5H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D69F0C1975A
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:19:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE15C54EEB
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:30:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9FD2D2072D
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:19:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4C97920735
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 22:30:34 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XtTdCQkp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726809AbgCVWTP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 22 Mar 2020 18:19:15 -0400
-Received: from mga09.intel.com ([134.134.136.24]:5508 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726786AbgCVWTO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 22 Mar 2020 18:19:14 -0400
-IronPort-SDR: MnHtTAhXaQ4HBKsKSXHdFg95ntStwAeBdkcA1gia4PzMZbQQLmfse14sVBF7cS13xrjwUB2jtI
- z98QpBxUHdNg==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Mar 2020 15:19:12 -0700
-IronPort-SDR: ArCCCWHZfxdjjjQGOMdgfA+yfU2ZGiAWq4zyZfdIijj1MbxJkGc/2Lb2CyulLY0Y45akDwVBGA
- QNH8hg24P3UQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.72,294,1580803200"; 
-   d="scan'208";a="280987324"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga002.fm.intel.com with ESMTP; 22 Mar 2020 15:19:10 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1jG8w5-00C5OE-1f; Mon, 23 Mar 2020 00:19:13 +0200
-Date:   Mon, 23 Mar 2020 00:19:13 +0200
-From:   "andriy.shevchenko@intel.com" <andriy.shevchenko@intel.com>
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "Tachici, Alexandru" <Alexandru.Tachici@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "Caprioru, Mircea" <Mircea.Caprioru@analog.com>
-Subject: Re: [PATCH v4 1/2] iio: dac: ad5770r: Add AD5770R support
-Message-ID: <20200322221913.GA1922688@smile.fi.intel.com>
-References: <20200218121031.27233-1-alexandru.tachici@analog.com>
- <20200218121031.27233-2-alexandru.tachici@analog.com>
- <20200321210921.GA2814584@smile.fi.intel.com>
- <2942e900ab01957027b918b2a5fdbd665fe6b2ed.camel@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <2942e900ab01957027b918b2a5fdbd665fe6b2ed.camel@analog.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+        id S1726875AbgCVWa3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 22 Mar 2020 18:30:29 -0400
+Received: from mail-wm1-f67.google.com ([209.85.128.67]:40437 "EHLO
+        mail-wm1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726797AbgCVWa3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Mar 2020 18:30:29 -0400
+Received: by mail-wm1-f67.google.com with SMTP id a81so6931374wmf.5;
+        Sun, 22 Mar 2020 15:30:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=V1IoBnnxV2Y83h2tlBdWy/1+5bjdle9P7nqs3bJI3i8=;
+        b=XtTdCQkpr+o6kyj73/aQkfTjIwMxz9y4AdHrLcVTm6dU7p02lHc2xghfjD/MNZzzJu
+         k4jQxRVegQTIy4APZ/F6XwKw0PzQXisKO4VkiojrjUA/CF9dbRvtpBYvKfchEq5U5xh+
+         UlNZXEvsQNIOapPVZClHmziLzIdz2e1g/AL6NPsbz27poj5nwoOHFWksZX5IfETxdzI6
+         6PpiggwonuXKjDEmlu8p2yI/d+3Rsf3npJnREawz5jFPGjNE2aLObxdptKbnRvHpb/Nl
+         uOGCxmLelQ2oyTQzpjLmAd/EOMDJvjBCPXJzGG7RSxJ7BVXvyZI9doMgArjBYSY+n7S5
+         BaSg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=V1IoBnnxV2Y83h2tlBdWy/1+5bjdle9P7nqs3bJI3i8=;
+        b=VlEbSVWwzgpTNBn7808lDn5WjjBOGZA29AEDnCOCquPCIzFE52sXziz9RQXC6ITqx9
+         ZOKz2EELgV9kbuoXgSCQHzd6stsXK16DMWNTCtlLLCRKWuOcjxSaZgP89AXBwG7X1Ozq
+         WQq5AJsdzRIrWxLvZXW7XIOnSIPaI0cM4DLj3UuFup+4W6EDHTXaYYY3XU/c/GKHse0s
+         zm6jTvletz2Hp4lPONqBskR1VP6YtJW971xW9shn6jJP3P+QlVc6RIguVVKpldGCFfcS
+         ihjrunDIr38Zgth0NzuLtC8VU2+TtrntW4OSL50UtokB/DPDkOpdh1gHGpptILoyp0aU
+         aMxQ==
+X-Gm-Message-State: ANhLgQ0vhohePvACvasw/UanLw6iAj2UiZ7LX1w+eEalMlpcIKb33TP8
+        mwOYBXmvAgVAesedeteuuKU2X5uR0nI=
+X-Google-Smtp-Source: ADFU+vt6WlMVjqpsPBPqnWoIiKd2ytsU9yzX0B0Smb/AF63Sc62fiu+9H+YrqMVCDAwy+28cuKiSSQ==
+X-Received: by 2002:a7b:ce19:: with SMTP id m25mr24368421wmc.134.1584916226413;
+        Sun, 22 Mar 2020 15:30:26 -0700 (PDT)
+Received: from localhost.localdomain (p5DCFFFE5.dip0.t-ipconnect.de. [93.207.255.229])
+        by smtp.gmail.com with ESMTPSA id p13sm8060517wru.3.2020.03.22.15.30.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 22 Mar 2020 15:30:25 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     lee.jones@linaro.org, robh+dt@kernel.org, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+        Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v3 1/5] dt-bindings: mfd: add document bindings for mp2629
+Date:   Sun, 22 Mar 2020 23:30:12 +0100
+Message-Id: <20200322223016.11509-2-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200322223016.11509-1-sravanhome@gmail.com>
+References: <20200322223016.11509-1-sravanhome@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 22, 2020 at 09:17:06AM +0000, Ardelean, Alexandru wrote:
-> On Sat, 2020-03-21 at 23:09 +0200, Andy Shevchenko wrote:
-> > On Tue, Feb 18, 2020 at 02:10:30PM +0200, Alexandru Tachici wrote:
-> > > The AD5770R is a 6-channel, 14-bit resolution, low noise, programmable
-> > > current output digital-to-analog converter (DAC) for photonics control
-> > > applications.
-> > > 
-> > > It contains five 14-bit resolution current sourcing DAC channels and one
-> > > 14-bit resolution current sourcing/sinking DAC channel.
-> > 
-> 
-> This patch made it into linux-next.
-> Doing a v2 now may be a bit noisy.
-> 
-> Maybe we can tidy-this-up later.
-> To be honest, it won't be the highest on our list.
-> [ I know how that sounds ]
+Add device tree binding information for mp2629 mfd driver.
 
-Yes, you may consider a follow up.
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+---
+ .../devicetree/bindings/mfd/mps,mp2629.yaml   | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
 
-> We can probably leave it for other people to clean it up.
-> [ People that want to start contributing to the kernel ]
-
-Maybe, but isn't better to supply cleaner code in the first place?
-
-I mean that these comments may be taken into consideration for the future
-contributions.
-
+diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+new file mode 100644
+index 000000000000..f5b8c73123c6
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/mfd/mps,mp2629.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MP2629 Battery Charger PMIC from Monolithic Power System.
++
++maintainers:
++  - Saravanan Sekar <sravanhome@gmail.com>
++
++description: |
++  MP2629 is an PMIC providing battery charging and power supply for smartphones,
++  Wireless camera and portable devices. Chip is contrlled over I2C.
++
++  The MFD device handles battery charger controller and ADC IIO device for
++  battery, system voltage
++
++properties:
++  compatible:
++    const: mps,mp2629
++
++  reg:
++    description:
++      I2C device address.
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  interrupt-controller: true
++
++  "#interrupt-cells":
++    const: 2
++    description:
++      The first cell is the IRQ number, the second cell is the trigger type.
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupt-controller
++  - "#interrupt-cells"
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/input/linux-event-codes.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        pmic@4b {
++            compatible = "mps,mp2629";
++            reg = <0x4b>;
++
++            interrupt-controller;
++            interrupt-parent = <&gpio2>;
++            #interrupt-cells = <2>;
++            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
++        };
++    };
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
