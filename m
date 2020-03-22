@@ -2,99 +2,85 @@ Return-Path: <SRS0=ud0C=5H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09B4AC4332E
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 17:54:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6651C4332B
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 17:58:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id E2CAF206C3
-	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 17:54:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7BECA206C3
+	for <linux-iio@archiver.kernel.org>; Sun, 22 Mar 2020 17:58:36 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1584899916;
+	bh=T+ytWmZQpGjbAP/os4ys8r0V5Uy2/2QTxKN4sGQ8ZJk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=VWDfuUDI41Z7wI8eyjpsdMKVRvNhmTWlJjvC0HXn2GCtoOnI3Bp3Wj/8AGS2V4Osd
+	 EKLV3ukvGN87FCDLo6KfdmJp0bKOpra222WAKAOu7+rXr3LMKukgSn8/YI4WPzUIzA
+	 G+XZpivP/gJNYn7tBPsXAhsJkoYO/qcJI8/hs7G8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726916AbgCVRyA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 22 Mar 2020 13:54:00 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:23446 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726785AbgCVRyA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Mar 2020 13:54:00 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02MHrwrU007719;
-        Sun, 22 Mar 2020 13:53:58 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 2ywfu53pqy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 22 Mar 2020 13:53:58 -0400
-Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 02MHrvAf005310
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Sun, 22 Mar 2020 13:53:57 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sun, 22 Mar 2020 13:53:56 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sun, 22 Mar 2020 13:53:56 -0400
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Sun, 22 Mar 2020 13:53:56 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 02MHro3g027953;
-        Sun, 22 Mar 2020 13:53:53 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>, <Laszlo.Nagy@analog.com>,
-        <Andrei.Grozav@analog.com>, <Michael.Hennerich@analog.com>,
-        <Istvan.Csomortani@analog.com>, <Adrian.Costina@analog.com>,
-        <Dragos.Bogdan@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v12 1/8] include: fpga: adi-axi-common.h: fixup whitespace tab -> space
-Date:   Sun, 22 Mar 2020 19:53:18 +0200
-Message-ID: <20200322175325.42469-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200322175325.42469-1-alexandru.ardelean@analog.com>
-References: <20200322175325.42469-1-alexandru.ardelean@analog.com>
+        id S1725985AbgCVR6g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 22 Mar 2020 13:58:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37616 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725881AbgCVR6g (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 22 Mar 2020 13:58:36 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8DC7D206C3;
+        Sun, 22 Mar 2020 17:58:34 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1584899915;
+        bh=T+ytWmZQpGjbAP/os4ys8r0V5Uy2/2QTxKN4sGQ8ZJk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=eVSCfN0t+/UVPK+HhohDI2nLzeg40nb9kVvGMwc4Y4EGYqfFAGP4J0/6xpFlV3rGQ
+         fb4U7BxavbGYN805zW7ItRdI7BoseRXip+OQhASIH+BCHokPDoTHKTGYQdgSxi9Wwa
+         nnWWBkOovHe5RgTETiNhZ9hPAPelqv03iYrDIuLY=
+Date:   Sun, 22 Mar 2020 17:58:31 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Syed Nayyar Waris <syednwaris@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 1/3] counter: 104-quad-8: Add lock guards - generic
+ interface
+Message-ID: <20200322175831.74e10aa7@archlinux>
+In-Reply-To: <20200318020506.GA45571@icarus>
+References: <20200316124929.GA389@syed.domain.name>
+        <20200318020506.GA45571@icarus>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.645
- definitions=2020-03-22_06:2020-03-21,2020-03-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
- clxscore=1015 impostorscore=0 adultscore=0 malwarescore=0
- priorityscore=1501 spamscore=0 suspectscore=0 phishscore=0
- lowpriorityscore=0 mlxlogscore=984 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2003220108
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The initial version use a tab between '#define' & 'ADI_AXI_REG_VERSION'.
-This changes it to space. The change is purely cosmetic.
+On Tue, 17 Mar 2020 22:14:49 -0400
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-Acked-by: Moritz Fischer <mdf@kernel.org>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- include/linux/fpga/adi-axi-common.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Mon, Mar 16, 2020 at 06:19:30PM +0530, Syed Nayyar Waris wrote:
+> > Add lock protection from race conditions to 104-quad-8 counter driver
+> > generic interface code changes. Mutex calls used for protection.
+> > 
+> > Fixes: f1d8a071d45b ("counter: 104-quad-8: Add Generic Counter interface
+> > support")
+> > 
+> > Signed-off-by: Syed Nayyar Waris <syednwaris@gmail.com>
+> > ---
+> > Changes in v5:
+> >  - Change spin lock calls to mutex lock calls
+> >  - Modify the title description.  
+> 
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-diff --git a/include/linux/fpga/adi-axi-common.h b/include/linux/fpga/adi-axi-common.h
-index 7fc95d5c95bb..ebd4e07ae3d8 100644
---- a/include/linux/fpga/adi-axi-common.h
-+++ b/include/linux/fpga/adi-axi-common.h
-@@ -11,7 +11,7 @@
- #ifndef ADI_AXI_COMMON_H_
- #define ADI_AXI_COMMON_H_
- 
--#define	ADI_AXI_REG_VERSION			0x0000
-+#define ADI_AXI_REG_VERSION			0x0000
- 
- #define ADI_AXI_PCORE_VER(major, minor, patch)	\
- 	(((major) << 16) | ((minor) << 8) | (patch))
--- 
-2.17.1
+Looks good.  I'm not sure right now which tree I'll take this through
+(depends on whether it looks like we'll get an rc8 and hence I can sneak
+it in for the coming merge window or not).
 
+So poke me if I seem to have forgotten to apply this in a week or so.
+
+Thanks,
+
+Jonathan
