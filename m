@@ -2,50 +2,48 @@ Return-Path: <SRS0=Yeyp=5I=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24B16C54FCF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 02217C4332E
 	for <linux-iio@archiver.kernel.org>; Mon, 23 Mar 2020 10:41:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0677020786
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Mar 2020 10:41:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CDFC320786
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Mar 2020 10:41:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727982AbgCWKle (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1727966AbgCWKle (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 23 Mar 2020 06:41:34 -0400
-Received: from mga17.intel.com ([192.55.52.151]:23726 "EHLO mga17.intel.com"
+Received: from mga04.intel.com ([192.55.52.120]:8223 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727927AbgCWKle (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727967AbgCWKle (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 23 Mar 2020 06:41:34 -0400
-IronPort-SDR: I+NVq2GJz2i+bceKlK+W9Z789Y1O+UcKNCUVmvA/w57/hJziR6dTVIViE19KNOcm4kGGBwYVxy
- 5UL34O6I25Vg==
+IronPort-SDR: AuGOJ7bRMS4hD9yMiSquavqJKJwCskMpVNkeHJ+4uq0W4gEAcci1WtZU72ImiJ8IVznxRX0NBE
+ mVggKJaTve5A==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2020 03:41:33 -0700
-IronPort-SDR: Yv39s845yoNIp5/ndXcck6vD3LbBKG1aDmc7JxbPcbYYcDmf1I7+guC2CEVK750Q6HPySdyywV
- PQNCxjuGQyHQ==
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 23 Mar 2020 03:41:33 -0700
+IronPort-SDR: nIjE1w2NVAzmPPRscLd8e1X2bu8bHwn32kKtFY6Ctoovh7mmKG7ZzaezAE/MSyWgvz93scmoQW
+ 5/VcIigSEcIQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,296,1580803200"; 
-   d="scan'208";a="246156414"
+   d="scan'208";a="239892945"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 23 Mar 2020 03:41:31 -0700
+  by orsmga008.jf.intel.com with ESMTP; 23 Mar 2020 03:41:31 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 7CC8E1FC; Mon, 23 Mar 2020 12:41:30 +0200 (EET)
+        id 54AB614B; Mon, 23 Mar 2020 12:41:30 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 4/5] iio: pressure: bmp280: Drop unneeded explicit castings
-Date:   Mon, 23 Mar 2020 12:41:28 +0200
-Message-Id: <20200323104129.60466-4-andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH v2 1/5] iio: pressure: bmp280: Tolerate IRQ before registering
+Date:   Mon, 23 Mar 2020 12:41:25 +0200
+Message-Id: <20200323104129.60466-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200323104129.60466-1-andriy.shevchenko@linux.intel.com>
-References: <20200323104129.60466-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -53,85 +51,51 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In few places the unnecessary explicit castings are being used.
-Drop them for good.
+With DEBUG_SHIRQ enabled we have a kernel crash
 
+[  116.482696] BUG: kernel NULL pointer dereference, address: 0000000000000000
+
+...
+
+[  116.606571] Call Trace:
+[  116.609023]  <IRQ>
+[  116.611047]  complete+0x34/0x50
+[  116.614206]  bmp085_eoc_irq+0x9/0x10 [bmp280]
+
+because DEBUG_SHIRQ mechanism fires an IRQ before registration and drivers
+ought to be able to handle an interrupt happening before request_irq() returns.
+
+Fixes: aae953949651 ("iio: pressure: bmp280: add support for BMP085 EOC interrupt")
+Cc: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v2: no change
- drivers/iio/pressure/bmp280-core.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
+v2: put conditional logic back when re-initializing completion (Jonathan)
+ drivers/iio/pressure/bmp280-core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 263a74666c1e..958d432d9c8f 100644
+index 29c209cc1108..2540e7c2358c 100644
 --- a/drivers/iio/pressure/bmp280-core.c
 +++ b/drivers/iio/pressure/bmp280-core.c
-@@ -337,8 +337,7 @@ static int bmp280_read_temp(struct bmp280_data *data,
- 	__be32 tmp = 0;
- 	s32 adc_temp, comp_temp;
+@@ -713,7 +713,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+ 	unsigned int ctrl;
  
--	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB,
--			       (u8 *) &tmp, 3);
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_TEMP_MSB, &tmp, 3);
- 	if (ret < 0) {
- 		dev_err(data->dev, "failed to read temperature\n");
- 		return ret;
-@@ -377,8 +376,7 @@ static int bmp280_read_press(struct bmp280_data *data,
- 	if (ret < 0)
- 		return ret;
+ 	if (data->use_eoc)
+-		init_completion(&data->done);
++		reinit_completion(&data->done);
  
--	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB,
--			       (u8 *) &tmp, 3);
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_PRESS_MSB, &tmp, 3);
- 	if (ret < 0) {
- 		dev_err(data->dev, "failed to read pressure\n");
- 		return ret;
-@@ -400,8 +398,8 @@ static int bmp280_read_press(struct bmp280_data *data,
- 
- static int bmp280_read_humid(struct bmp280_data *data, int *val, int *val2)
- {
-+	__be16 tmp;
- 	int ret;
--	__be16 tmp = 0;
- 	s32 adc_humidity;
- 	u32 comp_humidity;
- 
-@@ -410,8 +408,7 @@ static int bmp280_read_humid(struct bmp280_data *data, int *val, int *val2)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB,
--			       (u8 *) &tmp, 2);
-+	ret = regmap_bulk_read(data->regmap, BMP280_REG_HUMIDITY_MSB, &tmp, 2);
- 	if (ret < 0) {
- 		dev_err(data->dev, "failed to read humidity\n");
- 		return ret;
-@@ -733,14 +730,14 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
- 
- static int bmp180_read_adc_temp(struct bmp280_data *data, int *val)
- {
-+	__be16 tmp;
- 	int ret;
--	__be16 tmp = 0;
- 
- 	ret = bmp180_measure(data, BMP180_MEAS_TEMP);
+ 	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
  	if (ret)
- 		return ret;
- 
--	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 2);
-+	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, &tmp, 2);
- 	if (ret)
- 		return ret;
- 
-@@ -837,7 +834,7 @@ static int bmp180_read_adc_press(struct bmp280_data *data, int *val)
- 	if (ret)
- 		return ret;
- 
--	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, (u8 *)&tmp, 3);
-+	ret = regmap_bulk_read(data->regmap, BMP180_REG_OUT_MSB, &tmp, 3);
- 	if (ret)
- 		return ret;
- 
+@@ -969,6 +969,9 @@ static int bmp085_fetch_eoc_irq(struct device *dev,
+ 			"trying to enforce it\n");
+ 		irq_trig = IRQF_TRIGGER_RISING;
+ 	}
++
++	init_completion(&data->done);
++
+ 	ret = devm_request_threaded_irq(dev,
+ 			irq,
+ 			bmp085_eoc_irq,
 -- 
 2.25.1
 
