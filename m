@@ -2,99 +2,76 @@ Return-Path: <SRS0=WWoV=5J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D035C43331
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Mar 2020 10:57:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 955B3C4332B
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Mar 2020 11:15:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 456EC20786
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Mar 2020 10:57:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XzPL8rmm"
+	by mail.kernel.org (Postfix) with ESMTP id 777682080C
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Mar 2020 11:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727207AbgCXK5t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 Mar 2020 06:57:49 -0400
-Received: from mail-wr1-f67.google.com ([209.85.221.67]:40209 "EHLO
-        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727095AbgCXK5t (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2020 06:57:49 -0400
-Received: by mail-wr1-f67.google.com with SMTP id u10so460140wro.7
-        for <linux-iio@vger.kernel.org>; Tue, 24 Mar 2020 03:57:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=DOA10CRKFJGu8b5wtBJ2yLDJfOkq/sBVSQmhdUC4ypY=;
-        b=XzPL8rmmIVLxiwmtlWoRSXM0V5GpXguC00V1OiwP6D+VNJxQu2ndjNH1DMpUjS28PQ
-         95d55nIqF92A5FJDVtQG8Jzb05LrNkZmBvwRk7n8ylcgjn2PXRej0umf85yg4FJtwRIf
-         1d6lguSarwuUd5qHDfnSxccZHHNay6tDtznC6eX6gJLk7WG884AyXPo8Re0uFBwUCYRa
-         EJvXYkjpEwuOQ+odcen6exRdljEbPs65kh1We93B8zHf7DKnQ9qYQGqCQip3Pr7KLhbt
-         MOAHL7oolr6K4tZz9zakUdiOTZZ68VaGyLG81OjlfADYwnOzGldnrkt5IBYVDJai8PZR
-         9zoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=DOA10CRKFJGu8b5wtBJ2yLDJfOkq/sBVSQmhdUC4ypY=;
-        b=syEL5yLByLBHD9KAt6FGSKNChFLRv7C4HGZM7AszNaexLl9urvOZru4x7Ma8aRzZTo
-         Tva8+9N1xTwdLgMZx8TGF3JYLP+tmUvfPANiGnmPJpY5TVVS2E1sjvwxg25I+Dt+unD5
-         azJf5jjIamStj0hpON0Q+q53CMLFK3qLTEPBGI+mIagE5i4R7KcLtd8QMKuN4amTZGU5
-         JhY1JGWeQlLR2ZQ08IPTIl2hrWWCZ3oHu0B3HikXgbYmids4wiOUWAdhtQ9B0QaaKNgB
-         pm+2zOLxcff3koONL6m45IWq0nu3RsI9Q63bpcG/24jsR1+dkrQNXGM94p9l/BeGJuAv
-         XaeA==
-X-Gm-Message-State: ANhLgQ1F1lWsXBaaC6qoU+RYDpvUYVQaE2lQWm0NzuMyqaUdkpzEkCtO
-        gqVAOnYDzNh+vW4HrRel2LJHzA==
-X-Google-Smtp-Source: ADFU+vt2lLYB0Tgp6XRl+Nd0We086rBZL2iX6nYLI5T5X83Rf+H43VbfRkFbjVqQgqGMEydvpBiXPQ==
-X-Received: by 2002:adf:ba48:: with SMTP id t8mr36017493wrg.329.1585047466432;
-        Tue, 24 Mar 2020 03:57:46 -0700 (PDT)
-Received: from dell ([2.27.35.213])
-        by smtp.gmail.com with ESMTPSA id c7sm17274309wrn.49.2020.03.24.03.57.45
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 24 Mar 2020 03:57:45 -0700 (PDT)
-Date:   Tue, 24 Mar 2020 10:58:35 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andreas Kemnade <andreas@kemnade.info>
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        stefan@agner.ch, b.galvani@gmail.com, phh@phh.me,
-        letux-kernel@openphoenux.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: Re: [PATCH v7 7/7] mfd: rn5t618: cleanup i2c_device_id
-Message-ID: <20200324105835.GJ5477@dell>
-References: <20200320081105.12026-1-andreas@kemnade.info>
- <20200320081105.12026-8-andreas@kemnade.info>
+        id S1727328AbgCXLPl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 Mar 2020 07:15:41 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:44547 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726911AbgCXLPk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Mar 2020 07:15:40 -0400
+X-Originating-IP: 195.189.32.242
+Received: from pc.localdomain (unknown [195.189.32.242])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 2EC9B1C0014;
+        Tue, 24 Mar 2020 11:15:37 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>
+Cc:     Heiko Stuebner <heiko@sntech.de>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Artur Rojek <contact@artur-rojek.eu>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v5 2/5] dt-bindings: iio/adc: Add touchscreen idx for JZ47xx SoC ADC
+Date:   Tue, 24 Mar 2020 12:23:33 +0100
+Message-Id: <20200324112336.29755-2-contact@artur-rojek.eu>
+X-Mailer: git-send-email 2.26.0
+In-Reply-To: <20200324112336.29755-1-contact@artur-rojek.eu>
+References: <20200324112336.29755-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200320081105.12026-8-andreas@kemnade.info>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 20 Mar 2020, Andreas Kemnade wrote:
+Introduce support for touchscreen channels found in JZ47xx SoCs.
 
-> That list was just empty, so it can be removed if .probe_new
-> instead of .probe is used
-> 
-> Suggested-by: Lee Jones <lee.jones@linaro.org>
-> Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
-> ---
-> Functional independent from the other patches, but since they are
-> touching similar areas, commit/merge conflicts would occur.
->  drivers/mfd/rn5t618.c | 11 ++---------
->  1 file changed, 2 insertions(+), 9 deletions(-)
+Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+Tested-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Rob Herring <robh@kernel.org>
+---
 
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+ Changes:
 
+ v2-v5: no change
+
+ include/dt-bindings/iio/adc/ingenic,adc.h | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/include/dt-bindings/iio/adc/ingenic,adc.h b/include/dt-bindings/iio/adc/ingenic,adc.h
+index 42f871ab3272..95e20a8d6dc8 100644
+--- a/include/dt-bindings/iio/adc/ingenic,adc.h
++++ b/include/dt-bindings/iio/adc/ingenic,adc.h
+@@ -7,5 +7,7 @@
+ #define INGENIC_ADC_AUX		0
+ #define INGENIC_ADC_BATTERY	1
+ #define INGENIC_ADC_AUX2	2
++#define INGENIC_ADC_TOUCH_XP	3
++#define INGENIC_ADC_TOUCH_YP	4
+ 
+ #endif
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.26.0
+
