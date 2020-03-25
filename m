@@ -4,30 +4,29 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D59CC43331
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47136C1975A
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id EDBD420714
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 294AB20714
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727265AbgCYLJO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Mar 2020 07:09:14 -0400
-Received: from honk.sigxcpu.org ([24.134.29.49]:37636 "EHLO honk.sigxcpu.org"
+        id S1727280AbgCYLJU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Mar 2020 07:09:20 -0400
+Received: from honk.sigxcpu.org ([24.134.29.49]:37726 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726043AbgCYLJO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 25 Mar 2020 07:09:14 -0400
+        id S1727383AbgCYLJQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 25 Mar 2020 07:09:16 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by honk.sigxcpu.org (Postfix) with ESMTP id 356F7FB07;
-        Wed, 25 Mar 2020 12:09:10 +0100 (CET)
+        by honk.sigxcpu.org (Postfix) with ESMTP id 1A088FB05;
+        Wed, 25 Mar 2020 12:09:15 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
 Received: from honk.sigxcpu.org ([127.0.0.1])
         by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 3ofBYs3GjJsl; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
+        with ESMTP id bp-iItKMyRHl; Wed, 25 Mar 2020 12:09:13 +0100 (CET)
 Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
-        id 623B0401F4; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
+        id 78BA740208; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
 From:   =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 To:     Tomas Novotny <tomas@novotny.cz>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -42,9 +41,9 @@ To:     Tomas Novotny <tomas@novotny.cz>,
         devicetree@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v3 2/4] dt-bindings: iio: light: vcnl4000: Add near-level
-Date:   Wed, 25 Mar 2020 12:09:06 +0100
-Message-Id: <f0ad40351d7ab12f79d2c29f738443514ae0fb76.1585134362.git.agx@sigxcpu.org>
+Subject: [PATCH v3 4/4] Documentation: ABI: document IIO in_proximity_near_level file
+Date:   Wed, 25 Mar 2020 12:09:08 +0100
+Message-Id: <bffa50e16f64df2a97913d9a9e87481c6e7e4852.1585134362.git.agx@sigxcpu.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <cover.1585134362.git.agx@sigxcpu.org>
 References: <cover.1585134362.git.agx@sigxcpu.org>
@@ -56,40 +55,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This value indicates when userspace should consider an object
-near to the sensor/device.
+The vcnl4000 IIO driver introduced a new attribute
+"in_proximity_near_level".  This adds it to the list of documented ABI
+for sysfs-bus-iio.
 
 Signed-off-by: Guido Günther <agx@sigxcpu.org>
 ---
- .../devicetree/bindings/iio/light/vishay,vcnl4000.yaml    | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio-proximity | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-proximity
 
-diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-index 21ef2eb7a205..ac9e3bb6a505 100644
---- a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-+++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-@@ -25,6 +25,13 @@ properties:
-   reg:
-     maxItems: 1
- 
-+  near-level:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Raw proximity values equal or above this level should be
-+      considered 'near' to the device (an object is near to the
-+      sensor).
-+
- required:
-   - compatible
-   - reg
-@@ -40,6 +47,7 @@ examples:
-       light-sensor@51 {
-               compatible = "vishay,vcnl4200";
-               reg = <0x51>;
-+              near-level = <220>;
-       };
-   };
- ...
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-proximity b/Documentation/ABI/testing/sysfs-bus-iio-proximity
+new file mode 100644
+index 000000000000..2172f3bb9c64
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-proximity
+@@ -0,0 +1,10 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_proximity_nearlevel
++Date:		March 2020
++KernelVersion:	5.7
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Near level for proximity sensors. This is a single integer
++		value that tells user space when an object should be
++		considered close to the device. If the value read from the
++		sensor is above or equal to the value in this file an object
++		should typically be considered near.
 -- 
 2.23.0
 
