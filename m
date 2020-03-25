@@ -7,27 +7,27 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D1CCC1975A
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0A5C43331
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4E90120714
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A86620714
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgCYLJQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Mar 2020 07:09:16 -0400
-Received: from honk.sigxcpu.org ([24.134.29.49]:37682 "EHLO honk.sigxcpu.org"
+        id S1727490AbgCYLJY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Mar 2020 07:09:24 -0400
+Received: from honk.sigxcpu.org ([24.134.29.49]:37706 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726658AbgCYLJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726043AbgCYLJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Wed, 25 Mar 2020 07:09:15 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by honk.sigxcpu.org (Postfix) with ESMTP id B47BFFB03;
-        Wed, 25 Mar 2020 12:09:12 +0100 (CET)
+        by honk.sigxcpu.org (Postfix) with ESMTP id 14FEAFB04;
+        Wed, 25 Mar 2020 12:09:14 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
 Received: from honk.sigxcpu.org ([127.0.0.1])
         by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id Ukb82nZgSEwa; Wed, 25 Mar 2020 12:09:10 +0100 (CET)
+        with ESMTP id hVX3jahIkFCv; Wed, 25 Mar 2020 12:09:11 +0100 (CET)
 Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
-        id 6898940202; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
+        id 711F0401F8; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
 From:   =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 To:     Tomas Novotny <tomas@novotny.cz>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -42,9 +42,9 @@ To:     Tomas Novotny <tomas@novotny.cz>,
         devicetree@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v3 1/4] dt-bindings: iio: vcnl4000: convert bindings to YAML format
-Date:   Wed, 25 Mar 2020 12:09:05 +0100
-Message-Id: <513ead7fbdd58435420387729314acb6a5181251.1585134362.git.agx@sigxcpu.org>
+Subject: [PATCH v3 3/4] iio: vcnl4000: Export near level property for proximity sensor
+Date:   Wed, 25 Mar 2020 12:09:07 +0100
+Message-Id: <af2ce35478a5720e5325645b334f61d3c745fadd.1585134362.git.agx@sigxcpu.org>
 X-Mailer: git-send-email 2.23.0
 In-Reply-To: <cover.1585134362.git.agx@sigxcpu.org>
 References: <cover.1585134362.git.agx@sigxcpu.org>
@@ -56,97 +56,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the vcnl4000 device tree bindings to the new YAML format.
+When an object can be considered close to the sensor is hardware
+dependent. Allowing to configure the property via device tree
+allows to configure this device specific value.
+
+This is useful for e.g. iio-sensor-proxy to indicate to userspace
+if an object is close to the sensor.
 
 Signed-off-by: Guido Günther <agx@sigxcpu.org>
 ---
- .../bindings/iio/light/vcnl4000.txt           | 24 ----------
- .../bindings/iio/light/vishay,vcnl4000.yaml   | 45 +++++++++++++++++++
- 2 files changed, 45 insertions(+), 24 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+ drivers/iio/light/vcnl4000.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/vcnl4000.txt b/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
-deleted file mode 100644
-index 955af4555c90..000000000000
---- a/Documentation/devicetree/bindings/iio/light/vcnl4000.txt
-+++ /dev/null
-@@ -1,24 +0,0 @@
--VISHAY VCNL4000 -  Ambient Light and proximity sensor
--
--This driver supports the VCNL4000/10/20/40 and VCNL4200 chips
--
--Required properties:
--
--	-compatible: must be one of :
--        vishay,vcnl4000
--        vishay,vcnl4010
--        vishay,vcnl4020
--        vishay,vcnl4040
--        vishay,vcnl4200
--
--	-reg: I2C address of the sensor, should be one from below based on the model:
--        0x13
--        0x51
--        0x60
--
--Example:
--
--light-sensor@51 {
--	compatible = "vishay,vcnl4200";
--	reg = <0x51>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-new file mode 100644
-index 000000000000..21ef2eb7a205
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
-@@ -0,0 +1,45 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/vishay,vcnl4000.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index ec803c1e81df..a4bac101549e 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -83,6 +83,7 @@ struct vcnl4000_data {
+ 	struct mutex vcnl4000_lock;
+ 	struct vcnl4200_channel vcnl4200_al;
+ 	struct vcnl4200_channel vcnl4200_ps;
++	uint32_t near_level;
+ };
+ 
+ struct vcnl4000_chip_spec {
+@@ -343,6 +344,25 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+ 	},
+ };
+ 
++static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
++					uintptr_t priv,
++					const struct iio_chan_spec *chan,
++					char *buf)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
 +
-+title: VISHAY VCNL4000 ambient light and proximity sensor
++	return sprintf(buf, "%u\n", data->near_level);
++}
 +
-+maintainers:
-+  - Peter Meerwald <pmeerw@pmeerw.net>
++static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
++	{
++		.name = "nearlevel",
++		.shared = IIO_SEPARATE,
++		.read = vcnl4000_read_near_level,
++	},
++	{ /* sentinel */ }
++};
 +
-+description: |
-+  Ambient light sensing with proximity detection over an i2c
-+  interface.
+ static const struct iio_chan_spec vcnl4000_channels[] = {
+ 	{
+ 		.type = IIO_LIGHT,
+@@ -351,6 +371,7 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
+ 	}, {
+ 		.type = IIO_PROXIMITY,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.ext_info = vcnl4000_ext_info,
+ 	}
+ };
+ 
+@@ -440,6 +461,10 @@ static int vcnl4000_probe(struct i2c_client *client,
+ 	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
+ 		data->chip_spec->prod, data->rev);
+ 
++	if (device_property_read_u32(&client->dev, "near-level",
++				     &data->near_level))
++		data->near_level = 0;
 +
-+properties:
-+  compatible:
-+    enum:
-+      - vishay,vcnl4000
-+      - vishay,vcnl4010
-+      - vishay,vcnl4020
-+      - vishay,vcnl4040
-+      - vishay,vcnl4200
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+- |
-+  i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      light-sensor@51 {
-+              compatible = "vishay,vcnl4200";
-+              reg = <0x51>;
-+      };
-+  };
-+...
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &vcnl4000_info;
+ 	indio_dev->channels = vcnl4000_channels;
 -- 
 2.23.0
 
