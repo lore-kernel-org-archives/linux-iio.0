@@ -2,55 +2,39 @@ Return-Path: <SRS0=vKzs=5K=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 381B7C2D0EF
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 45C44C2D0E8
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:07:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0606B20775
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1E9FA2083E
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:07:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585173982;
-	bh=K5FXUgPFp2zVJwYRIWLrMG6m5759UHyUkE1YipOnLfk=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=xPJNoi9Ndw/zVMVcOE9cFVlgv6KyonqG7STUCD/8IeGm4a1mQWI/vdVg3AOnbwtJ2
-	 3a/O+1amH4MBG8S5LXW7nf2OwKs/yzWPdWnhaSYkbvkPlw14DeqMIuPEcuGYM2DIOY
-	 v3nEsCUNTUYF6NM6b3V+qixn5f6OaeamJbpJjPd0=
+	s=default; t=1585174079;
+	bh=9H85Fbzz9EQLFGoIwA8obSz5D1akVHxS7bxFmX8HdbU=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=eIIFKvJkKP3OYj9dlVgUN4mHRUaHjUhU29lIbq4nIrN95ZYGJyQvEwhQDoO+6hyi0
+	 64bJ0MGshQvFhKVsrg9KW5QMW6nadaYvs+YNYNjV9bwOBP48WGl9XWPBxuClRTAiWG
+	 Vm1IHSeVQQTnAW0JAf/OLPfiajrYclt2RvmSR0PQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727530AbgCYWFv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Mar 2020 18:05:51 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:44182 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727485AbgCYWFt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Mar 2020 18:05:49 -0400
-Received: by mail-io1-f67.google.com with SMTP id v3so3947013iot.11;
-        Wed, 25 Mar 2020 15:05:49 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AwF7FEOUbNvNk4mSehe5GSFcN0+uDrOJWlHbrUm2jl4=;
-        b=pxv7G0herYnThW09pyD7DYp4RI8JVvu7jYaN33KTOuLgkNv+3/nMj0yJ5veHQCt39N
-         oDt7O7mDwcObu8qZy6LIVkkkc98wzRAwclrDNQ0e1bqwWdaYKs6iJMb8tIhBXX+D9BeI
-         J2r2cmU5dIxAAU+eq3tlPrW3Y31VbwcF5MDwOUeZc4Th/RyWXQSSYlJYUajbxNOwoNIh
-         G4xolGeHUDw9cXUOZ0FQsV1XIhx4zXdwXsHEHKJv+yUPe3PTTkyCVZd7rM/jPw68Pq4X
-         9Urp2XjESJfCe7EHqB97Yfo+LysGH/euyVK9k1cGPiHcF9Ze2VZP+ShSkNaE5WOfhIlo
-         D4aQ==
-X-Gm-Message-State: ANhLgQ3QQ76rZ5PNb2Rue3g92sfGo/nu+Ag6kvksZtiOPKWlZXGBnviL
-        +mUCAeUwUoaJI40ikJuL5H2wBig=
-X-Google-Smtp-Source: ADFU+vsP1GIXWhv3Nn2746MnQvCz0PBygUKBaoaDtLTv4UJllArEZXEuLW2CGMWNrRni/irdN7azAg==
-X-Received: by 2002:a5e:8214:: with SMTP id l20mr5055871iom.54.1585173948584;
-        Wed, 25 Mar 2020 15:05:48 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.250])
-        by smtp.googlemail.com with ESMTPSA id v8sm102390ioh.40.2020.03.25.15.05.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 15:05:48 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
+        id S1727451AbgCYWHw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Mar 2020 18:07:52 -0400
+Received: from foss.arm.com ([217.140.110.172]:53740 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727357AbgCYWHw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 25 Mar 2020 18:07:52 -0400
+Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
+        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 6F6641FB;
+        Wed, 25 Mar 2020 15:07:51 -0700 (PDT)
+Received: from localhost (unknown [10.37.6.21])
+        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id EE6623F71E;
+        Wed, 25 Mar 2020 15:07:50 -0700 (PDT)
+Date:   Wed, 25 Mar 2020 22:07:49 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Brian Masney <masneyb@onstation.org>,
@@ -64,7 +48,6 @@ Cc:     linux-kernel@vger.kernel.org,
         Lee Jones <lee.jones@linaro.org>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         Michael Hennerich <michael.hennerich@analog.com>,
@@ -79,83 +62,56 @@ Cc:     linux-kernel@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH 2/4] dt-bindings: sram: qcom: Clean-up 'ranges' and child node names
-Date:   Wed, 25 Mar 2020 16:05:39 -0600
-Message-Id: <20200325220542.19189-3-robh@kernel.org>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200325220542.19189-1-robh@kernel.org>
+Subject: Re: [PATCH 4/4] dt-bindings: Add missing 'additionalProperties:
+ false'
+Message-ID: <20200325220749.GF12169@sirena.org.uk>
 References: <20200325220542.19189-1-robh@kernel.org>
+ <20200325220542.19189-5-robh@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="sDKAb4OeUBrWWL6P"
+Content-Disposition: inline
+In-Reply-To: <20200325220542.19189-5-robh@kernel.org>
+X-Cookie: Do not stamp.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The regex for child nodes doesn't match the example. This wasn't flagged
-with 'additionalProperties: false' missing. The child node schema was also
-incorrect with 'ranges' property as it applies to child nodes and should
-be moved up to the parent node.
 
-Fixes: 957fd69d396b ("dt-bindings: soc: qcom: add On Chip MEMory (OCMEM) bindings")
-Cc: Brian Masney <masneyb@onstation.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: linux-arm-msm@vger.kernel.org
-Signed-off-by: Rob Herring <robh@kernel.org>
----
- .../devicetree/bindings/sram/qcom,ocmem.yaml         | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+--sDKAb4OeUBrWWL6P
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml b/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
-index 222990f9923c..469cec133647 100644
---- a/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
-+++ b/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
-@@ -43,6 +43,9 @@ properties:
-   '#size-cells':
-     const: 1
- 
-+  ranges:
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
-@@ -51,9 +54,10 @@ required:
-   - clock-names
-   - '#address-cells'
-   - '#size-cells'
-+  - ranges
- 
- patternProperties:
--  "^.+-sram$":
-+  "-sram@[0-9a-f]+$":
-     type: object
-     description: A region of reserved memory.
- 
-@@ -61,12 +65,8 @@ patternProperties:
-       reg:
-         maxItems: 1
- 
--      ranges:
--        maxItems: 1
--
-     required:
-       - reg
--      - ranges
- 
- examples:
-   - |
-@@ -88,9 +88,9 @@ examples:
- 
-         #address-cells = <1>;
-         #size-cells = <1>;
-+        ranges = <0 0xfec00000 0x100000>;
- 
-         gmu-sram@0 {
-                 reg = <0x0 0x100000>;
--                ranges = <0 0 0xfec00000 0x100000>;
-         };
-       };
--- 
-2.20.1
+On Wed, Mar 25, 2020 at 04:05:41PM -0600, Rob Herring wrote:
+> Setting 'additionalProperties: false' is frequently omitted, but is
+> important in order to check that there aren't extra undocumented
+> properties in a binding.
+>=20
+> Ideally, we'd just add this automatically and make this the default, but
+> there's some cases where it doesn't work. For example, if a common
+> schema is referenced, then properties in the common schema aren't part
+> of what's considered for 'additionalProperties'. Also, sometimes there
+> are bus specific properties such as 'spi-max-frequency' that go into
+> bus child nodes, but aren't defined in the child node's schema.
 
+Acked-by: Mark Brown <broonie@kernel.org>
+
+--sDKAb4OeUBrWWL6P
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl571jQACgkQJNaLcl1U
+h9Afjwf/TlVFnvMm+meLOwlfTMDT7xvKv6i3g4S/t/OkkG/qfuDfUpRz0LarRYTg
+8163ZrHY0aAQmLzyxMQR2cBhzM1tfANuY93djQNhe1ac6MUdNxTGLm1n+m9xh/o8
+IsSrgrnEqXCNCgqkAvPcDY7qkeLi68p5VqJIfdOjjeJkusQL3Q0kQUv7kpi6cgXn
+5Y+PlKm4cxLmOxFeUmCLQKocDSMttTCjxA/jm7jX+CWzKJjObhgsoHP9rg+uIO+1
+VHCHKXwxl1a8dhfG9ZnUxXY9UqGqGINojiPmRtTBX5oZqY95zShlcNiJ2HNaRRsT
+oIsZgkZuypvPpKies+jaVF2IuoSbcA==
+=EzfV
+-----END PGP SIGNATURE-----
+
+--sDKAb4OeUBrWWL6P--
