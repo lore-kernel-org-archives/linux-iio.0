@@ -2,32 +2,31 @@ Return-Path: <SRS0=vKzs=5K=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D0A5C43331
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6725FC54FD0
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4A86620714
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 48D3A20772
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 11:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727490AbgCYLJY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1727483AbgCYLJY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 25 Mar 2020 07:09:24 -0400
-Received: from honk.sigxcpu.org ([24.134.29.49]:37706 "EHLO honk.sigxcpu.org"
+Received: from honk.sigxcpu.org ([24.134.29.49]:37656 "EHLO honk.sigxcpu.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726043AbgCYLJP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 25 Mar 2020 07:09:15 -0400
+        id S1727253AbgCYLJO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 25 Mar 2020 07:09:14 -0400
 Received: from localhost (localhost [127.0.0.1])
-        by honk.sigxcpu.org (Postfix) with ESMTP id 14FEAFB04;
-        Wed, 25 Mar 2020 12:09:14 +0100 (CET)
+        by honk.sigxcpu.org (Postfix) with ESMTP id 3DC47FB02;
+        Wed, 25 Mar 2020 12:09:11 +0100 (CET)
 X-Virus-Scanned: Debian amavisd-new at honk.sigxcpu.org
 Received: from honk.sigxcpu.org ([127.0.0.1])
         by localhost (honk.sigxcpu.org [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id hVX3jahIkFCv; Wed, 25 Mar 2020 12:09:11 +0100 (CET)
+        with ESMTP id K_x7j6K_rbDv; Wed, 25 Mar 2020 12:09:09 +0100 (CET)
 Received: by bogon.sigxcpu.org (Postfix, from userid 1000)
-        id 711F0401F8; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
+        id 546CA401FD; Wed, 25 Mar 2020 12:09:08 +0100 (CET)
 From:   =?UTF-8?q?Guido=20G=C3=BCnther?= <agx@sigxcpu.org>
 To:     Tomas Novotny <tomas@novotny.cz>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -42,12 +41,10 @@ To:     Tomas Novotny <tomas@novotny.cz>,
         devicetree@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v3 3/4] iio: vcnl4000: Export near level property for proximity sensor
-Date:   Wed, 25 Mar 2020 12:09:07 +0100
-Message-Id: <af2ce35478a5720e5325645b334f61d3c745fadd.1585134362.git.agx@sigxcpu.org>
+Subject: [PATCH v3 0/4] iio: vcnl4000: Export near level property for proximity sensor
+Date:   Wed, 25 Mar 2020 12:09:04 +0100
+Message-Id: <cover.1585134362.git.agx@sigxcpu.org>
 X-Mailer: git-send-email 2.23.0
-In-Reply-To: <cover.1585134362.git.agx@sigxcpu.org>
-References: <cover.1585134362.git.agx@sigxcpu.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -56,75 +53,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When an object can be considered close to the sensor is hardware
-dependent. Allowing to configure the property via device tree
-allows to configure this device specific value.
+If an object can be considered close to the device that has the proximity
+sensor built in is hardware dependent. Allowing to configure the property via
+device tree allows to export this device specific value to userspace via
+ext_info. This is useful for e.g. iio-sensor-proxy.
 
-This is useful for e.g. iio-sensor-proxy to indicate to userspace
-if an object is close to the sensor.
+This came up when adding proximity support to iio-sensor-proxy [1], [2], it is
+not meant as a vcnl4000 thing but rather as something useful for other proximity
+sensors too in the future.
 
-Signed-off-by: Guido Günther <agx@sigxcpu.org>
----
- drivers/iio/light/vcnl4000.c | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+I've not converted the vcnl4000 binding docs to yaml but can do so as part of
+this series in a v2 if the approach makes sense.
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index ec803c1e81df..a4bac101549e 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -83,6 +83,7 @@ struct vcnl4000_data {
- 	struct mutex vcnl4000_lock;
- 	struct vcnl4200_channel vcnl4200_al;
- 	struct vcnl4200_channel vcnl4200_ps;
-+	uint32_t near_level;
- };
- 
- struct vcnl4000_chip_spec {
-@@ -343,6 +344,25 @@ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
- 	},
- };
- 
-+static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
-+					uintptr_t priv,
-+					const struct iio_chan_spec *chan,
-+					char *buf)
-+{
-+	struct vcnl4000_data *data = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%u\n", data->near_level);
-+}
-+
-+static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
-+	{
-+		.name = "nearlevel",
-+		.shared = IIO_SEPARATE,
-+		.read = vcnl4000_read_near_level,
-+	},
-+	{ /* sentinel */ }
-+};
-+
- static const struct iio_chan_spec vcnl4000_channels[] = {
- 	{
- 		.type = IIO_LIGHT,
-@@ -351,6 +371,7 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
- 	}, {
- 		.type = IIO_PROXIMITY,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.ext_info = vcnl4000_ext_info,
- 	}
- };
- 
-@@ -440,6 +461,10 @@ static int vcnl4000_probe(struct i2c_client *client,
- 	dev_dbg(&client->dev, "%s Ambient light/proximity sensor, Rev: %02x\n",
- 		data->chip_spec->prod, data->rev);
- 
-+	if (device_property_read_u32(&client->dev, "near-level",
-+				     &data->near_level))
-+		data->near_level = 0;
-+
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->info = &vcnl4000_info;
- 	indio_dev->channels = vcnl4000_channels;
+Changes from v2:
+- as per review comment by Lars-Peter Clausen
+  https://lore.kernel.org/linux-iio/c787921f-c412-4986-14ea-e31b531d3d5b@metafoo.de/
+  Switch sysfs name to `nearlevel`
+- as per review comment by Nishant Malpani
+  https://lore.kernel.org/linux-iio/f5ea512c-d427-94c7-cf5f-f1300cbd4aa3@gmail.com/
+  Add manufacturer do binding document name
+- as per review comments by Andy Shevchenko
+  - Drop superfluous blank line
+  - Check return value of device_property_read_u32 for '!= 0' instead of '< 0'
+
+Changes from v1:
+- as per review comments by Jonathan Cameron
+  https://lore.kernel.org/linux-iio/20200221120519.43b72007@archlinux/
+  Document new sysfs file in Documentation/ABI/testing/sysfs-bus-iio-proximity
+- convert bindings to yaml
+- bindings: fix typo in near-level property
+
+[1]: https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/merge_requests/298
+[2]: https://lore.kernel.org/linux-iio/20200210154153.GA26903@bogon.m.sigxcpu.org/
+
+To: Tomas Novotny <tomas@novotny.cz>, Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,"Angus Ainslie (Purism)" <angus@akkea.ca>,"Guido Günther" <agx@sigxcpu.org>,Marco Felsch <m.felsch@pengutronix.de>,Thomas Gleixner <tglx@linutronix.de>,linux-iio@vger.kernel.org,linux-kernel@vger.kernel.org,devicetree@vger.kernel.org,
+Andy Shevchenko <andy.shevchenko@gmail.com>,Nishant Malpani <nish.malpani25@gmail.com>
+
+
+Guido Günther (4):
+  dt-bindings: iio: vcnl4000: convert bindings to YAML format
+  dt-bindings: iio: light: vcnl4000: Add near-level
+  iio: vcnl4000: Export near level property for proximity sensor
+  Documentation: ABI: document IIO in_proximity_near_level file
+
+ .../ABI/testing/sysfs-bus-iio-proximity       | 10 ++++
+ .../bindings/iio/light/vcnl4000.txt           | 24 ---------
+ .../bindings/iio/light/vishay,vcnl4000.yaml   | 53 +++++++++++++++++++
+ drivers/iio/light/vcnl4000.c                  | 25 +++++++++
+ 4 files changed, 88 insertions(+), 24 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-proximity
+ delete mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/light/vishay,vcnl4000.yaml
+
 -- 
 2.23.0
 
