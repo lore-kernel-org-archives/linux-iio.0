@@ -2,51 +2,52 @@ Return-Path: <SRS0=vKzs=5K=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B04BBC2BA1B
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 381B7C2D0EF
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 7E0AA20775
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0606B20775
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Mar 2020 22:06:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585173985;
-	bh=o9kTsTDvzX6XRBskyx/3cnGfmJvD3krgA4ezWk/YKKo=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=TL2jYXCNhAHIdx/BJyS6WnO6+t5N3ahm5TWfFw0wB/MFjkBQbHT03PAuZAoBivzQn
-	 FQLwUoZsw6nrS9xMnz9+h/g0CMhZ89CC7DX8Zxd9gaNfsfXxn/oZi4+pQRKyOr6zJD
-	 +yu221pnv5N+UbsVQeVefhf1oCdHkvlrGCWLiZ3s=
+	s=default; t=1585173982;
+	bh=K5FXUgPFp2zVJwYRIWLrMG6m5759UHyUkE1YipOnLfk=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=xPJNoi9Ndw/zVMVcOE9cFVlgv6KyonqG7STUCD/8IeGm4a1mQWI/vdVg3AOnbwtJ2
+	 3a/O+1amH4MBG8S5LXW7nf2OwKs/yzWPdWnhaSYkbvkPlw14DeqMIuPEcuGYM2DIOY
+	 v3nEsCUNTUYF6NM6b3V+qixn5f6OaeamJbpJjPd0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727384AbgCYWFr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Mar 2020 18:05:47 -0400
-Received: from mail-il1-f175.google.com ([209.85.166.175]:43780 "EHLO
-        mail-il1-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726081AbgCYWFr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Mar 2020 18:05:47 -0400
-Received: by mail-il1-f175.google.com with SMTP id g15so3465753ilj.10;
-        Wed, 25 Mar 2020 15:05:45 -0700 (PDT)
+        id S1727530AbgCYWFv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Mar 2020 18:05:51 -0400
+Received: from mail-io1-f67.google.com ([209.85.166.67]:44182 "EHLO
+        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727485AbgCYWFt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Mar 2020 18:05:49 -0400
+Received: by mail-io1-f67.google.com with SMTP id v3so3947013iot.11;
+        Wed, 25 Mar 2020 15:05:49 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=b/UNNUiqZNH/+Iv9VGZJuE2UKU7Uzk2Xjaa2yHi3k54=;
-        b=h8YVqz004LvjsagR0EJUS0EuPZ3qLqxgEqYyDMivOMaWbrCU8E7pdyi9N4YIdg8OTX
-         3tWrkESOi1CqPE1qEe+Z8nQaSdrAqf1fAsAFgL4Al+HS2vrqjLK1XboLDsNXhkx0ev6+
-         0EZZ1UKqC1T5cMTOnIKLyvkt7RtlEhtjfMP9NOWwi+MkCZFC6Y5qyuIUUtL5NhYTYEVZ
-         Q1EXNLNspmTlPRpT1q51dMo4o/k7vpdl0uRI2fGD+KPVdQZBnDZ4YdP25DXwvGkd5T+t
-         /4TKrSZxtqZcjSgwNlngRlpGr2Bjw5wpdXxAkxOR3qZWFdfqYT72ssOzvRYmZeOobfg6
-         52/A==
-X-Gm-Message-State: ANhLgQ2E+MW6/mXKRRpf8ikFfyNvihMLGQ68XAOCjJDRRsehoMtdGkTN
-        6HCStjWnRRwNi8P4jfI+4AMsPik=
-X-Google-Smtp-Source: ADFU+vt2kokrkcEpGRLO2UvFmwmQbT400vUIkyFS/Pwj5bVyFFr+iqUWdZpWVM9WT6gFsFQdf7TdIQ==
-X-Received: by 2002:a92:83ca:: with SMTP id p71mr5277381ilk.278.1585173944474;
-        Wed, 25 Mar 2020 15:05:44 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=AwF7FEOUbNvNk4mSehe5GSFcN0+uDrOJWlHbrUm2jl4=;
+        b=pxv7G0herYnThW09pyD7DYp4RI8JVvu7jYaN33KTOuLgkNv+3/nMj0yJ5veHQCt39N
+         oDt7O7mDwcObu8qZy6LIVkkkc98wzRAwclrDNQ0e1bqwWdaYKs6iJMb8tIhBXX+D9BeI
+         J2r2cmU5dIxAAU+eq3tlPrW3Y31VbwcF5MDwOUeZc4Th/RyWXQSSYlJYUajbxNOwoNIh
+         G4xolGeHUDw9cXUOZ0FQsV1XIhx4zXdwXsHEHKJv+yUPe3PTTkyCVZd7rM/jPw68Pq4X
+         9Urp2XjESJfCe7EHqB97Yfo+LysGH/euyVK9k1cGPiHcF9Ze2VZP+ShSkNaE5WOfhIlo
+         D4aQ==
+X-Gm-Message-State: ANhLgQ3QQ76rZ5PNb2Rue3g92sfGo/nu+Ag6kvksZtiOPKWlZXGBnviL
+        +mUCAeUwUoaJI40ikJuL5H2wBig=
+X-Google-Smtp-Source: ADFU+vsP1GIXWhv3Nn2746MnQvCz0PBygUKBaoaDtLTv4UJllArEZXEuLW2CGMWNrRni/irdN7azAg==
+X-Received: by 2002:a5e:8214:: with SMTP id l20mr5055871iom.54.1585173948584;
+        Wed, 25 Mar 2020 15:05:48 -0700 (PDT)
 Received: from xps15.herring.priv ([64.188.179.250])
-        by smtp.googlemail.com with ESMTPSA id v8sm102390ioh.40.2020.03.25.15.05.42
+        by smtp.googlemail.com with ESMTPSA id v8sm102390ioh.40.2020.03.25.15.05.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 25 Mar 2020 15:05:43 -0700 (PDT)
+        Wed, 25 Mar 2020 15:05:48 -0700 (PDT)
 From:   Rob Herring <robh@kernel.org>
 To:     devicetree@vger.kernel.org
 Cc:     linux-kernel@vger.kernel.org,
@@ -78,10 +79,12 @@ Cc:     linux-kernel@vger.kernel.org,
         linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
         linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
         netdev@vger.kernel.org
-Subject: [PATCH 0/4] dt-bindings: additionalProperties clean-up
-Date:   Wed, 25 Mar 2020 16:05:37 -0600
-Message-Id: <20200325220542.19189-1-robh@kernel.org>
+Subject: [PATCH 2/4] dt-bindings: sram: qcom: Clean-up 'ranges' and child node names
+Date:   Wed, 25 Mar 2020 16:05:39 -0600
+Message-Id: <20200325220542.19189-3-robh@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200325220542.19189-1-robh@kernel.org>
+References: <20200325220542.19189-1-robh@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -89,145 +92,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Setting 'additionalProperties: false' is frequently omitted, but is
-important in order to check that there aren't extra undocumented
-properties in a binding.
+The regex for child nodes doesn't match the example. This wasn't flagged
+with 'additionalProperties: false' missing. The child node schema was also
+incorrect with 'ranges' property as it applies to child nodes and should
+be moved up to the parent node.
 
-This series is a bunch of fixes in patches 1-3 found by setting
-'additionalProperties: false' and then patch 4 sets additionalProperties
-on a bunch of schema.
+Fixes: 957fd69d396b ("dt-bindings: soc: qcom: add On Chip MEMory (OCMEM) bindings")
+Cc: Brian Masney <masneyb@onstation.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: linux-arm-msm@vger.kernel.org
+Signed-off-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/sram/qcom,ocmem.yaml         | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Rob
-
-
-Rob Herring (4):
-  dt-bindings: iio/accel: Drop duplicate adi,adxl345/6 from
-    trivial-devices.yaml
-  dt-bindings: sram: qcom: Clean-up 'ranges' and child node names
-  dt-bindings: Clean-up schema errors due to missing
-    'addtionalProperties: false'
-  dt-bindings: Add missing 'additionalProperties: false'
-
- .../arm/altera/socfpga-clk-manager.yaml       |  2 ++
- .../amlogic/amlogic,meson-gx-ao-secure.yaml   |  2 ++
- .../bindings/arm/msm/qcom,llcc.yaml           |  2 ++
- .../devicetree/bindings/arm/renesas,prr.yaml  |  2 ++
- .../bindings/arm/samsung/exynos-chipid.yaml   |  2 ++
- .../devicetree/bindings/arm/samsung/pmu.yaml  |  2 ++
- .../arm/samsung/samsung-secure-firmware.yaml  |  2 ++
- .../bindings/arm/stm32/st,stm32-syscon.yaml   |  2 ++
- .../devicetree/bindings/clock/fsl,plldig.yaml |  5 ++++
- .../bindings/clock/imx8mn-clock.yaml          |  2 ++
- .../bindings/clock/imx8mp-clock.yaml          |  2 ++
- .../bindings/clock/milbeaut-clock.yaml        |  2 ++
- .../bindings/clock/qcom,gcc-apq8064.yaml      |  2 ++
- .../bindings/clock/qcom,gcc-ipq8074.yaml      |  2 ++
- .../bindings/clock/qcom,gcc-msm8996.yaml      |  2 ++
- .../bindings/clock/qcom,gcc-msm8998.yaml      |  2 ++
- .../bindings/clock/qcom,gcc-qcs404.yaml       |  2 ++
- .../bindings/clock/qcom,gcc-sc7180.yaml       |  2 ++
- .../bindings/clock/qcom,gcc-sm8150.yaml       |  2 ++
- .../devicetree/bindings/clock/qcom,gcc.yaml   |  2 ++
- .../devicetree/bindings/clock/qcom,mmcc.yaml  |  2 ++
- .../bindings/clock/qcom,msm8998-gpucc.yaml    |  2 ++
- .../bindings/clock/qcom,rpmhcc.yaml           |  2 ++
- .../bindings/clock/qcom,sc7180-dispcc.yaml    |  2 ++
- .../bindings/clock/qcom,sc7180-gpucc.yaml     |  2 ++
- .../bindings/clock/qcom,sc7180-videocc.yaml   |  2 ++
- .../bindings/clock/qcom,sdm845-dispcc.yaml    |  2 ++
- .../bindings/clock/qcom,sdm845-gpucc.yaml     |  2 ++
- .../bindings/clock/qcom,sdm845-videocc.yaml   |  2 ++
- .../bindings/display/amlogic,meson-vpu.yaml   |  2 ++
- .../bindings/dma/sifive,fu540-c000-pdma.yaml  |  2 ++
- .../devicetree/bindings/dsp/fsl,dsp.yaml      |  2 ++
- .../devicetree/bindings/eeprom/at24.yaml      |  2 ++
- ...ntel,ixp4xx-network-processing-engine.yaml |  3 +++
- .../bindings/gpio/brcm,xgs-iproc-gpio.yaml    |  2 ++
- .../gpio/socionext,uniphier-gpio.yaml         |  4 +++
- .../bindings/gpio/xylon,logicvc-gpio.yaml     |  2 ++
- .../bindings/gpu/arm,mali-bifrost.yaml        |  8 +++---
- .../bindings/gpu/arm,mali-midgard.yaml        |  5 ++++
- .../bindings/gpu/arm,mali-utgard.yaml         |  2 ++
- .../bindings/gpu/samsung-rotator.yaml         |  2 ++
- .../bindings/hwmon/adi,adm1177.yaml           |  2 ++
- .../bindings/hwmon/adi,ltc2947.yaml           |  2 ++
- .../bindings/hwmon/pmbus/ti,ucd90320.yaml     |  2 ++
- .../devicetree/bindings/hwmon/ti,tmp513.yaml  |  2 ++
- .../bindings/iio/accel/adi,adxl345.yaml       | 10 +++++---
- .../bindings/iio/accel/bosch,bma400.yaml      |  2 ++
- .../bindings/iio/adc/adi,ad7192.yaml          |  1 -
- .../bindings/iio/adc/adi,ad7780.yaml          |  2 ++
- .../bindings/iio/adc/avia-hx711.yaml          |  2 ++
- .../bindings/iio/adc/lltc,ltc2496.yaml        |  2 ++
- .../bindings/iio/adc/microchip,mcp3911.yaml   |  2 ++
- .../bindings/iio/adc/st,stm32-dfsdm-adc.yaml  |  2 ++
- .../iio/chemical/plantower,pms7003.yaml       |  2 ++
- .../iio/chemical/sensirion,sps30.yaml         |  2 ++
- .../bindings/iio/dac/lltc,ltc1660.yaml        |  2 ++
- .../bindings/iio/light/adux1020.yaml          |  2 ++
- .../devicetree/bindings/iio/light/bh1750.yaml |  2 ++
- .../bindings/iio/light/isl29018.yaml          |  2 ++
- .../bindings/iio/light/noa1305.yaml           |  2 ++
- .../bindings/iio/light/stk33xx.yaml           |  2 ++
- .../bindings/iio/light/tsl2583.yaml           |  2 ++
- .../bindings/iio/light/tsl2772.yaml           |  2 ++
- .../bindings/iio/light/veml6030.yaml          |  2 ++
- .../bindings/iio/pressure/asc,dlhl60d.yaml    |  2 ++
- .../bindings/iio/pressure/bmp085.yaml         |  5 ++++
- .../iio/proximity/devantech-srf04.yaml        |  2 ++
- .../bindings/iio/proximity/parallax-ping.yaml |  2 ++
- .../bindings/iio/temperature/adi,ltc2983.yaml |  2 ++
- .../bindings/input/gpio-vibrator.yaml         |  2 ++
- .../bindings/input/max77650-onkey.yaml        |  3 +++
- .../intel,ixp4xx-interrupt.yaml               |  2 ++
- .../bindings/iommu/samsung,sysmmu.yaml        |  2 ++
- .../bindings/leds/leds-max77650.yaml          |  3 +++
- .../bindings/leds/rohm,bd71828-leds.yaml      |  3 +++
- .../mailbox/amlogic,meson-gxbb-mhu.yaml       |  2 ++
- .../bindings/media/amlogic,gx-vdec.yaml       |  2 ++
- .../media/amlogic,meson-gx-ao-cec.yaml        | 11 +++++---
- .../bindings/media/renesas,ceu.yaml           |  2 ++
- .../devicetree/bindings/mfd/max77650.yaml     |  2 ++
- .../bindings/mfd/rohm,bd71828-pmic.yaml       |  5 ++++
- .../misc/intel,ixp4xx-ahb-queue-manager.yaml  |  2 ++
- .../bindings/net/ti,cpsw-switch.yaml          | 25 +++++++++++++------
- .../phy/allwinner,sun50i-h6-usb3-phy.yaml     |  2 ++
- .../phy/amlogic,meson-g12a-usb3-pcie-phy.yaml |  2 ++
- .../bindings/phy/intel,lgm-emmc-phy.yaml      |  2 ++
- .../bindings/phy/marvell,mmp3-hsic-phy.yaml   |  2 ++
- .../bindings/phy/ti,phy-j721e-wiz.yaml        |  2 ++
- .../pinctrl/aspeed,ast2400-pinctrl.yaml       |  2 ++
- .../pinctrl/aspeed,ast2500-pinctrl.yaml       |  2 ++
- .../pinctrl/aspeed,ast2600-pinctrl.yaml       |  2 ++
- .../bindings/pinctrl/st,stm32-pinctrl.yaml    |  2 ++
- .../bindings/power/amlogic,meson-ee-pwrc.yaml |  2 ++
- .../bindings/power/reset/syscon-poweroff.yaml |  2 ++
- .../bindings/power/reset/syscon-reboot.yaml   |  2 ++
- .../power/supply/max77650-charger.yaml        |  3 +++
- .../devicetree/bindings/ptp/ptp-idtcm.yaml    |  2 ++
- .../regulator/max77650-regulator.yaml         |  5 +++-
- .../bindings/reset/amlogic,meson-reset.yaml   |  2 ++
- .../reset/brcm,bcm7216-pcie-sata-rescal.yaml  |  2 ++
- .../bindings/rng/amlogic,meson-rng.yaml       |  2 ++
- .../devicetree/bindings/rng/brcm,bcm2835.yaml |  2 ++
- .../bindings/rtc/renesas,sh-rtc.yaml          |  2 ++
- .../devicetree/bindings/rtc/st,stm32-rtc.yaml |  2 ++
- .../bindings/serial/amlogic,meson-uart.yaml   |  2 ++
- .../bindings/soc/amlogic/amlogic,canvas.yaml  |  2 ++
- .../bindings/sound/adi,adau7118.yaml          |  2 ++
- .../bindings/sound/qcom,wcd934x.yaml          |  2 ++
- .../bindings/sound/renesas,fsi.yaml           |  2 ++
- .../bindings/sound/samsung,odroid.yaml        |  2 ++
- .../bindings/sound/samsung-i2s.yaml           |  2 ++
- .../devicetree/bindings/sram/qcom,ocmem.yaml  | 14 ++++++-----
- .../bindings/thermal/amlogic,thermal.yaml     |  4 +++
- .../bindings/timer/arm,arch_timer.yaml        |  2 ++
- .../bindings/timer/arm,arch_timer_mmio.yaml   |  4 +++
- .../bindings/timer/arm,global_timer.yaml      |  2 ++
- .../bindings/timer/intel,ixp4xx-timer.yaml    |  2 ++
- .../timer/samsung,exynos4210-mct.yaml         |  2 ++
- .../devicetree/bindings/trivial-devices.yaml  |  6 ++---
- 119 files changed, 296 insertions(+), 29 deletions(-)
-
---
+diff --git a/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml b/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
+index 222990f9923c..469cec133647 100644
+--- a/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
++++ b/Documentation/devicetree/bindings/sram/qcom,ocmem.yaml
+@@ -43,6 +43,9 @@ properties:
+   '#size-cells':
+     const: 1
+ 
++  ranges:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -51,9 +54,10 @@ required:
+   - clock-names
+   - '#address-cells'
+   - '#size-cells'
++  - ranges
+ 
+ patternProperties:
+-  "^.+-sram$":
++  "-sram@[0-9a-f]+$":
+     type: object
+     description: A region of reserved memory.
+ 
+@@ -61,12 +65,8 @@ patternProperties:
+       reg:
+         maxItems: 1
+ 
+-      ranges:
+-        maxItems: 1
+-
+     required:
+       - reg
+-      - ranges
+ 
+ examples:
+   - |
+@@ -88,9 +88,9 @@ examples:
+ 
+         #address-cells = <1>;
+         #size-cells = <1>;
++        ranges = <0 0xfec00000 0x100000>;
+ 
+         gmu-sram@0 {
+                 reg = <0x0 0x100000>;
+-                ranges = <0 0 0xfec00000 0x100000>;
+         };
+       };
+-- 
 2.20.1
+
