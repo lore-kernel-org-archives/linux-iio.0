@@ -2,56 +2,57 @@ Return-Path: <SRS0=N5H0=5M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0E1BC43331
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 21:05:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9CC9C43331
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 21:06:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 80B3120658
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 21:05:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B49252073E
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 21:06:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585343142;
-	bh=k6qmyW97YGA1y4XcZyq/RlW4XCWHs8OoW8pQlNO23/I=;
+	s=default; t=1585343192;
+	bh=glWv5x5tYeciSv+1oBtEhputAI81JkmLfjxr2fkT9PM=;
 	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=Mti6VqA42U5tGK4FdlSCjQhYM7N4EL6lpAesnnJYYIw6lP8isSZgk9me/FajRgsfh
-	 1XXj1BJZCqrqPWjRhFdvX5Unn+tnx26fG4EGU3NPcN5Qbb0ICDEuwWA7Dzz3Mlz2xI
-	 6c5DR39/iOZjFKYKT3xNTy7/q5q8xuxCPsGNE33Y=
+	b=pC5oUw6AmYatpzaTUd+X/1FdVHbnBQ71LX5zDmGtmjwjlk239EVzBLoTBZ/Wgp7YE
+	 lnHU9BlXHEGP+smt74fm0IKeg1xMIVEoPRWIKDCzJieYomdHHJ6LvgiFFSUgwTVFOu
+	 09fe7NJXNNhvb2Dy1bW6cRfGTPe+PW5Hvnui+fO0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727548AbgC0VFm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Mar 2020 17:05:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52712 "EHLO mail.kernel.org"
+        id S1727444AbgC0VGc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Mar 2020 17:06:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52844 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727352AbgC0VFl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 27 Mar 2020 17:05:41 -0400
-Received: from mail-qt1-f176.google.com (mail-qt1-f176.google.com [209.85.160.176])
+        id S1727352AbgC0VGc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 27 Mar 2020 17:06:32 -0400
+Received: from mail-qt1-f179.google.com (mail-qt1-f179.google.com [209.85.160.179])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F3F2A2074A;
-        Fri, 27 Mar 2020 21:05:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7E0402073E;
+        Fri, 27 Mar 2020 21:06:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1585343141;
-        bh=k6qmyW97YGA1y4XcZyq/RlW4XCWHs8OoW8pQlNO23/I=;
+        s=default; t=1585343191;
+        bh=glWv5x5tYeciSv+1oBtEhputAI81JkmLfjxr2fkT9PM=;
         h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=2kDM2fILBoLG/958xBtNYyVMLmBxMhy2RFG8YffVdLBjIFOeQrO8bEf9AYPoVXbHB
-         U0zKTEmG6kHt2UKACR+vDgIYkoh4VGEc55Vix0vMWWfrWwIzV0/pKu6GMKVubHdf0H
-         BjA2BndXrwvrLEHuftZIqVRHXlYFU4896/KSZTsU=
-Received: by mail-qt1-f176.google.com with SMTP id i3so9824212qtv.8;
-        Fri, 27 Mar 2020 14:05:40 -0700 (PDT)
-X-Gm-Message-State: ANhLgQ3yO/txPo5SuNu+9YLjuX8u0t/cr3yljP7Vt2YJia+wIyB9Pmvh
-        pgksWm8JZHkec3GfNs1Ys4o2cMu/Fbv7jiQxtA==
-X-Google-Smtp-Source: ADFU+vtvqz5AI4wH7P3cIuqZB25uwXMJTnHRkOu86W3BaXrP190mY4bBYCobUgQbF2yoqkp07GyxKABJIEepzVVyjJw=
-X-Received: by 2002:ac8:1b33:: with SMTP id y48mr1314603qtj.136.1585343140157;
- Fri, 27 Mar 2020 14:05:40 -0700 (PDT)
+        b=PaCC08dbyinHbfZ9F7vmFhIzQpFrllzHFBWbULPlH1W+LrtBgoQraHBJjeLan8WWO
+         l7y/GJAoB8SBGgXch5XKmLV+oHXMxI2AR8Ol4QGtBrvEoXbBlQ3lGICu798LYR2fde
+         CrWZDAUR2L5bPrmluR6xEkggyrP2PZiDegnQFswY=
+Received: by mail-qt1-f179.google.com with SMTP id g7so9801180qtj.13;
+        Fri, 27 Mar 2020 14:06:31 -0700 (PDT)
+X-Gm-Message-State: ANhLgQ0FVASQWhSbxxoSud1fSrJUMzwzeeLzWR+8xUAqbC/zxUUPdW97
+        76hOeBN9cRJpUlyFZ1H316UVncI3G6J/ojgvBg==
+X-Google-Smtp-Source: ADFU+vtdkc6HI4pCod8iofGlb2QXG/qLvgD3UC/ebV4n7v/H7Ix7pG4LzQ7xNEJ6EGp/RbN6TfHP/KUBvGx3L0q6IaM=
+X-Received: by 2002:ac8:18ab:: with SMTP id s40mr1312375qtj.224.1585343190660;
+ Fri, 27 Mar 2020 14:06:30 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200327131825.23650-1-festevam@gmail.com> <20200327131825.23650-2-festevam@gmail.com>
-In-Reply-To: <20200327131825.23650-2-festevam@gmail.com>
+References: <20200327131825.23650-1-festevam@gmail.com>
+In-Reply-To: <20200327131825.23650-1-festevam@gmail.com>
 From:   Rob Herring <robh+dt@kernel.org>
-Date:   Fri, 27 Mar 2020 15:05:27 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLeZoJ3qRuVFs7wLD+WtwY4Yw4DKiXi=spk9w6nxyg8FQ@mail.gmail.com>
-Message-ID: <CAL_JsqLeZoJ3qRuVFs7wLD+WtwY4Yw4DKiXi=spk9w6nxyg8FQ@mail.gmail.com>
-Subject: Re: [PATCH 2/3] dt-bindings: iio: dac: ad5770r: Remove unneeded unit names
+Date:   Fri, 27 Mar 2020 15:06:19 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqKiv5Ef37xe3mZWKtdY-rMCrquxyF4a9CpxoJRUNYT17A@mail.gmail.com>
+Message-ID: <CAL_JsqKiv5Ef37xe3mZWKtdY-rMCrquxyF4a9CpxoJRUNYT17A@mail.gmail.com>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: dac: ad5770r: Add vendor to
+ compatible string
 To:     Fabio Estevam <festevam@gmail.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Alexandru Tachici <alexandru.tachici@analog.com>,
@@ -65,22 +66,13 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 On Fri, Mar 27, 2020 at 7:18 AM Fabio Estevam <festevam@gmail.com> wrote:
 >
-> The following warnings are seen with 'make dt_binding_check':
+> The compatible string in the example misses the vendor information.
 >
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:29.35-32.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@0: node has a unit name, but no reg or ranges property
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:34.35-37.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@1: node has a unit name, but no reg or ranges property
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:39.35-42.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@2: node has a unit name, but no reg or ranges property
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:44.35-47.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@3: node has a unit name, but no reg or ranges property
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:49.35-52.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@4: node has a unit name, but no reg or ranges property
-> Documentation/devicetree/bindings/iio/dac/adi,ad5770r.example.dts:54.35-57.27: Warning (unit_address_vs_reg): /example-0/spi/ad5770r@0/channel@5: node has a unit name, but no reg or ranges property
+> Pass the "adi" vendor to fix it.
 >
-> Fix them by removing the unneeded unit addresses.
+> Signed-off-by: Fabio Estevam <festevam@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/iio/dac/adi,ad5770r.yaml | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 
-Actually, we want to use 'reg' instead of 'num'. Alexandru is
-attempting to fix[1].
-
-But looks like you found another issue with patch 1.
-
-Rob
-
-[1] https://lore.kernel.org/linux-iio/CAL_JsqKFdcACQtXd5h=4Pxbij+=uoHr2rLTFZMq4fVX8ph398g@mail.gmail.com/
+Acked-by: Rob Herring <robh@kernel.org>
