@@ -2,122 +2,144 @@ Return-Path: <SRS0=N5H0=5M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA1AAC2D0EC
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 10:40:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C4EC2D0F0
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 10:50:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A16B020578
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 10:40:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 17D2820578
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 10:50:06 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="LMxxjnWH"
+	dkim=pass (1024-bit key) header.d=yadro.com header.i=@yadro.com header.b="qTEhPFZV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726758AbgC0KkC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Mar 2020 06:40:02 -0400
-Received: from mail-wr1-f68.google.com ([209.85.221.68]:35193 "EHLO
-        mail-wr1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726333AbgC0KkC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2020 06:40:02 -0400
-Received: by mail-wr1-f68.google.com with SMTP id d5so10843279wrn.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Mar 2020 03:39:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=hUy8CSxiwxtlSvFdhJfOQOxn+8kEeA3/QOE0g86x3DY=;
-        b=LMxxjnWHsVPWoK+YealyJ9Y8VXYAU9t0UsEYeUXuUR6Kew3uePNv32seA9fjNqon+b
-         uKpgsUP3PLmbQwwhR2nGysLvWXcqVaYGhAvXiI15N8rxlWciMQWG/KcpXGRlWQpXvMbD
-         RVtEo241nEUUlqhor80ruIxUeVG3aaorxDTsvOsB9vIFYbqkiJl1Pqqd+D0Yy7eMMI9N
-         Qg3fNLmNm7A/O55vwlpdITkGRbG7ojljbzonQ4My13PQK/K3+3D+YmKSL0S4/AbMzliq
-         qioniwV77ZESN3EwdzImhbFexw5sbgGBNGrFPYs18SKLkJTQpHsVMFSvYh0qVZmZxkT5
-         CIIQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=hUy8CSxiwxtlSvFdhJfOQOxn+8kEeA3/QOE0g86x3DY=;
-        b=cf8jsUMZgUN2vzz9Zvu0bmhKuOW2JjNYGrI/DC1KuOD5LG+ULGf3TpZXxhNQwoaSgU
-         jQWm6UtEh8OQHoHnJE1FKIdN5Mw8poCyrtdBA6q4QpOfy+03Yfuj/oGTyI7SsxdJRQmf
-         JMilBIMqN3zfJfMCajRRR+8MmYxGTn0MNvMduDUMIBSMZbL1WrgToBVhA6+qZNWwz2iM
-         dNcCfxxSOTQEYfcMSeYYhV2zdQINcoma9Ev3UD+IfXaMnfpqp8WTCfVXTRQcvhwQl4RK
-         OQ3atmlXeGU6/wfr9WnMlaaec8FaUK09VRDc6oj7VC7ghNegvMJ3Dnp1ce7t7bPBjmDw
-         pCmQ==
-X-Gm-Message-State: ANhLgQ3Q3PsC3QsTPrxX7jzHhKGQ1jrNYDmGd6AtY8msx+RRk/gkYvxD
-        OA82DGRhTZPxgB+F9iJXLinYAQ==
-X-Google-Smtp-Source: ADFU+vu2K+4IxFs7+VvXvZAHHpSGTr0Ruak97rimwwt4gOR55rJ8O0ACPtX5CuXxCIq/LRKi6XwULw==
-X-Received: by 2002:adf:f0c5:: with SMTP id x5mr14511489wro.415.1585305598986;
-        Fri, 27 Mar 2020 03:39:58 -0700 (PDT)
-Received: from dell ([95.149.164.95])
-        by smtp.gmail.com with ESMTPSA id x206sm7522623wmg.17.2020.03.27.03.39.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 03:39:58 -0700 (PDT)
-Date:   Fri, 27 Mar 2020 10:40:49 +0000
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Andreas Kemnade <andreas@kemnade.info>
-Cc:     robh+dt@kernel.org, mark.rutland@arm.com, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rtc@vger.kernel.org,
-        stefan@agner.ch, b.galvani@gmail.com, phh@phh.me,
-        letux-kernel@openphoenux.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org, jic23@kernel.org
-Subject: [GIT PULL] Immutable branch between MFD, IIO and RTC due for the
- v5.7 merge window
-Message-ID: <20200327104049.GB3383@dell>
-References: <20200320081105.12026-1-andreas@kemnade.info>
+        id S1726739AbgC0Kt6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Mar 2020 06:49:58 -0400
+Received: from mta-02.yadro.com ([89.207.88.252]:44080 "EHLO mta-01.yadro.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726217AbgC0Kt5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 27 Mar 2020 06:49:57 -0400
+Received: from localhost (unknown [127.0.0.1])
+        by mta-01.yadro.com (Postfix) with ESMTP id A2FCE41276;
+        Fri, 27 Mar 2020 10:49:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
+        content-type:content-type:content-transfer-encoding:mime-version
+        :references:in-reply-to:x-mailer:message-id:date:date:subject
+        :subject:from:from:received:received:received; s=mta-01; t=
+        1585306194; x=1587120595; bh=oqz9wKZ8EUSYq1lPxvl6Sd67qb79RPMijWI
+        JWfcuRK0=; b=qTEhPFZV0FbP6tWPXroDv1zOnnZE8Ww7w7HqgSE9WBAIxf4KnL7
+        uizYyc3OHa/mmfpp9hkJoVtC072xA5B2pnAW6tyZIvA/riTDjlg1RPGymeXk23+2
+        9JRx0iLllWM4hoqdEugIJGDVaqZgRKyLuIdy+omkQbC7Wsu7fewBm6sc=
+X-Virus-Scanned: amavisd-new at yadro.com
+Received: from mta-01.yadro.com ([127.0.0.1])
+        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id HJ9KHVlAD8-G; Fri, 27 Mar 2020 13:49:54 +0300 (MSK)
+Received: from T-EXCH-02.corp.yadro.com (t-exch-02.corp.yadro.com [172.17.10.102])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mta-01.yadro.com (Postfix) with ESMTPS id 3FBCA412CA;
+        Fri, 27 Mar 2020 13:49:53 +0300 (MSK)
+Received: from localhost.yadro.com (10.199.0.42) by T-EXCH-02.corp.yadro.com
+ (172.17.10.102) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Fri, 27
+ Mar 2020 13:49:53 +0300
+From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
+CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v4 1/2] iio: proximity: provide device tree binding document
+Date:   Fri, 27 Mar 2020 13:49:53 +0300
+Message-ID: <20200327104954.27829-2-i.mikhaylov@yadro.com>
+X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200327104954.27829-1-i.mikhaylov@yadro.com>
+References: <20200327104954.27829-1-i.mikhaylov@yadro.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200320081105.12026-1-andreas@kemnade.info>
+Content-Type: text/plain
+X-Originating-IP: [10.199.0.42]
+X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
+ T-EXCH-02.corp.yadro.com (172.17.10.102)
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Enjoy!
+Mostly standard i2c driver with some additional led-current option
+for vcnl3020.
 
-The following changes since commit bb6d3fb354c5ee8d6bde2d576eb7220ea09862b9:
+Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+---
+ .../bindings/iio/proximity/vcnl3020.yaml      | 52 +++++++++++++++++++
+ 1 file changed, 52 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
 
-  Linux 5.6-rc1 (2020-02-09 16:08:48 -0800)
-
-are available in the Git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-rtc-5.7
-
-for you to fetch changes up to 7858658cdcab7ca8057444b1d24c6a28ddaa8589:
-
-  mfd: rn5t618: Cleanup i2c_device_id (2020-03-27 09:42:44 +0000)
-
-----------------------------------------------------------------
-Andreas Kemnade (7):
-      dt-bindings: mfd: rn5t618: Document optional property interrupts
-      mfd: rn5t618: Add IRQ support
-      mfd: rn5t618: Add RTC related registers
-      mfd: rn5t618: Add more subdevices
-      rtc: rc5t619: Add Ricoh RC5T619 RTC driver
-      iio: adc: rn5t618: Add ADC driver for RN5T618/RC5T619
-      mfd: rn5t618: Cleanup i2c_device_id
-
- Documentation/devicetree/bindings/mfd/rn5t618.txt |   4 +
- drivers/iio/adc/Kconfig                           |  10 +
- drivers/iio/adc/Makefile                          |   1 +
- drivers/iio/adc/rn5t618-adc.c                     | 256 +++++++++++++
- drivers/mfd/Kconfig                               |   1 +
- drivers/mfd/rn5t618.c                             | 109 +++++-
- drivers/rtc/Kconfig                               |  10 +
- drivers/rtc/Makefile                              |   1 +
- drivers/rtc/rtc-rc5t619.c                         | 444 ++++++++++++++++++++++
- include/linux/mfd/rn5t618.h                       |  26 ++
- 10 files changed, 851 insertions(+), 11 deletions(-)
- create mode 100644 drivers/iio/adc/rn5t618-adc.c
- create mode 100644 drivers/rtc/rtc-rc5t619.c
-
+diff --git a/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
+new file mode 100644
+index 000000000000..116aa0e0174d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/proximity/vcnl3020.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Integrated Proximity Sensor With Infrared Emitter
++
++maintainers:
++  - Ivan Mikhaylov <i.mikhaylov@yadro.com>
++
++description: |
++  The VCNL3020 is a fully integrated proximity sensor. Fully integrated means
++  that the infrared emitter is included in the package. It has 16-bit
++  resolution. It includes a signal processing IC and features standard I2C
++  communication interface. It features an interrupt function.
++
++  Specifications about the devices can be found at:
++  https://www.vishay.com/docs/84150/vcnl3020.pdf
++
++properties:
++  compatible:
++    enum:
++      - vishay,vcnl3020
++
++  reg:
++    maxItems: 1
++
++  led-current:
++    description:
++        IR LED current value with valid Range = 0 to 20d. e.g. 0 = 0 mA,
++        1 = 10 mA, 20 = 200 mA (2 = 20 mA = DEFAULT). LED Current is
++        limited to 200 mA for values higher than decimal 20.
++
++required:
++  - compatible
++  - reg
++  - led-current
++
++examples:
++  - |
++    i2c {
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        iio-proximity@13 {
++              compatible = "vishay,vcnl3020";
++              reg = <0x13>;
++              led-current = <0x14>;
++        };
++    };
 -- 
-Lee Jones [李琼斯]
-Linaro Services Technical Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.21.1
+
