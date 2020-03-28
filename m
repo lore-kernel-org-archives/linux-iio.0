@@ -1,166 +1,104 @@
-Return-Path: <SRS0=N5H0=5M=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=BGF5=5N=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C605CC2D0E5
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 22:45:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA97FC2D0EE
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Mar 2020 00:12:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 998FC2073B
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Mar 2020 22:45:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1585349108;
-	bh=7Zs/b+96WvUw27So2YKcRcWhDyAPTdzX/ZNYwXeNrqM=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=EMQ2TWK+tOSupjDPeDv9/zdrZdNJM2WMwwOCVRDeCckhbmYwqoiZEgLDOhyCs8Br+
-	 B0dEg3BEHmnzbWur7p3nTdFxjRpJlMqUn+7C8PnDWuDrggRXd3s9qLIgpEz4L9roaL
-	 UQEMoUxRYqmZ8CzObE8fQT3g88JccXRZl8VQmjB8=
+	by mail.kernel.org (Postfix) with ESMTP id AD6CA2073B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Mar 2020 00:12:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DdTPzQSS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727738AbgC0WpE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Mar 2020 18:45:04 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:45434 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727620AbgC0WpE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2020 18:45:04 -0400
-Received: by mail-io1-f67.google.com with SMTP id a24so10928117iol.12;
-        Fri, 27 Mar 2020 15:45:03 -0700 (PDT)
+        id S1727355AbgC1AMN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Mar 2020 20:12:13 -0400
+Received: from mail-wr1-f67.google.com ([209.85.221.67]:41009 "EHLO
+        mail-wr1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727193AbgC1AMM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Mar 2020 20:12:12 -0400
+Received: by mail-wr1-f67.google.com with SMTP id h9so13840265wrc.8;
+        Fri, 27 Mar 2020 17:12:11 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6QvXfJZlpggMK4ANi6m9pBKzrWALkcbq78l8N8OifPg=;
+        b=DdTPzQSSS2/ubRNz+h06dvMkaDyQidAdmr7yJ2mTtmmTwzoqX6EHYnr0/MwAzRwGIE
+         RlcOLbE+F3AacmuCQTK8cJEUKLDZ+4GKWInY23uvDR8OcceGXEu1iIzT8YGICQ310UD7
+         R8sUAcg2tpT4wWOBgSFav6VS+nxi7rK8To1sI4x7ydopKcNgLFJZB3X27lJqCtTd7NQV
+         wzoecopKD726yrk77Mnx14+2EyvKPbz6Zf7B2sz2Z7HuOmmrbAeWFKe55y3u48e/+hyX
+         BsohhHNKFVMeipbdBiZNDG7EogXjwZXoTtY7myZWugekXEj/1ozS2LW82aJI8P1rXddw
+         Gwrw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=u4k13uf5713DqF6VnWYY7OaKrDxuIhG+KLjykTCZmLE=;
-        b=Gv/I3R7+nOm+zatwFGKaLrr2HO4RHpM6Wiywg6KtnKTZacBCH/iLnHXPrVtmtU7U5R
-         fRMHJNwxU/jxQEYWXRPYwDdfk4SmpRIY4RrNXxfIxEv59Y/sAGxWJg5OGo3vl5gX722n
-         R6cKMvdscNifJPGOiQgDSfKP8U7oX6QB8PdhQeU/Fn80Pzcp2GAjphFe+aAjnnLsDss2
-         NYxpyvMbfS9mBpU3R1WEjTB07ymrXS+dfVUAq2x1W5cHXUfypR34+iORfI2A5XsfJEib
-         5Y1bNS9hclBlv/aSkn6OXx65/TU1lD0QaO5zPmUSpQqNiA9j9Ck3d1s6jvST9Tk1Fb8T
-         ePjQ==
-X-Gm-Message-State: ANhLgQ0NxNnuVl10UUWDG/OARaPvajEC8t/cZx1nbKfHmV7Dy5sCBO07
-        bDnIU5eTGVq5cgF1ygBwKmyLhpc=
-X-Google-Smtp-Source: ADFU+vsAE04nea1pFbNgX10KkqsBq3CtTvHBC//maalfcP/HRR+gaN6juo2FWt0zeUBHYvmVpvNbkQ==
-X-Received: by 2002:a6b:ed17:: with SMTP id n23mr871676iog.165.1585349103124;
-        Fri, 27 Mar 2020 15:45:03 -0700 (PDT)
-Received: from xps15.herring.priv ([64.188.179.250])
-        by smtp.googlemail.com with ESMTPSA id u125sm1838651ioe.24.2020.03.27.15.45.01
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6QvXfJZlpggMK4ANi6m9pBKzrWALkcbq78l8N8OifPg=;
+        b=b7KISZY4KukTC/TCg7eHhPfhdrLrjFCxq5ZlewscCGbzVmtdtrEajF+G+ioOeemOcd
+         vM/2I3TqaC/UFblrToRniQcYKg2kdAbDTUtBXkOrmLmUtBYJ64OhlIFNAdusvyvtSBSD
+         frp15DZ7M2WmQtv14rZqo0Vrxo80/+MsnFiJvKfj1ILVLgbm7eiX7CJOax7bVl4x0PRp
+         mRJeh+Qkb0PPDM+6atMP/k7oXuKMCiG6h86faWhZJKX9ELfin/wt6G03daqcfYU3TT3C
+         hpOgI3Sqgs+8pTBaU0+7+9bmlM7dxrq/OPeylgBo+5CgfHHiQbn3+7qHuLsxeHQjZhjZ
+         ZKww==
+X-Gm-Message-State: ANhLgQ2yemu/uw+OMX19GTQhs/kvD3n45bPEHm4ns8QbHesVeg1022Qo
+        O8rBETRjSjY6gbcUq0HIsJdKnIKzFRs=
+X-Google-Smtp-Source: ADFU+vt71LrkRSMzxCIoPkaoBOOACxjN15QoBbVzam8LUQZNktZELWKtn3lpLjnGh6viJMYFrwKTUw==
+X-Received: by 2002:adf:fc42:: with SMTP id e2mr1999357wrs.45.1585354330434;
+        Fri, 27 Mar 2020 17:12:10 -0700 (PDT)
+Received: from localhost.localdomain (p5B3F7536.dip0.t-ipconnect.de. [91.63.117.54])
+        by smtp.gmail.com with ESMTPSA id 61sm11237956wrn.82.2020.03.27.17.12.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Mar 2020 15:45:02 -0700 (PDT)
-From:   Rob Herring <robh@kernel.org>
-To:     devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] dt-bindings: iio: Fix adi,ltc2983 uint64-matrix schema constraints
-Date:   Fri, 27 Mar 2020 16:45:01 -0600
-Message-Id: <20200327224501.18590-1-robh@kernel.org>
-X-Mailer: git-send-email 2.20.1
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+        Fri, 27 Mar 2020 17:12:09 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
+        robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+        Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v5 5/5] MAINTAINERS: Add entry for mp2629 Battery Charger driver
+Date:   Sat, 28 Mar 2020 01:11:54 +0100
+Message-Id: <20200328001154.17313-6-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200328001154.17313-1-sravanhome@gmail.com>
+References: <20200328001154.17313-1-sravanhome@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-'minItems' and 'maxItems' apply at the same level as 'items' schemas as
-the keywords apply to arrays. What's currently defined is a 3
-dimensional matrix with the outer size being undefined. To fix this,
-minItems/maxItems needs to be moved up a level.
+Add MAINTAINERS entry for Monolithic Power Systems mp2629 Charger driver.
 
-With this fixed, the example fails validation. For matrix types, the dts
-syntax must use brackets (<>) matching the schema definition. In this
-case, the inner array size is 2 elements, so let's add the correct
-bracketing.
-
-Fixes: 3986a14870cb ("dt-bindings: iio: Add ltc2983 documentation")
-Cc: "Nuno Sá" <nuno.sa@analog.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org
-Signed-off-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
 ---
-I'll take this via the DT tree as I have another change this will 
-conflict.
+ MAINTAINERS | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-Rob
-
- .../bindings/iio/temperature/adi,ltc2983.yaml | 38 +++++++++----------
- 1 file changed, 18 insertions(+), 20 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-index acc030c1b20e..8fb46de6641d 100644
---- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-+++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
-@@ -123,12 +123,11 @@ patternProperties:
-           sign.
-         allOf:
-           - $ref: /schemas/types.yaml#/definitions/uint64-matrix
-+        minItems: 3
-+        maxItems: 64
-         items:
--          minItems: 3
--          maxItems: 64
--          items:
--            minItems: 2
--            maxItems: 2
-+          minItems: 2
-+          maxItems: 2
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 32a95d162f06..0f82d5a7a614 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11358,10 +11358,15 @@ F:	drivers/tty/mxser.*
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+ S:	Maintained
++F:	Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+ F:	Documentation/devicetree/bindings/regulator/mps,mp*.yaml
++F:	drivers/iio/adc/mp2629_adc.c
++F:	drivers/mfd/mp2629.c
++F:	drivers/power/supply/mp2629_charger.c
+ F:	drivers/regulator/mp5416.c
+ F:	drivers/regulator/mpq7920.c
+ F:	drivers/regulator/mpq7920.h
++F:	include/linux/mfd/mp2629.h
  
-   "^diode@":
-     type: object
-@@ -328,12 +327,11 @@ patternProperties:
-           78 and 79.
-         allOf:
-           - $ref: /schemas/types.yaml#/definitions/uint64-matrix
-+        minItems: 3
-+        maxItems: 64
-         items:
--          minItems: 3
--          maxItems: 64
--          items:
--            minItems: 2
--            maxItems: 2
-+          minItems: 2
-+          maxItems: 2
- 
-       adi,custom-steinhart:
-         description:
-@@ -465,16 +463,16 @@ examples:
-                         adi,sensor-type = <9>; //custom thermocouple
-                         adi,single-ended;
-                         adi,custom-thermocouple = /bits/ 64
--                                 <(-50220000) 0
--                                  (-30200000) 99100000
--                                  (-5300000) 135400000
--                                  0 273150000
--                                  40200000 361200000
--                                  55300000 522100000
--                                  88300000 720300000
--                                  132200000 811200000
--                                  188700000 922500000
--                                  460400000 1000000000>; //10 pairs
-+                                 <(-50220000) 0>,
-+                                 <(-30200000) 99100000>,
-+                                 <(-5300000) 135400000>,
-+                                 <0 273150000>,
-+                                 <40200000 361200000>,
-+                                 <55300000 522100000>,
-+                                 <88300000 720300000>,
-+                                 <132200000 811200000>,
-+                                 <188700000 922500000>,
-+                                 <460400000 1000000000>; //10 pairs
-                };
- 
-         };
+ MR800 AVERMEDIA USB FM RADIO DRIVER
+ M:	Alexey Klimov <klimov.linux@gmail.com>
 -- 
-2.20.1
+2.17.1
 
