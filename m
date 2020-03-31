@@ -2,149 +2,276 @@ Return-Path: <SRS0=NPSj=5Q=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0661C43331
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Mar 2020 11:48:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6ABDDC43331
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Mar 2020 11:48:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id A41DB206DB
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Mar 2020 11:48:19 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="dWHtUzeQ"
+	by mail.kernel.org (Postfix) with ESMTP id 3BB4220848
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Mar 2020 11:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730693AbgCaLsT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1730601AbgCaLso (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 Mar 2020 07:48:44 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:54336 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730543AbgCaLso (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Mar 2020 07:48:44 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 02VBe4RJ005230;
+        Tue, 31 Mar 2020 07:48:23 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3020e6hfnt-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 31 Mar 2020 07:48:23 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 02VBmMBY012147
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 31 Mar 2020 07:48:22 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 31 Mar 2020 07:48:21 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 31 Mar 2020 07:48:21 -0400
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 31 Mar 2020 07:48:21 -0400
+Received: from NSA-L01.ad.analog.com (nsa-l01.ad.analog.com [10.32.224.203])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 02VBmGg9024975;
         Tue, 31 Mar 2020 07:48:19 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:38960 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730424AbgCaLsS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Mar 2020 07:48:18 -0400
-Received: by mail-pl1-f195.google.com with SMTP id k18so3230014pll.6;
-        Tue, 31 Mar 2020 04:48:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=69MDAmNWecKpofdaJ8R37Cfmm+mjxxlz6kLovvC8eNM=;
-        b=dWHtUzeQCNnlshkvkAJulWssXaZvdkcJj3QIsmvb2ivhQYYOtF3mFxUDGirxGAG3lz
-         0BH69m+zRfU7bfVujzx8D23tApztMuqPR04mqXCTNgPuo6pwFMeimQURHig7LJOf1fUN
-         evgeEkyeZyqMtQ4Ubn51zgP/jUmH6Q+hfpay50Xg9m+cj5BoRL1cUcNQDQKj/W84wbWE
-         rgJvRrQZ/r8xU5J92YbJkWUqMy9HZQn3zyZJ96z8Mimi/NGQy16xF4D9Ieq2MHA8lEZq
-         5QafwbeJ4HTOEZikO4nEIKpdiLTCa6uK3kqowAdThkgX6aRYWLYIn90H0OKbTf+AKVUi
-         DMpw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=69MDAmNWecKpofdaJ8R37Cfmm+mjxxlz6kLovvC8eNM=;
-        b=TOTdlzZnlu2mwTOJ+Pjj3qpYe5xtpf/6xHlQqxbXTKUsCWpZDDUZdjQTHNqCQPFZNO
-         Vb4IFoZLNJUnWxjL7MKRIuIEdbBxBiQPVOCrwYb8FgMMmTqrg3QwsagCrmjbpgOCSonI
-         C7xJRD/Z4xzCS8JgaYqsdznETHDaaiX2WlPwV+QlGkb2eyc860LvYZfPAxMTza7voENt
-         8tYYjJDqrSbmKNu75cyQqZy2EazW/AWOzukhSiHQz3Up5CDr2jQQLaELM98ltdWoCN0T
-         RnXoqAbk4JyM6vvRboq6J/0WNThJDHamNY7CYZUxcEdFZ/SuflckVGye9kbv+5afi4U+
-         82sg==
-X-Gm-Message-State: ANhLgQ0GtD7siwhnYiRamVXWECPXaVH3776qRNSt4wmSAgWguVeQf5KC
-        OHec5871ATX05ZUE/OEexNDSjpH6lNyQwg==
-X-Google-Smtp-Source: ADFU+vuiR2Bk1INOg84gy/3iKqeZ2AoX8LJDpwX5kaP1UsgkNGnECWyUnfi3mOEZIgqDG//wEmQbxA==
-X-Received: by 2002:a17:902:7e05:: with SMTP id b5mr15613238plm.253.1585655296845;
-        Tue, 31 Mar 2020 04:48:16 -0700 (PDT)
-Received: from localhost.localdomain ([122.178.242.244])
-        by smtp.gmail.com with ESMTPSA id i15sm11601220pgc.74.2020.03.31.04.48.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 Mar 2020 04:48:16 -0700 (PDT)
-From:   Rohit Sarkar <rohitsarkar5398@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     dragos.bogdan@analog.com, Rohit Sarkar <rohitsarkar5398@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2 2/2] iio: imu: adis16460: use DEFINE_DEBUGFS_ATTRIBUTE instead of DEFINE_SIMPLE_ATTRIBUTE
-Date:   Tue, 31 Mar 2020 17:17:31 +0530
-Message-Id: <20200331114732.14739-3-rohitsarkar5398@gmail.com>
-X-Mailer: git-send-email 2.23.0.385.gbc12974a89
-In-Reply-To: <20200331114732.14739-1-rohitsarkar5398@gmail.com>
-References: <20200328063456.24012-1-rohitsarkar5398@gmail.com>
- <20200331114732.14739-1-rohitsarkar5398@gmail.com>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH v3 1/6] iio: imu: adis: Add Managed device functions
+Date:   Tue, 31 Mar 2020 13:48:06 +0200
+Message-ID: <20200331114811.7978-2-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200331114811.7978-1-nuno.sa@analog.com>
+References: <20200331114811.7978-1-nuno.sa@analog.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-03-31_04:2020-03-31,2020-03-31 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 mlxlogscore=937
+ spamscore=0 impostorscore=0 lowpriorityscore=0 adultscore=0 mlxscore=0
+ clxscore=1015 phishscore=0 suspectscore=2 malwarescore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2003310107
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-debugfs_create_file_unsafe does not protect the fops handed to it
-against file removal. DEFINE_DEBUGFS_ATTRIBUTE makes the fops aware of
-the file lifetime and thus protects it against removal.
+This patch adds support for a managed device version of
+adis_setup_buffer_and_trigger. It works exactly as the original
+one but it calls all the devm_iio_* functions to setup an iio
+buffer and trigger. Hence we do not need to care about cleaning those
+and we do not need to support a remove() callback for every driver using
+the adis library.
 
-Signed-off-by: Rohit Sarkar <rohitsarkar5398@gmail.com>
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/imu/adis16460.c | 27 +++++++++++++++------------
- 1 file changed, 15 insertions(+), 12 deletions(-)
+Changes in v2:
+ * Added blank lines for readability.
 
-diff --git a/drivers/iio/imu/adis16460.c b/drivers/iio/imu/adis16460.c
-index 9539cfe4a259..f96cfd007957 100644
---- a/drivers/iio/imu/adis16460.c
-+++ b/drivers/iio/imu/adis16460.c
-@@ -87,8 +87,8 @@ static int adis16460_show_serial_number(void *arg, u64 *val)
- 
- 	return 0;
+Changes in V3:
+ * Removed unnecessary inline;
+ * Free buffer resources.
+
+ drivers/iio/imu/adis_buffer.c  | 45 ++++++++++++++++++++++++++++++++++
+ drivers/iio/imu/adis_trigger.c | 41 ++++++++++++++++++++++++++++---
+ include/linux/iio/imu/adis.h   | 17 +++++++++++++
+ 3 files changed, 100 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 04e5e2a0fd6b..c2211ab80d8c 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -156,6 +156,14 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
  }
--DEFINE_SIMPLE_ATTRIBUTE(adis16460_serial_number_fops,
--	adis16460_show_serial_number, NULL, "0x%.4llx\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adis16460_serial_number_fops,
-+		adis16460_show_serial_number, NULL, "0x%.4llx\n");
  
- static int adis16460_show_product_id(void *arg, u64 *val)
++static void adis_buffer_cleanup(void *arg)
++{
++	struct adis *adis = arg;
++
++	kfree(adis->buffer);
++	kfree(adis->xfer);
++}
++
+ /**
+  * adis_setup_buffer_and_trigger() - Sets up buffer and trigger for the adis device
+  * @adis: The adis device.
+@@ -198,6 +206,43 @@ int adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(adis_setup_buffer_and_trigger);
+ 
++/**
++ * devm_adis_setup_buffer_and_trigger() - Sets up buffer and trigger for
++ *					  the managed adis device
++ * @adis: The adis device
++ * @indio_dev: The IIO device
++ * @trigger_handler: Optional trigger handler, may be NULL.
++ *
++ * Returns 0 on success, a negative error code otherwise.
++ *
++ * This function perfoms exactly the same as adis_setup_buffer_and_trigger()
++ */
++int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irqreturn_t (*trigger_handler)(int, void *))
++{
++	int ret;
++
++	if (!trigger_handler)
++		trigger_handler = adis_trigger_handler;
++
++	ret = devm_iio_triggered_buffer_setup(&adis->spi->dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      trigger_handler, NULL);
++	if (ret)
++		return ret;
++
++	if (adis->spi->irq) {
++		ret = devm_adis_probe_trigger(adis, indio_dev);
++		if (ret)
++			return ret;
++	}
++
++	return devm_add_action_or_reset(&adis->spi->dev, adis_buffer_cleanup,
++					adis);
++}
++EXPORT_SYMBOL_GPL(devm_adis_setup_buffer_and_trigger);
++
+ /**
+  * adis_cleanup_buffer_and_trigger() - Free buffer and trigger resources
+  * @adis: The adis device.
+diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
+index 8b9cd02c0f9f..a36810e0b1ab 100644
+--- a/drivers/iio/imu/adis_trigger.c
++++ b/drivers/iio/imu/adis_trigger.c
+@@ -27,6 +27,13 @@ static const struct iio_trigger_ops adis_trigger_ops = {
+ 	.set_trigger_state = &adis_data_rdy_trigger_set_state,
+ };
+ 
++static void adis_trigger_setup(struct adis *adis)
++{
++	adis->trig->dev.parent = &adis->spi->dev;
++	adis->trig->ops = &adis_trigger_ops;
++	iio_trigger_set_drvdata(adis->trig, adis);
++}
++
+ /**
+  * adis_probe_trigger() - Sets up trigger for a adis device
+  * @adis: The adis device
+@@ -45,9 +52,7 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ 	if (adis->trig == NULL)
+ 		return -ENOMEM;
+ 
+-	adis->trig->dev.parent = &adis->spi->dev;
+-	adis->trig->ops = &adis_trigger_ops;
+-	iio_trigger_set_drvdata(adis->trig, adis);
++	adis_trigger_setup(adis);
+ 
+ 	ret = request_irq(adis->spi->irq,
+ 			  &iio_trigger_generic_data_rdy_poll,
+@@ -73,6 +78,36 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(adis_probe_trigger);
+ 
++/**
++ * devm_adis_probe_trigger() - Sets up trigger for a managed adis device
++ * @adis: The adis device
++ * @indio_dev: The IIO device
++ *
++ * Returns 0 on success or a negative error code
++ */
++int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
++{
++	int ret;
++
++	adis->trig = devm_iio_trigger_alloc(&adis->spi->dev, "%s-dev%d",
++					    indio_dev->name, indio_dev->id);
++	if (!adis->trig)
++		return -ENOMEM;
++
++	adis_trigger_setup(adis);
++
++	ret = devm_request_irq(&adis->spi->dev, adis->spi->irq,
++			       &iio_trigger_generic_data_rdy_poll,
++			       IRQF_TRIGGER_RISING,
++			       indio_dev->name,
++			       adis->trig);
++	if (ret)
++		return ret;
++
++	return devm_iio_trigger_register(&adis->spi->dev, adis->trig);
++}
++EXPORT_SYMBOL_GPL(devm_adis_probe_trigger);
++
+ /**
+  * adis_remove_trigger() - Remove trigger for a adis devices
+  * @adis: The adis device
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index dd8219138c2e..ac94c483bf2b 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -448,11 +448,15 @@ struct adis_burst {
+ 	unsigned int	extra_len;
+ };
+ 
++int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irqreturn_t (*trigger_handler)(int, void *));
+ int adis_setup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *));
+ void adis_cleanup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev);
+ 
++int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
+ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
+ void adis_remove_trigger(struct adis *adis);
+ 
+@@ -461,6 +465,13 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 
+ #else /* CONFIG_IIO_BUFFER */
+ 
++static inline int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irqreturn_t (*trigger_handler)(int, void *))
++{
++	return 0;
++}
++
+ static inline int adis_setup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *))
  {
-@@ -105,8 +105,8 @@ static int adis16460_show_product_id(void *arg, u64 *val)
- 
- 	return 0;
- }
--DEFINE_SIMPLE_ATTRIBUTE(adis16460_product_id_fops,
--	adis16460_show_product_id, NULL, "%llu\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adis16460_product_id_fops,
-+		adis16460_show_product_id, NULL, "%llu\n");
- 
- static int adis16460_show_flash_count(void *arg, u64 *val)
+@@ -472,6 +483,12 @@ static inline void adis_cleanup_buffer_and_trigger(struct adis *adis,
  {
-@@ -123,19 +123,22 @@ static int adis16460_show_flash_count(void *arg, u64 *val)
- 
- 	return 0;
  }
--DEFINE_SIMPLE_ATTRIBUTE(adis16460_flash_count_fops,
--	adis16460_show_flash_count, NULL, "%lld\n");
-+DEFINE_DEBUGFS_ATTRIBUTE(adis16460_flash_count_fops,
-+		adis16460_show_flash_count, NULL, "%lld\n");
  
- static int adis16460_debugfs_init(struct iio_dev *indio_dev)
++static inline int devm_adis_probe_trigger(struct adis *adis,
++					  struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
+ static inline int adis_probe_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev)
  {
- 	struct adis16460 *adis16460 = iio_priv(indio_dev);
- 
--	debugfs_create_file("serial_number", 0400, indio_dev->debugfs_dentry,
--		adis16460, &adis16460_serial_number_fops);
--	debugfs_create_file("product_id", 0400, indio_dev->debugfs_dentry,
--		adis16460, &adis16460_product_id_fops);
--	debugfs_create_file("flash_count", 0400, indio_dev->debugfs_dentry,
--		adis16460, &adis16460_flash_count_fops);
-+	debugfs_create_file_unsafe("serial_number", 0400,
-+			indio_dev->debugfs_dentry, adis16460,
-+			&adis16460_serial_number_fops);
-+	debugfs_create_file_unsafe("product_id", 0400,
-+			indio_dev->debugfs_dentry, adis16460,
-+			&adis16460_product_id_fops);
-+	debugfs_create_file_unsafe("flash_count", 0400,
-+			indio_dev->debugfs_dentry, adis16460,
-+			&adis16460_flash_count_fops);
- 
- 	return 0;
- }
 -- 
-2.23.0.385.gbc12974a89
+2.17.1
 
