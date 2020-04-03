@@ -7,53 +7,51 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EBBCC2BA19
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00E24C2BA16
 	for <linux-iio@archiver.kernel.org>; Fri,  3 Apr 2020 13:27:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 381BF2082F
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Apr 2020 13:27:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C05322077D
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Apr 2020 13:27:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="AAGNkgaV"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="FHY4MvB6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726087AbgDCN1Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S2390573AbgDCN1Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 3 Apr 2020 09:27:24 -0400
-Received: from www381.your-server.de ([78.46.137.84]:34650 "EHLO
+Received: from www381.your-server.de ([78.46.137.84]:34596 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727989AbgDCN1Y (ORCPT
+        with ESMTP id S1726087AbgDCN1Y (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Apr 2020 09:27:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+         s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=QNulSPFYe2rb7/1as5iAxcoShdThpR0LSaF8Xw4+98M=; b=AAGNkgaVq6fgHt2AaXZNS/oqJX
-        Gf/L5NmhirbZrYE+4tlZfDC57KG8bDKtwGMgyJDwa1j/DvAClU+MvJASiazQqxeSTR5x2iWoEF83v
-        rPBrK0coV9+qM0EJVmr0Eg5mhaAkQKDaruMlGtHKp0E5yySkyUjPxUPQyCUrPLIu34bjO02khBarY
-        Ab8Ol2oMOBnLAy8t6ctH4mBvaTOvByEcyy8TA/dUCm2Xr0/2ykPQBOBmdXMHvcgrDkIYoJjB75cjS
-        HwSeAEowZJ34deJseap0qtO8sS1WAIBOKawB//2pKTVrQysloq9NwaY2WE1IMPPpPBMAtJ06/BWPi
-        YwHZYpIw==;
+        bh=mKLtDFlWzGTg0/5VkHR2G7E5TZJyHDnYIgUzIEAvaIY=; b=FHY4MvB6vAfvskY7KhCSWF4sf2
+        Ygm5ir+iCki35fy/UjRlTFnILMIlLJHtpIYd6lDy8XoX0Sq0d3YEhFmXcP5icyEC3+bt5d288W8wM
+        KJ/0gCrRaxemSjJh7AlFnsV+dLYZaPLPlS7ViXE1+QdCoR0WvTGYQDjx7vJkYBwC1uKI2KrgTlv49
+        iwxOQl5xNkfi1dTqD0s4bU9nnVZ2VRmgNlpw7F4foBjpMlt3Y2O9y9999DSpT1zmZLe/hH+7dG7s1
+        t46eM7yOzysOgGifYIz5Z9GuFc4o481X+VH27CPsxIonvr/9l/T9ACwLlmGO2Vi0heVMX1WfGrYHo
+        SQSr9j4w==;
 Received: from sslproxy02.your-server.de ([78.47.166.47])
         by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <lars@metafoo.de>)
-        id 1jKMLz-0004Fb-IJ; Fri, 03 Apr 2020 15:27:23 +0200
+        id 1jKMLx-0004Em-NG; Fri, 03 Apr 2020 15:27:22 +0200
 Received: from [82.135.69.229] (helo=lars-desktop.fritz.box)
         by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1jKMLz-000CaC-9X; Fri, 03 Apr 2020 15:27:23 +0200
+        id 1jKMLx-000CaC-Ek; Fri, 03 Apr 2020 15:27:21 +0200
 From:   Lars-Peter Clausen <lars@metafoo.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 5/5] iio: xilinx-xadc: Fix typo
-Date:   Fri,  3 Apr 2020 15:27:17 +0200
-Message-Id: <20200403132717.24682-5-lars@metafoo.de>
+Subject: [PATCH 1/5] iio: xilinx-xadc: Fix ADC-B powerdown
+Date:   Fri,  3 Apr 2020 15:27:13 +0200
+Message-Id: <20200403132717.24682-1-lars@metafoo.de>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200403132717.24682-1-lars@metafoo.de>
-References: <20200403132717.24682-1-lars@metafoo.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Authenticated-Sender: lars@metafoo.de
@@ -63,26 +61,36 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix a typo. 'at the a time' -> 'at a time'.
+The check for shutting down the second ADC is inverted. This causes it to
+be powered down when it should be enabled. As a result channels that are
+supposed to be handled by the second ADC return invalid conversion results.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/adc/xilinx-xadc-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/xilinx-xadc-core.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index c724b8788007..d7fecab9252e 100644
+index 2d6505a66511..4fcf1729341f 100644
 --- a/drivers/iio/adc/xilinx-xadc-core.c
 +++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -663,7 +663,7 @@ static int xadc_trigger_set_state(struct iio_trigger *trigger, bool state)
- 	mutex_lock(&xadc->mutex);
+@@ -722,13 +722,14 @@ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
+ {
+ 	uint16_t val;
  
- 	if (state) {
--		/* Only one of the two triggers can be active at the a time. */
-+		/* Only one of the two triggers can be active at a time. */
- 		if (xadc->trigger != NULL) {
- 			ret = -EBUSY;
- 			goto err_out;
++	/* Powerdown the ADC-B when it is not needed. */
+ 	switch (seq_mode) {
+ 	case XADC_CONF1_SEQ_SIMULTANEOUS:
+ 	case XADC_CONF1_SEQ_INDEPENDENT:
+-		val = XADC_CONF2_PD_ADC_B;
++		val = 0;
+ 		break;
+ 	default:
+-		val = 0;
++		val = XADC_CONF2_PD_ADC_B;
+ 		break;
+ 	}
+ 
 -- 
 2.20.1
 
