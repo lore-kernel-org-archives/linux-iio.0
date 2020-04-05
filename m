@@ -2,91 +2,120 @@ Return-Path: <SRS0=q/te=5V=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C8006C2BA19
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Apr 2020 10:36:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 977B7C2D0F4
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Apr 2020 10:38:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 9D64D206F8
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Apr 2020 10:36:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586082994;
-	bh=znrSgh2x/IC4B/MrB1nVE9CjuJwQivqvjaspxIsUhaE=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=ShLGCVghE6GQwSnAOr6KgbAJW44b0RB3JpKTOvubX2wgCEYi+7AxRlNm1N/7umevZ
-	 rQbQ+PI3zV7dIcn7PF2hKfTSL94llqkYzWvyUeXK8nyShiwmqT3d+aO+8PcdUw+8SV
-	 y9MTgWIl7icTvZUPY3SPYQv6SckZlTYcFFDf2x9k=
+	by mail.kernel.org (Postfix) with ESMTP id 5F499206F5
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Apr 2020 10:38:49 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MXLhu3KB"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgDEKgd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 5 Apr 2020 06:36:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50694 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726417AbgDEKgd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 5 Apr 2020 06:36:33 -0400
-Received: from localhost.localdomain (unknown [151.48.151.50])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5CE9920675;
-        Sun,  5 Apr 2020 10:36:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586082993;
-        bh=znrSgh2x/IC4B/MrB1nVE9CjuJwQivqvjaspxIsUhaE=;
-        h=From:To:Cc:Subject:Date:From;
-        b=E9j60K/E7xEDX7KAK47ErWBwMDSpcMwt2pXjHq5hUc2OPXKLZuHTU/E7Rintf7e/K
-         /pxE1SGfXzTZ8DTFp7rfbiFaQU6QyeYHJWn2ijA509g/QqS8YdTEKlSFghdkUZzUOl
-         1ryNt7q7KrHFLqYZyjW0OXe2uhdz8VDM1jWIfVOA=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
-Subject: [PATCH] iio: imu: st_lsm6dsx: remove duplicated macro
-Date:   Sun,  5 Apr 2020 12:36:26 +0200
-Message-Id: <f7c16e9f25debe726645f25df6c9c18aa44f0a1f.1586082819.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.25.1
+        id S1726417AbgDEKis (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 5 Apr 2020 06:38:48 -0400
+Received: from mail-pg1-f195.google.com ([209.85.215.195]:42447 "EHLO
+        mail-pg1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726399AbgDEKis (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Apr 2020 06:38:48 -0400
+Received: by mail-pg1-f195.google.com with SMTP id g6so4108814pgs.9;
+        Sun, 05 Apr 2020 03:38:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=qdLT95uUUHQQjan6IE7MImhuwtChu6BiQ6bgREKm7VM=;
+        b=MXLhu3KBzqbM7vGo8jZvb7194ZggQq+Rej3BI7Vu8KoJUXc36JHdoH3rU0SK24Q/N9
+         IdzsJGJ4LCDiyF0OfwAezRI30kFwJ08BUB8yJsFZz9EwPYD6JoiiLKBM3E/4qIv6HT6S
+         grhT/7ubthWiKfmBX95cGAsY3jVuTaLkP7V3ZpJZM54+jZoxtKhHCFfzK8z8BTdZTiTe
+         707weLjiVp+vnaIEsJClyv1vSvUL4YpocdJsP63n88sdSPK3CubOfMyw7LXqaL6d/FmG
+         UsOKCY6yzhfebMpt5GNWTIDIKfVf/GYUiUki1nEMB3eZSMH57CXpOlMaE/eArrZYhYl0
+         8EdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=qdLT95uUUHQQjan6IE7MImhuwtChu6BiQ6bgREKm7VM=;
+        b=ea0rNsaS8lE7K7f7u2XIzSwquQfvX7wU8WL2cO/THBuAfWlL4ziZJ3EYhqrCwu483q
+         bsAZkbOdzHVK7EsHIFibtwrtlNjsqwhlTMpNzmnMAmHEVVe32zxEvombij0H4grGEf3G
+         7N/hFGtpHjEKSWwE++NJZlu0ltUniUtHs8iJU0L0igUjhKsEAvJUTyv2zlcwqDg+yHqN
+         EWPpvJNCCnCIayLhJjzYURCKGz8P4fbhjA7NQwuU/quaUERCOYTWAE+GQodBNAiykxyd
+         P4Xvbau7cr0L7gmYEIqkcUhEnwYWzX9bydpJDZLZle7V5iu8trORoB+A2Rhzbluwncc+
+         HZKg==
+X-Gm-Message-State: AGi0Pua3Czw9nTzOTS5TL6WuSJBls9blWA+JhMjnEVlE4cDdW2/kBljf
+        /DXEvXF5E0gDbwra2r2qDqnfsvLivi4anzERGacf8ZP01LM=
+X-Google-Smtp-Source: APiQypIdZjZrO4aeX+/9G7UXEKP7hP1w5JadaMQbG06oUiIQ8NjExQZ7der4QrwRDuenrob6GM+iG+QvYzm3UfSS+fE=
+X-Received: by 2002:a63:1c1:: with SMTP id 184mr17155666pgb.203.1586083127176;
+ Sun, 05 Apr 2020 03:38:47 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200401162416.24474-1-i.mikhaylov@yadro.com> <20200401162416.24474-3-i.mikhaylov@yadro.com>
+ <CAHp75VcdDR-owtFuFMqNLFh_-L902fXODG14_6Dh416tTwjidA@mail.gmail.com>
+ <1e2c9b590a3626abee330a28cca86cbae7affb39.camel@yadro.com>
+ <CAHp75VdaM_pumyWyeHJxCQXrKUAW=ktJme1uYxH0w4e9an0X2A@mail.gmail.com> <20200405111341.0912468d@archlinux>
+In-Reply-To: <20200405111341.0912468d@archlinux>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 5 Apr 2020 13:38:36 +0300
+Message-ID: <CAHp75VeQ7LNve3bUEgzH2YrMwcihSDs+LHB3fgxy=b6pKH4RcA@mail.gmail.com>
+Subject: Re: [PATCH v6 2/2] iio: proximity: Add driver support for vcnl3020
+ proximity sensor
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove ST_LSM6DSX_REG_WHOAMI_ADDR duplicated macro and rely on ST sensor
-common definitions
+On Sun, Apr 5, 2020 at 1:13 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> On Thu, 2 Apr 2020 15:42:02 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > On Thu, Apr 2, 2020 at 11:24 AM Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
+> > > On Wed, 2020-04-01 at 19:35 +0300, Andy Shevchenko wrote:
+> > > > On Wed, Apr 1, 2020 at 7:24 PM Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+> > > > > +       indio_dev->name = VCNL_DRV_NAME;
+> > > >
+> > > > It's definitely not a driver name. You have to put part number here.
+> > >
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/light/tsl4531.c?h=v5.6#n199
+> That one is actually fine (if not very pretty) because the driver only supports one part and it happens
+> to also be the name of the driver.
+>
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/light/max44009.c?h=v5.6#n507
+> Also only one part supported, so fine if liable to accidentally get broken if we support more parts.
+>
+> > > https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/light/vl6180.c?h=v5.6#n515
+>
+> Again, one part supported and the driver has the same name.
+>
+> >
+> > Let's Jonathan speak up.
+>
+> So, the real point here is not the value being assigned but the fact it's
+> explicitly linked to the name of the driver.  I'd argue that you could use
+> VCNL_NAME as the define and that link is clearly broken. Or just put the string
+> inline in both places and don't worry about the tiny bit of replication!
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 84d219ae6aee..f3cf13b29d18 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -58,12 +58,11 @@
- #include <linux/regmap.h>
- #include <linux/bitfield.h>
- 
-+#include <linux/iio/common/st_sensors.h>
- #include <linux/platform_data/st_sensors_pdata.h>
- 
- #include "st_lsm6dsx.h"
- 
--#define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
--
- #define ST_LSM6DSX_TS_SENSITIVITY		25000UL /* 25us */
- 
- static const struct iio_chan_spec st_lsm6dsx_acc_channels[] = {
-@@ -1364,7 +1363,7 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6dsx_hw *hw, int id,
- 		return -ENODEV;
- 	}
- 
--	err = regmap_read(hw->regmap, ST_LSM6DSX_REG_WHOAMI_ADDR, &data);
-+	err = regmap_read(hw->regmap, ST_SENSORS_DEFAULT_WAI_ADDRESS, &data);
- 	if (err < 0) {
- 		dev_err(hw->dev, "failed to read whoami register\n");
- 		return err;
+My comments, except this one, to this version are quite minor, so,
+after addressing this in a way Jonathan likes,
+
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
+P.S. Don't forget to include given tags in the commit message of next
+(fixed) version.
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
