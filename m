@@ -4,41 +4,46 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83C56C2BA19
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:09:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A7BEC2BB55
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:09:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 57B90206C0
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:09:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6A262206C0
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:09:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728832AbgDFPJV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Apr 2020 11:09:21 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:25730 "EHLO
+        id S1728839AbgDFPJW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Apr 2020 11:09:22 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:27050 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728783AbgDFPJV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Apr 2020 11:09:21 -0400
+        by vger.kernel.org with ESMTP id S1728783AbgDFPJW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Apr 2020 11:09:22 -0400
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 036F4KEv030323;
-        Mon, 6 Apr 2020 11:09:00 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 306m367g88-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 036F4L42030332;
+        Mon, 6 Apr 2020 11:09:04 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 306m367g8f-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 06 Apr 2020 11:09:00 -0400
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 036F8wZB013993
+        Mon, 06 Apr 2020 11:09:03 -0400
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 036F92rw064352
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 6 Apr 2020 11:08:59 -0400
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Mon, 6 Apr 2020
- 08:08:57 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 6 Apr 2020 08:08:57 -0700
+        Mon, 6 Apr 2020 11:09:02 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 6 Apr 2020 11:09:02 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 6 Apr 2020 11:09:01 -0400
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 6 Apr 2020 11:09:01 -0400
 Received: from NSA-L01.ad.analog.com (nsa-l01.ad.analog.com [10.32.224.203])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 036F8oIg002847;
-        Mon, 6 Apr 2020 11:08:55 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 036F8oIi002847;
+        Mon, 6 Apr 2020 11:08:59 -0400
 From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
 CC:     Jonathan Cameron <jic23@kernel.org>,
@@ -49,9 +54,9 @@ CC:     Jonathan Cameron <jic23@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Alexandru Ardelean <alexandru.Ardelean@analog.com>,
         Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH v4 2/6] iio: imu: adis: Add irq mask variable
-Date:   Mon, 6 Apr 2020 17:08:42 +0200
-Message-ID: <20200406150846.878-3-nuno.sa@analog.com>
+Subject: [PATCH v4 4/6] iio: adis: Support different burst sizes
+Date:   Mon, 6 Apr 2020 17:08:44 +0200
+Message-ID: <20200406150846.878-5-nuno.sa@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200406150846.878-1-nuno.sa@analog.com>
 References: <20200406150846.878-1-nuno.sa@analog.com>
@@ -71,110 +76,127 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There are some ADIS devices that can configure the data ready pin
-polarity. Hence, we cannot hardcode our IRQ mask as IRQF_TRIGGER_RISING
-since we might want to have it as IRQF_TRIGGER_FALLING.
+Add burst_max_len to `adis_burst`. This is useful for devices which
+support different burst modes with different sizes. The buffer to be
+used in the spi transfer is allocated with this variable making sure
+that has space for all burst modes. The spi transfer length should hold
+the "real" burst length depending on the current burst mode configured
+in the device.
+
+Moreover, `extra_len` in `adis_burst` is made const and it should
+contain the smallest extra length necessary for a burst transfer. In
+`struct adis` was added a new `burst_extra_len` that should hold the
+extra bytes needed depending on the device instance being used.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
 Changes in v2:
- * Add kernel doc-string for `irq-mask`.
+ * Nothing changed.
 
 Changes in v3:
- * Removed unnecessary inline;
- * Renamed `__adis_validate_irq_mask` to `adis_validate_irq_mask` to keep lib consistency;
- * Cosmetics in logs.
+ * Reworked commit message;
+ * Made `extra_len` const;
+ * Added `burst_extra_len` to `struct adis`;
+ * Changed adis16400 accordingly.
 
 Changes in v4:
- * Use flag suffix instead of mask;
- * Add comments to `adis_validate_irq_flag`.
+ * Nothing changed.
 
- drivers/iio/imu/adis_trigger.c | 33 +++++++++++++++++++++++++++++++--
- include/linux/iio/imu/adis.h   |  2 ++
- 2 files changed, 33 insertions(+), 2 deletions(-)
+ drivers/iio/imu/adis16400.c   |  2 +-
+ drivers/iio/imu/adis_buffer.c | 13 +++++++++----
+ include/linux/iio/imu/adis.h  |  9 +++++++--
+ 3 files changed, 17 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
-index a36810e0b1ab..8afe71947c00 100644
---- a/drivers/iio/imu/adis_trigger.c
-+++ b/drivers/iio/imu/adis_trigger.c
-@@ -34,6 +34,27 @@ static void adis_trigger_setup(struct adis *adis)
- 	iio_trigger_set_drvdata(adis->trig, adis);
- }
+diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
+index 4445c242709c..439feb755d82 100644
+--- a/drivers/iio/imu/adis16400.c
++++ b/drivers/iio/imu/adis16400.c
+@@ -1195,7 +1195,7 @@ static int adis16400_probe(struct spi_device *spi)
+ 		indio_dev->available_scan_masks = st->avail_scan_mask;
+ 		st->adis.burst = &adis16400_burst;
+ 		if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
+-			st->adis.burst->extra_len = sizeof(u16);
++			st->adis.burst_extra_len = sizeof(u16);
+ 	}
  
-+static int adis_validate_irq_flag(struct adis *adis)
-+{
-+	/*
-+	 * Typically this devices have data ready either on the rising edge or
-+	 * on the falling edge of the data ready pin. This checks enforces that
-+	 * one of those is set in the drivers... It defaults to
-+	 * IRQF_TRIGGER_RISING for backward compatibility wiht devices that
-+	 * don't support changing the pin polarity.
-+	 */
-+	if (!adis->irq_flag) {
-+		adis->irq_flag = IRQF_TRIGGER_RISING;
-+		return 0;
-+	} else if (adis->irq_flag != IRQF_TRIGGER_RISING &&
-+		   adis->irq_flag != IRQF_TRIGGER_FALLING) {
-+		dev_err(&adis->spi->dev, "Invalid IRQ mask: %08lx\n",
-+			adis->irq_flag);
-+		return -EINVAL;
-+	}
+ 	adis16400_data = &st->variant->adis_data;
+diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
+index 8fdc4dca10c0..5b4225ee09b9 100644
+--- a/drivers/iio/imu/adis_buffer.c
++++ b/drivers/iio/imu/adis_buffer.c
+@@ -23,25 +23,30 @@ static int adis_update_scan_mode_burst(struct iio_dev *indio_dev,
+ 	const unsigned long *scan_mask)
+ {
+ 	struct adis *adis = iio_device_get_drvdata(indio_dev);
+-	unsigned int burst_length;
++	unsigned int burst_length, burst_max_length;
+ 	u8 *tx;
+ 
+ 	/* All but the timestamp channel */
+ 	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
+-	burst_length += adis->burst->extra_len;
++	burst_length += adis->burst->extra_len + adis->burst_extra_len;
 +
-+	return 0;
-+}
- /**
-  * adis_probe_trigger() - Sets up trigger for a adis device
-  * @adis: The adis device
-@@ -54,9 +75,13 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
++	if (adis->burst->burst_max_len)
++		burst_max_length = adis->burst->burst_max_len;
++	else
++		burst_max_length = burst_length;
  
- 	adis_trigger_setup(adis);
+ 	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
+ 	if (!adis->xfer)
+ 		return -ENOMEM;
  
-+	ret = adis_validate_irq_flag(adis);
-+	if (ret)
-+		return ret;
-+
- 	ret = request_irq(adis->spi->irq,
- 			  &iio_trigger_generic_data_rdy_poll,
--			  IRQF_TRIGGER_RISING,
-+			  adis->irq_flag,
- 			  indio_dev->name,
- 			  adis->trig);
- 	if (ret)
-@@ -96,9 +121,13 @@ int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+-	adis->buffer = kzalloc(burst_length + sizeof(u16), GFP_KERNEL);
++	adis->buffer = kzalloc(burst_max_length + sizeof(u16), GFP_KERNEL);
+ 	if (!adis->buffer) {
+ 		kfree(adis->xfer);
+ 		adis->xfer = NULL;
+ 		return -ENOMEM;
+ 	}
  
- 	adis_trigger_setup(adis);
+-	tx = adis->buffer + burst_length;
++	tx = adis->buffer + burst_max_length;
+ 	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
+ 	tx[1] = 0;
  
-+	ret = adis_validate_irq_flag(adis);
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_request_irq(&adis->spi->dev, adis->spi->irq,
- 			       &iio_trigger_generic_data_rdy_poll,
--			       IRQF_TRIGGER_RISING,
-+			       adis->irq_flag,
- 			       indio_dev->name,
- 			       adis->trig);
- 	if (ret)
 diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index e70814d96e1c..70e4d1d262f5 100644
+index 247fc4c7185c..2df67448f0d1 100644
 --- a/include/linux/iio/imu/adis.h
 +++ b/include/linux/iio/imu/adis.h
-@@ -87,6 +87,7 @@ struct adis_data {
+@@ -83,6 +83,8 @@ struct adis_data {
+  * @trig: IIO trigger object data
+  * @data: ADIS chip variant specific data
+  * @burst: ADIS burst transfer information
++ * @burst_extra_len: Burst extra length. Should only be used by devices that can
++ *		     dynamically change their burst mode length.
+  * @state_lock: Lock used by the device to protect state
   * @msg: SPI message object
   * @xfer: SPI transfer objects to be used for a @msg
-  * @current_page: Some ADIS devices have registers, this selects current page
-+ * @irq_flag: IRQ handling flags as passed to request_irq()
-  * @buffer: Data buffer for information read from the device
-  * @tx: DMA safe TX buffer for SPI transfers
-  * @rx: DMA safe RX buffer for SPI transfers
-@@ -113,6 +114,7 @@ struct adis {
- 	struct spi_message	msg;
- 	struct spi_transfer	*xfer;
- 	unsigned int		current_page;
-+	unsigned long		irq_flag;
- 	void			*buffer;
+@@ -98,7 +100,7 @@ struct adis {
  
- 	uint8_t			tx[10] ____cacheline_aligned;
+ 	const struct adis_data	*data;
+ 	struct adis_burst	*burst;
+-
++	unsigned int		burst_extra_len;
+ 	/**
+ 	 * The state_lock is meant to be used during operations that require
+ 	 * a sequence of SPI R/W in order to protect the SPI transfer
+@@ -502,11 +504,14 @@ int adis_single_conversion(struct iio_dev *indio_dev,
+  * @en			burst mode enabled
+  * @reg_cmd		register command that triggers burst
+  * @extra_len		extra length to account in the SPI RX buffer
++ * @burst_max_len	holds the maximum burst size when the device supports
++ *			more than one burst mode with different sizes
+  */
+ struct adis_burst {
+ 	bool		en;
+ 	unsigned int	reg_cmd;
+-	unsigned int	extra_len;
++	const u32	extra_len;
++	const u32	burst_max_len;
+ };
+ 
+ int
 -- 
 2.17.1
 
