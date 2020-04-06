@@ -2,27 +2,26 @@ Return-Path: <SRS0=C9+x=5W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 324E4C2BA1B
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9046CC2BB1D
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:58:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 0CF12248EC
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:58:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 63433248EA
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 15:58:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729146AbgDFP60 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Apr 2020 11:58:26 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:35897 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728817AbgDFP60 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Apr 2020 11:58:26 -0400
-X-Originating-IP: 78.193.40.249
+        id S1728817AbgDFP6a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Apr 2020 11:58:30 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:36043 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729174AbgDFP63 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Apr 2020 11:58:29 -0400
 Received: from localhost (unknown [78.193.40.249])
         (Authenticated sender: kamel.bouhara@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id B5283C0009;
-        Mon,  6 Apr 2020 15:58:22 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id D216B20000E;
+        Mon,  6 Apr 2020 15:58:26 +0000 (UTC)
 From:   Kamel Bouhara <kamel.bouhara@bootlin.com>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
@@ -36,10 +35,12 @@ Cc:     Nicolas Ferre <nicolas.ferre@microchip.com>,
         linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Kamel Bouhara <kamel.bouhara@bootlin.com>
-Subject: [PATCH 0/3] Introduce a counter inkernel API
-Date:   Mon,  6 Apr 2020 17:58:03 +0200
-Message-Id: <20200406155806.1295169-1-kamel.bouhara@bootlin.com>
+Subject: [PATCH 2/3] Input: rotary-encoder-counter: add DT bindings
+Date:   Mon,  6 Apr 2020 17:58:05 +0200
+Message-Id: <20200406155806.1295169-3-kamel.bouhara@bootlin.com>
 X-Mailer: git-send-email 2.25.0
+In-Reply-To: <20200406155806.1295169-1-kamel.bouhara@bootlin.com>
+References: <20200406155806.1295169-1-kamel.bouhara@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -47,30 +48,87 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello everyone,
+Add dt binding for the counter variant of the rotary encoder driver.
 
-This series introduce a basic inkernel API for the counter subsystem and
-add a new rotary encoder driver that use a counter interface instead of
-the GPIO existing one.
-
-See commit log in 0001-counter-add-an-inkernel-API.patch for further
-details.
-
-Kamel Bouhara (3):
-  counter: add an inkernel API
-  Input: rotary-encoder-counter: add DT bindings
-  Input: add a rotary encoders based on counter devices
-
- .../input/rotary-encoder-counter.yaml         |  67 ++++++
- drivers/counter/counter.c                     | 213 ++++++++++++++++++
- drivers/input/misc/Kconfig                    |   9 +
- drivers/input/misc/Makefile                   |   1 +
- drivers/input/misc/rotary_encoder_counter.c   | 152 +++++++++++++
- include/linux/counter.h                       |  27 +++
- 6 files changed, 469 insertions(+)
+Signed-off-by: Kamel Bouhara <kamel.bouhara@bootlin.com>
+---
+ .../input/rotary-encoder-counter.yaml         | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/input/rotary-encoder-counter.yaml
- create mode 100644 drivers/input/misc/rotary_encoder_counter.c
 
---
+diff --git a/Documentation/devicetree/bindings/input/rotary-encoder-counter.yaml b/Documentation/devicetree/bindings/input/rotary-encoder-counter.yaml
+new file mode 100644
+index 000000000000..a59f7c1faf0c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/rotary-encoder-counter.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/input/rotary-encoder-counter.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Rotary Encoder Counter
++
++maintainers:
++  - Kamel Bouhara <kamel.bouhara@bootlin.com>
++
++description:
++  Registers a Rotary encoder connected through a counter device.
++
++properties:
++  compatible:
++    const: rotary-encoder-counter
++
++  counter:
++    description: Phandle for the counter device providing rotary position.
++
++  linux-axis:
++    description: The input subsystem axis to map to this rotary encoder.
++    type: boolean
++
++  qdec-mode:
++    description: |
++      Quadrature decoder function to set in the counter device.
++      3: x1-PHA
++      4: x1-PHB
++      5: x2-PHA
++      6: x2-PHB
++      7: x4-PHA and PHB
++
++  steps:
++    description: Number of steps in a full turnaround of the encoder.
++      Only relevant for absolute axis. Defaults to 24 which is a typical
++      value for such devices.
++
++  relative-axis:
++    description: Register a relative axis rather than an absolute one.
++    type: boolean
++
++  rollover:
++    description: Automatic rollover when the rotary value becomes greater
++      than the specified steps or smaller than 0. For absolute axis only.
++    type: boolean
++
++  poll-interval:
++    description: Poll interval at which the position is read from the counter
++      device (default 500ms).
++
++required:
++  - compatible
++  - counter
++  - qdec-mode
++
++examples:
++  - |
++    rotary@0 {
++        compatible = "rotary-encoder-counter";
++
++        counter =<&qdec>;
++        qdec-mode = <7>;
++        relative-axis;
++    };
++...
+-- 
 2.25.0
 
