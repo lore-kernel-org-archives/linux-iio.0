@@ -2,99 +2,157 @@ Return-Path: <SRS0=C9+x=5W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0597C2BA17
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 16:33:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 463B8C2BA1E
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 17:19:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id C3DBC2495E
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 16:33:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CAE52333E
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Apr 2020 17:19:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=yadro.com header.i=@yadro.com header.b="DGLBL0Yq"
+	dkim=pass (1024-bit key) header.d=yadro.com header.i=@yadro.com header.b="DuNMRHqD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729048AbgDFQdQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Apr 2020 12:33:16 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:48262 "EHLO mta-01.yadro.com"
+        id S1726837AbgDFRTy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Apr 2020 13:19:54 -0400
+Received: from mta-02.yadro.com ([89.207.88.252]:50212 "EHLO mta-01.yadro.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728789AbgDFQdQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 6 Apr 2020 12:33:16 -0400
+        id S1728570AbgDFRTx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 6 Apr 2020 13:19:53 -0400
 Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 9704B41259;
-        Mon,  6 Apr 2020 16:33:13 +0000 (UTC)
+        by mta-01.yadro.com (Postfix) with ESMTP id CF55F412E1;
+        Mon,  6 Apr 2020 17:19:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-transfer-encoding:mime-version:user-agent:content-type
-        :content-type:organization:references:in-reply-to:date:date:from
-        :from:subject:subject:message-id:received:received:received; s=
-        mta-01; t=1586190792; x=1588005193; bh=5jzTCimFf/ZN+kP2sD+q9bPMb
-        I+Q4K3DWZbRHFkwR74=; b=DGLBL0YqcGOeu952klY/cvzNCyealrFkuiwZbyjdc
-        7z9P+5KzECC3m8eMMBVGj7O2zvtVW9Dp2pT0qtRvL3R1wc2zw+DLVSEJ98NQBwJS
-        yG4k9OEWHeICT9dwej1SvhFN1rxtcacC7BYuKWum+PW2vgQpcFjyXsuT1zy4YRGb
-        s0=
+        content-type:content-type:content-transfer-encoding:mime-version
+        :references:in-reply-to:x-mailer:message-id:date:date:subject
+        :subject:from:from:received:received:received; s=mta-01; t=
+        1586193588; x=1588007989; bh=mhLppsDhlxWOUw8QuK09z229nPprcp+dDLY
+        3Oilh9h8=; b=DuNMRHqDwddNTUMnTfJEbEh8dMVaYRJPS+WrWPgsOuztLNS06PQ
+        pb0vEzup7Mlc0FXWcG0BYnPH9IO8Qef1/CfBbN0N+CNLQTt8jcl8kLo30v7Uurj8
+        z2kJRsCe6C3fnW4ITfxhicYq961L4GVbzcLAv4rpKIkggvA6RnejG7iE=
 X-Virus-Scanned: amavisd-new at yadro.com
 Received: from mta-01.yadro.com ([127.0.0.1])
         by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id CN7tA-FteRvA; Mon,  6 Apr 2020 19:33:12 +0300 (MSK)
+        with ESMTP id 7M1AHUzF79P1; Mon,  6 Apr 2020 20:19:48 +0300 (MSK)
 Received: from T-EXCH-02.corp.yadro.com (t-exch-02.corp.yadro.com [172.17.10.102])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 53EAB412E2;
-        Mon,  6 Apr 2020 19:32:38 +0300 (MSK)
-Received: from localhost.localdomain (10.199.2.226) by
- T-EXCH-02.corp.yadro.com (172.17.10.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Mon, 6 Apr 2020 19:32:38 +0300
-Message-ID: <b02f5e2fc09b30c36b0d9e8984c18eb21cba7b73.camel@yadro.com>
-Subject: Re: [PATCH v7 2/2] iio: proximity: Add driver support for vcnl3020
- proximity sensor
+        by mta-01.yadro.com (Postfix) with ESMTPS id 074C0412DC;
+        Mon,  6 Apr 2020 20:19:48 +0300 (MSK)
+Received: from localhost.yadro.com (10.199.2.226) by T-EXCH-02.corp.yadro.com
+ (172.17.10.102) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id 15.1.669.32; Mon, 6 Apr
+ 2020 20:19:48 +0300
 From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
+CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 6 Apr 2020 19:32:56 +0300
-In-Reply-To: <CAHp75Vdg7bhB69uQSZt2LK3JXJ-my-+-Mg-0F6ij9HcFdQ=LTg@mail.gmail.com>
-References: <20200406151839.13572-1-i.mikhaylov@yadro.com>
-         <20200406151839.13572-3-i.mikhaylov@yadro.com>
-         <CAHp75Vdg7bhB69uQSZt2LK3JXJ-my-+-Mg-0F6ij9HcFdQ=LTg@mail.gmail.com>
-Organization: YADRO
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.32.5 (3.32.5-1.fc30) 
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v8 1/2] iio: proximity: provide device tree binding document
+Date:   Mon, 6 Apr 2020 20:20:01 +0300
+Message-ID: <20200406172002.18028-2-i.mikhaylov@yadro.com>
+X-Mailer: git-send-email 2.21.1
+In-Reply-To: <20200406172002.18028-1-i.mikhaylov@yadro.com>
+References: <20200406172002.18028-1-i.mikhaylov@yadro.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
 X-Originating-IP: [10.199.2.226]
 X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
  T-EXCH-02.corp.yadro.com (172.17.10.102)
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 2020-04-06 at 18:43 +0300, Andy Shevchenko wrote:
-> On Mon, Apr 6, 2020 at 6:18 PM Ivan Mikhaylov <i.mikhaylov@yadro.com> wrote:
-> > Proximity sensor driver based on light/vcnl4000.c code.
-> > For now supports only the single on-demand measurement.
-> > 
-> > The VCNL3020 is a fully integrated proximity sensor. Fully
-> > integrated means that the infrared emitter is included in the
-> > package. It has 16-bit resolution. It includes a signal
-> > processing IC and features standard I2C communication
-> > interface. It features an interrupt function.
-> > 
-> 
-> I don't know how to explain to you that if anybody gives the tag, you
-> need to add it to your commit message.
-> Why are you ignoring this?
-> 
+Mostly standard i2c driver with some additional led-current option
+for vcnl3020.
 
-Sorry for that, I'll add it.
+Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+---
+ .../bindings/iio/proximity/vcnl3020.yaml      | 65 +++++++++++++++++++
+ 1 file changed, 65 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
 
-> Jonathan, my tag still applies here, but I'm so confused with the above.
+diff --git a/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
+new file mode 100644
+index 000000000000..29ab2dee1694
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/proximity/vcnl3020.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Integrated Proximity Sensor With Infrared Emitter
++
++maintainers:
++  - Ivan Mikhaylov <i.mikhaylov@yadro.com>
++
++description: |
++  The VCNL3020 is a fully integrated proximity sensor. Fully integrated means
++  that the infrared emitter is included in the package. It has 16-bit
++  resolution. It includes a signal processing IC and features standard I2C
++  communication interface. It features an interrupt function.
++
++  Specifications about the devices can be found at:
++  https://www.vishay.com/docs/84150/vcnl3020.pdf
++
++properties:
++  compatible:
++    enum:
++      - vishay,vcnl3020
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    description: IRQ line for the proximity sensor
++    maxItems: 1
++
++  vdd-supply:
++    description: Regulator that provides power to the sensor
++
++  vddio-supply:
++    description: Regulator that provides power to the bus
++
++  vishay,led-current-milliamp:
++    description:
++        IR LED current value with valid Range = 0 to 20d. e.g. 0 = 0 mA,
++        1 = 10 mA, 20 = 200 mA (2 = 20 mA = DEFAULT). LED Current is
++        limited to 200 mA for values higher than decimal 20.
++    allOf:
++      - $ref: /schemas/types.yaml#/definitions/uint32
++      - enum: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17,
++              18, 19, 20]
++
++required:
++  - compatible
++  - reg
++
++examples:
++  - |
++    i2c {
++
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        proximity@13 {
++              compatible = "vishay,vcnl3020";
++              reg = <0x13>;
++              vishay,led-current-milliamp = <0x14>;
++        };
++    };
+-- 
+2.21.1
 
