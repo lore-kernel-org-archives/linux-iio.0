@@ -2,125 +2,105 @@ Return-Path: <SRS0=bGtZ=5X=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E45DC2BA16
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Apr 2020 04:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BAFCC2BA16
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Apr 2020 06:22:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 37F95206BE
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Apr 2020 04:59:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="Hc4f86YX"
+	by mail.kernel.org (Postfix) with ESMTP id 3A829206F5
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Apr 2020 06:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726704AbgDGE7F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Apr 2020 00:59:05 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:58042 "EHLO
-        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726399AbgDGE7F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Apr 2020 00:59:05 -0400
-Received: from pps.filterd (m0167090.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0374o1Q4005391;
-        Tue, 7 Apr 2020 00:59:03 -0400
-Received: from nam02-cy1-obe.outbound.protection.outlook.com (mail-cys01nam02lp2058.outbound.protection.outlook.com [104.47.37.58])
-        by mx0b-00128a01.pphosted.com with ESMTP id 306pv6qnsc-1
+        id S1726448AbgDGGWf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Apr 2020 02:22:35 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:23902 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726232AbgDGGWf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Apr 2020 02:22:35 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0376KR4R027263;
+        Tue, 7 Apr 2020 02:22:33 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 306m369p72-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Apr 2020 00:59:03 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=coA5zrzN8P4huoaA3ULAQgdGsq8QHPGFi25o+Q+1KFta01+YAO8eiFk0iNtmsgT010xgkLz4xPKzIzMegRtEoftspJuEaFOyeaAaH1aI112xRffMr6wmeyC8tipiJbjDf6SKuviqPQv89S61OS04K7xhGkTBlUuYMr/xCX4imTFMLFQHiy1NzHLx9OwIWhUMms32eAbMMmt9mnZRYv8+9I0vqfYKx8SRFuDslj63aTgiFtqwf8Of++0dxDjqaC9Y4BCz4q3IBI6VcaZOnOSjYxB70/ATLGic1EMZGQNKMcK07ftq3eCZsqNvNb5OqhR+edAOhpChjMZDIaPzyHmtaw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vlab9YmkP+d5iy1TTYtbOnpQiaH7sOjYCN9a0W3/fEA=;
- b=EacRcpQkOAXAHAZ59vihZzP0w5BuBGcFUmhnX6o5ZneEZc6epSZi0DIrtBe/Kdnb+13JM3ESG37E86MpfP0vKXXQ5GBJUPMvtUudK7idNiDbB5Jq8PNZc/hb/DfEoO+nBCwQezHJTd0Jc29UoyjDkO+oyTTQdzxdhat8IedbmDa1pN/hJT/9xBfyRpUTgd1SaiAQDNt9bqfB1pdesF9a1xM1DCz5EkslTN26jizaRhXLvkcYpj3e3kWvDQ5ZWt4wpFPNdQLrjwAagcdRn7kQiTEy2umMa9VMS9Iz7xMihR8O76nqanDclxFrceXJtf2h3U8M/x8vyuJFBMIzwGcrYw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Vlab9YmkP+d5iy1TTYtbOnpQiaH7sOjYCN9a0W3/fEA=;
- b=Hc4f86YXdTb4b7ktYKanq24mGP78pIn/oSkD0gOHy/PGojrBEpCXqXr5QlBUoRdCYwmyRyiifTBaJ/k648wlk0fVOsu1lTIkukOJoD3Mi4YGkUTDdakQRcoTaYh6aKYBuHgdP7sim9vpZpb9ZmU9J91FNbcHdUR08qqQaVbPoR8=
-Received: from DM6PR03MB4411.namprd03.prod.outlook.com (2603:10b6:5:10f::14)
- by DM6PR03MB4345.namprd03.prod.outlook.com (2603:10b6:5:10f::32) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2878.16; Tue, 7 Apr
- 2020 04:59:02 +0000
-Received: from DM6PR03MB4411.namprd03.prod.outlook.com
- ([fe80::c47f:ceee:cfda:6a7f]) by DM6PR03MB4411.namprd03.prod.outlook.com
- ([fe80::c47f:ceee:cfda:6a7f%3]) with mapi id 15.20.2878.018; Tue, 7 Apr 2020
- 04:59:02 +0000
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "Markus.Elfring@web.de" <Markus.Elfring@web.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC:     "jic23@kernel.org" <jic23@kernel.org>,
-        "Tachici, Alexandru" <Alexandru.Tachici@analog.com>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: ad7192: fix null de-ref crash during probe
-Thread-Topic: [PATCH] iio: adc: ad7192: fix null de-ref crash during probe
-Thread-Index: AQHWDEwtiqqYgDYlh0+16YCEgc/Z3qhtGvUA
-Date:   Tue, 7 Apr 2020 04:59:01 +0000
-Message-ID: <7ef930850988a24ce0d24cf2fd7f22a0b08b59af.camel@analog.com>
-References: <4ff0776f-b5de-536a-ccf9-7516f1a65d87@web.de>
-In-Reply-To: <4ff0776f-b5de-536a-ccf9-7516f1a65d87@web.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [188.27.135.58]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 6aea7e89-16a0-459e-1cd9-08d7dab063e2
-x-ms-traffictypediagnostic: DM6PR03MB4345:
-x-ms-exchange-transport-forked: True
-x-microsoft-antispam-prvs: <DM6PR03MB434517CD55AFA9F333468A3EF9C30@DM6PR03MB4345.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:2449;
-x-forefront-prvs: 036614DD9C
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4411.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(346002)(396003)(136003)(376002)(39850400004)(366004)(66476007)(8676002)(81156014)(2616005)(66556008)(66446008)(4744005)(4326008)(71200400001)(64756008)(81166006)(91956017)(76116006)(186003)(316002)(86362001)(66946007)(8936002)(966005)(54906003)(6512007)(6486002)(478600001)(26005)(5660300002)(110136005)(6506007)(2906002)(36756003);DIR:OUT;SFP:1101;
-received-spf: None (protection.outlook.com: analog.com does not designate
- permitted sender hosts)
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Ny80eEoH+Uh8/nRZPb42CSMiu3WW7QrIge7XIgUGRez8MaNP2YdoMjS+XfyrLO9Ei0PgycZStRDgv3/HDEmWjcZhw8j0iF0+bFbUQ7dxmtOtjSqwElht4xVfJkjKYuoVrW/lurkyWIblV4T1PwqLYFcAIr9zWxrGInOh8Q2U29B4zLEd6TNAh2/GKXdR0DuGfm4qvYVFhtbuen3RS/t39d7lRg4rJVID7kP90Ke37/pQruBpVM2KT/wYz8GbHtWqhTUMalIuMomGdsREa3jUzEavqbT5sZ90skOrx8hmm1rY6LPPGypGHmtCINV0h/ktbxytYFaYqoWm8K8OCK0Rqg2jEZdRnN6yMbF2JyjSNO3SDqH5Gi41hK/b6Rk/tmr5uNngP3264+INfFkGqg22Yz8dYoBPgb8iqYXGUp0Kx3BQYu4KGercmysRl36Jd4206yFLKjGMQFmTqgAcBqNhQP2XEnoRWL3UR+WhwI0KCBk2iMOm4bifrMInh7rEPAiqHif60Z9vPeWxmJwqbKrprA==
-x-ms-exchange-antispam-messagedata: n2f9AUvxOIZ0AV9rT24E9NJApt0dx8t9AkC6zq/VcQLPubq3ca49OaA9Tdo2+ayoYxmZl1zB5ud9jPBQBKyYJJa0A3LPjzNyDAQj6Tw9jLFNdrxznhlKPJ3ofmzgCfZgw8ymAnopzBGMM8zwpUOiNg==
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <5BAB9C12DF758D44A244743E417726F6@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        Tue, 07 Apr 2020 02:22:33 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 0376MVCd059802
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 7 Apr 2020 02:22:32 -0400
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 6 Apr 2020 23:22:30 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 6 Apr 2020 23:22:30 -0700
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0376MSiP024336;
+        Tue, 7 Apr 2020 02:22:28 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2] iio: core: move 'indio_dev->info' null check first
+Date:   Tue, 7 Apr 2020 09:21:15 +0300
+Message-ID: <20200407062115.84346-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200406123246.57684-1-alexandru.ardelean@analog.com>
+References: <20200406123246.57684-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6aea7e89-16a0-459e-1cd9-08d7dab063e2
-X-MS-Exchange-CrossTenant-originalarrivaltime: 07 Apr 2020 04:59:01.9417
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: dT6PvmrFRveZyVszHFmTu6p5oFDev1+Odey/At3A+nemR/T91GFFqrsNX8vBjYUqU5X60IaMpbufE3B3l+hS9NyXr4YkAQ3CsA/ff56JLQ4=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB4345
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-04-07_01:2020-04-07,2020-04-06 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- adultscore=0 malwarescore=0 phishscore=0 mlxscore=0 bulkscore=0
- mlxlogscore=999 lowpriorityscore=0 spamscore=0 suspectscore=0
- clxscore=1015 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2003020000 definitions=main-2004070039
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ lowpriorityscore=0 bulkscore=0 malwarescore=0 phishscore=0 mlxscore=0
+ mlxlogscore=999 suspectscore=0 spamscore=0 clxscore=1015
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004070053
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTA0LTA2IGF0IDIxOjQ2ICswMjAwLCBNYXJrdXMgRWxmcmluZyB3cm90ZToN
-Cj4gPiBBZnRlciB0aGF0IHBhdGNoICdzcGlfZ2V0X2RldmljZV9pZChzcGkpJyByZXR1cm5zIE5V
-TEwsIHNvIHRoaXMgY3Jhc2hlcw0KPiA+IGR1cmluZyBwcm9iZSB3aXRoIG51bGwgZGUtcmVmLg0K
-PiANCj4gSG93IGRvIHlvdSB0aGluayBhYm91dCB0byB1c2UgdGhlIHRlcm0g4oCcbnVsbCBwb2lu
-dGVyIGRlcmVmZXJlbmNl4oCdDQo+IGluIHRoZSBjb21taXQgbWVzc2FnZT8NCg0KZGVwZW5kcyBo
-b3cgbG9uZyB0aGUgY29tbWl0IHRpdGxlIHdpdGggYmUNCndpbGwgdGFrZSBhIGxvb2sNCg0KPiAN
-Cj4gDQo+ID4gRml4ZXMgNjY2MTRhYjJiZTM4OiAoInN0YWdpbmc6IGlpbzogYWRjOiBhZDcxOTI6
-IHJlbW92ZWQgc3BpX2RldmljZV9pZCIpDQo+IA0KPiBQbGVhc2UgY29ycmVjdCB0aGlzIHRhZy4N
-Cj4gaHR0cHM6Ly91cmxkZWZlbnNlLmNvbS92My9fX2h0dHBzOi8vZ2l0Lmtlcm5lbC5vcmcvcHVi
-L3NjbS9saW51eC9rZXJuZWwvZ2l0L3RvcnZhbGRzL2xpbnV4LmdpdC90cmVlL0RvY3VtZW50YXRp
-b24vcHJvY2Vzcy9zdWJtaXR0aW5nLXBhdGNoZXMucnN0P2lkPTdlNjM0MjA4NDdhZTVmMTAzNmU0
-ZjdjNDJmMGIzMjgyZTczZWZiYzIqbjE4M19fO0l3ISFBM05pOENTMHkyWSF1azliT2FEXzQ0OU4w
-UHh3dFFfV2lrV1lZNUtucHlrZVpUcC1yYnJSVGp1N0ZaTTZmUGQ0OHpDRDFwZTdyVFNZeXBLWWtn
-JCANCj4gDQo+IFdoeSB3YXMgYSBjb2xvbiBtaXNwbGFjZWQgaGVyZT8NCg0Kd2lsbCBmaXgNCnRo
-YW5rcw0KDQo+IA0KPiBSZWdhcmRzLA0KPiBNYXJrdXMNCg==
+Doesn't fix anything. Just moves this to be the first check, as it's very
+simple and fails the registration earlier, instead of potentially
+initializing the 'indio_dev->label' and checking for duplicate indexes, and
+then failing with this simple-check.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+Changelog v1 -> v2:
+* fix typo 'regitration' 'registration'
+
+ drivers/iio/industrialio-core.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 157d95a24faa..56ff24d7a174 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1711,6 +1711,9 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ {
+ 	int ret;
+ 
++	if (!indio_dev->info)
++		return -EINVAL;
++
+ 	indio_dev->driver_module = this_mod;
+ 	/* If the calling driver did not initialize of_node, do it here */
+ 	if (!indio_dev->dev.of_node && indio_dev->dev.parent)
+@@ -1723,9 +1726,6 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	if (!indio_dev->info)
+-		return -EINVAL;
+-
+ 	/* configure elements for the chrdev */
+ 	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+ 
+-- 
+2.17.1
+
