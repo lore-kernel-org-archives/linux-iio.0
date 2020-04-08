@@ -2,75 +2,91 @@ Return-Path: <SRS0=oaxC=5Y=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63B51C2D0EA
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Apr 2020 07:22:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935E3C2D0EA
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Apr 2020 08:15:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 30A942072A
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Apr 2020 07:22:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ocpp0enL"
+	by mail.kernel.org (Postfix) with ESMTP id 71ECF20730
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Apr 2020 08:15:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgDHHWY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 8 Apr 2020 03:22:24 -0400
-Received: from mail-io1-f47.google.com ([209.85.166.47]:35004 "EHLO
-        mail-io1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725932AbgDHHWY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Apr 2020 03:22:24 -0400
-Received: by mail-io1-f47.google.com with SMTP id w20so864189iob.2
-        for <linux-iio@vger.kernel.org>; Wed, 08 Apr 2020 00:22:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:from:date:message-id:subject:to:cc;
-        bh=U/vDou62n8EmCCxUOaZ8OkBOz8r22IdCgtFHZhQFqEM=;
-        b=ocpp0enLJ6rudn/Od8MNeM0lUH3f7GqDCxGkHEdmHCjjp7rQGzdonXTKIPyfzYuQ7Z
-         R4jEJ+bhpGI+blzWqhvVoY6lY6Q17+OC3rR5/1XWlDqovxU/r+TE5KgYOAPuQic+d+m3
-         +st/KD3PedYggb5y0IsJsS2wjjiIZCeM05AzA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to:cc;
-        bh=U/vDou62n8EmCCxUOaZ8OkBOz8r22IdCgtFHZhQFqEM=;
-        b=m83diqmMEye1+eJ9m9WrNbjTwP6pKO8o3xh3edUIWTB6uYQv28Xsm0qc5WLwlAdNVC
-         sR6dWoS3n2L0gq0OcrjpcNcFeXAQjj9wStHxpzlfk+7nCBfJWZ+orSYKd3NO9kt9wVy1
-         uAH9/GUOOS1abDshNM6lQw1/Tuj8V811Q3jVzWK9k3kVo8Ha7Gg0UPP0EJK83wdf5jPJ
-         33eFqcm91CeqG1rcfFGRf1RZ53d1JRf8DAGPiTBfHVoMGjRxVz21SWR9bVkpd+rn+TbS
-         A70XIFP++RyLq/dJH3DtJea1uDrVN4lX6C7xDvOhlrEC8khRPc0u7O8dVn9ITrqNHmfw
-         5lvQ==
-X-Gm-Message-State: AGi0PuYXtlHoziOZRwocVUIyoxjKnn+4p93toWbqEjgdIZ+vVferUo6t
-        k0eN79NxMG1tASxnw+WE6p307snUYyzJCpLDpQbgPiLTPeg=
-X-Google-Smtp-Source: APiQypI+CBTizPP4yixnTGS10poNCivGLLkFpNc6Vhc9+5NxPLFCi9yFu/NzTM9qgu/GQ9gmop2d+XbX+mfb8FZNd50=
-X-Received: by 2002:a02:1c07:: with SMTP id c7mr5516394jac.19.1586330543120;
- Wed, 08 Apr 2020 00:22:23 -0700 (PDT)
+        id S1726860AbgDHIPw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 Apr 2020 04:15:52 -0400
+Received: from server-x.ipv4.hkg02.ds.network ([27.111.83.178]:41314 "EHLO
+        mail.gtsys.com.hk" rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org
+        with ESMTP id S1726636AbgDHIPv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Apr 2020 04:15:51 -0400
+Received: from localhost (localhost [127.0.0.1])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id E2E412008E88;
+        Wed,  8 Apr 2020 16:10:30 +0800 (HKT)
+X-Virus-Scanned: Debian amavisd-new at gtsys.com.hk
+Received: from mail.gtsys.com.hk ([127.0.0.1])
+        by localhost (mail.gtsys.com.hk [127.0.0.1]) (amavisd-new, port 10024)
+        with ESMTP id D8T_60G7NNbU; Wed,  8 Apr 2020 16:10:30 +0800 (HKT)
+Received: from s01.gtsys.com.hk (unknown [10.128.4.2])
+        by mail.gtsys.com.hk (Postfix) with ESMTP id CA1132008987;
+        Wed,  8 Apr 2020 16:10:30 +0800 (HKT)
+Received: from armhf2.gtsys.com.hk (unknown [10.128.4.15])
+        by s01.gtsys.com.hk (Postfix) with ESMTP id C5E58C01F8A;
+        Wed,  8 Apr 2020 16:10:30 +0800 (HKT)
+Received: by armhf2.gtsys.com.hk (Postfix, from userid 1000)
+        id BF63D201602; Wed,  8 Apr 2020 16:10:30 +0800 (HKT)
+From:   Chris Ruehl <chris.ruehl@gtsys.com.hk>
+Cc:     Chris Ruehl <chris.ruehl@gtsys.com.hk>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 2/2] dt-bindings: iio/dac: ltc2632.txt
+Date:   Wed,  8 Apr 2020 16:10:24 +0800
+Message-Id: <20200408081029.11167-1-chris.ruehl@gtsys.com.hk>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Wed, 8 Apr 2020 00:22:10 -0700
-Message-ID: <CAPUE2uuL8AU8ps=aLGgkqDR3FVxeWCOoMhj+OruZ6YT5Jn+m0Q@mail.gmail.com>
-Subject: RFC: Present Screen rotation as counter
-To:     vilhelm.gray@gmail.com, Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Benson Leung <bleung@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Today, on chromebook, to detect screen orientation (portrait,
-landscape, inverted portrait, inverted landscape), chrome is polling
-lid accelerometer data and calculating the orientation.
-To save power, I want the embedded controller (EC) to forward an event
-when the lid acceleration detects an orientation change.
-To convey that information, I would like to define a rotary encoder
-with 4 regions, the counter increases when the screen is rotated
-clockwise, (decreases when rotated counter-clockwise) and would
-increment by 4 on a full rotation.
-The EC knows the accelerometer placement relative to the screen, so we
-can define landscape as count % 4 equals to 0.
-Would such a counter fit into the counter subsystem?
+This patch add support for Analog Devices (Linear Technology)
+LTC26234 Quad 12-/10-/8-Bit Rail-to-Rail DAC.
+Update ltc2632.txt with the expansions for it.
 
-Regards,
-Gwendal.
+Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
+---
+ Documentation/devicetree/bindings/iio/dac/ltc2632.txt | 8 +++++++-
+ 1 file changed, 7 insertions(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/dac/ltc2632.txt b/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
+index 338c3220f01a..1ab9570cf219 100644
+--- a/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
++++ b/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
+@@ -1,4 +1,4 @@
+-Linear Technology LTC2632/2636 DAC
++Linear Technology LTC2632/2634/2636 DAC
+ 
+ Required properties:
+  - compatible: Has to contain one of the following:
+@@ -8,6 +8,12 @@ Required properties:
+ 	lltc,ltc2632-h12
+ 	lltc,ltc2632-h10
+ 	lltc,ltc2632-h8
++	lltc,ltc2634-l12
++	lltc,ltc2634-l10
++	lltc,ltc2634-l8
++	lltc,ltc2634-h12
++	lltc,ltc2634-h10
++	lltc,ltc2634-h8
+ 	lltc,ltc2636-l12
+ 	lltc,ltc2636-l10
+ 	lltc,ltc2636-l8
+-- 
+2.20.1
+
