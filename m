@@ -2,108 +2,112 @@ Return-Path: <SRS0=RyTo=5Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.3 required=3.0 tests=DKIM_ADSP_CUSTOM_MED,
-	DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71EBAC2BBC7
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Apr 2020 14:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB7AC2BB86
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Apr 2020 15:11:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4A8222083E
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Apr 2020 14:14:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 53DB42078E
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Apr 2020 15:11:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="DOQ42rXP"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pnlwXTJG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727611AbgDIOOQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 Apr 2020 10:14:16 -0400
-Received: from mail-pl1-f195.google.com ([209.85.214.195]:35405 "EHLO
-        mail-pl1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727582AbgDIOOQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2020 10:14:16 -0400
-Received: by mail-pl1-f195.google.com with SMTP id c12so3884416plz.2;
-        Thu, 09 Apr 2020 07:14:16 -0700 (PDT)
+        id S1727771AbgDIPLo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 Apr 2020 11:11:44 -0400
+Received: from mail-pj1-f67.google.com ([209.85.216.67]:39393 "EHLO
+        mail-pj1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726977AbgDIPLo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Apr 2020 11:11:44 -0400
+Received: by mail-pj1-f67.google.com with SMTP id z3so1394297pjr.4;
+        Thu, 09 Apr 2020 08:11:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id;
-        bh=uI5Y7Iz6wEdm5rxqvMay0aecrVsycJlfiKALlRK1TEY=;
-        b=DOQ42rXPfTNch2EjG+zaAiC7Z4dYLn+EmfLBr0Br2LYseg2VIUP6RIgbsVqoyNc1Yp
-         +RFegdSut8BIZPelJWPF/9PNZzfYSWC3bd9ivsnI8Ma0LjI3MrccBYARLmFSZncP7jEy
-         oV2XSnO+AsJGgsZo7+1AdWaanMxTbzfeVEXPfckFTH4/ohQRAqrhEyujmPS72LuFrd+Z
-         2fdDnZ79A4AW3ZK7ViAab0wNqsJhNHf1LXRhAm5ibCz+jNJnFGKj8NN6zvGq2prA8gzB
-         F80kzViXZwTOuvoAn+kVKU5aa8Iy5ovUw3R4QVTJXbke/nZXT2Fw2F3H3CvdeLnbUd7A
-         xVNg==
+        h=from:to:subject:date:message-id;
+        bh=Uyv/46Juj5lfxcr3X6PKHvpdHN5/CAT3a4tPfLzARdM=;
+        b=pnlwXTJGzos2ogii+pXTu2z1dU1WlWajjcD9NxY6gBuekvamSXZTdOZiB/DAIr/wsH
+         TG87wBTFk5jBzdeez1DuQe6H6DlPvRz4GFgceEaeQh/ruyeiVhR610KoG+WIVAPBOuIO
+         +u4jh/ujyvta9oWDtpzEXQM/q9HoIPXemre6qYRz6cS2LROgykzVj0GNZ4fatX8G9NEP
+         7Ql5ru+fn077/80MqdqcJUNH/lVJkwUj13GxCT0zP/L/Craz1AXpgAYn+oK6nUkK8mfz
+         jweku9IBKesjmlxrvRlH43f9PJrAgcwzUz21KqToVjydwo+jPyj4+CJMcTJbdWTiDGlA
+         wlyg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=uI5Y7Iz6wEdm5rxqvMay0aecrVsycJlfiKALlRK1TEY=;
-        b=H5wYGFCC7wIthAKIse5FIWcr/vP25OCdNklaeW55VFWj+OjJyUDwvoWiAzcOj4+K/h
-         XaF7roTiOSSX6H6QCJXcb04Tl7TNmVMrZRkObnqgCBK2/PbLPAGWN7KKhY471rHRT7GO
-         77xsCO/aMp0L4il9dhjZWtRXzrHaL5D2NMX5FcioqgfGmxxEkWZQe8u4sq4sOqGyjicS
-         bsdl1XcdhlRnrinPn1yX09XsM1MaOgWvZok60A9n4gIUk8Pn37S5IK5/UVANyVTNiGlL
-         +CYyylF8dVPaKtG33y6R3kGKFr8YBElvw7hTiu1nYyPKa53EhVD7DpnhFSwlSZqqP4uK
-         nppw==
-X-Gm-Message-State: AGi0PuZXxmBMfS8PMHGmOf8yV418Nl1o/9lXZ+5fLI7R3iiIReHSusgF
-        mfcxLA5/MZWF3egzDWFzpFo=
-X-Google-Smtp-Source: APiQypL7mQ0rjhq7MJ8igG0FzbTjMHziSp4qVWjwRDmloGrVOGwRZhiAOXJzZTtsK53nMr4lTDoGKA==
-X-Received: by 2002:a17:90a:2489:: with SMTP id i9mr11116184pje.183.1586441655752;
-        Thu, 09 Apr 2020 07:14:15 -0700 (PDT)
+        h=x-gm-message-state:from:to:subject:date:message-id;
+        bh=Uyv/46Juj5lfxcr3X6PKHvpdHN5/CAT3a4tPfLzARdM=;
+        b=j7BMHSpyvCtATkcuU1tXB5aM20cNmid5dkzW2c+2oewlvnoc1EJ54YDYSGeHHTHJ/Q
+         LBWeRUu99YQNE4WCyVBqedJ35wxzIZ3pfzfxUk4Nv9OInEPq0ih5ru1qLBfUG+3OW2QR
+         6YrqSnCeKxuBNk9P9G/ilG6exHBGkSUkYkWqoLbPHYT0GtVXjw7BboB1DRJ158YfDZ+a
+         hq54qlssn1tCWsVK0dNNgaiC231VAGeF/wWK8m8xnBvWQX4FcH+bUJExBcfryeXxsGbW
+         0rQRBBPKva4AEWFDe1qUxUcxN8AWhmUpthet2SC0+BZr/ghXovuRQgpuzgeH+r3YTwOT
+         5E7A==
+X-Gm-Message-State: AGi0PuY/ZzsRdwcvZAi4cgbY/L0oAG4Nol4CryOjwREoi6pM0d+qcqDS
+        og7inRDdNekx1e9pr6Y9dio=
+X-Google-Smtp-Source: APiQypIRB49qL8jGLWw50RsGEtKpAFea2tTVz3FzmbuF4LyW3fyWIJKa8TcU+jZhRNPayvyUyvafUA==
+X-Received: by 2002:a17:902:8bc7:: with SMTP id r7mr91051plo.12.1586445103298;
+        Thu, 09 Apr 2020 08:11:43 -0700 (PDT)
 Received: from localhost.localdomain ([2409:4072:700:a20f:d50:b01b:c4e4:35ad])
-        by smtp.gmail.com with ESMTPSA id j4sm1285354pjy.34.2020.04.09.07.14.09
+        by smtp.gmail.com with ESMTPSA id s39sm2493358pjb.10.2020.04.09.08.11.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 09 Apr 2020 07:14:14 -0700 (PDT)
+        Thu, 09 Apr 2020 08:11:42 -0700 (PDT)
 From:   Aishwarya R <aishwaryarj100@gmail.com>
-Cc:     aishwaryarj100@gmail.com, Jonathan Cameron <jic23@kernel.org>,
+To:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Maxime Ripard <mripard@kernel.org>,
-        Chen-Yu Tsai <wens@csie.org>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Yangtao Li <tiny.windzz@gmail.com>,
-        Kate Stewart <kstewart@linuxfoundation.org>,
-        Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: sun4i-gpadc-iio: Use devm_platform_ioremap_resource
-Date:   Thu,  9 Apr 2020 19:43:30 +0530
-Message-Id: <20200409141331.30882-1-aishwaryarj100@gmail.com>
+        Allison Randal <allison@lohutok.net>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Aishwarya R <aishwaryarj100@gmail.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: at91-adc: Use devm_platform_ioremap_resource
+Date:   Thu,  9 Apr 2020 20:41:23 +0530
+Message-Id: <20200409151125.32677-1-aishwaryarj100@gmail.com>
 X-Mailer: git-send-email 2.17.1
-To:     unlisted-recipients:; (no To-header on input)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use the helper function that wraps the calls to platform_get_resource()
-and devm_ioremap_resource() together.
+Use the helper function that wraps the calls to
+platform_get_resource() and devm_ioremap_resource()
+together.
 
 Signed-off-by: Aishwarya R <aishwaryarj100@gmail.com>
 ---
- drivers/iio/adc/sun4i-gpadc-iio.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iio/adc/at91_adc.c | 5 +----
+ 1 file changed, 1 insertion(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index 176e1cb4abb1..0f2c1738a90d 100644
---- a/drivers/iio/adc/sun4i-gpadc-iio.c
-+++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -496,7 +496,6 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
- 				struct iio_dev *indio_dev)
- {
- 	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
--	struct resource *mem;
- 	void __iomem *base;
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index abe99856c823..0368b6dc6d60 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -1152,7 +1152,6 @@ static int at91_adc_probe(struct platform_device *pdev)
  	int ret;
+ 	struct iio_dev *idev;
+ 	struct at91_adc_state *st;
+-	struct resource *res;
+ 	u32 reg;
  
-@@ -508,8 +507,7 @@ static int sun4i_gpadc_probe_dt(struct platform_device *pdev,
- 	indio_dev->num_channels = ARRAY_SIZE(sun8i_a33_gpadc_channels);
- 	indio_dev->channels = sun8i_a33_gpadc_channels;
+ 	idev = devm_iio_device_alloc(&pdev->dev, sizeof(struct at91_adc_state));
+@@ -1182,9 +1181,7 @@ static int at91_adc_probe(struct platform_device *pdev)
+ 	if (st->irq < 0)
+ 		return -ENODEV;
  
--	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	base = devm_ioremap_resource(&pdev->dev, mem);
-+	base = devm_platform_ioremap_resource(pdev, 0);
- 	if (IS_ERR(base))
- 		return PTR_ERR(base);
+-	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-
+-	st->reg_base = devm_ioremap_resource(&pdev->dev, res);
++	st->reg_base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(st->reg_base))
+ 		return PTR_ERR(st->reg_base);
  
 -- 
 2.17.1
