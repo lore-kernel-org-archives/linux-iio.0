@@ -2,113 +2,135 @@ Return-Path: <SRS0=Too6=52=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68086C2BA2B
-	for <linux-iio@archiver.kernel.org>; Fri, 10 Apr 2020 14:17:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D76CBC2BA2B
+	for <linux-iio@archiver.kernel.org>; Fri, 10 Apr 2020 16:37:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 4B4F321556
-	for <linux-iio@archiver.kernel.org>; Fri, 10 Apr 2020 14:17:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AB2D320769
+	for <linux-iio@archiver.kernel.org>; Fri, 10 Apr 2020 16:37:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="oRm6j05J"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726684AbgDJORI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 10 Apr 2020 10:17:08 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:36182 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726009AbgDJOQy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2020 10:16:54 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03AEFHUQ027389;
-        Fri, 10 Apr 2020 10:16:42 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3091nb1brt-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 10 Apr 2020 10:16:42 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 03AEGelV010443
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 10 Apr 2020 10:16:41 -0400
-Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 10 Apr 2020 07:16:39 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 10 Apr 2020 07:16:39 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Fri, 10 Apr 2020 07:16:39 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03AEGZWv028552;
-        Fri, 10 Apr 2020 10:16:38 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <lars@metafoo.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 2/5] iio: buffer: add back-ref from iio_buffer to iio_dev
-Date:   Fri, 10 Apr 2020 17:17:26 +0300
-Message-ID: <20200410141729.82834-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200410141729.82834-1-alexandru.ardelean@analog.com>
-References: <20200410141729.82834-1-alexandru.ardelean@analog.com>
+        id S1726191AbgDJQhj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 10 Apr 2020 12:37:39 -0400
+Received: from mail-pf1-f193.google.com ([209.85.210.193]:38445 "EHLO
+        mail-pf1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726177AbgDJQhj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Apr 2020 12:37:39 -0400
+Received: by mail-pf1-f193.google.com with SMTP id c21so1247134pfo.5;
+        Fri, 10 Apr 2020 09:37:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=kMGQicetD64osreTQ6vhdHosnrVVm4nm7kya26WOitg=;
+        b=oRm6j05JIM7UtqWRYrfSaxrrD/Ym6w6VtNQlVuCeHZOGUlJq9iJJAh63qp1VuVWcnA
+         6tUrvMc5w4jbFD/AEDrwfhn0pnO8VUMXS9o2V3U88KWSQjZyXn01Pr4uT8GZzHYHUUlj
+         d45zmXh82TAbafnNSli99toZ75v+WESMrHLBti5hZNs09ZkSQMY6t37mDOPxI54VxfsQ
+         NCSL++sfB7WZeeWQBhiT53A66H5yn/uKbxYxLAwjfHXGLl4KDmVP9gEYLWtPsNy6iie2
+         F6ZjMej+3ND1Zh5h5E4dlvdeik9GhQCePrfp7d1nHUVJz4i6+6SUj+1g9ApCazQWm2Sl
+         3HgQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=kMGQicetD64osreTQ6vhdHosnrVVm4nm7kya26WOitg=;
+        b=hxOTpmY3pLvFuW/qMJ6wbx8NEGe4lLq82rZz/ji2/2IkbD3fLkbj4FqT0mY76rV7md
+         CNN3xlQKawZw/8qwZkOq5U3eCg/B3GAk9XIu+KSGxunzG+bxnFKqBTr18Q1Anj48ingG
+         r/Qph+k9l0EGiiAuKeRg5QeYQlmG9xIdIwYXGwQ5kDuneJayZwBSVbssrDefprusrxRC
+         rTxOJtj3S831ROzhVO+LLb5qHf4jgLYKBYBFspO7jv7EiXA33sY3g/Jyg0yK5uxz3Fa5
+         4MFI8B/8VteovOgWkVPpmB2CE10gkQnBRm6Km9O59qq4L7b+/vUlREJ5XO0eThZeu5L+
+         xs1w==
+X-Gm-Message-State: AGi0Pua5z0tfK8DgVVsy/RiUEVlUo9PnKpwE3VE/kmetFxb2VLRXBKp0
+        MenJVdlu9DkxHm/81E1GIvWbIoa4j8itCoGEsU0=
+X-Google-Smtp-Source: APiQypJSQVwaIbthGggDlTt2w0s1ErVhplhyXFG6YjdOuX1gpc0tMcIF6YG/7QdSDKsX+jLRYmIsK3fng1xEOpqLE+M=
+X-Received: by 2002:a63:1d4:: with SMTP id 203mr5113227pgb.74.1586536656920;
+ Fri, 10 Apr 2020 09:37:36 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-10_05:2020-04-09,2020-04-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 mlxlogscore=894 bulkscore=0 clxscore=1015 suspectscore=0
- mlxscore=0 phishscore=0 adultscore=0 priorityscore=1501 spamscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004100119
+References: <20200409151125.32677-1-aishwaryarj100@gmail.com>
+ <20200409155936.GV3628@piout.net> <CAHp75VcLLjjc5T+Qq8du4QgnQ-rtzFLh=5Jt-DPjigb+QUWOSg@mail.gmail.com>
+ <20200410112236.GX3628@piout.net>
+In-Reply-To: <20200410112236.GX3628@piout.net>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 10 Apr 2020 19:37:25 +0300
+Message-ID: <CAHp75VfJMsVB2rC-Qx6mQw+e8Vw9sVaWTu2Jvxj-nO1LzadHeA@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: at91-adc: Use devm_platform_ioremap_resource
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Aishwarya R <aishwaryarj100@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Allison Randal <allison@lohutok.net>,
+        Kefeng Wang <wangkefeng.wang@huawei.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-An IIO device will have multiple buffers, but it shouldn't be allowed that
-an IIO buffer should belong to more than 1 IIO device.
+On Fri, Apr 10, 2020 at 2:22 PM Alexandre Belloni
+<alexandre.belloni@bootlin.com> wrote:
+> On 10/04/2020 13:55:26+0300, Andy Shevchenko wrote:
+> > On Thu, Apr 9, 2020 at 7:00 PM Alexandre Belloni
+> > <alexandre.belloni@bootlin.com> wrote:
+> > > On 09/04/2020 20:41:23+0530, Aishwarya R wrote:
+> > > > Use the helper function that wraps the calls to
+> > > > platform_get_resource() and devm_ioremap_resource()
+> > > > together.
+> >
+> > > Please elaborate the actual value of doing that.
+> >
+> > Please, elaborate actual value of not doing that.
+> >
+> > Yes, I know that you are p* off of these changes, but why you not
+> > going further and forbid all clean ups we are doing in the code?
+> >
+> > To the point. Above change is reducing code base and showing the new
+> > comers modern APIs to use.
 
-Once things get moved more from IIO device to the IIO buffer, and an IIO
-device will be able to have more than 1 buffer attached, there will be a
-need for a back-ref to the IIO device [from the IIO buffer].
+> The value of doing it is to reduce the code size by 16 bytes. The same
+> people doing that will actively ruin that by adding error string for
+> error that will never ever happen.
 
-This change adds that.
+I don't see it in the patch we are discussing, so, not an argument.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/industrialio-buffer.c | 2 ++
- include/linux/iio/buffer_impl.h   | 3 +++
- 2 files changed, 5 insertions(+)
+> Also, the commit message is definitively lacking. A good commit message
+> would say that the patch has been generated using coccinelle, that no
+> testing has been done and that no thought has been given.
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index e6fa1a4e135d..f9ffc7762f6c 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1478,5 +1478,7 @@ void iio_device_attach_buffer(struct iio_dev *indio_dev,
- 			      struct iio_buffer *buffer)
- {
- 	indio_dev->buffer = iio_buffer_get(buffer);
-+
-+	indio_dev->buffer->indio_dev = indio_dev;
- }
- EXPORT_SYMBOL_GPL(iio_device_attach_buffer);
-diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
-index 1e7edf6bed96..8fb92250a190 100644
---- a/include/linux/iio/buffer_impl.h
-+++ b/include/linux/iio/buffer_impl.h
-@@ -69,6 +69,9 @@ struct iio_buffer_access_funcs {
-  * those writing new buffer implementations.
-  */
- struct iio_buffer {
-+	/** @indio_dev: IIO device to which this buffer belongs to. */
-+	struct iio_dev *indio_dev;
-+
- 	/** @length: Number of datums in buffer. */
- 	unsigned int length;
- 
+That's I agree with.
+But somebody need to teach people how to do it better.
+
+> It would definitively make sense to send one patch per subsystem instead
+> of having 475 different patches each changing only one location.
+
+Depends on the maintainer and subsystem. This is arguable argument.
+In my subsystems (let's forget about PDx86, where one per subsystem in
+principle is not working by nature of the subsystem, but consider
+others I'm maintaining) I prefer to have a possibility to track
+changes independently on driver basis.
+
+> The whole "let's let newcomers fix trivial bugs" thing is definitively
+> not working and it is not leading to an increase of the number of useful
+> reviewers and contributors
+
+Semi-agree. That people can be self-organized into a reviewer gang and
+try to learn together.
+In any case, as for maintainers, the task has not only technical
+aspects, but mentoring as well.
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
