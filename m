@@ -4,106 +4,259 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37CA5C2BA2B
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 11:05:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B5CC2BA2B
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 11:13:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 12EF820709
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 11:05:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9822A2072D
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 11:13:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1586689517;
-	bh=/G9a5N4EsNqKH+T/lms89vJhplOJCs+R8Eje0o+5H/g=;
+	s=default; t=1586689995;
+	bh=FceBHPgTNrFsYCCRJs015ni9bMzW0ZZrrVsZE0Rm9WU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=bjKU/dWuGYvrBs5cpk3VRtEFTp4wplbSUNx/SOcXRbujt8tcmr54si8gpmChuevQd
-	 SRRpRhKvTGbtEGh4l5MePKmqoiKjx9r/ZNFzBvgE5DVF3GMt43jj8RpH64Ri+Fnnjk
-	 rvQrxPPUOSb+YnP7BOYgDZxE6XaC2atqZs8L9tis=
+	b=IlMcAr58zJOVyYQngEwt9+CDiN80JuPjpmbITnJMcCxRUYkfhzxIfnDYHn4kYPmTj
+	 fgVdKb4CgkOj4Bxo1/nI8iEIw2Dm8m8YAydXkeyqPBE0uGk7GUMB70tWO9CTwHNVMN
+	 xeFovh5TjpiABr9AUsgCDSAM5ZDkFUj2fuehpWIA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726805AbgDLLFN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Apr 2020 07:05:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51848 "EHLO mail.kernel.org"
+        id S1726102AbgDLLNO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Apr 2020 07:13:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55210 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725909AbgDLLFN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 12 Apr 2020 07:05:13 -0400
+        id S1725909AbgDLLNO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 12 Apr 2020 07:13:14 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 21AD420708;
-        Sun, 12 Apr 2020 11:05:11 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 311ED2072D;
+        Sun, 12 Apr 2020 11:13:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1586689513;
-        bh=/G9a5N4EsNqKH+T/lms89vJhplOJCs+R8Eje0o+5H/g=;
+        s=default; t=1586689993;
+        bh=FceBHPgTNrFsYCCRJs015ni9bMzW0ZZrrVsZE0Rm9WU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=peW511SVOWZkWEg26/N8B0miVNp8xXwo71gfsyfoLC33ReCMoc+KhXfWizXcHg4wT
-         I67gGAQBRYtjgLroZc56GIQInlGm7K3h837F7zY1P124px/vk9LEV1wbrjRyGhAYy4
-         zAmbjA0v7maQ5VeeXSlt9V8DkBwtbSlM/7sK0i1k=
-Date:   Sun, 12 Apr 2020 12:05:09 +0100
+        b=JsufFmEYaPNzsvzbzd0UZxQUmbRmEIvvfzqmlBgVC0dcGB+yYSpo0dirw8IrMccF8
+         0RPWvLMTkg3jl9UKqdINrTf22/meqEPTbk7tvT6j0RqlX/Jixvy24JDm3+vHuEyo1Z
+         4BLXpZNc0Hc4xrpJBmFBD/E6k4Gotidrnkp8CvuU=
+Date:   Sun, 12 Apr 2020 12:13:10 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Chris Ruehl <chris.ruehl@gtsys.com.hk>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] dt-bindings: iio/dac: ltc2632.txt
-Message-ID: <20200412120431.03631ea8@archlinux>
-In-Reply-To: <20200408081029.11167-1-chris.ruehl@gtsys.com.hk>
-References: <20200408081029.11167-1-chris.ruehl@gtsys.com.hk>
+To:     Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: fix suspend/resume with runtime
+ power
+Message-ID: <20200412121310.7eac7f6a@archlinux>
+In-Reply-To: <MN2PR12MB44224D20FCD73D198639A5DAC4C20@MN2PR12MB4422.namprd12.prod.outlook.com>
+References: <20200331133850.23757-1-jmaneyrol@invensense.com>
+        <20200405141549.0f773f5f@archlinux>
+        <MN2PR12MB44224D20FCD73D198639A5DAC4C20@MN2PR12MB4422.namprd12.prod.outlook.com>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  8 Apr 2020 16:10:24 +0800
-Chris Ruehl <chris.ruehl@gtsys.com.hk> wrote:
+On Mon, 6 Apr 2020 07:33:44 +0000
+Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
 
-> This patch add support for Analog Devices (Linear Technology)
-> LTC26234 Quad 12-/10-/8-Bit Rail-to-Rail DAC.
-> Update ltc2632.txt with the expansions for it.
-> 
-> Signed-off-by: Chris Ruehl <chris.ruehl@gtsys.com.hk>
-Looks fine.
+> Hello Jonathan,
+>=20
+> there were 2 issues with suspend/resume when the device was already suspe=
+nded by runtime pm.
+>=20
+> When entering suspend, there was an error in logs because we were disabli=
+ng vddio regulator although it was already disabled.
+> And when resuming, the chip was pull back to full power but the pm_runtim=
+e state was not updated. So it was believing it was still suspended.
+>=20
+> Do you need a new patch with full description?
+>=20
+I edited to the description to add this info.
 
-We need to convert this over to yaml at somepoint.  If you are feeling
-particularly generous and want to do it would be much appreciated but
-it certainly isn't a requirement just to add IDs :)
+Applied to the fixes-togreg branch of iio.git
 
-thanks,
+Thanks
 
-jonathan
+Jonathan
 
-> ---
->  Documentation/devicetree/bindings/iio/dac/ltc2632.txt | 8 +++++++-
->  1 file changed, 7 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ltc2632.txt b/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
-> index 338c3220f01a..1ab9570cf219 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
-> +++ b/Documentation/devicetree/bindings/iio/dac/ltc2632.txt
-> @@ -1,4 +1,4 @@
-> -Linear Technology LTC2632/2636 DAC
-> +Linear Technology LTC2632/2634/2636 DAC
->  
->  Required properties:
->   - compatible: Has to contain one of the following:
-> @@ -8,6 +8,12 @@ Required properties:
->  	lltc,ltc2632-h12
->  	lltc,ltc2632-h10
->  	lltc,ltc2632-h8
-> +	lltc,ltc2634-l12
-> +	lltc,ltc2634-l10
-> +	lltc,ltc2634-l8
-> +	lltc,ltc2634-h12
-> +	lltc,ltc2634-h10
-> +	lltc,ltc2634-h8
->  	lltc,ltc2636-l12
->  	lltc,ltc2636-l10
->  	lltc,ltc2636-l8
+
+> Thanks,
+> JB
+>=20
+>=20
+> From: Jonathan Cameron <jic23@kernel.org>
+>=20
+> Sent: Sunday, April 5, 2020 15:15
+>=20
+> To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+>=20
+> Cc: linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>
+>=20
+> Subject: Re: [PATCH] iio: imu: inv_mpu6050: fix suspend/resume with runti=
+me power
+>=20
+> =C2=A0
+>=20
+>=20
+> =C2=A0CAUTION: This email originated from outside of the organization. Pl=
+ease make sure the sender is who they say they are and do not click links o=
+r open attachments unless you recognize the sender and know the content is =
+safe.
+>=20
+>=20
+>=20
+> On Tue, 31 Mar 2020 15:38:50 +0200
+>=20
+> Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> wrote:
+>=20
+>=20
+>=20
+> > Suspend/resume were not working correctly with pm runtime. =20
+>=20
+>=20
+>=20
+> Need more info than that!
+>=20
+> Anyhow, when you say "not working correctly" what is happening that
+>=20
+> is wrong?
+>=20
+>=20
+>=20
+> Jonathan
+>=20
+>=20
+>=20
+>=20
+>=20
+> > Now suspend check if the chip is already suspended, and =20
+>=20
+> > resume put runtime pm in the correct state. =20
+>=20
+> >  =20
+>=20
+> > Fixes: 4599cac84614 ("iio: imu: inv_mpu6050: use runtime pm with autosu=
+spend") =20
+>=20
+> > Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com> =20
+>=20
+> > --- =20
+>=20
+> >=C2=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 11 ++++++++++- =20
+>=20
+> >=C2=A0 1 file changed, 10 insertions(+), 1 deletion(-) =20
+>=20
+> >  =20
+>=20
+> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/i=
+mu/inv_mpu6050/inv_mpu_core.c =20
+>=20
+> > index e4b0d368c2f9..a58bab03f0b0 100644 =20
+>=20
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c =20
+>=20
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c =20
+>=20
+> > @@ -1636,6 +1636,10 @@ static int __maybe_unused inv_mpu_resume(struct =
+device *dev) =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (result) =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 goto out_unlock; =20
+>=20
+> >=C2=A0  =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 pm_runtime_disable(dev); =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 pm_runtime_set_active(dev); =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 pm_runtime_enable(dev); =20
+>=20
+> > + =20
+>=20
+>=20
+>=20
+> Looking at the docs, we should do this if we were previously suspended an=
+d no longer
+>=20
+> are.=C2=A0 Not sure we should do it we weren't previously in runtime susp=
+end?
+>=20
+>=20
+>=20
+> I guess it is idempotent anyway so if we were previously enabled we just =
+set it again.
+>=20
+> So probably fine.
+>=20
+>=20
+>=20
+> Jonathan
+>=20
+>=20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 result =3D inv_mpu6050_switch=
+_engine(st, true, st->suspended_sensors); =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (result) =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 goto out_unlock; =20
+>=20
+> > @@ -1657,13 +1661,18 @@ static int __maybe_unused inv_mpu_suspend(struc=
+t device *dev) =20
+>=20
+> >=C2=A0  =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 mutex_lock(&st->lock); =20
+>=20
+> >=C2=A0  =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 st->suspended_sensors =3D 0; =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 if (pm_runtime_suspended(dev)) { =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 result =3D 0; =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0 goto out_unlock; =20
+>=20
+> > +=C2=A0=C2=A0=C2=A0=C2=A0 } =20
+>=20
+> > + =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (iio_buffer_enabled(indio_=
+dev)) { =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 result =3D inv_mpu6050_prepare_fifo(st, false); =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 if (result) =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 goto out=
+_unlock; =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 } =20
+>=20
+> >=C2=A0  =20
+>=20
+> > -=C2=A0=C2=A0=C2=A0=C2=A0 st->suspended_sensors =3D 0; =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (st->chip_config.accl_en) =
+=20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0 st->suspended_sensors |=3D INV_MPU6050_SENSOR_ACCL; =20
+>=20
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (st->chip_config.gyro_en) =
+=20
+>=20
+>=20
+>=20
 
