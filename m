@@ -4,48 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C06A5C352BE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 866A5C2BB86
 	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 08:28:11 +0000 (UTC)
-Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A021220678
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 08:28:11 +0000 (UTC)
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org A021220678
+X-Greylist: delayed 171 seconds by postgrey-1.34 at mail.kernel.org; Mon, 13 Apr 2020 08:28:11 UTC
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 671AD20678
 Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=analog.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
+Received: from lindbergh.monkeyblade.net (lindbergh.monkeyblade.net [23.128.96.18])
+	by mail.kernel.org (Postfix) with ESMTP id 671AD20678
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 08:28:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727792AbgDMIZZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Apr 2020 04:25:25 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:63782 "EHLO
+        id S1727852AbgDMIZS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Apr 2020 04:25:18 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:62018 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727971AbgDMIZU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Apr 2020 04:25:20 -0400
+        by vger.kernel.org with ESMTP id S1727792AbgDMIZR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Apr 2020 04:25:17 -0400
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03D8I5hr003260;
-        Mon, 13 Apr 2020 04:25:02 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 30bat4p9cd-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03D8I5hq003260;
+        Mon, 13 Apr 2020 04:24:58 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 30bat4p9c5-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 13 Apr 2020 04:25:02 -0400
-Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 03D8P199002503
+        Mon, 13 Apr 2020 04:24:58 -0400
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 03D8OuYc020722
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 13 Apr 2020 04:25:01 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+        Mon, 13 Apr 2020 04:24:56 -0400
+Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 13 Apr 2020 04:25:00 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ 15.1.1779.2; Mon, 13 Apr 2020 01:24:55 -0700
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
+ SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 13 Apr 2020 04:25:00 -0400
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 13 Apr 2020 04:25:00 -0400
+ 15.1.1779.2; Mon, 13 Apr 2020 01:24:55 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 13 Apr 2020 01:24:54 -0700
 Received: from NSA-L01.ad.analog.com (nsa-l01.ad.analog.com [10.32.224.203])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03D8Om3w026405;
-        Mon, 13 Apr 2020 04:24:57 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03D8Om3t026405;
+        Mon, 13 Apr 2020 04:24:51 -0400
 From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
 CC:     Jonathan Cameron <jic23@kernel.org>,
@@ -56,9 +57,9 @@ CC:     Jonathan Cameron <jic23@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Alexandru Ardelean <alexandru.Ardelean@analog.com>,
         Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH v5 4/6] iio: adis: Support different burst sizes
-Date:   Mon, 13 Apr 2020 10:24:43 +0200
-Message-ID: <20200413082445.17324-5-nuno.sa@analog.com>
+Subject: [PATCH v5 1/6] iio: imu: adis: Add Managed device functions
+Date:   Mon, 13 Apr 2020 10:24:40 +0200
+Message-ID: <20200413082445.17324-2-nuno.sa@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200413082445.17324-1-nuno.sa@analog.com>
 References: <20200413082445.17324-1-nuno.sa@analog.com>
@@ -70,7 +71,7 @@ X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
  definitions=2020-04-13_02:2020-04-12,2020-04-13 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 spamscore=0
  lowpriorityscore=0 priorityscore=1501 clxscore=1015 adultscore=0
- mlxlogscore=999 bulkscore=0 malwarescore=0 phishscore=0 suspectscore=0
+ mlxlogscore=946 bulkscore=0 malwarescore=0 phishscore=0 suspectscore=2
  impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2004130074
 Sender: linux-iio-owner@vger.kernel.org
@@ -78,130 +79,209 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add burst_max_len to `adis_burst`. This is useful for devices which
-support different burst modes with different sizes. The buffer to be
-used in the spi transfer is allocated with this variable making sure
-that has space for all burst modes. The spi transfer length should hold
-the "real" burst length depending on the current burst mode configured
-in the device.
-
-Moreover, `extra_len` in `adis_burst` is made const and it should
-contain the smallest extra length necessary for a burst transfer. In
-`struct adis` was added a new `burst_extra_len` that should hold the
-extra bytes needed depending on the device instance being used.
+This patch adds support for a managed device version of
+adis_setup_buffer_and_trigger. It works exactly as the original
+one but it calls all the devm_iio_* functions to setup an iio
+buffer and trigger. Hence we do not need to care about cleaning those
+and we do not need to support a remove() callback for every driver using
+the adis library.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
 Changes in v2:
- * Nothing changed.
+ * Added blank lines for readability.
 
-Changes in v3:
- * Reworked commit message;
- * Made `extra_len` const;
- * Added `burst_extra_len` to `struct adis`;
- * Changed adis16400 accordingly.
+Changes in V3:
+ * Removed unnecessary inline;
+ * Free buffer resources.
 
 Changes in v4:
- * Nothing changed.
+ * Make use of irq_handler_t.
 
 Changes in v5:
  * Nothing changed.
 
- drivers/iio/imu/adis16400.c   |  2 +-
- drivers/iio/imu/adis_buffer.c | 13 +++++++++----
- include/linux/iio/imu/adis.h  |  9 +++++++--
- 3 files changed, 17 insertions(+), 7 deletions(-)
+ drivers/iio/imu/adis_buffer.c  | 45 ++++++++++++++++++++++++++++++++++
+ drivers/iio/imu/adis_trigger.c | 41 ++++++++++++++++++++++++++++---
+ include/linux/iio/imu/adis.h   | 17 +++++++++++++
+ 3 files changed, 100 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
-index 4445c242709c..439feb755d82 100644
---- a/drivers/iio/imu/adis16400.c
-+++ b/drivers/iio/imu/adis16400.c
-@@ -1195,7 +1195,7 @@ static int adis16400_probe(struct spi_device *spi)
- 		indio_dev->available_scan_masks = st->avail_scan_mask;
- 		st->adis.burst = &adis16400_burst;
- 		if (st->variant->flags & ADIS16400_BURST_DIAG_STAT)
--			st->adis.burst->extra_len = sizeof(u16);
-+			st->adis.burst_extra_len = sizeof(u16);
- 	}
- 
- 	adis16400_data = &st->variant->adis_data;
 diff --git a/drivers/iio/imu/adis_buffer.c b/drivers/iio/imu/adis_buffer.c
-index 8fdc4dca10c0..5b4225ee09b9 100644
+index 04e5e2a0fd6b..8fdc4dca10c0 100644
 --- a/drivers/iio/imu/adis_buffer.c
 +++ b/drivers/iio/imu/adis_buffer.c
-@@ -23,25 +23,30 @@ static int adis_update_scan_mode_burst(struct iio_dev *indio_dev,
- 	const unsigned long *scan_mask)
- {
- 	struct adis *adis = iio_device_get_drvdata(indio_dev);
--	unsigned int burst_length;
-+	unsigned int burst_length, burst_max_length;
- 	u8 *tx;
+@@ -156,6 +156,14 @@ static irqreturn_t adis_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
  
- 	/* All but the timestamp channel */
- 	burst_length = (indio_dev->num_channels - 1) * sizeof(u16);
--	burst_length += adis->burst->extra_len;
-+	burst_length += adis->burst->extra_len + adis->burst_extra_len;
++static void adis_buffer_cleanup(void *arg)
++{
++	struct adis *adis = arg;
 +
-+	if (adis->burst->burst_max_len)
-+		burst_max_length = adis->burst->burst_max_len;
-+	else
-+		burst_max_length = burst_length;
++	kfree(adis->buffer);
++	kfree(adis->xfer);
++}
++
+ /**
+  * adis_setup_buffer_and_trigger() - Sets up buffer and trigger for the adis device
+  * @adis: The adis device.
+@@ -198,6 +206,43 @@ int adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
+ }
+ EXPORT_SYMBOL_GPL(adis_setup_buffer_and_trigger);
  
- 	adis->xfer = kcalloc(2, sizeof(*adis->xfer), GFP_KERNEL);
- 	if (!adis->xfer)
- 		return -ENOMEM;
- 
--	adis->buffer = kzalloc(burst_length + sizeof(u16), GFP_KERNEL);
-+	adis->buffer = kzalloc(burst_max_length + sizeof(u16), GFP_KERNEL);
- 	if (!adis->buffer) {
- 		kfree(adis->xfer);
- 		adis->xfer = NULL;
- 		return -ENOMEM;
- 	}
- 
--	tx = adis->buffer + burst_length;
-+	tx = adis->buffer + burst_max_length;
- 	tx[0] = ADIS_READ_REG(adis->burst->reg_cmd);
- 	tx[1] = 0;
- 
-diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
-index 247fc4c7185c..2df67448f0d1 100644
---- a/include/linux/iio/imu/adis.h
-+++ b/include/linux/iio/imu/adis.h
-@@ -83,6 +83,8 @@ struct adis_data {
-  * @trig: IIO trigger object data
-  * @data: ADIS chip variant specific data
-  * @burst: ADIS burst transfer information
-+ * @burst_extra_len: Burst extra length. Should only be used by devices that can
-+ *		     dynamically change their burst mode length.
-  * @state_lock: Lock used by the device to protect state
-  * @msg: SPI message object
-  * @xfer: SPI transfer objects to be used for a @msg
-@@ -98,7 +100,7 @@ struct adis {
- 
- 	const struct adis_data	*data;
- 	struct adis_burst	*burst;
--
-+	unsigned int		burst_extra_len;
- 	/**
- 	 * The state_lock is meant to be used during operations that require
- 	 * a sequence of SPI R/W in order to protect the SPI transfer
-@@ -502,11 +504,14 @@ int adis_single_conversion(struct iio_dev *indio_dev,
-  * @en			burst mode enabled
-  * @reg_cmd		register command that triggers burst
-  * @extra_len		extra length to account in the SPI RX buffer
-+ * @burst_max_len	holds the maximum burst size when the device supports
-+ *			more than one burst mode with different sizes
-  */
- struct adis_burst {
- 	bool		en;
- 	unsigned int	reg_cmd;
--	unsigned int	extra_len;
-+	const u32	extra_len;
-+	const u32	burst_max_len;
++/**
++ * devm_adis_setup_buffer_and_trigger() - Sets up buffer and trigger for
++ *					  the managed adis device
++ * @adis: The adis device
++ * @indio_dev: The IIO device
++ * @trigger_handler: Optional trigger handler, may be NULL.
++ *
++ * Returns 0 on success, a negative error code otherwise.
++ *
++ * This function perfoms exactly the same as adis_setup_buffer_and_trigger()
++ */
++int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irq_handler_t trigger_handler)
++{
++	int ret;
++
++	if (!trigger_handler)
++		trigger_handler = adis_trigger_handler;
++
++	ret = devm_iio_triggered_buffer_setup(&adis->spi->dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      trigger_handler, NULL);
++	if (ret)
++		return ret;
++
++	if (adis->spi->irq) {
++		ret = devm_adis_probe_trigger(adis, indio_dev);
++		if (ret)
++			return ret;
++	}
++
++	return devm_add_action_or_reset(&adis->spi->dev, adis_buffer_cleanup,
++					adis);
++}
++EXPORT_SYMBOL_GPL(devm_adis_setup_buffer_and_trigger);
++
+ /**
+  * adis_cleanup_buffer_and_trigger() - Free buffer and trigger resources
+  * @adis: The adis device.
+diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
+index 8b9cd02c0f9f..a36810e0b1ab 100644
+--- a/drivers/iio/imu/adis_trigger.c
++++ b/drivers/iio/imu/adis_trigger.c
+@@ -27,6 +27,13 @@ static const struct iio_trigger_ops adis_trigger_ops = {
+ 	.set_trigger_state = &adis_data_rdy_trigger_set_state,
  };
  
- int
++static void adis_trigger_setup(struct adis *adis)
++{
++	adis->trig->dev.parent = &adis->spi->dev;
++	adis->trig->ops = &adis_trigger_ops;
++	iio_trigger_set_drvdata(adis->trig, adis);
++}
++
+ /**
+  * adis_probe_trigger() - Sets up trigger for a adis device
+  * @adis: The adis device
+@@ -45,9 +52,7 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ 	if (adis->trig == NULL)
+ 		return -ENOMEM;
+ 
+-	adis->trig->dev.parent = &adis->spi->dev;
+-	adis->trig->ops = &adis_trigger_ops;
+-	iio_trigger_set_drvdata(adis->trig, adis);
++	adis_trigger_setup(adis);
+ 
+ 	ret = request_irq(adis->spi->irq,
+ 			  &iio_trigger_generic_data_rdy_poll,
+@@ -73,6 +78,36 @@ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(adis_probe_trigger);
+ 
++/**
++ * devm_adis_probe_trigger() - Sets up trigger for a managed adis device
++ * @adis: The adis device
++ * @indio_dev: The IIO device
++ *
++ * Returns 0 on success or a negative error code
++ */
++int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev)
++{
++	int ret;
++
++	adis->trig = devm_iio_trigger_alloc(&adis->spi->dev, "%s-dev%d",
++					    indio_dev->name, indio_dev->id);
++	if (!adis->trig)
++		return -ENOMEM;
++
++	adis_trigger_setup(adis);
++
++	ret = devm_request_irq(&adis->spi->dev, adis->spi->irq,
++			       &iio_trigger_generic_data_rdy_poll,
++			       IRQF_TRIGGER_RISING,
++			       indio_dev->name,
++			       adis->trig);
++	if (ret)
++		return ret;
++
++	return devm_iio_trigger_register(&adis->spi->dev, adis->trig);
++}
++EXPORT_SYMBOL_GPL(devm_adis_probe_trigger);
++
+ /**
+  * adis_remove_trigger() - Remove trigger for a adis devices
+  * @adis: The adis device
+diff --git a/include/linux/iio/imu/adis.h b/include/linux/iio/imu/adis.h
+index dd8219138c2e..e70814d96e1c 100644
+--- a/include/linux/iio/imu/adis.h
++++ b/include/linux/iio/imu/adis.h
+@@ -448,11 +448,15 @@ struct adis_burst {
+ 	unsigned int	extra_len;
+ };
+ 
++int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irq_handler_t trigger_handler);
+ int adis_setup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *));
+ void adis_cleanup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev);
+ 
++int devm_adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
+ int adis_probe_trigger(struct adis *adis, struct iio_dev *indio_dev);
+ void adis_remove_trigger(struct adis *adis);
+ 
+@@ -461,6 +465,13 @@ int adis_update_scan_mode(struct iio_dev *indio_dev,
+ 
+ #else /* CONFIG_IIO_BUFFER */
+ 
++static inline int
++devm_adis_setup_buffer_and_trigger(struct adis *adis, struct iio_dev *indio_dev,
++				   irq_handler_t trigger_handler)
++{
++	return 0;
++}
++
+ static inline int adis_setup_buffer_and_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev, irqreturn_t (*trigger_handler)(int, void *))
+ {
+@@ -472,6 +483,12 @@ static inline void adis_cleanup_buffer_and_trigger(struct adis *adis,
+ {
+ }
+ 
++static inline int devm_adis_probe_trigger(struct adis *adis,
++					  struct iio_dev *indio_dev)
++{
++	return 0;
++}
++
+ static inline int adis_probe_trigger(struct adis *adis,
+ 	struct iio_dev *indio_dev)
+ {
 -- 
 2.17.1
 
