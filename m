@@ -2,342 +2,200 @@ Return-Path: <SRS0=mdhH=55=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9BC8C2BA19
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 10:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2D79C2BBC7
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 13:34:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B3FBD206A1
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 10:38:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A90092075E
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 13:34:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727952AbgDMKiD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Apr 2020 06:38:03 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:57546 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727776AbgDMKiC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 13 Apr 2020 06:38:02 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.lan)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <heiko@sntech.de>)
-        id 1jNlJh-0006wK-EU; Mon, 13 Apr 2020 00:43:05 +0200
-From:   Heiko Stuebner <heiko@sntech.de>
-To:     jic23@kernel.org
-Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        heiko@sntech.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-        xxm@rock-chips.com, kever.yang@rock-chips.com,
-        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
-Subject: [PATCH v3] iio: adc: rockchip_saradc: Add support iio buffers
-Date:   Mon, 13 Apr 2020 00:42:51 +0200
-Message-Id: <20200412224251.2919182-1-heiko@sntech.de>
-X-Mailer: git-send-email 2.24.1
+        id S1730001AbgDMNdy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Apr 2020 09:33:54 -0400
+Received: from mout.kundenserver.de ([217.72.192.74]:40405 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730000AbgDMNdy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Apr 2020 09:33:54 -0400
+Received: from envy ([82.207.195.83]) by mrelayeu.kundenserver.de (mreue109
+ [212.227.15.183]) with ESMTPSA (Nemesis) id 1M9WqY-1jIVZH2gIW-005XFe; Mon, 13
+ Apr 2020 15:33:39 +0200
+Message-ID: <7683f875aa617b3003a1949131ce79bd0e3c4dcb.camel@richard-neumann.de>
+Subject: Re: [PATCH v4 2/4] SFH: PCI driver to add support of AMD sensor
+ fusion Hub using HID framework
+From:   Richard Neumann <mail@richard-neumann.de>
+To:     "Shah, Nehal-bakulchandra" <nehal-bakulchandra.shah@amd.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Sandeep Singh <Sandeep.Singh@amd.com>, Shyam-sundar.S-k@amd.com,
+        Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-input <linux-input@vger.kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>
+Date:   Mon, 13 Apr 2020 15:33:37 +0200
+In-Reply-To: <3ffc343e-c44b-1b4e-993e-179a13dc928c@amd.com>
+References: <1582779537-25662-1-git-send-email-Sandeep.Singh@amd.com>
+         <1582779537-25662-3-git-send-email-Sandeep.Singh@amd.com>
+         <4fe47b0323c1d65d429ee89b000e8bfcd984495f.camel@richard-neumann.de>
+         <896f84bc-f0d6-59a5-c894-809695aa348f@amd.com>
+         <CAHp75Vfr6q_H6z6tRFfaKedF7oR7nhmZvRWL4mxx3W7uypUFvA@mail.gmail.com>
+         <9aea760f9abdd2f90f36642af77de7bfae719485.camel@richard-neumann.de>
+         <3ffc343e-c44b-1b4e-993e-179a13dc928c@amd.com>
+Content-Type: multipart/signed; micalg="pgp-sha256";
+        protocol="application/pgp-signature"; boundary="=-Lic1xVuC6am9NOepDW9o"
+User-Agent: Evolution 3.36.1 
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Provags-ID: V03:K1:R1qlNK3L8DeV4u5KSa3H1cOT/rnu2TOrZG7wEF5f+Em7c69dl6C
+ PgvPOCbB5opBzlzrhY7BLi71utTlICGQI7i8KwtmoANaOM1R2DieObIQey+mvamv1M9Rlzu
+ ZhGJ2/DF4Xsz1RKfzSSlPucw/dLBAYgDi6MqESKCy3Xb/xs5yP/Ba7X3Ju/zv0kdYqWJsvb
+ rpZhiBSdCgs7hIn65QEKg==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:TXtNW1lc3kM=:8AprZdlWe6BlromzeB6BIS
+ mAUVf4lHadPgX0QzihzKz4ygMxnFcTqitKKLFO1/Hdscn7qTldwFTtk2pvDJk5IX0FIU3/2Cg
+ LYiif/hzeCZiohDo0V/jWMIAYlenXolwvNV8OhCvjUOPEOmgTeh2eY3v5TvbFa/Pi6K8QytJ/
+ iv8+oDcCMTTPpO8FhCa/EWlsryvLs4v9GNxfOu+9+yCR+LMPvA0VRwSnlLM7Q0W9UN9YpQY2H
+ 3/uMPCi99hNJl2xysbHoPKxU9kaTss4NXJp87HjtsTX9uzh9AFvW0OnodODntcLAvuQ+PoFne
+ t4feu+8baCkZhvmSvSB8J5dfU4hzPhKf348TUyHp47RpnNHU9i8ldzr0Tj8GDQuKB2txbq/IR
+ M7v/A9bg3Lbcipe3rOvHkuvmQwHOe+kvCsbNJ0hzDdtdo9enUdRX4KYPfBtqvSJYZJlsFfk1y
+ jXd+kqZup68IUS57fwP0dSH9e64hNSZINeU+rLGWwWNHV02k5h6y21VgS0Pi3oYWV9QY8Pk6S
+ xitjA7/zTy0Ae8QASuOcbgF9mgbLqs49nSosnaCdd7USkNwhz7TnoDoRugxCCU4bSlbay+gar
+ Ea1vQidsd+Qu38iF3/6m3njfm+tVfxai91qI/2XdMtWp3f5xwxj7oy71GVICx2zwb0RMO0FfP
+ +wNGnS/tKD/ZvGIFkepwpAIduGsa/8R4x28vRjTjLKcVZKsA1bOhHJV1Edm2KO58rEM6Ri8/h
+ q2/BKXxaXidf4E+TkvEXnNyOyEeUNgzDKKTx+0PbvlvdqrZyNswPatf/H12zrHdnf+zvxHJkD
+ /+2aS5IHlcVz5w/bY9/yTOVW7R90Qgypn6jTXYERJ3UPbvWZf3ZM3c3pfOX0Qu751s2ydZl
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Simon Xue <xxm@rock-chips.com>
 
-Add the ability to also support access via (triggered) buffers
-next to the existing direct mode.
+--=-Lic1xVuC6am9NOepDW9o
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 
-Device in question is the Odroid Go Advance that connects a joystick
-to two of the saradc channels for X and Y axis and the new (and still
-pending) adc joystick driver of course wants to use triggered buffers
-from the iio subsystem.
+Am Montag, den 06.04.2020, 10:56 +0530 schrieb Shah, Nehal-
+bakulchandra:
+> HI
+>=20
+> On 4/1/2020 9:58 PM, Richard Neumann wrote:
+> > Am Dienstag, den 31.03.2020, 20:24 +0300 schrieb Andy Shevchenko:
+> > > On Tue, Mar 31, 2020 at 4:26 PM Shah, Nehal-bakulchandra
+> > > <nehal-bakulchandra.shah@amd.com> wrote:
+> > > > On 3/31/2020 6:01 PM, Richard Neumann wrote:
+> > > > > Not a real review, but your patch series seems to be
+> > > > > repeating a
+> > > > > lot
+> > > > > from drivers/i2c/busses/i2c-amd-mp2*.
+> > > > > Is there any chance we could re-use the code?
+> > > > > E.g. the AMD_C2P_* definitions from drivers/i2c/busses/i2c-
+> > > > > amd-
+> > > > > mp2.h?
+> > > > Thanks for the mail. Yes there are some common structures,
+> > > > however
+> > > > as of now we have kept separately considering both
+> > > >=20
+> > > > are part of different sub systems. But may be will consider
+> > > > this
+> > > > input for future enhancement.
+> > > It can be done in a form of shared definitions at least in
+> > > include/linux/platform_data/x86/amd-mp2.h or alike ...
+> > >=20
+> > I managed to add support for the AMD SFH PCI device to i2c-amd-mp2*=20
+> > and
+> > outsourced the headers to include/linux/i2c-amd-mp2.h. [1]
+> > I also refactored the patch series (excluded the documentation) [2]
+> > to
+> > use the PCI device now provided by i2c_amd_mp2_pci and removed some
+> > duplicate and unncessary code.
+> > The driver now consist of just one module (amd_sfhtp_hid).
+> > Unfortunately I was not able to solve the problem, that I get AMD-
+> > Vi
+> > IO_PAGE_FAULT errors when not booted with amd_iommu=3Doff.
+> >=20
+> > [1]=20
+> > https://gist.githubusercontent.com/conqp/4d726f86da8a8397d6e70091a124de=
+67/raw/f97e88a0b44d98bfa1258cb73c8afe4dce7afa87/i2c-amd-mp2.patch
+> > [2]=20
+> > https://gist.githubusercontent.com/conqp/67036e690aca89d08b958971edac28=
+3d/raw/2a1ef122f9c8c8e07164b6d597962ce7bbad6d45/amd-sfhtp.patch
+>=20
+> Thanks for the patch and appreciate your efforts. At this point of
+> time, we would like to have our first patch for SFH to be upstreamed
+> and dont want to complicate the
+>=20
+> with two sub systems and maintainers. Surely will consider this input
+> for future enhancement. Thanks for your understanding.
+>=20
+> Thanks
+>=20
+>=20
+> Nehal
+>=20
+>=20
+Hi all,
 
-Signed-off-by: Simon Xue <xxm@rock-chips.com>
-[some simplifications and added commit description]
-Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
----
-changes in v3:
-- split buffer struct into values and timestamp area similar to dln2-adc
-  and make sure timestamp gets 8-byte aligned - ALIGN uses 4 as it aligns
-  u16 elements not bytes - hopefully I got it right this time ;-)
-changes in v2:
-- use devm_iio_triggered_buffer_setup
-- calculate data array size from channel number (curtesy of at91-sama5d2_adc)
+I spent the last two weeks learning the HID API and refactored [1] the
+patch series again. I also took into consideration Nehal's input
+regarding the two subsystems. After tinkering with the integration of
+the SFH PCI driver into the existing i2c-amd-mp2-pci driver, I realized
+that this was a futile effort at this point of time, since the SFH
+protocol, as far as I understand it, does not really implement the I2C
+protocol. Thusly I turned away from trying to integrate the two
+drivers. The core changes I did, is to refactor the PCI driver to use a
+similar initialization as the i2c-amd-mp2-pci driver. The registers are
+now mapped correctly on initial setup (1 << 2) and not mapped to zero
+(1 >> 2) and the ioremapped later. With this change, the AMD-Vi page
+faults when not booting with amd_iommu=3Doff also automagically
+disappeared.=20
+The second change is the HID device handling. I now implemented the
+hid_ll_driver API with the respective functions to process raw events
+as well device start / stop and open / close routines. I also
+refactored the platform driver wich is now solely responsible for
+spawning and despawning the HID devices. I also reduced the commonly
+used structures and constats to those that were actually being used by
+the driver and renamed the PCI registers to express what they are used
+for in this driver. I also commented most functions and shared
+structures. The only problem I keep having on my machine is, that the
+register for the bit-shifted active sensors mask 0x1068C keeps
+returning zero on readout and thusly I need to override it.
+I tried to get the sensor mask by sending the "dump_sensorinfo" and
+"number_of_sensors_discovered" commands to different C2P registers and
+dumping the corresponding P2C registers. But so far I could not get any
+information that could be interpreted as the sensor info and mask that
+I need. Maybe Nehal or Sandeep could provide the information, if and
+how it ts possible to get information about the amount, position and
+type of the connected sensors in another way. I also found out, by
+sweeping the SFH registers (from 0 to 31), that there seem to be other
+sensors connected on my machine, namely at positions 0, 1, 2, 3, 4, 7,
+8 and 9. The ALS at 19 does not seem to be present on my system. I
+suspect that at least one of those is an additional accelerometer,
+since the only one working right now ist the accelerometer at position
+0, which is located in the sceen / lid. I suspect that the other one is
+located in the chassis, allowing the use of both to perform tablet mode
+detection by processing their relative orientation. I'd appreciate a
+hint on this assumption as well. ;-)
 
- drivers/iio/adc/Kconfig           |   2 +
- drivers/iio/adc/rockchip_saradc.c | 146 ++++++++++++++++++++++--------
- 2 files changed, 112 insertions(+), 36 deletions(-)
+Sincere regards,
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 12bb8b7ca1ff..8d2dd60614c6 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -809,6 +809,8 @@ config ROCKCHIP_SARADC
- 	tristate "Rockchip SARADC driver"
- 	depends on ARCH_ROCKCHIP || (ARM && COMPILE_TEST)
- 	depends on RESET_CONTROLLER
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	help
- 	  Say yes here to build support for the SARADC found in SoCs from
- 	  Rockchip.
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index 582ba047c4a6..0713363a4b43 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -15,7 +15,11 @@
- #include <linux/delay.h>
- #include <linux/reset.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/iio/buffer.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- #define SARADC_DATA			0x00
- 
-@@ -32,9 +36,12 @@
- #define SARADC_DLY_PU_SOC_MASK		0x3f
- 
- #define SARADC_TIMEOUT			msecs_to_jiffies(100)
-+#define SARADC_MAX_CHANNELS		6
-+
-+/* buffer elements are u16, timestamp needs to be 8-byte aligned */
-+#define SARADC_BUFFER_NUM_U16	ALIGN(SARADC_MAX_CHANNELS, 4)
- 
- struct rockchip_saradc_data {
--	int				num_bits;
- 	const struct iio_chan_spec	*channels;
- 	int				num_channels;
- 	unsigned long			clk_rate;
-@@ -49,8 +56,37 @@ struct rockchip_saradc {
- 	struct reset_control	*reset;
- 	const struct rockchip_saradc_data *data;
- 	u16			last_val;
-+	const struct iio_chan_spec *last_chan;
- };
- 
-+static void rockchip_saradc_power_down(struct rockchip_saradc *info)
-+{
-+	/* Clear irq & power down adc */
-+	writel_relaxed(0, info->regs + SARADC_CTRL);
-+}
-+
-+static int rockchip_saradc_conversion(struct rockchip_saradc *info,
-+				   struct iio_chan_spec const *chan)
-+{
-+	reinit_completion(&info->completion);
-+
-+	/* 8 clock periods as delay between power up and start cmd */
-+	writel_relaxed(8, info->regs + SARADC_DLY_PU_SOC);
-+
-+	info->last_chan = chan;
-+
-+	/* Select the channel to be used and trigger conversion */
-+	writel(SARADC_CTRL_POWER_CTRL
-+			| (chan->channel & SARADC_CTRL_CHN_MASK)
-+			| SARADC_CTRL_IRQ_ENABLE,
-+		   info->regs + SARADC_CTRL);
-+
-+	if (!wait_for_completion_timeout(&info->completion, SARADC_TIMEOUT))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
- static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
- 				    struct iio_chan_spec const *chan,
- 				    int *val, int *val2, long mask)
-@@ -62,24 +98,12 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&indio_dev->mlock);
- 
--		reinit_completion(&info->completion);
--
--		/* 8 clock periods as delay between power up and start cmd */
--		writel_relaxed(8, info->regs + SARADC_DLY_PU_SOC);
--
--		/* Select the channel to be used and trigger conversion */
--		writel(SARADC_CTRL_POWER_CTRL
--				| (chan->channel & SARADC_CTRL_CHN_MASK)
--				| SARADC_CTRL_IRQ_ENABLE,
--		       info->regs + SARADC_CTRL);
--
--		if (!wait_for_completion_timeout(&info->completion,
--						 SARADC_TIMEOUT)) {
--			writel_relaxed(0, info->regs + SARADC_CTRL);
-+		ret = rockchip_saradc_conversion(info, chan);
-+		if (ret) {
-+			rockchip_saradc_power_down(info);
- 			mutex_unlock(&indio_dev->mlock);
--			return -ETIMEDOUT;
-+			return ret;
- 		}
--
- 		*val = info->last_val;
- 		mutex_unlock(&indio_dev->mlock);
- 		return IIO_VAL_INT;
-@@ -91,7 +115,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
- 		}
- 
- 		*val = ret / 1000;
--		*val2 = info->data->num_bits;
-+		*val2 = chan->scan_type.realbits;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	default:
- 		return -EINVAL;
-@@ -104,10 +128,9 @@ static irqreturn_t rockchip_saradc_isr(int irq, void *dev_id)
- 
- 	/* Read value */
- 	info->last_val = readl_relaxed(info->regs + SARADC_DATA);
--	info->last_val &= GENMASK(info->data->num_bits - 1, 0);
-+	info->last_val &= GENMASK(info->last_chan->scan_type.realbits - 1, 0);
- 
--	/* Clear irq & power down adc */
--	writel_relaxed(0, info->regs + SARADC_CTRL);
-+	rockchip_saradc_power_down(info);
- 
- 	complete(&info->completion);
- 
-@@ -118,51 +141,55 @@ static const struct iio_info rockchip_saradc_iio_info = {
- 	.read_raw = rockchip_saradc_read_raw,
- };
- 
--#define ADC_CHANNEL(_index, _id) {				\
-+#define ADC_CHANNEL(_index, _id, _res) {			\
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.channel = _index,					\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
- 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
- 	.datasheet_name = _id,					\
-+	.scan_index = _index,					\
-+	.scan_type = {						\
-+		.sign = 'u',					\
-+		.realbits = _res,				\
-+		.storagebits = 16,				\
-+		.endianness = IIO_LE,				\
-+	},							\
- }
- 
- static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
--	ADC_CHANNEL(0, "adc0"),
--	ADC_CHANNEL(1, "adc1"),
--	ADC_CHANNEL(2, "adc2"),
-+	ADC_CHANNEL(0, "adc0", 10),
-+	ADC_CHANNEL(1, "adc1", 10),
-+	ADC_CHANNEL(2, "adc2", 10),
- };
- 
- static const struct rockchip_saradc_data saradc_data = {
--	.num_bits = 10,
- 	.channels = rockchip_saradc_iio_channels,
- 	.num_channels = ARRAY_SIZE(rockchip_saradc_iio_channels),
- 	.clk_rate = 1000000,
- };
- 
- static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
--	ADC_CHANNEL(0, "adc0"),
--	ADC_CHANNEL(1, "adc1"),
-+	ADC_CHANNEL(0, "adc0", 12),
-+	ADC_CHANNEL(1, "adc1", 12),
- };
- 
- static const struct rockchip_saradc_data rk3066_tsadc_data = {
--	.num_bits = 12,
- 	.channels = rockchip_rk3066_tsadc_iio_channels,
- 	.num_channels = ARRAY_SIZE(rockchip_rk3066_tsadc_iio_channels),
- 	.clk_rate = 50000,
- };
- 
- static const struct iio_chan_spec rockchip_rk3399_saradc_iio_channels[] = {
--	ADC_CHANNEL(0, "adc0"),
--	ADC_CHANNEL(1, "adc1"),
--	ADC_CHANNEL(2, "adc2"),
--	ADC_CHANNEL(3, "adc3"),
--	ADC_CHANNEL(4, "adc4"),
--	ADC_CHANNEL(5, "adc5"),
-+	ADC_CHANNEL(0, "adc0", 10),
-+	ADC_CHANNEL(1, "adc1", 10),
-+	ADC_CHANNEL(2, "adc2", 10),
-+	ADC_CHANNEL(3, "adc3", 10),
-+	ADC_CHANNEL(4, "adc4", 10),
-+	ADC_CHANNEL(5, "adc5", 10),
- };
- 
- static const struct rockchip_saradc_data rk3399_saradc_data = {
--	.num_bits = 10,
- 	.channels = rockchip_rk3399_saradc_iio_channels,
- 	.num_channels = ARRAY_SIZE(rockchip_rk3399_saradc_iio_channels),
- 	.clk_rate = 1000000,
-@@ -193,6 +220,42 @@ static void rockchip_saradc_reset_controller(struct reset_control *reset)
- 	reset_control_deassert(reset);
- }
- 
-+static irqreturn_t rockchip_saradc_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *i_dev = pf->indio_dev;
-+	struct rockchip_saradc *info = iio_priv(i_dev);
-+	struct {
-+		u16 values[SARADC_BUFFER_NUM_U16];
-+		int64_t timestamp;
-+	} data;
-+	int ret;
-+	int i, j = 0;
-+
-+	mutex_lock(&i_dev->mlock);
-+
-+	for_each_set_bit(i, i_dev->active_scan_mask, i_dev->masklength) {
-+		const struct iio_chan_spec *chan = &i_dev->channels[i];
-+
-+		ret = rockchip_saradc_conversion(info, chan);
-+		if (ret) {
-+			rockchip_saradc_power_down(info);
-+			goto out;
-+		}
-+
-+		data.values[j] = info->last_val;
-+		j++;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(i_dev, &data, iio_get_time_ns(i_dev));
-+out:
-+	mutex_unlock(&i_dev->mlock);
-+
-+	iio_trigger_notify_done(i_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int rockchip_saradc_probe(struct platform_device *pdev)
- {
- 	struct rockchip_saradc *info = NULL;
-@@ -221,6 +284,11 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 
- 	info->data = match->data;
- 
-+	if (info->data->num_channels > SARADC_MAX_CHANNELS) {
-+		dev_err(&pdev->dev, "max channels exceeded");
-+		return -EINVAL;
-+	}
-+
- 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	info->regs = devm_ioremap_resource(&pdev->dev, mem);
- 	if (IS_ERR(info->regs))
-@@ -315,6 +383,12 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	indio_dev->channels = info->data->channels;
- 	indio_dev->num_channels = info->data->num_channels;
- 
-+	ret = devm_iio_triggered_buffer_setup(&indio_dev->dev, indio_dev, NULL,
-+					      rockchip_saradc_trigger_handler,
-+					      NULL);
-+	if (ret)
-+		goto err_clk;
-+
- 	ret = iio_device_register(indio_dev);
- 	if (ret)
- 		goto err_clk;
--- 
-2.24.1
+Richard
+
+[1] https://gist.github.com/conqp/33baa079d9524914c4c0c196200e4f89
+
+--=-Lic1xVuC6am9NOepDW9o
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYIAB0WIQT62wKwhMqSt8WaustMqNUjvThq9wUCXpRqMQAKCRBMqNUjvThq
+9/xTAP0fCC9iZ+L52+k77GfQ7si6y49pvUTd0dJVRQdC7qsEhQD+Jok81CLtvoou
+Fi5/ODmaKCGFTxeC0IqrNK7CXiRITw8=
+=aUOQ
+-----END PGP SIGNATURE-----
+
+--=-Lic1xVuC6am9NOepDW9o--
 
