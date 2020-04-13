@@ -1,189 +1,152 @@
-Return-Path: <SRS0=GqNd=54=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=mdhH=55=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D6A8C2BBFD
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 22:12:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75287C2BA19
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 04:31:35 +0000 (UTC)
 Received: from vger.kernel.org (unknown [209.132.180.67])
-	by mail.kernel.org (Postfix) with ESMTP id 027D620708
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Apr 2020 22:12:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 35CE520731
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Apr 2020 04:31:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="C7Ekkxoj"
-DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 027D620708
-Authentication-Results: mail.kernel.org; dmarc=fail (p=none dis=none) header.from=redhat.com
+	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="zyswlUB0"
+DMARC-Filter: OpenDMARC Filter v1.3.2 mail.kernel.org 35CE520731
+Authentication-Results: mail.kernel.org; dmarc=none (p=none dis=none) header.from=analog.com
 Authentication-Results: mail.kernel.org; spf=none smtp.mailfrom=linux-iio-owner@vger.kernel.org
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728401AbgDLWMi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Apr 2020 18:12:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.18]:55162 "EHLO
+        id S1728698AbgDMEbe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Apr 2020 00:31:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.18]:60482 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727388AbgDLWMi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Apr 2020 18:12:38 -0400
-Received: from us-smtp-delivery-1.mimecast.com (us-smtp-2.mimecast.com [205.139.110.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87969C0A88B5
-        for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2020 15:12:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1586729557;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         in-reply-to:in-reply-to:references:references;
-        bh=cGjiTEH9gWCWuYOZfVsqMBDJb/PeBA4Q6mzgJop06QU=;
-        b=C7EkkxojxFiuyk2sc46ADPQ9fhqJIer7H7GGQoTYnt9pu2G9T/qBWF+w9SfdxT9BIzOc+V
-        ah5QkeXJHO9d7FM9md0AHd/bAqkyZWPzYeVinJ1oMAqeHGRNXf0/tXMqnareurMS/o7PHD
-        PVZbZjjzWrThBOzt1/FSmSYnq2S3MBs=
-Received: from mail-vk1-f200.google.com (mail-vk1-f200.google.com
- [209.85.221.200]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-256-pIgBW5ADNMCwFLLpk6nl9w-1; Sun, 12 Apr 2020 18:12:35 -0400
-X-MC-Unique: pIgBW5ADNMCwFLLpk6nl9w-1
-Received: by mail-vk1-f200.google.com with SMTP id x132so3556838vke.17
-        for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2020 15:12:35 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cGjiTEH9gWCWuYOZfVsqMBDJb/PeBA4Q6mzgJop06QU=;
-        b=YXHPvXuefkzOlWmSUX93Q1QFs6NliPwN0kOrl3A5uA3Rgswd+vaY6cS4HZzK+CDIpy
-         TKSbQ062fTCkgJaObpFuCnu0owr8lgFg/0GUL7KjSl0f848JYcfHGqgmnuV1/cpL2vES
-         WwzlLyCPZERXW4c5C0luY6WPJ12jKVcEpgmv0nT40Hu3DwBIzx7qlo12bom5F7x93kwD
-         OcFR0rIETgfQL8dxAtA3HJq4LibOwm+uFaNMlE9EMFypIw2R5KIvcANVE8JRH7bDkj6M
-         QhFkXyTQvJ820xOxbPJGwDGpiE79JuO+4yVDjOrTv3KgZD8+jOG4PHzQJP/wqZG6VPuu
-         4ifw==
-X-Gm-Message-State: AGi0Puaqb+/IaZckt5JElPcJx4iwoaUlciCXQ2pmcW4Ex2I/s0J28Lpz
-        I6TLSl7Urh3OM8xq342wvezEgxP1flHMi+KlVPb0czoTOE9Qig7RIKfNJJNPgGSCgudoxSEd6Xj
-        /2aKNrLjp2N7y3gr63a57AhTFM7Miy7l67eIz
-X-Received: by 2002:ab0:4505:: with SMTP id r5mr9462302uar.64.1586729554799;
-        Sun, 12 Apr 2020 15:12:34 -0700 (PDT)
-X-Google-Smtp-Source: APiQypLjTXIYkki/rWp91Qqizb80avO8beO2xI1BdDZTL2YTtVdPztrNPrKaVl8vvIGeyM1p416zRfnPTUlAaZO+6T4=
-X-Received: by 2002:ab0:4505:: with SMTP id r5mr9462291uar.64.1586729554390;
- Sun, 12 Apr 2020 15:12:34 -0700 (PDT)
+        with ESMTP id S1725775AbgDMEbd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Apr 2020 00:31:33 -0400
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7841C0A3BE0
+        for <linux-iio@vger.kernel.org>; Sun, 12 Apr 2020 21:31:33 -0700 (PDT)
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03D4TxJD018435;
+        Mon, 13 Apr 2020 00:31:31 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-00128a01.pphosted.com with ESMTP id 30b7namy4r-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Apr 2020 00:31:31 -0400
+Received: from m0167091.ppops.net (m0167091.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 03D4VVPW020322;
+        Mon, 13 Apr 2020 00:31:31 -0400
+Received: from nam10-mw2-obe.outbound.protection.outlook.com (mail-mw2nam10lp2103.outbound.protection.outlook.com [104.47.55.103])
+        by mx0b-00128a01.pphosted.com with ESMTP id 30b7namy4p-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 13 Apr 2020 00:31:31 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=TAqhjsBFXh8TYJtEIw+MDV3vdOeNgOAhKgfRUGnrJ9URMssTPyK4MlOU5Zn0SQFopFSCblg6Ty7xNRdBAwoFWSzbhYil3ATIaSqTRz1/WJl3k2W8qqd9DUhDQX2DjsRJU5w1RVx31jz9hkDsoGTlaa3eFr70lqI8FAHWFdnsMDyiuxSskDVnABKQS1i2D41Z4KiWrvtB/tOhq4YfIcuc6staE5mCdWThkethgDgi9n3RtkHZBYYtZwKDStwSfPXSDQGvsIAiT+m7LOt178JUdvDMDHKgCdjVdYQRLHsa9TsODsVu8I/0K1F/78rFIFhHu6tVCAkov8BqBIzVdjozng==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aa4C5tCupXqq3zrA+yolso65TahkTenWC6e/euv7Ndc=;
+ b=RYTFgYHFAK9kGpwOxIlgp5A6sYtHYyIVKLx7O+NmJXQTaZtCy/5/NAd2IS8YeIFepxlv+8xeU9NslThl8VQhQSq07+RL7aUSnpqyKAEGdiKgGa54rQPSThPDnFnLua/XPOh+/HPA3zL8cZqKbHhQDI13ev8Q2UekqmoBq7/8nHAzaFymrIIMpsKkrLJRsy9cRrUkUFRe4vMWaHCl7eYSVrL4pW+Eh01yGV/EODwlGsdVRfYjfbS26l/zf+r/sgj97+HIF/sRhHVK0T1s6Zci7Jof7KldgXSq67ppPje7FWjTLTwRnrTc/IhIPlagmqdrvTLNakBgbTce46Qv0WnSdQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=aa4C5tCupXqq3zrA+yolso65TahkTenWC6e/euv7Ndc=;
+ b=zyswlUB0/iigQTfUQJRSJbt82+7PipR1OOOP+b9+9HkRXyd2MQgYbAVRkZhGX5P++dE2ZIs7IQkXU1wFybtkJuivvOFMASFTLPGkQRmxPdV+v6gPSeJigfWpRfQOBGFpEhEO51bYJWC9DYqSIWnlDURtA0eNDNGJO6yffKdS3sE=
+Received: from DM6PR03MB4411.namprd03.prod.outlook.com (2603:10b6:5:10f::14)
+ by DM6PR03MB3787.namprd03.prod.outlook.com (2603:10b6:5:44::17) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2900.17; Mon, 13 Apr
+ 2020 04:31:29 +0000
+Received: from DM6PR03MB4411.namprd03.prod.outlook.com
+ ([fe80::c47f:ceee:cfda:6a7f]) by DM6PR03MB4411.namprd03.prod.outlook.com
+ ([fe80::c47f:ceee:cfda:6a7f%3]) with mapi id 15.20.2900.026; Mon, 13 Apr 2020
+ 04:31:29 +0000
+From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
+To:     "jic23@kernel.org" <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "Jonathan.Cameron@huawei.com" <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 1/6] iio:accel:mxc4005: Drop unnecessary explicit casts in
+ regmap_bulk_read calls
+Thread-Topic: [PATCH 1/6] iio:accel:mxc4005: Drop unnecessary explicit casts
+ in regmap_bulk_read calls
+Thread-Index: AQHWC3TZRHKV9xGe106JQLG1in8ocqh2gvYA
+Date:   Mon, 13 Apr 2020 04:31:29 +0000
+Message-ID: <6372edb1b9f88fdae77ad46d0b26388a99ba9c43.camel@analog.com>
+References: <20200405180321.1737310-1-jic23@kernel.org>
+         <20200405180321.1737310-2-jic23@kernel.org>
+In-Reply-To: <20200405180321.1737310-2-jic23@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [188.27.135.58]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 2f6cf437-4940-4016-6341-08d7df638948
+x-ms-traffictypediagnostic: DM6PR03MB3787:
+x-microsoft-antispam-prvs: <DM6PR03MB37874344D6B85ED3DBECA850F9DD0@DM6PR03MB3787.namprd03.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3631;
+x-forefront-prvs: 037291602B
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4411.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(10009020)(366004)(136003)(376002)(396003)(346002)(39850400004)(478600001)(110136005)(5660300002)(6512007)(36756003)(54906003)(2906002)(186003)(76116006)(26005)(316002)(91956017)(66946007)(66476007)(64756008)(66556008)(66446008)(4326008)(81156014)(2616005)(86362001)(8936002)(6486002)(71200400001)(6506007)(8676002);DIR:OUT;SFP:1101;
+received-spf: None (protection.outlook.com: analog.com does not designate
+ permitted sender hosts)
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: kyEQZhBy7XpCL0OeHpV4lvFojWDNkwr+jgha0K6X7EiFQThcYod9zyFTutEE5soejprWgKRY31nyCVurADZhMdvA8NZj+krV9yK9DsGJYcRr84R3/WJaDtVVQc95L325NjFoM3+uuhnZIrgShufBrS7s3eeZBnr6tc19OTjnNwOZZPfwmcShmGnmLVmE7YeSwDVaDeGK65V0bOp05ymypFchCiK4LJ4riyJGnYT4D0sJVaHBWAicfNzAFQWwlKmUX6zcLsUAe9STRuoFanq2yGNGGVElul1NdEajjW/M2s8rCmxEgkhIfs9uwWXfBsAbYMCBVmYpTE5tIEaIqpAYgpvWDswL9IGsonWnOfYRoazOP/H6SLOkDYTI4IwOBuK/5u6yvnEGwTj0dmWd2YJHPRpa69Hh9dcSJxexbUc64a4p3EGEvsdZMPND/x6gtJGF
+x-ms-exchange-antispam-messagedata: ZDxG0K5wSBraPkl2Fst5yMB38uPJtfMQHGCVeqgY+EKnTcyIgREtu+9XoiA8h8XlSK+vA1L4IH+ze/R27dEaVjIJy9j/Foil51Wph3xnpLp98rSFXaXDycMJD++CZQYP6Oa3nQItQdLTI6d9/kD7Nw==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <EC23D731EB0FDF4C8AA5218C107B4DFE@namprd03.prod.outlook.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <d7464094f82945ae7978a18e0117570b2c71c963.1586247885.git.lorenzo@kernel.org>
- <20200412142515.0b30b2b5@archlinux>
-In-Reply-To: <20200412142515.0b30b2b5@archlinux>
-From:   Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Date:   Mon, 13 Apr 2020 00:12:23 +0200
-Message-ID: <CAJ0CqmXuwE56eyi7p5-LydcAAnst4UjWgJnmPDTGZ__U8SSyjg@mail.gmail.com>
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: limit variales scope reading hw FIFO
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2f6cf437-4940-4016-6341-08d7df638948
+X-MS-Exchange-CrossTenant-originalarrivaltime: 13 Apr 2020 04:31:29.2524
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: OHK7fOcGWTN3yg2yIknATspuqoSmc/ipquPxaM8O3o9qd0yyQKfnrEtxGcnU+QIeAAIGJDubSZ4lIAUmdb8dBuv+OKZV9udwyW6LbIHMuCk=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3787
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-13_01:2020-04-12,2020-04-13 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ adultscore=0 spamscore=0 phishscore=0 bulkscore=0 mlxlogscore=999
+ clxscore=1015 impostorscore=0 priorityscore=1501 mlxscore=0 suspectscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004130040
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
->
-> On Tue,  7 Apr 2020 10:26:44 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->
-> > Fix following cppcheck warnings reported by kbuild test robot
-> >
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:313:15:
-> > warning: The scope of the variable 'word_len' can be reduced. [variableScope]
-> >                  ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:314:6:
-> > warning: The scope of the variable 'err' can be reduced. [variableScope]
-> >         ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:11:
-> > warning: The scope of the variable 'sip' can be reduced. [variableScope]
-> >              ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:16:
-> > warning: The scope of the variable 'acc_sip' can be reduced. [variableScope]
-> >                   ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:25:
-> > warning: The scope of the variable 'gyro_sip' can be reduced. [variableScope]
-> >                            ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:35:
-> > warning: The scope of the variable 'ts_sip' can be reduced. [variableScope]
-> >                                      ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:43:
-> > warning: The scope of the variable 'ext_sip' can be reduced. [variableScope]
-> >                                              ^
-> > drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c:341:62:
-> > warning: The scope of the variable 'offset' can be reduced. [variableScope]
-> >
-> > Reported-by: kbuild test robot <lkp@intel.com>
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> I find it hard to care about these to be honest.  I got the original report
-> at chose not to fix them :)  Anyhow, if you want to tidy them up that's fine
-> of course.
->
-> More interestingly this doesn't actually apply any more due to your sensor
-> hub patches.  If you want to respin on top of the testing branch of iio.git
-> then feel free.
->
-
-I agree with you, there are probably other 'errors' like that one so I
-guess we can just drop it.
-
-Regards,
-Lorenzo
-
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 12 +++++++-----
-> >  1 file changed, 7 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > index afd00daeefb2..849f01fbe76c 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > @@ -310,10 +310,12 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
-> >                                       u8 *data, unsigned int data_len,
-> >                                       unsigned int max_word_len)
-> >  {
-> > -     unsigned int word_len, read_len = 0;
-> > -     int err;
-> > +     unsigned int read_len = 0;
-> >
-> >       while (read_len < data_len) {
-> > +             unsigned int word_len;
-> > +             int err;
-> > +
-> >               word_len = min_t(unsigned int, data_len - read_len,
-> >                                max_word_len);
-> >               err = st_lsm6dsx_read_locked(hw, addr, data + read_len,
-> > @@ -338,7 +340,6 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
-> >  int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >  {
-> >       struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor, *ext_sensor = NULL;
-> > -     int err, sip, acc_sip, gyro_sip, ts_sip, ext_sip, read_len, offset;
-> >       u16 fifo_len, pattern_len = hw->sip * ST_LSM6DSX_SAMPLE_SIZE;
-> >       u16 fifo_diff_mask = hw->settings->fifo_ops.fifo_diff.mask;
-> >       u8 gyro_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
-> > @@ -346,6 +347,7 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >       u8 ext_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
-> >       bool reset_ts = false;
-> >       __le16 fifo_status;
-> > +     int err, read_len;
-> >       s64 ts = 0;
-> >
-> >       err = st_lsm6dsx_read_locked(hw,
-> > @@ -370,6 +372,8 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >               ext_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_EXT0]);
-> >
-> >       for (read_len = 0; read_len < fifo_len; read_len += pattern_len) {
-> > +             int acc_sip, gyro_sip, ts_sip, ext_sip, offset = 0, sip = 0;
-> > +
-> >               err = st_lsm6dsx_read_block(hw, ST_LSM6DSX_REG_FIFO_OUTL_ADDR,
-> >                                           hw->buff, pattern_len,
-> >                                           ST_LSM6DSX_MAX_WORD_LEN);
-> > @@ -399,8 +403,6 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
-> >               gyro_sip = gyro_sensor->sip;
-> >               acc_sip = acc_sensor->sip;
-> >               ts_sip = hw->ts_sip;
-> > -             offset = 0;
-> > -             sip = 0;
-> >
-> >               while (acc_sip > 0 || gyro_sip > 0 || ext_sip > 0) {
-> >                       if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
->
-
+T24gU3VuLCAyMDIwLTA0LTA1IGF0IDE5OjAzICswMTAwLCBqaWMyM0BrZXJuZWwub3JnIHdyb3Rl
+Og0KPiBGcm9tOiBKb25hdGhhbiBDYW1lcm9uIDxKb25hdGhhbi5DYW1lcm9uQGh1YXdlaS5jb20+
+DQo+IA0KPiByZWdtYXBfYnVsa19yZWFkIHRha2VzIGEgdm9pZCAqIGZvciBpdHMgdmFsIHBhcmFt
+ZXRlci4gSXQgY2VydGFpbmx5DQo+IG1ha2VzIG5vIHNlbnNlIHRvIGNhc3QgdG8gYSAodTggKikg
+KyBubyBuZWVkIHRvIGV4cGxpY2l0bHkgY2FzdA0KPiBhdCBhbGwgd2hlbiBjb252ZXJ0aW5nIGFu
+b3RoZXIgcG9pbnRlciB0eXBlIHRvIHZvaWQgKi4NCj4gDQoNClJldmlld2VkLWJ5OiBBbGV4YW5k
+cnUgQXJkZWxlYW4gPGFsZXhhbmRydS5hcmRlbGVhbkBhbmFsb2cuY29tPg0KDQo+IFNpZ25lZC1v
+ZmYtYnk6IEpvbmF0aGFuIENhbWVyb24gPEpvbmF0aGFuLkNhbWVyb25AaHVhd2VpLmNvbT4NCj4g
+LS0tDQo+ICBkcml2ZXJzL2lpby9hY2NlbC9teGM0MDA1LmMgfCA0ICsrLS0NCj4gIDEgZmlsZSBj
+aGFuZ2VkLCAyIGluc2VydGlvbnMoKyksIDIgZGVsZXRpb25zKC0pDQo+IA0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9paW8vYWNjZWwvbXhjNDAwNS5jIGIvZHJpdmVycy9paW8vYWNjZWwvbXhjNDAw
+NS5jDQo+IGluZGV4IDNkNWJlYTY1MTkyMy4uOWQwNzY0MmMwZGUxIDEwMDY0NA0KPiAtLS0gYS9k
+cml2ZXJzL2lpby9hY2NlbC9teGM0MDA1LmMNCj4gKysrIGIvZHJpdmVycy9paW8vYWNjZWwvbXhj
+NDAwNS5jDQo+IEBAIC0xMzUsNyArMTM1LDcgQEAgc3RhdGljIGludCBteGM0MDA1X3JlYWRfeHl6
+KHN0cnVjdCBteGM0MDA1X2RhdGEgKmRhdGEpDQo+ICAJaW50IHJldDsNCj4gIA0KPiAgCXJldCA9
+IHJlZ21hcF9idWxrX3JlYWQoZGF0YS0+cmVnbWFwLCBNWEM0MDA1X1JFR19YT1VUX1VQUEVSLA0K
+PiAtCQkJICAgICAgICh1OCAqKSBkYXRhLT5idWZmZXIsIHNpemVvZihkYXRhLT5idWZmZXIpKTsN
+Cj4gKwkJCSAgICAgICBkYXRhLT5idWZmZXIsIHNpemVvZihkYXRhLT5idWZmZXIpKTsNCj4gIAlp
+ZiAocmV0IDwgMCkgew0KPiAgCQlkZXZfZXJyKGRhdGEtPmRldiwgImZhaWxlZCB0byByZWFkIGF4
+ZXNcbiIpOw0KPiAgCQlyZXR1cm4gcmV0Ow0KPiBAQCAtMTUwLDcgKzE1MCw3IEBAIHN0YXRpYyBp
+bnQgbXhjNDAwNV9yZWFkX2F4aXMoc3RydWN0IG14YzQwMDVfZGF0YSAqZGF0YSwNCj4gIAlfX2Jl
+MTYgcmVnOw0KPiAgCWludCByZXQ7DQo+ICANCj4gLQlyZXQgPSByZWdtYXBfYnVsa19yZWFkKGRh
+dGEtPnJlZ21hcCwgYWRkciwgKHU4ICopICZyZWcsIHNpemVvZihyZWcpKTsNCj4gKwlyZXQgPSBy
+ZWdtYXBfYnVsa19yZWFkKGRhdGEtPnJlZ21hcCwgYWRkciwgJnJlZywgc2l6ZW9mKHJlZykpOw0K
+PiAgCWlmIChyZXQgPCAwKSB7DQo+ICAJCWRldl9lcnIoZGF0YS0+ZGV2LCAiZmFpbGVkIHRvIHJl
+YWQgcmVnICUwMnhcbiIsIGFkZHIpOw0KPiAgCQlyZXR1cm4gcmV0Ow0K
