@@ -2,148 +2,106 @@ Return-Path: <SRS0=VcbJ=57=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FB0FC2BB55
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 15:58:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 609E3C3815B
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:20:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5566E208FE
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 15:58:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 402CC20737
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:20:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=rere.qmqm.pl header.i=@rere.qmqm.pl header.b="J5wcI7lC"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="EP84ogsh"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2410032AbgDOP61 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Apr 2020 11:58:27 -0400
-Received: from rere.qmqm.pl ([91.227.64.183]:50851 "EHLO rere.qmqm.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2410018AbgDOP6Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 15 Apr 2020 11:58:25 -0400
-Received: from remote.user (localhost [127.0.0.1])
-        by rere.qmqm.pl (Postfix) with ESMTPSA id 492Rpj3tkWzCQ;
-        Wed, 15 Apr 2020 17:58:21 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=rere.qmqm.pl; s=1;
-        t=1586966302; bh=sPTpapXfr78FujPIIuXzxYq0FrcfINA6LgQokS6Lg8A=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=J5wcI7lCacgb85p4hxcKJf/Mb+FF/PRT6WeLeMcvDjLsjxB2nxIazKXeq0QmMH4Q+
-         tnqz4yVXdbc2SkjLA2y3ySkERydmBxPFu6M8JuAlFszNX3kjEb48eR5Kkje2q/b3wf
-         qHbOp0c74ffAYldJNNNxolqBREx9Bru7Kv+o2AIjGJpqy7J2x5GtrqaM/zmdL5M2X5
-         8W0UvekbJTdbFj7Dkt51EPlI+2ZezPLjFD/cIMssQkFbIhGd6L0jRL17sZRriPNPY6
-         8HsmRI+oQQiZS0BZOLF5VATAYrRUtMfHaKeN+7wDxYO/5FD+G6MziPQjW16EaOjiJF
-         1wNEXsmNVnF0g==
-X-Virus-Status: Clean
-X-Virus-Scanned: clamav-milter 0.102.2 at mail
-Date:   Wed, 15 Apr 2020 17:58:17 +0200
-From:   =?iso-8859-2?Q?Micha=B3_Miros=B3aw?= <mirq-linux@rere.qmqm.pl>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-input@vger.kernel.org,
-        Nick Reitemeyer <nick.reitemeyer@web.de>,
-        Stephan Gerhold <stephan@gerhold.net>
-Subject: Re: [PATCH] iio: magnetometer: ak8974: Provide scaling
-Message-ID: <20200415155817.GA19897@qmqm.qmqm.pl>
-References: <20200414211717.11472-1-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-2
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20200414211717.11472-1-linus.walleij@linaro.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        id S1415593AbgDOQUv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Apr 2020 12:20:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56238 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1415581AbgDOQUs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2020 12:20:48 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57D9FC061A0F;
+        Wed, 15 Apr 2020 09:20:47 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id u13so599720wrp.3;
+        Wed, 15 Apr 2020 09:20:47 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=6QvXfJZlpggMK4ANi6m9pBKzrWALkcbq78l8N8OifPg=;
+        b=EP84ogsh9NDfuDeE3+br9QlLD4Ex+blgDu0bl4JdBBHijrvMwx5Ayx/lPq1UAL5HkP
+         2iSzrh/x+r7yzQ1U7l/AKcTZ43apbQd3njUyoO2GRcPEGUig69BWCbdqxCx3bs2Qxvnr
+         lG4EE1ojjT+tMWb7o76l9kk1lkJbfiNaJQVzZKTFO/HYFOOoqXpaTA2SJGW6FVL3z0EG
+         4puC9NsOetsqDZ24YZArV7JkLS5GtldAWsfVkMyTLcv2/nOy+roSyHFSR8k13eLjP6ru
+         AB756opL2neDY1SHhJ3ByHiVjyUJnldUPor22kbx3Vqmv0a49eHK2hx1+3hhDUsgLBM9
+         hmsQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=6QvXfJZlpggMK4ANi6m9pBKzrWALkcbq78l8N8OifPg=;
+        b=dpbiHl15dkm2CQFCCpvEqXFEBhVnf14tB5qjuFLDSDMgkKyluCmUZnQ6UaPOmRbyb1
+         9HLzFo4kecUdvlUMvcO0YnqZtenXtZ3joglfsUbQKUUV7Ttp5/iVuRJ90UM02oCslXfA
+         Yf3Dyu30Kjn15JgNVzb6d47hRDSqzVUIiMtTAc6EMRIaEd3EsYpCq3vNPm/qr16IQmu/
+         RrJ2dVeRGjJZY9CbQs2aPa4z2n5RjdoqiRSEc5dHX7btgn4LV++gntKkg3ZExp3BE/Af
+         WwkPRWdYfXMfr2RYYVbvSpEeY3+CXbU5m50FmRZfiszffySiHTAcL3mBlXF68nlknQJf
+         M/vQ==
+X-Gm-Message-State: AGi0Puaxl3L9gCzMZxC5MvzRUjzXqzMZ30ueyp7/ojMOUqAlPFWwybws
+        EPo3yMywfIfirirP1AgMM0U=
+X-Google-Smtp-Source: APiQypKL0zfT975PKTD7SEXe+SHz+UWGx2gUY//ZiH52Ft9oqq66VmUYnhmuvVWOGYGTFrF1iwr8rQ==
+X-Received: by 2002:adf:cd8c:: with SMTP id q12mr31592637wrj.419.1586967646072;
+        Wed, 15 Apr 2020 09:20:46 -0700 (PDT)
+Received: from localhost.localdomain (p5B3F6CCC.dip0.t-ipconnect.de. [91.63.108.204])
+        by smtp.gmail.com with ESMTPSA id 17sm102526wmo.2.2020.04.15.09.20.45
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 15 Apr 2020 09:20:45 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
+        robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+        Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v9 6/6] MAINTAINERS: Add entry for mp2629 Battery Charger driver
+Date:   Wed, 15 Apr 2020 18:20:30 +0200
+Message-Id: <20200415162030.16414-7-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200415162030.16414-1-sravanhome@gmail.com>
+References: <20200415162030.16414-1-sravanhome@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Apr 14, 2020 at 11:17:17PM +0200, Linus Walleij wrote:
-> The manual for the HSCDTD008A gives us a scaling for the
-> three axis as +/- 2.4mT per axis.
-> 
-> When I implement this the biggest axis indicates 0.59 Gauss
-> which is a reasonable measurement for the earths magnetic
-> which is in the range of 0.25 to 0.65 Gauss on the surface
-> according to Wikipedia.
-> 
-> Since the raw read function is now also used for scaling
-> we need to break out a function that takes the locks and
-> runtime PM so we don't get too hairy goto:s.
-> 
-> Cc: Nick Reitemeyer <nick.reitemeyer@web.de>
-> Cc: Stephan Gerhold <stephan@gerhold.net>
-> Cc: Micha³ Miros³aw <mirq-linux@rere.qmqm.pl>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> This patch is based on top of Nick's patches for the
-> HSCDTD008A support.
-> ---
->  drivers/iio/magnetometer/ak8974.c | 66 +++++++++++++++++++++----------
->  1 file changed, 45 insertions(+), 21 deletions(-)
-> 
-> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-> index ade4ed8f67d2..effcdd93e650 100644
-> --- a/drivers/iio/magnetometer/ak8974.c
-> +++ b/drivers/iio/magnetometer/ak8974.c
-> @@ -554,46 +554,69 @@ static int ak8974_detect(struct ak8974 *ak8974)
->  	return 0;
->  }
->  
-> +static int ak8974_measure(struct ak8974 *ak8974, unsigned long address, s16 *val)
-> +{
-> +	__le16 hw_values[3];
-> +	int ret;
-> +
-> +	pm_runtime_get_sync(&ak8974->i2c->dev);
-> +	mutex_lock(&ak8974->lock);
-> +
-> +	ret = ak8974_trigmeas(ak8974);
-> +	if (ret)
-> +		goto out_unlock;
-> +	ret = ak8974_getresult(ak8974, hw_values);
-> +	if (ret)
-> +		goto out_unlock;
-> +	*val = (s16)le16_to_cpu(hw_values[address]);
+Add MAINTAINERS entry for Monolithic Power Systems mp2629 Charger driver.
 
-You could pass a pointer to int, and avoid later copy in
-ak8974_read_raw().
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+---
+ MAINTAINERS | 5 +++++
+ 1 file changed, 5 insertions(+)
 
-> +out_unlock:
-> +	mutex_unlock(&ak8974->lock);
-> +	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
-> +	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
-> +
-> +	return ret;
-> +}
-> +
->  static int ak8974_read_raw(struct iio_dev *indio_dev,
->  			   struct iio_chan_spec const *chan,
->  			   int *val, int *val2,
->  			   long mask)
->  {
->  	struct ak8974 *ak8974 = iio_priv(indio_dev);
-> -	__le16 hw_values[3];
->  	int ret = -EINVAL;
-> -
-> -	pm_runtime_get_sync(&ak8974->i2c->dev);
-> -	mutex_lock(&ak8974->lock);
-> +	s16 outval;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
->  		if (chan->address > 2) {
->  			dev_err(&ak8974->i2c->dev, "faulty channel address\n");
->  			ret = -EIO;
-> -			goto out_unlock;
-> +			goto out_err_read;
-[...]
-This can be just return -EIO since you've pushed the locks into separate
-function.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 32a95d162f06..0f82d5a7a614 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -11358,10 +11358,15 @@ F:	drivers/tty/mxser.*
+ MONOLITHIC POWER SYSTEM PMIC DRIVER
+ M:	Saravanan Sekar <sravanhome@gmail.com>
+ S:	Maintained
++F:	Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+ F:	Documentation/devicetree/bindings/regulator/mps,mp*.yaml
++F:	drivers/iio/adc/mp2629_adc.c
++F:	drivers/mfd/mp2629.c
++F:	drivers/power/supply/mp2629_charger.c
+ F:	drivers/regulator/mp5416.c
+ F:	drivers/regulator/mpq7920.c
+ F:	drivers/regulator/mpq7920.h
++F:	include/linux/mfd/mp2629.h
+ 
+ MR800 AVERMEDIA USB FM RADIO DRIVER
+ M:	Alexey Klimov <klimov.linux@gmail.com>
+-- 
+2.17.1
 
-Can you split the patch into one extracting the code for
-ak8974_measure() and second for adding the scale?
-
-Best Regards,
-Micha³ Miros³aw
