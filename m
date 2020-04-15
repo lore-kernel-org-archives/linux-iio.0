@@ -2,153 +2,164 @@ Return-Path: <SRS0=VcbJ=57=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BCDFEC2BB85
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:21:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62A48C2BA19
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:41:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9CE902137B
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:21:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3A3022064A
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 16:41:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aB+8LAPe"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="W82pyamZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1415581AbgDOQVW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Apr 2020 12:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56228 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1415559AbgDOQUm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2020 12:20:42 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F941C061A0C;
-        Wed, 15 Apr 2020 09:20:42 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id x25so251148wmc.0;
-        Wed, 15 Apr 2020 09:20:42 -0700 (PDT)
+        id S2406869AbgDOQlK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Apr 2020 12:41:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59438 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2404524AbgDOQlJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2020 12:41:09 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69186C061A0C;
+        Wed, 15 Apr 2020 09:41:06 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id 7so24838pjo.0;
+        Wed, 15 Apr 2020 09:41:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=kaq0gyVDK71RemoPPD/qDBGyBcEjT8bXtwKNY1omfRQ=;
-        b=aB+8LAPenu8u8j1QpgHPfqtPuw+2gk7m44m/yASBm7pHbXhE/pfhpizNu1p3P7UFv9
-         am3QPD3QN4JqJbymGvLY2IyNNCapui35nO/wjAk7bgEBBWv+kq5+aYyNTNs15WXq2jJG
-         hRjbMG2qnlciQcBi8HFzjotzGsB1D3vRYD+Z7YGDbGgcFzyuiakjoy+zAo0rihDzZteK
-         OLV53B3F4+9XcGB4Qh2Etb4eIM8eaZfZBEZzv4t4xrvK8VkuRu+6Tx/gQ+hObroBYUVq
-         BYgYPvecwi6otXKHaH9CmBLFfqfAryvVMKBqnSLZPr42tEwgP1R7QIbIAaiUuOVQEVjk
-         99+Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8fY6HIScFUhUnoCuOazyJ7I6i4IwGnwhNXDcGExeiw8=;
+        b=W82pyamZdYLII/DxDYCS0WiQMhoC57ijsJiJaNdq0w9QZtaxYZ8DQpLzBeGon5V3IU
+         zIO7yIVanbnWEQ/3mkzdwk2y0Dhy9jttKsD6kAci8bl0rCc+uzJ6uFXcLVB6Nkxp3Cri
+         HjXoyMsqEi8Oyb20fyNbtGfYvxCWH1Qiir9BPI0p76Q1u5QMz+2x06LmSUUYtbqOBsWl
+         ypBhp3VHH/OvXt1aNYpP5uO3C9A4USa/AZqSUY19AbcZ4wUTvL3O5dvkzQpXi5ZeRfKU
+         L1ku4GKTuaVbaYD6ySQC+o4mOfD1LsBadjFprlLV6smV0NWnhVPBTbRuenmf90hS4Wmr
+         vJ3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=kaq0gyVDK71RemoPPD/qDBGyBcEjT8bXtwKNY1omfRQ=;
-        b=TPdkQgd1fdIqNERZ/PsveuuGsepqOR3NsAZlHKtJF1J3rLKPlSlJgBhmTClt1pjylW
-         V3qvZ09WjXuMLZvopDIUSaca+4sF3cYFQua/er24wdTBC83AvlDJPUoGQTmSUl5ZbkvA
-         Duoj/s85JM2OA2TSnOY+lylK++CoJrUFKTUOCxIar2f8Xqc2ghiB1Em+/i+6RK3RDEQ/
-         44uWByeuKhXr/TGeDtgOGTAp84l/K9XlHTRXjDUOjE5rz07KRUU2Jzl201c33yeVXcB7
-         2rvRIsj7WPLTJmDTGhVJriTZVJk7eo5vfoyRFXIfowhfp5GsbrexHB+1EWeTDcErbksS
-         Judw==
-X-Gm-Message-State: AGi0PubFIj4Moz1CLCIbO4lJSeauSPEDQm5Pag0Z+omKLwT0qJAPfUgQ
-        yjfGP3x/FZ5Ut+pJwC+Q4s4=
-X-Google-Smtp-Source: APiQypK85StzSV6YhdZGFDOnj8XwLjnRbBVLo1rlb4at4q3Cl2x6KDIPfaGL+5DfyV1TfoM18T42+g==
-X-Received: by 2002:a1c:678a:: with SMTP id b132mr6166355wmc.107.1586967640041;
-        Wed, 15 Apr 2020 09:20:40 -0700 (PDT)
-Received: from localhost.localdomain (p5B3F6CCC.dip0.t-ipconnect.de. [91.63.108.204])
-        by smtp.gmail.com with ESMTPSA id 17sm102526wmo.2.2020.04.15.09.20.38
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Apr 2020 09:20:39 -0700 (PDT)
-From:   Saravanan Sekar <sravanhome@gmail.com>
-To:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
-        robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        Saravanan Sekar <sravanhome@gmail.com>
-Subject: [PATCH v9 1/6] dt-bindings: mfd: add document bindings for mp2629
-Date:   Wed, 15 Apr 2020 18:20:25 +0200
-Message-Id: <20200415162030.16414-2-sravanhome@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200415162030.16414-1-sravanhome@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8fY6HIScFUhUnoCuOazyJ7I6i4IwGnwhNXDcGExeiw8=;
+        b=mV4VDqHBu6gnYvieY/DNhhQkcmH2WY2CxsvkJRDCTnEi9mh3m5MIkAIP42l+7yAQg6
+         KsNxvqfsyQrv5DwldRf2cDfDX+l/HtFkidMrgRENRBz2wGatCJ4x9d3t2vbzCouWUHwi
+         CBkOgwzxoR962mtuzsietn5f0YnZ/JZDeq6e12KoLFnArTUv1dF7Z24Aq+r8QgLLSz79
+         OHGwZZ6f9KmfXuqBkOEmpLCct9PW1F2F53Zpps4FgiHhZvU/R5BErD3BhcFLGRt171eW
+         ofaQ9GAtD7qr2w4YnVY1YEl930YuFBBt4okAdFIdUav0RwbxjlDCQ7GIyVhhnYmDLv0l
+         bjMQ==
+X-Gm-Message-State: AGi0PualvDZL266589rGFZbxgV7QL8U2zO92haMDoPOrz2c+1wXJdL9L
+        OdEun1ksb5/4IcKBFPjvCrr7E6As2N52vqGzm14=
+X-Google-Smtp-Source: APiQypLpQ4BROYdkU/nhbjPTGt2JOPmF/DEXW5LmQFkYYyuvsNmnZbJZcRNBJoHz5G5fpiRtiT7hy0mb14znCc2fFY0=
+X-Received: by 2002:a17:902:aa09:: with SMTP id be9mr5868784plb.18.1586968865614;
+ Wed, 15 Apr 2020 09:41:05 -0700 (PDT)
+MIME-Version: 1.0
 References: <20200415162030.16414-1-sravanhome@gmail.com>
+In-Reply-To: <20200415162030.16414-1-sravanhome@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 15 Apr 2020 19:40:58 +0300
+Message-ID: <CAHp75VerGG0_J+fHrZfwJRa3EHtGuz-pJbD7zwoXN2jfO7dszA@mail.gmail.com>
+Subject: Re: [PATCH v9 0/6] Add battery charger driver support for MP2629
+To:     Saravanan Sekar <sravanhome@gmail.com>
+Cc:     Lee Jones <lee.jones@linaro.org>, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Sebastian Reichel <sre@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add device tree binding information for mp2629 mfd driver.
+On Wed, Apr 15, 2020 at 7:20 PM Saravanan Sekar <sravanhome@gmail.com> wrote:
+>
+> changes in v9:
+>  - fixed review comments in mp2629 power supply such as resource based
+>    iio channel, replace workqueue by threaded irq, irq get with "_optional"
+>
 
-Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
----
- .../devicetree/bindings/mfd/mps,mp2629.yaml   | 60 +++++++++++++++++++
- 1 file changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+May I ask you why you are ignoring my tag?
+If you don't want to have your patches reviewed / applied, just don't send them.
 
-diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-new file mode 100644
-index 000000000000..e71c554802a8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-@@ -0,0 +1,60 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mps,mp2629.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MP2629 Battery Charger PMIC from Monolithic Power System.
-+
-+maintainers:
-+  - Saravanan Sekar <sravanhome@gmail.com>
-+
-+description: |
-+  MP2629 is a PMIC providing battery charging and power supply for smartphones,
-+  wireless camera and portable devices. Chip is contrlled over I2C.
-+
-+  The battery charge management device handles battery charger controller and
-+  ADC IIO device for battery, system voltage
-+
-+properties:
-+  compatible:
-+    const: mps,mp2629
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+    description:
-+      The first cell is the IRQ number, the second cell is the trigger type.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-controller
-+  - "#interrupt-cells"
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/input/linux-event-codes.h>
-+    i2c@7e205000 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic@4b {
-+            compatible = "mps,mp2629";
-+            reg = <0x4b>;
-+
-+            interrupt-controller;
-+            interrupt-parent = <&gpio2>;
-+            #interrupt-cells = <2>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
+> changes in v8:
+>  - fixed order of call in probe/remove in iio adc
+>  - add ABI documentation for mp2629 power supply
+>
+> changes in v7:
+>  - fixed probe/remove order, managed and unmanaged call mix use in adc.
+>  - Documentation dual license, i2c node with controller address
+>
+> Overall looks good to me, FWIW,
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+>
+> One question though in reply to patch 4.
+>
+> changes in v6:
+>  - removed includes types.h in mfd, of_device.h in adc.
+>  - fixed review comments parentheses, err check, kstrtouint
+>
+> changes in v5:
+>  - removed platfrom data stored in mfd and directly accessed mfd struct in child
+>  - fixed spell check and capitalization in mfd and documentation
+>
+> changes in v4:
+>  - fixed capitalization in mfg Kconfig and documentation
+>
+> changes in v3:
+>  - regmap for children passed using platform data and remove mfd driver info
+>    access directly from children
+>
+> changes in v2:
+>  - removed EXPORT_SYMBOL of register set/get helper
+>  - regmap bit filed used, fixed other review comments
+>
+> This patch series add support for Battery charger control driver for Monolithic
+> Power System's MP2629 chipset, includes MFD driver for ADC battery & input
+> power supply measurement and battery charger control driver.
+>
+> Thanks,
+> Saravanan
+>
+> Saravanan Sekar (6):
+>   dt-bindings: mfd: add document bindings for mp2629
+>   mfd: mp2629: Add support for mps battery charger
+>   iio: adc: mp2629: Add support for mp2629 ADC driver
+>   power: supply: Add support for mps mp2629 battery charger
+>   power: supply: mp2629: Add impedance compenstation config
+>   MAINTAINERS: Add entry for mp2629 Battery Charger driver
+>
+>  .../ABI/testing/sysfs-class-power-mp2629      |   8 +
+>  .../devicetree/bindings/mfd/mps,mp2629.yaml   |  60 ++
+>  MAINTAINERS                                   |   5 +
+>  drivers/iio/adc/Kconfig                       |  10 +
+>  drivers/iio/adc/Makefile                      |   1 +
+>  drivers/iio/adc/mp2629_adc.c                  | 208 ++++++
+>  drivers/mfd/Kconfig                           |   9 +
+>  drivers/mfd/Makefile                          |   2 +
+>  drivers/mfd/mp2629.c                          |  86 +++
+>  drivers/power/supply/Kconfig                  |  10 +
+>  drivers/power/supply/Makefile                 |   1 +
+>  drivers/power/supply/mp2629_charger.c         | 667 ++++++++++++++++++
+>  include/linux/mfd/mp2629.h                    |  28 +
+>  13 files changed, 1095 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-class-power-mp2629
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+>  create mode 100644 drivers/iio/adc/mp2629_adc.c
+>  create mode 100644 drivers/mfd/mp2629.c
+>  create mode 100644 drivers/power/supply/mp2629_charger.c
+>  create mode 100644 include/linux/mfd/mp2629.h
+>
+> --
+> 2.17.1
+>
+
+
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
