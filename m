@@ -2,94 +2,94 @@ Return-Path: <SRS0=VcbJ=57=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63E04C3815B
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 19:34:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2855C2BA19
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 21:23:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3659520732
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 19:34:09 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="BoNkWHOq"
+	by mail.kernel.org (Postfix) with ESMTP id 79E8820732
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Apr 2020 21:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2633928AbgDOTdx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Apr 2020 15:33:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58028 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2411910AbgDOTdq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2020 15:33:46 -0400
-X-Greylist: delayed 1580 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 15 Apr 2020 12:33:46 PDT
-Received: from ns.pmeerw.net (ns.pmeerw.net [IPv6:2001:1b60:2:23:1033:103:0:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 513EBC061A10;
-        Wed, 15 Apr 2020 12:33:46 -0700 (PDT)
-Received: by ns.pmeerw.net (Postfix, from userid 1000)
-        id 0AE81E0451; Wed, 15 Apr 2020 21:33:44 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
-        t=1586979225; bh=zt+LqEm5Ju4itUmEBr0gu/NcCUHyrXsZ4W3aO6003Hs=;
-        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
-        b=BoNkWHOqhmGC1YIOQKnNi47aPOjh8xq5uaTcY8zyuFe6HNv3KnPhlwfdNDQohnotV
-         tzTtt7TnGpoANEtKIabW6z8elmtCW+WjP6T0nqp3i7ovSU7P9KiY1lB3YTDm9OUAlK
-         bc945YnMNQwk3F/1UmTOSHGOZxQ6rc74bEA1B2n0=
-Received: from localhost (localhost [127.0.0.1])
-        by ns.pmeerw.net (Postfix) with ESMTP id F1ED3E01A3;
-        Wed, 15 Apr 2020 21:33:44 +0200 (CEST)
-Date:   Wed, 15 Apr 2020 21:33:44 +0200 (CEST)
-From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To:     Saravanan Sekar <sravanhome@gmail.com>
-cc:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
-        robh+dt@kernel.org, jic23@kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org
-Subject: Re: [PATCH v9 5/6] power: supply: mp2629: Add impedance compenstation
- config
-In-Reply-To: <20200415162030.16414-6-sravanhome@gmail.com>
-Message-ID: <alpine.DEB.2.21.2004152132470.18914@vps.pmeerw.net>
-References: <20200415162030.16414-1-sravanhome@gmail.com> <20200415162030.16414-6-sravanhome@gmail.com>
-User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
+        id S2438919AbgDOVXO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Apr 2020 17:23:14 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:37605 "EHLO
+        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2438899AbgDOVXL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Apr 2020 17:23:11 -0400
+Received: from localhost (lfbn-lyo-1-9-35.w86-202.abo.wanadoo.fr [86.202.105.35])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 05AFA200003;
+        Wed, 15 Apr 2020 21:23:05 +0000 (UTC)
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Gregory CLEMENT <gregory.clement@bootlin.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH 1/3] iio: adc: ti-ads8344: properly byte swap value
+Date:   Wed, 15 Apr 2020 23:22:55 +0200
+Message-Id: <20200415212257.161238-2-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.25.2
+In-Reply-To: <20200415212257.161238-1-alexandre.belloni@bootlin.com>
+References: <20200415212257.161238-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 15 Apr 2020, Saravanan Sekar wrote:
+The first received byte is the MSB, followed by the LSB so the value needs
+to be byte swapped.
 
-subject: compensation
+Also, the ADC actually has a delay of one clock on the SPI bus. Read three
+bytes to get the last bit.
 
-comments below
+Fixes: 8dd2d7c0fed7 ("iio: adc: Add driver for the TI ADS8344 A/DC chips")
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+ drivers/iio/adc/ti-ads8344.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-> Allows the user to compensate the intrinsic resistance of the battery
-> to accelerate the charging cycle.
-> 
-> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-> ---
->  Documentation/ABI/testing/sysfs-class-power-mp2629 | 8 ++++++++
->  1 file changed, 8 insertions(+)
->  create mode 100644 Documentation/ABI/testing/sysfs-class-power-mp2629
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-class-power-mp2629 b/Documentation/ABI/testing/sysfs-class-power-mp2629
-> new file mode 100644
-> index 000000000000..7b7c0e7a7c45
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-class-power-mp2629
-> @@ -0,0 +1,8 @@
-> +What:		/sys/class/power_supply/mp2629_battery/batt_impedance_compen
-> +Date:		April 2020
-> +KernelVersion:	5.7
-> +Description:
-> +		Represents a battery impedance compenstation to accelerate charging.
-
-compensation
-
-> +
-> +                Access: Read, Write
-> +                Valid values: Represented in milli-ohms. Valid range is [0, 140].
-> 
-
+diff --git a/drivers/iio/adc/ti-ads8344.c b/drivers/iio/adc/ti-ads8344.c
+index 9a460807d46d..6da50ea35217 100644
+--- a/drivers/iio/adc/ti-ads8344.c
++++ b/drivers/iio/adc/ti-ads8344.c
+@@ -29,7 +29,6 @@ struct ads8344 {
+ 	struct mutex lock;
+ 
+ 	u8 tx_buf ____cacheline_aligned;
+-	u16 rx_buf;
+ };
+ 
+ #define ADS8344_VOLTAGE_CHANNEL(chan, si)				\
+@@ -76,6 +75,7 @@ static int ads8344_adc_conversion(struct ads8344 *adc, int channel,
+ {
+ 	struct spi_device *spi = adc->spi;
+ 	int ret;
++	u8 buf[3];
+ 
+ 	adc->tx_buf = ADS8344_START;
+ 	if (!differential)
+@@ -89,11 +89,11 @@ static int ads8344_adc_conversion(struct ads8344 *adc, int channel,
+ 
+ 	udelay(9);
+ 
+-	ret = spi_read(spi, &adc->rx_buf, 2);
++	ret = spi_read(spi, buf, sizeof(buf));
+ 	if (ret)
+ 		return ret;
+ 
+-	return adc->rx_buf;
++	return buf[0] << 9 | buf[1] << 1 | buf[2] >> 7;
+ }
+ 
+ static int ads8344_read_raw(struct iio_dev *iio,
 -- 
+2.25.2
 
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
