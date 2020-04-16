@@ -2,35 +2,36 @@ Return-Path: <SRS0=XMpF=6A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC5BC2BB85
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:44:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC16C2BB55
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:45:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2FAB0206D6
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:44:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DEB2821D95
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:45:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505201AbgDPLoN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Apr 2020 07:44:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57092 "EHLO
+        id S2506573AbgDPLpG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Apr 2020 07:45:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2505128AbgDPKgS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 06:36:18 -0400
-Received: from baptiste.telenet-ops.be (baptiste.telenet-ops.be [IPv6:2a02:1800:120:4::f00:13])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C475C03C1A6
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 03:36:14 -0700 (PDT)
+        with ESMTP id S2505189AbgDPKgN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 06:36:13 -0400
+X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Apr 2020 03:36:13 PDT
+Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEECC061A10
+        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 03:36:13 -0700 (PDT)
 Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:fd83:81bb:c1d7:433d])
-        by baptiste.telenet-ops.be with bizsmtp
-        id TNWz2200j4dKHqf01NWzN6; Thu, 16 Apr 2020 12:31:11 +0200
+        by xavier.telenet-ops.be with bizsmtp
+        id TNWz2200i4dKHqf01NWzxE; Thu, 16 Apr 2020 12:31:11 +0200
 Received: from rox.of.borg ([192.168.97.57])
         by ramsan with esmtp (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0001cz-Q0; Thu, 16 Apr 2020 12:30:59 +0200
+        id 1jP1nP-0001cj-Ll; Thu, 16 Apr 2020 12:30:59 +0200
 Received: from geert by rox.of.borg with local (Exim 4.90_1)
         (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0003zO-OP; Thu, 16 Apr 2020 12:30:59 +0200
+        id 1jP1nP-0003z7-JX; Thu, 16 Apr 2020 12:30:59 +0200
 From:   Geert Uytterhoeven <geert+renesas@glider.be>
 To:     Rob Herring <robh+dt@kernel.org>, Vinod Koul <vkoul@kernel.org>,
         David Airlie <airlied@linux.ie>,
@@ -49,66 +50,62 @@ Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
         dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
         alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH trivial 6/6] ASoC: Fix misspellings of "Analog Devices"
-Date:   Thu, 16 Apr 2020 12:30:58 +0200
-Message-Id: <20200416103058.15269-7-geert+renesas@glider.be>
+Subject: [PATCH trivial 0/6] Fix misspellings of "Analog Devices"
+Date:   Thu, 16 Apr 2020 12:30:52 +0200
+Message-Id: <20200416103058.15269-1-geert+renesas@glider.be>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200416103058.15269-1-geert+renesas@glider.be>
-References: <20200416103058.15269-1-geert+renesas@glider.be>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-According to https://www.analog.com/, the company name is spelled
-"Analog Devices".
+	Hi all,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- sound/soc/codecs/ad1980.c  | 2 +-
- sound/soc/codecs/ad73311.c | 2 +-
- sound/soc/codecs/wm8782.c  | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+In several files the company also known as ADI is spelled as "Analog
+Device".  However, according to https://www.analog.com/, the company
+name is spelled "Analog Devices".
 
-diff --git a/sound/soc/codecs/ad1980.c b/sound/soc/codecs/ad1980.c
-index c4414c725c1f945a..43b1337bac37f70f 100644
---- a/sound/soc/codecs/ad1980.c
-+++ b/sound/soc/codecs/ad1980.c
-@@ -2,7 +2,7 @@
- /*
-  * ad1980.c  --  ALSA Soc AD1980 codec support
-  *
-- * Copyright:	Analog Device Inc.
-+ * Copyright:	Analog Devices Inc.
-  * Author:	Roy Huang <roy.huang@analog.com>
-  * 		Cliff Cai <cliff.cai@analog.com>
-  */
-diff --git a/sound/soc/codecs/ad73311.c b/sound/soc/codecs/ad73311.c
-index 10daf61f02940b46..b98bf19f594e097f 100644
---- a/sound/soc/codecs/ad73311.c
-+++ b/sound/soc/codecs/ad73311.c
-@@ -2,7 +2,7 @@
- /*
-  * ad73311.c  --  ALSA Soc AD73311 codec support
-  *
-- * Copyright:	Analog Device Inc.
-+ * Copyright:	Analog Devices Inc.
-  * Author:	Cliff Cai <cliff.cai@analog.com>
-  */
- 
-diff --git a/sound/soc/codecs/wm8782.c b/sound/soc/codecs/wm8782.c
-index aa5577e364d01360..f89855c616ebe6e6 100644
---- a/sound/soc/codecs/wm8782.c
-+++ b/sound/soc/codecs/wm8782.c
-@@ -7,7 +7,7 @@
-  * Author: Johannes Stezenbach <js@sig21.net>
-  *
-  * based on ad73311.c
-- * Copyright:	Analog Device Inc.
-+ * Copyright:	Analog Devices Inc.
-  * Author:	Cliff Cai <cliff.cai@analog.com>
-  */
- 
+Hence this patch series, one per subsystem, fixes these misspellings.
+
+Thanks for your comments!
+
+Geert Uytterhoeven (6):
+  dt-bindings: Fix misspellings of "Analog Devices"
+  dma: Fix misspelling of "Analog Devices"
+  drm: Fix misspellings of "Analog Devices"
+  iio: Fix misspellings of "Analog Devices"
+  ALSA: Fix misspellings of "Analog Devices"
+  ASoC: Fix misspellings of "Analog Devices"
+
+ .../devicetree/bindings/display/bridge/adi,adv7123.txt        | 4 ++--
+ .../devicetree/bindings/display/bridge/adi,adv7511.txt        | 4 ++--
+ Documentation/devicetree/bindings/dma/adi,axi-dmac.txt        | 2 +-
+ Documentation/devicetree/bindings/iio/dac/ad5755.txt          | 2 +-
+ drivers/dma/Kconfig                                           | 2 +-
+ drivers/gpu/drm/bridge/adv7511/Kconfig                        | 2 +-
+ drivers/gpu/drm/drm_fb_cma_helper.c                           | 2 +-
+ drivers/gpu/drm/tegra/fb.c                                    | 2 +-
+ drivers/iio/adc/ad7791.c                                      | 2 +-
+ drivers/iio/trigger/iio-trig-hrtimer.c                        | 2 +-
+ drivers/staging/iio/Documentation/overview.txt                | 2 +-
+ sound/isa/ad1816a/ad1816a.c                                   | 2 +-
+ sound/pci/ac97/ac97_patch.c                                   | 2 +-
+ sound/pci/hda/Kconfig                                         | 4 ++--
+ sound/soc/codecs/ad1980.c                                     | 2 +-
+ sound/soc/codecs/ad73311.c                                    | 2 +-
+ sound/soc/codecs/wm8782.c                                     | 2 +-
+ 17 files changed, 20 insertions(+), 20 deletions(-)
+
 -- 
 2.17.1
 
+Gr{oetje,eeting}s,
+
+						Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+							    -- Linus Torvalds
