@@ -2,184 +2,165 @@ Return-Path: <SRS0=XMpF=6A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BF5C2BB55
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 14:10:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B83C8C2BB85
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 14:31:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 39984206D6
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 14:10:24 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GN52HuCO"
+	by mail.kernel.org (Postfix) with ESMTP id 9FDD521927
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 14:31:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729329AbgDPOKU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Apr 2020 10:10:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33846 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2393116AbgDPOJV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 10:09:21 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6191EC061A0C
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 07:09:21 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id v9so7910962ljk.12
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 07:09:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EcwerKQQEP8j7nclGhrMgaoQqJ2z0i0teVUv4cSWNXE=;
-        b=GN52HuCOuJ1SswJKMaB3uMoT9Eb7waHxo5fPIzcXanb+uCFUuFV9TkhM4PjXVBZGM4
-         X9GP/WnyyF12vzcnEFCYv7gJiciOItxiplPtQ813fPjhHClqYVqTvgWqTEjiVLTU1bms
-         Og8XEEhsp2X6ua24ARy8T8XZfkqUsljn7IRGAqPB2qSXuTLw19sluh/ley6xJnCCtHMa
-         5n+QFWr4zT6kwQ63EfIZqBR2gzX30JHDRng2AYTzLQ4DWUxX1hK3yE+MV4XlG4P+ZGIY
-         Etp9hrQ43oR1+uOnq0nhUh/Sh5WqYlC1+h1IeKX4VIbxG9eqaoREpo81upE/SDpDDH+l
-         DiRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=EcwerKQQEP8j7nclGhrMgaoQqJ2z0i0teVUv4cSWNXE=;
-        b=GIx1pwBGJoE5eWU45/KUGAFNS/r9fFfCnDzu5722rZQW0ePUdUDutBuVFAhnWdA2FK
-         pL6iidkjkTyVRWtLkHd6YBgf05S1wbzxpQQybZ/H6jRAuH1xQgGPVgfq8fJvnREPIExK
-         C5TV22xsNjy0vr8Z8LJsFl5l+WJCvEA9TLpN0otvCsRxPpeq71gAmkVFgh5cpJoGV8zw
-         GASjSt21pW+ukiqchdSmOb3hy/yjIHC3tnaXNogC4Olw8Ehzxr5zELuV+DRNj2p/ZiU4
-         xZUmQ/WGgLgdiEzCB9tME4ze3SKknlwn3uF9kl5fpTuE26et7y3uG0xMC/Vt3oCsRDcl
-         b5Rw==
-X-Gm-Message-State: AGi0PubO9xrcJUhoHQk4dRdEp0jAxWl0iQhdRAxoIEFoba7v2SVjBSPf
-        zWOkBAozOwqWuZvvshpS/TcdCA==
-X-Google-Smtp-Source: APiQypJcSV0LCNGO0pS1gyWwCMCoYh6wY2j+JWPGs+yObCYqdjzVp901POV40kM+hMkZGLw4VxCyCQ==
-X-Received: by 2002:a05:651c:39b:: with SMTP id e27mr6962616ljp.45.1587046159829;
-        Thu, 16 Apr 2020 07:09:19 -0700 (PDT)
-Received: from localhost.bredbandsbolaget (c-f3d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.243])
-        by smtp.gmail.com with ESMTPSA id v12sm9744045ljd.85.2020.04.16.07.09.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Apr 2020 07:09:19 -0700 (PDT)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-input@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Nick Reitemeyer <nick.reitemeyer@web.de>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>
-Subject: [PATCH 1/2 v2] iio: magnetometer: ak8974: Break out measurement
-Date:   Thu, 16 Apr 2020 16:09:16 +0200
-Message-Id: <20200416140917.8087-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.21.1
+        id S2405655AbgDPObR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Apr 2020 10:31:17 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32204 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2388206AbgDPObI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 10:31:08 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03GESLf9028407;
+        Thu, 16 Apr 2020 10:31:06 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 30dn9ady19-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Apr 2020 10:31:05 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 03GEV4xv050325
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 16 Apr 2020 10:31:04 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 16 Apr
+ 2020 10:31:03 -0400
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Thu, 16 Apr 2020 10:31:03 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03GEV1gm014494;
+        Thu, 16 Apr 2020 10:31:01 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: buffer: rework buffer attr read-only stat-flags with 'is_visible' hook
+Date:   Thu, 16 Apr 2020 17:31:43 +0300
+Message-ID: <20200416143143.80046-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-16_05:2020-04-14,2020-04-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ impostorscore=0 bulkscore=0 malwarescore=0 mlxlogscore=937 clxscore=1015
+ mlxscore=0 priorityscore=1501 suspectscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004160104
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This breaks out the measurement code to its own function
-so we can handle this without swirling it up with the
-bis switch() statement inside ak8974_read_raw().
+The kernel provides a facility for attribute groups to specify the stat
+flags of a sysfs file with an 'is_visible()' hook. This mechanism is
+usually more flexible than assigning read-only attributes at construction
+time.
+It's added-value is a bit more apparent when the number of attributes
+grows, so for sysfs buffer attributes this change may not be that be useful
+quite now.
 
-Use an intermediary s16* variable since we read s16 but
-the external API required an int* so this way we get
-explicit casting.
+It should become more useful as the sysfs structure for buffer attributes
+gets changed a bit.
 
-Cc: Nick Reitemeyer <nick.reitemeyer@web.de>
-Cc: Stephan Gerhold <stephan@gerhold.net>
-Cc: Michał Mirosław <mirq-linux@rere.qmqm.pl>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
-ChangeLog v1->v2:
-- Break out as a separate patch.
----
- drivers/iio/magnetometer/ak8974.c | 51 +++++++++++++++++++------------
- 1 file changed, 31 insertions(+), 20 deletions(-)
+ drivers/iio/industrialio-buffer.c | 48 ++++++++++++++++++++++---------
+ 1 file changed, 35 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-index ade4ed8f67d2..5361647b9054 100644
---- a/drivers/iio/magnetometer/ak8974.c
-+++ b/drivers/iio/magnetometer/ak8974.c
-@@ -554,46 +554,57 @@ static int ak8974_detect(struct ak8974 *ak8974)
- 	return 0;
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 221157136af6..60bb03e72afc 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1214,24 +1214,50 @@ static ssize_t iio_dma_show_data_available(struct device *dev,
+ 	return sprintf(buf, "%zu\n", bytes);
  }
  
-+static int ak8974_measure(struct ak8974 *ak8974, unsigned long address, s16 *val)
++enum {
++	IIO_BUFFER_ATTR_LENGTH,
++	IIO_BUFFER_ATTR_ENABLE,
++	IIO_BUFFER_ATTR_WATERMARK,
++	IIO_BUFFER_ATTR_DATA_AVAILABLE,
++	__IIO_BUFFER_ATTR_MAX
++};
++
++static umode_t iio_buffer_attr_group_is_visible(struct kobject *kobj,
++						struct attribute *attr,
++						int index)
 +{
-+	__le16 hw_values[3];
-+	int ret;
++	struct device *dev = container_of(kobj, struct device, kobj);
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_buffer *buffer = indio_dev->buffer;
 +
-+	pm_runtime_get_sync(&ak8974->i2c->dev);
-+	mutex_lock(&ak8974->lock);
-+
-+	ret = ak8974_trigmeas(ak8974);
-+	if (ret)
-+		goto out_unlock;
-+	ret = ak8974_getresult(ak8974, hw_values);
-+	if (ret)
-+		goto out_unlock;
-+	*val = (s16)le16_to_cpu(hw_values[address]);
-+out_unlock:
-+	mutex_unlock(&ak8974->lock);
-+	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
-+	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
-+
-+	return ret;
++	switch (index) {
++	case IIO_BUFFER_ATTR_LENGTH:
++		if (!buffer->access->set_length)
++			return S_IRUGO;
++		return attr->mode;
++	case IIO_BUFFER_ATTR_WATERMARK:
++		if (buffer->access->flags & INDIO_BUFFER_FLAG_FIXED_WATERMARK)
++			return S_IRUGO;
++		return attr->mode;
++	default:
++		return attr->mode;
++	}
 +}
 +
- static int ak8974_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2,
- 			   long mask)
- {
- 	struct ak8974 *ak8974 = iio_priv(indio_dev);
--	__le16 hw_values[3];
- 	int ret = -EINVAL;
--
--	pm_runtime_get_sync(&ak8974->i2c->dev);
--	mutex_lock(&ak8974->lock);
-+	s16 outval;
+ static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
+ 		   iio_buffer_write_length);
+-static struct device_attribute dev_attr_length_ro = __ATTR(length,
+-	S_IRUGO, iio_buffer_read_length, NULL);
+ static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
+ 		   iio_buffer_show_enable, iio_buffer_store_enable);
+ static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
+ 		   iio_buffer_show_watermark, iio_buffer_store_watermark);
+-static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
+-	S_IRUGO, iio_buffer_show_watermark, NULL);
+ static DEVICE_ATTR(data_available, S_IRUGO,
+ 		iio_dma_show_data_available, NULL);
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		if (chan->address > 2) {
- 			dev_err(&ak8974->i2c->dev, "faulty channel address\n");
- 			ret = -EIO;
--			goto out_unlock;
-+			goto out_err_read;
- 		}
--		ret = ak8974_trigmeas(ak8974);
--		if (ret)
--			goto out_unlock;
--		ret = ak8974_getresult(ak8974, hw_values);
--		if (ret)
--			goto out_unlock;
--
- 		/*
- 		 * We read all axes and discard all but one, for optimized
- 		 * reading, use the triggered buffer.
- 		 */
--		*val = (s16)le16_to_cpu(hw_values[chan->address]);
--
-+		ret = ak8974_measure(ak8974, chan->address, &outval);
-+		if (ret)
-+			goto out_err_read;
-+		*val = outval;
- 		ret = IIO_VAL_INT;
-+		break;
- 	}
--
-- out_unlock:
--	mutex_unlock(&ak8974->lock);
--	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
--	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
--
-+out_err_read:
- 	return ret;
- }
+ static struct attribute *iio_buffer_attrs[] = {
+-	&dev_attr_length.attr,
+-	&dev_attr_enable.attr,
+-	&dev_attr_watermark.attr,
+-	&dev_attr_data_available.attr,
++	[IIO_BUFFER_ATTR_LENGTH] = &dev_attr_length.attr,
++	[IIO_BUFFER_ATTR_ENABLE] = &dev_attr_enable.attr,
++	[IIO_BUFFER_ATTR_WATERMARK] = &dev_attr_watermark.attr,
++	[IIO_BUFFER_ATTR_DATA_AVAILABLE] = &dev_attr_data_available.attr,
+ };
  
+ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+@@ -1266,11 +1292,6 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 
+ 	memcpy(attr, iio_buffer_attrs, sizeof(iio_buffer_attrs));
+-	if (!buffer->access->set_length)
+-		attr[0] = &dev_attr_length_ro.attr;
+-
+-	if (buffer->access->flags & INDIO_BUFFER_FLAG_FIXED_WATERMARK)
+-		attr[2] = &dev_attr_watermark_ro.attr;
+ 
+ 	if (buffer->attrs)
+ 		memcpy(&attr[ARRAY_SIZE(iio_buffer_attrs)], buffer->attrs,
+@@ -1279,6 +1300,7 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	attr[attrcount + ARRAY_SIZE(iio_buffer_attrs)] = NULL;
+ 
+ 	buffer->buffer_group.name = "buffer";
++	buffer->buffer_group.is_visible = iio_buffer_attr_group_is_visible;
+ 	buffer->buffer_group.attrs = attr;
+ 
+ 	indio_dev->groups[indio_dev->groupcounter++] = &buffer->buffer_group;
 -- 
-2.21.1
+2.17.1
 
