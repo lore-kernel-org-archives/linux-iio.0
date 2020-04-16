@@ -6,106 +6,85 @@ X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC16C2BB55
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:45:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAE73C352BE
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:58:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DEB2821D95
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:45:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CCA9921D7F
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:58:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2506573AbgDPLpG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Apr 2020 07:45:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57070 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2505189AbgDPKgN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 06:36:13 -0400
-X-Greylist: delayed 301 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 16 Apr 2020 03:36:13 PDT
-Received: from xavier.telenet-ops.be (xavier.telenet-ops.be [IPv6:2a02:1800:120:4::f00:14])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EEECC061A10
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 03:36:13 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:fd83:81bb:c1d7:433d])
-        by xavier.telenet-ops.be with bizsmtp
-        id TNWz2200i4dKHqf01NWzxE; Thu, 16 Apr 2020 12:31:11 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0001cj-Ll; Thu, 16 Apr 2020 12:30:59 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0003z7-JX; Thu, 16 Apr 2020 12:30:59 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Rob Herring <robh+dt@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jiri Kosina <trivial@kernel.org>
-Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH trivial 0/6] Fix misspellings of "Analog Devices"
-Date:   Thu, 16 Apr 2020 12:30:52 +0200
-Message-Id: <20200416103058.15269-1-geert+renesas@glider.be>
+        id S2634587AbgDPL6S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Apr 2020 07:58:18 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:58538 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2634544AbgDPL6J (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 07:58:09 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03GBqVpS019700;
+        Thu, 16 Apr 2020 07:58:07 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 30dn9adgm7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 16 Apr 2020 07:58:07 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 03GBw6K9016564
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Thu, 16 Apr 2020 07:58:06 -0400
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 16 Apr
+ 2020 04:58:04 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Thu, 16 Apr 2020 04:58:04 -0700
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03GBw2DW013213;
+        Thu, 16 Apr 2020 07:58:03 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <jic23@kernel.org>, <robh+dt@kernel.org>
+Subject: [PATCH v2 0/2] iio: dac: ad5770r: dt bindings fixes
+Date:   Thu, 16 Apr 2020 14:58:46 +0300
+Message-ID: <20200416115848.56156-1-alexandru.tachici@analog.com>
 X-Mailer: git-send-email 2.17.1
+MIME-Version: 1.0
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
+ definitions=2020-04-16_03:2020-04-14,2020-04-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ impostorscore=0 bulkscore=0 malwarescore=0 mlxlogscore=709 clxscore=1015
+ mlxscore=0 priorityscore=1501 suspectscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2003020000 definitions=main-2004160084
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-	Hi all,
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-In several files the company also known as ADI is spelled as "Analog
-Device".  However, according to https://www.analog.com/, the company
-name is spelled "Analog Devices".
+This aims to replace use of num property from dt nodes with
+reg property both in dt bindings and driver and fix
+dt bindings errors.
 
-Hence this patch series, one per subsystem, fixes these misspellings.
+1. read from fwnode reg property instead of num property
 
-Thanks for your comments!
+2. replace num property with reg property and fix dt
+bindings errors
 
-Geert Uytterhoeven (6):
-  dt-bindings: Fix misspellings of "Analog Devices"
-  dma: Fix misspelling of "Analog Devices"
-  drm: Fix misspellings of "Analog Devices"
-  iio: Fix misspellings of "Analog Devices"
-  ALSA: Fix misspellings of "Analog Devices"
-  ASoC: Fix misspellings of "Analog Devices"
+Changelog v1 -> v2:
+	- replaced "oneOf:" with items for adi,range-microamp
+	- added reg allowed values to each channel
 
- .../devicetree/bindings/display/bridge/adi,adv7123.txt        | 4 ++--
- .../devicetree/bindings/display/bridge/adi,adv7511.txt        | 4 ++--
- Documentation/devicetree/bindings/dma/adi,axi-dmac.txt        | 2 +-
- Documentation/devicetree/bindings/iio/dac/ad5755.txt          | 2 +-
- drivers/dma/Kconfig                                           | 2 +-
- drivers/gpu/drm/bridge/adv7511/Kconfig                        | 2 +-
- drivers/gpu/drm/drm_fb_cma_helper.c                           | 2 +-
- drivers/gpu/drm/tegra/fb.c                                    | 2 +-
- drivers/iio/adc/ad7791.c                                      | 2 +-
- drivers/iio/trigger/iio-trig-hrtimer.c                        | 2 +-
- drivers/staging/iio/Documentation/overview.txt                | 2 +-
- sound/isa/ad1816a/ad1816a.c                                   | 2 +-
- sound/pci/ac97/ac97_patch.c                                   | 2 +-
- sound/pci/hda/Kconfig                                         | 4 ++--
- sound/soc/codecs/ad1980.c                                     | 2 +-
- sound/soc/codecs/ad73311.c                                    | 2 +-
- sound/soc/codecs/wm8782.c                                     | 2 +-
- 17 files changed, 20 insertions(+), 20 deletions(-)
+Alexandru Tachici (2):
+  iio: dac: ad5770r: read channel nr from reg
+  dt-bindings: iio: dac: AD5570R fix bindings errors
+
+ .../bindings/iio/dac/adi,ad5770r.yaml         | 82 +++++++++----------
+ drivers/iio/dac/ad5770r.c                     |  2 +-
+ 2 files changed, 40 insertions(+), 44 deletions(-)
 
 -- 
-2.17.1
+2.20.1
 
-Gr{oetje,eeting}s,
-
-						Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-							    -- Linus Torvalds
