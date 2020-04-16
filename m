@@ -2,85 +2,135 @@ Return-Path: <SRS0=XMpF=6A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84B16C38A29
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 10:49:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25AFCC2BB55
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:33:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6F9C022204
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 10:49:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00FAB21D7F
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Apr 2020 11:33:27 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZtnbFjIX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2505234AbgDPKs7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Apr 2020 06:48:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57100 "EHLO
+        id S2633553AbgDPLdY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Apr 2020 07:33:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37822 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2505243AbgDPKgX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 06:36:23 -0400
-Received: from andre.telenet-ops.be (andre.telenet-ops.be [IPv6:2a02:1800:120:4::f00:15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F217C025483
-        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 03:36:14 -0700 (PDT)
-Received: from ramsan ([IPv6:2a02:1810:ac12:ed60:fd83:81bb:c1d7:433d])
-        by andre.telenet-ops.be with bizsmtp
-        id TNWz2200X4dKHqf01NWzRY; Thu, 16 Apr 2020 12:31:11 +0200
-Received: from rox.of.borg ([192.168.97.57])
-        by ramsan with esmtp (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0001ck-MK; Thu, 16 Apr 2020 12:30:59 +0200
-Received: from geert by rox.of.borg with local (Exim 4.90_1)
-        (envelope-from <geert@linux-m68k.org>)
-        id 1jP1nP-0003zB-LC; Thu, 16 Apr 2020 12:30:59 +0200
-From:   Geert Uytterhoeven <geert+renesas@glider.be>
-To:     Rob Herring <robh+dt@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S2633529AbgDPLdQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Apr 2020 07:33:16 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9708AC061A0C
+        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 04:33:15 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id 198so5319074lfo.7
+        for <linux-iio@vger.kernel.org>; Thu, 16 Apr 2020 04:33:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dZXyKWWyETrlLsP8MP/5ANSEwhcD1vRzeNbXaoZ1FlQ=;
+        b=ZtnbFjIXjubeS6JcX+8DoYi/vy15QVyxl7cKN0GWBZRYUB0ZLKg6xjCzrG3JXlwILO
+         uDLuVQ9pj6WJG6c+onVOPCtQhVn9f6PJh2D53fGRj0SEO+7L5LVsjO9nQq8jJYAJjhsY
+         yWsl14a+KuSDynhsGbFfEUjc0z4KC3E3uXnPdOfpXL6v4b0c8w9gwaiRj/ASZP5nr5fD
+         TNFEFiM7ZN7q0Akzkk7Mv9FiV9UfWiOt1oFblgSCSkN9PHFN+ofYqolkieMRulp2te1N
+         GGAfjIS2TyTq7TYVuxtpbrSgd8PSVgqqRUn8xtiRalg4QNJnUo4U6qkRR9P+uOAHvqCY
+         +fog==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dZXyKWWyETrlLsP8MP/5ANSEwhcD1vRzeNbXaoZ1FlQ=;
+        b=j4WnRNlf3YKiCEIagkTzHxhIyWFCu2qesygHKepoR6Z2HVldWzd3+HdT7v8KydukBd
+         Ali6RsvWCzEGc0V1FqL19Jdpk1DDN8my/cl0qu3sgDl7qt57/9u1B3KKL2k2f6m93whY
+         lPTZVzYJV+LW497trYXjx6tw2NgIwq4pg9u9+mW3GknoYMaDSF7ov+ZURUVOf17ralWG
+         MoMwY5VzPUcKtxKBjYVmcuccw9MCEZIOcNdBe1grFx+b3v5FUoMrxJHQiRD/JPw6CCav
+         3BuUQmESfbqaISqMjiENGFUcjktaeP6sAK5//vPLq05rlOiREg132OQcn/orPmNA9A89
+         0o8A==
+X-Gm-Message-State: AGi0PuaXiOj8CF6bmnPw4mo5riVJd1wdeanU5nJqrRV7hDSGiuTHhkaK
+        vQqTYUH9UPSYfDqCXTpQuXZ5xlnTmhRMk8kmP+WJkg==
+X-Google-Smtp-Source: APiQypIkVbWK0Y/NjP6SU5E5L6VATrX3t+lUaZZYekHGYc+ikfyuybV0BXu40Puubowf7WnD35eo+JaAfoRr1FC2kTk=
+X-Received: by 2002:ac2:5c4e:: with SMTP id s14mr5882671lfp.77.1587036794076;
+ Thu, 16 Apr 2020 04:33:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200414222713.32660-1-digetx@gmail.com>
+In-Reply-To: <20200414222713.32660-1-digetx@gmail.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Thu, 16 Apr 2020 13:33:03 +0200
+Message-ID: <CACRpkdY_J8e127etFFYkoxLDDkc334Xgg8ZbapdU36oGsaZ08g@mail.gmail.com>
+Subject: Re: [PATCH v1] iio: magnetometer: ak8974: Silence deferred-probe error
+To:     Dmitry Osipenko <digetx@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Stefan Popa <stefan.popa@analog.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jiri Kosina <trivial@kernel.org>
-Cc:     devicetree@vger.kernel.org, dmaengine@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>
-Subject: [PATCH trivial 2/6] dma: Fix misspelling of "Analog Devices"
-Date:   Thu, 16 Apr 2020 12:30:54 +0200
-Message-Id: <20200416103058.15269-3-geert+renesas@glider.be>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200416103058.15269-1-geert+renesas@glider.be>
-References: <20200416103058.15269-1-geert+renesas@glider.be>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-According to https://www.analog.com/, the company name is spelled
-"Analog Devices".
+Hi Dmitry,
 
-Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
----
- drivers/dma/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+thanks for your patch!
 
-diff --git a/drivers/dma/Kconfig b/drivers/dma/Kconfig
-index 0924836443152fb5..c35c0e03b40f026b 100644
---- a/drivers/dma/Kconfig
-+++ b/drivers/dma/Kconfig
-@@ -106,7 +106,7 @@ config AXI_DMAC
- 	select REGMAP_MMIO
- 	help
- 	  Enable support for the Analog Devices AXI-DMAC peripheral. This DMA
--	  controller is often used in Analog Device's reference designs for FPGA
-+	  controller is often used in Analog Devices' reference designs for FPGA
- 	  platforms.
- 
- config BCM_SBA_RAID
--- 
-2.17.1
+On Wed, Apr 15, 2020 at 12:27 AM Dmitry Osipenko <digetx@gmail.com> wrote:
 
+> It's not uncommon that voltage regulator becomes available later during
+> kernel's boot process, in this case there is no need to print a noisy
+> error message. This patch moves the message about unavailable regulator
+> to the debug level in a case of the deferred-probe error and also amends
+> the message with error code.
+>
+> Signed-off-by: Dmitry Osipenko <digetx@gmail.com>
+> ---
+>  drivers/iio/magnetometer/ak8974.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> index d32996702110..cc3861f97d42 100644
+> --- a/drivers/iio/magnetometer/ak8974.c
+> +++ b/drivers/iio/magnetometer/ak8974.c
+> @@ -718,6 +718,7 @@ static const struct regmap_config ak8974_regmap_config = {
+>  static int ak8974_probe(struct i2c_client *i2c,
+>                         const struct i2c_device_id *id)
+>  {
+> +       const char *level = KERN_ERR;
+>         struct iio_dev *indio_dev;
+>         struct ak8974 *ak8974;
+>         unsigned long irq_trig;
+> @@ -746,7 +747,11 @@ static int ak8974_probe(struct i2c_client *i2c,
+>                                       ARRAY_SIZE(ak8974->regs),
+>                                       ak8974->regs);
+>         if (ret < 0) {
+> -               dev_err(&i2c->dev, "cannot get regulators\n");
+> +               if (ret == -EPROBE_DEFER)
+> +                       level = KERN_DEBUG;
+> +
+> +               dev_printk(level, &i2c->dev, "cannot get regulators: %d\n",
+
+This misses some important aspects of dev_dbg(), notably this:
+
+#if defined(CONFIG_DYNAMIC_DEBUG)
+#define dev_dbg(dev, fmt, ...)                                          \
+        dynamic_dev_dbg(dev, dev_fmt(fmt), ##__VA_ARGS__)
+#elif defined(DEBUG)
+#define dev_dbg(dev, fmt, ...)                                          \
+        dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__)
+#else
+#define dev_dbg(dev, fmt, ...)                                          \
+({                                                                      \
+        if (0)                                                          \
+                dev_printk(KERN_DEBUG, dev, dev_fmt(fmt), ##__VA_ARGS__); \
+})
+#endif
+
+If DEBUG is not defined the entire dev_dbg() message is enclodes in if (0)
+and compiled out of the kernel, saving space. The above does not
+fulfil that.
+
+Yours,
+Linus Walleij
