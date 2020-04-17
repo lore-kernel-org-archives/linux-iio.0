@@ -2,77 +2,125 @@ Return-Path: <SRS0=UPod=6B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F91DC352BE
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 09:24:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2207C38A29
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 09:39:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 36E44221EA
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 09:24:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A7924221EC
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 09:39:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730200AbgDQJYD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Apr 2020 05:24:03 -0400
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2057 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1730169AbgDQJYD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 17 Apr 2020 05:24:03 -0400
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
-        by Forcepoint Email with ESMTP id AC71BA26D8F55EC5BE24;
-        Fri, 17 Apr 2020 10:24:02 +0100 (IST)
-Received: from localhost (10.47.87.249) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 17 Apr
- 2020 10:24:02 +0100
-Date:   Fri, 17 Apr 2020 10:23:50 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Chris Ruehl <chris.ruehl@gtsys.com.hk>
-CC:     <linux-iio@vger.kernel.org>
-Subject: Re: inquiry: where to place iio/ bandpass filter driver
-Message-ID: <20200417102350.00003a28@Huawei.com>
-In-Reply-To: <55472b69-c587-ca04-d3b9-c8615e6a652d@gtsys.com.hk>
-References: <55472b69-c587-ca04-d3b9-c8615e6a652d@gtsys.com.hk>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.87.249]
-X-ClientProxiedBy: lhreml723-chm.china.huawei.com (10.201.108.74) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+        id S1730396AbgDQJjE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Apr 2020 05:39:04 -0400
+Received: from mx2.suse.de ([195.135.220.15]:34602 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730324AbgDQJjE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 17 Apr 2020 05:39:04 -0400
+X-Virus-Scanned: by amavisd-new at test-mx.suse.de
+Received: from relay2.suse.de (unknown [195.135.220.254])
+        by mx2.suse.de (Postfix) with ESMTP id 4FB76B02B;
+        Fri, 17 Apr 2020 09:39:00 +0000 (UTC)
+Date:   Fri, 17 Apr 2020 11:39:00 +0200
+Message-ID: <s5hd086bgej.wl-tiwai@suse.de>
+From:   Takashi Iwai <tiwai@suse.de>
+To:     Geert Uytterhoeven <geert+renesas@glider.be>
+Cc:     Rob Herring <robh+dt@kernel.org>, Vinod Koul <vkoul@kernel.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Stefan Popa <stefan.popa@analog.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jiri Kosina <trivial@kernel.org>, <devicetree@vger.kernel.org>,
+        <dmaengine@vger.kernel.org>, <dri-devel@lists.freedesktop.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH trivial 5/6] ALSA: Fix misspellings of "Analog Devices"
+In-Reply-To: <20200416103058.15269-6-geert+renesas@glider.be>
+References: <20200416103058.15269-1-geert+renesas@glider.be>
+        <20200416103058.15269-6-geert+renesas@glider.be>
+User-Agent: Wanderlust/2.15.9 (Almost Unreal) SEMI/1.14.6 (Maruoka)
+ FLIM/1.14.9 (=?UTF-8?B?R29qxY0=?=) APEL/10.8 Emacs/25.3
+ (x86_64-suse-linux-gnu) MULE/6.0 (HANACHIRUSATO)
+MIME-Version: 1.0 (generated by SEMI 1.14.6 - "Maruoka")
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 16 Apr 2020 11:48:31 +0800
-Chris Ruehl <chris.ruehl@gtsys.com.hk> wrote:
-
-> Hi,
+On Thu, 16 Apr 2020 12:30:57 +0200,
+Geert Uytterhoeven wrote:
 > 
-> I'm working on implementation for ltc6602 dual match bandpass filter spi
-> driver.
-> The driver tree has a iio/frequency which has PLLs at time beeing and
-> I wondering to drop my driver there or have a new directory
-> freqfilter or bpf ?
+> According to https://www.analog.com/, the company name is spelled
+> "Analog Devices".
 > 
-> This isn't urgent, but would be nice to know.
+> Signed-off-by: Geert Uytterhoeven <geert+renesas@glider.be>
+
+Applied this patch to sound git tree for-next branch.
+
+
+thanks,
+
+Takashi
+
+
+> ---
+>  sound/isa/ad1816a/ad1816a.c | 2 +-
+>  sound/pci/ac97/ac97_patch.c | 2 +-
+>  sound/pci/hda/Kconfig       | 4 ++--
+>  3 files changed, 4 insertions(+), 4 deletions(-)
 > 
-
-Perhaps iio/afe?  It's a type of analog front end (or might be used as such).
-Is the intent to wrap these up as a consumer of an ADC?  So they ultimately provide
-a unified device presentation to userspace of the ADC + filters. Or are
-we looking at simply controlling a filter which doesn't connect to an ADC or DAC
-visible to us?
-
-I'm not against a new directory for filters though.  Don't be specific on the
-type unless we need to be :)
-
-Jonathan
-
-> Regards
-> Chris
-
-
+> diff --git a/sound/isa/ad1816a/ad1816a.c b/sound/isa/ad1816a/ad1816a.c
+> index ce4c8ba2fa9873e7..ca18fe3ff8a59a9f 100644
+> --- a/sound/isa/ad1816a/ad1816a.c
+> +++ b/sound/isa/ad1816a/ad1816a.c
+> @@ -54,7 +54,7 @@ MODULE_PARM_DESC(clockfreq, "Clock frequency for ad1816a driver (default = 0).")
+>  static const struct pnp_card_device_id snd_ad1816a_pnpids[] = {
+>  	/* Analog Devices AD1815 */
+>  	{ .id = "ADS7150", .devs = { { .id = "ADS7150" }, { .id = "ADS7151" } } },
+> -	/* Analog Device AD1816? */
+> +	/* Analog Devices AD1816? */
+>  	{ .id = "ADS7180", .devs = { { .id = "ADS7180" }, { .id = "ADS7181" } } },
+>  	/* Analog Devices AD1816A - added by Kenneth Platz <kxp@atl.hp.com> */
+>  	{ .id = "ADS7181", .devs = { { .id = "ADS7180" }, { .id = "ADS7181" } } },
+> diff --git a/sound/pci/ac97/ac97_patch.c b/sound/pci/ac97/ac97_patch.c
+> index ebf926728c5f84af..45ef0f52ec55b803 100644
+> --- a/sound/pci/ac97/ac97_patch.c
+> +++ b/sound/pci/ac97/ac97_patch.c
+> @@ -1356,7 +1356,7 @@ static int patch_cx20551(struct snd_ac97 *ac97)
+>  }
+>  
+>  /*
+> - * Analog Device AD18xx, AD19xx codecs
+> + * Analog Devices AD18xx, AD19xx codecs
+>   */
+>  #ifdef CONFIG_PM
+>  static void ad18xx_resume(struct snd_ac97 *ac97)
+> diff --git a/sound/pci/hda/Kconfig b/sound/pci/hda/Kconfig
+> index e1d3082a4fe93153..7ba542e45a3d7f88 100644
+> --- a/sound/pci/hda/Kconfig
+> +++ b/sound/pci/hda/Kconfig
+> @@ -99,10 +99,10 @@ comment "Set to Y if you want auto-loading the codec driver"
+>  	depends on SND_HDA=y && SND_HDA_CODEC_REALTEK=m
+>  
+>  config SND_HDA_CODEC_ANALOG
+> -	tristate "Build Analog Device HD-audio codec support"
+> +	tristate "Build Analog Devices HD-audio codec support"
+>  	select SND_HDA_GENERIC
+>  	help
+> -	  Say Y or M here to include Analog Device HD-audio codec support in
+> +	  Say Y or M here to include Analog Devices HD-audio codec support in
+>  	  snd-hda-intel driver, such as AD1986A.
+>  
+>  comment "Set to Y if you want auto-loading the codec driver"
+> -- 
+> 2.17.1
+> 
