@@ -7,43 +7,43 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE97BC54F70
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Apr 2020 15:04:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9674CC3A5A0
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Apr 2020 15:04:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8FE672223D
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Apr 2020 15:04:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B23E22244
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Apr 2020 15:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587308661;
-	bh=/gYylPr2EpMW+lrY68r3C3qP+lUnSEGMSMOJGZvgXIU=;
+	s=default; t=1587308663;
+	bh=atwHYNRDrKcNOlDQ9cqo9CzcA6aCqQUWlDBp2r1IV3M=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Au/K27ZTii1SsJKXvJBYrBQQjjrY+IQvC86cC3NbRIUFQZmPiSb6m8F8emhOmupul
-	 h5z4Ch5P0nEfwTIEdqszpjEZ/Z6LO/gljZMqFTFFQyOHQBb7QChe3zle/Doc/W/qFl
-	 jVKy5GjuApF7uyHvsRe05+jdk6gJjPW2AR6noAvU=
+	b=VOstuuLdMB7aTX0LNUQViO/ImRZlkn7zlrNc4hfvaSxJnvur9DjdFg4YAwq8Tneu0
+	 JBTXoHDnuvwifm/M7jNm/hPbU+DbPO5pHvub9tqFqtCtemRYeEJs+9Dror/Dbdu8XG
+	 wmqxJ5Byl1ASyVr6Ndzn+N9x4wRkaPK8pOBYRi5o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726495AbgDSPEV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Apr 2020 11:04:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56262 "EHLO mail.kernel.org"
+        id S1726498AbgDSPEX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Apr 2020 11:04:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56312 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726458AbgDSPEU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 19 Apr 2020 11:04:20 -0400
+        id S1726458AbgDSPEW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 19 Apr 2020 11:04:22 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E677821974;
-        Sun, 19 Apr 2020 15:04:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E538921D94;
+        Sun, 19 Apr 2020 15:04:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587308660;
-        bh=/gYylPr2EpMW+lrY68r3C3qP+lUnSEGMSMOJGZvgXIU=;
+        s=default; t=1587308662;
+        bh=atwHYNRDrKcNOlDQ9cqo9CzcA6aCqQUWlDBp2r1IV3M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=zDx6OCutuo0xMx4illwE9XQ/3j2fdtfyRP65mNR5TIj1Z98ugiukrebCucdhmZ81S
-         Q0D+aaiu4vG47vKBInC1HQ3oZeHxsYL6DoLDpy9YUutGIiIA+EzDt8bydT9UafGvt4
-         M3JaoeMzGuWxmEcQIipruYBdgOnv9W0QwwsVyJH8=
+        b=zyl3RJlks/st9JJ10NvY53JGJ0C5wToSKoMkRQWWYmUa/UI7TA0T066hTxdEQf+K2
+         0Tl3GgVgU+Ikf1x5+maKGqYkLzJYSfMfAGm6RK124UQusAbTpVwrBxlXSMq6bNKqJU
+         mVe2n5nySTVwbL4sUbSAES8mU/L9NgMJuYBmav7o=
 From:   jic23@kernel.org
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 2/7] iio: light: cm32181: Add mod_devicetable.h and remove of_match_ptr
-Date:   Sun, 19 Apr 2020 16:02:01 +0100
-Message-Id: <20200419150206.43033-3-jic23@kernel.org>
+Subject: [PATCH 4/7] iio: light: gp2ap020a00f: Swap of.h for mod_devicetable.h + drop of_match_ptr
+Date:   Sun, 19 Apr 2020 16:02:03 +0100
+Message-Id: <20200419150206.43033-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200419150206.43033-1-jic23@kernel.org>
 References: <20200419150206.43033-1-jic23@kernel.org>
@@ -56,35 +56,50 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Enables probing via the ACPI PRP0001 route but more is mosty about
-removing examples of this that might get copied into new drivers.
+Also drops ifdef protections for CONFIG_OF.
+
+Enables probing via ACPI PRP0001 and removes an example that might be
+cut and paste into new drivers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/light/cm32181.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/light/gp2ap020a00f.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 5f4fb5674fa0..73c48f46220c 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -9,6 +9,7 @@
- #include <linux/i2c.h>
- #include <linux/mutex.h>
+diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+index 7fbbce0d4bc7..070d4cd0cf54 100644
+--- a/drivers/iio/light/gp2ap020a00f.c
++++ b/drivers/iio/light/gp2ap020a00f.c
+@@ -38,8 +38,8 @@
+ #include <linux/irq.h>
+ #include <linux/irq_work.h>
  #include <linux/module.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/interrupt.h>
+ #include <linux/mutex.h>
+-#include <linux/of.h>
+ #include <linux/regmap.h>
  #include <linux/regulator/consumer.h>
- #include <linux/iio/iio.h>
-@@ -354,7 +355,7 @@ MODULE_DEVICE_TABLE(of, cm32181_of_match);
- static struct i2c_driver cm32181_driver = {
+ #include <linux/slab.h>
+@@ -1617,18 +1617,16 @@ static const struct i2c_device_id gp2ap020a00f_id[] = {
+ 
+ MODULE_DEVICE_TABLE(i2c, gp2ap020a00f_id);
+ 
+-#ifdef CONFIG_OF
+ static const struct of_device_id gp2ap020a00f_of_match[] = {
+ 	{ .compatible = "sharp,gp2ap020a00f" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, gp2ap020a00f_of_match);
+-#endif
+ 
+ static struct i2c_driver gp2ap020a00f_driver = {
  	.driver = {
- 		.name	= "cm32181",
--		.of_match_table = of_match_ptr(cm32181_of_match),
-+		.of_match_table = cm32181_of_match,
+ 		.name	= GP2A_I2C_NAME,
+-		.of_match_table = of_match_ptr(gp2ap020a00f_of_match),
++		.of_match_table = gp2ap020a00f_of_match,
  	},
- 	.id_table       = cm32181_id,
- 	.probe		= cm32181_probe,
+ 	.probe		= gp2ap020a00f_probe,
+ 	.remove		= gp2ap020a00f_remove,
 -- 
 2.26.1
 
