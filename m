@@ -6,44 +6,44 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE24BC55181
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C78CC55184
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7A5A206CD
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 867DC2072D
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726325AbgDUAbj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Apr 2020 20:31:39 -0400
-Received: from mga04.intel.com ([192.55.52.120]:20088 "EHLO mga04.intel.com"
+        id S1726294AbgDUAbk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Apr 2020 20:31:40 -0400
+Received: from mga06.intel.com ([134.134.136.31]:1770 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726109AbgDUAbj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726363AbgDUAbj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 20 Apr 2020 20:31:39 -0400
-IronPort-SDR: 5RhkfgyHtc9yrzkvxN64qXpHjthDH0G3Q4scxcfzIxdz3bQ6MTcAfatLqU6NohmXnCGXsSUysP
- YDYTQKzKgdCg==
+IronPort-SDR: gUgr8fIGwCb+KesxVonCShvStQt9ikeXtsrkvTLkK+G8PWkKETBosF8m7qtTGN341Xue06nRii
+ jyfsg7OkK3cg==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:38 -0700
-IronPort-SDR: QUhch9b00CvjXDN7rloaIAg2mmkJBFHnbCl073WPPWK4LsjojfX4eiO/vl4Tg11m/VU5RMu4S5
- SK/US9/L3PCA==
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:39 -0700
+IronPort-SDR: iVHb9kVFSdraTjZD0PzJ9l6wUour1qaM4OXU6FeDa2+fOn5paTKzwFjDxec5TyhAZPdFfg3MZE
+ Oda50asD/+MA==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="255113798"
+   d="scan'208";a="365175463"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 20 Apr 2020 17:31:37 -0700
+  by fmsmga001.fm.intel.com with ESMTP; 20 Apr 2020 17:31:37 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 90E19206; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
+        id 68AB6190; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 04/16] iio: dac: ltc2632: Use put_unaligned_be24()
-Date:   Tue, 21 Apr 2020 03:31:23 +0300
-Message-Id: <20200421003135.23060-4-andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH v1 01/16] iio: adc: ad_sigma_delta: Use {get,put}_unaligned_be24()
+Date:   Tue, 21 Apr 2020 03:31:20 +0300
+Message-Id: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
-References: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -53,26 +53,39 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 This makes the driver code slightly easier to read.
 
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/dac/ltc2632.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iio/adc/ad_sigma_delta.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/dac/ltc2632.c b/drivers/iio/dac/ltc2632.c
-index 7adc91056aa1..5123776cb63e 100644
---- a/drivers/iio/dac/ltc2632.c
-+++ b/drivers/iio/dac/ltc2632.c
-@@ -75,9 +75,7 @@ static int ltc2632_spi_write(struct spi_device *spi,
- 	 * 10-, 8-bit input code followed by 4, 6, or 8 don't care bits.
- 	 */
- 	data = (cmd << 20) | (addr << 16) | (val << shift);
--	msg[0] = data >> 16;
--	msg[1] = data >> 8;
--	msg[2] = data;
-+	put_unaligned_be24(data, &msg[0]);
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index 8115b6de1d6c..dd3d54b3bc8b 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -70,9 +70,7 @@ int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
  
- 	return spi_write(spi, msg, sizeof(msg));
- }
+ 	switch (size) {
+ 	case 3:
+-		data[1] = val >> 16;
+-		data[2] = val >> 8;
+-		data[3] = val;
++		put_unaligned_be24(val, &data[1]);
+ 		break;
+ 	case 2:
+ 		put_unaligned_be16(val, &data[1]);
+@@ -157,9 +155,7 @@ int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
+ 		*val = get_unaligned_be32(sigma_delta->data);
+ 		break;
+ 	case 3:
+-		*val = (sigma_delta->data[0] << 16) |
+-			(sigma_delta->data[1] << 8) |
+-			sigma_delta->data[2];
++		*val = get_unaligned_be24(&sigma_delta->data[0]);
+ 		break;
+ 	case 2:
+ 		*val = get_unaligned_be16(sigma_delta->data);
 -- 
 2.26.1
 
