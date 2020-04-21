@@ -1,137 +1,81 @@
-Return-Path: <SRS0=UPod=6B=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Mhlw=6F=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4118BC2BB1D
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 22:48:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82D4CC54FCB
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1AC20221E9
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Apr 2020 22:48:27 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=crapouillou.net header.i=@crapouillou.net header.b="KYbtDyHW"
+	by mail.kernel.org (Postfix) with ESMTP id 64878206CD
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728959AbgDQWsX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Apr 2020 18:48:23 -0400
-Received: from outils.crapouillou.net ([89.234.176.41]:45918 "EHLO
-        crapouillou.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726086AbgDQWsX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Apr 2020 18:48:23 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1587163700; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=lnplkmtOlg6aQqRCemm0gncKeNcs1kJkULgCp1NFj8E=;
-        b=KYbtDyHW2xDF6OLyMVpHR10Oag/ONw+OglyvIRFt/kuSblQQMcP2nlwdF6bkil3V0JDzLX
-        ESBoxn9n5e/VmVDypGgtv244VnvAgS5G3LCDC/Lh1yOL76sviZpFuRfBB1MnlYvocjwVYC
-        /cErR2JFf+OjWI9xIBlN+ZVlnOQ5DS4=
-Date:   Sat, 18 Apr 2020 00:48:07 +0200
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [RESEND PATCH v5 5/5] input: joystick: Add ADC attached joystick
- driver.
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-input <linux-input@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Message-Id: <7CFY8Q.68YMS0V08F992@crapouillou.net>
-In-Reply-To: <CAHp75VfEAtqucMPdkygfBhojTJoHO5vFk_o0suiyf7i2JCMw9Q@mail.gmail.com>
-References: <20200417202859.35427-1-contact@artur-rojek.eu>
-        <20200417202859.35427-5-contact@artur-rojek.eu>
-        <CAHp75VfRbnnuUhfyXpu+5dp4TutHSrHus=sX_vG_5F0dX4k0fQ@mail.gmail.com>
-        <UFBY8Q.ES4D59V22INC1@crapouillou.net>
-        <CAHp75VfEAtqucMPdkygfBhojTJoHO5vFk_o0suiyf7i2JCMw9Q@mail.gmail.com>
+        id S1726181AbgDUAbi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Apr 2020 20:31:38 -0400
+Received: from mga12.intel.com ([192.55.52.136]:14368 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726079AbgDUAbi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 20 Apr 2020 20:31:38 -0400
+IronPort-SDR: BcN4WwZbXe9SnogNRTQXFGBK6vaSss0UktJhwd230sDK+su/3LW67mSYagUwb/3nzYSHYweEbD
+ zdtOTyKGLCXA==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:38 -0700
+IronPort-SDR: meXAvUcpVOh42i9bLUwteUinHNOCl9wSQIUkGoCPEK09T3z+doRkCjbnShH8JcWPyeUQc2peAQ
+ CVcssNkTYeYg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
+   d="scan'208";a="290282128"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2020 17:31:37 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 775A517F; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 02/16] iio: adc: mpc3422: Use get_unaligned_beXX()
+Date:   Tue, 21 Apr 2020 03:31:21 +0300
+Message-Id: <20200421003135.23060-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.26.1
+In-Reply-To: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
+References: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This makes the driver code slightly easier to read.
 
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/adc/mcp3422.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Le sam. 18 avril 2020 =E0 0:49, Andy Shevchenko=20
-<andy.shevchenko@gmail.com> a =E9crit :
-> On Sat, Apr 18, 2020 at 12:24 AM Paul Cercueil <paul@crapouillou.net>=20
-> wrote:
->>  Le sam. 18 avril 2020 =E0 0:10, Andy Shevchenko
->>  <andy.shevchenko@gmail.com> a =E9crit :
->>  > On Fri, Apr 17, 2020 at 11:21 PM Artur Rojek=20
->> <contact@artur-rojek.eu>
->>  > wrote:
->=20
-> ...
->=20
->>  >>  +#include <linux/of.h>
->>  >
->>  > Do you really need this? (See below as well)
->=20
->>  >>  +static const struct of_device_id adc_joystick_of_match[] =3D {
->>  >>  +       { .compatible =3D "adc-joystick", },
->>  >>  +       { },
->>  >>  +};
->>  >>  +MODULE_DEVICE_TABLE(of, adc_joystick_of_match);
->>  >>  +
->>  >>  +static struct platform_driver adc_joystick_driver =3D {
->>  >>  +       .driver =3D {
->>  >>  +               .name =3D "adc-joystick",
->>  >
->>  >>  +               .of_match_table =3D
->>  >> of_match_ptr(adc_joystick_of_match),
->>  >
->>  > Drop this a bit harmful of_match_ptr() macro. It should go with=20
->> ugly
->>  > #ifdeffery. Here you simple introduced a compiler warning.
->>=20
->>  I assume you mean #ifdef around the of_device_id + module table=20
->> macro?
->=20
-> Yes.
->=20
->>  > On top of that, you are using device property API, OF use in this=20
->> case
->>  > is contradictory (at lest to some extend).
->>=20
->>  I don't see why. The fact that the driver can work when probed from
->>  platform code
->=20
-> Ha-ha, tell me how. I would like to be very surprised.
-
-iio_map_array_register(),
-pinctrl_register_mappings(),
-platform_add_devices(),
-
-you're welcome.
-
->>  doesn't mean that it shouldn't have a table to probe
->>  from devicetree.
->=20
-> I didn't get what you are talking about here. The idea of _unified_
-> device property API is to get rid of OF-centric code in favour of more
-> generic approach. Mixing those two can be done only in specific cases
-> (here is not the one).
-
-And how are we mixing those two here? The only OF-centric thing here is=20
-the device table, which is required if we want the driver to probe from=20
-devicetree.
-
--Paul
-
->=20
-> --
-> With Best Regards,
-> Andy Shevchenko
-
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index ea24d7c58b12..b247eb209f10 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -117,11 +117,11 @@ static int mcp3422_read(struct mcp3422 *adc, int *value, u8 *config)
+ 
+ 	if (sample_rate == MCP3422_SRATE_3) {
+ 		ret = i2c_master_recv(adc->i2c, buf, 4);
+-		temp = buf[0] << 16 | buf[1] << 8 | buf[2];
++		temp = get_unaligned_be24(&buf[0]);
+ 		*config = buf[3];
+ 	} else {
+ 		ret = i2c_master_recv(adc->i2c, buf, 3);
+-		temp = buf[0] << 8 | buf[1];
++		temp = get_unaligned_be16(&buf[0]);
+ 		*config = buf[2];
+ 	}
+ 
+-- 
+2.26.1
 
