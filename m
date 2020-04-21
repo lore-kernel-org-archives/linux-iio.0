@@ -6,41 +6,41 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 444C1C55181
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D46FEC55186
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2F77522250
+	by mail.kernel.org (Postfix) with ESMTP id ADE7C2145D
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgDUAbl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Apr 2020 20:31:41 -0400
-Received: from mga05.intel.com ([192.55.52.43]:54519 "EHLO mga05.intel.com"
+        id S1726659AbgDUAbm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Apr 2020 20:31:42 -0400
+Received: from mga17.intel.com ([192.55.52.151]:43075 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726445AbgDUAbl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726709AbgDUAbl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 20 Apr 2020 20:31:41 -0400
-IronPort-SDR: TLqs7GL6a87bEg9F9cIwWheJtN4mNISUmE/KkyLxoM6c6G53wf0LvyXBn3DoAaahz8QK7CpxAE
- yl7WK/kRGkWw==
+IronPort-SDR: xy+b+FcIGusK1VJRxyBUF6ew8aTC+qAmrODbaR5HQ6w4UVLFofEDne7GQtjwBG8j80gsSiiiJW
+ 5AcWbo4PvGGw==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:40 -0700
-IronPort-SDR: Gp7CVy/mvGKxooyN7+gqr02uUv3P7JZcbNROcgr9vUYijrWDBf5XxPgDPApBuC9gL5dTzNByP3
- ST5Itgi3MfRA==
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:41 -0700
+IronPort-SDR: Y0Sac913DexQRxUYT+71bofMzSOE2YoK9DIpm8h9NC8HCyP/SkZvWL5g1bAppyKmkq0FNdoz+k
+ YeIOKjyfDXNg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="300437803"
+   d="scan'208";a="244002919"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 20 Apr 2020 17:31:39 -0700
+  by orsmga007.jf.intel.com with ESMTP; 20 Apr 2020 17:31:39 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id CE45148C; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
+        id E1BC25F5; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 10/16] iio: light: zopt2201: Use get_unaligned_le24()
-Date:   Tue, 21 Apr 2020 03:31:29 +0300
-Message-Id: <20200421003135.23060-10-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 12/16] iio: pressure: hp206c: Use get_unaligned_be24()
+Date:   Tue, 21 Apr 2020 03:31:31 +0300
+Message-Id: <20200421003135.23060-12-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
 References: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
@@ -55,22 +55,29 @@ This makes the driver code slightly easier to read.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/light/zopt2201.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/pressure/hp206c.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/light/zopt2201.c b/drivers/iio/light/zopt2201.c
-index 5f54f39e7a4c..0df45b42c091 100644
---- a/drivers/iio/light/zopt2201.c
-+++ b/drivers/iio/light/zopt2201.c
-@@ -219,7 +219,7 @@ static int zopt2201_read(struct zopt2201_data *data, u8 reg)
- 		goto fail;
- 	mutex_unlock(&data->lock);
+diff --git a/drivers/iio/pressure/hp206c.c b/drivers/iio/pressure/hp206c.c
+index 3ac3632e7242..d746882eccc8 100644
+--- a/drivers/iio/pressure/hp206c.c
++++ b/drivers/iio/pressure/hp206c.c
+@@ -93,12 +93,12 @@ static int hp206c_read_20bit(struct i2c_client *client, u8 cmd)
+ 	int ret;
+ 	u8 values[3];
  
--	return (buf[2] << 16) | (buf[1] << 8) | buf[0];
-+	return get_unaligned_le24(&buf[0]);
+-	ret = i2c_smbus_read_i2c_block_data(client, cmd, 3, values);
++	ret = i2c_smbus_read_i2c_block_data(client, cmd, sizeof(values), values);
+ 	if (ret < 0)
+ 		return ret;
+-	if (ret != 3)
++	if (ret != sizeof(values))
+ 		return -EIO;
+-	return ((values[0] & 0xF) << 16) | (values[1] << 8) | (values[2]);
++	return get_unaligned_be24(&values[0]) & GENMASK(19, 0);
+ }
  
- fail:
- 	mutex_unlock(&data->lock);
+ /* Spin for max 160ms until DEV_RDY is 1, or return error. */
 -- 
 2.26.1
 
