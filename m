@@ -6,41 +6,43 @@ X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA29DC54FCB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C81F2C55189
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C084208E4
+	by mail.kernel.org (Postfix) with ESMTP id AF2642145D
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Apr 2020 00:31:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726748AbgDUAbn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726707AbgDUAbn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 20 Apr 2020 20:31:43 -0400
-Received: from mga04.intel.com ([192.55.52.120]:20091 "EHLO mga04.intel.com"
+Received: from mga12.intel.com ([192.55.52.136]:14368 "EHLO mga12.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726707AbgDUAbl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726599AbgDUAbl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 20 Apr 2020 20:31:41 -0400
-IronPort-SDR: ItCgPnFJd5G99rqV5bV625d2n/5+EGxApajqlkp6aijxVeX7KsnIrnjDqt5Tyj2ioGGQDZL1B6
- 29UaHg4kG61Q==
+IronPort-SDR: eLDQb+hPgZ+mpfelpYuGsuH5dCwn/nzFh6WWI3ImnFyMvWZNUYZMs+rKuje50B5rlsTeKOiWTN
+ tSgpa3GMHSig==
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:41 -0700
-IronPort-SDR: I/yaiVRXp1g4FoxCVFxrorLhD6mnpIw5vzhoJdd8y2ZvxyrnQ0NwxPgsA4h/Y6ZyEOVBYNt42c
- XlgLMO0QS+UA==
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Apr 2020 17:31:40 -0700
+IronPort-SDR: 2OKV5EqA48DG5SAYMSuF/3f0YLoZtHAIRQA2Uj1ofyRJMzGs/vj98YUQN2+fb//djDgqKDPero
+ LBk8a516XPWg==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.72,408,1580803200"; 
-   d="scan'208";a="255113827"
+   d="scan'208";a="290282134"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 20 Apr 2020 17:31:40 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 20 Apr 2020 17:31:39 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id F2020796; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
+        id A5F24238; Tue, 21 Apr 2020 03:31:36 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 14/16] iio: pressure: zpa2326: Use get_unaligned_le24()
-Date:   Tue, 21 Apr 2020 03:31:33 +0300
-Message-Id: <20200421003135.23060-14-andriy.shevchenko@linux.intel.com>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH v1 06/16] iio: dac: ad5446: Use put_unaligned_be24()
+Date:   Tue, 21 Apr 2020 03:31:25 +0300
+Message-Id: <20200421003135.23060-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.26.1
 In-Reply-To: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
 References: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
@@ -53,41 +55,28 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 This makes the driver code slightly easier to read.
 
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/pressure/zpa2326.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/iio/dac/ad5446.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-index 99dfe33ee402..c2ad106e3d5b 100644
---- a/drivers/iio/pressure/zpa2326.c
-+++ b/drivers/iio/pressure/zpa2326.c
-@@ -1005,22 +1005,20 @@ static int zpa2326_fetch_raw_sample(const struct iio_dev *indio_dev,
- 	struct regmap *regs = ((struct zpa2326_private *)
- 			       iio_priv(indio_dev))->regmap;
- 	int            err;
-+	u8             v[3];
+diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
+index 61c670f7fc5f..87ff863bdc10 100644
+--- a/drivers/iio/dac/ad5446.c
++++ b/drivers/iio/dac/ad5446.c
+@@ -302,9 +302,7 @@ static int ad5660_write(struct ad5446_state *st, unsigned val)
+ 	struct spi_device *spi = to_spi_device(st->dev);
+ 	uint8_t data[3];
  
- 	switch (type) {
- 	case IIO_PRESSURE:
- 		zpa2326_dbg(indio_dev, "fetching raw pressure sample");
+-	data[0] = (val >> 16) & 0xFF;
+-	data[1] = (val >> 8) & 0xFF;
+-	data[2] = val & 0xFF;
++	put_unaligned_be24(val, &data[0]);
  
--		err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, value,
--				       3);
-+		err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, v, sizeof(v));
- 		if (err) {
- 			zpa2326_warn(indio_dev, "failed to fetch pressure (%d)",
- 				     err);
- 			return err;
- 		}
- 
--		/* Pressure is a 24 bits wide little-endian unsigned int. */
--		*value = (((u8 *)value)[2] << 16) | (((u8 *)value)[1] << 8) |
--			 ((u8 *)value)[0];
-+		*value = get_unaligned_le24(&v[0]);
- 
- 		return IIO_VAL_INT;
- 
+ 	return spi_write(spi, data, sizeof(data));
+ }
 -- 
 2.26.1
 
