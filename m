@@ -2,156 +2,182 @@ Return-Path: <SRS0=8tbM=6G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-8.3 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F4103C55190
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 16:04:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37D93C54FCB
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 16:40:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CD1F120774
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 16:04:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9BD8C214AF
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 16:40:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=yadro.com header.i=@yadro.com header.b="T49hmSMs"
+	dkim=pass (1024-bit key) header.d=pmeerw.net header.i=@pmeerw.net header.b="I4EUWzd0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726895AbgDVQEy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Apr 2020 12:04:54 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:41086 "EHLO mta-01.yadro.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726750AbgDVQEm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Apr 2020 12:04:42 -0400
-Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id 38DB84A0B4;
-        Wed, 22 Apr 2020 16:04:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
-        content-type:content-type:content-transfer-encoding:mime-version
-        :references:in-reply-to:x-mailer:message-id:date:date:subject
-        :subject:from:from:received:received:received; s=mta-01; t=
-        1587571477; x=1589385878; bh=V1ItQ94tgCt4bYGsnfXpx+j3WI+zxWO6ZLI
-        jBknDkTU=; b=T49hmSMsdF+aH/wG/nm4+cftyGmm7Zodnu9uokXcCjjhjpKdzv5
-        r16zHSjmKyjtY5RFvIYTfutJRXGViUMsWxHgvfQ9DuwuiDTx9/n6DTiXfznXXaHN
-        33JRHvYOG54xx3UpuKGnB+WkZgaf0LJBswO2sgQRU0RRLsRRH5XMccbA=
-X-Virus-Scanned: amavisd-new at yadro.com
-Received: from mta-01.yadro.com ([127.0.0.1])
-        by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id pqDJHobbVXim; Wed, 22 Apr 2020 19:04:37 +0300 (MSK)
-Received: from T-EXCH-02.corp.yadro.com (t-exch-02.corp.yadro.com [172.17.10.102])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id E03004A0B0;
-        Wed, 22 Apr 2020 19:04:36 +0300 (MSK)
-Received: from localhost.dev.yadro.com (10.199.3.42) by
- T-EXCH-02.corp.yadro.com (172.17.10.102) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384_P384) id
- 15.1.669.32; Wed, 22 Apr 2020 19:04:37 +0300
-From:   Ivan Mikhaylov <i.mikhaylov@yadro.com>
-CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v11 1/2] iio: proximity: provide device tree binding document
-Date:   Wed, 22 Apr 2020 19:05:08 +0300
-Message-ID: <20200422160509.7117-2-i.mikhaylov@yadro.com>
-X-Mailer: git-send-email 2.21.1
-In-Reply-To: <20200422160509.7117-1-i.mikhaylov@yadro.com>
-References: <20200422160509.7117-1-i.mikhaylov@yadro.com>
+        id S1726366AbgDVQkT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Apr 2020 12:40:19 -0400
+Received: from ns.pmeerw.net ([84.19.176.117]:56404 "EHLO ns.pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726006AbgDVQkS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Apr 2020 12:40:18 -0400
+Received: by ns.pmeerw.net (Postfix, from userid 1000)
+        id 3F478E01CB; Wed, 22 Apr 2020 18:40:17 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=pmeerw.net; s=mail;
+        t=1587573617; bh=McsTMxwzAFpLpU1JXIxR7mSymPut3YX7nBAYc8yLJBw=;
+        h=Date:From:To:cc:Subject:In-Reply-To:References:From;
+        b=I4EUWzd0zUhHuWZGbheNH6bJICyGifB/ISIONWZiCSVzEJCyoEtuHKBeNqUy9htv9
+         +7bJf/ONQTjhUoFi39a5WF9hh+xzYg8aHqhJdT88XzGmKxP6hkCzTtpklFhKOVl8j4
+         JhA5ThSvY0rsJ/i0kbuqbNc0hE+wmOeCAQ4vXs+8=
+Received: from localhost (localhost [127.0.0.1])
+        by ns.pmeerw.net (Postfix) with ESMTP id 2C28CE01A3;
+        Wed, 22 Apr 2020 18:40:17 +0200 (CEST)
+Date:   Wed, 22 Apr 2020 18:40:17 +0200 (CEST)
+From:   Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To:     Tomasz Duszynski <tomasz.duszynski@octakon.com>
+cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org, jic23@kernel.org
+Subject: Re: [PATCH 4/6] Documentation: ABI: testing: scd30: document iio
+ attributes
+In-Reply-To: <20200422141135.86419-5-tomasz.duszynski@octakon.com>
+Message-ID: <alpine.DEB.2.21.2004221818490.26800@vps.pmeerw.net>
+References: <20200422141135.86419-1-tomasz.duszynski@octakon.com> <20200422141135.86419-5-tomasz.duszynski@octakon.com>
+User-Agent: Alpine 2.21 (DEB 202 2017-01-01)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [10.199.3.42]
-X-ClientProxiedBy: T-EXCH-01.corp.yadro.com (172.17.10.101) To
- T-EXCH-02.corp.yadro.com (172.17.10.102)
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Mostly standard i2c driver with some additional led-current option
-for vcnl3020.
+On Wed, 22 Apr 2020, Tomasz Duszynski wrote:
 
-Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
----
- .../bindings/iio/proximity/vcnl3020.yaml      | 64 +++++++++++++++++++
- 1 file changed, 64 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
+> Add documentation for sensor specific iio attributes.
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
-new file mode 100644
-index 000000000000..ac47770609d2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/vcnl3020.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/vcnl3020.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Integrated Proximity Sensor With Infrared Emitter
-+
-+maintainers:
-+  - Ivan Mikhaylov <i.mikhaylov@yadro.com>
-+
-+description: |
-+  The VCNL3020 is a fully integrated proximity sensor. Fully integrated means
-+  that the infrared emitter is included in the package. It has 16-bit
-+  resolution. It includes a signal processing IC and features standard I2C
-+  communication interface. It features an interrupt function.
-+
-+  Specifications about the devices can be found at:
-+  https://www.vishay.com/docs/84150/vcnl3020.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - vishay,vcnl3020
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Regulator that provides power to the sensor
-+
-+  vddio-supply:
-+    description: Regulator that provides power to the bus
-+
-+  vishay,led-current-microamp:
-+    description:
-+      IR LED current value with valid Range = 0 to 20d. e.g. 0 = 0 mA,
-+      1 = 10 mA, 20 = 200 mA. LED Current is limited to 200 mA for values
-+      higher than decimal 20.
-+    enum: [0, 10000, 20000, 30000, 40000, 50000, 60000, 70000, 80000, 90000,
-+          100000, 110000, 120000, 130000, 140000, 150000, 160000, 170000,
-+          180000, 190000, 200000]
-+    default: 20000
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    i2c {
-+
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        proximity@13 {
-+              compatible = "vishay,vcnl3020";
-+              reg = <0x13>;
-+              vishay,led-current-microamp = <200000>;
-+        };
-+    };
+minor comments below
+ 
+> Signed-off-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio-scd30 | 97 +++++++++++++++++++
+>  1 file changed, 97 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-scd30
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-scd30 b/Documentation/ABI/testing/sysfs-bus-iio-scd30
+> new file mode 100644
+> index 000000000000..0431a718447d
+> --- /dev/null
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-scd30
+> @@ -0,0 +1,97 @@
+> +What:		/sys/bus/iio/devices/iio:deviceX/pressure_comp
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Given that sensor's CO2 measurement chamber has fixed volume
+> +		pressure changes will affect concentration readings. Writing
+> +		current ambient pressure here will allow senor to make necessary
+
+sensor
+
+> +		adjustments. Upon reading previously set value is returned.
+> +		Units are millibars.
+
+unit for pressure in IIO is kilopascal (e.g. 
+/sys/bus/iio/devices/iio:deviceX/in_pressure_raw)
+
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/pressure_comp_available
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The range of available values in millibars represented as the
+> +		minimum value, the step and the maximum value, all enclosed in
+> +		square brackets.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/meas_interval
+> +Date:		January 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Amount of time between subsequent measurements. Writing this
+> +		attribute will change measurement interval. Upon reading
+> +		current measurement interval is returned. Units are seconds.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/meas_interval_available
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The range of available values in seconds represented as the
+> +		minimum value, the step and the maximum value, all enclosed in
+> +		square brackets.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/asc
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Writing 1 or 0 to this attribute will respectively activate or
+> +		deactivate automatic self calibration procedure. Upon reading 1
+
+deactivate automatic self calibration (asc) procedure
+
+> +		is returned if asc is ongoing, 0 otherwise.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/frc
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Forced recalibration is used to compensate for sensor drifts
+> +		when a reference value of CO2 concentration in close proximity
+> +		to the sensor is available. Writing attribute will set frc
+> +		value. Upon reading current frc is returned. Units are
+> +		millibars.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/frc_available
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The range of available values in millibars represented as the
+> +		minimum value, the step and the maximum value, all enclosed in
+> +		square brackets.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/temp_offset
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Sensor readings may be affected by ambient temperature.
+> +		Writing temperature offset will compensate for unwanted changes.
+> +		Note that written offset gets multiplied by a factor of 100
+> +		by a sensor internally.
+> +
+> +		For example, writing 10 here will correspond to 0.1 degree
+> +		Celsius.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/temp_offset_available
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		The range of available values in degrees Celsius represented as
+> +		the minimum value, the step and the maximum value, all enclosed
+> +		in square brackets.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/reset
+> +Date:		April 2020
+> +KernelVersion:	5.8
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Software reset mechanism forces sensor into the same state
+> +		as after powering up without the need for removing power supply.
+> +		Writing any value will reset sensor.
+> 
+
 -- 
-2.21.1
 
+Peter Meerwald-Stadler
+Mobile: +43 664 24 44 418
