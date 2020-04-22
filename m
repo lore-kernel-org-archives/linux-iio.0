@@ -2,39 +2,37 @@ Return-Path: <SRS0=8tbM=6G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D473C54FCB
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 17:25:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1713C54FCB
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 17:27:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5BCEA20776
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 17:25:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 89AAC20776
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 17:27:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726437AbgDVRZo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Apr 2020 13:25:44 -0400
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2083 "EHLO huawei.com"
+        id S1726303AbgDVR1p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Apr 2020 13:27:45 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2084 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726303AbgDVRZn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Apr 2020 13:25:43 -0400
+        id S1726060AbgDVR1o (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Apr 2020 13:27:44 -0400
 Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
-        by Forcepoint Email with ESMTP id 02D717413FAEC5D030D6;
-        Wed, 22 Apr 2020 18:25:42 +0100 (IST)
+        by Forcepoint Email with ESMTP id 02688571B8635F29F7B1;
+        Wed, 22 Apr 2020 18:27:44 +0100 (IST)
 Received: from localhost (10.227.96.57) by lhreml710-chm.china.huawei.com
  (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 22 Apr
- 2020 18:25:41 +0100
-Date:   Wed, 22 Apr 2020 18:25:40 +0100
+ 2020 18:27:43 +0100
+Date:   Wed, 22 Apr 2020 18:27:42 +0100
 From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Chris Ruehl <chris.ruehl@gtsys.com.hk>
-CC:     <linux-iio@vger.kernel.org>
-Subject: Re: inquiry: where to place iio/ bandpass filter driver
-Message-ID: <20200422182540.0000410f@huawei.com>
-In-Reply-To: <a67b5e24-94df-cc84-73ae-004c0a27a26a@gtsys.com.hk>
-References: <55472b69-c587-ca04-d3b9-c8615e6a652d@gtsys.com.hk>
-        <20200417102350.00003a28@Huawei.com>
-        <a67b5e24-94df-cc84-73ae-004c0a27a26a@gtsys.com.hk>
+To:     Matt Ranostay <matt.ranostay@konsulko.com>
+CC:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: chemical: atlas-sensor: correct DO-SM channels
+Message-ID: <20200422182742.00004e9b@huawei.com>
+In-Reply-To: <20200419232847.32206-1-matt.ranostay@konsulko.com>
+References: <20200419232847.32206-1-matt.ranostay@konsulko.com>
 Organization: Huawei tech. R&D (UK)  Ltd.
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
@@ -49,67 +47,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 21 Apr 2020 08:37:13 +0800
-Chris Ruehl <chris.ruehl@gtsys.com.hk> wrote:
+On Mon, 20 Apr 2020 02:28:47 +0300
+Matt Ranostay <matt.ranostay@konsulko.com> wrote:
 
-> Jonathan,
+> IIO_CONCENTRATION channel for the DO-SM shouldn't be indexed as
+> there isn't more than one, and also ATLAS_CONCENTRATION_CHANNEL
+> macro scan_index define steps on the IIO_TIMESTAMP channel.
 > 
-> On 17/4/2020 5:23 pm, Jonathan Cameron wrote:
-> > On Thu, 16 Apr 2020 11:48:31 +0800
-> > Chris Ruehl <chris.ruehl@gtsys.com.hk> wrote:
-> >  
-> >> Hi,
-> >>
-> >> I'm working on implementation for ltc6602 dual match bandpass
-> >> filter spi driver.
-> >> The driver tree has a iio/frequency which has PLLs at time beeing
-> >> and I wondering to drop my driver there or have a new directory
-> >> freqfilter or bpf ?
-> >>
-> >> This isn't urgent, but would be nice to know.
-> >>  
-> > Perhaps iio/afe?  It's a type of analog front end (or might be used
-> > as such). Is the intent to wrap these up as a consumer of an ADC?
-> > So they ultimately provide a unified device presentation to
-> > userspace of the ADC + filters. Or are we looking at simply
-> > controlling a filter which doesn't connect to an ADC or DAC visible
-> > to us?
-> >
-> > I'm not against a new directory for filters though.  Don't be
-> > specific on the type unless we need to be :)
-> >
-> > Jonathan  
-> I place the driver into afe, makes totally sense to me, but have to
-> create a directory
-> linux/iio/afe which is not existing while I write this.
+> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 
-curious.  It was introduced in 4.18.
+Fixes tag?
 
-What tree are you working on top of?
-
+J
+> ---
+>  drivers/iio/chemical/atlas-sensor.c | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
 > 
-> will be then:
-> drivers/iio/afe/ltc6602.c
-> include/linux/iio/afe/ltc6602.h
-
-possibly on the header, but most IIO drivers don't have their own
-header. For kernel code it is preferred to put as much as possible
-directly in the c file.  The exceptions are drivers needing multiple
-files or where the header is used in conjunction with a DT binding.
-
-> add entry to drivers/iio/afe/Kconfig + Makefile.
-> 
-> If i have the driver ready and checked I send my patches
-
-Great.
-
-Jonathan
-> 
-> Cheers
-> Chris
-> 
-> >> Regards
-> >> Chris  
-> >  
-> 
+> diff --git a/drivers/iio/chemical/atlas-sensor.c
+> b/drivers/iio/chemical/atlas-sensor.c index
+> 82d470561ad3..7b199ce16ecf 100644 ---
+> a/drivers/iio/chemical/atlas-sensor.c +++
+> b/drivers/iio/chemical/atlas-sensor.c @@ -194,7 +194,19 @@ static
+> const struct iio_chan_spec atlas_orp_channels[] = { };
+>  
+>  static const struct iio_chan_spec atlas_do_channels[] = {
+> -	ATLAS_CONCENTRATION_CHANNEL(0, ATLAS_REG_DO_DATA),
+> +	{
+> +		.type = IIO_CONCENTRATION,
+> +		.address = ATLAS_REG_DO_DATA,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) |
+> BIT(IIO_CHAN_INFO_SCALE),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 32,
+> +			.storagebits = 32,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+>  	IIO_CHAN_SOFT_TIMESTAMP(1),
+>  	{
+>  		.type = IIO_TEMP,
 
