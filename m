@@ -2,70 +2,70 @@ Return-Path: <SRS0=8tbM=6G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 537C5C54FCB
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 13:09:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C12EC55189
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 13:09:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2A85221473
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 13:09:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 25D45206EC
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 13:09:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hK+ks0m1"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ljzXhu97"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726733AbgDVNJK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Apr 2020 09:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33194 "EHLO
+        id S1726846AbgDVNJS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Apr 2020 09:09:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725810AbgDVNJI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2020 09:09:08 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79502C03C1A9;
-        Wed, 22 Apr 2020 06:09:08 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id u127so2296494wmg.1;
-        Wed, 22 Apr 2020 06:09:08 -0700 (PDT)
+        with ESMTP id S1726788AbgDVNJL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2020 09:09:11 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF276C03C1A9;
+        Wed, 22 Apr 2020 06:09:10 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id e26so2242783wmk.5;
+        Wed, 22 Apr 2020 06:09:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=o8ZYjk3I5HUzOWotVnd0+m+B88M3hyy1mHjXl9WA6sE=;
-        b=hK+ks0m1mz5ue1YKIErT7o3rOfCS1EuBrtA5xlzhOf3ZWXKvueUPSUzTL8yDEgNZ68
-         JEwczI7+bw+PAS0Jx06/zbLwURBK5gxwQAHdtvUar+aQR4Gfdjh1nselM8ZzczQafAMP
-         Erp5ITRMLwNV7fdJxcQnBcYHHWI8gaowt98d34RouN5a20ujzv4+pnSv5II6JShCB/B+
-         u5eeS5JKGWD/bMCKGBd7HyaGtWRLM9d0UN74BiaVughzXZx2ysySWWsr8e6+JPElrrda
-         +0ecFlnuf0r4r/2cLijdEs36prNwd5Pyw4etsgYR3/T/1NEAc4/UXGgFhr80oki5qLvs
-         4o9g==
+        bh=Y1Mf0H3vRylE7+DAuIcmMCayD/UtsuUnHkFYxcx4ItY=;
+        b=ljzXhu97nV79eOcApdhTW2dXgKc9nPsgh/Ut3w2IhkJPSQUx+jQunUsZhgkf8y18FF
+         UWRGkm98D/o66DmfwlcOZkLuSUt3oGvE6F1O6FzAv/uEpnRYOzY6azaMssTytBHbx+ZR
+         TXcHPpP33vYi8hNRaEPelq5Hjaa89d7WpnqpaTLV7SryQxlHsaM42IGMLt3mh20DaUbh
+         HXRyoRG+hkPGPbiIYk/Vh+f2CzEgXYnb0NLJxGoDcMaKBGlF4phw8LjMBfONGuQYw9Su
+         w7bFpEKg5rZdcbUym/1ny2urJ1WxS0bv1Hns8kvExR4342GsS2pJKRCx2wrqdvmvGU+2
+         LaAA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=o8ZYjk3I5HUzOWotVnd0+m+B88M3hyy1mHjXl9WA6sE=;
-        b=H2CCIeQcaDAtBFolKa/Aw1dIoi3zIbIKLc5hsLJekNpScZTeIb57o4wloP1/s7TuT9
-         ZRFv87anyl72vA1G4KISJsw97YbJpLMSbXubrp2zWDjwjLFCqDqcgyPljO6ZNI60EgZn
-         l7AAyVKV02zQd/Ged10sbxOd7yk2JQadeIxGyGslMqjAoqLkgzua1xiKjoXfgM2y7VrR
-         FeNCvSH5iMyd11gkYNZZw8QKg0yXyN1bveea4RRRrbw+N6wk1vgcCLLI5on03RPBQTXx
-         i3ZLhBMA4WtSG/LRVhOvwFGJg+dJPYmYLqGKbf7M+y/v0xWk81x2pcdkC5M6JDsJ5Cr8
-         0lJQ==
-X-Gm-Message-State: AGi0Pua8iTjSO61rzfGStdU3aC1TYThWBGoHhyf2z6igONRAD7WOKvel
-        6b/EI8GNaFOZbtnqXFwYx4U=
-X-Google-Smtp-Source: APiQypLU8MGH0X0UdQ0rgRUyTEa3dUIF6jOnxmfpxOM7YDxUeHveBspOUUyr6TyVfxz+c1dnApX+VQ==
-X-Received: by 2002:a7b:c147:: with SMTP id z7mr11227951wmi.52.1587560947204;
-        Wed, 22 Apr 2020 06:09:07 -0700 (PDT)
+        bh=Y1Mf0H3vRylE7+DAuIcmMCayD/UtsuUnHkFYxcx4ItY=;
+        b=MfUX2WzhnAZ2SB9LjwAejMw57fbM3hdm6xJKoby19NmEghp8Rpv0uVGqNMQ20PdQJ6
+         53ZK+aZk+N7Qil+8RYLnuIZLaJ3S0PXPCZspC0e0L/2fGgb4rKvCoYTUa+zMhwN3TlkK
+         Fvzepo4YoYnKH5pD1gzVVf2CFTJpFVuD0kFKYAEpJ44bLhfYgQ2dKChMpJ8wgFubqs3L
+         cIlKPX7zjslandfOzYoVkWwgty7kdWMmP88yLE/edbK6l3aEYRK123VH2dq33htzQuVw
+         npVUeHu/Si4DuKTvWAbRARri5G3QDLg4KdULFt7+uHHBpfAkJe7zYr2Xb/MsCoJ0vi7k
+         xZkg==
+X-Gm-Message-State: AGi0PuYj5xqcO5nnEQEXh6+TZq8HS2ykYjHbBpLb+BxI1Ct9TdU2NcUc
+        KHV41MzoQKwd51aHkFavo+4=
+X-Google-Smtp-Source: APiQypJ2P1nWHujxrhLUN5VbmHA9PJNi8YQPRYfaszcxKSb8l/J2T0YhZL3Ytij/igoR9vdHTVgVHQ==
+X-Received: by 2002:a05:600c:da:: with SMTP id u26mr10810816wmm.48.1587560949669;
+        Wed, 22 Apr 2020 06:09:09 -0700 (PDT)
 Received: from meru.fronius.com ([2a01:cb18:832e:5f00:8872:7e71:5cf6:8a5b])
-        by smtp.gmail.com with ESMTPSA id o3sm2064820wru.68.2020.04.22.06.09.06
+        by smtp.gmail.com with ESMTPSA id o3sm2064820wru.68.2020.04.22.06.09.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Apr 2020 06:09:06 -0700 (PDT)
+        Wed, 22 Apr 2020 06:09:09 -0700 (PDT)
 From:   Mathieu Othacehe <m.othacehe@gmail.com>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v5 1/4] iio: vcnl4000: Factorize data reading and writing.
-Date:   Wed, 22 Apr 2020 15:08:53 +0200
-Message-Id: <20200422130856.1722-2-m.othacehe@gmail.com>
+Subject: [PATCH v5 3/4] iio: vcnl4000: Add sampling frequency support for VCNL4010/20.
+Date:   Wed, 22 Apr 2020 15:08:55 +0200
+Message-Id: <20200422130856.1722-4-m.othacehe@gmail.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200422130856.1722-1-m.othacehe@gmail.com>
 References: <20200422130856.1722-1-m.othacehe@gmail.com>
@@ -76,69 +76,179 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Factorize data reading in vcnl4000_measure into a vcnl4000_read_data
-function. Also add a vcnl4000_write_data function.
+Add sampling frequency support for proximity data on VCNL4010 and VCNL4020
+chips.
 
 Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 29 +++++++++++++++++++++++++----
- 1 file changed, 25 insertions(+), 4 deletions(-)
+ drivers/iio/light/vcnl4000.c | 112 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 111 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 58e97462e803..695a81e95d8d 100644
+index 4041608910d0..aefb549953ad 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -215,11 +215,34 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 	return 0;
- };
+@@ -86,6 +86,19 @@
+ #define VCNL4010_INT_DRDY \
+ 	(BIT(VCNL4010_INT_PROXIMITY) | BIT(VCNL4010_INT_ALS))
  
-+static int vcnl4000_read_data(struct vcnl4000_data *data, u8 data_reg, int *val)
-+{
-+	s32 ret;
++#define VCNL4010_PROXIMITY_SAMPLING_FREQUENCY_AVAILABLE  \
++	"1.95 3.90 7.81 16.62 31.25 62.5 125 250"
 +
-+	ret = i2c_smbus_read_word_data(data->client, data_reg);
++static const int vcnl4010_prox_sampling_frequency[][2] = {
++	{1, 950000},
++	{3, 906250},
++	{7, 812500},
++	{16, 625000},
++	{31, 250000},
++	{62, 500000},
++	{125, 0},
++	{250, 0},
++};
+ 
+ #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+ 
+@@ -366,6 +379,24 @@ static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
+ 	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
+ }
+ 
++static int vcnl4010_read_proxy_samp_freq(struct vcnl4000_data *data, int *val,
++					 int *val2)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_PROX_RATE);
 +	if (ret < 0)
 +		return ret;
 +
-+	*val = be16_to_cpu(ret);
++	if (ret >= ARRAY_SIZE(vcnl4010_prox_sampling_frequency))
++		return -EINVAL;
++
++	*val = vcnl4010_prox_sampling_frequency[ret][0];
++	*val2 = vcnl4010_prox_sampling_frequency[ret][1];
++
 +	return 0;
 +}
 +
-+static int vcnl4000_write_data(struct vcnl4000_data *data, u8 data_reg, int val)
+ static bool vcnl4010_is_in_periodic_mode(struct vcnl4000_data *data)
+ {
+ 	int ret;
+@@ -459,11 +490,75 @@ static int vcnl4010_read_raw(struct iio_dev *indio_dev,
+ 
+ 		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			ret = vcnl4010_read_proxy_samp_freq(data, val, val2);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int vcnl4010_write_proxy_samp_freq(struct vcnl4000_data *data, int val,
++					  int val2)
 +{
-+	__be16 be_val;
++	const unsigned int len = ARRAY_SIZE(vcnl4010_prox_sampling_frequency);
++	unsigned int i = len;
 +
-+	if (val > U16_MAX)
-+		return -ERANGE;
++	do {
++		if (val > vcnl4010_prox_sampling_frequency[i][0])
++			break;
++	} while (--i);
 +
-+	be_val = cpu_to_be16(val);
-+	return i2c_smbus_write_word_data(data->client, data_reg, be_val);
++	if (i == len)
++		return -EINVAL;
++
++	return i2c_smbus_write_byte_data(data->client, VCNL4010_PROX_RATE, i);
 +}
 +
++static int vcnl4010_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val, int val2, long mask)
++{
++	int ret;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
 +
- static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 				u8 rdy_mask, u8 data_reg, int *val)
- {
- 	int tries = 20;
--	__be16 buf;
- 	int ret;
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
++
++	/* Protect against event capture. */
++	if (vcnl4010_is_in_periodic_mode(data)) {
++		ret = -EBUSY;
++		goto end;
++	}
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			ret = vcnl4010_write_proxy_samp_freq(data, val, val2);
++			goto end;
++		default:
++			ret = -EINVAL;
++			goto end;
++		}
++	default:
++		ret = -EINVAL;
++		goto end;
++	}
++
++end:
++	iio_device_release_direct_mode(indio_dev);
++	return ret;
++}
++
+ static int vcnl4010_read_event(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+@@ -668,23 +763,38 @@ static const struct iio_chan_spec vcnl4010_channels[] = {
+ 	}, {
+ 		.type = IIO_PROXIMITY,
+ 		.scan_index = 0,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.event_spec = vcnl4000_event_spec,
+ 		.num_event_specs = ARRAY_SIZE(vcnl4000_event_spec),
+ 		.ext_info = vcnl4000_ext_info,
+ 	},
+ };
  
- 	mutex_lock(&data->vcnl4000_lock);
-@@ -246,13 +269,11 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 		goto fail;
- 	}
++static IIO_CONST_ATTR(in_proximity_sampling_frequency_available,
++		      VCNL4010_PROXIMITY_SAMPLING_FREQUENCY_AVAILABLE);
++
++static struct attribute *vcnl4010_attributes[] = {
++	&iio_const_attr_in_proximity_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group vcnl4010_attribute_group = {
++	.attrs = vcnl4010_attributes,
++};
++
+ static const struct iio_info vcnl4000_info = {
+ 	.read_raw = vcnl4000_read_raw,
+ };
  
--	ret = i2c_smbus_read_i2c_block_data(data->client,
--		data_reg, sizeof(buf), (u8 *) &buf);
-+	ret = vcnl4000_read_data(data, data_reg, val);
- 	if (ret < 0)
- 		goto fail;
+ static const struct iio_info vcnl4010_info = {
+ 	.read_raw = vcnl4010_read_raw,
++	.write_raw = vcnl4010_write_raw,
+ 	.read_event_value = vcnl4010_read_event,
+ 	.write_event_value = vcnl4010_write_event,
+ 	.read_event_config = vcnl4010_read_event_config,
+ 	.write_event_config = vcnl4010_write_event_config,
++	.attrs    = &vcnl4010_attribute_group,
+ };
  
- 	mutex_unlock(&data->vcnl4000_lock);
--	*val = be16_to_cpu(buf);
- 
- 	return 0;
- 
+ static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
 -- 
 2.26.0
 
