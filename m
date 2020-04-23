@@ -1,507 +1,751 @@
-Return-Path: <SRS0=8tbM=6G=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=tJ8n=6H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 458A9C55185
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 20:31:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23659C55185
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 00:02:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1090620882
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Apr 2020 20:31:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587587512;
-	bh=ELT7Sm1QLkTd+iAqGWAgqJwtPXELHEv/nf2mufAfaqo=;
-	h=Date:From:To:Subject:List-ID:From;
-	b=dtwjSHUPJAqJzR9N1bGLS2sNR1UN6Se4GQylFxQ+mR7oOpux223oPaB0CCizulr4U
-	 iRQWWBM64QCP5DjwgP18vu6IwHAgfMOqWuwBpvFbmM+6BWsyimLS0PuPIktUttqCcK
-	 l2Dy2le890YPD8DnCuF40wogePpICphhM9WEjHD4=
+	by mail.kernel.org (Postfix) with ESMTP id E080920776
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 00:02:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="V6NF8KiU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726008AbgDVUbv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Apr 2020 16:31:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37424 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725779AbgDVUbu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Apr 2020 16:31:50 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4219720857;
-        Wed, 22 Apr 2020 20:31:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587587509;
-        bh=ELT7Sm1QLkTd+iAqGWAgqJwtPXELHEv/nf2mufAfaqo=;
-        h=Date:From:To:Subject:From;
-        b=OLqefCFb+d/SQykc7mdR2Eh+4DJGz8y66RLt9DiiCc2TQH19Q1QuSCsIy2btBjtIc
-         7ZZR+h8+G2R/YTI1okLeujglZyfqX/BeNIdwn+K8/EufT8Faqu7djluTvoRWQM8nqT
-         wvRQm0ro6vJl68PzXJgIroQGktVjsmUt/vIRkbKM=
-Date:   Wed, 22 Apr 2020 21:31:45 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] First set of IIO new device support, cleanups etc for the
- 5.8 cycle
-Message-ID: <20200422213145.6b0f8c9d@archlinux>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726160AbgDWACi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Apr 2020 20:02:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50122 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726124AbgDWACh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2020 20:02:37 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 868ACC03C1AA
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 17:02:37 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id t40so1689219pjb.3
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 17:02:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=k20amPU6teiqeNogAdEekL7MSzigJqXJdEYNOQJTtyE=;
+        b=V6NF8KiUzx5xNsvZ7Z9LsggYC6lPBgEklF7SlnsCov00f2fgfPDtTvav1fB7qj6cO2
+         6Eu13MiFvgipu9L1xLb8z/1a8s3RmArREL1D+qfKZLwXF2ji+i0ayD60KxtbBGszZAfs
+         ituMt73zdcGo/AVjNOSKx31g817m65btTxt6o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=k20amPU6teiqeNogAdEekL7MSzigJqXJdEYNOQJTtyE=;
+        b=jyiHqSMyGzaUfm9n7Cq+VxdIoSiN/vp6IEnKvZKdhXo0sdPw99YIAxJSP4biiWbYVl
+         OgQGmHJJjuii2Pyym5ZsS01G2cmSUG6TjNljnHNgi7TzRfjavvw3rRju4oYJvmvAmZp/
+         bsi3I0oAtoB/jfR8ZC1dy7LcLORF9omDkNVtN+Lk+pFb7DcLhrFOS2VLqIRBvQk6FwQA
+         nZnVb1tMn55vNHfLtl8ftWtpk8nVG0Ilrh5nBKZqvZ6lfSkapesI+Iz5R+4FNC4WC/mn
+         PzvRt3durxR4WqieRYrnlLuB5ud6ABOUrbo+B1JpSPOsOcmKs+RR3UqOWL8TPlwUzmLB
+         qeyA==
+X-Gm-Message-State: AGi0PuZEv3TxxwMoM77dzJj5MdmytZr7C3NXe9HErUP/Fvvtcp1oVnDC
+        xa4DEM71GV/B3f2mPp0Dfn91wQ==
+X-Google-Smtp-Source: APiQypLSPWAVopTK0W7whypcylxqpbcE83p58cv35wCiYUN9fgrZ6Irhtme7ZW+5ics/YXNwr1UoBg==
+X-Received: by 2002:a17:90a:2043:: with SMTP id n61mr1315349pjc.126.1587600156760;
+        Wed, 22 Apr 2020 17:02:36 -0700 (PDT)
+Received: from localhost ([2620:15c:202:1:4cc0:7eee:97c9:3c1a])
+        by smtp.gmail.com with ESMTPSA id 127sm623359pfz.128.2020.04.22.17.02.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 22 Apr 2020 17:02:36 -0700 (PDT)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     enric.balletbo@collabora.com, jic23@kernel.org
+Cc:     bleung@chromium.org, groeck@chromium.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 2/2] iio: cros_ec_light: Add support for RGB sensor
+Date:   Wed, 22 Apr 2020 17:02:30 -0700
+Message-Id: <20200423000230.82750-3-gwendal@chromium.org>
+X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
+In-Reply-To: <20200423000230.82750-1-gwendal@chromium.org>
+References: <20200423000230.82750-1-gwendal@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The following changes since commit 825c6f470c62da05195fab57bb6561ccc1bdafcd:
+Add support for color sensors behind EC like TCS3400.
+The color data can be presented in Red Green Blue color space (RGB) or
+the CIE 1931 XYZ color space (XYZ).
+In XYZ mode, the sensor is configured for auto calibrating its channels
+and is the "normal" mode.
+The driver tells the EC to switch between the 2 modes by using the
+calibration command.
+When the sensor is in calibration mode, only clear and RGB channels are
+available. In normal mode, only clear and XYZ are.
+When RGB channels are enabled, the sensor switches to calibration mode
+when the buffer is enabled.
 
-  staging: mt7621-pci: be sure gpio descriptor is null on fails (2020-03-20=
- 15:10:51 +0100)
+When reading trhough sysfs command, set calibration mode and then read
+the channel(s). A command will be issue for each read, so the channels
+may come from different sensor sample.
+When using the buffer, after setting the mask, when the buffer is
+enabled, the calibration will be set based on the channel mask.
 
-are available in the Git repository at:
+libiio tools can be used to gather sensor information:
+iio_readdev -s 10 cros-ec-light \
+illuminance_clear illuminance_x illuminance_y illuminance_z
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-=
-5.8a
+To match IIO ABI, the clear illuminance channel has been renamed
+in_illuminance_clear_raw from in_illuminance_input.
 
-for you to fetch changes up to 2de8c02349f02d014e51b43f306d28fc7a23ea6e:
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ drivers/iio/light/cros_ec_light_prox.c        | 470 +++++++++++++++---
+ drivers/platform/chrome/cros_ec_sensorhub.c   |   3 +
+ .../linux/iio/common/cros_ec_sensors_core.h   |   1 -
+ .../linux/platform_data/cros_ec_commands.h    |   2 +
+ 4 files changed, 405 insertions(+), 71 deletions(-)
 
-  iio: magnetometer: ak8974: Silence deferred-probe error (2020-04-19 16:56=
-:43 +0100)
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 2198b50909ed0..57eee557a785c 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -17,82 +17,190 @@
+ #include <linux/module.h>
+ #include <linux/platform_data/cros_ec_commands.h>
+ #include <linux/platform_data/cros_ec_proto.h>
++#include <linux/platform_data/cros_ec_sensorhub.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ 
+ /*
+- * We only represent one entry for light or proximity. EC is merging different
+- * light sensors to return the what the eye would see. For proximity, we
+- * currently support only one light source.
++ * We may present up to 7 channels:
++ *
++ * +-----+-----+-----+-----+-----+-----+-----+
++ * |Clear|  X  |  Y  |  Z  | RED |BLUE |GREEN|
++ * |Prox |     |     |     |     |     |     |
++ * +-----+-----+-----+-----+-----+-----+-----+
++ *
++ * Prox[imity] is presented by proximity sensors.
++ * The clear channel is supported by single and color light sensors.
++ * Color light sensor either reports color information in the RGB space or
++ * the CIE 1931 XYZ (XYZ) color space.
+  */
+-#define CROS_EC_LIGHT_PROX_MAX_CHANNELS (1 + 1)
++#define CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK 1
++#define CROS_EC_LIGHT_XYZ_SPACE_MASK (0x7 << 1)
++#define CROS_EC_LIGHT_RGB_SPACE_MASK (0x7 << 4)
++
++/*
++ * We always represent one entry for light or proximity, and all
++ * samples can be timestamped.
++ */
++#define CROS_EC_LIGHT_PROX_MIN_CHANNELS (1 + 1)
++
++static const unsigned long cros_ec_light_prox_bitmasks[] = {
++	CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK,
++	CROS_EC_LIGHT_XYZ_SPACE_MASK,
++	CROS_EC_LIGHT_XYZ_SPACE_MASK | CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK,
++	CROS_EC_LIGHT_RGB_SPACE_MASK,
++	CROS_EC_LIGHT_RGB_SPACE_MASK | CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK,
++	0,
++};
++
++#define CROS_EC_IDX_TO_CHAN(_idx) (((_idx) - 1) % CROS_EC_SENSOR_MAX_AXIS)
+ 
+ /* State data for ec_sensors iio driver. */
+ struct cros_ec_light_prox_state {
+ 	/* Shared by all sensors */
+ 	struct cros_ec_sensors_core_state core;
++	struct iio_chan_spec *channel;
+ 
+-	struct iio_chan_spec channels[CROS_EC_LIGHT_PROX_MAX_CHANNELS];
++	/* Calibration information for the color channels. */
++	struct calib_data rgb_calib[CROS_EC_SENSOR_MAX_AXIS];
+ };
+ 
++static void cros_ec_light_channel_common(struct iio_chan_spec *channel)
++{
++	channel->info_mask_shared_by_all =
++		BIT(IIO_CHAN_INFO_SAMP_FREQ);
++	channel->info_mask_shared_by_all_available =
++		BIT(IIO_CHAN_INFO_SAMP_FREQ);
++	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
++	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
++	channel->scan_type.shift = 0;
++	channel->scan_index = 0;
++	channel->ext_info = cros_ec_sensors_ext_info;
++	channel->scan_type.sign = 'u';
++}
++
++static int
++cros_ec_light_extra_send_host_cmd(struct cros_ec_sensors_core_state *state,
++				  int increment, u16 opt_length)
++{
++	u8 save_sensor_num = state->param.info.sensor_num;
++	int ret;
++
++	state->param.info.sensor_num += increment;
++	ret = cros_ec_motion_send_host_cmd(state, opt_length);
++	state->param.info.sensor_num = save_sensor_num;
++	return ret;
++}
++
++static int cros_ec_light_prox_read_data(struct iio_dev *indio_dev,
++					struct iio_chan_spec const *chan,
++					int *val)
++{
++	struct cros_ec_light_prox_state *st = iio_priv(indio_dev);
++	int ret;
++	int idx = chan->scan_index;
++	s16 data;
++
++	/*
++	 * The data coming from the light sensor is
++	 * pre-processed and represents the ambient light
++	 * illuminance reading expressed in lux.
++	 */
++	if (idx == 0) {
++		ret = cros_ec_sensors_read_cmd(indio_dev, 1, &data);
++		if (ret < 0)
++			return ret;
++		*val = data;
++	} else {
++		ret = cros_ec_light_extra_send_host_cmd(
++				&st->core, 1, sizeof(st->core.resp->data));
++		if (ret)
++			return ret;
++		*val = st->core.resp->data.data[CROS_EC_IDX_TO_CHAN(idx)];
++	}
++	return IIO_VAL_INT;
++}
++
++static int cros_ec_light_read_color_scale(struct cros_ec_light_prox_state *st,
++					  int idx, int *val, int *val2)
++{
++	int ret, i;
++	u16 scale;
++
++	st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_SCALE;
++	st->core.param.sensor_scale.flags = 0;
++	if (idx == 0)
++		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
++	else
++		ret = cros_ec_light_extra_send_host_cmd(&st->core, 1, 0);
++	if (ret)
++		return ret;
++
++	if (idx == 0) {
++		scale = st->core.resp->sensor_scale.scale[0];
++		st->core.calib[0].scale = scale;
++	} else {
++		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
++			st->rgb_calib[i].scale =
++				st->core.resp->sensor_scale.scale[i];
++		scale = st->rgb_calib[CROS_EC_IDX_TO_CHAN(idx)].scale;
++	}
++	/*
++	 * scale is a number x.y, where x is coded on 1 bit,
++	 * y coded on 15 bits, between 0 and 9999.
++	 */
++	*val = scale >> 15;
++	*val2 = ((scale & 0x7FFF) * 1000000LL) /
++		MOTION_SENSE_DEFAULT_SCALE;
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++
+ static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
+ 				   struct iio_chan_spec const *chan,
+ 				   int *val, int *val2, long mask)
+ {
+ 	struct cros_ec_light_prox_state *st = iio_priv(indio_dev);
+-	u16 data = 0;
+-	s64 val64;
+-	int ret;
++	int i, ret = IIO_VAL_INT;
+ 	int idx = chan->scan_index;
++	s64 val64;
+ 
+ 	mutex_lock(&st->core.cmd_lock);
+-
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (chan->type == IIO_PROXIMITY) {
+-			ret = cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
+-						     (s16 *)&data);
+-			if (ret)
+-				break;
+-			*val = data;
+-			ret = IIO_VAL_INT;
+-		} else {
+-			ret = -EINVAL;
+-		}
+-		break;
+-	case IIO_CHAN_INFO_PROCESSED:
+-		if (chan->type == IIO_LIGHT) {
+-			ret = cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
+-						     (s16 *)&data);
+-			if (ret)
+-				break;
+-			/*
+-			 * The data coming from the light sensor is
+-			 * pre-processed and represents the ambient light
+-			 * illuminance reading expressed in lux.
+-			 */
+-			*val = data;
+-			ret = IIO_VAL_INT;
+-		} else {
+-			ret = -EINVAL;
+-		}
++		ret = cros_ec_light_prox_read_data(indio_dev, chan, val);
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
+ 		st->core.param.sensor_offset.flags = 0;
+ 
+-		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
++		if (idx == 0)
++			ret = cros_ec_motion_send_host_cmd(&st->core, 0);
++		else
++			ret = cros_ec_light_extra_send_host_cmd(
++					&st->core, 1, 0);
+ 		if (ret)
+ 			break;
+-
+-		/* Save values */
+-		st->core.calib[0].offset =
+-			st->core.resp->sensor_offset.offset[0];
+-
+-		*val = st->core.calib[idx].offset;
++		if (idx == 0) {
++			*val = st->core.calib[0].offset =
++				st->core.resp->sensor_offset.offset[0];
++		} else {
++			for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS;
++			     i++)
++				st->rgb_calib[i].offset =
++					st->core.resp->sensor_offset.offset[i];
++			*val = st->rgb_calib[CROS_EC_IDX_TO_CHAN(idx)].offset;
++		}
+ 		ret = IIO_VAL_INT;
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBSCALE:
++		if (indio_dev->num_channels > CROS_EC_LIGHT_PROX_MIN_CHANNELS) {
++			ret = cros_ec_light_read_color_scale(st, idx, val,
++							     val2);
++			break;
++		}
++		/* RANGE is used for calibration in 1 channel sensors. */
++		fallthrough;
++	case IIO_CHAN_INFO_SCALE:
+ 		/*
+ 		 * RANGE is used for calibration
+ 		 * scale is a number x.y, where x is coded on 16 bits,
+@@ -121,29 +229,84 @@ static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int cros_ec_light_write_color_scale(struct cros_ec_light_prox_state *st,
++					   int idx, int val, int val2)
++{
++	int i;
++	u16 scale;
++
++	if (val >= 2) {
++		/*
++		 * The user space is sending values already
++		 * multiplied by MOTION_SENSE_DEFAULT_SCALE.
++		 */
++		scale = val;
++	} else {
++		u64 val64 = val2 * MOTION_SENSE_DEFAULT_SCALE;
++
++		do_div(val64, 1000000);
++		scale = (val << 15) | val64;
++	}
++
++	st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_SCALE;
++	st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
++	st->core.param.sensor_offset.temp = EC_MOTION_SENSE_INVALID_CALIB_TEMP;
++	if (idx == 0) {
++		st->core.calib[0].scale = scale;
++		st->core.param.sensor_scale.scale[0] = scale;
++		return cros_ec_motion_send_host_cmd(&st->core, 0);
++	}
++
++	st->rgb_calib[CROS_EC_IDX_TO_CHAN(idx)].scale = scale;
++	for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
++		st->core.param.sensor_scale.scale[i] = st->rgb_calib[i].scale;
++	return cros_ec_light_extra_send_host_cmd(&st->core, 1, 0);
++}
++
+ static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
+ 			       struct iio_chan_spec const *chan,
+ 			       int val, int val2, long mask)
+ {
+ 	struct cros_ec_light_prox_state *st = iio_priv(indio_dev);
+-	int ret;
++	int ret, i;
+ 	int idx = chan->scan_index;
+ 
+ 	mutex_lock(&st->core.cmd_lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+-		st->core.calib[idx].offset = val;
+ 		/* Send to EC for each axis, even if not complete */
+ 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
+ 		st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
+-		st->core.param.sensor_offset.offset[0] =
+-			st->core.calib[0].offset;
+ 		st->core.param.sensor_offset.temp =
+ 					EC_MOTION_SENSE_INVALID_CALIB_TEMP;
+-		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
++		if (idx == 0) {
++			st->core.calib[0].offset = val;
++			st->core.param.sensor_offset.offset[0] = val;
++			ret = cros_ec_motion_send_host_cmd(&st->core, 0);
++		} else {
++			st->rgb_calib[CROS_EC_IDX_TO_CHAN(idx)].offset = val;
++			for (i = CROS_EC_SENSOR_X;
++			     i < CROS_EC_SENSOR_MAX_AXIS;
++			     i++)
++				st->core.param.sensor_offset.offset[i] =
++					st->rgb_calib[i].offset;
++			ret = cros_ec_light_extra_send_host_cmd(
++					&st->core, 1, 0);
++		}
+ 		break;
+ 	case IIO_CHAN_INFO_CALIBSCALE:
++		if (indio_dev->num_channels > CROS_EC_LIGHT_PROX_MIN_CHANNELS) {
++			ret = cros_ec_light_write_color_scale(st, idx,
++							      val, val2);
++			break;
++		}
++		/*
++		 * For sensors with only one channel, _RANGE is used
++		 * instead of _SCALE.
++		 */
++		fallthrough;
++	case IIO_CHAN_INFO_SCALE:
+ 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
+ 		st->core.param.sensor_range.data = (val << 16) | (val2 / 100);
+ 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+@@ -159,27 +322,154 @@ static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
+ 	return ret;
+ }
+ 
++static int cros_ec_light_push_data(struct iio_dev *indio_dev,
++				   s16 *data,
++				   s64 timestamp)
++{
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	unsigned long scan_mask;
++
++	if (!st || !indio_dev->active_scan_mask)
++		return 0;
++
++	scan_mask = *indio_dev->active_scan_mask;
++	if ((scan_mask & ~CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK) == 0)
++		/*
++		 * Only one channel at most is used.
++		 * Use regular push function.
++		 */
++		return cros_ec_sensors_push_data(indio_dev, data, timestamp);
++
++	if (scan_mask & CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK)
++		/*
++		 * Save clear channel, will be used when RGB data arrives.
++		 */
++		st->samples[0] = data[0];
++
++	return 0;
++}
++
++static int cros_ec_light_push_data_rgb(struct iio_dev *indio_dev,
++				       s16 *data,
++				       s64 timestamp)
++{
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	s16 *out;
++	unsigned long scan_mask;
++	unsigned int i;
++
++	if (!st || !indio_dev->active_scan_mask)
++		return 0;
++
++	scan_mask = *indio_dev->active_scan_mask;
++	/*
++	 * Send all data needed.
++	 */
++	out = (s16 *)st->samples;
++	for_each_set_bit(i,
++			 indio_dev->active_scan_mask,
++			 indio_dev->masklength) {
++		if (i > 0)
++			*out = data[CROS_EC_IDX_TO_CHAN(i)];
++		out++;
++	}
++	iio_push_to_buffers_with_timestamp(indio_dev, st->samples, timestamp);
++	return 0;
++}
++
++static irqreturn_t cros_ec_light_capture(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	int ret, i, idx = 0;
++	s16 data;
++	const unsigned long scan_mask = *indio_dev->active_scan_mask;
++
++	mutex_lock(&st->cmd_lock);
++
++	/* Clear capture data. */
++	memset(st->samples, 0, indio_dev->scan_bytes);
++
++	/* Read first channel. */
++	ret = cros_ec_sensors_read_cmd(indio_dev, 1, &data);
++	if (ret < 0) {
++		mutex_unlock(&st->cmd_lock);
++		goto done;
++	}
++	if (scan_mask & CROS_EC_LIGHT_CLEAR_OR_PROXIMITY_MASK)
++		((s16 *)st->samples)[idx++] = data;
++
++	/* Read remaining channels. */
++	if ((scan_mask & CROS_EC_LIGHT_XYZ_SPACE_MASK) ||
++	    (scan_mask & CROS_EC_LIGHT_RGB_SPACE_MASK)) {
++		ret = cros_ec_light_extra_send_host_cmd(
++				st, 1, sizeof(st->resp->data));
++		if (ret < 0) {
++			mutex_unlock(&st->cmd_lock);
++			goto done;
++		}
++		for (i = 0; i < CROS_EC_SENSOR_MAX_AXIS; i++)
++			((s16 *)st->samples)[idx++] = st->resp->data.data[i];
++	}
++	mutex_unlock(&st->cmd_lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, st->samples,
++					   iio_get_time_ns(indio_dev));
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int cros_ec_light_prox_update_scan_mode(struct iio_dev *indio_dev,
++					       const unsigned long *scan_mask)
++{
++	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
++	int ret;
++	bool enable_raw_mode;
++
++	if (*scan_mask & CROS_EC_LIGHT_XYZ_SPACE_MASK)
++		enable_raw_mode = false;
++	else if (*scan_mask & CROS_EC_LIGHT_RGB_SPACE_MASK)
++		enable_raw_mode = true;
++	else
++		/* Just clear channel or proxmity, nothing to do. */
++		return 0;
++
++	mutex_lock(&st->cmd_lock);
++	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
++	st->param.perform_calib.enable = enable_raw_mode;
++	ret = cros_ec_motion_send_host_cmd(st, 0);
++	mutex_unlock(&st->cmd_lock);
++
++	return ret;
++}
++
+ static const struct iio_info cros_ec_light_prox_info = {
+ 	.read_raw = &cros_ec_light_prox_read,
+ 	.write_raw = &cros_ec_light_prox_write,
+ 	.read_avail = &cros_ec_sensors_core_read_avail,
++	.update_scan_mode = &cros_ec_light_prox_update_scan_mode,
+ };
+ 
+ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
++	struct cros_ec_sensorhub *sensor_hub = dev_get_drvdata(dev->parent);
+ 	struct iio_dev *indio_dev;
+ 	struct cros_ec_light_prox_state *state;
+ 	struct iio_chan_spec *channel;
+-	int ret;
++	int ret, i, num_channels = CROS_EC_LIGHT_PROX_MIN_CHANNELS;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data);
++					cros_ec_light_capture,
++					cros_ec_light_push_data);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -189,28 +479,40 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ 	state = iio_priv(indio_dev);
+ 	state->core.type = state->core.resp->info.type;
+ 	state->core.loc = state->core.resp->info.location;
+-	channel = state->channels;
+ 
+-	/* Common part */
+-	channel->info_mask_shared_by_all =
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ);
+-	channel->info_mask_shared_by_all_available =
+-		BIT(IIO_CHAN_INFO_SAMP_FREQ);
+-	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
+-	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
+-	channel->scan_type.shift = 0;
+-	channel->scan_index = 0;
+-	channel->ext_info = cros_ec_sensors_ext_info;
+-	channel->scan_type.sign = 'u';
++	/* Check if we need more sensors for RGB (or XYZ). */
++	state->core.param.cmd = MOTIONSENSE_CMD_INFO;
++	if (cros_ec_light_extra_send_host_cmd(&state->core, 1, 0) == 0 &&
++	    state->core.resp->info.type == MOTIONSENSE_TYPE_LIGHT_RGB)
++		num_channels += 2 * CROS_EC_SENSOR_MAX_AXIS;
++
++	channel = devm_kcalloc(dev, num_channels, sizeof(*channel), 0);
++	if (!channel)
++		return -ENOMEM;
++
++	indio_dev->channels = channel;
++	indio_dev->num_channels = num_channels;
++	indio_dev->available_scan_masks = cros_ec_light_prox_bitmasks;
+ 
++	cros_ec_light_channel_common(channel);
+ 	/* Sensor specific */
+ 	switch (state->core.type) {
+ 	case MOTIONSENSE_TYPE_LIGHT:
+ 		channel->type = IIO_LIGHT;
++		if (num_channels > CROS_EC_LIGHT_PROX_MIN_CHANNELS) {
++			/*
++			 * To set a global scale, as CALIB_SCALE for RGB sensor
++			 * is limited between 0 and 2.
++			 */
++			channel->info_mask_shared_by_all |=
++				BIT(IIO_CHAN_INFO_SCALE);
++		}
+ 		channel->info_mask_separate =
+-			BIT(IIO_CHAN_INFO_PROCESSED) |
++			BIT(IIO_CHAN_INFO_RAW) |
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS) |
+ 			BIT(IIO_CHAN_INFO_CALIBSCALE);
++		channel->modified = 1;
++		channel->channel2 = IIO_MOD_LIGHT_CLEAR;
+ 		break;
+ 	case MOTIONSENSE_TYPE_PROX:
+ 		channel->type = IIO_PROXIMITY;
+@@ -223,20 +525,48 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ 		dev_warn(dev, "Unknown motion sensor\n");
+ 		return -EINVAL;
+ 	}
++	channel++;
++
++	if (num_channels > CROS_EC_LIGHT_PROX_MIN_CHANNELS) {
++		u8 sensor_num = state->core.param.info.sensor_num;
++		int idx;
++
++		for (i = CROS_EC_SENSOR_X, idx = 1; i < CROS_EC_SENSOR_MAX_AXIS;
++				i++, channel++, idx++) {
++			cros_ec_light_channel_common(channel);
++			channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++			channel->scan_index = idx;
++			channel->modified = 1;
++			channel->channel2 = IIO_MOD_X + i;
++			channel->type = IIO_LIGHT;
++		}
++		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS;
++				i++, channel++, idx++) {
++			cros_ec_light_channel_common(channel);
++			channel->info_mask_separate =
++				BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_CALIBBIAS) |
++				BIT(IIO_CHAN_INFO_CALIBSCALE);
++			channel->scan_index = idx;
++			channel->modified = 1;
++			channel->channel2 = IIO_MOD_LIGHT_RED + i;
++			channel->type = IIO_LIGHT;
++		}
++		cros_ec_sensorhub_register_push_data(
++				sensor_hub,
++				sensor_num + 1,
++				indio_dev,
++				cros_ec_light_push_data_rgb);
++	}
+ 
+ 	/* Timestamp */
+-	channel++;
+ 	channel->type = IIO_TIMESTAMP;
+ 	channel->channel = -1;
+-	channel->scan_index = 1;
++	channel->scan_index = num_channels - 1;
+ 	channel->scan_type.sign = 's';
+ 	channel->scan_type.realbits = 64;
+ 	channel->scan_type.storagebits = 64;
+ 
+-	indio_dev->channels = state->channels;
+-
+-	indio_dev->num_channels = CROS_EC_LIGHT_PROX_MAX_CHANNELS;
+-
+ 	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+diff --git a/drivers/platform/chrome/cros_ec_sensorhub.c b/drivers/platform/chrome/cros_ec_sensorhub.c
+index b7f2c00db5e1e..f85191ab2ee34 100644
+--- a/drivers/platform/chrome/cros_ec_sensorhub.c
++++ b/drivers/platform/chrome/cros_ec_sensorhub.c
+@@ -103,6 +103,9 @@ static int cros_ec_sensorhub_register(struct device *dev,
+ 		case MOTIONSENSE_TYPE_LIGHT:
+ 			name = "cros-ec-light";
+ 			break;
++		case MOTIONSENSE_TYPE_LIGHT_RGB:
++			/* Processed with cros-ec-light. */
++			continue;
+ 		case MOTIONSENSE_TYPE_ACTIVITY:
+ 			name = "cros-ec-activity";
+ 			break;
+diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
+index 7bc961defa87e..c31766c64bf94 100644
+--- a/include/linux/iio/common/cros_ec_sensors_core.h
++++ b/include/linux/iio/common/cros_ec_sensors_core.h
+@@ -26,7 +26,6 @@ enum {
+ 
+ /*
+  * 4 16 bit channels are allowed.
+- * Good enough for current sensors, they use up to 3 16 bit vectors.
+  */
+ #define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
+ 
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 3286ac00b0436..72ee6b049da62 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -2342,6 +2342,7 @@ enum motionsensor_type {
+ 	MOTIONSENSE_TYPE_ACTIVITY = 5,
+ 	MOTIONSENSE_TYPE_BARO = 6,
+ 	MOTIONSENSE_TYPE_SYNC = 7,
++	MOTIONSENSE_TYPE_LIGHT_RGB = 8,
+ 	MOTIONSENSE_TYPE_MAX,
+ };
+ 
+@@ -2375,6 +2376,7 @@ enum motionsensor_chip {
+ 	MOTIONSENSE_CHIP_LSM6DS3 = 17,
+ 	MOTIONSENSE_CHIP_LSM6DSO = 18,
+ 	MOTIONSENSE_CHIP_LNG2DM = 19,
++	MOTIONSENSE_CHIP_TCS3400 = 20,
+ 	MOTIONSENSE_CHIP_MAX,
+ };
+ 
+-- 
+2.26.1.301.g55bc3eb7cb9-goog
 
-----------------------------------------------------------------
-First set of new IIO device support, features and cleanup for the 5.8 cycle
-
-Usual mix of new drivers, new support in old drivers and lots of minor
-cleanup. Yaml conversions also continue to trickle in (plenty more to go!)
-
-New device support
-* ad7476
-  - Add ad7091 support (ID only)
-* ad9467
-  - New driver for this 200/250 MSPS adi-axi-adc and SPI attached ADC.
-* adi-axi-adc
-  - New driver to support ADIs generic AXI ADC IP core, used to provide
-    high speed interfaces to ADCs (JESD204B/C or parallel interfaces). Usua=
-lly
-    paired with a device using a slow configuration interface (spi etc)
-    Includes DT bindings and some fixes for fpga headers.
-* bmg160
-  - Add support for BMI088 (ID only)
-* max1241
-  - New driver for this ADC.
-* st_sensors
-  - Add support for LIS2HH12 accelerometer
-* sx9310
-  - New driver supporting sx9310 and sx9311 proximity sensors.
-
-Yaml DT binding conversions
-* rockchip-saradc (including adding some missing parts)
-* stm32-dac
-* tsl2563
-* vcnl4000
-
-Features
-* st_lsm6dsx
-  - Add LIS3MDL as a possible sensor hub device.
-* vcnl4000
-  - Add new concept of near level (from DT) to provide to userspace which
-    often needs to have some calibrated concept of 'near'.
-
-Cleanups, minor fixes etc.
-* core
-  - Use snprintf for functions where strings are built and there is
-    potential for overflow.
-  - Correct docs to indicate mlock should not be used directly by drivers.
-  - Fix up accidental dropping of a patch to use bitmap_zalloc.
-  - Stop allowing enabling of buffers with no channels enabled.
-  - Drop unused 'stufftoread' from iio_buffer.
-  - Drop scan_el_attrs form iio_buffer as unused.
-  - Reorder sanity checks in __iio_device_register to fail earlier.
-  - Drop all the devm_ runregister / free functions from IIO as they
-    were never used and encourage poor design.
-* dma-buffer
-  - Tidy up includes.
-* dma-engine-buffer
-  - Provide dev-managed allocator.
-  - Fix an issue with printing a size_t
-* cross subsystem (kxsd9, bmg160, mpu3050, bmi160, mpu6050, bmc150)
-  - Replace some unnecessary casts of error ptrs and whilst there.
-    use the %pe printf parameter to print them in a more useful fashion.
-* cross subsystem
-  - Drop casts in calls to regmap_bulk_read as they make no sense.
-  - Use devm_platform_ioremap_resource to reduce boilerplate.
-  - Fix typos in Analog Devices.
-* counters/104-quad
-  - Add Syed Nayyar Waris as an additional maintainer.
-* ad7476
-  - Generate CONVST signal internally rather than requiring external
-    trigger.  Add sysfs read back as can now do so.
-  - use devm_add_action_or_reset to tidy up error and remove handling.
-* ad7793
-  - Switch to read_avail from explicit attribute. Mostly done to avoid
-    confusing people with a - sign (without surounding spaces) that
-    was correct but checkpatch didn't like.
-* adis library
-  - Add missing newlines at end of error messages.
-* adis16400
-  - Use DEFINE_DEBUGS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTR.
-* adis16460
-  - Use DEFINE_DEBUGS_ATTRIBUTE rather than DEFINE_SIMPLE_ATTR.
-* ad_sigma_delta
-  - Move some channel definitions into individual drivers to avoid
-    having to deal with complex options.
-* ak8974
-  - Silence an error on deffered probe.
-* bmp280
-  - Harden against IRQ before registration.
-  - Convert to read_avail instead of opencoding the equivalent.
-  - Explicitly mark GPIO as optional.
-  - Cleanup casts.
-  - Remove line breaks from strings.
-* htts221
-  - Replace direct access to platform_data with dev_get_platdata().
-  - Use device properties rather than device tree ones to allow ACPI
-    probing.
-  - Casting cleanups.
-* intel_mrfld_adc
-  - Don't use unaligned accessor for aligned data.
-* isl29125
-  - Reorder buer pre and post hooks to allow for coming core rework.
-* ltc2983
-  - Remove comp to bool.
-* max1363
-  - Stop using mlock from the iio_dev directly in favour of a local lock
-    with clearly defined scope.
-* max30100
-  - Use generic device properties to allow ACPI probe.
-* mpu6050
-  - Convert to i2c_new_client_device.
-  - Add debugfs register access.
-* st_lsm6dsx
-  - Provide means of configuring full scale on slave device if supported.
-  - Drop include of st_sensors header to get one value. Its not otherwise
-    used by this driver.
-* st-sensors
-  - Replace direct access to platform_data with dev_get_platdata().
-  - Casting cleanups.
-  - Avoid splitting strings.
-* st_uvis25
-  - Casting cleanups.
-* tsl2563
-  - Typo fix.
-* tsl2772
-  - scnprintf in a non obvious string building usecase. Note also 'fixes'
-    a wrong calculation of remaining space that couldn't actually cause
-    any trouble as there was lots of room.
-* xilinx-xadc
-  - Fix Lars-Peter spelling his own name wrong :) + additional typos.
-
-----------------------------------------------------------------
-Aishwarya Ramakrishnan (3):
-      iio: adc: sun4i-gpadc-iio: Use devm_platform_ioremap_resource
-      iio: adc: at91-adc: Use devm_platform_ioremap_resource
-      iio: adc: fsl-imx25-gcq: Use devm_platform_ioremap_resource
-
-Alexandru Ardelean (24):
-      iio: adc: ad7780: define/use own IIO channel macros
-      iio: adc: ad7791: define/use own IIO channel macros
-      iio: adc: ad7793: define/use own IIO channel macros
-      iio: ad_sigma_delta: remove unused IIO channel macros
-      iio: buffer: re-introduce bitmap_zalloc() for trialmask
-      iio: adc: ad7793: use read_avail iio hook for scale available
-      iio: buffer: drop left-over 'stufftoread' field
-      include: fpga: adi-axi-common.h: fixup whitespace tab -> space
-      include: fpga: adi-axi-common.h: add version helper macros
-      iio: buffer-dmaengine: use %zu specifier for sprintf(align)
-      iio: buffer-dmaengine: add dev-managed calls for buffer alloc
-      dt-bindings: iio: adc: add bindings doc for AXI ADC driver
-      dt-bindings: iio: adc: add bindings doc for AD9467 ADC
-      iio: buffer: remove 'scan_el_attrs' attribute group from buffer struct
-      iio: move 'indio_dev->info' null check first in __iio_device_register=
-()
-      iio: core: drop devm_iio_device_unregister() API call
-      iio: core: drop devm_iio_triggered_buffer_cleanup() API call
-      iio: core: drop devm_iio_device_free() API call
-      iio: core: drop devm_iio_trigger_unregister() API call
-      iio: core: drop devm_iio_trigger_free() API call
-      iio: inkern: drop devm_iio_channel_release{_all} API calls
-      iio: buffer: drop devm_iio_hw_consumer_free() API call
-      iio: buffer: drop devm_iio_kfifo_free() API call
-      iio: light: isl29125: fix iio_triggered_buffer_{predisable,postenable=
-} positions
-
-Alexandru Lazar (2):
-      dt-bindings: iio: adc: Add MAX1241 bindings
-      iio: adc: Add MAX1241 driver
-
-Andy Shevchenko (14):
-      iio: light: st_uvis25: Drop unneeded casting when print error code
-      iio: st_sensors: Use dev_get_platdata() to get platform_data
-      iio: st_sensors: Drop unneeded explicit castings
-      iio: st_sensors: Drop unneeded casting when print error code
-      iio: st_sensors: Join string literals back
-      iio: humidity: hts221: Use dev_get_platdata() to get platform_data
-      iio: humidity: hts221: Make use of device properties
-      iio: humidity: hts221: Drop unneeded casting when print error code
-      iio: adc: intel_mrfld_adc: Use be16_to_cpu() instead of get_unaligned=
-_be16()
-      iio: pressure: bmp280: Tolerate IRQ before registering
-      iio: pressure: bmp280: Convert to use ->read_avail()
-      iio: pressure: bmp280: Explicitly mark GPIO optional
-      iio: pressure: bmp280: Drop unneeded explicit castings
-      iio: pressure: bmp280: Join string literals back
-
-Beniamin Bia (1):
-      iio: adc: ad7476: implement devm_add_action_or_reset
-
-Christophe JAILLET (1):
-      iio: imu: adis: Add a missing '\n' in a log message
-
-Daniel Campello (1):
-      iio: Add SEMTECH SX9310/9311 sensor driver
-
-Dmitry Osipenko (1):
-      iio: magnetometer: ak8974: Silence deferred-probe error
-
-Dragos Bogdan (3):
-      iio: adc: ad7476: Generate CONVST signal internally
-      iio: adc: ad7476: Add IIO_CHAN_INFO_RAW for AD7091R
-      iio: adc: ad7476: Add AD7091 support
-
-Fabrice Gasnier (1):
-      dt-bindings: iio: dac: stm32-dac: convert bindings to json-schema
-
-Ga=C3=ABtan Andr=C3=A9 (2):
-      dt-bindings: st_sensors: add st,lis2hh12 compatible entry
-      iio: accel: st_sensors: add support for LIS2HH12
-
-Geert Uytterhoeven (1):
-      iio: Fix misspellings of "Analog Devices"
-
-Guido G=C3=BCnther (5):
-      dt-bindings: iio: vcnl4000: convert bindings to YAML format
-      dt-bindings: iio: Introduce common properties for iio sensors
-      dt-bindings: iio: light: vcnl4000: Add proximity-near-level
-      iio: vcnl4000: Export near level property for proximity sensor
-      Documentation: ABI: document IIO in_proximity_nearlevel file
-
-Jimmy Assarsson (2):
-      iio: imu: st_lsm6dsx: Increase ODR_LIST_SIZE
-      iio: imu: st_lsm6dsx: Add sensor hub device LIS3MDL
-
-Johan Jonker (3):
-      dt-bindings: iio: adc: convert rockchip saradc bindings to yaml
-      dt-bindings: iio: adc: rockchip-saradc: add description for rk3308
-      dt-bindings: iio: adc: rockchip-saradc: add description for px30
-
-Jonathan Cameron (6):
-      iio:accel:mxc4005: Drop unnecessary explicit casts in regmap_bulk_rea=
-d calls
-      iio:chemical:atlas-sensor: Drop unnecessary explicit casts in regmap_=
-bulk_read calls
-      iio:chemical:bme680: Tidy up parameters to regmap_bulk_read
-      iio:imu:mpu6050: Tidy up parameters to regmap_bulk functions.
-      iio:magn:mmc35240: Drop unnecessary casts of val parameter in regmap_=
-bulk*
-      iio:light:ltr501: Drop unnecessary cast of parameter in regmap_bulk_r=
-ead
-
-Lars-Peter Clausen (4):
-      iio: xilinx-xadc: Fix typo in author's name
-      iio: buffer: Don't allow buffers without any channels enabled to be a=
-ctivated
-      iio: dma-buffer: Cleanup buffer.h/buffer_impl.h includes
-      iio: xilinx-xadc: Fix typo
-
-Lorenzo Bianconi (2):
-      iio: imu: st_lsm6dsx: configure full scale on slave device if support=
-ed
-      iio: imu: st_lsm6dsx: drop huge include in sensor-hub driver
-
-Michael Hennerich (2):
-      iio: adc: adi-axi-adc: add support for AXI ADC IP core
-      iio: adc: ad9467: add support AD9467 ADC
-
-Mike Looijmans (1):
-      iio/gyro/bmg160: Add support for BMI088 chip
-
-Nishant Malpani (11):
-      iio: light: tsl2563: Rename macro to fix typo
-      iio: accel: kxsd9: Use vsprintf extension %pe for symbolic error name
-      iio: gyro: bmg160_i2c: Use vsprintf extension %pe for symbolic error =
-name
-      iio: gyro: bmg160_spi: Use vsprintf extension %pe for symbolic error =
-name
-      iio: gyro: mpu3050: Use vsprintf extension %pe for symbolic error name
-      iio: imu: bmi160_i2c: Use vsprintf extension %pe for symbolic error n=
-ame
-      iio: imu: bmi160_spi: Use vsprintf extension %pe for symbolic error n=
-ame
-      iio: imu: inv_mpu6050_i2c: Use vsprintf extension %pe for symbolic er=
-ror name
-      iio: imu: inv_mpu6050_spi: Use vsprintf extension %pe for symbolic er=
-ror name
-      iio: magn: bmc150: Use vsprintf extension %pe for symbolic error name
-      dt-bindings: iio: tsl2563: convert bindings to YAML
-
-Rohit Sarkar (7):
-      iio: core: Make mlock internal to the iio core
-      iio: health: max30100: use generic property handler
-      iio: adc: max1363: replace uses of mlock
-      iio: imu: inv_mpu6050: add debugfs register r/w interface
-      iio: temperature: ltc2983: remove redundant comparison to bool
-      iio: imu: adis16400: use DEFINE_DEBUGFS_ATTRIBUTE instead of DEFINE_S=
-IMPLE_ATTRIBUTE
-      iio: imu: adis16460: use DEFINE_DEBUGFS_ATTRIBUTE instead of DEFINE_S=
-IMPLE_ATTRIBUTE
-
-Syed Nayyar Waris (1):
-      MAINTAINERS: Add Syed Nayyar Waris to ACCES 104-QUAD-8 driver
-
-Takashi Iwai (2):
-      iio: core: Use scnprintf() for avoiding potential buffer overflow
-      iio: tsl2772: Use scnprintf() for avoiding potential buffer overflow
-
-Wolfram Sang (1):
-      iio: imu: inv_mpu6050: convert to use i2c_new_client_device()
-
- Documentation/ABI/testing/sysfs-bus-iio-proximity  |   10 +
- Documentation/ABI/testing/sysfs-bus-iio-sx9310     |   10 +
- .../devicetree/bindings/iio/adc/adi,ad9467.yaml    |   65 ++
- .../devicetree/bindings/iio/adc/adi,axi-adc.yaml   |   62 ++
- .../devicetree/bindings/iio/adc/maxim,max1241.yaml |   63 ++
- .../bindings/iio/adc/rockchip-saradc.txt           |   37 -
- .../bindings/iio/adc/rockchip-saradc.yaml          |   80 ++
- Documentation/devicetree/bindings/iio/common.yaml  |   35 +
- .../devicetree/bindings/iio/dac/st,stm32-dac.txt   |   63 --
- .../devicetree/bindings/iio/dac/st,stm32-dac.yaml  |  110 ++
- .../devicetree/bindings/iio/gyroscope/bmg160.txt   |    2 +-
- .../bindings/iio/light/amstaos,tsl2563.yaml        |   49 +
- .../devicetree/bindings/iio/light/tsl2563.txt      |   19 -
- .../devicetree/bindings/iio/light/vcnl4000.txt     |   24 -
- .../bindings/iio/light/vishay,vcnl4000.yaml        |   50 +
- .../devicetree/bindings/iio/st-sensors.txt         |    1 +
- Documentation/driver-api/driver-model/devres.rst   |    8 -
- Documentation/driver-api/iio/triggers.rst          |    2 -
- MAINTAINERS                                        |    1 +
- drivers/iio/accel/Kconfig                          |    2 +-
- drivers/iio/accel/kxsd9-i2c.c                      |    4 +-
- drivers/iio/accel/mxc4005.c                        |    4 +-
- drivers/iio/accel/st_accel.h                       |    2 +
- drivers/iio/accel/st_accel_buffer.c                |    3 +-
- drivers/iio/accel/st_accel_core.c                  |   83 +-
- drivers/iio/accel/st_accel_i2c.c                   |    5 +
- drivers/iio/adc/Kconfig                            |   45 +
- drivers/iio/adc/Makefile                           |    3 +
- drivers/iio/adc/ad7476.c                           |   59 +-
- drivers/iio/adc/ad7780.c                           |   27 +-
- drivers/iio/adc/ad7791.c                           |   64 +-
- drivers/iio/adc/ad7793.c                           |  144 ++-
- drivers/iio/adc/ad9467.c                           |  422 ++++++++
- drivers/iio/adc/adi-axi-adc.c                      |  482 +++++++++
- drivers/iio/adc/at91_adc.c                         |    5 +-
- drivers/iio/adc/fsl-imx25-gcq.c                    |    4 +-
- drivers/iio/adc/intel_mrfld_adc.c                  |    6 +-
- drivers/iio/adc/max1241.c                          |  227 +++++
- drivers/iio/adc/max1363.c                          |   32 +-
- drivers/iio/adc/sun4i-gpadc-iio.c                  |    4 +-
- drivers/iio/adc/xilinx-xadc-core.c                 |    4 +-
- drivers/iio/adc/xilinx-xadc-events.c               |    2 +-
- drivers/iio/adc/xilinx-xadc.h                      |    2 +-
- drivers/iio/buffer/industrialio-buffer-dma.c       |    1 -
- drivers/iio/buffer/industrialio-buffer-dmaengine.c |   41 +-
- drivers/iio/buffer/industrialio-hw-consumer.c      |   31 -
- drivers/iio/buffer/industrialio-triggered-buffer.c |   11 -
- drivers/iio/buffer/kfifo_buf.c                     |   22 -
- drivers/iio/chemical/atlas-sensor.c                |    7 +-
- drivers/iio/chemical/bme680_core.c                 |   36 +-
- drivers/iio/common/st_sensors/st_sensors_core.c    |    6 +-
- drivers/iio/common/st_sensors/st_sensors_i2c.c     |    4 +-
- drivers/iio/common/st_sensors/st_sensors_spi.c     |    6 +-
- drivers/iio/common/st_sensors/st_sensors_trigger.c |   13 +-
- drivers/iio/gyro/Kconfig                           |    2 +-
- drivers/iio/gyro/bmg160_i2c.c                      |    6 +-
- drivers/iio/gyro/bmg160_spi.c                      |    5 +-
- drivers/iio/gyro/mpu3050-i2c.c                     |    4 +-
- drivers/iio/gyro/st_gyro_buffer.c                  |    3 +-
- drivers/iio/gyro/st_gyro_core.c                    |    9 +-
- drivers/iio/health/max30100.c                      |    7 +-
- drivers/iio/humidity/hts221_buffer.c               |    6 +-
- drivers/iio/humidity/hts221_i2c.c                  |    6 +-
- drivers/iio/humidity/hts221_spi.c                  |    6 +-
- drivers/iio/imu/adis.c                             |    2 +-
- drivers/iio/imu/adis16400.c                        |   19 +-
- drivers/iio/imu/adis16460.c                        |   27 +-
- drivers/iio/imu/bmi160/bmi160_i2c.c                |    4 +-
- drivers/iio/imu/bmi160/bmi160_spi.c                |    4 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_acpi.c         |    8 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |   23 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c          |    4 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c          |    4 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            |    2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c       |   96 ++
- drivers/iio/industrialio-buffer.c                  |   18 +-
- drivers/iio/industrialio-core.c                    |   88 +-
- drivers/iio/industrialio-trigger.c                 |   53 -
- drivers/iio/inkern.c                               |   27 -
- drivers/iio/light/isl29125.c                       |   28 +-
- drivers/iio/light/ltr501.c                         |    2 +-
- drivers/iio/light/st_uvis25_i2c.c                  |    4 +-
- drivers/iio/light/st_uvis25_spi.c                  |    4 +-
- drivers/iio/light/tsl2563.c                        |    2 +-
- drivers/iio/light/tsl2772.c                        |    6 +-
- drivers/iio/light/vcnl4000.c                       |   25 +
- drivers/iio/magnetometer/ak8974.c                  |    7 +-
- drivers/iio/magnetometer/bmc150_magn_spi.c         |    4 +-
- drivers/iio/magnetometer/mmc35240.c                |    4 +-
- drivers/iio/magnetometer/st_magn_core.c            |    3 +-
- drivers/iio/pressure/bmp280-core.c                 |   98 +-
- drivers/iio/pressure/st_pressure_core.c            |    7 +-
- drivers/iio/proximity/Kconfig                      |   13 +
- drivers/iio/proximity/Makefile                     |    1 +
- drivers/iio/proximity/sx9310.c                     | 1069 ++++++++++++++++=
-++++
- drivers/iio/temperature/ltc2983.c                  |    4 +-
- drivers/iio/trigger/iio-trig-hrtimer.c             |    2 +-
- drivers/staging/iio/Documentation/overview.txt     |    2 +-
- include/linux/fpga/adi-axi-common.h                |    6 +-
- include/linux/iio/adc/ad_sigma_delta.h             |   58 --
- include/linux/iio/adc/adi-axi-adc.h                |   64 ++
- include/linux/iio/buffer-dma.h                     |    2 +-
- include/linux/iio/buffer-dmaengine.h               |    3 +
- include/linux/iio/buffer_impl.h                    |    9 -
- include/linux/iio/consumer.h                       |   18 -
- include/linux/iio/hw-consumer.h                    |    1 -
- include/linux/iio/iio.h                            |   10 +-
- include/linux/iio/kfifo_buf.h                      |    1 -
- include/linux/iio/trigger.h                        |    3 -
- include/linux/iio/triggered_buffer.h               |    2 -
- 110 files changed, 3625 insertions(+), 774 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-proximity
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-sx9310
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad9467.ya=
-ml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,axi-adc.y=
-aml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max1241=
-.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-sara=
-dc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/rockchip-sara=
-dc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/common.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/dac/st,stm32-dac.=
-txt
- create mode 100644 Documentation/devicetree/bindings/iio/dac/st,stm32-dac.=
-yaml
- create mode 100644 Documentation/devicetree/bindings/iio/light/amstaos,tsl=
-2563.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/light/tsl2563.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/light/vcnl4000.txt
- create mode 100644 Documentation/devicetree/bindings/iio/light/vishay,vcnl=
-4000.yaml
- create mode 100644 drivers/iio/adc/ad9467.c
- create mode 100644 drivers/iio/adc/adi-axi-adc.c
- create mode 100644 drivers/iio/adc/max1241.c
- create mode 100644 drivers/iio/proximity/sx9310.c
- create mode 100644 include/linux/iio/adc/adi-axi-adc.h
