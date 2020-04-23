@@ -2,132 +2,116 @@ Return-Path: <SRS0=tJ8n=6H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0E6C5518E
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 00:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99AEDC54FD0
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 03:42:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4FC32075A
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 00:02:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 76A0F2075A
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Apr 2020 03:42:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="hKL3r/Vw"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="JHlBDxzp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726090AbgDWACh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Apr 2020 20:02:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50112 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726078AbgDWACg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2020 20:02:36 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01849C03C1AA
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 17:02:36 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id 145so1967351pfw.13
-        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 17:02:35 -0700 (PDT)
+        id S1726742AbgDWDmO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Apr 2020 23:42:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55922 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726002AbgDWDmO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Apr 2020 23:42:14 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32C22C03C1AA
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 20:42:13 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id u189so4217529ilc.4
+        for <linux-iio@vger.kernel.org>; Wed, 22 Apr 2020 20:42:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sTWLgOtshATpNFxTq+DHSs8KLIuF8Dd31xNiPcAAu1U=;
-        b=hKL3r/VwQHN2ryET6mZlqZljqTwA0CnHIlVqsMn/GYc2AQx2EMQ7vWu/EtMKyXUr4N
-         UxtLxq6KYh2kjhZJYi/3s1tudss/9Ps0OUEQse5XpS/yY/+JG/oh6sj1vMl/l0EHDNZF
-         XwKzXKW9V6TsPNDjHKtSE0WwmE96H7NUMSnwA=
+        d=konsulko.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=URty8UnZlh/QZ5WfQtE8lORc2T8l+OWaGW375NBKKJ4=;
+        b=JHlBDxzp1FkHMWliEhNyArdV4USpydA6tHjvpT5+7eMq+EfkTDnkPVU6UsDy5/hFm3
+         zUc0mxi+f4438yrUk7r2daOLvUr2fP73KNI1E0Glqxv/9GJB0+6Kifo2OVke9XwZtFkJ
+         ECR2UpAiknZcey1WfKpJV9k/7CwLFRAnnxzVE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sTWLgOtshATpNFxTq+DHSs8KLIuF8Dd31xNiPcAAu1U=;
-        b=LmY0XBF41Od/Y/hwSyTdJuPHH72iV5QOMEIHFogGuMwKlkqgLPRyP6S8wT9gns3Naa
-         1uxax4y8Dl1CEzIJIwUAqb+FxgNmXjKe76v+Yb+jIUYRjLPhYj4voMTSxmEWnc3idjWf
-         tc1eHxp8cLZQmuG1RosPb7ztYx3a3D3Zc7CRgpzV1kZ5DamOgsCFWMMtRiyqRKon+ffd
-         To0eaiqLh9GqpzqWgAR4/0+9kJrqeOzREcVYHONQsU5uT1BpjDhe1jj0UKSq13W/3B8c
-         RtkxDKCYhmiXRjf3taLRq4St3rI4tszVjG2aI/Ds+tvZL2K1HCgX4gA/ayoL54D6W3eU
-         uu7Q==
-X-Gm-Message-State: AGi0PuYYiPA9X1ccxgcoj4umY4lfgR8fzcHeqLp8bQSSqZa4O7NymX+t
-        QfbSXLfyDPuYKv3/QVZdjHbqvQ==
-X-Google-Smtp-Source: APiQypLfxlY6RoefRcmznE1AEdolDHeBNzAT1DehanG/lKhK8/uT5B6mhtWP+RRhZFikxAwIEF1jhA==
-X-Received: by 2002:a05:6a00:2b4:: with SMTP id q20mr1109600pfs.104.1587600155479;
-        Wed, 22 Apr 2020 17:02:35 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4cc0:7eee:97c9:3c1a])
-        by smtp.gmail.com with ESMTPSA id b73sm662301pfb.52.2020.04.22.17.02.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Apr 2020 17:02:34 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     enric.balletbo@collabora.com, jic23@kernel.org
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 1/2] iio: cros_ec: Allow enabling/disabling calibration mode
-Date:   Wed, 22 Apr 2020 17:02:29 -0700
-Message-Id: <20200423000230.82750-2-gwendal@chromium.org>
-X-Mailer: git-send-email 2.26.1.301.g55bc3eb7cb9-goog
-In-Reply-To: <20200423000230.82750-1-gwendal@chromium.org>
-References: <20200423000230.82750-1-gwendal@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=URty8UnZlh/QZ5WfQtE8lORc2T8l+OWaGW375NBKKJ4=;
+        b=QZlnXF3E3t7TwZcNvSYcuphwcXJLbdWQYbVDasqqEtScfunup/YaCcm3m2fuIO1GIO
+         TvU4g0Pye+7M61StIAWY5jutEWJuAqFk4xJjYhLPcN2hasql5zUpQ3RsZfMIF0BpFaAe
+         YtcZUGkU9iWU1c7Jy9TMfN30IqZd3MOqc6fl2fNeaCg1A7GCZ5uh3xAzHUlXWiH/lY+5
+         jjl1HJGNjkDg7JkCzRodGBfA5tZp099kYTjo2a2R6p365OenVem4DZsvesz88pIdZuzR
+         zZtH8tvgLy6RFRikAH8cXENPIsmUCA2eDlwp0eyHuYfIXmsK01Ri6BDg86GoTsdEr2yv
+         eEtA==
+X-Gm-Message-State: AGi0PubU9OztDL7uIc2Ti/JvQHwpdRWQRDDn1FRb7tVDZH1LhqIKnJEg
+        1XaU9zaIDPmNyfSAxlKj7nQYIcwQVogM0gRpa5c2uzHO1gjIWxA+
+X-Google-Smtp-Source: APiQypKn/CYLFODj3JUtq89oJCi8TUghE5inLEBY2qWl89o+bRmzhIyPXwas2fjk7CIU5rKNDqz5OFJM60B2r4eFB3A=
+X-Received: by 2002:a92:1b91:: with SMTP id f17mr1540185ill.142.1587613332398;
+ Wed, 22 Apr 2020 20:42:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200419232847.32206-1-matt.ranostay@konsulko.com> <20200422182742.00004e9b@huawei.com>
+In-Reply-To: <20200422182742.00004e9b@huawei.com>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Wed, 22 Apr 2020 20:42:01 -0700
+Message-ID: <CAJCx=gmHeyAsjf8ZkWpSE9=uDHtX7=5jES9sx0=P3kZh=TDHng@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: atlas-sensor: correct DO-SM channels
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-calibration was a one-shot event sent to the sensor to calibrate itself.
-It is used on Bosch sensors (BMI160, BMA254).
-For TCS3400 light sensor, we need to stay in calibration mode to run
-tests.
-Accept boolean true and false (not just true) to enter/exit calibration.
+On Wed, Apr 22, 2020 at 10:27 AM Jonathan Cameron
+<Jonathan.Cameron@huawei.com> wrote:
+>
+> On Mon, 20 Apr 2020 02:28:47 +0300
+> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+>
+> > IIO_CONCENTRATION channel for the DO-SM shouldn't be indexed as
+> > there isn't more than one, and also ATLAS_CONCENTRATION_CHANNEL
+> > macro scan_index define steps on the IIO_TIMESTAMP channel.
+> >
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- .../common/cros_ec_sensors/cros_ec_sensors_core.c    |  3 +--
- include/linux/platform_data/cros_ec_commands.h       | 12 +++++++++---
- 2 files changed, 10 insertions(+), 5 deletions(-)
+Fixes: 1a881ed8a43b  (iio: chemical: atlas-sensor: add RTD-SM module support)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index c831915ca7e56..3d8b25ee9d80c 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -411,11 +411,10 @@ static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
- 	ret = strtobool(buf, &calibrate);
- 	if (ret < 0)
- 		return ret;
--	if (!calibrate)
--		return -EINVAL;
- 
- 	mutex_lock(&st->cmd_lock);
- 	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
-+	st->param.perform_calib.enable = calibrate;
- 	ret = cros_ec_motion_send_host_cmd(st, 0);
- 	if (ret != 0) {
- 		dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
-diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
-index 69210881ebac8..3286ac00b0436 100644
---- a/include/linux/platform_data/cros_ec_commands.h
-+++ b/include/linux/platform_data/cros_ec_commands.h
-@@ -2517,13 +2517,19 @@ struct ec_params_motion_sense {
- 
- 		/*
- 		 * Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
--		 * and MOTIONSENSE_CMD_PERFORM_CALIB.
- 		 */
- 		struct __ec_todo_unpacked {
- 			uint8_t sensor_num;
--		} info, info_3, data, fifo_flush, perform_calib,
--				list_activities;
-+		} info, info_3, data, fifo_flush, list_activities;
- 
-+		/*
-+		 * Used for MOTIONSENSE_CMD_PERFORM_CALIB:
-+		 * Allow entering/exiting the calibration mode.
-+		 */
-+		struct __ec_todo_unpacked {
-+			uint8_t sensor_num;
-+			uint8_t enable;
-+		} perform_calib;
- 		/*
- 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
- 		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
--- 
-2.26.1.301.g55bc3eb7cb9-goog
-
+> > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+>
+> Fixes tag?
+>
+> J
+> > ---
+> >  drivers/iio/chemical/atlas-sensor.c | 14 +++++++++++++-
+> >  1 file changed, 13 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/chemical/atlas-sensor.c
+> > b/drivers/iio/chemical/atlas-sensor.c index
+> > 82d470561ad3..7b199ce16ecf 100644 ---
+> > a/drivers/iio/chemical/atlas-sensor.c +++
+> > b/drivers/iio/chemical/atlas-sensor.c @@ -194,7 +194,19 @@ static
+> > const struct iio_chan_spec atlas_orp_channels[] = { };
+> >
+> >  static const struct iio_chan_spec atlas_do_channels[] = {
+> > -     ATLAS_CONCENTRATION_CHANNEL(0, ATLAS_REG_DO_DATA),
+> > +     {
+> > +             .type = IIO_CONCENTRATION,
+> > +             .address = ATLAS_REG_DO_DATA,
+> > +             .info_mask_separate =
+> > +                     BIT(IIO_CHAN_INFO_RAW) |
+> > BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index = 0,
+> > +             .scan_type = {
+> > +                     .sign = 'u',
+> > +                     .realbits = 32,
+> > +                     .storagebits = 32,
+> > +                     .endianness = IIO_BE,
+> > +             },
+> > +     },
+> >       IIO_CHAN_SOFT_TIMESTAMP(1),
+> >       {
+> >               .type = IIO_TEMP,
+>
