@@ -2,107 +2,89 @@ Return-Path: <SRS0=dRc7=6J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4333BC54FCB
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Apr 2020 17:01:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DC01C54FCB
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Apr 2020 17:01:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2039420700
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Apr 2020 17:01:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587834079;
-	bh=gt3fpYTkrKObtHXD/pWODA9eL7Nil3GW9E4wiPFnZsI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=pZr9vgquR3/Hl1hI8EiqddhjToRR8vCX56vFC0stzOaGN5DYEBDrJIe1L9lb5yXsv
-	 GJ7BhMb2R7VF2vV1+Xaj5zyWAAr+gVoTsQbH61OuX3B3OOcbXdzFzqg4QjNTcATG/Y
-	 6jej/dPWUz8237m9n2jJoMHOWLd+sASxHGs3lOk8=
+	by mail.kernel.org (Postfix) with ESMTP id D5519206B6
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Apr 2020 17:01:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="hZrvMlW8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726363AbgDYRBP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Apr 2020 13:01:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40484 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726155AbgDYRBP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 25 Apr 2020 13:01:15 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 23B9B206B6;
-        Sat, 25 Apr 2020 17:01:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587834074;
-        bh=gt3fpYTkrKObtHXD/pWODA9eL7Nil3GW9E4wiPFnZsI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=elUDhyeGLpVAWIboxfI9gncmA3dQ/XCSrHFj4TQaq7iWRdfwCJzVmiQCEnyxxrcIS
-         fRIAfxI//TPr0jppQtXhM5ubHSKY+QXfNFYCyfBxyI7oZGoIQXWJ32Pcae8OiMmBnW
-         ufVvh9hdock4NsfDcooY+NIDw6qnbV8bCuayk8pQ=
-Date:   Sat, 25 Apr 2020 18:01:10 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-Cc:     "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "colin.king@canonical.com" <colin.king@canonical.com>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        "kernel-janitors@vger.kernel.org" <kernel-janitors@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH][next] iio: adc: ad7476: remove redundant null check on
- an array
-Message-ID: <20200425180110.3ffa5696@archlinux>
-In-Reply-To: <f2c6d3f3f8f884e87f1c9895fe99b77e8f4c1e3e.camel@analog.com>
-References: <20200424130419.22940-1-colin.king@canonical.com>
-        <f2c6d3f3f8f884e87f1c9895fe99b77e8f4c1e3e.camel@analog.com>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726200AbgDYRBw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Apr 2020 13:01:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36134 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726190AbgDYRBw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Apr 2020 13:01:52 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 22E24C09B04D
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2020 10:01:52 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id y25so6405175pfn.5
+        for <linux-iio@vger.kernel.org>; Sat, 25 Apr 2020 10:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=0DPf+EwH5OC8j0XXb+5msqneokhmCuJmIGM0FQ1prTI=;
+        b=hZrvMlW8HdGC3OFjVmw1jFlDLrY0RvNJAqZo8q5cMYjDRA27qduqwQNbX8lQoCAHUJ
+         JNB9EJKgHTHfY2CfSD2biiK6Qb2Dw3wjIxm6UbUoNncp8y5YQ86V29gM/55cu216vzxt
+         BlRf2w5reT5yqHIWUtBdmm5WrgBJSUzvXMXcfoHTk+cAEbpwISmhIQT9JxZGH1x+yXej
+         MB9v7hDn0Uf7Uvb/vahNFEd3vT65wkBDvWDUvnj5Pj1AU7KBTQwt82eJgxM296j2OzlP
+         RGMcnNZkUEYwgqhjd6LoXe62pZ0tToKR0v7tMQRUyPdyvNKRZsIce4w0gNTu0/MVXKA5
+         pyeQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=0DPf+EwH5OC8j0XXb+5msqneokhmCuJmIGM0FQ1prTI=;
+        b=rqtBzDgOMgLevbhNsNR2QGQ6K2Tk58iGhRTd6M0ShZiBfARMyczO2zyg3bYsH7Qaxt
+         mgIrLH1YBWG6EEwzp03ieHDsfxVeZtxK+Z8QIygs682PLkPtIOBto4FhhEP1Pc0pj5K+
+         jfZM7CY8inb0l2EwtEjUy+9C5ql5rNMPVsmMQqSkdE2Q1gvuE/26bgMpz8SIm10KddT4
+         IcnDPh+bgUz10ytZi1fkOhAj9tBeD+Px95U+qZzYt4PGrFyi/aUZPZg6Kawp1Ie2Mnss
+         CNAoF3d2JRZwhtL+eAi8HRsQS0a1Z+3gidemTFz5odh8MzlwvwalwzD6ieODKT72F/ZP
+         fiuw==
+X-Gm-Message-State: AGi0PuYAucj6lVnUuyGC9BaWV3N7Wpt58nIP14vqo+vMSnWyE81meB1W
+        IqH3mwgo/dcftEY+jLQ/npnHnyZW24Xmj+dr7DkMWYaqm5s=
+X-Google-Smtp-Source: APiQypLSwtj75Qv2IK8137kFHfZ2+EgZXtV1lNtp286g5PCGsj2zcAmIeK79wA1xtiQ1u6RsDx6S9zOlKViD2bm2dSk=
+X-Received: by 2002:a63:1c1:: with SMTP id 184mr15573150pgb.203.1587834111421;
+ Sat, 25 Apr 2020 10:01:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20200421003135.23060-1-andriy.shevchenko@linux.intel.com>
+ <20200421003135.23060-3-andriy.shevchenko@linux.intel.com> <20200425172441.2f2c3dab@archlinux>
+In-Reply-To: <20200425172441.2f2c3dab@archlinux>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 25 Apr 2020 20:01:40 +0300
+Message-ID: <CAHp75VeC+ZBxNoJM697+LU1WtNiQmujqSgt6p_JEueq=13F+bQ@mail.gmail.com>
+Subject: Re: [PATCH v1 03/16] iio: adc: ti-ads124s08: Use get_unaligned_be24()
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 24 Apr 2020 15:01:26 +0000
-"Ardelean, Alexandru" <alexandru.Ardelean@analog.com> wrote:
+On Sat, Apr 25, 2020 at 7:25 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Tue, 21 Apr 2020 03:31:22 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+>
+> > This makes the driver code slightly easier to read.
+> >
+> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> Added
+> #include <asm/unaligned.h>
+> and applied.
 
-> On Fri, 2020-04-24 at 14:04 +0100, Colin King wrote:
-> > From: Colin Ian King <colin.king@canonical.com>
-> > 
-> > The null check on st->chip_info->convst_channel is redundant because
-> > convst_channel is a 2 element array of struct iio_chan_spec objects
-> > and this can never be null. Fix this by removing the null check.
-> >   
-> 
-> Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing.
-I didn't take this as a fix as it's not doing any harm in the meantime
-whilst this patch goes the slow route.
+Thanks!
 
-Thanks,
-
-Jonathan
-
-> 
-> > Addresses-Coverity: ("Array compared against 0")
-> > Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> > ---
-> >  drivers/iio/adc/ad7476.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-> > index e9984a38fc4c..4e816d714ad2 100644
-> > --- a/drivers/iio/adc/ad7476.c
-> > +++ b/drivers/iio/adc/ad7476.c
-> > @@ -309,7 +309,7 @@ static int ad7476_probe(struct spi_device *spi)
-> >  	indio_dev->num_channels = 2;
-> >  	indio_dev->info = &ad7476_info;
-> >  
-> > -	if (st->convst_gpio && st->chip_info->convst_channel)
-> > +	if (st->convst_gpio)
-> >  		indio_dev->channels = st->chip_info->convst_channel;
-> >  	/* Setup default message */
-> >    
-
+-- 
+With Best Regards,
+Andy Shevchenko
