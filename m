@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 97680C5519A
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3E41C55199
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 74B8B2087E
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B5DA52087E
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Dv4YLXZH"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="eQClLDyK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726227AbgDZLDi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Apr 2020 07:03:38 -0400
-Received: from us-smtp-2.mimecast.com ([207.211.31.81]:36066 "EHLO
+        id S1726250AbgDZLD1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Apr 2020 07:03:27 -0400
+Received: from us-smtp-1.mimecast.com ([207.211.31.81]:36392 "EHLO
         us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726225AbgDZLD2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2020 07:03:28 -0400
+        by vger.kernel.org with ESMTP id S1726225AbgDZLDY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2020 07:03:24 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587899006;
+        s=mimecast20190719; t=1587899002;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=GRG3wb+HfKLYZc12zNwv5CO7j5yWInoHWZ1aFwKrIxE=;
-        b=Dv4YLXZH1B3U4Ge5NcxsncIPT7lkQVlHcyqGhKCF4NYkpV8v1iOhnxbELhF8OPoh6q4hu1
-        6gkyzuzgE88T/5ge9V0ELP7TruU1LUBgc3vma9RBPE8XzcVMy6z4kHBaW4rrq1BIUNyaho
-        vrVFTwIx4CsmzNjzy+nZnWkjXsXOmEU=
+        bh=k0r4SFAC0+UCYN7UhbpOsXXVV0ElOUm3a7IZgFa572w=;
+        b=eQClLDyKA1aOxDMJxjUnmmMOUEP26UTOEiciML8rX5sEjKEdNqyFhJnzukLm0RprT0M9/m
+        e7mOszC8fOd9rLBt9gb6FULbBHJgtKzpRoxh0CPEkq2ni7EaxjQCndlGFOIJ6Kq8kVSJD3
+        IGLx0XuWeOanApQTu3STn1vV6T2PkSs=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-383-pYmJho1LORmTytu4ZqOb8w-1; Sun, 26 Apr 2020 07:03:24 -0400
-X-MC-Unique: pYmJho1LORmTytu4ZqOb8w-1
+ us-mta-285-C4GW0QpgPkCOZHcQa3REAA-1; Sun, 26 Apr 2020 07:03:19 -0400
+X-MC-Unique: C4GW0QpgPkCOZHcQa3REAA-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id C6BA745F;
-        Sun, 26 Apr 2020 11:03:22 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0C8FE464;
+        Sun, 26 Apr 2020 11:03:17 +0000 (UTC)
 Received: from x1.localdomain.com (ovpn-112-32.ams2.redhat.com [10.36.112.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 333D410013A1;
-        Sun, 26 Apr 2020 11:03:20 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 740B310013A1;
+        Sun, 26 Apr 2020 11:03:14 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Subject: [PATCH 8/8] iio: light: cm32181: Fix integartion time typo
-Date:   Sun, 26 Apr 2020 13:02:56 +0200
-Message-Id: <20200426110256.218186-8-hdegoede@redhat.com>
+Subject: [PATCH 6/8] iio: light: cm32181: Make lux_per_bit and lux_per_bit_base_it runtime settings
+Date:   Sun, 26 Apr 2020 13:02:54 +0200
+Message-Id: <20200426110256.218186-6-hdegoede@redhat.com>
 In-Reply-To: <20200426110256.218186-1-hdegoede@redhat.com>
 References: <20200426110256.218186-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -69,28 +69,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix integartion time typo and while at it improve the comment with
-the typo a bit in general.
+Make lux_per_bit and lux_per_bit_base_it settings stored in struct
+cm32181_chip instead of a hardcoded (defined) values.
+
+This is a preparation patch for reading some ACPI tables which specify
+a device specific lux_per_bit value.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/light/cm32181.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/light/cm32181.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 878fc13632d8..50cfb7d189df 100644
+index 4fdf2f4a23ab..e5674d4a8143 100644
 --- a/drivers/iio/light/cm32181.c
 +++ b/drivers/iio/light/cm32181.c
-@@ -237,7 +237,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32=
+@@ -69,6 +69,8 @@ struct cm32181_chip {
+ 	u16 conf_regs[CM32181_CONF_REG_NUM];
+ 	int init_regs_bitmap;
+ 	int calibscale;
++	int lux_per_bit;
++	int lux_per_bit_base_it;
+ 	int num_als_it;
+ 	const int *als_it_bits;
+ 	const int *als_it_values;
+@@ -116,6 +118,8 @@ static int cm32181_reg_init(struct cm32181_chip *cm32=
 181)
-  *  @cm32181:	pointer of struct cm32181
-  *  @val2:	pointer of int to load the als_it value.
-  *
-- *  Report the current integartion time by millisecond.
-+ *  Report the current integration time in milliseconds.
-  *
-  *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
-  */
+ 			CM32181_CMD_ALS_IT_DEFAULT | CM32181_CMD_ALS_SM_DEFAULT;
+ 	cm32181->init_regs_bitmap =3D BIT(CM32181_REG_ADDR_CMD);
+ 	cm32181->calibscale =3D CM32181_CALIBSCALE_DEFAULT;
++	cm32181->lux_per_bit =3D CM32181_LUX_PER_BIT;
++	cm32181->lux_per_bit_base_it =3D CM32181_LUX_PER_BIT_BASE_IT;
+=20
+ 	/* Initialize registers*/
+ 	for (i =3D 0; i < CM32181_CONF_REG_NUM; i++) {
+@@ -214,8 +218,8 @@ static int cm32181_get_lux(struct cm32181_chip *cm321=
+81)
+ 	if (ret < 0)
+ 		return -EINVAL;
+=20
+-	lux =3D CM32181_LUX_PER_BIT;
+-	lux *=3D CM32181_LUX_PER_BIT_BASE_IT;
++	lux =3D cm32181->lux_per_bit;
++	lux *=3D cm32181->lux_per_bit_base_it;
+ 	lux =3D div_u64(lux, als_it);
+=20
+ 	ret =3D i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
 --=20
 2.26.0
 
