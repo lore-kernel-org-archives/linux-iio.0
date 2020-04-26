@@ -2,217 +2,235 @@ Return-Path: <SRS0=UcXy=6K=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D381AC55199
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 10:50:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9896FC55199
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B02A42084D
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 10:50:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1587898236;
-	bh=v4fChj3LpwH4K2rCU498iCs5BoJmqy8Myo+qfvH8RkM=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=w+AypbIEp2qMfzNSnaRsHc4ufH9gwP68W3r8jJQAq8Jlw2fiIIT/ToKJaPQj1+9yo
-	 /p+N5UQF6LfiDq4boBcn5V6WZjE97zI1sK5Vo+NtPYnaTWX2//j8thA8vvQfMA/csQ
-	 0e9pV/TOCZANU0uC8N8JqvwbxySn3awV6kkMJevk=
+	by mail.kernel.org (Postfix) with ESMTP id 792D62075B
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="R+UFKvO5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726143AbgDZKug (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Apr 2020 06:50:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726125AbgDZKug (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 26 Apr 2020 06:50:36 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1726323AbgDZLDa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Apr 2020 07:03:30 -0400
+Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:37998 "EHLO
+        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1726262AbgDZLD3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2020 07:03:29 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1587899007;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=Ia70Ai/6NHdFWgYbYmkiuqWOyDh2dovsyzqZrEtEQlk=;
+        b=R+UFKvO5rlxDmLujr4AZaN6je8Oj0nlFVQarYIHSU2cBK+n2AsGV9qSlKk+dmQzbHnaFm5
+        b2KIzm/MpJWMPfZldpvvhUJxxVzc+6CYAp/2+lVJaKxCDRpC8cVoViRoDaRSIZikRA9uF7
+        tOLbRW8VVMST2BX45FM7gMC91hPsjgM=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-512-W5Bp-2zlOUK7Il4fkM32_g-1; Sun, 26 Apr 2020 07:03:21 -0400
+X-MC-Unique: W5Bp-2zlOUK7Il4fkM32_g-1
+Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5B75C2071C;
-        Sun, 26 Apr 2020 10:50:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1587898235;
-        bh=v4fChj3LpwH4K2rCU498iCs5BoJmqy8Myo+qfvH8RkM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=u/FD5Ybr4FiV0nDtwbEJdKBTAgDw3P1AubrDhGR5u7nAwk4Hf50e0Rl+JdNY2E/Ey
-         svjQ909AvOWIwz1nGmIdrZvDVsCtvrQkbHjob+RcAnOBAqWDa7OtMeCxqVvP9UAbNe
-         5SY8gkzr4dnYCiB+8cegqYkwx59zj6RqRh4lYfC0=
-Date:   Sun, 26 Apr 2020 11:50:31 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>
-Subject: Re: [RFC PATCH 4/4] iio: Track enabled channels on a per channel
- basis
-Message-ID: <20200426115031.2eb0bb3c@archlinux>
-In-Reply-To: <CY4PR03MB33506FD8C2BF3921FE9BA2DD99D00@CY4PR03MB3350.namprd03.prod.outlook.com>
-References: <20200424051818.6408-1-alexandru.ardelean@analog.com>
-        <20200424051818.6408-5-alexandru.ardelean@analog.com>
-        <CY4PR03MB33506FD8C2BF3921FE9BA2DD99D00@CY4PR03MB3350.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id DFC651895870;
+        Sun, 26 Apr 2020 11:03:19 +0000 (UTC)
+Received: from x1.localdomain.com (ovpn-112-32.ams2.redhat.com [10.36.112.32])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 5673610013A1;
+        Sun, 26 Apr 2020 11:03:17 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        Kevin Tsai <ktsai@capellamicro.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
+        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH 7/8] iio: light: cm32181: Add support for parsing CPM0 and CPM1 ACPI tables
+Date:   Sun, 26 Apr 2020 13:02:55 +0200
+Message-Id: <20200426110256.218186-7-hdegoede@redhat.com>
+In-Reply-To: <20200426110256.218186-1-hdegoede@redhat.com>
+References: <20200426110256.218186-1-hdegoede@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 24 Apr 2020 07:51:05 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+On ACPI based systems the CPLM3218 ACPI device node describing the
+CM3218[1] sensor typically will have some extra tables with register
+init values for initializing the sensor and calibration info.
 
-> > From: linux-iio-owner@vger.kernel.org <linux-iio-owner@vger.kernel.org>
-> > On Behalf Of Alexandru Ardelean
-> > Sent: Freitag, 24. April 2020 07:18
-> > To: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Cc: jic23@kernel.org; lars@metafoo.de; Ardelean, Alexandru
-> > <alexandru.Ardelean@analog.com>
-> > Subject: [RFC PATCH 4/4] iio: Track enabled channels on a per channel b=
-asis
-> >=20
-> > From: Lars-Peter Clausen <lars@metafoo.de>
-> >=20
-> > Now that we support multiple channels with the same scan index we can no
-> > longer use the scan mask to track which channels have been enabled.
-> > Otherwise it is not possible to enable channels with the same scan index
-> > independently.
-> >=20
-> > Introduce a new channel mask which is used instead of the scan mask to
-> > track which channels are enabled. Whenever the channel mask is changed a
-> > new scan mask is computed based on it.
-> >=20
-> > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > ---
-> >  drivers/iio/industrialio-buffer.c | 62 +++++++++++++++++++++----------
-> >  drivers/iio/inkern.c              | 19 +++++++++-
-> >  include/linux/iio/buffer_impl.h   |  3 ++
-> >  include/linux/iio/consumer.h      |  2 +
-> >  4 files changed, 64 insertions(+), 22 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrial=
-io-buffer.c
-> > index c06691281287..1821a3e32fb3 100644
-> > --- a/drivers/iio/industrialio-buffer.c
-> > +++ b/drivers/iio/industrialio-buffer.c
-> > @@ -216,12 +216,20 @@ int iio_buffer_alloc_scanmask(struct iio_buffer
-> > *buffer,
-> >  	if (buffer->scan_mask =3D=3D NULL)
-> >  		return -ENOMEM;
-> >=20
-> > +	buffer->channel_mask =3D bitmap_zalloc(indio_dev->num_channels,
-> > +					     GFP_KERNEL);
-> > +	if (buffer->channel_mask =3D=3D NULL) {
-> > +		bitmap_free(buffer->scan_mask);
-> > +		return -ENOMEM;
-> > +	}
-> > +
-> >  	return 0;
-> >  }
-> >  EXPORT_SYMBOL_GPL(iio_buffer_alloc_scanmask);
-> >=20
-> >  void iio_buffer_free_scanmask(struct iio_buffer *buffer)
-> >  {
-> > +	bitmap_free(buffer->channel_mask);
-> >  	bitmap_free(buffer->scan_mask);
-> >  }
-> >  EXPORT_SYMBOL_GPL(iio_buffer_free_scanmask);
-> > @@ -285,7 +293,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
-> >=20
-> >  	/* Ensure ret is 0 or 1. */
-> >  	ret =3D !!test_bit(to_iio_dev_attr(attr)->address,
-> > -		       indio_dev->buffer->scan_mask);
-> > +		       indio_dev->buffer->channel_mask);
-> >=20
-> >  	return sprintf(buf, "%d\n", ret);
-> >  }
-> > @@ -330,11 +338,12 @@ static bool iio_validate_scan_mask(struct iio_dev
-> > *indio_dev,
-> >   * buffers might request, hence this code only verifies that the
-> >   * individual buffers request is plausible.
-> >   */
-> > -static int iio_scan_mask_set(struct iio_dev *indio_dev,
-> > -		      struct iio_buffer *buffer, int bit)
-> > +static int iio_channel_mask_set(struct iio_dev *indio_dev,
-> > +				struct iio_buffer *buffer, int bit)
-> >  {
-> >  	const unsigned long *mask;
-> >  	unsigned long *trialmask;
-> > +	unsigned int ch;
-> >=20
-> >  	trialmask =3D bitmap_zalloc(indio_dev->masklength, GFP_KERNEL);
-> >  	if (trialmask =3D=3D NULL)
-> > @@ -343,8 +352,11 @@ static int iio_scan_mask_set(struct iio_dev
-> > *indio_dev,
-> >  		WARN(1, "Trying to set scanmask prior to registering
-> > buffer\n");
-> >  		goto err_invalid_mask;
-> >  	}
-> > -	bitmap_copy(trialmask, buffer->scan_mask, indio_dev- =20
-> > >masklength); =20
-> > -	set_bit(bit, trialmask);
-> > +
-> > +	set_bit(bit, buffer->channel_mask);
-> > +
-> > +	for_each_set_bit(ch, buffer->channel_mask, indio_dev- =20
-> > >num_channels) =20
-> > +		set_bit(indio_dev->channels[ch].scan_index, trialmask); =20
->=20
-> So, here if the channels all have the same scan_index, we will end up wit=
-h a scan_mask which is
-> different that channel_mask, right? I saw that in our internal driver's w=
-e then just access the
-> channel_mask field directly to know what pieces/channels do we need to en=
-able prior to
-> buffering, which implies including buffer_impl.h.
-Given that we handle the demux only at the level of scan elements that won'=
-t work in general
-(even if it wasn't a horrible layering issue).
+This is based on a newer version of cm32181.c, with a copyright of:
 
->=20
-> So, for me it would make sense to compute scan_mask so that it will be th=
-e same as channel_mask
-> (hmm but that would be a problem when computing the buffer size...) and d=
-rivers can correctly use
-> ` validate_scan_mask ()` cb. Alternatively, we need to expose channel_mas=
-k either on a new cb or
-> change the ` validate_scan_mask ()` footprint.=20
+ * Copyright (C) 2014 Capella Microsystems Inc.
+ * Author: Kevin Tsai <ktsai@capellamicro.com>
+ *
+ * This program is free software; you can redistribute it and/or modify i=
+t
+ * under the terms of the GNU General Public License version 2, as publis=
+hed
+ * by the Free Software Foundation.
 
-Excellent points. We need to address support for:
+Which is floating around on the net in various places, but the changes
+from this newer version never made it upstream.
 
-1) available_scan_mask - if we have complicated rules on mixtures of channe=
-ls inside
-   a given buffer element.
+This was tested on the following models: Acer Switch 10 SW5-012 (CM32181)
+Asus T100TA (CM3218), Asus T100CHI (CM3218) and HP X2 10-n000nd (CM32181)=
+.
 
-2) channel enabling though I'm sort of inclined to say that if you are usin=
-g this approach
-   you only get information on channels that make up a scan mask element.  =
-Tough luck you
-   may end up enabling more than you'd like.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/light/cm32181.c | 98 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 98 insertions(+)
 
-It might be possible to make switch to using a channel mask but given the c=
-hannel index is
-implicit that is going to be at least a little bit nasty.
-
-How much does it hurt to not have the ability to separately control channel=
-s within
-a given buffer element?   Userspace can enable / disable them but reality i=
-s you'll
-get data for all the channels in a buffer element if any of them are enable=
-d.
-
-Given the demux will copy the whole element anyway (don't want to waste tim=
-e doing
-masking inside an element), userspace might get these extra channels anyway=
- if another
-consumer has enabled them.
-
-Jonathan
-
-
->=20
-> - Nuno S=C3=A1
+diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+index e5674d4a8143..878fc13632d8 100644
+--- a/drivers/iio/light/cm32181.c
++++ b/drivers/iio/light/cm32181.c
+@@ -4,6 +4,7 @@
+  * Author: Kevin Tsai <ktsai@capellamicro.com>
+  */
+=20
++#include <linux/acpi.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/i2c.h>
+@@ -53,6 +54,15 @@
+=20
+ #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
+=20
++/* CPM0 Index 0: device-id (3218 or 32181), 1: Unknown, 2: init_regs_bit=
+map */
++#define CPM0_REGS_BITMAP		2
++#define CPM0_HEADER_SIZE		3
++
++/* CPM1 Index 0: lux_per_bit, 1: calibscale, 2: resolution (100000) */
++#define CPM1_LUX_PER_BIT		0
++#define CPM1_CALIBSCALE			1
++#define CPM1_SIZE			3
++
+ /* CM3218 Family */
+ static const int cm3218_als_it_bits[] =3D { 0, 1, 2, 3 };
+ static const int cm3218_als_it_values[] =3D { 100000, 200000, 400000, 80=
+0000 };
+@@ -76,6 +86,56 @@ struct cm32181_chip {
+ 	const int *als_it_values;
+ };
+=20
++static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2);
++
++#ifdef CONFIG_ACPI
++/**
++ * cm32181_acpi_get_cpm() - Get CPM object from ACPI
++ * @client	pointer of struct i2c_client.
++ * @obj_name	pointer of ACPI object name.
++ * @count	maximum size of return array.
++ * @vals	pointer of array for return elements.
++ *
++ * Convert ACPI CPM table to array.
++ *
++ * Return: -ENODEV for fail.  Otherwise is number of elements.
++ */
++static int cm32181_acpi_get_cpm(struct i2c_client *client, char *obj_nam=
+e,
++				u64 *values, int count)
++{
++	struct acpi_buffer buffer =3D { ACPI_ALLOCATE_BUFFER, NULL };
++	union acpi_object *cpm, *elem;
++	acpi_handle handle;
++	acpi_status status;
++	int i;
++
++	handle =3D ACPI_HANDLE(&client->dev);
++	if (!handle)
++		return -ENODEV;
++
++	status =3D acpi_evaluate_object(handle, obj_name, NULL, &buffer);
++	if (ACPI_FAILURE(status)) {
++		dev_err(&client->dev, "object %s not found\n", obj_name);
++		return -ENODEV;
++	}
++
++	cpm =3D buffer.pointer;
++	if (cpm->package.count > count)
++		dev_warn(&client->dev, "%s table contains %d values, only using first =
+%d values\n",
++			 obj_name, cpm->package.count, count);
++
++	count =3D min_t(int, cpm->package.count, count);
++	for (i =3D 0; i < count; i++) {
++		elem =3D &(cpm->package.elements[i]);
++		values[i] =3D elem->integer.value;
++	}
++
++	kfree(buffer.pointer);
++
++	return count;
++}
++#endif /* CONFIG_ACPI */
++
+ /**
+  * cm32181_reg_init() - Initialize CM32181 registers
+  * @cm32181:	pointer of struct cm32181.
+@@ -121,6 +181,44 @@ static int cm32181_reg_init(struct cm32181_chip *cm3=
+2181)
+ 	cm32181->lux_per_bit =3D CM32181_LUX_PER_BIT;
+ 	cm32181->lux_per_bit_base_it =3D CM32181_LUX_PER_BIT_BASE_IT;
+=20
++#ifdef CONFIG_ACPI
++	if (ACPI_HANDLE(&client->dev)) {
++		u64 values[CPM0_HEADER_SIZE + CM32181_CONF_REG_NUM];
++		int count;
++
++		count =3D cm32181_acpi_get_cpm(client, "CPM0",
++					     values, ARRAY_SIZE(values));
++		if (count <=3D CPM0_HEADER_SIZE)
++			goto cpm_parsing_done;
++
++		count -=3D CPM0_HEADER_SIZE;
++
++		cm32181->init_regs_bitmap =3D values[CPM0_REGS_BITMAP];
++		cm32181->init_regs_bitmap &=3D GENMASK(count - 1, 0);
++		for (i =3D 0; i < count; i++) {
++			if (cm32181->init_regs_bitmap & BIT(i))
++				cm32181->conf_regs[i] =3D
++					values[CPM0_HEADER_SIZE + i];
++		}
++
++		count =3D cm32181_acpi_get_cpm(client, "CPM1",
++					     values, ARRAY_SIZE(values));
++		if (count !=3D CPM1_SIZE)
++			goto cpm_parsing_done;
++
++		cm32181->lux_per_bit =3D values[CPM1_LUX_PER_BIT];
++
++		/* Check for uncalibrated devices */
++		if (values[CPM1_CALIBSCALE] =3D=3D CM32181_CALIBSCALE_DEFAULT)
++			goto cpm_parsing_done;
++
++		cm32181->calibscale  =3D values[CPM1_CALIBSCALE];
++		/* CPM1 lux_per_bit is for the current it value */
++		cm32181_read_als_it(cm32181, &cm32181->lux_per_bit_base_it);
++	}
++cpm_parsing_done:
++#endif /* CONFIG_ACPI */
++
+ 	/* Initialize registers*/
+ 	for (i =3D 0; i < CM32181_CONF_REG_NUM; i++) {
+ 		if (cm32181->init_regs_bitmap & BIT(i)) {
+--=20
+2.26.0
 
