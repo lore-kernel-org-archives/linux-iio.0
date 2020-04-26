@@ -4,45 +4,44 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D47CEC55191
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4994CC55191
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B45AF20706
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 299BE20A8B
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Apr 2020 11:03:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="e8SWlra3"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="Jb5kIK10"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726225AbgDZLDk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Apr 2020 07:03:40 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:60787 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1726176AbgDZLDW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2020 07:03:22 -0400
+        id S1726118AbgDZLDR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Apr 2020 07:03:17 -0400
+Received: from us-smtp-1.mimecast.com ([205.139.110.61]:52331 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726165AbgDZLDK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Apr 2020 07:03:10 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1587899000;
+        s=mimecast20190719; t=1587898988;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=M+b26ndc6zVYTP424qBUkq5rKzs/VJMdgytlvMYK02Q=;
-        b=e8SWlra3/B1h3ghKMFf6cdMyok57lcVRDDBI6U50HbWBH07Oj9dHX7Tsc6rSRD2xsgzaAi
-        gUI5Iycv88DpU00c00y37XrBqhx0UVtOSRs9Zy6K6dSQ1c53Cv2693XczQR4M1CIErx0Gm
-        d0Wigb3lK3wO+yBaxshrMkPS+wSaYl8=
+         content-transfer-encoding:content-transfer-encoding;
+        bh=XDnRW1OXXiAC0WD3am+tOEpqeaV+ob+FQwHX7z++4IU=;
+        b=Jb5kIK1033u5YHF0V+mDQv1chLHvWyY4Ff4eS+FGEAr5Kt+HJtdFGrdOkaq+d3lHmYMBWP
+        Y5tcfuvXRqc5qrazHAAXarbczgVtc+wMWOyR12BlLkF82TDuQ43+HKbHETDKhCCKnRsrC2
+        x+Nd1a8eJAxDe59nmxWPK6QMDqm7Qzs=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-506-r22GhwiBNJep_CXCVPeLcQ-1; Sun, 26 Apr 2020 07:03:16 -0400
-X-MC-Unique: r22GhwiBNJep_CXCVPeLcQ-1
+ us-mta-142-YDclGxIiMfmhZqMzga3eaw-1; Sun, 26 Apr 2020 07:03:05 -0400
+X-MC-Unique: YDclGxIiMfmhZqMzga3eaw-1
 Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 2C6EC1009600;
-        Sun, 26 Apr 2020 11:03:14 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B45B480B713;
+        Sun, 26 Apr 2020 11:03:02 +0000 (UTC)
 Received: from x1.localdomain.com (ovpn-112-32.ams2.redhat.com [10.36.112.32])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 98C6810013A1;
-        Sun, 26 Apr 2020 11:03:11 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 45DF01001281;
+        Sun, 26 Apr 2020 11:02:58 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>,
@@ -56,11 +55,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Subject: [PATCH 5/8] iio: light: cm32181: Use units of 1/100000th for calibscale and lux_per_bit
-Date:   Sun, 26 Apr 2020 13:02:53 +0200
-Message-Id: <20200426110256.218186-5-hdegoede@redhat.com>
-In-Reply-To: <20200426110256.218186-1-hdegoede@redhat.com>
-References: <20200426110256.218186-1-hdegoede@redhat.com>
+Subject: [PATCH 1/8] iio: light: cm32181: Add some extra register defines
+Date:   Sun, 26 Apr 2020 13:02:49 +0200
+Message-Id: <20200426110256.218186-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
 Content-Transfer-Encoding: quoted-printable
@@ -69,77 +66,72 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use units of 1/100000th for calibscale and lux_per_bit. The similar
-cm3232 driver already uses 1/100000th as unit for calibscale.
+These come from a newer version of cm32181.c, which is floating around
+the net, with a copyright of:
 
-This allows for higher-accuracy and makes it easier to add support
-for getting device-specific calibscale and lux_per_bit values from
-a device's ACPI tables, as the values in the ACPI tables also use
-1/100000th units.
+ * Copyright (C) 2014 Capella Microsystems Inc.
+ * Author: Kevin Tsai <ktsai@capellamicro.com>
+ *
+ * This program is free software; you can redistribute it and/or modify i=
+t
+ * under the terms of the GNU General Public License version 2, as publis=
+hed
+ * by the Free Software Foundation.
 
-This units change means that our intermediate values in cm32181_get_lux()
-may get quite big, change the type of the lux variable to a u64 to
-deal with this.
+Note that this removes the bogus CM32181_CMD_ALS_ENABLE define, there
+is no enable bit, only a disable bit and enabled is the absence of
+being disabled.
+
+This is a preparation patch for adding support for the older
+CM3218 model of the light sensor.
 
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/light/cm32181.c | 22 +++++++++++-----------
- 1 file changed, 11 insertions(+), 11 deletions(-)
+ drivers/iio/light/cm32181.c | 15 +++++++++++----
+ 1 file changed, 11 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index e31c1005b03d..4fdf2f4a23ab 100644
+index 5f4fb5674fa0..ee386afe811e 100644
 --- a/drivers/iio/light/cm32181.c
 +++ b/drivers/iio/light/cm32181.c
-@@ -45,11 +45,11 @@
- #define CM32181_CMD_ALS_SM_MASK		(0x03 << CM32181_CMD_ALS_SM_SHIFT)
- #define CM32181_CMD_ALS_SM_DEFAULT	(0x01 << CM32181_CMD_ALS_SM_SHIFT)
+@@ -18,6 +18,9 @@
 =20
--#define CM32181_MLUX_PER_BIT		5	/* ALS_SM=3D01 IT=3D800ms */
--#define CM32181_MLUX_PER_BIT_BASE_IT	800000	/* Based on IT=3D800ms */
--#define	CM32181_CALIBSCALE_DEFAULT	1000
--#define CM32181_CALIBSCALE_RESOLUTION	1000
--#define MLUX_PER_LUX			1000
-+#define CM32181_LUX_PER_BIT		500	/* ALS_SM=3D01 IT=3D800ms */
-+#define CM32181_LUX_PER_BIT_RESOLUTION	100000
-+#define CM32181_LUX_PER_BIT_BASE_IT	800000	/* Based on IT=3D800ms */
-+#define CM32181_CALIBSCALE_DEFAULT	100000
-+#define CM32181_CALIBSCALE_RESOLUTION	100000
+ /* Registers Address */
+ #define CM32181_REG_ADDR_CMD		0x00
++#define CM32181_REG_ADDR_WH		0x01
++#define CM32181_REG_ADDR_WL		0x02
++#define CM32181_REG_ADDR_TEST		0x03
+ #define CM32181_REG_ADDR_ALS		0x04
+ #define CM32181_REG_ADDR_STATUS		0x06
+ #define CM32181_REG_ADDR_ID		0x07
+@@ -26,9 +29,13 @@
+ #define CM32181_CONF_REG_NUM		0x01
 =20
- #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
+ /* CMD register */
+-#define CM32181_CMD_ALS_ENABLE		0x00
+-#define CM32181_CMD_ALS_DISABLE		0x01
+-#define CM32181_CMD_ALS_INT_EN		0x02
++#define CM32181_CMD_ALS_DISABLE		BIT(0)
++#define CM32181_CMD_ALS_INT_EN		BIT(1)
++#define CM32181_CMD_ALS_THRES_WINDOW	BIT(2)
++
++#define CM32181_CMD_ALS_PERS_SHIFT	4
++#define CM32181_CMD_ALS_PERS_MASK	(0x03 << CM32181_CMD_ALS_PERS_SHIFT)
++#define CM32181_CMD_ALS_PERS_DEFAULT	(0x01 << CM32181_CMD_ALS_PERS_SHIFT=
+)
 =20
-@@ -208,15 +208,15 @@ static int cm32181_get_lux(struct cm32181_chip *cm3=
-2181)
- 	struct i2c_client *client =3D cm32181->client;
- 	int ret;
- 	int als_it;
--	unsigned long lux;
-+	u64 lux;
+ #define CM32181_CMD_ALS_IT_SHIFT	6
+ #define CM32181_CMD_ALS_IT_MASK		(0x0F << CM32181_CMD_ALS_IT_SHIFT)
+@@ -82,7 +89,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm3218=
+1)
+ 		return -ENODEV;
 =20
- 	ret =3D cm32181_read_als_it(cm32181, &als_it);
- 	if (ret < 0)
- 		return -EINVAL;
+ 	/* Default Values */
+-	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =3D CM32181_CMD_ALS_ENABLE |
++	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =3D
+ 			CM32181_CMD_ALS_IT_DEFAULT | CM32181_CMD_ALS_SM_DEFAULT;
+ 	cm32181->calibscale =3D CM32181_CALIBSCALE_DEFAULT;
 =20
--	lux =3D CM32181_MLUX_PER_BIT;
--	lux *=3D CM32181_MLUX_PER_BIT_BASE_IT;
--	lux /=3D als_it;
-+	lux =3D CM32181_LUX_PER_BIT;
-+	lux *=3D CM32181_LUX_PER_BIT_BASE_IT;
-+	lux =3D div_u64(lux, als_it);
-=20
- 	ret =3D i2c_smbus_read_word_data(client, CM32181_REG_ADDR_ALS);
- 	if (ret < 0)
-@@ -224,8 +224,8 @@ static int cm32181_get_lux(struct cm32181_chip *cm321=
-81)
-=20
- 	lux *=3D ret;
- 	lux *=3D cm32181->calibscale;
--	lux /=3D CM32181_CALIBSCALE_RESOLUTION;
--	lux /=3D MLUX_PER_LUX;
-+	lux =3D div_u64(lux, CM32181_CALIBSCALE_RESOLUTION);
-+	lux =3D div_u64(lux, CM32181_LUX_PER_BIT_RESOLUTION);
-=20
- 	if (lux > 0xFFFF)
- 		lux =3D 0xFFFF;
 --=20
 2.26.0
 
