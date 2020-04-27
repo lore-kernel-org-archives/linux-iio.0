@@ -7,42 +7,42 @@ X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E09EC7C8A3
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 15:51:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D60BC7C8A0
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 15:51:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E6CE32064C
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 15:51:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4898C206B6
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 15:51:23 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="MbSuDOcZ"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="XU+4Fl7i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728514AbgD0PvJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Apr 2020 11:51:09 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([207.211.31.120]:44009 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728491AbgD0PvI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2020 11:51:08 -0400
+        id S1727006AbgD0PvV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Apr 2020 11:51:21 -0400
+Received: from us-smtp-2.mimecast.com ([207.211.31.81]:45059 "EHLO
+        us-smtp-delivery-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728478AbgD0Pu6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2020 11:50:58 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588002667;
+        s=mimecast20190719; t=1588002657;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=O0EVbd8yvTnodt/PwOFNSr4NOJBYWtmio5+4hHlbVdA=;
-        b=MbSuDOcZjHsiLgGzFWjiHQzuMnH1n4njgSiooB0wV/YDqhB9+Z1BzIS3mh1u748gOSIbvx
-        IwO54eMrEaNvLgJwpjrWUK8IY7IFry188xZY7Ec0anWqtVcmgzrH/KusCx+UAhNIEV1MQz
-        9EPE0Ij0YLhN6lpaXb10rYb2cFVPcdY=
+        bh=uVbZSaI2POy6fJtwh+hojPBmfthgWVtJ9egPhBMBtdg=;
+        b=XU+4Fl7igzUvxGqMh1DmrmGFPwKC6MZaOwkRawctoNIldxIqveI6IZVLdHluksa28WLTXm
+        zH7BJNU91q0VfxhCY2s2F7kgQeTP5++tWz309pY2kwv9+jmABgLOJGfXPFnItTIwvbLbCG
+        uOYza9IYj0p23XIBlHlK/rFkzu1I/Cw=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-309-nI1rz6WXPVO-hYMpnkVNJQ-1; Mon, 27 Apr 2020 11:51:03 -0400
-X-MC-Unique: nI1rz6WXPVO-hYMpnkVNJQ-1
+ us-mta-395-F3ejC_FSN4yQldq6iUzilg-1; Mon, 27 Apr 2020 11:50:52 -0400
+X-MC-Unique: F3ejC_FSN4yQldq6iUzilg-1
 Received: from smtp.corp.redhat.com (int-mx03.intmail.prod.int.phx2.redhat.com [10.5.11.13])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id B660B835B40;
-        Mon, 27 Apr 2020 15:51:01 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 5538C835B40;
+        Mon, 27 Apr 2020 15:50:50 +0000 (UTC)
 Received: from x1.localdomain.com (ovpn-114-38.ams2.redhat.com [10.36.114.38])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 316A96063C;
-        Mon, 27 Apr 2020 15:50:59 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id C704660BEC;
+        Mon, 27 Apr 2020 15:50:47 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
         Len Brown <lenb@kernel.org>,
@@ -56,9 +56,9 @@ Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v2 8/8] iio: light: cm32181: Fix integartion time typo
-Date:   Mon, 27 Apr 2020 17:50:37 +0200
-Message-Id: <20200427155037.218390-8-hdegoede@redhat.com>
+Subject: [PATCH v2 4/8] iio: light: cm32181: Change reg_init to use a bitmap of which registers to init
+Date:   Mon, 27 Apr 2020 17:50:33 +0200
+Message-Id: <20200427155037.218390-4-hdegoede@redhat.com>
 In-Reply-To: <20200427155037.218390-1-hdegoede@redhat.com>
 References: <20200427155037.218390-1-hdegoede@redhat.com>
 MIME-Version: 1.0
@@ -69,29 +69,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix integartion time typo and while at it improve the comment with
-the typo a bit in general.
+This is a preparation patch for reading some ACPI tables which give
+init values for multiple registers.
 
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/light/cm32181.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Changes in v2:
+- Use unsigned long for init_regs_bitmap
+- Use for_each_set_bit()
+---
+ drivers/iio/light/cm32181.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 04ba636415c9..95c57b0cb230 100644
+index 4c26a4a8a070..194aa5a0ad08 100644
 --- a/drivers/iio/light/cm32181.c
 +++ b/drivers/iio/light/cm32181.c
-@@ -236,7 +236,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32=
-181)
-  *  @cm32181:	pointer of struct cm32181
-  *  @val2:	pointer of int to load the als_it value.
-  *
-- *  Report the current integartion time by millisecond.
-+ *  Report the current integration time in milliseconds.
-  *
-  *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
-  */
+@@ -26,7 +26,7 @@
+ #define CM32181_REG_ADDR_ID		0x07
+=20
+ /* Number of Configurable Registers */
+-#define CM32181_CONF_REG_NUM		0x01
++#define CM32181_CONF_REG_NUM		4
+=20
+ /* CMD register */
+ #define CM32181_CMD_ALS_DISABLE		BIT(0)
+@@ -53,10 +53,6 @@
+=20
+ #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
+=20
+-static const u8 cm32181_reg[CM32181_CONF_REG_NUM] =3D {
+-	CM32181_REG_ADDR_CMD,
+-};
+-
+ /* CM3218 Family */
+ static const int cm3218_als_it_bits[] =3D { 0, 1, 2, 3 };
+ static const int cm3218_als_it_values[] =3D { 100000, 200000, 400000, 80=
+0000 };
+@@ -71,6 +67,7 @@ struct cm32181_chip {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+ 	u16 conf_regs[CM32181_CONF_REG_NUM];
++	unsigned long init_regs_bitmap;
+ 	int calibscale;
+ 	int num_als_it;
+ 	const int *als_it_bits;
+@@ -117,12 +114,13 @@ static int cm32181_reg_init(struct cm32181_chip *cm=
+32181)
+ 	/* Default Values */
+ 	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =3D
+ 			CM32181_CMD_ALS_IT_DEFAULT | CM32181_CMD_ALS_SM_DEFAULT;
++	cm32181->init_regs_bitmap =3D BIT(CM32181_REG_ADDR_CMD);
+ 	cm32181->calibscale =3D CM32181_CALIBSCALE_DEFAULT;
+=20
+ 	/* Initialize registers*/
+-	for (i =3D 0; i < CM32181_CONF_REG_NUM; i++) {
+-		ret =3D i2c_smbus_write_word_data(client, cm32181_reg[i],
+-			cm32181->conf_regs[i]);
++	for_each_set_bit(i, &cm32181->init_regs_bitmap, CM32181_CONF_REG_NUM) {
++		ret =3D i2c_smbus_write_word_data(client, i,
++						cm32181->conf_regs[i]);
+ 		if (ret < 0)
+ 			return ret;
+ 	}
 --=20
 2.26.0
 
