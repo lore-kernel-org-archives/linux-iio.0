@@ -2,69 +2,70 @@ Return-Path: <SRS0=i9YC=6L=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3DE0C54FD0
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 09:56:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5402CC5519B
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 09:56:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 833EC206B8
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 09:56:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 230BA20663
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Apr 2020 09:56:29 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="D11QhMqd"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Q335oUTX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726539AbgD0J4L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Apr 2020 05:56:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47932 "EHLO
+        id S1726969AbgD0J4O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Apr 2020 05:56:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726485AbgD0J4K (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2020 05:56:10 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78748C0610D5;
-        Mon, 27 Apr 2020 02:56:10 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id r26so19729121wmh.0;
-        Mon, 27 Apr 2020 02:56:10 -0700 (PDT)
+        by vger.kernel.org with ESMTP id S1726485AbgD0J4N (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Apr 2020 05:56:13 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E62E0C0610D5;
+        Mon, 27 Apr 2020 02:56:12 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id x25so18840058wmc.0;
+        Mon, 27 Apr 2020 02:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=KabU8RQbYo6zO4Da1RE3r+c7iw+LtTTgVh+CWeRPFdU=;
-        b=D11QhMqdOeqN74psXrXyt0k3ad4XP+C8qKz3dj0O/uV/jAk3cyGJIWLyL2TSFWrcnZ
-         XrQyAn2YfjVjCtYZ3x3Y7fgpRSUqrri9uK+tF4C+sltasDw4hyaCGcO8MzFOYLiP7B/7
-         HqWKneHBzfXPvNoY3aqxhhZxlPJzRO/ZBS1Wi/HKLqekqVLGy9zt6DyOwlguk5Ijt3iw
-         +2nN9Xniyqqpy3U6L9VdCnxSD2m88/FPpRqr9ECzNr4cYt7ZvLRu6FVkRqFGIrwtZCI4
-         5eu7DdYVMyHixPDFxT6l8GEmsrfWWita3zLzjukFYQsAAzT/75cQ/RCIjy3fpQcHSJaQ
-         H6NQ==
+        bh=iBxDiU+CamaXyOQdcXuQVfY5fjkbVOeNQ02mkqzq6XI=;
+        b=Q335oUTXPiwU1GlQ1snQIjBw85grneMY9cKYncH+zxd0svw4GyRIyQNKrRkUtNZ6BX
+         7hgjJX6Uw/8FIEuPB/kWJoYJ3gwlwy+DXQsgOnIxSMDJYnY8NshdrRmmh9dRzhGQAlWu
+         7FncONoV2dlca+M3Zf5ME4sGIGtgYqTUO/lJ04huyG91Lqnf2PPbtRqiumEHXGmHaUAO
+         /u131faYOczsjjYeB4XY2QVqrEgaxzBVtk6sABkYwaBA41WGNauhH6mcYYRB8exQIv9I
+         PuHzZU+vTvHd1deirOCuWA1v+JxOSG+dX3QhvKu/EQTU6EFE0BMD2b8e5hcKpgXLZ5lf
+         NN8Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=KabU8RQbYo6zO4Da1RE3r+c7iw+LtTTgVh+CWeRPFdU=;
-        b=HjkfBIca0SmWPW4pvw+5F0u/za3kD9i3FOxg0xRlmYXWuKj9RpIJw/4dl4188ldGOr
-         HVCMW2v3TgVRjl+kJjhfdBUn8Emdy10X3uPgvjCcmQB1oVL/TAoJb+LIFh21+LmoiDP5
-         9l1jabAYGcUI8VUtFXygnE8thQ+oCx95nTB/Q3fJi0yi0vGKesHwhuUaguCyIXk9CGPp
-         3qjgQfCf5cSvOd/6OEn72SaT75HarBL6NwZOYhlZ1d00z796nOw5U9OvDT2/wHJh4CzL
-         QFXrMtCnEBzH+FA+jFYNXI1v31x+dTnipck9mfB1RmI5qFy4qwjY2iUzXgSCg6QKkr5o
-         nrDA==
-X-Gm-Message-State: AGi0PuY0bNCiBwwazTP+jWvt11AkLjsSjdG9KFy3MlAK6DKM2HNv3agC
-        hdsaJqKyDt+d6BiF4MJjNQI=
-X-Google-Smtp-Source: APiQypJ+YuAx21MDQYPsEab2m2G7VUSEmanfhivWgDrGsuNCE9EJ7V6qfEBKjHIiVueU9TGH2XLomg==
-X-Received: by 2002:a1c:384:: with SMTP id 126mr25520516wmd.58.1587981369106;
-        Mon, 27 Apr 2020 02:56:09 -0700 (PDT)
+        bh=iBxDiU+CamaXyOQdcXuQVfY5fjkbVOeNQ02mkqzq6XI=;
+        b=LGbi0FPwAzOiZdxUkeGmV1aUCCfMiAHNTXkLiiqcdBwC7gNPjnKWhbZd7tQ74Vc/vV
+         NXk5LvpGlNw/7sX2yA26gzq8sNGSWSd3InD0Bm4QE9VKQvFl8BSuE5l/pxs9FiICR7wu
+         Kwg8lch/VetEFM2zP5SzOQYOTn+iLpklRXPok0GiNjxywg0OgusUllHhA1iu3SKlVj3e
+         2k5NfvRNPIkKXMKs55m3MQXlXUZTcPRwSNEQWAoVK2xtCeYR8ekP2V8HhOYFrKxtOJSr
+         TvZ0LNWRlGCa/wibAkIiJCKDrt3aBCw2CIGorewNhPUW74oKZGhat7WpXyu6ZYw2iM6u
+         24RQ==
+X-Gm-Message-State: AGi0PuYuAEWQApoj6le/CBCqRto9VT/0/o4BSzX2H0VE+rYRLtxR3Sof
+        o/xYaUk5ZGHqVZ8UTyLb68c=
+X-Google-Smtp-Source: APiQypIw0GYr6yUdX9uUjfBrtWLjXISuUT0KjHyJ0tuNs7o3ub7e3QVIm82gtqpJJLWlVqJJJkggVA==
+X-Received: by 2002:a1c:98c3:: with SMTP id a186mr25228723wme.178.1587981371519;
+        Mon, 27 Apr 2020 02:56:11 -0700 (PDT)
 Received: from meru.fronius.com ([2a01:cb18:832e:5f00:7069:9b5d:ebe2:85b8])
-        by smtp.gmail.com with ESMTPSA id y10sm14487606wma.5.2020.04.27.02.56.07
+        by smtp.gmail.com with ESMTPSA id y10sm14487606wma.5.2020.04.27.02.56.10
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 27 Apr 2020 02:56:08 -0700 (PDT)
+        Mon, 27 Apr 2020 02:56:10 -0700 (PDT)
 From:   Mathieu Othacehe <m.othacehe@gmail.com>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v6 1/5] iio: vcnl4000: Fix i2c swapped word reading.
-Date:   Mon, 27 Apr 2020 11:55:55 +0200
-Message-Id: <20200427095559.16131-2-m.othacehe@gmail.com>
+Subject: [PATCH v6 3/5] iio: vcnl4000: Add event support for VCNL4010/20.
+Date:   Mon, 27 Apr 2020 11:55:57 +0200
+Message-Id: <20200427095559.16131-4-m.othacehe@gmail.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200427095559.16131-1-m.othacehe@gmail.com>
 References: <20200427095559.16131-1-m.othacehe@gmail.com>
@@ -75,41 +76,548 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The bytes returned by the i2c reading need to be swapped
-unconditionally. Otherwise, on be16 platforms, an incorrect value will be
-returned.
+The VCNL4010 and VCNL4020 chips are able to raise interrupts on proximity
+threshold events. Add support for threshold rising and falling events for
+those two chips.
+
+Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/light/vcnl4000.c | 454 ++++++++++++++++++++++++++++++-----
+ 1 file changed, 392 insertions(+), 62 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 58e97462e803..e5f86bd00fb0 100644
+index b976e29f2fda..e7653037fa5d 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -219,7 +219,6 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 				u8 rdy_mask, u8 data_reg, int *val)
+@@ -13,7 +13,6 @@
+  *
+  * TODO:
+  *   allow to adjust IR current
+- *   proximity threshold and event handling
+  *   periodic ALS/proximity measurement (VCNL4010/20)
+  *   interrupts (VCNL4010/20/40, VCNL4200)
+  */
+@@ -23,7 +22,9 @@
+ #include <linux/err.h>
+ #include <linux/delay.h>
+ #include <linux/pm_runtime.h>
++#include <linux/interrupt.h>
+ 
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+@@ -35,14 +36,22 @@
+ 
+ #define VCNL4000_COMMAND	0x80 /* Command register */
+ #define VCNL4000_PROD_REV	0x81 /* Product ID and Revision ID */
++#define VCNL4010_PROX_RATE      0x82 /* Proximity rate */
+ #define VCNL4000_LED_CURRENT	0x83 /* IR LED current for proximity mode */
+ #define VCNL4000_AL_PARAM	0x84 /* Ambient light parameter register */
++#define VCNL4010_ALS_PARAM      0x84 /* ALS rate */
+ #define VCNL4000_AL_RESULT_HI	0x85 /* Ambient light result register, MSB */
+ #define VCNL4000_AL_RESULT_LO	0x86 /* Ambient light result register, LSB */
+ #define VCNL4000_PS_RESULT_HI	0x87 /* Proximity result register, MSB */
+ #define VCNL4000_PS_RESULT_LO	0x88 /* Proximity result register, LSB */
+ #define VCNL4000_PS_MEAS_FREQ	0x89 /* Proximity test signal frequency */
++#define VCNL4010_INT_CTRL	0x89 /* Interrupt control */
+ #define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
++#define VCNL4010_LOW_THR_HI     0x8a /* Low threshold, MSB */
++#define VCNL4010_LOW_THR_LO     0x8b /* Low threshold, LSB */
++#define VCNL4010_HIGH_THR_HI    0x8c /* High threshold, MSB */
++#define VCNL4010_HIGH_THR_LO    0x8d /* High threshold, LSB */
++#define VCNL4010_ISR		0x8e /* Interrupt status */
+ 
+ #define VCNL4200_AL_CONF	0x00 /* Ambient light configuration */
+ #define VCNL4200_PS_CONF1	0x03 /* Proximity configuration */
+@@ -57,6 +66,26 @@
+ #define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
+ #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
+ #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
++#define VCNL4000_ALS_EN		BIT(2) /* start ALS measurement */
++#define VCNL4000_PROX_EN	BIT(1) /* start proximity measurement */
++#define VCNL4000_SELF_TIMED_EN	BIT(0) /* start self-timed measurement */
++
++/* Bit masks for interrupt registers. */
++#define VCNL4010_INT_THR_SEL	BIT(0) /* Select threshold interrupt source */
++#define VCNL4010_INT_THR_EN	BIT(1) /* Threshold interrupt type */
++#define VCNL4010_INT_ALS_EN	BIT(2) /* Enable on ALS data ready */
++#define VCNL4010_INT_PROX_EN	BIT(3) /* Enable on proximity data ready */
++
++#define VCNL4010_INT_THR_HIGH	0 /* High threshold exceeded */
++#define VCNL4010_INT_THR_LOW	1 /* Low threshold exceeded */
++#define VCNL4010_INT_ALS	2 /* ALS data ready */
++#define VCNL4010_INT_PROXIMITY	3 /* Proximity data ready */
++
++#define VCNL4010_INT_THR \
++	(BIT(VCNL4010_INT_THR_LOW) | BIT(VCNL4010_INT_THR_HIGH))
++#define VCNL4010_INT_DRDY \
++	(BIT(VCNL4010_INT_PROXIMITY) | BIT(VCNL4010_INT_ALS))
++
+ 
+ #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+ 
+@@ -88,6 +117,10 @@ struct vcnl4000_data {
+ 
+ struct vcnl4000_chip_spec {
+ 	const char *prod;
++	struct iio_chan_spec const *channels;
++	const int num_channels;
++	const struct iio_info *info;
++	bool irq_support;
+ 	int (*init)(struct vcnl4000_data *data);
+ 	int (*measure_light)(struct vcnl4000_data *data, int *val);
+ 	int (*measure_proximity)(struct vcnl4000_data *data, int *val);
+@@ -330,67 +363,16 @@ static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
+ 	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
+ }
+ 
+-static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
+-	[VCNL4000] = {
+-		.prod = "VCNL4000",
+-		.init = vcnl4000_init,
+-		.measure_light = vcnl4000_measure_light,
+-		.measure_proximity = vcnl4000_measure_proximity,
+-		.set_power_state = vcnl4000_set_power_state,
+-	},
+-	[VCNL4010] = {
+-		.prod = "VCNL4010/4020",
+-		.init = vcnl4000_init,
+-		.measure_light = vcnl4000_measure_light,
+-		.measure_proximity = vcnl4000_measure_proximity,
+-		.set_power_state = vcnl4000_set_power_state,
+-	},
+-	[VCNL4040] = {
+-		.prod = "VCNL4040",
+-		.init = vcnl4200_init,
+-		.measure_light = vcnl4200_measure_light,
+-		.measure_proximity = vcnl4200_measure_proximity,
+-		.set_power_state = vcnl4200_set_power_state,
+-	},
+-	[VCNL4200] = {
+-		.prod = "VCNL4200",
+-		.init = vcnl4200_init,
+-		.measure_light = vcnl4200_measure_light,
+-		.measure_proximity = vcnl4200_measure_proximity,
+-		.set_power_state = vcnl4200_set_power_state,
+-	},
+-};
+-
+-static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
+-					uintptr_t priv,
+-					const struct iio_chan_spec *chan,
+-					char *buf)
++static bool vcnl4010_is_in_periodic_mode(struct vcnl4000_data *data)
  {
- 	int tries = 20;
--	__be16 buf;
- 	int ret;
+-	struct vcnl4000_data *data = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%u\n", data->near_level);
+-}
++	int ret;
  
- 	mutex_lock(&data->vcnl4000_lock);
-@@ -246,13 +245,12 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 		goto fail;
+-static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
+-	{
+-		.name = "nearlevel",
+-		.shared = IIO_SEPARATE,
+-		.read = vcnl4000_read_near_level,
+-	},
+-	{ /* sentinel */ }
+-};
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
++	if (ret < 0)
++		return false;
+ 
+-static const struct iio_chan_spec vcnl4000_channels[] = {
+-	{
+-		.type = IIO_LIGHT,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+-			BIT(IIO_CHAN_INFO_SCALE),
+-	}, {
+-		.type = IIO_PROXIMITY,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-		.ext_info = vcnl4000_ext_info,
+-	}
+-};
++	return !!(ret & VCNL4000_SELF_TIMED_EN);
++}
+ 
+ static int vcnl4000_set_pm_runtime_state(struct vcnl4000_data *data, bool on)
+ {
+@@ -450,10 +432,345 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
  	}
+ }
  
--	ret = i2c_smbus_read_i2c_block_data(data->client,
--		data_reg, sizeof(buf), (u8 *) &buf);
-+	ret = i2c_smbus_read_word_swapped(data->client, data_reg);
++static int vcnl4010_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	int ret;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_SCALE:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		/* Protect against event capture. */
++		if (vcnl4010_is_in_periodic_mode(data)) {
++			ret = -EBUSY;
++		} else {
++			ret = vcnl4000_read_raw(indio_dev, chan, val, val2,
++						mask);
++		}
++
++		iio_device_release_direct_mode(indio_dev);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int vcnl4010_read_event(struct iio_dev *indio_dev,
++			       const struct iio_chan_spec *chan,
++			       enum iio_event_type type,
++			       enum iio_event_direction dir,
++			       enum iio_event_info info,
++			       int *val, int *val2)
++{
++	int ret;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			ret = vcnl4000_read_data(data, VCNL4010_HIGH_THR_HI,
++						 val);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT;
++		case IIO_EV_DIR_FALLING:
++			ret = vcnl4000_read_data(data, VCNL4010_LOW_THR_HI,
++						 val);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int vcnl4010_write_event(struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan,
++				enum iio_event_type type,
++				enum iio_event_direction dir,
++				enum iio_event_info info,
++				int val, int val2)
++{
++	int ret;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			ret = vcnl4000_write_data(data, VCNL4010_HIGH_THR_HI,
++						  val);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT;
++		case IIO_EV_DIR_FALLING:
++			ret = vcnl4000_write_data(data, VCNL4010_LOW_THR_HI,
++						  val);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static bool vcnl4010_is_thr_enabled(struct vcnl4000_data *data)
++{
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_INT_CTRL);
++	if (ret < 0)
++		return false;
++
++	return !!(ret & VCNL4010_INT_THR_EN);
++}
++
++static int vcnl4010_read_event_config(struct iio_dev *indio_dev,
++				      const struct iio_chan_spec *chan,
++				      enum iio_event_type type,
++				      enum iio_event_direction dir)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		return vcnl4010_is_thr_enabled(data);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int vcnl4010_config_threshold(struct iio_dev *indio_dev, bool state)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	int ret;
++	int icr;
++	int command;
++
++	if (state) {
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++
++		/* Enable periodic measurement of proximity data. */
++		command = VCNL4000_SELF_TIMED_EN | VCNL4000_PROX_EN;
++
++		/*
++		 * Enable interrupts on threshold, for proximity data by
++		 * default.
++		 */
++		icr = VCNL4010_INT_THR_EN;
++	} else {
++		if (!vcnl4010_is_thr_enabled(data))
++			return 0;
++
++		command = 0;
++		icr = 0;
++	}
++
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
++					command);
++	if (ret < 0)
++		goto end;
++
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4010_INT_CTRL, icr);
++
++end:
++	if (state)
++		iio_device_release_direct_mode(indio_dev);
++
++	return ret;
++}
++
++static int vcnl4010_write_event_config(struct iio_dev *indio_dev,
++				       const struct iio_chan_spec *chan,
++				       enum iio_event_type type,
++				       enum iio_event_direction dir,
++				       int state)
++{
++	switch (chan->type) {
++	case IIO_PROXIMITY:
++		return vcnl4010_config_threshold(indio_dev, state);
++	default:
++		return -EINVAL;
++	}
++}
++
++static ssize_t vcnl4000_read_near_level(struct iio_dev *indio_dev,
++					uintptr_t priv,
++					const struct iio_chan_spec *chan,
++					char *buf)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%u\n", data->near_level);
++}
++
++static const struct iio_chan_spec_ext_info vcnl4000_ext_info[] = {
++	{
++		.name = "nearlevel",
++		.shared = IIO_SEPARATE,
++		.read = vcnl4000_read_near_level,
++	},
++	{ /* sentinel */ }
++};
++
++static const struct iio_event_spec vcnl4000_event_spec[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	}
++};
++
++static const struct iio_chan_spec vcnl4000_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	}, {
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.ext_info = vcnl4000_ext_info,
++	}
++};
++
++static const struct iio_chan_spec vcnl4010_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	}, {
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.event_spec = vcnl4000_event_spec,
++		.num_event_specs = ARRAY_SIZE(vcnl4000_event_spec),
++		.ext_info = vcnl4000_ext_info,
++	},
++};
++
+ static const struct iio_info vcnl4000_info = {
+ 	.read_raw = vcnl4000_read_raw,
+ };
+ 
++static const struct iio_info vcnl4010_info = {
++	.read_raw = vcnl4010_read_raw,
++	.read_event_value = vcnl4010_read_event,
++	.write_event_value = vcnl4010_write_event,
++	.read_event_config = vcnl4010_read_event_config,
++	.write_event_config = vcnl4010_write_event_config,
++};
++
++static const struct vcnl4000_chip_spec vcnl4000_chip_spec_cfg[] = {
++	[VCNL4000] = {
++		.prod = "VCNL4000",
++		.init = vcnl4000_init,
++		.measure_light = vcnl4000_measure_light,
++		.measure_proximity = vcnl4000_measure_proximity,
++		.set_power_state = vcnl4000_set_power_state,
++		.channels = vcnl4000_channels,
++		.num_channels = ARRAY_SIZE(vcnl4000_channels),
++		.info = &vcnl4000_info,
++		.irq_support = false,
++	},
++	[VCNL4010] = {
++		.prod = "VCNL4010/4020",
++		.init = vcnl4000_init,
++		.measure_light = vcnl4000_measure_light,
++		.measure_proximity = vcnl4000_measure_proximity,
++		.set_power_state = vcnl4000_set_power_state,
++		.channels = vcnl4010_channels,
++		.num_channels = ARRAY_SIZE(vcnl4010_channels),
++		.info = &vcnl4010_info,
++		.irq_support = true,
++	},
++	[VCNL4040] = {
++		.prod = "VCNL4040",
++		.init = vcnl4200_init,
++		.measure_light = vcnl4200_measure_light,
++		.measure_proximity = vcnl4200_measure_proximity,
++		.set_power_state = vcnl4200_set_power_state,
++		.channels = vcnl4000_channels,
++		.num_channels = ARRAY_SIZE(vcnl4000_channels),
++		.info = &vcnl4000_info,
++		.irq_support = false,
++	},
++	[VCNL4200] = {
++		.prod = "VCNL4200",
++		.init = vcnl4200_init,
++		.measure_light = vcnl4200_measure_light,
++		.measure_proximity = vcnl4200_measure_proximity,
++		.set_power_state = vcnl4200_set_power_state,
++		.channels = vcnl4000_channels,
++		.num_channels = ARRAY_SIZE(vcnl4000_channels),
++		.info = &vcnl4000_info,
++		.irq_support = false,
++	},
++};
++
++static irqreturn_t vcnl4010_irq_thread(int irq, void *p)
++{
++	struct iio_dev *indio_dev = p;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++	unsigned long isr;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_ISR);
++	if (ret < 0)
++		goto end;
++
++	isr = ret;
++
++	if (isr & VCNL4010_INT_THR) {
++		if (test_bit(VCNL4010_INT_THR_LOW, &isr)) {
++			iio_push_event(indio_dev,
++				       IIO_UNMOD_EVENT_CODE(
++					       IIO_PROXIMITY,
++					       1,
++					       IIO_EV_TYPE_THRESH,
++					       IIO_EV_DIR_FALLING),
++				       iio_get_time_ns(indio_dev));
++		}
++
++		if (test_bit(VCNL4010_INT_THR_HIGH, &isr)) {
++			iio_push_event(indio_dev,
++				       IIO_UNMOD_EVENT_CODE(
++					       IIO_PROXIMITY,
++					       1,
++					       IIO_EV_TYPE_THRESH,
++					       IIO_EV_DIR_RISING),
++				       iio_get_time_ns(indio_dev));
++		}
++
++		i2c_smbus_write_byte_data(data->client, VCNL4010_ISR,
++					  isr & VCNL4010_INT_THR);
++	}
++
++end:
++	return IRQ_HANDLED;
++}
++
+ static int vcnl4000_probe(struct i2c_client *client,
+ 			  const struct i2c_device_id *id)
+ {
+@@ -483,12 +800,25 @@ static int vcnl4000_probe(struct i2c_client *client,
+ 		data->near_level = 0;
+ 
+ 	indio_dev->dev.parent = &client->dev;
+-	indio_dev->info = &vcnl4000_info;
+-	indio_dev->channels = vcnl4000_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(vcnl4000_channels);
++	indio_dev->info = data->chip_spec->info;
++	indio_dev->channels = data->chip_spec->channels;
++	indio_dev->num_channels = data->chip_spec->num_channels;
+ 	indio_dev->name = VCNL4000_DRV_NAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	if (client->irq && data->chip_spec->irq_support) {
++		ret = devm_request_threaded_irq(&client->dev, client->irq,
++						NULL, vcnl4010_irq_thread,
++						IRQF_TRIGGER_FALLING |
++						IRQF_ONESHOT,
++						"vcnl4010_irq",
++						indio_dev);
++		if (ret < 0) {
++			dev_err(&client->dev, "irq request failed\n");
++			return ret;
++		}
++	}
++
+ 	ret = pm_runtime_set_active(&client->dev);
  	if (ret < 0)
- 		goto fail;
- 
- 	mutex_unlock(&data->vcnl4000_lock);
--	*val = be16_to_cpu(buf);
-+	*val = ret;
- 
- 	return 0;
- 
+ 		goto fail_poweroff;
 -- 
 2.26.0
 
