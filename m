@@ -2,215 +2,109 @@ Return-Path: <SRS0=TpPT=6M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2EB0FC83009
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 17:30:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A5CEC83004
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 18:28:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1069A2085B
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 17:30:30 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="aQObl5dy"
+	by mail.kernel.org (Postfix) with ESMTP id 20D22214D8
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 18:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727957AbgD1Ra3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Apr 2020 13:30:29 -0400
-Received: from us-smtp-delivery-1.mimecast.com ([205.139.110.120]:28830 "EHLO
-        us-smtp-1.mimecast.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1728520AbgD1R3p (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Apr 2020 13:29:45 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1588094983;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=SgJQcSK6eEoH1/P5II7XvVifG0Bg4C73XG6IT0CFhZk=;
-        b=aQObl5dyKaNcXbc1D80+jODp6tTEPFo2mo2C2sHn/wdTfvcGPyIjDH7X7jTs2/LuOci9CN
-        CX5av8CVghy19bYMSAdolml8BlyY86ddDBxI2rIeV7Y2MeiSZdCxwN7EIELe4nRIYOkOLV
-        ok9J+hQU+X9zOaqIxVKlWxb4L+R7XFM=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-446-RkifAn5GP4WdiMVbXceFig-1; Tue, 28 Apr 2020 13:29:41 -0400
-X-MC-Unique: RkifAn5GP4WdiMVbXceFig-1
-Received: from smtp.corp.redhat.com (int-mx06.intmail.prod.int.phx2.redhat.com [10.5.11.16])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id CB326835B41;
-        Tue, 28 Apr 2020 17:29:39 +0000 (UTC)
-Received: from x1.localdomain.com (ovpn-114-62.ams2.redhat.com [10.36.114.62])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5087F5C1D4;
-        Tue, 28 Apr 2020 17:29:37 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>, linux-acpi@vger.kernel.org,
-        platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v3 04/11] iio: light: cm32181: Add support for the CM3218
-Date:   Tue, 28 Apr 2020 19:29:16 +0200
-Message-Id: <20200428172923.567806-4-hdegoede@redhat.com>
-In-Reply-To: <20200428172923.567806-1-hdegoede@redhat.com>
-References: <20200428172923.567806-1-hdegoede@redhat.com>
+        id S1729230AbgD1S2l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Apr 2020 14:28:41 -0400
+Received: from ms10.pegatroncorp.com ([192.72.126.90]:57742 "EHLO
+        ms9.pegatroncorp.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1729192AbgD1S2k (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Apr 2020 14:28:40 -0400
+Received: from pps.filterd (ptwppsf03.pega.corp.pegatron [127.0.0.1])
+        by ptwppsf03.pega.corp.pegatron (8.16.0.21/8.16.0.21) with SMTP id 03SIAIxX033230;
+        Wed, 29 Apr 2020 02:27:48 +0800
+Received: from ptw-ex-hub04.pega.corp.pegatron ([172.18.6.20])
+        by ptwppsf03.pega.corp.pegatron with ESMTP id 30nvwmqa7g-1
+        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT);
+        Wed, 29 Apr 2020 02:27:48 +0800
+Received: from PTW-EX-37.PEGA.CORP.PEGATRON ([fe80::5466:11cb:50e:8c0e]) by
+ PTW-EX-HUB04.PEGA.CORP.PEGATRON ([fe80::61de:87d8:fb23:fac6%24]) with mapi id
+ 14.03.0279.002; Wed, 29 Apr 2020 02:27:47 +0800
+From:   =?utf-8?B?TGVzbGllIEhzaWEo5aSP6YKm6YCyX1BlZ2F0cm9uKQ==?= 
+        <Leslie_Hsia@pegatroncorp.com>
+To:     Mark Brown <broonie@kernel.org>
+CC:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        =?utf-8?B?SGVybWVzIEhzaWVoKOisneaXu+WKrV9QZWdhdHJvbik=?= 
+        <Hermes_Hsieh@pegatroncorp.com>,
+        "jesse.sung@canonical.com" <jesse.sung@canonical.com>,
+        "jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH] subsystem: Amplifier driver for TAS5805M,Texas
+ instruments
+Thread-Topic: [PATCH] subsystem: Amplifier driver for TAS5805M,Texas
+ instruments
+Thread-Index: AQHWHVBtGCDb3Z/sSkKJhFF9f0UEJ6iO2ssO
+Date:   Tue, 28 Apr 2020 18:27:45 +0000
+Message-ID: <C84B7899-1FC4-43CC-9FAE-8FECE09E8D4E@pegatroncorp.com>
+References: <754706C925201D4896E92CCAD6B38E4401F0F733E3@PTW-EX-37.PEGA.CORP.PEGATRON>,<20200428113033.GE5677@sirena.org.uk>
+In-Reply-To: <20200428113033.GE5677@sirena.org.uk>
+Accept-Language: zh-TW, en-US
+Content-Language: zh-TW
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-X-Scanned-By: MIMEDefang 2.79 on 10.5.11.16
-Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for the CM3218 which is an older version of the
-CM32181.
-
-This is based on a newer version of cm32181.c, with a copyright of:
-
- * Copyright (C) 2014 Capella Microsystems Inc.
- * Author: Kevin Tsai <ktsai@capellamicro.com>
- *
- * This program is free software; you can redistribute it and/or modify i=
-t
- * under the terms of the GNU General Public License version 2, as publis=
-hed
- * by the Free Software Foundation.
-
-Which is floating around on the net in various places, but the changes
-from this newer version never made it upstream.
-
-This was tested on an Asus T100TA and an Asus T100CHI, which both come
-with the CM3218 variant of the light sensor.
-
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/iio/light/cm32181.c | 48 +++++++++++++++++++++++++++----------
- 1 file changed, 36 insertions(+), 12 deletions(-)
-
-diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
-index 6fc0a753c499..065bc7a11f84 100644
---- a/drivers/iio/light/cm32181.c
-+++ b/drivers/iio/light/cm32181.c
-@@ -55,15 +55,24 @@ static const u8 cm32181_reg[CM32181_CONF_REG_NUM] =3D=
- {
- 	CM32181_REG_ADDR_CMD,
- };
-=20
--static const int als_it_bits[] =3D {12, 8, 0, 1, 2, 3};
--static const int als_it_value[] =3D {25000, 50000, 100000, 200000, 40000=
-0,
--	800000};
-+/* CM3218 Family */
-+static const int cm3218_als_it_bits[] =3D { 0, 1, 2, 3 };
-+static const int cm3218_als_it_values[] =3D { 100000, 200000, 400000, 80=
-0000 };
-+
-+/* CM32181 Family */
-+static const int cm32181_als_it_bits[] =3D { 12, 8, 0, 1, 2, 3 };
-+static const int cm32181_als_it_values[] =3D {
-+	25000, 50000, 100000, 200000, 400000, 800000
-+};
-=20
- struct cm32181_chip {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	u16 conf_regs[CM32181_CONF_REG_NUM];
- 	int calibscale;
-+	int num_als_it;
-+	const int *als_it_bits;
-+	const int *als_it_values;
- };
-=20
- /**
-@@ -85,8 +94,21 @@ static int cm32181_reg_init(struct cm32181_chip *cm321=
-81)
- 		return ret;
-=20
- 	/* check device ID */
--	if ((ret & 0xFF) !=3D 0x81)
-+	switch (ret & 0xFF) {
-+	case 0x18: /* CM3218 */
-+		cm32181->num_als_it =3D ARRAY_SIZE(cm3218_als_it_bits);
-+		cm32181->als_it_bits =3D cm3218_als_it_bits;
-+		cm32181->als_it_values =3D cm3218_als_it_values;
-+		break;
-+	case 0x81: /* CM32181 */
-+	case 0x82: /* CM32182, fully compat. with CM32181 */
-+		cm32181->num_als_it =3D ARRAY_SIZE(cm32181_als_it_bits);
-+		cm32181->als_it_bits =3D cm32181_als_it_bits;
-+		cm32181->als_it_values =3D cm32181_als_it_values;
-+		break;
-+	default:
- 		return -ENODEV;
-+	}
-=20
- 	/* Default Values */
- 	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =3D
-@@ -121,9 +143,9 @@ static int cm32181_read_als_it(struct cm32181_chip *c=
-m32181, int *val2)
- 	als_it =3D cm32181->conf_regs[CM32181_REG_ADDR_CMD];
- 	als_it &=3D CM32181_CMD_ALS_IT_MASK;
- 	als_it >>=3D CM32181_CMD_ALS_IT_SHIFT;
--	for (i =3D 0; i < ARRAY_SIZE(als_it_bits); i++) {
--		if (als_it =3D=3D als_it_bits[i]) {
--			*val2 =3D als_it_value[i];
-+	for (i =3D 0; i < cm32181->num_als_it; i++) {
-+		if (als_it =3D=3D cm32181->als_it_bits[i]) {
-+			*val2 =3D cm32181->als_it_values[i];
- 			return IIO_VAL_INT_PLUS_MICRO;
- 		}
- 	}
-@@ -146,14 +168,14 @@ static int cm32181_write_als_it(struct cm32181_chip=
- *cm32181, int val)
- 	u16 als_it;
- 	int ret, i, n;
-=20
--	n =3D ARRAY_SIZE(als_it_value);
-+	n =3D cm32181->num_als_it;
- 	for (i =3D 0; i < n; i++)
--		if (val <=3D als_it_value[i])
-+		if (val <=3D cm32181->als_it_values[i])
- 			break;
- 	if (i >=3D n)
- 		i =3D n - 1;
-=20
--	als_it =3D als_it_bits[i];
-+	als_it =3D cm32181->als_it_bits[i];
- 	als_it <<=3D CM32181_CMD_ALS_IT_SHIFT;
-=20
- 	mutex_lock(&cm32181->lock);
-@@ -265,11 +287,12 @@ static int cm32181_write_raw(struct iio_dev *indio_=
-dev,
- static ssize_t cm32181_get_it_available(struct device *dev,
- 			struct device_attribute *attr, char *buf)
- {
-+	struct cm32181_chip *cm32181 =3D iio_priv(dev_to_iio_dev(dev));
- 	int i, n, len;
-=20
--	n =3D ARRAY_SIZE(als_it_value);
-+	n =3D cm32181->num_als_it;
- 	for (i =3D 0, len =3D 0; i < n; i++)
--		len +=3D sprintf(buf + len, "0.%06u ", als_it_value[i]);
-+		len +=3D sprintf(buf + len, "0.%06u ", cm32181->als_it_values[i]);
- 	return len + sprintf(buf + len, "\n");
- }
-=20
-@@ -345,6 +368,7 @@ static int cm32181_probe(struct i2c_client *client)
- }
-=20
- static const struct of_device_id cm32181_of_match[] =3D {
-+	{ .compatible =3D "capella,cm3218" },
- 	{ .compatible =3D "capella,cm32181" },
- 	{ }
- };
---=20
-2.26.0
-
+SGkgTWFyaywNCg0KWWVzLCBJIGFncmVlIHRoYXQgdGhlIGNvZGUgZGlkbuKAmXQgaW50ZWdyYXRl
+IHdpdGggQUxTQSBBUEksDQphbmQgd2Ugb25seSBuZWVkIHRvIGluaXRpYWxpemUgaTJjIHJlZ2lz
+dGVycyBkdWUgdG8gbWFrZSB0aGUgYW1wbGlmaWVyIHdvcmtzIHByb3Blcmx5LA0KYW5kIEkgZG8g
+ZmluZCB0aGVyZSBpcyBhbHJlYWR5IGFuIGFtcGxpZmllciBkcml2ZXIgaW4gL2RyaXZlcnMvaWlv
+L2FtcGxpZmllci8sDQp0aGF04oCZcyB3aHkgSSBzZW50IHRoZSBwYXRjaCB0byBKb25hdGhhbiwN
+Ckkgd2FudCB0byBwdXQgdGhpcyBkcml2ZXIgaW50byAvZHJpdmVycy9paW8vYW1wbGlmaWVyLywN
+CmJ1dCBoZSB0aG91Z2h0IHRoYXQgdGhpcyBpcyBhbiBhbXBsaWZpZXIgZHJpdmVyLA0KYW5kIHdl
+IHNob3VsZCBwdXQgaXQgaW50byAvc291bmQvZG9jL2NvZGVjcy8sDQpzbyB3b3VsZCB5b3UgcGxl
+YXNlIGdpdmUgbWUgYW4gYWR2aWNlIGFib3V0IHRoZSBkcml2ZXIgYmVsb25ncyB0byB3aGljaCBz
+dWJzeXN0ZW0/DQpKb25hdGhhbiwgd2hhdCBkbyB5b3UgdGhpbms/DQoNCkJlc3QgUmVnYXJkcywN
+Ckxlc2xpZQ0KDQo+IE1hcmsgQnJvd24gPGJyb29uaWVAa2VybmVsLm9yZz4g5pa8IDIwMjDlubQ0
+5pyIMjjml6Ug5LiL5Y2INzozMCDlr6vpgZPvvJoNCj4NCj4g77u/T24gVHVlLCBBcHIgMjgsIDIw
+MjAgYXQgMTA6NDM6MThBTSArMDAwMCwgTGVzbGllIEhzaWEo5aSP6YKm6YCyX1BlZ2F0cm9uKSB3
+cm90ZToNCj4+ICogICBBdXRob3I6IExlc2xpZSBIc2lhDQo+PiAqICAgQW1wbGlmaWVyIGRyaXZl
+ciBmb3IgVEFTNTgwNU0sIGluaXRpYWwgdGhlIGFtcGxpZmllciBhbmQgc2V0IHRoZSBzb3VuZCBw
+YXJhbWV0ZXIuDQo+PiAqICAgU2lnbmVkLW9mZi1ieTogTGVzbGllIEhzaWEgPExlc2xpZV9Ic2lh
+QHBlZ2F0cm9uY29ycC5jb208bWFpbHRvOkxlc2xpZV9Ic2lhQHBlZ2F0cm9uY29ycC5jb20+Pg0K
+Pg0KPiBQbGVhc2UgZm9sbG93IHRoZSBwYXRjaCBzdWJtaXNzaW9uIHByb2Nlc3MgdGhhdCBpcyBk
+ZXNjcmliZWQgaW4NCj4gRG9jdW1lbnRhdGlvbi9wcm9jZXNzL3N1Ym1pdHRpbmctcGF0Y2hlcy5y
+c3QgaW4gdGhlIGtlcm5lbCBzb3VyY2UuICBUYWtlDQo+IGEgbG9vayBhdCBvdGhlciBzdWJtaXNz
+aW9ucyBvbiB0aGUgbGlzdCBhbmQgZm9sbG93IGEgc2ltaWxhciBwcm9jZXNzLg0KPiBUaGVyZSBh
+bHNvIGFwcGVhciB0byBiZSBib3RoIElJTyBhbmQgQVNvQyBkcml2ZXJzIGluIHRoZXJlIHdoaWNo
+IGlzIGF0DQo+IGJlc3QgYSBiaXQgd2VpcmQuDQo+DQo+IEhhdmluZyBkb25lIGEgcXVpY2sgc2Nh
+biB0aHJvdWdoIHlvdXIgY29kZSBpdCBkb2Vzbid0IGFjdHVhbGx5IHNlZW0gdG8NCj4gaW50ZWdy
+YXRlIHdpdGggdGhlIHN1YnN5c3RlbSBhdCBhbGwgKHRoZXJlJ3Mgbm8NCj4gc25kX3NvY19yZWdp
+c3Rlcl9jb2RlYygpKQ0KPg0KPiBQbGVhc2Ugc3VibWl0IHBhdGNoZXMgdXNpbmcgc3ViamVjdCBs
+aW5lcyByZWZsZWN0aW5nIHRoZSBzdHlsZSBmb3IgdGhlDQo+IHN1YnN5c3RlbSwgdGhpcyBtYWtl
+cyBpdCBlYXNpZXIgZm9yIHBlb3BsZSB0byBpZGVudGlmeSByZWxldmFudCBwYXRjaGVzLg0KPiBM
+b29rIGF0IHdoYXQgZXhpc3RpbmcgY29tbWl0cyBpbiB0aGUgYXJlYSB5b3UncmUgY2hhbmdpbmcg
+YXJlIGRvaW5nIGFuZA0KPiBtYWtlIHN1cmUgeW91ciBzdWJqZWN0IGxpbmVzIHZpc3VhbGx5IHJl
+c2VtYmxlIHdoYXQgdGhleSdyZSBkb2luZy4NCj4gVGhlcmUncyBubyBuZWVkIHRvIHJlc3VibWl0
+IHRvIGZpeCB0aGlzIGFsb25lLg0KDQoNClRoaXMgZS1tYWlsIGFuZCBpdHMgYXR0YWNobWVudCBt
+YXkgY29udGFpbiBpbmZvcm1hdGlvbiB0aGF0IGlzIGNvbmZpZGVudGlhbCBvciBwcml2aWxlZ2Vk
+LCBhbmQgYXJlIHNvbGVseSBmb3IgdGhlIHVzZSBvZiB0aGUgaW5kaXZpZHVhbCB0byB3aG9tIHRo
+aXMgZS1tYWlsIGlzIGFkZHJlc3NlZC4gSWYgeW91IGFyZSBub3QgdGhlIGludGVuZGVkIHJlY2lw
+aWVudCBvciBoYXZlIHJlY2VpdmVkIGl0IGFjY2lkZW50YWxseSwgcGxlYXNlIGltbWVkaWF0ZWx5
+IG5vdGlmeSB0aGUgc2VuZGVyIGJ5IHJlcGx5IGUtbWFpbCBhbmQgZGVzdHJveSBhbGwgY29waWVz
+IG9mIHRoaXMgZW1haWwgYW5kIGl0cyBhdHRhY2htZW50LiBQbGVhc2UgYmUgYWR2aXNlZCB0aGF0
+IGFueSB1bmF1dGhvcml6ZWQgdXNlLCBkaXNjbG9zdXJlLCBkaXN0cmlidXRpb24gb3IgY29weWlu
+ZyBvZiB0aGlzIGVtYWlsIG9yIGl0cyBhdHRhY2htZW50IGlzIHN0cmljdGx5IHByb2hpYml0ZWQu
+DQoNCuacrOmbu+WtkOmDteS7tuWPiuWFtumZhOS7tuWPr+iDveWQq+acieapn+WvhuaIluS+neaz
+leWPl+eJueauiueuoeWItuS5i+izh+ioiu+8jOWDheS+m+acrOmbu+WtkOmDteS7tuS5i+WPl+aW
+h+iAheS9v+eUqOOAguWPsOerr+WmgumdnuacrOmbu+WtkOmDteS7tuS5i+WPl+aWh+iAheaIluiq
+pOaUtuacrOmbu+WtkOmDteS7tu+8jOiri+eri+WNs+WbnuimhumDteS7tumAmuefpeWvhOS7tuS6
+uu+8jOS4pumKt+avgOacrOmbu+WtkOmDteS7tuS5i+aJgOacieikh+acrOWPiumZhOS7tuOAguS7
+u+S9leacque2k+aOiOasiuiAjOS9v+eUqOOAgeaPremcsuOAgeaVo+S9iOaIluikh+ijveacrOmb
+u+WtkOmDteS7tuaIluWFtumZhOS7tuS5i+ihjOeCuu+8jOeahuWatOagvOemgeatoiDjgIINCg0K
