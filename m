@@ -2,125 +2,300 @@ Return-Path: <SRS0=TpPT=6M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A0FDC83004
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 04:30:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90296C83004
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 05:42:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2B505206C0
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 04:30:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6061F206B8
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 05:42:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="gJrE16ue"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="DiBkmGX6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725917AbgD1Eam (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Apr 2020 00:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53402 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725803AbgD1Eam (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Apr 2020 00:30:42 -0400
-Received: from mail-il1-x142.google.com (mail-il1-x142.google.com [IPv6:2607:f8b0:4864:20::142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42DADC03C1A9
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2020 21:30:42 -0700 (PDT)
-Received: by mail-il1-x142.google.com with SMTP id q10so18999131ile.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2020 21:30:42 -0700 (PDT)
+        id S1726271AbgD1Fm0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Apr 2020 01:42:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36234 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1725792AbgD1FmZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Apr 2020 01:42:25 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1974C03C1AD
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2020 22:42:24 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id k28so15818774lfe.10
+        for <linux-iio@vger.kernel.org>; Mon, 27 Apr 2020 22:42:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zEimIaSBcB0mfT9rADdplO2cqQvrJB1SRZif/RN9wQI=;
-        b=gJrE16ueIFnmDXtB5vueAPdnYAix/B7FIxvRjNQeZIgf4c9i7//ZOJ5Svi4CiRrtFa
-         kN1nD65tSTpff+qMrFawVg4po2jCjX0201wnYlU2lWXf0E8QBbxO1lq0P+U/q5ySXPVo
-         put4nPt1eWg0cl2in8VM2/Pw4Hh+U9tGtSuOQ=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=2u3+hiLcio3RfiSLRkdrsj4+dj8Bs6f6GNM5IncuNgw=;
+        b=DiBkmGX68Dci8L0NY+4z2PUc0Oahob1CBPCJrvQ7GOfQoh4Sninsj4anXkS0+JaUSz
+         ErA49qgJw2yIZC+i295bPZaH0SGp3kY+GIMiymufexrwhrdZdcD+ISsO2HxJa8sjSP2B
+         0Vura1sziSIyrjyGo1OVb/ICyH1H9OaAR1ht8=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zEimIaSBcB0mfT9rADdplO2cqQvrJB1SRZif/RN9wQI=;
-        b=Wu04zyQMYEdTq5hFQF+JGvIidgFD/6kNNy9GWfVEmtj8owAFgSOf/QI/brg05lkzBl
-         UDN83sc6+1Y2mIMCiNqLipRlaYtLMvfAmFsPw5fp8cqlrpfxAwPvpNWnAWkQpvI9X2np
-         NDPotrjnXOTMPMtfoHMHGD+FPK1+Q74mTgiSOaRTaRXxLQ/3DA3HX90HmXT8ZGkyYnYF
-         SdhHrstQY4pZW/MfbB1iRyDqJqq36omgQvzN0Y+jzBE09LlGrbR6/Jva/AgmJyYRvtRi
-         U+DGzvCGXol9W08I/Y8Azzz7gwotdRDr4p2EmV5T3feLTpiVErmQ+PAG8GYw7DO2Bt/Q
-         2dug==
-X-Gm-Message-State: AGi0PuYqjKFtpHDCMvremUy5VJJnT/n1irvwZJDsYnzbdafR4odnMMEb
-        wqFtE6YpmssT7d7F5mk1whu/DzMhRh86F1GmBCwM1A==
-X-Google-Smtp-Source: APiQypKhDhCwllrO5soAYIdmquX5OHseXL994b4H/CiVQ4PB9cn4MtWgAeNgpW8k2S9HbHOz7pCJJ7epWi9TuJhIM8Q=
-X-Received: by 2002:a92:d286:: with SMTP id p6mr23475580ilp.98.1588048241333;
- Mon, 27 Apr 2020 21:30:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200210001058.7515-1-matt.ranostay@konsulko.com> <20200413181031.68e101da@archlinux>
-In-Reply-To: <20200413181031.68e101da@archlinux>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=2u3+hiLcio3RfiSLRkdrsj4+dj8Bs6f6GNM5IncuNgw=;
+        b=Kz97ctoS7ui8vle2RMK+xP5pMQejxnNoXHzLBs4VHY/Zpska7+S1vZ1awEQfIyMcz4
+         fsV2yALfLUXrXpn9n19rJIyzyYsNMQrNSTFgvRDEOZnkvFXmpY128Ez/Gznp9kja7NQl
+         U/q7jQvJi8SQwf5DCdCjMycMo7EqGGcOom0tPjb/ysv7f3yWlIfWOaSIjM+RUMiCff+V
+         a4XiIAQuF6GACt+nSJCCHVg7aREsuuNbpLjqTGxdG8DhUOBn7OloeRurSNudeL1NQ6/w
+         YV20JwH4bUXa2rdtlJd4Hk1k7XaoMuHLoFeTPci3GirS0IS9R/bN4OgxeoKLj7c/K7lX
+         petw==
+X-Gm-Message-State: AGi0Puau+o0I70hHDwJc+IeaFWIpvUY8LsaLQ5jB+iM9c/w+8z2ZGu7g
+        8zBq4jkiGM0owqL0BaKDd1wh9A==
+X-Google-Smtp-Source: APiQypLbe5tLM0/OWOpZcEgg6yLhKzxRjeuHnueZeJedT3vEvXVTT0fsPx1STtxSOmZBAm1kdBHTZA==
+X-Received: by 2002:ac2:569b:: with SMTP id 27mr18064855lfr.134.1588052543169;
+        Mon, 27 Apr 2020 22:42:23 -0700 (PDT)
+Received: from taos-chr.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id c4sm13240035lfg.82.2020.04.27.22.42.22
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Apr 2020 22:42:22 -0700 (PDT)
 From:   Matt Ranostay <matt.ranostay@konsulko.com>
-Date:   Mon, 27 Apr 2020 21:30:30 -0700
-Message-ID: <CAJCx=gnEySbyLQA9u=nVJ3-Wk+++Ch6L9C-bYP_EFSz-7TKkhg@mail.gmail.com>
-Subject: Re: [PATCH v6 0/3] iio: chemical: atlas-sensor: add DO support
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 2/2] iio: chemical: add atlas-ezo-sensor initial support
+Date:   Tue, 28 Apr 2020 08:41:07 +0300
+Message-Id: <20200428054107.16061-3-matt.ranostay@konsulko.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200428054107.16061-1-matt.ranostay@konsulko.com>
+References: <20200428054107.16061-1-matt.ranostay@konsulko.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Apr 13, 2020 at 10:10 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
->
->
-> Hi Matt,
->
-> Found this still in my queue and to be honest I'm lost and
-> can't easily figure out what the status is (I'm too lazy to
-> read all the past threads).
->
-> So what do you think the status of this patch set is?
+Add driver for Atlas EZO line of sensors with initial support for
+CO2 the sensor. This is effectively ASCII strings proxied over I2C
+due to these series of sensors being by default UART.
 
-The code is merged but just noticed the documentation patch somehow got dropped.
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+---
+ drivers/iio/chemical/Kconfig            |  11 ++
+ drivers/iio/chemical/Makefile           |   1 +
+ drivers/iio/chemical/atlas-ezo-sensor.c | 173 ++++++++++++++++++++++++
+ 3 files changed, 185 insertions(+)
+ create mode 100644 drivers/iio/chemical/atlas-ezo-sensor.c
 
-Thanks,
+diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+index a7e65a59bf42..7f21afd73b1c 100644
+--- a/drivers/iio/chemical/Kconfig
++++ b/drivers/iio/chemical/Kconfig
+@@ -22,6 +22,17 @@ config ATLAS_PH_SENSOR
+ 	  To compile this driver as module, choose M here: the
+ 	  module will be called atlas-ph-sensor.
+ 
++config ATLAS_EZO_SENSOR
++	tristate "Atlas Scientific EZO sensors"
++	depends on I2C
++	help
++	  Say Y here to build I2C interface support for the following
++	  Atlas Scientific EZO sensors
++	    * CO2 EZO Sensor
++
++	  To compile this driver as module, choose M here: the
++	  module will be called atlas-ezo-sensor.
++
+ config BME680
+ 	tristate "Bosch Sensortec BME680 sensor driver"
+ 	depends on (I2C || SPI)
+diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+index 33d3a595dda9..aba4167db745 100644
+--- a/drivers/iio/chemical/Makefile
++++ b/drivers/iio/chemical/Makefile
+@@ -5,6 +5,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-sensor.o
++obj-$(CONFIG_ATLAS_EZO_SENSOR)	+= atlas-ezo-sensor.o
+ obj-$(CONFIG_BME680) += bme680_core.o
+ obj-$(CONFIG_BME680_I2C) += bme680_i2c.o
+ obj-$(CONFIG_BME680_SPI) += bme680_spi.o
+diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
+new file mode 100644
+index 000000000000..1f972f525a46
+--- /dev/null
++++ b/drivers/iio/chemical/atlas-ezo-sensor.c
+@@ -0,0 +1,173 @@
++// SPDX-License-Identifier: GPL-2.0+
++/*
++ * atlas-ezo-sensor.c - Support for Atlas Scientific EZO sensors
++ *
++ * Copyright (C) 2020 Konsulko Group
++ * Author: Matt Ranostay <matt.ranostay@konsulko.com>
++ */
++
++#include <linux/module.h>
++#include <linux/init.h>
++#include <linux/delay.h>
++#include <linux/mutex.h>
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/of_device.h>
++#include <linux/iio/iio.h>
++
++#define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
++#define ATLAS_CO2_INT_TIME_IN_MS	950
++
++enum {
++	ATLAS_CO2_EZO,
++};
++
++struct atlas_ezo_device {
++	const struct iio_chan_spec *channels;
++	int num_channels;
++	int delay;
++};
++
++struct atlas_ezo_data {
++	struct i2c_client *client;
++	struct atlas_ezo_device *chip;
++	struct mutex lock;
++	u8 buffer[8];
++};
++
++static const struct iio_chan_spec atlas_co2_ezo_channels[] = {
++	{
++		.type = IIO_CONCENTRATION,
++		.modified = 1,
++		.channel2 = IIO_MOD_CO2,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 32,
++			.storagebits = 32,
++			.endianness = IIO_CPU,
++		},
++	},
++};
++
++static struct atlas_ezo_device atlas_ezo_devices[] = {
++	[ATLAS_CO2_EZO] = {
++		.channels = atlas_co2_ezo_channels,
++		.num_channels = 1,
++		.delay = ATLAS_CO2_INT_TIME_IN_MS,
++	},
++};
++
++static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val, int *val2, long mask)
++{
++	struct atlas_ezo_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++	int ret = 0;
++
++	if (chan->type != IIO_CONCENTRATION)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW: {
++		int tmp;
++
++		mutex_lock(&data->lock);
++
++		tmp = i2c_smbus_write_byte(client, 'R');
++
++		if (tmp < 0) {
++			mutex_unlock(&data->lock);
++			return tmp;
++		}
++
++		msleep(data->chip->delay);
++
++		tmp = i2c_master_recv(client, data->buffer, sizeof(data->buffer));
++
++		// Confirm response code is 1 for success
++		if (tmp < 0 || data->buffer[0] != 1) {
++			mutex_unlock(&data->lock);
++			return -EBUSY;
++		}
++
++		ret = kstrtol(data->buffer + 1, 10, (long *) val);
++
++		mutex_unlock(&data->lock);
++
++		return ret ? ret : IIO_VAL_INT;
++	}
++	case IIO_CHAN_INFO_SCALE:
++		*val = 1;
++		*val2 = 10000; /* 0.0001 */
++		return IIO_VAL_FRACTIONAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info atlas_info = {
++	.read_raw = atlas_ezo_read_raw,
++};
++
++static const struct i2c_device_id atlas_ezo_id[] = {
++	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
++
++static const struct of_device_id atlas_ezo_dt_ids[] = {
++	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
++	{}
++};
++MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
++
++static int atlas_ezo_probe(struct i2c_client *client,
++		       const struct i2c_device_id *id)
++{
++	struct atlas_ezo_data *data;
++	struct atlas_ezo_device *chip;
++	const struct of_device_id *of_id;
++	struct iio_dev *indio_dev;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	of_id = of_match_device(atlas_dt_ids, &client->dev);
++	if (!of_id)
++		chip = &atlas_ezo_devices[id->driver_data];
++	else
++		chip = &atlas_ezo_devices[(unsigned long)of_id->data];
++
++	indio_dev->info = &atlas_info;
++	indio_dev->name = ATLAS_EZO_DRV_NAME;
++	indio_dev->channels = chip->channels;
++	indio_dev->num_channels = chip->num_channels;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->dev.parent = &client->dev;
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	data->chip = chip;
++	mutex_init(&data->lock);
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++};
++
++static struct i2c_driver atlas_ezo_driver = {
++	.driver = {
++		.name	= ATLAS_EZO_DRV_NAME,
++		.of_match_table	= atlas_ezo_dt_ids,
++	},
++	.probe		= atlas_ezo_probe,
++	.id_table	= atlas_ezo_id,
++};
++module_i2c_driver(atlas_ezo_driver);
++
++MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
++MODULE_DESCRIPTION("Atlas Scientific EZO sensors");
++MODULE_LICENSE("GPL");
+-- 
+2.20.1
 
-Matt
-
->
-> Thanks,
->
-> Jonathan
->
-> On Sun,  9 Feb 2020 16:10:55 -0800
-> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
->
-> > Changes from v1:
-> > * combined dt binding docs
-> > * added making interrupt line is optional patchset
-> > * broke out dt changes from DO-SM module patchset
-> >
-> > Changes from v2:
-> > * switch docs to YAML format
-> >
-> > Changes from v3:
-> > * fix up issues reported with dt-schema
-> >
-> > Changes from v4:
-> > * fix logic issue in optional interrupt patchset
-> >
-> > Changes from v5:
-> > * Update license on yaml conversion to GPLv2.0+ and BSD clause
-> >
-> > Matt Ranostay (3):
-> >   iio: chemical: atlas-sensor: allow probe without interrupt line
-> >   iio: chemical: atlas-sensor: add DO-SM module support
-> >   dt-bindings: iio: chemical: consolidate atlas-sensor docs
-> >
-> >  .../bindings/iio/chemical/atlas,ec-sm.txt     | 21 -----
-> >  .../bindings/iio/chemical/atlas,orp-sm.txt    | 21 -----
-> >  .../bindings/iio/chemical/atlas,ph-sm.txt     | 21 -----
-> >  .../bindings/iio/chemical/atlas,sensor.yaml   | 53 +++++++++++
-> >  drivers/iio/chemical/atlas-sensor.c           | 91 +++++++++++++++----
-> >  5 files changed, 125 insertions(+), 82 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ec-sm.txt
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,ph-sm.txt
-> >  create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,sensor.yaml
-> >
->
