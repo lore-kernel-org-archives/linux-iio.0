@@ -2,160 +2,113 @@ Return-Path: <SRS0=TpPT=6M=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04318C83000
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 11:14:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B016C83000
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 11:30:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DE21E206F0
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 11:14:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 76472206E2
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Apr 2020 11:30:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1588073437;
+	bh=bmn/QeL07kN6ZF+drWtdbMskzMxoYTgWWIqxwCRdXf4=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=YSutCamEb937HM2c/CXVHuLTGEtbj1Ga9LpZfBU85a9UxaGCjoR847h1ZvZIwE6qW
+	 rlDC6EakFpiigmHPxtXLCl416iyjQziaR6SQdS2x+r5k9A466zQGCp/+SPyEqIYlop
+	 EgPUJtJd9aXJirtuBXJx/yIYMD/YI5i+ze/hsWqg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726515AbgD1LOa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Apr 2020 07:14:30 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:16768 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726759AbgD1LOU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Apr 2020 07:14:20 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03SBBofY020265;
-        Tue, 28 Apr 2020 07:14:17 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 30mj45baag-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 28 Apr 2020 07:14:17 -0400
-Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 03SBEGDa013689
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 28 Apr 2020 07:14:16 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 28 Apr 2020 07:14:15 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 28 Apr 2020 07:14:15 -0400
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 28 Apr 2020 07:14:15 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03SBEAgu032471;
-        Tue, 28 Apr 2020 07:14:12 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <rachna@ti.com>, <mugunthanvnm@ti.com>,
-        <vigneshr@ti.com>, <afd@ti.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 2/3] iio: adc: ti_am335x_adc: alloc kfifo & IRQ via devm_ functions
-Date:   Tue, 28 Apr 2020 14:14:29 +0300
-Message-ID: <20200428111430.71723-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200428111430.71723-1-alexandru.ardelean@analog.com>
-References: <20200428111430.71723-1-alexandru.ardelean@analog.com>
+        id S1726519AbgD1Lah (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Apr 2020 07:30:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40382 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726419AbgD1Lag (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 28 Apr 2020 07:30:36 -0400
+Received: from localhost (fw-tnat.cambridge.arm.com [217.140.96.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99138206A1;
+        Tue, 28 Apr 2020 11:30:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588073436;
+        bh=bmn/QeL07kN6ZF+drWtdbMskzMxoYTgWWIqxwCRdXf4=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QXN7mTggzYM5iyN9EKtU2t26wDOabguc6BJyfL9I9ZktUFES2RtQ9TuYb3oSdKyGJ
+         h9SKy7kOhvpYLmygqhauu4Ndgh/XXWktuuTitkA5oIm7y+SidIvmVZ/jNqIM4m5+sV
+         /8R2NSjfbzEFBH4knAeFN8+52tqfm+s60t0W5LpM=
+Date:   Tue, 28 Apr 2020 12:30:33 +0100
+From:   Mark Brown <broonie@kernel.org>
+To:     Leslie =?utf-8?B?SHNpYSjlpI/pgqbpgLJfUGVnYXRyb24p?= 
+        <Leslie_Hsia@pegatroncorp.com>
+Cc:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Hermes =?utf-8?B?SHNpZWgo6Kyd5pe75YqtX1BlZ2F0cm9uKQ==?= 
+        <Hermes_Hsieh@pegatroncorp.com>,
+        "jesse.sung@canonical.com" <jesse.sung@canonical.com>,
+        "jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH] subsystem: Amplifier driver for TAS5805M,Texas
+ instruments
+Message-ID: <20200428113033.GE5677@sirena.org.uk>
+References: <754706C925201D4896E92CCAD6B38E4401F0F733E3@PTW-EX-37.PEGA.CORP.PEGATRON>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-28_07:2020-04-28,2020-04-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- suspectscore=2 malwarescore=0 spamscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 bulkscore=0 mlxlogscore=856 clxscore=1015
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004280091
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="bi5JUZtvcfApsciF"
+Content-Disposition: inline
+In-Reply-To: <754706C925201D4896E92CCAD6B38E4401F0F733E3@PTW-EX-37.PEGA.CORP.PEGATRON>
+X-Cookie: Eschew obfuscation.
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change attaches the life-cycle of the kfifo buffer & IRQ to the
-parent-device. This in turn cleans up the exit & error paths, since we
-don't need to explicitly cleanup these resources.
 
-The main intent here is to remove the explicit cleanup of the
-'indio_dev->buffer' via 'iio_kfifo_free(indio_dev->buffer);'.
+--bi5JUZtvcfApsciF
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-As we want to add support for multiple buffers per IIO device, having it
-exposed like this makes it tricky to consider a safe backwards compatible
-approach for it.
+On Tue, Apr 28, 2020 at 10:43:18AM +0000, Leslie Hsia(=E5=A4=8F=E9=82=A6=E9=
+=80=B2_Pegatron) wrote:
+>   *   Author: Leslie Hsia
+>   *   Amplifier driver for TAS5805M, initial the amplifier and set the so=
+und parameter.
+>   *   Signed-off-by: Leslie Hsia <Leslie_Hsia@pegatroncorp.com<mailto:Les=
+lie_Hsia@pegatroncorp.com>>
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/adc/ti_am335x_adc.c | 20 +++++---------------
- 1 file changed, 5 insertions(+), 15 deletions(-)
+Please follow the patch submission process that is described in
+Documentation/process/submitting-patches.rst in the kernel source.  Take
+a look at other submissions on the list and follow a similar process.
+There also appear to be both IIO and ASoC drivers in there which is at
+best a bit weird.
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index d932fe383a24..03b2ab649cc3 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -377,7 +377,8 @@ static const struct iio_buffer_setup_ops tiadc_buffer_setup_ops = {
- 	.postdisable = &tiadc_buffer_postdisable,
- };
- 
--static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
-+static int tiadc_iio_buffered_hardware_setup(struct device *dev,
-+	struct iio_dev *indio_dev,
- 	irqreturn_t (*pollfunc_bh)(int irq, void *p),
- 	irqreturn_t (*pollfunc_th)(int irq, void *p),
- 	int irq,
-@@ -387,13 +388,13 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
- 	struct iio_buffer *buffer;
- 	int ret;
- 
--	buffer = iio_kfifo_allocate();
-+	buffer = devm_iio_kfifo_allocate(dev);
- 	if (!buffer)
- 		return -ENOMEM;
- 
- 	iio_device_attach_buffer(indio_dev, buffer);
- 
--	ret = request_threaded_irq(irq,	pollfunc_th, pollfunc_bh,
-+	ret = devm_request_threaded_irq(dev, irq, pollfunc_th, pollfunc_bh,
- 				flags, indio_dev->name, indio_dev);
- 	if (ret)
- 		goto error_kfifo_free;
-@@ -408,15 +409,6 @@ static int tiadc_iio_buffered_hardware_setup(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
--static void tiadc_iio_buffered_hardware_remove(struct iio_dev *indio_dev)
--{
--	struct tiadc_device *adc_dev = iio_priv(indio_dev);
--
--	free_irq(adc_dev->mfd_tscadc->irq, indio_dev);
--	iio_kfifo_free(indio_dev->buffer);
--}
--
--
- static const char * const chan_name_ain[] = {
- 	"AIN0",
- 	"AIN1",
-@@ -636,7 +628,7 @@ static int tiadc_probe(struct platform_device *pdev)
- 	if (err < 0)
- 		return err;
- 
--	err = tiadc_iio_buffered_hardware_setup(indio_dev,
-+	err = tiadc_iio_buffered_hardware_setup(&pdev->dev, indio_dev,
- 		&tiadc_worker_h,
- 		&tiadc_irq_h,
- 		adc_dev->mfd_tscadc->irq,
-@@ -661,7 +653,6 @@ static int tiadc_probe(struct platform_device *pdev)
- err_dma:
- 	iio_device_unregister(indio_dev);
- err_buffer_unregister:
--	tiadc_iio_buffered_hardware_remove(indio_dev);
- err_free_channels:
- 	return err;
- }
-@@ -679,7 +670,6 @@ static int tiadc_remove(struct platform_device *pdev)
- 		dma_release_channel(dma->chan);
- 	}
- 	iio_device_unregister(indio_dev);
--	tiadc_iio_buffered_hardware_remove(indio_dev);
- 
- 	step_en = get_adc_step_mask(adc_dev);
- 	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
--- 
-2.17.1
+Having done a quick scan through your code it doesn't actually seem to
+integrate with the subsystem at all (there's no
+snd_soc_register_codec())=20
 
+Please submit patches using subject lines reflecting the style for the
+subsystem, this makes it easier for people to identify relevant patches.
+Look at what existing commits in the area you're changing are doing and
+make sure your subject lines visually resemble what they're doing.
+There's no need to resubmit to fix this alone.
+
+--bi5JUZtvcfApsciF
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAl6oE9gACgkQJNaLcl1U
+h9CBNwf9GnZKlT7pJP/Ffhe6NYK62tVJxbnR+kIljUUaRAdSQyXtO0R54DP6U890
+CZoGgcrPIG+TYwY+mFJ29DaTKGVWGlkoXsEQi4kECGmKLKTH3lfY698eXGqJM4WZ
+TplTUGDbl1n08WOpqdLeX1XdEXM+LHqBAAG7KmNgk/MYFFnVN0QMADONgtAW/6SW
+vfyMttbzzRAOYGZ5wUsnL6+O1qShCElLKOzhcIj+3XDD+rt+iejwrq0hd1CUndWY
+Zd7ENnySP+KAtk4pYfr0UbjNzdSbKDnQgLEiRFNoCHizBF/+28O0PslkVKSgAjpQ
+2TGhh2N0R+7r03DW5Kpuj7U6xxPZvQ==
+=n/8D
+-----END PGP SIGNATURE-----
+
+--bi5JUZtvcfApsciF--
