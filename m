@@ -2,272 +2,303 @@ Return-Path: <SRS0=7En4=6N=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17CF8C83006
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 15:17:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F36C83000
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 18:11:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F23F620575
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 15:17:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B63222205
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 18:11:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="bUt0zzXr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726883AbgD2PRp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 29 Apr 2020 11:17:45 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:53734 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726526AbgD2PRo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Apr 2020 11:17:44 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 03TFHUhv024812;
-        Wed, 29 Apr 2020 11:17:30 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 30mj45g5h6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 29 Apr 2020 11:17:30 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 03TFHPlV027198
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 29 Apr 2020 11:17:26 -0400
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 29 Apr
- 2020 08:17:24 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 29 Apr 2020 08:17:24 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 03TFHM17026989;
-        Wed, 29 Apr 2020 11:17:22 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <lars@metafoo.de>, <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 1/2] iio: Move scan mask management to the core
-Date:   Wed, 29 Apr 2020 18:17:39 +0300
-Message-ID: <20200429151740.85917-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726773AbgD2SL4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 29 Apr 2020 14:11:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39908 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726423AbgD2SL4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Apr 2020 14:11:56 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D73EDC03C1AE;
+        Wed, 29 Apr 2020 11:11:55 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id t3so3022261qkg.1;
+        Wed, 29 Apr 2020 11:11:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f6ytqgDFNHsaOJjTUUUjsCdnofrnVPTea34tVhvLGag=;
+        b=bUt0zzXrJQLxLVIZKOSGZaDef2zTVtHzKp2OFZL1X/gYdKIm90Aci8JdCzU+HrnhyV
+         Vu9hRMumm5D4AnMwumFwuQlVhj5yiboiM1cc9eeBrHKQFCM2zFpss+E8s4iYLzjLPBB0
+         2SwjgpMwPX7VG2WaJGzHUUDu7bplqk4VzO4GChrHIkL12/2IoUQQmSlaklBzRXIOT4es
+         K3yC1ufxKbErto9d6S8XNfgHcZeD6CgJUzWDLwVPoENy0MlIGzAOuPlu4zzdHw9nZFRR
+         h/fm0R3Ajic+K8g7D+JNxg98G5zysinkwWtVFhEHKjuoQGQ8jYQEKg2wvu+FqNgPRMFt
+         aWnA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=f6ytqgDFNHsaOJjTUUUjsCdnofrnVPTea34tVhvLGag=;
+        b=Z5SRfe+QqU1HdIsLp+YkRsLAmj7gNKe/XpjCaLDSOk2//PhkOEMO3t54NTkNNF+6Rb
+         gZ4EsumWXb1w3wG4fIG9E7u1l56Nifbp1aHt9EBXiPj4xSUS++oB7BpYMLnTKl9rlytW
+         jTLkILyJqr792Lk0EcsCjgMSwwvn+Yokm01vBv65Uk4uUbTnZEp4wlFO/0PaKfDDZOjT
+         1yb8z8u794tlI7M0SWrbT3mvhTdBVt9MmL7O2T2KHBvzjceP5Yo3bKM9OR4WStpGNuLg
+         nvhmg9TiwxCvdkSJ4KwE0x9yXTtI/n03j9v+qD2bGQMZxVqSNRNcnm2A5psO1ZRrzaG4
+         XOrA==
+X-Gm-Message-State: AGi0PuaF2PO8Ls/TPm4+frG0CTTjRTpmrvqlrXlGdhg3MbQH2JO3+Zk2
+        OxFwSfe7Vm5pTbIRE43rDQ8=
+X-Google-Smtp-Source: APiQypLffH5aM3hScXzjOmVleEGq/GKFIsQVNidjLjtLe6HlCO9EYM6OMrwbw2vdYhGIPLCAhnhKzQ==
+X-Received: by 2002:a37:886:: with SMTP id 128mr32049757qki.325.1588183915008;
+        Wed, 29 Apr 2020 11:11:55 -0700 (PDT)
+Received: from localhost.localdomain (072-189-064-225.res.spectrum.com. [72.189.64.225])
+        by smtp.gmail.com with ESMTPSA id o43sm16315082qtf.46.2020.04.29.11.11.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 29 Apr 2020 11:11:54 -0700 (PDT)
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     jic23@kernel.org
+Cc:     kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        alexandre.belloni@bootlin.com, david@lechnology.com,
+        felipe.balbi@linux.intel.com, fabien.lahoudere@collabora.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/4] Introduce the Counter character device interface
+Date:   Wed, 29 Apr 2020 14:11:34 -0400
+Message-Id: <cover.1588176662.git.vilhelm.gray@gmail.com>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.138,18.0.676
- definitions=2020-04-29_07:2020-04-29,2020-04-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
- suspectscore=2 malwarescore=0 spamscore=0 adultscore=0 priorityscore=1501
- lowpriorityscore=0 bulkscore=0 mlxlogscore=999 clxscore=1015
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2003020000 definitions=main-2004290128
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+Over the past couple years we have noticed some shortcomings with the
+Counter sysfs interface. Although useful in the majority of situations,
+there are certain use-cases where interacting through sysfs attributes
+can become cumbersome and inefficient. A desire to support more advanced
+functionality such as timestamps, multi-axis positioning tables, and
+other such latency-sensitive applications, has motivated a reevaluation
+of the Counter subsystem. I believe a character device interface will be
+helpful for this more niche area of counter device use.
 
-Let the core handle the buffer scan mask management including allocation
-and channel selection. Having this handled in a central place rather than
-open-coding it all over the place will make it easier to change the
-implementation (if needed).
-At the very least, this change abstracts scan-mask management away from
-buffer implementations.
+To quell any concerns from the offset: this patchset makes no changes to
+the existing Counter sysfs userspace interface -- existing userspace
+applications will continue to work with no modifications necessary. I
+request that driver maintainers please test their applications to verify
+that this is true, and report any discrepancies if they arise.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
+However, this patchset does contain a major reimplementation of the
+Counter subsystem core and driver API. A reimplementation was necessary
+in order to separate the sysfs code from the counter device drivers and
+internalize it as a dedicated component of the core Counter subsystem
+module. A minor benefit from all of this is that the sysfs interface is
+now ensured a certain amount of consistency because the translation is
+performed outside of individual counter device drivers.
 
-Changelog v1 -> v2:
-- split away from initial series; the `buffer->channel_mask` attribute
-  requires a bit more dicussion; or may even be dropped; just these 2
-  patches helps with diff-ing 2 trees, as applying patches between my
-  work tree & IIO has fewer conflicts
-- return -EINVAL if masklength is 0 in iio_buffer_alloc_scanmask()
-- convert 2nd parameter to `unsigned int masklength` in
-  iio_buffer_alloc_scanmask()
+Essentially, the reimplementation has enabled counter device drivers to
+pass and handle data as native C datatypes now rather than the sysfs
+strings from before. A high-level view of how a count value is passed
+down from a counter device driver can be exemplified by the following:
 
- drivers/iio/buffer/industrialio-buffer-cb.c | 17 +++++-----
- drivers/iio/industrialio-buffer.c           | 36 +++++++++++++++------
- drivers/iio/inkern.c                        | 15 +++++++++
- include/linux/iio/consumer.h                | 10 ++++++
- 4 files changed, 59 insertions(+), 19 deletions(-)
+                 ----------------------
+                / Counter device       \
+                +----------------------+
+                | Count register: 0x28 |
+                +----------------------+
+                        |
+                 -----------------
+                / raw count data /
+                -----------------
+                        |
+                        V
+                +----------------------------+
+                | Counter device driver      |----------+
+                +----------------------------+          |
+                | Processes data from device |   -------------------
+                |----------------------------|  / driver callbacks /
+                | Type: unsigned long        |  -------------------
+                | Value: 42                  |          |
+                +----------------------------+          |
+                        |                               |
+                 ----------------                       |
+                / unsigned long /                       |
+                ----------------                        |
+                        |                               |
+                        |                               V
+                        |               +----------------------+
+                        |               | Counter core         |
+                        |               +----------------------+
+                        |               | Routes device driver |
+                        |               | callbacks to the     |
+                        |               | userspace interfaces |
+                        |               +----------------------+
+                        |                       |
+                        |                -------------------
+                        |               / driver callbacks /
+                        |               -------------------
+                        |                       |
+                +-------+---------------+       |
+                |                       |       |
+                |               +-------|-------+
+                |               |       |
+                V               |       V
+        +--------------------+  |  +---------------------+
+        | Counter sysfs      |<-+->| Counter chrdev      |
+        +--------------------+     +---------------------+
+        | Translates to the  |     | Translates to the   |
+        | standard Counter   |     | standard Counter    |
+        | sysfs output       |     | character device    |
+        |--------------------|     |---------------------+
+        | Type: const char * |     | Type: unsigned long |
+        | Value: "42"        |     | Value: 42           |
+        +--------------------+     +---------------------+
+                |                               |
+         ---------------                 ----------------
+        / const char * /                / unsigned long /
+        ---------------                 ----------------
+                |                               |
+                |                               V
+                |                       +-----------+
+                |                       | ioctl     |
+                |                       +-----------+
+                |                       \ Count: 42 /
+                |                        -----------
+                |
+                V
+        +--------------------------------------------------+
+        | `/sys/bus/counter/devices/counterX/countY/count` |
+        +--------------------------------------------------+
+        \ Count: "42"                                      /
+         --------------------------------------------------
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-cb.c b/drivers/iio/buffer/industrialio-buffer-cb.c
-index 47c96f7f4976..dc5bb2ab533a 100644
---- a/drivers/iio/buffer/industrialio-buffer-cb.c
-+++ b/drivers/iio/buffer/industrialio-buffer-cb.c
-@@ -34,7 +34,7 @@ static void iio_buffer_cb_release(struct iio_buffer *buffer)
- {
- 	struct iio_cb_buffer *cb_buff = buffer_to_cb_buffer(buffer);
- 
--	bitmap_free(cb_buff->buffer.scan_mask);
-+	iio_buffer_free_scanmask(&cb_buff->buffer);
- 	kfree(cb_buff);
- }
- 
-@@ -72,27 +72,26 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
- 	}
- 
- 	cb_buff->indio_dev = cb_buff->channels[0].indio_dev;
--	cb_buff->buffer.scan_mask = bitmap_zalloc(cb_buff->indio_dev->masklength,
--						  GFP_KERNEL);
--	if (cb_buff->buffer.scan_mask == NULL) {
--		ret = -ENOMEM;
-+
-+	ret = iio_buffer_alloc_scanmask(&cb_buff->buffer,
-+					cb_buff->indio_dev->masklength);
-+	if (ret)
- 		goto error_release_channels;
--	}
-+
- 	chan = &cb_buff->channels[0];
- 	while (chan->indio_dev) {
- 		if (chan->indio_dev != cb_buff->indio_dev) {
- 			ret = -EINVAL;
- 			goto error_free_scan_mask;
- 		}
--		set_bit(chan->channel->scan_index,
--			cb_buff->buffer.scan_mask);
-+		iio_buffer_channel_enable(&cb_buff->buffer, chan);
- 		chan++;
- 	}
- 
- 	return cb_buff;
- 
- error_free_scan_mask:
--	bitmap_free(cb_buff->buffer.scan_mask);
-+	iio_buffer_free_scanmask(&cb_buff->buffer);
- error_release_channels:
- 	iio_channel_release_all(cb_buff->channels);
- error_free_cb_buff:
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index eae39eaf49af..c6b63f4474ff 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -208,6 +208,26 @@ void iio_buffer_init(struct iio_buffer *buffer)
- }
- EXPORT_SYMBOL(iio_buffer_init);
- 
-+int iio_buffer_alloc_scanmask(struct iio_buffer *buffer,
-+			      unsigned int masklength)
-+{
-+	if (!masklength)
-+		return -EINVAL;
-+
-+	buffer->scan_mask = bitmap_zalloc(masklength, GFP_KERNEL);
-+	if (buffer->scan_mask == NULL)
-+		return -ENOMEM;
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iio_buffer_alloc_scanmask);
-+
-+void iio_buffer_free_scanmask(struct iio_buffer *buffer)
-+{
-+	bitmap_free(buffer->scan_mask);
-+}
-+EXPORT_SYMBOL_GPL(iio_buffer_free_scanmask);
-+
- /**
-  * iio_buffer_set_attrs - Set buffer specific attributes
-  * @buffer: The buffer for which we are setting attributes
-@@ -1306,14 +1326,10 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 				indio_dev->scan_index_timestamp =
- 					channels[i].scan_index;
- 		}
--		if (indio_dev->masklength && buffer->scan_mask == NULL) {
--			buffer->scan_mask = bitmap_zalloc(indio_dev->masklength,
--							  GFP_KERNEL);
--			if (buffer->scan_mask == NULL) {
--				ret = -ENOMEM;
--				goto error_cleanup_dynamic;
--			}
--		}
-+
-+		ret = iio_buffer_alloc_scanmask(buffer, indio_dev->masklength);
-+		if (ret)
-+			goto error_cleanup_dynamic;
- 	}
- 
- 	buffer->scan_el_group.name = iio_scan_elements_group_name;
-@@ -1334,7 +1350,7 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 	return 0;
- 
- error_free_scan_mask:
--	bitmap_free(buffer->scan_mask);
-+	iio_buffer_free_scanmask(buffer);
- error_cleanup_dynamic:
- 	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
- 	kfree(buffer->buffer_group.attrs);
-@@ -1349,7 +1365,7 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
- 	if (!buffer)
- 		return;
- 
--	bitmap_free(buffer->scan_mask);
-+	iio_buffer_free_scanmask(buffer);
- 	kfree(buffer->buffer_group.attrs);
- 	kfree(buffer->scan_el_group.attrs);
- 	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index ede99e0d5371..f35cb9985edc 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -11,6 +11,7 @@
- 
- #include <linux/iio/iio.h>
- #include "iio_core.h"
-+#include <linux/iio/buffer_impl.h>
- #include <linux/iio/machine.h>
- #include <linux/iio/driver.h>
- #include <linux/iio/consumer.h>
-@@ -857,6 +858,20 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
- }
- EXPORT_SYMBOL_GPL(iio_write_channel_raw);
- 
-+void iio_buffer_channel_enable(struct iio_buffer *buffer,
-+			       const struct iio_channel *chan)
-+{
-+	set_bit(chan->channel->scan_index, buffer->scan_mask);
-+}
-+EXPORT_SYMBOL_GPL(iio_buffer_channel_enable);
-+
-+void iio_buffer_channel_disable(struct iio_buffer *buffer,
-+				const struct iio_channel *chan)
-+{
-+	clear_bit(chan->channel->scan_index, buffer->scan_mask);
-+}
-+EXPORT_SYMBOL_GPL(iio_buffer_channel_disable);
-+
- unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan)
- {
- 	const struct iio_chan_spec_ext_info *ext_info;
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index c4118dcb8e05..9fcd320c2fb4 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -12,6 +12,7 @@
- 
- struct iio_dev;
- struct iio_chan_spec;
-+struct iio_buffer;
- struct device;
- 
- /**
-@@ -342,6 +343,15 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
- int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
- 	int *processed, unsigned int scale);
- 
-+void iio_buffer_channel_enable(struct iio_buffer *buffer,
-+			       const struct iio_channel *chan);
-+void iio_buffer_channel_disable(struct iio_buffer *buffer,
-+				const struct iio_channel *chan);
-+
-+int iio_buffer_alloc_scanmask(struct iio_buffer *buffer,
-+			      unsigned int masklength);
-+void iio_buffer_free_scanmask(struct iio_buffer *buffer);
-+
- /**
-  * iio_get_channel_ext_info_count() - get number of ext_info attributes
-  *				      connected to the channel.
+I am aware that an in-kernel API can simplify the data transfer between
+counter device drivers and the userspace interfaces, but I want to
+postpone that development until after the new Counter character device
+ioctl commands are solidified. A userspace ABI is effectively immutable
+so I want to make sure we get that right before working on an in-kernel
+API that is more flexible to change. However, when we do develop an
+in-kernel API, it will likely be housed as part of the Counter core
+component, through which the userspace interfaces will then communicate.
+
+Interaction with Counter character devices occurs via ioctl commands.
+This allows userspace applications to access and set counter data using
+native C datatypes rather than working through string translations.
+
+Regarding the organization of this patchset, I have combined the counter
+device driver changes with the first patch because the changes must all
+be taken together in order to avoid compilation errors. I can see how
+this can end up making it difficult to review so many changes at once,
+so alternatively I can separate out the counter device driver changes
+into their own dedicated patches -- with the understanding that the
+patches must all be taken together.
+
+In addition, I anticipate the Microchip TCB capture counter driver to
+break with this patchset. I'm not sure how that driver will be picked
+up yet so I have avoided adding it to this patchset right now. But the
+changes to support that driver are simple to make so I can add them in a
+later revision of this patchset.
+
+The following are some questions I have about this patchset:
+
+1. Should enums be used to represent standard counter component states
+   (e.g. COUNTER_SIGNAL_LOW), or would these be better defined as int?
+
+   These standard counter component states are defined in the
+   counter-types.h file and serve as constants used by counter device
+   drivers and Counter subsystem components in order to ensure a
+   consistent interface.
+
+   My concern is whether enum constants will cause problems when passed
+   to userspace via the Counter character device ioctl calls. Along the
+   same lines is whether the C bool datatype is safe to pass as well,
+   given that it is a more modern C datatype.
+
+2. Should device driver callbacks return int or long? I sometimes see
+   error values returned as long (e.g. PTR_ERR(), the file_operations
+   structure's ioctl callbacks, etc.); when is it necessary to return
+   long as opposed to int?
+
+3. I only implemented the unlocked_ioctl callback. Should I implement a
+   compat_ioctl callback as well?
+
+4. How much space should allot for name strings? Name strings hold the
+   names of components (ideally as they appear on datasheets), so I've
+   arbitrarily chosen a size of 32 for the character device interface.
+
+5. Should the owning component of an extension be determined by the
+   device driver or Counter subsystem?
+
+   A lot of the complexity in the counters-function-types.h file and the
+   sysfs-callbacks.c file is due to the function pointer casts required
+   in order to support three different ownership scenarios: the owning
+   component is the device, the owning component is a Count, the owning
+   component is a Signal.
+
+   Because the Counter subsystem doesn't not know which scenario is
+   valid, it must manually check and provide for all three ownership
+   cases. On the other hand, device drivers do know exactly which case
+   applies because they are the ones providing the callbacks.
+
+   The complexity in the Counter subsystem code can be eliminated if the
+   owning component is simply passed down to the callbacks as a void
+   pointer. The device drivers will then be responsible for casting to
+   the appropriate component type, but this should in theory not be a
+   problem since the device driver assigned the callback to the owning
+   component in the first place.
+
+William Breathitt Gray (4):
+  counter: Internalize sysfs interface code
+  docs: counter: Update to reflect sysfs internalization
+  counter: Add character device interface
+  docs: counter: Document character device interface
+
+ Documentation/driver-api/generic-counter.rst  |  259 ++-
+ .../userspace-api/ioctl/ioctl-number.rst      |    1 +
+ MAINTAINERS                                   |    3 +-
+ drivers/counter/104-quad-8.c                  |  437 +++--
+ drivers/counter/Makefile                      |    2 +
+ drivers/counter/counter-chrdev.c              | 1134 +++++++++++++
+ drivers/counter/counter-chrdev.h              |   16 +
+ drivers/counter/counter-core.c                |  220 +++
+ drivers/counter/counter-function-types.h      |   81 +
+ drivers/counter/counter-strings.h             |   46 +
+ drivers/counter/counter-sysfs-callbacks.c     |  566 +++++++
+ drivers/counter/counter-sysfs-callbacks.h     |   28 +
+ drivers/counter/counter-sysfs.c               |  524 ++++++
+ drivers/counter/counter-sysfs.h               |   14 +
+ drivers/counter/counter.c                     | 1496 -----------------
+ drivers/counter/ftm-quaddec.c                 |   46 +-
+ drivers/counter/stm32-lptimer-cnt.c           |  159 +-
+ drivers/counter/stm32-timer-cnt.c             |  132 +-
+ drivers/counter/ti-eqep.c                     |  170 +-
+ include/linux/counter.h                       |  547 +++---
+ include/linux/counter_enum.h                  |   45 -
+ include/uapi/linux/counter-types.h            |   67 +
+ include/uapi/linux/counter.h                  |  313 ++++
+ 23 files changed, 3816 insertions(+), 2490 deletions(-)
+ create mode 100644 drivers/counter/counter-chrdev.c
+ create mode 100644 drivers/counter/counter-chrdev.h
+ create mode 100644 drivers/counter/counter-core.c
+ create mode 100644 drivers/counter/counter-function-types.h
+ create mode 100644 drivers/counter/counter-strings.h
+ create mode 100644 drivers/counter/counter-sysfs-callbacks.c
+ create mode 100644 drivers/counter/counter-sysfs-callbacks.h
+ create mode 100644 drivers/counter/counter-sysfs.c
+ create mode 100644 drivers/counter/counter-sysfs.h
+ delete mode 100644 drivers/counter/counter.c
+ delete mode 100644 include/linux/counter_enum.h
+ create mode 100644 include/uapi/linux/counter-types.h
+ create mode 100644 include/uapi/linux/counter.h
+
+
+base-commit: 00edef1ac058b3c754d29bcfd35ea998d9e7a339
 -- 
-2.17.1
+2.26.2
 
