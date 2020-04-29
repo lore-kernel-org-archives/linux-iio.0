@@ -7,63 +7,66 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09571C83009
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 13:40:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 285E6C83004
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 13:51:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9FA82087E
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 13:40:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07C3F2074A
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Apr 2020 13:51:10 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="iRH/fvJ6"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=linumiz.com header.i=@linumiz.com header.b="BacXzOBA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728539AbgD2Nkb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 29 Apr 2020 09:40:31 -0400
-Received: from gproxy7-pub.mail.unifiedlayer.com ([70.40.196.235]:57924 "EHLO
-        gproxy7-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727915AbgD2Nka (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Apr 2020 09:40:30 -0400
-Received: from cmgw15.unifiedlayer.com (unknown [10.9.0.15])
-        by gproxy7.mail.unifiedlayer.com (Postfix) with ESMTP id 8DF3121675F
-        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2020 07:40:29 -0600 (MDT)
+        id S1726765AbgD2NvJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 29 Apr 2020 09:51:09 -0400
+Received: from gproxy1-pub.mail.unifiedlayer.com ([69.89.25.95]:40807 "EHLO
+        gproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727769AbgD2NvJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Apr 2020 09:51:09 -0400
+Received: from cmgw12.unifiedlayer.com (unknown [10.9.0.12])
+        by gproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id 16EF157A47F84
+        for <linux-iio@vger.kernel.org>; Wed, 29 Apr 2020 07:40:15 -0600 (MDT)
 Received: from md-in-79.webhostbox.net ([43.225.55.182])
         by cmsmtp with ESMTP
-        id TmwtjOPxWrO3uTmwuj4Vtg; Wed, 29 Apr 2020 07:40:29 -0600
+        id TmwejRkQ5N8ArTmwgjShYN; Wed, 29 Apr 2020 07:40:15 -0600
 X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.3 cv=dbOuI0fe c=1 sm=1 tr=0
+X-Authority-Analysis: v=2.3 cv=YYGTGTZf c=1 sm=1 tr=0
  a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=LfuyaZh/8e9VOkaVZk0aRw==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=cl8xLZFz6L8A:10:nop_rcvd_month_year
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=qf4gfuq51q0A:10:nop_charset_1
+ a=cl8xLZFz6L8A:10:nop_rcvd_month_year
  a=oz0wMknONp8A:10:endurance_base64_authed_username_1 a=vU9dKmh3AAAA:8
- a=VwQbUJbxAAAA:8 a=zKD5vtlRtLnuLDy9xr4A:9
- a=sfIEtMYjypgA:10:uccc_2email_address a=rsP06fVo5MYu2ilr0aT5:22
- a=AjGcO6oz07-iQ99wixmX:22
+ a=gEfo2CItAAAA:8 a=U4Au-FSsymrcop1UMgkA:9 a=k40Crp0UdiQA:10:nop_charset_2
+ a=rsP06fVo5MYu2ilr0aT5:22 a=sptkURWiP4Gy88Gu7hUp:22
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
-        ; s=default; h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:
-        Sender:Reply-To:MIME-Version:Content-Type:Content-Transfer-Encoding:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Jq/MMu6L30dsLWRddLaNxkvwFcbee6RqmoIFiQYoC14=; b=iRH/fvJ68raZFp/QLSn0oo2x7m
-        olazxcq2tM1L7Vxou2ciatH+Rkr3WHGUj3t4sYnH76n9hvgg9GwzRfNcLcYZv6fyrTb7qyFyashiw
-        SqVH4vRmOzrLL3ijVt05qNbaJ2LEBd9HFCS1Heya1ZKrJTe1kWiQahlgbiSrECCecFldSIyuM4x72
-        c7Uz87S4iv9YcNyEJSr37memTn0pEqqXM7yBm6rJNXvN6NwW5rSCHiHGCnf5XeHbLERNwxhdxoBwI
-        ca8c3WXbOHoM2H3k1U5no7Wl4sXhGnQ6a5A4Qz7cI49OeMTDnr/aQgKO7FBm64OSKgDGPJKONezfg
-        5SGP7O5g==;
+        ; s=default; h=Content-Transfer-Encoding:Content-Type:MIME-Version:References
+        :In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=x/MFNzAJcS07WLC0HV/XoJWLUxwR781mQq/IIrAfjro=; b=BacXzOBA+UnNkwTGM24L16I7e9
+        SH34QLIXeTnDwFZxmLp5QIhOV5HFeA4lO1a8j12zqmGK6tNLxUJil6Zjaomuecb6IVFrpwYpU0Neh
+        thaaPYE4W6Dk85Ursy98he0XZLuD7WsXIpFuXIJwdDVnb1J1nPsQiPTGM8CmE5++sw6IW+8pOZa+0
+        5hwxZo2/F/Es9Ct2DU0Z0SLca0IwoOt0LS/IRMz3+n2XZBTjgk3l3kWIszQhSvF7jQMKMmuNKSaCX
+        +rjF+BUFLKSaXHI0FHXcE6YA5WMiGE9IlnwyeAbJn0u49aXHWsBHUH44m8Lz4gYIICyqhcN6J/Jzb
+        dUFm341A==;
 Received: from p5b3f6bb1.dip0.t-ipconnect.de ([91.63.107.177]:33262 helo=localhost.localdomain)
         by md-in-79.webhostbox.net with esmtpsa (TLSv1.2:ECDHE-RSA-AES128-GCM-SHA256:128)
         (Exim 4.92)
         (envelope-from <saravanan@linumiz.com>)
-        id 1jTmwr-0009y4-Iz; Wed, 29 Apr 2020 13:40:26 +0000
+        id 1jTmwd-0009y4-06; Wed, 29 Apr 2020 13:40:11 +0000
 From:   Saravanan Sekar <saravanan@linumiz.com>
 To:     robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, broonie@kernel.org,
         lgirdwood@gmail.com, saravanan@linumiz.com
 Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH v2 3/4] iio: accel: wsen-itds accel documentation
-Date:   Wed, 29 Apr 2020 15:39:42 +0200
-Message-Id: <20200429133943.18298-4-saravanan@linumiz.com>
+Subject: [PATCH v2 1/4] dt-bindings: iio: add document bindings for wsen-itds accel sensor
+Date:   Wed, 29 Apr 2020 15:39:40 +0200
+Message-Id: <20200429133943.18298-2-saravanan@linumiz.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200429133943.18298-1-saravanan@linumiz.com>
 References: <20200429133943.18298-1-saravanan@linumiz.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=y
+Content-Transfer-Encoding: 8bit
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
 X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
 X-AntiAbuse: Original Domain - vger.kernel.org
@@ -72,13 +75,13 @@ X-AntiAbuse: Sender Address Domain - linumiz.com
 X-BWhitelist: no
 X-Source-IP: 91.63.107.177
 X-Source-L: No
-X-Exim-ID: 1jTmwr-0009y4-Iz
+X-Exim-ID: 1jTmwd-0009y4-06
 X-Source: 
 X-Source-Args: 
 X-Source-Dir: 
 X-Source-Sender: p5b3f6bb1.dip0.t-ipconnect.de (localhost.localdomain) [91.63.107.177]:33262
 X-Source-Auth: saravanan@linumiz.com
-X-Email-Count: 32
+X-Email-Count: 12
 X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
 X-Local-Domain: yes
 Sender: linux-iio-owner@vger.kernel.org
@@ -86,44 +89,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation about device operating mode and output data range
-supported according to operating mode
+Add device tree binding information for wsen-itds accel sensor driver.
 
 Signed-off-by: Saravanan Sekar <saravanan@linumiz.com>
 ---
- .../ABI/testing/sysfs-bus-iio-wsen-itds       | 23 +++++++++++++++++++
- 1 file changed, 23 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-wsen-itds
+ .../bindings/iio/accel/we,wsen-itds.yaml      | 55 +++++++++++++++++++
+ 1 file changed, 55 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/we,wsen-itds.yaml
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-wsen-itds b/Documentation/ABI/testing/sysfs-bus-iio-wsen-itds
+diff --git a/Documentation/devicetree/bindings/iio/accel/we,wsen-itds.yaml b/Documentation/devicetree/bindings/iio/accel/we,wsen-itds.yaml
 new file mode 100644
-index 000000000000..5979f2b8aa1a
+index 000000000000..eb01ed88091b
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-wsen-itds
-@@ -0,0 +1,23 @@
-+What:		/sys/bus/iio/devices/iio\:device0/in_accel_samp_freq_available
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Reading gives range of sample frequencies available for current operating mode
-+		after one data has generated.
++++ b/Documentation/devicetree/bindings/iio/accel/we,wsen-itds.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/accel/we,wsen-itds.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+		Access: Read
-+		Valid values: represented in Hz
-+		- range [12.5, 1600] for high permormance mode
-+		- range [1.6, 200] for normal/low power mode
++title: Würth Elektronik WSEN-ITDS triaxial acceleration sensor
 +
-+What:		/sys/bus/iio/devices/iio\:device0/operating_mode
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Represents the device operating mode. High performance mode gives high output
-+		data rate and low noise compared to normal mode. Normal mode consumes less
-+		current.  In single shot device enters to lowpower after one data has
-+		generated.
++maintainers:
++  - Saravanan Sekar <saravanan@linumiz.com>
 +
-+		Access: Read, Write
-+		Valid values: "lowpower", "normal", "high_perf", "single_shot"
++description: |
++  Acceleration and temperature iio sensor with an i2c interface.
++  The sensor provides additional application specific features like
++  tap detection, 6D orientation, Free-fall, Motion and Activity.
++
++properties:
++  compatible:
++    enum:
++      - we,wsen-itds
++
++  reg:
++    maxItems: 1
++
++  vdd-supply:
++    description: phandle to the regulator that provides power to the accelerometer
++
++  vddio-supply:
++    description: phandle to the regulator that provides power to the sensor's IO
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      accelerometer@18 {
++        compatible = "we,wsen-itds";
++        reg = <0x18>;
++        vdd-supply = <&vdd>;
++        vddio-supply = <&vddio>;
++        interrupt-parent = <&gpio0>;
++        interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
++      };
++    };
 -- 
 2.17.1
 
