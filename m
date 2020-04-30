@@ -4,51 +4,50 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B772AC47247
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 13:50:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A885C47253
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 13:54:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 924FF2137B
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 13:50:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DDF1C24962
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 13:54:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588254655;
-	bh=zh48Mwux3jwlRb4nRNfRVX7V+9O0mJOiLa7xukcJ8qw=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=doy9a9Ct16YYloMaILz9ma+zCcSTptidJbgk9QWqlJR+3XYhH6SXuc10fuWu2xv5o
-	 5QrEwvgerKYH6ozzbCyQEaas4d6C0DW/EZlxvDWlcBsH4A1vPdmf0HfxiD4Ey4viIC
-	 NvZfeu0Rj2jb2S0JoHyM/rGHAQPYiiKDuN9iwB+g=
+	s=default; t=1588254846;
+	bh=2q6xYtEnk5Q9fAbhYOot0AOAKQNt/B7JU4vxKPWHFG0=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=YpfI3Rk/KxhjEqGLtPOe4wybIBVjLgMOpB9htCq5HHqNzocYBxeM8G9Wp/ME3cept
+	 HyraIQ25bWeYFWbI9FHl5HFJnFXjeWSBFb+JQsghhpX7N9oiFAj3f75ZARj1VhSsM6
+	 jjSpPgQ0uP0SaiXOv0RXB924Yja2FaSUCSKrHygk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727803AbgD3Nuy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Apr 2020 09:50:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58462 "EHLO mail.kernel.org"
+        id S1728885AbgD3NyF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Apr 2020 09:54:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36144 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727086AbgD3Nuv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:50:51 -0400
+        id S1728881AbgD3NyE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:54:04 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F194420873;
-        Thu, 30 Apr 2020 13:50:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3AB582063A;
+        Thu, 30 Apr 2020 13:54:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254650;
-        bh=zh48Mwux3jwlRb4nRNfRVX7V+9O0mJOiLa7xukcJ8qw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=aM2CA3/ZyqgR1ZnvGR2nyqxRn/ktVd3a8pfUTp/gKQxm8rt3hYG9/OLQJuaAHkOKa
-         w1nGIDwQT+TX/lB3ygMngFtr/VHJ9kmMgSv6w/jG2TLd8vaRIXl47C6PzQ4H8jcGYN
-         D5+FchyrFwAPbr6two9Kt+wrSGpVrTcVYT3UPHPQ=
+        s=default; t=1588254844;
+        bh=2q6xYtEnk5Q9fAbhYOot0AOAKQNt/B7JU4vxKPWHFG0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=el+UKp8X4Hs8p+up8LaYpNIcWkgJ3xnqAeAnrt4cNxr+csL97WCdhop9mIXgENQQ1
+         J31zQlTRoLm76jFT9slCfmvVb84aRXd8LuCeKMuELWiYwZ7Z6KKflfEAp3hY2t1VSa
+         iaKvgFGFr3kuMdk0rHXQOWQXo+t3rsNW6Fa6FOgs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
+Cc:     YueHaibing <yuehaibing@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 05/79] iio: imu: st_lsm6dsx: fix read misalignment on untagged FIFO
-Date:   Thu, 30 Apr 2020 09:49:29 -0400
-Message-Id: <20200430135043.19851-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.14 01/27] iio:ad7797: Use correct attribute_group
+Date:   Thu, 30 Apr 2020 09:53:36 -0400
+Message-Id: <20200430135402.20994-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200430135043.19851-1-sashal@kernel.org>
-References: <20200430135043.19851-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,120 +57,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lorenzo Bianconi <lorenzo@kernel.org>
+From: YueHaibing <yuehaibing@huawei.com>
 
-[ Upstream commit 7762902c89c4c78d32ec562f1ada44d02039104b ]
+[ Upstream commit 28535877ac5b2b84f0d394fd67a5ec71c0c48b10 ]
 
-st_lsm6dsx suffers of a read misalignment on untagged FIFO when
-all 3 supported sensors (accel, gyro and ext device) are running
-at different ODRs (the use-case is reported in the LSM6DSM Application
-Note at pag 100).
-Fix the issue taking into account decimation factor reading the FIFO
-pattern.
+It should use ad7797_attribute_group in ad7797_info,
+according to commit ("iio:ad7793: Add support for the ad7796 and ad7797").
 
-Fixes: e485e2a2cfd6 ("iio: imu: st_lsm6dsx: enable sensor-hub support for lsm6dsm")
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Scale is fixed for the ad7796 and not programmable, hence
+should not have the scale_available attribute.
+
+Fixes: fd1a8b912841 ("iio:ad7793: Add support for the ad7796 and ad7797")
+Signed-off-by: YueHaibing <yuehaibing@huawei.com>
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  2 ++
- .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 23 +++++++++++++------
- 2 files changed, 18 insertions(+), 7 deletions(-)
+ drivers/iio/adc/ad7793.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 9c3486a8134fd..b8ed6c900c457 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -337,6 +337,7 @@ enum st_lsm6dsx_fifo_mode {
-  * @gain: Configured sensor sensitivity.
-  * @odr: Output data rate of the sensor [Hz].
-  * @watermark: Sensor watermark level.
-+ * @decimator: Sensor decimation factor.
-  * @sip: Number of samples in a given pattern.
-  * @ts_ref: Sensor timestamp reference for hw one.
-  * @ext_info: Sensor settings if it is connected to i2c controller
-@@ -350,6 +351,7 @@ struct st_lsm6dsx_sensor {
- 	u32 odr;
- 
- 	u16 watermark;
-+	u8 decimator;
- 	u8 sip;
- 	s64 ts_ref;
- 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index bb899345f2bba..afd00daeefb2d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -93,6 +93,7 @@ st_lsm6dsx_get_decimator_val(struct st_lsm6dsx_sensor *sensor, u32 max_odr)
- 			break;
- 	}
- 
-+	sensor->decimator = decimator;
- 	return i == max_size ? 0 : st_lsm6dsx_decimator_table[i].val;
- }
- 
-@@ -337,7 +338,7 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
- int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- {
- 	struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor, *ext_sensor = NULL;
--	int err, acc_sip, gyro_sip, ts_sip, ext_sip, read_len, offset;
-+	int err, sip, acc_sip, gyro_sip, ts_sip, ext_sip, read_len, offset;
- 	u16 fifo_len, pattern_len = hw->sip * ST_LSM6DSX_SAMPLE_SIZE;
- 	u16 fifo_diff_mask = hw->settings->fifo_ops.fifo_diff.mask;
- 	u8 gyro_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
-@@ -399,19 +400,20 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 		acc_sip = acc_sensor->sip;
- 		ts_sip = hw->ts_sip;
- 		offset = 0;
-+		sip = 0;
- 
- 		while (acc_sip > 0 || gyro_sip > 0 || ext_sip > 0) {
--			if (gyro_sip > 0) {
-+			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
- 				memcpy(gyro_buff, &hw->buff[offset],
- 				       ST_LSM6DSX_SAMPLE_SIZE);
- 				offset += ST_LSM6DSX_SAMPLE_SIZE;
- 			}
--			if (acc_sip > 0) {
-+			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
- 				memcpy(acc_buff, &hw->buff[offset],
- 				       ST_LSM6DSX_SAMPLE_SIZE);
- 				offset += ST_LSM6DSX_SAMPLE_SIZE;
- 			}
--			if (ext_sip > 0) {
-+			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
- 				memcpy(ext_buff, &hw->buff[offset],
- 				       ST_LSM6DSX_SAMPLE_SIZE);
- 				offset += ST_LSM6DSX_SAMPLE_SIZE;
-@@ -441,18 +443,25 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 				offset += ST_LSM6DSX_SAMPLE_SIZE;
- 			}
- 
--			if (gyro_sip-- > 0)
-+			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
- 					gyro_buff, gyro_sensor->ts_ref + ts);
--			if (acc_sip-- > 0)
-+				gyro_sip--;
-+			}
-+			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_ACC],
- 					acc_buff, acc_sensor->ts_ref + ts);
--			if (ext_sip-- > 0)
-+				acc_sip--;
-+			}
-+			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_EXT0],
- 					ext_buff, ext_sensor->ts_ref + ts);
-+				ext_sip--;
-+			}
-+			sip++;
- 		}
- 	}
- 
+diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
+index 07246a6037e31..f64781d03d5d3 100644
+--- a/drivers/iio/adc/ad7793.c
++++ b/drivers/iio/adc/ad7793.c
+@@ -543,7 +543,7 @@ static const struct iio_info ad7797_info = {
+ 	.read_raw = &ad7793_read_raw,
+ 	.write_raw = &ad7793_write_raw,
+ 	.write_raw_get_fmt = &ad7793_write_raw_get_fmt,
+-	.attrs = &ad7793_attribute_group,
++	.attrs = &ad7797_attribute_group,
+ 	.validate_trigger = ad_sd_validate_trigger,
+ 	.driver_module = THIS_MODULE,
+ };
 -- 
 2.20.1
 
