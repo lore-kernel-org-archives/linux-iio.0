@@ -4,50 +4,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4D81C47247
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 14:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35C7CC28CBC
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 14:08:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AC8822063A
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 14:03:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 09B25206D9
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 14:08:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588255424;
-	bh=LnRKxRdBBHi+iOcOHrjj/xv8agSdNOIgGHqJnMpCSqM=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=UjJJ2fE9xsV3Pv4kNVdFw61wRBEEeF1Ssqzu4vQueL6JML486Qs9fnOJqIbFep9A4
-	 wkAIs0C71HaS0nu9V96vVkMwoDl8471bNKNreCC7bCUJ37E5kdBFd42v7DOeLxxP4q
-	 8nnP4xeY1zlWPeyut7myvopjtQ/kALDupjCn10CQ=
+	s=default; t=1588255693;
+	bh=0wW0V+rRBxMvbpxl7tX25DnAh6VZYNKvgkET024GIBE=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=Z1Btn73LO0hLqb2PrlQQAwibjybk+/cQcA1UYj0kzoqpH8r783kG2iQ26rMI4lTYn
+	 edn6DW2zjtP/4RISbfvq8SwHntk+8EHBo17UaJDKXGnTFTcpgDKLH2UPsSf8+w31RR
+	 uVF2VyebPgircZOvFrThaivqwja/58a0/3kKP4fY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729084AbgD3ODn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Apr 2020 10:03:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35252 "EHLO mail.kernel.org"
+        id S1728369AbgD3NwX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Apr 2020 09:52:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33302 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728515AbgD3Nx2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 30 Apr 2020 09:53:28 -0400
+        id S1728361AbgD3NwW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 30 Apr 2020 09:52:22 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F3A42208DB;
-        Thu, 30 Apr 2020 13:53:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 164A7208D5;
+        Thu, 30 Apr 2020 13:52:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588254807;
-        bh=LnRKxRdBBHi+iOcOHrjj/xv8agSdNOIgGHqJnMpCSqM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cqpsjiMlWPxWEwf81cteVVsuSaxLtq4nI79KZK4C7Ql2rohivZaahUXrARoRDWMmW
-         VMsYItGqS7kP7PY3orWNq8dygfvTUfO/weWboFu/wlVUF9W1x8JWD1Z0Usbrb5oFXW
-         shXaSZSKyJ7kXme7ERJLzwKY2wdAaxGyqQc40k3w=
+        s=default; t=1588254741;
+        bh=0wW0V+rRBxMvbpxl7tX25DnAh6VZYNKvgkET024GIBE=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=e4DXl7/EGpRyXzmXeUAZWp/RGXbNCvzxMv1uSPdIta+NdYnl0hvZ48PU0Dva97HVl
+         256c8RaoF9fLiSemHjKiQjQuKNeVjK2PDQkK9Yj4CnjLUc3rqa4KVrRDnPUR6BNGGY
+         vu9jRqmpk/NV/hX5jHmkG0XG9ojXYI6hmfr1wySU=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     YueHaibing <yuehaibing@huawei.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/30] iio:ad7797: Use correct attribute_group
-Date:   Thu, 30 Apr 2020 09:52:56 -0400
-Message-Id: <20200430135325.20762-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 02/57] iio:ad7797: Use correct attribute_group
+Date:   Thu, 30 Apr 2020 09:51:23 -0400
+Message-Id: <20200430135218.20372-2-sashal@kernel.org>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200430135218.20372-1-sashal@kernel.org>
+References: <20200430135218.20372-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -77,10 +79,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/ad7793.c b/drivers/iio/adc/ad7793.c
-index d4bbe5b533189..23a6e7baa396b 100644
+index bbc41ecf0d2ff..6ed6d14102016 100644
 --- a/drivers/iio/adc/ad7793.c
 +++ b/drivers/iio/adc/ad7793.c
-@@ -542,7 +542,7 @@ static const struct iio_info ad7797_info = {
+@@ -541,7 +541,7 @@ static const struct iio_info ad7797_info = {
  	.read_raw = &ad7793_read_raw,
  	.write_raw = &ad7793_write_raw,
  	.write_raw_get_fmt = &ad7793_write_raw_get_fmt,
