@@ -2,156 +2,109 @@ Return-Path: <SRS0=pZW2=6O=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E3C7C47254
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 15:58:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD96BC4724C
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 20:13:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7987D206D6
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 15:58:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QyNrwT+W"
+	by mail.kernel.org (Postfix) with ESMTP id C8DE020873
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Apr 2020 20:13:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727079AbgD3P6X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Apr 2020 11:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46496 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726420AbgD3P6W (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2020 11:58:22 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ACD0C035495;
-        Thu, 30 Apr 2020 08:58:21 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id h4so2468207wmb.4;
-        Thu, 30 Apr 2020 08:58:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=aPPULoNFOiHN1wQeO/5XgTLf2n39COR44XZpOJQLw28=;
-        b=QyNrwT+WNXchl+9yKQicG4Q3p56veqUYcTRzcIlqNU1z7zPsdYa/L7H1C6RbEn2ZjI
-         7GI6LfwhnzkW9tc9htFUibUuZTSDXPMwXXAuSUBqb1Zq1E/QbFJ+7TWFtxl3vZqwJwOv
-         ZHqzp+RbuvRGNofkpczTN+HogOVx7ydvXbc1WeVEJCx7oz+TjnY+H3pFqOqjYrTNcW7Y
-         cworM0Q4P0+fN6GjDfTA3J6rr+hm0FR878ILWgXdPWXEtDA2H2ZJ/DGtVuuvONLjM6PK
-         DOTqkGY+OvZ6T/x4qDIxX5CkS9w9P0o7Bc68pvxSKe3vfgdqiQFxuXYATydTBATDDlVT
-         ++fA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=aPPULoNFOiHN1wQeO/5XgTLf2n39COR44XZpOJQLw28=;
-        b=FaDt1uV/IgJwuZ516BbO/Ok1Hi8gkbyGYGAQVatNShRf2ib8KWiziFsuK4La9a8peS
-         b6TgqV4TY/0cXOdH6ShYIFcBNSdX01sOERKNB6+0cgjoXlyL+g7WpqhCgXFYutsiNxFR
-         zo0+AyGzipyNZqOFG2TBRLcoadsBOxdgmj59OIvC5893UFQrdNbyyMAScJ08dO4pKab4
-         H3vIi4hDopsMyCZ7QdyJ2qPOtxxhqKPtjD1GEt+lcR+44nrbH8PuxScmF1Y98aXzmYYJ
-         VuC8NGXyovQevwfnPSxx+bBW+Zgeo31Wxzm6EHRda1MIGGXirt0/rEG4s5vyi9TbVcr3
-         4XnA==
-X-Gm-Message-State: AGi0Pubzop41TtfPMTeM0+s1U4oawZHPNSXqLFWHo+GKwDiHTIROiPyV
-        2rlwpDzWn8b7+2IRm/oT/8g=
-X-Google-Smtp-Source: APiQypJ06DFupF/Xb94Fv10hDtfNyoH65DEbcEDGvCnSx5MMfP8FGTMn+W/k6TY0AwEgN1w+0d89JA==
-X-Received: by 2002:a1c:99d3:: with SMTP id b202mr3848184wme.126.1588262299841;
-        Thu, 30 Apr 2020 08:58:19 -0700 (PDT)
-Received: from localhost.localdomain (p5B3F6E9D.dip0.t-ipconnect.de. [91.63.110.157])
-        by smtp.gmail.com with ESMTPSA id w8sm265410wrs.25.2020.04.30.08.58.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 30 Apr 2020 08:58:19 -0700 (PDT)
-From:   Saravanan Sekar <sravanhome@gmail.com>
-To:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
-        robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        Saravanan Sekar <sravanhome@gmail.com>
-Subject: [PATCH v11 1/6] dt-bindings: mfd: add document bindings for mp2629
-Date:   Thu, 30 Apr 2020 17:58:05 +0200
-Message-Id: <20200430155810.21383-2-sravanhome@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200430155810.21383-1-sravanhome@gmail.com>
-References: <20200430155810.21383-1-sravanhome@gmail.com>
+        id S1727850AbgD3UNv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Apr 2020 16:13:51 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:39037 "EHLO
+        relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726626AbgD3UNu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Apr 2020 16:13:50 -0400
+X-Originating-IP: 86.202.105.35
+Received: from localhost (lfbn-lyo-1-9-35.w86-202.abo.wanadoo.fr [86.202.105.35])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 9F8B7FF80A;
+        Thu, 30 Apr 2020 20:13:45 +0000 (UTC)
+Date:   Thu, 30 Apr 2020 22:13:45 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     jic23@kernel.org, kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        david@lechnology.com, felipe.balbi@linux.intel.com,
+        fabien.lahoudere@collabora.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+Subject: Re: [PATCH 0/4] Introduce the Counter character device interface
+Message-ID: <20200430201345.GX51277@piout.net>
+References: <cover.1588176662.git.vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <cover.1588176662.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add device tree binding information for mp2629 mfd driver.
+Hi,
 
-Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- .../devicetree/bindings/mfd/mps,mp2629.yaml   | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+On 29/04/2020 14:11:34-0400, William Breathitt Gray wrote:
+> Over the past couple years we have noticed some shortcomings with the
+> Counter sysfs interface. Although useful in the majority of situations,
+> there are certain use-cases where interacting through sysfs attributes
+> can become cumbersome and inefficient. A desire to support more advanced
+> functionality such as timestamps, multi-axis positioning tables, and
+> other such latency-sensitive applications, has motivated a reevaluation
+> of the Counter subsystem. I believe a character device interface will be
+> helpful for this more niche area of counter device use.
+> 
+> To quell any concerns from the offset: this patchset makes no changes to
+> the existing Counter sysfs userspace interface -- existing userspace
+> applications will continue to work with no modifications necessary. I
+> request that driver maintainers please test their applications to verify
+> that this is true, and report any discrepancies if they arise.
+> 
 
-diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-new file mode 100644
-index 000000000000..f91acc42d652
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mps,mp2629.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MP2629 Battery Charger PMIC from Monolithic Power System.
-+
-+maintainers:
-+  - Saravanan Sekar <sravanhome@gmail.com>
-+
-+description: |
-+  MP2629 is a PMIC providing battery charging and power supply for smartphones,
-+  wireless camera and portable devices. Chip is controlled over I2C.
-+
-+  The battery charge management device handles battery charger controller and
-+  ADC IIO device for battery, system voltage
-+
-+properties:
-+  compatible:
-+    const: mps,mp2629
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+    description:
-+      The first cell is the IRQ number, the second cell is the trigger type.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-controller
-+  - "#interrupt-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/input/linux-event-codes.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic@4b {
-+            compatible = "mps,mp2629";
-+            reg = <0x4b>;
-+
-+            interrupt-controller;
-+            interrupt-parent = <&gpio2>;
-+            #interrupt-cells = <2>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
+On that topic, I'm wondering why the counter subsystem uses /sys/bus
+instead of /sys/class that would be more natural for a class of devices.
+I can't see how counters would be considered busses. I think you should
+consider moving it over to /sys/class (even if deprecating
+/sys/bus/counter will be long).
+
+> Interaction with Counter character devices occurs via ioctl commands.
+> This allows userspace applications to access and set counter data using
+> native C datatypes rather than working through string translations.
+> 
+
+I agree with David that you should consider using read to retrieve the
+counter data as this will simplify interrupt handling/polling and
+blocking/non-blocking reads can be used by an application. ABI wise,
+this can also be a good move as you could always consider having an
+ioctl requesting a specific format when reading the device so you are
+not stuck with the initial format you are going to choose.
+
+> 2. Should device driver callbacks return int or long? I sometimes see
+>    error values returned as long (e.g. PTR_ERR(), the file_operations
+>    structure's ioctl callbacks, etc.); when is it necessary to return
+>    long as opposed to int?
+> 
+
+You should use a long if you ever have to return a point as it is
+guaranteed to have the correct size. Else, just stick to an int if you
+are not going to overflow it.
+
+> 3. I only implemented the unlocked_ioctl callback. Should I implement a
+>    compat_ioctl callback as well?
+> 
+
+The compat_ioctl is to handle 32bit userspace running on a 64bit kernel.
+If your structures have the same size in both cases, then you don't have
+to implement compat_ioctl.
+
+Have a look at Documentation/driver-api/ioctl.rst
+
+
 -- 
-2.17.1
-
+Alexandre Belloni, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
