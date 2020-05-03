@@ -2,206 +2,211 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F232C47247
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:06:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7919DC28CBC
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:20:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 63F4D206B9
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:06:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4D6CD206D9
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:20:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1588526406;
+	bh=pDottKMNnrqLrwSAt7oXmpd18av3ewiA/EaQNbK61kc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=WzfJul9d1GnkP7pUqzJ2N5gfoWR0kLwi1LYf59xuLpbUgW7DPzHD2ZV88UKvRoH92
+	 aOEfjR9HSg70xF6leXbSKAyP8rp9d+7TnfN+zEKNlS6VuFpgcS2xTq4XIxJNBY4WcC
+	 1C58IlAaV92dgf8QpSSLLZxcUd7APtMVqfnb6Dj0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728830AbgECRFu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 13:05:50 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:58493 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728753AbgECRFu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 13:05:50 -0400
-X-Originating-IP: 195.189.32.242
-Received: from pc.localdomain (unknown [195.189.32.242])
-        (Authenticated sender: contact@artur-rojek.eu)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 9FC9640007;
-        Sun,  3 May 2020 17:05:44 +0000 (UTC)
-From:   Artur Rojek <contact@artur-rojek.eu>
-To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        id S1728997AbgECRUF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 13:20:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48514 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728859AbgECRUF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 May 2020 13:20:05 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 760E3206A5;
+        Sun,  3 May 2020 17:20:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588526404;
+        bh=pDottKMNnrqLrwSAt7oXmpd18av3ewiA/EaQNbK61kc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qdZtVGFrRb3ohgknISGb/OAjSB2B0GbvURwANQ85KskwRZxYYLCBtTfsk6cJzq/RM
+         +Tp5LxtZfyDOLo/WacXYrs7JOLqLGiQRNqTeHGiTnxy8LWiJpO7fw2NMs/iinyu/kb
+         AqVFxDfMhh5LQwvUKGqOL1uVAEmzSw0GrVQ5ARn4=
+Date:   Sun, 3 May 2020 18:19:58 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nuno =?UTF-8?B?U8Oh?= <noname.nuno@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Heiko Stuebner <heiko@sntech.de>,
-        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v6 1/7] dt-bindings: iio/adc: Convert ingenic-adc docs to YAML.
-Date:   Sun,  3 May 2020 19:14:45 +0200
-Message-Id: <20200503171451.44034-1-contact@artur-rojek.eu>
-X-Mailer: git-send-email 2.26.2
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v5 5/6] iio: imu: Add support for adis16475
+Message-ID: <20200503181959.369161a4@archlinux>
+In-Reply-To: <20200503122926.1fcc73fa@archlinux>
+References: <20200413082445.17324-1-nuno.sa@analog.com>
+        <20200413082445.17324-6-nuno.sa@analog.com>
+        <2418ed60-8407-0c99-bf5d-1afc3964de2b@metafoo.de>
+        <20200502184010.134eb8b5@archlinux>
+        <67202bd8-e0a5-be53-13c6-e01a25e2a85b@metafoo.de>
+        <df0f04296fafccfcf18b08b213bae20ff69c2384.camel@gmail.com>
+        <20200503094751.633feda1@archlinux>
+        <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
+        <231ac29f177774eeb32b0ed907516173af0f97eb.camel@gmail.com>
+        <20200503122926.1fcc73fa@archlinux>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the textual documentation of Device Tree bindings for the
-Ingenic JZ47xx SoCs ADC controller to YAML.
+On Sun, 3 May 2020 12:29:26 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-The `interrupts` property is now explicitly listed and marked as
-required. While missing from the previous textual documentation, this
-property has been used with all the boards which probe this driver.
+> On Sun, 03 May 2020 13:07:01 +0200
+> Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+>=20
+> > On Sun, 2020-05-03 at 11:07 +0200, Lars-Peter Clausen wrote: =20
+> > > On 5/3/20 10:47 AM, Jonathan Cameron wrote:   =20
+> > > > On Sat, 02 May 2020 21:52:18 +0200
+> > > > Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+> > > >    =20
+> > > > > On Sat, 2020-05-02 at 20:01 +0200, Lars-Peter Clausen wrote:   =20
+> > > > > > On 5/2/20 7:40 PM, Jonathan Cameron wrote:   =20
+> > > > > > > On Mon, 27 Apr 2020 20:06:07 +0200
+> > > > > > > Lars-Peter Clausen <lars@metafoo.de> wrote:
+> > > > > > >       =20
+> > > > > > > > On 4/13/20 10:24 AM, Nuno S=C3=A1 wrote:   =20
+> > > > > > > > > [...]
+> > > > > > > > > +static irqreturn_t adis16475_trigger_handler(int irq,
+> > > > > > > > > void *p)
+> > > > > > > > > +{
+> > > > > > > > > [...]
+> > > > > > > > > +	__be16 data[ADIS16475_MAX_SCAN_DATA], *buffer;
+> > > > > > > > > [...]
+> > > > > > > > > +
+> > > > > > > > > +	iio_push_to_buffers_with_timestamp(indio_dev, data, pf-=
+   =20
+> > > > > > > > > > timestamp);   =20
+> > > > > > > > If the timestamp is enabled the IIO core might insert
+> > > > > > > > padding
+> > > > > > > > between
+> > > > > > > > the data channels and the timestamp. If that happens this
+> > > > > > > > will
+> > > > > > > > disclose
+> > > > > > > > kernel stack memory to userspace.
+> > > > > > > >=20
+> > > > > > > > This needs either a memset(data, 0x00, sizeof(data)) or
+> > > > > > > > maybe put
+> > > > > > > > data
+> > > > > > > > into the state struct and kzalloc it.   =20
+> > > > > > > Good spot. Could simply do __be16 data[ADI..] =3D {0}; rather
+> > > > > > > than
+> > > > > > > explicit
+> > > > > > > memset, but some form of zeroization is needed.
+> > > > > > >=20
+> > > > > > > I've fixed up the applied patch with the above approach.   =20
+> > > > > > There is actually another issue. The stack data is not
+> > > > > > necessarily
+> > > > > > aligned to 64 bit, which causes issues if we try to put the 64-
+> > > > > > bit   =20
+> > > > > Oh, this is actually more problematic. Yes, since we have an
+> > > > > array of
+> > > > > u16, that is not guaranteed to be 64bit aligned. Doing a quick
+> > > > > search
+> > > > > of `iio_push_to_buffers_with_timestamp()` users and I could
+> > > > > quickly
+> > > > > find 4/5 drivers with the same problem. I guess the API should
+> > > > > clearly
+> > > > > state that `data` needs to be __at least__ 64 bits aligned (maybe
+> > > > > a
+> > > > > future patch). Or we could even check the address and guarantee
+> > > > > that it
+> > > > > is properly aligned before continuing (though Im guessing this
+> > > > > will
+> > > > > break a lot of users...)   =20
+> > > > > > timestamp in it. I think data should really be in the state
+> > > > > > struct.   =20
+> > > > > Yes, with a proper __aligned(8) attribute... Or couldn't we just
+> > > > > use
+> > > > > __aligned(8) on the stack variable?   =20
+> > > > Forcing alignment on the stack isn't terribly reliable, which is
+> > > > why
+> > > > we never do that for dma safe buffers.
+> > > >=20
+> > > > Probably better to just move it to the state structure.
+> > > > I'll fix it up to do that. Please sanity check what will shortly
+> > > > be in the testing branch.
+> > > >=20
+> > > > The moment Lars mentioned this I groaned. As you've noted a few
+> > > > other
+> > > > drivers have the same problem + the ABI doesn't clearly state
+> > > > or check this.
+> > > >=20
+> > > > We should certainly fix all the drivers that suffer this problem
+> > > > first then we can think about adding a runtime check.   =20
+> > >=20
+> > > It looks like it is actually quite a few drivers, maybe we should
+> > > switch    =20
+> >=20
+> > Yeps, not surprised...
+> >  =20
+> > > to put_unaligned(). We probably got lucky in most cases and the
+> > > buffer   =20
+> >=20
+> > This would keep us from having to fix all the users (just need to fix
+> > the memory leakage you mention on the next email) to use a properly
+> > aligned buffer. And later on, if we want, we can always add an
+> > `aligned` variant of `iio_push_to_buffers_with_timestamp()` were we
+> > check for alignment... =20
+>=20
+> I'd rather scrub the existing set to fix this.  The reason being
+> to make the point they were broken.  Fixing up with an unaligned
+> write in the core is not 'obvious' to people looking at whether
+> to pick up patches for individual drivers.
+>=20
+> Unlikely to be too much extra over making sure we don't leak kernel
+> data.   If we move them to the iio_priv structure we will avoid that
+> anyway due to that being kzalloc ed in the first place.  We may
+> leak previous timestamps or read values, but we don't care about that.
+>=20
+> It's been there a while, so no 'super hurry' to fix these up but
+> we should do it over next few months.
 
-Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
-Tested-by: Paul Cercueil <paul@crapouillou.net>
----
+It's also worth noticing that there is some care needed.
+Some devices don't need to zero because there is no padding.
+Some devices are using the core demux, so the timestamp is always
+in the same place, hence can be nicely refactored to an explicit
+structure, either on the stack or heap.
 
-Changes:
+Anyhow, from the first few I looked at I suspect they are all going
+to have slightly different optimal solutions.
 
-v6: new patch
+Take a look at the kxsd9 patch I'll send in a minute.  For that one
+I think the cleanest thing is to leave the variable on the stack
+but use an explicit structure to ensure the alignment is correct.
 
- .../bindings/iio/adc/ingenic,adc.txt          | 49 ------------
- .../bindings/iio/adc/ingenic,adc.yaml         | 74 +++++++++++++++++++
- 2 files changed, 74 insertions(+), 49 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+I'll look to do a few of these at a time over the next few weeks
+as each one needs fairly careful review.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
-deleted file mode 100644
-index cd9048cf9dcf..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
-+++ /dev/null
-@@ -1,49 +0,0 @@
--* Ingenic JZ47xx ADC controller IIO bindings
--
--Required properties:
--
--- compatible: Should be one of:
--  * ingenic,jz4725b-adc
--  * ingenic,jz4740-adc
--  * ingenic,jz4770-adc
--- reg: ADC controller registers location and length.
--- clocks: phandle to the SoC's ADC clock.
--- clock-names: Must be set to "adc".
--- #io-channel-cells: Must be set to <1> to indicate channels are selected
--  by index.
--
--ADC clients must use the format described in iio-bindings.txt, giving
--a phandle and IIO specifier pair ("io-channels") to the ADC controller.
--
--Example:
--
--#include <dt-bindings/iio/adc/ingenic,adc.h>
--
--adc: adc@10070000 {
--	compatible = "ingenic,jz4740-adc";
--	#io-channel-cells = <1>;
--
--	reg = <0x10070000 0x30>;
--
--	clocks = <&cgu JZ4740_CLK_ADC>;
--	clock-names = "adc";
--
--	interrupt-parent = <&intc>;
--	interrupts = <18>;
--};
--
--adc-keys {
--	...
--	compatible = "adc-keys";
--	io-channels = <&adc INGENIC_ADC_AUX>;
--	io-channel-names = "buttons";
--	...
--};
--
--battery {
--	...
--	compatible = "ingenic,jz4740-battery";
--	io-channels = <&adc INGENIC_ADC_BATTERY>;
--	io-channel-names = "battery";
--	...
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
-new file mode 100644
-index 000000000000..e9c46fff840a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
-@@ -0,0 +1,74 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019-2020 Artur Rojek
-+%YAML 1.2
-+---
-+$id: "http://devicetree.org/schemas/iio/adc/ingenic,adc.yaml#"
-+$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-+
-+title: Ingenic JZ47xx ADC controller IIO bindings
-+
-+maintainers:
-+  - Artur Rojek <contact@artur-rojek.eu>
-+
-+description: >
-+  Industrial I/O subsystem bindings for ADC controller found in
-+  Ingenic JZ47xx SoCs.
-+
-+  ADC clients must use the format described in iio-bindings.txt, giving
-+  a phandle and IIO specifier pair ("io-channels") to the ADC controller.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - ingenic,jz4725b-adc
-+      - ingenic,jz4740-adc
-+      - ingenic,jz4770-adc
-+
-+  '#io-channel-cells':
-+    const: 1
-+    description:
-+      Must be set to <1> to indicate channels are selected by index.
-+
-+  reg:
-+    items:
-+      - description: ADC controller registers location and length.
-+
-+  clocks:
-+    items:
-+      - description: phandle to the SoC's ADC clock.
-+
-+  clock-names:
-+    items:
-+      - const: adc
-+
-+  interrupts:
-+    items:
-+      - description: IRQ line for the ADC.
-+
-+required:
-+  - compatible
-+  - '#io-channel-cells'
-+  - reg
-+  - clocks
-+  - clock-names
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/clock/jz4740-cgu.h>
-+    #include <dt-bindings/iio/adc/ingenic,adc.h>
-+
-+    adc@10070000 {
-+            compatible = "ingenic,jz4740-adc";
-+            #io-channel-cells = <1>;
-+
-+            reg = <0x10070000 0x30>;
-+
-+            clocks = <&cgu JZ4740_CLK_ADC>;
-+            clock-names = "adc";
-+
-+            interrupt-parent = <&intc>;
-+            interrupts = <18>;
-+    };
--- 
-2.26.2
+Jonathan
+
+>=20
+> Jonathan
+>=20
+> >=20
+> > - Nuno S=C3=A1
+> >  =20
+>=20
 
