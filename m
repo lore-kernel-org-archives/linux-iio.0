@@ -2,250 +2,205 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C948EC47247
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72779C28CBC
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:40:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A8EFB2075B
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B06320721
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:40:44 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JTfbZzsR"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="VHIymDBu"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728071AbgECJc1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 05:32:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1728042AbgECJcZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 05:32:25 -0400
-Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB956C061A0F;
-        Sun,  3 May 2020 02:32:24 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id g13so17215445wrb.8;
-        Sun, 03 May 2020 02:32:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=ZEVkzMr6z0E4N1w6xvyS7Drw+BpsL4Z8MCI9pveo6ew=;
-        b=JTfbZzsRD5FEAtKAv7LjZSV23RJroAhBbat2MmM4sStt0BIPlU7p5q7xGsCFzNOm4W
-         jhbw3qSabgjBkHF8BM4ynXZiqk9kcbLfmmjAYiQLaUr+vW+kZbaOxGnwrOL6ud7dFqry
-         cG0zpUIYzMom4gzuIlSCHmwFGb2jrRfUkoL87IDhUe9OuPx8vp9EomsdYMZ+Nz1P7TXY
-         8flr6sIfPO5NFW5gwFx+4Y/JdwZ7YE9j6WTioct0OJrw2CXiz/HC+pMiED2m8+oh5cL5
-         7UXJVNyCuttxrorh4Hd6NLjQ6WECO51xM/NBHWjTkdFS3p1Tvt1usNuHC2uplORUKXd5
-         1eiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=ZEVkzMr6z0E4N1w6xvyS7Drw+BpsL4Z8MCI9pveo6ew=;
-        b=T03syJk431ctQNy58JiLx8ckqozU2JlAMm/RRMgNT/LAt4/l2XEDiXgibWzNT+/Gwr
-         EosGSGmH629pRKDO6FMM18FIB5/XML1CKq4rB8jC/37MwjuIY1RDUbI03wL40cme1//S
-         BJILV3b0eMI51xx/bKOF0G1TSYAIqUvsMOmho4K2yS8CWS5lvK+Uc9/d38BLOKuDge0s
-         DuvRbDPPQowLyGMMS7O1hKs4kLZtEogTzQqOxJGwwVDGZF/3XwH2nDhpDt4MirEBT2XH
-         neXpXotAsIQHiG9ll/khrnvhRa7kMLtlkhYUBGbizgKBrrt65zQerLwsqmxhYRtCh+aM
-         0kdQ==
-X-Gm-Message-State: AGi0Pub3CppIh6C3Tb5h0toNVOAnSSzqkhC4OuvNTOnw348Rw6eUWAIc
-        57uoljmcJCkbxKIw7/v2i3o=
-X-Google-Smtp-Source: APiQypL6QCwBdkDNBUXEnhQgAkcCiTBp2R+0CK23GEb4hH5lCYbEcE0uvjVINI4FJq2opQQCmFqd+Q==
-X-Received: by 2002:adf:ff84:: with SMTP id j4mr12857856wrr.305.1588498343569;
-        Sun, 03 May 2020 02:32:23 -0700 (PDT)
-Received: from meru.home ([2a01:cb18:832e:5f00:1cf0:acc0:9003:83d6])
-        by smtp.gmail.com with ESMTPSA id e17sm10086963wrr.32.2020.05.03.02.32.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 May 2020 02:32:23 -0700 (PDT)
-From:   Mathieu Othacehe <m.othacehe@gmail.com>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v7 4/5] iio: vcnl4000: Add sampling frequency support for VCNL4010/20.
-Date:   Sun,  3 May 2020 11:29:58 +0200
-Message-Id: <20200503092959.8806-5-m.othacehe@gmail.com>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200503092959.8806-1-m.othacehe@gmail.com>
-References: <20200503092959.8806-1-m.othacehe@gmail.com>
+        id S1727916AbgECJko (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 05:40:44 -0400
+Received: from www381.your-server.de ([78.46.137.84]:59928 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727892AbgECJkn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 05:40:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:References:Cc:To:From:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=PmIwGfeNx10nR9VQdjdugrCf7Ma4J5m4gGNNnzDznG4=; b=VHIymDBuILYNtd/YJ1QistliZx
+        Pw0HMeUtaQiMGk1gZMs2cy6NJL0wpIUhZNQubAmnaDbk8BztijpZ5KrzUUtITDQw84IwDUaCkweho
+        5nQInVtb9z88rBgpH9GPO4nCFX/40kzWp9of52UKQrxwglQXIjeJVH43mFObfQ3iVou+DHWdJvP13
+        EF6HT7ZR/lAlueAGthEeXnlN6vVnzHCCYWvdNRQ172GYiL0cog3k9oBEQ68GiEVslT6zldlBcHUSH
+        F9YbzGDkuvv731ZXJBodc68A2Rontxyh90XS+LeXMNywe/z9gazO4W4TVuj41wnFHpyT9B9jF2plF
+        RV8lpVXg==;
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <lars@metafoo.de>)
+        id 1jVAfr-0000ol-O4; Sun, 03 May 2020 11:12:35 +0200
+Received: from [82.135.70.217] (helo=[192.168.178.20])
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1jVAfr-000Qxw-Bg; Sun, 03 May 2020 11:12:35 +0200
+Subject: Re: [PATCH v5 5/6] iio: imu: Add support for adis16475
+From:   Lars-Peter Clausen <lars@metafoo.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>
+Cc:     =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+References: <20200413082445.17324-1-nuno.sa@analog.com>
+ <20200413082445.17324-6-nuno.sa@analog.com>
+ <2418ed60-8407-0c99-bf5d-1afc3964de2b@metafoo.de>
+ <20200502184010.134eb8b5@archlinux>
+ <67202bd8-e0a5-be53-13c6-e01a25e2a85b@metafoo.de>
+ <df0f04296fafccfcf18b08b213bae20ff69c2384.camel@gmail.com>
+ <20200503094751.633feda1@archlinux>
+ <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
+Message-ID: <b7289aca-f393-faca-f512-a952a77c1e68@metafoo.de>
+Date:   Sun, 3 May 2020 11:12:34 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
 MIME-Version: 1.0
+In-Reply-To: <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.2/25800/Sat May  2 14:08:18 2020)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add sampling frequency support for proximity data on VCNL4010 and VCNL4020
-chips.
-
-Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
----
- drivers/iio/light/vcnl4000.c | 118 ++++++++++++++++++++++++++++++++++-
- 1 file changed, 117 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e7653037fa5d..65c0cf2b5037 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -86,6 +86,16 @@
- #define VCNL4010_INT_DRDY \
- 	(BIT(VCNL4010_INT_PROXIMITY) | BIT(VCNL4010_INT_ALS))
- 
-+static const int vcnl4010_prox_sampling_frequency[][2] = {
-+	{1, 950000},
-+	{3, 906250},
-+	{7, 812500},
-+	{16, 625000},
-+	{31, 250000},
-+	{62, 500000},
-+	{125, 0},
-+	{250, 0},
-+};
- 
- #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
- 
-@@ -363,6 +373,24 @@ static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
- 	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
- }
- 
-+static int vcnl4010_read_proxy_samp_freq(struct vcnl4000_data *data, int *val,
-+					 int *val2)
-+{
-+	int ret;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_PROX_RATE);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (ret >= ARRAY_SIZE(vcnl4010_prox_sampling_frequency))
-+		return -EINVAL;
-+
-+	*val = vcnl4010_prox_sampling_frequency[ret][0];
-+	*val2 = vcnl4010_prox_sampling_frequency[ret][1];
-+
-+	return 0;
-+}
-+
- static bool vcnl4010_is_in_periodic_mode(struct vcnl4000_data *data)
- {
- 	int ret;
-@@ -456,11 +484,95 @@ static int vcnl4010_read_raw(struct iio_dev *indio_dev,
- 
- 		iio_device_release_direct_mode(indio_dev);
- 		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		switch (chan->type) {
-+		case IIO_PROXIMITY:
-+			ret = vcnl4010_read_proxy_samp_freq(data, val, val2);
-+			if (ret < 0)
-+				return ret;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		default:
-+			return -EINVAL;
-+		}
- 	default:
- 		return -EINVAL;
- 	}
- }
- 
-+static int vcnl4010_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = (int *)vcnl4010_prox_sampling_frequency;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		*length = 2 * ARRAY_SIZE(vcnl4010_prox_sampling_frequency);
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int vcnl4010_write_proxy_samp_freq(struct vcnl4000_data *data, int val,
-+					  int val2)
-+{
-+	unsigned int i;
-+	int index = -1;
-+
-+	for (i = 0; i < ARRAY_SIZE(vcnl4010_prox_sampling_frequency); i++) {
-+		if (val == vcnl4010_prox_sampling_frequency[i][0] &&
-+		    val2 == vcnl4010_prox_sampling_frequency[i][1]) {
-+			index = i;
-+			break;
-+		}
-+	}
-+
-+	if (index < 0)
-+		return -EINVAL;
-+
-+	return i2c_smbus_write_byte_data(data->client, VCNL4010_PROX_RATE,
-+					 index);
-+}
-+
-+static int vcnl4010_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long mask)
-+{
-+	int ret;
-+	struct vcnl4000_data *data = iio_priv(indio_dev);
-+
-+	ret = iio_device_claim_direct_mode(indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	/* Protect against event capture. */
-+	if (vcnl4010_is_in_periodic_mode(data)) {
-+		ret = -EBUSY;
-+		goto end;
-+	}
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		switch (chan->type) {
-+		case IIO_PROXIMITY:
-+			ret = vcnl4010_write_proxy_samp_freq(data, val, val2);
-+			goto end;
-+		default:
-+			ret = -EINVAL;
-+			goto end;
-+		}
-+	default:
-+		ret = -EINVAL;
-+		goto end;
-+	}
-+
-+end:
-+	iio_device_release_direct_mode(indio_dev);
-+	return ret;
-+}
-+
- static int vcnl4010_read_event(struct iio_dev *indio_dev,
- 			       const struct iio_chan_spec *chan,
- 			       enum iio_event_type type,
-@@ -663,7 +775,9 @@ static const struct iio_chan_spec vcnl4010_channels[] = {
- 			BIT(IIO_CHAN_INFO_SCALE),
- 	}, {
- 		.type = IIO_PROXIMITY,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.event_spec = vcnl4000_event_spec,
- 		.num_event_specs = ARRAY_SIZE(vcnl4000_event_spec),
- 		.ext_info = vcnl4000_ext_info,
-@@ -676,6 +790,8 @@ static const struct iio_info vcnl4000_info = {
- 
- static const struct iio_info vcnl4010_info = {
- 	.read_raw = vcnl4010_read_raw,
-+	.read_avail = vcnl4010_read_avail,
-+	.write_raw = vcnl4010_write_raw,
- 	.read_event_value = vcnl4010_read_event,
- 	.write_event_value = vcnl4010_write_event,
- 	.read_event_config = vcnl4010_read_event_config,
--- 
-2.26.0
+On 5/3/20 11:07 AM, Lars-Peter Clausen wrote:
+> On 5/3/20 10:47 AM, Jonathan Cameron wrote:
+>> On Sat, 02 May 2020 21:52:18 +0200
+>> Nuno Sá <noname.nuno@gmail.com> wrote:
+>>
+>>> On Sat, 2020-05-02 at 20:01 +0200, Lars-Peter Clausen wrote:
+>>>> On 5/2/20 7:40 PM, Jonathan Cameron wrote:
+>>>>> On Mon, 27 Apr 2020 20:06:07 +0200
+>>>>> Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>>>> On 4/13/20 10:24 AM, Nuno Sá wrote:
+>>>>>>> [...]
+>>>>>>> +static irqreturn_t adis16475_trigger_handler(int irq, void *p)
+>>>>>>> +{
+>>>>>>> [...]
+>>>>>>> +    __be16 data[ADIS16475_MAX_SCAN_DATA], *buffer;
+>>>>>>> [...]
+>>>>>>> +
+>>>>>>> +    iio_push_to_buffers_with_timestamp(indio_dev, data, pf-
+>>>>>>>> timestamp);
+>>>>>> If the timestamp is enabled the IIO core might insert padding
+>>>>>> between
+>>>>>> the data channels and the timestamp. If that happens this will
+>>>>>> disclose
+>>>>>> kernel stack memory to userspace.
+>>>>>>
+>>>>>> This needs either a memset(data, 0x00, sizeof(data)) or maybe put
+>>>>>> data
+>>>>>> into the state struct and kzalloc it.
+>>>>> Good spot. Could simply do __be16 data[ADI..] = {0}; rather than
+>>>>> explicit
+>>>>> memset, but some form of zeroization is needed.
+>>>>>
+>>>>> I've fixed up the applied patch with the above approach.
+>>>> There is actually another issue. The stack data is not necessarily
+>>>> aligned to 64 bit, which causes issues if we try to put the 64-bit
+>>> Oh, this is actually more problematic. Yes, since we have an array of
+>>> u16, that is not guaranteed to be 64bit aligned. Doing a quick search
+>>> of `iio_push_to_buffers_with_timestamp()` users and I could quickly
+>>> find 4/5 drivers with the same problem. I guess the API should clearly
+>>> state that `data` needs to be __at least__ 64 bits aligned (maybe a
+>>> future patch). Or we could even check the address and guarantee that it
+>>> is properly aligned before continuing (though Im guessing this will
+>>> break a lot of users...)
+>>>> timestamp in it. I think data should really be in the state struct.
+>>> Yes, with a proper __aligned(8) attribute... Or couldn't we just use
+>>> __aligned(8) on the stack variable?
+>> Forcing alignment on the stack isn't terribly reliable, which is why
+>> we never do that for dma safe buffers.
+>>
+>> Probably better to just move it to the state structure.
+>> I'll fix it up to do that. Please sanity check what will shortly
+>> be in the testing branch.
+>>
+>> The moment Lars mentioned this I groaned. As you've noted a few other
+>> drivers have the same problem + the ABI doesn't clearly state
+>> or check this.
+>>
+>> We should certainly fix all the drivers that suffer this problem
+>> first then we can think about adding a runtime check.
+>
+> It looks like it is actually quite a few drivers, maybe we should 
+> switch to put_unaligned(). We probably got lucky in most cases and the 
+> buffer is naturally aligned to 64 bit.
+>
+> But the reason I noticed this is because I ran into the issue in the 
+> wild where the timestamp ended up at the wrong offset in the buffer, 
+> so it does happen.
+>
+> The following semantic patch finds affected drivers.
+>
+> @@
+> type T;
+> identifier buf;
+> expression N;
+> expression ts;
+> expression indio_dev;
+> @@
+> *T buf[N];
+> ...
+> *iio_push_to_buffers_with_timestamp(indio_dev, buf, ts)
+>
+> Matched files:
+>
+> --- drivers/iio/health/afe4403.c
+> --- drivers/iio/health/afe4404.c
+> --- drivers/iio/gyro/mpu3050-core.c
+> --- drivers/iio/gyro/itg3200_buffer.c
+> --- drivers/iio/chemical/ccs811.c
+> --- drivers/iio/chemical/sps30.c
+> --- drivers/iio/chemical/pms7003.c
+> --- drivers/iio/proximity/isl29501.c
+> --- drivers/iio/proximity/mb1232.c
+> --- drivers/iio/accel/kxsd9.c
+> --- drivers/iio/accel/mma8452.c
+> --- drivers/iio/accel/bmc150-accel-core.c
+> --- drivers/iio/accel/mma7455_core.c
+> --- drivers/iio/adc/ti-adc081c.c
+> --- drivers/iio/adc/ti-adc084s021.c
+> --- drivers/iio/adc/ti-ads1015.c
+> --- drivers/iio/adc/ti-ads124s08.c
+> --- drivers/iio/adc/ina2xx-adc.c
+> --- drivers/iio/adc/ti-ads8688.c
+> --- drivers/iio/adc/ti-adc0832.c
+> --- drivers/iio/adc/ti-adc12138.c
+> --- drivers/iio/adc/max1118.c
+> --- drivers/iio/adc/ad_sigma_delta.c
+> --- drivers/iio/light/si1145.c
+> --- drivers/iio/light/vcnl4035.c
+> --- drivers/iio/light/max44000.c
+> --- drivers/iio/light/rpr0521.c
+> --- drivers/iio/light/st_uvis25_core.c
+> --- drivers/iio/light/ltr501.c
+> --- drivers/iio/magnetometer/ak8974.c
+> --- drivers/iio/magnetometer/mag3110.c
+> --- drivers/iio/magnetometer/ak8975.c
+> --- drivers/iio/humidity/hdc100x.c
+> --- drivers/iio/humidity/hts221_buffer.c
+> --- drivers/iio/imu/bmi160/bmi160_core.c
+> --- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> --- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> --- drivers/iio/pressure/ms5611_core.c
+> --- drivers/iio/pressure/mpl3115.c
+>
+Most of these drivers also seem to have the issue that they leak stack 
+memory. Only 11 of them clear the buffer.
 
