@@ -4,223 +4,146 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D793C28CBC
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:38:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D117C4724C
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:55:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D8EE32075B
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:38:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0DA222071C
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:55:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588502292;
-	bh=eMxME0+Eg46hELjOnYbsaxHgLKs+NXA38J0XX9hpq/o=;
+	s=default; t=1588503316;
+	bh=fZQ7cC46CUTZaUrGeHFBxKEhMwBLwuhUAblK/lbIiCw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xGlJA/R1hLl+1jEOTRakqLxfls3X0RwZqoMpT2LkWG26UhKJh6C95qXQ2Z9yyvuv1
-	 XvG+3dh/BnWT55ULTfMgt2h+tOgzA7qyz3TfyNPdKY1VLO75ffkY4CT6/0FoQb7TjT
-	 RcM55RxZpkJIBIPQD+ocVM3/VUU1eBhcyLryFcgE=
+	b=2vsRd5r0pFbkKRLEOFCf+2Vfn+VP8AyLkOPssJ0+bRAP791yFMM6jjwXGQSeHto/h
+	 /2hY4FYGYAEBXvYxkaDa2Yg9/AVFUgsBEhDv4QQH4J4UCivbQpbGSn34G4RMnMSBqK
+	 zlsZzOuvdvoy+E4EfSTLNfhGtA2FZgezH0a2lxzI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728018AbgECKiM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 06:38:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45440 "EHLO mail.kernel.org"
+        id S1728190AbgECKzE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 06:55:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50950 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727916AbgECKiM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 May 2020 06:38:12 -0400
+        id S1727051AbgECKzC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 May 2020 06:55:02 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1975A20757;
-        Sun,  3 May 2020 10:38:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 649022071C;
+        Sun,  3 May 2020 10:54:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588502291;
-        bh=eMxME0+Eg46hELjOnYbsaxHgLKs+NXA38J0XX9hpq/o=;
+        s=default; t=1588503301;
+        bh=fZQ7cC46CUTZaUrGeHFBxKEhMwBLwuhUAblK/lbIiCw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=i4DKc0Hbip0XlgKqqKBe+kxGCpPuDxjngVTgqteHl5EN74mqSO98s6HvSu9y0vmWi
-         BWttfHLlyJT/6+CqQXAbZcAHbKLf+OJkhxMoAKtMSw+/Yl3xkIofRGAX7+shmQX3KR
-         qQmtHEaFCjagRLd6E6ftePGT5ZLfWF1zjQ56A0P8=
-Date:   Sun, 3 May 2020 11:38:07 +0100
+        b=rKPgZktsbGAKq1XOfzayn1qZg/K1bsR9r1qYuSGx7TsbIyUMmMTjnc6eF+dVyQHuv
+         +Pobfei/LEOes8lv1CB6MJN1LEtEURzR7XdXUE8N4sJHSjccaoTqQvPlQKXNl/sTno
+         upr/67Tz/pX+U05sd+8isKEE8GMbJS9z1n1T4rAY=
+Date:   Sun, 3 May 2020 11:54:56 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <rachna@ti.com>, <mugunthanvnm@ti.com>, <vigneshr@ti.com>,
-        <afd@ti.com>
-Subject: Re: [PATCH 3/3] iio: adc: ti_am335x_adc: convert rest of probe to
- devm_ functions
-Message-ID: <20200503113807.07c5237e@archlinux>
-In-Reply-To: <20200428111430.71723-3-alexandru.ardelean@analog.com>
-References: <20200428111430.71723-1-alexandru.ardelean@analog.com>
-        <20200428111430.71723-3-alexandru.ardelean@analog.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 01/11] iio: light: cm32181: Switch to new style
+ i2c-driver probe function
+Message-ID: <20200503115456.11a16411@archlinux>
+In-Reply-To: <20200428172923.567806-1-hdegoede@redhat.com>
+References: <20200428172923.567806-1-hdegoede@redhat.com>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 28 Apr 2020 14:14:30 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Tue, 28 Apr 2020 19:29:13 +0200
+Hans de Goede <hdegoede@redhat.com> wrote:
 
-> This change converts the rest of the probe to use devm_ functions.
-> Consequently this allows us to remove the remove hook.
->=20
-> It tries to preserve the initial order or probe & remove.
-> The devm_add_action() call hooks the cleanup routine (what's needed still
-> for the remove part).
-> If that doesn't work the DMA channel is cleaned up manually inside the
-> probe hook. This done (like this) because the remove hook has a peculiar
-> cleanup that tries to restore a step-mask, and that only seems to happen =
-on
-> the remove hook, and not in any probe error-cleanup paths.
->=20
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> Switch to the new style i2c-driver probe_new probe function and drop the
+> unnecessary i2c_device_id table (we do not have any old style board files
+> using this).
+> 
+> This is a preparation patch for adding ACPI binding support.
+> 
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> ---
+> Changes in v3:
+> - This is a new patch in v3 of this patch-set
+> ---
+>  drivers/iio/light/cm32181.c | 15 +++------------
+>  1 file changed, 3 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+> index 5f4fb5674fa0..cc57190a24cb 100644
+> --- a/drivers/iio/light/cm32181.c
+> +++ b/drivers/iio/light/cm32181.c
+> @@ -294,8 +294,7 @@ static const struct iio_info cm32181_info = {
+>  	.attrs			= &cm32181_attribute_group,
+>  };
+>  
+> -static int cm32181_probe(struct i2c_client *client,
+> -			const struct i2c_device_id *id)
+> +static int cm32181_probe(struct i2c_client *client)
+>  {
+>  	struct cm32181_chip *cm32181;
+>  	struct iio_dev *indio_dev;
+> @@ -316,7 +315,7 @@ static int cm32181_probe(struct i2c_client *client,
+>  	indio_dev->channels = cm32181_channels;
+>  	indio_dev->num_channels = ARRAY_SIZE(cm32181_channels);
+>  	indio_dev->info = &cm32181_info;
+> -	indio_dev->name = id->name;
+> +	indio_dev->name = dev_name(&client->dev);
 
-First two patches are fine, but this last one is (as you've noted) more
-complex.  I'd like to cleanup the complexity rather than papering over
-it.
+ABI breakage.  The name needs to be unaffected by this patch and I'm 
+fairly sure it just gained the vendor prefix.
 
-So the real question is why we need to restore the step-mask on exit, but
-not in other paths in the code.
+So to drop that table, you need to provide the 'clean' part number
+somewhere else.  Seeing as driver currently only supports one number,
+you could just provide it directly here. However, as you are
+going to add support for another part number later, you'll need
+to do something more clever when you introduce that. 
 
-=46rom what I recall (and it's been quite a lot of years) the step mask
-is controlling the 'scan' so that we capture the set of enabled channels
-and no others (there is a mux that is being controlled).
-
-The current optimization is to not bother resetting that to empty when
-we read individual channels, or come out of buffered mode because we
-will set it anyway when moving to some new mode.
-
-What I can't understand is why we need to set it in the exit path?
-This is a complex corner given the involvement of the touchscreen
-driver and mfd.  My first inclination is we may be better off leaving
-it alone unless we have a test setup to make sure we fully understand
-what is going on.
-
-Given your stated reason for tidying this up was to deal with the
-buffer stuff and this has no impact on that, I'll take patches 1 and 2 for
-now and leave this one out.
-
-However, I'd like to leave more time for comments on those two as well
-(though they seem 'obviously' correct to me).
-
-Thanks,
+I'll make this suggestion in that patch, but I think you should add
+a chip_info structure for each of the supported chips rather than using
+a switch to put a number of different elements in place.  The name
+would then go in there.
 
 Jonathan
 
 
-> ---
->  drivers/iio/adc/ti_am335x_adc.c | 63 +++++++++++++++++----------------
->  1 file changed, 32 insertions(+), 31 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_=
-adc.c
-> index 03b2ab649cc3..9fac83e036c1 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -562,6 +562,18 @@ static int tiadc_request_dma(struct platform_device =
-*pdev,
->  	return -ENOMEM;
->  }
-> =20
-> +static void tiadc_cleanup_dma(struct tiadc_device *adc_dev)
-> +{
-> +	struct tiadc_dma *dma =3D &adc_dev->dma;
-> +
-> +	if (!dma->chan)
-> +		return;
-> +
-> +	dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> +			  dma->buf, dma->addr);
-> +	dma_release_channel(dma->chan);
-> +}
-> +
->  static int tiadc_parse_dt(struct platform_device *pdev,
->  			  struct tiadc_device *adc_dev)
->  {
-> @@ -593,6 +605,17 @@ static int tiadc_parse_dt(struct platform_device *pd=
-ev,
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+>  	ret = cm32181_reg_init(cm32181);
+> @@ -338,13 +337,6 @@ static int cm32181_probe(struct i2c_client *client,
 >  	return 0;
 >  }
-> =20
-> +static void tiadc_cleanup(void *data)
-> +{
-> +	struct tiadc_device *adc_dev =3D data;
-> +	u32 step_en;
-> +
-> +	tiadc_cleanup_dma(adc_dev);
-> +
-> +	step_en =3D get_adc_step_mask(adc_dev);
-> +	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
-> +}
-> +
->  static int tiadc_probe(struct platform_device *pdev)
->  {
->  	struct iio_dev		*indio_dev;
-> @@ -635,48 +658,27 @@ static int tiadc_probe(struct platform_device *pdev)
->  		IRQF_SHARED,
->  		&tiadc_buffer_setup_ops);
-> =20
-> +	err =3D devm_iio_device_register(&pdev->dev, indio_dev);
->  	if (err)
-> -		goto err_free_channels;
+>  
+> -static const struct i2c_device_id cm32181_id[] = {
+> -	{ "cm32181", 0 },
+> -	{ }
+> -};
 > -
-> -	err =3D iio_device_register(indio_dev);
-> -	if (err)
-> -		goto err_buffer_unregister;
-> +		return err;
-> =20
->  	platform_set_drvdata(pdev, indio_dev);
-> =20
->  	err =3D tiadc_request_dma(pdev, adc_dev);
->  	if (err && err =3D=3D -EPROBE_DEFER)
-> -		goto err_dma;
-> +		return err;
-> +
-> +	err =3D devm_add_action(&pdev->dev, tiadc_cleanup, adc_dev);
-> +	if (err)
-> +		goto err_free_dma;
-> =20
->  	return 0;
-> =20
-> -err_dma:
-> -	iio_device_unregister(indio_dev);
-> -err_buffer_unregister:
-> -err_free_channels:
-> +err_free_dma:
-> +	tiadc_cleanup_dma(adc_dev);
->  	return err;
->  }
-> =20
-> -static int tiadc_remove(struct platform_device *pdev)
-> -{
-> -	struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
-> -	struct tiadc_device *adc_dev =3D iio_priv(indio_dev);
-> -	struct tiadc_dma *dma =3D &adc_dev->dma;
-> -	u32 step_en;
+> -MODULE_DEVICE_TABLE(i2c, cm32181_id);
 > -
-> -	if (dma->chan) {
-> -		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> -				  dma->buf, dma->addr);
-> -		dma_release_channel(dma->chan);
-> -	}
-> -	iio_device_unregister(indio_dev);
-> -
-> -	step_en =3D get_adc_step_mask(adc_dev);
-> -	am335x_tsc_se_clr(adc_dev->mfd_tscadc, step_en);
-> -
-> -	return 0;
-> -}
-> -
->  static int __maybe_unused tiadc_suspend(struct device *dev)
->  {
->  	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> @@ -723,7 +725,6 @@ static struct platform_driver tiadc_driver =3D {
->  		.of_match_table =3D ti_adc_dt_ids,
+>  static const struct of_device_id cm32181_of_match[] = {
+>  	{ .compatible = "capella,cm32181" },
+>  	{ }
+> @@ -356,8 +348,7 @@ static struct i2c_driver cm32181_driver = {
+>  		.name	= "cm32181",
+>  		.of_match_table = of_match_ptr(cm32181_of_match),
 >  	},
->  	.probe	=3D tiadc_probe,
-> -	.remove	=3D tiadc_remove,
+> -	.id_table       = cm32181_id,
+> -	.probe		= cm32181_probe,
+> +	.probe_new	= cm32181_probe,
 >  };
->  module_platform_driver(tiadc_driver);
-> =20
+>  
+>  module_i2c_driver(cm32181_driver);
 
