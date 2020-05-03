@@ -2,102 +2,125 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.5 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CDE4C47257
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:22:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06765C4725B
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:22:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 24300206F0
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:22:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1588526573;
-	bh=H5DRm8kRjmWsw/shw3xhMImAae+jgiKRFKbQATAq3q4=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=K0MDO/VTSlw+knMDPMLwvzTimMZpr+jYsjp8u0aY2KwkNIry1xdXLao4LNzccYE2s
-	 o3qsrm6QdhBMQ60G/UGXgAP19Eh6Eb1kkan6fNkUk1pHOuoxjjivCPn0M/5QhYvVGg
-	 tgqyrXEWCv3X0+OMFIvIjZ6KqQEXSL00TeRPcFik=
+	by mail.kernel.org (Postfix) with ESMTP id E2C6B20707
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:22:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729034AbgECRWw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 13:22:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50946 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729055AbgECRWs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 May 2020 13:22:48 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 32CD9206D9;
-        Sun,  3 May 2020 17:22:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1588526567;
-        bh=H5DRm8kRjmWsw/shw3xhMImAae+jgiKRFKbQATAq3q4=;
-        h=From:To:Cc:Subject:Date:From;
-        b=wu8nyXlqf0Uv5NWfq1aeKqEXKgALC/818T6eCWOm0guoKvaIBqZZX+BXhN86JaK79
-         hFBulFLJ7M/RCmTcdBBY07gS52z+gKmz5i5cP/2VFFNCvaJw0k2PbqiiYXD3+rXiyd
-         e0M/51uZ83BYxgNZoCBmVqjNpZqkwd9HF7lUA0mg=
-From:   jic23@kernel.org
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio: accel: kxsd9: Fix alignment of local buffer.
-Date:   Sun,  3 May 2020 18:22:35 +0100
-Message-Id: <20200503172235.207632-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.26.2
+        id S1729019AbgECRWj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 13:22:39 -0400
+Received: from mail-bn8nam11olkn2042.outbound.protection.outlook.com ([40.92.20.42]:57057
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1729017AbgECRWi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 May 2020 13:22:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=HVZp4ZIUCj1+vREFuzWK+AH4j+sx9awQ0ytv6Nkd58yMMQuwQns1BeYKB84OSZQ5H9z5xuvujKj0d8c4rPV8M7/2sNXjgQ0qnQApAAScUifaPENNjaOGHDBBZd5LRu3pLXi+/12jzGlXAoPZes7O9uJKgZ4nAIWiomONKoFAShPs2vU+/psTsROgRSoaSRPTdwkf4bUgYLzG+SWUZL8r+edDCDnnCUEF5tcRcqMmKO6XV1JhfGUFwC5i9oiZZ1hUBGAKQEIE8l1I33O8D2pDJBqJUMwcxfLLto2yCrBmNCS13uGS6slNpXclJfgZwK4NXL5s0iToL4urhfLuJimF+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=IPNZ3Ud7Np307HILwUMB3QGtjDwJj2u3qprKFyJumjw=;
+ b=LPtruzXjpqqlvNPVYle53ayYZXHebKtgcqEJkjkn7PH1VC6ZoHeg9ms3CwZdxHMeUVEvhws6n2rVQ1Z6l+PKoqxvnsr+jcdvAkxfdKQ4DzxbeyEFO2VhGSBXHZFS30r1ZI+YmTUopHAN/8oH6fRFDJs6J63yxC8JkMrQ+FwfUlapdOaC45QqDlayCj1MFIDHgUS68/yMDyw+VqpzLQBVbdkX6wZAsYbaphcQUpM8/YnQYsPwTUmw3V+tPL8XmenfWykqKGrA0DuOGFiM0G0qsrtKWpV6EzJtuma4McRUhATwHCwLWZ0sb59WrAH9xi/fONxVe0aGTR91K0PKFuPWrQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=live.ca; dmarc=pass action=none header.from=live.ca; dkim=pass
+ header.d=live.ca; arc=none
+Received: from BN8NAM11FT054.eop-nam11.prod.protection.outlook.com
+ (2a01:111:e400:fc4b::50) by
+ BN8NAM11HT043.eop-nam11.prod.protection.outlook.com (2a01:111:e400:fc4b::380)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19; Sun, 3 May
+ 2020 17:22:36 +0000
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ (2a01:111:e400:fc4b::42) by BN8NAM11FT054.mail.protection.outlook.com
+ (2a01:111:e400:fc4b::358) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.19 via Frontend
+ Transport; Sun, 3 May 2020 17:22:36 +0000
+X-IncomingTopHeaderMarker: OriginalChecksum:A477503DADCB2B6AA6B3C54AC9DBBB8BE6710F418E899DC9358484ADDF276CF5;UpperCasedChecksum:2508AAB308A08505E9D1FB16F4E4008AFFB1BCCED208FCC599BB489E632C5F8D;SizeAsReceived:8014;Count:50
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc]) by BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc%6]) with mapi id 15.20.2958.029; Sun, 3 May 2020
+ 17:22:36 +0000
+From:   Jonathan Bakker <xc-racer2@live.ca>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, linus.walleij@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
+        kstewart@linuxfoundation.org, gregkh@linuxfoundation.org,
+        tglx@linutronix.de, linux-input@vger.kernel.org
+Cc:     Jonathan Bakker <xc-racer2@live.ca>
+Subject: [PATCH 3/5] dt-bindings: iio: accel: Add bma023 compatible to bma180
+Date:   Sun,  3 May 2020 10:22:04 -0700
+Message-ID: <BN6PR04MB0660DA2A47787A56A2FC7290A3A90@BN6PR04MB0660.namprd04.prod.outlook.com>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200503172206.13782-1-xc-racer2@live.ca>
+References: <20200503172206.13782-1-xc-racer2@live.ca>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: MWHPR14CA0047.namprd14.prod.outlook.com
+ (2603:10b6:300:12b::33) To BN6PR04MB0660.namprd04.prod.outlook.com
+ (2603:10b6:404:d9::21)
+X-Microsoft-Original-Message-ID: <20200503172206.13782-4-xc-racer2@live.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from jon-hp-6570b.telus (2001:569:fb68:9c00:8067:f823:1e15:7520) by MWHPR14CA0047.namprd14.prod.outlook.com (2603:10b6:300:12b::33) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2958.20 via Frontend Transport; Sun, 3 May 2020 17:22:34 +0000
+X-Mailer: git-send-email 2.20.1
+X-Microsoft-Original-Message-ID: <20200503172206.13782-4-xc-racer2@live.ca>
+X-TMN:  [wm7OSSp0tZOupPR5H66RTs7aVsMHOIxc+h6rkamvy6mMX4E5TOVYLrvBYK22+2gr]
+X-MS-PublicTrafficType: Email
+X-IncomingHeaderCount: 50
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-Correlation-Id: a28f686b-0ba6-4f76-b101-08d7ef869259
+X-MS-TrafficTypeDiagnostic: BN8NAM11HT043:
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: fkI0Hukk9Ilff+k8ahHzUV/RIEd/wtBlTSWJSe11HUC4jWZVgydfx8Ntsr3nAlVW1J0/+UuA9PZVhfdYAyy+nxJBUqI7dz7jAye71hB9A7kXKGwVrr+49AsEVJd7BPscOdWYo0xAQIt6Iw66R82fWL7x6Bo2tzKvW+df4MAy+WehqfqAfwaBFgSubsd9e25nMbQdDKARB0cfwnp8aYN2fQPjrvYQKUwxnAiruB482Yiyg7Y+N9R3zpRHkMY31jEs
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR04MB0660.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:;DIR:OUT;SFP:1901;
+X-MS-Exchange-AntiSpam-MessageData: /burLea5ria6AOkUY0Ct6bh3d+KHgVl/KEn+QvXiJHxBNmYfQ2N1LttcmbZDhb/Mlt/odSBi7dOwUE/mgL32d0J9N7ZSmLfc1OcIUu3oKvhhxrumFU9Qkqb2EoH3CpIaAR7i5dI+rU9dXVDjHZwfb+bMbHgDGc15Rz56anja7KQOZ5eyGgfcZhJGln0KVsDcvT8fJakYmBF5/qRLlinVHw==
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: a28f686b-0ba6-4f76-b101-08d7ef869259
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 03 May 2020 17:22:36.1409
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN8NAM11HT043
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The bma023 is in the same family as the bma180 and support is
+being added to the bma180 IIO driver for it.
 
-iio_push_to_buffers_with_timestamp assumes 8 byte alignment which
-is not guaranteed by an array of 8 __be16.
-
-Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
 ---
- drivers/iio/accel/kxsd9.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ Documentation/devicetree/bindings/iio/accel/bma180.txt | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 0b876b2dc5bd..4c42d1200914 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -209,14 +209,16 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
- 	const struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
-+	struct {
-+		__be16 chan[4];
-+		u64 ts;
-+	} hw_values;
- 	int ret;
--	/* 4 * 16bit values AND timestamp */
--	__be16 hw_values[8];
+diff --git a/Documentation/devicetree/bindings/iio/accel/bma180.txt b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+index f53237270b32..48bec35f452a 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bma180.txt
++++ b/Documentation/devicetree/bindings/iio/accel/bma180.txt
+@@ -1,4 +1,4 @@
+-* Bosch BMA180 / BMA25x triaxial acceleration sensor
++* Bosch BMA023 / BMA180 / BMA25x triaxial acceleration sensor
  
- 	ret = regmap_bulk_read(st->map,
- 			       KXSD9_REG_X,
--			       &hw_values,
--			       8);
-+			       hw_values.chan,
-+			       sizeof(hw_values.chan));
- 	if (ret) {
- 		dev_err(st->dev,
- 			"error reading data\n");
-@@ -224,7 +226,7 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
- 	}
+ http://omapworld.com/BMA180_111_1002839.pdf
+ http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds002-05.pdf
+@@ -6,6 +6,7 @@ http://ae-bst.resource.bosch.com/media/products/dokumente/bma250/bst-bma250-ds00
+ Required properties:
  
- 	iio_push_to_buffers_with_timestamp(indio_dev,
--					   hw_values,
-+					   &hw_values,
- 					   iio_get_time_ns(indio_dev));
- 	iio_trigger_notify_done(indio_dev->trig);
- 
+   - compatible : should be one of:
++    "bosch,bma023"
+     "bosch,bma180"
+     "bosch,bma250"
+     "bosch,bma254"
 -- 
-2.26.2
+2.20.1
 
