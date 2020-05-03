@@ -2,302 +2,221 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 73178C47247
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:55:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D40EC28CBC
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:59:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5176A2071C
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:55:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7349D2075B
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 10:59:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1588503553;
+	bh=c7egyq09BMhVt3ri4v+ufmeD1U0mLvSIu0PQfdAIRSE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=0LWVzg5L4+mGoCz4p4slRvDCa3zLCLwZBPQY1Wm1c1w4lpNIaCakMGUdw25hQ+oE2
+	 8WCOm/cv0qu+2Xk45ctufypMraDM0+V06/QgHBO2QV1P/U5oWIDr33rKHCCI3pJhMw
+	 1UT5+hn/LY4PMmUPTF/qNEQKsCVorLzYr2dNBsnA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgECKz3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 06:55:29 -0400
-Received: from smtpout1.mo803.mail-out.ovh.net ([79.137.123.219]:36653 "EHLO
-        smtpout1.mo803.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728205AbgECKz2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 06:55:28 -0400
-Received: from pro2.mail.ovh.net (unknown [10.108.16.246])
-        by mo803.mail-out.ovh.net (Postfix) with ESMTPS id 9EDD45092F0B;
-        Sun,  3 May 2020 12:55:24 +0200 (CEST)
-Received: from localhost (89.70.31.203) by DAG2EX1.emp2.local (172.16.2.11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Sun, 3 May 2020
- 12:55:24 +0200
-Date:   Sun, 3 May 2020 12:53:51 +0200
-From:   Tomasz Duszynski <tomasz.duszynski@octakon.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
-Subject: Re: [PATCH 1/6] iio: chemical: scd30: add core driver
-Message-ID: <20200503105351.GA2712@arch>
-References: <20200422141135.86419-1-tomasz.duszynski@octakon.com>
- <20200422141135.86419-2-tomasz.duszynski@octakon.com>
- <20200425195534.2ac91fe6@archlinux>
- <20200428075101.GA6908@arch>
- <20200502173738.66dbc888@archlinux>
+        id S1728096AbgECK7N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 06:59:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728091AbgECK7M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 May 2020 06:59:12 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B34312071C;
+        Sun,  3 May 2020 10:59:09 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588503551;
+        bh=c7egyq09BMhVt3ri4v+ufmeD1U0mLvSIu0PQfdAIRSE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=WYLF3dzNqQO5XKMNxjazLKDaCpQl4hs7L9tpnY4k2BYkw/hN70NXbzVWpPKu+Qier
+         28cWbknZe425MdNsem7pyKYSY4P8wf+tJgF0/uF+LKp5pGK+dS8QtFBCT9q+XaqvG3
+         3tS6+GafHfRkYjHSd3XlU5X5VKDJD11lMqHY1ZB4=
+Date:   Sun, 3 May 2020 11:59:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Darren Hart <dvhart@infradead.org>,
+        Andy Shevchenko <andy@infradead.org>,
+        linux-acpi@vger.kernel.org, platform-driver-x86@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 04/11] iio: light: cm32181: Add support for the
+ CM3218
+Message-ID: <20200503115906.6fb86b49@archlinux>
+In-Reply-To: <20200428172923.567806-4-hdegoede@redhat.com>
+References: <20200428172923.567806-1-hdegoede@redhat.com>
+        <20200428172923.567806-4-hdegoede@redhat.com>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200502173738.66dbc888@archlinux>
-X-Originating-IP: [89.70.31.203]
-X-ClientProxiedBy: DAG2EX2.emp2.local (172.16.2.12) To DAG2EX1.emp2.local
- (172.16.2.11)
-X-Ovh-Tracer-Id: 11753269131200519250
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduhedrjedvgdefgecutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecunecujfgurhepfffhvffukfhfgggtuggjihesthdtredttddtjeenucfhrhhomhepvfhomhgrshiiucffuhhsiiihnhhskhhiuceothhomhgrshiirdguuhhsiiihnhhskhhisehotghtrghkohhnrdgtohhmqeenucggtffrrghtthgvrhhnpedtheevtefhffduteejfedtkeeuheejgeejvdetfffgveekffefgeffueeghefgjeenucfkpheptddrtddrtddrtddpkeelrdejtddrfedurddvtdefnecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepthhomhgrshiirdguuhhsiiihnhhskhhisehotghtrghkohhnrdgtohhmpdhrtghpthhtoheprhhosghhodgutheskhgvrhhnvghlrdhorhhg
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, May 02, 2020 at 05:37:38PM +0100, Jonathan Cameron wrote:
-> On Tue, 28 Apr 2020 09:51:01 +0200
-> Tomasz Duszynski <tomasz.duszynski@octakon.com> wrote:
->
-> > On Sat, Apr 25, 2020 at 07:55:34PM +0100, Jonathan Cameron wrote:
-> > > On Wed, 22 Apr 2020 16:11:30 +0200
-> > > Tomasz Duszynski <tomasz.duszynski@octakon.com> wrote:
-> > >
-> > > > Add Sensirion SCD30 carbon dioxide core driver.
-> > > >
-> > > > Signed-off-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
-> > > Hi Tomasz
-> > >
-> > > As you've probably guessed the big questions are around the custom ABI.
-> > >
-> > > Few other things inline.
-> > >
-> > > Jonathan
-> > >
-> ...
->
-> > > > +static int scd30_read_meas(struct scd30_state *state)
-> > > > +{
-> > > > +	int i, ret;
-> > > > +
-> > > > +	ret = scd30_command(state, CMD_READ_MEAS, 0, (char *)state->meas,
-> > > > +			    sizeof(state->meas));
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	for (i = 0; i < ARRAY_SIZE(state->meas); i++)
-> > > > +		state->meas[i] = scd30_float_to_fp(state->meas[i]);
-> > >
-> > > We have previously discussed proving direct floating point channel types
-> > > for the rare devices that actually provide floating point data in
-> > > a standard format.
-> > >
-> > > I'm happy to revisit that if you would like to.
-> > >
-> >
-> > Thanks for reminding me :).
-> >
-> > In that case I admit that some float helper in iio would be a good thing to
-> > have. Especially that there will be at least 2 sensors using it.
-> >
-> > I'd work on that after this driver makes it into the tree.
-> >
-> > How does it sound?
->
-> The problem is that, if we do it in that order we have ABI for this
-> device that we should really maintain.  We can probably get away
-> with changing it on the basis the channel type is self describing anyway
-> but it's not ideal.
->
-> So probably fine but not best practice...
->
+On Tue, 28 Apr 2020 19:29:16 +0200
+Hans de Goede <hdegoede@redhat.com> wrote:
 
-While I generally agree I can also easily imagine inclusion delay caused
-by that change. I need to give some more though to this.
+> Add support for the CM3218 which is an older version of the
+> CM32181.
+> 
+> This is based on a newer version of cm32181.c, with a copyright of:
+> 
+>  * Copyright (C) 2014 Capella Microsystems Inc.
+>  * Author: Kevin Tsai <ktsai@capellamicro.com>
+>  *
+>  * This program is free software; you can redistribute it and/or modify it
+>  * under the terms of the GNU General Public License version 2, as published
+>  * by the Free Software Foundation.
+> 
+> Which is floating around on the net in various places, but the changes
+> from this newer version never made it upstream.
+> 
+> This was tested on an Asus T100TA and an Asus T100CHI, which both come
+> with the CM3218 variant of the light sensor.
+> 
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-> >
-> > > > +
-> > > > +	/*
-> > > > +	 * Accuracy within calibrated operating range is
-> > > > +	 * +-(30ppm + 3% measurement) so fractional part does
-> > > > +	 * not add real value. Moreover, ppm is an integer.
-> > > > +	 */
-> > > > +	state->meas[CONC] /= 100;
-> > > > +
-> > > > +	return 0;
-> > > > +}
-> > > > +
-> > > > +static int scd30_wait_meas_irq(struct scd30_state *state)
-> > > > +{
-> > > > +	int ret, timeout = msecs_to_jiffies(state->meas_interval * 1250);
-> > > > +
-> > > > +	reinit_completion(&state->meas_ready);
-> > > > +	enable_irq(state->irq);
-> > >
-> > > So this is just 'grab the next one'?
-> > >
-> >
-> > Yes, grab the fresh one. Moreover enabling interrupts only when necessary can
-> > limit pointless buss traffic. Reason being irq is acknowledged by reading data
-> > from sensor.
-> >
->
-> As mentioned below, it seems to me that we should really be starting this
-> device only when we want a reading.  Hence any interrupt (subject to possible
-> races) should be valid.  Hence we would not be enabling and disabling the
-> interrupt controller mask on this line.
->
+The need to also store the name for the different sensors makes
+the case for picking between 'chip_info' structures in here stronger.
+So I'd do that instead of setting multiple elements in your
+switch statement... (See inline)
 
-While it's okay for triggered mode that isn't so ideal for polled mode
-because of extra time needed by sensor to actually spin up.
+> ---
+>  drivers/iio/light/cm32181.c | 48 +++++++++++++++++++++++++++----------
+>  1 file changed, 36 insertions(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/light/cm32181.c b/drivers/iio/light/cm32181.c
+> index 6fc0a753c499..065bc7a11f84 100644
+> --- a/drivers/iio/light/cm32181.c
+> +++ b/drivers/iio/light/cm32181.c
+> @@ -55,15 +55,24 @@ static const u8 cm32181_reg[CM32181_CONF_REG_NUM] = {
+>  	CM32181_REG_ADDR_CMD,
+>  };
+>  
+> -static const int als_it_bits[] = {12, 8, 0, 1, 2, 3};
+> -static const int als_it_value[] = {25000, 50000, 100000, 200000, 400000,
+> -	800000};
+> +/* CM3218 Family */
+> +static const int cm3218_als_it_bits[] = { 0, 1, 2, 3 };
+> +static const int cm3218_als_it_values[] = { 100000, 200000, 400000, 800000 };
+> +
+> +/* CM32181 Family */
+> +static const int cm32181_als_it_bits[] = { 12, 8, 0, 1, 2, 3 };
+> +static const int cm32181_als_it_values[] = {
+> +	25000, 50000, 100000, 200000, 400000, 800000
+> +};
+>  
+>  struct cm32181_chip {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+>  	u16 conf_regs[CM32181_CONF_REG_NUM];
+>  	int calibscale;
+> +	int num_als_it;
+> +	const int *als_it_bits;
+> +	const int *als_it_values;
+These are constant for each type of chip and come as a set.
+Better to just have a cm32181_chip_info structure with all 3 in it
+(and the name as mentioned earlier).  That way your switch below
+just becomes a matter of setting a single pointer for each case.
 
-You start measuring and expect new data to arrive within 2 seconds
-(given 0.5Hz sampling frequency is set) but they can actually show
-up within 8 secs. Not very reliable so to say.
+>  };
+>  
+>  /**
+> @@ -85,8 +94,21 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
+>  		return ret;
+>  
+>  	/* check device ID */
+> -	if ((ret & 0xFF) != 0x81)
+> +	switch (ret & 0xFF) {
+> +	case 0x18: /* CM3218 */
 
-Thus I think sticking to continuous sampling is preferred here.
+I'd ideally like to see a sanity check that we have the part expected.
+So the compatible matches what we actually get.
 
->
-> > > > +static int scd30_setup_trigger(struct iio_dev *indio_dev)
-> > > > +{
-> > > > +	struct scd30_state *state = iio_priv(indio_dev);
-> > > > +	struct device *dev = indio_dev->dev.parent;
-> > > > +	struct iio_trigger *trig;
-> > > > +	int ret;
-> > > > +
-> > > > +	trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
-> > > > +				      indio_dev->id);
-> > > > +	if (!trig) {
-> > > > +		dev_err(dev, "failed to allocate trigger\n");
-> > > > +		return -ENOMEM;
-> > > > +	}
-> > > > +
-> > > > +	trig->dev.parent = dev;
-> > > > +	trig->ops = &scd30_trigger_ops;
-> > > > +	iio_trigger_set_drvdata(trig, indio_dev);
-> > > > +
-> > > > +	ret = devm_iio_trigger_register(dev, trig);
-> > > > +	if (ret)
-> > > > +		return ret;
-> > > > +
-> > > > +	indio_dev->trig = iio_trigger_get(trig);
-> > > > +
-> > > > +	ret = devm_request_threaded_irq(dev, state->irq, scd30_irq_handler,
-> > > > +					scd30_irq_thread_handler,
-> > > > +					IRQF_TRIGGER_HIGH | IRQF_ONESHOT,
-> > > > +					indio_dev->name, indio_dev);
-> > > > +	if (ret)
-> > > > +		dev_err(dev, "failed to request irq\n");
-> > >
-> > > I'm guessing this is a device without any means to disable the interrupt
-> > > being generated?  In which case are you safe against a race before you
-> > > disable here?
-> > >
-> >
-> > IRQs can be actually disabled by telling device to stop taking measurements.
-> > There is dedicated command for that. If irq fires off before being disabled
-> > nothing bad should happen as everything necessary is in place already.
->
-> Hmm. I wonder if we'd be better off starting it on demand - or only when running
-> with it as a data ready trigger. That would make the the polled read a case
-> of starting the sampling for one sample rather than just 'picking' one from
-> the stream of actual samples.
->
-> >
-> > Another thing is that without disabling interrupt here we would get warning
-> > about unbalanced irq whilst enabling trigger.
-> >
-> > > > +
-> > > > +	disable_irq(state->irq);
-> > > > +
-> > > > +	return ret;
-> > > > +}
-> > > > +
-> > > > +int scd30_probe(struct device *dev, int irq, const char *name, void *priv,
-> > > > +		int (*command)(struct scd30_state *state, enum scd30_cmd cmd,
-> > > > +			       u16 arg, char *rsp, int size))
-> > > > +{
-> > > > +	static const unsigned long scd30_scan_masks[] = { 0x07, 0x00 };
-> > > > +	struct scd30_state *state;
-> > > > +	struct iio_dev *indio_dev;
-> > > > +	int ret;
-> > > > +	u16 val;
-> > > > +
-> > > > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> > > > +	if (!indio_dev)
-> > > > +		return -ENOMEM;
-> > > > +
-> > > > +	dev_set_drvdata(dev, indio_dev);
-> > > > +
-> > > > +	state = iio_priv(indio_dev);
-> > > > +	state->dev = dev;
-> > > > +	state->priv = priv;
-> > > > +	state->irq = irq;
-> > > > +	state->pressure_comp = SCD30_PRESSURE_COMP_DEFAULT;
-> > > > +	state->meas_interval = SCD30_MEAS_INTERVAL_DEFAULT;
-> > > > +	state->command = command;
-> > > > +	mutex_init(&state->lock);
-> > > > +	init_completion(&state->meas_ready);
-> > > > +
-> > > > +	indio_dev->dev.parent = dev;
-> > > > +	indio_dev->info = &scd30_info;
-> > > > +	indio_dev->name = name;
-> > > > +	indio_dev->channels = scd30_channels;
-> > > > +	indio_dev->num_channels = ARRAY_SIZE(scd30_channels);
-> > > > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > > > +	indio_dev->available_scan_masks = scd30_scan_masks;
-> > > > +
-> > > > +	state->vdd = devm_regulator_get(dev, "vdd");
-> > > > +	if (IS_ERR(state->vdd)) {
-> > >
-> > > This is very noisy if we have deferred probing going on.
-> > > Either explicitly check for that case or just don't bother
-> > > with an error message in this path.
-> > >
-> >
-> > Okay.
-> >
-> > > > +		dev_err(dev, "failed to get vdd regulator\n");
-> > > > +		return PTR_ERR(state->vdd);
-> > > > +	}
-> > > > +
-> > > > +	ret = regulator_enable(state->vdd);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "failed to enable vdd regulator\n");
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > > +	ret = devm_add_action_or_reset(dev, scd30_exit, state);
-> > > > +	if (ret)
-> > >
-> > > This should match exactly against the item above it. Whilst stop
-> > > measurement may be safe from here on, it is not easy to review
-> > > unless we can clearly see where the equivalent start is.
-> > >
-> >
-> > Well, naming might be confusing. The thing is that sensor after being
-> > powered up reverts itself to the much the same state it left.
-> >
-> > If we have real regulator then scd30_exit would disable regulator and
-> > that's it. But, in case of a dummy one and sensor starting in
-> > continuous mode we waste power for no real reason (for example 19mA
-> > at 0.5Hz).
-> >
-> > So it's explanation for doing 2 things inside early on but not excuse
-> > for unintuitive naming.
->
-> I'd rather see two devm_add_action_or_reset calls one handling the regulator
-> and one handling the register write.  Then it will be clear what each
-> one is doing and that there are no possible races.  Basically it lets
-> a reviewer not bother thinking which is always good :)
->
+If it doesn't but the part is still one we support print a warning.
 
-Fair enough.
+> +		cm32181->num_als_it = ARRAY_SIZE(cm3218_als_it_bits);
+> +		cm32181->als_it_bits = cm3218_als_it_bits;
+> +		cm32181->als_it_values = cm3218_als_it_values;
+> +		break;
+> +	case 0x81: /* CM32181 */
+> +	case 0x82: /* CM32182, fully compat. with CM32181 */
+> +		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
+> +		cm32181->als_it_bits = cm32181_als_it_bits;
+> +		cm32181->als_it_values = cm32181_als_it_values;
+> +		break;
+> +	default:
+>  		return -ENODEV;
+> +	}
+>  
+>  	/* Default Values */
+>  	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =
+> @@ -121,9 +143,9 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
+>  	als_it = cm32181->conf_regs[CM32181_REG_ADDR_CMD];
+>  	als_it &= CM32181_CMD_ALS_IT_MASK;
+>  	als_it >>= CM32181_CMD_ALS_IT_SHIFT;
+> -	for (i = 0; i < ARRAY_SIZE(als_it_bits); i++) {
+> -		if (als_it == als_it_bits[i]) {
+> -			*val2 = als_it_value[i];
+> +	for (i = 0; i < cm32181->num_als_it; i++) {
+> +		if (als_it == cm32181->als_it_bits[i]) {
+> +			*val2 = cm32181->als_it_values[i];
+>  			return IIO_VAL_INT_PLUS_MICRO;
+>  		}
+>  	}
+> @@ -146,14 +168,14 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
+>  	u16 als_it;
+>  	int ret, i, n;
+>  
+> -	n = ARRAY_SIZE(als_it_value);
+> +	n = cm32181->num_als_it;
+>  	for (i = 0; i < n; i++)
+> -		if (val <= als_it_value[i])
+> +		if (val <= cm32181->als_it_values[i])
+>  			break;
+>  	if (i >= n)
+>  		i = n - 1;
+>  
+> -	als_it = als_it_bits[i];
+> +	als_it = cm32181->als_it_bits[i];
+>  	als_it <<= CM32181_CMD_ALS_IT_SHIFT;
+>  
+>  	mutex_lock(&cm32181->lock);
+> @@ -265,11 +287,12 @@ static int cm32181_write_raw(struct iio_dev *indio_dev,
+>  static ssize_t cm32181_get_it_available(struct device *dev,
+>  			struct device_attribute *attr, char *buf)
+>  {
+> +	struct cm32181_chip *cm32181 = iio_priv(dev_to_iio_dev(dev));
+>  	int i, n, len;
+>  
+> -	n = ARRAY_SIZE(als_it_value);
+> +	n = cm32181->num_als_it;
+>  	for (i = 0, len = 0; i < n; i++)
+> -		len += sprintf(buf + len, "0.%06u ", als_it_value[i]);
+> +		len += sprintf(buf + len, "0.%06u ", cm32181->als_it_values[i]);
+>  	return len + sprintf(buf + len, "\n");
+>  }
+>  
+> @@ -345,6 +368,7 @@ static int cm32181_probe(struct i2c_client *client)
+>  }
+>  
+>  static const struct of_device_id cm32181_of_match[] = {
+> +	{ .compatible = "capella,cm3218" },
+>  	{ .compatible = "capella,cm32181" },
+>  	{ }
+>  };
 
-> >
-> > > > +		return ret;
-> > > > +
-> > > > +	ret = scd30_reset(state);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "failed to reset device: %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
