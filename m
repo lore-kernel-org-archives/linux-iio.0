@@ -2,201 +2,151 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.0 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C76C28CBC
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:08:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C31E3C28CBC
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:23:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 755F220787
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:08:07 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="cBYMp/cL"
+	by mail.kernel.org (Postfix) with ESMTP id 96D122084D
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:23:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1588497805;
+	bh=tS8rC1xwfDsH8CpezAlet6bkQanl+yMNiprBNGD6djY=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=YpAXQw1RgEYcnmfwJxQiSw0XLpECDU4ZluXu4K6nJCp2+rK7Pax+NBPTjCfZWt6cX
+	 PxaIb7sQ0Ejin33dCSMLqovFgHmX65RAdQvGxQe0V7Jko+6DVQRecVj0PEyvRWGJnq
+	 8XQAKlATj6SyDDQDyDXzIuQVRap4UMAJ4HYi32Hc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726884AbgECJIG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 05:08:06 -0400
-Received: from www381.your-server.de ([78.46.137.84]:56340 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726445AbgECJIG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 05:08:06 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=BETlCmS6FRwXGPjY7EbPU0StF1KNKBAdQE/SWk0Jk88=; b=cBYMp/cLSYq4EhCQafzfBewNXd
-        hej0/vcJ+FdAIQINFlkX2CxD6njuZimBcHHoQB1/UkohfgbhAZr48fn9yETwElW5nmtQdA//Ez4yc
-        Cm76EOTm3e2YXAh/hsZrfjberWLU02eZYkulAf8YVLDpysTmo2aim6zFyH+iwzCLoUCEXNb9/C9Jl
-        DHQ0hSVJtGY7QHgGvEVqXeNnwViiMAXB+8Wad8npyoEU1w+voEKeBUCwrQC/SxLcIglyBIli46cZR
-        cyM4mgeTrzjAB/64JjrLe9iqOG6nYPXSg76+RTRk7uRBGhSWSetFtMXs9wiorW5TqbfFUSjOwK/0Q
-        SIaKIjhg==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <lars@metafoo.de>)
-        id 1jVAbO-0000G7-Eo; Sun, 03 May 2020 11:07:58 +0200
-Received: from [82.135.70.217] (helo=[192.168.178.20])
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1jVAbO-0002ZY-1T; Sun, 03 May 2020 11:07:58 +0200
-Subject: Re: [PATCH v5 5/6] iio: imu: Add support for adis16475
-To:     Jonathan Cameron <jic23@kernel.org>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>
-Cc:     =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-References: <20200413082445.17324-1-nuno.sa@analog.com>
- <20200413082445.17324-6-nuno.sa@analog.com>
- <2418ed60-8407-0c99-bf5d-1afc3964de2b@metafoo.de>
- <20200502184010.134eb8b5@archlinux>
- <67202bd8-e0a5-be53-13c6-e01a25e2a85b@metafoo.de>
- <df0f04296fafccfcf18b08b213bae20ff69c2384.camel@gmail.com>
- <20200503094751.633feda1@archlinux>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
-Date:   Sun, 3 May 2020 11:07:56 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1727837AbgECJXZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 05:23:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48506 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726445AbgECJXY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 May 2020 05:23:24 -0400
+Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C327206A5;
+        Sun,  3 May 2020 09:23:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1588497804;
+        bh=tS8rC1xwfDsH8CpezAlet6bkQanl+yMNiprBNGD6djY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=2CjA7HuwF3NwkOh+hkxYDNqyBIoT+EOkEDNGLLwIzj3G7kmBXBpBu+NCb+Imya6WJ
+         7yyP8+/tRWBq6z8/5kMwrXrLm0XDdrRzihGNzhofPQwwTuYJZlWNR2oxoUfRhvPZ1A
+         ex2DOR/tUhRIKR5g6hfFiI5yt6O8oQTgWZTQevlw=
+Date:   Sun, 3 May 2020 11:23:16 +0200
+From:   Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        david@lechnology.com, felipe.balbi@linux.intel.com,
+        fabien.lahoudere@collabora.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+Subject: Re: [PATCH 0/4] Introduce the Counter character device interface
+Message-ID: <20200503092316.GA570888@kroah.com>
+References: <cover.1588176662.git.vilhelm.gray@gmail.com>
+ <20200430201345.GX51277@piout.net>
+ <20200501154519.GA4581@icarus>
+ <20200502175536.1e9ac944@archlinux>
 MIME-Version: 1.0
-In-Reply-To: <20200503094751.633feda1@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.2/25800/Sat May  2 14:08:18 2020)
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200502175536.1e9ac944@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 5/3/20 10:47 AM, Jonathan Cameron wrote:
-> On Sat, 02 May 2020 21:52:18 +0200
-> Nuno Sá <noname.nuno@gmail.com> wrote:
->
->> On Sat, 2020-05-02 at 20:01 +0200, Lars-Peter Clausen wrote:
->>> On 5/2/20 7:40 PM, Jonathan Cameron wrote:
->>>> On Mon, 27 Apr 2020 20:06:07 +0200
->>>> Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>>    
->>>>> On 4/13/20 10:24 AM, Nuno Sá wrote:
->>>>>> [...]
->>>>>> +static irqreturn_t adis16475_trigger_handler(int irq, void *p)
->>>>>> +{
->>>>>> [...]
->>>>>> +	__be16 data[ADIS16475_MAX_SCAN_DATA], *buffer;
->>>>>> [...]
->>>>>> +
->>>>>> +	iio_push_to_buffers_with_timestamp(indio_dev, data, pf-
->>>>>>> timestamp);
->>>>> If the timestamp is enabled the IIO core might insert padding
->>>>> between
->>>>> the data channels and the timestamp. If that happens this will
->>>>> disclose
->>>>> kernel stack memory to userspace.
->>>>>
->>>>> This needs either a memset(data, 0x00, sizeof(data)) or maybe put
->>>>> data
->>>>> into the state struct and kzalloc it.
->>>> Good spot. Could simply do __be16 data[ADI..] = {0}; rather than
->>>> explicit
->>>> memset, but some form of zeroization is needed.
->>>>
->>>> I've fixed up the applied patch with the above approach.
->>> There is actually another issue. The stack data is not necessarily
->>> aligned to 64 bit, which causes issues if we try to put the 64-bit
->> Oh, this is actually more problematic. Yes, since we have an array of
->> u16, that is not guaranteed to be 64bit aligned. Doing a quick search
->> of `iio_push_to_buffers_with_timestamp()` users and I could quickly
->> find 4/5 drivers with the same problem. I guess the API should clearly
->> state that `data` needs to be __at least__ 64 bits aligned (maybe a
->> future patch). Or we could even check the address and guarantee that it
->> is properly aligned before continuing (though Im guessing this will
->> break a lot of users...)
->>> timestamp in it. I think data should really be in the state struct.
->> Yes, with a proper __aligned(8) attribute... Or couldn't we just use
->> __aligned(8) on the stack variable?
-> Forcing alignment on the stack isn't terribly reliable, which is why
-> we never do that for dma safe buffers.
->
-> Probably better to just move it to the state structure.
-> I'll fix it up to do that. Please sanity check what will shortly
-> be in the testing branch.
->
-> The moment Lars mentioned this I groaned. As you've noted a few other
-> drivers have the same problem + the ABI doesn't clearly state
-> or check this.
->
-> We should certainly fix all the drivers that suffer this problem
-> first then we can think about adding a runtime check.
+On Sat, May 02, 2020 at 05:55:36PM +0100, Jonathan Cameron wrote:
+> On Fri, 1 May 2020 11:46:10 -0400
+> William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
+> 
+> > On Thu, Apr 30, 2020 at 10:13:45PM +0200, Alexandre Belloni wrote:
+> > > Hi,
+> > > 
+> > > On 29/04/2020 14:11:34-0400, William Breathitt Gray wrote:  
+> > > > Over the past couple years we have noticed some shortcomings with the
+> > > > Counter sysfs interface. Although useful in the majority of situations,
+> > > > there are certain use-cases where interacting through sysfs attributes
+> > > > can become cumbersome and inefficient. A desire to support more advanced
+> > > > functionality such as timestamps, multi-axis positioning tables, and
+> > > > other such latency-sensitive applications, has motivated a reevaluation
+> > > > of the Counter subsystem. I believe a character device interface will be
+> > > > helpful for this more niche area of counter device use.
+> > > > 
+> > > > To quell any concerns from the offset: this patchset makes no changes to
+> > > > the existing Counter sysfs userspace interface -- existing userspace
+> > > > applications will continue to work with no modifications necessary. I
+> > > > request that driver maintainers please test their applications to verify
+> > > > that this is true, and report any discrepancies if they arise.
+> > > >   
+> > > 
+> > > On that topic, I'm wondering why the counter subsystem uses /sys/bus
+> > > instead of /sys/class that would be more natural for a class of devices.
+> > > I can't see how counters would be considered busses. I think you should
+> > > consider moving it over to /sys/class (even if deprecating
+> > > /sys/bus/counter will be long).  
+> > 
+> > At the time I wasn't quite familiar with sysfs development so I was
+> > following the iio sysfs code rather closely. However, I see now that
+> > you're probably right: this isn't really a bus but rather a collection
+> > of various types of counters -- i.e. a class of devices.
+> > 
+> > Perhaps I should migrate this then to /sys/class/counter. Of course, the
+> > /sys/bus/counter location will have to remain for compatibility with
+> > existing applications, but I think a simple symlink to the new
+> > /sys/class/counter location should suffice for that.
+> > 
+> > If anyone sees an issue with this give me a heads up.
+> To just address this point as I've not read the rest of the thread yet...
+> 
+> I would resist moving it.  This one is an old argument. 
+> 
+> Some info in https://lwn.net/Articles/645810/
+> As that puts it a "bus" is better known as a "subsystem".
+> 
+> When we originally considered class vs bus for IIO, the view expressed
+> at the times was that the whole separation of the two didn't mean anything
+> and for non trivial cases bus was always preferred.  It's nothing to do
+> with with whether the thing is a bus or not.  Now I suppose it's possible
+> opinion has moved on this topic...    However, I'd say there
+> is really 0 advantage in moving an existing subsystem even if opinion
+> has changed.
+> 
+> +CC Greg in case he wants to add anything.
 
-It looks like it is actually quite a few drivers, maybe we should switch 
-to put_unaligned(). We probably got lucky in most cases and the buffer 
-is naturally aligned to 64 bit.
+Traditionally classes are a unified way of representing data to
+userspace, independant of the physical transport that the data came to
+userspace on (i.e. input devices are a class, it doesn't matter if they
+came on serial, USB, PS/2, or virtual busses.)
 
-But the reason I noticed this is because I ran into the issue in the 
-wild where the timestamp ended up at the wrong offset in the buffer, so 
-it does happen.
+A bus is traditionally a collection of drivers that all talk on a same
+physical transport, that then expose data from that transport to a
+specific userspace class.  Again, think USB mice drivers, serial mice
+drivers, PS/2 mice drivers.
 
-The following semantic patch finds affected drivers.
+Busses bind a driver to a device it creates based on that "bus".
+Classes create virtual devices that export data to userspace for a
+specific common protocol.
 
-@@
-type T;
-identifier buf;
-expression N;
-expression ts;
-expression indio_dev;
-@@
-*T buf[N];
-...
-*iio_push_to_buffers_with_timestamp(indio_dev, buf, ts)
+Does that help?
 
-Matched files:
+One can argue (and have properly in the past), that classes and busses
+really are not all that different, and there used to be code floating
+around that made them the same exact thing in the kernel, with loads of
+userspace sysfs symlinks to preserve things, but those are well out of
+date and I don't think anyone feels like reviving them.  However I think
+systemd might still have code in it to work properly if that ever
+happens, haven't looked in a few years...
 
---- drivers/iio/health/afe4403.c
---- drivers/iio/health/afe4404.c
---- drivers/iio/gyro/mpu3050-core.c
---- drivers/iio/gyro/itg3200_buffer.c
---- drivers/iio/chemical/ccs811.c
---- drivers/iio/chemical/sps30.c
---- drivers/iio/chemical/pms7003.c
---- drivers/iio/proximity/isl29501.c
---- drivers/iio/proximity/mb1232.c
---- drivers/iio/accel/kxsd9.c
---- drivers/iio/accel/mma8452.c
---- drivers/iio/accel/bmc150-accel-core.c
---- drivers/iio/accel/mma7455_core.c
---- drivers/iio/adc/ti-adc081c.c
---- drivers/iio/adc/ti-adc084s021.c
---- drivers/iio/adc/ti-ads1015.c
---- drivers/iio/adc/ti-ads124s08.c
---- drivers/iio/adc/ina2xx-adc.c
---- drivers/iio/adc/ti-ads8688.c
---- drivers/iio/adc/ti-adc0832.c
---- drivers/iio/adc/ti-adc12138.c
---- drivers/iio/adc/max1118.c
---- drivers/iio/adc/ad_sigma_delta.c
---- drivers/iio/light/si1145.c
---- drivers/iio/light/vcnl4035.c
---- drivers/iio/light/max44000.c
---- drivers/iio/light/rpr0521.c
---- drivers/iio/light/st_uvis25_core.c
---- drivers/iio/light/ltr501.c
---- drivers/iio/magnetometer/ak8974.c
---- drivers/iio/magnetometer/mag3110.c
---- drivers/iio/magnetometer/ak8975.c
---- drivers/iio/humidity/hdc100x.c
---- drivers/iio/humidity/hts221_buffer.c
---- drivers/iio/imu/bmi160/bmi160_core.c
---- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
---- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
---- drivers/iio/pressure/ms5611_core.c
---- drivers/iio/pressure/mpl3115.c
+thanks,
 
+greg k-h
