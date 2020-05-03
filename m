@@ -2,130 +2,100 @@ Return-Path: <SRS0=u9I9=6R=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 323CEC28CBC
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 16:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDFCEC4725A
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:05:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0697920757
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 16:25:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uHgi4jck"
+	by mail.kernel.org (Postfix) with ESMTP id AD428206F1
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 17:05:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728665AbgECQZd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 12:25:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44838 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728002AbgECQZd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 12:25:33 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF13C061A0E;
-        Sun,  3 May 2020 09:25:32 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id z1so4346920pfn.3;
-        Sun, 03 May 2020 09:25:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=N3PY0NJ7YL1BNARD0oetT7jynu4pCokp1u8ZAvx5dx4=;
-        b=uHgi4jckBb1RaPiRnyys/tkc39VdwZl7c3o+IQlNjugZL8FZYQn75n77dVAU+bCjLs
-         9eq7vhb99S00JA58zhzo13ohJMlwEbJdqDhuTNmc5DU689eE2JcVK+RF0JiWICCLhu0A
-         GBe6DRYG28uXIsb1t/ZrAvcbvJl3sIECsWP8CQl+yhrMfPsWqemHwMPB5zCnyQ0nwK/C
-         WCifDlVGNcjT5mugw7i1kzvwXWF7hVJt5rkIiplYpFSCYtMKxC+qxXUUgbioH3kuJz7D
-         M6yqH+t3dFiLUWQjFrbF/2/464jS+nZBjqD+pa0QWNy2bomD6btiMSyLt0X6kuEkYcrV
-         Sx+A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=N3PY0NJ7YL1BNARD0oetT7jynu4pCokp1u8ZAvx5dx4=;
-        b=Zxqoe0thq5IvgKsDln3YVt1hmDG+YmqsiMUgKXQy5dW89gn9VjT5Q3wZPInZw44oRC
-         Sy7onZBaSXu0FF1F1HKtUoT3ygOuRuUS99vxEl6eiIAQbUk2CLst0rPgd2JhMQA2lRyV
-         Ry9W472ySzCqqThCcgbDa/uncVSpLNJC7XgjnMOlDYA7v3chRByZWQh+5jelSAbqqQMT
-         E4PqTpaXsQcyrOW+Id9nQFUnSljPEswPC13SRfqWTN3yfE6++U/YcPilCJYD5gZdqR7a
-         2vWjtBYsUC+CDQu44KDn/d3/2S0qg2lfRpAGY2yYSoTP5/U77q2XYvG/SdE+YYSFdb+v
-         DOYA==
-X-Gm-Message-State: AGi0PuYDHjnM98xf4V8rrBJ1FJ6nCh3EzHf3OIxb4T2bpvf3fi/go+Ln
-        Mn+pglBtX/yoJRNfqE0kCvTb5bpg4Pj+DSYo+3I=
-X-Google-Smtp-Source: APiQypIdkxCKDQcOl5esMtYineYHmnfKgOTXof+YtrxX0N/0Q0zcOtHVkEZH2obVS8ilArA2woICWcXUSh4qFjhVf9I=
-X-Received: by 2002:a63:1c1:: with SMTP id 184mr13829522pgb.203.1588523132175;
- Sun, 03 May 2020 09:25:32 -0700 (PDT)
+        id S1728917AbgECRFz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 13:05:55 -0400
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:55991 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728783AbgECRFy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 13:05:54 -0400
+X-Originating-IP: 195.189.32.242
+Received: from pc.localdomain (unknown [195.189.32.242])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id 6E4F24000A;
+        Sun,  3 May 2020 17:05:50 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Artur Rojek <contact@artur-rojek.eu>
+Subject: [PATCH v6 3/7] IIO: Ingenic JZ47xx: Add xlate cb to retrieve correct channel idx
+Date:   Sun,  3 May 2020 19:14:47 +0200
+Message-Id: <20200503171451.44034-3-contact@artur-rojek.eu>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200503171451.44034-1-contact@artur-rojek.eu>
+References: <20200503171451.44034-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
-References: <20200428172923.567806-1-hdegoede@redhat.com> <20200428172923.567806-10-hdegoede@redhat.com>
- <20200503122237.4af34181@archlinux>
-In-Reply-To: <20200503122237.4af34181@archlinux>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 3 May 2020 19:25:20 +0300
-Message-ID: <CAHp75Vdt+shL3yXHfct17DUHdRBBrCzC4vBjQL8YHbimFefV7A@mail.gmail.com>
-Subject: Re: [PATCH v3 10/11] iio: light: cm32181: Add support for parsing
- CPM0 and CPM1 ACPI tables
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Darren Hart <dvhart@infradead.org>,
-        Andy Shevchenko <andy@infradead.org>,
-        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        Platform Driver <platform-driver-x86@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, May 3, 2020 at 2:22 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> On Tue, 28 Apr 2020 19:29:22 +0200
-> Hans de Goede <hdegoede@redhat.com> wrote:
+Provide an of_xlate callback in order to retrieve the correct channel
+specifier index from the IIO channels array.
 
-...
+Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+Tested-by: Paul Cercueil <paul@crapouillou.net>
+---
 
-> > This was tested on the following models: Acer Switch 10 SW5-012 (CM32181)
-> > Asus T100TA (CM3218), Asus T100CHI (CM3218) and HP X2 10-n000nd (CM32181).
->
-> I assume it's far too much to hope this CPM0 / CPM1 stuff is actually defined
-> in a spec anywhere?
->
-> There are standard way of adding vendor specific data blobs to ACPI and this
-> isn't one of them (unless I'm missing something).  People need to beat
-> up vendors earlier about this stuff.
->
-> Grumble over...
->
-> Code looks fine to me, but I'd like an ACPI review ideally.
+ Changes:
 
-ACPI didn't cover embedded world and has the following issues
-a) where it should be strict (like how many I2CSerialBus() resources
-can be given and for what type of devices, etc), it doesn't
-b) they need to provides better validation tools, but they didn't
-c) it's still windows oriented :-(
+ v2-v6: no change
 
-Above is custom extension on how to add device properties (and note,
-we have now _DSD() and still we have some M$ way of thinking how to
-use them).
+ drivers/iio/adc/ingenic-adc.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
 
-Since the above approach is in the wild, I'm afraid we have not many
-possibilities here (each of them with own problems):
-1/ shout at vendors to use ACPI properly and simple don't by broken
-hardware (rather firmware)
-2/ try to support custom changes (may lead to several approaches for
-the same thing)
-3/ create a lot of board files (something in between 1/ and 2/)
-
-As a result:
-1/ is obviously a best one, but I think it's an utopia.
-2/ in practice we don't have many deviations (luckily OEMs are quite
-lazy to modify reference BIOSes and often reuse existing approaches)
-3/ may not work, because on cheap laptops the means of distinguishing
-them (like DMI strings) may also been broken.
-
+diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
+index 6c3bbba7c44b..0eee4b4fb96c 100644
+--- a/drivers/iio/adc/ingenic-adc.c
++++ b/drivers/iio/adc/ingenic-adc.c
+@@ -400,6 +400,21 @@ static int ingenic_adc_read_raw(struct iio_dev *iio_dev,
+ 	}
+ }
+ 
++static int ingenic_adc_of_xlate(struct iio_dev *iio_dev,
++				const struct of_phandle_args *iiospec)
++{
++	int i;
++
++	if (!iiospec->args_count)
++		return -EINVAL;
++
++	for (i = 0; i < iio_dev->num_channels; ++i)
++		if (iio_dev->channels[i].channel == iiospec->args[0])
++			return i;
++
++	return -EINVAL;
++}
++
+ static void ingenic_adc_clk_cleanup(void *data)
+ {
+ 	clk_unprepare(data);
+@@ -409,6 +424,7 @@ static const struct iio_info ingenic_adc_info = {
+ 	.write_raw = ingenic_adc_write_raw,
+ 	.read_raw = ingenic_adc_read_raw,
+ 	.read_avail = ingenic_adc_read_avail,
++	.of_xlate = ingenic_adc_of_xlate,
+ };
+ 
+ static const struct iio_chan_spec ingenic_channels[] = {
 -- 
-With Best Regards,
-Andy Shevchenko
+2.26.2
+
