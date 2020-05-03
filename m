@@ -8,64 +8,64 @@ X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 526D6C47258
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C948EC47247
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BFB820757
-	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A8EFB2075B
+	for <linux-iio@archiver.kernel.org>; Sun,  3 May 2020 09:32:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BpbK/XA5"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="JTfbZzsR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728086AbgECJc2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 May 2020 05:32:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37472 "EHLO
+        id S1728071AbgECJc1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 May 2020 05:32:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-FAIL-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726445AbgECJcY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 05:32:24 -0400
+        by vger.kernel.org with ESMTP id S1728042AbgECJcZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 May 2020 05:32:25 -0400
 Received: from mail-wr1-x444.google.com (mail-wr1-x444.google.com [IPv6:2a00:1450:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31434C061A0C;
-        Sun,  3 May 2020 02:32:23 -0700 (PDT)
-Received: by mail-wr1-x444.google.com with SMTP id h9so6902625wrt.0;
-        Sun, 03 May 2020 02:32:23 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB956C061A0F;
+        Sun,  3 May 2020 02:32:24 -0700 (PDT)
+Received: by mail-wr1-x444.google.com with SMTP id g13so17215445wrb.8;
+        Sun, 03 May 2020 02:32:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=j/mmHt22K1/kkx3UEk6NpFmo2AhOraXdCBC9rYucPjU=;
-        b=BpbK/XA5SEb/BHwOC5qEqRitO3A1TcTCKOeZ6samXTQq9zG4G4KRkBEPgCg4oh8YAv
-         /4CFZMSnFbBfJrl/YcG8rQwlvEoco/JBIj73pzEkxlu2xbx9DrUp5K033aUcBhSd1uE1
-         OCjQ7+S/X5nt4cYdIz2OiCSOe+3J3NirrF+GUKSkodPryLZm/B18jK855q2MXpRE8CYB
-         TmNcjJIzO6S+MGOnyFKugZVIdBzBqHsN8QAkfSvuNDR2pgbZ9VfesEPDlzgiIbJnCUkl
-         R7BddwUFWAzXB1Awie1eVAdsUja6lvUdk6BnwEhnxbZriiXRD8sqmxXb+enyw6p+EWxj
-         gnjQ==
+        bh=ZEVkzMr6z0E4N1w6xvyS7Drw+BpsL4Z8MCI9pveo6ew=;
+        b=JTfbZzsRD5FEAtKAv7LjZSV23RJroAhBbat2MmM4sStt0BIPlU7p5q7xGsCFzNOm4W
+         jhbw3qSabgjBkHF8BM4ynXZiqk9kcbLfmmjAYiQLaUr+vW+kZbaOxGnwrOL6ud7dFqry
+         cG0zpUIYzMom4gzuIlSCHmwFGb2jrRfUkoL87IDhUe9OuPx8vp9EomsdYMZ+Nz1P7TXY
+         8flr6sIfPO5NFW5gwFx+4Y/JdwZ7YE9j6WTioct0OJrw2CXiz/HC+pMiED2m8+oh5cL5
+         7UXJVNyCuttxrorh4Hd6NLjQ6WECO51xM/NBHWjTkdFS3p1Tvt1usNuHC2uplORUKXd5
+         1eiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=j/mmHt22K1/kkx3UEk6NpFmo2AhOraXdCBC9rYucPjU=;
-        b=PF59aIswhmMeQePUsKE7qgvLCdMecQ47Rnhpvii85mhRCVtKwfvy47/N2Jp9SUuYSg
-         H7mfo3qermWwPrud3EYJhyL2LJwD1MrAFNb6JWP5mBrZ7M3yHOFbSs2P4PDeRkWwmWT8
-         6VDoa1QypsHTUpxYSnYzBMWiMbSDf8r1nr7HiDv5MH2GFQlQCTAsSdnLi4qBL6zFT2CO
-         zujiQP+oA8UNNVOcrfPN0+R6haalVJd1H6B+XRazc2CAQC29rXB9rDdmrdd2oiENqg+p
-         sYLqsUGpG3cW3lVYW9foXrpTSpPGCzwGw5+ux5Kzn9jWu+/gPtR4n1u7aUEkmVZewkqV
-         +3Tw==
-X-Gm-Message-State: AGi0PuaURefYJWP7iUvF3m+YybJLMrBFFu021XAD48O+/eElMJlN8Lrp
-        k2IMLAFSjSRsqf1TuH0cx7k=
-X-Google-Smtp-Source: APiQypKXLFowYZptnJJ3uIrCi1n098XwkSSiMR1lPfeDrcQuULs0O0i3gVFLSalVvtbuj3+E2rg5Uw==
-X-Received: by 2002:adf:d091:: with SMTP id y17mr12755777wrh.418.1588498341742;
-        Sun, 03 May 2020 02:32:21 -0700 (PDT)
+        bh=ZEVkzMr6z0E4N1w6xvyS7Drw+BpsL4Z8MCI9pveo6ew=;
+        b=T03syJk431ctQNy58JiLx8ckqozU2JlAMm/RRMgNT/LAt4/l2XEDiXgibWzNT+/Gwr
+         EosGSGmH629pRKDO6FMM18FIB5/XML1CKq4rB8jC/37MwjuIY1RDUbI03wL40cme1//S
+         BJILV3b0eMI51xx/bKOF0G1TSYAIqUvsMOmho4K2yS8CWS5lvK+Uc9/d38BLOKuDge0s
+         DuvRbDPPQowLyGMMS7O1hKs4kLZtEogTzQqOxJGwwVDGZF/3XwH2nDhpDt4MirEBT2XH
+         neXpXotAsIQHiG9ll/khrnvhRa7kMLtlkhYUBGbizgKBrrt65zQerLwsqmxhYRtCh+aM
+         0kdQ==
+X-Gm-Message-State: AGi0Pub3CppIh6C3Tb5h0toNVOAnSSzqkhC4OuvNTOnw348Rw6eUWAIc
+        57uoljmcJCkbxKIw7/v2i3o=
+X-Google-Smtp-Source: APiQypL6QCwBdkDNBUXEnhQgAkcCiTBp2R+0CK23GEb4hH5lCYbEcE0uvjVINI4FJq2opQQCmFqd+Q==
+X-Received: by 2002:adf:ff84:: with SMTP id j4mr12857856wrr.305.1588498343569;
+        Sun, 03 May 2020 02:32:23 -0700 (PDT)
 Received: from meru.home ([2a01:cb18:832e:5f00:1cf0:acc0:9003:83d6])
-        by smtp.gmail.com with ESMTPSA id e17sm10086963wrr.32.2020.05.03.02.32.20
+        by smtp.gmail.com with ESMTPSA id e17sm10086963wrr.32.2020.05.03.02.32.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 03 May 2020 02:32:21 -0700 (PDT)
+        Sun, 03 May 2020 02:32:23 -0700 (PDT)
 From:   Mathieu Othacehe <m.othacehe@gmail.com>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Mathieu Othacehe <m.othacehe@gmail.com>
-Subject: [PATCH v7 2/5] iio: vcnl4000: Factorize data reading and writing.
-Date:   Sun,  3 May 2020 11:29:56 +0200
-Message-Id: <20200503092959.8806-3-m.othacehe@gmail.com>
+Subject: [PATCH v7 4/5] iio: vcnl4000: Add sampling frequency support for VCNL4010/20.
+Date:   Sun,  3 May 2020 11:29:58 +0200
+Message-Id: <20200503092959.8806-5-m.othacehe@gmail.com>
 X-Mailer: git-send-email 2.26.0
 In-Reply-To: <20200503092959.8806-1-m.othacehe@gmail.com>
 References: <20200503092959.8806-1-m.othacehe@gmail.com>
@@ -76,60 +76,176 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Factorize data reading in vcnl4000_measure into a vcnl4000_read_data
-function. Also add a vcnl4000_write_data function.
+Add sampling frequency support for proximity data on VCNL4010 and VCNL4020
+chips.
 
 Signed-off-by: Mathieu Othacehe <m.othacehe@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ drivers/iio/light/vcnl4000.c | 118 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 117 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e5f86bd00fb0..b976e29f2fda 100644
+index e7653037fa5d..65c0cf2b5037 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -215,6 +215,27 @@ static int vcnl4200_init(struct vcnl4000_data *data)
- 	return 0;
- };
+@@ -86,6 +86,16 @@
+ #define VCNL4010_INT_DRDY \
+ 	(BIT(VCNL4010_INT_PROXIMITY) | BIT(VCNL4010_INT_ALS))
  
-+static int vcnl4000_read_data(struct vcnl4000_data *data, u8 data_reg, int *val)
++static const int vcnl4010_prox_sampling_frequency[][2] = {
++	{1, 950000},
++	{3, 906250},
++	{7, 812500},
++	{16, 625000},
++	{31, 250000},
++	{62, 500000},
++	{125, 0},
++	{250, 0},
++};
+ 
+ #define VCNL4000_SLEEP_DELAY_MS	2000 /* before we enter pm_runtime_suspend */
+ 
+@@ -363,6 +373,24 @@ static int vcnl4200_measure_proximity(struct vcnl4000_data *data, int *val)
+ 	return vcnl4200_measure(data, &data->vcnl4200_ps, val);
+ }
+ 
++static int vcnl4010_read_proxy_samp_freq(struct vcnl4000_data *data, int *val,
++					 int *val2)
 +{
-+	s32 ret;
++	int ret;
 +
-+	ret = i2c_smbus_read_word_swapped(data->client, data_reg);
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4010_PROX_RATE);
 +	if (ret < 0)
 +		return ret;
 +
-+	*val = ret;
++	if (ret >= ARRAY_SIZE(vcnl4010_prox_sampling_frequency))
++		return -EINVAL;
++
++	*val = vcnl4010_prox_sampling_frequency[ret][0];
++	*val2 = vcnl4010_prox_sampling_frequency[ret][1];
++
 +	return 0;
 +}
 +
-+static int vcnl4000_write_data(struct vcnl4000_data *data, u8 data_reg, int val)
+ static bool vcnl4010_is_in_periodic_mode(struct vcnl4000_data *data)
+ {
+ 	int ret;
+@@ -456,11 +484,95 @@ static int vcnl4010_read_raw(struct iio_dev *indio_dev,
+ 
+ 		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			ret = vcnl4010_read_proxy_samp_freq(data, val, val2);
++			if (ret < 0)
++				return ret;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int vcnl4010_read_avail(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       const int **vals, int *type, int *length,
++			       long mask)
 +{
-+	if (val > U16_MAX)
-+		return -ERANGE;
-+
-+	return i2c_smbus_write_word_swapped(data->client, data_reg, val);
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*vals = (int *)vcnl4010_prox_sampling_frequency;
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		*length = 2 * ARRAY_SIZE(vcnl4010_prox_sampling_frequency);
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
 +}
 +
++static int vcnl4010_write_proxy_samp_freq(struct vcnl4000_data *data, int val,
++					  int val2)
++{
++	unsigned int i;
++	int index = -1;
 +
- static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 				u8 rdy_mask, u8 data_reg, int *val)
- {
-@@ -245,12 +266,11 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 		goto fail;
- 	}
++	for (i = 0; i < ARRAY_SIZE(vcnl4010_prox_sampling_frequency); i++) {
++		if (val == vcnl4010_prox_sampling_frequency[i][0] &&
++		    val2 == vcnl4010_prox_sampling_frequency[i][1]) {
++			index = i;
++			break;
++		}
++	}
++
++	if (index < 0)
++		return -EINVAL;
++
++	return i2c_smbus_write_byte_data(data->client, VCNL4010_PROX_RATE,
++					 index);
++}
++
++static int vcnl4010_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val, int val2, long mask)
++{
++	int ret;
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
++
++	/* Protect against event capture. */
++	if (vcnl4010_is_in_periodic_mode(data)) {
++		ret = -EBUSY;
++		goto end;
++	}
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		switch (chan->type) {
++		case IIO_PROXIMITY:
++			ret = vcnl4010_write_proxy_samp_freq(data, val, val2);
++			goto end;
++		default:
++			ret = -EINVAL;
++			goto end;
++		}
++	default:
++		ret = -EINVAL;
++		goto end;
++	}
++
++end:
++	iio_device_release_direct_mode(indio_dev);
++	return ret;
++}
++
+ static int vcnl4010_read_event(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+@@ -663,7 +775,9 @@ static const struct iio_chan_spec vcnl4010_channels[] = {
+ 			BIT(IIO_CHAN_INFO_SCALE),
+ 	}, {
+ 		.type = IIO_PROXIMITY,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.info_mask_separate_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.event_spec = vcnl4000_event_spec,
+ 		.num_event_specs = ARRAY_SIZE(vcnl4000_event_spec),
+ 		.ext_info = vcnl4000_ext_info,
+@@ -676,6 +790,8 @@ static const struct iio_info vcnl4000_info = {
  
--	ret = i2c_smbus_read_word_swapped(data->client, data_reg);
-+	ret = vcnl4000_read_data(data, data_reg, val);
- 	if (ret < 0)
- 		goto fail;
- 
- 	mutex_unlock(&data->vcnl4000_lock);
--	*val = ret;
- 
- 	return 0;
- 
+ static const struct iio_info vcnl4010_info = {
+ 	.read_raw = vcnl4010_read_raw,
++	.read_avail = vcnl4010_read_avail,
++	.write_raw = vcnl4010_write_raw,
+ 	.read_event_value = vcnl4010_read_event,
+ 	.write_event_value = vcnl4010_write_event,
+ 	.read_event_config = vcnl4010_read_event_config,
 -- 
 2.26.0
 
