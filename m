@@ -2,67 +2,69 @@ Return-Path: <SRS0=gXbi=6U=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7263CC28CBC
-	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B56EC28CBC
+	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CD752073A
-	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15F4F2073A
+	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jJj8oVcc"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lfgwokHK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726630AbgEFXDg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 May 2020 19:03:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46000 "EHLO
+        id S1726579AbgEFXDo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 May 2020 19:03:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726598AbgEFXDe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 May 2020 19:03:34 -0400
-Received: from mail-pj1-x1042.google.com (mail-pj1-x1042.google.com [IPv6:2607:f8b0:4864:20::1042])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ED32C061A0F
-        for <linux-iio@vger.kernel.org>; Wed,  6 May 2020 16:03:33 -0700 (PDT)
-Received: by mail-pj1-x1042.google.com with SMTP id a32so1750882pje.5
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2020 16:03:33 -0700 (PDT)
+        with ESMTP id S1726616AbgEFXDf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 May 2020 19:03:35 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CEDC061A10
+        for <linux-iio@vger.kernel.org>; Wed,  6 May 2020 16:03:35 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id w65so1929223pfc.12
+        for <linux-iio@vger.kernel.org>; Wed, 06 May 2020 16:03:35 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xmaPtEHyPvGoB0RVI/vcu9s3SLlgGAwwRY3BU1xGh4w=;
-        b=jJj8oVccZvz0VnXx/RxslRSl6lS7KnhNSbt4svw5Um1pu8LUgfMmb9WcLEL1iqiPLK
-         G+4wMfzeASCOFSnrKIGoRn/y6nbJIYl1NV6RfpsHJnnxes8xXH6iXuSrmE3Njx5tX213
-         T2IC0Deegw5PZ+VMuBtGBSRU6fSXOqAAwinVU=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fykYEAZBREXkb37+0Le9Kbmd8C0bOVDbkDBjBlbVUGs=;
+        b=lfgwokHK0Brklpzmvej4JY8UQXjySJzJ+cT+2XjoIkDqqZjSbOTNZ6iPY8vjZi9La1
+         akivu/sXiwoKnL4CijDaXD1urZM8fMii/n8Xu0NMSP+goA0/yhjTXDuxVTfoo1Bn0cmK
+         azlsh4ZzLuWf0l/Ut5hrPMr6DfpcJbBBQHiLU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=xmaPtEHyPvGoB0RVI/vcu9s3SLlgGAwwRY3BU1xGh4w=;
-        b=r4kamdV307KE1OTI85rNlQXR6Tv0s0pW012lrUHwmaBGB82QqwZldU8/ZRZomLcnip
-         yOC1TKndQTEAagc/G39ypeRC6WTRtk/MGH0aNcuBsPLOViOhAo70M5HsaQCyVoQNRV2w
-         nJVWowoWYVWmqZIYxjn6+UUNvSdCECnZfR1ih4YIhIoL0ujNPJ8MU320HmKW1/7BXCzq
-         aYFitzaN6aUnldOAUmBF2554XMNhm/GV2BLSzJFJaJLvrpg7DHEOlAskY9Bb5v3DrTbJ
-         WwSzrpuGOi/nc2Ss/6QtMFveqH/6USLZxymvPBoTKvlnPOeWSCJoU3XjBvw03201NaE4
-         JpVA==
-X-Gm-Message-State: AGi0PuaHVm1/44HUG8gkat2FCljIEVYsf4gTShnQVPMHW+jM3obbavM8
-        zoDm7/1ZPpYY2B8wJR1iTTnXxA==
-X-Google-Smtp-Source: APiQypKUO7bfvDMai2oDuvIVuwr3nwkhaoD7oZ559rsBY2hRfYMuzzVDjlXNMNfwdicLgaOeZJ2Bjg==
-X-Received: by 2002:a17:902:c3d3:: with SMTP id j19mr10226448plj.340.1588806212706;
-        Wed, 06 May 2020 16:03:32 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fykYEAZBREXkb37+0Le9Kbmd8C0bOVDbkDBjBlbVUGs=;
+        b=U/SgcXyf47Q9XpvXmSrsiz94TfJCmt2vzZYXXp9nFiDeKUdmdfvaLPdG6JWdCL2/Km
+         H6aROXfWuUCsIRn4Rr6XwajrqERr2Z6rHhvKWXlU+63ud2Q9KztUxUkdoLDtSgqQMr0E
+         eaFxRNLCuvcHIUz7tS/iUPydtFc40mU4gJJoLY8cS1A6Ehkn00p6cMqaTs2pA8dqQ8CM
+         HNClw36o/OOK+58J9upnqyWXUnJbCdIOgkLMPTCmXQlWNiS0H6Ss5u8T6jzxijpIOynr
+         ZOnaLXBtCDtmzKHI12IBH3XwJ+rNCWUgh4AnxOD6V0QoWI3Za5XQRNk/huzeSfVCJfo5
+         oesw==
+X-Gm-Message-State: AGi0PuY/rTiY4Y4nnuqh54k3s8iPZkdErAMEqMEhGp4PLUdRfL9U6qly
+        Z78z0HF8WjU8PtBONGq44xu4Qw==
+X-Google-Smtp-Source: APiQypJzs+W5WYsIPFMtcylCwrB5U4odFnrNJsA8N4YlUV03urAgiM46sr3oUpC6aJ8qe9h4yvm5KQ==
+X-Received: by 2002:a62:fc82:: with SMTP id e124mr10932061pfh.126.1588806215221;
+        Wed, 06 May 2020 16:03:35 -0700 (PDT)
 Received: from localhost ([2620:15c:202:1:4cc0:7eee:97c9:3c1a])
-        by smtp.gmail.com with ESMTPSA id 189sm2887851pfd.55.2020.05.06.16.03.31
+        by smtp.gmail.com with ESMTPSA id e2sm5555852pjt.2.2020.05.06.16.03.34
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 May 2020 16:03:31 -0700 (PDT)
+        Wed, 06 May 2020 16:03:34 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     enric.balletbo@collabora.com, jic23@kernel.org
 Cc:     bleung@chromium.org, groeck@chromium.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 0/3] iio: cros_ec: Add support for RGB light sensor
-Date:   Wed,  6 May 2020 16:03:21 -0700
-Message-Id: <20200506230324.139241-1-gwendal@chromium.org>
+Subject: [PATCH v2 2/3] iio: cros_ec: Allow enabling/disabling calibration mode
+Date:   Wed,  6 May 2020 16:03:23 -0700
+Message-Id: <20200506230324.139241-3-gwendal@chromium.org>
 X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
+In-Reply-To: <20200506230324.139241-1-gwendal@chromium.org>
+References: <20200506230324.139241-1-gwendal@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -70,28 +72,62 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for color light sensor presented by the Chromebook Embedded
-Controller (EC).
-Instead of just presenting lux measurement (clear channel), a color light
-sensor is able to report color temperature measurement.
+calibration was a one-shot event sent to the sensor to calibrate itself.
+It is used on Bosch sensors (BMI160, BMA254).
+For TCS3400 light sensor, we need to stay in calibration mode to run
+tests.
+Accept boolean true and false (not just true) to enter/exit calibration.
 
-The EC, using factory settings, can transform the raw measurement into
-the CIE 1931 XYZ color space (XYZ) and take adavantage of color sensor
-autocalibration to provide the most accurate measurements.
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ .../common/cros_ec_sensors/cros_ec_sensors_core.c    |  3 +--
+ include/linux/platform_data/cros_ec_commands.h       | 12 +++++++++---
+ 2 files changed, 10 insertions(+), 5 deletions(-)
 
-Gwendal Grignou (3):
-  iio: Add in_illumincance vectors in different color spaces
-  iio: cros_ec: Allow enabling/disabling calibration mode
-  iio: cros_ec_light: Add support for RGB sensor
-
- Documentation/ABI/testing/sysfs-bus-iio       |  27 +
- .../cros_ec_sensors/cros_ec_sensors_core.c    |   3 +-
- drivers/iio/light/cros_ec_light_prox.c        | 469 +++++++++++++++---
- drivers/platform/chrome/cros_ec_sensorhub.c   |   3 +
- .../linux/iio/common/cros_ec_sensors_core.h   |   1 -
- .../linux/platform_data/cros_ec_commands.h    |  14 +-
- 6 files changed, 441 insertions(+), 76 deletions(-)
-
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index c831915ca7e56..3d8b25ee9d80c 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -411,11 +411,10 @@ static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
+ 	ret = strtobool(buf, &calibrate);
+ 	if (ret < 0)
+ 		return ret;
+-	if (!calibrate)
+-		return -EINVAL;
+ 
+ 	mutex_lock(&st->cmd_lock);
+ 	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
++	st->param.perform_calib.enable = calibrate;
+ 	ret = cros_ec_motion_send_host_cmd(st, 0);
+ 	if (ret != 0) {
+ 		dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
+diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
+index 451885c697cc3..395c9b2b05c66 100644
+--- a/include/linux/platform_data/cros_ec_commands.h
++++ b/include/linux/platform_data/cros_ec_commands.h
+@@ -2517,13 +2517,19 @@ struct ec_params_motion_sense {
+ 
+ 		/*
+ 		 * Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
+-		 * and MOTIONSENSE_CMD_PERFORM_CALIB.
+ 		 */
+ 		struct __ec_todo_unpacked {
+ 			uint8_t sensor_num;
+-		} info, info_3, data, fifo_flush, perform_calib,
+-				list_activities;
++		} info, info_3, data, fifo_flush, list_activities;
+ 
++		/*
++		 * Used for MOTIONSENSE_CMD_PERFORM_CALIB:
++		 * Allow entering/exiting the calibration mode.
++		 */
++		struct __ec_todo_unpacked {
++			uint8_t sensor_num;
++			uint8_t enable;
++		} perform_calib;
+ 		/*
+ 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
+ 		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
 -- 
 2.26.2.526.g744177e7f7-goog
 
