@@ -1,133 +1,144 @@
-Return-Path: <SRS0=gXbi=6U=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=3fDo=6V=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.4 required=3.0 tests=FORGED_MUA_MOZILLA,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B56EC28CBC
-	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8447C47257
+	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 03:46:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 15F4F2073A
-	for <linux-iio@archiver.kernel.org>; Wed,  6 May 2020 23:03:48 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lfgwokHK"
+	by mail.kernel.org (Postfix) with ESMTP id 84337208D6
+	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 03:46:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726579AbgEFXDo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 May 2020 19:03:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46014 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726616AbgEFXDf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 May 2020 19:03:35 -0400
-Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7CEDC061A10
-        for <linux-iio@vger.kernel.org>; Wed,  6 May 2020 16:03:35 -0700 (PDT)
-Received: by mail-pf1-x441.google.com with SMTP id w65so1929223pfc.12
-        for <linux-iio@vger.kernel.org>; Wed, 06 May 2020 16:03:35 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=fykYEAZBREXkb37+0Le9Kbmd8C0bOVDbkDBjBlbVUGs=;
-        b=lfgwokHK0Brklpzmvej4JY8UQXjySJzJ+cT+2XjoIkDqqZjSbOTNZ6iPY8vjZi9La1
-         akivu/sXiwoKnL4CijDaXD1urZM8fMii/n8Xu0NMSP+goA0/yhjTXDuxVTfoo1Bn0cmK
-         azlsh4ZzLuWf0l/Ut5hrPMr6DfpcJbBBQHiLU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=fykYEAZBREXkb37+0Le9Kbmd8C0bOVDbkDBjBlbVUGs=;
-        b=U/SgcXyf47Q9XpvXmSrsiz94TfJCmt2vzZYXXp9nFiDeKUdmdfvaLPdG6JWdCL2/Km
-         H6aROXfWuUCsIRn4Rr6XwajrqERr2Z6rHhvKWXlU+63ud2Q9KztUxUkdoLDtSgqQMr0E
-         eaFxRNLCuvcHIUz7tS/iUPydtFc40mU4gJJoLY8cS1A6Ehkn00p6cMqaTs2pA8dqQ8CM
-         HNClw36o/OOK+58J9upnqyWXUnJbCdIOgkLMPTCmXQlWNiS0H6Ss5u8T6jzxijpIOynr
-         ZOnaLXBtCDtmzKHI12IBH3XwJ+rNCWUgh4AnxOD6V0QoWI3Za5XQRNk/huzeSfVCJfo5
-         oesw==
-X-Gm-Message-State: AGi0PuY/rTiY4Y4nnuqh54k3s8iPZkdErAMEqMEhGp4PLUdRfL9U6qly
-        Z78z0HF8WjU8PtBONGq44xu4Qw==
-X-Google-Smtp-Source: APiQypJzs+W5WYsIPFMtcylCwrB5U4odFnrNJsA8N4YlUV03urAgiM46sr3oUpC6aJ8qe9h4yvm5KQ==
-X-Received: by 2002:a62:fc82:: with SMTP id e124mr10932061pfh.126.1588806215221;
-        Wed, 06 May 2020 16:03:35 -0700 (PDT)
-Received: from localhost ([2620:15c:202:1:4cc0:7eee:97c9:3c1a])
-        by smtp.gmail.com with ESMTPSA id e2sm5555852pjt.2.2020.05.06.16.03.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 06 May 2020 16:03:34 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     enric.balletbo@collabora.com, jic23@kernel.org
-Cc:     bleung@chromium.org, groeck@chromium.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 2/3] iio: cros_ec: Allow enabling/disabling calibration mode
-Date:   Wed,  6 May 2020 16:03:23 -0700
-Message-Id: <20200506230324.139241-3-gwendal@chromium.org>
-X-Mailer: git-send-email 2.26.2.526.g744177e7f7-goog
-In-Reply-To: <20200506230324.139241-1-gwendal@chromium.org>
-References: <20200506230324.139241-1-gwendal@chromium.org>
+        id S1725900AbgEGDqT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 May 2020 23:46:19 -0400
+Received: from mail-bn8nam11olkn2105.outbound.protection.outlook.com ([40.92.20.105]:3265
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725809AbgEGDqS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 6 May 2020 23:46:18 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=H6RU40mxfE/ETXWqX7lULOs5+WgvJsquNu8n0tiqmxk6APKMfxqVFXyaeTHEEfsEPgxb5XT22BKI0866Hp0krt8oZs3iBWLAGLdx2I1CBG82ApBdMVCl+Aj3Glc0HppIUzqLcNN4TZhbL6JfDZT5WvB/b6Gt5Q380WkgqMAgLu4L9jtIgY+yyfLjgKXEcD0mYmPItXab41bpnBwoJSA2C6+dKvoT7W3f88S6xeLGr5aAHq5GbF5iyyvjd5hwha0YzBnJlBQ1UBkf0JtF3DHIuVqts7PdU7uTDc073ik7JBJQx7xJcUyhCwpBaLtTHsRHIE1ck4RIdpRfMVjNk2y2+A==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=pmDWlafs14Q6VMNAJHrSpZQMRnRb/5cs5bsIzxKI0cc=;
+ b=er0gLHOsKtI6pAE99dPnT+zu5y9nAIy51lLYj3KLgTxGRC7bFQiPe0kBf0Qc8LIQFzeG3fTgiVpGfjcYresH2/PIIdtZTNBl8pAR2ZofG8SeDAOp7ggIlGRtqeHiksJAiv6a1ihSwhxsDIE14xIuZeJ0WTj2g9dHsvz8rejxIM4HOUB9QnrCuajfi+VWhVlvDCvdzOvLgvrEcUBHv89we5VyxAS6/KLR60Oq+PH7ePOlQJN9Qho2TZyKQ51VGtA4KOpaMQ9P8DX6ccl/AZZMocBgISpt8qULShvgXJgMC9a6mPui+ldrnLL3LTZFU6hyMaW5QzIISrlf1GiGGWZrbw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=live.ca; dmarc=pass action=none header.from=live.ca; dkim=pass
+ header.d=live.ca; arc=none
+Received: from DM6NAM11FT046.eop-nam11.prod.protection.outlook.com
+ (2a01:111:e400:fc4d::46) by
+ DM6NAM11HT205.eop-nam11.prod.protection.outlook.com (2a01:111:e400:fc4d::408)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Thu, 7 May
+ 2020 03:46:16 +0000
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ (2a01:111:e400:fc4d::50) by DM6NAM11FT046.mail.protection.outlook.com
+ (2a01:111:e400:fc4d::121) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend
+ Transport; Thu, 7 May 2020 03:46:16 +0000
+X-IncomingTopHeaderMarker: OriginalChecksum:C64A0D1C153867C6508DF9CF4C46FD056C7998A7E745EC5D91E008066963A8B5;UpperCasedChecksum:29CAB8839F0C089A5EBE16CF563B443A6A0F09687527BF45B8C9A99B4AE4A1DB;SizeAsReceived:9673;Count:50
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc]) by BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc%6]) with mapi id 15.20.2979.028; Thu, 7 May 2020
+ 03:46:16 +0000
+Subject: Re: [PATCH 2/5] input: misc: bma150: Conditionally disable bma023
+ support
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Kate Stewart <kstewart@linuxfoundation.org>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Linux Input <linux-input@vger.kernel.org>
+References: <20200503172206.13782-1-xc-racer2@live.ca>
+ <BN6PR04MB0660B420EFA83668BBF4F315A3A90@BN6PR04MB0660.namprd04.prod.outlook.com>
+ <CACRpkdb3kG=7SQg8RGh1F=8=_mivV6p_zxpodFT=M-f3PmiyYQ@mail.gmail.com>
+From:   Jonathan Bakker <xc-racer2@live.ca>
+Message-ID: <BN6PR04MB0660BA0E181869F866594E98A3A50@BN6PR04MB0660.namprd04.prod.outlook.com>
+Date:   Wed, 6 May 2020 20:46:12 -0700
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.5.0
+In-Reply-To: <CACRpkdb3kG=7SQg8RGh1F=8=_mivV6p_zxpodFT=M-f3PmiyYQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: MWHPR19CA0068.namprd19.prod.outlook.com
+ (2603:10b6:300:94::30) To BN6PR04MB0660.namprd04.prod.outlook.com
+ (2603:10b6:404:d9::21)
+X-Microsoft-Original-Message-ID: <684cc7d2-eb84-d20a-8167-baa9b8481fbd@live.ca>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [IPv6:2001:569:fb68:9c00:8067:f823:1e15:7520] (2001:569:fb68:9c00:8067:f823:1e15:7520) by MWHPR19CA0068.namprd19.prod.outlook.com (2603:10b6:300:94::30) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27 via Frontend Transport; Thu, 7 May 2020 03:46:14 +0000
+X-Microsoft-Original-Message-ID: <684cc7d2-eb84-d20a-8167-baa9b8481fbd@live.ca>
+X-TMN:  [P1Gdv29WsRGTIvD4UhhxdaGFBX63zmW5MY41hHHiQhJkokaREGIBjHlghwolm+eu]
+X-MS-PublicTrafficType: Email
+X-IncomingHeaderCount: 50
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-Correlation-Id: 058380fa-2608-4b6d-f129-08d7f23931a1
+X-MS-TrafficTypeDiagnostic: DM6NAM11HT205:
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: FvHprMXW5AZf4lw4xUlHvj/dzwQF8wzAQBST42yfL6gB6BgmFwxxIICX7E6KoLt/U0zPvO0S/ev1iBpuHGvOLxi9PXWGOW0CRliGH0+uaT4oL7OnHFl/m3DD/rU5ptNLu8nyCNtuUVDu0bSYgFcJY2qSvXslAluQfB0Fj/sE7TqW9UCH4cQ/PEIYhdYlftQNnxN70Q/tvrNlixqqt4sRDA==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR04MB0660.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:;DIR:OUT;SFP:1901;
+X-MS-Exchange-AntiSpam-MessageData: c6LMankO2Ajf3jUDX00QucY5sdzf2jDTWVo0MxCgQYVWEOxMVcJw39iLvR1NBokYj57WbKwbzpIulozBnFjNlHYNmYrZcilXBj4iUKQm5X+ONTUyn8Js7eS1ddOEvjWhMvOagG0aYWs4OlQj/KdcE4LBCZVNvqt74vc7MRsO14PLUK7Z5ovYobxNZ5B/y+psXOyY26u+0lgOIsA/FOQcQA==
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 058380fa-2608-4b6d-f129-08d7f23931a1
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2020 03:46:16.0216
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6NAM11HT205
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-calibration was a one-shot event sent to the sensor to calibrate itself.
-It is used on Bosch sensors (BMI160, BMA254).
-For TCS3400 light sensor, we need to stay in calibration mode to run
-tests.
-Accept boolean true and false (not just true) to enter/exit calibration.
+Hi Linus,
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- .../common/cros_ec_sensors/cros_ec_sensors_core.c    |  3 +--
- include/linux/platform_data/cros_ec_commands.h       | 12 +++++++++---
- 2 files changed, 10 insertions(+), 5 deletions(-)
+On 2020-05-06 5:46 a.m., Linus Walleij wrote:
+> On Sun, May 3, 2020 at 7:22 PM Jonathan Bakker <xc-racer2@live.ca> wrote:
+> 
+>> The bma180 IIO driver has been extended for support for bma023.
+>> However, this could cause conflicts with this driver.  Since some
+>> setups may depend upon the evdev setup, disable support in this
+>> driver for the bma023 only when the IIO driver is being built.
+>>
+>> Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
+> 
+> I would just fix this with KConfig instead, like add mutually
+> exclusive depends on these two drivers.
+> 
+> Set this input driver as:
+> depends on BMA180=n
+> 
+> And the IIO driver as:
+> depends on INPUT_BMA150=n
+> 
+> It's a rough measure but this input driver should anyway
+> go away.
+> 
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index c831915ca7e56..3d8b25ee9d80c 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -411,11 +411,10 @@ static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
- 	ret = strtobool(buf, &calibrate);
- 	if (ret < 0)
- 		return ret;
--	if (!calibrate)
--		return -EINVAL;
- 
- 	mutex_lock(&st->cmd_lock);
- 	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
-+	st->param.perform_calib.enable = calibrate;
- 	ret = cros_ec_motion_send_host_cmd(st, 0);
- 	if (ret != 0) {
- 		dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
-diff --git a/include/linux/platform_data/cros_ec_commands.h b/include/linux/platform_data/cros_ec_commands.h
-index 451885c697cc3..395c9b2b05c66 100644
---- a/include/linux/platform_data/cros_ec_commands.h
-+++ b/include/linux/platform_data/cros_ec_commands.h
-@@ -2517,13 +2517,19 @@ struct ec_params_motion_sense {
- 
- 		/*
- 		 * Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
--		 * and MOTIONSENSE_CMD_PERFORM_CALIB.
- 		 */
- 		struct __ec_todo_unpacked {
- 			uint8_t sensor_num;
--		} info, info_3, data, fifo_flush, perform_calib,
--				list_activities;
-+		} info, info_3, data, fifo_flush, list_activities;
- 
-+		/*
-+		 * Used for MOTIONSENSE_CMD_PERFORM_CALIB:
-+		 * Allow entering/exiting the calibration mode.
-+		 */
-+		struct __ec_todo_unpacked {
-+			uint8_t sensor_num;
-+			uint8_t enable;
-+		} perform_calib;
- 		/*
- 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
- 		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
--- 
-2.26.2.526.g744177e7f7-goog
+Ok, sounds good to me.  If I include a patch removing the input driver, can I just drop this patch entirely?
 
+The only in-tree user of the input driver (based on i2c ids) is Intel Mid.  Not sure what the kernel policy on dropping drivers is.
+
+> Yours,
+> Linus Walleij
+> 
+
+Thanks,
+Jonathan
