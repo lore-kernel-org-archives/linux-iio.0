@@ -2,67 +2,67 @@ Return-Path: <SRS0=3fDo=6V=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FE70C47247
-	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 14:43:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD23C38A24
+	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 14:43:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 16DC120838
-	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 14:43:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 131A62083B
+	for <linux-iio@archiver.kernel.org>; Thu,  7 May 2020 14:43:17 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="USg3gbcU";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="Vr8XtRvC"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="fcTjI6zL";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="Uf0KAzsn"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725914AbgEGOnM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 May 2020 10:43:12 -0400
-Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:9114 "EHLO
-        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725953AbgEGOnL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2020 10:43:11 -0400
-Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
-        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 047Eegd5005564;
-        Thu, 7 May 2020 07:43:08 -0700
+        id S1726518AbgEGOnR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 May 2020 10:43:17 -0400
+Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:22222 "EHLO
+        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725953AbgEGOnQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 May 2020 10:43:16 -0400
+Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
+        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 047EbhbX006057;
+        Thu, 7 May 2020 07:43:10 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
- subject : date : message-id : content-type : mime-version; s=pfpt1;
- bh=FLMMta27B4eNge9zl/UsA4ypqXYUsyy7p94h0/+sClk=;
- b=USg3gbcUwfIgbTElQKW3bvLvQJBS59kvJCV5F/6UjuaesLKxEPirIYMiMho4CoJC/lgp
- T9TiYh65nTvNirK/AhkzIvhL2Std2hPzkQKxB+VLiItDVVrrbFjoEBFFlnlsIiwUjPvZ
- 9DUJsEuZUw0dvEm7X1hMnScMI1dl/clctBHHQXAbZHukM3zKwG6dfT7IgPG12bKkC7Li
- 1LdlbyOcN5PAzHobZFVGhwKwl6hgJFc6oG1vug0VXxQnuCxJ15tIw9DLsy9zW7KzKEcj
- rPTV3W0c3LM1qvmFTUDJZr6rNpd4O1Zn05HNxrzwtvAmxy+m511OB9XklhNswlRKMLAJ Zw== 
-Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2172.outbound.protection.outlook.com [104.47.57.172])
-        by mx0a-00328301.pphosted.com with ESMTP id 30sfwdjs8n-1
+ subject : date : message-id : in-reply-to : references : content-type :
+ mime-version; s=pfpt1; bh=er34X0ctctBVY/TXGsxPvBZIbWfDqgkiAj78pIAj8Cs=;
+ b=fcTjI6zLLK2EgfR4yEfQu1h6o8POIGrIQfZkewN2+wydxdKHHZB7ksdIjJBhKiYNeoiI
+ zJWrpjsjvVA10BgImQFA9pUjW3SYEJqg+rjSTfUSkqKfIisGbguBBgr3Rt1yYfjDmB32
+ r7wLHroVNyqcODsYexfvfCzcQp9Yo4iQ6dK3peSKkWbaD7ST5WuTbmp0liDisZZArpPB
+ M8vFTrJXEDIqXLbSpsWmPrI6qjkWO8bGwUnGO8qv5oiSi7vIgK7nDCbSWB8hIEn29xM9
+ bMHWlTrS9ZQzEuSiJo4BLKtLbVuTVEdTmn6CKchHgRqnQsyWSm2l7b3uqE4yKnx1XCRJ qw== 
+Received: from nam11-dm6-obe.outbound.protection.outlook.com (mail-dm6nam11lp2174.outbound.protection.outlook.com [104.47.57.174])
+        by mx0b-00328301.pphosted.com with ESMTP id 30s4tnatwj-2
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 May 2020 07:43:07 -0700
+        Thu, 07 May 2020 07:43:10 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=mRgBBi5E4ZIboc+0xw8fRhNOlcjMhJHHObrrFsUvyzBtCVChr7RK7xCHd1uExCknpd/S38otZG2iKR601fsSDTSYIBx381s3sWAqhPF3lsSjoV4N5z7vfNRMeW5Cwck4d3Hv51lP8HqUSXCLNfGSr2utC49nuH5K1rMG6KRez01XZIh7OUgyNTTC/7DG1sz7vomCqFufdwkyK+RcyljSc4KUV2wmokeEqV+Pag217BvQkVQyf8k56BmKoiMSfdSmSkpDm9kpg7YB2/9icOiOirikmU23RCoMYyZvnWwJXov2mN1zYomDHi5oFYCaZDxgRol7CjqGSm1GvYUsMMHkdA==
+ b=oG0gzy5zyCeQC4WcozcqeVALsDheHasIpnySvnU4fdBIvZj2UnUa2bw5FZDU5zDfKmRNx0OL0EiW6NJHE9btdwjCi2vLTTjSkOvWmX1BXFlNG8d9q1VimsiEg/HGm0PtxJ/7LpQAds5qwYQamwwF3D7sZOhjMyqqzpz7VUO9fF1nBPIxMLU/GqKKpDoVIEaOPszpQb5aME08kcFDxFSaCfs+Pbg1em+wJfro6l0YOVW6HVgyZECF9jm828zEmW8oN/AhF4dX83J0Jiw9IUA61DF7uEUsErlMGDc98Rj95IsB9Q4HUFai0Qm5Y4VquSccyWCHDPS/7I41Xb+f75cMFQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FLMMta27B4eNge9zl/UsA4ypqXYUsyy7p94h0/+sClk=;
- b=h0D1SgJzJmzk8jc1YdV57uUf1DRSiy32OY685zLfZ6ZJoVxi/FEX9qs7811emwE/1ZjGveFkADzsW3/uRcgBliMzIubQ6sBZmbXElSWcd4pU6nq0FrCutopz0w+cU2gNe9aoPdNqd01WoAZwy221Eno2Ut0oATmGVAPuaI627TAxV6yq7ctCBgCDoo/xIpZghIPby76RDsnoEOEzy1clnjD1MFNLqslj9vx0gwYcLDVuWKAiY660JPdYPjOSyzNWOLpOh6RC0oyEkupLqiI/EYMjpY/ZIyv6yQ3qoZmUEf3qsbxYXeIPBIxfolPF7GJGOEmfXXfqkgvXgpFf6BVHBw==
+ bh=er34X0ctctBVY/TXGsxPvBZIbWfDqgkiAj78pIAj8Cs=;
+ b=lUXF/tVbfVMBY/8DChFiVcVhCxsJWUjWG7ZQn3GZZVGm2AkHKVTZvybRpIkQs5f3+l/Fo84CpcxJMoJ/wcKUu8nLbTwmM1mG5w47vDwVSjOwrNcvM6SZ4m9orlV/JnZ3MGOOBlDPD7XbT7mrkDapiX/0DD4V+SpPSsYZclGrKe6/QFiR/uyLiXVzLfJOVA8VXpe8ERM3p6z5waGm9iQZdhsUIkS2F0NRqYFkJlhwJ6z8KLjYQQQDFo9OCHpy4Z1tQIixHjDMPPDD9eNWaFFBlHzGVCt2xbQgsyvoNVV7X5iapPf0Zx9lFEg9lalac8rdthKxKBjrqZgUj64X0Dx/og==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=invensense.com; dmarc=pass action=none
  header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=FLMMta27B4eNge9zl/UsA4ypqXYUsyy7p94h0/+sClk=;
- b=Vr8XtRvC0cktAPZuiYyflLhq3Cglv2/9Rg6lp6WKzzkcz+cspj5aKSVMFnQYMpqmfKgH2PtzsSeqflo935KSFveaxJeQvuPw3JtlGl1AKY+UAlVql0jHwzVl5uEtvyArGOjYDOSBUPl4yY9YZwxfOtTBRnUSgUsgtVgB6vl8C8c=
+ bh=er34X0ctctBVY/TXGsxPvBZIbWfDqgkiAj78pIAj8Cs=;
+ b=Uf0KAzsnJ5/G7+gXsh4QK9+J6qCGyxfoisQ+z/EZXkf6G8oOdWpG8yXwpNyMfCi/UjI5YVXhjNvA8kxcPJsPEGMXEMGVG9WTiFxns4AJIKRLo9R4Bx/s4uBczST7FQEiqA5Ui49SXGG5ebYjhweIoCV1rIFje6GMbLyYfEOV/e0=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=invensense.com;
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com (2603:10b6:208:265::9)
  by MN2PR12MB4269.namprd12.prod.outlook.com (2603:10b6:208:1d4::7) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.28; Thu, 7 May
- 2020 14:43:05 +0000
+ 2020 14:43:09 +0000
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::7471:da8b:8ca1:6af0]) by MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::7471:da8b:8ca1:6af0%4]) with mapi id 15.20.2979.028; Thu, 7 May 2020
- 14:43:05 +0000
+ 14:43:09 +0000
 From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
         mchehab+huawei@kernel.org, davem@davemloft.net,
@@ -70,123 +70,187 @@ To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH 00/12] iio: imu: new inv_icm42600 driver
-Date:   Thu,  7 May 2020 16:42:10 +0200
-Message-Id: <20200507144222.20989-1-jmaneyrol@invensense.com>
+Subject: [PATCH 02/12] iio: imu: inv_icm42600: add I2C driver for inv_icm42600 driver
+Date:   Thu,  7 May 2020 16:42:12 +0200
+Message-Id: <20200507144222.20989-3-jmaneyrol@invensense.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200507144222.20989-1-jmaneyrol@invensense.com>
+References: <20200507144222.20989-1-jmaneyrol@invensense.com>
 Content-Type: text/plain
 X-ClientProxiedBy: LNXP265CA0048.GBRP265.PROD.OUTLOOK.COM
  (2603:10a6:600:5c::36) To MN2PR12MB4422.namprd12.prod.outlook.com
  (2603:10b6:208:265::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LNXP265CA0048.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:5c::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Thu, 7 May 2020 14:43:04 +0000
+Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LNXP265CA0048.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:5c::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.26 via Frontend Transport; Thu, 7 May 2020 14:43:07 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [77.157.193.39]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: bd476020-509d-465f-6808-08d7f294f3a9
+X-MS-Office365-Filtering-Correlation-Id: b4d962cc-56d4-407f-1a30-08d7f294f5ea
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4269:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB426915120EC9917242B0250EC4A50@MN2PR12MB4269.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Microsoft-Antispam-PRVS: <MN2PR12MB42695CDD60FF2218A174E6E1C4A50@MN2PR12MB4269.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:843;
 X-Forefront-PRVS: 03965EFC76
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: npQ4heBtGSplG76oxvyhH4IBGFbpoE4grymmO8BgNhtB1lpvT6SYY49l+QAnDCO6DLZ/q6UITX0S8w7nDPq9/NLoNZfeueVEg3Hm8Y0IKtGoWJQRid8vSump4jSnfEddDvc9XxNbHcDkwpaYRQZ7cvdTwybKNOoQEY6KaTZOSvcRSqVl5wvBdVkzrqPGv+RNwfnCUYebqE5pu5kUrYsY4QYg/5piAkGYK0eLN6BxlD78ger2pcHGP0v66RoXC8/ccc96BsVQsveCjNDOZpW7LnkPYEzAcaF/G2h9xKhIA8QMh8t7r6Aqw+Hf21+gEzgr+yEpffzkWOLQAEZuLxWBFWiv84jVDdEgFbwvrJh3lKjAV2cITn1n1TvyUGiY0ehxyMfLHXPcEcgmBBjUc4PTwWpEdBBI+XF4Du3o0yqRH7cy4Ao4JveX1BrKzmG+p0YFd5CRVUwwEkjjKpe9G6K6IfoXelcbKl4cimABG+0juoIjAMBAu71qNn7Y1zLKYaoB+w7EJ8433HZypuSIN0B90g==
+X-Microsoft-Antispam-Message-Info: kn8YuyNJD2Y9r0ku8F6frjmqsLfza+SQfsytq3a9E/YmlViqcjXygSGCU3+OyV2JLoXtmy+i4zgdsPl3Uqs0ED+DDDwD0u/zwgauT4ViqDxa9yx5GqbVJ1dAQ2FTczXG5GkxHuvDSjspDnO9mCMDpP6cFEZUZkamTTLfdATjMuHOdK7ZneVH22TZ4by7K7mVLBc2UIEEvUSAyjRRCg3u9WbbCqsFoHh+Za8ChiHf0z7jBq9p33vChI7oUgyQBhL/OY56FxaJb853lSie5JW307rV+S2tncikJNsvkSSUtj/tppQCVyO7f531c2rYOHiX09lCjVg2MqecwSQ2FZdOfUHnbLn2oZFALQD0sHC5abg411C0HVzzNMJSzhT7O27BzlaSBhhjvfH5AfScVZ7UDNmj545BJCW0+ZySW7hkpG61J2S66288PZeOitu+P+bAMSFWAp/I4UKtKNrNTSfgk+TZrWWItNrMROa23cGokBN8zK5NoWqgLS7lxzE81woAh0SOQQ7Z7lBOdIiQMlUaog==
 X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(396003)(136003)(366004)(39850400004)(376002)(33430700001)(186003)(6486002)(478600001)(16526019)(5660300002)(4326008)(33440700001)(66556008)(8676002)(1076003)(36756003)(316002)(66946007)(66476007)(6666004)(52116002)(8936002)(86362001)(2616005)(83280400001)(956004)(83320400001)(83290400001)(83310400001)(26005)(2906002)(7696005)(83300400001)(107886003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: dcka/gsgMm+BqeX8TTMzVbp4WUxovW5fgV5rtjrDJUbOb+hlCxdG9Ci6Ku5RzVt8ABACXJA03fNDJ34C3glhH6MMyNzm0A0LE07oa9r5T1rtHLzBBdHw46SfDgbjon13L3i6OXaBgWofVA1naXRLcildrzw/jOoNEPwmGGBPlkIySe9SZbTUTZu5ljp9mpI4xHWjtqqAgXsmqz/IS1gaLlnB3Mo9YWtw1qfqMxLt0QPUODtnmPBBf+aKhBdXrf7qPZTnHAUeIzvRm6bUpyAFlCpySMHq+Zu5u3VrrO56BnkRasrHJDSuqgtWqbSzq/pIf5+HgVIlfxr2POLzX087iV3VaCG0X+peK6B7soD8C+ad3cz0px7wuD6VMPhmlAHkBQUmwrpxPZBDg/Ts63L6E779joHuIjzhEGLFjeLk2aghjXNsHPc5GVeLzHfOuUy2+DrJVI5DEhhrZgTj8NmD5wm86UEhKX/fIocp2DDKSV7voNPNWcjHfRF8nQwr5EE+SRHLfLMdHy3b2TFTDfk6tHI1d+MOW0kNdQxjLKUFm8djfxKhzxZk0REyhRMDfW+pryOvtugfaMFdprgGrkOSwDTc92U0Fps7L+BhGpwpNLbzX1LGlMfu7xg9nskfmQ5BE+dcyoXfUdpgcvnGqbF9IGqzowq3iCKNlBzTTf09g8eEtoK9OEHDFE+fYyLsYVe5pwgjU58svPtp3SXRDsX94IdH4LsPrgLGOfoedzGrpXLbykm84NVUMesxCpFt/4zrcKikQ8DcFUmm80NTtpMFTQ+JkuSRr7wLa9w16QZJo7o=
+X-MS-Exchange-AntiSpam-MessageData: Ia8nNKRS+K89yLUegzsxo0McCAI2QnxKxuEnoKl3lKMATVsoyrAdbBuG1GaBGfoTJ7BaeMoaPaVAWV3G8h6eHi1C/qrtXTEpPOq3PNrOJ/8qvCFXWBsjxSdMHQ11RFFY/hJUEYt1tAzwv9AFiPu6m0cKoC5eI8QJgVSfxa1qKAzYo6/MpzbDiPr8fLF10NoB+2ws6ucxhaWAbYx88vL4BOxvrq8PHKZ0bnXOHpSi64S0us3oCZdBEKerKLBErXKmbIeymD3+aaJQ8oFSBIAasDC7QUuL0yvK3t+CVddblQzvidy64a6+DxybqPf0cXDNiTEw1IGKlz/+UiYrCv/ENkHrp9R6h9wzv5mQsutloPdFePtXtW9OZgFNA9SzDPTFA4CBl/p/AiybIQ7naaryWCvnPmy+P3SpsMePDnRcu2CLzdqZqEMO2UQBTshulWLO8M6023Wy544MXCtSkV2Jm7GGSMlj+6fbHCJnwEpVAu8tiNUTHLh6M606E2+3qKFQYO2qnXgpOjFNtueSwLePtqH3hEOtYqkzFcgVegbTCRPh3QHvHZH0g8dixI5mx3WnyeZaJ9bzANRI97hHHuDqL8vIjh98AE6CMGaCVU3A2RBGhgTN7fgHK3HZ4Ba6e6S9Mz0TMfs0IbifJvcaxNI2sFP6VA1mK+aj05uYSPUGVCcbnh+R77635L1yYJUhWiUp1EJwqesOwQHFaM3+hDkj7srZTnjQ4P2d5GXeGYa4gAz8YJEKwpq/q+jV5OdU5NUmogxuqCMcwD6zs4RH5ojndKcdwaPIJTXJFE0Ttb/28rQ=
 X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: bd476020-509d-465f-6808-08d7f294f3a9
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2020 14:43:05.5770
+X-MS-Exchange-CrossTenant-Network-Message-Id: b4d962cc-56d4-407f-1a30-08d7f294f5ea
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 May 2020 14:43:09.3137
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: 6hzRw886e8xw9HV3J86GFgt6QxNp/X+fZ8QLbnikNwDkJWAPXnWzJQBeoimpflwROgyXvkgxkZlzz+Be1I5n4h/cT+pVWQo/1YBKqUcxHDk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: IhfZf7tBM762Ndi4cEZwmLGFfeT/jTOvJn2r0+G+KVAHR/xec7Vkn+hghHxmsUJzjtrXrNfGwY4XRJdSlQBRGVTUTsgFNXx+ZN1l7t669Jw=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4269
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
  definitions=2020-05-07_09:2020-05-07,2020-05-07 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 spamscore=0 impostorscore=0 suspectscore=0 mlxscore=0
- phishscore=0 bulkscore=0 malwarescore=0 mlxlogscore=712 clxscore=1011
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 adultscore=0
+ priorityscore=1501 spamscore=0 mlxlogscore=999 impostorscore=0
+ suspectscore=0 phishscore=0 malwarescore=0 lowpriorityscore=0 bulkscore=0
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2003020000 definitions=main-2005070118
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series add a new driver for managing InvenSense ICM-426xx 6-axis IMUs.
-This next generation of chips includes new generations of 3-axis gyroscope
-and 3-axis accelerometer, support of I3C in addition to I2C and SPI, and
-intelligent MotionTracking features like pedometer, tilt detection, and
-tap detection.
+Add I2C driver for InvenSense ICM-426xxx devices.
 
-This series is delivering a driver supporting gyroscope, accelerometer and
-temperature data, with polling and buffering using hwfifo and watermark,
-on I2C and SPI busses.
+Configure bus signal slew rates as indicated in the datasheet.
 
-Gyroscope and accelerometer sensors are completely independent and can have
-different ODRs. Since there is only a single FIFO a specific value is used to
-mark invalid data. For keeping the device standard we are de-multiplexing data
-from the FIFO to 2 IIO devices with 2 buffers, 1 for the accelerometer and 1
-for the gyroscope. This architecture also enables to easily turn each sensor
-on/off without impacting the other. The IIO devices are using triggered buffer
-as sub-interrupts of the device iio trigger using the interrupt pin. A complex
-timestamping mechanism is added to handle correctly FIFO watermark and dynamic
-changes.
-
-Jean-Baptiste Maneyrol (12):
-  iio: imu: inv_icm42600: add core of new inv_icm42600 driver
-  iio: imu: inv_icm42600: add I2C driver for inv_icm42600 driver
-  iio: imu: inv_icm42600: add SPI driver for inv_icm42600 driver
-  iio: imu: inv_icm42600: add gyroscope IIO device
-  iio: imu: inv_icm42600: add accelerometer IIO device
-  iio: imu: inv_icm42600: add temperature sensor support
-  iio: imu: add Kconfig and Makefile for inv_icm42600 driver
-  iio: imu: inv_icm42600: add device interrupt trigger
-  iio: imu: inv_icm42600: add buffer support in iio devices
-  iio: imu: inv_icm42600: add accurate timestamping
-  dt-bindings: iio: imu: Add inv_icm42600 documentation
-  MAINTAINERS: add entry for inv_icm42600 6-axis imu sensor
-
- .../bindings/iio/imu/invensense,icm42600.yaml |  90 +++
- MAINTAINERS                                   |   8 +
- drivers/iio/imu/Kconfig                       |   1 +
- drivers/iio/imu/Makefile                      |   1 +
- drivers/iio/imu/inv_icm42600/Kconfig          |  30 +
- drivers/iio/imu/inv_icm42600/Makefile         |  16 +
- drivers/iio/imu/inv_icm42600/inv_icm42600.h   | 400 +++++++++
- .../iio/imu/inv_icm42600/inv_icm42600_accel.c | 752 +++++++++++++++++
- .../imu/inv_icm42600/inv_icm42600_buffer.c    | 373 +++++++++
- .../imu/inv_icm42600/inv_icm42600_buffer.h    | 162 ++++
- .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 674 +++++++++++++++
- .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 764 ++++++++++++++++++
- .../iio/imu/inv_icm42600/inv_icm42600_i2c.c   | 117 +++
- .../iio/imu/inv_icm42600/inv_icm42600_spi.c   | 117 +++
- .../iio/imu/inv_icm42600/inv_icm42600_temp.c  |  86 ++
- .../iio/imu/inv_icm42600/inv_icm42600_temp.h  |  32 +
- .../imu/inv_icm42600/inv_icm42600_timestamp.c | 246 ++++++
- .../imu/inv_icm42600/inv_icm42600_timestamp.h |  82 ++
- .../imu/inv_icm42600/inv_icm42600_trigger.c   | 188 +++++
- 19 files changed, 4139 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
- create mode 100644 drivers/iio/imu/inv_icm42600/Kconfig
- create mode 100644 drivers/iio/imu/inv_icm42600/Makefile
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600.h
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ .../iio/imu/inv_icm42600/inv_icm42600_i2c.c   | 117 ++++++++++++++++++
+ 1 file changed, 117 insertions(+)
  create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.c
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.h
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_trigger.c
 
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+new file mode 100644
+index 000000000000..b61f993beacf
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+@@ -0,0 +1,117 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2020 InvenSense, Inc.
++ */
++
++#include <linux/device.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/regmap.h>
++#include <linux/of_device.h>
++
++#include "inv_icm42600.h"
++
++static int inv_icm42600_i2c_bus_setup(struct inv_icm42600_state *st)
++{
++	unsigned int mask, val;
++	int ret;
++
++	/* setup interface registers */
++	mask = INV_ICM42600_INTF_CONFIG6_MASK;
++	val = INV_ICM42600_INTF_CONFIG6_I3C_EN;
++	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
++				 mask, val);
++	if (ret)
++		return ret;
++
++	mask = INV_ICM42600_INTF_CONFIG4_I3C_BUS_ONLY;
++	val = 0;
++	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG4,
++				 mask, val);
++	if (ret)
++		return ret;
++
++	/* set slew rates for I2C and SPI */
++	mask = INV_ICM42600_DRIVE_CONFIG_I2C_MASK |
++	       INV_ICM42600_DRIVE_CONFIG_SPI_MASK;
++	val = INV_ICM42600_DRIVE_CONFIG_I2C(INV_ICM42600_SLEW_RATE_12_36NS) |
++	      INV_ICM42600_DRIVE_CONFIG_SPI(INV_ICM42600_SLEW_RATE_12_36NS);
++	ret = regmap_update_bits(st->map, INV_ICM42600_REG_DRIVE_CONFIG,
++				 mask, val);
++	if (ret)
++		return ret;
++
++	/* disable SPI bus */
++	mask = INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_MASK;
++	val = INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_SPI_DIS;
++	return regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG0,
++				  mask, val);
++}
++
++static int inv_icm42600_probe(struct i2c_client *client,
++			      const struct i2c_device_id *id)
++{
++	const void *match;
++	enum inv_icm42600_chip chip;
++	struct regmap *regmap;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_I2C_BLOCK))
++		return -ENOTSUPP;
++
++	match = device_get_match_data(&client->dev);
++	if (match)
++		chip = (enum inv_icm42600_chip)match;
++	else if (id)
++		chip = (enum inv_icm42600_chip)id->driver_data;
++	else
++		return -EINVAL;
++
++	regmap = devm_regmap_init_i2c(client, &inv_icm42600_regmap_config);
++	if (IS_ERR(regmap))
++		return PTR_ERR(regmap);
++
++	return inv_icm42600_core_probe(regmap, chip,
++				       inv_icm42600_i2c_bus_setup);
++}
++
++static const struct of_device_id inv_icm42600_of_matches[] = {
++	{
++		.compatible = "invensense,icm42600",
++		.data = (void *)INV_CHIP_ICM42600,
++	}, {
++		.compatible = "invensense,icm42602",
++		.data = (void *)INV_CHIP_ICM42602,
++	}, {
++		.compatible = "invensense,icm42605",
++		.data = (void *)INV_CHIP_ICM42605,
++	}, {
++		.compatible = "invensense,icm42622",
++		.data = (void *)INV_CHIP_ICM42622,
++	},
++	{}
++};
++MODULE_DEVICE_TABLE(of, inv_icm42600_of_matches);
++
++static const struct i2c_device_id inv_icm42600_ids[] = {
++	{"icm42600", INV_CHIP_ICM42600},
++	{"icm42602", INV_CHIP_ICM42602},
++	{"icm42605", INV_CHIP_ICM42605},
++	{"icm42622", INV_CHIP_ICM42622},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, inv_icm42600_ids);
++
++static struct i2c_driver inv_icm42600_driver = {
++	.probe = inv_icm42600_probe,
++	.id_table = inv_icm42600_ids,
++	.driver = {
++		.of_match_table = inv_icm42600_of_matches,
++		.name = "inv-icm42600-i2c",
++		.pm = &inv_icm42600_pm_ops,
++	},
++};
++module_i2c_driver(inv_icm42600_driver);
++
++MODULE_AUTHOR("InvenSense, Inc.");
++MODULE_DESCRIPTION("InvenSense ICM-426xx I2C driver");
++MODULE_LICENSE("GPL");
 -- 
 2.17.1
 
