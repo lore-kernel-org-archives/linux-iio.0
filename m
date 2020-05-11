@@ -2,249 +2,967 @@ Return-Path: <SRS0=l02c=6Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 113BEC54E8E
-	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 14:56:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A35EFC47255
+	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 16:50:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DDA89206F9
-	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 14:56:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6F3BE206D7
+	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 16:50:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=analog.onmicrosoft.com header.i=@analog.onmicrosoft.com header.b="T+8O+u5p"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="aFIxNTpF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728000AbgEKO4v (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 May 2020 10:56:51 -0400
-Received: from mx0b-00128a01.pphosted.com ([148.163.139.77]:60256 "EHLO
-        mx0b-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726068AbgEKO4u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 May 2020 10:56:50 -0400
-Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
-        by mx0b-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04BEoScJ030778;
-        Mon, 11 May 2020 10:56:34 -0400
-Received: from nam11-co1-obe.outbound.protection.outlook.com (mail-co1nam11lp2173.outbound.protection.outlook.com [104.47.56.173])
-        by mx0b-00128a01.pphosted.com with ESMTP id 30wp9b58h3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 11 May 2020 10:56:33 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Yc7vUbVg4Or/ZHYblG2wOoUEzXxbOl2OQo5pvCtruPX0BZZdUD+BvGCpTsee0JuWAfJE+/4j6PJybQSxVj43LHsN0Mn0VxCanRkhjoal3etyKEI9JlNTvtGZ/kZuc7qz2sTLh2jnIvXyVdf1lomdvT/z44PhT0YUHj+z2oa3rftpXzgFlCDReX2cjjWtV5Q/sfFxXMcfKixZFiXSBWJL48owTIGOAJEpFcX/NOcz3iRB0z4vRf5heTcWJ3rAoOWaJvMDE0MAtm6KMTW4mkiRB7WjO09hh3pMESK0Jgt2sTIhUSnqDNaomJ8ZIpkml8pXUi8FJkxZFqJ+4A8wXlgu3A==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UpHZj9Ux6PJM2mEHEDIryQJAT+snGH1wsI1HUknu7ZY=;
- b=cI1SxnF41kc2TTtelALGFnltO1NWDgr+BXabTYgOMbivS6Xn0IghRsbkp/3IPx5lkMZvMemmkt5fhjUCS3ZiNbPk6ptb8q83/uMY3VkrWcOPyJYudBB9BszOaQjSqJZrkS7sTF9xXHGUK5kCM9Xo99GVeVjJMGlVy/1ZHStUMUAe6Osj9Yz+jh34hfLAYtElAjjc7nI8GAoq8LHz2HEl79yKiybD9Y/l75RMidTpFQbZpSrQry29NXNcct9z9E/r7/OiA20V2UpxPmYA+7dzyAKJF1HS5p8IZAE5bBsxIN3pn/k5fxqxkR/3kF6a6RsY6hK7wW7PrAJnp7Ye/wAuuA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
+        id S1729730AbgEKQuc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 May 2020 12:50:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33318 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729120AbgEKQub (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 May 2020 12:50:31 -0400
+Received: from mail-qv1-xf43.google.com (mail-qv1-xf43.google.com [IPv6:2607:f8b0:4864:20::f43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2648BC061A0C;
+        Mon, 11 May 2020 09:50:30 -0700 (PDT)
+Received: by mail-qv1-xf43.google.com with SMTP id di6so4815480qvb.10;
+        Mon, 11 May 2020 09:50:30 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=UpHZj9Ux6PJM2mEHEDIryQJAT+snGH1wsI1HUknu7ZY=;
- b=T+8O+u5p4mEcdZj21I7L3lH7laHLFw69yOMm3u1YgEPGrFlGaxcxa71qi5wkV1HXnQ4NZxnKDyNovtvDN97ZydSG7U9h5Gy/1bR9GLClQjALuRHPXUXJitYJpSPNqcMKpYNVhI7nZRa855ZGd1a0kD3HoY1k9SF0AOEc1CQjZcA=
-Received: from DM6PR03MB4411.namprd03.prod.outlook.com (2603:10b6:5:10f::14)
- by DM6PR03MB3433.namprd03.prod.outlook.com (2603:10b6:5:ac::17) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.33; Mon, 11 May
- 2020 14:56:32 +0000
-Received: from DM6PR03MB4411.namprd03.prod.outlook.com
- ([fe80::e02f:b3c0:d1e9:5eaf]) by DM6PR03MB4411.namprd03.prod.outlook.com
- ([fe80::e02f:b3c0:d1e9:5eaf%3]) with mapi id 15.20.2979.033; Mon, 11 May 2020
- 14:56:32 +0000
-From:   "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>
-To:     "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [RFC PATCH 00/14] iio: buffer: add support for multiple buffers
-Thread-Topic: [RFC PATCH 00/14] iio: buffer: add support for multiple buffers
-Thread-Index: AQHWJUAdPxP6vzcVf0GdP2M4m7Jctaifc8QAgAGoDQCAAZjjAIAAAUIAgAAoyACAAAXVAIAACUqAgAAQVwA=
-Date:   Mon, 11 May 2020 14:56:31 +0000
-Message-ID: <04fda2eb89244dd2bf8e024d4b4405eceffd016c.camel@analog.com>
-References: <20200508135348.15229-1-alexandru.ardelean@analog.com>
-         <a9a47e84-b933-cca6-dcfb-d97a51c8bdd4@metafoo.de>
-         <20200510110958.29046a18@archlinux>
-         <8c5d9ef5ed4ea9037c5459daa2044d1cd7c5db7a.camel@analog.com>
-         <c88b17c3-a9d6-e755-04e8-bc9f225e2a3b@metafoo.de>
-         <554fe46f0cdd1cafb313f534c0edd93f5686b806.camel@analog.com>
-         <7d2c8174e345bf8e241d48de65066d2606143503.camel@analog.com>
-         <9ae7e69b-f4ce-dd2b-d70b-2aac66b19814@metafoo.de>
-In-Reply-To: <9ae7e69b-f4ce-dd2b-d70b-2aac66b19814@metafoo.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: kernel.org; dkim=none (message not signed)
- header.d=none;kernel.org; dmarc=none action=none header.from=analog.com;
-x-originating-ip: [188.27.130.47]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-ht: Tenant
-x-ms-office365-filtering-correlation-id: 5135d340-acda-49a9-2fb1-08d7f5bb7e2f
-x-ms-traffictypediagnostic: DM6PR03MB3433:
-x-microsoft-antispam-prvs: <DM6PR03MB34338EF8DBC569D8A11EF583F9A10@DM6PR03MB3433.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:9508;
-x-forefront-prvs: 04004D94E2
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: Acsms36ItUpeueUdYijeF4XR3QBtePkgCVJhxOgVP37CKsx8YCpXnxxN5xiFVyzJLA9PJBOUX2MWZyVOWZCiWPNJnITs7mKDTfBzwKWgOJD2buNkpEdOnWbC+Dns9OTqtWcXPpo7Zms0jPDl29dEMRNHAlfMnN6kFuZmE92VB4POJmmK6OViYjmNwly5xbKBIIRPYfqZu9IXuPvNkFXLECEDQikkg6NEN87SCD11yYqO0HDePRJvcWOz6xWJTE4WxND56wD0FAeg7/En86ENZwXhmLXrPrGutnHxcsma11y2t6Kkya/klQ3RYXZD1UA4ZboKVsR2DX0C91hN9wLZSlNPvHu+BLisTHFOwTcAfIVRB93MPBP+PcgB37cnCeTcReAWl05YA9fkeGI4JxZVoiLXPiWFMhSkH+g+HWR1jT0XQxGqNqsTucGQZTtIeUPyXAS9Xr4i2jPcZ1Cyvyy7GRI9sfCTib1p091U8d26/OYmMPDc2uMiS0L6mXywlStH3JmrnWkz73IcquhmH4VLtw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB4411.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(366004)(346002)(376002)(136003)(39860400002)(396003)(33430700001)(66946007)(5660300002)(66446008)(64756008)(66556008)(36756003)(71200400001)(6486002)(4326008)(6512007)(2906002)(8676002)(110136005)(54906003)(33440700001)(86362001)(66476007)(8936002)(91956017)(76116006)(316002)(26005)(53546011)(6506007)(478600001)(186003)(2616005);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: uXuI0AO5u7dFqcTJvdK11B0289Va++XJuaN2Lq5hOrOgkiB28qFAOP876VlasTzYu+tp9+hS1zwezbGvd7yKYBVaepK/ytVmnPRT+OIG5/WSCi7wdJBb0tnrbn3SEspSeHG2vQgWK/oq/bEDz7UEQTWiKlWM7AzBXH3zwDeGVmQgvuhDUqMEK+yihgbMUv2ES457PiCZJ/eWuGQOMPvr2qZaYnKtAOtn9ufyAeJsptkbVzW4m1XCKcZPgM5L0UTLu/osC71QOo/PN8jjIibYtxSsaoo3b8XJk+40qPbdn7WL2fBVvLq9CTinvhuac2AiAj3s4YjdbKVAz9jow6KdkLDqyhdSZmGAw9zMVx3L1DeR20R5vrpjyPOKLONdD33mtUKYHoz+SqPFBUV5cwJofr2T0bGshbALP8izRq+adIFftp96nO/Jw6OMqSVDVjUMchmm0G7X+55Rb0vmSG+Ni6s38wMLShkY7MVzgP4lxA0=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <24511EBAFDA16140B274A8789AB0A461@namprd03.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=5fOl/eG2h718tSCREnWRWFvf6/9gzpZjOaIUY7+985g=;
+        b=aFIxNTpFMm0WOq96jYZCy5CQ8jkNSX2E1oBFjGSOSMAmE9rwLH7DP/u9wDZFdkCr/p
+         VdjBj2v07Ly66sQOatAU3b8o+LxRE4babPbD3XE/qIbtH9/PEzJzM723jaYvnDC91cBm
+         1LMMElrPrvCIdSJiwv37wzOYvrTQTQOq2AP8z46pXjLYhHwNdspICnqoQAJ7XXD7mhf9
+         K/CPad5df44oZAYAZLRsV2LhYP3W/q9MO5FFb/O1/QnNaIFfQ/YiBRfoKlqs67RcWY6B
+         QUbfuJ48ocUS2A7QTfc3kV41XDaP54rjiPjMZjUtC8yudsxeCsXMkYClrj3gOz8Zen/l
+         h29A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=5fOl/eG2h718tSCREnWRWFvf6/9gzpZjOaIUY7+985g=;
+        b=QWf5tmNHHKhIcJtaow4mGuKOZmCx9Nq7ZYL3EpwnUSlMUYPICCqWfSz2Tdq+/gZG6r
+         9+MBee3oaMRi0hxqDcar5N8a38Q5b9Zpd8BFpulRyNNMIZ/u8Qh57aT5I/9GuwX7YDy8
+         +dH8deyj8Hb81n9qzvOAsfLHDnXcUaJWVvtUtvuK6J1POux75kNjM5N9R8X/0U7/cctm
+         brgRDjTz4lQOSZsUdAYtssMQqhbM6JwoNZxoKZSiBV7C++l0i7zbi1dDxTgjJxE1JbsA
+         O5PqtTuWh8KN0Vq53mIk5Ka2w76O6VvMKdTul8lXRo7xLSRouAblzdzYf/vYeLqU8VwM
+         BuDg==
+X-Gm-Message-State: AGi0Pua+4knjIkvGzyXXeI2HA4gbhqQA3mTTdx/gXY2rDotKGDGO6fML
+        S3i6o6b+xpy+dmKbLD9t7ilqr6uDafU=
+X-Google-Smtp-Source: APiQypK8VPrhltvJcE1G/6TndY8VlNFQqumMTn6N96/ldvdoVEr0U6XuUPOsUyvRlj9Y1uotCmuMZw==
+X-Received: by 2002:ad4:4d44:: with SMTP id m4mr12071487qvm.236.1589215829006;
+        Mon, 11 May 2020 09:50:29 -0700 (PDT)
+Received: from walkerma-glaptop.roam.corp.google.com ([96.75.216.153])
+        by smtp.gmail.com with ESMTPSA id o31sm5066085qto.64.2020.05.11.09.50.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 May 2020 09:50:28 -0700 (PDT)
+Date:   Mon, 11 May 2020 09:50:24 -0700
+From:   Matthew Walker <mattofak@gmail.com>
+To:     Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        jic23@kernel.org, linux-kernel@vger.kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
+        mark.rutland@arm.com, John FitzSimons <jfitzsim@google.com>
+Subject: Re: [PATCH v5 2/2] iio: accel: Add support for the Bosch-Sensortec
+ BMI088
+Message-ID: <20200511095024.69425879@walkerma-glaptop.roam.corp.google.com>
+In-Reply-To: <20200324080309.12171-2-mike.looijmans@topic.nl>
+References: <20200324080309.12171-1-mike.looijmans@topic.nl>
+        <20200324080309.12171-2-mike.looijmans@topic.nl>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 5135d340-acda-49a9-2fb1-08d7f5bb7e2f
-X-MS-Exchange-CrossTenant-originalarrivaltime: 11 May 2020 14:56:31.9336
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: Ar+hbRHagkmhjLqLYwlbPX6jTo6ER33N2835IfH4X4J8TzB13MeG8yV0gt+H0yMc0hfxH9jkQyvRSyjqPvhdaK9dWsGqVyqoj2L4xAgmFOI=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR03MB3433
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-11_07:2020-05-11,2020-05-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=999
- lowpriorityscore=0 suspectscore=0 bulkscore=0 malwarescore=0 phishscore=0
- clxscore=1015 impostorscore=0 spamscore=0 priorityscore=1501 adultscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2003020000
- definitions=main-2005110117
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDIwLTA1LTExIGF0IDE1OjU4ICswMjAwLCBMYXJzLVBldGVyIENsYXVzZW4gd3Jv
-dGU6DQo+IFtFeHRlcm5hbF0NCj4gDQo+IE9uIDUvMTEvMjAgMzoyNCBQTSwgQXJkZWxlYW4sIEFs
-ZXhhbmRydSB3cm90ZToNCj4gPiBPbiBNb24sIDIwMjAtMDUtMTEgYXQgMTM6MDMgKzAwMDAsIEFy
-ZGVsZWFuLCBBbGV4YW5kcnUgd3JvdGU6DQo+ID4gPiBbRXh0ZXJuYWxdDQo+ID4gPiANCj4gPiA+
-IE9uIE1vbiwgMjAyMC0wNS0xMSBhdCAxMjozNyArMDIwMCwgTGFycy1QZXRlciBDbGF1c2VuIHdy
-b3RlOg0KPiA+ID4gPiBbRXh0ZXJuYWxdDQo+ID4gPiA+IA0KPiA+ID4gPiBPbiA1LzExLzIwIDEy
-OjMzIFBNLCBBcmRlbGVhbiwgQWxleGFuZHJ1IHdyb3RlOg0KPiA+ID4gPiA+IE9uIFN1biwgMjAy
-MC0wNS0xMCBhdCAxMTowOSArMDEwMCwgSm9uYXRoYW4gQ2FtZXJvbiB3cm90ZToNCj4gPiA+ID4g
-PiA+IFtFeHRlcm5hbF0NCj4gPiA+ID4gPiA+IA0KPiA+ID4gPiA+ID4gT24gU2F0LCA5IE1heSAy
-MDIwIDEwOjUyOjE0ICswMjAwDQo+ID4gPiA+ID4gPiBMYXJzLVBldGVyIENsYXVzZW4gPGxhcnNA
-bWV0YWZvby5kZT4gd3JvdGU6DQo+ID4gPiA+ID4gPiANCj4gPiA+ID4gPiA+ID4gT24gNS84LzIw
-IDM6NTMgUE0sIEFsZXhhbmRydSBBcmRlbGVhbiB3cm90ZToNCj4gPiA+ID4gPiA+ID4gPiBbLi4u
-XQ0KPiA+ID4gPiA+ID4gPiA+IFdoYXQgSSBkb24ndCBsaWtlLCBpcyB0aGF0IGlpbzpkZXZpY2Uz
-IGhhcyBpaW86YnVmZmVyMzowICh0byAzKS4NCj4gPiA+ID4gPiA+ID4gPiBUaGlzIGlzIGJlY2F1
-c2UgdGhlICdidWZmZXItPmRldi5wYXJlbnQgPSAmaW5kaW9fZGV2LT5kZXYnLg0KPiA+ID4gPiA+
-ID4gPiA+IEJ1dCBJIGRvIGZlZWwgdGhpcyBpcyBjb3JyZWN0Lg0KPiA+ID4gPiA+ID4gPiA+IFNv
-LCBub3cgSSBkb24ndCBrbm93IHdoZXRoZXIgdG8gbGVhdmUgaXQgbGlrZSB0aGF0IG9yIHN5bWxp
-bmsgdG8NCj4gPiA+ID4gPiA+ID4gPiBzaG9ydGVyDQo+ID4gPiA+ID4gPiA+ID4gdmVyc2lvbnMg
-bGlrZSAnaWlvOmJ1ZmZlcjM6WScgLT4gJ2lpbzpkZXZpY2UzL2J1ZmZlclknLg0KPiA+ID4gPiA+
-ID4gPiA+IFRoZSByZWFzb24gZm9yIG5hbWluZyB0aGUgSUlPIGJ1ZmZlciBkZXZpY2VzIHRvICdp
-aW86YnVmZmVyWDpZJw0KPiA+ID4gPiA+ID4gPiA+IGlzDQo+ID4gPiA+ID4gPiA+ID4gbW9zdGx5
-IHRvIG1ha2UgdGhlIG5hbWVzIHVuaXF1ZS4gSXQgd291bGQgaGF2ZSBsb29rZWQgd2VpcmQgdG8N
-Cj4gPiA+ID4gPiA+ID4gPiBkbw0KPiA+ID4gPiA+ID4gPiA+ICcvZGV2L2J1ZmZlcjEnIGlmIEkg
-d291bGQgaGF2ZSBuYW1lZCB0aGUgYnVmZmVyIGRldmljZXMNCj4gPiA+ID4gPiA+ID4gPiAnYnVm
-ZmVyWCcuDQo+ID4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+ID4gU28sIG5vdyBJJ20gdGhp
-bmtpbmcgb2Ygd2hldGhlciBhbGwgdGhpcyBpcyBhY2NlcHRhYmxlLg0KPiA+ID4gPiA+ID4gPiA+
-IE9yIHdoYXQgaXMgYWNjZXB0YWJsZT8NCj4gPiA+ID4gPiA+ID4gPiBTaG91bGQgSSBzeW1saW5r
-ICdpaW86ZGV2aWNlMy9paW86YnVmZmVyMzowJyAtPg0KPiA+ID4gPiA+ID4gPiA+ICdpaW86ZGV2
-aWNlMy9idWZmZXIwJz8NCj4gPiA+ID4gPiA+ID4gPiBXaGF0IGVsc2Ugc2hvdWxkIEkgY29uc2lk
-ZXIgbW92aW5nIGZvcndhcmQ/DQo+ID4gPiA+ID4gPiA+ID4gV2hhdCBtZWFucyBmb3J3YXJkPw0K
-PiA+ID4gPiA+ID4gPiA+IFdoZXJlIGRpZCBJIGxlYXZlIG15IGJlZXI/DQo+ID4gPiA+ID4gPiA+
-IExvb2tpbmcgYXQgaG93IHRoZSAvZGV2LyBkZXZpY2VzIGFyZSBuYW1lZCBJIHRoaW5rIHdlIGNh
-biBwcm92aWRlDQo+ID4gPiA+ID4gPiA+IGENCj4gPiA+ID4gPiA+ID4gbmFtZQ0KPiA+ID4gPiA+
-ID4gPiB0aGF0IGlzIGRpZmZlcmVudCBmcm9tIHRoZSBkZXZfbmFtZSgpIG9mIHRoZSBkZXZpY2Uu
-IEhhdmUgYSBsb29rDQo+ID4gPiA+ID4gPiA+IGF0DQo+ID4gPiA+ID4gPiA+IGRldmljZV9nZXRf
-ZGV2bm9kZSgpIGluIGRyaXZlcnMvYmFzZS9jb3JlLmMuIFdlIHNob3VsZCBiZSBhYmxlIHRvDQo+
-ID4gPiA+ID4gPiA+IHByb3ZpZGUgdGhlIG5hbWUgZm9yIHRoZSBjaGFyZGV2IHRocm91Z2ggdGhl
-IGRldm5vZGUoKSBjYWxsYmFjay4NCj4gPiA+ID4gPiA+ID4gDQo+ID4gPiA+ID4gPiA+IFdoaWxl
-IHdlIGFyZSBhdCB0aGlzLCBkbyB3ZSB3YW50IHRvIG1vdmUgdGhlIG5ldyBkZXZpY2VzIGludG8g
-YW4NCj4gPiA+ID4gPiA+ID4gaWlvDQo+ID4gPiA+ID4gPiA+IHN1YmZvbGRlcj8gU28gaWlvL2J1
-ZmZlcjA6MCBpbnN0ZWFkIG9mIGlpbzpidWZmZXIwOjA/DQo+ID4gPiA+ID4gPiBQb3NzaWJseSBv
-biB0aGUgZm9sZGVyLiAgSSBjYW4ndCBmb3IgdGhlIGxpZmUgb2YgbWUgcmVtZW1iZXIgd2h5IEkN
-Cj4gPiA+ID4gPiA+IGRlY2lkZWQNCj4gPiA+ID4gPiA+IG5vdCB0byBkbyB0aGF0IHRoZSBmaXJz
-dCB0aW1lIGFyb3VuZCAtIEknbGwgbGVhdmUgaXQgYXQgdGhlDQo+ID4gPiA+ID4gPiBteXN0ZXJp
-b3VzICJpdCBtYXkgdHVybiBvdXQgdG8gYmUgaGFyZGVyIHRoYW4geW91J2QgdGhpbmsuLi4iDQo+
-ID4gPiA+ID4gPiBIb3BlZnVsbHkgbm90IDspDQo+ID4gPiA+ID4gSSB3YXMgYWxzbyB0aGlua2lu
-ZyBhYm91dCB0aGUgL2Rldi9paW8gc3ViZm9sZGVyIHdoaWxlIGRvaW5nIHRoaXMuDQo+ID4gPiA+
-ID4gSSBjYW4gY29weSB0aGF0IGZyb20gL2Rldi9pbnB1dA0KPiA+ID4gPiA+IFRoZXkgc2VlbSB0
-byBkbyBpdCBhbHJlYWR5Lg0KPiA+ID4gPiA+IEkgZG9uJ3Qga25vdyBob3cgZGlmZmljdWx0IGl0
-IHdvdWxkIGJlLiBCdXQgaXQgbG9va3MgbGlrZSBhIGdvb2QNCj4gPiA+ID4gPiBwcmVjZWRlbnQu
-DQo+ID4gPiA+IEFsbCB5b3UgaGF2ZSB0byBkbyBpcyByZXR1cm4gImlpby8uLi4iIGZyb20gdGhl
-IGRldm5vZGUoKSBjYWxsYmFjay4NCj4gPiA+IEkgYWRtaXQgSSBkaWQgbm90IGxvb2sgY2xvc2Vs
-eSBpbnRvIGRyaXZlcnMvaW5wdXQvaW5wdXQuYyBiZWZvcmUNCj4gPiA+IG1lbnRpb25pbmcNCj4g
-PiA+IHRoaXMNCj4gPiA+IGFzIGFzIGdvb2QgcHJlY2VkZW50Lg0KPiA+ID4gDQo+ID4gPiBCdXQs
-IEkgbG9va3MgbGlrZSAvZGV2L2lucHB1dCBpcyBhIGNsYXNzLg0KPiA+ID4gV2hpbGUgSUlPIGRl
-dmljZXMgYXJlIGEgYnVzX3R5cGUgZGV2aWNlcy4NCj4gPiA+IFNob3VsZCB3ZSBzdGFydCBpbXBs
-ZW1lbnRpbmcgYW4gSUlPIGNsYXNzPyBvcj8NCj4gPiBXaGF0IEkgc2hvdWxkIGhhdmUgaGlnaGxp
-Z2h0ZWQgW2JlZm9yZV0gd2l0aCB0aGlzLCBpcyB0aGF0IHRoZXJlIGlzIG5vDQo+ID4gZGV2bm9k
-ZSgpDQo+ID4gY2FsbGJhY2sgZm9yIHRoZSBidXNfdHlwZSBbdHlwZV0uDQo+IEJ1dCB0aGVyZSBp
-cyBvbmUgaW4gZGV2aWNlX3R5cGUgOikNCg0KTWFueSB0aGFua3MgOikNClRoYXQgd29ya2VkIG5p
-Y2VseS4NCg0KSSBub3cgaGF2ZToNCg0Kcm9vdEBhbmFsb2c6fiMgbHMgL2Rldi9paW8vKg0KL2Rl
-di9paW8vaWlvOmRldmljZTAgIC9kZXYvaWlvL2lpbzpkZXZpY2UxDQoNCi9kZXYvaWlvL2Rldmlj
-ZTM6DQpidWZmZXIwICBidWZmZXIxICBidWZmZXIyICBidWZmZXIzDQoNCi9kZXYvaWlvL2Rldmlj
-ZTQ6DQpidWZmZXIwDQoNCg0KSXQgbG9va3MgbGlrZSBJIGNhbiBzaGlmdCB0aGVzZSBhcm91bmQg
-YXMgbmVlZGVkLg0KVGhpcyBpcyBqdXN0IGFuIGV4cGVyaW1lbnQuDQpJIG1hbmFnZWQgdG8gbW92
-ZSB0aGUgaWlvIGRldmljZXMgdW5kZXIgL2Rldi9paW8sIHRob3VnaCBwcm9iYWJseSB0aGUgSUlP
-DQpkZXZpY2VzIHdpbGwgc3RpbGwgYmUgYXJvdW5kIGFzIC9kZXYvaWlvOmRldmljZVggZm9yIGxl
-Z2FjeSByZWFzb25zLg0KDQpUd28gdGhpbmdzIHJlbWFpbiB1bnJlc29sdmVkLg0KMS4gVGhlIG5h
-bWUgb2YgdGhlIElJTyBidWZmZXIgZGV2aWNlLg0KDQpyb290QGFuYWxvZzovc3lzL2J1cy9paW8v
-ZGV2aWNlcyMgbHMgaWlvXDpkZXZpY2UzLw0KYnVmZmVyICAgICAgICAgIGluX3ZvbHRhZ2UwX3Rl
-c3RfbW9kZSAgICAgICAgICAgbmFtZQ0KZXZlbnRzICAgICAgICAgIGluX3ZvbHRhZ2UxX3Rlc3Rf
-bW9kZSAgICAgICAgICAgb2Zfbm9kZQ0KaWlvOmJ1ZmZlcjozOjAgIGluX3ZvbHRhZ2Vfc2FtcGxp
-bmdfZnJlcXVlbmN5ICAgcG93ZXINCmlpbzpidWZmZXI6MzoxICBpbl92b2x0YWdlX3NjYWxlICAg
-ICAgICAgICAgICAgIHNjYW5fZWxlbWVudHMNCmlpbzpidWZmZXI6MzoyICBpbl92b2x0YWdlX3Nj
-YWxlX2F2YWlsYWJsZSAgICAgIHN1YnN5c3RlbQ0KaWlvOmJ1ZmZlcjozOjMgIGluX3ZvbHRhZ2Vf
-dGVzdF9tb2RlX2F2YWlsYWJsZSAgdWV2ZW50DQoNCg0KUmlnaHQgbm93LCBlYWNoIGJ1ZmZlciBk
-ZXZpY2UgaXMgbmFtZWQgJ2lpbzpidWZmZXI6WDpZJy4NCk9uZSBzdWdnZXN0dGlvbiB3YXMgICdp
-aW86ZGV2aWNlWDpidWZmZXJZJw0KSSdtIHN1c3BlY3RpbmcgdGhlIGxhdHRlciBpcyBwcmVmZXJy
-ZWQgYXMgd2hlbiB5b3Ugc29ydCB0aGUgZm9sZGVycywgYnVmZmVycw0KY29tZSByaWdodCBhZnRl
-ciB0aGUgaWlvOmRldmljZVggZm9sZGVycyBpbiAvc3lzL2J1cy9paW8vZGV2aWNlcy4NCg0KSSBk
-b24ndCBmZWVsIGl0IG1hdHRlcnMgbXVjaCB0aGUgZGV2aWNlIG5hbWUgb2YgdGhlIElJTyBidWZm
-ZXIgaWYgd2Ugc3ltbGluayBpdA0KdG8gYSBzaG9ydGVyIGZvcm0uDQogDQpJJ20gZ3Vlc3Npbmcs
-IHdlIHN5bWxpbmsgdGhlc2UgZGV2aWNlcyB0byBzaG9ydC1oYW5kICdidWZmZXJZJyBmb2xkZXJz
-IGluIGVhY2gNCidpaW86ZGV2aWNlWCc/DQoNClNvLCB5b3UnZCBnZXQgc29tZXRoaW5nIGxpa2U6
-DQoNCmRyd3hyLXhyLXggOCByb290IHJvb3QgICAgMCBNYXkgMTEgMTQ6NDAgLg0KZHJ3eHIteHIt
-eCA0IHJvb3Qgcm9vdCAgICAwIE1heSAxMSAxNDozNSAuLg0KbHJ3eHJ3eHJ3eCAxIHJvb3Qgcm9v
-dCAgICAwIE1heSAxMSAxNDozNSBidWZmZXIgLT4gaWlvOmJ1ZmZlcjozOjANCmxyd3hyd3hyd3gg
-NCByb290IHJvb3QgICAgMCBNYXkgMTEgMTQ6MzUgYnVmZmVyMCAtPiBpaW86YnVmZmVyOjM6MA0K
-bHJ3eHJ3eHJ3eCA0IHJvb3Qgcm9vdCAgICAwIE1heSAxMSAxNDozNSBidWZmZXIxIC0+IGlpbzpi
-dWZmZXI6MzoxDQpscnd4cnd4cnd4IDQgcm9vdCByb290ICAgIDAgTWF5IDExIDE0OjM1IGJ1ZmZl
-cjIgLT4gaWlvOmJ1ZmZlcjozOjINCmxyd3hyd3hyd3ggNCByb290IHJvb3QgICAgMCBNYXkgMTEg
-MTQ6MzUgYnVmZmVyMyAtPiBpaW86YnVmZmVyOjM6Mw0KZHJ3eHJ3eHJ3eCAyIHJvb3Qgcm9vdCAg
-ICAwIE1heSAxMSAxNDozNSBldmVudHMNCmRyd3hyd3hyd3ggNCByb290IHJvb3QgICAgMCBNYXkg
-MTEgMTQ6MzUgaWlvOmJ1ZmZlcjozOjANCmRyd3hyd3hyd3ggNCByb290IHJvb3QgICAgMCBNYXkg
-MTEgMTQ6MzUgaWlvOmJ1ZmZlcjozOjENCmRyd3hyd3hyd3ggNCByb290IHJvb3QgICAgMCBNYXkg
-MTEgMTQ6MzUgaWlvOmJ1ZmZlcjozOjINCmRyd3hyd3hyd3ggNCByb290IHJvb3QgICAgMCBNYXkg
-MTEgMTQ6MzUgaWlvOmJ1ZmZlcjozOjMNCi1ydy1ydy1ydy0gMSByb290IHJvb3QgNDA5NiBNYXkg
-MTEgMTQ6MzUgaW5fdm9sdGFnZTBfdGVzdF9tb2RlDQotcnctcnctcnctIDEgcm9vdCByb290IDQw
-OTYgTWF5IDExIDE0OjM1IGluX3ZvbHRhZ2UxX3Rlc3RfbW9kZQ0KLXJ3LXJ3LXJ3LSAxIHJvb3Qg
-cm9vdCA0MDk2IE1heSAxMSAxNDozNSBpbl92b2x0YWdlX3NhbXBsaW5nX2ZyZXF1ZW5jeQ0KLXJ3
-LXJ3LXJ3LSAxIHJvb3Qgcm9vdCA0MDk2IE1heSAxMSAxNDozNSBpbl92b2x0YWdlX3NjYWxlDQot
-cnctcnctcnctIDEgcm9vdCByb290IDQwOTYgTWF5IDExIDE0OjM1IGluX3ZvbHRhZ2Vfc2NhbGVf
-YXZhaWxhYmxlDQotcnctcnctcnctIDEgcm9vdCByb290IDQwOTYgTWF5IDExIDE0OjM1IGluX3Zv
-bHRhZ2VfdGVzdF9tb2RlX2F2YWlsYWJsZQ0KLXJ3LXJ3LXJ3LSAxIHJvb3Qgcm9vdCA0MDk2IE1h
-eSAxMSAxNDozNSBuYW1lDQpscnd4cnd4cnd4IDEgcm9vdCByb290ICAgIDAgTWF5IDExIDE0OjM1
-IG9mX25vZGUgLT4gDQouLi8uLi8uLi8uLi8uLi9maXJtd2FyZS9kZXZpY2V0cmVlL2Jhc2UvZnBn
-YS1heGlAMC9heGktYWQ5NjgwLWhwY0A0NGExMDAwMA0KZHJ3eHJ3eHJ3eCAyIHJvb3Qgcm9vdCAg
-ICAwIE1heSAxMSAxNDozNSBwb3dlcg0KbHJ3eHJ3eHJ3eCAxIHJvb3Qgcm9vdCAgICAwIE1heSAx
-MSAxNDozNSBzY2FuX2VsZW1lbnRzIC0+DQppaW86YnVmZmVyOjM6MC9zY2FuX2VsZW1lbnRzDQps
-cnd4cnd4cnd4IDEgcm9vdCByb290ICAgIDAgTWF5IDExIDE0OjM1IHN1YnN5c3RlbSAtPiAuLi8u
-Li8uLi8uLi8uLi9idXMvaWlvDQotcnctcnctcnctIDEgcm9vdCByb290IDQwOTYgTWF5IDExIDE0
-OjM1IHVldmVudA0KDQoxYS4gL3N5cy9idXMvaWlvL2RldmljZXMgbG9va3MgbGlrZSB0aGlzOg0K
-aWlvOmJ1ZmZlcjozOjAgICh0aGlzIHdvdWxkIGJlY29tZSBpaW86ZGV2aWNlMzpidWZmZXIwICkN
-CmlpbzpidWZmZXI6MzoxDQppaW86YnVmZmVyDQo6MzoyDQppaW86YnVmZmVyOjM6Mw0KaWlvOmJ1
-ZmZlcjo0OjANCmlpbzpkZXZpY2UwDQppaW86ZGV2aWNlMQ0KaWlvOmRldmljZTINCmlpbzpkZXZp
-Y2UzDQppaW86DQpkZXZpY2U0DQoNCk9uZSBtaW5vciBpc3N1ZSBoZXJlIGlzIHRoYXQgdGhlIGJ1
-ZmZlcnMgZ2V0IGxpc3RlZCBpbiB0aGUgL3N5cy9idXMvaWlvL2RldmljZXMNCmZvbGRlciwgYmVj
-YXVzZSBJJ20gYWRkaW5nIHRoZW0gdG8gdGhlIGlpbyBidXMsIHRvIGJlIGFibGUgdG8gZ2V0IGEg
-Y2hhcmRldg0KW2Zyb20gdGhlIHByZS1hbGxvY2F0ZWQgY2hhcmRldiByZWdpb24gb2YgSUlPXS4N
-Cg0KbGliaWlvIGdldHMgYSBsaXR0bGUgY29uZnVzZWQsIGFzIGl0IHNlZXMgdGhlc2UgYnVmZmVy
-cyBhcmUgSUlPIGJ1ZmZlciBjYXBhYmxlDQpkZXZpY2VzOw0KDQoJaWlvOmJ1ZmZlcjozOjA6IChi
-dWZmZXIgY2FwYWJsZSkNCgkJMiBjaGFubmVscyBmb3VuZDoNCgkJCXZvbHRhZ2UwOiAgKGlucHV0
-LCBpbmRleDogMCwgZm9ybWF0OiBsZTpTMTQvMTY+PjApDQoJCQl2b2x0YWdlMTogIChpbnB1dCwg
-aW5kZXg6IDEsIGZvcm1hdDogbGU6UzE0LzE2Pj4wKQ0KCQk1IGRldmljZS1zcGVjaWZpYyBhdHRy
-aWJ1dGVzIGZvdW5kOg0KCQkJCWF0dHIgIDA6IGRhdGFfYXZhaWxhYmxlIHZhbHVlOiAwDQoJCQkJ
-YXR0ciAgMTogZW5hYmxlIHZhbHVlOiAwDQoJCQkJYXR0ciAgMjogbGVuZ3RoIHZhbHVlOiA0MDk2
-DQoJCQkJYXR0ciAgMzogbGVuZ3RoX2FsaWduX2J5dGVzIHZhbHVlOiA4DQoJCQkJYXR0ciAgNDog
-d2F0ZXJtYXJrIHZhbHVlOiAyMDQ4DQoJaWlvOmJ1ZmZlcjozOjE6IChidWZmZXIgY2FwYWJsZSkN
-Cg0KSG9wZWZ1bGx5LCB0aGlzIGlzIG5vdCBhIGJpZyBwcm9ibGVtLCBidXQgbGV0J3Mgc2VlLg0K
-DQoyLiBJIGtub3cgdGhpcyBpcyBbc3RpbGxdIHN0dXBpZCBub3c7IGJ1dCBhbnkgc3VnZ2VzdGlv
-bnMgb25lIGhvdyB0byBzeW1saW5rIA0KL2Rldi9paW86ZGV2aWNlMyAtPiAvZGV2L2lpby9kZXZp
-Y2UzL2J1ZmZlcjAgPw0KDQpSZWdhcmRpbmcgdGhpcyBvbmUsIEkgbWF5IHRyeSBhIGZldyB0aGlu
-Z3MsIGJ1dCBhbnkgc3VnZ2VzdGlvbiBpcyB3ZWxjb21lLg0KDQoNCg0KVGhhbmtzDQpBbGV4DQo=
+Mike,
+
+Thanks for doing this work. I've been reviewing it with the intention
+of bringing it into my organizations embedded platform, and had some
+comments for you if you're still looking to improve upon things.
+
+A big question I have for you right at the start however is why are you
+locking around some but not all of the regmap calls? I couldn't figure
+out why you need locking at all given that regmap contains its own
+locks. The best concept I could come up with is that there is some race
+between the power management code and regmap, but I'm not seeing it.
+
+On Tue, 24 Mar 2020 09:03:08 +0100
+Mike Looijmans <mike.looijmans@topic.nl> wrote:
+
+> The BMI088 is a combined module with both accelerometer and gyroscope.
+> This adds the accelerometer driver support for the SPI interface.
+> The gyroscope part is already supported by the BMG160 driver.
+> 
+> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+> ---
+> v2: Remove unused typedefs and variables
+>     Fix error return when iio_device_register fails
+> v3: Processed comments from Jonathan Cameron and Lars-Peter Clausen
+>     implement runtime PM (tested by code tracing) and sleep
+>     fix scale and offset factors for accel and temperature and
+>     return raw values instead of pre-scaled ones
+>     Use iio_device_{claim,release}_direct_mode
+>     Remove unused code and structs
+>     Use a cache-aligned buffer for bulk read
+>     Configure and enable caching register values    
+> v4: Remove unused #include directives
+>     Remove unused #defines for event and irq
+>     Replace (ret < 0) with (ret) for all regmap calls
+>     Consistent checking of IO errors in probe and init
+>     Removed #ifdef CONFIG_PM guard
+>     Use bitops for set_frequency instead of loop with shift
+>     s/__s16/s16/g
+>     Remove excess blank lines
+>     Don't return -EAGAIN in pm_runtime
+> v5: Add includes and forward defines in header
+>     BIT(7) instead of 0x80
+>     Reset already sets defaults, do not set them again
+>     Remove now unused bmi088_accel_set_bw
+>     Remove unused AXIS_MAX
+>     Use MASK define for ODR setting
+>     Explain buffer use and alignment
+>     Split bmi088_accel_set_power_state into "on" and "off" parts
+>     Cosmetic changes to improve readability
+> 
+>  drivers/iio/accel/Kconfig             |  17 +
+>  drivers/iio/accel/Makefile            |   2 +
+>  drivers/iio/accel/bmi088-accel-core.c | 610
+> ++++++++++++++++++++++++++ drivers/iio/accel/bmi088-accel-spi.c  |
+> 85 ++++ drivers/iio/accel/bmi088-accel.h      |  18 +
+>  5 files changed, 732 insertions(+)
+>  create mode 100644 drivers/iio/accel/bmi088-accel-core.c
+>  create mode 100644 drivers/iio/accel/bmi088-accel-spi.c
+>  create mode 100644 drivers/iio/accel/bmi088-accel.h
+> 
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 5d91a6dda894..7ed9c82b731b 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -151,6 +151,23 @@ config BMC150_ACCEL_SPI
+>  	tristate
+>  	select REGMAP_SPI
+>  
+> +config BMI088_ACCEL
+> +	tristate "Bosch BMI088 Accelerometer Driver"
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	select REGMAP
+> +	select BMI088_ACCEL_SPI
+> +	help
+> +	  Say yes here to build support for the Bosch BMI088
+> accelerometer. +
+> +	  This is a combo module with both accelerometer and
+> gyroscope.
+> +	  This driver is only implementing accelerometer part, which
+> has
+> +	  its own address and register map.
+> +
+> +config BMI088_ACCEL_SPI
+> +	tristate
+> +	select REGMAP_SPI
+> +
+>  config DA280
+>  	tristate "MiraMEMS DA280 3-axis 14-bit digital accelerometer
+> driver" depends on I2C
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 3a051cf37f40..f44613103ae5 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -19,6 +19,8 @@ obj-$(CONFIG_BMA400_I2C) += bma400_i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> +obj-$(CONFIG_BMI088_ACCEL) += bmi088-accel-core.o
+> +obj-$(CONFIG_BMI088_ACCEL_SPI) += bmi088-accel-spi.o
+>  obj-$(CONFIG_DA280)	+= da280.o
+>  obj-$(CONFIG_DA311)	+= da311.o
+>  obj-$(CONFIG_DMARD06)	+= dmard06.o
+> diff --git a/drivers/iio/accel/bmi088-accel-core.c
+> b/drivers/iio/accel/bmi088-accel-core.c new file mode 100644
+> index 000000000000..c1d9a8ba2f46
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmi088-accel-core.c
+> @@ -0,0 +1,610 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * 3-axis accelerometer driver supporting following Bosch-Sensortec
+> chips:
+> + *  - BMI088
+> + *
+> + * Copyright (c) 2018-2020, Topic Embedded Products
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/delay.h>
+> +#include <linux/slab.h>
+> +#include <linux/acpi.h>
+> +#include <linux/pm.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/regmap.h>
+> +#include <asm/unaligned.h>
+> +
+> +#include "bmi088-accel.h"
+> +
+> +#define BMI088_ACCEL_REG_CHIP_ID			0x00
+> +#define BMI088_ACCEL_REG_ERROR				0x02
+> +
+> +#define BMI088_ACCEL_REG_INT_STATUS			0x1D
+> +#define BMI088_ACCEL_INT_STATUS_BIT_DRDY		BIT(7)
+> +
+> +#define BMI088_ACCEL_REG_RESET				0x7E
+> +#define BMI088_ACCEL_RESET_VAL				0xB6
+> +
+> +#define BMI088_ACCEL_REG_PWR_CTRL			0x7D
+> +#define BMI088_ACCEL_REG_PWR_CONF			0x7C
+> +
+> +#define BMI088_ACCEL_REG_INT_MAP_DATA			0x58
+> +#define BMI088_ACCEL_INT_MAP_DATA_BIT_INT1_DRDY		BIT(2)
+> +#define BMI088_ACCEL_INT_MAP_DATA_BIT_INT2_FWM		BIT(5)
+> +
+> +#define BMI088_ACCEL_REG_INT1_IO_CONF			0x53
+> +#define BMI088_ACCEL_INT1_IO_CONF_BIT_ENABLE_OUT	BIT(3)
+> +#define BMI088_ACCEL_INT1_IO_CONF_BIT_LVL		BIT(1)
+> +
+> +#define BMI088_ACCEL_REG_INT2_IO_CONF			0x54
+> +#define BMI088_ACCEL_INT2_IO_CONF_BIT_ENABLE_OUT	BIT(3)
+> +#define BMI088_ACCEL_INT2_IO_CONF_BIT_LVL		BIT(1)
+> +
+> +#define BMI088_ACCEL_REG_ACC_CONF			0x40
+> +#define BMI088_ACCEL_MODE_ODR_MASK			0x0f
+> +
+> +#define BMI088_ACCEL_REG_ACC_RANGE			0x41
+> +#define BMI088_ACCEL_RANGE_3G				0x00
+> +#define BMI088_ACCEL_RANGE_6G				0x01
+> +#define BMI088_ACCEL_RANGE_12G				0x02
+> +#define BMI088_ACCEL_RANGE_24G				0x03
+> +
+> +#define BMI088_ACCEL_REG_TEMP				0x22
+> +#define BMI088_ACCEL_REG_TEMP_SHIFT			5
+> +#define BMI088_ACCEL_TEMP_UNIT				125
+> +#define BMI088_ACCEL_TEMP_OFFSET			23000
+> +
+> +#define BMI088_ACCEL_REG_XOUT_L				0x12
+> +#define BMI088_ACCEL_AXIS_TO_REG(axis) \
+> +	(BMI088_ACCEL_REG_XOUT_L + (axis * 2))
+> +
+> +#define BMI088_ACCEL_MAX_STARTUP_TIME_US		1000
+> +#define BMI088_AUTO_SUSPEND_DELAY_MS			2000
+> +
+> +#define BMI088_ACCEL_REG_FIFO_STATUS			0x0E
+> +#define BMI088_ACCEL_REG_FIFO_CONFIG0			0x48
+> +#define BMI088_ACCEL_REG_FIFO_CONFIG1			0x49
+> +#define BMI088_ACCEL_REG_FIFO_DATA			0x3F
+> +#define BMI088_ACCEL_FIFO_LENGTH			100
+> +
+> +#define BMI088_ACCEL_FIFO_MODE_FIFO			0x40
+> +#define BMI088_ACCEL_FIFO_MODE_STREAM			0x80
+> +
+> +enum bmi088_accel_axis {
+> +	AXIS_X,
+> +	AXIS_Y,
+> +	AXIS_Z,
+> +};
+> +
+> +enum bmi088_power_modes {
+> +	BMI088_ACCEL_MODE_ACTIVE,
+> +	BMI088_ACCEL_MODE_SUSPEND,
+> +};
+
+It seems like these could be defined as per register 0x7C; then you can
+avoid the secondary lookup / ternary in bmi088_accel_set_mode().
+
+> +
+> +/* Available OSR (over sampling rate) sets the 3dB cut-off frequency
+> */ +enum bmi088_osr_modes {
+> +	BMI088_ACCEL_MODE_OSR_NORMAL = 0xA,
+> +	BMI088_ACCEL_MODE_OSR_2 = 0x9,
+> +	BMI088_ACCEL_MODE_OSR_4 = 0x8,
+> +};
+> +
+> +/* Available ODR (output data rates) in Hz */
+> +enum bmi088_odr_modes {
+> +	BMI088_ACCEL_MODE_ODR_12_5 = 0x5,
+> +	BMI088_ACCEL_MODE_ODR_25 = 0x6,
+> +	BMI088_ACCEL_MODE_ODR_50 = 0x7,
+> +	BMI088_ACCEL_MODE_ODR_100 = 0x8,
+> +	BMI088_ACCEL_MODE_ODR_200 = 0x9,
+> +	BMI088_ACCEL_MODE_ODR_400 = 0xa,
+> +	BMI088_ACCEL_MODE_ODR_800 = 0xb,
+> +	BMI088_ACCEL_MODE_ODR_1600 = 0xc,
+> +};
+> +
+> +struct bmi088_scale_info {
+> +	int scale;
+> +	u8 reg_range;
+> +};
+> +
+> +struct bmi088_accel_chip_info {
+> +	const char *name;
+> +	u8 chip_id;
+> +	const struct iio_chan_spec *channels;
+> +	int num_channels;
+> +};
+> +
+> +struct bmi088_accel_data {
+> +	struct regmap *regmap;
+> +	struct mutex mutex;
+> +	const struct bmi088_accel_chip_info *chip_info;
+> +	u8 buffer[2] ____cacheline_aligned; /* shared DMA safe
+> buffer */ +};
+> +
+> +static const struct regmap_range bmi088_volatile_ranges[] = {
+> +	/* All registers below 0x40 are volatile, except the CHIP
+> ID. */
+> +	regmap_reg_range(BMI088_ACCEL_REG_ERROR, 0x3f),
+> +	/* Mark the RESET as volatile too, it is self-clearing */
+> +	regmap_reg_range(BMI088_ACCEL_REG_RESET,
+> BMI088_ACCEL_REG_RESET), +};
+> +
+> +static const struct regmap_access_table bmi088_volatile_table = {
+> +	.yes_ranges	= bmi088_volatile_ranges,
+> +	.n_yes_ranges	= ARRAY_SIZE(bmi088_volatile_ranges),
+> +};
+> +
+> +const struct regmap_config bmi088_regmap_conf = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = 0x7E,
+> +	.volatile_table = &bmi088_volatile_table,
+> +	.cache_type = REGCACHE_RBTREE,
+> +};
+> +EXPORT_SYMBOL_GPL(bmi088_regmap_conf);
+
+This might benefit from a rd_noinc_table defined for the FIFO read
+register.
+
+> +
+> +static int bmi088_accel_set_power_state_on(struct bmi088_accel_data
+> *data) +{
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	int ret;
+> +
+> +	ret = pm_runtime_get_sync(dev);
+> +	if (ret < 0) {
+> +		pm_runtime_put_noidle(dev);
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int bmi088_accel_set_power_state_off(struct bmi088_accel_data
+> *data) +{
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	int ret;
+> +
+> +	pm_runtime_mark_last_busy(dev);
+> +	ret = pm_runtime_put_autosuspend(dev);
+> +
+> +	return ret < 0 ? ret : 0;
+
+I'm not an expert in the power management code, but I traced this and
+the only consumer of this call is iio set_trigger_state which only
+cares if the output is less than 0. Thoughts on just returning ret
+directly?
+
+> +}
+> +
+> +/*
+> + * The register ACC_PWR_CTRL enables and disables the accelerometer
+> and the
+> + * temperature sensor.
+> + */
+> +static int bmi088_accel_enable(struct bmi088_accel_data *data, bool
+> on_off) +{
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	unsigned int val = on_off ? 0x4 : 0x0;
+> +	int ret;
+> +
+> +	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CTRL,
+> val);
+> +	if (ret) {
+> +		dev_err(dev, "Error writing ACC_PWR_CTRL reg\n");
+> +		return ret;
+> +	}
+> +	/* Datasheet recommends to wait at least 5ms before
+> communication */
+> +	usleep_range(5000, 6000);
+> +
+> +	return 0;
+> +}
+> +
+> +/* In suspend mode, only the accelerometer is powered down. */
+> +static int bmi088_accel_set_mode(struct bmi088_accel_data *data,
+> +				enum bmi088_power_modes mode)
+> +{
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	unsigned int val = mode == BMI088_ACCEL_MODE_SUSPEND ? 0x3 :
+> 0x0;
+
+As suggested above, if the enum was defined with the values already
+set, then this ternary could be removed.
+
+> +	int ret;
+> +
+> +	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_PWR_CONF,
+> val);
+> +	if (ret) {
+> +		dev_err(dev, "Error writing ACCEL_PWR_CONF reg\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int bmi088_accel_get_sample_freq(struct bmi088_accel_data
+> *data,
+> +					int *val, int *val2)
+> +{
+> +	unsigned int value;
+> +	int ret;
+> +
+> +	ret = regmap_read(data->regmap, BMI088_ACCEL_REG_ACC_CONF,
+> +			  &value);
+> +	if (ret)
+> +		return ret;
+> +
+> +	value &= BMI088_ACCEL_MODE_ODR_MASK;
+> +	if (value == BMI088_ACCEL_MODE_ODR_12_5) {
+> +		*val = 12;
+> +		*val2 = 500000;
+> +		ret = IIO_VAL_INT_PLUS_MICRO;
+> +	} else {
+> +		*val = 25 << (value - BMI088_ACCEL_MODE_ODR_25);
+> +		*val2 = 0;
+> +		ret = IIO_VAL_INT;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int bmi088_accel_set_sample_freq(struct bmi088_accel_data
+> *data, int val) +{
+> +	unsigned int value;
+> +
+> +	if (val < 12 || val > 1600)
+> +		return -EINVAL;
+> +
+> +	value = fls(val) + 1;
+> +
+> +	return regmap_update_bits(data->regmap,
+> BMI088_ACCEL_REG_ACC_CONF,
+> +				  BMI088_ACCEL_MODE_ODR_MASK, value);
+> +}
+> +
+> +static int bmi088_accel_get_temp(struct bmi088_accel_data *data, int
+> *val) +{
+> +	int ret;
+> +	s16 temp;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	ret = regmap_bulk_read(data->regmap, BMI088_ACCEL_REG_TEMP,
+> +			       &data->buffer, sizeof(__be16));
+> +	/* data->buffer is cacheline aligned */
+> +	temp = be16_to_cpu(*(__be16 *)data->buffer);
+> +
+> +	mutex_unlock(&data->mutex);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = temp >> BMI088_ACCEL_REG_TEMP_SHIFT;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int bmi088_accel_get_axis(struct bmi088_accel_data *data,
+> +				 struct iio_chan_spec const *chan,
+> +				 int *val)
+> +{
+> +	int ret;
+> +	s16 raw_val;
+> +
+> +	mutex_lock(&data->mutex);
+> +
+> +	ret = bmi088_accel_set_power_state_on(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_bulk_read(data->regmap,
+> +
+> BMI088_ACCEL_AXIS_TO_REG(chan->scan_index),
+> +			       data->buffer, sizeof(__le16));
+> +	raw_val = le16_to_cpu(*(__le16 *)data->buffer);
+> +
+> +	bmi088_accel_set_power_state_off(data);
+> +
+> +	mutex_unlock(&data->mutex);
+> +
+> +	if (ret)
+> +		return ret;
+> +
+> +	*val = raw_val;
+> +
+> +	return IIO_VAL_INT;
+> +}
+> +
+> +static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int *val, int *val2, long mask)
+> +{
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			return bmi088_accel_get_temp(data, val);
+> +		case IIO_ACCEL:
+> +			ret =
+> iio_device_claim_direct_mode(indio_dev);
+> +			if (ret)
+> +				return ret;
+> +
+> +			ret = bmi088_accel_get_axis(data, chan, val);
+> +			iio_device_release_direct_mode(indio_dev);
+> +			if (ret)
+> +				return ret;
+> +
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			/* Offset applies before scale */
+> +			*val =
+> BMI088_ACCEL_TEMP_OFFSET/BMI088_ACCEL_TEMP_UNIT;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			/* 0.125 degrees per LSB */
+> +			*val = BMI088_ACCEL_TEMP_UNIT;
+> +			return IIO_VAL_INT;
+> +		case IIO_ACCEL:
+> +			ret = regmap_read(data->regmap,
+> +
+> BMI088_ACCEL_REG_ACC_RANGE, val);
+> +			if (ret)
+> +				return ret;
+> +
+> +			*val2 = 15 - (*val & 0x3);
+> +			*val = 3 * 980;
+> +
+> +			return IIO_VAL_FRACTIONAL_LOG2;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		mutex_lock(&data->mutex);
+> +		ret = bmi088_accel_get_sample_freq(data, val, val2);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int bmi088_accel_write_raw(struct iio_dev *indio_dev,
+> +				  struct iio_chan_spec const *chan,
+> +				  int val, int val2, long mask)
+> +{
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		mutex_lock(&data->mutex);
+> +		ret = bmi088_accel_set_sample_freq(data, val);
+> +		mutex_unlock(&data->mutex);
+> +		return ret;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("12.5 25 50 100 200 400 800
+> 1600"); +
+> +static struct attribute *bmi088_accel_attributes[] = {
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group bmi088_accel_attrs_group = {
+> +	.attrs = bmi088_accel_attributes,
+> +};
+> +
+> +#define BMI088_ACCEL_CHANNEL(_axis) {
+> 	\
+> +	.type = IIO_ACCEL,
+> 	\
+> +	.modified = 1,
+> 		\
+> +	.channel2 = IIO_MOD_##_axis,
+> 	\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> 	\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
+> |		\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> 	\
+> +	.scan_index = AXIS_##_axis,
+> 	\ +}
+> +
+> +static const struct iio_chan_spec bmi088_accel_channels[] = {
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET),
+> +		.scan_index = -1,
+> +	},
+> +	BMI088_ACCEL_CHANNEL(X),
+> +	BMI088_ACCEL_CHANNEL(Y),
+> +	BMI088_ACCEL_CHANNEL(Z),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+> +};
+> +
+> +static const struct bmi088_accel_chip_info
+> bmi088_accel_chip_info_tbl[] = {
+> +	[0] = {
+> +		.name = "bmi088a",
+> +		.chip_id = 0x1E,
+> +		.channels = bmi088_accel_channels,
+> +		.num_channels = ARRAY_SIZE(bmi088_accel_channels),
+> +	},
+> +};
+> +
+> +static const struct iio_info bmi088_accel_info = {
+> +	.attrs		= &bmi088_accel_attrs_group,
+> +	.read_raw	= bmi088_accel_read_raw,
+> +	.write_raw	= bmi088_accel_write_raw,
+> +};
+> +
+> +static const unsigned long bmi088_accel_scan_masks[] = {
+> +	BIT(AXIS_X) | BIT(AXIS_Y) | BIT(AXIS_Z),
+> +	0
+> +};
+> +
+> +static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
+> +{
+> +	struct device *dev = regmap_get_device(data->regmap);
+> +	int ret, i;
+> +	unsigned int val;
+> +
+> +	/* Do a dummy read to enable SPI interface, won't harm I2C */
+> +	regmap_read(data->regmap, BMI088_ACCEL_REG_INT_STATUS, &val);
+> +
+> +	/*
+> +	 * Reset chip to get it in a known good state. A delay of
+> 1ms after
+> +	 * reset is required according to the data sheet
+> +	 */
+> +	ret = regmap_write(data->regmap, BMI088_ACCEL_REG_RESET,
+> +			   BMI088_ACCEL_RESET_VAL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	usleep_range(1000, 2000);
+> +
+> +	/* Do a dummy read again after a reset to enable the SPI
+> interface */
+> +	regmap_read(data->regmap, BMI088_ACCEL_REG_INT_STATUS, &val);
+> +
+> +	/* Read chip ID */
+> +	ret = regmap_read(data->regmap, BMI088_ACCEL_REG_CHIP_ID,
+> &val);
+> +	if (ret) {
+> +		dev_err(dev, "Error: Reading chip id\n");
+> +		return ret;
+> +	}
+> +
+> +	/* Validate chip ID */
+> +	for (i = 0; i < ARRAY_SIZE(bmi088_accel_chip_info_tbl); i++)
+> {
+> +		if (bmi088_accel_chip_info_tbl[i].chip_id == val) {
+> +			data->chip_info =
+> &bmi088_accel_chip_info_tbl[i];
+> +			break;
+> +		}
+> +	}
+> +	if (i == ARRAY_SIZE(bmi088_accel_chip_info_tbl)) {
+> +		dev_err(dev, "Invalid chip %x\n", val);
+> +		return -ENODEV;
+> +	}
+> +
+> +	/* Enable accelerometer after reset */
+> +	return bmi088_accel_enable(data, true);
+> +}
+> +
+> +int bmi088_accel_core_probe(struct device *dev, struct regmap
+> *regmap,
+> +	int irq, const char *name, bool block_supported)
+> +{
+> +	struct bmi088_accel_data *data;
+> +	struct iio_dev *indio_dev;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	dev_set_drvdata(dev, indio_dev);
+> +
+> +	data->regmap = regmap;
+> +
+> +	ret = bmi088_accel_chip_init(data);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mutex_init(&data->mutex);
+> +
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->channels = data->chip_info->channels;
+> +	indio_dev->num_channels = data->chip_info->num_channels;
+> +	indio_dev->name = name ? name : data->chip_info->name;
+> +	indio_dev->available_scan_masks = bmi088_accel_scan_masks;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->info = &bmi088_accel_info;
+> +
+> +	ret = pm_runtime_set_active(dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	pm_runtime_enable(dev);
+> +	pm_runtime_set_autosuspend_delay(dev,
+> BMI088_AUTO_SUSPEND_DELAY_MS);
+> +	pm_runtime_use_autosuspend(dev);
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		dev_err(dev, "Unable to register iio device\n");
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(bmi088_accel_core_probe);
+> +
+> +int bmi088_accel_core_remove(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	pm_runtime_disable(dev);
+> +	pm_runtime_set_suspended(dev);
+> +	pm_runtime_put_noidle(dev);
+> +
+> +	mutex_lock(&data->mutex);
+> +	bmi088_accel_set_mode(data, BMI088_ACCEL_MODE_SUSPEND);
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(bmi088_accel_core_remove);
+> +
+> +/* When going into system sleep, put the chip in power down */
+> +static int __maybe_unused bmi088_accel_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&data->mutex);
+> +	bmi088_accel_set_mode(data, BMI088_ACCEL_MODE_SUSPEND);
+> +	bmi088_accel_enable(data, false);
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +static int __maybe_unused bmi088_accel_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +
+> +	mutex_lock(&data->mutex);
+> +	bmi088_accel_enable(data, true);
+> +	bmi088_accel_set_mode(data, BMI088_ACCEL_MODE_ACTIVE);
+> +	mutex_unlock(&data->mutex);
+> +
+> +	return 0;
+> +}
+> +
+> +/* For runtime PM put the chip in suspend mode */
+> +static int __maybe_unused bmi088_accel_runtime_suspend(struct device
+> *dev) +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +
+> +	return bmi088_accel_set_mode(data,
+> BMI088_ACCEL_MODE_SUSPEND); +}
+> +
+> +static int __maybe_unused bmi088_accel_runtime_resume(struct device
+> *dev) +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct bmi088_accel_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	ret = bmi088_accel_set_mode(data, BMI088_ACCEL_MODE_ACTIVE);
+> +	if (ret)
+> +		return ret;
+> +
+> +	usleep_range(BMI088_ACCEL_MAX_STARTUP_TIME_US,
+> +		     BMI088_ACCEL_MAX_STARTUP_TIME_US * 2);
+> +
+> +	return 0;
+> +}
+> +
+> +const struct dev_pm_ops bmi088_accel_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(bmi088_accel_suspend,
+> bmi088_accel_resume)
+> +	SET_RUNTIME_PM_OPS(bmi088_accel_runtime_suspend,
+> +			   bmi088_accel_runtime_resume, NULL)
+> +};
+> +EXPORT_SYMBOL_GPL(bmi088_accel_pm_ops);
+> +
+> +MODULE_AUTHOR("Niek van Agt <niek.van.agt@topicproducts.com>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("BMI088 accelerometer driver (core)");
+> diff --git a/drivers/iio/accel/bmi088-accel-spi.c
+> b/drivers/iio/accel/bmi088-accel-spi.c new file mode 100644
+> index 000000000000..7794090b8e6d
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmi088-accel-spi.c
+> @@ -0,0 +1,85 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * 3-axis accelerometer driver supporting following Bosch-Sensortec
+> chips:
+> + *  - BMI088
+> + *
+> + * Copyright (c) 2018-2020, Topic Embedded Products
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/regmap.h>
+> +
+> +#include "bmi088-accel.h"
+> +
+> +int bmi088_regmap_spi_write(void *context, const void *data, size_t
+> count) +{
+> +	struct spi_device *spi = context;
+> +
+> +	/* Write register is same as generic SPI */
+> +	return spi_write(spi, data, count);
+> +}
+> +
+> +int bmi088_regmap_spi_read(void *context, const void *reg,
+> +				size_t reg_size, void *val, size_t
+> val_size) +{
+> +	struct spi_device *spi = context;
+> +	u8 addr[2];
+> +
+> +	addr[0] = *(u8 *)reg;
+> +	addr[0] |= BIT(7); /* Set RW = '1' */
+> +	addr[1] = 0; /* Read requires a dummy byte transfer */
+> +
+> +	return spi_write_then_read(spi, addr, sizeof(addr), val,
+> val_size); +}
+> +
+> +static struct regmap_bus bmi088_regmap_bus = {
+> +	.write = bmi088_regmap_spi_write,
+> +	.read = bmi088_regmap_spi_read,
+> +	.reg_format_endian_default = REGMAP_ENDIAN_BIG,
+> +	.val_format_endian_default = REGMAP_ENDIAN_BIG,
+> +};
+> +
+> +static int bmi088_accel_probe(struct spi_device *spi)
+> +{
+> +	struct regmap *regmap;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+> +
+> +	regmap = devm_regmap_init(&spi->dev, &bmi088_regmap_bus,
+> +			spi, &bmi088_regmap_conf);
+> +
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "Failed to initialize spi
+> regmap\n");
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq,
+> id->name,
+> +				       true);
+> +}
+> +
+> +static int bmi088_accel_remove(struct spi_device *spi)
+> +{
+> +	return bmi088_accel_core_remove(&spi->dev);
+> +}
+> +
+> +static const struct spi_device_id bmi088_accel_id[] = {
+> +	{"bmi088_accel", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, bmi088_accel_id);
+> +
+> +static struct spi_driver bmi088_accel_driver = {
+> +	.driver = {
+> +		.name	= "bmi088_accel_spi",
+> +		.pm	= &bmi088_accel_pm_ops,
+> +	},
+> +	.probe		= bmi088_accel_probe,
+> +	.remove		= bmi088_accel_remove,
+> +	.id_table	= bmi088_accel_id,
+> +};
+> +module_spi_driver(bmi088_accel_driver);
+> +
+> +MODULE_AUTHOR("Niek van Agt <niek.van.agt@topicproducts.com>");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_DESCRIPTION("BMI088 accelerometer driver (SPI)");
+> diff --git a/drivers/iio/accel/bmi088-accel.h
+> b/drivers/iio/accel/bmi088-accel.h new file mode 100644
+> index 000000000000..5c25f16b672c
+> --- /dev/null
+> +++ b/drivers/iio/accel/bmi088-accel.h
+> @@ -0,0 +1,18 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef BMI088_ACCEL_H
+> +#define BMI088_ACCEL_H
+> +
+> +#include <linux/pm.h>
+> +#include <linux/regmap.h>
+> +#include <linux/types.h>
+> +
+> +struct device;
+> +
+> +extern const struct regmap_config bmi088_regmap_conf;
+> +extern const struct dev_pm_ops bmi088_accel_pm_ops;
+> +
+> +int bmi088_accel_core_probe(struct device *dev, struct regmap
+> *regmap, int irq,
+> +			    const char *name, bool block_supported);
+> +int bmi088_accel_core_remove(struct device *dev);
+> +
+> +#endif /* BMI088_ACCEL_H */
+
