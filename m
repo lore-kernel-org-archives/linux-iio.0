@@ -2,221 +2,119 @@ Return-Path: <SRS0=l02c=6Z=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+X-Spam-Status: No, score=-12.8 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 909EBC54E8E
-	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 18:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36E96C47255
+	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 19:12:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 730FB20736
-	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 18:27:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 055C0206E6
+	for <linux-iio@archiver.kernel.org>; Mon, 11 May 2020 19:12:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1589221651;
-	bh=n1BKRgC7KzQQA1J3HWD6sqr2Lm+wYt9aO1pUwoBvLuM=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ZgTxkRR9IThf9mXzI6/pddtak0vgroSGrnNc7lNSU9XNJQ1iuS8X17zqIcFwnjZTi
-	 RWmaaN/BxM5jw86K2Bqlw23VRJFHpYKJcrwc3Y97KLO0s0I5lQT6obTqLzdeJBNtG/
-	 qz43ZKjQcdvuKhknNkiZRxh7Prkie3ZeHhc+7um4=
+	s=default; t=1589224320;
+	bh=y6wmr4MoqUoWmVIt3d7OFxQPoqzir6uX21teSxuChqg=;
+	h=Date:From:To:Subject:List-ID:From;
+	b=1+VbBCwUJxIXCa0sC+PHy4KVu4KBy5WsIgEBh6rAPhGAru+Dml+iSiGYip+N0vMuD
+	 SykAT7dzmyzV6AX0DvjPPv85iq0QUu5K6rlDCk8ZkT+zzPzZ5ElUfPofCy1qWxkCyU
+	 afnDjPfpU47+hOYDHEpafr0VeEInvi8Kx6zGweO4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731151AbgEKS1a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 May 2020 14:27:30 -0400
-Received: from mail-oi1-f193.google.com ([209.85.167.193]:34300 "EHLO
-        mail-oi1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729772AbgEKS13 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 May 2020 14:27:29 -0400
-Received: by mail-oi1-f193.google.com with SMTP id c12so14963890oic.1;
-        Mon, 11 May 2020 11:27:28 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7Dq6v2RgQ1NzWRtNWHz7ueSOJkRsa7ZUQ4A+tRGmEk0=;
-        b=IGtzoL25r7bVwaABBJlubOvf7v1TLCK4QhcxRsYXvSDFitGboO7IX6iVSlNHo668DZ
-         pNtUx9RiydiDih+N22JpuZzgUL3CmUGHnjBoGRraR6bXxx3kndy+9b8LWFnwb520uM59
-         xCf6rJGAw3QTh3ZCxbp2p4ud3boe9v/WM/+IcO35VoqAn41Yj5En7IMZ0Z6brFedDSXs
-         3tB/2SYlsAHV8TnQ+lYrC0sErOfzjnrNigMbZ36mL79g3VUa4fnpoAcKB78mv6ougpId
-         gYs4NcMrTW2RvQntRCnN7irFV4F0DjCJGIYfauuuxlPhTfSSIJhU2BpCNwWkiFCn0Tbz
-         wEdw==
-X-Gm-Message-State: AGi0PuYs0hoF7eHcCXC7VPalRiVfGnwYmBriSwDLohrP80n0TcmXI1W8
-        HZLRH+ZkeX8yLsijCS+xYg==
-X-Google-Smtp-Source: APiQypIddoKpSsY4vXjl9FBRpjHvq4vl8fRKeIJdFi0j9WY+HcG6j9RKFSXh8teT5bLZUpju5w9kTA==
-X-Received: by 2002:aca:cc0d:: with SMTP id c13mr12333340oig.125.1589221648092;
-        Mon, 11 May 2020 11:27:28 -0700 (PDT)
-Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k26sm2859224ots.3.2020.05.11.11.27.27
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 May 2020 11:27:27 -0700 (PDT)
-Received: (nullmailer pid 22174 invoked by uid 1000);
-        Mon, 11 May 2020 16:11:27 -0000
-Date:   Mon, 11 May 2020 11:11:27 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Kamel Bouhara <kamel.bouhara@bootlin.com>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        linux-input@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-iio@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>
-Subject: Re: [PATCH v4 4/5] dt-bindings: counter: microchip-tcb-capture
- counter
-Message-ID: <20200511161127.GA21385@bogus>
-References: <20200511140505.1649111-1-kamel.bouhara@bootlin.com>
- <20200511140505.1649111-5-kamel.bouhara@bootlin.com>
+        id S1731198AbgEKTL7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 May 2020 15:11:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59222 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728613AbgEKTL7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 11 May 2020 15:11:59 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7C467206E6;
+        Mon, 11 May 2020 19:11:58 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1589224318;
+        bh=y6wmr4MoqUoWmVIt3d7OFxQPoqzir6uX21teSxuChqg=;
+        h=Date:From:To:Subject:From;
+        b=Ft4pYutGlsk0x6Kng2vmsWLxR3AYoysyzUXQFZ7koNRpfQX4hUzxswYSxrNag4PSQ
+         ipBL+9LIvcwd3z/Q+Ti2Sohbt7ykHTVxMOv2/RyNTdUCZZ7AGrQ6Mvtnxop2TUVT/V
+         QUTgglzy2QxUhEa3ft/nDFo1EzqIytjo5b84swg4=
+Date:   Mon, 11 May 2020 20:11:50 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] 2nd set of IIO fixes for the 5.7 cycle.
+Message-ID: <20200511201150.13576144@archlinux>
+X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200511140505.1649111-5-kamel.bouhara@bootlin.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 11 May 2020 16:05:04 +0200, Kamel Bouhara wrote:
-> Describe the devicetree binding for the Microchip TCB module.
-> Each counter blocks exposes three independent counters.
-> 
-> However, when configured in quadrature decoder, both channel <0> and <1>
-> are required for speed/position and rotation capture (yet only the
-> position is captured).
-> 
-> Signed-off-by: Kamel Bouhara <kamel.bouhara@bootlin.com>
-> ---
->  .../soc/microchip/atmel,at91rm9200-tcb.yaml   | 29 +++++++++++++++++--
->  1 file changed, 26 insertions(+), 3 deletions(-)
-> 
+The following changes since commit c532cc617e6edc4398a9ec5c8f470833966f9f9f:
 
+  Merge tag 'iio-fixes-for-5.7a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-linus (2020-04-20 14:07:00 +0200)
 
-My bot found errors running 'make dt_binding_check' on your patch:
+are available in the Git repository at:
 
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-doc-validate", line 64, in <module>
-    ret = check_doc(args.yamldt)
-  File "/usr/local/bin/dt-doc-validate", line 25, in check_doc
-    testtree = dtschema.load(filename, line_number=line_number, duplicate_keys=False)
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 592, in load
-    return yaml.load(f.read())
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/main.py", line 343, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 113, in get_single_data
-    return self.construct_document(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 123, in construct_document
-    for _dummy in generator:
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 723, in construct_yaml_map
-    value = self.construct_mapping(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 440, in construct_mapping
-    return BaseConstructor.construct_mapping(self, node, deep=deep)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 257, in construct_mapping
-    if self.check_mapping_key(node, key_node, mapping, key, value):
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 295, in check_mapping_key
-    raise DuplicateKeyError(*args)
-ruamel.yaml.constructor.DuplicateKeyError: while constructing a mapping
-  in "<unicode string>", line 4, column 1
-found duplicate key "examples" with value "[]" (original value: "[]")
-  in "<unicode string>", line 157, column 1
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-5.7b
 
-To suppress this check see:
-    http://yaml.readthedocs.io/en/latest/api.html#duplicate-keys
+for you to fetch changes up to 928edefbc18cd8433f7df235c6e09a9306e7d580:
 
-Duplicate keys will become an error in future releases, and are errors
-by default when using the new API.
+  iio: sca3000: Remove an erroneous 'get_device()' (2020-05-10 10:53:36 +0100)
 
-Documentation/devicetree/bindings/Makefile:12: recipe for target 'Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.example.dts' failed
-make[1]: *** [Documentation/devicetree/bindings/soc/microchip/atmel,at91rm9200-tcb.example.dts] Error 1
-make[1]: *** Waiting for unfinished jobs....
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-mk-schema", line 34, in <module>
-    schemas = dtschema.process_schemas(args.schemas, core_schema=(not args.useronly))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 554, in process_schemas
-    sch = process_schema(os.path.abspath(filename))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 507, in process_schema
-    schema = load_schema(filename)
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 123, in load_schema
-    return do_load(os.path.join(schema_basedir, schema))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 108, in do_load
-    return yaml.load(tmp)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/main.py", line 343, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 113, in get_single_data
-    return self.construct_document(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 123, in construct_document
-    for _dummy in generator:
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 723, in construct_yaml_map
-    value = self.construct_mapping(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 440, in construct_mapping
-    return BaseConstructor.construct_mapping(self, node, deep=deep)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 257, in construct_mapping
-    if self.check_mapping_key(node, key_node, mapping, key, value):
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 295, in check_mapping_key
-    raise DuplicateKeyError(*args)
-ruamel.yaml.constructor.DuplicateKeyError: while constructing a mapping
-  in "<unicode string>", line 4, column 1
-found duplicate key "examples" with value "[]" (original value: "[]")
-  in "<unicode string>", line 157, column 1
+----------------------------------------------------------------
+iio-fixes-for-5.7b Second set of fixes for IIO in the 5.7 cycle.
 
-To suppress this check see:
-    http://yaml.readthedocs.io/en/latest/api.html#duplicate-keys
+Usual mixed bag of breakage in new code and ancient bugs.
 
-Duplicate keys will become an error in future releases, and are errors
-by default when using the new API.
+ad2s1210
+- Fix missing CS change needed to actually read anything.
+atlas-sensor
+- Avoid clashing scan index with the timestamp channel.
+sca3000
+- Fix a randomly placed get_device in an error message print.
+st_lsm6dsx
+- Fix missing unlock in error path.
+stm32-adc
+- Fix which device is used to request DMA to ensure it's one
+  that has actually been registered at point of use.
+stm32-dfsdm
+- Fix which device is used to request DMA to ensure it's one
+  that has actually been registered at poitn of use.
+ti-ads8344
+- Fix channel selection.
+vf610 dac
+- Fix some missing error handling code.
 
-Traceback (most recent call last):
-  File "/usr/local/bin/dt-mk-schema", line 34, in <module>
-    schemas = dtschema.process_schemas(args.schemas, core_schema=(not args.useronly))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 554, in process_schemas
-    sch = process_schema(os.path.abspath(filename))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 507, in process_schema
-    schema = load_schema(filename)
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 123, in load_schema
-    return do_load(os.path.join(schema_basedir, schema))
-  File "/usr/local/lib/python3.6/dist-packages/dtschema/lib.py", line 108, in do_load
-    return yaml.load(tmp)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/main.py", line 343, in load
-    return constructor.get_single_data()
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 113, in get_single_data
-    return self.construct_document(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 123, in construct_document
-    for _dummy in generator:
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 723, in construct_yaml_map
-    value = self.construct_mapping(node)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 440, in construct_mapping
-    return BaseConstructor.construct_mapping(self, node, deep=deep)
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 257, in construct_mapping
-    if self.check_mapping_key(node, key_node, mapping, key, value):
-  File "/usr/local/lib/python3.6/dist-packages/ruamel/yaml/constructor.py", line 295, in check_mapping_key
-    raise DuplicateKeyError(*args)
-ruamel.yaml.constructor.DuplicateKeyError: while constructing a mapping
-  in "<unicode string>", line 4, column 1
-found duplicate key "examples" with value "[]" (original value: "[]")
-  in "<unicode string>", line 157, column 1
+----------------------------------------------------------------
+Christophe JAILLET (2):
+      iio: dac: vf610: Fix an error handling path in 'vf610_dac_probe()'
+      iio: sca3000: Remove an erroneous 'get_device()'
 
-To suppress this check see:
-    http://yaml.readthedocs.io/en/latest/api.html#duplicate-keys
+Dan Carpenter (1):
+      iio: imu: st_lsm6dsx: unlock on error in st_lsm6dsx_shub_write_raw()
 
-Duplicate keys will become an error in future releases, and are errors
-by default when using the new API.
+Dragos Bogdan (1):
+      staging: iio: ad2s1210: Fix SPI reading
 
-Documentation/devicetree/bindings/Makefile:41: recipe for target 'Documentation/devicetree/bindings/processed-schema-examples.yaml' failed
-make[1]: *** [Documentation/devicetree/bindings/processed-schema-examples.yaml] Error 123
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/processed-schema-examples.yaml'
-Documentation/devicetree/bindings/Makefile:45: recipe for target 'Documentation/devicetree/bindings/processed-schema.yaml' failed
-make[1]: *** [Documentation/devicetree/bindings/processed-schema.yaml] Error 123
-make[1]: *** Deleting file 'Documentation/devicetree/bindings/processed-schema.yaml'
-Makefile:1300: recipe for target 'dt_binding_check' failed
-make: *** [dt_binding_check] Error 2
+Fabrice Gasnier (2):
+      iio: adc: stm32-adc: fix device used to request dma
+      iio: adc: stm32-dfsdm: fix device used to request dma
 
-See https://patchwork.ozlabs.org/patch/1287813
+Gregory CLEMENT (1):
+      iio: adc: ti-ads8344: Fix channel selection
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure dt-schema is up to date:
+Matt Ranostay (1):
+      iio: chemical: atlas-sensor: correct DO-SM channels
 
-pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
-
-Please check and re-submit.
-
+ drivers/iio/accel/sca3000.c                  |  2 +-
+ drivers/iio/adc/stm32-adc.c                  |  8 ++++----
+ drivers/iio/adc/stm32-dfsdm-adc.c            | 21 +++++++++++----------
+ drivers/iio/adc/ti-ads8344.c                 |  8 +++++---
+ drivers/iio/chemical/atlas-sensor.c          | 14 +++++++++++++-
+ drivers/iio/dac/vf610_dac.c                  |  1 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c |  7 +++++--
+ drivers/staging/iio/resolver/ad2s1210.c      | 17 ++++++++++++-----
+ 8 files changed, 52 insertions(+), 26 deletions(-)
