@@ -6,43 +6,39 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F36ABC433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5333BC433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D4A07206DA
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3A5F72074A
+	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727099AbgENNSA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 May 2020 09:18:00 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6458 "EHLO
+        id S1727970AbgENNSE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 May 2020 09:18:04 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:14506 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727939AbgENNR7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 May 2020 09:17:59 -0400
+        by vger.kernel.org with ESMTP id S1727939AbgENNSD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 May 2020 09:18:03 -0400
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04ED9YD5020380;
-        Thu, 14 May 2020 09:17:44 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3100x5yebe-1
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04ED9YA9020413;
+        Thu, 14 May 2020 09:17:48 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3100x5yebm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 May 2020 09:17:44 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 04EDHheX059637
+        Thu, 14 May 2020 09:17:48 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 04EDHkXc034638
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 14 May 2020 09:17:43 -0400
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 14 May 2020 06:17:42 -0700
+        Thu, 14 May 2020 09:17:46 -0400
 Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 14 May 2020 06:17:26 -0700
+ 15.1.1779.2; Thu, 14 May 2020 06:17:45 -0700
 Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
  (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 14 May 2020 06:17:41 -0700
+ Transport; Thu, 14 May 2020 06:17:45 -0700
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 04EDHUam017033;
-        Thu, 14 May 2020 09:17:37 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 04EDHUao017033;
+        Thu, 14 May 2020 09:17:42 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -53,9 +49,9 @@ CC:     <ludovic.desroches@microchip.com>, <eugen.hristev@microchip.com>,
         <alexandre.belloni@bootlin.com>, <alexandre.torgue@st.com>,
         <mcoquelin.stm32@gmail.com>, <ak@it-klinger.de>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 3/8] iio: at91_adc: pass ref to IIO device via param for int function
-Date:   Thu, 14 May 2020 16:17:05 +0300
-Message-ID: <20200514131710.84201-4-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 5/8] iio: stm32-adc: pass iio device as arg for the interrupt handler
+Date:   Thu, 14 May 2020 16:17:07 +0300
+Message-ID: <20200514131710.84201-6-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200514131710.84201-1-alexandru.ardelean@analog.com>
 References: <20200514131710.84201-1-alexandru.ardelean@analog.com>
@@ -74,48 +70,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This changes the argument for the interrupt handler to be the IIO device
+instead of the state-struct.
 Since there will be some changes to how iio_priv_to_dev() is implemented,
 it could be that the helper becomes a bit slower, as it will be hidden away
 in the IIO core.
 
-For this driver, the IIO device can be passed directly as a parameter to
-the at91_ts_sample() function, thus making it immune to the change of
-iio_priv_to_dev().
-The function gets called in an interrupt context.
+The iio_priv() call will still be fast enough, as it will return a void
+pointer from the public IIO device structure. So it's better to switch the
+order.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/adc/at91_adc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/adc/stm32-adc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index 0368b6dc6d60..5999defe47cd 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -287,13 +287,12 @@ static void handle_adc_eoc_trigger(int irq, struct iio_dev *idev)
- 	}
- }
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 80c3f963527b..34885387fbdb 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1227,8 +1227,8 @@ static int stm32_adc_read_raw(struct iio_dev *indio_dev,
  
--static int at91_ts_sample(struct at91_adc_state *st)
-+static int at91_ts_sample(struct iio_dev *idev, struct at91_adc_state *st)
+ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
  {
- 	unsigned int xscale, yscale, reg, z1, z2;
- 	unsigned int x, y, pres, xpos, ypos;
- 	unsigned int rxp = 1;
- 	unsigned int factor = 1000;
--	struct iio_dev *idev = iio_priv_to_dev(st);
+-	struct stm32_adc *adc = data;
+-	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
++	struct iio_dev *indio_dev = data;
++	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
  
- 	unsigned int xyz_mask_bits = st->res;
- 	unsigned int xyz_mask = (1 << xyz_mask_bits) - 1;
-@@ -449,7 +448,7 @@ static irqreturn_t at91_adc_9x5_interrupt(int irq, void *private)
+@@ -1240,8 +1240,8 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
  
- 		if (status & AT91_ADC_ISR_PENS) {
- 			/* validate data by pen contact */
--			at91_ts_sample(st);
-+			at91_ts_sample(idev, st);
- 		} else {
- 			/* triggered by event that is no pen contact, just read
- 			 * them to clean the interrupt and discard all.
+ static irqreturn_t stm32_adc_isr(int irq, void *data)
+ {
+-	struct stm32_adc *adc = data;
+-	struct iio_dev *indio_dev = iio_priv_to_dev(adc);
++	struct iio_dev *indio_dev = data;
++	struct stm32_adc *adc = iio_priv(indio_dev);
+ 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
+ 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
+ 
+@@ -1882,7 +1882,7 @@ static int stm32_adc_probe(struct platform_device *pdev)
+ 
+ 	ret = devm_request_threaded_irq(&pdev->dev, adc->irq, stm32_adc_isr,
+ 					stm32_adc_threaded_isr,
+-					0, pdev->name, adc);
++					0, pdev->name, indio_dev);
+ 	if (ret) {
+ 		dev_err(&pdev->dev, "failed to request IRQ\n");
+ 		return ret;
 -- 
 2.17.1
 
