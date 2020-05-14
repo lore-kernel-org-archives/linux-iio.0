@@ -2,118 +2,136 @@ Return-Path: <SRS0=YwmI=64=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.5 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 916EEC433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5668AC433E1
+	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 20:49:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 784822073E
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 13:18:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DFD120734
+	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 20:49:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727910AbgENNRy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 May 2020 09:17:54 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:59964 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727893AbgENNRy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 May 2020 09:17:54 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04ED9Xa5020333;
-        Thu, 14 May 2020 09:17:42 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3100x5yeb6-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 14 May 2020 09:17:41 -0400
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 04EDHdDF034599
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 14 May 2020 09:17:40 -0400
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 14 May 2020 06:17:39 -0700
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 14 May 2020 06:17:22 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 14 May 2020 06:17:38 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 04EDHUal017033;
-        Thu, 14 May 2020 09:17:35 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-kernel@vger.kernel.org>
-CC:     <ludovic.desroches@microchip.com>, <eugen.hristev@microchip.com>,
-        <jic23@kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <alexandre.torgue@st.com>,
-        <mcoquelin.stm32@gmail.com>, <ak@it-klinger.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 2/8] iio: at91-sama5d2_adc: pass ref to IIO device via param for int function
-Date:   Thu, 14 May 2020 16:17:04 +0300
-Message-ID: <20200514131710.84201-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200514131710.84201-1-alexandru.ardelean@analog.com>
-References: <20200514131710.84201-1-alexandru.ardelean@analog.com>
+        id S1727899AbgENUti (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 May 2020 16:49:38 -0400
+Received: from mail-dm6nam11olkn2012.outbound.protection.outlook.com ([40.92.19.12]:35069
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725975AbgENUti (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 14 May 2020 16:49:38 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=ds9KAoNuN03iTsxp5QM4K5cnzn8b5TAuc/LqyvWLURzldOEbdsGTjXzXGbIGaFlLHcYvrtUX8DWHXOUPdTeUPCya8ZWd3VsjeIp8tU47Jdf8yuP0pxIa9te6+ygiR0tA5nJnz/VJCsszAp3r0mhgGiRfrudXNxC/JulsZxzjbZ8UbvZmo6PwCbRGBzOK6d6MMd8NKyKBGUsoiw4kCyQ6z297rRkDhrnohdhz2nOQ0FgN61Ak1AKq20eCKUtNEr4XdWxYYZhwQhObfevD5GA3cdFHV6QhpR+h+MxOyXGGjnh2FVuhBVkgk0ZMdJeQ2mXhtPOFK4unzsdmWHok5iw/Xw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=0gQb/mLFCP0Ax6abw0Rx/iFeUK7JPMc6LgqmOY43Qj8=;
+ b=e9MnUdLQlJP2YzB3Y4Cd+LBjVTW62kH4ffGymft5cNJEVPZEg0kHBjKlnSZdhboQhp6unIoe4+OoBxL+k9q4whF9qZTqjtQInnNhGDTuLR4KCq3QBMawtT1aV6CAHWhsJS9ixASqkvobLm2YhocsaRxUMPpwnlhSQaKTrAHAV4ZyOFzp3vwgBRVd8fD0bzbaTXx0FiH+Hi+oBtHz0KaqOrhCp6lLDl5jvgG8GUpN+2QDDfsePTD6HplIizXkQ63iTXNXHuJpgAL9A32AuPCzY5PhEWWMCz/XQrO8IEdH89dGr/mvtF57yzHD5ugn4DhkItHwCwxN1Yf4Hxip38X24w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=live.ca; dmarc=pass action=none header.from=live.ca; dkim=pass
+ header.d=live.ca; arc=none
+Received: from DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
+ (2a01:111:e400:fc4d::4c) by
+ DM6NAM11HT176.eop-nam11.prod.protection.outlook.com (2a01:111:e400:fc4d::215)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.2979.27; Thu, 14 May
+ 2020 20:49:36 +0000
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ (2a01:111:e400:fc4d::47) by DM6NAM11FT024.mail.protection.outlook.com
+ (2a01:111:e400:fc4d::159) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.19 via Frontend
+ Transport; Thu, 14 May 2020 20:49:36 +0000
+X-IncomingTopHeaderMarker: OriginalChecksum:4EAEA0836819E73F787C1291744D01E778C02E5C445F7792A09E7B5B056A8DA5;UpperCasedChecksum:8DB64853B47B2D4C9C2830E46BADC6666A8719CB60A42E1F9C4246D268464EDF;SizeAsReceived:7790;Count:48
+Received: from BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc]) by BN6PR04MB0660.namprd04.prod.outlook.com
+ ([fe80::ad10:4127:4bc8:76fc%6]) with mapi id 15.20.3000.022; Thu, 14 May 2020
+ 20:49:36 +0000
+From:   Jonathan Bakker <xc-racer2@live.ca>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, linus.walleij@linaro.org,
+        kstewart@linuxfoundation.org, tglx@linutronix.de,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     Jonathan Bakker <xc-racer2@live.ca>
+Subject: [PATCH v2 0/7] iio: accel: Add bma150 family support to bma180
+Date:   Thu, 14 May 2020 13:48:54 -0700
+Message-ID: <BN6PR04MB0660D19DC149EB425A0D7F64A3BC0@BN6PR04MB0660.namprd04.prod.outlook.com>
+X-Mailer: git-send-email 2.20.1
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ClientProxiedBy: MWHPR1701CA0009.namprd17.prod.outlook.com
+ (2603:10b6:301:14::19) To BN6PR04MB0660.namprd04.prod.outlook.com
+ (2603:10b6:404:d9::21)
+X-Microsoft-Original-Message-ID: <20200514204901.3199-1-xc-racer2@live.ca>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
- definitions=2020-05-14_03:2020-05-14,2020-05-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- malwarescore=0 suspectscore=0 cotscore=-2147483648 mlxscore=0 spamscore=0
- lowpriorityscore=0 mlxlogscore=999 phishscore=0 priorityscore=1501
- clxscore=1015 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2005140117
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from jon-hp-6570b.telus (2001:569:fb68:9c00:8067:f823:1e15:7520) by MWHPR1701CA0009.namprd17.prod.outlook.com (2603:10b6:301:14::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25 via Frontend Transport; Thu, 14 May 2020 20:49:34 +0000
+X-Mailer: git-send-email 2.20.1
+X-Microsoft-Original-Message-ID: <20200514204901.3199-1-xc-racer2@live.ca>
+X-TMN:  [/olKf3xRIrsp2pIo8i6t2nG6YEz29elr6ra5GAvGUcqrCjmTm0wvydpo94SMj8YO]
+X-MS-PublicTrafficType: Email
+X-IncomingHeaderCount: 48
+X-EOPAttributedMessage: 0
+X-MS-Office365-Filtering-Correlation-Id: e6ab7dbb-55b0-4fa1-9e60-08d7f8484fcd
+X-MS-TrafficTypeDiagnostic: DM6NAM11HT176:
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: zSUAR+NN3ZeX4o1osNTryYlmypf+dWXPeIEnr0OpiHZi91N71zuXQG3ZogiszK7NbCINHgTG5PEmeBBLj1sr5fWhPDgcb6S1O9V7pygfNISwcr11UbZ/hNvQ1h/yJm3AcyFLiB4ey34S1WUBHm0lF7+fQ8SXd6oZ5hT3EnewUVsGHGDR9DEyrSkyC+CxRHN3076hKthLMavT5aTlvlXlrg==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR04MB0660.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:;DIR:OUT;SFP:1901;
+X-MS-Exchange-AntiSpam-MessageData: KBnnuhLZ7OK3SOp5h84En3iRDoKqxKi0tqN+jiPLTcmiisEr34rQR9FuQGpVYIHlHAvAsVnHgqObfxuFC1zDeKJpGrKBihdTVAwyqcgN/SKZyufoAgiuVDBHJ+08e8TiAGri3q+THIBTE8qMPZK2k/2TssY31xR8Q7wpTKNs2Nwwe0ho6+Gy4WgSYYn6Pcx9kaPtFE7C6eBEz/dJufvAuQ==
+X-OriginatorOrg: outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: e6ab7dbb-55b0-4fa1-9e60-08d7f8484fcd
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 20:49:36.2401
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
+X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
+X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6NAM11HT176
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since there will be some changes to how iio_priv_to_dev() is implemented,
-it could be that the helper becomes a bit slower, as it will be hidden away
-in the IIO core.
+This patchset adds support for the bma023, bma150, and smb380 three
+axis accelerometers to the bma180 IIO driver.  The bma023 is found
+on several ~2010 phones, including the first-gen Galaxy S series.
 
-For this driver, the IIO device can be passed directly as a parameter to
-the at91_adc_no_pen_detect_interrupt() function, thus making it immune to
-the change of iio_priv_to_dev().
-The function gets called in an interrupt context.
+The bma023 differs from later chips (bma180, bma25x) in that it
+has no low power but still working mode and no temperature
+channel.  The bma150 is very similar to the bma023, but has a
+temperature channel.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/adc/at91-sama5d2_adc.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+As these chips are also supported by an input driver, the bma180 IIO
+driver now explicitly conflicts with INPUT_BMA150 in the Kconfig.
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 9abbbdcc7420..822b8782acba 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -1275,10 +1275,9 @@ static void at91_adc_pen_detect_interrupt(struct at91_adc_state *st)
- 	st->touch_st.touching = true;
- }
- 
--static void at91_adc_no_pen_detect_interrupt(struct at91_adc_state *st)
-+static void at91_adc_no_pen_detect_interrupt(struct iio_dev *indio_dev,
-+					     struct at91_adc_state *st)
- {
--	struct iio_dev *indio_dev = iio_priv_to_dev(st);
--
- 	at91_adc_writel(st, AT91_SAMA5D2_TRGR,
- 			AT91_SAMA5D2_TRGR_TRGMOD_NO_TRIGGER);
- 	at91_adc_writel(st, AT91_SAMA5D2_IDR, AT91_SAMA5D2_IER_NOPEN |
-@@ -1318,7 +1317,7 @@ static irqreturn_t at91_adc_interrupt(int irq, void *private)
- 		at91_adc_pen_detect_interrupt(st);
- 	} else if ((status & AT91_SAMA5D2_IER_NOPEN)) {
- 		/* nopen detected IRQ */
--		at91_adc_no_pen_detect_interrupt(st);
-+		at91_adc_no_pen_detect_interrupt(indio, st);
- 	} else if ((status & AT91_SAMA5D2_ISR_PENS) &&
- 		   ((status & rdy_mask) == rdy_mask)) {
- 		/* periodic trigger IRQ - during pen sense */
+While I was at it, I noticed that the dt binding doc was missing
+the regulators, so I've added those in.
+
+The patches have been tested on a GT-i9000 with a bma023.  The interrupt
+pin is not connected on this board so the trigger was not tested.  The
+bma150 was only tested by changing the compatible and confirming that
+the accelerometer channels were working.
+
+Changes from v1:
+-Added patches for bma150 and smb380 variants
+-Add R-b and A-b tags
+-Change so BMA180 and INPUT_BMA150 conflict rather than removing
+ the i2c ids from the input driver when the iio driver is enabled
+
+Jonathan Bakker (7):
+  iio: accel: bma180: Prepare for different reset values
+  iio: accel: Make bma180 conflict with input's bma150
+  dt-bindings: iio: accel: Add bma150 family compatibles to bma180
+  dt-bindings: iio: accel: Add required regulators to bma180
+  iio: accel: bma180: Add support for bma023
+  iio: accel: bma180: Rename center_temp to temp_offset
+  iio: accel: Add bma150/smb380 support to bma180
+
+ .../devicetree/bindings/iio/accel/bma180.txt  |   8 +-
+ drivers/iio/accel/Kconfig                     |   8 +-
+ drivers/iio/accel/bma180.c                    | 208 ++++++++++++++++--
+ 3 files changed, 206 insertions(+), 18 deletions(-)
+
 -- 
-2.17.1
+2.20.1
 
