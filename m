@@ -1,122 +1,191 @@
-Return-Path: <SRS0=YwmI=64=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=/iaT=65=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=FREEMAIL_FORGED_FROMDOMAIN,
-	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF9B2C433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 20:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B956C433DF
+	for <linux-iio@archiver.kernel.org>; Fri, 15 May 2020 03:00:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D76D32065F
-	for <linux-iio@archiver.kernel.org>; Thu, 14 May 2020 20:50:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1AA252074A
+	for <linux-iio@archiver.kernel.org>; Fri, 15 May 2020 03:00:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1589511608;
+	bh=o461O1VN8+GikyE4m6q0vZ6eip5p9sPvEENcukkNYQQ=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=QMewdJJ/mk+kb9NnNIaOdOOoG5tLKpRX6DEzGBYIh6quGRXiKf/YUwtN5d8T6/5eH
+	 2czrGNsszxNh9qHFM4asTBTCrXCE52fvdVrYr8NwJRf9IBBGfSIaeWYggTinSA1Vlf
+	 PEIu3k0sy42bd02ULL6Ho59fBkqKqr9W+yyxPQEc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728039AbgENUtn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 May 2020 16:49:43 -0400
-Received: from mail-bn8nam11olkn2086.outbound.protection.outlook.com ([40.92.20.86]:51936
-        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1728003AbgENUtm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 14 May 2020 16:49:42 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ThLnv5lSmws+vUYa+ZgxIfkojhG9IJpWEO9C8dozW8EWVZBgK+Na+xXP+ZTTxukV6AnX6XtbEqIuiUGsq5Hq8rO1K8DL0OKoW2c8/veUGtj3zHBR0OxgqYZYp7n5gusk2Q3tE0KlqGLap/rc/N+G3YTMy2JKq8DCzM1hVqhYKfF3J9GJBJNU1RcFYU9hQ1VJuBw8P6Zh6UaUaD9GBZ0B/HpZC3ZrbVpuNWUxaGMYGea7rGUcIZC3L4AGAO4UjvAF8EEp11pxcqNO6onvMj37eszxWAZcoeuzAI3H08d4UVfSkUjmMIBx/0jGU03Aa+oNzlIT/a5D/mKM1Ynt7ZQ42w==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=+RsMuAs/ZPNrfZ7RCX424suZ/MYZz2ohqipYKr1Jd2g=;
- b=KHeUh87mDCBcZU8YZKCOjmCdsRP8IzGIjv/aqE/RLge6cdTCMTvCNopriXCn0BwEVcAnzH9X6LT51dyVc4AN1+HbfjOO1YlycEpTgmezj0kmHTo7UM36coYZcsJyr3asFsFWsgyr2kCtF0tB3npsrqM2Dtdc6gHng0Ihf5Hw+TI78ZhAcrg7EkPKPUZS/zLzmGVoqC13h8CvmUJHlsXIf6kL2/m8GA6dsPJwZBLZxuTSqSmS+snrgO08MS3dMCefYPC8SRG1Bv6yRw+lGxf7kzp1lppd8PwqVfpJwoL4RYx3/bxLFGgFudIYpZQ5SQ5MLGkfr9VhWCMb+gk2XBJlZg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=live.ca; dmarc=pass action=none header.from=live.ca; dkim=pass
- header.d=live.ca; arc=none
-Received: from DM6NAM11FT024.eop-nam11.prod.protection.outlook.com
- (2a01:111:e400:fc4d::40) by
- DM6NAM11HT166.eop-nam11.prod.protection.outlook.com (2a01:111:e400:fc4d::314)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.19; Thu, 14 May
- 2020 20:49:40 +0000
-Received: from BN6PR04MB0660.namprd04.prod.outlook.com
- (2a01:111:e400:fc4d::47) by DM6NAM11FT024.mail.protection.outlook.com
- (2a01:111:e400:fc4d::159) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.19 via Frontend
- Transport; Thu, 14 May 2020 20:49:40 +0000
-X-IncomingTopHeaderMarker: OriginalChecksum:A36B77B61527388797D60F30556D9B683C6C6CE0F8DA9ED8F111124A23243BBF;UpperCasedChecksum:6CEC7650E5006B7F0739E7E06465655965F27F1CB2BF508A2473C4D47F190E7F;SizeAsReceived:7916;Count:50
-Received: from BN6PR04MB0660.namprd04.prod.outlook.com
- ([fe80::ad10:4127:4bc8:76fc]) by BN6PR04MB0660.namprd04.prod.outlook.com
- ([fe80::ad10:4127:4bc8:76fc%6]) with mapi id 15.20.3000.022; Thu, 14 May 2020
- 20:49:40 +0000
-From:   Jonathan Bakker <xc-racer2@live.ca>
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, linus.walleij@linaro.org,
-        kstewart@linuxfoundation.org, tglx@linutronix.de,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc:     Jonathan Bakker <xc-racer2@live.ca>
-Subject: [PATCH v2 2/7] iio: accel: Make bma180 conflict with input's bma150
-Date:   Thu, 14 May 2020 13:48:56 -0700
-Message-ID: <BN6PR04MB0660FE5CCD136539A328B29EA3BC0@BN6PR04MB0660.namprd04.prod.outlook.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200514204901.3199-1-xc-racer2@live.ca>
-References: <20200514204901.3199-1-xc-racer2@live.ca>
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ClientProxiedBy: MWHPR1701CA0009.namprd17.prod.outlook.com
- (2603:10b6:301:14::19) To BN6PR04MB0660.namprd04.prod.outlook.com
- (2603:10b6:404:d9::21)
-X-Microsoft-Original-Message-ID: <20200514204901.3199-3-xc-racer2@live.ca>
+        id S1727856AbgEODAH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 May 2020 23:00:07 -0400
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:43265 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726345AbgEODAG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 May 2020 23:00:06 -0400
+Received: by mail-oi1-f196.google.com with SMTP id i22so960722oik.10;
+        Thu, 14 May 2020 20:00:04 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=bjc9M+ltvOohtg90sCLNJrRki6/Nirbm2vS+XeCl5Xk=;
+        b=CBr/WwpyQHhBZ4RZa/piW2/x1Cjxykvc2dcSFgZSeCr7HDTeIA+0LM4PhnaerdlTG2
+         dxLXHuzmKsReAqCEqCIIPF5bWBMrCq+d+OlFrm+FIqRzG/UkAQnsOpWC+hHO5nM/FrgF
+         Kfya+nuqVK6Qtgk6vJnUuKTBgP4/SV3GV9OXhVZjQQ3AzqpmdPYjSLmhslhRS1bBmckD
+         C2RL0HIO41Zcq4X59LtaYgoe+ET3umI1SvTAjqcdR8zUPBovw7qFkmIxnqDFjaWudL7r
+         qsq/DIrDM02ckpoAM6ah4/gSKP0cD8VfGWb5tuZ00i/5jG49w0vvAbPE5bvkHxqN7gcx
+         dalw==
+X-Gm-Message-State: AOAM531XwSw/7seKwKOGHy3tUABHpcrcWb0Ts0geRy/ngbiq8ALW3+PN
+        kbczIQAcBmoayeRfY9nXDQ==
+X-Google-Smtp-Source: ABdhPJw2JGnI3HK1STO/gY+vd05hdLxQM19boTQeYNYuxp5F6jLUKLnTu0URfOrtg50l2/MqoT/tcw==
+X-Received: by 2002:aca:d50f:: with SMTP id m15mr713670oig.54.1589511603885;
+        Thu, 14 May 2020 20:00:03 -0700 (PDT)
+Received: from rob-hp-laptop (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id e4sm256580oou.33.2020.05.14.20.00.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 14 May 2020 20:00:03 -0700 (PDT)
+Received: (nullmailer pid 11296 invoked by uid 1000);
+        Fri, 15 May 2020 03:00:02 -0000
+Date:   Thu, 14 May 2020 22:00:02 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Cc:     jic23@kernel.org, mchehab+huawei@kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 11/12] dt-bindings: iio: imu: Add inv_icm42600
+ documentation
+Message-ID: <20200515030002.GA6242@bogus>
+References: <20200507144222.20989-1-jmaneyrol@invensense.com>
+ <20200507144222.20989-12-jmaneyrol@invensense.com>
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from jon-hp-6570b.telus (2001:569:fb68:9c00:8067:f823:1e15:7520) by MWHPR1701CA0009.namprd17.prod.outlook.com (2603:10b6:301:14::19) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3000.25 via Frontend Transport; Thu, 14 May 2020 20:49:38 +0000
-X-Mailer: git-send-email 2.20.1
-X-Microsoft-Original-Message-ID: <20200514204901.3199-3-xc-racer2@live.ca>
-X-TMN:  [vTw3+WUsAml8BNH0USNY/YseRjzFYgwgAwack7XAIxrMaTHZHBYDBffO798iLn9T]
-X-MS-PublicTrafficType: Email
-X-IncomingHeaderCount: 50
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-Correlation-Id: acc3de34-4ef8-4b6f-e790-08d7f848524d
-X-MS-TrafficTypeDiagnostic: DM6NAM11HT166:
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: JYkKbpjntwU9JeBNGhy/V5z+KYoOGfiAscLtGJWLHMMNJVxRgLIizH6f6FmF7ThunoFcK6mRlBTJa9IoHqEz2356v7lWcTXxtyovb+5jwrPGOVbWtzJsEqJo7as3hNdqiHNyLQSGcIvNJNRVV/i0MUApp1idZ/KlNQBf+o+Qm+8s9ajpLiO6mVW3MEur0vbUJx/LRpgpxe4qlNZWBVQ6Mg==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:0;SRV:;IPV:NLI;SFV:NSPM;H:BN6PR04MB0660.namprd04.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:;DIR:OUT;SFP:1901;
-X-MS-Exchange-AntiSpam-MessageData: uHCmMiNcTR3/h9dWdQb1+MddOQKOpCOxIaYcuqBR3BHJpjhT+AVUVvQyUSJrABa2eOu08b/OziiT/RgTpFSY+a8i7uPkIbqoFhshFsRgBm++7mNBlWeumagK5nqPe9weIYabVgE+07IvvSk4SIxlf+r71EBW4wg1EEY2I1fKQJ89SegSnUsp6yBt1LpWzBtV5jvPQkDK8ylZacQYNJLkBA==
-X-OriginatorOrg: outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: acc3de34-4ef8-4b6f-e790-08d7f848524d
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 14 May 2020 20:49:40.2673
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 84df9e7f-e9f6-40af-b435-aaaaaaaaaaaa
-X-MS-Exchange-CrossTenant-FromEntityHeader: Internet
-X-MS-Exchange-CrossTenant-RMS-PersistedConsumerOrg: 00000000-0000-0000-0000-000000000000
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6NAM11HT166
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200507144222.20989-12-jmaneyrol@invensense.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The bma180 IIO driver is being extended for support for the chips
-support by input's bma150 driver (bma023, bma150, smb380). Don't
-allow both drivers to be enabled simultaneously as they're for the
-same hardware.
+On Thu, May 07, 2020 at 04:42:21PM +0200, Jean-Baptiste Maneyrol wrote:
+> Document the ICM-426xxx devices devicetree bindings.
+> 
+> Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+> ---
+>  .../bindings/iio/imu/invensense,icm42600.yaml | 90 +++++++++++++++++++
+>  1 file changed, 90 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
+> new file mode 100644
+> index 000000000000..a7175f6543fa
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/imu/invensense,icm42600.yaml
+> @@ -0,0 +1,90 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/imu/invensense,icm42600.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: InvenSense ICM-426xx Inertial Measurement Unit
+> +
+> +maintainers:
+> +  - Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+> +
+> +description: |
+> +  6-axis MotionTracking device that combines a 3-axis gyroscope and a 3-axis accelerometer.
+> +
+> +  It has a configurable host interface that supports I3C, I2C and SPI serial communication, features a 2kB FIFO and
+> +  2 programmable interrupts with ultra-low-power wake-on-motion support to minimize system power consumption.
+> +
+> +  Other industry-leading features include InvenSense on-chip APEX Motion Processing engine for gesture recognition,
+> +  activity classification, and pedometer, along with programmable digital filters, and an embedded temperature sensor.
+> +
+> +  https://invensense.tdk.com/wp-content/uploads/2020/03/DS-000292-ICM-42605-v1.4.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - invensense,icm42600
+> +      - invensense,icm42602
+> +      - invensense,icm42605
+> +      - invensense,icm42622
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  spi-cpha: true
+> +
+> +  spi-cpol: true
 
-Signed-off-by: Jonathan Bakker <xc-racer2@live.ca>
----
- drivers/iio/accel/Kconfig | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+It doesn't make much sense to specify these and not make them required. 
+I guess you could have a device with multiple modes, but generally 
+there's only one right combination of these properties. Also, this could 
+just be implied by the compatible.
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 5d91a6dda894..09e8c51f854a 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -90,7 +90,7 @@ config ADXL372_I2C
- 
- config BMA180
- 	tristate "Bosch BMA180/BMA25x 3-Axis Accelerometer Driver"
--	depends on I2C
-+	depends on I2C && INPUT_BMA150=n
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--- 
-2.20.1
+> +
+> +  spi-max-frequency:
+> +    maxItems: 1
 
+Not an array. Either give a frequency range (minimum/maximum) or just 
+'true'.
+
+> +
+> +  vdd-supply:
+> +    description: Regulator that provides power to the sensor
+> +
+> +  vddio-supply:
+> +    description: Regulator that provides power to the bus
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - interrupts
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c0 {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        icm42605@68 {
+> +          compatible = "invensense,icm42605";
+> +          reg = <0x68>;
+> +          interrupt-parent = <&gpio2>;
+> +          interrupts = <7 IRQ_TYPE_EDGE_FALLING>;
+> +          vdd-supply = <&vdd>;
+> +          vddio-supply = <&vddio>;
+> +        };
+> +    };
+> +  - |
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi0 {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        icm42602@0 {
+> +          compatible = "invensense,icm42602";
+> +          reg = <0>;
+> +          spi-max-frequency = <24000000>;
+> +          spi-cpha;
+> +          spi-cpol;
+> +          interrupt-parent = <&gpio1>;
+> +          interrupts = <2 IRQ_TYPE_EDGE_FALLING>;
+> +          vdd-supply = <&vdd>;
+> +          vddio-supply = <&vddio>;
+> +        };
+> +    };
+> -- 
+> 2.17.1
+> 
