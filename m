@@ -6,23 +6,23 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A9F3C433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB041C433E6
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1C00120758
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C20AE207D3
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726709AbgEQTtq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 May 2020 15:49:46 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:47351 "EHLO
+        id S1726775AbgEQTtk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 May 2020 15:49:40 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:56973 "EHLO
         relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726872AbgEQTtp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:49:45 -0400
+        with ESMTP id S1726727AbgEQTtj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:49:39 -0400
 X-Originating-IP: 195.189.32.242
 Received: from pc.localdomain (unknown [195.189.32.242])
         (Authenticated sender: contact@artur-rojek.eu)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 8952B1BF208;
-        Sun, 17 May 2020 19:49:39 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 0B10A1BF204;
+        Sun, 17 May 2020 19:49:33 +0000 (UTC)
 From:   Artur Rojek <contact@artur-rojek.eu>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -35,9 +35,9 @@ Cc:     Heiko Stuebner <heiko@sntech.de>,
         linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v7 7/7] input: joystick: Add ADC attached joystick driver.
-Date:   Sun, 17 May 2020 21:49:04 +0200
-Message-Id: <20200517194904.34758-7-contact@artur-rojek.eu>
+Subject: [PATCH v7 5/7] IIO: Ingenic JZ47xx: Add touchscreen mode.
+Date:   Sun, 17 May 2020 21:49:02 +0200
+Message-Id: <20200517194904.34758-5-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200517194904.34758-1-contact@artur-rojek.eu>
 References: <20200517194904.34758-1-contact@artur-rojek.eu>
@@ -48,330 +48,264 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add a driver for joystick devices connected to ADC controllers
-supporting the Industrial I/O subsystem.
+The SADC component in JZ47xx SoCs provides support for touchscreen
+operations (pen position and pen down pressure) in single-ended and
+differential modes.
+
+Of the known hardware to use this controller, GCW Zero and Anbernic RG-350
+utilize the touchscreen mode by having their joystick(s) attached to the
+X/Y positive/negative input pins.
+GCW Zero comes with a single joystick and is sufficiently handled with the
+currently implemented single-ended mode. Support for boards with two
+joysticks, where one is hooked up to Xn/Yn and the other to Xp/Yp channels
+will need to be provided in the future.
+
+The touchscreen component of SADC takes a significant time to stabilize
+after first receiving the clock and a delay of 50ms has been empirically
+proven to be a safe value before data sampling can begin.
+
+All the boards which probe this driver have the interrupt provided from
+Device Tree, with no need to handle a case where the IRQ was not provided.
 
 Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 Tested-by: Paul Cercueil <paul@crapouillou.net>
-Tested-by: Heiko Stuebner <heiko@sntech.de>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 ---
 
  Changes:
 
- v2: - sanity check supported channel format on probe,
-     - rename adc_joystick_disable to a more sensible adc_joystick_cleanup, 
-     - enforce correct axis order by checking the `reg` property of
-       child nodes
+ v2: - improve description of the touchscreen mode,
+     - get rid of the unneeded kfifo,
+     - drop IIO_BUFFER_CB from Kconfig,
+     - remove extended names from the touchscreen channels
 
- v3-v5: no change
+ v3: remove unneeded `linux/iio/kfifo_buf.h` include
 
- v6: - remove redundant `<linux/of.h>`
-     - set `val` for each endianness case in their respective branches
-     - pass received error codes to return value of `adc_joystick_set_axes`
-     - change `(bits >> 3) > 2` to `bits > 16` for readability
-     - drop `of_match_ptr`
+ v4: clarify irq provider source in the patch description
+
+ v5: no change
+
+ v6: - correct the spelling of Device Tree and IRQ in commit message
+     - don't omit trailing commas from initializer lists
+     - error check `clk_enable`
+     - remove redundant `dev_err` from `platform_get_irq` error check
 
  v7: no change
 
- drivers/input/joystick/Kconfig        |  10 +
- drivers/input/joystick/Makefile       |   1 +
- drivers/input/joystick/adc-joystick.c | 253 ++++++++++++++++++++++++++
- 3 files changed, 264 insertions(+)
- create mode 100644 drivers/input/joystick/adc-joystick.c
+ drivers/iio/adc/Kconfig       |   1 +
+ drivers/iio/adc/ingenic-adc.c | 115 +++++++++++++++++++++++++++++++++-
+ 2 files changed, 114 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/input/joystick/Kconfig b/drivers/input/joystick/Kconfig
-index 940b744639c7..efbc20ec5099 100644
---- a/drivers/input/joystick/Kconfig
-+++ b/drivers/input/joystick/Kconfig
-@@ -42,6 +42,16 @@ config JOYSTICK_A3D
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called a3d.
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 12bb8b7ca1ff..c3314135fa2a 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -465,6 +465,7 @@ config INA2XX_ADC
+ config INGENIC_ADC
+ 	tristate "Ingenic JZ47xx SoCs ADC driver"
+ 	depends on MIPS || COMPILE_TEST
++	select IIO_BUFFER
+ 	help
+ 	  Say yes here to build support for the Ingenic JZ47xx SoCs ADC unit.
  
-+config JOYSTICK_ADC
-+	tristate "Simple joystick connected over ADC"
-+	depends on IIO
-+	select IIO_BUFFER_CB
-+	help
-+	  Say Y here if you have a simple joystick connected over ADC.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called adc-joystick.
-+
- config JOYSTICK_ADI
- 	tristate "Logitech ADI digital joysticks and gamepads"
- 	select GAMEPORT
-diff --git a/drivers/input/joystick/Makefile b/drivers/input/joystick/Makefile
-index 8656023f6ef5..58232b3057d3 100644
---- a/drivers/input/joystick/Makefile
-+++ b/drivers/input/joystick/Makefile
-@@ -6,6 +6,7 @@
- # Each configuration option enables a list of files.
+diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
+index 0eee4b4fb96c..49226d8fd8f6 100644
+--- a/drivers/iio/adc/ingenic-adc.c
++++ b/drivers/iio/adc/ingenic-adc.c
+@@ -8,7 +8,9 @@
  
- obj-$(CONFIG_JOYSTICK_A3D)		+= a3d.o
-+obj-$(CONFIG_JOYSTICK_ADC)		+= adc-joystick.o
- obj-$(CONFIG_JOYSTICK_ADI)		+= adi.o
- obj-$(CONFIG_JOYSTICK_AMIGA)		+= amijoy.o
- obj-$(CONFIG_JOYSTICK_AS5011)		+= as5011.o
-diff --git a/drivers/input/joystick/adc-joystick.c b/drivers/input/joystick/adc-joystick.c
-new file mode 100644
-index 000000000000..a4ba8eac5a12
---- /dev/null
-+++ b/drivers/input/joystick/adc-joystick.c
-@@ -0,0 +1,253 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Input driver for joysticks connected over ADC.
-+ * Copyright (c) 2019-2020 Artur Rojek <contact@artur-rojek.eu>
-+ */
-+#include <linux/ctype.h>
-+#include <linux/input.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
+ #include <dt-bindings/iio/adc/ingenic,adc.h>
+ #include <linux/clk.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
++#include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/iopoll.h>
+ #include <linux/kernel.h>
+@@ -20,6 +22,8 @@
+ #define JZ_ADC_REG_CFG			0x04
+ #define JZ_ADC_REG_CTRL			0x08
+ #define JZ_ADC_REG_STATUS		0x0c
++#define JZ_ADC_REG_ADSAME		0x10
++#define JZ_ADC_REG_ADWAIT		0x14
+ #define JZ_ADC_REG_ADTCH		0x18
+ #define JZ_ADC_REG_ADBDAT		0x1c
+ #define JZ_ADC_REG_ADSDAT		0x20
+@@ -28,6 +32,9 @@
+ #define JZ_ADC_REG_ENABLE_PD		BIT(7)
+ #define JZ_ADC_REG_CFG_AUX_MD		(BIT(0) | BIT(1))
+ #define JZ_ADC_REG_CFG_BAT_MD		BIT(4)
++#define JZ_ADC_REG_CFG_PULL_UP(n)	((n) << 16)
++#define JZ_ADC_REG_CFG_SAMPLE_NUM(n)	((n) << 10)
++#define JZ_ADC_REG_CFG_TOUCH_OPS_MASK	(BIT(31) | GENMASK(23, 10))
+ #define JZ_ADC_REG_ADCLK_CLKDIV_LSB	0
+ #define JZ4725B_ADC_REG_ADCLK_CLKDIV10US_LSB	16
+ #define JZ4770_ADC_REG_ADCLK_CLKDIV10US_LSB	8
+@@ -44,6 +51,14 @@
+ #define JZ4770_ADC_BATTERY_VREF			6600
+ #define JZ4770_ADC_BATTERY_VREF_BITS		12
+ 
++#define JZ_ADC_IRQ_AUX			BIT(0)
++#define JZ_ADC_IRQ_BATTERY		BIT(1)
++#define JZ_ADC_IRQ_TOUCH		BIT(2)
++#define JZ_ADC_IRQ_PEN_DOWN		BIT(3)
++#define JZ_ADC_IRQ_PEN_UP		BIT(4)
++#define JZ_ADC_IRQ_PEN_DOWN_SLEEP	BIT(5)
++#define JZ_ADC_IRQ_SLEEP		BIT(7)
 +
-+struct adc_joystick_axis {
-+	u32 code;
-+	s32 range[2];
-+	s32 fuzz;
-+	s32 flat;
-+};
-+
-+struct adc_joystick {
-+	struct input_dev *input;
-+	struct iio_cb_buffer *buffer;
-+	struct adc_joystick_axis *axes;
-+	struct iio_channel *chans;
-+	int num_chans;
-+};
-+
-+static int adc_joystick_handle(const void *data, void *private)
+ struct ingenic_adc;
+ 
+ struct ingenic_adc_soc_data {
+@@ -428,6 +443,28 @@ static const struct iio_info ingenic_adc_info = {
+ };
+ 
+ static const struct iio_chan_spec ingenic_channels[] = {
++	{
++		.type = IIO_POSITIONRELATIVE,
++		.indexed = 1,
++		.channel = INGENIC_ADC_TOUCH_XP,
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 12,
++			.storagebits = 16,
++		},
++	},
++	{
++		.type = IIO_POSITIONRELATIVE,
++		.indexed = 1,
++		.channel = INGENIC_ADC_TOUCH_YP,
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 12,
++			.storagebits = 16,
++		},
++	},
+ 	{
+ 		.extend_name = "aux",
+ 		.type = IIO_VOLTAGE,
+@@ -435,6 +472,7 @@ static const struct iio_chan_spec ingenic_channels[] = {
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+ 		.indexed = 1,
+ 		.channel = INGENIC_ADC_AUX,
++		.scan_index = -1,
+ 	},
+ 	{
+ 		.extend_name = "battery",
+@@ -445,6 +483,7 @@ static const struct iio_chan_spec ingenic_channels[] = {
+ 						BIT(IIO_CHAN_INFO_SCALE),
+ 		.indexed = 1,
+ 		.channel = INGENIC_ADC_BATTERY,
++		.scan_index = -1,
+ 	},
+ 	{ /* Must always be last in the array. */
+ 		.extend_name = "aux2",
+@@ -453,16 +492,76 @@ static const struct iio_chan_spec ingenic_channels[] = {
+ 				      BIT(IIO_CHAN_INFO_SCALE),
+ 		.indexed = 1,
+ 		.channel = INGENIC_ADC_AUX2,
++		.scan_index = -1,
+ 	},
+ };
+ 
++static int ingenic_adc_buffer_enable(struct iio_dev *iio_dev)
 +{
-+	struct adc_joystick *joy = private;
-+	enum iio_endian endianness;
-+	int bytes, msb, val, i;
-+	bool sign;
-+
-+	bytes = joy->chans[0].channel->scan_type.storagebits >> 3;
-+
-+	for (i = 0; i < joy->num_chans; ++i) {
-+		endianness = joy->chans[i].channel->scan_type.endianness;
-+		msb = joy->chans[i].channel->scan_type.realbits - 1;
-+		sign = (tolower(joy->chans[i].channel->scan_type.sign) == 's');
-+
-+		switch (bytes) {
-+		case 1:
-+			val = ((const u8 *)data)[i];
-+			break;
-+		case 2:
-+			if (endianness == IIO_BE)
-+				val = be16_to_cpu(((const u16 *)data)[i]);
-+			else if (endianness == IIO_LE)
-+				val = le16_to_cpu(((const u16 *)data)[i]);
-+			else /* IIO_CPU */
-+				val = ((const u16 *)data)[i];
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		val >>= joy->chans[i].channel->scan_type.shift;
-+		if (sign)
-+			val = sign_extend32(val, msb);
-+		else
-+			val &= GENMASK(msb, 0);
-+		input_report_abs(joy->input, joy->axes[i].code, val);
-+	}
-+
-+	input_sync(joy->input);
-+
-+	return 0;
-+}
-+
-+static int adc_joystick_open(struct input_dev *dev)
-+{
-+	struct adc_joystick *joy = input_get_drvdata(dev);
++	struct ingenic_adc *adc = iio_priv(iio_dev);
 +	int ret;
 +
-+	ret = iio_channel_start_all_cb(joy->buffer);
-+	if (ret)
-+		dev_err(dev->dev.parent, "Unable to start callback buffer");
-+
-+	return ret;
-+}
-+
-+static void adc_joystick_close(struct input_dev *dev)
-+{
-+	struct adc_joystick *joy = input_get_drvdata(dev);
-+
-+	iio_channel_stop_all_cb(joy->buffer);
-+}
-+
-+static void adc_joystick_cleanup(void *data)
-+{
-+	iio_channel_release_all_cb(data);
-+}
-+
-+static int adc_joystick_set_axes(struct device *dev, struct adc_joystick *joy)
-+{
-+	struct adc_joystick_axis *axes;
-+	struct fwnode_handle *child;
-+	int num_axes, ret, i;
-+
-+	num_axes = device_get_child_node_count(dev);
-+	if (!num_axes) {
-+		dev_err(dev, "Unable to find child nodes");
-+		return -EINVAL;
++	ret = clk_enable(adc->clk);
++	if (ret) {
++		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n",
++			ret);
++		return ret;
 +	}
 +
-+	if (num_axes != joy->num_chans) {
-+		dev_err(dev, "Got %d child nodes for %d channels",
-+			num_axes, joy->num_chans);
-+		return -EINVAL;
-+	}
-+
-+	axes = devm_kmalloc_array(dev, num_axes, sizeof(*axes), GFP_KERNEL);
-+	if (!axes)
-+		return -ENOMEM;
-+
-+	device_for_each_child_node(dev, child) {
-+		ret = fwnode_property_read_u32(child, "reg", &i);
-+		if (ret) {
-+			dev_err(dev, "reg invalid or missing");
-+			goto err;
-+		}
-+
-+		if (i >= num_axes) {
-+			ret = -EINVAL;
-+			dev_err(dev, "No matching axis for reg %d", i);
-+			goto err;
-+		}
-+
-+		ret = fwnode_property_read_u32(child, "linux,code",
-+					     &axes[i].code);
-+		if (ret) {
-+			dev_err(dev, "linux,code invalid or missing");
-+			goto err;
-+		}
-+
-+		ret = fwnode_property_read_u32_array(child, "abs-range",
-+						   axes[i].range, 2);
-+		if (ret) {
-+			dev_err(dev, "abs-range invalid or missing");
-+			goto err;
-+		}
-+
-+		fwnode_property_read_u32(child, "abs-fuzz",
-+					 &axes[i].fuzz);
-+		fwnode_property_read_u32(child, "abs-flat",
-+					 &axes[i].flat);
-+
-+		input_set_abs_params(joy->input, axes[i].code,
-+				     axes[i].range[0], axes[i].range[1],
-+				     axes[i].fuzz,
-+				     axes[i].flat);
-+		input_set_capability(joy->input, EV_ABS, axes[i].code);
-+	}
-+
-+	joy->axes = axes;
++	/* It takes significant time for the touchscreen hw to stabilize. */
++	msleep(50);
++	ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_TOUCH_OPS_MASK,
++			       JZ_ADC_REG_CFG_SAMPLE_NUM(4) |
++			       JZ_ADC_REG_CFG_PULL_UP(4));
++	writew(80, adc->base + JZ_ADC_REG_ADWAIT);
++	writew(2, adc->base + JZ_ADC_REG_ADSAME);
++	writeb((u8)~JZ_ADC_IRQ_TOUCH, adc->base + JZ_ADC_REG_CTRL);
++	writel(0, adc->base + JZ_ADC_REG_ADTCH);
++	ingenic_adc_enable(adc, 2, true);
 +
 +	return 0;
-+
-+err:
-+	fwnode_handle_put(child);
-+	return ret;
 +}
 +
-+static int adc_joystick_probe(struct platform_device *pdev)
++static int ingenic_adc_buffer_disable(struct iio_dev *iio_dev)
 +{
-+	struct device *dev = &pdev->dev;
-+	struct adc_joystick *joy;
-+	struct input_dev *input;
-+	int bits, ret, i;
++	struct ingenic_adc *adc = iio_priv(iio_dev);
 +
-+	joy = devm_kzalloc(dev, sizeof(*joy), GFP_KERNEL);
-+	if (!joy)
-+		return -ENOMEM;
++	ingenic_adc_enable(adc, 2, false);
++	writeb(0xff, adc->base + JZ_ADC_REG_CTRL);
++	writeb(0xff, adc->base + JZ_ADC_REG_STATUS);
++	ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_TOUCH_OPS_MASK, 0);
++	writew(0, adc->base + JZ_ADC_REG_ADSAME);
++	writew(0, adc->base + JZ_ADC_REG_ADWAIT);
++	clk_disable(adc->clk);
 +
-+	joy->chans = devm_iio_channel_get_all(dev);
-+	if (IS_ERR(joy->chans)) {
-+		ret = PTR_ERR(joy->chans);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "Unable to get IIO channels");
-+		return ret;
-+	}
-+
-+	/* Count how many channels we got. NULL terminated. */
-+	while (joy->chans[joy->num_chans].indio_dev)
-+		joy->num_chans++;
-+
-+	bits = joy->chans[0].channel->scan_type.storagebits;
-+	if (!bits || (bits > 16)) {
-+		dev_err(dev, "Unsupported channel storage size");
-+		return -EINVAL;
-+	}
-+	for (i = 1; i < joy->num_chans; ++i)
-+		if (joy->chans[i].channel->scan_type.storagebits != bits) {
-+			dev_err(dev, "Channels must have equal storage size");
-+			return -EINVAL;
-+		}
-+
-+	input = devm_input_allocate_device(dev);
-+	if (!input) {
-+		dev_err(dev, "Unable to allocate input device");
-+		return -ENOMEM;
-+	}
-+
-+	joy->input = input;
-+	input->name = pdev->name;
-+	input->id.bustype = BUS_HOST;
-+	input->open = adc_joystick_open;
-+	input->close = adc_joystick_close;
-+
-+	ret = adc_joystick_set_axes(dev, joy);
-+	if (ret)
-+		return ret;
-+
-+	input_set_drvdata(input, joy);
-+	ret = input_register_device(input);
-+	if (ret) {
-+		dev_err(dev, "Unable to register input device: %d", ret);
-+		return ret;
-+	}
-+
-+	joy->buffer = iio_channel_get_all_cb(dev, adc_joystick_handle, joy);
-+	if (IS_ERR(joy->buffer)) {
-+		dev_err(dev, "Unable to allocate callback buffer");
-+		return PTR_ERR(joy->buffer);
-+	}
-+
-+	ret = devm_add_action_or_reset(dev, adc_joystick_cleanup, joy->buffer);
-+	if (ret)
-+		dev_err(dev, "Unable to add action");
-+
-+	return ret;
++	return 0;
 +}
 +
-+static const struct of_device_id adc_joystick_of_match[] = {
-+	{ .compatible = "adc-joystick", },
-+	{ },
++static const struct iio_buffer_setup_ops ingenic_buffer_setup_ops = {
++	.postenable = &ingenic_adc_buffer_enable,
++	.predisable = &ingenic_adc_buffer_disable
 +};
-+MODULE_DEVICE_TABLE(of, adc_joystick_of_match);
 +
-+static struct platform_driver adc_joystick_driver = {
-+	.driver = {
-+		.name = "adc-joystick",
-+		.of_match_table = adc_joystick_of_match,
-+	},
-+	.probe = adc_joystick_probe,
-+};
-+module_platform_driver(adc_joystick_driver);
++static irqreturn_t ingenic_adc_irq(int irq, void *data)
++{
++	struct iio_dev *iio_dev = data;
++	struct ingenic_adc *adc = iio_priv(iio_dev);
++	u32 tdat;
 +
-+MODULE_DESCRIPTION("Input driver for joysticks connected over ADC");
-+MODULE_AUTHOR("Artur Rojek <contact@artur-rojek.eu>");
-+MODULE_LICENSE("GPL");
++	tdat = readl(adc->base + JZ_ADC_REG_ADTCH);
++	iio_push_to_buffers(iio_dev, &tdat);
++	writeb(JZ_ADC_IRQ_TOUCH, adc->base + JZ_ADC_REG_STATUS);
++
++	return IRQ_HANDLED;
++}
++
+ static int ingenic_adc_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct iio_dev *iio_dev;
+ 	struct ingenic_adc *adc;
+ 	const struct ingenic_adc_soc_data *soc_data;
+-	int ret;
++	int irq, ret;
+ 
+ 	soc_data = device_get_match_data(dev);
+ 	if (!soc_data)
+@@ -477,6 +576,17 @@ static int ingenic_adc_probe(struct platform_device *pdev)
+ 	mutex_init(&adc->aux_lock);
+ 	adc->soc_data = soc_data;
+ 
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return irq;
++
++	ret = devm_request_irq(dev, irq, ingenic_adc_irq, 0,
++			       dev_name(dev), iio_dev);
++	if (ret < 0) {
++		dev_err(dev, "Failed to request irq: %d\n", ret);
++		return ret;
++	}
++
+ 	adc->base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(adc->base))
+ 		return PTR_ERR(adc->base);
+@@ -516,7 +626,8 @@ static int ingenic_adc_probe(struct platform_device *pdev)
+ 
+ 	iio_dev->dev.parent = dev;
+ 	iio_dev->name = "jz-adc";
+-	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
++	iio_dev->setup_ops = &ingenic_buffer_setup_ops;
+ 	iio_dev->channels = ingenic_channels;
+ 	iio_dev->num_channels = ARRAY_SIZE(ingenic_channels);
+ 	/* Remove AUX2 from the list of supported channels. */
 -- 
 2.26.2
 
