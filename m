@@ -2,63 +2,76 @@ Return-Path: <SRS0=lwR9=67=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C57A6C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 18:57:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E956EC433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:07:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8EC4D207F9
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 18:57:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C3B4F207E8
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:07:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="BV48uItP"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="Q9XKetRy"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726270AbgEQS5c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 May 2020 14:57:32 -0400
-Received: from www381.your-server.de ([78.46.137.84]:58308 "EHLO
+        id S1726279AbgEQTHx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 May 2020 15:07:53 -0400
+Received: from www381.your-server.de ([78.46.137.84]:40544 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgEQS5b (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 14:57:31 -0400
+        with ESMTP id S1726269AbgEQTHx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:07:53 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
         MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
         List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=rWb1QY3mi2puWksAAp1ZVv3tzV9xeexKowgPDIKwQiw=; b=BV48uItPB+LwTAu4m+rkwL6uy6
-        pbAW2C4JUfyNPNgJzD9voDA7XTOpvw1wvXIhz57AIlZuUHUFlWq/FFCw4PPu63RTFvQJde7x92Ji2
-        v5MSWIgqxUtZWfKUwAU88cUFuNGEYYpm54iap2Zeq+wx3GdJmGB1ErUmJtyDw26flgufQrs1lS61X
-        CpEcSPDEfgz4HE3ERjfzPJJJjW6pQqTQyN6yquSySXQagQVNLI5av1SBZI2+20LaTJKqP6OAhWK91
-        PVer2Gtp7rAeQrHPJqHJ+EiQRiy9KsGlbKNIbcYEOXEK1tvIiTvkQ/6YDHxmZP5MD3VEFSTRPx6Lh
-        1+GImI8w==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
+        bh=6GdRbluMtOop2dOM591dUHKtjzX05pFnm683JFJkgFc=; b=Q9XKetRy2CpfL70vyBV268K+tI
+        KCB4YC5yYxc3GQqfYhnqoMzv1U8Ohv8GJtYsfGdoZEieAfJGEKlxlj209giniR7sxF6pvQSDeGmyM
+        0VQ0UqTvjtUaIxsgujpXuxpj4KNtuLczJZncqBNoosstHYlt4QplpZMPomSK6tJT5tsi8LToMP0Fx
+        HeC8SOh3uXKJ24ms5kaa8vaXnbEZ/cXmpIVzyCpD3/2upK5hUVMgDzcAhoY/hFI1BsGZabCQhRa4v
+        BAHHCT8WTdu7ClaPgy0c3g0pUNNnZxdNUUVuUDDPiDGw3tq6E4C+zN5tU5RzWLDkbh2jfssX5LnHG
+        rqM+emsg==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
         by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
         (Exim 4.89_1)
         (envelope-from <lars@metafoo.de>)
-        id 1jaOTX-00040h-51; Sun, 17 May 2020 20:57:27 +0200
+        id 1jaOdX-0004Vh-7r; Sun, 17 May 2020 21:07:47 +0200
 Received: from [82.135.68.131] (helo=[192.168.178.20])
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1jaOTW-000Hbh-Rl; Sun, 17 May 2020 20:57:26 +0200
-Subject: Re: [PATCH 02/11] iio:accel:mma8452: Fix timestamp alignment and
- prevent data leak.
-To:     jic23@kernel.org, linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Meerwald <pmeerw@pmeerw.net>
-References: <20200517173000.220819-1-jic23@kernel.org>
- <20200517173000.220819-3-jic23@kernel.org>
+        id 1jaOdW-00014g-S6; Sun, 17 May 2020 21:07:46 +0200
+Subject: Re: [PATCH v5 5/6] iio: imu: Add support for adis16475
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+References: <20200413082445.17324-1-nuno.sa@analog.com>
+ <20200413082445.17324-6-nuno.sa@analog.com>
+ <2418ed60-8407-0c99-bf5d-1afc3964de2b@metafoo.de>
+ <20200502184010.134eb8b5@archlinux>
+ <67202bd8-e0a5-be53-13c6-e01a25e2a85b@metafoo.de>
+ <df0f04296fafccfcf18b08b213bae20ff69c2384.camel@gmail.com>
+ <20200503094751.633feda1@archlinux>
+ <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
+ <b7289aca-f393-faca-f512-a952a77c1e68@metafoo.de>
+ <20200517171523.54fa6deb@archlinux>
 From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <170d718b-7ee4-ac08-c083-830c06c59f65@metafoo.de>
-Date:   Sun, 17 May 2020 20:57:26 +0200
+Message-ID: <3136c4c7-b964-dce4-9e43-4cbbcc9187a1@metafoo.de>
+Date:   Sun, 17 May 2020 21:07:45 +0200
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.8.0
 MIME-Version: 1.0
-In-Reply-To: <20200517173000.220819-3-jic23@kernel.org>
+In-Reply-To: <20200517171523.54fa6deb@archlinux>
 Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Content-Language: en-US
 X-Authenticated-Sender: lars@metafoo.de
 X-Virus-Scanned: Clear (ClamAV 0.102.2/25815/Sun May 17 14:16:18 2020)
@@ -67,71 +80,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 5/17/20 7:29 PM, jic23@kernel.org wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On 5/17/20 6:15 PM, Jonathan Cameron wrote:
+> On Sun, 3 May 2020 11:12:34 +0200
+> Lars-Peter Clausen <lars@metafoo.de> wrote:
 >
-> One of a class of bugs pointed out by Lars in a recent review.
-> iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
-> to the size of the timestamp (8 bytes).  This is not guaranteed in
-> this driver which uses a 16 byte u8 array on the stack.  As Lars also noted
-> this anti pattern can involve a leak of data to userspace and that
-> indeed can happen here.  We close both issues by moving to
-> a suitable structure in the iio_priv() data with alignment
-> ensured by use of an explicit c structure.  This data is allocated
-> with kzalloc so no data can leak appart from previous readings.
+>> On 5/3/20 11:07 AM, Lars-Peter Clausen wrote:
+>>> On 5/3/20 10:47 AM, Jonathan Cameron wrote:
+>>>> On Sat, 02 May 2020 21:52:18 +0200
+>>>> Nuno Sá <noname.nuno@gmail.com> wrote:
+>>>>   
+>>>>> On Sat, 2020-05-02 at 20:01 +0200, Lars-Peter Clausen wrote:
+>>>>>> On 5/2/20 7:40 PM, Jonathan Cameron wrote:
+>>>>>>> On Mon, 27 Apr 2020 20:06:07 +0200
+>>>>>>> Lars-Peter Clausen <lars@metafoo.de> wrote:
+>>>>>>>> On 4/13/20 10:24 AM, Nuno Sá wrote:
+>>>>>>>>> [...]
+>>>>>>>>> +static irqreturn_t adis16475_trigger_handler(int irq, void *p)
+>>>>>>>>> +{
+>>>>>>>>> [...]
+>>>>>>>>> +    __be16 data[ADIS16475_MAX_SCAN_DATA], *buffer;
+>>>>>>>>> [...]
+>>>>>>>>> +
+>>>>>>>>> +    iio_push_to_buffers_with_timestamp(indio_dev, data, pf-
+>>>>>>>>>> timestamp);
+>>>>>>>> If the timestamp is enabled the IIO core might insert padding
+>>>>>>>> between
+>>>>>>>> the data channels and the timestamp. If that happens this will
+>>>>>>>> disclose
+>>>>>>>> kernel stack memory to userspace.
+>>>>>>>>
+>>>>>>>> This needs either a memset(data, 0x00, sizeof(data)) or maybe put
+>>>>>>>> data
+>>>>>>>> into the state struct and kzalloc it.
+>>>>>>> Good spot. Could simply do __be16 data[ADI..] = {0}; rather than
+>>>>>>> explicit
+>>>>>>> memset, but some form of zeroization is needed.
+>>>>>>>
+>>>>>>> I've fixed up the applied patch with the above approach.
+>>>>>> There is actually another issue. The stack data is not necessarily
+>>>>>> aligned to 64 bit, which causes issues if we try to put the 64-bit
+>>>>> Oh, this is actually more problematic. Yes, since we have an array of
+>>>>> u16, that is not guaranteed to be 64bit aligned. Doing a quick search
+>>>>> of `iio_push_to_buffers_with_timestamp()` users and I could quickly
+>>>>> find 4/5 drivers with the same problem. I guess the API should clearly
+>>>>> state that `data` needs to be __at least__ 64 bits aligned (maybe a
+>>>>> future patch). Or we could even check the address and guarantee that it
+>>>>> is properly aligned before continuing (though Im guessing this will
+>>>>> break a lot of users...)
+>>>>>> timestamp in it. I think data should really be in the state struct.
+>>>>> Yes, with a proper __aligned(8) attribute... Or couldn't we just use
+>>>>> __aligned(8) on the stack variable?
+>>>> Forcing alignment on the stack isn't terribly reliable, which is why
+>>>> we never do that for dma safe buffers.
+>>>>
+>>>> Probably better to just move it to the state structure.
+>>>> I'll fix it up to do that. Please sanity check what will shortly
+>>>> be in the testing branch.
+>>>>
+>>>> The moment Lars mentioned this I groaned. As you've noted a few other
+>>>> drivers have the same problem + the ABI doesn't clearly state
+>>>> or check this.
+>>>>
+>>>> We should certainly fix all the drivers that suffer this problem
+>>>> first then we can think about adding a runtime check.
+>>> It looks like it is actually quite a few drivers, maybe we should
+>>> switch to put_unaligned(). We probably got lucky in most cases and the
+>>> buffer is naturally aligned to 64 bit.
+> Just a quick update on this.  I've been taking a deeper look and there
+> are some 'interesting' cases in here so the put_unaligned is attractive
+> unfortunately I don't think we can go that way because it would be
+> reasonable for consumers of the buffer to expect it to be appropriately
+> aligned.   We need to rework many of these anyway to fix the related
+> data leak.
 >
-> Fixes: c7eeea93ac60 ("iio: Add Freescale MMA8452Q 3-axis accelerometer driver")
-> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> ---
->   drivers/iio/accel/mma8452.c | 11 ++++++++---
->   1 file changed, 8 insertions(+), 3 deletions(-)
+> I've done some of below and will post shortly - a few will take more
+> effort and probably need testing rather than just relying on review.
 >
-> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> index 00e100fc845a..704867ffda7a 100644
-> --- a/drivers/iio/accel/mma8452.c
-> +++ b/drivers/iio/accel/mma8452.c
-> @@ -110,6 +110,12 @@ struct mma8452_data {
->   	int sleep_val;
->   	struct regulator *vdd_reg;
->   	struct regulator *vddio_reg;
-> +
-> +	/* Ensure correct alignment of time stamp when present */
-> +	struct {
-> +		__be16 channels[3];
-> +		s64 ts;
-> +	} buffer;
+> So far the 'interesting ones' are mpu3050 and isl29501.
 
-
-I feel we should have a macro for this.
-
-DECLARE_IIO_BUFFER_WITH_TIMESTAMP(buffer, __be16, 3);
-
-The name is maybe a bit too long.
-
-And potentially also DECLARE_IIO_BUFFER_WITH_TIMESTAMP_ON_STACK() which 
-initializes it to zero.
-
->   };
->   
->    /**
-> @@ -1091,14 +1097,13 @@ static irqreturn_t mma8452_trigger_handler(int irq, void *p)
->   	struct iio_poll_func *pf = p;
->   	struct iio_dev *indio_dev = pf->indio_dev;
->   	struct mma8452_data *data = iio_priv(indio_dev);
-> -	u8 buffer[16]; /* 3 16-bit channels + padding + ts */
->   	int ret;
->   
-> -	ret = mma8452_read(data, (__be16 *)buffer);
-> +	ret = mma8452_read(data, data->buffer.channels);
->   	if (ret < 0)
->   		goto done;
->   
-> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
->   					   iio_get_time_ns(indio_dev));
->   
->   done:
-
+isl29501 looks OK to me. mpu3050 is clearly broken, buffer is both 
+unaligned and too small!
 
