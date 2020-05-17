@@ -2,101 +2,206 @@ Return-Path: <SRS0=lwR9=67=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CF93C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:09:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A62C433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 764AA20709
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:09:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 67CAC2065F
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726274AbgEQTJ3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 May 2020 15:09:29 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net ([46.105.34.251]:52875 "EHLO
-        smtpout1.mo528.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726269AbgEQTJ3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:09:29 -0400
-Received: from pro2.mail.ovh.net (unknown [10.109.156.173])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 40D6B5E1A4CF;
-        Sun, 17 May 2020 21:09:27 +0200 (CEST)
-Received: from localhost (34.99.246.4) by DAG2EX1.emp2.local (172.16.2.11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1847.3; Sun, 17 May
- 2020 21:09:26 +0200
-Date:   Sun, 17 May 2020 21:07:28 +0200
-From:   Tomasz Duszynski <tomasz.duszynski@octakon.com>
-To:     <jic23@kernel.org>
-CC:     <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: Re: [PATCH 10/11] iio:chemical:sps30: Fix timestamp alignment
-Message-ID: <20200517190728.GB18033@arch>
-References: <20200517173000.220819-1-jic23@kernel.org>
- <20200517173000.220819-11-jic23@kernel.org>
+        id S1726302AbgEQTt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 May 2020 15:49:28 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:52015 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726269AbgEQTt1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:49:27 -0400
+X-Originating-IP: 195.189.32.242
+Received: from pc.localdomain (unknown [195.189.32.242])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id F08B71BF204;
+        Sun, 17 May 2020 19:49:22 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Artur Rojek <contact@artur-rojek.eu>
+Subject: [PATCH v7 1/7] dt-bindings: iio/adc: Convert ingenic-adc docs to YAML.
+Date:   Sun, 17 May 2020 21:48:58 +0200
+Message-Id: <20200517194904.34758-1-contact@artur-rojek.eu>
+X-Mailer: git-send-email 2.26.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Disposition: inline
-In-Reply-To: <20200517173000.220819-11-jic23@kernel.org>
-X-Originating-IP: [34.99.246.4]
-X-ClientProxiedBy: DAG3EX2.emp2.local (172.16.2.22) To DAG2EX1.emp2.local
- (172.16.2.11)
-X-Ovh-Tracer-Id: 10081026291751214162
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: -100
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduhedruddtfedgudefvdcutefuodetggdotefrodftvfcurfhrohhfihhlvgemucfqggfjpdevjffgvefmvefgnecuuegrihhlohhuthemucehtddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenucfjughrpeffhffvuffkfhggtggujghisehttdertddttdejnecuhfhrohhmpefvohhmrghsiicuffhushiihihnshhkihcuoehtohhmrghsiidrughushiihihnshhkihesohgtthgrkhhonhdrtghomheqnecuggftrfgrthhtvghrnheptdehveethfffudetjeeftdekueehjeegjedvteffgfevkefffeegffeugeehgfejnecukfhppedtrddtrddtrddtpdefgedrleelrddvgeeirdegnecuvehluhhsthgvrhfuihiivgepudenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepthhomhgrshiirdguuhhsiiihnhhskhhisehotghtrghkohhnrdgtohhmpdhrtghpthhtohepthguuhhsiiihnhhssehgmhgrihhlrdgtohhm
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, May 17, 2020 at 06:29:59PM +0100, jic23@kernel.org wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> One of a class of bugs pointed out by Lars in a recent review.
-> iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
-> to the size of the timestamp (8 bytes).  This is not guaranteed in
-> this driver which uses an array of smaller elements on the stack.
->
-> Fixes: 232e0f6ddeae ("iio: chemical: add support for Sensirion SPS30 sensor")
-> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Tomasz Duszynski <tduszyns@gmail.com>
-> ---
->  drivers/iio/chemical/sps30.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-> index acb9f8ecbb3d..a88c1fb875a0 100644
-> --- a/drivers/iio/chemical/sps30.c
-> +++ b/drivers/iio/chemical/sps30.c
-> @@ -230,15 +230,18 @@ static irqreturn_t sps30_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct sps30_state *state = iio_priv(indio_dev);
->  	int ret;
-> -	s32 data[4 + 2]; /* PM1, PM2P5, PM4, PM10, timestamp */
-> +	struct {
-> +		s32 data[4]; /* PM1, PM2P5, PM4, PM10 */
-> +		s64 ts;
-> +	} scan;
->
->  	mutex_lock(&state->lock);
-> -	ret = sps30_do_meas(state, data, 4);
-> +	ret = sps30_do_meas(state, scan.data, ARRAY_SIZE(scan.data));
->  	mutex_unlock(&state->lock);
->  	if (ret)
->  		goto err;
->
-> -	iio_push_to_buffers_with_timestamp(indio_dev, data,
-> +	iio_push_to_buffers_with_timestamp(indio_dev, &scan,
->  					   iio_get_time_ns(indio_dev));
->  err:
->  	iio_trigger_notify_done(indio_dev->trig);
-> --
-> 2.26.2
->
+Convert the textual documentation of Device Tree bindings for the
+Ingenic JZ47xx SoCs ADC controller to YAML.
 
-Thanks for the fix.
-Acked-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+The `interrupts` property is now explicitly listed and marked as
+required. While missing from the previous textual documentation, this
+property has been used with all the boards which probe this driver.
+
+Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
+Tested-by: Paul Cercueil <paul@crapouillou.net>
+---
+
+ Changes:
+
+ v6: new patch
+
+ v7: - specify `maxItems: 1` for single entry properties
+     - get rid of redundant descriptions of said properties
+
+ .../bindings/iio/adc/ingenic,adc.txt          | 49 -------------
+ .../bindings/iio/adc/ingenic,adc.yaml         | 71 +++++++++++++++++++
+ 2 files changed, 71 insertions(+), 49 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
+deleted file mode 100644
+index cd9048cf9dcf..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
++++ /dev/null
+@@ -1,49 +0,0 @@
+-* Ingenic JZ47xx ADC controller IIO bindings
+-
+-Required properties:
+-
+-- compatible: Should be one of:
+-  * ingenic,jz4725b-adc
+-  * ingenic,jz4740-adc
+-  * ingenic,jz4770-adc
+-- reg: ADC controller registers location and length.
+-- clocks: phandle to the SoC's ADC clock.
+-- clock-names: Must be set to "adc".
+-- #io-channel-cells: Must be set to <1> to indicate channels are selected
+-  by index.
+-
+-ADC clients must use the format described in iio-bindings.txt, giving
+-a phandle and IIO specifier pair ("io-channels") to the ADC controller.
+-
+-Example:
+-
+-#include <dt-bindings/iio/adc/ingenic,adc.h>
+-
+-adc: adc@10070000 {
+-	compatible = "ingenic,jz4740-adc";
+-	#io-channel-cells = <1>;
+-
+-	reg = <0x10070000 0x30>;
+-
+-	clocks = <&cgu JZ4740_CLK_ADC>;
+-	clock-names = "adc";
+-
+-	interrupt-parent = <&intc>;
+-	interrupts = <18>;
+-};
+-
+-adc-keys {
+-	...
+-	compatible = "adc-keys";
+-	io-channels = <&adc INGENIC_ADC_AUX>;
+-	io-channel-names = "buttons";
+-	...
+-};
+-
+-battery {
+-	...
+-	compatible = "ingenic,jz4740-battery";
+-	io-channels = <&adc INGENIC_ADC_BATTERY>;
+-	io-channel-names = "battery";
+-	...
+-};
+diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+new file mode 100644
+index 000000000000..9f414dbdae86
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+@@ -0,0 +1,71 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2019-2020 Artur Rojek
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/iio/adc/ingenic,adc.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: Ingenic JZ47xx ADC controller IIO bindings
++
++maintainers:
++  - Artur Rojek <contact@artur-rojek.eu>
++
++description: >
++  Industrial I/O subsystem bindings for ADC controller found in
++  Ingenic JZ47xx SoCs.
++
++  ADC clients must use the format described in iio-bindings.txt, giving
++  a phandle and IIO specifier pair ("io-channels") to the ADC controller.
++
++properties:
++  compatible:
++    enum:
++      - ingenic,jz4725b-adc
++      - ingenic,jz4740-adc
++      - ingenic,jz4770-adc
++
++  '#io-channel-cells':
++    const: 1
++    description:
++      Must be set to <1> to indicate channels are selected by index.
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    items:
++      - const: adc
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - '#io-channel-cells'
++  - reg
++  - clocks
++  - clock-names
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/clock/jz4740-cgu.h>
++    #include <dt-bindings/iio/adc/ingenic,adc.h>
++
++    adc@10070000 {
++            compatible = "ingenic,jz4740-adc";
++            #io-channel-cells = <1>;
++
++            reg = <0x10070000 0x30>;
++
++            clocks = <&cgu JZ4740_CLK_ADC>;
++            clock-names = "adc";
++
++            interrupt-parent = <&intc>;
++            interrupts = <18>;
++    };
+-- 
+2.26.2
+
