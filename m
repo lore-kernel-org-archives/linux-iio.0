@@ -4,25 +4,25 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86A62C433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 147B6C433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67CAC2065F
-	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ECEB5207E8
+	for <linux-iio@archiver.kernel.org>; Sun, 17 May 2020 19:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726302AbgEQTt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 May 2020 15:49:28 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:52015 "EHLO
+        id S1726834AbgEQTtm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 May 2020 15:49:42 -0400
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:57993 "EHLO
         relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726269AbgEQTt1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:49:27 -0400
+        with ESMTP id S1726709AbgEQTtl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 May 2020 15:49:41 -0400
 X-Originating-IP: 195.189.32.242
 Received: from pc.localdomain (unknown [195.189.32.242])
         (Authenticated sender: contact@artur-rojek.eu)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id F08B71BF204;
-        Sun, 17 May 2020 19:49:22 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 972F31BF206;
+        Sun, 17 May 2020 19:49:36 +0000 (UTC)
 From:   Artur Rojek <contact@artur-rojek.eu>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -34,11 +34,14 @@ Cc:     Heiko Stuebner <heiko@sntech.de>,
         Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
         linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v7 1/7] dt-bindings: iio/adc: Convert ingenic-adc docs to YAML.
-Date:   Sun, 17 May 2020 21:48:58 +0200
-Message-Id: <20200517194904.34758-1-contact@artur-rojek.eu>
+        Artur Rojek <contact@artur-rojek.eu>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 6/7] dt-bindings: input: Add docs for ADC driven joystick.
+Date:   Sun, 17 May 2020 21:49:03 +0200
+Message-Id: <20200517194904.34758-6-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200517194904.34758-1-contact@artur-rojek.eu>
+References: <20200517194904.34758-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -46,161 +49,163 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the textual documentation of Device Tree bindings for the
-Ingenic JZ47xx SoCs ADC controller to YAML.
-
-The `interrupts` property is now explicitly listed and marked as
-required. While missing from the previous textual documentation, this
-property has been used with all the boards which probe this driver.
+Add documentation for the adc-joystick driver, used to provide support
+for joysticks connected over ADC.
 
 Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 Tested-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
 
  Changes:
 
- v6: new patch
+ v2: - Add `reg` property to axis subnode in order to enumerate the axes,
+     - rename `linux,abs-code` property to `linux,code`,
+     - drop `linux,` prefix from the remaining properties of axis subnode
 
- v7: - specify `maxItems: 1` for single entry properties
-     - get rid of redundant descriptions of said properties
+ v3: no change
 
- .../bindings/iio/adc/ingenic,adc.txt          | 49 -------------
- .../bindings/iio/adc/ingenic,adc.yaml         | 71 +++++++++++++++++++
- 2 files changed, 71 insertions(+), 49 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+ v4: - remove "bindings" from the unique identifier string,
+     - replace `|` with `>` for all description properties,
+     - specify the number of items for `io-channels`,
+     - correct the regex pattern of `axis` property,
+     - specify the value range of `reg` property for each axis,
+     - put `abs-range` properties under `allOf` 
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
-deleted file mode 100644
-index cd9048cf9dcf..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
-+++ /dev/null
-@@ -1,49 +0,0 @@
--* Ingenic JZ47xx ADC controller IIO bindings
--
--Required properties:
--
--- compatible: Should be one of:
--  * ingenic,jz4725b-adc
--  * ingenic,jz4740-adc
--  * ingenic,jz4770-adc
--- reg: ADC controller registers location and length.
--- clocks: phandle to the SoC's ADC clock.
--- clock-names: Must be set to "adc".
--- #io-channel-cells: Must be set to <1> to indicate channels are selected
--  by index.
--
--ADC clients must use the format described in iio-bindings.txt, giving
--a phandle and IIO specifier pair ("io-channels") to the ADC controller.
--
--Example:
--
--#include <dt-bindings/iio/adc/ingenic,adc.h>
--
--adc: adc@10070000 {
--	compatible = "ingenic,jz4740-adc";
--	#io-channel-cells = <1>;
--
--	reg = <0x10070000 0x30>;
--
--	clocks = <&cgu JZ4740_CLK_ADC>;
--	clock-names = "adc";
--
--	interrupt-parent = <&intc>;
--	interrupts = <18>;
--};
--
--adc-keys {
--	...
--	compatible = "adc-keys";
--	io-channels = <&adc INGENIC_ADC_AUX>;
--	io-channel-names = "buttons";
--	...
--};
--
--battery {
--	...
--	compatible = "ingenic,jz4740-battery";
--	io-channels = <&adc INGENIC_ADC_BATTERY>;
--	io-channel-names = "battery";
--	...
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+ v5: add `a-f` to the regex pattern of `axis` property
+
+ v6-v7: no change
+
+ .../bindings/input/adc-joystick.yaml          | 121 ++++++++++++++++++
+ 1 file changed, 121 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/adc-joystick.yaml
+
+diff --git a/Documentation/devicetree/bindings/input/adc-joystick.yaml b/Documentation/devicetree/bindings/input/adc-joystick.yaml
 new file mode 100644
-index 000000000000..9f414dbdae86
+index 000000000000..054406bbd22b
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
-@@ -0,0 +1,71 @@
++++ b/Documentation/devicetree/bindings/input/adc-joystick.yaml
+@@ -0,0 +1,121 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +# Copyright 2019-2020 Artur Rojek
 +%YAML 1.2
 +---
-+$id: "http://devicetree.org/schemas/iio/adc/ingenic,adc.yaml#"
++$id: "http://devicetree.org/schemas/input/adc-joystick.yaml#"
 +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 +
-+title: Ingenic JZ47xx ADC controller IIO bindings
++title: ADC attached joystick
 +
 +maintainers:
 +  - Artur Rojek <contact@artur-rojek.eu>
 +
 +description: >
-+  Industrial I/O subsystem bindings for ADC controller found in
-+  Ingenic JZ47xx SoCs.
-+
-+  ADC clients must use the format described in iio-bindings.txt, giving
-+  a phandle and IIO specifier pair ("io-channels") to the ADC controller.
++  Bindings for joystick devices connected to ADC controllers supporting
++  the Industrial I/O subsystem.
 +
 +properties:
 +  compatible:
-+    enum:
-+      - ingenic,jz4725b-adc
-+      - ingenic,jz4740-adc
-+      - ingenic,jz4770-adc
++    const: adc-joystick
 +
-+  '#io-channel-cells':
++  io-channels:
++    minItems: 1
++    maxItems: 1024
++    description: >
++      List of phandle and IIO specifier pairs.
++      Each pair defines one ADC channel to which a joystick axis is connected.
++      See Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
++
++  '#address-cells':
 +    const: 1
-+    description:
-+      Must be set to <1> to indicate channels are selected by index.
 +
-+  reg:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: adc
-+
-+  interrupts:
-+    maxItems: 1
++  '#size-cells':
++    const: 0
 +
 +required:
 +  - compatible
-+  - '#io-channel-cells'
-+  - reg
-+  - clocks
-+  - clock-names
-+  - interrupts
++  - io-channels
++  - '#address-cells'
++  - '#size-cells'
 +
 +additionalProperties: false
 +
++patternProperties:
++  "^axis@[0-9a-f]+$":
++    type: object
++    description: >
++      Represents a joystick axis bound to the given ADC channel.
++      For each entry in the io-channels list, one axis subnode with a matching
++      reg property must be specified.
++
++    properties:
++      reg:
++        minimum: 0
++        maximum: 1023
++        description: Index of an io-channels list entry bound to this axis.
++
++      linux,code:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: EV_ABS specific event code generated by the axis.
++
++      abs-range:
++        allOf:
++          - $ref: /schemas/types.yaml#/definitions/uint32-array
++          - items:
++              - description: minimum value
++              - description: maximum value
++        description: >
++          Minimum and maximum values produced by the axis.
++          For an ABS_X axis this will be the left-most and right-most
++          inclination of the joystick. If min > max, it is left to userspace to
++          treat the axis as inverted.
++          This property is interpreted as two signed 32 bit values.
++
++      abs-fuzz:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: >
++          Amount of noise in the input value.
++          Omitting this property indicates the axis is precise.
++
++      abs-flat:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: >
++          Axial "deadzone", or area around the center position, where the axis
++          is considered to be at rest.
++          Omitting this property indicates the axis always returns to exactly
++          the center position.
++
++    required:
++      - reg
++      - linux,code
++      - abs-range
++
++    additionalProperties: false
++
 +examples:
 +  - |
-+    #include <dt-bindings/clock/jz4740-cgu.h>
 +    #include <dt-bindings/iio/adc/ingenic,adc.h>
++    #include <dt-bindings/input/input.h>
 +
-+    adc@10070000 {
-+            compatible = "ingenic,jz4740-adc";
-+            #io-channel-cells = <1>;
++    joystick: adc-joystick {
++      compatible = "adc-joystick";
++      io-channels = <&adc INGENIC_ADC_TOUCH_XP>,
++                    <&adc INGENIC_ADC_TOUCH_YP>;
++      #address-cells = <1>;
++      #size-cells = <0>;
 +
-+            reg = <0x10070000 0x30>;
-+
-+            clocks = <&cgu JZ4740_CLK_ADC>;
-+            clock-names = "adc";
-+
-+            interrupt-parent = <&intc>;
-+            interrupts = <18>;
++      axis@0 {
++              reg = <0>;
++              linux,code = <ABS_X>;
++              abs-range = <3300 0>;
++              abs-fuzz = <4>;
++              abs-flat = <200>;
++      };
++      axis@1 {
++              reg = <1>;
++              linux,code = <ABS_Y>;
++              abs-range = <0 3300>;
++              abs-fuzz = <4>;
++              abs-flat = <200>;
++      };
 +    };
 -- 
 2.26.2
