@@ -2,141 +2,163 @@ Return-Path: <SRS0=I2bj=7A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.3 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAF16C433DF
-	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 16:02:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD13C433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 16:30:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 96223207E8
-	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 16:02:01 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MArjN6+o"
+	by mail.kernel.org (Postfix) with ESMTP id 226F420657
+	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 16:30:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728015AbgERQCB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 May 2020 12:02:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726958AbgERQCA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2020 12:02:00 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 745C2C061A0C;
-        Mon, 18 May 2020 09:01:59 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id s8so12501818wrt.9;
-        Mon, 18 May 2020 09:01:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=9SSAcWWQEWD0r3Pko5lkNYBqf2cJb3ilW4xHvkzbc9I=;
-        b=MArjN6+oacAwZQGLd8doq6gdFJ0WT4Kb25b+spk8eQpNEELJfKBkAiwG9HaZYt3kfV
-         n5AZKmlkj/DXuI/Rc0m4dWo4+ZJKH2LZVXZuQbQ735O0LaMitBaRTdBV3Bd7Fkjw8HoR
-         oRAFfSozNAKRNaKSL+j2nIDT4rV0zp0IFfAgnr3Z6rO6qoVDjDcRDgpJVTwSf1WxUFHm
-         Kdx0yV0GVZI52ulLcFDWl7DU1qRHEoRbMugSprRMnJj2p5jM9INfkX8ZnDYDjqcKBuVk
-         MavDletV6NJe2uUYog3u/jaK+4wROkr7iDFVoOivj4Rf152ZddwNy7kbAK2qGrSKKmr6
-         TVzQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=9SSAcWWQEWD0r3Pko5lkNYBqf2cJb3ilW4xHvkzbc9I=;
-        b=kwcyc+aff9wNLHOjU71gZzW7NA4JpBM4X8mplckvG+cwVtJiomBgtX8ujFqHLdSHdg
-         xrHuZqXaIIieY0xi9W1EGG6TrEhL2LtWCP085XMirkJ7Dov539gfV+tWr37b+lQWtQM9
-         HTLNB9jFpg5h0l96tRKCVTao5ha+7XC18lgAu1LQ67tOCrnL5+VME8ZmhxV8wmbP6k2G
-         tVqA/xNOanJaomG3GHWq1O2FgMbP9A6aNiIDMvPa2oeUqQI6iexI3MD1z800rTFFDATq
-         CivKJ0bhrk+sL26KZFBPJysl4HT4Tnp49gYzjFb9uPAiqb/5617coxMW8yJxOSLZRfV4
-         ERPQ==
-X-Gm-Message-State: AOAM533zfXtoREVUE3kGfUb47qd50xyuofyb+OfZ3FJFVW08foQpuosf
-        44nX1eLNiGjzRQi/NSPVjBg=
-X-Google-Smtp-Source: ABdhPJxlB/26iS1Qh1s66tzdQo+jkzTvK0fB4tNlbfmbOIrBYS3GZJGvXhEyqbh9cO61i0owgfIf9A==
-X-Received: by 2002:adf:e90b:: with SMTP id f11mr20601532wrm.364.1589817718065;
-        Mon, 18 May 2020 09:01:58 -0700 (PDT)
-Received: from ict14-OptiPlex-980 ([178.23.248.46])
-        by smtp.gmail.com with ESMTPSA id q5sm18237471wra.36.2020.05.18.09.01.56
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Mon, 18 May 2020 09:01:56 -0700 (PDT)
-Date:   Mon, 18 May 2020 18:01:20 +0200
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        id S1727782AbgERQa3 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 May 2020 12:30:29 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2221 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727006AbgERQa2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 18 May 2020 12:30:28 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.107])
+        by Forcepoint Email with ESMTP id D4239F39FD155421C674;
+        Mon, 18 May 2020 17:30:22 +0100 (IST)
+Received: from localhost (10.47.85.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1913.5; Mon, 18 May
+ 2020 17:30:22 +0100
+Date:   Mon, 18 May 2020 17:29:54 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>,
+        Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Steve Winslow <swinslow@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 3/3] iio: magnetometer: ak8975: Add gpio reset support
-Message-ID: <20200518160120.GA21361@ict14-OptiPlex-980>
-References: <20200518133645.19127-1-jonathan.albrieux@gmail.com>
- <20200518133645.19127-4-jonathan.albrieux@gmail.com>
- <CAHp75VdFJUNOtRyCNEGnvoOCZYoPvyhjC15_iC72JD-1sOavwA@mail.gmail.com>
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandru Ardelean <alexandru.Ardelean@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v5 5/6] iio: imu: Add support for adis16475
+Message-ID: <20200518172954.00005fd8@Huawei.com>
+In-Reply-To: <3136c4c7-b964-dce4-9e43-4cbbcc9187a1@metafoo.de>
+References: <20200413082445.17324-1-nuno.sa@analog.com>
+        <20200413082445.17324-6-nuno.sa@analog.com>
+        <2418ed60-8407-0c99-bf5d-1afc3964de2b@metafoo.de>
+        <20200502184010.134eb8b5@archlinux>
+        <67202bd8-e0a5-be53-13c6-e01a25e2a85b@metafoo.de>
+        <df0f04296fafccfcf18b08b213bae20ff69c2384.camel@gmail.com>
+        <20200503094751.633feda1@archlinux>
+        <c7c6c4af-826a-d52a-3969-4ccccbff12e9@metafoo.de>
+        <b7289aca-f393-faca-f512-a952a77c1e68@metafoo.de>
+        <20200517171523.54fa6deb@archlinux>
+        <3136c4c7-b964-dce4-9e43-4cbbcc9187a1@metafoo.de>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VdFJUNOtRyCNEGnvoOCZYoPvyhjC15_iC72JD-1sOavwA@mail.gmail.com>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.47.85.42]
+X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, May 18, 2020 at 05:55:51PM +0300, Andy Shevchenko wrote:
-> On Mon, May 18, 2020 at 4:38 PM Jonathan Albrieux
-> <jonathan.albrieux@gmail.com> wrote:
-> 
-> > +       gpiod_set_value_cansleep(data->reset_gpiod, 1);
-> 
-> (1)
-> 
-> ...
-> 
-> > +       /*
-> > +        * If reset pin is provided then will be set to high on power on
-> > +        * and to low on power off according to AK09911 datasheet
-> > +        */
-> 
-> Wording is confusing, perhaps you have to use 'asserted / deasserted'.
+On Sun, 17 May 2020 21:07:45 +0200
+Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-Thank you for the suggestion, I'll be working on rewording as soon as
-possible.
-
-> Btw, in (1) it's also "high" (asserted). I barely understand how it's
-> supposed to work in all cases?
+> On 5/17/20 6:15 PM, Jonathan Cameron wrote:
+> > On Sun, 3 May 2020 11:12:34 +0200
+> > Lars-Peter Clausen <lars@metafoo.de> wrote:
+> >  
+> >> On 5/3/20 11:07 AM, Lars-Peter Clausen wrote:  
+> >>> On 5/3/20 10:47 AM, Jonathan Cameron wrote:  
+> >>>> On Sat, 02 May 2020 21:52:18 +0200
+> >>>> Nuno Sá <noname.nuno@gmail.com> wrote:
+> >>>>     
+> >>>>> On Sat, 2020-05-02 at 20:01 +0200, Lars-Peter Clausen wrote:  
+> >>>>>> On 5/2/20 7:40 PM, Jonathan Cameron wrote:  
+> >>>>>>> On Mon, 27 Apr 2020 20:06:07 +0200
+> >>>>>>> Lars-Peter Clausen <lars@metafoo.de> wrote:  
+> >>>>>>>> On 4/13/20 10:24 AM, Nuno Sá wrote:  
+> >>>>>>>>> [...]
+> >>>>>>>>> +static irqreturn_t adis16475_trigger_handler(int irq, void *p)
+> >>>>>>>>> +{
+> >>>>>>>>> [...]
+> >>>>>>>>> +    __be16 data[ADIS16475_MAX_SCAN_DATA], *buffer;
+> >>>>>>>>> [...]
+> >>>>>>>>> +
+> >>>>>>>>> +    iio_push_to_buffers_with_timestamp(indio_dev, data, pf-  
+> >>>>>>>>>> timestamp);  
+> >>>>>>>> If the timestamp is enabled the IIO core might insert padding
+> >>>>>>>> between
+> >>>>>>>> the data channels and the timestamp. If that happens this will
+> >>>>>>>> disclose
+> >>>>>>>> kernel stack memory to userspace.
+> >>>>>>>>
+> >>>>>>>> This needs either a memset(data, 0x00, sizeof(data)) or maybe put
+> >>>>>>>> data
+> >>>>>>>> into the state struct and kzalloc it.  
+> >>>>>>> Good spot. Could simply do __be16 data[ADI..] = {0}; rather than
+> >>>>>>> explicit
+> >>>>>>> memset, but some form of zeroization is needed.
+> >>>>>>>
+> >>>>>>> I've fixed up the applied patch with the above approach.  
+> >>>>>> There is actually another issue. The stack data is not necessarily
+> >>>>>> aligned to 64 bit, which causes issues if we try to put the 64-bit  
+> >>>>> Oh, this is actually more problematic. Yes, since we have an array of
+> >>>>> u16, that is not guaranteed to be 64bit aligned. Doing a quick search
+> >>>>> of `iio_push_to_buffers_with_timestamp()` users and I could quickly
+> >>>>> find 4/5 drivers with the same problem. I guess the API should clearly
+> >>>>> state that `data` needs to be __at least__ 64 bits aligned (maybe a
+> >>>>> future patch). Or we could even check the address and guarantee that it
+> >>>>> is properly aligned before continuing (though Im guessing this will
+> >>>>> break a lot of users...)  
+> >>>>>> timestamp in it. I think data should really be in the state struct.  
+> >>>>> Yes, with a proper __aligned(8) attribute... Or couldn't we just use
+> >>>>> __aligned(8) on the stack variable?  
+> >>>> Forcing alignment on the stack isn't terribly reliable, which is why
+> >>>> we never do that for dma safe buffers.
+> >>>>
+> >>>> Probably better to just move it to the state structure.
+> >>>> I'll fix it up to do that. Please sanity check what will shortly
+> >>>> be in the testing branch.
+> >>>>
+> >>>> The moment Lars mentioned this I groaned. As you've noted a few other
+> >>>> drivers have the same problem + the ABI doesn't clearly state
+> >>>> or check this.
+> >>>>
+> >>>> We should certainly fix all the drivers that suffer this problem
+> >>>> first then we can think about adding a runtime check.  
+> >>> It looks like it is actually quite a few drivers, maybe we should
+> >>> switch to put_unaligned(). We probably got lucky in most cases and the
+> >>> buffer is naturally aligned to 64 bit.  
+> > Just a quick update on this.  I've been taking a deeper look and there
+> > are some 'interesting' cases in here so the put_unaligned is attractive
+> > unfortunately I don't think we can go that way because it would be
+> > reasonable for consumers of the buffer to expect it to be appropriately
+> > aligned.   We need to rework many of these anyway to fix the related
+> > data leak.
+> >
+> > I've done some of below and will post shortly - a few will take more
+> > effort and probably need testing rather than just relying on review.
+> >
+> > So far the 'interesting ones' are mpu3050 and isl29501.  
 > 
-> > +       reset_gpiod = devm_gpiod_get_optional(&client->dev,
-> > +                                             "reset", GPIOD_OUT_HIGH);
-> > +       if (IS_ERR(reset_gpiod))
-> > +               return PTR_ERR(reset_gpiod);
+> isl29501 looks OK to me. mpu3050 is clearly broken, buffer is both 
+> unaligned and too small!
+
+isl29501 reads a pair of 8 bit registers, then writes them to a 32 bit value
+for no particular reason and puts that in the first 32 bits of the buffer
+having declared the channel to have a storage size of 16 bits.
+
+So going to have some fun on one or other of the endian types...
+
+J
+
 > 
 
-I'm sorry but I'm not sure about what you mean by saying all cases.
-Currently  I'm testing this driver on a msm8916 device having AK09911
-magnetometer. At the current stage the driver is failing on probe 
-because reset pin is not connected to VID (as datasheet requires in case
-of pin not being used). In case of reset pin not asserted, register's
-reset is triggered resulting in empty registers, leading to probe fail.
-For this reason pin is asserted during power on in order to have 
-informations in registers and deasserted before power off triggering
-a reset.
 
-A workaround that gets AK09911 working on device is by setting the
-reset pin always high on device tree. This way registers gets reset by
-a Power On Reset circuit autonomously and reset pin never triggers the
-reset.
-
-> -- 
-> With Best Regards,
-> Andy Shevchenko
-
-Hoping to having answered to your question,
-Best regards,
-Jonathan Albrieux
