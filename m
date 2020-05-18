@@ -2,207 +2,129 @@ Return-Path: <SRS0=I2bj=7A=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B005FC433E1
-	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 13:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C26AC433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 13:38:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9073B206D4
-	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 13:37:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="etf5MMPE"
+	by mail.kernel.org (Postfix) with ESMTP id 23FAB206D4
+	for <linux-iio@archiver.kernel.org>; Mon, 18 May 2020 13:38:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727803AbgERNhT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 May 2020 09:37:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726726AbgERNhS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2020 09:37:18 -0400
-Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2EFF8C061A0C;
-        Mon, 18 May 2020 06:37:17 -0700 (PDT)
-Received: by mail-wm1-x32f.google.com with SMTP id u188so10445336wmu.1;
-        Mon, 18 May 2020 06:37:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NelqWN4DVZYy525kVaNQdwoOLRrWijttmX4yjSOk4TQ=;
-        b=etf5MMPEn4z8AHZdpZ7sc+hcohmCVEJmLOXvtHFdAQFE1DuQrKgV5tkYkDlizGkJH8
-         oSWBTSovYT1ZRQZL1XTpnEd5TYPgwAhiK6k+wCG8rE0/BVDsnkIRnKlIWSq684etNstH
-         6ty+ESXpcgBPHAd1kmC4d7zB3Rsv4YHp0LI9aIZw2kaoNh04fJBfxZXM6d2yt+bKADDJ
-         CLkjF3u8DL7CS32wzg/aEOP9jg9rad1JEBgxvWb3dL3uH/6AW3PeeulcDd8gt3HiLLsV
-         2zw48I51FhKv1PEAN5qeCeUQYZfur9qJCU+TwtvvfA6JPCUDjN9NrpaNpyclm/Nh+kOQ
-         WOgg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=NelqWN4DVZYy525kVaNQdwoOLRrWijttmX4yjSOk4TQ=;
-        b=gPsPt3kl2HFcOWsT8aUvji0DKnvVWUnuSr5Gyc0+jttr/HKzq4x++J9DAYB7CgWJMx
-         Un2vU6uQ9LyCy+uEoQMDW4fLwJagfb5Nq+rVZOwiT3EuyH1hpPhCIhEFdEZb9hlQ/0/+
-         u3DRpgGslcLD0nvItU/2pKgAoGg5rlnkyF6RyjkveDLAmjxaqRvA1RReOsWdCUjgvV2U
-         vsl8GboJOjWTeRxVa4WdAWtzEA/26VE6eqREWyj/Azhh2CX/xPPrQDFthL5iPTKCOCh2
-         eIlfY++Yd9xv9PNmeMZDOhUezFoWP9ApsHJGOIOPpUSHM9lp9GqhzCM8/8z9azl9O3MW
-         pa9g==
-X-Gm-Message-State: AOAM532fNCuHhRt5agPRnSBu5H9fVpaTAS9nNb5HsTT43Ynt2B2OdMuV
-        qRbo1LvGvyrIOdi3d5tvQbBg0NGDmgVAcA==
-X-Google-Smtp-Source: ABdhPJxiuDzQMURyYKYTaTg35peXm3A8P8ECn083yX9dd5j0bhQ3NDoJ+IZRcXYmr1B5Aq9N19Z3tw==
-X-Received: by 2002:a1c:98c9:: with SMTP id a192mr19357450wme.48.1589809034962;
-        Mon, 18 May 2020 06:37:14 -0700 (PDT)
-Received: from ict14-OptiPlex-980.kataweb.it ([178.23.248.46])
-        by smtp.googlemail.com with ESMTPSA id o26sm17054328wro.83.2020.05.18.06.37.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 06:37:14 -0700 (PDT)
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Steve Winslow <swinslow@gmail.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH 1/3] dt-bindings: iio: magnetometer: ak8975: convert txt format to yaml
-Date:   Mon, 18 May 2020 15:36:36 +0200
-Message-Id: <20200518133645.19127-2-jonathan.albrieux@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200518133645.19127-1-jonathan.albrieux@gmail.com>
-References: <20200518133645.19127-1-jonathan.albrieux@gmail.com>
+        id S1726958AbgERNiX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 May 2020 09:38:23 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:64474 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726855AbgERNiX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 May 2020 09:38:23 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04IDYv5n017131;
+        Mon, 18 May 2020 09:38:20 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 312d35nn4n-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 May 2020 09:38:19 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 04IDcIpe060429
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 18 May 2020 09:38:18 -0400
+Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 18 May 2020 06:38:17 -0700
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 18 May 2020 06:38:16 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 18 May 2020 06:38:16 -0700
+Received: from saturn.ad.analog.com ([10.48.65.112])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 04IDcEMj025859;
+        Mon, 18 May 2020 09:38:14 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+CC:     <jic23@kernel.org>, <ak@it-klinger.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2] iio: proximity: ping: pass reference to IIO device as param to ping_read()
+Date:   Mon, 18 May 2020 16:38:13 +0300
+Message-ID: <20200518133813.403903-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-18_06:2020-05-15,2020-05-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ suspectscore=0 bulkscore=0 mlxscore=0 phishscore=0 cotscore=-2147483648
+ impostorscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ clxscore=1015 adultscore=0 malwarescore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005180121
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Converts documentation from txt format to yaml
+Since there will be some changes to how iio_priv_to_dev() is implemented,
+it could be that the helper becomes a bit slower, as it will be hidden away
+in the IIO core.
 
-Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+But even without that rework, this looks like it can pass the 'indio_dev'
+object to ping_read() and obtain the state struct via iio_priv() which is a
+preferred practice than going back-n-forth (getting the state-struct, then
+using iio_priv_to_dev() to get the indio_dev object back).
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- .../bindings/iio/magnetometer/ak8975.txt      | 30 ---------
- .../bindings/iio/magnetometer/ak8975.yaml     | 66 +++++++++++++++++++
- 2 files changed, 66 insertions(+), 30 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-deleted file mode 100644
-index aa67ceb0d4e0..000000000000
---- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--* AsahiKASEI AK8975 magnetometer sensor
--
--Required properties:
--
--  - compatible : should be "asahi-kasei,ak8975"
--  - reg : the I2C address of the magnetometer
--
--Optional properties:
--
--  - gpios : should be device tree identifier of the magnetometer DRDY pin
--  - vdd-supply: an optional regulator that needs to be on to provide VDD
--  - mount-matrix: an optional 3x3 mounting rotation matrix
--
--Example:
--
--ak8975@c {
--        compatible = "asahi-kasei,ak8975";
--        reg = <0x0c>;
--        gpios = <&gpj0 7 0>;
--        vdd-supply = <&ldo_3v3_gnss>;
--        mount-matrix = "-0.984807753012208",  /* x0 */
--                       "0",                   /* y0 */
--                       "-0.173648177666930",  /* z0 */
--                       "0",                   /* x1 */
--                       "-1",                  /* y1 */
--                       "0",                   /* z1 */
--                       "-0.173648177666930",  /* x2 */
--                       "0",                   /* y2 */
--                       "0.984807753012208";   /* z2 */
--};
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-new file mode 100644
-index 000000000000..86e3efa693a8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/magnetometer/ak8975.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AsahiKASEI AK8975 magnetometer sensor
-+
-+maintainers:
-+  - can't find a mantainer, author is Laxman Dewangan <ldewangan@nvidia.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - "asahi-kasei,ak8975"
-+      - "ak8975"
-+      - "asahi-kasei,ak8963"
-+      - "ak8963"
-+      - "asahi-kasei,ak09911"
-+      - "ak09911"
-+      - "asahi-kasei,ak09912"
-+      - "ak09912"
-+
-+  reg:
-+    maxItems: 1
-+    description: the I2C address of the magnetometer
-+
-+  gpios:
-+    description: should be device tree identifier of the magnetometer DRDY pin
-+
-+  vdd-supply:
-+    maxItems: 1
-+    description: |
-+      an optional regulator that needs to be on to provide VDD power to
-+      the sensor.
-+
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    i2c@78b7000 {
-+        reg = <0x78b6000 0x600>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ak8975@c {
-+            compatible = "asahi-kasei,ak8975";
-+            reg = <0x0c>;
-+            gpios = <&gpj0 7 0>;
-+            vdd-supply = <&ldo_3v3_gnss>;
-+            mount-matrix = "-0.984807753012208",  /* x0 */
-+                           "0",                   /* y0 */
-+                           "-0.173648177666930",  /* z0 */
-+                           "0",                   /* x1 */
-+                           "-1",                  /* y1 */
-+                           "0",                   /* z1 */
-+                           "-0.173648177666930",  /* x2 */
-+                           "0",                   /* y2 */
-+                           "0.984807753012208";   /* z2 */
-+        };
-+    };
+Changelog v1 -> v2:
+* split away from series
+* pass 'indio_dev' to ping_read() and get the info via iio_priv()
+
+ drivers/iio/proximity/ping.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/proximity/ping.c b/drivers/iio/proximity/ping.c
+index 12b893c5b0ee..2e99eeb27f2e 100644
+--- a/drivers/iio/proximity/ping.c
++++ b/drivers/iio/proximity/ping.c
+@@ -89,14 +89,14 @@ static irqreturn_t ping_handle_irq(int irq, void *dev_id)
+ 	return IRQ_HANDLED;
+ }
+ 
+-static int ping_read(struct ping_data *data)
++static int ping_read(struct iio_dev *indio_dev)
+ {
++	struct ping_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 	ktime_t ktime_dt;
+ 	s64 dt_ns;
+ 	u32 time_ns, distance_mm;
+ 	struct platform_device *pdev = to_platform_device(data->dev);
+-	struct iio_dev *indio_dev = iio_priv_to_dev(data);
+ 
+ 	/*
+ 	 * just one read-echo-cycle can take place at a time
+@@ -228,7 +228,6 @@ static int ping_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *channel, int *val,
+ 			    int *val2, long info)
+ {
+-	struct ping_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	if (channel->type != IIO_DISTANCE)
+@@ -236,7 +235,7 @@ static int ping_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (info) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = ping_read(data);
++		ret = ping_read(indio_dev);
+ 		if (ret < 0)
+ 			return ret;
+ 		*val = ret;
 -- 
-2.17.1
+2.25.1
 
