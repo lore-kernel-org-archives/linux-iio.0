@@ -2,68 +2,45 @@ Return-Path: <SRS0=Mbqr=7B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48533C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 12:44:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CA83C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 12:55:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 283EA20657
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 12:44:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="sETFH7px"
+	by mail.kernel.org (Postfix) with ESMTP id 430A02081A
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 12:55:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728875AbgESMod (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 May 2020 08:44:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40192 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728869AbgESMo3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2020 08:44:29 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72266C08C5C0;
-        Tue, 19 May 2020 05:44:29 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id f134so2928753wmf.1;
-        Tue, 19 May 2020 05:44:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=jfvT9uA0eu5W3Ndyf2EIIWVhSCqK5/sx7OIEpRxugJ8=;
-        b=sETFH7pxB/VLh576Yx/jY1DlUpiI7RGGUZRgYEzCYCj0VvawGm+v2MgkgtI8jJTudC
-         eG/yvelXn+SCptYFg4vWFRw5WkhRmSIPMy4Z/pfR4k30ll9k9Lk2rkw0e/Zt/Sjy9UB8
-         JO+1t5AHuShC8siXyFxmN6QoWJcPgczLIAQMIxVRehHbPf1XOa4ki9PNz9HtMc65GMR9
-         2qbFXyEuqbtxkIgER1Eo7zwmeipeZky1TycC/XcQCNryuH1izp5rLBv+mNHUsG9OGYJI
-         PkVM4ye4rr+vSWPCdzUES4vHzdu2xmD+Qfhb3NfjV4RTvwkw/KX1E8AB/JMg02b4B9f3
-         XKoA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=jfvT9uA0eu5W3Ndyf2EIIWVhSCqK5/sx7OIEpRxugJ8=;
-        b=Lx37EJWGCEv3J9RnakfOy3iE4e/iKbsFUlyPP7Cszgnm1MOeNktVeA9Xc5W42klwAD
-         BOoNa0zCkZPfNYgaorJ0JNsMITODWBZBwyj3h5C5S+O8IavCTnz+OwD6QbE03ZbN2JAr
-         8444q7bfi4zo6zV2kas4zbcxj5bL5NZIG/lbF/TgIpxUd75eWsR3PriCafjysmEkkPrK
-         VpJWy8KZSaIhtXfuqfQ/1vTVYy5j82NzB2TI/DaFTWU+4dtNupzlr+X6mFb3Oao0KL7n
-         colqwezxuCWF+fnc+d7o6GbvtIfU5NoNFvKCHjhA1Q8zGjbD8+3gkVBTUkxWeDpen3xQ
-         4Y2Q==
-X-Gm-Message-State: AOAM532Ti2aEaqdrNKK6PcpeV3MmEjMOPW+evwGXM1VAtMUjkTokbY0r
-        OzUDRuzvGkQNlbEQ8zBDuawyj+Mg0lsZTw==
-X-Google-Smtp-Source: ABdhPJwPQdgQNqbxNA8WlDoBXfKplt1SdvrG2YJD+XWvLpfyBcQDcjMXKFRcYkvUlROAE2/S1NynKw==
-X-Received: by 2002:a1c:f211:: with SMTP id s17mr5757742wmc.168.1589892267534;
-        Tue, 19 May 2020 05:44:27 -0700 (PDT)
-Received: from ict14-OptiPlex-980.kataweb.it ([178.23.248.46])
-        by smtp.googlemail.com with ESMTPSA id b12sm3953870wmj.0.2020.05.19.05.44.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 May 2020 05:44:26 -0700 (PDT)
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
+        id S1728925AbgESMzj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 May 2020 08:55:39 -0400
+Received: from mga18.intel.com ([134.134.136.126]:39330 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727904AbgESMzj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 19 May 2020 08:55:39 -0400
+IronPort-SDR: 1QPPdSq2c9YrdNEUA/yMS0QtjXL8OiMKEqSbz7jX6N/vygoq0njAYnAz1G9jXJ3rOcIRdoyBrV
+ k2EMAEwxmjAQ==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 May 2020 05:55:38 -0700
+IronPort-SDR: ZdSL02WNQcrR3lRD0XvomnzS/+alYOWgQuiQ2cvisdS+wVE8M13quLDYGhM9s4kNmDqizzcbP5
+ G/whYnOTF+aw==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,410,1583222400"; 
+   d="scan'208";a="465961411"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga005.fm.intel.com with ESMTP; 19 May 2020 05:55:35 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jb1mT-007daU-FJ; Tue, 19 May 2020 15:55:37 +0300
+Date:   Tue, 19 May 2020 15:55:37 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Albrieux <jonathan.albrieux@gmail.com>
+Cc:     linux-kernel@vger.kernel.org,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Jilayne Lovejoy <opensource@jilayne.com>,
@@ -71,59 +48,58 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht,
         Kate Stewart <kstewart@linuxfoundation.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Steve Winslow <swinslow@gmail.com>,
         Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v3 2/4] dt-bindings: iio: magnetometer: ak8975: add gpio reset support
-Date:   Tue, 19 May 2020 14:43:52 +0200
-Message-Id: <20200519124402.26076-3-jonathan.albrieux@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200519124402.26076-1-jonathan.albrieux@gmail.com>
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v3 3/4] iio: magnetometer: ak8975: Fix typo, uniform
+ measurement unit style
+Message-ID: <20200519125537.GH1634618@smile.fi.intel.com>
 References: <20200519124402.26076-1-jonathan.albrieux@gmail.com>
+ <20200519124402.26076-4-jonathan.albrieux@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200519124402.26076-4-jonathan.albrieux@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add reset-gpio support.
+On Tue, May 19, 2020 at 02:43:53PM +0200, Jonathan Albrieux wrote:
+> Minor comment style edits.
 
-Without reset's deassertion during ak8975_power_on(), driver's probe fails
-on ak8975_who_i_am() while checking for device identity for AK09911 chip.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-AK09911 has an active low reset gpio to handle register's reset.
-AK09911 datasheed says that, if not used, reset pin should be connected
-to VID. This patch emulates this situation.
+> Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+> ---
+>  drivers/iio/magnetometer/ak8975.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+> index 3c881541ae72..fd368455cd7b 100644
+> --- a/drivers/iio/magnetometer/ak8975.c
+> +++ b/drivers/iio/magnetometer/ak8975.c
+> @@ -385,9 +385,9 @@ static int ak8975_power_on(const struct ak8975_data *data)
+>  		return ret;
+>  	}
+>  	/*
+> -	 * According to the datasheet the power supply rise time i 200us
+> +	 * According to the datasheet the power supply rise time is 200us
+>  	 * and the minimum wait time before mode setting is 100us, in
+> -	 * total 300 us. Add some margin and say minimum 500us here.
+> +	 * total 300us. Add some margin and say minimum 500us here.
+>  	 */
+>  	usleep_range(500, 1000);
+>  	return 0;
+> -- 
+> 2.17.1
+> 
 
-Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
----
- .../devicetree/bindings/iio/magnetometer/ak8975.yaml          | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-index 86e3efa693a8..a82c0ff5d098 100644
---- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-@@ -37,6 +37,9 @@ properties:
-   mount-matrix:
-     description: an optional 3x3 mounting rotation matrix
- 
-+  reset-gpio:
-+    description: an optional pin needed for AK09911 to set the reset state
-+
- required:
-   - compatible
-   - reg
-@@ -53,6 +56,7 @@ examples:
-             reg = <0x0c>;
-             gpios = <&gpj0 7 0>;
-             vdd-supply = <&ldo_3v3_gnss>;
-+            reset-gpio = <&msmgpio 111 1>;
-             mount-matrix = "-0.984807753012208",  /* x0 */
-                            "0",                   /* y0 */
-                            "-0.173648177666930",  /* z0 */
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
