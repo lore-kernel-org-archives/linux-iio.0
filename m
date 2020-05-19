@@ -2,124 +2,103 @@ Return-Path: <SRS0=Mbqr=7B=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+X-Spam-Status: No, score=-3.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19374C433E0
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 90ED3C433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 07:51:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE5BA2075F
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B9A8207E8
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 07:51:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Lf3/+do0"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Qx4FxYkR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728492AbgESG6k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 May 2020 02:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42720 "EHLO
+        id S1728027AbgESHvv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 May 2020 03:51:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51058 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726881AbgESG6j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2020 02:58:39 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73F62C061A0C;
-        Mon, 18 May 2020 23:58:38 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id h17so14512244wrc.8;
-        Mon, 18 May 2020 23:58:38 -0700 (PDT)
+        with ESMTP id S1726943AbgESHvu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2020 03:51:50 -0400
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 75985C061A0C;
+        Tue, 19 May 2020 00:51:50 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id e16so14699568wra.7;
+        Tue, 19 May 2020 00:51:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=fgREyKjff7N+7JWNDs3uGB4t29VL/TFRo7x/0hYtz3g=;
-        b=Lf3/+do0F4iiTpuBw4bTQbfX++RlKxaxpY+GquHmiFE0PzWZrxI1yR+99aM5tpfeH4
-         EomvGrPdTv0NFTrznPD3N1ibSacAa6omjZZcYg9v2rjUuFq22v/Lq74nAYGKBq8Ksxqo
-         4x5fvv9mPi50Vm3LoFox9qBKTWBsScXeyTlv89n2Z/Xu/Xrwc6qHwzdrovoJjt6Ur6lK
-         f9M6gYLRuRqL2j7S7sg5FC0g3oL7Z45TehhZRljhtWzvn8j5a6IUnFk+75r0ugWhYvmL
-         xlLUB/UPsUzKGRvjN42KlC3jsVMf/2PMx55of9IQ6vMG/G3vr99u1UVB3azfT1BAwX1y
-         YYnw==
+        h=from:to:cc:subject:date:message-id;
+        bh=oPqV/U6ZMKrfCAPX/g+ptuFFrR608MN26a6/3zmIm9U=;
+        b=Qx4FxYkRVjXqo1Bee59HHHicL1AVPpEWHYEEn1yxhHtRPxJKgfauplYwAp20Hy3kzz
+         OuMFhUNBdt5pmK/Bx1k2qDniw4rlOSnYFJ21NPosQw+gJ4fwRtocqjydkrS5UVZ6fYIp
+         2Uw36v+GODgo3DNtt0/39KY7D6+P7/7+jfe40PTkTU+bS7HN9IvOkIuInMz215QBJ/yI
+         S+bsHwCLhYIAvB9+fQcI4lrz62SSogApBqzLtTC5y3xuhIX9DOwLHyORI13esw0xRHiD
+         MMjAKMuZ+CVzPW361/tIXR4ipx423JQ5xX9iwxZXCB5mTODDDPXUUfDbTzFXg1ewc/ky
+         7vpw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=fgREyKjff7N+7JWNDs3uGB4t29VL/TFRo7x/0hYtz3g=;
-        b=nvqcsJcIWqXcHy+LQAH40Gnw+tghaz1YX8vfKQiikiQmUNmcUlcCx5ZcwCAtoFJ2qj
-         TfxIO75aHjp2eeEsrUB6t3MqHX3SFl+FC5OloEqTdtxrWRuPFuJRcYe9p3xsECHGNDNm
-         t8604OI4UTyvnHpn4RM3FXaaCsjhaUdDBsXLWyRiORXPGsTTTX46+dyoq54HmosyafhZ
-         rtiN3ENDxACdpvNhxmlv+0XlFTP/NWDNgvWlA3Z6J+zJgdjl4v7HiA/R59Y2YxPUJkUl
-         Fz6n7dipF0pnu8VHq+TY2N+Quc2iA7msfcbAfwIgPSzDzrsgtFghHTcNe4H/n32uA42j
-         ODTA==
-X-Gm-Message-State: AOAM533JA5cKApjspxfQiQe59WvsXXVREUdL1tN3kH6/8stI7BZj+yZz
-        55KXfqA/RwF0U9JEQraHZZ6P2/OgkqpSSQ==
-X-Google-Smtp-Source: ABdhPJzDZgWDJkU9XwCBSoNr3U013Fw71PkMKwlLojJvYv06QTdemOsA5/LeBNAM0cVhJ6btwRotBg==
-X-Received: by 2002:a5d:54c4:: with SMTP id x4mr25419963wrv.73.1589871516599;
-        Mon, 18 May 2020 23:58:36 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=oPqV/U6ZMKrfCAPX/g+ptuFFrR608MN26a6/3zmIm9U=;
+        b=Z7i83//66gF5FyCa8J7SsVjm6DaWKN2Kvvba3qpipVDj9PI2kqm5CsTbYPzBU+A1lE
+         2i3YMqAci5CND/njWkj2BpZkHQB3BeGn6NWjc/Pg059mDpcEPHlo6d/Rdh4MFX+i5crE
+         tnTJb0+Tus/o6x3dvuPylSboaKBP58f91ziHSYpt+Got3Ul1swJrHTOBqarzGdpuOvLi
+         jQ1WEP5ezTRN2XQEzYj8XVYT+/74eoA8mch3tCsZ1e8n2dfeSKUDxwbV6+GzT+m9ar6O
+         kEmv5OcNZ650v2iUoVq7v3qzYVaH9eaeJyi94fKnEzZV5hYH3zQ7L/vUyBSYbprEjMO3
+         XhWg==
+X-Gm-Message-State: AOAM532Dnphbvl5It0JDPOtL8EZ9AGZHxiCVuabiel4Q/3voEBFu/XAX
+        OJswHgI3qoM+K2cWfSl0N6MvdnDDBks=
+X-Google-Smtp-Source: ABdhPJxtWNV9gW9Gu6NsxHHpnkmIO0W67f11Kv3Ql8NrcqBrMJfCm5F98MsSLTQqy72dH60DwEPoLA==
+X-Received: by 2002:a5d:6605:: with SMTP id n5mr26016134wru.198.1589874708018;
+        Tue, 19 May 2020 00:51:48 -0700 (PDT)
 Received: from ict14-OptiPlex-980.kataweb.it ([178.23.248.46])
-        by smtp.googlemail.com with ESMTPSA id p7sm2597550wmc.24.2020.05.18.23.58.35
+        by smtp.googlemail.com with ESMTPSA id w18sm20019697wro.33.2020.05.19.00.51.46
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 23:58:35 -0700 (PDT)
+        Tue, 19 May 2020 00:51:46 -0700 (PDT)
 From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS),
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        DEVICE TREE BINDINGS), Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
         linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v2 2/3] dt-bindings: iio: magnetometer: ak8975: add gpio reset support
-Date:   Tue, 19 May 2020 08:57:42 +0200
-Message-Id: <20200519065749.4624-3-jonathan.albrieux@gmail.com>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v2 0/4] iio: imu: bmi160: added regulator and mount-matrix support
+Date:   Tue, 19 May 2020 09:50:56 +0200
+Message-Id: <20200519075111.6356-1-jonathan.albrieux@gmail.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200519065749.4624-1-jonathan.albrieux@gmail.com>
-References: <20200519065749.4624-1-jonathan.albrieux@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add reset-gpio support.
+v2: fixed missing description for iio: imu: bmi160: added regulator
+support
 
-Without reset's deassertion during ak8975_power_on, driver's probe fails on
-ak8975_who_i_am while checking for device identity for AK09911 chip
+Convert txt format documentation to yaml.
+Add documentation about vdd-supply, vddio-supply and mount-matrix.
 
-AK09911 has an active low reset gpio to handle register's reset.
-AK09911 datasheed says that, if not used, reset pin should be connected
-to VID. This patch emulates this situation
+Add vdd-supply and vddio-supply support. Without this support, vdd and
+vddio should be set to always-on in device tree.
 
-Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
----
- .../devicetree/bindings/iio/magnetometer/ak8975.yaml          | 4 ++++
- 1 file changed, 4 insertions(+)
+Add mount-matrix binding support. As chip could have different
+orientations a mount matrix support is needed to correctly translate
+these differences
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-index 86e3efa693a8..a82c0ff5d098 100644
---- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-@@ -37,6 +37,9 @@ properties:
-   mount-matrix:
-     description: an optional 3x3 mounting rotation matrix
- 
-+  reset-gpio:
-+    description: an optional pin needed for AK09911 to set the reset state
-+
- required:
-   - compatible
-   - reg
-@@ -53,6 +56,7 @@ examples:
-             reg = <0x0c>;
-             gpios = <&gpj0 7 0>;
-             vdd-supply = <&ldo_3v3_gnss>;
-+            reset-gpio = <&msmgpio 111 1>;
-             mount-matrix = "-0.984807753012208",  /* x0 */
-                            "0",                   /* y0 */
-                            "-0.173648177666930",  /* z0 */
+Jonathan Albrieux (4):
+  dt-bindings: iio: imu: bmi160: convert txt format to yaml
+  dt-bindings: iio: imu: bmi160: add regulators and mount-matrix
+  iio: imu: bmi160: added regulator support
+  iio: imu: bmi160: added mount-matrix support
+
+ .../devicetree/bindings/iio/imu/bmi160.txt    |  37 ------
+ .../devicetree/bindings/iio/imu/bmi160.yaml   | 105 ++++++++++++++++++
+ drivers/iio/imu/bmi160/bmi160.h               |   3 +
+ drivers/iio/imu/bmi160/bmi160_core.c          |  47 +++++++-
+ 4 files changed, 154 insertions(+), 38 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.yaml
+
 -- 
 2.17.1
 
