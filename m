@@ -5,58 +5,58 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74951C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8FF6C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 53E472075F
-	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 873BF2075F
+	for <linux-iio@archiver.kernel.org>; Tue, 19 May 2020 06:58:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="pJZeFjDD"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="O59a8tWI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728474AbgESG6f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 May 2020 02:58:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42710 "EHLO
+        id S1727077AbgESG6m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 May 2020 02:58:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726881AbgESG6f (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2020 02:58:35 -0400
-Received: from mail-wm1-x331.google.com (mail-wm1-x331.google.com [IPv6:2a00:1450:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 39D7CC05BD09;
-        Mon, 18 May 2020 23:58:35 -0700 (PDT)
-Received: by mail-wm1-x331.google.com with SMTP id f13so1831501wmc.5;
-        Mon, 18 May 2020 23:58:35 -0700 (PDT)
+        with ESMTP id S1726881AbgESG6l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 May 2020 02:58:41 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF962C061A0C;
+        Mon, 18 May 2020 23:58:40 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id e16so14534134wra.7;
+        Mon, 18 May 2020 23:58:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=NelqWN4DVZYy525kVaNQdwoOLRrWijttmX4yjSOk4TQ=;
-        b=pJZeFjDDmF0Hwc489EH9MdK0NI1hdcSSzTItrlZpAAMqIB6AePhn6kkk/0SjKc3r6X
-         uS/OWa0zSebw54mQlf7dpK9Ro+CV6rVpYTi3uhfgLZInFJKp4o2OZ9EEDPqAxr7SUns3
-         GsA8FDMhsx02mSPu3aoiYhKwl754yDy069/vcQQOtcNXY/K1ilBVSCTFCXPjE5XUMwSW
-         MFvRm6bVon/HVlXmr5+csIbtkK33DkGbeUxVkZ3nqTVEagDW2OFFO+svZCf5nvPLo3gD
-         ygfDNBDySjSRwCubFDg0qeuv4zAt/Lyrw5nG055k/oVSljPnCVfWaUUSlxiQ+Hg9vsqo
-         pxKw==
+        bh=VDmyzrySD4Ps31eGi/jgnHCXsN6EThrf0g6khOYg/JA=;
+        b=O59a8tWIvaWSO7HtdqtunTf7+/K5LaFq+VdCrxMS6b53oKh0BLDN5J59TBRs/d8Kdf
+         JCLzm73uJz38sMPsWJP7eZSlaGPV9b7Q0OvjdUloCD/y0Ezt3lAhMJADf3jYvoea2ENx
+         ctzn791eqzvOIXTuPVy1JSRsj25fuoJK9DMms6zJ9cwC2J2U+HLlCrntW66DvOB5HJfv
+         fEwZSQcRskrh0AD1TAk1H3bcP5vwKyySbD5zromoFzBHKj/ZUosrvpZnDDTHujWi+OQR
+         2ag6R4CAWOMNM93cUOx+zyRS5JdMDrFrhf0liWG0uJOpoWvKXGS3Ml7VjBARRqaTlvvg
+         GIOA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=NelqWN4DVZYy525kVaNQdwoOLRrWijttmX4yjSOk4TQ=;
-        b=XQesakZpDolI1CV5f7Inwf/5aGRj2S+OPWduyz6uynBdXZZrrgmdvdnfY0RLn8pozi
-         lfspeUiWwXC9u2ZyzleRrU/fe6lxSDsvw3u0LxQkYNYHYbwfYlfraGHeywsjZwvCWENZ
-         sntRv9BZGoaOOTsq6KnsKtBHv8I6vdVeQ6Ex3D/IPInsAyMiMm8EbE/EKh3NnmojjpY7
-         2brCsIjg9jy+trpf4d2fT57j1/FfYqbr+6R9uOZVWV0XEGEcfDvmagzVjgsPUbGAv5CF
-         7T89geD56wWqDyoJKQJlcBbRE3FDaca2grCemzHji5vlktnq4fnB6F2xdfI4FwG7zxZl
-         U2mw==
-X-Gm-Message-State: AOAM530ciJbF0ApVYbZiVfQCdP8C8QqLDADurgwKM6UXUw27ruXPEC3T
-        f8Y9t+HL2886gxbik+qkI/kFCyzE8S78Eg==
-X-Google-Smtp-Source: ABdhPJxZ37RZkNrYqL5WauyNN8HMIZLHyRzsIGBVssL0crdhUU1geEPsmsiDcC8bRlLmjW8AcdtLtg==
-X-Received: by 2002:a05:600c:21c1:: with SMTP id x1mr3501921wmj.173.1589871513384;
-        Mon, 18 May 2020 23:58:33 -0700 (PDT)
+        bh=VDmyzrySD4Ps31eGi/jgnHCXsN6EThrf0g6khOYg/JA=;
+        b=aWvVTj5vxXfW9EKigobvzOehmJUfhB1o+B/mTaRtemcFu3v1QXdI1xCiLsZtP/K1Ny
+         OmLrCpg/czj+vO1V3los4W9QtCzutJ97HpEWcYQ3Bx3lqT5BdD0f92jkuDNYvfrRG1rZ
+         zNptYypWkSfsUnBUgkpihARG88eAlxPQfpuY+WU5Ie+EMOuhYs9nlo7HdR0hx3Q9QkS8
+         aLDxGs/SWzwdOlZaocQp5bFL16X2cuhMQZyx4vvBu8F2mPs9kLUs6hDBlyUVIMr3SZV9
+         LFf+Z9Vr4w9ml3i/IhS1CxFMptWwlV9hoaPIWAEOfEof8xxg1dG1Bz/X7lubL1QMlKUf
+         Tu6w==
+X-Gm-Message-State: AOAM532GCR4xuWGzxGsYW2SCRmj3HIXcZaL4DDIunM52QQTe2AVIG4Tr
+        SyZdTh25yhl6RuYJ1xqafLAnY6TayvsGGg==
+X-Google-Smtp-Source: ABdhPJwwRa+ZKzjAn8nODGSc7yyEzdFyLKC/+Nuye0maZqgeufwZYQnzOfJck2YEm1F2QAz/G5bdDQ==
+X-Received: by 2002:adf:f783:: with SMTP id q3mr23694885wrp.348.1589871519170;
+        Mon, 18 May 2020 23:58:39 -0700 (PDT)
 Received: from ict14-OptiPlex-980.kataweb.it ([178.23.248.46])
-        by smtp.googlemail.com with ESMTPSA id p7sm2597550wmc.24.2020.05.18.23.58.32
+        by smtp.googlemail.com with ESMTPSA id p7sm2597550wmc.24.2020.05.18.23.58.37
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 May 2020 23:58:32 -0700 (PDT)
+        Mon, 18 May 2020 23:58:38 -0700 (PDT)
 From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     Jonathan Albrieux <jonathan.albrieux@gmail.com>,
@@ -72,10 +72,10 @@ Cc:     Jonathan Albrieux <jonathan.albrieux@gmail.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Thomas Gleixner <tglx@linutronix.de>,
         Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH v2 1/3] dt-bindings: iio: magnetometer: ak8975: convert txt format to yaml
-Date:   Tue, 19 May 2020 08:57:41 +0200
-Message-Id: <20200519065749.4624-2-jonathan.albrieux@gmail.com>
+        Jilayne Lovejoy <opensource@jilayne.com>
+Subject: [PATCH v2 3/3] iio: magnetometer: ak8975: Add gpio reset support
+Date:   Tue, 19 May 2020 08:57:43 +0200
+Message-Id: <20200519065749.4624-4-jonathan.albrieux@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200519065749.4624-1-jonathan.albrieux@gmail.com>
 References: <20200519065749.4624-1-jonathan.albrieux@gmail.com>
@@ -84,124 +84,91 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Converts documentation from txt format to yaml
+According to AK09911 datasheet, if reset gpio is provided then 
+deassert reset on ak8975_power_on and assert reset on ak8975_power_off.
+
+Without reset's deassertion during ak8975_power_on, driver's probe fails on
+ak8975_who_i_am while checking for device identity for AK09911 chip
+
+AK09911 has an active low reset gpio to handle register's reset.
+AK09911 datasheed says that, if not used, reset pin should be connected
+to VID. This patch emulates this situation
 
 Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
 ---
- .../bindings/iio/magnetometer/ak8975.txt      | 30 ---------
- .../bindings/iio/magnetometer/ak8975.yaml     | 66 +++++++++++++++++++
- 2 files changed, 66 insertions(+), 30 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
+ drivers/iio/magnetometer/ak8975.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-deleted file mode 100644
-index aa67ceb0d4e0..000000000000
---- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-+++ /dev/null
-@@ -1,30 +0,0 @@
--* AsahiKASEI AK8975 magnetometer sensor
--
--Required properties:
--
--  - compatible : should be "asahi-kasei,ak8975"
--  - reg : the I2C address of the magnetometer
--
--Optional properties:
--
--  - gpios : should be device tree identifier of the magnetometer DRDY pin
--  - vdd-supply: an optional regulator that needs to be on to provide VDD
--  - mount-matrix: an optional 3x3 mounting rotation matrix
--
--Example:
--
--ak8975@c {
--        compatible = "asahi-kasei,ak8975";
--        reg = <0x0c>;
--        gpios = <&gpj0 7 0>;
--        vdd-supply = <&ldo_3v3_gnss>;
--        mount-matrix = "-0.984807753012208",  /* x0 */
--                       "0",                   /* y0 */
--                       "-0.173648177666930",  /* z0 */
--                       "0",                   /* x1 */
--                       "-1",                  /* y1 */
--                       "0",                   /* z1 */
--                       "-0.173648177666930",  /* x2 */
--                       "0",                   /* y2 */
--                       "0.984807753012208";   /* z2 */
--};
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-new file mode 100644
-index 000000000000..86e3efa693a8
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.yaml
-@@ -0,0 +1,66 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/magnetometer/ak8975.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 3c881541ae72..84dea520db02 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -358,6 +358,7 @@ struct ak8975_data {
+ 	u8			asa[3];
+ 	long			raw_to_gauss[3];
+ 	struct gpio_desc	*eoc_gpiod;
++	struct gpio_desc	*reset_gpiod;
+ 	int			eoc_irq;
+ 	wait_queue_head_t	data_ready_queue;
+ 	unsigned long		flags;
+@@ -384,10 +385,13 @@ static int ak8975_power_on(const struct ak8975_data *data)
+ 			 "Failed to enable specified Vid supply\n");
+ 		return ret;
+ 	}
 +
-+title: AsahiKASEI AK8975 magnetometer sensor
++	gpiod_set_value_cansleep(data->reset_gpiod, 0);
 +
-+maintainers:
-+  - can't find a mantainer, author is Laxman Dewangan <ldewangan@nvidia.com>
+ 	/*
+-	 * According to the datasheet the power supply rise time i 200us
++	 * According to the datasheet the power supply rise time is 200us
+ 	 * and the minimum wait time before mode setting is 100us, in
+-	 * total 300 us. Add some margin and say minimum 500us here.
++	 * total 300us. Add some margin and say minimum 500us here.
+ 	 */
+ 	usleep_range(500, 1000);
+ 	return 0;
+@@ -396,6 +400,8 @@ static int ak8975_power_on(const struct ak8975_data *data)
+ /* Disable attached power regulator if any. */
+ static void ak8975_power_off(const struct ak8975_data *data)
+ {
++	gpiod_set_value_cansleep(data->reset_gpiod, 1);
 +
-+properties:
-+  compatible:
-+    enum:
-+      - "asahi-kasei,ak8975"
-+      - "ak8975"
-+      - "asahi-kasei,ak8963"
-+      - "ak8963"
-+      - "asahi-kasei,ak09911"
-+      - "ak09911"
-+      - "asahi-kasei,ak09912"
-+      - "ak09912"
+ 	regulator_disable(data->vid);
+ 	regulator_disable(data->vdd);
+ }
+@@ -839,6 +845,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 	struct ak8975_data *data;
+ 	struct iio_dev *indio_dev;
+ 	struct gpio_desc *eoc_gpiod;
++	struct gpio_desc *reset_gpiod;
+ 	const void *match;
+ 	unsigned int i;
+ 	int err;
+@@ -856,6 +863,16 @@ static int ak8975_probe(struct i2c_client *client,
+ 	if (eoc_gpiod)
+ 		gpiod_set_consumer_name(eoc_gpiod, "ak_8975");
+ 
++	/*
++	 * According to AK09911 datasheet, if reset gpio is provided then
++	 * deassert reset on ak8975_power_on and assert reset on
++	 * ak8975_power_off.
++	 */
++	reset_gpiod = devm_gpiod_get_optional(&client->dev,
++					      "reset", GPIOD_OUT_HIGH);
++	if (IS_ERR(reset_gpiod))
++		return PTR_ERR(reset_gpiod);
 +
-+  reg:
-+    maxItems: 1
-+    description: the I2C address of the magnetometer
-+
-+  gpios:
-+    description: should be device tree identifier of the magnetometer DRDY pin
-+
-+  vdd-supply:
-+    maxItems: 1
-+    description: |
-+      an optional regulator that needs to be on to provide VDD power to
-+      the sensor.
-+
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    i2c@78b7000 {
-+        reg = <0x78b6000 0x600>;
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        ak8975@c {
-+            compatible = "asahi-kasei,ak8975";
-+            reg = <0x0c>;
-+            gpios = <&gpj0 7 0>;
-+            vdd-supply = <&ldo_3v3_gnss>;
-+            mount-matrix = "-0.984807753012208",  /* x0 */
-+                           "0",                   /* y0 */
-+                           "-0.173648177666930",  /* z0 */
-+                           "0",                   /* x1 */
-+                           "-1",                  /* y1 */
-+                           "0",                   /* z1 */
-+                           "-0.173648177666930",  /* x2 */
-+                           "0",                   /* y2 */
-+                           "0.984807753012208";   /* z2 */
-+        };
-+    };
+ 	/* Register with IIO */
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (indio_dev == NULL)
+@@ -866,6 +883,7 @@ static int ak8975_probe(struct i2c_client *client,
+ 
+ 	data->client = client;
+ 	data->eoc_gpiod = eoc_gpiod;
++	data->reset_gpiod = reset_gpiod;
+ 	data->eoc_irq = 0;
+ 
+ 	err = iio_read_mount_matrix(&client->dev, "mount-matrix", &data->orientation);
 -- 
 2.17.1
 
