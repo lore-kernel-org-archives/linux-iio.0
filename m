@@ -1,149 +1,186 @@
-Return-Path: <SRS0=L1FS=7C=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=0VFF=7D=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38EB9C433E1
-	for <linux-iio@archiver.kernel.org>; Wed, 20 May 2020 19:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F8BC433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 21 May 2020 13:12:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 15ECE207F9
-	for <linux-iio@archiver.kernel.org>; Wed, 20 May 2020 19:48:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 32ED620721
+	for <linux-iio@archiver.kernel.org>; Thu, 21 May 2020 13:12:40 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Sl5Q5x/A"
+	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="S0qqcneG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727125AbgETTsP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 May 2020 15:48:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49852 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726837AbgETTsP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 May 2020 15:48:15 -0400
-Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CD22C061A0E;
-        Wed, 20 May 2020 12:48:15 -0700 (PDT)
-Received: by mail-qk1-x741.google.com with SMTP id m11so4904293qka.4;
-        Wed, 20 May 2020 12:48:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=j9GtLPWP384+mcmNAjX0iJ86SP6E9SyJL2vo8P6h15U=;
-        b=Sl5Q5x/AR2Cz1CAvTwZdOUzSDcS1IoQUjBY1fsHBdcZ5ff2iJLVCx4Wpgo6pWMtppo
-         Qg7bibiXvAe0J8B48njqtDUyPxTy4DEiIxugvAX4yguVlx4js6USdh9R6krQ8K0qMkb4
-         GQXRXRAp7J3Eo4Fjn4o5dxvzoJDqdgAdficdKdEJT+elbKteocf+XSgjeX3HOHQDoilN
-         5SVI+N1BJpSw+t0v/iI9aHQ468Qb8y4xefOE9hRmHUqdQBziUqAWiRnRv3w81Xr1ZKK6
-         mxx3q0LJPp3PybZYh+BNcnfZh2oOgvhWX6+t6hIvlO20GBW/Iok4ZqsJe3PccDdaqTAz
-         gM+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=j9GtLPWP384+mcmNAjX0iJ86SP6E9SyJL2vo8P6h15U=;
-        b=O7Qt2rvhoc0s51IxfywynxLjjbP8qwyjH9ycjOUKGRXFxmdiCkWLMJOiaqhroP3ibm
-         BZ6kHQznw1FocKAFnJFUizxcRTY5SbU0St0y6c710bbdcAY23AGhqH/FOE08haFIQTbA
-         /62o6D9ztOTdGzGLy93Rrf2yy6EASvxgjPADbT1EWt6dDkZhglaHnBLlXq91klu14sJi
-         iFBgkolHFPFvpMubYuBphpO5AkYpT9mRsjDRXaSoNxADY026FYHAGcmttr8WY24H1wEv
-         7f9p6P3WFhqPGzGovQqdUJq7/LyiwCG58Q2PRwAZoxSZ998LgPyhavCrJmTNFMDDSlst
-         tJ3g==
-X-Gm-Message-State: AOAM531XasSpPIIjpQr11kNZEOmS9x1MHvFhZY/P+UrrDVfRE5BzAe5b
-        e753oHku8zGgwRj1wIjeep5R/tQFSH3Z+g==
-X-Google-Smtp-Source: ABdhPJzmmfjnZ7v5lGiG7IP3kli4Yc3gZcR3wRYRHUJSWq/PIhQlU1MF8BbwpjcxK2O6dG5qUal0DA==
-X-Received: by 2002:a37:7347:: with SMTP id o68mr5962002qkc.343.1590004093902;
-        Wed, 20 May 2020 12:48:13 -0700 (PDT)
-Received: from ict14-OptiPlex-980.kataweb.it ([178.23.248.46])
-        by smtp.googlemail.com with ESMTPSA id m33sm3158419qte.17.2020.05.20.12.48.11
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 20 May 2020 12:48:13 -0700 (PDT)
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, daniel.baluta@nxp.com,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        devicetree@vger.kernel.org (open list:OPEN FIRMWARE AND FLATTENED
-        DEVICE TREE BINDINGS), Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v3 5/5] iio: imu: bmi160: added mount-matrix support
-Date:   Wed, 20 May 2020 21:46:44 +0200
-Message-Id: <20200520194656.16218-6-jonathan.albrieux@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200520194656.16218-1-jonathan.albrieux@gmail.com>
-References: <20200520194656.16218-1-jonathan.albrieux@gmail.com>
+        id S1728159AbgEUNMj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 May 2020 09:12:39 -0400
+Received: from lelv0143.ext.ti.com ([198.47.23.248]:45424 "EHLO
+        lelv0143.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727846AbgEUNMj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 May 2020 09:12:39 -0400
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by lelv0143.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04LDBC4s078057;
+        Thu, 21 May 2020 08:11:12 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1590066672;
+        bh=VemXfjgt65Oev2cvZlMZZzFpOSjBFRiDmH0WqyBrDRQ=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=S0qqcneGOnHgQNxpZegvDc5igJJmd0uK65jmWBnKDd8kJ9TsVFF5Ta3ddZamcFu99
+         XCeCXpyCFX0MXRCyp5UGGOG+1Q1R4dwmPomjqwwYzaqPIf79ALR+eNZfdRE8SID7BN
+         pxrvlJmvROFC2i5N+A2frjD1dudJWkeeXxaRAvwo=
+Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04LDBCJ5113114;
+        Thu, 21 May 2020 08:11:12 -0500
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE108.ent.ti.com
+ (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 21
+ May 2020 08:11:11 -0500
+Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
+ Frontend Transport; Thu, 21 May 2020 08:11:11 -0500
+Received: from [10.250.38.163] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04LDBA8m061105;
+        Thu, 21 May 2020 08:11:11 -0500
+Subject: Re: [PATCH 07/11] iio:health:afe4403 Fix timestamp alignment and
+ prevent data leak.
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, <jic23@kernel.org>,
+        <linux-iio@vger.kernel.org>
+CC:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+References: <20200517173000.220819-1-jic23@kernel.org>
+ <20200517173000.220819-8-jic23@kernel.org>
+ <951a305b-b3b4-6cfc-f39a-f7458dfcb54b@ti.com>
+ <83B13776-904F-4FCF-93A6-D430281E4B55@jic23.retrosnub.co.uk>
+From:   "Andrew F. Davis" <afd@ti.com>
+Message-ID: <c0e4e79e-2a1a-07cd-dd4b-91a87333bc4f@ti.com>
+Date:   Thu, 21 May 2020 09:11:10 -0400
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.7.0
+MIME-Version: 1.0
+In-Reply-To: <83B13776-904F-4FCF-93A6-D430281E4B55@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add mount-matrix binding support. As chip could have different orientations
-a mount matrix support is needed to correctly translate these differences.
 
-Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
----
- drivers/iio/imu/bmi160/bmi160.h      |  1 +
- drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++++++++
- 2 files changed, 21 insertions(+)
 
-diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
-index 923c3b274fde..a82e040bd109 100644
---- a/drivers/iio/imu/bmi160/bmi160.h
-+++ b/drivers/iio/imu/bmi160/bmi160.h
-@@ -9,6 +9,7 @@ struct bmi160_data {
- 	struct regmap *regmap;
- 	struct iio_trigger *trig;
- 	struct regulator_bulk_data supplies[2];
-+	struct iio_mount_matrix orientation;
- };
- 
- extern const struct regmap_config bmi160_regmap_config;
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index d3316ca02fbd..26d586daee26 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -110,6 +110,7 @@
- 		.storagebits = 16,				\
- 		.endianness = IIO_LE,				\
- 	},							\
-+	.ext_info = bmi160_ext_info,				\
- }
- 
- /* scan indexes follow DATA register order */
-@@ -265,6 +266,20 @@ static const struct  bmi160_odr_item bmi160_odr_table[] = {
- 	},
- };
- 
-+static const struct iio_mount_matrix *
-+bmi160_get_mount_matrix(const struct iio_dev *indio_dev,
-+			const struct iio_chan_spec *chan)
-+{
-+	struct bmi160_data *data = iio_priv(indio_dev);
-+
-+	return &data->orientation;
-+}
-+
-+static const struct iio_chan_spec_ext_info bmi160_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bmi160_get_mount_matrix),
-+	{ }
-+};
-+
- static const struct iio_chan_spec bmi160_channels[] = {
- 	BMI160_CHANNEL(IIO_ACCEL, X, BMI160_SCAN_ACCEL_X),
- 	BMI160_CHANNEL(IIO_ACCEL, Y, BMI160_SCAN_ACCEL_Y),
-@@ -839,6 +854,11 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
- 		return ret;
- 	}
- 
-+	ret = iio_read_mount_matrix(dev, "mount-matrix",
-+				    &data->orientation);
-+	if (ret)
-+		return ret;
-+
- 	ret = bmi160_chip_init(data, use_spi);
- 	if (ret)
- 		return ret;
--- 
-2.17.1
+On 5/18/20 12:06 PM, Jonathan Cameron wrote:
+> 
+> 
+> On 18 May 2020 01:09:47 BST, "Andrew F. Davis" <afd@ti.com> wrote:
+>> On 5/17/20 1:29 PM, jic23@kernel.org wrote:
+>>> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>>>
+>>> One of a class of bugs pointed out by Lars in a recent review.
+>>> iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+>>> to the size of the timestamp (8 bytes).  This is not guaranteed in
+>>> this driver which uses a 32 byte array of smaller elements on the
+>> stack.
+>>> As Lars also noted this anti pattern can involve a leak of data to
+>>> userspace and that indeed can happen here.  We close both issues by
+>>> moving to a suitable structure in the iio_priv() data with alignment
+>>> explicitly requested.  This data is allocated with kzalloc so no
+>>> data can leak appart from previous readings.
+>>>
+>>> Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403
+>> heart monitor")
+>>> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+>>> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>>> Cc: Andrew F. Davis <afd@ti.com>
+>>> ---
+>>>  drivers/iio/health/afe4403.c | 9 ++++++---
+>>>  1 file changed, 6 insertions(+), 3 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/health/afe4403.c
+>> b/drivers/iio/health/afe4403.c
+>>> index e9f87e42ff4f..a3507624b30f 100644
+>>> --- a/drivers/iio/health/afe4403.c
+>>> +++ b/drivers/iio/health/afe4403.c
+>>> @@ -65,6 +65,7 @@ static const struct reg_field afe4403_reg_fields[]
+>> = {
+>>>   * @regulator: Pointer to the regulator for the IC
+>>>   * @trig: IIO trigger for this device
+>>>   * @irq: ADC_RDY line interrupt number
+>>> + * @buffer: Used to construct data layout to push into IIO buffer.
+>>>   */
+>>>  struct afe4403_data {
+>>>  	struct device *dev;
+>>> @@ -74,6 +75,8 @@ struct afe4403_data {
+>>>  	struct regulator *regulator;
+>>>  	struct iio_trigger *trig;
+>>>  	int irq;
+>>> +	/* Ensure suitable alignment for timestamp */
+>>> +	s32 buffer[8] __aligned(8);
+>>
+>>
+>> One of those fancy structs with the timestamp specified would be nice
+>> here like the other patches. IIRC we have 6 s32 channels, plus a s64
+>> ts.
+> 
+> I think we may only have some of those channels enabled.  So ts may be it several
+> locations in the buffer. 
+> 
 
+Might have been better to have the ts at the beginning, could have also
+helped with alignment for when an odd number of channels are enabled.
+
+> Hence we could use the structure approach but it might give a false sense
+> of what is going on. 
+> 
+
+That's true, it can always be cleaned later then.
+
+Andrew
+
+> J
+>>
+>> Other than that everything looks good.
+>>
+>> Andrew
+>>
+>>
+>>>  };
+>>>  
+>>>  enum afe4403_chan_id {
+>>> @@ -309,7 +312,6 @@ static irqreturn_t afe4403_trigger_handler(int
+>> irq, void *private)
+>>>  	struct iio_dev *indio_dev = pf->indio_dev;
+>>>  	struct afe4403_data *afe = iio_priv(indio_dev);
+>>>  	int ret, bit, i = 0;
+>>> -	s32 buffer[8];
+>>>  	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
+>>>  	u8 rx[3];
+>>>  
+>>> @@ -326,7 +328,7 @@ static irqreturn_t afe4403_trigger_handler(int
+>> irq, void *private)
+>>>  		if (ret)
+>>>  			goto err;
+>>>  
+>>> -		buffer[i++] = get_unaligned_be24(&rx[0]);
+>>> +		afe->buffer[i++] = get_unaligned_be24(&rx[0]);
+>>>  	}
+>>>  
+>>>  	/* Disable reading from the device */
+>>> @@ -335,7 +337,8 @@ static irqreturn_t afe4403_trigger_handler(int
+>> irq, void *private)
+>>>  	if (ret)
+>>>  		goto err;
+>>>  
+>>> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+>> pf->timestamp);
+>>> +	iio_push_to_buffers_with_timestamp(indio_dev, afe->buffer,
+>>> +					   pf->timestamp);
+>>>  err:
+>>>  	iio_trigger_notify_done(indio_dev->trig);
+>>>  
+>>>
+> 
