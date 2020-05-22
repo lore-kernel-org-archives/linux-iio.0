@@ -1,219 +1,243 @@
-Return-Path: <SRS0=0VFF=7D=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=svVW=7E=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.4 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66ECEC433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 21 May 2020 19:06:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF43C433DF
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 02:03:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 42B3120738
-	for <linux-iio@archiver.kernel.org>; Thu, 21 May 2020 19:06:12 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=ti.com header.i=@ti.com header.b="hIeY3eXo"
+	by mail.kernel.org (Postfix) with ESMTP id 40B8320825
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 02:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729555AbgEUTGL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 May 2020 15:06:11 -0400
-Received: from lelv0142.ext.ti.com ([198.47.23.249]:37456 "EHLO
-        lelv0142.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729548AbgEUTGL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 May 2020 15:06:11 -0400
-Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by lelv0142.ext.ti.com (8.15.2/8.15.2) with ESMTP id 04LJ5dE7037142;
-        Thu, 21 May 2020 14:05:39 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1590087939;
-        bh=IM3wnX+hifg+zrZeZXs8VBdhLfgueTxNx5emj0mKCcA=;
-        h=Subject:To:CC:References:From:Date:In-Reply-To;
-        b=hIeY3eXoFNgwQc7m1V62ZWVFsl3azwGeDLwJtrKZSsfqd7JxvJzN20W4MUIso1JEo
-         fP0kl1P37rx9KlXZqsVsTbdmLPFeOratQvTrEHhGEneLuWvnid/PiFwt4oOvnviRDK
-         RjBbsqtbWz8DhPe9GrxSEkw2+Siy4B/Rcy3eRuW4=
-Received: from DFLE111.ent.ti.com (dfle111.ent.ti.com [10.64.6.32])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 04LJ5dga065976
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 21 May 2020 14:05:39 -0500
-Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE111.ent.ti.com
- (10.64.6.32) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 21
- May 2020 14:05:38 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
- (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
- Frontend Transport; Thu, 21 May 2020 14:05:38 -0500
-Received: from [10.250.38.163] (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 04LJ5bQr089119;
-        Thu, 21 May 2020 14:05:38 -0500
-Subject: Re: [PATCH 07/11] iio:health:afe4403 Fix timestamp alignment and
- prevent data leak.
-To:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-CC:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <20200517173000.220819-1-jic23@kernel.org>
- <20200517173000.220819-8-jic23@kernel.org>
- <951a305b-b3b4-6cfc-f39a-f7458dfcb54b@ti.com>
- <83B13776-904F-4FCF-93A6-D430281E4B55@jic23.retrosnub.co.uk>
- <c0e4e79e-2a1a-07cd-dd4b-91a87333bc4f@ti.com>
- <5763033E-38E7-434A-AAA9-E5D27FEDBA35@jic23.retrosnub.co.uk>
- <20200521194530.08706fee@archlinux>
-From:   "Andrew F. Davis" <afd@ti.com>
-Message-ID: <e28e67c9-a234-64da-2839-9434fc62c6ec@ti.com>
-Date:   Thu, 21 May 2020 15:05:37 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1726948AbgEVCDT convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 May 2020 22:03:19 -0400
+Received: from sender4-op-o13.zoho.com ([136.143.188.13]:17355 "EHLO
+        sender4-op-o13.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726335AbgEVCDT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 May 2020 22:03:19 -0400
+X-Greylist: delayed 920 seconds by postgrey-1.27 at vger.kernel.org; Thu, 21 May 2020 22:03:18 EDT
+ARC-Seal: i=1; a=rsa-sha256; t=1590112060; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=TtWG8bOr+l2cUzQQQuH/C/1bxKX3zjQcNMGq62xqEz3ei1OunWd8WfPp1wgsTI31qWURYQy+ZzE0wftaW14nw0M4ufHT9u5GFf84YCx5ut4ffTpnOIfhLnmRd0b7ILYCDF/HhBrgtQvILzKgDLvb6TCH6WwIjXpJszNEtUWysU8=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1590112060; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
+        bh=x3B2RQ6ZO76BbbxGVulJCWNjzrXHXwCUoOG5Y58uDiw=; 
+        b=Y4f74Zu2sQI0/eG9D3GONIp2kRZQDSHGQ/rx2VXWzvTFap0LfmOtAFbobk+XhOhucXfUmGA29it6EckGnzYjd1V46vWXF9euNLHdH+PVTw2MPqdhDsSnAlQg/Udqamom7iOEtlU502CnrMzCIjwSQzCPBrOI3yNGzGqvJYbFIxo=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
+        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
+Received: from gothmog.test (pool-96-255-47-18.washdc.fios.verizon.net [96.255.47.18]) by mx.zohomail.com
+        with SMTPS id 15901120579821002.9855844976217; Thu, 21 May 2020 18:47:37 -0700 (PDT)
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio@vger.kernel.org, Dan Robertson <dan@dlrobertson.com>
+Message-ID: <20200522014634.28505-2-dan@dlrobertson.com>
+Subject: [PATCH 1/1] iio: accel: bma400: add support for bma400 spi
+Date:   Fri, 22 May 2020 01:46:34 +0000
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200522014634.28505-1-dan@dlrobertson.com>
+References: <20200522014634.28505-1-dan@dlrobertson.com>
 MIME-Version: 1.0
-In-Reply-To: <20200521194530.08706fee@archlinux>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 5/21/20 2:45 PM, Jonathan Cameron wrote:
-> On Thu, 21 May 2020 15:44:43 +0100
-> Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
-> 
->> On 21 May 2020 14:11:10 BST, "Andrew F. Davis" <afd@ti.com> wrote:
->>>
->>>
->>> On 5/18/20 12:06 PM, Jonathan Cameron wrote:  
->>>>
->>>>
->>>> On 18 May 2020 01:09:47 BST, "Andrew F. Davis" <afd@ti.com> wrote:  
->>>>> On 5/17/20 1:29 PM, jic23@kernel.org wrote:  
->>>>>> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->>>>>>
->>>>>> One of a class of bugs pointed out by Lars in a recent review.
->>>>>> iio_push_to_buffers_with_timestamp assumes the buffer used is  
->>> aligned  
->>>>>> to the size of the timestamp (8 bytes).  This is not guaranteed in
->>>>>> this driver which uses a 32 byte array of smaller elements on the  
->>>>> stack.  
->>>>>> As Lars also noted this anti pattern can involve a leak of data to
->>>>>> userspace and that indeed can happen here.  We close both issues by
->>>>>> moving to a suitable structure in the iio_priv() data with  
->>> alignment  
->>>>>> explicitly requested.  This data is allocated with kzalloc so no
->>>>>> data can leak appart from previous readings.
->>>>>>
->>>>>> Fixes: eec96d1e2d31 ("iio: health: Add driver for the TI AFE4403  
->>>>> heart monitor")  
->>>>>> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
->>>>>> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->>>>>> Cc: Andrew F. Davis <afd@ti.com>
->>>>>> ---
->>>>>>  drivers/iio/health/afe4403.c | 9 ++++++---
->>>>>>  1 file changed, 6 insertions(+), 3 deletions(-)
->>>>>>
->>>>>> diff --git a/drivers/iio/health/afe4403.c  
->>>>> b/drivers/iio/health/afe4403.c  
->>>>>> index e9f87e42ff4f..a3507624b30f 100644
->>>>>> --- a/drivers/iio/health/afe4403.c
->>>>>> +++ b/drivers/iio/health/afe4403.c
->>>>>> @@ -65,6 +65,7 @@ static const struct reg_field  
->>> afe4403_reg_fields[]  
->>>>> = {  
->>>>>>   * @regulator: Pointer to the regulator for the IC
->>>>>>   * @trig: IIO trigger for this device
->>>>>>   * @irq: ADC_RDY line interrupt number
->>>>>> + * @buffer: Used to construct data layout to push into IIO buffer.
->>>>>>   */
->>>>>>  struct afe4403_data {
->>>>>>  	struct device *dev;
->>>>>> @@ -74,6 +75,8 @@ struct afe4403_data {
->>>>>>  	struct regulator *regulator;
->>>>>>  	struct iio_trigger *trig;
->>>>>>  	int irq;
->>>>>> +	/* Ensure suitable alignment for timestamp */
->>>>>> +	s32 buffer[8] __aligned(8);  
->>>>>
->>>>>
->>>>> One of those fancy structs with the timestamp specified would be  
->>> nice  
->>>>> here like the other patches. IIRC we have 6 s32 channels, plus a s64
->>>>> ts.  
->>>>
->>>> I think we may only have some of those channels enabled.  So ts may  
->>> be it several  
->>>> locations in the buffer. 
->>>>   
->>>
->>> Might have been better to have the ts at the beginning, could have also
->>> helped with alignment for when an odd number of channels are enabled.  
->>
->> Perhaps but for many use cases we don't turn timestamps on and we would need to pad
->>  anyway for alignment of the fifo. 
->>
->>>  
->>>> Hence we could use the structure approach but it might give a false  
->>> sense  
->>>> of what is going on. 
->>>>   
->>>
->>> That's true, it can always be cleaned later then.  
->>
->> Agreed. This is definitely something we can revisit sometime in the future. 
-> 
-> Formal Ack on applying the two afe patches?
-> 
+Add basic support for the Bosch Sensortec BMA400 3-axes ultra-low power
+accelerometer when configured to use SPI.
 
-Acked-by: Andrew F. Davis <afd@ti.com>
+Signed-off-by: Dan Robertson <dan@dlrobertson.com>
+---
+ drivers/iio/accel/Kconfig      |   8 ++-
+ drivers/iio/accel/Makefile     |   1 +
+ drivers/iio/accel/bma400_spi.c | 126 +++++++++++++++++++++++++++++++++
+ 3 files changed, 134 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/accel/bma400_spi.c
 
-> Thanks,
-> 
-> Jonathan
->>
->> J
->>>
->>> Andrew
->>>  
->>>> J  
->>>>>
->>>>> Other than that everything looks good.
->>>>>
->>>>> Andrew
->>>>>
->>>>>  
->>>>>>  };
->>>>>>  
->>>>>>  enum afe4403_chan_id {
->>>>>> @@ -309,7 +312,6 @@ static irqreturn_t afe4403_trigger_handler(int  
->>>>> irq, void *private)  
->>>>>>  	struct iio_dev *indio_dev = pf->indio_dev;
->>>>>>  	struct afe4403_data *afe = iio_priv(indio_dev);
->>>>>>  	int ret, bit, i = 0;
->>>>>> -	s32 buffer[8];
->>>>>>  	u8 tx[4] = {AFE440X_CONTROL0, 0x0, 0x0, AFE440X_CONTROL0_READ};
->>>>>>  	u8 rx[3];
->>>>>>  
->>>>>> @@ -326,7 +328,7 @@ static irqreturn_t afe4403_trigger_handler(int  
->>>>> irq, void *private)  
->>>>>>  		if (ret)
->>>>>>  			goto err;
->>>>>>  
->>>>>> -		buffer[i++] = get_unaligned_be24(&rx[0]);
->>>>>> +		afe->buffer[i++] = get_unaligned_be24(&rx[0]);
->>>>>>  	}
->>>>>>  
->>>>>>  	/* Disable reading from the device */
->>>>>> @@ -335,7 +337,8 @@ static irqreturn_t afe4403_trigger_handler(int  
->>>>> irq, void *private)  
->>>>>>  	if (ret)
->>>>>>  		goto err;
->>>>>>  
->>>>>> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,  
->>>>> pf->timestamp);  
->>>>>> +	iio_push_to_buffers_with_timestamp(indio_dev, afe->buffer,
->>>>>> +					   pf->timestamp);
->>>>>>  err:
->>>>>>  	iio_trigger_notify_done(indio_dev->trig);
->>>>>>  
->>>>>>  
->>>>   
->>
-> 
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 24ebe9e76915..cb4ef367e5fa 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -116,18 +116,24 @@ config BMA400
+ 	tristate "Bosch BMA400 3-Axis Accelerometer Driver"
+ 	select REGMAP
+ 	select BMA400_I2C if I2C
++	select BMA400_SPI if I2C
+ 	help
+ 	  Say Y here if you want to build a driver for the Bosch BMA400
+ 	  triaxial acceleration sensor.
+ 
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called bma400_core and you will also get
+-	  bma400_i2c if I2C is enabled.
++	  bma400_i2c if I2C is enabled and bma400_spi if SPI is
++	  enabled.
+ 
+ config BMA400_I2C
+ 	tristate
+ 	depends on BMA400
+ 
++config BMA400_SPI
++	tristate
++	depends on BMA400
++
+ config BMC150_ACCEL
+ 	tristate "Bosch BMC150 Accelerometer Driver"
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 3a051cf37f40..4f6c1ebe13b0 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -16,6 +16,7 @@ obj-$(CONFIG_BMA180) += bma180.o
+ obj-$(CONFIG_BMA220) += bma220_spi.o
+ obj-$(CONFIG_BMA400) += bma400_core.o
+ obj-$(CONFIG_BMA400_I2C) += bma400_i2c.o
++obj-$(CONFIG_BMA400_SPI) += bma400_spi.o
+ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+ obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+diff --git a/drivers/iio/accel/bma400_spi.c b/drivers/iio/accel/bma400_spi.c
+new file mode 100644
+index 000000000000..d92b37e1a657
+--- /dev/null
++++ b/drivers/iio/accel/bma400_spi.c
+@@ -0,0 +1,126 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * SPI IIO driver for Bosch BMA400 triaxial acceleration sensor.
++ *
++ * Copyright 2020 Dan Robertson <dan@dlrobertson.com>
++ *
++ */
++#include <linux/init.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++
++#include <linux/spi/spi.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#include "bma400.h"
++
++#define BMA400_MAX_SPI_READ 2
++#define BMA400_SPI_READ_BUFFER_SIZE (BMA400_MAX_SPI_READ + 1)
++
++static int bma400_regmap_spi_read(void *context,
++				  const void *reg, size_t reg_size,
++				  void *val, size_t val_size)
++{
++	struct device *dev = context;
++	struct spi_device *spi = to_spi_device(dev);
++	ssize_t status;
++	/*
++	 * TODO(dlrobertson): What is a reasonable length to cap
++	 * this at.
++	 */
++	u8 result[BMA400_SPI_READ_BUFFER_SIZE];
++
++	if (val_size > BMA400_MAX_SPI_READ)
++		return -EINVAL;
++
++	status = spi_write_then_read(spi, reg, 1, result, val_size + 1);
++	if (status)
++		return status;
++
++	/*
++	 * From the BMA400 datasheet:
++	 *
++	 * > For a basic read operation two bytes have to be read and the first
++	 * > has to be dropped and the second byte must be interpreted.
++	 */
++	memcpy(val, result + 1, val_size);
++
++	return 0;
++}
++
++static int bma400_regmap_spi_write(void *context, const void *data,
++				   size_t count)
++{
++	struct device *dev = context;
++	struct spi_device *spi = to_spi_device(dev);
++
++	return spi_write(spi, data, count);
++}
++
++static struct regmap_bus bma400_regmap_bus = {
++	.read = bma400_regmap_spi_read,
++	.write = bma400_regmap_spi_write,
++	.read_flag_mask = BIT(7),
++	.max_raw_read = BMA400_MAX_SPI_READ,
++};
++
++static int bma400_spi_probe(struct spi_device *spi)
++{
++	struct regmap *regmap;
++	unsigned int val;
++	int ret;
++
++	regmap = devm_regmap_init(&spi->dev, &bma400_regmap_bus,
++				  &spi->dev, &bma400_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&spi->dev, "failed to create regmap\n");
++		return PTR_ERR(regmap);
++	}
++
++	/*
++	 * Per the bma400 datasheet, the first SPI read may
++	 * return garbage on the first read. The chip ID
++	 * register will be read and checked again in the
++	 * following probe.
++	 */
++	ret = regmap_read(regmap, BMA400_CHIP_ID_REG, &val);
++	if (ret)
++		dev_err(&spi->dev, "Failed to read chip id register\n");
++
++	return bma400_probe(&spi->dev, regmap, "bma400");
++}
++
++static int bma400_spi_remove(struct spi_device *spi)
++{
++	return bma400_remove(&spi->dev);
++}
++
++static const struct spi_device_id bma400_spi_ids[] = {
++	{ "bma400", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, bma400_spi_ids);
++
++static const struct of_device_id bma400_of_spi_match[] = {
++	{ .compatible = "bosch,bma400" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, bma400_of_spi_match);
++
++static struct spi_driver bma400_spi_driver = {
++	.driver = {
++		.name = "bma400",
++		.of_match_table = bma400_of_spi_match,
++	},
++	.probe    = bma400_spi_probe,
++	.remove   = bma400_spi_remove,
++	.id_table = bma400_spi_ids,
++};
++
++module_spi_driver(bma400_spi_driver);
++
++MODULE_AUTHOR("Dan Robertson <dan@dlrobertson.com>");
++MODULE_DESCRIPTION("Bosch BMA400 triaxial acceleration sensor (SPI)");
++MODULE_LICENSE("GPL");
+
