@@ -2,118 +2,88 @@ Return-Path: <SRS0=I6G3=7H=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71318C433DF
-	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F275C433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:33:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4AF9120870
-	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590426573;
-	bh=s3OTwiKGmtQFWWFLEttjDV3dHScyMzmuOmgsAQChbvY=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wxxeToeBNmdaj2PrWqp2YuZqo5q+AONjOodd5RjJ1/ieiNG4JNTV2ZygpPgL1zhWL
-	 3BIlT76bgHHTs3zhEidT962uci6NTB2n8dakLPts0nkkcaqvHBidllG8XbYFk0icNg
-	 27r/lYChCw6vJU1rxIr99dE3AN9nBxBnYgqHmy08=
+	by mail.kernel.org (Postfix) with ESMTP id 167EA2070A
+	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:33:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391310AbgEYRJd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 May 2020 13:09:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42928 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391301AbgEYRJb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 25 May 2020 13:09:31 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3AC3F207D8;
-        Mon, 25 May 2020 17:09:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590426571;
-        bh=s3OTwiKGmtQFWWFLEttjDV3dHScyMzmuOmgsAQChbvY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=x8AD/5yskj6IXoPdvfPZ4pgi647fiGgbshx6VI+ybASZ2r0H/xpu1VLbVGf42LH0L
-         YRQ520H7kU5RsZMrzf5CzPhAgvF+4SV2E3txET5W+Awdcq1+pugPJFrM25lpm39Z6u
-         hpC6sc/qXxpZ7V1lLITCkofiD95o9EGdgPlpMcjc=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        id S2388615AbgEYRd1 convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 May 2020 13:33:27 -0400
+Received: from sender4-op-o13.zoho.com ([136.143.188.13]:17378 "EHLO
+        sender4-op-o13.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388480AbgEYRd1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 May 2020 13:33:27 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1590112056; cv=none; 
+        d=zohomail.com; s=zohoarc; 
+        b=oGfe+QdtlGDYI14677wMfLSj92XXbM9Lhmo7BWxhU0I6kbG3vMw40/sYJJzNMqT7N7lCCHZ0J2umuq4geAeQckEdL2ISG9PToYq7ZcFH1aln/C+DPLWN6xh1BaAqW3YZD7vt88hUIJMTUHaCfwInYLj5/NlRT5fqB5V7gQTC4VA=
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
+        t=1590112056; h=Content-Type:Content-Transfer-Encoding:Cc:Date:From:MIME-Version:Message-ID:Subject:To; 
+        bh=oN4KLkGs+p55XvRD7sfv6wRXXmKnfQpRoDquzCJfqvM=; 
+        b=OiJ7p2bjdPV7YIhnzlH0CpfCxsG7Z3Sw8Wwe9QSJ+a2efSqX0Om7d5WtXPMMEHfWEihaCK61fGa9CkFe/iBGTruVyK9uUKFH+/VbBAbi0syBhVvvhBF2HOzcjvZeFvtenEvl7rFRi3CtWZVURAg7VhKo4aU06XD1G2vUSBaV7gw=
+ARC-Authentication-Results: i=1; mx.zohomail.com;
+        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
+        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
+Received: from gothmog.test (pool-96-255-47-18.washdc.fios.verizon.net [96.255.47.18]) by mx.zohomail.com
+        with SMTPS id 1590112054758503.16101315885237; Thu, 21 May 2020 18:47:34 -0700 (PDT)
+From:   Dan Robertson <dan@dlrobertson.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Akinobu Mita <akinobu.mita@gmail.com>
-Subject: [PATCH 25/25] iio:adc:max1118 Fix alignment of timestamp and data leak issues
-Date:   Mon, 25 May 2020 18:06:28 +0100
-Message-Id: <20200525170628.503283-26-jic23@kernel.org>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio@vger.kernel.org, Dan Robertson <dan@dlrobertson.com>
+Message-ID: <20200522014634.28505-1-dan@dlrobertson.com>
+Subject: [PATCH 0/1] iio: accel: bma400: add support for bma400 spi
+Date:   Fri, 22 May 2020 01:46:33 +0000
 X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200525170628.503283-1-jic23@kernel.org>
-References: <20200525170628.503283-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 8BIT
+X-ZohoMailClient: External
+Content-Type: text/plain; charset=utf8
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The Bosch Sensortec BMA400 3-axes ultra-low power supports a 4 wire
+SPI ditital interface. This patch adds support for the device when
+configured for SPI instead of I2C.
 
-One of a class of bugs pointed out by Lars in a recent review.
-iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
-to the size of the timestamp (8 bytes).  This is not guaranteed in
-this driver which uses an array of smaller elements on the stack.
-As Lars also noted this anti pattern can involve a leak of data to
-userspace and that indeed can happen here.  We close both issues by
-moving to a suitable structure in the iio_priv() data.
+I was originally hoping to avoid using a regmap_bus definition, but the
+register reads from the device are padded by a byte while register
+writes are not padded. As a result, a regmap_config like the following
+does not work.
 
-This data is allocated with kzalloc so no data can leak apart
-from previous readings.
+const struct regmap_config bma400_regmap_spi_config = {
+    reg_bits = 8,
+    pad_bits = 8,
+    val_bits = 8,
+    read_flag_mask = BIT(7),
+    max_register = BMA400_CMD_REG,
+};
 
-Fixes: a9e9c7153e96 ("iio: adc: add max1117/max1118/max1119 ADC driver")
-Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Akinobu Mita <akinobu.mita@gmail.com>
----
- drivers/iio/adc/max1118.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+I used a regmap_bus structure with read and write implementations to
+work around this, but would appreciate feedback on this approach and
+my implementation.
 
-diff --git a/drivers/iio/adc/max1118.c b/drivers/iio/adc/max1118.c
-index 0c5d7aaf6826..32296cc6fa9b 100644
---- a/drivers/iio/adc/max1118.c
-+++ b/drivers/iio/adc/max1118.c
-@@ -35,6 +35,11 @@ struct max1118 {
- 	struct spi_device *spi;
- 	struct mutex lock;
- 	struct regulator *reg;
-+	/* Ensure natural alignment of buffer elements */
-+	struct {
-+		u8 channels[2];
-+		s64 ts;
-+	} scan;
- 
- 	u8 data ____cacheline_aligned;
- };
-@@ -165,7 +170,6 @@ static irqreturn_t max1118_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct max1118 *adc = iio_priv(indio_dev);
--	u8 data[16] = { }; /* 2x 8-bit ADC data + padding + 8 bytes timestamp */
- 	int scan_index;
- 	int i = 0;
- 
-@@ -183,10 +187,10 @@ static irqreturn_t max1118_trigger_handler(int irq, void *p)
- 			goto out;
- 		}
- 
--		data[i] = ret;
-+		adc->scan.channels[i] = ret;
- 		i++;
- 	}
--	iio_push_to_buffers_with_timestamp(indio_dev, data,
-+	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
- 					   iio_get_time_ns(indio_dev));
- out:
- 	mutex_unlock(&adc->lock);
--- 
-2.26.2
+Cheers,
+
+ - Dan
+
+Dan Robertson (1):
+  iio: accel: bma400: add support for bma400 spi
+
+ drivers/iio/accel/Kconfig      |   8 ++-
+ drivers/iio/accel/Makefile     |   1 +
+ drivers/iio/accel/bma400_spi.c | 126 +++++++++++++++++++++++++++++++++
+ 3 files changed, 134 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/accel/bma400_spi.c
+
 
