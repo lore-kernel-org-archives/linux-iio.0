@@ -2,245 +2,274 @@ Return-Path: <SRS0=svVW=7E=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C23C433E1
-	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:25:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DA83C433E0
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:36:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 65B0E207FB
-	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:25:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WT1eooU+"
+	by mail.kernel.org (Postfix) with ESMTP id 442A520757
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:36:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728816AbgEVIZS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 May 2020 04:25:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728802AbgEVIZR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2020 04:25:17 -0400
-Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE79BC061A0E;
-        Fri, 22 May 2020 01:25:15 -0700 (PDT)
-Received: by mail-qt1-x842.google.com with SMTP id v4so7699300qte.3;
-        Fri, 22 May 2020 01:25:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=XJsKRH19vB/cGeqHjSkLUZnV1D50ZWfC9CxNYPIMtuY=;
-        b=WT1eooU+uX39YaJnVBfcBwibdNR0GBbXNZ7UxW9dkBnZ6uo3Z8NAuBoJ/KLlGMvLuk
-         /FpXarQmNwRs2mMpODVT5yjKfleiByaCbuVk3bHQHdNMg32aarFM4JJOWuxE7SGS90M5
-         mLeTWV7UI43lbPMp9dRYb6FAyfKbuiB3JF6/akACi71rn9RxBnBFOZlounf58CiAF5Ed
-         DUgBaoMbrbtXyLWJ8iT7DYBK8W/uIoRhmZVdjeWDzgk1+GFpvpjPUCK0PfD7gUbhTarM
-         S5BXV41a0kQpTGaFoLcwppp9NlZLmGVwwliK7RHGlITo9l/DBBhjj/ZquFOjf6wTOEQd
-         aqpA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=XJsKRH19vB/cGeqHjSkLUZnV1D50ZWfC9CxNYPIMtuY=;
-        b=LqhrpKqIPoMJggEMEeUxtCdXDtgeXDPsC01Mv3d3xYBwYpOyC0a8Ps1xP+YcnPOywj
-         zpgY6dNqtfnbioIymotSaav9+ZkYm6dtUJq5xGyz8jAkZR4Lfmlqjo1Zi1Wo+x1ybnX9
-         i/1Pk/7R8zEZ80jt8Sc2RHBKHNgexkH8WT/7VuKAqM6HxQitD+ZrgtIR3NCa+Q3JYB3J
-         mjDisOqZmYXiknQsU/7fCIo1LFce45BdvSmoNoh7svQgyUCXPu/6N014AUvFfY7Hfjo1
-         +4dNDDpr/Ot+BoP70RPKXI86lBCKbKL6k+thizgiIFNgdwuA6icb0EpzHel+EyIDhYjC
-         CK+Q==
-X-Gm-Message-State: AOAM530/KU+j2SkuFznsLYmcwYC6KpR/Z/oan9iWz72a5bgsWzlSw7FY
-        CaQtWdxo7pNncb6HO9RdH1I=
-X-Google-Smtp-Source: ABdhPJx84n0CAJh5FKdKOS8FIWCGtW9vmaMCZgQjSSdpcVpXYn/dDcrgwzR9SW2EGFoU5Mqmc7LBmA==
-X-Received: by 2002:ac8:6ece:: with SMTP id f14mr14505718qtv.135.1590135914681;
-        Fri, 22 May 2020 01:25:14 -0700 (PDT)
-Received: from ict14-OptiPlex-980 ([178.23.248.46])
-        by smtp.gmail.com with ESMTPSA id u16sm3397752qkm.107.2020.05.22.01.25.12
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 22 May 2020 01:25:14 -0700 (PDT)
-Date:   Fri, 22 May 2020 10:25:10 +0200
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        linux-kernel@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 3/4] iio: imu: bmi160: added regulator support
-Message-ID: <20200522082510.GC19742@ict14-OptiPlex-980>
-References: <20200519075111.6356-1-jonathan.albrieux@gmail.com>
- <20200519075111.6356-4-jonathan.albrieux@gmail.com>
- <20200519185535.00003cb7@Huawei.com>
- <20200520071751.GD3361@ict14-OptiPlex-980>
- <20200521193055.7ee7cf9c@archlinux>
+        id S1728959AbgEVIgB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 May 2020 04:36:01 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:1742 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728929AbgEVIgB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2020 04:36:01 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04M8XRHS016327;
+        Fri, 22 May 2020 04:36:00 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 312d3655mx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 22 May 2020 04:36:00 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 04M8ZvJQ040182
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 22 May 2020 04:35:57 -0400
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Fri, 22 May
+ 2020 01:35:55 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Fri, 22 May 2020 01:35:55 -0700
+Received: from saturn.ad.analog.com ([10.48.65.112])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 04M8ZhUO005306;
+        Fri, 22 May 2020 04:35:43 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <bcm-kernel-feedback-list@broadcom.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-input@vger.kernel.org>, <linux-aspeed@lists.ozlabs.org>,
+        <linux-samsung-soc@vger.kernel.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-mediatek@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>, <linux-pm@vger.kernel.org>,
+        <platform-driver-x86@vger.kernel.org>, <devel@driverdev.osuosl.org>
+CC:     <vilhelm.gray@gmail.com>, <syednwaris@gmail.com>,
+        <fabrice.gasnier@st.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <jic23@kernel.org>,
+        <dan@dlrobertson.com>, <jikos@kernel.org>,
+        <srinivas.pandruvada@linux.intel.com>, <linus.walleij@linaro.org>,
+        <wens@csie.org>, <hdegoede@redhat.com>, <rjui@broadcom.com>,
+        <sbranden@broadcom.com>, <peda@axentia.se>, <kgene@kernel.org>,
+        <krzk@kernel.org>, <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
+        <ak@it-klinger.de>, <paul@crapouillou.net>, <milo.kim@ti.com>,
+        <vz@mleia.com>, <slemieux.tyco@gmail.com>, <khilman@baylibre.com>,
+        <matthias.bgg@gmail.com>, <agross@kernel.org>,
+        <bjorn.andersson@linaro.org>, <heiko@sntech.de>,
+        <orsonzhai@gmail.com>, <baolin.wang7@gmail.com>,
+        <zhang.lyra@gmail.com>, <mripard@kernel.org>, <tduszyns@gmail.com>,
+        <rmfrfs@gmail.com>, <lorenzo.bianconi83@gmail.com>,
+        <ktsai@capellamicro.com>, <songqiang1304521@gmail.com>,
+        <tomislav.denis@avl.com>, <eajames@linux.ibm.com>,
+        <dmitry.torokhov@gmail.com>, <coproscefalo@gmail.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/5] iio: core: pass parent device as parameter during allocation
+Date:   Fri, 22 May 2020 11:22:04 +0300
+Message-ID: <20200522082208.383631-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200521193055.7ee7cf9c@archlinux>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.676
+ definitions=2020-05-22_05:2020-05-21,2020-05-22 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ suspectscore=2 bulkscore=0 mlxscore=0 phishscore=0 cotscore=-2147483648
+ impostorscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
+ clxscore=1011 adultscore=0 malwarescore=0 classifier=spam adjust=0
+ reason=mlx scancount=1 engine=8.12.0-2004280000
+ definitions=main-2005220070
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, May 21, 2020 at 07:30:55PM +0100, Jonathan Cameron wrote:
-> On Wed, 20 May 2020 09:17:51 +0200
-> Jonathan Albrieux <jonathan.albrieux@gmail.com> wrote:
-> 
-> > On Tue, May 19, 2020 at 06:55:35PM +0100, Jonathan Cameron wrote:
-> > > On Tue, 19 May 2020 09:50:59 +0200
-> > > Jonathan Albrieux <jonathan.albrieux@gmail.com> wrote:
-> > >   
-> > > > v2: fixed missing description  
-> > > 
-> > > Don't put change log here....  
-> > 
-> > Yep I will put it in the cover letter
-> > 
-> > > > 
-> > > > Add vdd-supply and vddio-supply support. Without this support vdd and vddio
-> > > > should be set to always-on in device tree  
-> > > 
-> > > Kind of the opposite.  If they are always on we don't have to provide them
-> > > in the device tree.
-> > >   
-> > 
-> > I wrote that because, testing on msm8916, without setting the regulators to
-> > always on they were controlled by other components and it happened that
-> > the line wasn't ready during probe causing failure to load the module.
-> > 
-> > I will try to reword based on your comment, thank you.
-> 
-> Ah. Understood.  I'd give that explicit example in the patch description.
-> I'd assumed this was the normal case of they weren't being described
-> at all in DT, whereas you case is more complex.
-> 
-> Jonathan
->
+The change passes the parent device to the iio_device_alloc() call. This
+also updates the devm_iio_device_alloc() call to consider the device object
+as the parent device by default.
 
-Yep, I omitted to describe the case I was in. I'll add it to next patch, thank
-you,
+Having it passed like this, should ensure that any IIO device object
+already has a device object as parent, allowing for neater control, like
+passing the 'indio_dev' object for other stuff [like buffers/triggers/etc],
+and potentially creating iiom_xxx(indio_dev) functions.
+
+With this patch, only the 'drivers/platform/x86/toshiba_acpi.c' needs an
+update to pass the parent object as a parameter.
+
+In the next patch all devm_iio_device_alloc() calls will be handled.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/dummy/iio_simple_dummy.c         | 14 ++++++++------
+ drivers/iio/industrialio-core.c              | 11 ++++++-----
+ drivers/platform/x86/toshiba_acpi.c          |  3 +--
+ drivers/staging/iio/Documentation/device.txt |  4 +---
+ include/linux/iio/iio.h                      |  4 ++--
+ 5 files changed, 18 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index 6cb02299a215..b35ae7c039f7 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -566,6 +566,13 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	struct iio_dev *indio_dev;
+ 	struct iio_dummy_state *st;
+ 	struct iio_sw_device *swd;
++	struct device *parent = NULL;
++
++	/*
++	 * With hardware: Set the parent device.
++	 * parent = &spi->dev;
++	 * parent = &client->dev;
++	 */
  
-> > 
-> > > A few trivial things inline.
-> > >   
-> > > > 
-> > > > Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-> > > > ---  
-> > > 
-> > > Change log goes here so we don't end up keeping it in the git log.
-> > >   
-> > > >  drivers/iio/imu/bmi160/bmi160.h      |  2 ++
-> > > >  drivers/iio/imu/bmi160/bmi160_core.c | 27 ++++++++++++++++++++++++++-
-> > > >  2 files changed, 28 insertions(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
-> > > > index 621f5309d735..923c3b274fde 100644
-> > > > --- a/drivers/iio/imu/bmi160/bmi160.h
-> > > > +++ b/drivers/iio/imu/bmi160/bmi160.h
-> > > > @@ -3,10 +3,12 @@
-> > > >  #define BMI160_H_
-> > > >  
-> > > >  #include <linux/iio/iio.h>
-> > > > +#include <linux/regulator/consumer.h>
-> > > >  
-> > > >  struct bmi160_data {
-> > > >  	struct regmap *regmap;
-> > > >  	struct iio_trigger *trig;
-> > > > +	struct regulator_bulk_data supplies[2];
-> > > >  };
-> > > >  
-> > > >  extern const struct regmap_config bmi160_regmap_config;
-> > > > diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> > > > index 6af65d6f1d28..9bbe0d8e6720 100644
-> > > > --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> > > > +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> > > > @@ -15,6 +15,7 @@
-> > > >  #include <linux/delay.h>
-> > > >  #include <linux/irq.h>
-> > > >  #include <linux/of_irq.h>
-> > > > +#include <linux/regulator/consumer.h>
-> > > >  
-> > > >  #include <linux/iio/iio.h>
-> > > >  #include <linux/iio/triggered_buffer.h>
-> > > > @@ -709,6 +710,12 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
-> > > >  	unsigned int val;
-> > > >  	struct device *dev = regmap_get_device(data->regmap);
-> > > >  
-> > > > +	ret = regulator_bulk_enable(ARRAY_SIZE(data->supplies), data->supplies);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "Failed to enable regulators: %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > >  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
-> > > >  	if (ret)
-> > > >  		return ret;
-> > > > @@ -793,9 +800,17 @@ int bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type)
-> > > >  static void bmi160_chip_uninit(void *data)
-> > > >  {
-> > > >  	struct bmi160_data *bmi_data = data;
-> > > > +	struct device *dev = regmap_get_device(bmi_data->regmap);
-> > > > +	int ret;
-> > > >  
-> > > >  	bmi160_set_mode(bmi_data, BMI160_GYRO, false);
-> > > >  	bmi160_set_mode(bmi_data, BMI160_ACCEL, false);
-> > > > +
-> > > > +	ret = regulator_bulk_disable(ARRAY_SIZE(bmi_data->supplies),
-> > > > +				     bmi_data->supplies);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "Failed to disable regulators: %d\n", ret);
-> > > > +	}  
-> > > No need for brackets around a 1 line if block
-> > >   
-> > 
-> > Thank you, I didn't noticed that :-)
-> > 
-> > > 	if (ret)
-> > > 		dev_err(dev, "failed to disable regulators: %d\n", ret);
-> > >   
-> > > >  }
-> > > >  
-> > > >  int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> > > > @@ -815,6 +830,16 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> > > >  	dev_set_drvdata(dev, indio_dev);
-> > > >  	data->regmap = regmap;
-> > > >  
-> > > > +	data->supplies[0].supply = "vdd";
-> > > > +	data->supplies[1].supply = "vddio";
-> > > > +	ret = devm_regulator_bulk_get(dev,
-> > > > +				      ARRAY_SIZE(data->supplies),
-> > > > +				      data->supplies);
-> > > > +	if (ret) {
-> > > > +		dev_err(dev, "Failed to get regulators: %d\n", ret);
-> > > > +		return ret;
-> > > > +	}
-> > > > +
-> > > >  	ret = bmi160_chip_init(data, use_spi);
-> > > >  	if (ret)
-> > > >  		return ret;
-> > > > @@ -853,6 +878,6 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> > > >  }
-> > > >  EXPORT_SYMBOL_GPL(bmi160_core_probe);
-> > > >  
-> > > > -MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
-> > > > +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");  
-> > > 
-> > > Good fix but shouldn't be in this patch.   Put it a separate patch on it's own.
-> > >   
-> > 
-> > Ok will separate this fix into another patch, thank you!
-> > 
-> > > >  MODULE_DESCRIPTION("Bosch BMI160 driver");
-> > > >  MODULE_LICENSE("GPL v2");  
-> > > 
-> > >   
-> > 
-> > Best regards,
-> > Jonathan Albrieux
-> 
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+ 	if (!swd) {
+@@ -580,7 +587,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 * It also has a region (accessed by iio_priv()
+ 	 * for chip specific state information.
+ 	 */
+-	indio_dev = iio_device_alloc(sizeof(*st));
++	indio_dev = iio_device_alloc(parent, sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+ 		goto error_ret;
+@@ -590,11 +597,6 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	mutex_init(&st->lock);
+ 
+ 	iio_dummy_init_device(indio_dev);
+-	/*
+-	 * With hardware: Set the parent device.
+-	 * indio_dev->dev.parent = &spi->dev;
+-	 * indio_dev->dev.parent = &client->dev;
+-	 */
+ 
+ 	 /*
+ 	 * Make the iio_dev struct available to remove function.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1527f01a44f1..75661661aaba 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1493,7 +1493,7 @@ struct device_type iio_device_type = {
+  * iio_device_alloc() - allocate an iio_dev from a driver
+  * @sizeof_priv:	Space to allocate for private structure.
+  **/
+-struct iio_dev *iio_device_alloc(int sizeof_priv)
++struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ {
+ 	struct iio_dev *dev;
+ 	size_t alloc_size;
+@@ -1510,6 +1510,7 @@ struct iio_dev *iio_device_alloc(int sizeof_priv)
+ 	if (!dev)
+ 		return NULL;
+ 
++	dev->dev.parent = parent;
+ 	dev->dev.groups = dev->groups;
+ 	dev->dev.type = &iio_device_type;
+ 	dev->dev.bus = &iio_bus_type;
+@@ -1551,7 +1552,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
+ 
+ /**
+  * devm_iio_device_alloc - Resource-managed iio_device_alloc()
+- * @dev:		Device to allocate iio_dev for
++ * @parent:		Device to allocate iio_dev for, and parent for this IIO device
+  * @sizeof_priv:	Space to allocate for private structure.
+  *
+  * Managed iio_device_alloc. iio_dev allocated with this function is
+@@ -1560,7 +1561,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
+  * RETURNS:
+  * Pointer to allocated iio_dev on success, NULL on failure.
+  */
+-struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
++struct iio_dev *devm_iio_device_alloc(struct device *parent, int sizeof_priv)
+ {
+ 	struct iio_dev **ptr, *iio_dev;
+ 
+@@ -1569,10 +1570,10 @@ struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv)
+ 	if (!ptr)
+ 		return NULL;
+ 
+-	iio_dev = iio_device_alloc(sizeof_priv);
++	iio_dev = iio_device_alloc(parent, sizeof_priv);
+ 	if (iio_dev) {
+ 		*ptr = iio_dev;
+-		devres_add(dev, ptr);
++		devres_add(parent, ptr);
+ 	} else {
+ 		devres_free(ptr);
+ 	}
+diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
+index 808944546739..4a4d09c352dd 100644
+--- a/drivers/platform/x86/toshiba_acpi.c
++++ b/drivers/platform/x86/toshiba_acpi.c
+@@ -3128,7 +3128,7 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
+ 
+ 	toshiba_accelerometer_available(dev);
+ 	if (dev->accelerometer_supported) {
+-		dev->indio_dev = iio_device_alloc(sizeof(*dev));
++		dev->indio_dev = iio_device_alloc(&acpi_dev->dev, sizeof(*dev));
+ 		if (!dev->indio_dev) {
+ 			pr_err("Unable to allocate iio device\n");
+ 			goto iio_error;
+@@ -3138,7 +3138,6 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
+ 
+ 		dev->indio_dev->info = &toshiba_iio_accel_info;
+ 		dev->indio_dev->name = "Toshiba accelerometer";
+-		dev->indio_dev->dev.parent = &acpi_dev->dev;
+ 		dev->indio_dev->modes = INDIO_DIRECT_MODE;
+ 		dev->indio_dev->channels = toshiba_iio_accel_channels;
+ 		dev->indio_dev->num_channels =
+diff --git a/drivers/staging/iio/Documentation/device.txt b/drivers/staging/iio/Documentation/device.txt
+index ec42544a46aa..0d1275b1eb3f 100644
+--- a/drivers/staging/iio/Documentation/device.txt
++++ b/drivers/staging/iio/Documentation/device.txt
+@@ -8,7 +8,7 @@ The crucial structure for device drivers in iio is iio_dev.
+ 
+ First allocate one using:
+ 
+-struct iio_dev *indio_dev = iio_device_alloc(sizeof(struct chip_state));
++struct iio_dev *indio_dev = iio_device_alloc(parent, sizeof(struct chip_state));
+ where chip_state is a structure of local state data for this instance of
+ the chip.
+ 
+@@ -16,8 +16,6 @@ That data can be accessed using iio_priv(struct iio_dev *).
+ 
+ Then fill in the following:
+ 
+-- indio_dev->dev.parent
+-	Struct device associated with the underlying hardware.
+ - indio_dev->name
+ 	Name of the device being driven - made available as the name
+ 	attribute in sysfs.
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a1be82e74c93..91a69f4751aa 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -676,7 +676,7 @@ static inline void *iio_device_get_drvdata(struct iio_dev *indio_dev)
+ 
+ /* Can we make this smaller? */
+ #define IIO_ALIGN L1_CACHE_BYTES
+-struct iio_dev *iio_device_alloc(int sizeof_priv);
++struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+ 
+ static inline void *iio_priv(const struct iio_dev *indio_dev)
+ {
+@@ -690,7 +690,7 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
+ }
+ 
+ void iio_device_free(struct iio_dev *indio_dev);
+-struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
++struct iio_dev *devm_iio_device_alloc(struct device *parent, int sizeof_priv);
+ struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
+ 						const char *fmt, ...);
+ /**
+-- 
+2.25.1
 
-Best regards,
-Jonathan Albrieux
