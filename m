@@ -8,57 +8,57 @@ X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C917FC433E1
-	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:22:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88C23C433E1
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:25:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A4335207FB
-	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:22:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 65B0E207FB
+	for <linux-iio@archiver.kernel.org>; Fri, 22 May 2020 08:25:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="b0ajaNou"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WT1eooU+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729046AbgEVIWP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 May 2020 04:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53178 "EHLO
+        id S1728816AbgEVIZS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 May 2020 04:25:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53642 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729035AbgEVIWO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2020 04:22:14 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5084BC061A0E;
-        Fri, 22 May 2020 01:22:14 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id o19so7644606qtr.10;
-        Fri, 22 May 2020 01:22:14 -0700 (PDT)
+        with ESMTP id S1728802AbgEVIZR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 May 2020 04:25:17 -0400
+Received: from mail-qt1-x842.google.com (mail-qt1-x842.google.com [IPv6:2607:f8b0:4864:20::842])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE79BC061A0E;
+        Fri, 22 May 2020 01:25:15 -0700 (PDT)
+Received: by mail-qt1-x842.google.com with SMTP id v4so7699300qte.3;
+        Fri, 22 May 2020 01:25:15 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to:user-agent;
-        bh=qaSTpI+hoKbcDh1IJSe4IFX4jlP4yvAzkKXCdtDTr4o=;
-        b=b0ajaNouQvAMtjCixmjNfc52hEaKiDEB4Jvjoj8DxK398h+j0xbvYCInbPEUHWQ0nU
-         jV/cjX1jSXXULD/upDhTnRB7AIfmAk2IC0spuad+yxWJwvDsxsCSPYsLC+WltoVsKEo0
-         MLAB9emLf2j1hAj5Nd6OLG1gayVQIR+aMYK0e8WuuULbwgPMAAHExV3j0kNjigqPkkga
-         5s+MV4u5/qKUfWZv4civronFw+zf33XOdE1R9/2cGxWf6S3S1iMJV7HpK+yYx+CBHFmB
-         GPSXVupRzX1l7sNAJ+055AIoIxOCY8wuIZdPaUxVmRaR0DaAattTFdpG4y+yBhJmFCVd
-         mi+A==
+        bh=XJsKRH19vB/cGeqHjSkLUZnV1D50ZWfC9CxNYPIMtuY=;
+        b=WT1eooU+uX39YaJnVBfcBwibdNR0GBbXNZ7UxW9dkBnZ6uo3Z8NAuBoJ/KLlGMvLuk
+         /FpXarQmNwRs2mMpODVT5yjKfleiByaCbuVk3bHQHdNMg32aarFM4JJOWuxE7SGS90M5
+         mLeTWV7UI43lbPMp9dRYb6FAyfKbuiB3JF6/akACi71rn9RxBnBFOZlounf58CiAF5Ed
+         DUgBaoMbrbtXyLWJ8iT7DYBK8W/uIoRhmZVdjeWDzgk1+GFpvpjPUCK0PfD7gUbhTarM
+         S5BXV41a0kQpTGaFoLcwppp9NlZLmGVwwliK7RHGlITo9l/DBBhjj/ZquFOjf6wTOEQd
+         aqpA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=qaSTpI+hoKbcDh1IJSe4IFX4jlP4yvAzkKXCdtDTr4o=;
-        b=k19annX4tc9wHZjpG51QhEd+fIGwyr8Kh+Wpro/zmx1GEQaOcRmdacslRyBPNDYj6j
-         1iJ4jRnjzZvnyqKsFIk6Sj/w0IuqJfOKL2UD3vVeVuPkAPa+sMdTDjHCaF2IUa8mGq9E
-         zeV9ExYcWipNScn6TVUpEK2exXAn1/ZoQD5zzPdhr9GQZh9wqonR8cWVZNauEcgmVTOZ
-         vP11+pgNNygRzqdx7fpWQLRijmrVgkERqJqWpevmwkzZBkLWG8JFCoxanoHn2BhZKiQy
-         QFUmvlLXQFQwz+gCEa+Rcg4orYQXoByxuHitL0bReIOgvCCLwfB5MobW8Rs6HpWGCNQV
-         YuZg==
-X-Gm-Message-State: AOAM53322p+enVupOiDnjpGOLIqzfcpXbvosDfvJN4dbueZNPLs4LZsE
-        uj7yEjm++ID7wzLJZrL082U=
-X-Google-Smtp-Source: ABdhPJw7rbep+3/HLbSGIL/XIM433BRRMgPkIPWQm7t0hxdPxucenhrj7Pk8aBzO6cQCZGnwN7SXhw==
-X-Received: by 2002:ac8:7659:: with SMTP id i25mr3153642qtr.270.1590135733261;
-        Fri, 22 May 2020 01:22:13 -0700 (PDT)
+        bh=XJsKRH19vB/cGeqHjSkLUZnV1D50ZWfC9CxNYPIMtuY=;
+        b=LqhrpKqIPoMJggEMEeUxtCdXDtgeXDPsC01Mv3d3xYBwYpOyC0a8Ps1xP+YcnPOywj
+         zpgY6dNqtfnbioIymotSaav9+ZkYm6dtUJq5xGyz8jAkZR4Lfmlqjo1Zi1Wo+x1ybnX9
+         i/1Pk/7R8zEZ80jt8Sc2RHBKHNgexkH8WT/7VuKAqM6HxQitD+ZrgtIR3NCa+Q3JYB3J
+         mjDisOqZmYXiknQsU/7fCIo1LFce45BdvSmoNoh7svQgyUCXPu/6N014AUvFfY7Hfjo1
+         +4dNDDpr/Ot+BoP70RPKXI86lBCKbKL6k+thizgiIFNgdwuA6icb0EpzHel+EyIDhYjC
+         CK+Q==
+X-Gm-Message-State: AOAM530/KU+j2SkuFznsLYmcwYC6KpR/Z/oan9iWz72a5bgsWzlSw7FY
+        CaQtWdxo7pNncb6HO9RdH1I=
+X-Google-Smtp-Source: ABdhPJx84n0CAJh5FKdKOS8FIWCGtW9vmaMCZgQjSSdpcVpXYn/dDcrgwzR9SW2EGFoU5Mqmc7LBmA==
+X-Received: by 2002:ac8:6ece:: with SMTP id f14mr14505718qtv.135.1590135914681;
+        Fri, 22 May 2020 01:25:14 -0700 (PDT)
 Received: from ict14-OptiPlex-980 ([178.23.248.46])
-        by smtp.gmail.com with ESMTPSA id i41sm7734348qte.15.2020.05.22.01.22.10
+        by smtp.gmail.com with ESMTPSA id u16sm3397752qkm.107.2020.05.22.01.25.12
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 22 May 2020 01:22:12 -0700 (PDT)
-Date:   Fri, 22 May 2020 10:22:08 +0200
+        Fri, 22 May 2020 01:25:14 -0700 (PDT)
+Date:   Fri, 22 May 2020 10:25:10 +0200
 From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
@@ -67,149 +67,180 @@ Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
         <devicetree@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Daniel Baluta <daniel.baluta@nxp.com>
-Subject: Re: [PATCH v2 1/4] dt-bindings: iio: imu: bmi160: convert txt format
- to yaml
-Message-ID: <20200522082208.GB19742@ict14-OptiPlex-980>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 3/4] iio: imu: bmi160: added regulator support
+Message-ID: <20200522082510.GC19742@ict14-OptiPlex-980>
 References: <20200519075111.6356-1-jonathan.albrieux@gmail.com>
- <20200519075111.6356-2-jonathan.albrieux@gmail.com>
- <20200519184933.00003f00@Huawei.com>
- <20200520072423.GF3361@ict14-OptiPlex-980>
- <20200521192736.4818f17b@archlinux>
+ <20200519075111.6356-4-jonathan.albrieux@gmail.com>
+ <20200519185535.00003cb7@Huawei.com>
+ <20200520071751.GD3361@ict14-OptiPlex-980>
+ <20200521193055.7ee7cf9c@archlinux>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200521192736.4818f17b@archlinux>
+In-Reply-To: <20200521193055.7ee7cf9c@archlinux>
 User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, May 21, 2020 at 07:27:36PM +0100, Jonathan Cameron wrote:
-> On Wed, 20 May 2020 09:24:23 +0200
+On Thu, May 21, 2020 at 07:30:55PM +0100, Jonathan Cameron wrote:
+> On Wed, 20 May 2020 09:17:51 +0200
 > Jonathan Albrieux <jonathan.albrieux@gmail.com> wrote:
 > 
-> > On Tue, May 19, 2020 at 06:49:33PM +0100, Jonathan Cameron wrote:
-> > > On Tue, 19 May 2020 09:50:57 +0200
+> > On Tue, May 19, 2020 at 06:55:35PM +0100, Jonathan Cameron wrote:
+> > > On Tue, 19 May 2020 09:50:59 +0200
 > > > Jonathan Albrieux <jonathan.albrieux@gmail.com> wrote:
 > > >   
-> > > > Converts documentation from txt format to yaml 
+> > > > v2: fixed missing description  
+> > > 
+> > > Don't put change log here....  
+> > 
+> > Yep I will put it in the cover letter
+> > 
 > > > > 
-> > > > Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-> > > > ---
-> > > >  .../devicetree/bindings/iio/imu/bmi160.txt    | 37 --------
-> > > >  .../devicetree/bindings/iio/imu/bmi160.yaml   | 84 +++++++++++++++++++
-> > > >  2 files changed, 84 insertions(+), 37 deletions(-)
-> > > >  delete mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
-> > > >  create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.yaml
-> > > > 
-> > > > diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-> > > > deleted file mode 100644
-> > > > index 900c169de00f..000000000000
-> > > > --- a/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-> > > > +++ /dev/null
-> > > > @@ -1,37 +0,0 @@
-> > > > -Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
-> > > > -and externally connectable Magnetometer
-> > > > -
-> > > > -https://www.bosch-sensortec.com/bst/products/all_products/bmi160
-> > > > -
-> > > > -Required properties:
-> > > > - - compatible : should be "bosch,bmi160"
-> > > > - - reg : the I2C address or SPI chip select number of the sensor
-> > > > - - spi-max-frequency : set maximum clock frequency (only for SPI)
-> > > > -
-> > > > -Optional properties:
-> > > > - - interrupts : interrupt mapping for IRQ
-> > > > - - interrupt-names : set to "INT1" if INT1 pin should be used as interrupt
-> > > > -   input, set to "INT2" if INT2 pin should be used instead
-> > > > - - drive-open-drain : set if the specified interrupt pin should be configured as
-> > > > -   open drain. If not set, defaults to push-pull.
-> > > > -
-> > > > -Examples:
-> > > > -
-> > > > -bmi160@68 {
-> > > > -	compatible = "bosch,bmi160";
-> > > > -	reg = <0x68>;
-> > > > -
-> > > > -	interrupt-parent = <&gpio4>;
-> > > > -	interrupts = <12 IRQ_TYPE_EDGE_RISING>;
-> > > > -	interrupt-names = "INT1";
-> > > > -};
-> > > > -
-> > > > -bmi160@0 {
-> > > > -	compatible = "bosch,bmi160";
-> > > > -	reg = <0>;
-> > > > -	spi-max-frequency = <10000000>;
-> > > > -
-> > > > -	interrupt-parent = <&gpio2>;
-> > > > -	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-> > > > -	interrupt-names = "INT2";
-> > > > -};
-> > > > diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.yaml b/Documentation/devicetree/bindings/iio/imu/bmi160.yaml
-> > > > new file mode 100644
-> > > > index 000000000000..6b464ce5ed0b
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iio/imu/bmi160.yaml
-> > > > @@ -0,0 +1,84 @@
-> > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > > > +%YAML 1.2
-> > > > +---
-> > > > +$id: http://devicetree.org/schemas/iio/imu/bmi160.yaml#
-> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > > > +
-> > > > +title: Bosch BMI160
-> > > > +
-> > > > +maintainers:
-> > > > +  - can't find a mantainer, author is Daniel Baluta <daniel.baluta@intel.com>  
+> > > > Add vdd-supply and vddio-supply support. Without this support vdd and vddio
+> > > > should be set to always-on in device tree  
 > > > 
-> > > Daniel is still active in the kernel, just not at Intel any more. +CC
+> > > Kind of the opposite.  If they are always on we don't have to provide them
+> > > in the device tree.
 > > >   
 > > 
-> > Oh ok thank you! Daniel are you still maintaining this driver?
+> > I wrote that because, testing on msm8916, without setting the regulators to
+> > always on they were controlled by other components and it happened that
+> > the line wasn't ready during probe causing failure to load the module.
 > > 
-> > > > +
-> > > > +description: |
-> > > > +  Inertial Measurement Unit with Accelerometer, Gyroscope and externally
-> > > > +  connectable Magnetometer
-> > > > +  https://www.bosch-sensortec.com/bst/products/all_products/bmi160
-> > > > +
-> > > > +properties:
-> > > > +  compatible:
-> > > > +    const: bosch,bmi160
-> > > > +
-> > > > +  reg:
-> > > > +    maxItems: 1
-> > > > +    description: the I2C address or SPI chip select number of the sensor  
-> > > 
-> > > As standard for i2c and spi, usually no need to have a description line for
-> > > this element.
-> > >   
-> > 
-> > Thank you, will remove the description then.
-> > 
-> > > > +
-> > > > +  spi-max-frequency:
-> > > > +    maxItems: 1
-> > > > +    description: set maximum clock frequency (required only for SPI)  
-> > > 
-> > > Standard spi binding.  Probably doesn't need to be included here.
-> > >   
-> > 
-> > So should I completely remove it from properties?
+> > I will try to reword based on your comment, thank you.
 > 
-> Yes
-> 
-> 
-> Thanks,
+> Ah. Understood.  I'd give that explicit example in the patch description.
+> I'd assumed this was the normal case of they weren't being described
+> at all in DT, whereas you case is more complex.
 > 
 > Jonathan
+>
 
-Ok I will remove it completely in next patch,
-Thank you,
+Yep, I omitted to describe the case I was in. I'll add it to next patch, thank
+you,
+ 
+> > 
+> > > A few trivial things inline.
+> > >   
+> > > > 
+> > > > Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+> > > > ---  
+> > > 
+> > > Change log goes here so we don't end up keeping it in the git log.
+> > >   
+> > > >  drivers/iio/imu/bmi160/bmi160.h      |  2 ++
+> > > >  drivers/iio/imu/bmi160/bmi160_core.c | 27 ++++++++++++++++++++++++++-
+> > > >  2 files changed, 28 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
+> > > > index 621f5309d735..923c3b274fde 100644
+> > > > --- a/drivers/iio/imu/bmi160/bmi160.h
+> > > > +++ b/drivers/iio/imu/bmi160/bmi160.h
+> > > > @@ -3,10 +3,12 @@
+> > > >  #define BMI160_H_
+> > > >  
+> > > >  #include <linux/iio/iio.h>
+> > > > +#include <linux/regulator/consumer.h>
+> > > >  
+> > > >  struct bmi160_data {
+> > > >  	struct regmap *regmap;
+> > > >  	struct iio_trigger *trig;
+> > > > +	struct regulator_bulk_data supplies[2];
+> > > >  };
+> > > >  
+> > > >  extern const struct regmap_config bmi160_regmap_config;
+> > > > diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> > > > index 6af65d6f1d28..9bbe0d8e6720 100644
+> > > > --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> > > > +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> > > > @@ -15,6 +15,7 @@
+> > > >  #include <linux/delay.h>
+> > > >  #include <linux/irq.h>
+> > > >  #include <linux/of_irq.h>
+> > > > +#include <linux/regulator/consumer.h>
+> > > >  
+> > > >  #include <linux/iio/iio.h>
+> > > >  #include <linux/iio/triggered_buffer.h>
+> > > > @@ -709,6 +710,12 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
+> > > >  	unsigned int val;
+> > > >  	struct device *dev = regmap_get_device(data->regmap);
+> > > >  
+> > > > +	ret = regulator_bulk_enable(ARRAY_SIZE(data->supplies), data->supplies);
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to enable regulators: %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > >  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
+> > > >  	if (ret)
+> > > >  		return ret;
+> > > > @@ -793,9 +800,17 @@ int bmi160_probe_trigger(struct iio_dev *indio_dev, int irq, u32 irq_type)
+> > > >  static void bmi160_chip_uninit(void *data)
+> > > >  {
+> > > >  	struct bmi160_data *bmi_data = data;
+> > > > +	struct device *dev = regmap_get_device(bmi_data->regmap);
+> > > > +	int ret;
+> > > >  
+> > > >  	bmi160_set_mode(bmi_data, BMI160_GYRO, false);
+> > > >  	bmi160_set_mode(bmi_data, BMI160_ACCEL, false);
+> > > > +
+> > > > +	ret = regulator_bulk_disable(ARRAY_SIZE(bmi_data->supplies),
+> > > > +				     bmi_data->supplies);
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to disable regulators: %d\n", ret);
+> > > > +	}  
+> > > No need for brackets around a 1 line if block
+> > >   
+> > 
+> > Thank you, I didn't noticed that :-)
+> > 
+> > > 	if (ret)
+> > > 		dev_err(dev, "failed to disable regulators: %d\n", ret);
+> > >   
+> > > >  }
+> > > >  
+> > > >  int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+> > > > @@ -815,6 +830,16 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+> > > >  	dev_set_drvdata(dev, indio_dev);
+> > > >  	data->regmap = regmap;
+> > > >  
+> > > > +	data->supplies[0].supply = "vdd";
+> > > > +	data->supplies[1].supply = "vddio";
+> > > > +	ret = devm_regulator_bulk_get(dev,
+> > > > +				      ARRAY_SIZE(data->supplies),
+> > > > +				      data->supplies);
+> > > > +	if (ret) {
+> > > > +		dev_err(dev, "Failed to get regulators: %d\n", ret);
+> > > > +		return ret;
+> > > > +	}
+> > > > +
+> > > >  	ret = bmi160_chip_init(data, use_spi);
+> > > >  	if (ret)
+> > > >  		return ret;
+> > > > @@ -853,6 +878,6 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+> > > >  }
+> > > >  EXPORT_SYMBOL_GPL(bmi160_core_probe);
+> > > >  
+> > > > -MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
+> > > > +MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");  
+> > > 
+> > > Good fix but shouldn't be in this patch.   Put it a separate patch on it's own.
+> > >   
+> > 
+> > Ok will separate this fix into another patch, thank you!
+> > 
+> > > >  MODULE_DESCRIPTION("Bosch BMI160 driver");
+> > > >  MODULE_LICENSE("GPL v2");  
+> > > 
+> > >   
+> > 
+> > Best regards,
+> > Jonathan Albrieux
+> 
 
 Best regards,
 Jonathan Albrieux
