@@ -1,115 +1,122 @@
-Return-Path: <SRS0=Ogni=7F=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=2Dns=7G=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03832C433E0
-	for <linux-iio@archiver.kernel.org>; Sat, 23 May 2020 12:20:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 624C3C433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 24 May 2020 02:51:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C970420727
-	for <linux-iio@archiver.kernel.org>; Sat, 23 May 2020 12:20:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="abXODuSD"
+	by mail.kernel.org (Postfix) with ESMTP id 361EC20759
+	for <linux-iio@archiver.kernel.org>; Sun, 24 May 2020 02:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387770AbgEWMUL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 23 May 2020 08:20:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59116 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729150AbgEWMUK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 23 May 2020 08:20:10 -0400
-Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32AD4C061A0E;
-        Sat, 23 May 2020 05:20:10 -0700 (PDT)
-Received: by mail-ed1-x541.google.com with SMTP id l5so11373142edn.7;
-        Sat, 23 May 2020 05:20:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-transfer-encoding:content-language;
-        bh=0eDh4QSckHASr5gJNa93QIawwkukXovHo+mlHmY4Lhs=;
-        b=abXODuSDPU+tSd/aKAtdwD4ZmcwhOK6kZpXLE+1Mt/0RNH7RLOueH2k+wCQRqgCtT6
-         YfKQDXCg07z+3VvEoz2zDnJnqF8w5WVgb6Lg32BuTYrgqjSlxQWab/q2OZ8lvyN0hs7G
-         HixW5Lu0fGx9fL39/3dDxIUlu+rdiw8LWY4Q91wN/6cxtfgV1zvR/YpySJeQutRwWUue
-         5A+a8Z/BPcebwaO6RDIcYHasM8pU/9k7F+t5dIAJGlxzqusMn4qxnaRTNbCT1y/+X6fY
-         8aMfms1rfJ3NNr2wde8rPzS1o6TtajZvnkxVPcK14+2OfA9aM7fOqJBvJqdo1kJSedos
-         bApQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-transfer-encoding
-         :content-language;
-        bh=0eDh4QSckHASr5gJNa93QIawwkukXovHo+mlHmY4Lhs=;
-        b=SG9DgMlDKwz32k12Rt44EcUAaAvyK6879Tf5h2Ud2jlJt3GVdxm+NsUlY5Al2WkV9i
-         0agLNwpxToNP7OtFeVpvpDLWuEqXiBZcsNPxH+Nk337WIhVNs6YJS+z7l7/wK7SjAw5F
-         vWZGJuNT0wX5ub3iHB1I7w6mbfcWQgegbRszO/070j4jpRfo/jgvZar5JSFKVUJmUkZ2
-         r0LdkMgnI5uqXfBi9GBp9t/z5NYbvR6YUr1zwRLorxj6VD73TGw3ve6a8x6S5ljvSRIj
-         o92s7tZzyu5u0kyaRD/7qlD44dyh7q6Rx1hmZtOA1i0rar1YoNXh6MgpGfv1rKSU1JlW
-         9QtA==
-X-Gm-Message-State: AOAM531cfnyAu2Eqxgky0WHhMHgt53203nQuFD6vgnEdA5IAFDk/R61h
-        rhnvXyybfAiqRVcCyYUaTFVMQqA1220=
-X-Google-Smtp-Source: ABdhPJw0WWrU6MYwaQyjtRK0gQ22IEoCRNxXM7wU4niVLiDiVFKlpp+B5SscpiO/jz0dd9+0GzUcQw==
-X-Received: by 2002:a50:f086:: with SMTP id v6mr7192187edl.140.1590236408350;
-        Sat, 23 May 2020 05:20:08 -0700 (PDT)
-Received: from [192.168.0.104] (p5dcfec14.dip0.t-ipconnect.de. [93.207.236.20])
-        by smtp.gmail.com with ESMTPSA id h12sm10038898ejk.103.2020.05.23.05.20.06
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 23 May 2020 05:20:07 -0700 (PDT)
-Subject: Re: [PATCH v11 2/6] mfd: mp2629: Add support for mps battery charger
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     andy.shevchenko@gmail.com, robh+dt@kernel.org, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        sre@kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
-References: <20200430155810.21383-1-sravanhome@gmail.com>
- <20200430155810.21383-3-sravanhome@gmail.com> <20200519103741.GW271301@dell>
-From:   saravanan sekar <sravanhome@gmail.com>
-Message-ID: <75b6a2ee-2d90-17c2-4b2b-0ef6238e903e@gmail.com>
-Date:   Sat, 23 May 2020 14:20:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
-MIME-Version: 1.0
-In-Reply-To: <20200519103741.GW271301@dell>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
+        id S2388263AbgEXCvu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 23 May 2020 22:51:50 -0400
+Received: from mail.zju.edu.cn ([61.164.42.155]:53384 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388262AbgEXCvu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 23 May 2020 22:51:50 -0400
+Received: from localhost.localdomain (unknown [222.205.77.158])
+        by mail-app2 (Coremail) with SMTP id by_KCgBXHpAl4cleagbCAQ--.44957S4;
+        Sun, 24 May 2020 10:51:21 +0800 (CST)
+From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
+To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: magnetometer: ak8974: Fix runtime PM imbalance on error
+Date:   Sun, 24 May 2020 10:51:17 +0800
+Message-Id: <20200524025117.15679-1-dinghao.liu@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: by_KCgBXHpAl4cleagbCAQ--.44957S4
+X-Coremail-Antispam: 1UD129KBjvJXoW7Cw4rXrW7uFyUAF13Cry5twb_yoW8uFWkpr
+        WkZFy7trW8Xw12qF45ArnxuFy5Cay3Jry8CrZ0ka47ZFsxZa98tF4kJr1YvF18CFWkJF4U
+        Jr4vq39ruF12kF7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUva1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVAFwVW8JwCF04k20xvY0x0EwIxG
+        rwCF04k20xvE74AGY7Cv6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxV
+        Aqx4xG67AKxVWUJVWUGwC20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q
+        6r43MIIYrxkI7VAKI48JMIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6x
+        kF7I0E14v26r1j6r4UMIIF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv
+        67AKxVWUJVW8JwCI42IY6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyT
+        uYvjfUO_MaUUUUU
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgEJBlZdtORShQARsR
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Lee,
+When devm_regmap_init_i2c() returns an error code, a pairing
+runtime PM usage counter decrement is needed to keep the
+counter balanced. For error paths after ak8974_set_power(),
+ak8974_detect() and ak8974_reset(), things are the same.
 
-On 19/05/20 12:37 pm, Lee Jones wrote:
-> On Thu, 30 Apr 2020, Saravanan Sekar wrote:
->
->> mp2629 is a highly-integrated switching-mode battery charge management
->> device for single-cell Li-ion or Li-polymer battery.
->>
->> Add MFD core enables chip access for ADC driver for battery readings,
->> and a power supply battery-charger driver
->>
->> Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
->> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
->> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->> ---
->>   drivers/mfd/Kconfig        |  9 +++++
->>   drivers/mfd/Makefile       |  2 +
->>   drivers/mfd/mp2629.c       | 79 ++++++++++++++++++++++++++++++++++++++
->>   include/linux/mfd/mp2629.h | 17 ++++++++
->>   4 files changed, 107 insertions(+)
->>   create mode 100644 drivers/mfd/mp2629.c
->>   create mode 100644 include/linux/mfd/mp2629.h
-> For my own reference (apply this as-is to your sign-off block):
->
->    Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
->
-Do I have to resend with above sign-off in all the patch?
+However, When iio_triggered_buffer_setup() returns an error
+code, we don't need such a decrement because there is already
+one before this call. Things are the same for other error paths
+after it.
 
-Thanks,
-Saravanan
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+---
+ drivers/iio/magnetometer/ak8974.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index d32996702110..c1bdb304eb9e 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -764,18 +764,24 @@ static int ak8974_probe(struct i2c_client *i2c,
+ 	ak8974->map = devm_regmap_init_i2c(i2c, &ak8974_regmap_config);
+ 	if (IS_ERR(ak8974->map)) {
+ 		dev_err(&i2c->dev, "failed to allocate register map\n");
++		pm_runtime_put_noidle(&i2c->dev);
++		pm_runtime_disable(&i2c->dev);
+ 		return PTR_ERR(ak8974->map);
+ 	}
+ 
+ 	ret = ak8974_set_power(ak8974, AK8974_PWR_ON);
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "could not power on\n");
++		pm_runtime_put_noidle(&i2c->dev);
++		pm_runtime_disable(&i2c->dev);
+ 		goto power_off;
+ 	}
+ 
+ 	ret = ak8974_detect(ak8974);
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "neither AK8974 nor AMI30x found\n");
++		pm_runtime_put_noidle(&i2c->dev);
++		pm_runtime_disable(&i2c->dev);
+ 		goto power_off;
+ 	}
+ 
+@@ -786,6 +792,8 @@ static int ak8974_probe(struct i2c_client *i2c,
+ 	ret = ak8974_reset(ak8974);
+ 	if (ret) {
+ 		dev_err(&i2c->dev, "AK8974 reset failed\n");
++		pm_runtime_put_noidle(&i2c->dev);
++		pm_runtime_disable(&i2c->dev);
+ 		goto power_off;
+ 	}
+ 
+@@ -851,7 +859,6 @@ static int ak8974_probe(struct i2c_client *i2c,
+ cleanup_buffer:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ disable_pm:
+-	pm_runtime_put_noidle(&i2c->dev);
+ 	pm_runtime_disable(&i2c->dev);
+ 	ak8974_set_power(ak8974, AK8974_PWR_OFF);
+ power_off:
+-- 
+2.17.1
 
