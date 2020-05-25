@@ -7,48 +7,50 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9957CC433E1
-	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 594A7C433E2
+	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 716B3208B3
-	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2B2582084C
+	for <linux-iio@archiver.kernel.org>; Mon, 25 May 2020 17:09:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1590426560;
-	bh=rVZ8obXG9Z449L0E2sVrhNZGsbFafinP9wKcqaPwfjQ=;
+	s=default; t=1590426563;
+	bh=+xpa65jymIGOxUbAyYqIQ5ig/I8NZrqJJOUJ32e7LxQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Wal4JMy7RgoqMPgYKgJzhEoDVXddb3V8f19AP5hAzRxY++ykznZiadEYB51MWNccE
-	 Ujkv21IS0NQQgygOardxOWD4tV14L/KnqR4Y0fHopc2rox6s0nQxrPZZcFIlr35VFp
-	 a0gGZtqwLaUAjm2GdO8FSfJGCW3lds/GUMOeBdYg=
+	b=r+6fFtWbXe3FT3eP9f9cnaTcvp8RbA4HEDZKt57VTvApzZF2eRwqmw5504gAnPLwQ
+	 +UwyHUaAADhdG7AVusdYcxAKW7i1ZWveWRuSIktMnxQOjWOMnHGCu3iZpgvl1+AFKM
+	 viHA23XvaVwt4IDjhO0fKLZy2ZwUqIgR1cbT6eVU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2391278AbgEYRJS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 May 2020 13:09:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42760 "EHLO mail.kernel.org"
+        id S2391302AbgEYRJW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 May 2020 13:09:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42820 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2391298AbgEYRJS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 25 May 2020 13:09:18 -0400
+        id S2391297AbgEYRJV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 25 May 2020 13:09:21 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C6492207DA;
-        Mon, 25 May 2020 17:09:16 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42A02208A9;
+        Mon, 25 May 2020 17:09:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1590426557;
-        bh=rVZ8obXG9Z449L0E2sVrhNZGsbFafinP9wKcqaPwfjQ=;
+        s=default; t=1590426561;
+        bh=+xpa65jymIGOxUbAyYqIQ5ig/I8NZrqJJOUJ32e7LxQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cyWJ6lv6uHTqWc+CJ/HQeQl7zccY/GGIZLMMOrjnsU/JLqoqpMoK4oRd7bjY/82lI
-         /SkQB0jYETfFuZPDy3FstYcZPpzetdDV6bKxCZ0cV3ErB1XAm/hzlBRsD5/0esC81s
-         GWbigP4wRl80F2GenQ+3KTEW5cpIDYwEuP4EUFdo=
+        b=Ci1G0Uh60xxyXvXaiSQcSZfcDnMiuzg3Sk2i5pa4XVffSXojcH2UkksYler848+oL
+         tcFVwtFiE4gXuLByK3pgpHIYPZ6ouymWaeCBPrxhjw9XA5BQPlufhFwzu/msrEtLY5
+         5kfDaiKwdxlHeQyvPR9P/+stUda30Vw1DA1uLEt4=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 14/25] iio:pressure:ms5611 Fix buffer element alignment
-Date:   Mon, 25 May 2020 18:06:17 +0100
-Message-Id: <20200525170628.503283-15-jic23@kernel.org>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>
+Subject: [PATCH 17/25] iio:adc:ti-adc084s021 Fix alignment and data leak issues.
+Date:   Mon, 25 May 2020 18:06:20 +0100
+Message-Id: <20200525170628.503283-18-jic23@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200525170628.503283-1-jic23@kernel.org>
 References: <20200525170628.503283-1-jic23@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -61,45 +63,54 @@ One of a class of bugs pointed out by Lars in a recent review.
 iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
 to the size of the timestamp (8 bytes).  This is not guaranteed in
 this driver which uses an array of smaller elements on the stack.
-Here there is no data leak possibility so use an explicit structure
-on the stack to ensure alignment and nice readable fashion.
+As Lars also noted this anti pattern can involve a leak of data to
+userspace and that indeed can happen here.  We close both issues by
+moving to a suitable structure in the iio_priv().
 
-Fixes: 713bbb4efb9dc ("iio: pressure: ms5611: Add triggered buffer support")
+This data is allocated with kzalloc so no data can leak apart from
+previous readings.
+
+Fixes: 3691e5a69449 ("iio: adc: add driver for the ti-adc084s021 chip")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Mårten Lindahl <martenli@axis.com>
 ---
- drivers/iio/pressure/ms5611_core.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ti-adc084s021.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index 2f598ad91621..ba9cf9d77a4a 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -212,16 +212,21 @@ static irqreturn_t ms5611_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ms5611_state *st = iio_priv(indio_dev);
--	s32 buf[4]; /* s32 (pressure) + s32 (temp) + 2 * s32 (timestamp) */
-+	/* Ensure buffer elements are naturally aligned */
+diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
+index bdedf456ee05..36d874cced9d 100644
+--- a/drivers/iio/adc/ti-adc084s021.c
++++ b/drivers/iio/adc/ti-adc084s021.c
+@@ -25,6 +25,11 @@ struct adc084s021 {
+ 	struct spi_transfer spi_trans;
+ 	struct regulator *reg;
+ 	struct mutex lock;
++	/* Buffer used to align data */
 +	struct {
-+		s32 channels[2];
++		__be16 channels[4];
 +		s64 ts;
 +	} scan;
- 	int ret;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache line.
+@@ -140,14 +145,13 @@ static irqreturn_t adc084s021_buffer_trigger_handler(int irq, void *pollfunc)
+ 	struct iio_poll_func *pf = pollfunc;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct adc084s021 *adc = iio_priv(indio_dev);
+-	__be16 data[8] = {0}; /* 4 * 16-bit words of data + 8 bytes timestamp */
  
- 	mutex_lock(&st->lock);
--	ret = ms5611_read_temp_and_pressure(indio_dev, &buf[1], &buf[0]);
-+	ret = ms5611_read_temp_and_pressure(indio_dev, &scan.channels[1],
-+					    &scan.channels[0]);
- 	mutex_unlock(&st->lock);
- 	if (ret < 0)
- 		goto err;
+ 	mutex_lock(&adc->lock);
  
--	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-+	iio_push_to_buffers_with_timestamp(indio_dev, &scan,
+-	if (adc084s021_adc_conversion(adc, &data) < 0)
++	if (adc084s021_adc_conversion(adc, adc->scan.channels) < 0)
+ 		dev_err(&adc->spi->dev, "Failed to read data\n");
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data,
++	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
  					   iio_get_time_ns(indio_dev));
- 
- err:
+ 	mutex_unlock(&adc->lock);
+ 	iio_trigger_notify_done(indio_dev->trig);
 -- 
 2.26.2
 
