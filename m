@@ -2,158 +2,98 @@ Return-Path: <SRS0=dvH7=7I=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A31A0C433E0
-	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 09:07:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0455C433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 09:15:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7F78F20776
-	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 09:07:39 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="E1Zn4Bon"
+	by mail.kernel.org (Postfix) with ESMTP id B7A762073B
+	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 09:15:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731650AbgEZJHM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 May 2020 05:07:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53002 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726926AbgEZJHL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 May 2020 05:07:11 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA8E2C03E97E;
-        Tue, 26 May 2020 02:07:09 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id h21so22985441ejq.5;
-        Tue, 26 May 2020 02:07:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=UoSXv7d+tfcbmDpE4494j4outc83bbmJfjPfvWfKgp8=;
-        b=E1Zn4BonDAZfXqeAVoIjieZScLB7xEcTXC1txRzXUH4cyZuLA90KwdC3EGMqnnoZ6G
-         Vz66XzILh53/4yZY/rakDIuLG7uD1RRlR04D7G8RyKZzVjzS+W8EI0Wc3X7cdzsumNUE
-         Dzz6EGyrlOHlNtQsJxHgEVspJVj9iZK+wmtBqxCgfWfdsAygkJ/en15AQnPDPVKPFB57
-         9GwUtAQixdqFK8BqJeiBCzYaPC7ElJ9gj2NBOEOypsWmQp1lI92n8UGl2PweDeDq3fy2
-         houOrcj/9t9hbcJyGHNeiOhn6JogBApRhxPm7A127Uzhxm55Xd+5K4MRI2aY2M5yn+Rc
-         jl2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=UoSXv7d+tfcbmDpE4494j4outc83bbmJfjPfvWfKgp8=;
-        b=Axrr/A44fDgQ71uR6ojYsmFaxyqShDnGOxk/YFRsBVoKmBrSLtFxFBOgvtlyW9F7wJ
-         KRT/YWOhGmIdvgM0BB9H7cceKHhs1d7CRBLWF+kOGvvn9JjBA38aKlgrzc7TfZ60HC1u
-         9LxScmlgvXW5dV7FklWumK/lFEbB5kzPWjXvf8vLrkJTeHy9K/UXbqxTHA3dQM/iO3s0
-         KVYDsBILNCB7kZUjPUFZNbavFjeF4ttcq9ih9BR3eAC2L7tiSpT9nldDVfvwfzw7Ps8Z
-         QIFJlfiIMslF9qN1vBdTv7VeCdblixHL+cEptHGj8MT2WTlhx89KzK8QbpFEXzScs7Cg
-         QKng==
-X-Gm-Message-State: AOAM530R4T7K+DJ/NrvFGdnwampg2AIhI3H050Nr+xf/Wjphrl5aecyR
-        7LNj95n1HXl54mG60rxX7svEKAAVp3g=
-X-Google-Smtp-Source: ABdhPJwpvX+VTKRQ21Tskdgdffg+/i7CV0+SqALml+Alne2V/whW+p7h/YP7ZJIKMZawfplBQexcEA==
-X-Received: by 2002:a17:906:3944:: with SMTP id g4mr237901eje.55.1590484028537;
-        Tue, 26 May 2020 02:07:08 -0700 (PDT)
-Received: from localhost.localdomain (p5b3f6e09.dip0.t-ipconnect.de. [91.63.110.9])
-        by smtp.gmail.com with ESMTPSA id c7sm17870535edj.54.2020.05.26.02.07.07
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 02:07:07 -0700 (PDT)
-From:   Saravanan Sekar <sravanhome@gmail.com>
-To:     lee.jones@linaro.org, andy.shevchenko@gmail.com,
-        robh+dt@kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, sre@kernel.org
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
-        sravanhome@gmail.com
-Subject: [PATCH v12 1/6] dt-bindings: mfd: add document bindings for mp2629
-Date:   Tue, 26 May 2020 11:06:41 +0200
-Message-Id: <20200526090646.25827-2-sravanhome@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200526090646.25827-1-sravanhome@gmail.com>
-References: <20200526090646.25827-1-sravanhome@gmail.com>
+        id S1731605AbgEZJPz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 May 2020 05:15:55 -0400
+Received: from mga17.intel.com ([192.55.52.151]:13834 "EHLO mga17.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731600AbgEZJPz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 May 2020 05:15:55 -0400
+IronPort-SDR: 4IZCxMpLy2oht/86Qt2fqTQxN7Y4EtKOJdyLxE7veFGmd88q6MunZxg05uWOm2v4srhr6XBGDr
+ KYqkMpdUruZw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 02:15:54 -0700
+IronPort-SDR: O87iqakQ/xm2JIRQNTUI1kgP2mbHXX49IJxCmXoA3j5dMOj9rft2RWvs7vFStk8B5TKbayCiLs
+ ehdOS0QqMBQA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,436,1583222400"; 
+   d="scan'208";a="442012951"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga005.jf.intel.com with ESMTP; 26 May 2020 02:15:53 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jdVgi-008xdo-KE; Tue, 26 May 2020 12:15:56 +0300
+Date:   Tue, 26 May 2020 12:15:56 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 19/25] iio:adc:ti-ads1015 Fix buffer element alignment
+Message-ID: <20200526091556.GN1634618@smile.fi.intel.com>
+References: <20200525170628.503283-1-jic23@kernel.org>
+ <20200525170628.503283-20-jic23@kernel.org>
+ <20200525175236.GG1634618@smile.fi.intel.com>
+ <da67e0e4-5889-eb87-7bc0-fac07ae54e57@metafoo.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <da67e0e4-5889-eb87-7bc0-fac07ae54e57@metafoo.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add device tree binding information for mp2629 mfd driver.
+On Tue, May 26, 2020 at 10:11:44AM +0200, Lars-Peter Clausen wrote:
+> On 5/25/20 7:52 PM, Andy Shevchenko wrote:
+> > On Mon, May 25, 2020 at 06:06:22PM +0100, Jonathan Cameron wrote:
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
----
- .../devicetree/bindings/mfd/mps,mp2629.yaml   | 62 +++++++++++++++++++
- 1 file changed, 62 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+...
 
-diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-new file mode 100644
-index 000000000000..f91acc42d652
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
-@@ -0,0 +1,62 @@
-+# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/mfd/mps,mp2629.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: MP2629 Battery Charger PMIC from Monolithic Power System.
-+
-+maintainers:
-+  - Saravanan Sekar <sravanhome@gmail.com>
-+
-+description: |
-+  MP2629 is a PMIC providing battery charging and power supply for smartphones,
-+  wireless camera and portable devices. Chip is controlled over I2C.
-+
-+  The battery charge management device handles battery charger controller and
-+  ADC IIO device for battery, system voltage
-+
-+properties:
-+  compatible:
-+    const: mps,mp2629
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-controller: true
-+
-+  "#interrupt-cells":
-+    const: 2
-+    description:
-+      The first cell is the IRQ number, the second cell is the trigger type.
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - interrupt-controller
-+  - "#interrupt-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/input/linux-event-codes.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        pmic@4b {
-+            compatible = "mps,mp2629";
-+            reg = <0x4b>;
-+
-+            interrupt-controller;
-+            interrupt-parent = <&gpio2>;
-+            #interrupt-cells = <2>;
-+            interrupts = <3 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
+> > > -	s16 buf[8]; /* 1x s16 ADC val + 3x s16 padding +  4x s16 timestamp */
+> > > +	/* Ensure natural alignment for buffer elements */
+> > > +	struct {
+> > > +		s16 channel;
+> > > +		s64 ts;
+> > > +	} scan;
+> > Hmm... On x86_32 and x86_64 this will give different padding. Is it okay from
+> > iio_push_to_buffers_with_timestamp() point of view?
+> 
+> No, this is terrible. IIO expects 64 bit words to be 64 bit aligned. Looks
+> like we can't rely on implicit padding, but need to always explicitly
+> specify it.
+> 
+> Or maybe we can typedef and IIO timestamp type with an explicit __aligned
+> attribute. I wonder if that works... After having a quick look, the kernel
+> already defines aligned_u64, so maybe using that is an option.
+
+Another way is simple to provide offset of timestamp member as a parameter.
+Though, if it's an ABI, then alas, we need to align it properly.
+
+Also, wouldn't be better to explicitly show the padding?
+
+	struct {
+		s16 channel;
+		s16 padding[3];
+		s64 ts;
+	} scan;
+
+(matter of style though, just saying).
+
 -- 
-2.17.1
+With Best Regards,
+Andy Shevchenko
+
 
