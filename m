@@ -2,111 +2,73 @@ Return-Path: <SRS0=dvH7=7I=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-0.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B015C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 21:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A070C433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 21:03:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE58E208B8
-	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 21:03:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VxLVlL2u"
+	by mail.kernel.org (Postfix) with ESMTP id 21804208DB
+	for <linux-iio@archiver.kernel.org>; Tue, 26 May 2020 21:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389124AbgEZVCu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 May 2020 17:02:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391600AbgEZVCu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 May 2020 17:02:50 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 87FE8C03E96D;
-        Tue, 26 May 2020 14:02:48 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id e4so3830474ljn.4;
-        Tue, 26 May 2020 14:02:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=bpnokN0i6iCHNbK3Hq2vncfPsrhaFuH0/YJmD+o8wI4=;
-        b=VxLVlL2uJgD4tEuJ8HJ+1wJG6gimbOIOkNBoSiNo56Zxq6cx5bVNYR3llSszhnkNzR
-         GWC8MtdB/XsZYCrrOxgFMNWnwJhoa/zeDbYM6BTdBD2huTi9BMsANoA5oETumPKoVidv
-         xN10EHuwJ7jjzU8ZbF9+eSkx9HlhHDt9FhueIoda+ZK4BkFBA4Nz/WmGTBDSTXYuy9qE
-         GPrEFJqHm4GRT6xpVdoVeQgvDKLoV92ziZi3dqc3MPvtYSlhWDuk2+3JID+ChavP/9CC
-         rCtxBKLM4kNLLsrkgVhmd8YFGN2/3G0SLLSZd1h8tTLn1T487iztCSQ1ePnygCiGlQQ4
-         G0PA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=bpnokN0i6iCHNbK3Hq2vncfPsrhaFuH0/YJmD+o8wI4=;
-        b=Kf7vYYVI47S565o63NrUSbrklAIq7nXiftzWsaGIT78/x36NqAcRbD8a6tfvB6AVPJ
-         MHLMXQ8VxhynausZ5+ID2W3aVRZL8kVcNpwK9zZ31R7WC+tcXfGI7NzXhDfBcSJAq3ZJ
-         P5pmYZZpFCZsKjLBFiQ7/mMRdgK8wcjmbLoBzT5xAczHdIdNdieYRkprrvfEqNN0e3Cl
-         WmVHvZbrsTqx2cwrv4szmHkS88r05uv3QhMhx8YoF98kCdboK1/DvJePgARxmze4Mcs9
-         yTdA6GfW6dQSnGcK+w/SNt8yVhyAMwAgGtRRcrI+vCE2R6t9Evx7zWh5YUhRMt1UlEDL
-         kAhQ==
-X-Gm-Message-State: AOAM531m7GApuqqR68Ho9O7kT95Apst7vnyrzBvHzntGSGfijWsSm6c0
-        lauEklcyylHsgW2UfdwGcLs=
-X-Google-Smtp-Source: ABdhPJzaQJBzXvQP3qF409CnTmdMdRKLGVplXwhvZ1kkB03s4LC2Tn+VxTcyf3Kv+ChjZ+wnSeUTxQ==
-X-Received: by 2002:a2e:8e36:: with SMTP id r22mr1440534ljk.186.1590526967087;
-        Tue, 26 May 2020 14:02:47 -0700 (PDT)
-Received: from localhost.localdomain (h-158-174-22-22.NA.cust.bahnhof.se. [158.174.22.22])
-        by smtp.gmail.com with ESMTPSA id z133sm240443lfa.41.2020.05.26.14.02.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 May 2020 14:02:46 -0700 (PDT)
-From:   Rikard Falkeborn <rikard.falkeborn@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        id S2391539AbgEZVDN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 May 2020 17:03:13 -0400
+Received: from mga14.intel.com ([192.55.52.115]:28269 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2389600AbgEZVDN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 26 May 2020 17:03:13 -0400
+IronPort-SDR: uR0QjuLktDhtkSV8x4YuKMBPLAjy0p/EQB9q6GDKcgwQVyz3ukWLu2sbhVkx16t0oNC2YbC+ip
+ 0AzwNX2N5pxw==
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 26 May 2020 14:03:12 -0700
+IronPort-SDR: +oPvapBd7xep/FsIIPbzPnsgceGasB4L294oGlPzMBG6BE1H+PPBNiVgSf7+luQfbaJF6k3eG7
+ vQHu+L0q7nCQ==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.73,437,1583222400"; 
+   d="scan'208";a="270214893"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by orsmga006.jf.intel.com with ESMTP; 26 May 2020 14:03:10 -0700
+Received: from andy by smile with local (Exim 4.93)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1jdgjB-00950U-Sy; Wed, 27 May 2020 00:03:13 +0300
+Date:   Wed, 27 May 2020 00:03:13 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rikard Falkeborn <rikard.falkeborn@gmail.com>
-Subject: [PATCH 1/6] iio: adc: max11100: Constify struct iio_chan_spec
-Date:   Tue, 26 May 2020 23:02:18 +0200
-Message-Id: <20200526210223.1672-2-rikard.falkeborn@gmail.com>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20200526210223.1672-1-rikard.falkeborn@gmail.com>
-References: <20200526210223.1672-1-rikard.falkeborn@gmail.com>
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 19/25] iio:adc:ti-ads1015 Fix buffer element alignment
+Message-ID: <20200526210313.GD1634618@smile.fi.intel.com>
+References: <20200525170628.503283-1-jic23@kernel.org>
+ <20200525170628.503283-20-jic23@kernel.org>
+ <20200525175236.GG1634618@smile.fi.intel.com>
+ <da67e0e4-5889-eb87-7bc0-fac07ae54e57@metafoo.de>
+ <20200526091556.GN1634618@smile.fi.intel.com>
+ <20200526174328.0000673d@Huawei.com>
+ <20200526170612.GY1634618@smile.fi.intel.com>
+ <E1CB2D23-5B37-47E7-8782-ACC296EE5712@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <E1CB2D23-5B37-47E7-8782-ACC296EE5712@jic23.retrosnub.co.uk>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-max11100_channels is not modified and can therefore be made const to
-allow the compiler to put it in read-only memory.
+On Tue, May 26, 2020 at 08:17:11PM +0100, Jonathan Cameron wrote:
+> On 26 May 2020 18:06:12 BST, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Before:
-   text    data     bss     dec     hex filename
-   3776    1168       0    4944    1350 drivers/iio/adc/max11100.o
+> Might be easier to just align it though than explain this subtlety. 
 
-After:
-   text    data     bss     dec     hex filename
-   3968     976       0    4944    1350 drivers/iio/adc/max11100.o
+The easiest one seems to move ts to be first member of the struct / buffer. Problem solved.
 
-Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
----
- drivers/iio/adc/max11100.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
-index 3440539cfdba..b121ca78f851 100644
---- a/drivers/iio/adc/max11100.c
-+++ b/drivers/iio/adc/max11100.c
-@@ -37,7 +37,7 @@ struct max11100_state {
- 	u8 buffer[3] ____cacheline_aligned;
- };
- 
--static struct iio_chan_spec max11100_channels[] = {
-+static const struct iio_chan_spec max11100_channels[] = {
- 	{ /* [0] */
- 		.type = IIO_VOLTAGE,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
 -- 
-2.26.2
+With Best Regards,
+Andy Shevchenko
+
 
