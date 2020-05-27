@@ -2,256 +2,357 @@ Return-Path: <SRS0=xjLk=7J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3BDBC433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 15:30:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7186EC433DF
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:57:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8E53D2065C
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 15:30:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A9AB20B80
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:57:56 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Oap9h53I"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="JsvxgfIr";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="GtRaxR76"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729448AbgE0PaL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 May 2020 11:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729416AbgE0PaL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2020 11:30:11 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0968AC05BD1E;
-        Wed, 27 May 2020 08:30:11 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id h9so9256963qtj.7;
-        Wed, 27 May 2020 08:30:10 -0700 (PDT)
+        id S1728857AbgE0S5z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 May 2020 14:57:55 -0400
+Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:41698 "EHLO
+        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728822AbgE0S5x (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2020 14:57:53 -0400
+Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
+        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04RIuQjR001589;
+        Wed, 27 May 2020 11:57:51 -0700
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : content-type :
+ content-transfer-encoding : mime-version; s=pfpt1;
+ bh=ifQLSNUEar3fKvbuL13xuy+kkdbA2WLCRxsr+Qj844w=;
+ b=JsvxgfIr0QjgFHdhnVuOt6zsUicDpFqnOVtRIZNkPX21f3SK/01vZkPeAYW7KrfTSYQh
+ 22EFaH1ISc3qE48hmU4JF+rhTnYNowCzzueAZbov94+x5ejtGK4Ls6q08NVkEtrmZ/hb
+ Mht7aS/La8e+sYMIMEoJfjR2pRRgSai4JB3hIQ2046UfGWULBcJs7/mPWr1xVIxmTTGA
+ a9EwCQy69Ub2HLcBcYpJ5SLGeqOT1b1VUlDZn7D0FzocLp7YY56lBippipjNsQpqW9x7
+ DiYMCEqQiv6Dwgk+XqsuB/MjuyQBEkAl4eXQYlm+7k7YnpKDuQzBJUQ2Ier+CJMpQCZo fA== 
+Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2173.outbound.protection.outlook.com [104.47.55.173])
+        by mx0a-00328301.pphosted.com with ESMTP id 3194qh0ncv-3
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 27 May 2020 11:57:51 -0700
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BpUL4S7GP7Ts1vAnOmted+KibJSdDs+wlHi0f45lzCKyDSug44vC7RvyUSUauIZ/BX4Xw/O2W0RT+3yS63CEQ2idLFWYN8b2yhxA1i8MYiAfcoVeX5944AA4axP2weUkW2qPqaQX5ZrboBGJqydpVePGDjyfu8dwJ3hg7AxNe6eOfFK/uK77pDPbA4uTMRhLK/qU2HewL0KX+Ezar4JR3XTW1NbdULEy+AyK3c7YJLKyimvniBX2Stl5lFIU7jdla7xlfWBpeczPosaki80HH/ui8lD9UVCvIBvC84BMsGML2Azt/RBir+oe1NqvyXV9IJSDZfIWvbqnR4BbsOM67w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ifQLSNUEar3fKvbuL13xuy+kkdbA2WLCRxsr+Qj844w=;
+ b=RUdZGqXtw/a/HGab66hGLE9ahJcBIXq87AzIcdjUk8bE/Bm8UjThkl/T+3txv03PkmnIlZ0tul5xOG+Dpqq22gFp1sC6eKfuCsgExl0elFTNdcL0EOMUw9EaJpUBoC3aIKvAAtK52rsjgYd4L/ifL+8NtqTQIlom9YBASwBu0zwN0AkrDZLyGFoWuonhCTQWiwenHO4Y69F6+DJcrRyfRC/bjg8PhlecWNV3smAqpDDPt7JobmdfbvFcz+vl2S8E8IQGdBC9Z/oSm00dybkND0Ph0AcgPKCA3zu+SlUSVsWJc/cj/72fDGdh05K4Hmvt9/4MC2l5lZWYXeDqYPGgCg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=invensense.com; dmarc=pass action=none
+ header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=zkunrZ0oeTCMztxG/OegBl2pml7XGAS8duP4C52EX6I=;
-        b=Oap9h53IlxWOHi0RDCE66AdYN29wfAsbfyk1QJ8LaluzX9rvKMepwlSxjc73mIDafz
-         70p2spgj38vRS+A7COVFSdEnfquX4eT2K1O+d9J5DHQsDd42rCDKqkvBpPZJoPL0oM+8
-         eFsL1Kuklf2RdebuF6n8QOK76x6Rx5oQn7ITcZdgt7v7vLgXQIJalvgup7hOwdVPebRK
-         jWpSbb7AFjdj5pA9koQuF6Umyp3MisLlDy4qw5QuUd4AcckwSIGvuy6ssY/Rf4R/zg1L
-         SGO4P/6OFpvNxXznbm4ydRYLwBTlnzyO4qmfpQNj5y8gUsXVOP02M7EzPkZweaDWwjb/
-         Cz3w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=zkunrZ0oeTCMztxG/OegBl2pml7XGAS8duP4C52EX6I=;
-        b=qszY34hWm1gjn1UrBD5YFVOkqDj+V0DG1zT64cXbREbKsoILhdiQ1EchoyYi4T88Ao
-         zAuZ5egL9Q1xrvlU6mLtp3PUbD6AVjy55S9JUUz5OLe+cnMHXmCYscXLSPAbSBVvXOyv
-         3D064SUZ46cSRy95fI558GEh/FZwPAEOaMxl1tMBzrZos3TzOARn1Sn2ITh8K50mAwSt
-         O6Sl8xXjjrv/S9vwEAok/YJ2L9yUoxBZRL/I3CHGF7ku1YA5eJAsgKbDTuxK0LiEy+go
-         GT456IPNFzxb6gQ+3shU/emu2asHxNaT9CB5lK1WnngHmsHAEdG0SzPXrMC6RQI6lLdu
-         JTvw==
-X-Gm-Message-State: AOAM532A0jhEat4upnDmOLJsNcCB/p+PTsO8Y6KrMGWqjMyKyBsxync8
-        Kc9wUxcF+pIxmasuf43tpFg=
-X-Google-Smtp-Source: ABdhPJy7Aid9jgwaunjEzd/i0WniQ3PXIiToFKc9WwZdimCPt06wxXiwafiDs+QXwN+BKXf7pwycGA==
-X-Received: by 2002:ac8:710f:: with SMTP id z15mr4782320qto.71.1590593409980;
-        Wed, 27 May 2020 08:30:09 -0700 (PDT)
-Received: from ict14-OptiPlex-980 ([178.23.248.46])
-        by smtp.gmail.com with ESMTPSA id c186sm1744441qkd.102.2020.05.27.08.30.07
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Wed, 27 May 2020 08:30:09 -0700 (PDT)
-Date:   Wed, 27 May 2020 17:29:58 +0200
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-kernel@vger.kernel.org,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v6 2/5] dt-bindings: iio: magnetometer: ak8975: convert
- format to yaml, add maintainer
-Message-ID: <20200527152958.GA21548@ict14-OptiPlex-980>
-References: <20200525151117.32540-1-jonathan.albrieux@gmail.com>
- <20200525151117.32540-3-jonathan.albrieux@gmail.com>
- <20200526222847.GA492828@bogus>
+ d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=ifQLSNUEar3fKvbuL13xuy+kkdbA2WLCRxsr+Qj844w=;
+ b=GtRaxR76+498RyI1qPh0M3yZf4Z3+u4Q+YflYdx9btymw9XHoN8xEpnys97hrOt1SXvqcuo2uGoguuOPlU1qzVSjopEIj2cf+3WH99NdL1SrYM+q9Cpxuzji1xeGtUR5mwfTKssf9AxehZ/GZZUMq7hOtI/sR1zajRSHDOlZALM=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=invensense.com;
+Received: from MN2PR12MB4422.namprd12.prod.outlook.com (2603:10b6:208:265::9)
+ by MN2PR12MB3470.namprd12.prod.outlook.com (2603:10b6:208:d0::31) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
+ 2020 18:57:49 +0000
+Received: from MN2PR12MB4422.namprd12.prod.outlook.com
+ ([fe80::8940:8e95:6996:cc0]) by MN2PR12MB4422.namprd12.prod.outlook.com
+ ([fe80::8940:8e95:6996:cc0%8]) with mapi id 15.20.3045.018; Wed, 27 May 2020
+ 18:57:49 +0000
+From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
+        mchehab+huawei@kernel.org, davem@davemloft.net,
+        gregkh@linuxfoundation.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [PATCH v2 06/12] iio: imu: inv_icm42600: add temperature sensor support
+Date:   Wed, 27 May 2020 20:57:05 +0200
+Message-Id: <20200527185711.21331-7-jmaneyrol@invensense.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200527185711.21331-1-jmaneyrol@invensense.com>
+References: <20200527185711.21331-1-jmaneyrol@invensense.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+X-ClientProxiedBy: LO2P265CA0168.GBRP265.PROD.OUTLOOK.COM
+ (2603:10a6:600:9::36) To MN2PR12MB4422.namprd12.prod.outlook.com
+ (2603:10b6:208:265::9)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200526222847.GA492828@bogus>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LO2P265CA0168.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26 via Frontend Transport; Wed, 27 May 2020 18:57:48 +0000
+X-Mailer: git-send-email 2.17.1
+X-Originating-IP: [77.157.193.39]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 9fb52fa3-7a58-4c83-2326-08d8026fd9e9
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3470:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <MN2PR12MB3470BF256A26C214119DDA1AC4B10@MN2PR12MB3470.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
+X-Forefront-PRVS: 04163EF38A
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: W9J2VXsb6yKNBkJSLM0/Dh+ujqroDseXc0kNdehHtpEdLNYy3Aly4zmWLVc4CfZ75AsLqgFNFWthTZlJKXF7D2CrzC1w7b5Od/VXILX4Z5vtG9WMTmQCkUA4n9SvD3zvEbtUdk6fRq4aUB7/FhRFzVnYel5Kulj0nKZq7kk/A0gao2RaKxBhztAVmaP8Oo7l1H+4Bf/FfsGm9k1PbDDEB+ExMA6HVr4U4beH8nBRZY4tVRcF6hGnwHEOnI+c23dPgbB+AATK23vbx+VaFR1/9OjnWc7pz0Lekhy8eb0OdQSV/WKZp7TXN1nMvsH9L7qNrV/OOkag/atK2XMLX8Ukfw==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39850400004)(136003)(346002)(366004)(376002)(8936002)(66476007)(66556008)(36756003)(66946007)(5660300002)(316002)(86362001)(186003)(52116002)(7696005)(26005)(8676002)(478600001)(4326008)(16526019)(1076003)(2616005)(107886003)(6666004)(956004)(83380400001)(6486002)(2906002);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: 556BqEPS31b0L4/WpgXCMZckC0amxBoyYmYrE8b+SyCzHAbP71yXBB1inH9eevGZaRlxaeBRn9pO8TxLOq2EBI8Q+iyt7q26Agh1NXv6m3JvDbnlTbDaCiLaMSqpBuxU1SVeHU16xqcc1KeX1UCgwUH+LZXk7DmdREwCqatQPWWZwGOkhbv4d0x1nuyb2oyhw7sfCbCvc5P79dW98bh8+1YC3FFm3ITdGUw9bczeHjgL79yBKZmkEZuTgseL/TkQ1TYuoZq3elimrAG47+6qb+9e7DnjcTix2L6Y7XFpRwvY+rdayHN7q5PK8JAtHwNE+s7yTL2hFcIknv6supi2MtAlxvJ73QIcJFJf9sztVznaRh26gIJacuLnjqp52d5tUiyUKK6QiDx/5Ka/4ZuychGXgAHMCXmovSCVBAEeK/yX6DJUxMR+cj0fX86VQ3Sit2NxPTQZHxFP4Bk1g3lm5u7VjYhMNMKNdgnp7uY2XNY=
+X-OriginatorOrg: invensense.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9fb52fa3-7a58-4c83-2326-08d8026fd9e9
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 18:57:49.5551
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: 23KL1jHcMNTWXEoGz7VJWPNitYN9g13hEe7eVIHpcYWjezB+jSkNRl4l/dwchK7WGcQXba8eMFnxkKeJHvtFaJ6S2N3/S/9adMwQ9exZRg8=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3470
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
+ definitions=2020-05-27_03:2020-05-27,2020-05-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ suspectscore=0 cotscore=-2147483648 mlxlogscore=999 clxscore=1015
+ lowpriorityscore=0 malwarescore=0 impostorscore=0 spamscore=0 mlxscore=0
+ adultscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2005270145
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 26, 2020 at 04:28:47PM -0600, Rob Herring wrote:
-> On Mon, May 25, 2020 at 05:10:36PM +0200, Jonathan Albrieux wrote:
-> > Converts documentation from txt format to yaml.
-> 
-> I would have converted to yaml and do any re-formatting/wording, then 
-> added 'interrupts', but this is fine.
->
+Add temperature channel in gyroscope and accelerometer devices.
 
-Thank you, I'll keep that in mind for future works like this one
+Temperature is available in full 16 bits resolution as a processed
+channel. Scale and offset attributes are also provided for the low
+8 bits resolution raw temperature found in the FIFO.
+
+Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+---
+ .../iio/imu/inv_icm42600/inv_icm42600_accel.c | 11 ++-
+ .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 11 ++-
+ .../iio/imu/inv_icm42600/inv_icm42600_temp.c  | 87 +++++++++++++++++++
+ .../iio/imu/inv_icm42600/inv_icm42600_temp.h  | 30 +++++++
+ 4 files changed, 137 insertions(+), 2 deletions(-)
+ create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
+ create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h
+
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+index 7620ce1958e0..6a615d7ffb24 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+@@ -13,6 +13,7 @@
+ #include <linux/iio/iio.h>
  
-> 
-> > Signed-off-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-> > ---
-> >  .../bindings/iio/magnetometer/ak8975.txt      | 37 ---------
-> >  .../iio/magnetometer/asahi-kasei,ak8975.yaml  | 78 +++++++++++++++++++
-> >  2 files changed, 78 insertions(+), 37 deletions(-)
-> >  delete mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-> >  create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-> > deleted file mode 100644
-> > index 0576b9df0bf2..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/magnetometer/ak8975.txt
-> > +++ /dev/null
-> > @@ -1,37 +0,0 @@
-> > -* AsahiKASEI AK8975 magnetometer sensor
-> > -
-> > -Required properties:
-> > -
-> > -  - compatible : should be "asahi-kasei,ak8975".
-> > -  - reg : the I2C address of the magnetometer.
-> > -
-> > -Optional properties:
-> > -
-> > -  - gpios : AK8975 has a "Data ready" pin (DRDY) which informs that data
-> > -      is ready to be read and is possible to listen on it. If used,
-> > -      this should be active high. Prefer interrupt over this.
-> > -
-> > -  - interrupts : interrupt for DRDY pin. Triggered on rising edge.
-> > -
-> > -  - vdd-supply: an optional regulator that needs to be on to provide VDD.
-> > -
-> > -  - mount-matrix: an optional 3x3 mounting rotation matrix.
-> > -
-> > -Example:
-> > -
-> > -ak8975@c {
-> > -        compatible = "asahi-kasei,ak8975";
-> > -        reg = <0x0c>;
-> > -        interrupt-parent = <&gpio6>;
-> > -        interrupts = <15 IRQ_TYPE_EDGE_RISING>;
-> > -        vdd-supply = <&ldo_3v3_gnss>;
-> > -        mount-matrix = "-0.984807753012208",  /* x0 */
-> > -                       "0",                   /* y0 */
-> > -                       "-0.173648177666930",  /* z0 */
-> > -                       "0",                   /* x1 */
-> > -                       "-1",                  /* y1 */
-> > -                       "0",                   /* z1 */
-> > -                       "-0.173648177666930",  /* x2 */
-> > -                       "0",                   /* y2 */
-> > -                       "0.984807753012208";   /* z2 */
-> > -};
-> > diff --git a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-> > new file mode 100644
-> > index 000000000000..a603659d5fa5
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
-> > @@ -0,0 +1,78 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/magnetometer/asahi-kasei,ak8975.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: AsahiKASEI AK8975 magnetometer sensor
-> > +
-> > +maintainers:
-> > +  - Jonathan Albrieux <jonathan.albrieux@gmail.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    oneOf:
-> > +      - const: asahi-kasei,ak8975
-> > +      - const: asahi-kasei,ak8963
-> > +      - const: asahi-kasei,ak09911
-> > +      - const: asahi-kasei,ak09912
-> 
-> These 4 can be an enum.
-> 
-> > +      - const: ak8975
-> > +        deprecated: true
-> > +      - const: ak8963
-> > +        deprecated: true
-> > +      - const: ak09911
-> > +        deprecated: true
-> > +      - const: ak09912
-> > +        deprecated: true
-> 
-> And these 4 can be an enum+deprecated.
-> 
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +    description: the I2C address of the magnetometer.
-> 
-> Don't need a description.
-> 
-> > +
-> > +  gpios:
-> > +    description: |
-> > +      AK8975 has a "Data ready" pin (DRDY) which informs that data
-> > +      is ready to be read and is possible to listen on it. If used,
-> > +      this should be active high. Prefer interrupt over this.
-> 
-> Need to define how many GPIOs (maxItems: 1).
-> 
+ #include "inv_icm42600.h"
++#include "inv_icm42600_temp.h"
+ 
+ #define INV_ICM42600_ACCEL_CHAN(_modifier, _index, _ext_info)		\
+ 	{								\
+@@ -45,6 +46,7 @@ enum inv_icm42600_accel_scan {
+ 	INV_ICM42600_ACCEL_SCAN_X,
+ 	INV_ICM42600_ACCEL_SCAN_Y,
+ 	INV_ICM42600_ACCEL_SCAN_Z,
++	INV_ICM42600_ACCEL_SCAN_TEMP,
+ };
+ 
+ static const struct iio_chan_spec_ext_info inv_icm42600_accel_ext_infos[] = {
+@@ -59,6 +61,7 @@ static const struct iio_chan_spec inv_icm42600_accel_channels[] = {
+ 				inv_icm42600_accel_ext_infos),
+ 	INV_ICM42600_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42600_ACCEL_SCAN_Z,
+ 				inv_icm42600_accel_ext_infos),
++	INV_ICM42600_TEMP_CHAN(INV_ICM42600_ACCEL_SCAN_TEMP),
+ };
+ 
+ static int inv_icm42600_accel_read_sensor(struct inv_icm42600_state *st,
+@@ -450,8 +453,14 @@ static int inv_icm42600_accel_read_raw(struct iio_dev *indio_dev,
+ 	int16_t data;
+ 	int ret;
+ 
+-	if (chan->type != IIO_ACCEL)
++	switch (chan->type) {
++	case IIO_ACCEL:
++		break;
++	case IIO_TEMP:
++		return inv_icm42600_temp_read_raw(indio_dev, chan, val, val2, mask);
++	default:
+ 		return -EINVAL;
++	}
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
+index 9d9672989b23..38654e0d217b 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
+@@ -13,6 +13,7 @@
+ #include <linux/iio/iio.h>
+ 
+ #include "inv_icm42600.h"
++#include "inv_icm42600_temp.h"
+ 
+ #define INV_ICM42600_GYRO_CHAN(_modifier, _index, _ext_info)		\
+ 	{								\
+@@ -45,6 +46,7 @@ enum inv_icm42600_gyro_scan {
+ 	INV_ICM42600_GYRO_SCAN_X,
+ 	INV_ICM42600_GYRO_SCAN_Y,
+ 	INV_ICM42600_GYRO_SCAN_Z,
++	INV_ICM42600_GYRO_SCAN_TEMP,
+ };
+ 
+ static const struct iio_chan_spec_ext_info inv_icm42600_gyro_ext_infos[] = {
+@@ -59,6 +61,7 @@ static const struct iio_chan_spec inv_icm42600_gyro_channels[] = {
+ 			       inv_icm42600_gyro_ext_infos),
+ 	INV_ICM42600_GYRO_CHAN(IIO_MOD_Z, INV_ICM42600_GYRO_SCAN_Z,
+ 			       inv_icm42600_gyro_ext_infos),
++	INV_ICM42600_TEMP_CHAN(INV_ICM42600_GYRO_SCAN_TEMP),
+ };
+ 
+ static int inv_icm42600_gyro_read_sensor(struct inv_icm42600_state *st,
+@@ -461,8 +464,14 @@ static int inv_icm42600_gyro_read_raw(struct iio_dev *indio_dev,
+ 	int16_t data;
+ 	int ret;
+ 
+-	if (chan->type != IIO_ANGL_VEL)
++	switch (chan->type) {
++	case IIO_ANGL_VEL:
++		break;
++	case IIO_TEMP:
++		return inv_icm42600_temp_read_raw(indio_dev, chan, val, val2, mask);
++	default:
+ 		return -EINVAL;
++	}
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
+new file mode 100644
+index 000000000000..b0871352fe39
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.c
+@@ -0,0 +1,87 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * Copyright (C) 2020 Invensense, Inc.
++ */
++
++#include <linux/kernel.h>
++#include <linux/device.h>
++#include <linux/mutex.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/math64.h>
++#include <linux/iio/iio.h>
++
++#include "inv_icm42600.h"
++#include "inv_icm42600_temp.h"
++
++static int inv_icm42600_temp_read(struct inv_icm42600_state *st, int32_t *temp)
++{
++	struct device *dev = regmap_get_device(st->map);
++	int64_t data;
++	__be16 *raw;
++	int16_t val;
++	int ret;
++
++	pm_runtime_get_sync(dev);
++	mutex_lock(&st->lock);
++
++	ret = inv_icm42600_set_temp_conf(st, true, NULL);
++	if (ret)
++		goto exit;
++
++	raw = (__be16 *)&st->buffer[0];
++	ret = regmap_bulk_read(st->map, INV_ICM42600_REG_TEMP_DATA, raw, sizeof(*raw));
++	if (ret)
++		goto exit;
++
++	val = (int16_t)be16_to_cpup(raw);
++	if (val == INV_ICM42600_DATA_INVALID) {
++		ret = -EINVAL;
++		goto exit;
++	}
++	/*
++	 * T°C = (val / 132.48) + 25 = ((val * 100) / 13248) + 25
++	 * Tm°C = (val * 100 * 1000) / 13248 + 25000
++	 */
++	data = (int64_t)(val) * 100LL * 1000LL;
++	*temp = div_s64(data, 13248) + 25000;
++exit:
++	mutex_unlock(&st->lock);
++	pm_runtime_mark_last_busy(dev);
++	pm_runtime_put_autosuspend(dev);
++	return ret;
++}
++
++int inv_icm42600_temp_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2, long mask)
++{
++	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	int32_t temp;
++	int ret;
++
++	if (chan->type != IIO_TEMP)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++		ret = inv_icm42600_temp_read(st, &temp);
++		iio_device_release_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++		*val = temp;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 483;
++		*val2 = 91787;
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = 25000;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h
+new file mode 100644
+index 000000000000..2c3a932faa94
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_temp.h
+@@ -0,0 +1,30 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
++/*
++ * Copyright (C) 2020 Invensense, Inc.
++ */
++
++#ifndef INV_ICM42600_TEMP_H_
++#define INV_ICM42600_TEMP_H_
++
++#include <linux/iio/iio.h>
++
++#define INV_ICM42600_TEMP_CHAN(_index)					\
++	{								\
++		.type = IIO_TEMP,					\
++		.info_mask_separate =					\
++			BIT(IIO_CHAN_INFO_PROCESSED) |			\
++			BIT(IIO_CHAN_INFO_OFFSET) |			\
++			BIT(IIO_CHAN_INFO_SCALE),			\
++		.scan_index = _index,					\
++		.scan_type = {						\
++			.sign = 's',					\
++			.realbits = 8,					\
++			.storagebits = 8,				\
++		},							\
++	}
++
++int inv_icm42600_temp_read_raw(struct iio_dev *indio_dev,
++			       struct iio_chan_spec const *chan,
++			       int *val, int *val2, long mask);
++
++#endif
+-- 
+2.17.1
 
-Ok, I'll edit those fields as soon as possible, thank you,
-
-Best regards,
-Jonathan Albrieux
-
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +    description: interrupt for DRDY pin. Triggered on rising edge.
-> > +
-> > +  vdd-supply:
-> > +    maxItems: 1
-> > +    description: |
-> > +      an optional regulator that needs to be on to provide VDD power to
-> > +      the sensor.
-> > +
-> > +  mount-matrix:
-> > +    description: an optional 3x3 mounting rotation matrix.
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    i2c {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        magnetometer@c {
-> > +            compatible = "asahi-kasei,ak8975";
-> > +            reg = <0x0c>;
-> > +            interrupt-parent = <&gpio6>;
-> > +            interrupts = <15 IRQ_TYPE_EDGE_RISING>;
-> > +            vdd-supply = <&ldo_3v3_gnss>;
-> > +            mount-matrix = "-0.984807753012208",  /* x0 */
-> > +                           "0",                   /* y0 */
-> > +                           "-0.173648177666930",  /* z0 */
-> > +                           "0",                   /* x1 */
-> > +                           "-1",                  /* y1 */
-> > +                           "0",                   /* z1 */
-> > +                           "-0.173648177666930",  /* x2 */
-> > +                           "0",                   /* y2 */
-> > +                           "0.984807753012208";   /* z2 */
-> > +        };
-> > +    };
-> > -- 
-> > 2.17.1
-> > 
