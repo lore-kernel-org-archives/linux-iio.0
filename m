@@ -5,65 +5,65 @@ X-Spam-Level:
 X-Spam-Status: No, score=-7.0 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4755BC433E3
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:58:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7A56C433E1
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:58:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25A282078C
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:58:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A13222078C
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 18:58:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="iKkDZEOb";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="PTGlOyg2"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="ddM37bsA";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="XmNol9kL"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728427AbgE0S6E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 May 2020 14:58:04 -0400
-Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:41024 "EHLO
-        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728742AbgE0S5y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2020 14:57:54 -0400
-Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
-        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04RIuQjP001589;
-        Wed, 27 May 2020 11:57:50 -0700
+        id S2387538AbgE0S6Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 May 2020 14:58:16 -0400
+Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:18356 "EHLO
+        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2387505AbgE0S6M (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 May 2020 14:58:12 -0400
+Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
+        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 04RIw4r2009036;
+        Wed, 27 May 2020 11:58:04 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=pfpt1; bh=gtSwqTtO9ukhzvARnknbqS3F3iKZcfW6tzOqlJOI/Zg=;
- b=iKkDZEObnyhpPWW3WU1/BMyi7/vld6WJ3Rs5KjsLMUaBlw3iCD+EM/6I+4UgcDeYmCoJ
- afw5oqVHot+NHGlZWIhlJNOFqS6RVJXqtuw+7RdlHcNM8nLlzLt6Bte6euI0TxFAzT0b
- rhDepDGnBUzMQZXauTqy0xC9EE06JeesCBFbT4lux8CFcfCJPmbwB2kIq/i5n83Lqwh1
- itLk+/ei+QNlooIQODNyFnGeGwffsCXEgW9lCfBtgelzb4gBQaxFJ1iZcIFoMKYfEpTV
- Pe0NOGyhslVNs3Rsmz8tVOnKuAacamy39eUxmYGaXSMg/8l18IbvOPNC8+178JHocwAa IA== 
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2173.outbound.protection.outlook.com [104.47.55.173])
-        by mx0a-00328301.pphosted.com with ESMTP id 3194qh0ncv-1
+ mime-version; s=pfpt1; bh=adTOVxfFk239g0IguKBJRwJ3v1k5cthu91P2HPJKIcs=;
+ b=ddM37bsA5oy+7Jv8cywHPhVXQzif0vrKwEnygjz0nhJh0SaGN5sow7FVax2IAAqv+SvX
+ EbZ17aFhFX6m6uQ/I/+A10bFzabPBzChMdUpqJYaxARl4C+2eH4UR2zSDEONlyCj1N5T
+ sF5kw+M4pPIACVKFeSJhmd7do1s2MbBNtnSNzK7MCCAYBKAkJTGCpsoi2MC1N+sWX4rI
+ NiMkfoXg1UgfCrw/d39X4vASZyyuYIkdwGTeUNSAIC/R0Mn65YPLoQ/Ro58V/SdTbJ6U
+ 89PNZ/6h0j/+Vcu3l/RCjshm642w9moMOCdExoztCv7oioutux/Aaby8tTZiIv4Ek+sM 4Q== 
+Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2177.outbound.protection.outlook.com [104.47.58.177])
+        by mx0b-00328301.pphosted.com with ESMTP id 3185ap9ewx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 27 May 2020 11:57:49 -0700
+        Wed, 27 May 2020 11:58:03 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=A+HIPSkRYsFoSUIlVEytknE3EVCMG9GqXkzvIgX2IH+GLMpSfk3DHG6eIJIQk+bU/xMlaBR1i8ZVnXivTJpWYN+j/yVDtbzyfGJ4uGkcb0E4zceh6ecZ3cf4dLa8ipfYSK+kO+JrnIdLmDPW4kVD4A2KRfXRFzSAHZX52AghqQl+vcKmDsTrk6f/784L4a7qarBK9dJBeRaBgU9OANo6CgMLvKCNS0e6iz3m0bwOMeYAxQ2CPLgNGysIDVSjp3qkuDN4J9A9LJMhuprXXb8ZRT8RloVNcv6+K6avvYRfStZ1cZniJxv4927CMI7w3OO2vobGqCU4CQOFZy89dRiGUQ==
+ b=Er+RSAZJ6zmEDcAJChn2dlAUz9IVcxWWdKG6TjI5AmDp4jtPJTt2qZc/CHCsnUhwFvJIbIxSwbaUaaxo2F5VNnQ+5QTqVdCimgcAyMhJIODdXUfpOHVv5ANHWMoWTFG1mBZBfZENqwiiL3ODQ+nEA8J/QBQ9biv/MPPqytxao7lk8OIrgZo/H8kH5EbKaJCcvv6SWFStyXDqKndr82HC2kv2QiMDOzbOQQwDtTdSGKjwQcIttVJC8z4WkaDfa0btuALQhGpeF6PCot7GZouxqvsNNm+X2jk8O1We+m2xZXgW3UsBCOBhH11cgnYB3SN4WBvNfmtRQm6ZCcvH1JpqXw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gtSwqTtO9ukhzvARnknbqS3F3iKZcfW6tzOqlJOI/Zg=;
- b=WJx1fa8hlBrjUe+CAw1qZpv/pE+5MD8bVtI/Wzmaj9SQlu3Gv0SzC86cIktplKnlz6AE8qoLM5PHkeMcjhd07EjL6E57Mt9DtkqiClokEpBeXwRO3pBo2Rwh503S0mMv2LkKqb49KP0IOvTbiUsb8QHApAzbrwhJkMny8XzxGslC+UWpWQB9hgunyWlOYiyoQ7PcpYMPOI9qoV7FIGjm5SanbWVxM0YkFk71AYjQpa8cWNtOWt7nOSVnxjtDL4RCPdehflvcz0Wczwl/YptCJxO8fULZLIPgzgpHzcWeE0AwhoNPLXqgjZPwts4akBkFnbbQGGkcsQCJ1ziYHlfUsw==
+ bh=adTOVxfFk239g0IguKBJRwJ3v1k5cthu91P2HPJKIcs=;
+ b=MqAV1SJjy+zJfmBwSVuw7E36RuKsHg/QbxChg3ezmOOEcpgbOsAn3HWRec33KfjoSoXgPRKxtTOrath7c/NBdgfJJ2QRbXuTP+EWzyW6LSXg6GoVQOVfRiL77YI0/XcykqLh7pohe0UOO0Bl4gh5KZW0Kd3SvJ/buqlwTuYhTd8dO27La7fIU7MvNt7pRVrEjEoGGKGPQQyAxDdjdJNdnPU4vDUOrqhcORQVjKkPdXfGvl3TnAyJqR1Iu6Mxkpw5yUqeIkI4bl2rJafkS/dAxPRnP9qj4mp7KGFbHffeBzS/ThJ9hjzhM99/IFc6v3Oax3wszun3r+CHeDTH6ryPvw==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=invensense.com; dmarc=pass action=none
  header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=gtSwqTtO9ukhzvARnknbqS3F3iKZcfW6tzOqlJOI/Zg=;
- b=PTGlOyg2afOcbyLNVO8+sS661MshXJbWe3twY7bFT1dL5WSTFt2/6M5C1w9LNw7G14zvMdXe93L507flTJoUUyUNuGy5sCrEAN8/YYm78QzqCH1DDu3YJT1bJ9oUYzLWkVlqIgTULo9T1/91uvNBVPZwXDWiwATXRW0KAyuB0zg=
+ bh=adTOVxfFk239g0IguKBJRwJ3v1k5cthu91P2HPJKIcs=;
+ b=XmNol9kLnUJ3HKbC7sjFKgsYUrZkfBnLhckQUkcrX8PBlBjT1A+YgS/pA3CYnwkfTUIvk2IkhPfPzeBCW9go4OzX6f6FjaL31c4F0w3frD6zxjFYVdM++k9h/b8U8PnbgJH3qFNLwChb44ZslqJXSpvd78PnPyUGvRCNr6MurMI=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=invensense.com;
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com (2603:10b6:208:265::9)
- by MN2PR12MB3470.namprd12.prod.outlook.com (2603:10b6:208:d0::31) with
+ by MN2PR12MB3151.namprd12.prod.outlook.com (2603:10b6:208:d1::16) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.27; Wed, 27 May
- 2020 18:57:46 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.23; Wed, 27 May
+ 2020 18:57:56 +0000
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::8940:8e95:6996:cc0]) by MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::8940:8e95:6996:cc0%8]) with mapi id 15.20.3045.018; Wed, 27 May 2020
- 18:57:46 +0000
+ 18:57:56 +0000
 From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
         mchehab+huawei@kernel.org, davem@davemloft.net,
@@ -71,9 +71,9 @@ To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH v2 04/12] iio: imu: inv_icm42600: add gyroscope IIO device
-Date:   Wed, 27 May 2020 20:57:03 +0200
-Message-Id: <20200527185711.21331-5-jmaneyrol@invensense.com>
+Subject: [PATCH v2 10/12] iio: imu: inv_icm42600: add accurate timestamping
+Date:   Wed, 27 May 2020 20:57:09 +0200
+Message-Id: <20200527185711.21331-11-jmaneyrol@invensense.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200527185711.21331-1-jmaneyrol@invensense.com>
 References: <20200527185711.21331-1-jmaneyrol@invensense.com>
@@ -83,705 +83,853 @@ X-ClientProxiedBy: LO2P265CA0168.GBRP265.PROD.OUTLOOK.COM
  (2603:10b6:208:265::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LO2P265CA0168.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26 via Frontend Transport; Wed, 27 May 2020 18:57:44 +0000
+Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LO2P265CA0168.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:9::36) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3021.26 via Frontend Transport; Wed, 27 May 2020 18:57:55 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [77.157.193.39]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: c48c9dcf-168f-40ae-b2cd-08d8026fd7e2
-X-MS-TrafficTypeDiagnostic: MN2PR12MB3470:
+X-MS-Office365-Filtering-Correlation-Id: 8f21f344-f43d-482a-c053-08d8026fde04
+X-MS-TrafficTypeDiagnostic: MN2PR12MB3151:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB3470343F5738B39922ED7638C4B10@MN2PR12MB3470.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:651;
+X-Microsoft-Antispam-PRVS: <MN2PR12MB31510FBFE138D0EF96959C76C4B10@MN2PR12MB3151.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:8882;
 X-Forefront-PRVS: 04163EF38A
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XniHn++/qDa6rHDwFx3pYj7LWFxk11EQKAupXdBeTTycXdgXHhN6iHjVhcrRxMSKn6Q419tnCjNun80/zK+xBxjyKiDrJSnnHbLMCImtP/RuYKjUFk3RaEsP09iXdWtgTMF5vIAIP6wvJURDt5jyWZ+YosNtyx6EPPwbSENotarOpL/WRwkYkgGLkYry/FLGQpenrgm1YuEASW04Qaingfd4fpFjPXT1+QKrruQztTbcD5QGf3A1kfGBqQwAXhNxeoxQOQJ49q2gx1Nf2mNXKvI5eoQEuVm3UaxMSk6RtYVyIYJeJuimyOiwwvaJmhCMM6BLn62fCLOIME8mCG+HbQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(396003)(39850400004)(136003)(346002)(366004)(376002)(8936002)(66476007)(66556008)(36756003)(66946007)(5660300002)(316002)(30864003)(86362001)(186003)(52116002)(7696005)(26005)(8676002)(478600001)(4326008)(16526019)(1076003)(2616005)(107886003)(6666004)(956004)(83380400001)(6486002)(2906002);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: uUaRctVgb3YNtoVcoPW0bEKW4ClPSG9BL+OWPdo9Pkh8exL1VUBR4xi3wuvTuD5CkZwwWBKBLNrhCfg5N9MIrUB2KRDq7VOk46KD5IWaxTZfs77io6ITz/EftjUHDOG7lMQRFUlGepOiQ274uP87cQVkZTeeI+xpj2loA/Zid5y6dMXRoPgR1kvHiZW8ULUgJ86vXFKoD5musor9+pl7NWuPGbTvlNl+Kb7HSrh9YdVCf0yGxmi4gekljTVWkRQ/CqlaM1yylOXftI/7xdVGgkC48ORI1mJ6J9sMZqX/2BmjAA546lda6BGH1mNVuwgLMzbneG+ob8Ie0pKbEgVuDaPYrjTfSqqAl01kZIrP53fGtQoDip0Zl8R9WnsLJPlC+tgIm6jtZANehHYeQB2A2S7/49Wu7Pdh1OFEyg1JHW/0OC5kcaTg6pYUx4KNBZarDhGgqXGgb03FcJJwpupNy96hFDbP4HR5UUMpbfJ71eY=
+X-Microsoft-Antispam-Message-Info: UpkWM2VoMndUqaSCsfL9V0+//VtxZH/pv7AbZkAsZRUQv+no9y6zh65y+S1Jj9Hf7ml7+qH1ADgFAex9xx9bkq4eZAVwujZIUCW+4UeJcHXE/Dz5aOoiNCbCdEhGLTm8Z1D9HQRfg0/lSBf8RXuEe2jTc/Rvjzb+k+2mXbC94wxr6CQOXDTTyhxyeWr8eNjmi1Gfjez4tKVjmZKdSV8oFgF0QgXbxWwBz1bE5hQhLGpZFhfow2IPFeLeObV8N1TBKDUm9/KGPOQCLNtirCbKeiI3hVz4GzXYs+OTnDbVjKGAEYe6NOqCuoGikT00Z8WzrAvfLCYFvPD1QRB58IEn/w==
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(136003)(39850400004)(346002)(366004)(396003)(376002)(16526019)(478600001)(107886003)(8676002)(5660300002)(186003)(8936002)(316002)(6666004)(6486002)(30864003)(1076003)(7696005)(66946007)(26005)(2616005)(956004)(2906002)(86362001)(36756003)(52116002)(4326008)(66556008)(83380400001)(66476007);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: iStrqtjSoJlWWKGSiSXmCvP8aD9rlmdRqLEhm0/VvHA1rU8gmR6Q/KR6tZwch0GCNjNqGmWQtYUY0O4vb062IC+uLZ+feYsxR7tjnowcdoAlUGfolthDwadezOJZ1PGc1EZpU5dKfDOhDX7MnhBlZ/M0rSB8uXYPknwiZ948KT/Tb0/LPIG7PgAXyp/TV3fbGf+LoRN1TytSc1WktET/BbuVRCSTO2jGoMX3LDvGzNgV28HivjadQDLCIP3SsPVmsF6Ic23HQXJDtwNkpRYiV//Yb85QWuZH7IeeMDLZniFT75L/VWRaseov3c+onqb7OMHT2yyHRKNWbfqWEqRQ5oHeo84cZwUGaJHGg7MpbDXFIzYfhuwmiFMIivdaZKQlPN0btfgIEnvwRmmDJqbPiceuFPNdHlv+sBf7Qlny4dKo0fFL8RiggNkqjAX6XrPmOR4jSQFBeIUm+VBfowxPyQ8fPj1oOHvdOMulyBWHwlM=
 X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: c48c9dcf-168f-40ae-b2cd-08d8026fd7e2
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 18:57:46.1793
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8f21f344-f43d-482a-c053-08d8026fde04
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 27 May 2020 18:57:56.4544
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: AOo9w+14hsGPMfn4b69GI1W+L3HiVz0rnS08dIGH5jn3t79xsHAjmcFtvNnul2YchzVxE/5f3yP8awbE/CFY6DqJun/8fbMV1aEWND5kL7g=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3470
+X-MS-Exchange-CrossTenant-UserPrincipalName: o07b0JbMfn0Gg6XMc6z8RhLeKWdOlb5KonOkBFJZr1pVs2CZ8/03rvQGWl47aEHbtNzZm6hoiZrw7xhJhLG6BqwbpbLWV+hUygQ9Owr+KPI=
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB3151
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
  definitions=2020-05-27_03:2020-05-27,2020-05-27 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
- suspectscore=0 cotscore=-2147483648 mlxlogscore=999 clxscore=1015
- lowpriorityscore=0 malwarescore=0 impostorscore=0 spamscore=0 mlxscore=0
- adultscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 cotscore=-2147483648
+ suspectscore=2 adultscore=0 bulkscore=0 impostorscore=0 phishscore=0
+ mlxscore=0 malwarescore=0 lowpriorityscore=0 mlxlogscore=999 clxscore=1015
+ spamscore=0 priorityscore=1501 classifier=spam adjust=0 reason=mlx
  scancount=1 engine=8.12.0-2004280000 definitions=main-2005270145
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add IIO device for gyroscope sensor with data polling interface.
-Attributes: raw, scale, sampling_frequency, calibbias.
+Add a timestamping mechanism for buffer that provides accurate
+event timestamps when using watermark. This mechanism estimates
+device internal clock by comparing FIFO interrupts delta time and
+device elapsed time computed by parsing FIFO data.
 
-Gyroscope in low noise mode.
+Take interrupt timestamp in hard irq handler and add IIO device
+specific timestamp structures in device private allocation.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- drivers/iio/imu/inv_icm42600/inv_icm42600.h   |   6 +
- .../iio/imu/inv_icm42600/inv_icm42600_core.c  |   4 +
- .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  | 600 ++++++++++++++++++
- 3 files changed, 610 insertions(+)
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
+ drivers/iio/imu/inv_icm42600/Makefile         |   1 +
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h   |   5 +
+ .../iio/imu/inv_icm42600/inv_icm42600_accel.c |  40 +++-
+ .../imu/inv_icm42600/inv_icm42600_buffer.c    |  28 +++
+ .../iio/imu/inv_icm42600/inv_icm42600_core.c  |  17 +-
+ .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  |  40 +++-
+ .../imu/inv_icm42600/inv_icm42600_timestamp.c | 195 ++++++++++++++++++
+ .../imu/inv_icm42600/inv_icm42600_timestamp.h |  85 ++++++++
+ 8 files changed, 398 insertions(+), 13 deletions(-)
+ create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.c
+ create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.h
 
+diff --git a/drivers/iio/imu/inv_icm42600/Makefile b/drivers/iio/imu/inv_icm42600/Makefile
+index 0f49f6df3647..291714d9aa54 100644
+--- a/drivers/iio/imu/inv_icm42600/Makefile
++++ b/drivers/iio/imu/inv_icm42600/Makefile
+@@ -6,6 +6,7 @@ inv-icm42600-y += inv_icm42600_gyro.o
+ inv-icm42600-y += inv_icm42600_accel.o
+ inv-icm42600-y += inv_icm42600_temp.o
+ inv-icm42600-y += inv_icm42600_buffer.o
++inv-icm42600-y += inv_icm42600_timestamp.o
+ 
+ obj-$(CONFIG_INV_ICM42600_I2C) += inv-icm42600-i2c.o
+ inv-icm42600-i2c-y += inv_icm42600_i2c.o
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-index 14c8ef152418..c1023d59b37b 100644
+index 4d5811562a61..2de0dd7675fb 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
-@@ -120,6 +120,8 @@ struct inv_icm42600_suspended {
-  *  @orientation:	sensor chip orientation relative to main hardware.
-  *  @conf:		chip sensors configurations.
-  *  @suspended:		suspended sensors configuration.
-+ *  @indio_gyro:	gyroscope IIO device.
-+ *  @buffer:		data transfer buffer aligned for DMA.
+@@ -126,6 +126,7 @@ struct inv_icm42600_suspended {
+  *  @indio_accel:	accelerometer IIO device.
+  *  @buffer:		data transfer buffer aligned for DMA.
+  *  @fifo:		FIFO management structure.
++ *  @timestamp:		interrupt timestamps.
   */
  struct inv_icm42600_state {
  	struct mutex lock;
-@@ -131,6 +133,8 @@ struct inv_icm42600_state {
- 	struct iio_mount_matrix orientation;
- 	struct inv_icm42600_conf conf;
- 	struct inv_icm42600_suspended suspended;
-+	struct iio_dev *indio_gyro;
-+	uint8_t buffer[2] ____cacheline_aligned;
+@@ -141,6 +142,10 @@ struct inv_icm42600_state {
+ 	struct iio_dev *indio_accel;
+ 	uint8_t buffer[2] ____cacheline_aligned;
+ 	struct inv_icm42600_fifo fifo;
++	struct {
++		int64_t gyro;
++		int64_t accel;
++	} timestamp;
  };
  
  /* Virtual register addresses: @bank on MSB (4 upper bits), @address on LSB */
-@@ -369,4 +373,6 @@ int inv_icm42600_debugfs_reg(struct iio_dev *indio_dev, unsigned int reg,
- int inv_icm42600_core_probe(struct regmap *regmap, int chip,
- 			    inv_icm42600_bus_setup bus_setup);
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+index c73ce204efc6..ec1d124c1471 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_accel.c
+@@ -17,6 +17,7 @@
+ #include "inv_icm42600.h"
+ #include "inv_icm42600_temp.h"
+ #include "inv_icm42600_buffer.h"
++#include "inv_icm42600_timestamp.h"
  
-+int inv_icm42600_gyro_init(struct inv_icm42600_state *st);
+ #define INV_ICM42600_ACCEL_CHAN(_modifier, _index, _ext_info)		\
+ 	{								\
+@@ -50,6 +51,7 @@ enum inv_icm42600_accel_scan {
+ 	INV_ICM42600_ACCEL_SCAN_Y,
+ 	INV_ICM42600_ACCEL_SCAN_Z,
+ 	INV_ICM42600_ACCEL_SCAN_TEMP,
++	INV_ICM42600_ACCEL_SCAN_TIMESTAMP,
+ };
+ 
+ static const struct iio_chan_spec_ext_info inv_icm42600_accel_ext_infos[] = {
+@@ -65,13 +67,15 @@ static const struct iio_chan_spec inv_icm42600_accel_channels[] = {
+ 	INV_ICM42600_ACCEL_CHAN(IIO_MOD_Z, INV_ICM42600_ACCEL_SCAN_Z,
+ 				inv_icm42600_accel_ext_infos),
+ 	INV_ICM42600_TEMP_CHAN(INV_ICM42600_ACCEL_SCAN_TEMP),
++	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM42600_ACCEL_SCAN_TIMESTAMP),
+ };
+ 
+-/* IIO buffer data: 8 bytes */
++/* IIO buffer data: 16 bytes */
+ struct inv_icm42600_accel_buffer {
+ 	struct inv_icm42600_fifo_sensor_data accel;
+ 	int8_t temp;
+ 	uint8_t padding;
++	int64_t timestamp;
+ };
+ 
+ #define INV_ICM42600_SCAN_MASK_ACCEL_3AXIS				\
+@@ -92,6 +96,7 @@ static int inv_icm42600_accel_update_scan_mode(struct iio_dev *indio_dev,
+ 					       const unsigned long *scan_mask)
+ {
+ 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
+ 	unsigned int fifo_en = 0;
+ 	unsigned int sleep_temp = 0;
+@@ -119,6 +124,7 @@ static int inv_icm42600_accel_update_scan_mode(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	/* update data FIFO write */
++	inv_icm42600_timestamp_apply_odr(ts, 0, 0, 0);
+ 	ret = inv_icm42600_buffer_set_fifo_en(st, fifo_en | st->fifo.en);
+ 	if (ret)
+ 		goto out_unlock;
+@@ -299,9 +305,11 @@ static int inv_icm42600_accel_read_odr(struct inv_icm42600_state *st,
+ 	return IIO_VAL_INT_PLUS_MICRO;
+ }
+ 
+-static int inv_icm42600_accel_write_odr(struct inv_icm42600_state *st,
++static int inv_icm42600_accel_write_odr(struct iio_dev *indio_dev,
+ 					int val, int val2)
+ {
++	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	struct device *dev = regmap_get_device(st->map);
+ 	unsigned int idx;
+ 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
+@@ -320,6 +328,11 @@ static int inv_icm42600_accel_write_odr(struct inv_icm42600_state *st,
+ 	pm_runtime_get_sync(dev);
+ 	mutex_lock(&st->lock);
+ 
++	ret = inv_icm42600_timestamp_update_odr(ts, inv_icm42600_odr_to_period(conf.odr),
++						iio_buffer_enabled(indio_dev));
++	if (ret)
++		goto out_unlock;
 +
- #endif
+ 	ret = inv_icm42600_set_accel_conf(st, &conf, NULL);
+ 	if (ret)
+ 		goto out_unlock;
+@@ -609,7 +622,7 @@ static int inv_icm42600_accel_write_raw(struct iio_dev *indio_dev,
+ 		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		return inv_icm42600_accel_write_odr(st, val, val2);
++		return inv_icm42600_accel_write_odr(indio_dev, val, val2);
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		ret = iio_device_claim_direct_mode(indio_dev);
+ 		if (ret)
+@@ -692,6 +705,8 @@ int inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ {
+ 	struct device *dev = regmap_get_device(st->map);
+ 	const char *name;
++	struct inv_icm42600_timestamp *ts;
++	uint32_t period;
+ 	struct iio_dev *indio_dev;
+ 	struct iio_buffer *buffer;
+ 
+@@ -699,7 +714,7 @@ int inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ 	if (!name)
+ 		return -ENOMEM;
+ 
+-	indio_dev = devm_iio_device_alloc(dev, 0);
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*ts));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+@@ -707,6 +722,10 @@ int inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
++	ts = iio_priv(indio_dev);
++	period = inv_icm42600_odr_to_period(st->conf.accel.odr);
++	inv_icm42600_timestamp_init(ts, period);
++
+ 	iio_device_set_drvdata(indio_dev, st);
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->name = name;
+@@ -726,16 +745,19 @@ int inv_icm42600_accel_init(struct inv_icm42600_state *st)
+ int inv_icm42600_accel_parse_fifo(struct iio_dev *indio_dev)
+ {
+ 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	ssize_t i, size;
++	unsigned int no;
+ 	const void *accel, *gyro, *timestamp;
+ 	const int8_t *temp;
+ 	unsigned int odr;
++	int64_t ts_val;
+ 	struct inv_icm42600_accel_buffer buffer = {
+ 		.padding = 0,
+ 	};
+ 
+ 	/* parse all fifo packets */
+-	for (i = 0; i < st->fifo.count; i += size) {
++	for (i = 0, no = 0; i < st->fifo.count; i += size, ++no) {
+ 		size = inv_icm42600_fifo_decode_packet(&st->fifo.data[i],
+ 				&accel, &gyro, &temp, &timestamp, &odr);
+ 		/* quit if error or FIFO is empty */
+@@ -746,10 +768,16 @@ int inv_icm42600_accel_parse_fifo(struct iio_dev *indio_dev)
+ 		if (accel == NULL || !inv_icm42600_fifo_is_data_valid(accel))
+ 			continue;
+ 
++		/* update odr */
++		if (odr & INV_ICM42600_SENSOR_ACCEL)
++			inv_icm42600_timestamp_apply_odr(ts, st->fifo.period,
++							 st->fifo.nb.total, no);
++
+ 		/* fill and push data buffer */
+ 		memcpy(&buffer.accel, accel, sizeof(buffer.accel));
+ 		buffer.temp = temp ? *temp : 0;
+-		iio_push_to_buffers(indio_dev, &buffer);
++		ts_val = inv_icm42600_timestamp_pop(ts);
++		iio_push_to_buffers_with_timestamp(indio_dev, &buffer, ts_val);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+index c91075f62231..3c8b1b19de15 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.c
+@@ -14,6 +14,7 @@
+ #include <linux/iio/buffer.h>
+ 
+ #include "inv_icm42600.h"
++#include "inv_icm42600_timestamp.h"
+ #include "inv_icm42600_buffer.h"
+ 
+ /* FIFO header: 1 byte */
+@@ -356,6 +357,7 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
+ 	struct device *dev = regmap_get_device(st->map);
+ 	unsigned int sensor;
+ 	unsigned int *watermark;
++	struct inv_icm42600_timestamp *ts;
+ 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
+ 	unsigned int sleep_temp = 0;
+ 	unsigned int sleep_sensor = 0;
+@@ -365,9 +367,11 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
+ 	if (indio_dev == st->indio_gyro) {
+ 		sensor = INV_ICM42600_SENSOR_GYRO;
+ 		watermark = &st->fifo.watermark.gyro;
++		ts = iio_priv(st->indio_gyro);
+ 	} else if (indio_dev == st->indio_accel) {
+ 		sensor = INV_ICM42600_SENSOR_ACCEL;
+ 		watermark = &st->fifo.watermark.accel;
++		ts = iio_priv(st->indio_accel);
+ 	} else {
+ 		return -EINVAL;
+ 	}
+@@ -395,6 +399,8 @@ static int inv_icm42600_buffer_postdisable(struct iio_dev *indio_dev)
+ 	if (!st->fifo.on)
+ 		ret = inv_icm42600_set_temp_conf(st, false, &sleep_temp);
+ 
++	inv_icm42600_timestamp_reset(ts);
++
+ out_unlock:
+ 	mutex_unlock(&st->lock);
+ 
+@@ -480,17 +486,26 @@ int inv_icm42600_buffer_fifo_read(struct inv_icm42600_state *st,
+ 
+ int inv_icm42600_buffer_fifo_parse(struct inv_icm42600_state *st)
+ {
++	struct inv_icm42600_timestamp *ts;
+ 	int ret;
+ 
+ 	if (st->fifo.nb.total == 0)
+ 		return 0;
+ 
++	/* handle gyroscope timestamp and FIFO data parsing */
++	ts = iio_priv(st->indio_gyro);
++	inv_icm42600_timestamp_interrupt(ts, st->fifo.period, st->fifo.nb.total,
++					 st->fifo.nb.gyro, st->timestamp.gyro);
+ 	if (st->fifo.nb.gyro > 0) {
+ 		ret = inv_icm42600_gyro_parse_fifo(st->indio_gyro);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
++	/* handle accelerometer timestamp and FIFO data parsing */
++	ts = iio_priv(st->indio_accel);
++	inv_icm42600_timestamp_interrupt(ts, st->fifo.period, st->fifo.nb.total,
++					 st->fifo.nb.accel, st->timestamp.accel);
+ 	if (st->fifo.nb.accel > 0) {
+ 		ret = inv_icm42600_accel_parse_fifo(st->indio_accel);
+ 		if (ret)
+@@ -503,8 +518,13 @@ int inv_icm42600_buffer_fifo_parse(struct inv_icm42600_state *st)
+ int inv_icm42600_buffer_hwfifo_flush(struct inv_icm42600_state *st,
+ 				     unsigned int count)
+ {
++	struct inv_icm42600_timestamp *ts;
++	int64_t gyro_ts, accel_ts;
+ 	int ret;
+ 
++	gyro_ts = iio_get_time_ns(st->indio_gyro);
++	accel_ts = iio_get_time_ns(st->indio_accel);
++
+ 	ret = inv_icm42600_buffer_fifo_read(st, count);
+ 	if (ret)
+ 		return ret;
+@@ -513,12 +533,20 @@ int inv_icm42600_buffer_hwfifo_flush(struct inv_icm42600_state *st,
+ 		return 0;
+ 
+ 	if (st->fifo.nb.gyro > 0) {
++		ts = iio_priv(st->indio_gyro);
++		inv_icm42600_timestamp_interrupt(ts, st->fifo.period,
++						 st->fifo.nb.total, st->fifo.nb.gyro,
++						 gyro_ts);
+ 		ret = inv_icm42600_gyro_parse_fifo(st->indio_gyro);
+ 		if (ret)
+ 			return ret;
+ 	}
+ 
+ 	if (st->fifo.nb.accel > 0) {
++		ts = iio_priv(st->indio_accel);
++		inv_icm42600_timestamp_interrupt(ts, st->fifo.period,
++						 st->fifo.nb.total, st->fifo.nb.accel,
++						 accel_ts);
+ 		ret = inv_icm42600_accel_parse_fifo(st->indio_accel);
+ 		if (ret)
+ 			return ret;
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-index 81b171d6782c..dccb7bcc782e 100644
+index 6f1c1eb83953..c0d676219fc7 100644
 --- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
-@@ -510,6 +510,10 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip,
+@@ -19,6 +19,7 @@
+ 
+ #include "inv_icm42600.h"
+ #include "inv_icm42600_buffer.h"
++#include "inv_icm42600_timestamp.h"
+ 
+ static const struct regmap_range_cfg inv_icm42600_regmap_ranges[] = {
+ 	{
+@@ -413,6 +414,16 @@ static int inv_icm42600_setup(struct inv_icm42600_state *st,
+ 	return inv_icm42600_set_conf(st, hw->conf);
+ }
+ 
++static irqreturn_t inv_icm42600_irq_timestamp(int irq, void *_data)
++{
++	struct inv_icm42600_state *st = _data;
++
++	st->timestamp.gyro = iio_get_time_ns(st->indio_gyro);
++	st->timestamp.accel = iio_get_time_ns(st->indio_accel);
++
++	return IRQ_WAKE_THREAD;
++}
++
+ static irqreturn_t inv_icm42600_irq_handler(int irq, void *_data)
+ {
+ 	struct inv_icm42600_state *st = _data;
+@@ -493,7 +504,7 @@ static int inv_icm42600_irq_init(struct inv_icm42600_state *st, int irq,
  	if (ret)
  		return ret;
  
-+	ret = inv_icm42600_gyro_init(st);
+-	return devm_request_threaded_irq(dev, irq, NULL,
++	return devm_request_threaded_irq(dev, irq, inv_icm42600_irq_timestamp,
+ 					 inv_icm42600_irq_handler, irq_type,
+ 					 "inv_icm42600", st);
+ }
+@@ -613,6 +624,10 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip, int irq,
+ 	if (ret)
+ 		return ret;
+ 
++	ret = inv_icm42600_timestamp_setup(st);
 +	if (ret)
 +		return ret;
 +
- 	/* setup runtime power management */
- 	ret = pm_runtime_set_active(dev);
+ 	ret = inv_icm42600_buffer_init(st);
  	if (ret)
+ 		return ret;
 diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-new file mode 100644
-index 000000000000..9d9672989b23
---- /dev/null
+index b05c33876b8d..76d92a550278 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
 +++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_gyro.c
-@@ -0,0 +1,600 @@
+@@ -17,6 +17,7 @@
+ #include "inv_icm42600.h"
+ #include "inv_icm42600_temp.h"
+ #include "inv_icm42600_buffer.h"
++#include "inv_icm42600_timestamp.h"
+ 
+ #define INV_ICM42600_GYRO_CHAN(_modifier, _index, _ext_info)		\
+ 	{								\
+@@ -50,6 +51,7 @@ enum inv_icm42600_gyro_scan {
+ 	INV_ICM42600_GYRO_SCAN_Y,
+ 	INV_ICM42600_GYRO_SCAN_Z,
+ 	INV_ICM42600_GYRO_SCAN_TEMP,
++	INV_ICM42600_GYRO_SCAN_TIMESTAMP,
+ };
+ 
+ static const struct iio_chan_spec_ext_info inv_icm42600_gyro_ext_infos[] = {
+@@ -65,13 +67,15 @@ static const struct iio_chan_spec inv_icm42600_gyro_channels[] = {
+ 	INV_ICM42600_GYRO_CHAN(IIO_MOD_Z, INV_ICM42600_GYRO_SCAN_Z,
+ 			       inv_icm42600_gyro_ext_infos),
+ 	INV_ICM42600_TEMP_CHAN(INV_ICM42600_GYRO_SCAN_TEMP),
++	IIO_CHAN_SOFT_TIMESTAMP(INV_ICM42600_GYRO_SCAN_TIMESTAMP),
+ };
+ 
+-/* IIO buffer data: 8 bytes */
++/* IIO buffer data: 16 bytes */
+ struct inv_icm42600_gyro_buffer {
+ 	struct inv_icm42600_fifo_sensor_data gyro;
+ 	int8_t temp;
+ 	uint8_t padding;
++	int64_t timestamp;
+ };
+ 
+ #define INV_ICM42600_SCAN_MASK_GYRO_3AXIS				\
+@@ -92,6 +96,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
+ 					      const unsigned long *scan_mask)
+ {
+ 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
+ 	unsigned int fifo_en = 0;
+ 	unsigned int sleep_gyro = 0;
+@@ -119,6 +124,7 @@ static int inv_icm42600_gyro_update_scan_mode(struct iio_dev *indio_dev,
+ 	}
+ 
+ 	/* update data FIFO write */
++	inv_icm42600_timestamp_apply_odr(ts, 0, 0, 0);
+ 	ret = inv_icm42600_buffer_set_fifo_en(st, fifo_en | st->fifo.en);
+ 	if (ret)
+ 		goto out_unlock;
+@@ -311,9 +317,11 @@ static int inv_icm42600_gyro_read_odr(struct inv_icm42600_state *st,
+ 	return IIO_VAL_INT_PLUS_MICRO;
+ }
+ 
+-static int inv_icm42600_gyro_write_odr(struct inv_icm42600_state *st,
++static int inv_icm42600_gyro_write_odr(struct iio_dev *indio_dev,
+ 				       int val, int val2)
+ {
++	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	struct device *dev = regmap_get_device(st->map);
+ 	unsigned int idx;
+ 	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
+@@ -332,6 +340,11 @@ static int inv_icm42600_gyro_write_odr(struct inv_icm42600_state *st,
+ 	pm_runtime_get_sync(dev);
+ 	mutex_lock(&st->lock);
+ 
++	ret = inv_icm42600_timestamp_update_odr(ts, inv_icm42600_odr_to_period(conf.odr),
++						iio_buffer_enabled(indio_dev));
++	if (ret)
++		goto out_unlock;
++
+ 	ret = inv_icm42600_set_gyro_conf(st, &conf, NULL);
+ 	if (ret)
+ 		goto out_unlock;
+@@ -620,7 +633,7 @@ static int inv_icm42600_gyro_write_raw(struct iio_dev *indio_dev,
+ 		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		return inv_icm42600_gyro_write_odr(st, val, val2);
++		return inv_icm42600_gyro_write_odr(indio_dev, val, val2);
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		ret = iio_device_claim_direct_mode(indio_dev);
+ 		if (ret)
+@@ -703,6 +716,8 @@ int inv_icm42600_gyro_init(struct inv_icm42600_state *st)
+ {
+ 	struct device *dev = regmap_get_device(st->map);
+ 	const char *name;
++	struct inv_icm42600_timestamp *ts;
++	uint32_t period;
+ 	struct iio_dev *indio_dev;
+ 	struct iio_buffer *buffer;
+ 
+@@ -710,7 +725,7 @@ int inv_icm42600_gyro_init(struct inv_icm42600_state *st)
+ 	if (!name)
+ 		return -ENOMEM;
+ 
+-	indio_dev = devm_iio_device_alloc(dev, 0);
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*ts));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+@@ -718,6 +733,10 @@ int inv_icm42600_gyro_init(struct inv_icm42600_state *st)
+ 	if (!buffer)
+ 		return -ENOMEM;
+ 
++	ts = iio_priv(indio_dev);
++	period = inv_icm42600_odr_to_period(st->conf.gyro.odr);
++	inv_icm42600_timestamp_init(ts, period);
++
+ 	iio_device_set_drvdata(indio_dev, st);
+ 	indio_dev->dev.parent = dev;
+ 	indio_dev->name = name;
+@@ -737,16 +756,19 @@ int inv_icm42600_gyro_init(struct inv_icm42600_state *st)
+ int inv_icm42600_gyro_parse_fifo(struct iio_dev *indio_dev)
+ {
+ 	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
++	struct inv_icm42600_timestamp *ts = iio_priv(indio_dev);
+ 	ssize_t i, size;
++	unsigned int no;
+ 	const void *accel, *gyro, *timestamp;
+ 	const int8_t *temp;
+ 	unsigned int odr;
++	int64_t ts_val;
+ 	struct inv_icm42600_gyro_buffer buffer = {
+ 		.padding = 0,
+ 	};
+ 
+ 	/* parse all fifo packets */
+-	for (i = 0; i < st->fifo.count; i += size) {
++	for (i = 0, no = 0; i < st->fifo.count; i += size, ++no) {
+ 		size = inv_icm42600_fifo_decode_packet(&st->fifo.data[i],
+ 				&accel, &gyro, &temp, &timestamp, &odr);
+ 		/* quit if error or FIFO is empty */
+@@ -757,10 +779,16 @@ int inv_icm42600_gyro_parse_fifo(struct iio_dev *indio_dev)
+ 		if (gyro == NULL || !inv_icm42600_fifo_is_data_valid(gyro))
+ 			continue;
+ 
++		/* update odr */
++		if (odr & INV_ICM42600_SENSOR_GYRO)
++			inv_icm42600_timestamp_apply_odr(ts, st->fifo.period,
++							 st->fifo.nb.total, no);
++
+ 		/* fill and push data buffer */
+ 		memcpy(&buffer.gyro, gyro, sizeof(buffer.gyro));
+ 		buffer.temp = temp ? *temp : 0;
+-		iio_push_to_buffers(indio_dev, &buffer);
++		ts_val = inv_icm42600_timestamp_pop(ts);
++		iio_push_to_buffers_with_timestamp(indio_dev, &buffer, ts_val);
+ 	}
+ 
+ 	return 0;
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.c
+new file mode 100644
+index 000000000000..7f2dc41f807b
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.c
+@@ -0,0 +1,195 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
 + * Copyright (C) 2020 Invensense, Inc.
 + */
 +
 +#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/mutex.h>
-+#include <linux/pm_runtime.h>
 +#include <linux/regmap.h>
-+#include <linux/delay.h>
 +#include <linux/math64.h>
-+#include <linux/iio/iio.h>
 +
 +#include "inv_icm42600.h"
++#include "inv_icm42600_timestamp.h"
 +
-+#define INV_ICM42600_GYRO_CHAN(_modifier, _index, _ext_info)		\
-+	{								\
-+		.type = IIO_ANGL_VEL,					\
-+		.modified = 1,						\
-+		.channel2 = _modifier,					\
-+		.info_mask_separate =					\
-+			BIT(IIO_CHAN_INFO_RAW) |			\
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
-+		.info_mask_shared_by_type =				\
-+			BIT(IIO_CHAN_INFO_SCALE),			\
-+		.info_mask_shared_by_type_available =			\
-+			BIT(IIO_CHAN_INFO_SCALE) |			\
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
-+		.info_mask_shared_by_all =				\
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-+		.info_mask_shared_by_all_available =			\
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
-+		.scan_index = _index,					\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 16,					\
-+			.storagebits = 16,				\
-+			.endianness = IIO_BE,				\
-+		},							\
-+		.ext_info = _ext_info,					\
-+	}
++/* internal chip period is 32kHz, 31250ns */
++#define INV_ICM42600_TIMESTAMP_PERIOD		31250
++/* allow a jitter of +/- 2% */
++#define INV_ICM42600_TIMESTAMP_JITTER		2
++/* compute min and max periods accepted */
++#define INV_ICM42600_TIMESTAMP_MIN_PERIOD(_p)		\
++	(((_p) * (100 - INV_ICM42600_TIMESTAMP_JITTER)) / 100)
++#define INV_ICM42600_TIMESTAMP_MAX_PERIOD(_p)		\
++	(((_p) * (100 + INV_ICM42600_TIMESTAMP_JITTER)) / 100)
 +
-+enum inv_icm42600_gyro_scan {
-+	INV_ICM42600_GYRO_SCAN_X,
-+	INV_ICM42600_GYRO_SCAN_Y,
-+	INV_ICM42600_GYRO_SCAN_Z,
-+};
-+
-+static const struct iio_chan_spec_ext_info inv_icm42600_gyro_ext_infos[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, inv_icm42600_get_mount_matrix),
-+	{},
-+};
-+
-+static const struct iio_chan_spec inv_icm42600_gyro_channels[] = {
-+	INV_ICM42600_GYRO_CHAN(IIO_MOD_X, INV_ICM42600_GYRO_SCAN_X,
-+			       inv_icm42600_gyro_ext_infos),
-+	INV_ICM42600_GYRO_CHAN(IIO_MOD_Y, INV_ICM42600_GYRO_SCAN_Y,
-+			       inv_icm42600_gyro_ext_infos),
-+	INV_ICM42600_GYRO_CHAN(IIO_MOD_Z, INV_ICM42600_GYRO_SCAN_Z,
-+			       inv_icm42600_gyro_ext_infos),
-+};
-+
-+static int inv_icm42600_gyro_read_sensor(struct inv_icm42600_state *st,
-+					 struct iio_chan_spec const *chan,
-+					 int16_t *val)
++/* Add a new value inside an accumulator and update the estimate value */
++static void inv_update_acc(struct inv_icm42600_timestamp_acc *acc, uint32_t val)
 +{
-+	struct device *dev = regmap_get_device(st->map);
-+	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
-+	unsigned int reg;
-+	__be16 *data;
-+	int ret;
++	uint64_t sum = 0;
++	size_t i;
 +
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
++	acc->values[acc->idx++] = val;
++	if (acc->idx >= ARRAY_SIZE(acc->values))
++		acc->idx = 0;
 +
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		reg = INV_ICM42600_REG_GYRO_DATA_X;
-+		break;
-+	case IIO_MOD_Y:
-+		reg = INV_ICM42600_REG_GYRO_DATA_Y;
-+		break;
-+	case IIO_MOD_Z:
-+		reg = INV_ICM42600_REG_GYRO_DATA_Z;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	pm_runtime_get_sync(dev);
-+	mutex_lock(&st->lock);
-+
-+	/* enable gyro sensor */
-+	conf.mode = INV_ICM42600_SENSOR_MODE_LOW_NOISE;
-+	ret = inv_icm42600_set_gyro_conf(st, &conf, NULL);
-+	if (ret)
-+		goto exit;
-+
-+	/* read gyro register data */
-+	data = (__be16 *)&st->buffer[0];
-+	ret = regmap_bulk_read(st->map, reg, data, sizeof(*data));
-+	if (ret)
-+		goto exit;
-+
-+	*val = (int16_t)be16_to_cpup(data);
-+	if (*val == INV_ICM42600_DATA_INVALID)
-+		ret = -EINVAL;
-+exit:
-+	mutex_unlock(&st->lock);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+	return ret;
-+}
-+
-+/* IIO format int + nano */
-+static const int inv_icm42600_gyro_scale[] = {
-+	/* +/- 2000dps => 0.001065264 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_2000DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_2000DPS + 1] = 1065264,
-+	/* +/- 1000dps => 0.000532632 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_1000DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_1000DPS + 1] = 532632,
-+	/* +/- 500dps => 0.000266316 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_500DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_500DPS + 1] = 266316,
-+	/* +/- 250dps => 0.000133158 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_250DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_250DPS + 1] = 133158,
-+	/* +/- 125dps => 0.000066579 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_125DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_125DPS + 1] = 66579,
-+	/* +/- 62.5dps => 0.000033290 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_62_5DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_62_5DPS + 1] = 33290,
-+	/* +/- 31.25dps => 0.000016645 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_31_25DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_31_25DPS + 1] = 16645,
-+	/* +/- 15.625dps => 0.000008322 rad/s */
-+	[2 * INV_ICM42600_GYRO_FS_15_625DPS] = 0,
-+	[2 * INV_ICM42600_GYRO_FS_15_625DPS + 1] = 8322,
-+};
-+
-+static int inv_icm42600_gyro_read_scale(struct inv_icm42600_state *st,
-+					int *val, int *val2)
-+{
-+	unsigned int idx;
-+
-+	idx = st->conf.gyro.fs;
-+
-+	*val = inv_icm42600_gyro_scale[2 * idx];
-+	*val2 = inv_icm42600_gyro_scale[2 * idx + 1];
-+	return IIO_VAL_INT_PLUS_NANO;
-+}
-+
-+static int inv_icm42600_gyro_write_scale(struct inv_icm42600_state *st,
-+					 int val, int val2)
-+{
-+	struct device *dev = regmap_get_device(st->map);
-+	unsigned int idx;
-+	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
-+	int ret;
-+
-+	for (idx = 0; idx < ARRAY_SIZE(inv_icm42600_gyro_scale); idx += 2) {
-+		if (val == inv_icm42600_gyro_scale[idx] &&
-+		    val2 == inv_icm42600_gyro_scale[idx + 1])
++	/* compute the mean of all stored values, use 0 as empty slot */
++	for (i = 0; i < ARRAY_SIZE(acc->values); ++i) {
++		if (acc->values[i] == 0)
 +			break;
++		sum += acc->values[i];
 +	}
-+	if (idx >= ARRAY_SIZE(inv_icm42600_gyro_scale))
-+		return -EINVAL;
 +
-+	conf.fs = idx / 2;
-+
-+	pm_runtime_get_sync(dev);
-+	mutex_lock(&st->lock);
-+
-+	ret = inv_icm42600_set_gyro_conf(st, &conf, NULL);
-+
-+	mutex_unlock(&st->lock);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return ret;
++	acc->val = div_u64(sum, i);
 +}
 +
-+/* IIO format int + micro */
-+static const int inv_icm42600_gyro_odr[] = {
-+	/* 12.5Hz */
-+	12, 500000,
-+	/* 25Hz */
-+	25, 0,
-+	/* 50Hz */
-+	50, 0,
-+	/* 100Hz */
-+	100, 0,
-+	/* 200Hz */
-+	200, 0,
-+	/* 1kHz */
-+	1000, 0,
-+	/* 2kHz */
-+	2000, 0,
-+	/* 4kHz */
-+	4000, 0,
-+};
-+
-+static const int inv_icm42600_gyro_odr_conv[] = {
-+	INV_ICM42600_ODR_12_5HZ,
-+	INV_ICM42600_ODR_25HZ,
-+	INV_ICM42600_ODR_50HZ,
-+	INV_ICM42600_ODR_100HZ,
-+	INV_ICM42600_ODR_200HZ,
-+	INV_ICM42600_ODR_1KHZ_LN,
-+	INV_ICM42600_ODR_2KHZ_LN,
-+	INV_ICM42600_ODR_4KHZ_LN,
-+};
-+
-+static int inv_icm42600_gyro_read_odr(struct inv_icm42600_state *st,
-+				      int *val, int *val2)
++void inv_icm42600_timestamp_init(struct inv_icm42600_timestamp *ts,
++				 uint32_t period)
 +{
-+	unsigned int odr;
-+	unsigned int i;
++	/* initial odr for sensor after reset is 1kHz */
++	const uint32_t default_period = 1000000;
 +
-+	odr = st->conf.gyro.odr;
++	/* current multiplier and period values after reset */
++	ts->mult = default_period / INV_ICM42600_TIMESTAMP_PERIOD;
++	ts->period = default_period;
++	/* new set multiplier is the one from chip initialization */
++	ts->new_mult = period / INV_ICM42600_TIMESTAMP_PERIOD;
 +
-+	for (i = 0; i < ARRAY_SIZE(inv_icm42600_gyro_odr_conv); ++i) {
-+		if (inv_icm42600_gyro_odr_conv[i] == odr)
-+			break;
-+	}
-+	if (i >= ARRAY_SIZE(inv_icm42600_gyro_odr_conv))
-+		return -EINVAL;
-+
-+	*val = inv_icm42600_gyro_odr[2 * i];
-+	*val2 = inv_icm42600_gyro_odr[2 * i + 1];
-+
-+	return IIO_VAL_INT_PLUS_MICRO;
++	/* use theoretical value for chip period */
++	inv_update_acc(&ts->chip_period, INV_ICM42600_TIMESTAMP_PERIOD);
 +}
 +
-+static int inv_icm42600_gyro_write_odr(struct inv_icm42600_state *st,
-+				       int val, int val2)
++int inv_icm42600_timestamp_setup(struct inv_icm42600_state *st)
 +{
-+	struct device *dev = regmap_get_device(st->map);
-+	unsigned int idx;
-+	struct inv_icm42600_sensor_conf conf = INV_ICM42600_SENSOR_CONF_INIT;
-+	int ret;
++	unsigned int val;
 +
-+	for (idx = 0; idx < ARRAY_SIZE(inv_icm42600_gyro_odr); idx += 2) {
-+		if (val == inv_icm42600_gyro_odr[idx] &&
-+		    val2 == inv_icm42600_gyro_odr[idx + 1])
-+			break;
-+	}
-+	if (idx >= ARRAY_SIZE(inv_icm42600_gyro_odr))
-+		return -EINVAL;
-+
-+	conf.odr = inv_icm42600_gyro_odr_conv[idx / 2];
-+
-+	pm_runtime_get_sync(dev);
-+	mutex_lock(&st->lock);
-+
-+	ret = inv_icm42600_set_gyro_conf(st, &conf, NULL);
-+
-+	mutex_unlock(&st->lock);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+
-+	return ret;
++	/* enable timestamp register */
++	val = INV_ICM42600_TMST_CONFIG_TMST_TO_REGS_EN |
++	      INV_ICM42600_TMST_CONFIG_TMST_EN;
++	return regmap_update_bits(st->map, INV_ICM42600_REG_TMST_CONFIG,
++				  INV_ICM42600_TMST_CONFIG_MASK, val);
 +}
 +
++int inv_icm42600_timestamp_update_odr(struct inv_icm42600_timestamp *ts,
++				      uint32_t period, bool fifo)
++{
++	/* when FIFO is on, prevent odr change if one is already pending */
++	if (fifo && ts->new_mult != 0)
++		return -EAGAIN;
++
++	ts->new_mult = period / INV_ICM42600_TIMESTAMP_PERIOD;
++
++	return 0;
++}
++
++static bool inv_validate_period(uint32_t period, uint32_t mult)
++{
++	const uint32_t chip_period = INV_ICM42600_TIMESTAMP_PERIOD;
++	uint32_t period_min, period_max;
++
++	/* check that period is acceptable */
++	period_min = INV_ICM42600_TIMESTAMP_MIN_PERIOD(chip_period) * mult;
++	period_max = INV_ICM42600_TIMESTAMP_MAX_PERIOD(chip_period) * mult;
++	if (period > period_min && period < period_max)
++		return true;
++	else
++		return false;
++}
++
++static bool inv_compute_chip_period(struct inv_icm42600_timestamp *ts,
++				    uint32_t mult, uint32_t period)
++{
++	uint32_t new_chip_period;
++
++	if (!inv_validate_period(period, mult))
++		return false;
++
++	/* update chip internal period estimation */
++	new_chip_period = period / mult;
++	inv_update_acc(&ts->chip_period, new_chip_period);
++
++	return true;
++}
++
++void inv_icm42600_timestamp_interrupt(struct inv_icm42600_timestamp *ts,
++				      uint32_t fifo_period, size_t fifo_nb,
++				      size_t sensor_nb, int64_t timestamp)
++{
++	struct inv_icm42600_timestamp_interval *it;
++	int64_t delta, interval;
++	const uint32_t fifo_mult = fifo_period / INV_ICM42600_TIMESTAMP_PERIOD;
++	uint32_t period = ts->period;
++	int32_t m;
++	bool valid = false;
++
++	if (fifo_nb == 0)
++		return;
++
++	/* update interrupt timestamp and compute chip and sensor periods */
++	it = &ts->it;
++	it->lo = it->up;
++	it->up = timestamp;
++	delta = it->up - it->lo;
++	if (it->lo != 0) {
++		/* compute period: delta time divided by number of samples */
++		period = div_s64(delta, fifo_nb);
++		valid = inv_compute_chip_period(ts, fifo_mult, period);
++		/* update sensor period if chip internal period is updated */
++		if (valid)
++			ts->period = ts->mult * ts->chip_period.val;
++	}
++
++	/* no previous data, compute theoritical value from interrupt */
++	if (ts->timestamp == 0) {
++		/* elapsed time: sensor period * sensor samples number */
++		interval = (int64_t)ts->period * (int64_t)sensor_nb;
++		ts->timestamp = it->up - interval;
++		return;
++	}
++
++	/* if interrupt interval is valid, sync with interrupt timestamp */
++	if (valid) {
++		/* compute measured fifo_period */
++		fifo_period = fifo_mult * ts->chip_period.val;
++		/* delta time between last sample and last interrupt */
++		delta = it->lo - ts->timestamp;
++		/* if there are multiple samples, go back to first one */
++		while (delta >= (fifo_period * 3 / 2))
++			delta -= fifo_period;
++		/* compute maximal adjustment value */
++		m = INV_ICM42600_TIMESTAMP_MAX_PERIOD(ts->period) - ts->period;
++		if (delta > m)
++			delta = m;
++		else if (delta < -m)
++			delta = -m;
++		ts->timestamp += delta;
++	}
++}
++
++void inv_icm42600_timestamp_apply_odr(struct inv_icm42600_timestamp *ts,
++				      uint32_t fifo_period, size_t fifo_nb,
++				      unsigned int fifo_no)
++{
++	int64_t interval;
++	uint32_t fifo_mult;
++
++	if (ts->new_mult == 0)
++		return;
++
++	/* update to new multiplier and update period */
++	ts->mult = ts->new_mult;
++	ts->new_mult = 0;
++	ts->period = ts->mult * ts->chip_period.val;
++
++	/*
++	 * After ODR change the time interval with the previous sample is
++	 * undertermined (depends when the change occures). So we compute the
++	 * timestamp from the current interrupt using the new FIFO period, the
++	 * total number of samples and the current sample numero.
++	 */
++	if (ts->timestamp != 0) {
++		/* compute measured fifo period */
++		fifo_mult = fifo_period / INV_ICM42600_TIMESTAMP_PERIOD;
++		fifo_period = fifo_mult * ts->chip_period.val;
++		/* computes time interval between interrupt and this sample */
++		interval = (int64_t)(fifo_nb - fifo_no) * (int64_t)fifo_period;
++		ts->timestamp = ts->it.up - interval;
++	}
++}
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.h b/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.h
+new file mode 100644
+index 000000000000..4e4f331d4fe4
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_timestamp.h
+@@ -0,0 +1,85 @@
++/* SPDX-License-Identifier: GPL-2.0-or-later */
 +/*
-+ * Calibration bias values, IIO range format int + nano.
-+ * Value is limited to +/-64dps coded on 12 bits signed. Step is 1/32 dps.
++ * Copyright (C) 2020 Invensense, Inc.
 + */
-+static int inv_icm42600_gyro_calibbias[] = {
-+	-1, 117010721,		/* min: -1.117010721 rad/s */
-+	0, 545415,		/* step: 0.000545415 rad/s */
-+	1, 116465306,		/* max: 1.116465306 rad/s */
++
++#ifndef INV_ICM42600_TIMESTAMP_H_
++#define INV_ICM42600_TIMESTAMP_H_
++
++#include <linux/kernel.h>
++
++struct inv_icm42600_state;
++
++/**
++ * struct inv_icm42600_timestamp_interval - timestamps interval
++ * @lo:	interval lower bound
++ * @up:	interval upper bound
++ */
++struct inv_icm42600_timestamp_interval {
++	int64_t lo;
++	int64_t up;
 +};
 +
-+static int inv_icm42600_gyro_read_offset(struct inv_icm42600_state *st,
-+					 struct iio_chan_spec const *chan,
-+					 int *val, int *val2)
-+{
-+	struct device *dev = regmap_get_device(st->map);
-+	int64_t val64;
-+	int32_t bias;
-+	unsigned int reg;
-+	int16_t offset;
-+	uint8_t data[2];
-+	int ret;
-+
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		reg = INV_ICM42600_REG_OFFSET_USER0;
-+		break;
-+	case IIO_MOD_Y:
-+		reg = INV_ICM42600_REG_OFFSET_USER1;
-+		break;
-+	case IIO_MOD_Z:
-+		reg = INV_ICM42600_REG_OFFSET_USER3;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	pm_runtime_get_sync(dev);
-+	mutex_lock(&st->lock);
-+
-+	ret = regmap_bulk_read(st->map, reg, st->buffer, sizeof(data));
-+	memcpy(data, st->buffer, sizeof(data));
-+
-+	mutex_unlock(&st->lock);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+	if (ret)
-+		return ret;
-+
-+	/* 12 bits signed value */
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		offset = sign_extend32(((data[1] & 0x0F) << 8) | data[0], 11);
-+		break;
-+	case IIO_MOD_Y:
-+		offset = sign_extend32(((data[0] & 0xF0) << 4) | data[1], 11);
-+		break;
-+	case IIO_MOD_Z:
-+		offset = sign_extend32(((data[1] & 0x0F) << 8) | data[0], 11);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/*
-+	 * convert raw offset to dps then to rad/s
-+	 * 12 bits signed raw max 64 to dps: 64 / 2048
-+	 * dps to rad: Pi / 180
-+	 * result in nano (1000000000)
-+	 * (offset * 64 * Pi * 1000000000) / (2048 * 180)
-+	 */
-+	val64 = (int64_t)offset * 64LL * 3141592653LL;
-+	/* for rounding, add + or - divisor (2048 * 180) divided by 2 */
-+	if (val64 >= 0)
-+		val64 += 2048 * 180 / 2;
-+	else
-+		val64 -= 2048 * 180 / 2;
-+	bias = div_s64(val64, 2048 * 180);
-+	*val = bias / 1000000000L;
-+	*val2 = bias % 1000000000L;
-+
-+	return IIO_VAL_INT_PLUS_NANO;
-+}
-+
-+static int inv_icm42600_gyro_write_offset(struct inv_icm42600_state *st,
-+					  struct iio_chan_spec const *chan,
-+					  int val, int val2)
-+{
-+	struct device *dev = regmap_get_device(st->map);
-+	int64_t val64, min, max;
-+	unsigned int reg, regval;
-+	int16_t offset;
-+	int ret;
-+
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		reg = INV_ICM42600_REG_OFFSET_USER0;
-+		break;
-+	case IIO_MOD_Y:
-+		reg = INV_ICM42600_REG_OFFSET_USER1;
-+		break;
-+	case IIO_MOD_Z:
-+		reg = INV_ICM42600_REG_OFFSET_USER3;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	/* inv_icm42600_gyro_calibbias: min - step - max in nano */
-+	min = (int64_t)inv_icm42600_gyro_calibbias[0] * 1000000000LL +
-+	      (int64_t)inv_icm42600_gyro_calibbias[1];
-+	max = (int64_t)inv_icm42600_gyro_calibbias[4] * 1000000000LL +
-+	      (int64_t)inv_icm42600_gyro_calibbias[5];
-+	val64 = (int64_t)val * 1000000000LL + (int64_t)val2;
-+	if (val64 < min || val64 > max)
-+		return -EINVAL;
-+
-+	/*
-+	 * convert rad/s to dps then to raw value
-+	 * rad to dps: 180 / Pi
-+	 * dps to raw 12 bits signed, max 64: 2048 / 64
-+	 * val in nano (1000000000)
-+	 * val * 180 * 2048 / (Pi * 1000000000 * 64)
-+	 */
-+	val64 = val64 * 180LL * 2048LL;
-+	/* for rounding, add + or - divisor (3141592653 * 64) divided by 2 */
-+	if (val64 >= 0)
-+		val64 += 3141592653LL * 64LL / 2LL;
-+	else
-+		val64 -= 3141592653LL * 64LL / 2LL;
-+	offset = div64_s64(val64, 3141592653LL * 64LL);
-+
-+	/* clamp value limited to 12 bits signed */
-+	if (offset < -2048)
-+		offset = -2048;
-+	else if (offset > 2047)
-+		offset = 2047;
-+
-+	pm_runtime_get_sync(dev);
-+	mutex_lock(&st->lock);
-+
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		/* OFFSET_USER1 register is shared */
-+		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER1,
-+				  &regval);
-+		if (ret)
-+			goto out_unlock;
-+		st->buffer[0] = offset & 0xFF;
-+		st->buffer[1] = (regval & 0xF0) | ((offset & 0xF00) >> 8);
-+		break;
-+	case IIO_MOD_Y:
-+		/* OFFSET_USER1 register is shared */
-+		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER1,
-+				  &regval);
-+		if (ret)
-+			goto out_unlock;
-+		st->buffer[0] = ((offset & 0xF00) >> 4) | (regval & 0x0F);
-+		st->buffer[1] = offset & 0xFF;
-+		break;
-+	case IIO_MOD_Z:
-+		/* OFFSET_USER4 register is shared */
-+		ret = regmap_read(st->map, INV_ICM42600_REG_OFFSET_USER4,
-+				  &regval);
-+		if (ret)
-+			goto out_unlock;
-+		st->buffer[0] = offset & 0xFF;
-+		st->buffer[1] = (regval & 0xF0) | ((offset & 0xF00) >> 8);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	ret = regmap_bulk_write(st->map, reg, st->buffer, 2);
-+
-+out_unlock:
-+	mutex_unlock(&st->lock);
-+	pm_runtime_mark_last_busy(dev);
-+	pm_runtime_put_autosuspend(dev);
-+	return ret;
-+}
-+
-+static int inv_icm42600_gyro_read_raw(struct iio_dev *indio_dev,
-+				      struct iio_chan_spec const *chan,
-+				      int *val, int *val2, long mask)
-+{
-+	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
-+	int16_t data;
-+	int ret;
-+
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+		ret = inv_icm42600_gyro_read_sensor(st, chan, &data);
-+		iio_device_release_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+		*val = data;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		return inv_icm42600_gyro_read_scale(st, val, val2);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return inv_icm42600_gyro_read_odr(st, val, val2);
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		return inv_icm42600_gyro_read_offset(st, chan, val, val2);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42600_gyro_read_avail(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					const int **vals,
-+					int *type, int *length, long mask)
-+{
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = inv_icm42600_gyro_scale;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*length = ARRAY_SIZE(inv_icm42600_gyro_scale);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*vals = inv_icm42600_gyro_odr;
-+		*type = IIO_VAL_INT_PLUS_MICRO;
-+		*length = ARRAY_SIZE(inv_icm42600_gyro_odr);
-+		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		*vals = inv_icm42600_gyro_calibbias;
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		return IIO_AVAIL_RANGE;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42600_gyro_write_raw(struct iio_dev *indio_dev,
-+				       struct iio_chan_spec const *chan,
-+				       int val, int val2, long mask)
-+{
-+	struct inv_icm42600_state *st = iio_device_get_drvdata(indio_dev);
-+	int ret;
-+
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+		ret = inv_icm42600_gyro_write_scale(st, val, val2);
-+		iio_device_release_direct_mode(indio_dev);
-+		return ret;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return inv_icm42600_gyro_write_odr(st, val, val2);
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+		ret = inv_icm42600_gyro_write_offset(st, chan, val, val2);
-+		iio_device_release_direct_mode(indio_dev);
-+		return ret;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int inv_icm42600_gyro_write_raw_get_fmt(struct iio_dev *indio_dev,
-+					       struct iio_chan_spec const *chan,
-+					       long mask)
-+{
-+	if (chan->type != IIO_ANGL_VEL)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info inv_icm42600_gyro_info = {
-+	.read_raw = inv_icm42600_gyro_read_raw,
-+	.read_avail = inv_icm42600_gyro_read_avail,
-+	.write_raw = inv_icm42600_gyro_write_raw,
-+	.write_raw_get_fmt = inv_icm42600_gyro_write_raw_get_fmt,
-+	.debugfs_reg_access = inv_icm42600_debugfs_reg,
++/**
++ * struct inv_icm42600_timestamp_acc - accumulator for computing an estimation
++ * @val:	current estimation of the value, the mean of all values
++ * @idx:	current index of the next free place in values table
++ * @values:	table of all measured values, use for computing the mean
++ */
++struct inv_icm42600_timestamp_acc {
++	uint32_t val;
++	size_t idx;
++	uint32_t values[32];
 +};
 +
-+int inv_icm42600_gyro_init(struct inv_icm42600_state *st)
++/**
++ * struct inv_icm42600_timestamp - timestamp management states
++ * @it:			interrupts interval timestamps
++ * @timestamp:		store last timestamp for computing next data timestamp
++ * @mult:		current internal period multiplier
++ * @new_mult:		new set internal period multiplier (not yet effective)
++ * @period:		measured current period of the sensor
++ * @chip_period:	accumulator for computing internal chip period
++ */
++struct inv_icm42600_timestamp {
++	struct inv_icm42600_timestamp_interval it;
++	int64_t timestamp;
++	uint32_t mult;
++	uint32_t new_mult;
++	uint32_t period;
++	struct inv_icm42600_timestamp_acc chip_period;
++};
++
++void inv_icm42600_timestamp_init(struct inv_icm42600_timestamp *ts,
++				 uint32_t period);
++
++int inv_icm42600_timestamp_setup(struct inv_icm42600_state *st);
++
++int inv_icm42600_timestamp_update_odr(struct inv_icm42600_timestamp *ts,
++				      uint32_t period, bool fifo);
++
++void inv_icm42600_timestamp_interrupt(struct inv_icm42600_timestamp *ts,
++				      uint32_t fifo_period, size_t fifo_nb,
++				      size_t sensor_nb, int64_t timestamp);
++
++static inline int64_t
++inv_icm42600_timestamp_pop(struct inv_icm42600_timestamp *ts)
 +{
-+	struct device *dev = regmap_get_device(st->map);
-+	const char *name;
-+	struct iio_dev *indio_dev;
-+
-+	name = devm_kasprintf(dev, GFP_KERNEL, "%s-gyro", st->name);
-+	if (!name)
-+		return -ENOMEM;
-+
-+	indio_dev = devm_iio_device_alloc(dev, 0);
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	iio_device_set_drvdata(indio_dev, st);
-+	indio_dev->dev.parent = dev;
-+	indio_dev->name = name;
-+	indio_dev->info = &inv_icm42600_gyro_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = inv_icm42600_gyro_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(inv_icm42600_gyro_channels);
-+
-+	st->indio_gyro = indio_dev;
-+	return devm_iio_device_register(dev, st->indio_gyro);
++	ts->timestamp += ts->period;
++	return ts->timestamp;
 +}
++
++void inv_icm42600_timestamp_apply_odr(struct inv_icm42600_timestamp *ts,
++				      uint32_t fifo_period, size_t fifo_nb,
++				      unsigned int fifo_no);
++
++static inline void
++inv_icm42600_timestamp_reset(struct inv_icm42600_timestamp *ts)
++{
++	const struct inv_icm42600_timestamp_interval interval_init = {0LL, 0LL};
++
++	ts->it = interval_init;
++	ts->timestamp = 0;
++}
++
++#endif
 -- 
 2.17.1
 
