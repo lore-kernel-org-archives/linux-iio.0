@@ -2,95 +2,200 @@ Return-Path: <SRS0=xjLk=7J=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.2 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 924B1C433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 14:06:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5A5CC433E1
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 14:44:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 782C5207D3
-	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 14:06:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFA2E20899
+	for <linux-iio@archiver.kernel.org>; Wed, 27 May 2020 14:44:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730310AbgE0OGN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 May 2020 10:06:13 -0400
-Received: from mga03.intel.com ([134.134.136.65]:20537 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730268AbgE0OGM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 27 May 2020 10:06:12 -0400
-IronPort-SDR: nxnHDfu3fWcV+poCo+3u4Ztn4nO2RuN6lzVjEtmjhlbOcjn/k5TIgTIe0HHIrb9lsB/k9ieu7H
- eg0W2HSOm6zQ==
-X-Amp-Result: SKIPPED(no attachment in message)
-X-Amp-File-Uploaded: False
-Received: from fmsmga005.fm.intel.com ([10.253.24.32])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 27 May 2020 07:06:12 -0700
-IronPort-SDR: o+ggt5P5jsapQG25TIZQvKM9K6wbbrh3TnTZnUAkyR/C2oSWBqsRaiZDkTJF+0u2AeD43/3EJd
- 0u7RwtACgFwQ==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.73,441,1583222400"; 
-   d="scan'208";a="468719626"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
-  by fmsmga005.fm.intel.com with ESMTP; 27 May 2020 07:06:10 -0700
-Received: from andy by smile with local (Exim 4.93)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1jdwhB-009Eup-No; Wed, 27 May 2020 17:06:13 +0300
-Date:   Wed, 27 May 2020 17:06:13 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        id S2388506AbgE0OoX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 May 2020 10:44:23 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2250 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S2388395AbgE0OoX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 27 May 2020 10:44:23 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
+        by Forcepoint Email with ESMTP id 6FDE3D37E52F5CDD50AD;
+        Wed, 27 May 2020 15:44:21 +0100 (IST)
+Received: from localhost (10.47.93.204) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 27 May
+ 2020 15:44:21 +0100
+Date:   Wed, 27 May 2020 15:43:49 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+        Jonathan Cameron <jic23@kernel.org>
+CC:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        <linux-iio@vger.kernel.org>
 Subject: Re: [PATCH 19/25] iio:adc:ti-ads1015 Fix buffer element alignment
-Message-ID: <20200527140613.GD1634618@smile.fi.intel.com>
-References: <20200525170628.503283-20-jic23@kernel.org>
- <20200525175236.GG1634618@smile.fi.intel.com>
- <da67e0e4-5889-eb87-7bc0-fac07ae54e57@metafoo.de>
- <20200526091556.GN1634618@smile.fi.intel.com>
- <20200526174328.0000673d@Huawei.com>
- <20200526170612.GY1634618@smile.fi.intel.com>
- <E1CB2D23-5B37-47E7-8782-ACC296EE5712@jic23.retrosnub.co.uk>
- <20200526210313.GD1634618@smile.fi.intel.com>
- <20200527124107.00001386@Huawei.com>
- <20200527123713.GO1634618@smile.fi.intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Message-ID: <20200527154349.00007f44@Huawei.com>
 In-Reply-To: <20200527123713.GO1634618@smile.fi.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+References: <20200525170628.503283-1-jic23@kernel.org>
+        <20200525170628.503283-20-jic23@kernel.org>
+        <20200525175236.GG1634618@smile.fi.intel.com>
+        <da67e0e4-5889-eb87-7bc0-fac07ae54e57@metafoo.de>
+        <20200526091556.GN1634618@smile.fi.intel.com>
+        <20200526174328.0000673d@Huawei.com>
+        <20200526170612.GY1634618@smile.fi.intel.com>
+        <E1CB2D23-5B37-47E7-8782-ACC296EE5712@jic23.retrosnub.co.uk>
+        <20200526210313.GD1634618@smile.fi.intel.com>
+        <20200527124107.00001386@Huawei.com>
+        <20200527123713.GO1634618@smile.fi.intel.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.93.204]
+X-ClientProxiedBy: lhreml731-chm.china.huawei.com (10.201.108.82) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, May 27, 2020 at 03:37:13PM +0300, Andy Shevchenko wrote:
+On Wed, 27 May 2020 15:37:13 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
 > On Wed, May 27, 2020 at 12:41:07PM +0100, Jonathan Cameron wrote:
 > > On Wed, 27 May 2020 00:03:13 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:  
+> > > On Tue, May 26, 2020 at 08:17:11PM +0100, Jonathan Cameron wrote:  
+> > > > On 26 May 2020 18:06:12 BST, Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:    
+> 
+> > > > Might be easier to just align it though than explain this subtlety.     
+> > > 
+> > > The easiest one seems to move ts to be first member of the struct / buffer. Problem solved.  
+> > 
+> > Sort of, but it brings other problems.
+> > 
+> > 1) Breaks userspace ABI.  Yes, no one should be relying on the ordering of
+> >    elements from a given sensor, but we all know someone will be.   As
+> >    things currently stand note we only have one actual report of there
+> >    being a case where the alignment stuff breaks down (before I broke it
+> >    much more significantly with this patch set!)
+> > 
+> > 2) We have to rework all the drivers, including the majority that use a suitably
+> >    aligned buffer anyway (typically ____cacheline_aligned for DMA safety).
+> >    The structure thing doesn't work any more because the timestamp is optional,
+> >    so we have to have the drivers do their alignment differently depending on whether
+> >    it is there or not, so we are back to use using __aligned(8) for all the buffers. 
+> >    At the end of the day, the iio_push_to_buffers_with_timestamp is only workable
+> >    because the timestamp is at the end of the buffer.  
+> 
+> I see.
+> 
+> > At this point I'm thinking we just stick to u8, u16 etc arrays.  At that point
+> > we either decide that we are happy to not backport past (IIRC) 4.19 where the minimum gcc
+> > version was increased such that __aligned(8) works on the stack, or we move them into
+> > the iio_priv() structure where __aligned(8) always worked and hence squash the issue
+> > of kernel data leaking without a memset on each scan. The only remaining question is
+> > whether we get extra clarity by using
+> > 
+> > struct {
+> > 	s16 channels[2];
+> > 	// I think we can actually drop the padding if marking the timestamp as
+> > 	// __aligned(8)
+> > 	u8 padding[4];
+> > 	s64 timestamp __aligned(8);
+> > } scan;
+> > 
+> > or 
+> > 
+> > s16 scan[8] __aligned(8);
+> > 
+> > 
+> > For the __aligned part this from the gcc docs looks helpful:
+> > 
+> > https://gcc.gnu.org/onlinedocs/gcc-4.6.4/gcc/Type-Attributes.html
+> > 
+> > "Note that the alignment of any given struct or union type is
+> > required by the ISO C standard to be at least a perfect multiple
+> > of the lowest common multiple of the alignments of all of the
+> > members of the struct or union in question. This means that you
+> > can effectively adjust the alignment of a struct or union type by
+> > attaching an aligned attribute to any one of the members of such a
+> > type, but the notation illustrated in the example above is a more
+> > obvious, intuitive, and readable way to request the compiler to
+> > adjust the alignment of an entire struct or union type. "  
+> 
+> This means that
+> 
+> struct sx {
+> 	u8 channel;
+> 	s64 ts;
+> };
+> 
+> struct sx y, *py = &y;
+> 
+> py will be always aligned to at least 8 bytes (per s64 type).
+> It has no effect on the members themselves.
 
-...
+Ah. I cut too much out. 
 
+"This attribute specifies a minimum alignment (in bytes) for variables of the specified type."
+
+So taking...
+
+struct sx {
+	u8 channel;
+	s64 ts __aligned(8);
+};
+
+So if ts is __aligned(8) it will be aligned to 8 bytes, but so will the structure containing it.
+hence will will have 7 bytes of padding.
+
+There are a few similar users of this in kernel.  For example
+
+https://elixir.bootlin.com/linux/latest/source/include/linux/efi.h#L809
+
+Which after digging in the UEFI spec is because all variables in UEFI are
+defined to have natural alignment and the structures are aligned to the
+largest size.  So effectively same case we have.
+
+Lots of other cases, that one just had a convenient spec to point at.
+They mostly exist in uapi headers presumably to allow stuff to consistent
+across from x86_64 to x86_32 userspace.
+
+
+> 
 > > So I think that means we can safely do
 > > 
 > > struct {
 > > 	u8 channel;
 > > 	s64 ts __aligned(8);
-> > };
+> > };  
 > 
 > I don't know how this attribute will affect *a member* of the struct. Perhaps
 > it's straightforward and GCC simple apply it to POD.
 > 
 > > and be guaranteed correct padding and alignment in what I think is
 > > a fairly readable form.  It's also self documenting so I can
-> > probably drop some of the explanatory comments.
+> > probably drop some of the explanatory comments.  
 > 
 > If it is documented, then I fully agree, otherwise will look
 > like a (fragile) hack.
+> 
 
-I meant here if __aligned() behaviour against POD inside the structure
-is documented in GCC manuals / etc.
+Agreed.  It seems to be documented and I'm reassured by the bunch
+of existing places this seems to be being used.
+Also helps that they are mostly for uapi consistency which is
+really want we are talking about here as well.
 
--- 
-With Best Regards,
-Andy Shevchenko
+Will let this sit for a few days before I do anything about a v2
+in the hope that someone will point out any more corner cases
+I should have known about!
+
+Jonathan
+
+
+
+
 
 
