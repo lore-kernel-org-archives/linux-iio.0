@@ -2,56 +2,54 @@ Return-Path: <SRS0=4zHB=7U=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B719C433E0
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 14:37:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3CA2C433DF
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 14:43:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EB1BD206A4
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 14:37:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B0D94206A4
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 14:43:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591540663;
-	bh=XBVsX5XN9Ux6WFn3vUGBICg/ARMOHduqQ+t3TGgaZMs=;
+	s=default; t=1591540991;
+	bh=C1MGID1Ql+htrqwUGJ65/TlfhHS1QG30CrqwQIJccCM=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wJcUjwEMW1b59+6jnowA//EDnetl/crNQpT3BX8w0Rl848gCxI//c/rjTlwhAppIg
-	 F+cbtTkeArLZGFSVeL7QYzWAe1mLuOYMAPdFdRD+WS3bgC/zP59rgV+0ibGmaDg5OZ
-	 Y/59HvjfftKttic2XEWTGn9k8wZ3xQWDCFEpRcRM=
+	b=GdLhLMu21FMBrBo8UA6qoyDBSnxYazmurFA+xVz/ATCNIRPJkCH80xYj5jOZBTUCv
+	 /VcsCNLC2fbshfmdyRFdLZ9NuWvCvXVmRuELBW9X//A9ahTjeRLulma1w5mJlEfP8E
+	 39cYWAgXA0wC3jT05tYaf9fDq9/4VFwkltXqzYMQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbgFGOhm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Jun 2020 10:37:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35810 "EHLO mail.kernel.org"
+        id S1726673AbgFGOnL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Jun 2020 10:43:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37054 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726493AbgFGOhm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Jun 2020 10:37:42 -0400
+        id S1726663AbgFGOnL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Jun 2020 10:43:11 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8376C20663;
-        Sun,  7 Jun 2020 14:37:40 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8874120663;
+        Sun,  7 Jun 2020 14:43:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591540661;
-        bh=XBVsX5XN9Ux6WFn3vUGBICg/ARMOHduqQ+t3TGgaZMs=;
+        s=default; t=1591540990;
+        bh=C1MGID1Ql+htrqwUGJ65/TlfhHS1QG30CrqwQIJccCM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=L3Be72jaKyoCJSjVPA6TMmvOS2kKvapKWAljG6Iuii7MPuqoHXlbScLNv9J9QoGYU
-         BZn+EJNah+QiX9aMyuEw/jMFmfNTF7y4CSnYHGUEX1cC863P41hqT624FZKUBRpLsM
-         syOgSM7kikYwsNLlQBY8hiMGXGzaOI1QuxHpOYCw=
-Date:   Sun, 7 Jun 2020 15:37:37 +0100
+        b=M0HdunJwW8GnWsphy67cAyd0o7kXBxLRPQjskcQ8C6E+UxI/pjgJUurFfuUeLyj9O
+         t3IkpfuzY/1voRdGYzO1OgSluWGGdvUDOzaTc2w8EP83ZMz92NG+0Z8gWgeKKDyivH
+         Xvhv68MN18aHdt7+qC4+J7a4WjVqSv97KwoYyirc=
+Date:   Sun, 7 Jun 2020 15:43:06 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Subject: Re: [PATCH 04/25] iio:light:st_uvis25 Fix timestamp alignment and
- prevent data leak.
-Message-ID: <20200607153737.499cfa8c@archlinux>
-In-Reply-To: <20200526175326.00007712@Huawei.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 06/25] iio:magnetometer:ak8974: Fix alignment and data
+ leak issues
+Message-ID: <20200607154306.712d2a3d@archlinux>
+In-Reply-To: <CACRpkdYmoS3z_5WhCUMHqUmoTZ0UaxNA5oE4HUbXHH9Whwgeeg@mail.gmail.com>
 References: <20200525170628.503283-1-jic23@kernel.org>
-        <20200525170628.503283-5-jic23@kernel.org>
-        <20200526075505.GB339643@localhost.localdomain>
-        <20200526175326.00007712@Huawei.com>
+        <20200525170628.503283-7-jic23@kernel.org>
+        <CACRpkdYmoS3z_5WhCUMHqUmoTZ0UaxNA5oE4HUbXHH9Whwgeeg@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,100 +59,43 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 26 May 2020 17:53:26 +0100
-Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+On Tue, 26 May 2020 11:24:40 +0200
+Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> On Tue, 26 May 2020 09:55:05 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+> On Mon, May 25, 2020 at 7:09 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > 
-> > > One of a class of bugs pointed out by Lars in a recent review.
-> > > iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
-> > > to the size of the timestamp (8 bytes).  This is not guaranteed in
-> > > this driver which uses an array of smaller elements on the stack.
-> > > As Lars also noted this anti pattern can involve a leak of data to
-> > > userspace and that indeed can happen here.  We close both issues by
-> > > moving to a suitable structure in the iio_priv()
-> > > 
-> > > This data is allocated with kzalloc so no data can leak apart
-> > > from previous readings.
-> > > 
-> > > Fixes: 3025c8688c1e ("iio: light: add support for UVIS25 sensor")
-> > > Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>    
-> > 
-> > Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>  
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >
+> > One of a class of bugs pointed out by Lars in a recent review.
+> > iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+> > to the size of the timestamp (8 bytes).  This is not guaranteed in
+> > this driver which uses an array of smaller elements on the stack.
+> > As Lars also noted this anti pattern can involve a leak of data to
+> > userspace and that indeed can happen here.  We close both issues by
+> > moving to a suitable structure in the iio_priv() data.
+> >
+> > This data is allocated with kzalloc so no data can leak appart from
+> > previous readings.
+> >
+> > Fixes: 7c94a8b2ee8cf ("iio: magn: add a driver for AK8974")
+> > Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Linus Walleij <linus.walleij@linaro.org>  
 > 
-> Unfortunately this is wrong (as Andy Schevchenko pointed out in one
-> of the other patches).  On x86_32 s64 is only aligned to 4 bytes
-> so the size of the structure will end up too small for the IIO alignment
-> rules.
-> 
-> There will be a v2 once we've figure out the best, consistent solution.
+> Whoa, good catch! Definitely my mindless coding.
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+I've tweaked this slightly fro v2 to add an __aligned(8) to the ts.
+This is driven by the need for some cases to be careful on x86_32
+where the s64 might be 4 byte aligned and the padding come out wrong.
+It doesn't actually matter in this case but I'd rather be explicit.
 
-Given the change is fairly small I've kept acks etc from V1. Hopefully
-no one minds that.
+Have kept the reviewed-by as not a material change on this one.
+
+Thanks,
 
 Jonathan
 
 > 
-> Sorry about that!
-> 
-> Jonathan
-> 
-> >   
-> > > ---
-> > >  drivers/iio/light/st_uvis25.h      | 5 +++++
-> > >  drivers/iio/light/st_uvis25_core.c | 6 +++---
-> > >  2 files changed, 8 insertions(+), 3 deletions(-)
-> > > 
-> > > diff --git a/drivers/iio/light/st_uvis25.h b/drivers/iio/light/st_uvis25.h
-> > > index 78bc56aad129..f7027e4c4493 100644
-> > > --- a/drivers/iio/light/st_uvis25.h
-> > > +++ b/drivers/iio/light/st_uvis25.h
-> > > @@ -27,6 +27,11 @@ struct st_uvis25_hw {
-> > >  	struct iio_trigger *trig;
-> > >  	bool enabled;
-> > >  	int irq;
-> > > +	/* Ensure timestamp is naturally aligned */
-> > > +	struct {
-> > > +		u8 chan;
-> > > +		s64 ts;
-> > > +	} scan;
-> > >  };
-> > >  
-> > >  extern const struct dev_pm_ops st_uvis25_pm_ops;
-> > > diff --git a/drivers/iio/light/st_uvis25_core.c b/drivers/iio/light/st_uvis25_core.c
-> > > index d262c254b895..fe1f2dc970c7 100644
-> > > --- a/drivers/iio/light/st_uvis25_core.c
-> > > +++ b/drivers/iio/light/st_uvis25_core.c
-> > > @@ -234,17 +234,17 @@ static const struct iio_buffer_setup_ops st_uvis25_buffer_ops = {
-> > >  
-> > >  static irqreturn_t st_uvis25_buffer_handler_thread(int irq, void *p)
-> > >  {
-> > > -	u8 buffer[ALIGN(sizeof(u8), sizeof(s64)) + sizeof(s64)];
-> > >  	struct iio_poll_func *pf = p;
-> > >  	struct iio_dev *iio_dev = pf->indio_dev;
-> > >  	struct st_uvis25_hw *hw = iio_priv(iio_dev);
-> > >  	int err;
-> > >  
-> > > -	err = regmap_read(hw->regmap, ST_UVIS25_REG_OUT_ADDR, (int *)buffer);
-> > > +	err = regmap_read(hw->regmap, ST_UVIS25_REG_OUT_ADDR,
-> > > +			  (unsigned int *)&hw->scan.chan);
-> > >  	if (err < 0)
-> > >  		goto out;
-> > >  
-> > > -	iio_push_to_buffers_with_timestamp(iio_dev, buffer,
-> > > +	iio_push_to_buffers_with_timestamp(iio_dev, &hw->scan,
-> > >  					   iio_get_time_ns(iio_dev));
-> > >  
-> > >  out:
-> > > -- 
-> > > 2.26.2
-> > >     
-> >   
-> 
-> 
+> Yours,
+> Linus Walleij
 
