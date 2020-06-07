@@ -7,45 +7,47 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81094C433E0
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A6BD4C433E1
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5C4F1207ED
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 877CD20774
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591545396;
-	bh=mMuKcBvTXiWZzJiaFG6JAmtS0d6Tu2YW0zZARGnklTY=;
+	s=default; t=1591545397;
+	bh=HP6QiGsO6mZHJotBLGSvYQhGJVexxnVRqWQ+bd20rzA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=I3H/w794t7KNbR6fLhYqqIX+ESkNPYf8nqbcNDp2grKEV+9Hn90xdkyIUYSBLFXT0
-	 3SHQoI+SE6BbQrXN1Ub4B3hIq/t35+8esRJI2ZAx0mZzey7ujRVlPNrNP5d0Bo711p
-	 pTp7k1k1PRNn2BRXnpPKanIxZiq7dS4E3XZd+VdQ=
+	b=YQbXX98oyrxfIhruWmtgW72GZSSGlfIVXfypoNimR7SKiPQZar0cHp/YXTVtDMbTO
+	 VdsfBfNEEi93ki4J9PSTWt5XvyHXV8uF8CGLBHqVPvJ2Ms7DOd/lJCXhpDmk8tFOAB
+	 ANC2e/y9dPmfYzcuVics+dDz4++J10+sxRsrD1mU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726720AbgFGP4f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Jun 2020 11:56:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57444 "EHLO mail.kernel.org"
+        id S1726732AbgFGP4h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Jun 2020 11:56:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57466 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726703AbgFGP4f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Jun 2020 11:56:35 -0400
+        id S1726703AbgFGP4g (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Jun 2020 11:56:36 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F1361207C3;
-        Sun,  7 Jun 2020 15:56:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 338402075A;
+        Sun,  7 Jun 2020 15:56:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591545394;
-        bh=mMuKcBvTXiWZzJiaFG6JAmtS0d6Tu2YW0zZARGnklTY=;
+        s=default; t=1591545396;
+        bh=HP6QiGsO6mZHJotBLGSvYQhGJVexxnVRqWQ+bd20rzA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XlmVDbbUtW8Q27lhucCqy+UcQylCiuARUbUa6TfWRVAwtefzBtJgb0TCYHPubvkmh
-         SutjyAuBmm6thE9fKalEHMYMpBLUOTvN9BGnXdZn1mbE9tsBfQVYTUiDfYrFBtZHOU
-         dyEFOLe5bpFQlXqDlEsE7dP46VbKqHgP4Op0HHJA=
+        b=c7r+EwMLudIA5OV3n3KetK2rQ7qX3EBA4snowR3rNK8dqXdvqjmQff2xB+Obcqo7B
+         8uqcScypEGV4BRlJfuxMifEJ9vxXfYSd5pyeAaAi3II43w82DEzOqRg/Z2s/ObduRQ
+         qjulse46bEXBFmPRFBVm8B7xMCx8UZh2hJ9R2k8c=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 15/32] iio:magnetometer:mag3110 Fix alignment and data leak issues.
-Date:   Sun,  7 Jun 2020 16:53:51 +0100
-Message-Id: <20200607155408.958437-16-jic23@kernel.org>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alison Schofield <amsfield22@gmail.com>
+Subject: [PATCH 16/32] iio:humidity:hdc100x Fix alignment and data leak issues
+Date:   Sun,  7 Jun 2020 16:53:52 +0100
+Message-Id: <20200607155408.958437-17-jic23@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200607155408.958437-1-jic23@kernel.org>
 References: <20200607155408.958437-1-jic23@kernel.org>
@@ -65,61 +67,58 @@ this driver which uses an array of smaller elements on the stack.
 As Lars also noted this anti pattern can involve a leak of data to
 userspace and that indeed can happen here.  We close both issues by
 moving to a suitable structure in the iio_priv() data.
-This data is allocated with kzalloc so no data can leak apart from
-previous readings.
+This data is allocated with kzalloc so no data can leak apart
+from previous readings.
 
-The explicit alignment of ts is not necessary in this case but
-does make the code slightly less fragile so I have included it.
-
-Fixes: 39631b5f9584 ("iio: Add Freescale mag3110 magnetometer driver")
+Fixes: 16bf793f86b2 ("iio: humidity: hdc100x: add triggered buffer support for HDC100X")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: Alison Schofield <amsfield22@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/magnetometer/mag3110.c | 13 +++++++++----
- 1 file changed, 9 insertions(+), 4 deletions(-)
+ drivers/iio/humidity/hdc100x.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-index 4d305a21c379..e96113ca39bd 100644
---- a/drivers/iio/magnetometer/mag3110.c
-+++ b/drivers/iio/magnetometer/mag3110.c
-@@ -56,6 +56,12 @@ struct mag3110_data {
- 	int sleep_val;
- 	struct regulator *vdd_reg;
- 	struct regulator *vddio_reg;
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 3331141734c8..e64af35f5f6f 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -38,6 +38,11 @@ struct hdc100x_data {
+ 
+ 	/* integration time of the sensor */
+ 	int adc_int_us[2];
 +	/* Ensure natural alignment of timestamp */
 +	struct {
-+		__be16 channels[3];
-+		u8 temp;
++		__be16 channels[2];
 +		s64 ts __aligned(8);
 +	} scan;
  };
  
- static int mag3110_request(struct mag3110_data *data)
-@@ -387,10 +393,9 @@ static irqreturn_t mag3110_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct mag3110_data *data = iio_priv(indio_dev);
--	u8 buffer[16]; /* 3 16-bit channels + 1 byte temp + padding + ts */
+ /* integration time in us */
+@@ -322,7 +327,6 @@ static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
+ 	struct i2c_client *client = data->client;
+ 	int delay = data->adc_int_us[0] + data->adc_int_us[1];
  	int ret;
+-	s16 buf[8];  /* 2x s16 + padding + 8 byte timestamp */
  
--	ret = mag3110_read(data, (__be16 *) buffer);
-+	ret = mag3110_read(data, data->scan.channels);
- 	if (ret < 0)
- 		goto done;
+ 	/* dual read starts at temp register */
+ 	mutex_lock(&data->lock);
+@@ -333,13 +337,13 @@ static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
+ 	}
+ 	usleep_range(delay, delay + 1000);
  
-@@ -399,10 +404,10 @@ static irqreturn_t mag3110_trigger_handler(int irq, void *p)
- 			MAG3110_DIE_TEMP);
- 		if (ret < 0)
- 			goto done;
--		buffer[6] = ret;
-+		data->scan.temp = ret;
+-	ret = i2c_master_recv(client, (u8 *)buf, 4);
++	ret = i2c_master_recv(client, (u8 *)data->scan.channels, 4);
+ 	if (ret < 0) {
+ 		dev_err(&client->dev, "cannot read sensor data\n");
+ 		goto err;
  	}
  
--	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf,
 +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
- 		iio_get_time_ns(indio_dev));
- 
- done:
+ 					   iio_get_time_ns(indio_dev));
+ err:
+ 	mutex_unlock(&data->lock);
 -- 
 2.26.2
 
