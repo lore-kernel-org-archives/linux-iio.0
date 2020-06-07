@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B824C433E1
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 729A2C433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F128420774
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5223B2077D
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Jun 2020 15:56:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591545384;
-	bh=/7HMEYxm0+mVyu1uPDL2YHgHNIiwgf7MN4rKB8pGQ3I=;
+	s=default; t=1591545385;
+	bh=CS28lnsBO+exFHAiBdT6MA64+4LUqQXykTjN1/Az7R4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=dzwRUJJlor+c3My0jHxw4roNELm7zSpMtygksQt1NAWd+gcrHgtmkMCfQkxKC1QAD
-	 ezJqYWplNiFfqwZgaJBf1uYAiI6LdSF9OMKAUrUhS6WzZzqLgagS6R9PPLNvAjtwbr
-	 F0+0F93laRLrTyO4HRhx+8w3zzYhQPS3b8oaKev8=
+	b=wc5qUh2g3vgO1eT5Z95lVJUKgHInSWxkd5kBdtqDZPkoHdLckwVMtgNvGGIITnQw5
+	 KqD0Vm+HBnD6nZcPM8rEQC9wc5h/5JGLmbUG9C8yxbRo1hS30PU+ybvJq5k/Q/H2mq
+	 i1OoHt4ubEchQS1x259lo2PCsgMpqORo2l7/k98Y=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726683AbgFGP4X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Jun 2020 11:56:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57268 "EHLO mail.kernel.org"
+        id S1726688AbgFGP4Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Jun 2020 11:56:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57288 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726631AbgFGP4X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Jun 2020 11:56:23 -0400
+        id S1726631AbgFGP4Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Jun 2020 11:56:24 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BE53020659;
-        Sun,  7 Jun 2020 15:56:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 282BB2076A;
+        Sun,  7 Jun 2020 15:56:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591545382;
-        bh=/7HMEYxm0+mVyu1uPDL2YHgHNIiwgf7MN4rKB8pGQ3I=;
+        s=default; t=1591545384;
+        bh=CS28lnsBO+exFHAiBdT6MA64+4LUqQXykTjN1/Az7R4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kgYoFIEIWlEREVKJt4s9ZQm7Qpi9gKcxEbtGn1Q0NbMJd4bvku+ckaAs6Q94XW+zB
-         EeTsJR4OBesRsbJ17IqMsqk6k4umBtDPSHCXwnriiRQRJCrplMvKmx+8RZPxyZt4tZ
-         hup2HMGUUivNNsoLj8xn6gZRmbidIueScVlnMfns=
+        b=e2NMQfbUF+XgzhHP3ztWhKIDIL+k8yFhJwMTohLvnMMvbebhkxJ1rdNoDaEIG5ODT
+         l0SeAvhLeRABjTHpYaj6YZ0GsppkOvy6y5jJsBiRum2NVkpL4AlbgBADxkW/xA7AyG
+         yBQAG/rwAcGx3LiH7BvR32AHyp5StzAqH2MBjQso=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Andreas Klinger <ak@it-klinger.de>
-Subject: [PATCH 06/32] iio:proximity:mb1232: Fix timestamp alignment and prevent data leak.
-Date:   Sun,  7 Jun 2020 16:53:42 +0100
-Message-Id: <20200607155408.958437-7-jic23@kernel.org>
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH 07/32] iio:chemical:ccs811: Fix timestamp alignment and prevent data leak.
+Date:   Sun,  7 Jun 2020 16:53:43 +0100
+Message-Id: <20200607155408.958437-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200607155408.958437-1-jic23@kernel.org>
 References: <20200607155408.958437-1-jic23@kernel.org>
@@ -62,62 +62,62 @@ From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 One of a class of bugs pointed out by Lars in a recent review.
 iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
 to the size of the timestamp (8 bytes).  This is not guaranteed in
-this driver which uses a 16 byte s16 array on the stack   As Lars also noted
-this anti pattern can involve a leak of data to userspace and that
-indeed can happen here.  We close both issues by moving to
-a suitable structure in the iio_priv() data with alignment
-ensured by use of an explicit c structure.  This data is allocated
-with kzalloc so no data can leak appart from previous readings.
+this driver which uses an array of smaller elements on the stack.
+As Lars also noted this anti pattern can involve a leak of data to
+userspace and that indeed can happen here.  We close both issues by
+moving to a suitable structure in the iio_priv() data with alignment
+explicitly requested.  This data is allocated with kzalloc so no
+data can leak appart from previous readings.
 
-In this case the forced alignment of the ts is necessary to ensure
-correct padding on x86_32 where the s64 would only be 4 byte aligned.
+The explicit alignment of ts is necessary to ensure consistent
+padding for x86_32 in which the ts would otherwise be 4 byte aligned.
 
-Fixes: 16b05261537e ("mb1232.c: add distance iio sensor with i2c")
+Fixes: 283d26917ad6 ("iio: chemical: ccs811: Add triggered buffer support")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Andreas Klinger <ak@it-klinger.de>
+Cc: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/proximity/mb1232.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+ drivers/iio/chemical/ccs811.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/proximity/mb1232.c b/drivers/iio/proximity/mb1232.c
-index 654564c45248..ad4b1fb2607a 100644
---- a/drivers/iio/proximity/mb1232.c
-+++ b/drivers/iio/proximity/mb1232.c
-@@ -40,6 +40,11 @@ struct mb1232_data {
- 	 */
- 	struct completion	ranging;
- 	int			irqnr;
-+	/* Ensure correct alignment of data to push to IIO buffer */
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index 2b007e7568b2..60dd87e96f5f 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -78,6 +78,11 @@ struct ccs811_data {
+ 	struct iio_trigger *drdy_trig;
+ 	struct gpio_desc *wakeup_gpio;
+ 	bool drdy_trig_on;
++	/* Ensures correct alignment of timestamp if present */
 +	struct {
-+		s16 distance;
++		s16 channels[2];
 +		s64 ts __aligned(8);
 +	} scan;
  };
  
- static irqreturn_t mb1232_handle_irq(int irq, void *dev_id)
-@@ -113,17 +118,13 @@ static irqreturn_t mb1232_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
+ static const struct iio_chan_spec ccs811_channels[] = {
+@@ -327,17 +332,17 @@ static irqreturn_t ccs811_trigger_handler(int irq, void *p)
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct mb1232_data *data = iio_priv(indio_dev);
--	/*
--	 * triggered buffer
--	 * 16-bit channel + 48-bit padding + 64-bit timestamp
--	 */
--	s16 buffer[8] = { 0 };
+ 	struct ccs811_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	s16 buf[8]; /* s16 eCO2 + s16 TVOC + padding + 8 byte timestamp */
+ 	int ret;
  
--	buffer[0] = mb1232_read_distance(data);
--	if (buffer[0] < 0)
-+	data->scan.distance = mb1232_read_distance(data);
-+	if (data->scan.distance < 0)
+-	ret = i2c_smbus_read_i2c_block_data(client, CCS811_ALG_RESULT_DATA, 4,
+-					    (u8 *)&buf);
++	ret = i2c_smbus_read_i2c_block_data(client, CCS811_ALG_RESULT_DATA,
++					    sizeof(data->scan.channels),
++					    (u8 *)data->scan.channels);
+ 	if (ret != 4) {
+ 		dev_err(&client->dev, "cannot read sensor data\n");
  		goto err;
+ 	}
  
--	iio_push_to_buffers_with_timestamp(indio_dev, buffer, pf->timestamp);
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf,
 +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
-+					   pf->timestamp);
+ 					   iio_get_time_ns(indio_dev));
  
  err:
- 	iio_trigger_notify_done(indio_dev->trig);
 -- 
 2.26.2
 
