@@ -4,50 +4,51 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D576C433E1
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A54C433E1
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4B8C3206C3
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 838CA206C3
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591662667;
-	bh=J/mHmxTcdz6R3LWlTyf4BHmBvzBzTnR9MdLUtULekx0=;
+	s=default; t=1591662680;
+	bh=0KMVBazzO/udkctSIz3PZmnLDrZNTnpCBWpljnxyuvQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=PUAdTCAjMPLJa0zY1nqVmLYMGrzP3jtFqUg2vC8bsU9lnICwgxGjZP0UZATz0ohgo
-	 w2UTSl3kglRRAaRgDx40heqXpzhpZC1dS4juSsg2DmdtNblBHBeLcu/UTeVmJYmsxZ
-	 awEwlsiSQKTYli9I+IaonBC2NExRNkD8GlsUWJjY=
+	b=w1S4E1jnuR/zYte50bxlr3lxxkGF00rWy244WVG6a9lRruNHzRWNpR6n291Jg3W6N
+	 QpeOIOvTR4TDR4VS9RZNzZ6QTmu9H0VysS44g58Ka5bAkhsR9hWUYdfQJxgKhlJkZY
+	 Xi87zyZVH9cS7Ds/+zKJf/7YWCZsCfq/sr6Ygk9s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730370AbgFIAan (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Jun 2020 20:30:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36824 "EHLO mail.kernel.org"
+        id S1729027AbgFIAbT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Jun 2020 20:31:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36670 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730085AbgFHXPn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:15:43 -0400
+        id S1730058AbgFHXPf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:15:35 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AD47B2068D;
-        Mon,  8 Jun 2020 23:15:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 42C9720820;
+        Mon,  8 Jun 2020 23:15:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658143;
-        bh=J/mHmxTcdz6R3LWlTyf4BHmBvzBzTnR9MdLUtULekx0=;
+        s=default; t=1591658135;
+        bh=0KMVBazzO/udkctSIz3PZmnLDrZNTnpCBWpljnxyuvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QXFO/xCju7cBm+H22T+WOmybM4A8fg+abkhsRyr5eq3gNMCwEPfEtPQoDa734HrRC
-         V9bWXo37+4paj4dVb6anYRrpHs+x6HcFbBYxDAyarrD68i7NEkOUd0vfhZIYKS7UER
-         zvDyX5j0kVSaTOsHOuwC+QcST053Hv61xi+h0zks=
+        b=SMX8nJQG/UPU/DcZg1lSJPJKBrtM0m6RsAA7KbgWTG1h4DAIB31X3Xeca0sMgbFnt
+         EB8qmVU2BAsxeCdTSgl/UJcHB8ki5R+fWDbaVjE7G3M3+aauf4bT7WL4JNzRsT4rX2
+         RbMauJXHl87sEhcuGgmkLbH3IWVBgDNyBk9/g7UY=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
+Cc:     Dragos Bogdan <dragos.bogdan@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 176/606] iio: dac: vf610: Fix an error handling path in 'vf610_dac_probe()'
-Date:   Mon,  8 Jun 2020 19:05:01 -0400
-Message-Id: <20200608231211.3363633-176-sashal@kernel.org>
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Subject: [PATCH AUTOSEL 5.6 169/606] staging: iio: ad2s1210: Fix SPI reading
+Date:   Mon,  8 Jun 2020 19:04:54 -0400
+Message-Id: <20200608231211.3363633-169-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -60,33 +61,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+From: Dragos Bogdan <dragos.bogdan@analog.com>
 
-commit aad4742fbf0a560c25827adb58695a4497ffc204 upstream.
+commit 5e4f99a6b788047b0b8a7496c2e0c8f372f6edf2 upstream.
 
-A call to 'vf610_dac_exit()' is missing in an error handling path.
+If the serial interface is used, the 8-bit address should be latched using
+the rising edge of the WR/FSYNC signal.
 
-Fixes: 1b983bf42fad ("iio: dac: vf610_dac: Add IIO DAC driver for Vybrid SoC")
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+This basically means that a CS change is required between the first byte
+sent, and the second one.
+This change splits the single-transfer transfer of 2 bytes into 2 transfers
+with a single byte, and CS change in-between.
+
+Note fixes tag is not accurate, but reflects a point beyond which there
+are too many refactors to make backporting straight forward.
+
+Fixes: b19e9ad5e2cb ("staging:iio:resolver:ad2s1210 general driver cleanup.")
+Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/dac/vf610_dac.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/iio/resolver/ad2s1210.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/dac/vf610_dac.c b/drivers/iio/dac/vf610_dac.c
-index 71f8a5c471c4..7f1e9317c3f3 100644
---- a/drivers/iio/dac/vf610_dac.c
-+++ b/drivers/iio/dac/vf610_dac.c
-@@ -223,6 +223,7 @@ static int vf610_dac_probe(struct platform_device *pdev)
- 	return 0;
+diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
+index 4b25a3a314ed..ed404355ea4c 100644
+--- a/drivers/staging/iio/resolver/ad2s1210.c
++++ b/drivers/staging/iio/resolver/ad2s1210.c
+@@ -130,17 +130,24 @@ static int ad2s1210_config_write(struct ad2s1210_state *st, u8 data)
+ static int ad2s1210_config_read(struct ad2s1210_state *st,
+ 				unsigned char address)
+ {
+-	struct spi_transfer xfer = {
+-		.len = 2,
+-		.rx_buf = st->rx,
+-		.tx_buf = st->tx,
++	struct spi_transfer xfers[] = {
++		{
++			.len = 1,
++			.rx_buf = &st->rx[0],
++			.tx_buf = &st->tx[0],
++			.cs_change = 1,
++		}, {
++			.len = 1,
++			.rx_buf = &st->rx[1],
++			.tx_buf = &st->tx[1],
++		},
+ 	};
+ 	int ret = 0;
  
- error_iio_device_register:
-+	vf610_dac_exit(info);
- 	clk_disable_unprepare(info->clk);
+ 	ad2s1210_set_mode(MOD_CONFIG, st);
+ 	st->tx[0] = address | AD2S1210_MSB_IS_HIGH;
+ 	st->tx[1] = AD2S1210_REG_FAULT;
+-	ret = spi_sync_transfer(st->sdev, &xfer, 1);
++	ret = spi_sync_transfer(st->sdev, xfers, 2);
+ 	if (ret < 0)
+ 		return ret;
  
- 	return ret;
 -- 
 2.25.1
 
