@@ -7,46 +7,47 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D871C433E2
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5FA9C433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:30:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DD5872078B
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:29:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AA7F1207C3
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:30:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591662596;
-	bh=i3SMjkDTekRiVkaB8I7Uy/nuh03l3LqJmw7nClDogTE=;
+	s=default; t=1591662640;
+	bh=NIvfnbAIw5QiLc2iBkfIAXHTrtRPZKfqnsnYAz9ZcoA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=1NaktnxpOkZpEEADyuR4LLaKYsERafpY+a0ZIg7LPT8c6nqxAiXF0YbN75upGa/QX
-	 aBIDtkU2S4gHxNtbPcCIidA7R/jAwSx5IdzNmoq+GH0K7R4KE5ICqXMYcwqlZrtyhb
-	 dsV67zPiVCYM0CMRIbNeLdTiheXsjgBI/Pg8Wh6g=
+	b=nXgEIPUJDxOr9G0xwZlx4dHB85ODDOIl68jiLg2pbosX9TrP8xCUys61DKNoOcQqB
+	 ZNseEnHGpIkhlV+fhD17OJ9OuW6Wrl2rMFEA218uV0N3omiHtDyqczowVsCDBSL26J
+	 ypT8Lt+Q5sXlF5Ai+rrg/TKhqg2I6IjHVUZ62cv8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730171AbgFHXQF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Jun 2020 19:16:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37330 "EHLO mail.kernel.org"
+        id S1730119AbgFIAa3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Jun 2020 20:30:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729344AbgFHXQE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:16:04 -0400
+        id S1730089AbgFHXPo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 8 Jun 2020 19:15:44 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F3FB820760;
-        Mon,  8 Jun 2020 23:16:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D3B9220659;
+        Mon,  8 Jun 2020 23:15:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658164;
-        bh=i3SMjkDTekRiVkaB8I7Uy/nuh03l3LqJmw7nClDogTE=;
+        s=default; t=1591658144;
+        bh=NIvfnbAIw5QiLc2iBkfIAXHTrtRPZKfqnsnYAz9ZcoA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W7jC6BCaRUkWeTOMSp3NyEbRntGt9AVIYRGXX7xuD1In+WoFAOwMl2EKPqlXTB3T/
-         I+xn8kULHGDGOYCC4en3j1qpLHkVjRqxVJvfuXzD30sUXrANz/e7jP5C3NmLBNlIPN
-         H2GuVFL08QIt+gyk1ureOUu2BLLMzrjjsn6bYj70=
+        b=zAxxxOiPCejfHMqXscA2CSRKCvkRBq0/TkIGlgCdQbm4O9rOx60/9FHTj+D9Hcm/H
+         2MdfuaqIumRBfCjavvluZ2v6QX8VH+RV9sFfdZtlZfa8thuzxoObCsw+v85XT4zL0U
+         KhN36uMRH3HNZf0Hc9S6c52bnAxw6006N2JDdHWs=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
+Cc:     Gregory CLEMENT <gregory.clement@bootlin.com>,
+        Stable@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.6 193/606] iio: imu: st_lsm6dsx: unlock on error in st_lsm6dsx_shub_write_raw()
-Date:   Mon,  8 Jun 2020 19:05:18 -0400
-Message-Id: <20200608231211.3363633-193-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.6 177/606] iio: adc: ti-ads8344: Fix channel selection
+Date:   Mon,  8 Jun 2020 19:05:02 -0400
+Message-Id: <20200608231211.3363633-177-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
 References: <20200608231211.3363633-1-sashal@kernel.org>
@@ -59,46 +60,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Dan Carpenter <dan.carpenter@oracle.com>
+From: Gregory CLEMENT <gregory.clement@bootlin.com>
 
-commit 115c215a7e5753ddf982c8760ce7904dd3fbb8ae upstream.
+commit bcfa1e253d2e329e1ebab5c89f3c73f6dd17606c upstream.
 
-We need to release a lock if st_lsm6dsx_check_odr() fails, we can't
-return directly.
+During initial submission the selection of the channel was done using
+the scan_index member of the iio_chan_spec structure. It was an abuse
+because this member is supposed to be used with a buffer so it was
+removed.
 
-Fixes: 76551a3c3df1 ("iio: imu: st_lsm6dsx: specify slave odr in slv_odr")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+However there was still the need to be able to known how to select a
+channel, the correct member to store this information is address.
+
+Thanks to this it is possible to select any other channel than the
+channel 0.
+
+Fixes: 8dd2d7c0fed7 ("iio: adc: Add driver for the TI ADS8344 A/DC chips")
+Signed-off-by: Gregory CLEMENT <gregory.clement@bootlin.com>
+Cc: <Stable@vger.kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ti-ads8344.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-index 64ef07a30726..1cf98195f84d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c
-@@ -544,8 +544,10 @@ st_lsm6dsx_shub_write_raw(struct iio_dev *iio_dev,
+diff --git a/drivers/iio/adc/ti-ads8344.c b/drivers/iio/adc/ti-ads8344.c
+index abe4b56c847c..8a8792010c20 100644
+--- a/drivers/iio/adc/ti-ads8344.c
++++ b/drivers/iio/adc/ti-ads8344.c
+@@ -32,16 +32,17 @@ struct ads8344 {
+ 	u8 rx_buf[3];
+ };
  
- 			ref_sensor = iio_priv(hw->iio_devs[ST_LSM6DSX_ID_ACC]);
- 			odr = st_lsm6dsx_check_odr(ref_sensor, val, &odr_val);
--			if (odr < 0)
--				return odr;
-+			if (odr < 0) {
-+				err = odr;
-+				goto release;
-+			}
- 
- 			sensor->ext_info.slv_odr = val;
- 			sensor->odr = odr;
-@@ -557,6 +559,7 @@ st_lsm6dsx_shub_write_raw(struct iio_dev *iio_dev,
- 		break;
+-#define ADS8344_VOLTAGE_CHANNEL(chan, si)				\
++#define ADS8344_VOLTAGE_CHANNEL(chan, addr)				\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+ 		.channel = chan,					\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++		.address = addr,					\
  	}
  
-+release:
- 	iio_device_release_direct_mode(iio_dev);
+-#define ADS8344_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
++#define ADS8344_VOLTAGE_CHANNEL_DIFF(chan1, chan2, addr)		\
+ 	{								\
+ 		.type = IIO_VOLTAGE,					\
+ 		.indexed = 1,						\
+@@ -50,6 +51,7 @@ struct ads8344 {
+ 		.differential = 1,					\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++		.address = addr,					\
+ 	}
  
- 	return err;
+ static const struct iio_chan_spec ads8344_channels[] = {
+@@ -105,7 +107,7 @@ static int ads8344_read_raw(struct iio_dev *iio,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+ 		mutex_lock(&adc->lock);
+-		*value = ads8344_adc_conversion(adc, channel->scan_index,
++		*value = ads8344_adc_conversion(adc, channel->address,
+ 						channel->differential);
+ 		mutex_unlock(&adc->lock);
+ 		if (*value < 0)
 -- 
 2.25.1
 
