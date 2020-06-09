@@ -2,95 +2,83 @@ Return-Path: <SRS0=Co8Y=7W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A64FC433E0
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 03:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21D9CC433E1
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 16:34:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44E8620774
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 03:01:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="Q/k0j6yD"
+	by mail.kernel.org (Postfix) with ESMTP id 019B620734
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 16:34:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726907AbgFIDB1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Jun 2020 23:01:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726884AbgFIDB0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Jun 2020 23:01:26 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7B0C03E969
-        for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2020 20:01:24 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id h5so19579718wrc.7
-        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2020 20:01:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=konsulko.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/SmwDWkJ4stL4qv6js29DIgr2yazMzqUZLwr+w5ebWU=;
-        b=Q/k0j6yD6ZU04LwWFDj/iiySIFrvvly2WoOzPeML0/16KKXsTGKjuWTCgzvKiJqI0F
-         2HAnCOB7aOUYXUkLErqYiuBHb9NsaxYmkFep/fOmqkF5FOKD743skvuIytaYsq/w6MNy
-         hwNyyzdixDSorUFU0+I+pI5WxRHq+aKlSlhdU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=/SmwDWkJ4stL4qv6js29DIgr2yazMzqUZLwr+w5ebWU=;
-        b=QlBlQEE0dnJKitow1Yzg9uZdOiU3V2W45CMXzbgkV8ciQeLs85CLJnzDTXkdEDNa1n
-         Cz1+ahcB5xJOlti3AKQbdrNEM1Y6J3Pmkz2vE7AbyS7euBBwg0NY9zKlkeJGOHf5wo96
-         B238ywgO0v48vNNjESuTbE3kcaJPnq/rMWdG4SnaKjBdfIGJ2yoF3y40fQKPiMxmkwNo
-         5sUklWOkt6hLoc2vGgdRAe9O623kwf0Ae8AefFRYfMJUlfYgIvkupEgRfx9O7+KaggiQ
-         ZJ5VtdHLnZxPO5/UeTaZDcAsIBpn7uHhPm4Jkb6oZF5FaHJSi35AwnU1fraf2D+dWuuK
-         hl4w==
-X-Gm-Message-State: AOAM530RuvCPzs1stC9/uG/aD7988sVJOLqmQVDoAiTbLYorZsaLndw9
-        9gv1XweTYTVhDNl1tVBUfgSY+xMjoQA=
-X-Google-Smtp-Source: ABdhPJzhtrvhSnDsRfU36JxmMOUHcTc3JAUIV3adMAPBiVsqsMhpFbUCQxX5p2XXyxVHki8mGDQ8qA==
-X-Received: by 2002:a5d:6789:: with SMTP id v9mr2043868wru.124.1591671683070;
-        Mon, 08 Jun 2020 20:01:23 -0700 (PDT)
-Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
-        by smtp.gmail.com with ESMTPSA id t8sm1615282wro.56.2020.06.08.20.01.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Jun 2020 20:01:22 -0700 (PDT)
-From:   Matt Ranostay <matt.ranostay@konsulko.com>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH] iio: core: add missing IIO_MOD_H2/ETHANOL string identifiers
-Date:   Tue,  9 Jun 2020 06:01:16 +0300
-Message-Id: <20200609030116.23013-1-matt.ranostay@konsulko.com>
-X-Mailer: git-send-email 2.20.1
+        id S1731023AbgFIQe5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Jun 2020 12:34:57 -0400
+Received: from smtp.asem.it ([151.1.184.197]:62788 "EHLO smtp.asem.it"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726100AbgFIQey (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 9 Jun 2020 12:34:54 -0400
+X-Greylist: delayed 303 seconds by postgrey-1.27 at vger.kernel.org; Tue, 09 Jun 2020 12:34:54 EDT
+Received: from webmail.asem.it
+        by asem.it (smtp.asem.it)
+        (SecurityGateway 6.5.2)
+        with ESMTP id SG000307107.MSG 
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2020 18:29:49 +0200S
+Received: from ASAS044.asem.intra (172.16.16.44) by ASAS044.asem.intra
+ (172.16.16.44) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Tue, 9 Jun
+ 2020 18:29:47 +0200
+Received: from flavio-x.asem.intra (172.16.17.208) by ASAS044.asem.intra
+ (172.16.16.44) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
+ Transport; Tue, 9 Jun 2020 18:29:47 +0200
+From:   Flavio Suligoi <f.suligoi@asem.it>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Fabien Lahoudere <fabien.lahoudere@collabora.com>
+CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Flavio Suligoi <f.suligoi@asem.it>
+Subject: [PATCH 1/1] iio: common: fix spelling mistake
+Date:   Tue, 9 Jun 2020 18:29:43 +0200
+Message-ID: <20200609162943.867-1-f.suligoi@asem.it>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-SGHeloLookup-Result: pass smtp.helo=webmail.asem.it (ip=172.16.16.44)
+X-SGSPF-Result: none (smtp.asem.it)
+X-SGOP-RefID: str=0001.0A090209.5EDFB8FC.0048,ss=1,re=0.000,recu=0.000,reip=0.000,cl=1,cld=1,fgs=0 (_st=1 _vt=0 _iwf=0)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing strings to iio_modifier_names[] for proper modification
-of channels.
+Fix typo: "tigger" --> "trigger"
 
-Fixes: b170f7d48443d (iio: Add modifiers for ethanol and H2 gases)
-Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+Signed-off-by: Flavio Suligoi <f.suligoi@asem.it>
 ---
- drivers/iio/industrialio-core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 1527f01a44f1..352533342702 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -130,6 +130,8 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_PM2P5] = "pm2p5",
- 	[IIO_MOD_PM4] = "pm4",
- 	[IIO_MOD_PM10] = "pm10",
-+	[IIO_MOD_ETHANOL] = "ethanol",
-+	[IIO_MOD_H2] = "h2",
- };
- 
- /* relies on pairs of these shared then separate */
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index c831915ca7e5..4888fb23d801 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -352,7 +352,7 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 		} else {
+ 			/*
+ 			 * The only way to get samples in buffer is to set a
+-			 * software tigger (systrig, hrtimer).
++			 * software trigger (systrig, hrtimer).
+ 			 */
+ 			ret = devm_iio_triggered_buffer_setup(
+ 					dev, indio_dev, NULL, trigger_capture,
 -- 
-2.20.1
+2.17.1
 
