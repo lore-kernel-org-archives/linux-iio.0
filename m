@@ -2,124 +2,95 @@ Return-Path: <SRS0=Co8Y=7W=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2A54C433E1
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A64FC433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 03:01:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 838CA206C3
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 00:31:20 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1591662680;
-	bh=0KMVBazzO/udkctSIz3PZmnLDrZNTnpCBWpljnxyuvQ=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=w1S4E1jnuR/zYte50bxlr3lxxkGF00rWy244WVG6a9lRruNHzRWNpR6n291Jg3W6N
-	 QpeOIOvTR4TDR4VS9RZNzZ6QTmu9H0VysS44g58Ka5bAkhsR9hWUYdfQJxgKhlJkZY
-	 Xi87zyZVH9cS7Ds/+zKJf/7YWCZsCfq/sr6Ygk9s=
+	by mail.kernel.org (Postfix) with ESMTP id 44E8620774
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 03:01:28 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="Q/k0j6yD"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729027AbgFIAbT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Jun 2020 20:31:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36670 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730058AbgFHXPf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 8 Jun 2020 19:15:35 -0400
-Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42C9720820;
-        Mon,  8 Jun 2020 23:15:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1591658135;
-        bh=0KMVBazzO/udkctSIz3PZmnLDrZNTnpCBWpljnxyuvQ=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SMX8nJQG/UPU/DcZg1lSJPJKBrtM0m6RsAA7KbgWTG1h4DAIB31X3Xeca0sMgbFnt
-         EB8qmVU2BAsxeCdTSgl/UJcHB8ki5R+fWDbaVjE7G3M3+aauf4bT7WL4JNzRsT4rX2
-         RbMauJXHl87sEhcuGgmkLbH3IWVBgDNyBk9/g7UY=
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Dragos Bogdan <dragos.bogdan@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH AUTOSEL 5.6 169/606] staging: iio: ad2s1210: Fix SPI reading
-Date:   Mon,  8 Jun 2020 19:04:54 -0400
-Message-Id: <20200608231211.3363633-169-sashal@kernel.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200608231211.3363633-1-sashal@kernel.org>
-References: <20200608231211.3363633-1-sashal@kernel.org>
+        id S1726907AbgFIDB1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Jun 2020 23:01:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45470 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726884AbgFIDB0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Jun 2020 23:01:26 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E7B0C03E969
+        for <linux-iio@vger.kernel.org>; Mon,  8 Jun 2020 20:01:24 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id h5so19579718wrc.7
+        for <linux-iio@vger.kernel.org>; Mon, 08 Jun 2020 20:01:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/SmwDWkJ4stL4qv6js29DIgr2yazMzqUZLwr+w5ebWU=;
+        b=Q/k0j6yD6ZU04LwWFDj/iiySIFrvvly2WoOzPeML0/16KKXsTGKjuWTCgzvKiJqI0F
+         2HAnCOB7aOUYXUkLErqYiuBHb9NsaxYmkFep/fOmqkF5FOKD743skvuIytaYsq/w6MNy
+         hwNyyzdixDSorUFU0+I+pI5WxRHq+aKlSlhdU=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=/SmwDWkJ4stL4qv6js29DIgr2yazMzqUZLwr+w5ebWU=;
+        b=QlBlQEE0dnJKitow1Yzg9uZdOiU3V2W45CMXzbgkV8ciQeLs85CLJnzDTXkdEDNa1n
+         Cz1+ahcB5xJOlti3AKQbdrNEM1Y6J3Pmkz2vE7AbyS7euBBwg0NY9zKlkeJGOHf5wo96
+         B238ywgO0v48vNNjESuTbE3kcaJPnq/rMWdG4SnaKjBdfIGJ2yoF3y40fQKPiMxmkwNo
+         5sUklWOkt6hLoc2vGgdRAe9O623kwf0Ae8AefFRYfMJUlfYgIvkupEgRfx9O7+KaggiQ
+         ZJ5VtdHLnZxPO5/UeTaZDcAsIBpn7uHhPm4Jkb6oZF5FaHJSi35AwnU1fraf2D+dWuuK
+         hl4w==
+X-Gm-Message-State: AOAM530RuvCPzs1stC9/uG/aD7988sVJOLqmQVDoAiTbLYorZsaLndw9
+        9gv1XweTYTVhDNl1tVBUfgSY+xMjoQA=
+X-Google-Smtp-Source: ABdhPJzhtrvhSnDsRfU36JxmMOUHcTc3JAUIV3adMAPBiVsqsMhpFbUCQxX5p2XXyxVHki8mGDQ8qA==
+X-Received: by 2002:a5d:6789:: with SMTP id v9mr2043868wru.124.1591671683070;
+        Mon, 08 Jun 2020 20:01:23 -0700 (PDT)
+Received: from taos.konsulko.bg (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id t8sm1615282wro.56.2020.06.08.20.01.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 08 Jun 2020 20:01:22 -0700 (PDT)
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH] iio: core: add missing IIO_MOD_H2/ETHANOL string identifiers
+Date:   Tue,  9 Jun 2020 06:01:16 +0300
+Message-Id: <20200609030116.23013-1-matt.ranostay@konsulko.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-X-stable: review
-X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Dragos Bogdan <dragos.bogdan@analog.com>
+Add missing strings to iio_modifier_names[] for proper modification
+of channels.
 
-commit 5e4f99a6b788047b0b8a7496c2e0c8f372f6edf2 upstream.
-
-If the serial interface is used, the 8-bit address should be latched using
-the rising edge of the WR/FSYNC signal.
-
-This basically means that a CS change is required between the first byte
-sent, and the second one.
-This change splits the single-transfer transfer of 2 bytes into 2 transfers
-with a single byte, and CS change in-between.
-
-Note fixes tag is not accurate, but reflects a point beyond which there
-are too many refactors to make backporting straight forward.
-
-Fixes: b19e9ad5e2cb ("staging:iio:resolver:ad2s1210 general driver cleanup.")
-Signed-off-by: Dragos Bogdan <dragos.bogdan@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: <Stable@vger.kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Signed-off-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Fixes: b170f7d48443d (iio: Add modifiers for ethanol and H2 gases)
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/staging/iio/resolver/ad2s1210.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/iio/resolver/ad2s1210.c b/drivers/staging/iio/resolver/ad2s1210.c
-index 4b25a3a314ed..ed404355ea4c 100644
---- a/drivers/staging/iio/resolver/ad2s1210.c
-+++ b/drivers/staging/iio/resolver/ad2s1210.c
-@@ -130,17 +130,24 @@ static int ad2s1210_config_write(struct ad2s1210_state *st, u8 data)
- static int ad2s1210_config_read(struct ad2s1210_state *st,
- 				unsigned char address)
- {
--	struct spi_transfer xfer = {
--		.len = 2,
--		.rx_buf = st->rx,
--		.tx_buf = st->tx,
-+	struct spi_transfer xfers[] = {
-+		{
-+			.len = 1,
-+			.rx_buf = &st->rx[0],
-+			.tx_buf = &st->tx[0],
-+			.cs_change = 1,
-+		}, {
-+			.len = 1,
-+			.rx_buf = &st->rx[1],
-+			.tx_buf = &st->tx[1],
-+		},
- 	};
- 	int ret = 0;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1527f01a44f1..352533342702 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -130,6 +130,8 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_PM2P5] = "pm2p5",
+ 	[IIO_MOD_PM4] = "pm4",
+ 	[IIO_MOD_PM10] = "pm10",
++	[IIO_MOD_ETHANOL] = "ethanol",
++	[IIO_MOD_H2] = "h2",
+ };
  
- 	ad2s1210_set_mode(MOD_CONFIG, st);
- 	st->tx[0] = address | AD2S1210_MSB_IS_HIGH;
- 	st->tx[1] = AD2S1210_REG_FAULT;
--	ret = spi_sync_transfer(st->sdev, &xfer, 1);
-+	ret = spi_sync_transfer(st->sdev, xfers, 2);
- 	if (ret < 0)
- 		return ret;
- 
+ /* relies on pairs of these shared then separate */
 -- 
-2.25.1
+2.20.1
 
