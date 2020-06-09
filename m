@@ -7,60 +7,60 @@ X-Spam-Status: No, score=-9.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 109FCC433E1
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 19:41:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C877C433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 19:41:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E2BF6206C3
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 19:41:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 58F182072F
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Jun 2020 19:41:57 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="ruE4hjz3"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="FQ3YMpSs"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2389295AbgFITlx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Jun 2020 15:41:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58724 "EHLO
+        id S1727940AbgFITl4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Jun 2020 15:41:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58708 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2389390AbgFITlr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Jun 2020 15:41:47 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 942EBC05BD1E
-        for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2020 12:41:47 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id n23so10713116pgb.12
-        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2020 12:41:47 -0700 (PDT)
+        with ESMTP id S2389381AbgFITlo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Jun 2020 15:41:44 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53B1BC05BD1E
+        for <linux-iio@vger.kernel.org>; Tue,  9 Jun 2020 12:41:41 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id o6so10763032pgh.2
+        for <linux-iio@vger.kernel.org>; Tue, 09 Jun 2020 12:41:41 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=konsulko.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=l8eunt1wTSxU0bEfA0XN6C1T6L3rOZuiLFejw2nwip4=;
-        b=ruE4hjz3pLJMLbbrNhyGM2wmjtv/yEAX7RQ65VLEKsUNDxPUB7dkXqr3f5ACcCXhcn
-         aRlKnTen0k6bBDFNeGhLz6lrMVD5rno/q+JtAUqN8fAQ8nOJcA/u931gCeYNBl7L/ljP
-         fIWDxh/S+Mm7fz0EoQsIto9LGE+eU6I2xLd2Q=
+        bh=7IE8CNMcewVtSsQj1yITcU7rdFKTtb3zAy4M9NZpbSE=;
+        b=FQ3YMpSsYuscNY4nPozg9IBTdd3wuk4ZbxdemKrbXRfy1b661Vn9PCh98SeWVhb5nl
+         NNmGd7mYf0ointwOg71+f+LdlbzPnYorVxbv2qhpFPZLGmBGnDji8kinvACeVWafPM6z
+         dsCNGY+6Ky3IT/pjSFWV0TR2qpIOqCPS8k7fs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=l8eunt1wTSxU0bEfA0XN6C1T6L3rOZuiLFejw2nwip4=;
-        b=t38rnH2y0CkJqWFWZaWFu1yc91O15juo5Xy1ExtC0OckAh8VJjKFv8wugdHNJHXpgm
-         dbhiaa0pf0Xjfzbtp+J5s9k65Ii2hWv3EyCN8/4Zq40fxqwwxI8SDFik0JY6Kav3cavy
-         MXHsGr1rsMWYf8OgMFZJ17zG1Qd+ql6yL0HT0HtdQ13smchcW1UMQdWDIwD4gtltH7PW
-         +NmVFrT6aGeQZ9rC4Pt9XE5+HwynBDzldN36vTlsoSieuzzofXRQ3QKiGMATotIOTraU
-         B19I+jQodeOF4k3joI+7tMzNQQpGiGMhV+QbxLL97M09MxtFXaXa3tNYCfvUDaibFCEQ
-         Zwkg==
-X-Gm-Message-State: AOAM532XmF8UB3NzIguuflMeIKEGh42mTd8TxODZCq8iagertfYqdBMR
-        8pItRCfuOMFvHrGNjIHsMAeDuQ==
-X-Google-Smtp-Source: ABdhPJznRrSlwdqBVG3fkzMQO1tulZGBggqtnCHGpEjS+L2AKETok6W3sMkMGTE19HEhCq3x4GgwkQ==
-X-Received: by 2002:a62:7b41:: with SMTP id w62mr25571818pfc.142.1591731707117;
-        Tue, 09 Jun 2020 12:41:47 -0700 (PDT)
+        bh=7IE8CNMcewVtSsQj1yITcU7rdFKTtb3zAy4M9NZpbSE=;
+        b=bk+S5aIWUeKOOrSPhTThEdWApTJJ2BzynsoXwwluZg4afgjIqlySkbWQ6Hu7NvS6GS
+         Lrr3v3+va4EDV9L09guuYM3hbi3DILEPj6d/1kOuOfWunT5NC+fz0B6upn4Es+C1n/e+
+         6/SgwPcSg689CDeZba6x1ud0L1wwatNbQV4nXCcIJkXiV8laBMcwZVJ48W0879hyQzNJ
+         mGU/Oi4lLxU3IXUXcSgY4Eo/SSYpMjbIX4EPhxhZu5tmeQsUwCPZBv1XtChzsAKHRX3Q
+         lVqG8z81OGPyfwVL/jYciVqGo9+2TVq6iC+1Vibbix27Zjjr/yoe7r8Dq+8IAjH6FYBD
+         YmDw==
+X-Gm-Message-State: AOAM531cxGKQn2hwLhXyz8bSQAtQ/L7NLFwX02XYpR6GbptxBcFRwd4C
+        LK8zl6KHg7i5AtO8ll4aj5olAw==
+X-Google-Smtp-Source: ABdhPJyp8IR9XUq/fzGvU6NwbCOue/TbsqeAOl7EOzzvAx/ioafvvepXC3g0wMgroNVWeRoU+PyUMA==
+X-Received: by 2002:a63:545a:: with SMTP id e26mr25192493pgm.4.1591731700894;
+        Tue, 09 Jun 2020 12:41:40 -0700 (PDT)
 Received: from ubuntu.Home (anon-42-81.vpn.ipredator.se. [46.246.42.81])
-        by smtp.gmail.com with ESMTPSA id z85sm10563627pfc.66.2020.06.09.12.41.44
+        by smtp.gmail.com with ESMTPSA id z85sm10563627pfc.66.2020.06.09.12.41.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Jun 2020 12:41:46 -0700 (PDT)
+        Tue, 09 Jun 2020 12:41:40 -0700 (PDT)
 From:   Matt Ranostay <matt.ranostay@konsulko.com>
 To:     jic23@kernel.org
 Cc:     linux-iio@vger.kernel.org,
         Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH 3/3] iio: chemical: atlas-ezo-sensor: add support for O2 sensor
-Date:   Tue,  9 Jun 2020 12:41:17 -0700
-Message-Id: <20200609194117.5837-4-matt.ranostay@konsulko.com>
+Subject: [PATCH 1/3] iio: add IIO_MOD_O2 modifier
+Date:   Tue,  9 Jun 2020 12:41:15 -0700
+Message-Id: <20200609194117.5837-2-matt.ranostay@konsulko.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200609194117.5837-1-matt.ranostay@konsulko.com>
 References: <20200609194117.5837-1-matt.ranostay@konsulko.com>
@@ -71,149 +71,73 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for the Atlas EZO O2 chemical sensor which required
-some refactoring of the driver and parsing of i2c transfer.
-
-Sensor data is converted by the scaling value from percent to
-IIO_CONCENTRATION.
+Add modifier IIO_MOD_O2 for O2 concentration reporting
 
 Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/chemical/atlas-ezo-sensor.c | 74 ++++++++++++++++++-------
- 1 file changed, 55 insertions(+), 19 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio | 2 ++
+ drivers/iio/industrialio-core.c         | 1 +
+ include/uapi/linux/iio/types.h          | 1 +
+ tools/iio/iio_event_monitor.c           | 2 ++
+ 4 files changed, 6 insertions(+)
 
-diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
-index a94eb8a6bf32..94188c84e65f 100644
---- a/drivers/iio/chemical/atlas-ezo-sensor.c
-+++ b/drivers/iio/chemical/atlas-ezo-sensor.c
-@@ -16,10 +16,11 @@
- #include <linux/iio/iio.h>
- 
- #define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
--#define ATLAS_CO2_INT_TIME_IN_MS	950
-+#define ATLAS_INT_TIME_IN_MS		950
- 
- enum {
- 	ATLAS_CO2_EZO,
-+	ATLAS_O2_EZO,
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index d3e53a6d8331..5166d905a830 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1564,6 +1564,8 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_ethanol_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_ethanol_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_h2_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_h2_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_o2_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_o2_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_voc_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_concentrationX_voc_raw
+ KernelVersion:	4.3
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1527f01a44f1..983dba7725a4 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -130,6 +130,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_PM2P5] = "pm2p5",
+ 	[IIO_MOD_PM4] = "pm4",
+ 	[IIO_MOD_PM10] = "pm10",
++	[IIO_MOD_O2] = "o2",
  };
  
- struct atlas_ezo_device {
-@@ -38,31 +39,54 @@ struct atlas_ezo_data {
- 	u8 buffer[8];
+ /* relies on pairs of these shared then separate */
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index fdd81affca4b..48c13147c0a8 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -94,6 +94,7 @@ enum iio_modifier {
+ 	IIO_MOD_PM10,
+ 	IIO_MOD_ETHANOL,
+ 	IIO_MOD_H2,
++	IIO_MOD_O2,
  };
  
-+#define ATLAS_CONCENTRATION_CHANNEL(_modifier) \
-+	{ \
-+		.type = IIO_CONCENTRATION, \
-+		.modified = 1,\
-+		.channel2 = _modifier, \
-+		.info_mask_separate = \
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE), \
-+		.scan_index = 0, \
-+		.scan_type =  { \
-+			.sign = 'u', \
-+			.realbits = 32, \
-+			.storagebits = 32, \
-+			.endianness = IIO_CPU, \
-+		}, \
-+	}
-+
- static const struct iio_chan_spec atlas_co2_ezo_channels[] = {
--	{
--		.type = IIO_CONCENTRATION,
--		.modified = 1,
--		.channel2 = IIO_MOD_CO2,
--		.info_mask_separate =
--			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
--		.scan_index = 0,
--		.scan_type = {
--			.sign = 'u',
--			.realbits = 32,
--			.storagebits = 32,
--			.endianness = IIO_CPU,
--		},
--	},
-+	ATLAS_CONCENTRATION_CHANNEL(IIO_MOD_CO2),
-+};
-+
-+static const struct iio_chan_spec atlas_o2_ezo_channels[] = {
-+	ATLAS_CONCENTRATION_CHANNEL(IIO_MOD_O2),
+ enum iio_event_type {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index f115d166c985..bb03859db89d 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -119,6 +119,7 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_PM2P5] = "pm2p5",
+ 	[IIO_MOD_PM4] = "pm4",
+ 	[IIO_MOD_PM10] = "pm10",
++	[IIO_MOD_O2] = "o2",
  };
  
- static struct atlas_ezo_device atlas_ezo_devices[] = {
- 	[ATLAS_CO2_EZO] = {
- 		.channels = atlas_co2_ezo_channels,
- 		.num_channels = 1,
--		.delay = ATLAS_CO2_INT_TIME_IN_MS,
-+		.delay = ATLAS_INT_TIME_IN_MS,
- 	},
-+	[ATLAS_O2_EZO] = {
-+		.channels = atlas_o2_ezo_channels,
-+		.num_channels = 1,
-+		.delay = ATLAS_INT_TIME_IN_MS,
-+	}
- };
- 
-+static void atlas_ezo_sanitize(char *buf)
-+{
-+	char *ptr = strchr(buf, '.');
-+
-+	if (!ptr)
-+		return;
-+
-+	for (; *ptr; ptr++)
-+		*ptr = *(ptr + 1);
-+}
-+
- static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
- 			  struct iio_chan_spec const *chan,
- 			  int *val, int *val2, long mask)
-@@ -96,6 +120,9 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
- 			return -EBUSY;
- 		}
- 
-+		/* removing floating point for fixed number representation */
-+		atlas_ezo_sanitize(data->buffer + 2);
-+
- 		ret = kstrtol(data->buffer + 1, 10, &tmp);
- 
- 		*val = tmp;
-@@ -105,9 +132,16 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
- 		return ret ? ret : IIO_VAL_INT;
- 	}
- 	case IIO_CHAN_INFO_SCALE:
--		*val = 0;
--		*val2 = 100; /* 0.0001 */
--		return IIO_VAL_INT_PLUS_MICRO;
-+		switch (chan->channel2) {
-+		case IIO_MOD_CO2:
-+			*val = 0;
-+			*val2 = 100; /* 0.0001 */
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_MOD_O2:
-+			*val = 100;
-+			return IIO_VAL_INT;
-+		}
-+		return -EINVAL;
- 	}
- 
- 	return 0;
-@@ -119,12 +153,14 @@ static const struct iio_info atlas_info = {
- 
- static const struct i2c_device_id atlas_ezo_id[] = {
- 	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
-+	{ "atlas-o2-ezo", ATLAS_O2_EZO },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
- 
- static const struct of_device_id atlas_ezo_dt_ids[] = {
- 	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
-+	{ .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
+ static bool event_is_known(struct iio_event_data *event)
+@@ -211,6 +212,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_MOD_PM2P5:
+ 	case IIO_MOD_PM4:
+ 	case IIO_MOD_PM10:
++	case IIO_MOD_O2:
+ 		break;
+ 	default:
+ 		return false;
 -- 
 2.25.1
 
