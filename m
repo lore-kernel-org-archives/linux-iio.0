@@ -1,194 +1,141 @@
-Return-Path: <SRS0=4pMd=73=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=DrF8=75=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
-	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.7 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	UNPARSEABLE_RELAY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC6A0C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Jun 2020 20:35:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41665C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Jun 2020 17:29:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8C5C020578
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Jun 2020 20:35:33 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="yWI9wiHD";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="iQDYZOEP"
+	by mail.kernel.org (Postfix) with ESMTP id 2BAB0208D5
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Jun 2020 17:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727906AbgFNUfd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Jun 2020 16:35:33 -0400
-Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:8446 "EHLO
-        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727870AbgFNUfc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Jun 2020 16:35:32 -0400
-Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
-        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05EKXWmi001358;
-        Sun, 14 Jun 2020 13:35:16 -0700
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
- subject : date : message-id : references : in-reply-to : content-type :
- content-transfer-encoding : mime-version; s=pfpt1;
- bh=dq67KSCrUgmX8Wfj5CNkaYAjOY/aIAmbwyr1Q8jev1s=;
- b=yWI9wiHDsxGNlqlvaSDc3GGYBkj2hoi4oDqZ3xtOcfow2VtkI0H4s8UAiNlBDCudcu5u
- Eg6i7VbhOWVdQaBliUfeP3RreiPAsy/GbxRGIspLbdOMEPn2e8do/f+PiPfHFcWLzSr9
- C/J83oqUqsPHy7ESQjmDzEJrkpfK7GhLn0vIUi0E8s3kquh2KHeyDGlPMKUxFnwDhwsU
- G+49qYqsCIFQi3Vva7oFScMzxJMLD8+KLyTTs5S46a4UawOIpbS0YVNmHJCSyn/Kc8Yq
- 1otyk8kVZrsbwgwv/JwdEWhhpcoItXCBOZQaReld0Px6MJBIsDkHRQWaJm+n+aHw3eqS vQ== 
-Received: from nam12-dm6-obe.outbound.protection.outlook.com (mail-dm6nam12lp2174.outbound.protection.outlook.com [104.47.59.174])
-        by mx0b-00328301.pphosted.com with ESMTP id 31mtrn0gdj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 14 Jun 2020 13:35:16 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=L52TsSV51DfZ+QUsumVSgS7Zo/ACdXNBuMv80Dkva+x8aIHuIhl713jmiGN7DTzyj6qUhwGyx3rKIBVz2KpF462h8SIJVSKAE13jcUItEZz4ncdLGrqS8qOwvSCwTUHCcKEgcVKxzxXH/CvBHN9xkph8UdHyvGlmyRn9hw+rxnYIo9b2fnR2MNwy+OpcY9h9MT3Fly+c57qjXceZhx3fdNOGFbaKRoZcP2yIwg3GNy0uk5DKQqlH34hmKlD7JXVaCR3SUKaoORoxWivtC/CG2q2sTyi9rk0THuajF5q6lVkiopBZZBOiMdQpzHDs7A3Et3MqLbe441e8JIS3R/r7ZQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dq67KSCrUgmX8Wfj5CNkaYAjOY/aIAmbwyr1Q8jev1s=;
- b=bEMIobkb8EEjTOHu+TuODIR6EwMGu2ImTaZ/E/cNvCvSdAB6oSeQRe9IKMg0ALYoTEpHBBMH3Me6X8raVc+SsWG2oKfxodC7UGUIlCDs5GgD4CVBN/uj+ChismPcbYGwmRmCY/lBVG9sno9wZh56T1LRmpJ/P6Z1kTKYoqsz3vuneq2CqnDint+I2s6bN7JnqG4y4DClDLz3g6M+wGa7qVzL5ci4gLrjKWRgcBK0EhN6KJBNPSFeP6OnHUj0UIp+r/RcjA8Z/lyetMOF1NDnptebiY5v7zGySZz2F9FHfRYok9IZ+tbJLDhQu5CpGVNHoqK2OgvLPzTdSVuFT9YNyw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=invensense.com; dmarc=pass action=none
- header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=dq67KSCrUgmX8Wfj5CNkaYAjOY/aIAmbwyr1Q8jev1s=;
- b=iQDYZOEPEtNT9AsLZz7d++ul72cqSIKlQXU3eq1J8vqkV6Hlx06guqFRLfh6YZuojP+0QKMXt6GQA0BcmPB++aEXhIoRwuVHW4VbdafyIwyyfSP0Qfr0UU2rFbQcG82fdj7gO3bybW7g8Bhhx03HupXPA01b8H8Rg0twpxiBNP4=
-Received: from MN2PR12MB4422.namprd12.prod.outlook.com (2603:10b6:208:265::9)
- by MN2PR12MB4270.namprd12.prod.outlook.com (2603:10b6:208:1d9::21) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3088.18; Sun, 14 Jun
- 2020 20:35:14 +0000
-Received: from MN2PR12MB4422.namprd12.prod.outlook.com
- ([fe80::8940:8e95:6996:cc0]) by MN2PR12MB4422.namprd12.prod.outlook.com
- ([fe80::8940:8e95:6996:cc0%9]) with mapi id 15.20.3088.028; Sun, 14 Jun 2020
- 20:35:13 +0000
-From:   Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "robh@kernel.org" <robh@kernel.org>,
-        "mchehab+huawei@kernel.org" <mchehab+huawei@kernel.org>,
-        "davem@davemloft.net" <davem@davemloft.net>,
-        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 06/13] iio: imu: inv_icm42600: add temperature sensor
- support
-Thread-Topic: [PATCH v3 06/13] iio: imu: inv_icm42600: add temperature sensor
- support
-Thread-Index: AQHWPdWIUjAhv0WNM0u1pU/hnDKuy6jYQFCAgABZXLc=
-Date:   Sun, 14 Jun 2020 20:35:13 +0000
-Message-ID: <MN2PR12MB4422148948CF6FC7953A6D2AC49F0@MN2PR12MB4422.namprd12.prod.outlook.com>
-References: <20200608204250.3291-1-jmaneyrol@invensense.com>
- <20200608204250.3291-7-jmaneyrol@invensense.com>,<fd4918b6-a55f-4047-7f18-b796a8ccd020@metafoo.de>
-In-Reply-To: <fd4918b6-a55f-4047-7f18-b796a8ccd020@metafoo.de>
-Accept-Language: en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-authentication-results: metafoo.de; dkim=none (message not signed)
- header.d=none;metafoo.de; dmarc=none action=none header.from=invensense.com;
-x-originating-ip: [2a01:e0a:393:a700:5eee:e32c:7422:df0]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: 6677bfc3-3a55-4a47-7958-08d810a270fa
-x-ms-traffictypediagnostic: MN2PR12MB4270:
-x-microsoft-antispam-prvs: <MN2PR12MB427027E9433A9A88674AEFA0C49F0@MN2PR12MB4270.namprd12.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-forefront-prvs: 04347F8039
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: v7Ho9fEqvKvztL6JblIUyXZEOvgTOsVPI6HBh6RZZaWoEUqOL3lHPqqtLrpDOXesinsV4txpXOb21ROAjOZ0zcpmSKG0733H4CWMUrb5Yrzk453SZcbvLxRzXdimtlmIsQkqM/OyviTtd7auQ6YjArgWnKy3P3/BnsVtX389u9U++pJ5fejIsX5pm7ooSVsilxokOM6ZCTHJWFnWgMyMSU8wMtL2fw0DxKiD4vPLqv860QuHbnIYuWjK2Qmxywj36sEN7IFo8T9g9/1zFGDgBqdttTqeFwX6UPlJez4LI5kSJxWtu48uXsxKCIGce9ItY7/t3mG0BYuKTjaG71UxIg==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(396003)(39830400003)(346002)(366004)(136003)(7416002)(66946007)(66476007)(66446008)(64756008)(66556008)(33656002)(86362001)(91956017)(76116006)(4326008)(71200400001)(8676002)(186003)(2906002)(8936002)(54906003)(110136005)(316002)(53546011)(9686003)(478600001)(55016002)(6506007)(52536014)(7696005)(5660300002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: 7id103ksoa7cyPiWUT7RO5CF834MNz6IE+cfOc0Hl4zztCy7mwt8Zpa6iItR06cSeI8CZ9n8aEI+3miicqjBByHMGKjnZwDwfeTN66pO4AHOG1k1GpChWkmDxVBNf8wiy6l+So/hrNFx/Xe5Bz+DQ8lDX+6jR/XtKgUBRwLeUMUnk4rjmxODQsZ5lFZtAFP2S46cCKM38CVqvn3EV9/sJpoVhQsB19KgZkt1rZrX55o+Ur1lGh2qR6P5kyh1R3NW/Gy3RsZSeYFeSLdjk10ZsmRhI/HNUwzBLdgDrOKKYIxzO0xXgakw8CCUTCkLKHYoCMRRvahWotp2xozHOWUigBvZNOlE7iUvClLFzqQM1GmbcHuUDwQqOB97KdexCx182z6GlIv0/VJRxfDMAgd8TPq3sjafLI5CZHFvETD/c7aho6AnJqzjavivHhqKO9SgI6qbr4RwuQZa5aUhMOIeeIzsY4mfRCPUF3GcwpPHYqI/Uz9tG9GbttZ6nKn4dSX9e9o18gufri00mxBGJWhs8Hs+CDTcwHkZ9BbTqcvzlmg=
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6677bfc3-3a55-4a47-7958-08d810a270fa
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Jun 2020 20:35:13.7352
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 462b3b3b-e42b-47ea-801a-f1581aac892d
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: UAelbfR9xOPbmO9way8Gy8UD9rekn/wzZKbfkEIY88dZHCdkM6FzVN7f5kJ/Gyff64elLGEyfMdZPfpMyhajjCiRzPKzeH66CX+HDuAX6Jg=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4270
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-14_06:2020-06-12,2020-06-14 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0
- priorityscore=1501 cotscore=-2147483648 suspectscore=0 lowpriorityscore=0
- malwarescore=0 mlxscore=0 phishscore=0 impostorscore=0 clxscore=1015
- mlxlogscore=999 spamscore=0 bulkscore=0 classifier=spam adjust=0
- reason=mlx scancount=1 engine=8.12.0-2004280000
- definitions=main-2006140184
+        id S1731039AbgFPR3V (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Jun 2020 13:29:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34112 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729272AbgFPR3U (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Jun 2020 13:29:20 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 421C4C061573;
+        Tue, 16 Jun 2020 10:29:20 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: andrzej.p)
+        with ESMTPSA id 4CE612A2C75
+From:   Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+To:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-tegra@vger.kernel.org, patches@opensource.cirrus.com,
+        ibm-acpi-devel@lists.sourceforge.net,
+        platform-driver-x86@vger.kernel.org
+Cc:     "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Len Brown <lenb@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Kukjin Kim <kgene@kernel.org>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Sylvain Lemieux <slemieux.tyco@gmail.com>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Jonathan Hunter <jonathanh@nvidia.com>,
+        Barry Song <baohua@kernel.org>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>,
+        Peter Hutterer <peter.hutterer@redhat.com>,
+        Henrique de Moraes Holschuh <ibm-acpi@hmh.eng.br>,
+        Andrzej Pietrasiewicz <andrzej.p@collabora.com>,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        kernel@collabora.com
+Subject: [PATCH] Input: document inhibiting
+Date:   Tue, 16 Jun 2020 19:29:09 +0200
+Message-Id: <20200616172909.21625-1-andrzej.p@collabora.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <40988408-8f36-3a52-6439-34084de6b129@redhat.com>
+References: <40988408-8f36-3a52-6439-34084de6b129@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Lars,=0A=
-=0A=
-for the temperature data, the problem is that temperature in the FIFO (used=
- in buffer) is not in the same format than when reading the register.=0A=
-=0A=
-Reading the temperature register return a full precision value on 16 bits. =
-I am using a PROCESSED attribute for it.=0A=
-Temperature data in buffer (coming from the FIFO) is on 8 bits in lower pre=
-cision. It is reported as raw data, thus the need of the offset and scale v=
-alues.=0A=
-=0A=
-So offset and scale values are only for transforming the temperature data f=
-rom the buffer, and direct read is a full precision already processed in m=
-=B0C.=0A=
-=0A=
-Thanks for the review,=0A=
-JB=0A=
-=0A=
-From: Lars-Peter Clausen <lars@metafoo.de>=0A=
-Sent: Sunday, June 14, 2020 17:10=0A=
-To: Jean-Baptiste Maneyrol <JManeyrol@invensense.com>; jic23@kernel.org <ji=
-c23@kernel.org>; robh+dt@kernel.org <robh+dt@kernel.org>; robh@kernel.org <=
-robh@kernel.org>; mchehab+huawei@kernel.org <mchehab+huawei@kernel.org>; da=
-vem@davemloft.net <davem@davemloft.net>; gregkh@linuxfoundation.org <gregkh=
-@linuxfoundation.org>=0A=
-Cc: linux-iio@vger.kernel.org <linux-iio@vger.kernel.org>; devicetree@vger.=
-kernel.org <devicetree@vger.kernel.org>; linux-kernel@vger.kernel.org <linu=
-x-kernel@vger.kernel.org>=0A=
-Subject: Re: [PATCH v3 06/13] iio: imu: inv_icm42600: add temperature senso=
-r support =0A=
-=A0=0A=
-=A0CAUTION: This email originated from outside of the organization. Please =
-make sure the sender is who they say they are and do not click links or ope=
-n attachments unless you recognize the sender and know the content is safe.=
-=0A=
-=0A=
-On 6/8/20 10:42 PM, Jean-Baptiste Maneyrol wrote:=0A=
-> +=A0=A0=A0=A0 case IIO_CHAN_INFO_PROCESSED:=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D iio_device_claim_direct_mod=
-e(indio_dev);=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 if (ret)=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return ret;=
-=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 ret =3D inv_icm42600_temp_read(st, =
-&temp);=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 iio_device_release_direct_mode(indi=
-o_dev);=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 if (ret)=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return ret;=
-=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *val =3D temp;=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return IIO_VAL_INT;=0A=
-> +=A0=A0=A0=A0 case IIO_CHAN_INFO_SCALE:=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *val =3D 483;=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *val2 =3D 91787;=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return IIO_VAL_INT_PLUS_MICRO;=0A=
-> +=A0=A0=A0=A0 case IIO_CHAN_INFO_OFFSET:=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 *val =3D 25000;=0A=
-> +=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0=A0 return IIO_VAL_INT;=0A=
-=0A=
-If the data is returned processed there is no need to specify scale and =0A=
-offset.=0A=
-=0A=
-But since the transformation to turn the data into standard units is a =0A=
-simple linear transform the preferred way to handle this is to return =0A=
-RAW data and specify scale and offset.=0A=
+Document inhibiting input devices and its relation to being
+a wakeup source.
+
+Signed-off-by: Andrzej Pietrasiewicz <andrzej.p@collabora.com>
+---
+
+@Hans, @Dmitry,
+
+My fist attempt at documenting inhibiting. Kindly look at it to see if I haven't got anything
+wrong.
+
+Andrzej
+
+ Documentation/input/input-programming.rst | 36 +++++++++++++++++++++++
+ 1 file changed, 36 insertions(+)
+
+diff --git a/Documentation/input/input-programming.rst b/Documentation/input/input-programming.rst
+index 45a4c6e05e39..0cd1ad4504fb 100644
+--- a/Documentation/input/input-programming.rst
++++ b/Documentation/input/input-programming.rst
+@@ -164,6 +164,42 @@ disconnects. Calls to both callbacks are serialized.
+ The open() callback should return a 0 in case of success or any nonzero value
+ in case of failure. The close() callback (which is void) must always succeed.
+ 
++Inhibiting input devices
++~~~~~~~~~~~~~~~~~~~~~~~~
++
++Inhibiting a device means ignoring input events from it. As such it is about maintaining
++relationships with input handlers - either an already existing relationships, or
++relationships to be established while the device is in inhibited state.
++
++If a device is inhibited, no input handler will receive events from it.
++
++The fact that nobody wants events from the device is exploited further, by calling device's
++close() (if there are users) and open() (if there are users) on inhibit and uninhibit
++operations, respectively. Indeed, the meaning of close() is to stop providing events
++to the input core and that of open() is to start providing events to the input core.
++
++Inhibiting and uninhibiting is orthogonal to opening and closing the device by input
++handlers. Userspace might want to inhibit a device in anticipation before any handler is
++positively matched against it.
++
++Inhibiting and uninhibiting is orthogonal to device's being a wakeup source, too. Being a
++wakeup source plays a role when the system is sleeping, not when the system is operating.
++How drivers should program their interaction between inhibiting, sleeping and being a wakeup
++source is driver-specific.
++
++Taking the analogy with the network devices - bringing a network interface down doesn't mean
++that it should be impossible to be wake the system up on LAN through this interface. So, there
++may be input drivers which should be considered wakeup sources even when inhibited. Actually,
++in many i2c input devices their interrupt is declared a wakeup interrupt and its handling
++happens in driver's core, which is not aware of input-specific inhibit (nor should it be).
++Composite devices containing several interfaces can be inhibited on a per-interface basis and
++e.g. inhibiting one interface shouldn't affect the device's capability of being a wakeup source.
++
++If a device is to be considered a wakeup source while inhibited, special care must be taken when
++programming its suspend(), as it might need to call device's open(). Depending on what close()
++means for the device in question not opening() it before going to sleep might make it impossible
++to provide any wakeup events. The device is going to sleep anyway.
++
+ Basic event types
+ ~~~~~~~~~~~~~~~~~
+ 
+-- 
+2.17.1
+
