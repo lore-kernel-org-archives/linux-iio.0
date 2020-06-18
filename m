@@ -4,49 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B7CC433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 02:45:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3B19C433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 02:51:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF58D20776
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 02:45:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 809B82083B
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 02:51:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1592448341;
-	bh=yIpaCBY7KC3JSoJD77yuBJ8C7JGm5l4UWnOFl9zU1Rs=;
+	s=default; t=1592448706;
+	bh=KV/4TVQazgEth8uM7noTCOHjy48wFXUisUo/higDEX0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=R/QzWAa/C98m2SbyBVorxm58/iJPgqh6EH11w5WCRzoe7oSWhzecL8Z/Yzk7ctYnJ
-	 dkWZW8Buc77oaILD9WqrxGnT5uLMwNSVoV+r/SsWX4LqNBkK6rhSkDRBD+8FzhRsX1
-	 NRvRaKj7UlQIR3S8HWdO4bC4z3fJG2MXHms9wENY=
+	b=xWBuf4S6b+eZZVOwV8xuOV1ZhVx7Ln3PFDWf1PoFO3lvO/iTmLlwVDHrDJc9GxxW+
+	 OSqyAb4SAtYx8g0TZtxCh35Uy6tnV1FD8TWPNkXpDEpldLO2eXYlzsoI0b4TaiKAzx
+	 WU7LhsCmvbroXBV3515ftdg9oFjJQGP1298xQm8s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728489AbgFRCpg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 Jun 2020 22:45:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38538 "EHLO mail.kernel.org"
+        id S1727953AbgFRBIw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Jun 2020 21:08:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34842 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728665AbgFRBK4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:10:56 -0400
+        id S1727945AbgFRBIv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:08:51 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B22B720CC7;
-        Thu, 18 Jun 2020 01:10:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A123221D7B;
+        Thu, 18 Jun 2020 01:08:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592442655;
-        bh=yIpaCBY7KC3JSoJD77yuBJ8C7JGm5l4UWnOFl9zU1Rs=;
+        s=default; t=1592442531;
+        bh=KV/4TVQazgEth8uM7noTCOHjy48wFXUisUo/higDEX0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=znju3W+H0nu9v7waOHP/DKIYOaxdlVT1C5h5lGAq2hoTJPBppMTOpx2i2xk7uaC5E
-         N+aYFBSPKwaP6fi1wXCnps6uVOAGUKZ04TG5CYUFOne8V5Pu9gXVYyGq9NlgeZ0DgG
-         o9yeA3vZimXPTTz0PSN14sPHYHtVxgwbmIza2na0=
+        b=zTAVFta6W9dakk5clWe++8TQPscxL9TSiwHCJDhKQpKuSHDFc1YJ8bOH/oXy6lZh+
+         IuAATbStTRuzvvwBQbU2CAZ09nD46QZJVYfs8JDIwQjMLL8FeG6d3xY19Tf6ZaDTwv
+         d+VrPolV/TzP2mEDn+qBECFZ1Ta5+ImaW/PwWo8g=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Andreas Klinger <ak@it-klinger.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.7 127/388] iio: buffer: Don't allow buffers without any channels enabled to be activated
-Date:   Wed, 17 Jun 2020 21:03:44 -0400
-Message-Id: <20200618010805.600873-127-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.7 034/388] iio: bmp280: fix compensation of humidity
+Date:   Wed, 17 Jun 2020 21:02:11 -0400
+Message-Id: <20200618010805.600873-34-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618010805.600873-1-sashal@kernel.org>
 References: <20200618010805.600873-1-sashal@kernel.org>
@@ -59,66 +58,47 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+From: Andreas Klinger <ak@it-klinger.de>
 
-[ Upstream commit b7329249ea5b08b2a1c2c3f24a2f4c495c4f14b8 ]
+[ Upstream commit dee2dabc0e4115b80945fe2c91603e634f4b4686 ]
 
-Before activating a buffer make sure that at least one channel is enabled.
-Activating a buffer with 0 channels enabled doesn't make too much sense and
-disallowing this case makes sure that individual driver don't have to add
-special case code to handle it.
+Limit the output of humidity compensation to the range between 0 and 100
+percent.
 
-Currently, without this patch enabling a buffer is possible and no error is
-produced. With this patch -EINVAL is returned.
+Depending on the calibration parameters of the individual sensor it
+happens, that a humidity above 100 percent or below 0 percent is
+calculated, which don't make sense in terms of relative humidity.
 
-An example of execution with this patch and some instrumented print-code:
-   root@analog:~# cd /sys/bus/iio/devices/iio\:device3/buffer
-   root@analog:/sys/bus/iio/devices/iio:device3/buffer# echo 1 > enable
-   0: iio_verify_update 748 indio_dev->masklength 2 *insert_buffer->scan_mask 00000000
-   1: iio_verify_update 753
-   2:__iio_update_buffers 1115 ret -22
-   3: iio_buffer_store_enable 1241 ret -22
-   -bash: echo: write error: Invalid argument
-1, 2 & 3 are exit-error paths. 0 the first print in iio_verify_update()
-rergardless of error path.
+Add a clamp to the compensation formula as described in the datasheet of
+the sensor in chapter 4.2.3.
 
-Without this patch (and same instrumented print-code):
-   root@analog:~# cd /sys/bus/iio/devices/iio\:device3/buffer
-   root@analog:/sys/bus/iio/devices/iio:device3/buffer# echo 1 > enable
-   0: iio_verify_update 748 indio_dev->masklength 2 *insert_buffer->scan_mask 00000000
-   root@analog:/sys/bus/iio/devices/iio:device3/buffer#
-Buffer is enabled with no error.
+Although this clamp is documented, it was never in the driver of the
+kernel.
 
-Note from Jonathan: Probably not suitable for automatic application to stable.
-This has been there from the very start.  It tidies up an odd corner
-case but won't effect any 'real' users.
+It depends on the circumstances (calibration parameters, temperature,
+humidity) if one can see a value above 100 percent without the clamp.
+The writer of this patch was working with this type of sensor without
+noting this error. So it seems to be a rare event when this bug occures.
 
-Fixes: 84b36ce5f79c0 ("staging:iio: Add support for multiple buffers")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/industrialio-buffer.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/pressure/bmp280-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 4ada5592aa2b..7c0004b5a4bb 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -687,6 +687,13 @@ static int iio_verify_update(struct iio_dev *indio_dev,
- 	bool scan_timestamp;
- 	unsigned int modes;
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 2540e7c2358c..973264a088f9 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -271,6 +271,8 @@ static u32 bmp280_compensate_humidity(struct bmp280_data *data,
+ 		+ (s32)2097152) * calib->H2 + 8192) >> 14);
+ 	var -= ((((var >> 15) * (var >> 15)) >> 7) * (s32)calib->H1) >> 4;
  
-+	if (insert_buffer &&
-+	    bitmap_empty(insert_buffer->scan_mask, indio_dev->masklength)) {
-+		dev_dbg(&indio_dev->dev,
-+			"At least one scan element must be enabled first\n");
-+		return -EINVAL;
-+	}
++	var = clamp_val(var, 0, 419430400);
 +
- 	memset(config, 0, sizeof(*config));
- 	config->watermark = ~0;
+ 	return var >> 12;
+ };
  
 -- 
 2.25.1
