@@ -7,48 +7,49 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0EDE6C433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:40:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C5CC433DF
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:43:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E1F6A221E9
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:40:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D7FEB2220E
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:43:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1592444410;
-	bh=811B0B764YxttwgQV/eX2nfnyolO95ahQFXsXIETAMo=;
+	s=default; t=1592444637;
+	bh=CryLUDvGXkgUR5k66ISKOBbT+s4DXfJg1hJXZ1rf0sI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=UOp/Rg9hM9KzR92a27VK5NF6jXs/cmUNBhJuPVJWZBaU5xWrlVFD4BjUOQSVYTaI4
-	 UUeptMAdlzes7I9SoNtZRI6h1/o136DAfpGDymozBjUKm3KOqvwj5i1ryN5Gx89NS7
-	 TB4wTQRRidz2A+N3HS0+jeyUqEs82ayTnHCZkjJY=
+	b=YQywB/Hb4rTyFknaz3mchOucjJyyvU9etcdy3eame8elAM3K/4tWycx0azSJbGz4m
+	 CmMIApaT4vLofeV2DgZg3Uvt4X3fYpQdQT/i9EAa1G7oUyysf0z5XESBhDL54JtFiq
+	 5bQHwI56CXJlc1ItIWp5qdYPT4llqqg1GjR/Ex+M=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729463AbgFRBkG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 Jun 2020 21:40:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40028 "EHLO mail.kernel.org"
+        id S1731120AbgFRBnw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Jun 2020 21:43:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:38038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732468AbgFRBaJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:30:09 -0400
+        id S1732210AbgFRB3A (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:29:00 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8BBDA2222C;
-        Thu, 18 Jun 2020 01:30:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B2082220A;
+        Thu, 18 Jun 2020 01:28:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443809;
-        bh=811B0B764YxttwgQV/eX2nfnyolO95ahQFXsXIETAMo=;
+        s=default; t=1592443739;
+        bh=CryLUDvGXkgUR5k66ISKOBbT+s4DXfJg1hJXZ1rf0sI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eZki912GPUIfihZrXMzTINGSqocNyZeh17+9nONEqrqaf2VVtDPUdCFz+TwSRKAEB
-         W7k4DC+PEBeaYkL1diGLTJtRpRHk8M4nzcconGGpw/xNtc3YU0O6iJNZa6LMjdHAVF
-         kF+QZYiifigo1W/ASThCy+0zoGDTMSvCKfm4TSxc=
+        b=vls+pd1fe4dyEzY7CSXPK7j9FGhYOmWhQfAMW0/evGOK14cCwxeHdqrGxX63SrIFc
+         D3AVXbo+RtVaPaTThyw1xxxIzw1ujF6ZQ5MrddmaNrl1AxVsYl18CM2JnxwCWfYEC7
+         ZS2VGpfTywbH79vq5qZ+1EDaZXQcEP2xx+FTIg2k=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 03/60] iio: light: isl29125: fix iio_triggered_buffer_{predisable,postenable} positions
-Date:   Wed, 17 Jun 2020 21:29:07 -0400
-Message-Id: <20200618013004.610532-3-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 30/80] iio: buffer: Don't allow buffers without any channels enabled to be activated
+Date:   Wed, 17 Jun 2020 21:27:29 -0400
+Message-Id: <20200618012819.609778-30-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20200618013004.610532-1-sashal@kernel.org>
-References: <20200618013004.610532-1-sashal@kernel.org>
+In-Reply-To: <20200618012819.609778-1-sashal@kernel.org>
+References: <20200618012819.609778-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -58,86 +59,66 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-[ Upstream commit 9b7a12c3e090cf3fba6f66f1f23abbc6e0e86021 ]
+[ Upstream commit b7329249ea5b08b2a1c2c3f24a2f4c495c4f14b8 ]
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
+Before activating a buffer make sure that at least one channel is enabled.
+Activating a buffer with 0 channels enabled doesn't make too much sense and
+disallowing this case makes sure that individual driver don't have to add
+special case code to handle it.
 
-For the predisable hook, the disable code should occur before detaching
-the poll func, and for the postenable hook, the poll func should be
-attached before the enable code.
+Currently, without this patch enabling a buffer is possible and no error is
+produced. With this patch -EINVAL is returned.
 
-This change reworks the predisable/postenable hooks so that the pollfunc is
-attached/detached in the correct position.
-It also balances the calls a bit, by grouping the preenable and the
-iio_triggered_buffer_postenable() into a single
-isl29125_buffer_postenable() function.
+An example of execution with this patch and some instrumented print-code:
+   root@analog:~# cd /sys/bus/iio/devices/iio\:device3/buffer
+   root@analog:/sys/bus/iio/devices/iio:device3/buffer# echo 1 > enable
+   0: iio_verify_update 748 indio_dev->masklength 2 *insert_buffer->scan_mask 00000000
+   1: iio_verify_update 753
+   2:__iio_update_buffers 1115 ret -22
+   3: iio_buffer_store_enable 1241 ret -22
+   -bash: echo: write error: Invalid argument
+1, 2 & 3 are exit-error paths. 0 the first print in iio_verify_update()
+rergardless of error path.
 
+Without this patch (and same instrumented print-code):
+   root@analog:~# cd /sys/bus/iio/devices/iio\:device3/buffer
+   root@analog:/sys/bus/iio/devices/iio:device3/buffer# echo 1 > enable
+   0: iio_verify_update 748 indio_dev->masklength 2 *insert_buffer->scan_mask 00000000
+   root@analog:/sys/bus/iio/devices/iio:device3/buffer#
+Buffer is enabled with no error.
+
+Note from Jonathan: Probably not suitable for automatic application to stable.
+This has been there from the very start.  It tidies up an odd corner
+case but won't effect any 'real' users.
+
+Fixes: 84b36ce5f79c0 ("staging:iio: Add support for multiple buffers")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/light/isl29125.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/iio/industrialio-buffer.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-index e2945a20e5f6..60388a41ec8c 100644
---- a/drivers/iio/light/isl29125.c
-+++ b/drivers/iio/light/isl29125.c
-@@ -215,13 +215,24 @@ static const struct iio_info isl29125_info = {
- 	.driver_module = THIS_MODULE,
- };
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 2f037cd59d53..2b680e65b4dd 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -667,6 +667,13 @@ static int iio_verify_update(struct iio_dev *indio_dev,
+ 	bool scan_timestamp;
+ 	unsigned int modes;
  
--static int isl29125_buffer_preenable(struct iio_dev *indio_dev)
-+static int isl29125_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct isl29125_data *data = iio_priv(indio_dev);
-+	int err;
-+
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err)
-+		return err;
- 
- 	data->conf1 |= ISL29125_MODE_RGB;
--	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+	err = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
- 		data->conf1);
-+	if (err) {
-+		iio_triggered_buffer_predisable(indio_dev);
-+		return err;
++	if (insert_buffer &&
++	    bitmap_empty(insert_buffer->scan_mask, indio_dev->masklength)) {
++		dev_dbg(&indio_dev->dev,
++			"At least one scan element must be enabled first\n");
++		return -EINVAL;
 +	}
 +
-+	return 0;
- }
- 
- static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
-@@ -229,19 +240,18 @@ static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
- 	struct isl29125_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	data->conf1 &= ~ISL29125_MODE_MASK;
- 	data->conf1 |= ISL29125_MODE_PD;
--	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+	ret = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
- 		data->conf1);
-+
-+	iio_triggered_buffer_predisable(indio_dev);
-+
-+	return ret;
- }
- 
- static const struct iio_buffer_setup_ops isl29125_buffer_setup_ops = {
--	.preenable = isl29125_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
-+	.postenable = isl29125_buffer_postenable,
- 	.predisable = isl29125_buffer_predisable,
- };
+ 	memset(config, 0, sizeof(*config));
+ 	config->watermark = ~0;
  
 -- 
 2.25.1
