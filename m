@@ -4,48 +4,49 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB7F0C433E4
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:46:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32413C433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:46:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A83BD2075E
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:46:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 13025221F6
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Jun 2020 01:46:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1592444804;
-	bh=vVie/ygbR0DLrb/Ebw/E2vK9WDMcdwM+9xRJs4xgTwg=;
+	s=default; t=1592444817;
+	bh=e4JErN6gl4pxdH0kmK3utJOeNKKOq5iACh4WBMypCXs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=a/Yk+bL+J0TSLlZccMCujuNK71rfWOWJhyRMU6xMCYaVq4onixzaxm67pbItKEpCr
-	 QRzDpZ5kv8cPZz5N1goAOqeeXU9JMER06K4E4NTCn9CCwvEAA/0+F+UhGNchS30KzU
-	 Wv6/WxrnzETr2YKHJl1nKbGaMmpGGKz9dKaPAp3g=
+	b=RhCYbgNQehjiL/GgO2OWVidmqX3DojdE6LVsxQi+gz4gALiDyweqt92Vcw6FNn2AL
+	 cIW+2cN03HIdjTZ/mDDmoPvnXDV8y32s0lCsV6YjZ386427a8y2LzPzLVytibSi2U0
+	 z1NEhc1MnGjlCrsIXcv7ZpVnnmrGmlG4pTC7r3VI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732210AbgFRBqg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 Jun 2020 21:46:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37078 "EHLO mail.kernel.org"
+        id S1731676AbgFRBqp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Jun 2020 21:46:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37048 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732091AbgFRB20 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 17 Jun 2020 21:28:26 -0400
+        id S1732086AbgFRB2Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 17 Jun 2020 21:28:25 -0400
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 775E122224;
-        Thu, 18 Jun 2020 01:28:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4692D2220D;
+        Thu, 18 Jun 2020 01:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1592443706;
-        bh=vVie/ygbR0DLrb/Ebw/E2vK9WDMcdwM+9xRJs4xgTwg=;
+        s=default; t=1592443705;
+        bh=e4JErN6gl4pxdH0kmK3utJOeNKKOq5iACh4WBMypCXs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=fNrxiWFI1+qZCBzZDeRvhO+Tt7kLBoe2bqAopQCcWs9ntwDYOVaQl+FHin7xam3ee
-         LaR9ryYkk06RI87RkxW70iHfr800KWQBRBakAmAVGDxwsJFOJD9cjd34m3eE7MmyZA
-         vD8g3q7zyNdVtE77nT4CJQeY3PAhlFzjpa+W5yF8=
+        b=NsUWzqfqQ674AiEeTC9xd6on1vNXZJ1xL5G71qR7CLmF++0PMR2Zx3flCDB5R7UZB
+         7c8AumuI1/hB5JrLOb/KNHjq5HvVgWUD48o48T8J1Lh216YD0N9TI4oX/giSSgYI0K
+         l4wg5zf/zf0O9S35K12hsj3iEGBL+YLygu8bIsy8=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 05/80] iio: light: isl29125: fix iio_triggered_buffer_{predisable,postenable} positions
-Date:   Wed, 17 Jun 2020 21:27:04 -0400
-Message-Id: <20200618012819.609778-5-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 4.9 04/80] iio: pressure: bmp280: Tolerate IRQ before registering
+Date:   Wed, 17 Jun 2020 21:27:03 -0400
+Message-Id: <20200618012819.609778-4-sashal@kernel.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200618012819.609778-1-sashal@kernel.org>
 References: <20200618012819.609778-1-sashal@kernel.org>
@@ -58,87 +59,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-[ Upstream commit 9b7a12c3e090cf3fba6f66f1f23abbc6e0e86021 ]
+[ Upstream commit 97b31a6f5fb95b1ec6575b78a7240baddba34384 ]
 
-The iio_triggered_buffer_{predisable,postenable} functions attach/detach
-the poll functions.
+With DEBUG_SHIRQ enabled we have a kernel crash
 
-For the predisable hook, the disable code should occur before detaching
-the poll func, and for the postenable hook, the poll func should be
-attached before the enable code.
+[  116.482696] BUG: kernel NULL pointer dereference, address: 0000000000000000
 
-This change reworks the predisable/postenable hooks so that the pollfunc is
-attached/detached in the correct position.
-It also balances the calls a bit, by grouping the preenable and the
-iio_triggered_buffer_postenable() into a single
-isl29125_buffer_postenable() function.
+...
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+[  116.606571] Call Trace:
+[  116.609023]  <IRQ>
+[  116.611047]  complete+0x34/0x50
+[  116.614206]  bmp085_eoc_irq+0x9/0x10 [bmp280]
+
+because DEBUG_SHIRQ mechanism fires an IRQ before registration and drivers
+ought to be able to handle an interrupt happening before request_irq() returns.
+
+Fixes: aae953949651 ("iio: pressure: bmp280: add support for BMP085 EOC interrupt")
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/light/isl29125.c | 28 +++++++++++++++++++---------
- 1 file changed, 19 insertions(+), 9 deletions(-)
+ drivers/iio/pressure/bmp280-core.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/isl29125.c b/drivers/iio/light/isl29125.c
-index 1d2c0c8a1d4f..4802cc031a0e 100644
---- a/drivers/iio/light/isl29125.c
-+++ b/drivers/iio/light/isl29125.c
-@@ -217,13 +217,24 @@ static const struct iio_info isl29125_info = {
- 	.driver_module = THIS_MODULE,
- };
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index c9263acc190b..36f03fdf4d4f 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -630,7 +630,7 @@ static int bmp180_measure(struct bmp280_data *data, u8 ctrl_meas)
+ 	unsigned int ctrl;
  
--static int isl29125_buffer_preenable(struct iio_dev *indio_dev)
-+static int isl29125_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct isl29125_data *data = iio_priv(indio_dev);
-+	int err;
+ 	if (data->use_eoc)
+-		init_completion(&data->done);
++		reinit_completion(&data->done);
+ 
+ 	ret = regmap_write(data->regmap, BMP280_REG_CTRL_MEAS, ctrl_meas);
+ 	if (ret)
+@@ -886,6 +886,9 @@ static int bmp085_fetch_eoc_irq(struct device *dev,
+ 			"trying to enforce it\n");
+ 		irq_trig = IRQF_TRIGGER_RISING;
+ 	}
 +
-+	err = iio_triggered_buffer_postenable(indio_dev);
-+	if (err)
-+		return err;
- 
- 	data->conf1 |= ISL29125_MODE_RGB;
--	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+	err = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
- 		data->conf1);
-+	if (err) {
-+		iio_triggered_buffer_predisable(indio_dev);
-+		return err;
-+	}
++	init_completion(&data->done);
 +
-+	return 0;
- }
- 
- static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
-@@ -231,19 +242,18 @@ static int isl29125_buffer_predisable(struct iio_dev *indio_dev)
- 	struct isl29125_data *data = iio_priv(indio_dev);
- 	int ret;
- 
--	ret = iio_triggered_buffer_predisable(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	data->conf1 &= ~ISL29125_MODE_MASK;
- 	data->conf1 |= ISL29125_MODE_PD;
--	return i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
-+	ret = i2c_smbus_write_byte_data(data->client, ISL29125_CONF1,
- 		data->conf1);
-+
-+	iio_triggered_buffer_predisable(indio_dev);
-+
-+	return ret;
- }
- 
- static const struct iio_buffer_setup_ops isl29125_buffer_setup_ops = {
--	.preenable = isl29125_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
-+	.postenable = isl29125_buffer_postenable,
- 	.predisable = isl29125_buffer_predisable,
- };
- 
+ 	ret = devm_request_threaded_irq(dev,
+ 			irq,
+ 			bmp085_eoc_irq,
 -- 
 2.25.1
 
