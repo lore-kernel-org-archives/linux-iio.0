@@ -2,99 +2,153 @@ Return-Path: <SRS0=DWr1=AC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0
-	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+X-Spam-Status: No, score=-4.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2727CC433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Jun 2020 12:32:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A200C433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Jun 2020 15:43:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0E297248E5
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Jun 2020 12:32:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 74187251F7
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Jun 2020 15:43:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730045AbgFUMcA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 21 Jun 2020 08:32:00 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6950 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729965AbgFUMcA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2020 08:32:00 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05LCPsfx004709;
-        Sun, 21 Jun 2020 08:31:43 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 31sca6jr45-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Sun, 21 Jun 2020 08:31:43 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 05LCVfR8063672
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Sun, 21 Jun 2020 08:31:42 -0400
-Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sun, 21 Jun 2020 05:31:40 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Sun, 21 Jun 2020 05:31:39 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Sun, 21 Jun 2020 05:31:39 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 05LCVWVc007980;
-        Sun, 21 Jun 2020 08:31:37 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <knaack.h@gmx.de>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 3/7] iio: core: remove padding from private information
-Date:   Sun, 21 Jun 2020 15:33:41 +0300
-Message-ID: <20200621123345.2469-4-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200621123345.2469-1-alexandru.ardelean@analog.com>
-References: <20200621123345.2469-1-alexandru.ardelean@analog.com>
+        id S1730363AbgFUPnF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 21 Jun 2020 11:43:05 -0400
+Received: from smtpout1.mo528.mail-out.ovh.net ([46.105.34.251]:56875 "EHLO
+        smtpout1.mo528.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730356AbgFUPnF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Jun 2020 11:43:05 -0400
+Received: from pro2.mail.ovh.net (unknown [10.109.143.237])
+        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id 0C88D63E478B;
+        Sun, 21 Jun 2020 17:43:02 +0200 (CEST)
+Received: from localhost (89.70.180.118) by DAG2EX1.emp2.local (172.16.2.11)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3; Sun, 21 Jun
+ 2020 17:43:01 +0200
+Date:   Sun, 21 Jun 2020 17:40:37 +0200
+From:   Tomasz Duszynski <tomasz.duszynski@octakon.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>,
+        <andy.shevchenko@gmail.com>, <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v5 1/4] iio: chemical: scd30: add core driver
+Message-ID: <20200621154037.GA13809@arch>
+References: <20200607175812.95777-2-tomasz.duszynski@octakon.com>
+ <20200620172502.0d532081@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
- definitions=2020-06-21_05:2020-06-19,2020-06-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- malwarescore=0 phishscore=0 clxscore=1015 bulkscore=0 spamscore=0
- mlxlogscore=999 priorityscore=1501 cotscore=-2147483648 lowpriorityscore=0
- suspectscore=0 mlxscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2006210101
+Content-Type: text/plain; charset="utf-8"
+Content-Disposition: inline
+In-Reply-To: <20200620172502.0d532081@archlinux>
+X-Originating-IP: [89.70.180.118]
+X-ClientProxiedBy: DAG2EX1.emp2.local (172.16.2.11) To DAG2EX1.emp2.local
+ (172.16.2.11)
+X-Ovh-Tracer-Id: 9225060887347813458
+X-VR-SPAMSTATE: OK
+X-VR-SPAMSCORE: 0
+X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduhedrudektddgleefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpeffhffvuffkfhggtggujghisehttdertddttdejnecuhfhrohhmpefvohhmrghsiicuffhushiihihnshhkihcuoehtohhmrghsiidrughushiihihnshhkihesohgtthgrkhhonhdrtghomheqnecuggftrfgrthhtvghrnheptdehveethfffudetjeeftdekueehjeegjedvteffgfevkefffeegffeugeehgfejnecukfhppedtrddtrddtrddtpdekledrjedtrddukedtrdduudeknecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmohguvgepshhmthhpqdhouhhtpdhhvghlohepphhrohdvrdhmrghilhdrohhvhhdrnhgvthdpihhnvghtpedtrddtrddtrddtpdhmrghilhhfrhhomhepthhomhgrshiirdguuhhsiiihnhhskhhisehotghtrghkohhnrdgtohhmpdhrtghpthhtohepphhmvggvrhifsehpmhgvvghrfidrnhgvth
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There was a recent discussion about this code:
-  https://lore.kernel.org/linux-iio/20200322165317.0b1f0674@archlinux/
+On Sat, Jun 20, 2020 at 05:25:02PM +0100, Jonathan Cameron wrote:
+> On Sun, 7 Jun 2020 19:58:09 +0200
+> Tomasz Duszynski <tomasz.duszynski@octakon.com> wrote:
+>
+> > Add Sensirion SCD30 carbon dioxide core driver.
+> >
+> > Signed-off-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+>
+> A few things I'd missed showed up in warnings when I applied this and
+> ran a sparse check.  Please fix up and send a v6.
+> Also sanity check the rest with sparse. Note if I'd missed this 0-day
+> would have sent use these warnings.
+>
 
-This looks like a good time to removed this, since any issues about it
-should pop-up under testing, because the iio_dev is having a bit of an
-overhaul and stuff being moved to iio_dev_opaque.
+Ah, forgot to add C=2 to prior building. Thanks for catching this.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/industrialio-core.c | 2 --
- 1 file changed, 2 deletions(-)
+> Thanks,
+>
+> Jonathan
+>
+> > +
+> > +static int scd30_read_meas(struct scd30_state *state)
+> > +{
+> > +	int i, ret;
+> > +
+> > +	ret = state->command(state, CMD_READ_MEAS, 0, state->meas, sizeof(state->meas));
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	be32_to_cpu_array(state->meas, state->meas, ARRAY_SIZE(state->meas));
+>
+> The type of the input to the above has the wrong endian markings.
+>
+> CHECK   drivers/iio/chemical/scd30_core.c
+> drivers/iio/chemical/scd30_core.c:123:40: warning: incorrect type in argument 2 (different base types)
+> drivers/iio/chemical/scd30_core.c:123:40:    expected restricted __be32 const [usertype] *src
+> drivers/iio/chemical/scd30_core.c:123:40:    got int *
+>
+> Whilst you could use a cast, it would be tidier to use an array of __be32.
+>
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 33e2953cf021..27005ba4d09c 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1507,8 +1507,6 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 		alloc_size = ALIGN(alloc_size, IIO_ALIGN);
- 		alloc_size += sizeof_priv;
- 	}
--	/* ensure 32-byte alignment of whole construct ? */
--	alloc_size += IIO_ALIGN - 1;
- 
- 	iio_dev_opaque = kzalloc(alloc_size, GFP_KERNEL);
- 	if (!iio_dev_opaque)
--- 
-2.17.1
+Here's the only place where it's a __be32. All other places assume
+cpu endianess which means changing array type generates a few other warnings
+here and there. So I'd prefer to be lazy here and use a cast :).
 
+> > +
+> > +	for (i = 0; i < ARRAY_SIZE(state->meas); i++)
+> > +		state->meas[i] = scd30_float_to_fp(state->meas[i]);
+> > +
+> > +	/*
+> > +	 * co2 is left unprocessed while temperature and humidity are scaled
+> > +	 * to milli deg C and milli percent respectively.
+> > +	 */
+> > +	state->meas[SCD30_TEMP] *= 10;
+> > +	state->meas[SCD30_HR] *= 10;
+> > +
+> > +	return 0;
+> > +}
+> > +
+>
+> ...
+>
+> > +
+> > +static irqreturn_t scd30_trigger_handler(int irq, void *p)
+> > +{
+> > +	struct iio_poll_func *pf = p;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct scd30_state *state = iio_priv(indio_dev);
+> > +	struct {
+> > +		int data[SCD30_MEAS_COUNT];
+> > +		s64 ts __aligned(8);
+> > +	} scan = { 0, };
+> should be scan = { {0, }, }; or something like that
+> as first element happens to be an array.
+>
+> Actually there is padding in here you need to zero I think.
+> So memset is a better bet.
+>
+
+Sure.
+
+> > +	int ret;
+> > +
+> > +	mutex_lock(&state->lock);
+> > +	if (!iio_trigger_using_own(indio_dev))
+> > +		ret = scd30_read_poll(state);
+> > +	else
+> > +		ret = scd30_read_meas(state);
+> > +	memcpy(scan.data, state->meas, sizeof(state->meas));
+> > +	mutex_unlock(&state->lock);
+> > +	if (ret)
+> > +		goto out;
+> > +
+> > +	iio_push_to_buffers_with_timestamp(indio_dev, &scan, iio_get_time_ns(indio_dev));
+> > +out:
+> > +	iio_trigger_notify_done(indio_dev->trig);
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> ...
