@@ -5,64 +5,64 @@ X-Spam-Level:
 X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
 	DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	MSGID_FROM_MTA_HEADER,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C644CC433E1
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jun 2020 15:38:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7866AC433DF
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jun 2020 15:38:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A43732071A
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Jun 2020 15:38:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4BEAA2073E
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Jun 2020 15:38:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="BkxwiGta";
-	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="KH4lzREU"
+	dkim=pass (2048-bit key) header.d=invensense.com header.i=@invensense.com header.b="e4/4rAJe";
+	dkim=pass (1024-bit key) header.d=invensense.onmicrosoft.com header.i=@invensense.onmicrosoft.com header.b="IXT0e5tc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729605AbgFVPiE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Jun 2020 11:38:04 -0400
-Received: from mx0a-00328301.pphosted.com ([148.163.145.46]:51456 "EHLO
-        mx0a-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729539AbgFVPiC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jun 2020 11:38:02 -0400
-Received: from pps.filterd (m0156134.ppops.net [127.0.0.1])
-        by mx0a-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MFaviq023511;
-        Mon, 22 Jun 2020 08:38:00 -0700
+        id S1729296AbgFVPiP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Jun 2020 11:38:15 -0400
+Received: from mx0b-00328301.pphosted.com ([148.163.141.47]:42252 "EHLO
+        mx0b-00328301.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1729253AbgFVPiL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Jun 2020 11:38:11 -0400
+Received: from pps.filterd (m0156136.ppops.net [127.0.0.1])
+        by mx0b-00328301.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 05MFWD47004964;
+        Mon, 22 Jun 2020 08:38:07 -0700
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=invensense.com; h=from : to : cc :
  subject : date : message-id : in-reply-to : references : content-type :
- mime-version; s=pfpt1; bh=yobIXnKmHVtQN55oixDDsZx17pu/hx9Y5m9OJf2mIOA=;
- b=BkxwiGta2O63HOavmOs9pPiDbYIF4BewDnimn6GJoc5BBYwZEE2M5PbusT/zniPHcfEw
- Oc63rcvSLhxPm4BdcNArE612TMzP+HavRUk0g0H9fhRVAsY1RtvkWYpigJK1LJdYrWf0
- dnogql4G7FbZb44e+ZXAMsotKM9EN3N4L+F3sGxtPFjCOXuH3fmvVh2IPSawIvn0HUn5
- wthhW9qmqaWbjApeR6ThejZxjRhc0XVx4XqwDRH6y39WY33vSl72OiiGHApba06WGkV7
- KPpWqOubRvtXOl8DiGO5rS3koQZugPISmBv31OjzfkGct6fx8L0CDigZxCnfgFaT+jse cA== 
-Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2057.outbound.protection.outlook.com [104.47.44.57])
-        by mx0a-00328301.pphosted.com with ESMTP id 31sdxnrtxx-1
+ mime-version; s=pfpt1; bh=QBf2HMHj1/eKnonntrdhRRALP8UmjKyNHNknL468b6U=;
+ b=e4/4rAJeLeL+expAwpQI1u2vgDkycWFpOtISOSc0SsI2baFkb+BknE8JjdgNXl7CLPLw
+ fOi37yWblczAq21129Qk6x0nCxPVs9AwQFURP0IB02LM318zanRxi0tSCzPV23bl1OwZ
+ KHXkJ2g7tNqW7oE5NcSi9eBLwdgzCC3zvqjXRX7akUeyN0lE/TSMx1NqG5fXGEJ7Bh89
+ YMFIjJpgQ7xq0LCbyR6KHzpWsr6GxUmXbZY6u/pJ0Ai6xKaHqvq9YvQeqnyBEiVII2y8
+ msl7OdlwFXmxotNKPRIgsHKe/+00X0QyIfEcVDskw3usCS52wTqWLN8ZKhknSR/1j1fE aw== 
+Received: from nam04-sn1-obe.outbound.protection.outlook.com (mail-sn1nam04lp2056.outbound.protection.outlook.com [104.47.44.56])
+        by mx0b-00328301.pphosted.com with ESMTP id 31sedp0ukm-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 22 Jun 2020 08:38:00 -0700
+        Mon, 22 Jun 2020 08:38:07 -0700
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=nFtRVxNmM24Clyb9Y2gaLTBqW7W3lnzFuCgwYemFXNFx+B7TfTbJw5z6znAMKAUKJlznaJoLXAV5KB6MfM6RC4NGCMhWBC1OUHAvACJVxICKHOHZLQcXGKTkxqryLReDSeYGUm/kOPK5a5tZwAGBLMu6hzLESlEDhKVT26y3ia680HbTmAdssQYrnbTIixuJ6aRZEkZQ34XotoK9PrdPwurTrwxVlVF6nQ2CrWRzeyJAHJl6YNvje9wZsuZJy05kCHz3liDjuHExayNJ/uf8ie6LAw3UtV1C4JQJy4QT+V7HIdwvqy+Kz+extzccqq6s9AjtqoV7nwx2BMXCtvOWvA==
+ b=QaNWVkBGBZL+3xB8cxgsTXgrUqOikUoiSdxP2YzQz8FVOPoqW+CEKbhMYe3LVEPXxLAnf6sz2tg6nvgy9/+DUwodwSavCvk6eLlMABBAJ821kn5EqTZNUHeEs5cHJzuZrojmzPJNNsfhvyY+4oabr4XoGIQFu4XCeyBKtZz7LOeQTJY7ksJvDFCKGnoZwPg0EC7hSDdB1cFTyTXwyQy/hhe6kaVo1liEPzZTBu6U2ou9PaFPIRox9k4rulCCOlYRhZU8JlkrSrDkT4P5bF64qNxURGQ2T5APPH8ZNhuWhhiLLMQlHt7dqTVwpp2o8Pks9OS1jEUhQdI8shvTYaLe2w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yobIXnKmHVtQN55oixDDsZx17pu/hx9Y5m9OJf2mIOA=;
- b=XMY4FEVenYnSAMOjHQjxpAv2fMqG8GmFA1vjGID8suUwh6Q6TWlJ1mpT3ZWMgHbr4965ok5Z6V4QlDuhcxLmd8nuk7rJxnSx02FZCDc7AagElg1MO857rzxQA9AJPjF/3GyrJ5GsNPF47c3tmEM/0Q4AkDzBp15ff2cLs+I6ameN6yVExUk5Yg1T6iTErhHD3VTPKcYFfJlOgeTHb09OpqCFnzQVLzSSMYgowsTdt7U/DeDf1r+ijqasX17y0ZCY2MMVz9Epr9CrLu7IgNHKf+sVTmU2cMsNMJMpkZAOI41adB3lwtKDPcit+eAb7pUaIF+c8vA123CEPcXFH3O8rg==
+ bh=QBf2HMHj1/eKnonntrdhRRALP8UmjKyNHNknL468b6U=;
+ b=kX+gcgm0Kko6qzduxVYZ1PkQhT0lbKrZHFRH/Cjtz9W3WMoAzPbZoCa2W3GLdHI0cYmH3SddVkVUTGiTn94LSvE23CZtPWMddwpdMJmSgK6LrBF3Ru9wjGueS/0RZY1dJxFAB4FVeZOpDgAyxOdOSEpFpGz2M+qK6eJKGTGcg4V58G43cu6E73N4WUvr53Lu3nwa/HjBqC9eKEWhnDZ0U1lf7SDUJgBa4qwYqVCX66ZDSjSZ7uHuJl4wAP9rEA3/jXY3U2CfTrkyjlq3cS+T7W/mfhtK9oOnI2GLpRtDzdE8RJ+E0djpq6KLADDgE0BbI+DYu+P+0AOY/fcIl1FZqA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
  smtp.mailfrom=invensense.com; dmarc=pass action=none
  header.from=invensense.com; dkim=pass header.d=invensense.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=invensense.onmicrosoft.com; s=selector2-invensense-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=yobIXnKmHVtQN55oixDDsZx17pu/hx9Y5m9OJf2mIOA=;
- b=KH4lzREUsYUK0A0Xex1FrBxCwB6NukacPewM6gE4ST9m/GfCS9daO0vkhhnmMJ45ta0aPN57gSHvaI05mUmvr1DBy8JrN4av9bY1GqM6ejUJ2xEzdYn/a+N5V0z9ebejDK87XX84uboUPJe1mlqY9wPI7X5l5mw01oXxUAH5olA=
+ bh=QBf2HMHj1/eKnonntrdhRRALP8UmjKyNHNknL468b6U=;
+ b=IXT0e5tcBtxYc6kr1n9mcjUPqCg8nBPIvSR7EKn1zbZLUPGLjn7kH16vIpluFr1PtP0xDTXmZ43GbT2f6qTExjsCLdPaiQl3jju4ej4aULe9JMZr4ijfGY8t0at+w1C+viWKb88LQOfnHzM7f/oHXGRgVofPB1L+N3zdRABJTWg=
 Authentication-Results: kernel.org; dkim=none (message not signed)
  header.d=none;kernel.org; dmarc=none action=none header.from=invensense.com;
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com (2603:10b6:208:265::9)
  by MN2PR12MB4501.namprd12.prod.outlook.com (2603:10b6:208:269::10) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.22; Mon, 22 Jun
- 2020 15:37:59 +0000
+ 2020 15:38:06 +0000
 Received: from MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::8940:8e95:6996:cc0]) by MN2PR12MB4422.namprd12.prod.outlook.com
  ([fe80::8940:8e95:6996:cc0%7]) with mapi id 15.20.3109.027; Mon, 22 Jun 2020
- 15:37:59 +0000
+ 15:38:05 +0000
 From:   Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
         mchehab+huawei@kernel.org, davem@davemloft.net,
@@ -70,9 +70,9 @@ To:     jic23@kernel.org, robh+dt@kernel.org, robh@kernel.org,
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH v4 03/13] iio: imu: inv_icm42600: add SPI driver for inv_icm42600 driver
-Date:   Mon, 22 Jun 2020 17:37:19 +0200
-Message-Id: <20200622153729.12702-4-jmaneyrol@invensense.com>
+Subject: [PATCH v4 07/13] iio: imu: add Kconfig and Makefile for inv_icm42600 driver
+Date:   Mon, 22 Jun 2020 17:37:23 +0200
+Message-Id: <20200622153729.12702-8-jmaneyrol@invensense.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200622153729.12702-1-jmaneyrol@invensense.com>
 References: <20200622153729.12702-1-jmaneyrol@invensense.com>
@@ -82,157 +82,131 @@ X-ClientProxiedBy: LO2P265CA0054.GBRP265.PROD.OUTLOOK.COM
  (2603:10b6:208:265::9)
 MIME-Version: 1.0
 X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LO2P265CA0054.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:60::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21 via Frontend Transport; Mon, 22 Jun 2020 15:37:57 +0000
+Received: from frgnb-buildozer.invcorp.invensense.com (77.157.193.39) by LO2P265CA0054.GBRP265.PROD.OUTLOOK.COM (2603:10a6:600:60::18) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3109.21 via Frontend Transport; Mon, 22 Jun 2020 15:38:04 +0000
 X-Mailer: git-send-email 2.17.1
 X-Originating-IP: [77.157.193.39]
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 75f20469-9b8e-43bf-9816-08d816c23dd8
+X-MS-Office365-Filtering-Correlation-Id: 92e30dea-ae75-4d9b-5043-08d816c241c6
 X-MS-TrafficTypeDiagnostic: MN2PR12MB4501:
 X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <MN2PR12MB450139AB9DBE642964E16FE9C4970@MN2PR12MB4501.namprd12.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:843;
+X-Microsoft-Antispam-PRVS: <MN2PR12MB4501CF03D44425DDFFEC94CDC4970@MN2PR12MB4501.namprd12.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:2803;
 X-Forefront-PRVS: 0442E569BC
 X-MS-Exchange-SenderADCheck: 1
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: gOemBcCU9wbFh3qYX33ArjNQBa7A5NDNiST6Bat0pPw0JGl0SfyKFGTzr7Oy/XCZQgYpDfnkCLzdAGEMFFEKmtIXtLdYohFSr+73coVYbTE/KGwyqc4d8IPayq2ol3JhRgz/CnKjYtHlIs7r0BXcTPx+4tSjZ1amQlCNe5pUGBsb3dr/fGwmva7EtsObLEblT+l1Qd3cNhfZgQvB9BjPeF9bMd1kMJ/eScfqybErAWjsyQVKDI+2zoOUaTfK/QjIZk/m2atK0Qvh+t3Bb1Nw6tvQN7VIrLJgdBqjgk595nw0XW8/eEbNNTcq64tk06TwZOfq6GzxFDnQ2AmwniyiwQ==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(39850400004)(136003)(366004)(396003)(4326008)(66946007)(7696005)(52116002)(8676002)(66476007)(66556008)(956004)(2616005)(1076003)(83380400001)(107886003)(86362001)(36756003)(478600001)(6486002)(6666004)(26005)(316002)(8936002)(16526019)(5660300002)(2906002)(186003);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: 9JhKM/feFZLAXou9+F0mi+J0BQKsoo16O1zdUYJuLINNjvS/M1CGAIHCopnSS7jwaGUrQ0LADJAj1qT2oWWBulKxUf41IqQUtLyZxK3Gc90U+t7ovKf4F4YuuXwWCh7dAGQUU6ILwVwrWzAKEaGUvtMeqsp4FGGsI1KGwgglEe3yH0RFlcJIU94exdFuKQvElDO+0jVh0uC3Fm+FNkVho1sgR4o5XpB5c/Qels0UUVgTFgWwqBM0gfVrm4MXkw9OZlxPS8guJwMuHyepH/ogjrZz0Op20/lGuL9KSbaPZcDOpeVhkZqY6FaYW0Eh14lhyMdl1dGvTT2VDur4I0N6kLvxCALKbyxtUlYEVpQUFqz7jTxGegRGVASClyZiwJ5hGvvLjnLjlJRhXxqACLen11Q7c5k/6RN0yYW6RSiL4UJYEmYCRgwt2C92aCyP7hC8izfVMRDM5ZKHCs64ubjwTuIAMM6kTkMdMNtTOEVyFR8=
+X-Microsoft-Antispam-Message-Info: VrP/9H9KCdyTuCyJPP1Lx3dIdvCrHjlLzCURD1gR2TMs/YRqSX/sfBtkX2NtvjnBNADibaWD4SSMlML6SLeB3+mVhwigMVM/DN/2RC7yh8rEaHzqfalEMgVv600swCg56bSRYWoDcxrIEfNGBx0OAAj/hkuQ9k4K6b1oywfWu1vTH57MxJZ9k825xsMJPx/3iw9/sFlWFGRP1pGBNNmGegJTKLmQFgYViGy/0cujLhby6y4iB4CxyNgyPni30Z8vb5aPn+08wUE/L58wQM0gph0eg62QZraKSccN9CUmCiXxoUhKb6O+fNvEU7NAyJRW
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MN2PR12MB4422.namprd12.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(346002)(376002)(39850400004)(136003)(366004)(396003)(4326008)(66946007)(7696005)(52116002)(8676002)(66476007)(66556008)(956004)(2616005)(1076003)(107886003)(86362001)(36756003)(478600001)(6486002)(6666004)(26005)(316002)(8936002)(16526019)(5660300002)(2906002)(186003);DIR:OUT;SFP:1101;
+X-MS-Exchange-AntiSpam-MessageData: qOM1gGb8QSmkF8nnp9llxAkcJjCCcse7O0rzuXR3hjF2vzd+LOpTiJx3fiR6PVKMo9GqnNHAujSS/VNVJfZWYtqMzIDTUz1dftHp2tNDgbLjN/EbV8yb+Ku+7nqTkBk14+jXZXlo7yliP28NrKTJdee7/xC/kOSzlVlI4pOLXuyLcgtLWyneZrfZgoTk5CsygNqmcHqhsKY4EE6szIv5mtunPmDZ/T+S4TU3K6wc5efFbcNClsE5jTGKYz1cheqd4Xw6ibZeza6WSKDPZWgrQH/7HjCMdMIpLs7i0AQtzbpFCDiIyx4k3gkRms/uCB/yw1dtFWHTJJsWxI7p9U9bu07jt7bFMJdQT/iwnjorEjOPqkV6rWsOOkCeLVPyO/1jgoGCXebJzTrwPZtCaDjVheMmw4SSmfmzj3giC/Ej43CM8lMnGLE8AZQ9JE+Z/uLLdBrQThB9bWd4z67H4gjTCE9XSJTy1bpRLJmMZvtAH7k=
 X-OriginatorOrg: invensense.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 75f20469-9b8e-43bf-9816-08d816c23dd8
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 15:37:59.1529
+X-MS-Exchange-CrossTenant-Network-Message-Id: 92e30dea-ae75-4d9b-5043-08d816c241c6
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 22 Jun 2020 15:38:05.8247
  (UTC)
 X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
 X-MS-Exchange-CrossTenant-Id: 462b3b3b-e42b-47ea-801a-f1581aac892d
 X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: zQP/E0zSgeg/fX29jIN8pc0cc7sLC1wmbitJoBejVgyBM+bN8VL6F/TDCKk2HZNutIcr3VajvLRVSd+8rWKyX+P0XdD92Ru2pbs2QJMdcBk=
+X-MS-Exchange-CrossTenant-UserPrincipalName: 8kg99BzAke0vQ+MaJ8sqQkBnI6pAviwYrb9Fdo+7JzncvjVrX13sk6k47JV3moYeH6zzVtPw8JcnHS224Ix2gyG3/9XwvmIO8K01WsEBSEQ=
 X-MS-Exchange-Transport-CrossTenantHeadersStamped: MN2PR12MB4501
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.216,18.0.687
  definitions=2020-06-22_09:2020-06-22,2020-06-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501 mlxscore=0
- phishscore=0 clxscore=1015 bulkscore=0 cotscore=-2147483648 suspectscore=0
- impostorscore=0 spamscore=0 mlxlogscore=999 malwarescore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2004280000 definitions=main-2006220116
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
+ adultscore=0 mlxlogscore=972 spamscore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 priorityscore=1501 bulkscore=0 cotscore=-2147483648
+ malwarescore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2006220116
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add SPI driver for InvenSense ICM-426xxx devices.
-
-Configure bus signal slew rates as indicated in the datasheet.
+Add 3 modules: inv-icm42600, inv-icm42600-i2c, inv-icm42600-spi.
 
 Signed-off-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 ---
- .../iio/imu/inv_icm42600/inv_icm42600_spi.c   | 99 +++++++++++++++++++
- 1 file changed, 99 insertions(+)
- create mode 100644 drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+ drivers/iio/imu/Kconfig               |  1 +
+ drivers/iio/imu/Makefile              |  1 +
+ drivers/iio/imu/inv_icm42600/Kconfig  | 28 +++++++++++++++++++++++++++
+ drivers/iio/imu/inv_icm42600/Makefile | 13 +++++++++++++
+ 4 files changed, 43 insertions(+)
+ create mode 100644 drivers/iio/imu/inv_icm42600/Kconfig
+ create mode 100644 drivers/iio/imu/inv_icm42600/Makefile
 
-diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
+index fc4123d518bc..f02883b08480 100644
+--- a/drivers/iio/imu/Kconfig
++++ b/drivers/iio/imu/Kconfig
+@@ -91,6 +91,7 @@ config KMX61
+ 	  To compile this driver as module, choose M here: the module will
+ 	  be called kmx61.
+ 
++source "drivers/iio/imu/inv_icm42600/Kconfig"
+ source "drivers/iio/imu/inv_mpu6050/Kconfig"
+ source "drivers/iio/imu/st_lsm6dsx/Kconfig"
+ 
+diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
+index 88b2c4555230..13e9ff442b11 100644
+--- a/drivers/iio/imu/Makefile
++++ b/drivers/iio/imu/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_FXOS8700) += fxos8700_core.o
+ obj-$(CONFIG_FXOS8700_I2C) += fxos8700_i2c.o
+ obj-$(CONFIG_FXOS8700_SPI) += fxos8700_spi.o
+ 
++obj-y += inv_icm42600/
+ obj-y += inv_mpu6050/
+ 
+ obj-$(CONFIG_KMX61) += kmx61.o
+diff --git a/drivers/iio/imu/inv_icm42600/Kconfig b/drivers/iio/imu/inv_icm42600/Kconfig
 new file mode 100644
-index 000000000000..a9c5e2fdbe2a
+index 000000000000..22390a72f0a3
 --- /dev/null
-+++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
-@@ -0,0 +1,99 @@
-+// SPDX-License-Identifier: GPL-2.0-or-later
-+/*
-+ * Copyright (C) 2020 InvenSense, Inc.
-+ */
++++ b/drivers/iio/imu/inv_icm42600/Kconfig
+@@ -0,0 +1,28 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
 +
-+#include <linux/kernel.h>
-+#include <linux/device.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/spi/spi.h>
-+#include <linux/regmap.h>
-+#include <linux/property.h>
++config INV_ICM42600
++	tristate
 +
-+#include "inv_icm42600.h"
++config INV_ICM42600_I2C
++	tristate "InvenSense ICM-426xx I2C driver"
++	depends on I2C
++	select INV_ICM42600
++	select REGMAP_I2C
++	help
++	  This driver supports the InvenSense ICM-426xx motion tracking
++	  devices over I2C.
 +
-+static int inv_icm42600_spi_bus_setup(struct inv_icm42600_state *st)
-+{
-+	unsigned int mask, val;
-+	int ret;
++	  This driver can be built as a module. The module will be called
++	  inv-icm42600-i2c.
 +
-+	/* setup interface registers */
-+	val = INV_ICM42600_INTF_CONFIG6_I3C_EN |
-+	      INV_ICM42600_INTF_CONFIG6_I3C_SDR_EN |
-+	      INV_ICM42600_INTF_CONFIG6_I3C_DDR_EN;
-+	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG6,
-+				 INV_ICM42600_INTF_CONFIG6_MASK, val);
-+	if (ret)
-+		return ret;
++config INV_ICM42600_SPI
++	tristate "InvenSense ICM-426xx SPI driver"
++	depends on SPI_MASTER
++	select INV_ICM42600
++	select REGMAP_SPI
++	help
++	  This driver supports the InvenSense ICM-426xx motion tracking
++	  devices over SPI.
 +
-+	ret = regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG4,
-+				 INV_ICM42600_INTF_CONFIG4_I3C_BUS_ONLY, 0);
-+	if (ret)
-+		return ret;
++	  This driver can be built as a module. The module will be called
++	  inv-icm42600-spi.
+diff --git a/drivers/iio/imu/inv_icm42600/Makefile b/drivers/iio/imu/inv_icm42600/Makefile
+new file mode 100644
+index 000000000000..48965824f00c
+--- /dev/null
++++ b/drivers/iio/imu/inv_icm42600/Makefile
+@@ -0,0 +1,13 @@
++# SPDX-License-Identifier: GPL-2.0-or-later
 +
-+	/* set slew rates for I2C and SPI */
-+	mask = INV_ICM42600_DRIVE_CONFIG_I2C_MASK |
-+	       INV_ICM42600_DRIVE_CONFIG_SPI_MASK;
-+	val = INV_ICM42600_DRIVE_CONFIG_I2C(INV_ICM42600_SLEW_RATE_20_60NS) |
-+	      INV_ICM42600_DRIVE_CONFIG_SPI(INV_ICM42600_SLEW_RATE_INF_2NS);
-+	ret = regmap_update_bits(st->map, INV_ICM42600_REG_DRIVE_CONFIG,
-+				 mask, val);
-+	if (ret)
-+		return ret;
++obj-$(CONFIG_INV_ICM42600) += inv-icm42600.o
++inv-icm42600-y += inv_icm42600_core.o
++inv-icm42600-y += inv_icm42600_gyro.o
++inv-icm42600-y += inv_icm42600_accel.o
++inv-icm42600-y += inv_icm42600_temp.o
 +
-+	/* disable i2c bus */
-+	return regmap_update_bits(st->map, INV_ICM42600_REG_INTF_CONFIG0,
-+				  INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_MASK,
-+				  INV_ICM42600_INTF_CONFIG0_UI_SIFS_CFG_I2C_DIS);
-+}
++obj-$(CONFIG_INV_ICM42600_I2C) += inv-icm42600-i2c.o
++inv-icm42600-i2c-y += inv_icm42600_i2c.o
 +
-+static int inv_icm42600_probe(struct spi_device *spi)
-+{
-+	const void *match;
-+	enum inv_icm42600_chip chip;
-+	struct regmap *regmap;
-+
-+	match = device_get_match_data(&spi->dev);
-+	if (!match)
-+		return -EINVAL;
-+	chip = (enum inv_icm42600_chip)match;
-+
-+	regmap = devm_regmap_init_spi(spi, &inv_icm42600_regmap_config);
-+	if (IS_ERR(regmap))
-+		return PTR_ERR(regmap);
-+
-+	return inv_icm42600_core_probe(regmap, chip, inv_icm42600_spi_bus_setup);
-+}
-+
-+static const struct of_device_id inv_icm42600_of_matches[] = {
-+	{
-+		.compatible = "invensense,icm42600",
-+		.data = (void *)INV_CHIP_ICM42600,
-+	}, {
-+		.compatible = "invensense,icm42602",
-+		.data = (void *)INV_CHIP_ICM42602,
-+	}, {
-+		.compatible = "invensense,icm42605",
-+		.data = (void *)INV_CHIP_ICM42605,
-+	}, {
-+		.compatible = "invensense,icm42622",
-+		.data = (void *)INV_CHIP_ICM42622,
-+	},
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, inv_icm42600_of_matches);
-+
-+static struct spi_driver inv_icm42600_driver = {
-+	.driver = {
-+		.name = "inv-icm42600-spi",
-+		.of_match_table = inv_icm42600_of_matches,
-+		.pm = &inv_icm42600_pm_ops,
-+	},
-+	.probe = inv_icm42600_probe,
-+};
-+module_spi_driver(inv_icm42600_driver);
-+
-+MODULE_AUTHOR("InvenSense, Inc.");
-+MODULE_DESCRIPTION("InvenSense ICM-426xx SPI driver");
-+MODULE_LICENSE("GPL");
++obj-$(CONFIG_INV_ICM42600_SPI) += inv-icm42600-spi.o
++inv-icm42600-spi-y += inv_icm42600_spi.o
 -- 
 2.17.1
 
