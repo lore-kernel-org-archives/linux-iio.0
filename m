@@ -2,112 +2,120 @@ Return-Path: <SRS0=dIb5=AE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.5 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0
+	tests=HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26E37C433E0
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Jun 2020 13:35:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F71C433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Jun 2020 23:30:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0CB3B207BB
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Jun 2020 13:35:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FAF72078E
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Jun 2020 23:30:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732631AbgFWNfW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Jun 2020 09:35:22 -0400
-Received: from jabberwock.ucw.cz ([46.255.230.98]:59518 "EHLO
-        jabberwock.ucw.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732616AbgFWNfW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Jun 2020 09:35:22 -0400
-Received: by jabberwock.ucw.cz (Postfix, from userid 1017)
-        id 5FFD01C0C0A; Tue, 23 Jun 2020 15:35:19 +0200 (CEST)
-Date:   Tue, 23 Jun 2020 15:35:12 +0200
-From:   Pavel Machek <pavel@ucw.cz>
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-tegra@vger.kernel.org, patches@opensource.cirrus.com,
-        ibm-acpi-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Barry Song <baohua@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Nick Dyer <nick@shmanahar.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sangwon Jee <jeesw@melfas.com>,
-        Peter Hutterer <peter.hutterer@redhat.com>,
-        Henrique de Moraes Holschuh <ibm-acpi@hmh.eng.br>,
-        Micha?? Miros??aw <mirq-linux@rere.qmqm.pl>,
-        kernel@collabora.com
-Subject: Re: [PATCH v2] Input: document inhibiting
-Message-ID: <20200623133512.GA2783@bug>
-References: <f9007f37-c526-5fa4-3188-a554d2434177@redhat.com>
- <20200617101822.8558-1-andrzej.p@collabora.com>
+        id S2387872AbgFWXaV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Jun 2020 19:30:21 -0400
+Received: from gloria.sntech.de ([185.11.138.130]:60778 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387710AbgFWXaV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Jun 2020 19:30:21 -0400
+Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=phil.lan)
+        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <heiko@sntech.de>)
+        id 1jnsMp-0002Nq-Nd; Wed, 24 Jun 2020 01:30:15 +0200
+From:   Heiko Stuebner <heiko@sntech.de>
+To:     jic23@kernel.org
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        heiko@sntech.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+        xxm@rock-chips.com,
+        Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+Subject: [PATCH v6 2/3] iio: adc: rockchip_saradc: better prefix for channel constant
+Date:   Wed, 24 Jun 2020 01:30:10 +0200
+Message-Id: <20200623233011.2319035-2-heiko@sntech.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200623233011.2319035-1-heiko@sntech.de>
+References: <20200623233011.2319035-1-heiko@sntech.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200617101822.8558-1-andrzej.p@collabora.com>
-User-Agent: Mutt/1.5.23 (2014-03-12)
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi!
+From: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
 
-> +Inhibiting input devices
-> +~~~~~~~~~~~~~~~~~~~~~~~~
-> +
-> +Inhibiting a device means ignoring input events from it. As such it is about maintaining
-> +relationships with input handlers - either already existing relationships, or relationships
-> +to be established while the device is in inhibited state.
-> +
-> +If a device is inhibited, no input handler will receive events from it.
-> +
-> +The fact that nobody wants events from the device is exploited further, by calling device's
-> +close() (if there are users) and open() (if there are users) on inhibit and uninhibit
-> +operations, respectively. Indeed, the meaning of close() is to stop providing events
-> +to the input core and that of open() is to start providing events to the input core.
-> +
-> +Calling the device's close() method on inhibit (if there are users) allows the driver
-> +to save power. Either by directly powering down the device or by releasing the
-> +runtime-pm reference it got in open() when the driver is using runtime-pm.
-> +
-> +Inhibiting and uninhibiting are orthogonal to opening and closing the device by input
-> +handlers. Userspace might want to inhibit a device in anticipation before any handler is
-> +positively matched against it.
+As suggested give the current ADC_CHANNEL constant a distinct
+and consistent prefix.
 
-Ok.
+Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Signed-off-by: Heiko Stuebner <heiko.stuebner@theobroma-systems.com>
+---
+changes in v6:
+- none
+changes in v5:
+- new patch
 
-> +Inhibiting and uninhibiting are orthogonal to device's being a wakeup source, too. 
-> Being a +wakeup source plays a role when the system is sleeping, not when the system is 
-> operating. +How drivers should program their interaction between inhibiting, sleeping 
-> and being a wakeup +source is driver-specific. + +Taking the analogy with the network 
+ drivers/iio/adc/rockchip_saradc.c | 24 ++++++++++++------------
+ 1 file changed, 12 insertions(+), 12 deletions(-)
 
-I don't believe making interaction driver-specific is good idea. We should decide
-what reasonable behaviour is and then make drivers implement that...
-
-Best regards,
-									Pavel
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index 1a7990d60f9f..5d2e07dc72fd 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -118,7 +118,7 @@ static const struct iio_info rockchip_saradc_iio_info = {
+ 	.read_raw = rockchip_saradc_read_raw,
+ };
+ 
+-#define ADC_CHANNEL(_index, _id) {				\
++#define SARADC_CHANNEL(_index, _id) {				\
+ 	.type = IIO_VOLTAGE,					\
+ 	.indexed = 1,						\
+ 	.channel = _index,					\
+@@ -128,9 +128,9 @@ static const struct iio_info rockchip_saradc_iio_info = {
+ }
+ 
+ static const struct iio_chan_spec rockchip_saradc_iio_channels[] = {
+-	ADC_CHANNEL(0, "adc0"),
+-	ADC_CHANNEL(1, "adc1"),
+-	ADC_CHANNEL(2, "adc2"),
++	SARADC_CHANNEL(0, "adc0"),
++	SARADC_CHANNEL(1, "adc1"),
++	SARADC_CHANNEL(2, "adc2"),
+ };
+ 
+ static const struct rockchip_saradc_data saradc_data = {
+@@ -141,8 +141,8 @@ static const struct rockchip_saradc_data saradc_data = {
+ };
+ 
+ static const struct iio_chan_spec rockchip_rk3066_tsadc_iio_channels[] = {
+-	ADC_CHANNEL(0, "adc0"),
+-	ADC_CHANNEL(1, "adc1"),
++	SARADC_CHANNEL(0, "adc0"),
++	SARADC_CHANNEL(1, "adc1"),
+ };
+ 
+ static const struct rockchip_saradc_data rk3066_tsadc_data = {
+@@ -153,12 +153,12 @@ static const struct rockchip_saradc_data rk3066_tsadc_data = {
+ };
+ 
+ static const struct iio_chan_spec rockchip_rk3399_saradc_iio_channels[] = {
+-	ADC_CHANNEL(0, "adc0"),
+-	ADC_CHANNEL(1, "adc1"),
+-	ADC_CHANNEL(2, "adc2"),
+-	ADC_CHANNEL(3, "adc3"),
+-	ADC_CHANNEL(4, "adc4"),
+-	ADC_CHANNEL(5, "adc5"),
++	SARADC_CHANNEL(0, "adc0"),
++	SARADC_CHANNEL(1, "adc1"),
++	SARADC_CHANNEL(2, "adc2"),
++	SARADC_CHANNEL(3, "adc3"),
++	SARADC_CHANNEL(4, "adc4"),
++	SARADC_CHANNEL(5, "adc5"),
+ };
+ 
+ static const struct rockchip_saradc_data rk3399_saradc_data = {
 -- 
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blog.html
+2.26.2
+
