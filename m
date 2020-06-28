@@ -2,52 +2,54 @@ Return-Path: <SRS0=lSA7=AJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7CF1C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Jun 2020 12:39:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 21B89C433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Jun 2020 12:39:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AC16320885
+	by mail.kernel.org (Postfix) with ESMTP id ECFC020885
 	for <linux-iio@archiver.kernel.org>; Sun, 28 Jun 2020 12:39:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593347941;
-	bh=VwrAZjQJNNVu89JxAzrpztx+ssvfnpIaIRUZ+Eb+zwY=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=srKJtdXZWB+69Jj1RDJXnUPmuwWeVcEC0ECmHCoXPp5hDrPxASPCJcpb03yglVOe4
-	 pFBP35SURzVvCa//oqvlOL6mjv2RMEAnNBLDkNgc7IkfzCjimncRNkOXjXlV9p8Oft
-	 UfUCvBGySvMjAenXQqIN9a/023fDeYDT0qGH1vzg=
+	s=default; t=1593347942;
+	bh=Cz7K3AIcHR1ju60+moItSF+IFx6ukxJN/DTrE0HQDXQ=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=e7ZdRFlPqXoSF+SmWdP+84rDlhJGRf0OZGFyimYZs14ioHcEH+lOm6kGzM9/aRV5j
+	 a/qI4BCwZ5gB1i+GmZoWWtbtf23hDdZLf23PCIxHCMssKvGxmVu8DpZvjwrE37zdct
+	 22CthQ4c1q/38oD1DpAjr6WmfMkoHUD6jv90YbDg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726381AbgF1MjB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726342AbgF1MjB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 28 Jun 2020 08:39:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53020 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:53038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726342AbgF1MjA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726373AbgF1MjA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 28 Jun 2020 08:39:00 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A8C6B20738;
-        Sun, 28 Jun 2020 12:38:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E88F320760;
+        Sun, 28 Jun 2020 12:38:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593347939;
-        bh=VwrAZjQJNNVu89JxAzrpztx+ssvfnpIaIRUZ+Eb+zwY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=L4llOQYQINM2fioxC245V4VZaergw+BaDalAJ/p7znhzD4FI+BToGmrQU//fYZAOv
-         sbjoNcO8Vh3++uVXl9kFu5EvNgjFNf2/8IAJxYZAQKhdXdknnyZu11Q9NHlJHn0m6j
-         WHTLvO1Twjjy0ZKglEU9S9LsiqGzM+EThz6xWVB4=
+        s=default; t=1593347940;
+        bh=Cz7K3AIcHR1ju60+moItSF+IFx6ukxJN/DTrE0HQDXQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=wQIjdBVBocTYgL1sYSDQBcIhgJLi/AfewDlXG7LWJOK+yL/PQ2Uv2rYCSeXgw+8RR
+         WBQVPYOCrmZ60XbbzupHG/70zOG1nOZFhaCCJMozXBvzdNtMXwvzpwGBRsAS6oh4rp
+         sAD5OK3imZU5kGGtwRiu7H2qvBazb1mcRdutb0v8=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     alexandru.Ardelean@analog.com,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 00/23] iio:adc more of_match_ptr and similar removal
-Date:   Sun, 28 Jun 2020 13:36:31 +0100
-Message-Id: <20200628123654.32830-1-jic23@kernel.org>
+Subject: [PATCH 01/23] iio:adc:lpc32xx: Drop of_match_ptr protection
+Date:   Sun, 28 Jun 2020 13:36:32 +0100
+Message-Id: <20200628123654.32830-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200628123654.32830-1-jic23@kernel.org>
+References: <20200628123654.32830-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -56,73 +58,51 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Continuation of slow process to try and remove use of of_match_ptr
-to supress asignment of the of_device_id table when !CONFIG_OF.
+Whilst is unlikely anyone will be using this part with an ACPI PRP0001
+based binding any time soon, we are getting a lot of cut and pasting
+of this pattern so I am looking to remove it entirely from IIO.
 
-Usual argument that it prevents ACPI being used with these drivers
-via PRP0001 in DSDT.  Perhaps more usefully we are cutting down on the
-number of places it can be cut and paste from into new drivers.
+In this case CONFIG_OF protections also removed and
+mod_devicetable.h include added given direct use of struct of_device_id.
 
-This is just the low hanging fruit.  I'm not yet sure if it makes
-sense to expend the effort to use generic firmware properties etc
-for some of the remaining drivers as it is unlikely they'll ever
-be used with anything other than device tree. There are 4 current
-ADC drivers in this more complex category.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/lpc32xx_adc.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-Jonathan Cameron (23):
-  iio:adc:lpc32xx: Drop of_match_ptr protection
-  iio:adc:axp20x: Convert from OF to generic fw / device properties
-  iio:adc:hi8435: Drop unused of_gpio.h header
-  iio:adc:hi8435: Drop of_match_ptr protection.
-  iio:adc:max1363: Drop of_match_ptr and use generic
-    device_get_match_data
-  iio:adc:max1027: drop of_match_ptr and CONFIG_OF protections
-  iio:adc:ltc2496: Drop of_match_ptr and use mod_devicetable.h
-  iio:adc:cpcap-adc: Drop of_match_ptr protection and use
-    device_get_match_data
-  iio:adc:ltc2497 drop of_match_ptr protection
-  iio:adc:max11100: Drop of_match_ptr protection / add mod_devicetable.h
-    include
-  iio:adc:max1118: Drop CONFIG_OF / of_match_ptr protections
-  iio:adc:mcp320x: Drop CONFIG_OF and of_match_ptr protections
-  iio:adc:mcp3422: remove CONFIG_OF and of_match_ptr protections
-  iio:adc:sd_adc_modulator: Drop of_match_ptr and tweak includes
-  iio:adc:ti-adc081c: Drop of_match_ptr and change to mod_devicetable.h
-  iio:adc:ti-adc0832: drop CONFIG_OF and of_match_ptr protections
-  iio:adc:ti-adc084s021: drop of_match_ptr protection
-  iio:adc:ti-adc108s102: Drop CONFIG_OF and of_match_ptr protections
-  iio:adc:ti-adc128s052: drop of_match_ptr protection
-  iio:adc:ti-adc161s626: Drop of_match_ptr protection.
-  iio:adc:ti-tlc4541: Drop CONFIG_OF and of_match_ptr protections.
-  iio:adc:bcm_iproc: Drop of_match_ptr protection and switch to
-    mod_devicetable.h
-  iio:adc:ingenic: drop of_match_ptr protection and include
-    mod_devicetable.h
-
- drivers/iio/adc/axp20x_adc.c       | 10 +++++-----
- drivers/iio/adc/bcm_iproc_adc.c    |  4 ++--
- drivers/iio/adc/cpcap-adc.c        | 22 ++++++----------------
- drivers/iio/adc/hi8435.c           |  6 ++----
- drivers/iio/adc/ingenic-adc.c      |  5 ++---
- drivers/iio/adc/lpc32xx_adc.c      |  5 ++---
- drivers/iio/adc/ltc2496.c          |  4 ++--
- drivers/iio/adc/ltc2497.c          |  4 ++--
- drivers/iio/adc/max1027.c          |  5 ++---
- drivers/iio/adc/max11100.c         |  3 ++-
- drivers/iio/adc/max1118.c          |  7 ++-----
- drivers/iio/adc/max1363.c          | 11 ++++-------
- drivers/iio/adc/mcp320x.c          |  5 ++---
- drivers/iio/adc/mcp3422.c          |  6 ++----
- drivers/iio/adc/sd_adc_modulator.c |  5 +++--
- drivers/iio/adc/ti-adc081c.c       |  6 ++----
- drivers/iio/adc/ti-adc0832.c       |  7 ++-----
- drivers/iio/adc/ti-adc084s021.c    |  3 ++-
- drivers/iio/adc/ti-adc108s102.c    |  5 ++---
- drivers/iio/adc/ti-adc128s052.c    |  3 ++-
- drivers/iio/adc/ti-adc161s626.c    |  3 ++-
- drivers/iio/adc/ti-tlc4541.c       |  5 ++---
- 22 files changed, 54 insertions(+), 80 deletions(-)
-
+diff --git a/drivers/iio/adc/lpc32xx_adc.c b/drivers/iio/adc/lpc32xx_adc.c
+index bc2712a48844..b56ce15255cf 100644
+--- a/drivers/iio/adc/lpc32xx_adc.c
++++ b/drivers/iio/adc/lpc32xx_adc.c
+@@ -14,6 +14,7 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/module.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/platform_device.h>
+ #include <linux/regulator/consumer.h>
+ 
+@@ -209,19 +210,17 @@ static int lpc32xx_adc_probe(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-#ifdef CONFIG_OF
+ static const struct of_device_id lpc32xx_adc_match[] = {
+ 	{ .compatible = "nxp,lpc3220-adc" },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, lpc32xx_adc_match);
+-#endif
+ 
+ static struct platform_driver lpc32xx_adc_driver = {
+ 	.probe		= lpc32xx_adc_probe,
+ 	.driver		= {
+ 		.name	= LPC32XXAD_NAME,
+-		.of_match_table = of_match_ptr(lpc32xx_adc_match),
++		.of_match_table = lpc32xx_adc_match,
+ 	},
+ };
+ 
 -- 
 2.27.0
 
