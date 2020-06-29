@@ -2,77 +2,99 @@ Return-Path: <SRS0=WQji=AK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA9C6C433E0
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Jun 2020 19:06:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8CABC433DF
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Jun 2020 19:49:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9787020663
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Jun 2020 19:06:21 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="QmS0Aewl"
+	by mail.kernel.org (Postfix) with ESMTP id CB25020874
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Jun 2020 19:49:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730468AbgF2TGU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 Jun 2020 15:06:20 -0400
-Received: from www381.your-server.de ([78.46.137.84]:46342 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729371AbgF2TGT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Jun 2020 15:06:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:To:Subject:Sender:Reply-To:Cc:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
-        List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=XTvylXMPIsFqnfKIAoIZyVNDNeQ+X85fQ4qzs7EoduI=; b=QmS0Aewli0daeHBXlQwTsOn3q8
-        nxxCcTfjv0G918ucLK364sfDiZ91JAjTS/vodpcC/V244DUIQuEIBIEH2vWKXKlsE7YRbLF7oQimb
-        4WGK573xw3tWw+x5VPRI5YzFPQAywNBHwCh7GS290PTK2XdwdwJULDdFnIRR5CqvhBu7x+0IPkylD
-        T9piIkYmf3XtbUBsUQclk6WUICtkzHfiGnTmVyT+f+DrDuaYHOqXUe1iLHDH+mhDaZ6tv0ecdAfMM
-        1yrN1oZiQsR1e2BvNuwKe6axxYw+RegZiFYdydZD6nrIQYnb62CLtkqi/4Mx7+QO7qKnS3j/P155M
-        5+f/NxDw==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
-        (Exim 4.89_1)
-        (envelope-from <lars@metafoo.de>)
-        id 1jpz6c-00045S-1Z; Mon, 29 Jun 2020 21:06:14 +0200
-Received: from [82.135.70.27] (helo=[192.168.178.20])
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1jpz6b-000Gpr-SC; Mon, 29 Jun 2020 21:06:13 +0200
-Subject: Re: Interest in a virtual IIO microconf?
-To:     "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <20200628133607.61d31ed1@archlinux>
- <2fd40a0d341cbe7dded2fa9b2f53b4f87b1a2ab8.camel@analog.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <d7124f0b-99cb-0213-329d-dbade7d5a56d@metafoo.de>
-Date:   Mon, 29 Jun 2020 21:06:13 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.9.0
+        id S2388218AbgF2Tt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 Jun 2020 15:49:28 -0400
+Received: from mslow2.mail.gandi.net ([217.70.178.242]:46070 "EHLO
+        mslow2.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388209AbgF2Tt1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Jun 2020 15:49:27 -0400
+X-Greylist: delayed 2420 seconds by postgrey-1.27 at vger.kernel.org; Mon, 29 Jun 2020 15:49:26 EDT
+Received: from relay10.mail.gandi.net (unknown [217.70.178.230])
+        by mslow2.mail.gandi.net (Postfix) with ESMTP id 033753B0AB2
+        for <linux-iio@vger.kernel.org>; Mon, 29 Jun 2020 07:25:01 +0000 (UTC)
+Received: from uno.localdomain (93-34-118-233.ip49.fastwebnet.it [93.34.118.233])
+        (Authenticated sender: jacopo@jmondi.org)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 8549E240008;
+        Mon, 29 Jun 2020 07:24:40 +0000 (UTC)
+Date:   Mon, 29 Jun 2020 09:28:09 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, alexandru.Ardelean@analog.com,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 10/23] iio:adc:max11100: Drop of_match_ptr protection /
+ add mod_devicetable.h include
+Message-ID: <20200629072809.fk2vve5ycdiwnkyk@uno.localdomain>
+References: <20200628123654.32830-1-jic23@kernel.org>
+ <20200628123654.32830-11-jic23@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <2fd40a0d341cbe7dded2fa9b2f53b4f87b1a2ab8.camel@analog.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.3/25858/Mon Jun 29 15:30:49 2020)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200628123654.32830-11-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 6/29/20 3:51 PM, Ardelean, Alexandru wrote:
-> There's also an internal idea we had, where we can extend the IIO dummy
-> driver [or create a new one], to load data and read-back [as a replay for
-> userspace].
-> We never got to do it, but would be curios of other did.
+Hi Jonathan,
+On Sun, Jun 28, 2020 at 01:36:41PM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> Allows use of driver with ACPI PRP0001 base binding.
+> Mostly this is about trying to avoid cut and paste of this into new
+> drivers (it is a frequent review comment) rather than any
+> thought that this driver might get used on an ACPI platform.
+>
+> The mod_devicetable.h include is to encourage best practice of including
+> any header directly used within the code (here for of_match_id)
+>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Jacopo Mondi <jacopo@jmondi.org>
+> ---
+>  drivers/iio/adc/max11100.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+>
+> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+> index 57734f9742f6..77fcee1dddf7 100644
+> --- a/drivers/iio/adc/max11100.c
+> +++ b/drivers/iio/adc/max11100.c
+> @@ -9,6 +9,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> +#include <linux/mod_devicetable.h>
 
-Like this?
+If we want to keep the inclusion order alphabetically sorted,
+shouldn't mod_devicetable. come before module.h ?
 
-https://github.com/larsclausen/linux/blob/iio-high-speed-4.19/drivers/iio/dummy/iio_virtual_dma_loopback.c
+That apart:
+Acked-by: Jacopo Mondi <jacopo@jmondi.org>
 
+Thanks
+   j
+
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/spi/spi.h>
+>
+> @@ -161,7 +162,7 @@ MODULE_DEVICE_TABLE(of, max11100_ids);
+>  static struct spi_driver max11100_driver = {
+>  	.driver = {
+>  		.name	= "max11100",
+> -		.of_match_table = of_match_ptr(max11100_ids),
+> +		.of_match_table = max11100_ids,
+>  	},
+>  	.probe		= max11100_probe,
+>  	.remove		= max11100_remove,
+> --
+> 2.27.0
+>
