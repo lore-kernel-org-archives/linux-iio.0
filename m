@@ -7,54 +7,53 @@ X-Spam-Status: No, score=-10.0 required=3.0
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDA31C433DF
-	for <linux-iio@archiver.kernel.org>; Wed,  1 Jul 2020 12:05:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC1DC433DF
+	for <linux-iio@archiver.kernel.org>; Wed,  1 Jul 2020 12:07:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C90C12073E
-	for <linux-iio@archiver.kernel.org>; Wed,  1 Jul 2020 12:05:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0666720775
+	for <linux-iio@archiver.kernel.org>; Wed,  1 Jul 2020 12:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730484AbgGAMFN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 1 Jul 2020 08:05:13 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:37668 "EHLO
+        id S1730241AbgGAMH3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 1 Jul 2020 08:07:29 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:51136 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730103AbgGAMFM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jul 2020 08:05:12 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 061C0Wk5023938;
-        Wed, 1 Jul 2020 08:04:54 -0400
+        by vger.kernel.org with ESMTP id S1730103AbgGAMH3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Jul 2020 08:07:29 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 061C6nwc011112;
+        Wed, 1 Jul 2020 08:07:13 -0400
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 31wyy6csm5-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 31x315mekd-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 01 Jul 2020 08:04:54 -0400
+        Wed, 01 Jul 2020 08:07:13 -0400
 Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 061C4qMD038691
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 061C7B2A039343
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 1 Jul 2020 08:04:53 -0400
+        Wed, 1 Jul 2020 08:07:12 -0400
 Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
  SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 1 Jul 2020 05:04:51 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ 15.1.1779.2; Wed, 1 Jul 2020 05:07:10 -0700
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
  SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 1 Jul 2020 05:04:51 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 1 Jul 2020 05:04:51 -0700
+ 15.1.1779.2; Wed, 1 Jul 2020 05:07:10 -0700
+Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 1 Jul 2020 05:07:10 -0700
 Received: from NSA-L01.ad.analog.com (fpaumier-l01.ad.analog.com [10.32.224.81] (may be forged))
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 061C4lbs020721;
-        Wed, 1 Jul 2020 08:04:48 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 061C77dJ020784;
+        Wed, 1 Jul 2020 08:07:08 -0400
 From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
 To:     <linux-iio@vger.kernel.org>
 CC:     Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Jonathan Cameron <jic23@kernel.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 1/2] iio: adc: adi-axi-adc: Fix object reference counting
-Date:   Wed, 1 Jul 2020 14:04:41 +0200
-Message-ID: <20200701120442.258-1-nuno.sa@analog.com>
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH] iio: adis16480: Use irq types instead of flags
+Date:   Wed, 1 Jul 2020 14:07:02 +0200
+Message-ID: <20200701120702.365-1-nuno.sa@analog.com>
 X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
 Content-Type: text/plain; charset="UTF-8"
@@ -62,47 +61,44 @@ Content-Transfer-Encoding: 8bit
 X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-07-01_08:2020-07-01,2020-07-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=1 spamscore=0
- cotscore=-2147483648 adultscore=0 mlxlogscore=999 malwarescore=0
- bulkscore=0 phishscore=0 impostorscore=0 clxscore=1011 mlxscore=0
- priorityscore=1501 lowpriorityscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2004280000 definitions=main-2007010089
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=657
+ mlxscore=0 lowpriorityscore=0 impostorscore=0 priorityscore=1501
+ malwarescore=0 phishscore=0 spamscore=0 clxscore=1015 suspectscore=1
+ cotscore=-2147483648 bulkscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2004280000 definitions=main-2007010090
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When looking for a registered client to attach with, the wrong reference
-counters are being grabbed. The idea is to increment the module and device
-counters of the client device and not the counters of the axi device being
-probed.
-
-Fixes: ef04070692a2 (iio: adc: adi-axi-adc: add support for AXI ADC IP core)
+The value retrieved by `irqd_get_trigger_type()` is not an irq flag.
+While the values are the same, the meaning is different.
 
 Signed-off-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/adi-axi-adc.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/imu/adis16480.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
-index 63d926e86798..86b6b65916ee 100644
---- a/drivers/iio/adc/adi-axi-adc.c
-+++ b/drivers/iio/adc/adi-axi-adc.c
-@@ -332,12 +332,12 @@ static struct adi_axi_adc_client *adi_axi_adc_attach_client(struct device *dev)
- 		if (cl->dev->of_node != cln)
- 			continue;
- 
--		if (!try_module_get(dev->driver->owner)) {
-+		if (!try_module_get(cl->dev->driver->owner)) {
- 			mutex_unlock(&registered_clients_lock);
- 			return ERR_PTR(-ENODEV);
- 		}
- 
--		get_device(dev);
-+		get_device(cl->dev);
- 		cl->info = info;
- 		mutex_unlock(&registered_clients_lock);
- 		return cl;
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 5163749f568e..1eb4f98076f1 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -1102,12 +1102,12 @@ static int adis16480_config_irq_pin(struct device_node *of_node,
+ 	/*
+ 	 * Get the interrupt line behaviour. The data ready polarity can be
+ 	 * configured as positive or negative, corresponding to
+-	 * IRQF_TRIGGER_RISING or IRQF_TRIGGER_FALLING respectively.
++	 * IRQ_TYPE_EDGE_RISING or IRQ_TYPE_EDGE_FALLING respectively.
+ 	 */
+ 	irq_type = irqd_get_trigger_type(desc);
+-	if (irq_type == IRQF_TRIGGER_RISING) { /* Default */
++	if (irq_type == IRQ_TYPE_EDGE_RISING) { /* Default */
+ 		val |= ADIS16480_DRDY_POL(1);
+-	} else if (irq_type == IRQF_TRIGGER_FALLING) {
++	} else if (irq_type == IRQ_TYPE_EDGE_FALLING) {
+ 		val |= ADIS16480_DRDY_POL(0);
+ 	} else {
+ 		dev_err(&st->adis.spi->dev,
 -- 
 2.25.1
 
