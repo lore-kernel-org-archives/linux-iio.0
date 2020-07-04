@@ -7,111 +7,132 @@ X-Spam-Status: No, score=-8.6 required=3.0 tests=DKIMWL_WL_HIGH,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22861C433DF
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 17:04:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C41FC433E0
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 17:19:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EAA0720723
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 17:04:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4981420782
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 17:19:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1593882276;
-	bh=DkgPIls1+c5LNFEqZV01uTNJv3uWaayUf8Qlid7V49g=;
+	s=default; t=1593883148;
+	bh=OsxmT5cTxf5QNb+/jlVqNSKLTitmbDMAOhy+OIg771E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=T3A2nSk+HiC7pq7HDcgK1hn5TMipnns4Kz4i2eobV3/xcsVnELRU5Bjs9DvNlLDAL
-	 anCyzvtbt1zhzr0Aov/Whfs1DuSqnmWc2yp2IA3ZaCkezSiImET1SXmw85y5B5mTng
-	 PNqji3d+2AQfzXP2zKR2KYB5vJTQ5IMAPbUlRfIo=
+	b=QHzjW7ha7wjuaIJzkzssTP9KNaU1GhL/m3rTaDBjFdQ0u35JJeR5ipHA7lVKMMqcF
+	 v6H+xG8hXHFW67X6lst6ACrAVSUXFujeNtoIFIxNfzlOglMoK5gP4f+dvv78xW7sa+
+	 AeghSWstDs9QDeh38UoK7++O9p/9FZ56RMixQ6fc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726643AbgGDREf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 4 Jul 2020 13:04:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40072 "EHLO mail.kernel.org"
+        id S1726682AbgGDRTH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 4 Jul 2020 13:19:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45358 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726639AbgGDREf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 4 Jul 2020 13:04:35 -0400
+        id S1726669AbgGDRTH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 4 Jul 2020 13:19:07 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7837206BE;
-        Sat,  4 Jul 2020 17:04:33 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2555220737;
+        Sat,  4 Jul 2020 17:19:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1593882274;
-        bh=DkgPIls1+c5LNFEqZV01uTNJv3uWaayUf8Qlid7V49g=;
+        s=default; t=1593883147;
+        bh=OsxmT5cTxf5QNb+/jlVqNSKLTitmbDMAOhy+OIg771E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=yIKNSUaxN6i+9YxDBWVuHlCAyI5Nl9AmiIjkHWTsv2ZIB3vM1eOQCltPszIJ1k/Uf
-         kRKgG8/XRPnfZkc3Mbx7G6bCYo8348AJqMw9I1uyTjrs8x+9RQugpcxUffEHsVJ+kr
-         uZraLKdsWL6pl8TjTJEnJbmu3SvJxnG2Rwv+HFX8=
-Date:   Sat, 4 Jul 2020 18:04:30 +0100
+        b=mQLgB3Oh+4UzkmF9Z3OlTipiRcZ6enU0gNYtNG7pSvWliJeSNrCUFcrPQ4mgRGvAK
+         OGJKzTX51oeAQ3BZujJFnU9zr1Bly3W7INPwbxIZiBwNlAIsMGKrGQlNWBkVLDbiL8
+         Ui4QUS7+4ho06Dr+ihsH8GIalbGdcBjgSG5z/2L4=
+Date:   Sat, 4 Jul 2020 18:19:03 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
-        <u.kleine-koenig@pengutronix.de>
+To:     Jacopo Mondi <jacopo@jmondi.org>
 Cc:     linux-iio@vger.kernel.org, alexandru.Ardelean@analog.com,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: Re: [PATCH 09/23] iio:adc:ltc2497 drop of_match_ptr protection
-Message-ID: <20200704180430.0a6d5df1@archlinux>
-In-Reply-To: <20200628155324.y257v4tf5xvzb5xh@pengutronix.de>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 10/23] iio:adc:max11100: Drop of_match_ptr protection /
+ add mod_devicetable.h include
+Message-ID: <20200704181903.0ad2b7c5@archlinux>
+In-Reply-To: <20200629072809.fk2vve5ycdiwnkyk@uno.localdomain>
 References: <20200628123654.32830-1-jic23@kernel.org>
-        <20200628123654.32830-10-jic23@kernel.org>
-        <20200628155324.y257v4tf5xvzb5xh@pengutronix.de>
+        <20200628123654.32830-11-jic23@kernel.org>
+        <20200629072809.fk2vve5ycdiwnkyk@uno.localdomain>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 28 Jun 2020 17:53:24 +0200
-Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+On Mon, 29 Jun 2020 09:28:09 +0200
+Jacopo Mondi <jacopo@jmondi.org> wrote:
 
-> On Sun, Jun 28, 2020 at 01:36:40PM +0100, Jonathan Cameron wrote:
+> Hi Jonathan,
+> On Sun, Jun 28, 2020 at 01:36:41PM +0100, Jonathan Cameron wrote:
 > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >=20
-> > This prevents the driver being used with ACPI PRP0001 based
-> > bindings. Also switch include to mod_devicetable.h which devices
-> > the used id structure.
-> >=20
-> > Note this is most about removing something I don't want want cut
-> > and paste into new driver rather than any thought that this particular
-> > driver will be used in an ACPI system (though it might!)
-> >=20
+> >
+> > Allows use of driver with ACPI PRP0001 base binding.
+> > Mostly this is about trying to avoid cut and paste of this into new
+> > drivers (it is a frequent review comment) rather than any
+> > thought that this driver might get used on an ACPI platform.
+> >
+> > The mod_devicetable.h include is to encourage best practice of including
+> > any header directly used within the code (here for of_match_id)
+> >
 > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Michael Hennerich <michael.hennerich@analog.com>
-> > Cc: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+> > Cc: Jacopo Mondi <jacopo@jmondi.org>
 > > ---
-> >  drivers/iio/adc/ltc2497.c | 4 ++--
-> >  1 file changed, 2 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-> > index 5db63d7c6bc5..1adddf5a88a9 100644
-> > --- a/drivers/iio/adc/ltc2497.c
-> > +++ b/drivers/iio/adc/ltc2497.c
-> > @@ -11,7 +11,7 @@
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/driver.h>
+> >  drivers/iio/adc/max11100.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+> > index 57734f9742f6..77fcee1dddf7 100644
+> > --- a/drivers/iio/adc/max11100.c
+> > +++ b/drivers/iio/adc/max11100.c
+> > @@ -9,6 +9,7 @@
+> >  #include <linux/delay.h>
+> >  #include <linux/kernel.h>
 > >  #include <linux/module.h>
-> > -#include <linux/of.h>
-> > +#include <linux/mod_devicetable.h>
-> > =20
-> >  #include "ltc2497.h"
-> > =20
-> > @@ -98,7 +98,7 @@ MODULE_DEVICE_TABLE(of, ltc2497_of_match);
-> >  static struct i2c_driver ltc2497_driver =3D {
-> >  	.driver =3D {
-> >  		.name =3D "ltc2497",
-> > -		.of_match_table =3D of_match_ptr(ltc2497_of_match),
-> > +		.of_match_table =3D ltc2497_of_match, =20
->=20
-> This was the copy source of ltc2496_driver. there the change was fine,
-> so it is here:
->=20
-> Reviewed-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
-Applied thanks,
+> > +#include <linux/mod_devicetable.h>  
+> 
+> If we want to keep the inclusion order alphabetically sorted,
+> shouldn't mod_devicetable. come before module.h ?
 
-J
+I have no idea what the 'convention' on ordering of
+underscores in the kernel is, so I did
 
->=20
-> Best regards
-> Uwe
->=20
+git grep -A1 module\.h -- drivers/ | grep mod_devicetable\.h | wc
+ 116     232    7798
+git grep -B1 module\.h -- drivers/ | grep mod_devicetable\.h | wc
+ 52     104    3694
+
+Which I think means we have almost twice as many cases of
+it being after module.h as before.  Still I'm going to cynically
+decide to not care :)
+
+> 
+> That apart:
+> Acked-by: Jacopo Mondi <jacopo@jmondi.org>
+> 
+Thanks,
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to poke at it.
+
+Jonathan
+
+> Thanks
+>    j
+> 
+> >  #include <linux/regulator/consumer.h>
+> >  #include <linux/spi/spi.h>
+> >
+> > @@ -161,7 +162,7 @@ MODULE_DEVICE_TABLE(of, max11100_ids);
+> >  static struct spi_driver max11100_driver = {
+> >  	.driver = {
+> >  		.name	= "max11100",
+> > -		.of_match_table = of_match_ptr(max11100_ids),
+> > +		.of_match_table = max11100_ids,
+> >  	},
+> >  	.probe		= max11100_probe,
+> >  	.remove		= max11100_remove,
+> > --
+> > 2.27.0
+> >  
 
