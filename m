@@ -2,48 +2,68 @@ Return-Path: <SRS0=gBti=AP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	TVD_SPACE_RATIO,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=DKIM_SIGNED,DKIM_VALID,
+	DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FB9FC433EA
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:47:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 78E51C433DF
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 12:30:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D91D62100A
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:47:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56C58208D5
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 12:30:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="RWNe5fwb"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OpZFtOaW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727082AbgGDDpN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Jul 2020 23:45:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52502 "EHLO
+        id S1727919AbgGDMa5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 4 Jul 2020 08:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48276 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726746AbgGDDpM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jul 2020 23:45:12 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67B6CC061794;
-        Fri,  3 Jul 2020 20:45:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:In-Reply-To:References;
-        bh=RjgXbItONDI8qoKZoagX/7fm2XOCDVB41PDHOzajmYk=; b=RWNe5fwbC3uETb+vlA25w47G3W
-        81y378w8gWI/l1I3BPLGTGJicfvdaYVSHZlWHL4Hr274m/Gu+9IT0kTIyL9CibvdIjGBGjA0sEIg2
-        zPhQ7y4YxWIMVJNCAjAtZPQxKkCok68tVHKhYM/AWFDo8STqJT6VWg8wFXfdJOdojDYsKxqN2zWGO
-        ILNhDg2rOINWSh94+fSvNzVs0SACUZiQvqnxJgiCJ2jzDTuI9P5RBHjoZOnCRuAiVODwJ3OIB3HUC
-        x4PHuDEI9filMB0QaqnSXiLe2h3crPRb65DfVRIkCXMmbrrFyBqlIQC0wi3nSpCE1f7DqmZJiG6je
-        HtGhnLOw==;
-Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
-        by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jrZ6y-0001Xb-Bk; Sat, 04 Jul 2020 03:45:09 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>, dmaengine@vger.kernel.org,
-        Luis Chamberlain <mcgrof@kernel.org>,
+        with ESMTP id S1726738AbgGDMa5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jul 2020 08:30:57 -0400
+Received: from mail-qk1-x741.google.com (mail-qk1-x741.google.com [IPv6:2607:f8b0:4864:20::741])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2240BC061794;
+        Sat,  4 Jul 2020 05:30:57 -0700 (PDT)
+Received: by mail-qk1-x741.google.com with SMTP id b4so30963677qkn.11;
+        Sat, 04 Jul 2020 05:30:57 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=sOwZHk+VUidgfHH4SuXy00BIvhn2pt9U8Ew+xLvAsZg=;
+        b=OpZFtOaWIMlYV+gfwKL/L+8ff8UWmweHWOKfEufQ7KjkPr/LF9GO3Suf5BAUOgHdG+
+         YMRvdzJkBOY6hna7YZrEpLXFBOOBp81PwigxKHmOJ2GPwZhBdeHv05BtupTZV7tATXwR
+         DPcdZ9jElS7N771ftpchtTFTYqu55hNeZprcQJhE09KKMrs2uqGFEt5pTEoyH2es8Iqq
+         ro0Us25isi/BQXdmmHuwbBHcvFnxXeGG56nVsOPxbYCN+zs0kMMnrVT4EN8443erjvAN
+         i8H5GFPG9frq8EQT+swZCSwTZFhUhI8U1TX+Z6kFiVVLsdLaHU/QMWqNKs5DDcd3VZaH
+         rZrw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=sOwZHk+VUidgfHH4SuXy00BIvhn2pt9U8Ew+xLvAsZg=;
+        b=OmzQEDug8JFVLfK/6K0EtmUMDmjg5X4/wzlqDP7xksSXygUvfudq3zZap8A6SxOShP
+         XAjDhxuf8g7vliNzwhFRPsSkZgtt1K9mk7lDtZJhEA2aSBtQcSB/bJDejghyQjMpUqOx
+         2DwQzP8UWstAT93yisWeYF+eqcRE2FMHcTDpoMcwanWLeM9rIMK9M/GDiciYj9I1TY28
+         pul/VNpeOsnT/tqnxSx56mCdCpN1B3OMvmdnhWOAnth73V5vbAcus1AsGB0C2GTkidhy
+         4ldyDKSFv1qCQF59HmQa8EbTYkIh5lVZW8Iaxd3ZnkAA2IScYNRf7tcnYsav3ETdohjJ
+         Zh6Q==
+X-Gm-Message-State: AOAM533GMHUZ9SnLaKtSBWfKgElhwOqzuIEL62uPI95Nk65fwFPKKVEI
+        +U2UVnaZMFV53NR/4b1V1ak=
+X-Google-Smtp-Source: ABdhPJxQkc5E1xdUVhKWRhep5Tf5kvtqhrZWqA7orRfGsTG/6YQJPlx2ZdIX0fYJyfo1s/jCEkbjNQ==
+X-Received: by 2002:a37:a14c:: with SMTP id k73mr39030752qke.145.1593865856267;
+        Sat, 04 Jul 2020 05:30:56 -0700 (PDT)
+Received: from shinobu (072-189-064-225.res.spectrum.com. [72.189.64.225])
+        by smtp.gmail.com with ESMTPSA id 21sm13502872qkj.56.2020.07.04.05.30.54
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 04 Jul 2020 05:30:55 -0700 (PDT)
+Date:   Sat, 4 Jul 2020 08:30:41 -0400
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        dmaengine@vger.kernel.org, Luis Chamberlain <mcgrof@kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
         linux-iio@vger.kernel.org,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
         linux-media@vger.kernel.org, Jon Mason <jdmason@kudzu.us>,
@@ -53,57 +73,71 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Vishal Verma <vishal.l.verma@intel.com>,
         Ira Weiny <ira.weiny@intel.com>, linux-nvdimm@lists.01.org,
         linux-usb@vger.kernel.org, Eli Billauer <eli.billauer@gmail.com>
-Subject: [PATCH 00/17] Documentation/driver-api: eliminate duplicated words
-Date:   Fri,  3 Jul 2020 20:44:45 -0700
-Message-Id: <20200704034502.17199-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
+Subject: Re: [PATCH 06/17] Documentation/driver-api: generic-counter: drop
+ doubled word
+Message-ID: <20200704123041.GA5194@shinobu>
+References: <20200704034502.17199-1-rdunlap@infradead.org>
+ <20200704034502.17199-7-rdunlap@infradead.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="mP3DRpeJDSE+ciuQ"
+Content-Disposition: inline
+In-Reply-To: <20200704034502.17199-7-rdunlap@infradead.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove occurrences of duplicated words in Documentation/driver-api/.
 
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
-Cc: Vinod Koul <vkoul@kernel.org>
-Cc: dmaengine@vger.kernel.org
-Cc: Luis Chamberlain <mcgrof@kernel.org>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: linux-media@vger.kernel.org
-Cc: Jon Mason <jdmason@kudzu.us>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Allen Hubbe <allenbh@gmail.com>
-Cc: linux-ntb@googlegroups.com
-Cc: Dan Williams <dan.j.williams@intel.com>
-Cc: Vishal Verma <vishal.l.verma@intel.com>
-Cc: Dave Jiang <dave.jiang@intel.com>
-Cc: Ira Weiny <ira.weiny@intel.com>
-Cc: linux-nvdimm@lists.01.org
-Cc: linux-usb@vger.kernel.org
-Cc: Eli Billauer <eli.billauer@gmail.com>
+--mP3DRpeJDSE+ciuQ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
+On Fri, Jul 03, 2020 at 08:44:51PM -0700, Randy Dunlap wrote:
+> Drop the doubled word "the".
+>=20
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: linux-doc@vger.kernel.org
+> Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+> Cc: linux-iio@vger.kernel.org
+> ---
+>  Documentation/driver-api/generic-counter.rst |    2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> --- linux-next-20200701.orig/Documentation/driver-api/generic-counter.rst
+> +++ linux-next-20200701/Documentation/driver-api/generic-counter.rst
+> @@ -262,7 +262,7 @@ the system.
+>  Counter Counts may be allocated via counter_count structures, and
+>  respective Counter Signal associations (Synapses) made via
+>  counter_synapse structures. Associated counter_synapse structures are
+> -stored as an array and set to the the synapses array member of the
+> +stored as an array and set to the synapses array member of the
+>  respective counter_count structure. These counter_count structures are
+>  set to the counts array member of an allocated counter_device structure
+>  before the Counter is registered to the system.
 
- Documentation/driver-api/dmaengine/provider.rst        |    2 +-
- Documentation/driver-api/driver-model/platform.rst     |    2 +-
- Documentation/driver-api/firmware/built-in-fw.rst      |    2 +-
- Documentation/driver-api/firmware/direct-fs-lookup.rst |    2 +-
- Documentation/driver-api/firmware/firmware_cache.rst   |    2 +-
- Documentation/driver-api/firmware/request_firmware.rst |    2 +-
- Documentation/driver-api/generic-counter.rst           |    2 +-
- Documentation/driver-api/iio/buffers.rst               |    2 +-
- Documentation/driver-api/media/cec-core.rst            |    2 +-
- Documentation/driver-api/media/dtv-frontend.rst        |    6 +++---
- Documentation/driver-api/media/v4l2-controls.rst       |    4 ++--
- Documentation/driver-api/media/v4l2-dev.rst            |    2 +-
- Documentation/driver-api/ntb.rst                       |    2 +-
- Documentation/driver-api/nvdimm/nvdimm.rst             |    2 +-
- Documentation/driver-api/uio-howto.rst                 |    2 +-
- Documentation/driver-api/usb/URB.rst                   |    2 +-
- Documentation/driver-api/xillybus.rst                  |    2 +-
- 17 files changed, 20 insertions(+), 20 deletions(-)
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+
+--mP3DRpeJDSE+ciuQ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAl8AdmgACgkQhvpINdm7
+VJKL2g/9H6mqC4m/nbUz0xx6u/KB2FTl+BheIuZdhAKQ7vaavuFT9QQK7KdB4VlZ
+9/mxbfR37ZCap3U06SMiqcB3cBirDGz38z0kpQEnjoRLfO86+gb7WfpBn19BkBt3
+SgI+iKUWbpFBZQnOXpP/mpmGDIIBJdb/oPeqamTmeCP5zmkGPStlR66mReRTCF5A
+C1ISpNFBpFTCSLXvMannoxxEWHfug95Oq+z2MxNY87LfNKQm+jtRD+yjfvNJJDEO
+EA/p8gavvQuNNS7HnwjzT7F5xc+1eoZINk5w4/KkoSJzcyMQEBnPCKQV/T6YJT9A
+odyOiKcmBQOQ4SjjWZwsaf86ELIGt85SR6MtjXAv/+Hakuim0lvEN53LjeLw42XS
+UiQ6k3UvFMLccw56hfUrntSUWiMCNSHJHi7CNiHKoR8Bu2lUpGZUbsj2dJ5f2f6B
+QTZxZrFKdYpWQ6Bj56Gw+qz7n6YKWoAdhW6BhSqmnNn+gvgpWqPTgz5OG6hXARgI
+2MyKfuKyyc73wPPenSuCF+0ugENfjmYAfkKkFIHweBP82YemBQH1gzRNtusQgjp3
+NYyhPpdbiSDucr9uicWqOTwEjOppSfUpNIehHwKmZQOePA+Ewj1U0mbKsA17IbDm
+7tXxxkVxTlKSuEIfgiDufrHw5oOner+LPe/QKsMK4nNBHKTRGpQ=
+=Q9+X
+-----END PGP SIGNATURE-----
+
+--mP3DRpeJDSE+ciuQ--
