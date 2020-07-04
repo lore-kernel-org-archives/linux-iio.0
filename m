@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 476E9C433E2
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB8CC433E0
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1B6B5208C7
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D4CCC208D5
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="XHH2ztO1"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Ba1zfCJU"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727834AbgGDDpz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Jul 2020 23:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
+        id S1728017AbgGDDqM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Jul 2020 23:46:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726746AbgGDDpy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jul 2020 23:45:54 -0400
+        with ESMTP id S1727995AbgGDDqK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jul 2020 23:46:10 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4563CC061794;
-        Fri,  3 Jul 2020 20:45:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B178C061794;
+        Fri,  3 Jul 2020 20:46:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=bouRfF6/sBtVI5L0f+o3qswHe079xcdi/E30/5xT1pk=; b=XHH2ztO1svnSw116jt9ZOBVu3g
-        8ihrZ06RGuZUU1+9Ss+0SpdMxY6eZWCP869qGbzh3x9eqrA9Z6aqBlHoR50fbPXnCEivOfwo8FUk6
-        6kAtKLIkrUVEnykvBJuua7L1A2rcrODPsN/HKNaCEzh3NYGZt8SOIbpaO0Haw1kguGAAQH00j34Sw
-        GCG4LOBCB9ZtdRtiXiU1Tc/mFplI/c+3QFLjD7Tf9hHGQ8ghInj6T+4uIBc3aC0XhuNJEZtHySl9p
-        6VpU5KJDpV4e7FJeQFWpONp3eDL7nsJ53o5irIw8xoqHLKskDW+wzOvhUHzB5HHHh8rBtU0zBrBnm
-        qJSKMooA==;
+        bh=/CGMiPAz1EqlmAsuqBAdyktP4CyuJQt8tuDtDyXNR6Y=; b=Ba1zfCJUJkqxlIdW9NwaYHEcyF
+        MUxE9LcPWFaVt1IkC8D8F+X1OIQXwvnN6awtL4ky5UGvax4zDdWGiHgT841yxr3dqNim6QFPwn8vN
+        GMhffP4nmlRfdqHpuugtZuepsX43cLgQrRmyz601mCHSYu7TArLaqoNB+9GWPt/KoJ6o1HlnGFW6+
+        ffXycZpHadTyGoB6jodB59F5Uky/eEp/HhIxxp8ecbrze2ib5Xij1IrEw8ppucqYNnTB/F67CDIW5
+        1gP2g017fPDIvX4CaiYCMfiPQk2Gzae5rRr4uN2SrC8CVH/dLvYWnF7La5HikU4HIXPq6URlT+LRQ
+        f1tiDR5Q==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jrZ7f-0001Xb-Kv; Sat, 04 Jul 2020 03:45:52 +0000
+        id 1jrZ7v-0001Xb-Dv; Sat, 04 Jul 2020 03:46:08 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -53,9 +53,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Vishal Verma <vishal.l.verma@intel.com>,
         Ira Weiny <ira.weiny@intel.com>, linux-nvdimm@lists.01.org,
         linux-usb@vger.kernel.org, Eli Billauer <eli.billauer@gmail.com>
-Subject: [PATCH 08/17] Documentation/driver-api: media/cec-core: drop doubled word
-Date:   Fri,  3 Jul 2020 20:44:53 -0700
-Message-Id: <20200704034502.17199-9-rdunlap@infradead.org>
+Subject: [PATCH 11/17] Documentation/driver-api: driver-model/platform: drop doubled word
+Date:   Fri,  3 Jul 2020 20:44:56 -0700
+Message-Id: <20200704034502.17199-12-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200704034502.17199-1-rdunlap@infradead.org>
 References: <20200704034502.17199-1-rdunlap@infradead.org>
@@ -66,25 +66,24 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Drop the doubled word "the".
+Drop the doubled word "that".
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: Jonathan Corbet <corbet@lwn.net>
 Cc: linux-doc@vger.kernel.org
-Cc: Mauro Carvalho Chehab <mchehab@kernel.org>
-Cc: linux-media@vger.kernel.org
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 ---
- Documentation/driver-api/media/cec-core.rst |    2 +-
+ Documentation/driver-api/driver-model/platform.rst |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- linux-next-20200701.orig/Documentation/driver-api/media/cec-core.rst
-+++ linux-next-20200701/Documentation/driver-api/media/cec-core.rst
-@@ -341,7 +341,7 @@ So this must work:
- 	$ cat einj.txt >error-inj
+--- linux-next-20200701.orig/Documentation/driver-api/driver-model/platform.rst
++++ linux-next-20200701/Documentation/driver-api/driver-model/platform.rst
+@@ -108,7 +108,7 @@ field to hold additional information.
  
- The first callback is called when this file is read and it should show the
--the current error injection state:
-+current error injection state:
+ Embedded systems frequently need one or more clocks for platform devices,
+ which are normally kept off until they're actively needed (to save power).
+-System setup also associates those clocks with the device, so that that
++System setup also associates those clocks with the device, so that
+ calls to clk_get(&pdev->dev, clock_name) return them as needed.
  
- .. c:function::
- 	int (*error_inj_show)(struct cec_adapter *adap, struct seq_file *sf);
+ 
