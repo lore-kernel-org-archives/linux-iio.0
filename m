@@ -6,36 +6,36 @@ X-Spam-Status: No, score=-6.8 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
 	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BB8CC433E0
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8345C433E0
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D4CCC208D5
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96EFB208D5
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jul 2020 03:46:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="Ba1zfCJU"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=infradead.org header.i=@infradead.org header.b="b+GvlsX2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728017AbgGDDqM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Jul 2020 23:46:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52668 "EHLO
+        id S1728098AbgGDDqd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Jul 2020 23:46:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727995AbgGDDqK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jul 2020 23:46:10 -0400
+        with ESMTP id S1728051AbgGDDqb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jul 2020 23:46:31 -0400
 Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1B178C061794;
-        Fri,  3 Jul 2020 20:46:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F295C061794;
+        Fri,  3 Jul 2020 20:46:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description;
-        bh=/CGMiPAz1EqlmAsuqBAdyktP4CyuJQt8tuDtDyXNR6Y=; b=Ba1zfCJUJkqxlIdW9NwaYHEcyF
-        MUxE9LcPWFaVt1IkC8D8F+X1OIQXwvnN6awtL4ky5UGvax4zDdWGiHgT841yxr3dqNim6QFPwn8vN
-        GMhffP4nmlRfdqHpuugtZuepsX43cLgQrRmyz601mCHSYu7TArLaqoNB+9GWPt/KoJ6o1HlnGFW6+
-        ffXycZpHadTyGoB6jodB59F5Uky/eEp/HhIxxp8ecbrze2ib5Xij1IrEw8ppucqYNnTB/F67CDIW5
-        1gP2g017fPDIvX4CaiYCMfiPQk2Gzae5rRr4uN2SrC8CVH/dLvYWnF7La5HikU4HIXPq6URlT+LRQ
-        f1tiDR5Q==;
+        bh=da/AGHoRkO/K6+XfD+STqPg75KP2M3Vysus0lxWaxjo=; b=b+GvlsX2K4UeFKpQnj+S+D/Nay
+        MZkBQRoPw75b975an8rimIFtmK4enh9wwLga47yaRZRffScQHHwUofM9oBGCzlmNKeT16ADlzdhhz
+        4qG3SHs/DPvLJmaz5qemOKS0U6rq76LPBM4+iLDdGNbnKl0EZ2Gadmgt2JV/lSaFZ21ioipqZIc+V
+        cNNR4unosdctgrsyO/N1/ir+bbKO2jEMlAoZ+/z8zA2wPyogvb1eq4uMpW++yRz+N4ZgtTUBtDcTd
+        GLraAVlq4a4Ez/xZj9FdUUGYpcHaOOYwK6xScKCwpIs2XqYO9Xbl/+nKrycct0CGw0X8z9e6yNNEE
+        arwj0Ayg==;
 Received: from [2601:1c0:6280:3f0::19c2] (helo=smtpauth.infradead.org)
         by casper.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1jrZ7v-0001Xb-Dv; Sat, 04 Jul 2020 03:46:08 +0000
+        id 1jrZ8G-0001Xb-OG; Sat, 04 Jul 2020 03:46:29 +0000
 From:   Randy Dunlap <rdunlap@infradead.org>
 To:     linux-kernel@vger.kernel.org
 Cc:     Randy Dunlap <rdunlap@infradead.org>,
@@ -53,9 +53,9 @@ Cc:     Randy Dunlap <rdunlap@infradead.org>,
         Vishal Verma <vishal.l.verma@intel.com>,
         Ira Weiny <ira.weiny@intel.com>, linux-nvdimm@lists.01.org,
         linux-usb@vger.kernel.org, Eli Billauer <eli.billauer@gmail.com>
-Subject: [PATCH 11/17] Documentation/driver-api: driver-model/platform: drop doubled word
-Date:   Fri,  3 Jul 2020 20:44:56 -0700
-Message-Id: <20200704034502.17199-12-rdunlap@infradead.org>
+Subject: [PATCH 15/17] Documentation/driver-api: usb/URB: drop doubled word
+Date:   Fri,  3 Jul 2020 20:45:00 -0700
+Message-Id: <20200704034502.17199-16-rdunlap@infradead.org>
 X-Mailer: git-send-email 2.26.2
 In-Reply-To: <20200704034502.17199-1-rdunlap@infradead.org>
 References: <20200704034502.17199-1-rdunlap@infradead.org>
@@ -66,24 +66,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Drop the doubled word "that".
+Drop the doubled word "also".
 
 Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
 Cc: Jonathan Corbet <corbet@lwn.net>
 Cc: linux-doc@vger.kernel.org
 Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-usb@vger.kernel.org
 ---
- Documentation/driver-api/driver-model/platform.rst |    2 +-
+ Documentation/driver-api/usb/URB.rst |    2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
---- linux-next-20200701.orig/Documentation/driver-api/driver-model/platform.rst
-+++ linux-next-20200701/Documentation/driver-api/driver-model/platform.rst
-@@ -108,7 +108,7 @@ field to hold additional information.
+--- linux-next-20200701.orig/Documentation/driver-api/usb/URB.rst
++++ linux-next-20200701/Documentation/driver-api/usb/URB.rst
+@@ -240,7 +240,7 @@ How to do isochronous (ISO) transfers?
+ ======================================
  
- Embedded systems frequently need one or more clocks for platform devices,
- which are normally kept off until they're actively needed (to save power).
--System setup also associates those clocks with the device, so that that
-+System setup also associates those clocks with the device, so that
- calls to clk_get(&pdev->dev, clock_name) return them as needed.
- 
- 
+ Besides the fields present on a bulk transfer, for ISO, you also
+-also have to set ``urb->interval`` to say how often to make transfers; it's
++have to set ``urb->interval`` to say how often to make transfers; it's
+ often one per frame (which is once every microframe for highspeed devices).
+ The actual interval used will be a power of two that's no bigger than what
+ you specify. You can use the :c:func:`usb_fill_int_urb` macro to fill
