@@ -2,92 +2,85 @@ Return-Path: <SRS0=yR2k=AU=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.5 required=3.0 tests=DKIM_INVALID,DKIM_SIGNED,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-3.8 required=3.0 tests=HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C04F1C433DF
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Jul 2020 08:42:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18BFDC433E0
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Jul 2020 15:22:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A0EAC20672
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Jul 2020 08:42:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="dLgi7J4T"
+	by mail.kernel.org (Postfix) with ESMTP id E79E6207FF
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Jul 2020 15:22:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726290AbgGIIm7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 Jul 2020 04:42:59 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:1587 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726245AbgGIIm6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jul 2020 04:42:58 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1594284178; x=1625820178;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=naiMyOesp8RxIMv5uWwrT0H5EbS2YkDtqjFU8DFRK30=;
-  b=dLgi7J4TcUechEjK8VFTJoB3RD/ETITMryZVgGIQZJN1KyDAkCgVB9/T
-   kTjmJPg4lquiVkaqSTc8iveC6ZxUqxalAPEnuhDyykwAsWtpeMQBrHYsq
-   Mlmvwa2TrESxY1stf8wBjCltFdwVdCKQudOv6tP/P3rAtTip26+ijYAPc
-   WYb74jV2k+TRhFOB0M+Q1GX2FDXJyYcoNUm3MFbQBYovB4ZyNzqlxfbV9
-   lVMdK06ZCM2k04WRzZx/G0gPXavOEyRdJxNUg8nvUA2P5XWBCxdruauDq
-   tjoO+kxw7ANb89PfUU/T4VIeITdF/tM0szhY1HiuAglCvIP45KZ5AdS4A
-   g==;
-IronPort-SDR: EjDE+njmwjGUn65WqqmWn/MUVsjvX/rLhiu/iqjMLdjuj+N/ywO8Xsnqg6FriavKX6B7Eyw6TN
- TUHekSDKXLc8aPQ4osEdWoKSBefCmD944vSpM67Gu9LJBwYXLLSaK/gE6upoDORyDVqd1uJpso
- sqU60yIz72XBQ62ZWrRU1qK0Iy3WlyWwpMZYG1Im0WULbZFd1BmXsFK7lU0E28CcgWQh6gpsMX
- Cv5hX+Ga2ohxve9seLpmQhryxq/I8LmLt8+JcqwotqKMH4DjrOInOBtMZN+m7otqfw7encsvt8
- K9U=
-X-IronPort-AV: E=Sophos;i="5.75,331,1589266800"; 
-   d="scan'208";a="83127385"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jul 2020 01:42:57 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Thu, 9 Jul 2020 01:42:30 -0700
-Received: from ibiza.mchp-main.com (10.10.115.15) by chn-vm-ex03.mchp-main.com
- (10.10.85.151) with Microsoft SMTP Server id 15.1.1979.3 via Frontend
- Transport; Thu, 9 Jul 2020 01:42:55 -0700
-From:   Ludovic Desroches <ludovic.desroches@microchip.com>
-To:     <eugen.hristev@microchip.com>
-CC:     <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>,
-        "Ludovic Desroches" <ludovic.desroches@microchip.com>
-Subject: [PATCH] MAINTAINERS: adc: at91-sama5d2_adc: remove myself as co-maintainer
-Date:   Thu, 9 Jul 2020 10:33:16 +0200
-Message-ID: <20200709083316.7290-1-ludovic.desroches@microchip.com>
-X-Mailer: git-send-email 2.24.0
+        id S1726964AbgGIPWl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 Jul 2020 11:22:41 -0400
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:43865 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726852AbgGIPWl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jul 2020 11:22:41 -0400
+X-Originating-IP: 195.189.32.242
+Received: from pc.localdomain (unknown [195.189.32.242])
+        (Authenticated sender: contact@artur-rojek.eu)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 0CCBEC000B;
+        Thu,  9 Jul 2020 15:22:34 +0000 (UTC)
+From:   Artur Rojek <contact@artur-rojek.eu>
+To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Heiko Stuebner <heiko@sntech.de>,
+        Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Artur Rojek <contact@artur-rojek.eu>
+Subject: [PATCH v8 0/6] iio/adc: ingenic: Cleanups & add touchscreen mode.
+Date:   Thu,  9 Jul 2020 17:21:54 +0200
+Message-Id: <20200709152200.10039-1-contact@artur-rojek.eu>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Eugen is, now, more active and up to date on this topic than I. So I let
-him the full maintainance of this driver.
+Hi all,
 
-Signed-off-by: Ludovic Desroches <ludovic.desroches@microchip.com>
----
- MAINTAINERS | 1 -
- 1 file changed, 1 deletion(-)
+v8 of this patchset introduces some structural changes, which I deemed
+worthy highlighting here:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index c87b94e6b2f6..0134ac72c42c 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -11361,7 +11361,6 @@ F:	Documentation/devicetree/bindings/pwm/atmel-pwm.txt
- F:	drivers/pwm/pwm-atmel.c
- 
- MICROCHIP SAMA5D2-COMPATIBLE ADC DRIVER
--M:	Ludovic Desroches <ludovic.desroches@microchip.com>
- M:	Eugen Hristev <eugen.hristev@microchip.com>
- L:	linux-iio@vger.kernel.org
- S:	Supported
+ - adc-joystick related changes have been dropped from this patchset and
+   will be upstreamed separately. Their only connection to this patchset
+   was that they used INGENIC_ADC_TOUCH_* defines in the DTS example,
+   causing trouble to Rob's scripts.
+
+ - Integrated Paul's changes, which introduce an ADCMD low-level command
+   feature. These changes affect patches 5/6 and 6/6, with the former
+   requiring Rob to re-ack.
+
+Cheers,
+Artur
+
+Artur Rojek (5):
+  dt-bindings: iio/adc: Convert ingenic-adc docs to YAML.
+  IIO: Ingenic JZ47xx: Error check clk_enable calls.
+  IIO: Ingenic JZ47xx: Add xlate cb to retrieve correct channel idx
+  dt-bindings: iio/adc: Add touchscreen idx for JZ47xx SoC ADC
+  IIO: Ingenic JZ47xx: Add touchscreen mode.
+
+Paul Cercueil (1):
+  iio/adc: ingenic: Retrieve channels list from soc data struct
+
+ .../bindings/iio/adc/ingenic,adc.txt          |  49 ---
+ .../bindings/iio/adc/ingenic,adc.yaml         |  71 ++++
+ drivers/iio/adc/Kconfig                       |   1 +
+ drivers/iio/adc/ingenic-adc.c                 | 386 ++++++++++++++++--
+ include/dt-bindings/iio/adc/ingenic,adc.h     |   6 +
+ 5 files changed, 426 insertions(+), 87 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+
 -- 
-2.24.0
+2.27.0
 
