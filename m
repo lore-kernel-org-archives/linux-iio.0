@@ -1,163 +1,144 @@
-Return-Path: <SRS0=zWuT=AV=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=tAvY=AW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12611C433F4
-	for <linux-iio@archiver.kernel.org>; Fri, 10 Jul 2020 16:15:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51138C433DF
+	for <linux-iio@archiver.kernel.org>; Sat, 11 Jul 2020 11:49:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E28C12080D
-	for <linux-iio@archiver.kernel.org>; Fri, 10 Jul 2020 16:15:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A6E5206D9
+	for <linux-iio@archiver.kernel.org>; Sat, 11 Jul 2020 11:49:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="QuZR81fN"
+	dkim=pass (2048-bit key) header.d=geanix.com header.i=@geanix.com header.b="TEw6QIyT"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728392AbgGJQPg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 10 Jul 2020 12:15:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60394 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727916AbgGJQPa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Jul 2020 12:15:30 -0400
-Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2573C08C5CE
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2020 09:15:29 -0700 (PDT)
-Received: by mail-wm1-x344.google.com with SMTP id q15so6735875wmj.2
-        for <linux-iio@vger.kernel.org>; Fri, 10 Jul 2020 09:15:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=A58ALUumjjt05j/+gyv9/npKtqLpw2CKDOBqng8A+3w=;
-        b=QuZR81fNhSUrP+8tEzSRhwiB/EBjSn8c4nKW3rzK26q91ROb63GYpHfCv8OIOr3Iye
-         vgJv3D5760cJMIigdjaZPmqlMqcEWrmpvDFWtGjmhgsmKUCLuUnOgc6mnQBc4614vIle
-         0MjYT4bo/cC8bN8n4xbG+0IiNjRpGrJzdY/tb4u4oIWLbLNkdLQco2HxIJOvW2r1ieAb
-         c6yjBsk4td8ScIrB85WUlivHVrN6yr64idhd8Kx/0YaG7zCpK8+Sskbszg9j5anS10VM
-         /IhcpCKxO+Hg8GFw1f+PXyjRHhr2Anum/aez6NC/F3zwYHCpfVt6vHTW3tefl3+T6KRU
-         c49Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=A58ALUumjjt05j/+gyv9/npKtqLpw2CKDOBqng8A+3w=;
-        b=ioOqavI9Ua2VvVQcNRDSLsulw1fZ9lkZfxWn+KtRC2FpAO6sOqCWU36VkJi1shnPts
-         XlLlNnNE9FYY+mKu/R3O5d7Lquv04UU9iVRM/PrUVRw2tddI4oGWSI+Uacgze0SlWMi4
-         v/N378TlWNLpIXscoAsxkQkfYu22q+fvu2c1WQXQ+QnM57pJAKkeqWvfEr/8jBQR6mp7
-         A2lfl7YpfP42qwgP3iB42ygF/P0DZPQercKTm9nUlTJ6RE/Qp4Cf5LvMqt+6gxO+QSkH
-         qLmnKzRLTOtpIJcZcHncd3jlaJPHOXAud2nbYh+MhZ6ac5NcWuJKOO2xcJyDqOxI7i3O
-         ylew==
-X-Gm-Message-State: AOAM532YaVZ4xogDiN55gkcgtvv0B9rqXI+nHT1vH1qEsY1B39BgbJw1
-        pLjBSYTY3GnW0XmHJCHY56CtaY5cvQs=
-X-Google-Smtp-Source: ABdhPJwH+VJhu7xGq6cwXoneM1srOvV259fXHjx+PcqNcKEtcuecBaDo5y3b2FSMlJnpTTjKY51fbA==
-X-Received: by 2002:a7b:c14a:: with SMTP id z10mr5701020wmi.19.1594397727814;
-        Fri, 10 Jul 2020 09:15:27 -0700 (PDT)
-Received: from debian-brgl.home (lfbn-nic-1-68-20.w2-15.abo.wanadoo.fr. [2.15.159.20])
-        by smtp.gmail.com with ESMTPSA id e8sm11179359wrp.26.2020.07.10.09.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Jul 2020 09:15:27 -0700 (PDT)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v3 3/3] iio: adc: xilinx-xadc: use devm_krealloc()
-Date:   Fri, 10 Jul 2020 18:15:16 +0200
-Message-Id: <20200710161516.11625-4-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200710161516.11625-1-brgl@bgdev.pl>
-References: <20200710161516.11625-1-brgl@bgdev.pl>
+        id S1726809AbgGKLtl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 11 Jul 2020 07:49:41 -0400
+Received: from first.geanix.com ([116.203.34.67]:44842 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726342AbgGKLtl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 11 Jul 2020 07:49:41 -0400
+Received: from [192.168.100.99] (xb90f4a16.cust.hiper.dk [185.15.74.22])
+        by first.geanix.com (Postfix) with ESMTPSA id C501620249F3;
+        Sat, 11 Jul 2020 11:49:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1594468177; bh=1DqkpjW+8C2KCKw5XE/qPQvlJf78p6+49XM8768LfYE=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To;
+        b=TEw6QIyTu2JUvqVEwutAoof/6d6TR7Obl4pJSm8WJN94gqeSrTm29h3W04q6jrYyO
+         XUABHsi8SL+cgMWjD+/4ht8fsFpU6mfUgxXMPMls0iiTpRrpZVmVrIo5CUKN+YFcN3
+         W+WogMpiQaZ8QiDMWvaTmyCiViKFD0og5oiKfF0+SCsdpkz7LJxxvB5XJYnLcMiQ8X
+         /bC1TpNyCLL1OlhlZsZnrDZuhEFRSJYlm1KUT/Zio8BuibcztFdj+m3gmRuU79bBHJ
+         7OMqAonQeuk//2Wc5SkJL+Vs+f9fizQuE+d/Hb9/OPe9X9+1vn1JxPNz3VFRDclU68
+         k53+1nCud0V6w==
+Subject: Re: [PATCH] iio: imu: st_lsm6dsx: reset hw ts after resume
+To:     Lorenzo Bianconi <lorenzo@kernel.org>, jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, lorenzo.bianconi@redhat.com
+References: <15dadc531c5b30819a72b289ccd5c25e04f73657.1594388801.git.lorenzo@kernel.org>
+From:   Sean Nyekjaer <sean@geanix.com>
+Message-ID: <f639082c-91b9-c056-673d-2835ba05ac03@geanix.com>
+Date:   Sat, 11 Jul 2020 13:49:37 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <15dadc531c5b30819a72b289ccd5c25e04f73657.1594388801.git.lorenzo@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Use the managed variant of krealloc() and shrink the code a bit.
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
----
- drivers/iio/adc/xilinx-xadc-core.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
-index d7fecab9252e..5bdbe502e983 100644
---- a/drivers/iio/adc/xilinx-xadc-core.c
-+++ b/drivers/iio/adc/xilinx-xadc-core.c
-@@ -1094,6 +1094,7 @@ MODULE_DEVICE_TABLE(of, xadc_of_match_table);
- static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 	unsigned int *conf)
- {
-+	struct device *dev = indio_dev->dev.parent;
- 	struct xadc *xadc = iio_priv(indio_dev);
- 	struct iio_chan_spec *channels, *chan;
- 	struct device_node *chan_node, *child;
-@@ -1138,7 +1139,8 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 		*conf |= XADC_CONF0_MUX | XADC_CONF0_CHAN(ext_mux_chan);
- 	}
- 
--	channels = kmemdup(xadc_channels, sizeof(xadc_channels), GFP_KERNEL);
-+	channels = devm_kmemdup(dev, xadc_channels,
-+				sizeof(xadc_channels), GFP_KERNEL);
- 	if (!channels)
- 		return -ENOMEM;
- 
-@@ -1174,8 +1176,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
- 	of_node_put(chan_node);
- 
- 	indio_dev->num_channels = num_channels;
--	indio_dev->channels = krealloc(channels, sizeof(*channels) *
--					num_channels, GFP_KERNEL);
-+	indio_dev->channels = devm_krealloc(dev, channels,
-+					    sizeof(*channels) * num_channels,
-+					    GFP_KERNEL);
- 	/* If we can't resize the channels array, just use the original */
- 	if (!indio_dev->channels)
- 		indio_dev->channels = channels;
-@@ -1229,14 +1232,14 @@ static int xadc_probe(struct platform_device *pdev)
- 
- 	ret = xadc_parse_dt(indio_dev, pdev->dev.of_node, &conf0);
- 	if (ret)
--		goto err_device_free;
-+		return ret;
- 
- 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
- 		ret = iio_triggered_buffer_setup(indio_dev,
- 			&iio_pollfunc_store_time, &xadc_trigger_handler,
- 			&xadc_buffer_ops);
- 		if (ret)
--			goto err_device_free;
-+			return ret;
- 
- 		xadc->convst_trigger = xadc_alloc_trigger(indio_dev, "convst");
- 		if (IS_ERR(xadc->convst_trigger)) {
-@@ -1354,8 +1357,6 @@ static int xadc_probe(struct platform_device *pdev)
- err_triggered_buffer_cleanup:
- 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
- 		iio_triggered_buffer_cleanup(indio_dev);
--err_device_free:
--	kfree(indio_dev->channels);
- 
- 	return ret;
- }
-@@ -1375,7 +1376,6 @@ static int xadc_remove(struct platform_device *pdev)
- 	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
- 	clk_disable_unprepare(xadc->clk);
- 	kfree(xadc->data);
--	kfree(indio_dev->channels);
- 
- 	return 0;
- }
--- 
-2.26.1
+On 10/07/2020 15.49, Lorenzo Bianconi wrote:
+> Reset hw time sampling after the device resume in order to keep timing
+> in sync
+>
+> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Tested-by: Sean Nyekjaer <sean@geanix.com>
+> ---
+>   drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  3 +--
+>   .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 23 ++++++++++++-------
+>   drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c  |  2 +-
+>   3 files changed, 17 insertions(+), 11 deletions(-)
+>
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> index b56df409ed0f..529970195b39 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> @@ -436,8 +436,7 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor,
+>   				u16 watermark);
+>   int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable);
+>   int st_lsm6dsx_flush_fifo(struct st_lsm6dsx_hw *hw);
+> -int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+> -			     enum st_lsm6dsx_fifo_mode fifo_mode);
+> +int st_lsm6dsx_resume_fifo(struct st_lsm6dsx_hw *hw);
+>   int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw);
+>   int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw);
+>   int st_lsm6dsx_check_odr(struct st_lsm6dsx_sensor *sensor, u32 odr, u8 *val);
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> index afd00daeefb2..7de10bd636ea 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> @@ -184,8 +184,8 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
+>   	return err;
+>   }
+>   
+> -int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+> -			     enum st_lsm6dsx_fifo_mode fifo_mode)
+> +static int st_lsm6dsx_set_fifo_mode(struct st_lsm6dsx_hw *hw,
+> +				    enum st_lsm6dsx_fifo_mode fifo_mode)
+>   {
+>   	unsigned int data;
+>   
+> @@ -302,6 +302,18 @@ static int st_lsm6dsx_reset_hw_ts(struct st_lsm6dsx_hw *hw)
+>   	return 0;
+>   }
+>   
+> +int st_lsm6dsx_resume_fifo(struct st_lsm6dsx_hw *hw)
+> +{
+> +	int err;
+> +
+> +	/* reset hw ts counter */
+> +	err = st_lsm6dsx_reset_hw_ts(hw);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	return st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
+> +}
+> +
+>   /*
+>    * Set max bulk read to ST_LSM6DSX_MAX_WORD_LEN/ST_LSM6DSX_MAX_TAGGED_WORD_LEN
+>    * in order to avoid a kmalloc for each bus access
+> @@ -675,12 +687,7 @@ int st_lsm6dsx_update_fifo(struct st_lsm6dsx_sensor *sensor, bool enable)
+>   		goto out;
+>   
+>   	if (fifo_mask) {
+> -		/* reset hw ts counter */
+> -		err = st_lsm6dsx_reset_hw_ts(hw);
+> -		if (err < 0)
+> -			goto out;
+> -
+> -		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
+> +		err = st_lsm6dsx_resume_fifo(hw);
+>   		if (err < 0)
+>   			goto out;
+>   	}
+> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> index c8ddeb3f48ff..346c24281d26 100644
+> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> @@ -2457,7 +2457,7 @@ static int __maybe_unused st_lsm6dsx_resume(struct device *dev)
+>   	}
+>   
+>   	if (hw->fifo_mask)
+> -		err = st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
+> +		err = st_lsm6dsx_resume_fifo(hw);
+>   
+>   	return err;
+>   }
 
