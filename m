@@ -2,57 +2,53 @@ Return-Path: <SRS0=WZ3W=AX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A775AC433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Jul 2020 10:59:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 440A1C433E1
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Jul 2020 11:07:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8262820725
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Jul 2020 10:59:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 158EA20725
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Jul 2020 11:07:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594551566;
-	bh=m2ldq/P6eHCKFhsuxxrh5YUDTHV4+XhlQ3ie/UGHytY=;
+	s=default; t=1594552076;
+	bh=VQYnof+3zxRfw57/Ng3rwFQWh3H071SZuRU7Lssd3Y4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=VQWbZqcp+cQWdzklNvpsaxe59aP5Iy/CJ6SmrO4j1fZ6kjXagtdeVJDUhmWeghwws
-	 kamLB6AKzSnsATpwSh4JeDz0UL+KRpWlFXDe+zAvOk5byq0vcK1Pt0ZOtx8Wr+yDjD
-	 DRtfQjNMApHqj8Qk53x1Tj/aX/sepOCWxCTxzoCA=
+	b=Cn6yJ+/zHeaCHe9XOwmaNzzsyLcKdVbKnyjPfdu0vzHrecjamYHF4CrLFBKEoDh8o
+	 cDIpc+22DRopEbiEeWSsfilYWBy7buvdCOoBEDkv/JqBHsn28jfJ+zdOo/UhKtCy1g
+	 Q+YlzdYaB5JdfM7b6ntJb7dEwDX9WNVjvQw2j2GQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728665AbgGLK7Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Jul 2020 06:59:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53536 "EHLO mail.kernel.org"
+        id S1728615AbgGLLHz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Jul 2020 07:07:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58476 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728615AbgGLK7Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 12 Jul 2020 06:59:25 -0400
+        id S1725892AbgGLLHz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 12 Jul 2020 07:07:55 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3831420720;
-        Sun, 12 Jul 2020 10:59:23 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 625252070B;
+        Sun, 12 Jul 2020 11:07:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594551564;
-        bh=m2ldq/P6eHCKFhsuxxrh5YUDTHV4+XhlQ3ie/UGHytY=;
+        s=default; t=1594552075;
+        bh=VQYnof+3zxRfw57/Ng3rwFQWh3H071SZuRU7Lssd3Y4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=nnDVnbU7ES+2e9H77biTNBg1l0d6WFJsQYIUb4CiY9yr/CyZ8A3Cft1RdwqKGQqxo
-         QqRrUxdG44IFfj7y+moOM1OFGSNY9pme2u9QX+xxyWAsmMG1g08B94A30zK7PzRv0M
-         /VTl+AXZNOymhjMGrdSihK+nh8wTxx1zpjQ/+SuM=
-Date:   Sun, 12 Jul 2020 11:59:20 +0100
+        b=fuATGhEthg/Tu6uL2oHbYJBBgOmIAXEf/88abryDxMPV6rZeNjwTW6mO0ECJgTgiv
+         xq6VUHmBz5TUgh0aqPEzbK1L94FPuUIdu6Ji0A2Sh3Q9LMOalWyL44FYiByq9rI1di
+         zioVrDlEjKBYD6kSg1W1dXT6408w1ShHxmyqKepc=
+Date:   Sun, 12 Jul 2020 12:07:51 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Eugene Zaikonnikov <ez@norphonic.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, development@norphonic.com,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Subject: Re: [PATCH v9 2/2] dt-bindings: iio: humidity: Add TI HDC20x0
- support
-Message-ID: <20200712115920.4041260c@archlinux>
-In-Reply-To: <86blknd0id.fsf@norphonic.com>
-References: <86d053d1re.fsf@norphonic.com>
-        <86blknd0id.fsf@norphonic.com>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     Gwendal Grignou <gwendal@chromium.org>, bleung@chromium.org,
+        lars@metafoo.de, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3] iio: cros_ec_accel_legacy: Add Read Only frequency
+ entries
+Message-ID: <20200712120751.7e7fb7a4@archlinux>
+In-Reply-To: <853ea3f1-83d8-2a4a-8994-1351d36cbe66@collabora.com>
+References: <20200709180924.2437466-1-gwendal@chromium.org>
+        <853ea3f1-83d8-2a4a-8994-1351d36cbe66@collabora.com>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -62,85 +58,117 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 10 Jul 2020 14:20:58 +0200
-Eugene Zaikonnikov <ez@norphonic.com> wrote:
+On Fri, 10 Jul 2020 10:21:47 +0200
+Enric Balletbo i Serra <enric.balletbo@collabora.com> wrote:
 
-> Add device tree bindings for HDC2010/HDC2080 family of humidity and
-> temperature sensors.
+> Hi Gwendal,
 > 
-
-As Andy mentioned for patch 1 please avoid attachments.
-
-> Changes from v8:
-> - document the use of reg
-> - change the license terms to GPL-2.0-only
-
-The change log should be after the --- (which isn't here because
-of the attachments issue).  This is so we don't track a bunch of change
-logs in the eventual git log.  They tend not to be of much interest once
-a patch has merged.  If there is stuff in there of interest, it should usually
-be added to the patch description itself (e.g. some design decision or similar).
-
-The license terms seem to be dual with BSD, which is good, but
-not what the change log says!
-
-I've pasted in the actual patch content below, so others can easily
-review this version.
+> On 9/7/20 20:09, Gwendal Grignou wrote:
+> > Report to user space that 10Hz is the sampling frequency of
+> > the accelerometers in legacy mode, and it can not be changed.
+> > 
+> > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>  
+> 
+> Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+I'm fairly sure you could have just used IIO_VAL_INT as the return
+value given the micro part is 0.  Doesn't make any practical difference
+though so applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it!
 
 Thanks,
+
 Jonathan
 
-
 > 
-> Signed-off-by: Eugene Zaikonnikov <ez@norphonic.com>
-> 
+> > ---
+> > Changes since v2:
+> > - fix compilation warning
+> > Changes since v1:
+> > - Use a static array to store the single frequency allowed.
+> > 
+> >  drivers/iio/accel/cros_ec_accel_legacy.c | 46 +++++++++++++++++++++++-
+> >  1 file changed, 45 insertions(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+> > index 2532b9ad33842..b6f3471b62dcf 100644
+> > --- a/drivers/iio/accel/cros_ec_accel_legacy.c
+> > +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+> > @@ -33,6 +33,11 @@
+> >   */
+> >  #define ACCEL_LEGACY_NSCALE 9586168
+> >  
+> > +/*
+> > + * Sensor frequency is hard-coded to 10Hz.
+> > + */
+> > +static const int cros_ec_legacy_sample_freq[] = { 10, 0 };
+> > +
+> >  static int cros_ec_accel_legacy_read_cmd(struct iio_dev *indio_dev,
+> >  				  unsigned long scan_mask, s16 *data)
+> >  {
+> > @@ -96,6 +101,11 @@ static int cros_ec_accel_legacy_read(struct iio_dev *indio_dev,
+> >  		*val = 0;
+> >  		ret = IIO_VAL_INT;
+> >  		break;
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		*val = cros_ec_legacy_sample_freq[0];
+> > +		*val2 = cros_ec_legacy_sample_freq[1];
+> > +		ret = IIO_VAL_INT_PLUS_MICRO;
+> > +		break;
+> >  	default:
+> >  		ret = cros_ec_sensors_core_read(st, chan, val, val2,
+> >  				mask);
+> > @@ -120,9 +130,39 @@ static int cros_ec_accel_legacy_write(struct iio_dev *indio_dev,
+> >  	return -EINVAL;
+> >  }
+> >  
+> > +/**
+> > + * cros_ec_accel_legacy_read_avail() - get available values
+> > + * @indio_dev:		pointer to state information for device
+> > + * @chan:	channel specification structure table
+> > + * @vals:	list of available values
+> > + * @type:	type of data returned
+> > + * @length:	number of data returned in the array
+> > + * @mask:	specifies which values to be requested
+> > + *
+> > + * Return:	an error code or IIO_AVAIL_LIST
+> > + */
+> > +static int cros_ec_accel_legacy_read_avail(struct iio_dev *indio_dev,
+> > +					   struct iio_chan_spec const *chan,
+> > +					   const int **vals,
+> > +					   int *type,
+> > +					   int *length,
+> > +					   long mask)
+> > +{
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		*length = ARRAY_SIZE(cros_ec_legacy_sample_freq);
+> > +		*vals = cros_ec_legacy_sample_freq;
+> > +		*type = IIO_VAL_INT_PLUS_MICRO;
+> > +		return IIO_AVAIL_LIST;
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> > +
+> >  static const struct iio_info cros_ec_accel_legacy_info = {
+> >  	.read_raw = &cros_ec_accel_legacy_read,
+> >  	.write_raw = &cros_ec_accel_legacy_write,
+> > +	.read_avail = &cros_ec_accel_legacy_read_avail,
+> >  };
+> >  
+> >  /*
+> > @@ -142,7 +182,11 @@ static const struct iio_info cros_ec_accel_legacy_info = {
+> >  		.info_mask_separate =					\
+> >  			BIT(IIO_CHAN_INFO_RAW) |			\
+> >  			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
+> > -		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SCALE),	\
+> > +		.info_mask_shared_by_all =				\
+> > +			BIT(IIO_CHAN_INFO_SCALE) |			\
+> > +			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
+> > +		.info_mask_shared_by_all_available =			\
+> > +			BIT(IIO_CHAN_INFO_SAMP_FREQ),			\
+> >  		.ext_info = cros_ec_sensors_ext_info,			\
+> >  		.scan_type = {						\
+> >  			.sign = 's',					\
+> >   
 
-> diff -uprN linux-5.3.8/Documentation/devicetree/bindings/iio/humidity/ti,hdc2010.yaml linux-5.3.8_docs/Documentation/devicetree/bindings/iio/humidity/ti,hdc2010.yaml
-> --- linux-5.3.8/Documentation/devicetree/bindings/iio/humidity/ti,hdc2010.yaml	1970-01-01 01:00:00.000000000 +0100
-> +++ linux-5.3.8_docs/Documentation/devicetree/bindings/iio/humidity/ti,hdc2010.yaml	2020-07-10 13:08:46.818076734 +0200
-> @@ -0,0 +1,45 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/humidity/ti,hdc2010.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: HDC2010/HDC2080 humidity and temperature iio sensors
-> +
-> +maintainers:
-> +  - Eugene Zaikonnikov <ez@norophonic.com>
-> +
-> +description: |
-> +  Relative humidity and tempereature sensors on I2C bus
-> +
-> +  Datasheets are available at:
-> +    http://www.ti.com/product/HDC2010/datasheet
-> +    http://www.ti.com/product/HDC2080/datasheet
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,hdc2010
-> +      - ti,hdc2080
-> +
-> +  vdd-supply:
-> +    maxItems: 1
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +examples:
-> +  - |
-> +    i2c0 {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      humidity@40 {
-> +          compatible = "ti,hdc2010";
-> +          reg = <0x40>;
-> +      };
-> +    };
