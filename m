@@ -2,173 +2,644 @@ Return-Path: <SRS0=5TKQ=A2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C56C433EC
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jul 2020 09:25:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EAB1AC433E2
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jul 2020 09:28:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E7BD320674
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jul 2020 09:25:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BD744206D5
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jul 2020 09:28:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="qhopu08J"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lTriWVLA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729672AbgGOJZm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jul 2020 05:25:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32768 "EHLO
+        id S1730257AbgGOJ2V (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jul 2020 05:28:21 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33200 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730684AbgGOJZf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2020 05:25:35 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6E6EC061755
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2020 02:25:34 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id k6so1684290wrn.3
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jul 2020 02:25:34 -0700 (PDT)
+        with ESMTP id S1730249AbgGOJ2U (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jul 2020 05:28:20 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A577C061755;
+        Wed, 15 Jul 2020 02:28:20 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id l63so2779137pge.12;
+        Wed, 15 Jul 2020 02:28:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AR4pD/vZwN2JP47WtR5Vfk5V/YokTCEDqho1kec2JCE=;
-        b=qhopu08JJqyGVWM8MDtpU6JVIWtlkY/NnlnGcBCS+TkqHVlMYZCT1RLk+MEuRYSutJ
-         Mz8gNxGSDfTI2Khw6fFC3HZcnjZ6Z+Z5iqmwENLjM4HHIWIMh56/pmcmIBmkgn3H6XMZ
-         M6KH8TAg17NgRppYPsBYkQf4jev6BsLcTpXASzlY4SUydRRXOOANPVb6nu0GXXXxZT1U
-         vUXWUbvpCu8a/l/dBvForlWP/wA2pJyQJKcjMOlX3Y5uSh1i4gEz0L2GOgugIFGpyQHK
-         1n0DYLSdBKCzzAx++x22kXWT9YBkSHuodb5M5K4+W9OauBo41vCiKiCYdQE1/zn9bP0Z
-         OUxw==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2+VMsOTm1wpjTk++9eZZTe0kG8BcKDnSfegJMXQmzM=;
+        b=lTriWVLAb1I2R6jxXo6R+CNiyFX/kB8gQwPtSkWli/1dhGTE3BAuHy8OUorylo/jf5
+         HwZMwp/yL+hlkDkgJIYmvDubGiPHzy6/iOzVZc4RjkSLhumuZ1JvTX7cPCMMS5X68cF8
+         ydT4jT00soa+veRrok3q+xviSjpJYgOASPJ2lbRUVxzTsaThqWcna/Dav8O1dyM6gRX3
+         ePt1PU3H7rGILthnxe6qn5N6/EDVYSDUQEjmrIWRtvFYx8uIGL+5LlRV1AfMy3RxM1Py
+         UmfXW1ixKyKqI88qBg9HxMlxswUdfKWoW8+Ej/1n0n45859kKGWZq2RbzqHpKpoQ/uog
+         WFWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AR4pD/vZwN2JP47WtR5Vfk5V/YokTCEDqho1kec2JCE=;
-        b=fgol7qORqM+4lepR8v/f2E3LAwvU01eGBgJJ0sVwtIGlOXH72kwGO04zK1NJgPlC0m
-         zW8BlnSVVupFy5jCZkUHUekfWGnQA3iRJnGauvI7hUsOF/GwDBETjmOn5DwzXwFX3B1E
-         d5PlfGjG5XCYy/gPe9ZIN1pKzr5nuVeUCBzh15ijgYLlvBKHJScrhBZjtGOtS02+UDXA
-         bHK3Dyvnr8RDlnoS8dDHU51vnIVzB96lt1EUsEmLpkBzfbH4lsTYQd7gbSlHIA2eSXEa
-         vTrPZ5WHXvp3HDd24LpWCiev+5OsDxESSFcdPEDe7jw+HTMjbwJdzz1xecTNqcGqUBEj
-         HEBw==
-X-Gm-Message-State: AOAM53074fcajHHiXhRSCKIuS7tjfzeHulR4vRI5MM7Lh7MRNclmJml+
-        PFEw/4OkVfcl9WEEW+Nh5CfpGg==
-X-Google-Smtp-Source: ABdhPJwasQoZOdVqFSXYXVkG5h1AH+jFH0hwrRh6njPBhBYy1lP/eR9xcCccJviz2jSBfYaDCl1Kqw==
-X-Received: by 2002:adf:facb:: with SMTP id a11mr10840496wrs.277.1594805133522;
-        Wed, 15 Jul 2020 02:25:33 -0700 (PDT)
-Received: from debian-brgl.home (lfbn-nic-1-68-20.w2-15.abo.wanadoo.fr. [2.15.159.20])
-        by smtp.gmail.com with ESMTPSA id v11sm12083419wmb.3.2020.07.15.02.25.32
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=o2+VMsOTm1wpjTk++9eZZTe0kG8BcKDnSfegJMXQmzM=;
+        b=a+YOsOLIDzdPPgTGivXabglPlr6m1MoXXIcWVItemjfrwtFpg4N0UH6R/V1brsx1e9
+         v7B8Ll8tOTVJJKdPp8ET92TKsSs+TX/32rMLnVeSAvwkZaf8WeIBkSIqFVu3EOgBhnnv
+         miIIXmF1O5o0vHah5+Xofh420MaIIaVlPodV3EmOoNhE+k+Pe/sEe61ssyR3aUDJcgWo
+         i1YPZIjUoIXoiOm33w3Afn3Lcw6cN714l/gv7+sjc4ZnKundJGRFb2EfD5z5Rm9jPTUB
+         9ufKEe+d0s66btIyaFJ+uL0e6dxzmceUXjIqik3MbuOTlLcqMm8TG8wNjAcUMVGtGA3c
+         If9w==
+X-Gm-Message-State: AOAM532WuQAG5MZLg+mCEGDlUins7MAnfRKSxeZ4LH6OtIR6BGMQs4Nh
+        f1gtjAOe6S5UMAzI6RkdyXw=
+X-Google-Smtp-Source: ABdhPJxkWEHL4P+xTXKfPgM9XYFGzAtpupoFLhlw5+fpSRzRTFYTd/PFVtCAuZj6CLlMcPrAFrkjCw==
+X-Received: by 2002:a62:fb07:: with SMTP id x7mr8435849pfm.252.1594805300046;
+        Wed, 15 Jul 2020 02:28:20 -0700 (PDT)
+Received: from nish-HP-Pavilion ([2409:4072:6188:2bbe:d028:8959:a8a3:a7bc])
+        by smtp.gmail.com with ESMTPSA id oc6sm1590428pjb.43.2020.07.15.02.28.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 15 Jul 2020 02:25:33 -0700 (PDT)
-From:   Bartosz Golaszewski <brgl@bgdev.pl>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH v5 2/3] hwmon: pmbus: use more devres helpers
-Date:   Wed, 15 Jul 2020 11:25:27 +0200
-Message-Id: <20200715092528.8136-3-brgl@bgdev.pl>
-X-Mailer: git-send-email 2.26.1
-In-Reply-To: <20200715092528.8136-1-brgl@bgdev.pl>
-References: <20200715092528.8136-1-brgl@bgdev.pl>
+        Wed, 15 Jul 2020 02:28:19 -0700 (PDT)
+From:   Nishant Malpani <nish.malpani25@gmail.com>
+To:     jic23@kernel.org
+Cc:     dragos.bogdan@analog.com, darius.berghe@analog.com,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Nishant Malpani <nish.malpani25@gmail.com>
+Subject: [PATCH 1/2] iio: gyro: Add driver support for ADXRS290
+Date:   Wed, 15 Jul 2020 14:57:57 +0530
+Message-Id: <20200715092757.14563-1-nish.malpani25@gmail.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+ADXRS290 is a high performance MEMS pitch and roll (dual-axis in-plane)
+angular rate sensor (gyroscope) designed for use in stabilization
+applications. It also features an internal temperature sensor and
+programmable high-pass and low-pass filters.
 
-Shrink pmbus code by using devm_hwmon_device_register_with_groups()
-and devm_krealloc() instead of their non-managed variants.
+Add support for ADXRS290 in direct-access mode for now.
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Acked-by: Guenter Roeck <linux@roeck-us.net>
+Datasheet:
+Link: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXRS290.pdf
+
+Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
 ---
- drivers/hwmon/pmbus/pmbus_core.c | 28 +++++++++-------------------
- 1 file changed, 9 insertions(+), 19 deletions(-)
+ MAINTAINERS                 |   6 +
+ drivers/iio/gyro/Kconfig    |  10 +
+ drivers/iio/gyro/Makefile   |   1 +
+ drivers/iio/gyro/adxrs290.c | 490 ++++++++++++++++++++++++++++++++++++
+ 4 files changed, 507 insertions(+)
+ create mode 100644 drivers/iio/gyro/adxrs290.c
 
-diff --git a/drivers/hwmon/pmbus/pmbus_core.c b/drivers/hwmon/pmbus/pmbus_core.c
-index 44535add3a4a1..91839979cf6c1 100644
---- a/drivers/hwmon/pmbus/pmbus_core.c
-+++ b/drivers/hwmon/pmbus/pmbus_core.c
-@@ -1018,9 +1018,9 @@ static int pmbus_add_attribute(struct pmbus_data *data, struct attribute *attr)
- {
- 	if (data->num_attributes >= data->max_attributes - 1) {
- 		int new_max_attrs = data->max_attributes + PMBUS_ATTR_ALLOC_SIZE;
--		void *new_attrs = krealloc(data->group.attrs,
--					   new_max_attrs * sizeof(void *),
--					   GFP_KERNEL);
-+		void *new_attrs = devm_krealloc(data->dev, data->group.attrs,
-+						new_max_attrs * sizeof(void *),
-+						GFP_KERNEL);
- 		if (!new_attrs)
- 			return -ENOMEM;
- 		data->group.attrs = new_attrs;
-@@ -2534,7 +2534,7 @@ int pmbus_do_probe(struct i2c_client *client, const struct i2c_device_id *id,
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e016ee39c74a..dd02cfc410e8 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -1098,6 +1098,12 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ F:	drivers/media/i2c/adv7842*
  
- 	ret = pmbus_find_attributes(client, data);
- 	if (ret)
--		goto out_kfree;
++ANALOG DEVICES INC ADXRS290 DRIVER
++M:	Nishant Malpani <nish.malpani25@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++F:	drivers/iio/gyro/adxrs290.c
++
+ ANALOG DEVICES INC ASOC CODEC DRIVERS
+ M:	Lars-Peter Clausen <lars@metafoo.de>
+ M:	Nuno Sá <nuno.sa@analog.com>
+diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+index 6daeddf37f60..024a34139875 100644
+--- a/drivers/iio/gyro/Kconfig
++++ b/drivers/iio/gyro/Kconfig
+@@ -41,6 +41,16 @@ config ADIS16260
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called adis16260.
+ 
++config ADXRS290
++	tristate "Analog Devices ADXRS290 Dual-Axis MEMS Gyroscope SPI driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices ADXRS290 programmable
++	  digital output gyroscope.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called adxrs290.
++
+ config ADXRS450
+ 	tristate "Analog Devices ADXRS450/3 Digital Output Gyroscope SPI driver"
+ 	depends on SPI
+diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+index 45cbd5dc644e..0319b397dc3f 100644
+--- a/drivers/iio/gyro/Makefile
++++ b/drivers/iio/gyro/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_ADIS16080) += adis16080.o
+ obj-$(CONFIG_ADIS16130) += adis16130.o
+ obj-$(CONFIG_ADIS16136) += adis16136.o
+ obj-$(CONFIG_ADIS16260) += adis16260.o
++obj-$(CONFIG_ADXRS290) += adxrs290.o
+ obj-$(CONFIG_ADXRS450) += adxrs450.o
+ obj-$(CONFIG_BMG160) += bmg160_core.o
+ obj-$(CONFIG_BMG160_I2C) += bmg160_i2c.o
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+new file mode 100644
+index 000000000000..1139f79a3bd5
+--- /dev/null
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -0,0 +1,490 @@
++// SPDX-License-Identifier: GPL-2.0-or-later
++/*
++ * ADXRS290 SPI Gyroscope Driver
++ *
++ * Copyright (C) 2020 Analog Devices, Inc.
++ */
++
++#include <asm/unaligned.h>
++#include <linux/bitfield.h>
++#include <linux/device.h>
++#include <linux/delay.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define ADXRS290_ADI_ID		0xAD
++#define ADXRS290_MEMS_ID	0x1D
++#define ADXRS290_DEV_ID		0x92
++
++#define ADXRS290_REG_ADI_ID	0x00 /* Analog Devices Identifier Register */
++#define ADXRS290_REG_MEMS_ID	0x01 /* MEMS Identifier Register */
++#define ADXRS290_REG_DEV_ID	0x02 /* Device Identifier Register */
++#define ADXRS290_REG_REV_ID	0x03 /* Silicon Revision Number Register */
++#define ADXRS290_REG_SN0	0x04 /* Serial Number Registers, 4 bytes */
++#define ADXRS290_REG_DATAX0	0x08 /* Roll Rate o/p Data Regs, 2 bytes */
++#define ADXRS290_REG_DATAY0	0x0A /* Pitch Rate o/p Data Regs, 2 bytes */
++#define ADXRS290_REG_TEMP0	0x0C /* Temperature Data Registers, 2 bytes */
++#define ADXRS290_REG_POWER_CTL	0x10 /* Power Control Register */
++#define ADXRS290_REG_FILTER	0x11 /* Band-pass Filter Register */
++#define ADXRS290_REG_DATA_RDY	0x12 /* Data Ready Register */
++
++#define ADXRS290_READ		BIT(7)
++#define ADXRS290_TSM		BIT(0)
++#define ADXRS290_MEASUREMENT	BIT(1)
++#define ADXRS290_SYNC		GENMASK(1, 0)
++#define ADXRS290_LPF_MASK	GENMASK(2, 0)
++#define ADXRS290_LPF(x)		FIELD_PREP(ADXRS290_LPF_MASK, x)
++#define ADXRS290_HPF_MASK	GENMASK(7, 4)
++#define ADXRS290_HPF(x)		FIELD_PREP(ADXRS290_HPF_MASK, x)
++
++#define ADXRS290_READ_REG(reg)	(ADXRS290_READ | (reg))
++
++#define ADXRS290_MAX_TRANSITION_TIME_MS 100
++
++enum adxrs290_mode {
++	STANDBY,
++	MEASUREMENT,
++};
++
++struct adxrs290_state {
++	struct spi_device	*spi;
++	/* To atomize successive reads for single measurement */
++	struct mutex		lock;
++	enum adxrs290_mode	mode;
++	unsigned int		lpf_3db_freq_idx;
++	unsigned int		hpf_3db_freq_idx;
++	union {
++		u8 tx;
++		u8 rx[2];
++	}			data ____cacheline_aligned;
++};
++
++/*
++ * Available cut-off frequencies of the low pass filter in Hz.
++ * The integer part and fractional part are represented separately.
++ */
++static const unsigned int adxrs290_lpf_3db_freq_tbl[][2] = {
++	[0] = {480, 0},
++	[1] = {320, 0},
++	[2] = {160, 0},
++	[3] = {80, 0},
++	[4] = {56, 600},
++	[5] = {40, 0},
++	[6] = {28, 300},
++	[7] = {20, 0},
++};
++
++/*
++ * Available cut-off frequencies of the high pass filter in Hz.
++ * The integer part and fractional part are represented separately.
++ */
++static const unsigned int adxrs290_hpf_3db_freq_tbl[][2] = {
++	[0] = {0, 0},
++	[1] = {0, 11},
++	[2] = {0, 22},
++	[3] = {0, 44},
++	[4] = {0, 87},
++	[5] = {0, 175},
++	[6] = {0, 350},
++	[7] = {0, 700},
++	[8] = {1, 400},
++	[9] = {2, 800},
++	[10] = {11, 300},
++};
++
++static int adxrs290_spi_read16b(struct iio_dev *indio_dev, const u8 cmd,
++				u16 *val)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++	int ret = 0;
++
++	struct spi_transfer t[] = {
++		{
++			.tx_buf = &st->data.tx,
++			.bits_per_word = 8,
++			.len = sizeof(st->data.tx),
++			.cs_change = 0,
++		}, {
++			.rx_buf = &st->data.rx,
++			.bits_per_word = 8,
++			.len = sizeof(st->data.rx),
++		},
++	};
++
++	mutex_lock(&st->lock);
++
++	st->data.tx = cmd;
++	ret = spi_sync_transfer(st->spi, t, ARRAY_SIZE(t));
++
++	if (ret < 0) {
++		dev_err(&st->spi->dev, "error reading 16b from reg 0x%02x\n",
++			cmd);
++		goto err_unlock;
++	}
++
++	*val = get_unaligned_le16(st->data.rx);
++
++err_unlock:
++	mutex_unlock(&st->lock);
++	return ret;
++}
++
++static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd,
++				  unsigned int *val)
++{
++	int ret;
++	u16 temp;
++
++	ret = adxrs290_spi_read16b(indio_dev, cmd, &temp);
++	if (ret < 0)
 +		return ret;
- 
- 	/*
- 	 * If there are no attributes, something is wrong.
-@@ -2542,35 +2542,27 @@ int pmbus_do_probe(struct i2c_client *client, const struct i2c_device_id *id,
- 	 */
- 	if (!data->num_attributes) {
- 		dev_err(dev, "No attributes found\n");
--		ret = -ENODEV;
--		goto out_kfree;
++
++	*val = temp;
++
++	return 0;
++}
++
++static int adxrs290_get_temp_data(struct iio_dev *indio_dev, unsigned int *val)
++{
++	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_TEMP0);
++	int ret;
++	u16 temp;
++
++	ret = adxrs290_spi_read16b(indio_dev, cmd, &temp);
++	if (ret < 0)
++		return ret;
++
++	/* extract lower 12 bits temperature reading */
++	*val = temp & 0x0FFF;
++
++	return 0;
++}
++
++static int adxrs290_get_3db_freq(struct iio_dev *indio_dev, u8 *val, u8 *val2)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++	const u8 cmd = ADXRS290_READ_REG(ADXRS290_REG_FILTER);
++	int temp;
++
++	temp = spi_w8r8(st->spi, cmd);
++	if (temp < 0)
++		return temp;
++
++	*val = FIELD_GET(ADXRS290_LPF_MASK, temp);
++	*val2 = FIELD_GET(ADXRS290_HPF_MASK, temp);
++
++	return 0;
++}
++
++static int adxrs290_spi_write_reg(struct spi_device *spi, const u8 reg,
++				  const u8 val)
++{
++	u8 buf[2];
++
++	buf[0] = reg;
++	buf[1] = val;
++
++	return spi_write(spi, buf, ARRAY_SIZE(buf));
++}
++
++static unsigned int adxrs290_find_best_match(const unsigned int (*freq_tbl)[2],
++					     unsigned int n, unsigned int freq)
++{
++	unsigned int i, best_freq_idx;
++	unsigned int diff, best_diff;
++
++	best_freq_idx = 0;
++	best_diff = UINT_MAX;
++	for (i = 0; i < n; i++) {
++		diff = abs(freq_tbl[i][0] - freq);
++		if (diff < best_diff) {
++			best_diff = diff;
++			best_freq_idx = i;
++		}
++	}
++
++	return best_freq_idx;
++}
++
++static int adxrs290_set_filter_freq(struct iio_dev *indio_dev,
++				    unsigned int lpf_idx, unsigned int hpf_idx)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++	u8 val;
++
++	val = ADXRS290_HPF(hpf_idx) | ADXRS290_LPF(lpf_idx);
++
++	return adxrs290_spi_write_reg(st->spi, ADXRS290_REG_FILTER, val);
++}
++
++static ssize_t adxrs290_show_avail(const unsigned int (*freq_tbl)[2], size_t n,
++				   char *buf)
++{
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < n; i++) {
++		len += scnprintf(buf + len, PAGE_SIZE - len,
++				 "%u.%03u ", freq_tbl[i][0], freq_tbl[i][1]);
++	}
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t adxrs290_show_lpf_freq_avail(struct device *dev,
++					    struct device_attribute *attr,
++					    char *buf)
++{
++	return adxrs290_show_avail(adxrs290_lpf_3db_freq_tbl,
++				   ARRAY_SIZE(adxrs290_lpf_3db_freq_tbl), buf);
++}
++
++static ssize_t adxrs290_show_hpf_freq_avail(struct device *dev,
++					    struct device_attribute *attr,
++					    char *buf)
++{
++	return adxrs290_show_avail(adxrs290_hpf_3db_freq_tbl,
++				   ARRAY_SIZE(adxrs290_hpf_3db_freq_tbl), buf);
++}
++
++/* attribute to display available 3db frequencies for the low-pass filter */
++static IIO_DEVICE_ATTR(in_anglvel_filter_low_pass_3db_frequency_available,
++		       0444, adxrs290_show_lpf_freq_avail, NULL, 0);
++
++/* attribute to display available 3db frequencies for the high-pass filter */
++static IIO_DEVICE_ATTR(in_anglvel_filter_high_pass_3db_frequency_available,
++		       0444, adxrs290_show_hpf_freq_avail, NULL, 0);
++
++static struct attribute *adxrs290_attributes[] = {
++	&iio_dev_attr_in_anglvel_filter_low_pass_3db_frequency_available.dev_attr.attr,
++	&iio_dev_attr_in_anglvel_filter_high_pass_3db_frequency_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group adxrs290_attrs_group = {
++	.attrs = adxrs290_attributes,
++};
++
++static int adxrs290_initial_setup(struct iio_dev *indio_dev)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++
++	st->mode = MEASUREMENT;
++
++	return adxrs290_spi_write_reg(st->spi,
++				      ADXRS290_REG_POWER_CTL,
++				      ADXRS290_MEASUREMENT | ADXRS290_TSM);
++}
++
++static int adxrs290_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val,
++			     int *val2,
++			     long mask)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++	int ret;
++	unsigned int t;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_ANGL_VEL:
++			ret = adxrs290_get_rate_data(indio_dev,
++						     ADXRS290_READ_REG(chan->address),
++						     &t);
++			if (ret < 0)
++				return ret;
++			*val = t;
++			return IIO_VAL_INT;
++		case IIO_TEMP:
++			ret = adxrs290_get_temp_data(indio_dev, &t);
++			if (ret < 0)
++				return ret;
++			*val = t;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_ANGL_VEL:
++			*val = 0;
++			*val2 = 87266;
++			return IIO_VAL_INT_PLUS_NANO;
++		case IIO_TEMP:
++			*val = 100;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		switch (chan->type) {
++		case IIO_ANGL_VEL:
++			t = st->lpf_3db_freq_idx;
++			*val = adxrs290_lpf_3db_freq_tbl[t][0];
++			*val2 = adxrs290_lpf_3db_freq_tbl[t][1] * 1000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
++		switch (chan->type) {
++		case IIO_ANGL_VEL:
++			t = st->hpf_3db_freq_idx;
++			*val = adxrs290_hpf_3db_freq_tbl[t][0];
++			*val2 = adxrs290_hpf_3db_freq_tbl[t][1] * 1000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		default:
++			return -EINVAL;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int adxrs290_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val,
++			      int val2,
++			      long mask)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++	unsigned int lpf_idx, hpf_idx;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
++		lpf_idx = adxrs290_find_best_match(adxrs290_lpf_3db_freq_tbl,
++						   ARRAY_SIZE(adxrs290_lpf_3db_freq_tbl),
++						   val);
++		/* caching the updated state of the low-pass filter */
++		st->lpf_3db_freq_idx = lpf_idx;
++		/* retrieving the current state of the high-pass filter */
++		hpf_idx = st->hpf_3db_freq_idx;
++		return adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
++	case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
++		hpf_idx = adxrs290_find_best_match(adxrs290_hpf_3db_freq_tbl,
++						   ARRAY_SIZE(adxrs290_hpf_3db_freq_tbl),
++						   val);
++		/* caching the updated state of the high-pass filter */
++		st->hpf_3db_freq_idx = hpf_idx;
++		/* retrieving the current state of the low-pass filter */
++		lpf_idx = st->lpf_3db_freq_idx;
++		return adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
++	}
++
++	return -EINVAL;
++}
++
++#define ADXRS290_ANGL_VEL_CHANNEL(reg, axis) {				\
++	.type = IIO_ANGL_VEL,						\
++	.address = reg,							\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##axis,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++	BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY) |		\
++	BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),		\
++}
++
++static const struct iio_chan_spec adxrs290_channels[] = {
++	ADXRS290_ANGL_VEL_CHANNEL(ADXRS290_REG_DATAX0, X),
++	ADXRS290_ANGL_VEL_CHANNEL(ADXRS290_REG_DATAY0, Y),
++	{
++		.type = IIO_TEMP,
++		.address = ADXRS290_REG_TEMP0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_SCALE),
++	},
++};
++
++static const struct iio_info adxrs290_info = {
++	.attrs = &adxrs290_attrs_group,
++	.read_raw = &adxrs290_read_raw,
++	.write_raw = &adxrs290_write_raw,
++};
++
++static int adxrs290_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct adxrs290_state *st;
++	int ret;
++	u8 val, val2;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++	st->spi = spi;
++	spi_set_drvdata(spi, indio_dev);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = "adxrs290";
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = adxrs290_channels;
++	indio_dev->num_channels = ARRAY_SIZE(adxrs290_channels);
++	indio_dev->info = &adxrs290_info;
++
++	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_ADI_ID));
++	if (val != ADXRS290_ADI_ID) {
++		dev_err(&spi->dev, "Wrong ADI ID 0x%02x\n", val);
 +		return -ENODEV;
- 	}
- 
- 	data->groups[0] = &data->group;
- 	memcpy(data->groups + 1, info->groups, sizeof(void *) * groups_num);
--	data->hwmon_dev = hwmon_device_register_with_groups(dev, client->name,
--							    data, data->groups);
-+	data->hwmon_dev = devm_hwmon_device_register_with_groups(dev,
-+					client->name, data, data->groups);
- 	if (IS_ERR(data->hwmon_dev)) {
--		ret = PTR_ERR(data->hwmon_dev);
- 		dev_err(dev, "Failed to register hwmon device\n");
--		goto out_kfree;
-+		return PTR_ERR(data->hwmon_dev);
- 	}
- 
- 	ret = pmbus_regulator_register(data);
- 	if (ret)
--		goto out_unregister;
++	}
++
++	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_MEMS_ID));
++	if (val != ADXRS290_MEMS_ID) {
++		dev_err(&spi->dev, "Wrong MEMS ID 0x%02x\n", val);
++		return -ENODEV;
++	}
++
++	val = spi_w8r8(spi, ADXRS290_READ_REG(ADXRS290_REG_DEV_ID));
++	if (val != ADXRS290_DEV_ID) {
++		dev_err(&spi->dev, "Wrong DEV ID 0x%02x\n", val);
++		return -ENODEV;
++	}
++
++	/* default mode the gyroscope starts in */
++	st->mode = STANDBY;
++
++	/* switch to measurement mode and switch on the temperature sensor */
++	ret = adxrs290_initial_setup(indio_dev);
++	if (ret < 0)
 +		return ret;
- 
- 	ret = pmbus_init_debugfs(client, data);
- 	if (ret)
- 		dev_warn(dev, "Failed to register debugfs\n");
- 
- 	return 0;
--
--out_unregister:
--	hwmon_device_unregister(data->hwmon_dev);
--out_kfree:
--	kfree(data->group.attrs);
--	return ret;
- }
- EXPORT_SYMBOL_GPL(pmbus_do_probe);
- 
-@@ -2580,8 +2572,6 @@ int pmbus_do_remove(struct i2c_client *client)
- 
- 	debugfs_remove_recursive(data->debugfs);
- 
--	hwmon_device_unregister(data->hwmon_dev);
--	kfree(data->group.attrs);
- 	return 0;
- }
- EXPORT_SYMBOL_GPL(pmbus_do_remove);
++
++	/* max transition time to measurement mode */
++	msleep_interruptible(ADXRS290_MAX_TRANSITION_TIME_MS);
++
++	ret = adxrs290_get_3db_freq(indio_dev, &val, &val2);
++	if (ret < 0)
++		return ret;
++
++	st->lpf_3db_freq_idx = val;
++	st->hpf_3db_freq_idx = val2;
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
++}
++
++static const struct of_device_id adxrs290_of_match[] = {
++	{ .compatible = "adi,adxrs290" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, adxrs290_of_match);
++
++static struct spi_driver adxrs290_driver = {
++	.driver = {
++		.name = "adxrs290",
++		.of_match_table = adxrs290_of_match,
++	},
++	.probe = adxrs290_probe,
++};
++module_spi_driver(adxrs290_driver);
++
++MODULE_AUTHOR("Nishant Malpani <nish.malpani25@gmail.com>");
++MODULE_DESCRIPTION("Analog Devices ADXRS290 Gyroscope SPI driver");
++MODULE_LICENSE("GPL");
 -- 
-2.26.1
+2.20.1
 
