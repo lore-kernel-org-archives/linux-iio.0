@@ -7,66 +7,64 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3219CC433E2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E438DC433F1
 	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 14:01:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0DADA20787
+	by mail.kernel.org (Postfix) with ESMTP id C3F3F20787
 	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 14:01:15 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="YF6DGOzv"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="oumlQEnI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729061AbgGPOBH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Jul 2020 10:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
+        id S1728928AbgGPN7w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Jul 2020 09:59:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43082 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729018AbgGPN7w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 09:59:52 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A678DC08C5C0
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:51 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id q5so7174323wru.6
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:51 -0700 (PDT)
+        with ESMTP id S1729148AbgGPN7r (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 09:59:47 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ABCC4C08C5C0
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:46 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id b6so7137021wrs.11
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=yEDHcQixmRplGH8qNHcfA8UvDCGb3hBlRKYBVkzPSos=;
-        b=YF6DGOzvWXwjmcXxIzZUFAmsdA5heVnu9aShEi8rkD0j/TNT8wZuLJMOvDRzajTvu3
-         EZ9bTrqWqgDJBUX1agYozSK+ZJnf9PgQkShRJZHA7Ws9e7H4FGsZdVbfQIUlX5mjrKba
-         fll3JV4KPJkSLq1yYyR9CiRBCcJw4bnyRIn/BXaWM5gYZ2SHxSseCfkr17CpZ1g93SiM
-         L1qvDjd6jhvmp4erh3iWa7niWF1IxIU1P0qyMqzJ0YEdrTdkh4Ur46vuYJ77gEx4dbVJ
-         y1CYx0aoTnQbiTTUrafBbYcDxQyZexTCVzZbN0Ggt120qIUmpTS1r5EWSKoV1tvSIFHj
-         TRdw==
+        bh=Cb+wSympQ/t7mvjSrlchyDpaG5lOzmi7hZ5OiAi8Mno=;
+        b=oumlQEnIha+gPZ486gfCpU6mSvsOEk0BcYWvK8/hsanQRyIRhlTtGw1XHd1ZKAntb3
+         zDCnA15Semh4CaC/EsmkpiGdRQuSj3HgP1HhW3Qv/aHf5Td42D9Z4s/uVHYp4Fjz1XM1
+         OCw8fiy1rDDE/qdrqb3Agd4WT/q9uKQc/RTWRkahnyGhccuQbTeTdywSX3gDFBt+N6RP
+         DaFDmvWjnPap3vH8zCePAv8eTD5BA3XtcLMJHhOkJsJKl+VNjLZYQmU18Xd05QLMfFk/
+         Y1tiTBVpPgEEjfvv8u3az3bSjHw7AHyPFTQ8fjW2rJ/PXcQiEzZfbNXbvkPrCkOxV1R1
+         +g+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=yEDHcQixmRplGH8qNHcfA8UvDCGb3hBlRKYBVkzPSos=;
-        b=DpNQFU2fOG3jKd8pIV1BKAyoEVJ9FAu9Q3eHFEZdEasDWVAGQdgBW/LAnXUhr2Mt+a
-         K25lS/ajQBe30kQE6+495/18P0YB4ZizG6k7eojCJY0E2Sl8//bJVjrd3AiTKhtXSwsn
-         JxIdgemX9TpbdqA1mQcCxu3CheS0JK5dTsm6FZBt7sVKFuLqx4om7kZVkvpvUEa0umlX
-         1l7Ma7tW0vsdDpE3jbcOjx64oRNMl73fbwViF0BiYvg3tfOCLXXQM2aFnZEtiIo3aPmd
-         SFhfEeDb8T+Tqa8s+h7ODOcCISlyMwF3rEMXb+6OasaMHbkJ+lfuHDFPA9gC84ab+2hP
-         wpiQ==
-X-Gm-Message-State: AOAM532oggKnqSs93YheUSC/+5WwuqYIoXX4YBl6Jn9djII2NI/6jA/Y
-        q9gjY92q23Tkk6xdHtFfqFW8Gw==
-X-Google-Smtp-Source: ABdhPJxoUsWtSXEkwMRRz3h+uwsnqGWeXsnl39jFf61Fm9YhnvLTfGANxYoAUCDpYNm0FXBYzcBa9w==
-X-Received: by 2002:adf:cc85:: with SMTP id p5mr5124004wrj.273.1594907990336;
-        Thu, 16 Jul 2020 06:59:50 -0700 (PDT)
+        bh=Cb+wSympQ/t7mvjSrlchyDpaG5lOzmi7hZ5OiAi8Mno=;
+        b=jbRzfZfiKcO/Me2VkEL4QsOV2po7lxJSFfEC206cgll40tRNfo9iPIQhW0Ia4iMeK+
+         O1X3PNiohdu4EZglgPiLipokmvL0wuxds6reS8TrGWYXZ34Mp/ymLZm05T/FS1w0u6eH
+         y6dhwrLIgY74Uz06Exog209xHu75am0zuQgZGLaVgY815J0jSd+nj6MhDtiUMqczo/fi
+         5kWqqqYKbzY8OEQsu1xBUKy71Gx93Z3+JQg9pPqD7ojl04xfDmHfsY3mhN05QUGD91H0
+         Q86sa7XWm8PZhZ6gItVWH9qLyq00v9vf4l1JI+vhkQn5VdcC1ChPfv2fBBSkjsO04n1t
+         esJg==
+X-Gm-Message-State: AOAM531m3+gtOjcUUiMRhKZMYBaE6T4t4dtwJc6h7Q7Ua2kVezaIIid0
+        yb9Jnh//0PRR1JOKKiy3ZicHFQ==
+X-Google-Smtp-Source: ABdhPJzTCQ3Uui/xfkaXvBiqKU2DEubjel0BONeoSaNK/ek/9whacXXXBE4S96ii0ZuJ6/6OxW817g==
+X-Received: by 2002:adf:81c7:: with SMTP id 65mr4973510wra.47.1594907984888;
+        Thu, 16 Jul 2020 06:59:44 -0700 (PDT)
 Received: from localhost.localdomain ([2.31.163.61])
-        by smtp.gmail.com with ESMTPSA id x18sm9351001wrq.13.2020.07.16.06.59.49
+        by smtp.gmail.com with ESMTPSA id x18sm9351001wrq.13.2020.07.16.06.59.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 06:59:49 -0700 (PDT)
+        Thu, 16 Jul 2020 06:59:44 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Marc Zyngier <maz@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 15/30] iio: dummy: iio_dummy_evgen: Demote file header and supply description for 'irq_sim_domain'
-Date:   Thu, 16 Jul 2020 14:59:13 +0100
-Message-Id: <20200716135928.1456727-16-lee.jones@linaro.org>
+        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH 10/30] iio: dummy: iio_simple_dummy: Add newline after function-end
+Date:   Thu, 16 Jul 2020 14:59:08 +0100
+Message-Id: <20200716135928.1456727-11-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200716135928.1456727-1-lee.jones@linaro.org>
 References: <20200716135928.1456727-1-lee.jones@linaro.org>
@@ -77,46 +75,31 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-File headers are not good candidates for kerneldoc.
+Fixes the following checkpatch.pl warning(s):
 
-Fixes the following W=1 kernel build warning(s):
+ CHECK: Please use a blank line after function/struct/union/enum declarations
+ #46: FILE: drivers/iio/dummy/iio_simple_dummy.c:690:
+  }
+ +/*
+ total: 0 errors, 0 warnings, 1 checks, 22 lines checked
 
- drivers/iio/dummy/iio_dummy_evgen.c:30: warning: Cannot understand  * @regs: irq regs we are faking
- on line 30 - I thought it was a doc line
- drivers/iio/dummy/iio_dummy_evgen.c:42: warning: Function parameter or member 'irq_sim_domain' not described in 'iio_dummy_eventgen'
-
-Cc: Marc Zyngier <maz@kernel.org>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/dummy/iio_dummy_evgen.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/dummy/iio_dummy_evgen.c b/drivers/iio/dummy/iio_dummy_evgen.c
-index ee85d596e5284..1febbbff0ded6 100644
---- a/drivers/iio/dummy/iio_dummy_evgen.c
-+++ b/drivers/iio/dummy/iio_dummy_evgen.c
-@@ -1,5 +1,5 @@
- // SPDX-License-Identifier: GPL-2.0-only
--/**
-+/*
-  * Copyright (c) 2011 Jonathan Cameron
-  *
-  * Companion module to the iio simple dummy example driver.
-@@ -27,11 +27,13 @@
- #define IIO_EVENTGEN_NO 10
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index be66b26373723..cc4335963d0cf 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -687,6 +687,7 @@ static int iio_dummy_remove(struct iio_sw_device *swd)
  
- /**
-+ * struct iio_dummy_eventgen
-  * @regs: irq regs we are faking
-  * @lock: protect the evgen state
-  * @inuse: mask of which irqs are connected
-  * @irq_sim: interrupt simulator
-  * @base: base of irq range
-+ * @irq_sim_domain: irq domain
-  */
- struct iio_dummy_eventgen {
- 	struct iio_dummy_regs regs[IIO_EVENTGEN_NO];
+ 	return 0;
+ }
++
+ /*
+  * module_iio_sw_device_driver() -  device driver registration
+  *
 -- 
 2.25.1
 
