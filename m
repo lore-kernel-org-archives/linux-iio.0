@@ -2,132 +2,123 @@ Return-Path: <SRS0=PdeJ=A3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC687C433E4
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 09:44:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 804A8C433E8
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B176A2071B
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 09:44:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5DC4D20825
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:38 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lIgBjCAr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726769AbgGPJoO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Jul 2020 05:44:14 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:63738 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728022AbgGPJoM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 05:44:12 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 06G9e8bJ031070;
-        Thu, 16 Jul 2020 05:44:11 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3279gmq8hv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 16 Jul 2020 05:44:11 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 06G9i9ec057827
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 16 Jul 2020 05:44:09 -0400
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 16 Jul
- 2020 02:44:08 -0700
-Received: from zeus.spd.analog.com (10.64.82.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 16 Jul 2020 02:44:08 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 06G9i21p001073;
-        Thu, 16 Jul 2020 05:44:07 -0400
-From:   Darius Berghe <darius.berghe@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>
-Subject: [PATCH v2 3/3] ltc2471 driver yaml
-Date:   Thu, 16 Jul 2020 12:46:11 +0300
-Message-ID: <20200716094611.81746-4-darius.berghe@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200716094611.81746-1-darius.berghe@analog.com>
-References: <20200716094611.81746-1-darius.berghe@analog.com>
+        id S1729094AbgGPN7h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Jul 2020 09:59:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729089AbgGPN7e (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 09:59:34 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DF0C061755
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:34 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id a6so7194345wrm.4
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:34 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=orBUHy/BGmffZA4LA+ipGScBGUJn7fYfkbVAM8m+aww=;
+        b=lIgBjCArdEpGcSjo1Rtyqs2OSMZAreCnZeJRzKDgcP3CvY/5Xd0NYDupYFjKFwfWM5
+         8NTez5a0+GP2x5yjemlpLB+aTTjQ8S/dqgLBGoRHH1TirXWad94K54nYcZY5/E/HogpY
+         Pa0szhtyvxV7eswEIeRtZGLcXBcTnM8d098PbdOkekwkzEqrrpOPEjcBBsk9PQdq8x7l
+         vN7XrcDk9k5slv9pZz8JLLhKPWH5mgn37I/ifQZjH20DkFWId3KtsmI853Spb2u3OD/8
+         XZthh5TsJnei/DNdFfuLF9sII/FWEpg4Ddo+zhujsBMvEcNZa1ReZeoKjd8zy3mQP0kk
+         KhkQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=orBUHy/BGmffZA4LA+ipGScBGUJn7fYfkbVAM8m+aww=;
+        b=EK7yAnu18+LR+tAEs4HUs+Pbn3X2ZZS3XXK8w3vFGpIDDUlXMI4GLUzw5a7U1tgrVl
+         YtmCFny4c73XjiiT9cuIRaUiRl3bDi6f7iDG8SmLEQvsddvHXpINPdqUEDy1iEXao9vB
+         ZFTZf37WK32VTwHdj1+Zp5BgivtaFMTHetBWy2RKnwoIIVrGFNuZZefRAtqggrYQOpe9
+         ENKR7Onf2YBiFmpogFu6lBS00+cvcVFguuywthMT8rlC594ZE8z11kxgU1zvplyMuiOn
+         Gu7bu2IlInKx967T/n3TgISqtNMUw/9SjVYdN5LVhn/sYndT/+kKThcpdOKZFzhRwdPC
+         iJGg==
+X-Gm-Message-State: AOAM530s+q3K5paM2uomjsJ0zUOY8fffr8E98hUQMLLOejgv6HYaR+0a
+        Xw+gJEctvYRWaS9LaWZB3vGDyA==
+X-Google-Smtp-Source: ABdhPJy1JSTu3kbsgYP/loEirhUW8pkWOd//jLIarF1XbEoVeVUlgCgFHlYhgElHekzZ+SrfxtpWig==
+X-Received: by 2002:a5d:66ca:: with SMTP id k10mr5162237wrw.244.1594907973157;
+        Thu, 16 Jul 2020 06:59:33 -0700 (PDT)
+Received: from localhost.localdomain ([2.31.163.61])
+        by smtp.gmail.com with ESMTPSA id x18sm9351001wrq.13.2020.07.16.06.59.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 16 Jul 2020 06:59:32 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH 01/30] iio: adc: ad_sigma_delta: Remove unused variable 'ret'
+Date:   Thu, 16 Jul 2020 14:58:59 +0100
+Message-Id: <20200716135928.1456727-2-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200716135928.1456727-1-lee.jones@linaro.org>
+References: <20200716135928.1456727-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-07-16_05:2020-07-16,2020-07-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- lowpriorityscore=0 spamscore=0 impostorscore=0 clxscore=1015
- suspectscore=0 priorityscore=1501 mlxscore=0 bulkscore=0 adultscore=0
- mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2007160075
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add dt binding documentation for ltc2471 driver. This covers all supported
-devices.
+Fixes the following W=1 kernel build warning(s):
 
-Signed-off-by: Darius Berghe <darius.berghe@analog.com>
+ drivers/iio/adc/ad_sigma_delta.c: In function ‘ad_sd_trigger_handler’:
+ drivers/iio/adc/ad_sigma_delta.c:405:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
+ 405 | int ret;
+ | ^~~
+
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- .../bindings/iio/adc/adi,ltc2471.yaml         | 49 +++++++++++++++++++
- 1 file changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ltc2471.yaml
+ drivers/iio/adc/ad_sigma_delta.c | 7 ++-----
+ 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ltc2471.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ltc2471.yaml
-new file mode 100644
-index 000000000000..d5b35a1fa651
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ltc2471.yaml
-@@ -0,0 +1,49 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2020 Analog Devices Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/bindings/iio/adc/adi,ltc2471.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices LTC2471 16-bit I2C Sigma-Delta ADC
-+
-+maintainers:
-+  - Mike Looijmans <mike.looijmans@topic.nl>
-+
-+description: |
-+  Analog Devices LTC2461 (single-ended) and LTC2463 (differential) 16-bit
-+  I2C Sigma-Delta ADC with 60sps output rate.
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/24613fa.pdf
-+
-+  Analog Devices LTC2471 (single-ended) and LTC2473 (differential) 16-bit
-+  I2C Sigma-Delta ADC with selectable 208/833sps output rate.
-+  https://www.analog.com/media/en/technical-documentation/data-sheets/24713fb.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ltc2461
-+      - adi,ltc2463
-+      - adi,ltc2471
-+      - adi,ltc2473
-+
-+  reg:
-+    maxItems: 1
-+
-+  avcc-supply:
-+    description:
-+      Phandle to the Avcc power supply (2.7V - 5.5V)
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+  - |
-+    i2c0 {
-+      adc@14 {
-+        compatible = "adi,ltc2461";
-+        reg = <0x14>;
-+      };
-+    };
-+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index dd3d54b3bc8bb..f269b926440da 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -402,7 +402,6 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	unsigned int reg_size;
+ 	unsigned int data_reg;
+ 	uint8_t data[16];
+-	int ret;
+ 
+ 	memset(data, 0x00, 16);
+ 
+@@ -419,14 +418,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	case 4:
+ 	case 2:
+ 	case 1:
+-		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
+-			&data[0]);
++		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
+ 		break;
+ 	case 3:
+ 		/* We store 24 bit samples in a 32 bit word. Keep the upper
+ 		 * byte set to zero. */
+-		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
+-			&data[1]);
++		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
+ 		break;
+ 	}
+ 
 -- 
-2.27.0
+2.25.1
 
