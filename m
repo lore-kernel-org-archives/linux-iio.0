@@ -7,70 +7,70 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 804A8C433E8
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 226BBC433DF
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5DC4D20825
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00712207BC
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Jul 2020 13:59:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="lIgBjCAr"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Jv6cEZz6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729094AbgGPN7h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Jul 2020 09:59:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
+        id S1729127AbgGPN7m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Jul 2020 09:59:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729089AbgGPN7e (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 09:59:34 -0400
-Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63DF0C061755
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:34 -0700 (PDT)
-Received: by mail-wr1-x443.google.com with SMTP id a6so7194345wrm.4
-        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:34 -0700 (PDT)
+        with ESMTP id S1729114AbgGPN7j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Jul 2020 09:59:39 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3498FC08C5CE
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:39 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id a6so7194675wrm.4
+        for <linux-iio@vger.kernel.org>; Thu, 16 Jul 2020 06:59:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=orBUHy/BGmffZA4LA+ipGScBGUJn7fYfkbVAM8m+aww=;
-        b=lIgBjCArdEpGcSjo1Rtyqs2OSMZAreCnZeJRzKDgcP3CvY/5Xd0NYDupYFjKFwfWM5
-         8NTez5a0+GP2x5yjemlpLB+aTTjQ8S/dqgLBGoRHH1TirXWad94K54nYcZY5/E/HogpY
-         Pa0szhtyvxV7eswEIeRtZGLcXBcTnM8d098PbdOkekwkzEqrrpOPEjcBBsk9PQdq8x7l
-         vN7XrcDk9k5slv9pZz8JLLhKPWH5mgn37I/ifQZjH20DkFWId3KtsmI853Spb2u3OD/8
-         XZthh5TsJnei/DNdFfuLF9sII/FWEpg4Ddo+zhujsBMvEcNZa1ReZeoKjd8zy3mQP0kk
-         KhkQ==
+        bh=fG8RCQ1K6Z0ZD4fhah06tp/GYuGMejEtwlGsSpFMXOU=;
+        b=Jv6cEZz6qHBVpSVOcwxAwzMDLFTHVAMLrP4A4D4V+FHDXZFAj1flc7YVNIRB0ee/WE
+         aGwz1qvHH5ne6KtO0pimqv30XyEUFcAkU23rYpnzcim2sUiERnCh6IOKBB5AawvDrf8C
+         ehF69Fh15rdZX9cZB3/5QsQtMFIlc6Z/K5pwABNbOJZ3J9yl9OmDxcPn1ZmNQ73UBVdd
+         1nd8eBuxEXNCHdgG3vNdNRXpWRlvHe1EONC1e4r2cMKbEMXWTcWXpn3M4bomO7+Qtk0Q
+         f9bBWRoxYeSNIHsBfDB6eeNBmtIY/JWwik6Dn/F/JwVAb7FmkeG6bI8x/+y8B8xVwthK
+         o+AQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=orBUHy/BGmffZA4LA+ipGScBGUJn7fYfkbVAM8m+aww=;
-        b=EK7yAnu18+LR+tAEs4HUs+Pbn3X2ZZS3XXK8w3vFGpIDDUlXMI4GLUzw5a7U1tgrVl
-         YtmCFny4c73XjiiT9cuIRaUiRl3bDi6f7iDG8SmLEQvsddvHXpINPdqUEDy1iEXao9vB
-         ZFTZf37WK32VTwHdj1+Zp5BgivtaFMTHetBWy2RKnwoIIVrGFNuZZefRAtqggrYQOpe9
-         ENKR7Onf2YBiFmpogFu6lBS00+cvcVFguuywthMT8rlC594ZE8z11kxgU1zvplyMuiOn
-         Gu7bu2IlInKx967T/n3TgISqtNMUw/9SjVYdN5LVhn/sYndT/+kKThcpdOKZFzhRwdPC
-         iJGg==
-X-Gm-Message-State: AOAM530s+q3K5paM2uomjsJ0zUOY8fffr8E98hUQMLLOejgv6HYaR+0a
-        Xw+gJEctvYRWaS9LaWZB3vGDyA==
-X-Google-Smtp-Source: ABdhPJy1JSTu3kbsgYP/loEirhUW8pkWOd//jLIarF1XbEoVeVUlgCgFHlYhgElHekzZ+SrfxtpWig==
-X-Received: by 2002:a5d:66ca:: with SMTP id k10mr5162237wrw.244.1594907973157;
-        Thu, 16 Jul 2020 06:59:33 -0700 (PDT)
+        bh=fG8RCQ1K6Z0ZD4fhah06tp/GYuGMejEtwlGsSpFMXOU=;
+        b=cFIk3b77e/BXJ0ItagHxLhM/MGtbk/i5vES4OPzbP61yFlUuQFj+OOJAYn35a/UvH1
+         tUoCCDWKUm/qqufkSoaxG/2IMv2VPUTQwhVugcu3iBj1kRZEvtDfkjAjnmTzaFddb2CY
+         LGxFRv5uY+nmyBAyyj8Mkkv6fV4YWx5GmZBzQL5WKO/udE0lv8QVyfamIE2dDPX/pZ4B
+         z8c1MspTan4Q31WSMqaXdg15+/zhEDRwB38KTlvjIpqmLtvJ2d+x2ttLiHtntnWIOpFu
+         0DRez/jWHFcu0Ov2mMoUpC22SA2MluGe/JUFdEmglA95K4sOLWSkBlIM13m/L/0rFS6s
+         BqTw==
+X-Gm-Message-State: AOAM532mZK5XfGRduAGpb2Tc1OBdnX3koB2Q0zxijsWyERI7YzVNXoGN
+        W1hzoxNVdQvi8pn5zYM5YARIIA==
+X-Google-Smtp-Source: ABdhPJyvpcH8qjv3cJarACK1MheVg11n29CkbWUPLk1zd4I4RoIeswrSswn++4ZubNJ1s43pi5gpJQ==
+X-Received: by 2002:a5d:60c7:: with SMTP id x7mr4966047wrt.138.1594907977935;
+        Thu, 16 Jul 2020 06:59:37 -0700 (PDT)
 Received: from localhost.localdomain ([2.31.163.61])
-        by smtp.gmail.com with ESMTPSA id x18sm9351001wrq.13.2020.07.16.06.59.31
+        by smtp.gmail.com with ESMTPSA id x18sm9351001wrq.13.2020.07.16.06.59.36
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 16 Jul 2020 06:59:32 -0700 (PDT)
+        Thu, 16 Jul 2020 06:59:37 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH 01/30] iio: adc: ad_sigma_delta: Remove unused variable 'ret'
-Date:   Thu, 16 Jul 2020 14:58:59 +0100
-Message-Id: <20200716135928.1456727-2-lee.jones@linaro.org>
+        Andreas Brauchli <a.brauchli@elementarea.net>,
+        Pascal Sachs <pascal.sachs@sensirion.com>
+Subject: [PATCH 05/30] iio: chemical: sgp30: Add description for sgp_read_cmd()'s 'duration_us'
+Date:   Thu, 16 Jul 2020 14:59:03 +0100
+Message-Id: <20200716135928.1456727-6-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200716135928.1456727-1-lee.jones@linaro.org>
 References: <20200716135928.1456727-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -79,46 +79,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/iio/adc/ad_sigma_delta.c: In function ‘ad_sd_trigger_handler’:
- drivers/iio/adc/ad_sigma_delta.c:405:6: warning: variable ‘ret’ set but not used [-Wunused-but-set-variable]
- 405 | int ret;
- | ^~~
+ drivers/iio/chemical/sgp30.c:236: warning: Function parameter or member 'duration_us' not described in 'sgp_read_cmd'
 
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: Andreas Brauchli <a.brauchli@elementarea.net>
+Cc: Pascal Sachs <pascal.sachs@sensirion.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/adc/ad_sigma_delta.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iio/chemical/sgp30.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index dd3d54b3bc8bb..f269b926440da 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -402,7 +402,6 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 	unsigned int reg_size;
- 	unsigned int data_reg;
- 	uint8_t data[16];
--	int ret;
- 
- 	memset(data, 0x00, 16);
- 
-@@ -419,14 +418,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 	case 4:
- 	case 2:
- 	case 1:
--		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
--			&data[0]);
-+		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
- 		break;
- 	case 3:
- 		/* We store 24 bit samples in a 32 bit word. Keep the upper
- 		 * byte set to zero. */
--		ret = ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
--			&data[1]);
-+		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
- 		break;
- 	}
- 
+diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
+index 403e8803471a9..82e407d48a0aa 100644
+--- a/drivers/iio/chemical/sgp30.c
++++ b/drivers/iio/chemical/sgp30.c
+@@ -227,6 +227,7 @@ static int sgp_verify_buffer(const struct sgp_data *data,
+  * @cmd:         SGP Command to issue
+  * @buf:         Raw data buffer to use
+  * @word_count:  Num words to read, excluding CRC bytes
++ * @duration_us: Time to sleep in microseconds
+  *
+  * Return:       0 on success, negative error otherwise.
+  */
 -- 
 2.25.1
 
