@@ -2,68 +2,121 @@ Return-Path: <SRS0=ht9U=A4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DFD7C433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 10:06:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73749C433E6
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 28A2220768
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 10:06:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1594980418;
-	bh=hs1UCaLv+a/6ZnHuCHhjVUCU1g3D671OBuyCu1/B8fg=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=NfBl+GVy+F2xtzdJbuRYPNGBh6HMEGB9myWFQYQ5A3FM7Hmy0SVHhaDJ61HcM7Pm4
-	 +c7clLo5wwkgPaeO0CLtLl3S4zNYACqLAoXqwE+YF94jPgWSvb8JBz/TOfDZQlK/JJ
-	 cg3WjS5iapKj/2Y9WVOGPbEPUNTlb2WI8VROrLWg=
+	by mail.kernel.org (Postfix) with ESMTP id 4FD4920775
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="S9lD2Fgc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726198AbgGQKG5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 06:06:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36264 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726040AbgGQKG5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 17 Jul 2020 06:06:57 -0400
-Received: from localhost (83-86-89-107.cable.dynamic.v4.ziggo.nl [83.86.89.107])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C746220768;
-        Fri, 17 Jul 2020 10:06:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1594980417;
-        bh=hs1UCaLv+a/6ZnHuCHhjVUCU1g3D671OBuyCu1/B8fg=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=KHArW6YmDSCH1tgOTyi0/W+6jyhanximdMaG9FBW07hF4MGNhNhvGRIDVu2WVLsFl
-         7mewxI/8Inm3iXJ7sQQ65a7wC9a4Dkm9ceB4ywd5ykACowOtiJg7QOf9NHXgGehujd
-         rtYWm3p7TeVy6ZG/FFm+zz8qAe732iMmXboYtY+A=
-Date:   Fri, 17 Jul 2020 12:06:28 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL V2] First set of new device support, cleanups and features
- for  IIO in the 5.9 cycle.
-Message-ID: <20200717100628.GA2553180@kroah.com>
-References: <20200717085925.2d965fa8@archlinux>
+        id S1727107AbgGQQ4M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727086AbgGQQ4L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:11 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0246CC0619D3
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:11 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id w3so18193551wmi.4
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hYRcY09U97CVxzwpsH08LkHk/eW62/WS+I9jHKij00E=;
+        b=S9lD2Fgc5UI10/qScFay1KtnmHz3np9XzTgCMLkNWXkkHSEUblJu5387F4Amn6iIwy
+         6Xo5Ixfr4lMmOoDZ4iinaU70w0+tcHGMflhwfBixXPjyprx4xfBtHrKs3nEbQ2A3I6ba
+         PH9h+zF6K4gmX8i97SRg/00OkGBSw/v7S59w0j3GUhBvDhegdC/XVKBrLXCScupMj3a0
+         qaCf+F3g1vYRFDRPqBt+2oebbS7YTGjCzxT8dTeXOlB8TMUxtUmkYX0qtGx6xn2eFKl/
+         bsrIyOak559L1U3wXrbod/rH63Uu/+NP9ZD2bcK/7HiEhpJYvharcDRcBUaZxzyjCERC
+         VvFA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hYRcY09U97CVxzwpsH08LkHk/eW62/WS+I9jHKij00E=;
+        b=CwMOhGxuM/NiknhL1ntxc6UfE8ajMfUD0wNLa+ooacLJmOGRN7Kt4FxO1zOjmoRNRA
+         SDFr9M1QLzTeKUZANauYH3YziGcmY+nDG9KmmWLKNnP3HL+KmndQXZOkKS9kFjJBeQ5/
+         nP1pb/wrQu4KV+kkuzCuct1q5QlH62+atJ8QPiME6z14SONgFpGAt2NDZg7cuZmvtJQK
+         nabqq+Y0wFBW0yHIrZX+iYxglGu9u6xdgaykJNCkmTs0v/ymSPglWxufslM15d+cQ2Im
+         GLMvnIqJzisL5kZWc2TvvGB5hK4KCJgq06Orq6ebxv0Or3Nmo+jJaoidgEWVbMZULZct
+         8AyQ==
+X-Gm-Message-State: AOAM533f3FXlqjfh0/RtERTo903ywDwuBomdilzgndxAYSgSOXLrQdRk
+        ChIcLBCY9vBm3W7LI0Zh9wMw3bfrKUbfjw==
+X-Google-Smtp-Source: ABdhPJwM2SKJU6PP5MTF4FYuwv93umVSuD72RMLXGtklHukYXUTZ51NU5+N+dxBdDALw+BaMxkAJhA==
+X-Received: by 2002:a1c:dd86:: with SMTP id u128mr9977983wmg.131.1595004969731;
+        Fri, 17 Jul 2020 09:56:09 -0700 (PDT)
+Received: from localhost.localdomain ([2.27.167.94])
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.08
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 17 Jul 2020 09:56:09 -0700 (PDT)
+From:   Lee Jones <lee.jones@linaro.org>
+To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Adriana Reus <adriana.reus@intel.com>
+Subject: [PATCH 10/30] iio: light: us5182d: Fix formatting in kerneldoc function block
+Date:   Fri, 17 Jul 2020 17:55:18 +0100
+Message-Id: <20200717165538.3275050-11-lee.jones@linaro.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
+References: <20200717165538.3275050-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200717085925.2d965fa8@archlinux>
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jul 17, 2020 at 08:59:25AM +0100, Jonathan Cameron wrote:
-> The following changes since commit b791d1bdf9212d944d749a5c7ff6febdba241771:
-> 
->   Merge tag 'locking-kcsan-2020-06-11' of git://git.kernel.org/pub/scm/linux/kernel/git/tip/tip (2020-06-11 18:55:43 -0700)
-> 
-> are available in the Git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.9a-take2
+Kerneldoc expects attributes/parameters to be in '@*.: ' format.
 
-Pulled and pushed out, thanks.
+Fixes the following W=1 kernel build warning(s):
 
-greg k-h
+ drivers/iio/light/us5182d.c:457: warning: Function parameter or member 'data' not described in 'us5182d_update_dark_th'
+ drivers/iio/light/us5182d.c:457: warning: Function parameter or member 'index' not described in 'us5182d_update_dark_th'
+ drivers/iio/light/us5182d.c:479: warning: Function parameter or member 'data' not described in 'us5182d_apply_scale'
+ drivers/iio/light/us5182d.c:479: warning: Function parameter or member 'index' not described in 'us5182d_apply_scale'
+
+Cc: Adriana Reus <adriana.reus@intel.com>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/light/us5182d.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+index b995f21a33479..24843597beba5 100644
+--- a/drivers/iio/light/us5182d.c
++++ b/drivers/iio/light/us5182d.c
+@@ -446,8 +446,8 @@ static int us5182d_read_raw(struct iio_dev *indio_dev,
+ 
+ /**
+  * us5182d_update_dark_th - update Darh_Th registers
+- * @data	us5182d_data structure
+- * @index	index in us5182d_dark_ths array to use for the updated value
++ * @data:	us5182d_data structure
++ * @index:	index in us5182d_dark_ths array to use for the updated value
+  *
+  * Function needs to be called with a lock held because it needs two i2c write
+  * byte operations as these registers (0x27 0x28) don't work in word mode
+@@ -469,8 +469,8 @@ static int us5182d_update_dark_th(struct us5182d_data *data, int index)
+ 
+ /**
+  * us5182d_apply_scale - update the ALS scale
+- * @data	us5182d_data structure
+- * @index	index in us5182d_scales array to use for the updated value
++ * @data:	us5182d_data structure
++ * @index:	index in us5182d_scales array to use for the updated value
+  *
+  * Function needs to be called with a lock held as we're having more than one
+  * i2c operation.
+-- 
+2.25.1
+
