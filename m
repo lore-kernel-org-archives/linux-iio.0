@@ -2,163 +2,117 @@ Return-Path: <SRS0=ht9U=A4=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68D07C433F7
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:58:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA2E5C433E2
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:58:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 46C1420737
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:58:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BA8AC2074B
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:58:01 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sFPByDNA"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="diGqESAP"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726901AbgGQQ4B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 12:56:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38472 "EHLO
+        id S1727010AbgGQQ4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38496 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726894AbgGQQ4A (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:00 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B952DC0619D3
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:55:59 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id g75so15936681wme.5
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:55:59 -0700 (PDT)
+        with ESMTP id S1726996AbgGQQ4E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:04 -0400
+Received: from mail-wm1-x344.google.com (mail-wm1-x344.google.com [IPv6:2a00:1450:4864:20::344])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD07C0619D2
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:03 -0700 (PDT)
+Received: by mail-wm1-x344.google.com with SMTP id q15so15965817wmj.2
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fLkc9nPCuFBlzzdiW7QaC6+VUWcbfx+wZE7RZ/DJmNs=;
-        b=sFPByDNA5iYDcZYuDfV45s4PhocxhrjliSkzVTpwzkpMoIJAC+Ow7ygouOnOQC05Fk
-         UXof8K/SHdq9efQWfx79WDIdIGG7i3OmiIALVQr5Nh3pvDjdTVMuAGHVZgfiJlRfAvUQ
-         /D6G5t/utAdZYH8VmsuOb0k5eBhQwdcvubu1hsT7byxwSm6vfttnDQE1F+cW3zYabv5k
-         Y1H5tQZB/pqQcrpgoyd0QuxAowJXUZqHDMgF9+OzyVTHjafWt3j3Exkzm5K2o85Ni0Pn
-         BD0IYGGRUFqUPpr4Z/ClpIz8oR50UQyWK3UFQQoh8NPaCYM/C/Alruk3FmmNg5+Rrbgj
-         tVFQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=fAAjM1mVIkO+nJSIb50glO5h9HOq0tsEwp52kRso+4M=;
+        b=diGqESAPD2yg592c8LXDZUadk/s4W30i0sy1gOfHfVL8rkg/bSc9SLulra7mzvbh6q
+         tuEL6z3Ah/YSeL14hltOCwWppAmPt9ShSHMKVUYb1l9qxcXUKIq3zTM4yzvIsbo3iu4q
+         Ykl7tRihGTqXOJZh9Cs0qp94pb/2FYwjxDujVZoKALn49L4H3l4V5PCd5jLqVtsS7beD
+         22JzY3Ro0UmLJsBfPgiEIAOxKd3eSn0tZAWAokfmdtwS1UnVx4x70bW1Hh+KxeUgefEx
+         u0NqUPGOR33Su4RnGuvF9P8VjlNBWNlC/ezdUIbKIArdrdAqQTZGQ9DjBwz8xh5LjUs3
+         uwFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=fLkc9nPCuFBlzzdiW7QaC6+VUWcbfx+wZE7RZ/DJmNs=;
-        b=D+GBIILv32mSXywl/W9uUuQUQMPpYLsQ/mO3C7GEVRBXQ6/yN0OUP7/pKzDse42SjN
-         7S3NIWhxkdZW04c0blDuu+1cb9MuZ1HiR8/7cfahRNLdh/RgTUzWmpPvdPyd3piJ9Kgg
-         1e3ExPT0MUzXT+qxT68NmQyAhbH0LxhsyNOwFyvxST7LISEWnxeQsDWGkDU+Ogf33g35
-         7QP+Kanc39cqkEqaBxSKtSnjPmleHGrRZ27zaD+MczSEDL4LpkFUdkkSvDYeQ2+c2K+b
-         a1/RZW4dAtaJgUBxDj+cKiyaDU7/utJCRxs31D77PyaolN1MGQoZ8x/wMhjdZJ99OX4t
-         PWdg==
-X-Gm-Message-State: AOAM533BKTNqfwhto9/GCnkTf0wB8lDfUtOTSOyhGgOWcHCxx2FGZORT
-        PjD4dMsjpVnBK6IFCVDJGecFxw==
-X-Google-Smtp-Source: ABdhPJxlRLyTEBRgP66TpNStZ4Vf90Rbo/XRmlXZaoAy3SRK+ONsTDWdNXHOBfZIS1TD/U04dGJsbg==
-X-Received: by 2002:a7b:c116:: with SMTP id w22mr9872360wmi.97.1595004958202;
-        Fri, 17 Jul 2020 09:55:58 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=fAAjM1mVIkO+nJSIb50glO5h9HOq0tsEwp52kRso+4M=;
+        b=gjE1/m8MqI0Tp4EG6fwENUAWEoo9QReHXR8qUDtfGeoFEuSIDa1KjzPn0Jmf8vUxpz
+         UMddv/3lKfHmaos9rbP9ncdKBEitD4P6yADCWexY6ZjzawvGuJsT+11xE6CTDBd+EebU
+         6URGhDQjDTeL4wkoSwQ8HHdts5ReXISaaHhqpHJp2LCc9o74MuwRuXIQcF1typts+TZu
+         JwhWFlOWsbw7e9WCzmUDHw3ftzClSdhRn+Kzhgel/IRCSQ5ud2afAjJQy8Kb88iwj/qk
+         9Tm/sMwmzZg0/yPjsxQ0liv5RHaHjJDva1bNf94jPTBBWv+T+8TzHMqSAZvWOn4uTS5I
+         dHcQ==
+X-Gm-Message-State: AOAM533e3NTX3KMMlr7pR01LeZCMCU9fEE/Z2CFv3bB70a2WHLWa+Oa2
+        WcexuOq4JC5XhL8gq+un28K9Qw==
+X-Google-Smtp-Source: ABdhPJxBjePr/D/nJshvCMDW+pFxohRxj6BB8ic0aMowVQ5331Lh4fFUBQZq7R8GCcKKIDDyto7/3g==
+X-Received: by 2002:a05:600c:2154:: with SMTP id v20mr10975426wml.185.1595004962476;
+        Fri, 17 Jul 2020 09:56:02 -0700 (PDT)
 Received: from localhost.localdomain ([2.27.167.94])
-        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.55.57
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:55:57 -0700 (PDT)
+        Fri, 17 Jul 2020 09:56:02 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH 00/30] Second batch of W=1 fixes for IIO
-Date:   Fri, 17 Jul 2020 17:55:08 +0100
-Message-Id: <20200717165538.3275050-1-lee.jones@linaro.org>
+        linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
+        Josef Gajdusek <atx@atx.name>
+Subject: [PATCH 04/30] iio: magnetometer: hmc5843: 'hmc5843_pm_ops' is unused in 1 of 3 files including hmc5843_core.h
+Date:   Fri, 17 Jul 2020 17:55:12 +0100
+Message-Id: <20200717165538.3275050-5-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
+References: <20200717165538.3275050-1-lee.jones@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This set is part of a larger effort attempting to clean-up W=1
-kernel builds, which are currently overwhelmingly riddled with
-niggly little warnings.
+We know that it's okay for 'hmc5843_pm_ops' to be unused here.
 
-Only a couple left after this.  I'll sort those next week.
+Fixes the following W=1 kernel build warning(s):
 
-Lee Jones (30):
-  iio: adc: ti_am335x_adc: Remove a couple of unused 'read' variables
-  iio: adc: twl4030-madc: Remove set but unused variables 'len'
-  iio: adc: twl4030-madc: Fix misnamed struct attribute
-  iio: magnetometer: hmc5843: 'hmc5843_pm_ops' is unused in 1 of 3 files
-    including hmc5843_core.h
-  iio: adc: twl6030-gpadc: Fix some misdocumentation and formatting
-    issues
-  iio: dac: ltc2632: Fix formatting in kerneldoc struct header
-  iio: light: si1145: Demote obvious misuse of kerneldoc to standard
-    comment blocks
-  iio: resolver: ad2s1200: Change ordering of compiler attribute macro
-  iio: temperature: mlx90632: Function parameter descriptions must match
-    exactly
-  iio: light: us5182d: Fix formatting in kerneldoc function block
-  iio: adc: ad799x: Demote seemingly unintentional kerneldoc header
-  iio: dac: ad5504: Fix formatting errors and demote non-compliant
-    kerneldoc
-  iio: adc: at91_adc: Fix 'bad line' warning
-  iio: adc: at91-sama5d2_adc: Struct kerneldoc titles need to start with
-    'struct '
-  iio: adc: cpcap-adc: Demote seemingly unintentional kerneldoc header
-  iio: accel: sca3000: Fix 2 misspellings and demote nonconforming
-    kerneldocs
-  iio: gyro: adxrs450: Change ordering of compiler attribute macro
-  iio: gyro: fxas21002c: Move 'fxas21002c_reg_fields' to the only file
-    its used
-  iio: imu: st_lsm6dsx: st_lsm6dsx: Reorder 'inline' declaration
-  iio: adc: max1363: Fix kerneldoc attribute formatting for 'lock'
-  iio: adc: max9611: Demote obvious misuse of kerneldoc to standard
-    comment blocks
-  iio: adc: mcp320x: Change ordering of compiler attribute macro
-  iio: adc: palmas_gpadc: Demote non-conforming kerneldoc header
-  iio: imu: inv_mpu6050: inv_mpu_core: Demote obvious misuse of
-    kerneldoc to standard comment blocks
-  iio: imu: inv_mpu6050: inv_mpu_ring: Demote seemingly unintentional
-    kerneldoc header
-  iio: adc: qcom-pm8xxx-xoadc: Demote standard comment block and supply
-    missing description
-  iio: magnetometer: ak8974: Add description for ak8974's 'scan'
-    attribute
-  iio: imu: st_lsm6dsx: st_lsm6dsx_shub: Demote obvious misuse of
-    kerneldoc to standard comment blocks
-  iio: imu: st_lsm6dsx: st_lsm6dsx: Mark 'st_lsm6dsx_accel_ext_info' as
-    __maybe_unused
-  iio: adc: rockchip_saradc: Demote Demote seemingly unintentional
-    kerneldoc header
+ In file included from include/linux/device.h:25,
+ from include/linux/iio/iio.h:10,
+ from drivers/iio/magnetometer/hmc5843_core.c:16:
+ drivers/iio/magnetometer/hmc5843.h:55:26: warning: ‘hmc5843_pm_ops’ defined but not used [-Wunused-const-variable=]
+ 55 | static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
+ | ^~~~~~~~~~~~~~
+ include/linux/pm.h:354:25: note: in definition of macro ‘SIMPLE_DEV_PM_OPS’
+ 354 | const struct dev_pm_ops name = { | ^~~~
 
- drivers/iio/accel/sca3000.c                  | 12 ++--
- drivers/iio/adc/ad799x.c                     |  2 +-
- drivers/iio/adc/at91-sama5d2_adc.c           |  4 +-
- drivers/iio/adc/at91_adc.c                   |  2 +-
- drivers/iio/adc/cpcap-adc.c                  |  6 +-
- drivers/iio/adc/max1363.c                    |  2 +-
- drivers/iio/adc/max9611.c                    |  4 +-
- drivers/iio/adc/mcp320x.c                    |  2 +-
- drivers/iio/adc/palmas_gpadc.c               |  3 +-
- drivers/iio/adc/qcom-pm8xxx-xoadc.c          |  3 +-
- drivers/iio/adc/rockchip_saradc.c            |  2 +-
- drivers/iio/adc/ti_am335x_adc.c              |  8 +--
- drivers/iio/adc/twl4030-madc.c               | 14 ++---
- drivers/iio/adc/twl6030-gpadc.c              |  4 +-
- drivers/iio/dac/ad5504.c                     |  7 +--
- drivers/iio/dac/ltc2632.c                    |  6 +-
- drivers/iio/gyro/adxrs450.c                  |  2 +-
- drivers/iio/gyro/fxas21002c.h                | 66 --------------------
- drivers/iio/gyro/fxas21002c_core.c           | 66 ++++++++++++++++++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c   | 14 ++---
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c   |  2 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |  5 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_shub.c |  8 +--
- drivers/iio/light/si1145.c                   |  6 +-
- drivers/iio/light/us5182d.c                  |  8 +--
- drivers/iio/magnetometer/ak8974.c            |  1 +
- drivers/iio/magnetometer/hmc5843.h           |  6 +-
- drivers/iio/resolver/ad2s1200.c              |  2 +-
- drivers/iio/temperature/mlx90632.c           |  4 +-
- 29 files changed, 136 insertions(+), 135 deletions(-)
+Cc: Josef Gajdusek <atx@atx.name>
+Signed-off-by: Lee Jones <lee.jones@linaro.org>
+---
+ drivers/iio/magnetometer/hmc5843.h | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
+diff --git a/drivers/iio/magnetometer/hmc5843.h b/drivers/iio/magnetometer/hmc5843.h
+index b0dee87a8b20e..3f6c0b6629415 100644
+--- a/drivers/iio/magnetometer/hmc5843.h
++++ b/drivers/iio/magnetometer/hmc5843.h
+@@ -52,9 +52,9 @@ int hmc5843_common_suspend(struct device *dev);
+ int hmc5843_common_resume(struct device *dev);
+ 
+ #ifdef CONFIG_PM_SLEEP
+-static SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
+-		hmc5843_common_suspend,
+-		hmc5843_common_resume);
++static __maybe_unused SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
++					hmc5843_common_suspend,
++					hmc5843_common_resume);
+ #define HMC5843_PM_OPS (&hmc5843_pm_ops)
+ #else
+ #define HMC5843_PM_OPS NULL
 -- 
 2.25.1
 
