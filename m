@@ -7,104 +7,116 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FFBAC433FB
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F2AAC433EB
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 704B5208DB
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1E3992074B
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:55 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="gax7Woqu"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ivqSuFwJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727910AbgGQQ4Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 12:56:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38606 "EHLO
+        id S1728001AbgGQQ4c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38670 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727876AbgGQQ4W (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:22 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52DE6C0619D3
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:22 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id f7so11908235wrw.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:22 -0700 (PDT)
+        with ESMTP id S1727990AbgGQQ4c (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:32 -0400
+Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1F80C0619D5
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:31 -0700 (PDT)
+Received: by mail-wm1-x341.google.com with SMTP id f139so18223358wmf.5
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=rHQ/jO1LhjZqNtelCIEh1tkpMHr7F5JhR3YsKGdMJak=;
-        b=gax7WoquXCNWbtQ32PKWdu+p6CINIYPJ64653qBVA7k6sICf8rlMQTpk2nd/sPyRKW
-         LzPBfRVamHkdO/sf1vEGjrOjSxv++JfIprn9Igv21SDOyw2b73cXNm/p13aUAO4bPVeG
-         WIT5jOcosEKJUAYL0iK5CZDiwYlIKtNdEhpYpzmJXMMaybPSuowQUpX1UDiOOU0fVhXZ
-         T0L2WJ7tvFvMmBIaiRVmwnMn2Zq7b7PNO6Ho3bca5LjWdsG0ksj+Wal/Mcu7eJyB4RsF
-         6sPolkV1LjvVteKTcBo+aU3tvd18BW7yUcfWp8dJDRcQDrBMvIJnSS6v4mihpd5MjcZI
-         cpHQ==
+        bh=SjCKbpOQYkAjrdgAsqIA/xWvJJA5FtP0GGnZ8k9FnTs=;
+        b=ivqSuFwJF4H6NAcbUhesIqowLDzidp+Q6Cgsz6IjVOhNdsxaKBhzss9ugyry3dFrG9
+         fQBBBXEoej+fOoDSGBnxdVz4CD13TQB1T+4cVVZGFzQvWpki0ODmu5u0v8v0yt+41hPZ
+         1mXsEez3J1Iat433csy4cV4yJDHoaj+RVbK7fHmvFa9nVwOztrPrIJZkY9DI5PaTo8D+
+         YuZFDeHGjalJQa0UxKX6Ael4XD7z+KkPZCYKNEMG+IzrADbDZHezMpzqZroHmMKs3PyT
+         9PQIrqjsIt04NXtb0AP3+bwWH7ZWRo98fJpOTcrHezrFH14KJOj3pX+9SuOaq0LtKqnf
+         eTGw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=rHQ/jO1LhjZqNtelCIEh1tkpMHr7F5JhR3YsKGdMJak=;
-        b=FolUd6/ThsSM0kDi4j695meFt3qlAxBLpBkegRiVMHbYfuCl/KWE4+8PuskAe5ul33
-         cspyv2IBd529Jl8jGsfisuOgtEO6eZ8nbsO3vz7uxzV8u+xnZKMd5weQQVD6qgrMB5ML
-         rsdPgTGEzcljpaOQWe7nTXqCw8rQ3xgQ87F10L280qCzLG/2UGf++5fcIstwHEnQxox3
-         eCAeJn5/VH/Rn9AiS9fVHM1kMk1o54LyapJ3u14lDpdy+fcwxrxMd6TXorVyAjs+0+y4
-         043mM0Fa5/Yrxc/aT7YSk5SqTDqf5njcpvSG6G6nwHAba0FXMkSMSVHy1tZHRZLhA1Po
-         SooA==
-X-Gm-Message-State: AOAM531f5USKNxzxT57me5txUIfLLe59pzMW6cZJ+WqtMM19hvmZMy1X
-        GU7U4mv5bQlGnYOyP6tQj6Bz2A==
-X-Google-Smtp-Source: ABdhPJwoHoY99/X6VnON+9Fq/TFQG3iB3igVuAL6ttNu5GBSpTuN7C9MiiUk2XrtnDU7l2HXLI8KqQ==
-X-Received: by 2002:adf:efca:: with SMTP id i10mr3678182wrp.278.1595004981099;
-        Fri, 17 Jul 2020 09:56:21 -0700 (PDT)
+        bh=SjCKbpOQYkAjrdgAsqIA/xWvJJA5FtP0GGnZ8k9FnTs=;
+        b=UwI4ia9X2GNQkSPoXhiAvMcTNMYIbi5t9gmWO2//XMF8b+ZfA2C0skBvLbAryP1De2
+         UhLmtcyH3gv3DkE2prZqx4gCv6euMpcel7dEnEpTvQbtnK5V/WBHI1oq2gUzD3WfWs3c
+         nTgl6cL5lBat8+HbSlriw68wUN+AxDnpzrP9+DPPt9FQ2c1GlE9kQgQTzGEEepuxKRwc
+         Dv0z4+LiPHh9ji33APnD4G78kPNRY8TcXNZ4Ub9nsHMpbrLDxt1VdnqFJrP4zTd3ifFh
+         KTQaq8n7pAKVGOzHbkHrzaiSJquPBnse4G9EVDyx6q9rlmWzl3YW9BOHFVTgRyG1dLKq
+         5tUw==
+X-Gm-Message-State: AOAM533HZuYDodgtcbHK9Zx4e++5LKtFwPey5h5ZG+XrW6M6GAqbIwJG
+        w+3tQGwRmNjPicm+a+Cp8mlv1A==
+X-Google-Smtp-Source: ABdhPJwW9dW090U2vHUzNPUpV1Mt8bRTkM26NfT0oEOck47f5YKRu8EkwGOvWNvxyd4IU6KLo0tJVw==
+X-Received: by 2002:a1c:6805:: with SMTP id d5mr9938456wmc.19.1595004990415;
+        Fri, 17 Jul 2020 09:56:30 -0700 (PDT)
 Received: from localhost.localdomain ([2.27.167.94])
-        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.20
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:56:20 -0700 (PDT)
+        Fri, 17 Jul 2020 09:56:29 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Rohit Sarkar <rohitsarkar5398@gmail.com>
-Subject: [PATCH 20/30] iio: adc: max1363: Fix kerneldoc attribute formatting for 'lock'
-Date:   Fri, 17 Jul 2020 17:55:28 +0100
-Message-Id: <20200717165538.3275050-21-lee.jones@linaro.org>
+        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH 29/30] iio: imu: st_lsm6dsx: st_lsm6dsx: Mark 'st_lsm6dsx_accel_ext_info' as __maybe_unused
+Date:   Fri, 17 Jul 2020 17:55:37 +0100
+Message-Id: <20200717165538.3275050-30-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
 References: <20200717165538.3275050-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Kerneldoc expects attributes/parameters to be in '@*.: ' format.
+It doesn't make sense to move it into '*core*' as it's co-located with
+other, similar definitions which are used in multiple locations.
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/iio/adc/max1363.c:190: warning: Function parameter or member 'lock' not described in 'max1363_state'
+ In file included from drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c:17:
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h:497:44: warning: ‘st_lsm6dsx_accel_ext_info’ defined but not used [-Wunused-const-variable=]
+ 497 | static const struct iio_chan_spec_ext_info st_lsm6dsx_accel_ext_info[] = {
+ | ^~~~~~~~~~~~~~~~~~~~~~~~~
+ In file included from drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c:17:
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h:497:44: warning: ‘st_lsm6dsx_accel_ext_info’ defined but not used [-Wunused-const-variable=]
+ 497 | static const struct iio_chan_spec_ext_info st_lsm6dsx_accel_ext_info[] = {
+ | ^~~~~~~~~~~~~~~~~~~~~~~~~
+ In file included from drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c:16:
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h:497:44: warning: ‘st_lsm6dsx_accel_ext_info’ defined but not used [-Wunused-const-variable=]
+ 497 | static const struct iio_chan_spec_ext_info st_lsm6dsx_accel_ext_info[] = {
+ | ^~~~~~~~~~~~~~~~~~~~~~~~~
 
-Cc: Liam Girdwood <lgirdwood@gmail.com>
-Cc: Mark Brown <broonie@kernel.org>
-Cc: Rohit Sarkar <rohitsarkar5398@gmail.com>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/adc/max1363.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-index 9d92017c79b2d..0fe348a47fe01 100644
---- a/drivers/iio/adc/max1363.c
-+++ b/drivers/iio/adc/max1363.c
-@@ -150,7 +150,7 @@ struct max1363_chip_info {
-  * @current_mode:	the scan mode of this chip
-  * @requestedmask:	a valid requested set of channels
-  * @reg:		supply regulator
-- * @lock		lock to ensure state is consistent
-+ * @lock:		lock to ensure state is consistent
-  * @monitor_on:		whether monitor mode is enabled
-  * @monitor_speed:	parameter corresponding to device monitor speed setting
-  * @mask_high:		bitmask for enabled high thresholds
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 3e47a9287938b..d82ec6398222f 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -494,7 +494,8 @@ st_lsm6dsx_get_mount_matrix(const struct iio_dev *iio_dev,
+ 	return &hw->orientation;
+ }
+ 
+-static const struct iio_chan_spec_ext_info st_lsm6dsx_accel_ext_info[] = {
++static const
++struct iio_chan_spec_ext_info __maybe_unused st_lsm6dsx_accel_ext_info[] = {
+ 	IIO_MOUNT_MATRIX(IIO_SHARED_BY_ALL, st_lsm6dsx_get_mount_matrix),
+ 	{ }
+ };
 -- 
 2.25.1
 
