@@ -7,105 +7,116 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 356EEC4345A
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A4950C433F1
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1323F2076D
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8010F20704
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="eTKat4s5"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PKIGtM3D"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727101AbgGQQ5n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 12:57:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
+        id S1727049AbgGQQ4I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38508 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727060AbgGQQ4J (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:09 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D88D6C0619D3
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:08 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id 22so15959515wmg.1
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:08 -0700 (PDT)
+        with ESMTP id S1727034AbgGQQ4G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:06 -0400
+Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 587D4C0619D4
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:06 -0700 (PDT)
+Received: by mail-wr1-x442.google.com with SMTP id q5so11887781wru.6
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YT0JMRu5eQoXCKZAUBFbS9kdf7HqY+KCePcGHxfvNYY=;
-        b=eTKat4s5/E2CjyBQFfD4OL1Ried9ygggeHKRbE97/qquwCB2+CYfFiIS6FYHPLNsx5
-         3bvHk49rpmbB7hewemhLQokS/V6/KSynXxRNFacpI5IIVQ+fMQrB1RyK/ewDBVY73ToY
-         ako+0yfuwsc6WN8/S4LT22mJVi28aSWaKEI8EbCNebD6upedRCYsYFg/7LwdcTjXzG/t
-         jFXi4H8Z4gXXgZ6RanUmbysgAER+yapMU6ZDtSaCQX0aOfrvxKiNpmZpbq9NZSN7EWoN
-         vUY+SBWM+Pe0yMnFXI41l/n+N/+BHK5CFTQDwMCOBeE3d7zZlpHyMJPSUywTDPbWVuJc
-         kaTQ==
+        bh=Nb/tQ5HxMJdwcZU2zmj2JX73dDo4qPaNgdilk8WGn+Q=;
+        b=PKIGtM3D2mbpyKmn3TKhhnoylY/9SJkUrY4ltLFIvfTnvtK22ZcRqj+nCxV7ManVNH
+         PM6fCgKXbO3du9XZekl35+F/HNFxILIuNr89nGvO8ZykWn3ZxeCXbyz16VaOu4wO2s0A
+         Q9DcmJ2djcG9N6cZJyM9u6x9govSwTDegiSXdbmxvOQIY1Z878AgbNMG0RuKNv+rnemV
+         EzgMJbROJp64FD8fLqBQ5/x6fMR5DUBqrLlF4wjYn+UEH7VnSn6FdaexPbS8sXcwCEOv
+         E0U3cqvHiAiXh07wKOKILeRvzBXnnw1GarLo4j//BBH50lLMEkNNCJKmnH4XQX149h+t
+         Qyaw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YT0JMRu5eQoXCKZAUBFbS9kdf7HqY+KCePcGHxfvNYY=;
-        b=tUGfm6DhEJR4H0IE1w8Spisao59k1p5wSU9u4urLZoQ7XdF7VVltJJ6oL9eYF4leNg
-         aPPu0xo4fVugACEOWwlA1T66oSPEdXVH1VxJFr7WvDXaOhH1IRSZ/DSwxNPRvEF6LY85
-         kyVxAQZuCOrvIjBLcMxwprQ90Yxj2zjk/6tAZ/oI6Ck+CPyr3ITYpCHExbLzmzM7ejtM
-         e21jptUFDbg8Ac2F8KauOhWvGo6CusPjVjbYNyFgufMHD8MIree9bVbpjtFbqTwkv+MJ
-         2p8WpZYnfuuCSvsKB6T6YB2RwSjMtTfxWIIokRwSVzsEDV16OhkjMAyi82blXQlLHYax
-         NBtQ==
-X-Gm-Message-State: AOAM533xKxBfwEuFtjw2uEtibujC77N6DGYUXAAG1kREB9HeZPotfkUI
-        mLIOVortyFRfu5SIo4+FpyDtUA==
-X-Google-Smtp-Source: ABdhPJzJZIsoV7iAoqalIXWp6mzGqQalHQtp2jPJU/OINo7Arv9yvyl5bvzrXnJxJul0lIZXe1sF6A==
-X-Received: by 2002:a1c:2e57:: with SMTP id u84mr10869481wmu.52.1595004967573;
-        Fri, 17 Jul 2020 09:56:07 -0700 (PDT)
+        bh=Nb/tQ5HxMJdwcZU2zmj2JX73dDo4qPaNgdilk8WGn+Q=;
+        b=XPu/UuzqXc0prXm3buY9jhIbJ3re2EtyMC6izJKo4dKQG1awqtiCKPChH4bGIYKAl/
+         A8FNgjcaIhiZTEuqGr+jopzWia0LIdNzi5xsK/8jwwNhMJEfsCSlhN9drQ+P7pDgVMcr
+         tYLKPLVkvl6OQ3Xzy5AJmaZ8ad0yLTxJwj0M5BrcB0Hwgg/yjbY3A/+OUD+lOWy2F4lW
+         ST5lrMPB1S3uojGE4l3ZmRiVFhB43e8+4ZGo3ofIvabFzq18MEygDuiQ81O7pnOqiGvr
+         OuaDb4DMEekCTPXK9MVsRoqF6q8iV8Do801gtKR/IkZbGQM+j/jteMxmtE9Dh9/0tyZd
+         Pqzw==
+X-Gm-Message-State: AOAM531DXQhpmFIeOTsaiD1T6SZLRMVS7iGp0keP3mwlQ0EEgiqE03jj
+        /uEa4VQfLKCjTPF966uj1mZSVg==
+X-Google-Smtp-Source: ABdhPJztkgQ/mGf0gxIVfj/VajfXJbHIhm8tYxqIPUW3TqJw+AzgcxbVjtmnL0yYGvZxxCqshqRMsg==
+X-Received: by 2002:a5d:6452:: with SMTP id d18mr11020033wrw.284.1595004965111;
+        Fri, 17 Jul 2020 09:56:05 -0700 (PDT)
 Received: from localhost.localdomain ([2.27.167.94])
-        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.06
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:56:07 -0700 (PDT)
+        Fri, 17 Jul 2020 09:56:04 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        David Veenstra <davidjulianveenstra@gmail.com>,
-        Graff Yang <graff.yang@gmail.com>
-Subject: [PATCH 08/30] iio: resolver: ad2s1200: Change ordering of compiler attribute macro
-Date:   Fri, 17 Jul 2020 17:55:16 +0100
-Message-Id: <20200717165538.3275050-9-lee.jones@linaro.org>
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Silvan Murer <silvan.murer@gmail.com>,
+        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
+Subject: [PATCH 06/30] iio: dac: ltc2632: Fix formatting in kerneldoc struct header
+Date:   Fri, 17 Jul 2020 17:55:14 +0100
+Message-Id: <20200717165538.3275050-7-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
 References: <20200717165538.3275050-1-lee.jones@linaro.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Kerneldoc gets confused if the variable does not follow the
-type/attribute definitions.
+Kerneldoc expects attributes/parameters to be in '@*.: ' format.
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/iio/resolver/ad2s1200.c:44: warning: Function parameter or member '____cacheline_aligned' not described in 'ad2s1200_state'
+ drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'powerdown_cache_mask' not described in 'ltc2632_state'
+ drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'vref_mv' not described in 'ltc2632_state'
+ drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'vref_reg' not described in 'ltc2632_state'
 
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-Cc: David Veenstra <davidjulianveenstra@gmail.com>
-Cc: Graff Yang <graff.yang@gmail.com>
+Cc: Liam Girdwood <lgirdwood@gmail.com>
+Cc: Mark Brown <broonie@kernel.org>
+Cc: "Uwe Kleine-König" <u.kleine-koenig@pengutronix.de>
+Cc: Silvan Murer <silvan.murer@gmail.com>
+Cc: Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/resolver/ad2s1200.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ltc2632.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
-index a391f46ee06b7..29cfd57eff9e7 100644
---- a/drivers/iio/resolver/ad2s1200.c
-+++ b/drivers/iio/resolver/ad2s1200.c
-@@ -40,7 +40,7 @@ struct ad2s1200_state {
- 	struct spi_device *sdev;
- 	struct gpio_desc *sample;
- 	struct gpio_desc *rdvel;
--	__be16 rx ____cacheline_aligned;
-+	__be16 ____cacheline_aligned rx;
- };
- 
- static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/dac/ltc2632.c b/drivers/iio/dac/ltc2632.c
+index f891311f05cfe..733f13d3e5df4 100644
+--- a/drivers/iio/dac/ltc2632.c
++++ b/drivers/iio/dac/ltc2632.c
+@@ -38,9 +38,9 @@ struct ltc2632_chip_info {
+ /**
+  * struct ltc2632_state - driver instance specific data
+  * @spi_dev:			pointer to the spi_device struct
+- * @powerdown_cache_mask	used to show current channel powerdown state
+- * @vref_mv			used reference voltage (internal or external)
+- * @vref_reg		regulator for the reference voltage
++ * @powerdown_cache_mask:	used to show current channel powerdown state
++ * @vref_mv:			used reference voltage (internal or external)
++ * @vref_reg:		regulator for the reference voltage
+  */
+ struct ltc2632_state {
+ 	struct spi_device *spi_dev;
 -- 
 2.25.1
 
