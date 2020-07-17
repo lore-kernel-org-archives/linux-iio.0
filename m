@@ -7,67 +7,65 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 486D6C433ED
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42D04C433F8
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2A01420737
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 23E612076D
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:57:21 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="ZcVlGaOL"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="uGY7fLW6"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728112AbgGQQ5I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 12:57:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38620 "EHLO
+        id S1727786AbgGQQ4U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38586 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727915AbgGQQ4Y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:24 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 687D5C0619D3
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:24 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id o2so18258009wmh.2
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:24 -0700 (PDT)
+        with ESMTP id S1727848AbgGQQ4T (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:19 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55522C0619D7
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:19 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id w3so18194037wmi.4
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=31Tvqv5NM4OFlqEMdtTKPK1d2uzVylaWVS7jDebvxGA=;
-        b=ZcVlGaOL/eDTv4lz5JNlb4hvtqD+61w7PMNxH3NBGKRHyPqzJ4uTAIwYuWJ3ev4dFT
-         5ehYJVF7nzM9II9CEoOhTa5w10VsHMdfcTywQSHOaEckBYNSBkF+sGd21ZfrWfQIlEBL
-         qgQPBZ0oVg2jhGx6D3/GJrJ7VfP/4KBF/PtN6vkRzd4z/rXUzkcOw01OfBXm95uVCErX
-         lKoBUJ2uPi9lXqc/vfY3vePmqyzN6UUSmJO6WeZa9wZw1PmU+UxCbVUiYkom0kazHefl
-         ngHnsxDuAtEVfKz7u+Q4npgGQh/o4Y/5k2CT7Ca7cmyxxW5Z1s1cBljlyLx11/+NZJdw
-         cQGQ==
+        bh=l9KL9HYXYgn6Rpl6BIijuJhUjr4NXdIWWmHfn/aX7y4=;
+        b=uGY7fLW6qHw0et20UC3kHdd/8MYDxlSOWeQea54xURu68895NqIfNpQmb7zeDx2jal
+         BmiDZWuiJCPY/VZmfubpUqLVnO0T3Yb+tul7GQODb1HKyfDZYhhVgDQtoUOTznE8TWSc
+         eZggPH8MYF1UZ14ZnuOAa7P6PU/qpUjLaXR9oxCQDwwx6AvPeadxxoGS7680CWMDBcIV
+         9iQoaCYJy918i0CcOWNFVJvBmnFRBZerJZOffW7GOLXYRm/kAzI6ECQ9+TcVqmt43rRY
+         58jPPxGOl6Zn8kf63cwptde45XH8vb5uxq+thHdJFhAi495FjquGtGjXoCZgiaB0z9K9
+         o3/A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=31Tvqv5NM4OFlqEMdtTKPK1d2uzVylaWVS7jDebvxGA=;
-        b=JIT/jtvyPA4mqueboONVLYNgft7hOjPzy7CKxLrqSrKwVdEaZTFb87qr7CdcJHdU13
-         UqYRRqXZ+2XLEGUXJh0F4Fpb057QCaLe+TDBYtnG67bxQOhza1qciKTjbtZNLZDOo8rz
-         qvs6YPKavYV4yGQEXhuA7bWsdBXRkjOY2jjYinNoCqzwkAFgBxQn3lbBTRlsdzksKnu+
-         fb87AGtNQxj4vvSMmQsoZI6jJCRbaEg/QBIpXh4Zvap/YTrm2FIr0nbzIRECQnoY37Ui
-         qMCGom8rm7pQDEm8brbZRQmr0JuWein8TX+vLZTcWCWWPbeZr9z6gSO+b2WPAkCG6qEr
-         UcvA==
-X-Gm-Message-State: AOAM532HP9C/8X3LVCvHUqinL7KqoFyiWzPPJDy+L/lKlwIlHreko82i
-        wLRvFs2q6aC61DfdtUx0GKchJg==
-X-Google-Smtp-Source: ABdhPJznCryOGiaapGhkR1ssu1klQe40/wpuzaMcITlbW08G7kOfQATkKGR7vsCaF9kKxBdVSbniuQ==
-X-Received: by 2002:a7b:c8c8:: with SMTP id f8mr10596923wml.142.1595004983177;
-        Fri, 17 Jul 2020 09:56:23 -0700 (PDT)
+        bh=l9KL9HYXYgn6Rpl6BIijuJhUjr4NXdIWWmHfn/aX7y4=;
+        b=o655yx7zXHd6cmhu03pXcQ2CF45xrLCYUB956glHMPTpoai/djsxO4Jzt7t7wIN2iQ
+         mxmKQ0fsZnAB6O4ZWzK2WMZKnFOMP4nXzCjooz8fxxNfkBWnxYwVy9nP1yqAbj5nENvw
+         0NbJ7dyIcV1oIkJ9M3C4hA0E0OmugRchiqsfvkyg+ZQnURh4zeX+y1WJNBrKDgq5MQB9
+         jsaqyP+S2iNlSY4T06nj5JWPr4vhCHjaIoSUEvd7YuPqhSa/LP6Snp2k/YbJNiqGcLlC
+         w3M3AR6K7w0AtFJVAvsLgNpdTf5mylrv0U5ljb/h0zb39WOSoANm/U1D/d3df4EqiLeg
+         Gbgw==
+X-Gm-Message-State: AOAM532vM5YyQpDFcFoPepjqm8G+d5OaJLz/D3hgSQ9XCsFseQaI5dzJ
+        PZIb75/IkRB4F8eZ69yDTkrmKw==
+X-Google-Smtp-Source: ABdhPJwolaFtALJ8b06cyO8m7AqyQP6KwwYk6G75p3joMVOgZdxFOGPzU5mARmnYEYjb71TVU+u7tQ==
+X-Received: by 2002:a1c:2e57:: with SMTP id u84mr10870067wmu.52.1595004978069;
+        Fri, 17 Jul 2020 09:56:18 -0700 (PDT)
 Received: from localhost.localdomain ([2.27.167.94])
-        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.22
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:56:22 -0700 (PDT)
+        Fri, 17 Jul 2020 09:56:17 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Oskar Andero <oskar.andero@gmail.com>,
-        Bendorff Jensen <abj@rosetechnology.dk>,
-        Soren Andersen <san@rosetechnology.dk>
-Subject: [PATCH 22/30] iio: adc: mcp320x: Change ordering of compiler attribute macro
-Date:   Fri, 17 Jul 2020 17:55:30 +0100
-Message-Id: <20200717165538.3275050-23-lee.jones@linaro.org>
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH 17/30] iio: gyro: adxrs450: Change ordering of compiler attribute macro
+Date:   Fri, 17 Jul 2020 17:55:25 +0100
+Message-Id: <20200717165538.3275050-18-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
 References: <20200717165538.3275050-1-lee.jones@linaro.org>
@@ -78,34 +76,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Kerneldoc gets confused if the variable does not follow th
+Kerneldoc gets confused if the variable does not follow the
 type/attribute definitions.
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/iio/adc/mcp320x.c:96: warning: Function parameter or member '____cacheline_aligned' not described in 'mcp320x'
+ drivers/iio/gyro/adxrs450.c:79: warning: Function parameter or member '____cacheline_aligned' not described in 'adxrs450_state'
 
-Cc: Oskar Andero <oskar.andero@gmail.com>
-Cc: Bendorff Jensen <abj@rosetechnology.dk>
-Cc: Soren Andersen <san@rosetechnology.dk>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/adc/mcp320x.c | 2 +-
+ drivers/iio/gyro/adxrs450.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index 2c0eb5de110ca..191a8f644ffe7 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -91,7 +91,7 @@ struct mcp320x {
- 	struct mutex lock;
- 	const struct mcp320x_chip_info *chip_info;
+diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
+index b00c0eb442493..e00b97e30cf9d 100644
+--- a/drivers/iio/gyro/adxrs450.c
++++ b/drivers/iio/gyro/adxrs450.c
+@@ -73,7 +73,7 @@ enum {
+ struct adxrs450_state {
+ 	struct spi_device	*us;
+ 	struct mutex		buf_lock;
+-	__be32			tx ____cacheline_aligned;
++	__be32 ____cacheline_aligned tx;
+ 	__be32			rx;
  
--	u8 tx_buf ____cacheline_aligned;
-+	u8 ____cacheline_aligned tx_buf;
- 	u8 rx_buf[4];
  };
- 
 -- 
 2.25.1
 
