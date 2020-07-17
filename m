@@ -7,65 +7,68 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48990C433EC
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13504C433ED
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 27664208DB
-	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E5B3A20737
+	for <linux-iio@archiver.kernel.org>; Fri, 17 Jul 2020 16:56:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="yNPkHK1z"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="bgDHQZAm"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727001AbgGQQ4N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 17 Jul 2020 12:56:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38546 "EHLO
+        id S1727790AbgGQQ4Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 17 Jul 2020 12:56:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38560 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727106AbgGQQ4M (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:12 -0400
-Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C27EC0619D5
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:12 -0700 (PDT)
-Received: by mail-wm1-x343.google.com with SMTP id o2so18257237wmh.2
-        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:12 -0700 (PDT)
+        with ESMTP id S1727782AbgGQQ4P (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Jul 2020 12:56:15 -0400
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B35F4C0619D3
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:14 -0700 (PDT)
+Received: by mail-wm1-x342.google.com with SMTP id g10so7563527wmc.1
+        for <linux-iio@vger.kernel.org>; Fri, 17 Jul 2020 09:56:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=p0oUjKd59zMZaiGxgNRXSn/6+OSkd6Llst+aM8IBTWc=;
-        b=yNPkHK1zRA5ix6G8yWlcUoKNJIibFKAQ4kphl5pebJ5dbhCkkiDDttAbMDpxtPjbOf
-         ANaEw0YL+Z4RRuoY6dGRbsFDJMtrLMEWHjNyhtm72oiR0PLfCa3p/a6awZAV4JepQY8G
-         t38WX2mNBcRNYhoMkmNrlEcNUeX5W3rLp0fRirHfA7d9RaK9OdLglhBvRRq5oRKv5ntJ
-         SUxrPXSBg7BMtMtwuoy6k0UQRoamSfOSNgW229eFCxWEJqh0qnJ0wf8DWlweGjaS8NqT
-         z3MKcL49zcmAVUmHLmpdHY98sz+Vm4GuPO3dlQw7xOMzHSuNAomXLDnptzQSM+jKW3tl
-         zgqQ==
+        bh=cyqL66bhaPo6pUJYftE+BouP+W8ifTKxcOtS6pP8tIA=;
+        b=bgDHQZAm1Y7zGqco6LHcPFImygLo/eaYHhgO4zR4uqMXJXBH/9/wUXvkgURQEgEcPf
+         vRFq3fHY/XmeaUh/vIQRfq1bADE7GHYiWQH+exNS6KTPZddIkQaaSOTeEE1bi7W2D1mY
+         VxSPWjFBYAHsExqDJeVWJD9VpQGNiY/CcKTKKEjWbytzE9T9GORFrOXAmRDKAUscog6q
+         vSo5MTT6YhP/nJK4HnudqudhwFB9qB4kRLz1I2/7IrgKaw858ntypQ4Hps0xQ8t6V+Ef
+         ySaRfcZdo60TpEiSnm9Cf26IdXLDFZ1NvK3lpAsBAF9Jmw26IZJc/czIvlbIyh/c7XP1
+         xz9g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=p0oUjKd59zMZaiGxgNRXSn/6+OSkd6Llst+aM8IBTWc=;
-        b=rB2YxEoKU+1RdtuaxJDxqqjEaK8+KrZEfF1VRnVX54BzwTjQs8PSncDEjeunAHpNPQ
-         dxFndk3Y3W6lFH5kgHvA6k6RqRvJrWBz/QiRXTD5jQ6u2XmrapOhgCdOtxc37uA0FX4F
-         0i/oO7IbNiQielGomOMGOrcqefgILvWJWBXPL7DgIp1vY23CX88dlBJKCWHBv+03SnK9
-         IAS0rV2I4SEUeh9lmk265/XuHNar8mH/XplMfRkXR3lXLmJJiyujkpr+KINMNnGOg8Lp
-         zYOe15kwb4epCigfoPDkvBBcUhJ1YyWM/C7OcZpujBiTazqUXaK0b/j4albOEkQn/C5i
-         VU8g==
-X-Gm-Message-State: AOAM531nj+IQHrj92laAyJvwZo8TsnQy9O+GkNua6cCUkH/U383mZuYc
-        bhH7fzYl5GusHeuCdpR6aQemrQ==
-X-Google-Smtp-Source: ABdhPJzGx0h8an30IqO75LbxvOE6R1dZce6G1gw/E5yjUFHsKN1Rz4cLrUZ2G69jijBs0tNvFkzJbg==
-X-Received: by 2002:a1c:2602:: with SMTP id m2mr10749472wmm.50.1595004970818;
-        Fri, 17 Jul 2020 09:56:10 -0700 (PDT)
+        bh=cyqL66bhaPo6pUJYftE+BouP+W8ifTKxcOtS6pP8tIA=;
+        b=lVT7ChefAerqi9Z3uyYl35oRe9X8i3cnGq56uaYFL2CSyR0AX9+fw6cunkxnzR01XZ
+         UdLcseCbLDQ0pVDS7QMYSePA2cQ4m3n9SFvyMjQvjbBZp7niWZoRswpPA8bVruKGeJZ3
+         kRmQstt3wN+iQ0MZyHm4cIaizzcH+bAxYrxeCOpb3iEhM+EEHWCBxxmcvSGg1YuoBTpP
+         lRGf7iWO/BdCkDDsD4/TOxJEurMLI6KvgSSlqdhxOOdwdioB0htmlsPpVwhDUrHLpwYI
+         9bfdhAUX7gxRPEGyPlmng9QIc2dI2XE+I/desbxmaY/xlVnJLK0oLSywSwz6JwUfHiWy
+         3KpA==
+X-Gm-Message-State: AOAM531uiwDp8xvErsODJ06lovO3NH6o+Y4ppBm5Ar+wBO2MNkt5ls3n
+        s398OsgLzV/rm20Oa0JIExgGkA==
+X-Google-Smtp-Source: ABdhPJzkOkfui+os8Qw2Xmd5y3cEYFZKIpsg38EFiEnyePI47o5q7jh1WVLfiLgGxOTQOSGbdLUnzQ==
+X-Received: by 2002:a1c:3b02:: with SMTP id i2mr9952906wma.24.1595004973487;
+        Fri, 17 Jul 2020 09:56:13 -0700 (PDT)
 Received: from localhost.localdomain ([2.27.167.94])
-        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.09
+        by smtp.gmail.com with ESMTPSA id k4sm14941516wrp.86.2020.07.17.09.56.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 17 Jul 2020 09:56:10 -0700 (PDT)
+        Fri, 17 Jul 2020 09:56:12 -0700 (PDT)
 From:   Lee Jones <lee.jones@linaro.org>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net
 Cc:     linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Lee Jones <lee.jones@linaro.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH 11/30] iio: adc: ad799x: Demote seemingly unintentional kerneldoc header
-Date:   Fri, 17 Jul 2020 17:55:19 +0100
-Message-Id: <20200717165538.3275050-12-lee.jones@linaro.org>
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 13/30] iio: adc: at91_adc: Fix 'bad line' warning
+Date:   Fri, 17 Jul 2020 17:55:21 +0100
+Message-Id: <20200717165538.3275050-14-lee.jones@linaro.org>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200717165538.3275050-1-lee.jones@linaro.org>
 References: <20200717165538.3275050-1-lee.jones@linaro.org>
@@ -76,33 +79,34 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is the only use of function related kerneldoc in the sourcefile
-and no descriptions are provided.
+All lines should start with ' *'.
 
 Fixes the following W=1 kernel build warning(s):
 
- drivers/iio/adc/ad799x.c:192: warning: Function parameter or member 'irq' not described in 'ad799x_trigger_handler'
- drivers/iio/adc/ad799x.c:192: warning: Function parameter or member 'p' not described in 'ad799x_trigger_handler'
+ drivers/iio/adc/at91_adc.c:160: warning: bad line:                         (Interruptions registers mostly)
 
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
 Signed-off-by: Lee Jones <lee.jones@linaro.org>
 ---
- drivers/iio/adc/ad799x.c | 2 +-
+ drivers/iio/adc/at91_adc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index ef013af1aec07..007ec7ad94752 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -182,7 +182,7 @@ static int ad799x_update_config(struct ad799x_state *st, u16 config)
- 	return 0;
- }
- 
--/**
-+/*
-  * ad799x_trigger_handler() bh of trigger launched polling to ring buffer
-  *
-  * Currently there is no option in this driver to disable the saving of
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 0368b6dc6d60a..c5ea75cd88fa8 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -157,7 +157,7 @@
+  * struct at91_adc_reg_desc - Various informations relative to registers
+  * @channel_base:	Base offset for the channel data registers
+  * @drdy_mask:		Mask of the DRDY field in the relevant registers
+-			(Interruptions registers mostly)
++ *			(Interruptions registers mostly)
+  * @status_register:	Offset of the Interrupt Status Register
+  * @trigger_register:	Offset of the Trigger setup register
+  * @mr_prescal_mask:	Mask of the PRESCAL field in the adc MR register
 -- 
 2.25.1
 
