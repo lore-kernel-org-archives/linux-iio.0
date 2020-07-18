@@ -5,53 +5,52 @@ X-Spam-Level:
 X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D433C433E1
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:33:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFBACC433DF
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:30:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3284020775
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:33:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8B2AE20775
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:30:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595082834;
-	bh=aGwpt6WMtqY5/WwIWAUClRDNeEjX6lZPDr9q46ZIAzA=;
+	s=default; t=1595082626;
+	bh=hSj5ozE6nlmBDB2UvoDj+PMby8N54ruWX+quUPUBqqY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=himhpMHHlFFibcPK7p5amIaw3YCTR62gsRwPCHENxA8cF6nOJQi2Q7gWN1ZFhX1aG
-	 UKsmWanQPbfFXMBZi35dzveDI0WuQ+RL76XsJBpghXdvUpvGEJuha6frNIpoq+OdEo
-	 fCsGRXDeqlZX/lkqYSzlWRLaW1cf0LW497lt+sgI=
+	b=NuDZ2adNd+5X+HIpvft/3Wwi+E2vbSWziDELUicBf/dDORmi1vWm9MZPIh2rwKCxm
+	 iyoTbSbGszc0kNMZpYIoyND3rN+exNGeXCrSANe5G7soRkh+gSV+qs8hjoZBlUOIho
+	 AufeM4Xx5iu0xNhrkeW4q6AutgIPpTnoHnqLCc4M=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgGROdv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jul 2020 10:33:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58500 "EHLO mail.kernel.org"
+        id S1726627AbgGROa0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jul 2020 10:30:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58056 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbgGROdu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Jul 2020 10:33:50 -0400
+        id S1726611AbgGROaZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 18 Jul 2020 10:30:25 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 843B22064B;
-        Sat, 18 Jul 2020 14:33:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D052E2064B;
+        Sat, 18 Jul 2020 14:30:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595082830;
-        bh=aGwpt6WMtqY5/WwIWAUClRDNeEjX6lZPDr9q46ZIAzA=;
+        s=default; t=1595082625;
+        bh=hSj5ozE6nlmBDB2UvoDj+PMby8N54ruWX+quUPUBqqY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Gge3LrrjfJKyzp//YFHSwSmJVxw7LfnupVN36U63PeAqSXkxRPKvxWsEHCV/LqNw7
-         m/EMa0BK62RgKjFd1YnGzoReJaUHRmQSSFzFAPtHYrefkFkPx6R4PFC+BFfN6pfmJH
-         ukVYIi2uU1CsfI2Iw0+T2mhjS1OJ1/vJiOOEru3I=
-Date:   Sat, 18 Jul 2020 15:33:45 +0100
+        b=bvU9gLcHyzfQcWQlJ0h008mfH1DpUBduRBPdjsbl5AKlCNPKDgX+EW8m80mfdVpZu
+         A3eycEbsJxzIUhb/gEHGMTEDkX7h36ZBAAwyRzLjCh5MVAqSD+EqhOkq6jKL4Gfpl/
+         nbd0IUxK2NuyMGkubuxdZKYue+BuU/psGHhgKPl8=
+Date:   Sat, 18 Jul 2020 15:30:20 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Lee Jones <lee.jones@linaro.org>
 Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org,
-        Andreas Brauchli <a.brauchli@elementarea.net>,
-        Pascal Sachs <pascal.sachs@sensirion.com>
-Subject: Re: [PATCH 05/30] iio: chemical: sgp30: Add description for
- sgp_read_cmd()'s 'duration_us'
-Message-ID: <20200718153345.0a6a5720@archlinux>
-In-Reply-To: <20200716135928.1456727-6-lee.jones@linaro.org>
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH 04/30] iio: adc: ad7298: Demote obvious misuse of
+ kerneldoc to standard comment blocks
+Message-ID: <20200718153020.643f55c6@archlinux>
+In-Reply-To: <20200716135928.1456727-5-lee.jones@linaro.org>
 References: <20200716135928.1456727-1-lee.jones@linaro.org>
-        <20200716135928.1456727-6-lee.jones@linaro.org>
+        <20200716135928.1456727-5-lee.jones@linaro.org>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -61,41 +60,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 16 Jul 2020 14:59:03 +0100
+On Thu, 16 Jul 2020 14:59:02 +0100
 Lee Jones <lee.jones@linaro.org> wrote:
 
+> No attempt has been made to document either of the demoted functions here.
+> 
 > Fixes the following W=1 kernel build warning(s):
 > 
->  drivers/iio/chemical/sgp30.c:236: warning: Function parameter or member 'duration_us' not described in 'sgp_read_cmd'
+>  drivers/iio/adc/ad7298.c:106: warning: Function parameter or member 'indio_dev' not described in 'ad7298_update_scan_mode'
+>  drivers/iio/adc/ad7298.c:106: warning: Function parameter or member 'active_scan_mask' not described in 'ad7298_update_scan_mode'
+>  drivers/iio/adc/ad7298.c:154: warning: Function parameter or member 'irq' not described in 'ad7298_trigger_handler'
+>  drivers/iio/adc/ad7298.c:154: warning: Function parameter or member 'p' not described in 'ad7298_trigger_handler'
 > 
-> Cc: Andreas Brauchli <a.brauchli@elementarea.net>
-> Cc: Pascal Sachs <pascal.sachs@sensirion.com>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-
-Perhaps we can do better on the wording.
+As both are static, no particular reason they should have kernel-doc comments
+so agreed we are better fixing this one by demoting rather than adding
+the missing stuff.
+Applied.
 
 > ---
->  drivers/iio/chemical/sgp30.c | 1 +
->  1 file changed, 1 insertion(+)
+>  drivers/iio/adc/ad7298.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
-> index 403e8803471a9..82e407d48a0aa 100644
-> --- a/drivers/iio/chemical/sgp30.c
-> +++ b/drivers/iio/chemical/sgp30.c
-> @@ -227,6 +227,7 @@ static int sgp_verify_buffer(const struct sgp_data *data,
->   * @cmd:         SGP Command to issue
->   * @buf:         Raw data buffer to use
->   * @word_count:  Num words to read, excluding CRC bytes
-> + * @duration_us: Time to sleep in microseconds
-
-Time taken to sensor to take a reading and data to be ready.
-
-Something like that maybe?  I've not checked the datasheet but from
-code that looks to be what this describes..
-
-Jonathan
-
+> diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+> index dc8d8c5f6ad36..006b6f63cf4e8 100644
+> --- a/drivers/iio/adc/ad7298.c
+> +++ b/drivers/iio/adc/ad7298.c
+> @@ -98,9 +98,9 @@ static const struct iio_chan_spec ad7298_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(8),
+>  };
+>  
+> -/**
+> +/*
+>   * ad7298_update_scan_mode() setup the spi transfer buffer for the new scan mask
+> - **/
+> + */
+>  static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
+>  	const unsigned long *active_scan_mask)
+>  {
+> @@ -144,12 +144,12 @@ static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
+>  	return 0;
+>  }
+>  
+> -/**
+> +/*
+>   * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
 >   *
->   * Return:       0 on success, negative error otherwise.
->   */
+>   * Currently there is no option in this driver to disable the saving of
+>   * timestamps within the ring.
+> - **/
+> + */
+>  static irqreturn_t ad7298_trigger_handler(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
 
