@@ -2,131 +2,90 @@ Return-Path: <SRS0=77Uk=A5=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2128C433E0
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 16:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E1A4C433E1
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 16:36:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 719932173E
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 16:29:42 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595089782;
-	bh=89r/vzFa0Z0afnvQgRK8zBvAGeUyQXap6+PdGNRqtME=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xGU7vo4QKXHCSo9GlT3pNK7maQiLAe0y+GJnGmHdXn6pATKwtwDK0oHxA498/ksES
-	 8nTpa6MiiwK7wDfhyLrLDjIYu6bnYEQwoGkasnwRjsXrcPFqtw2iIdKfmXXH8KCNZm
-	 KJyf2Uan3mSAYmaJLg4g/PWZFmLYpN5dN9N9KVYI=
+	by mail.kernel.org (Postfix) with ESMTP id 00D3B2080D
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 16:36:58 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="RmXTjFH1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727771AbgGRQ3m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jul 2020 12:29:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37936 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726346AbgGRQ3l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Jul 2020 12:29:41 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E456E2080D;
-        Sat, 18 Jul 2020 16:29:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595089781;
-        bh=89r/vzFa0Z0afnvQgRK8zBvAGeUyQXap6+PdGNRqtME=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CnYV7GR4c9p5VrrTGH/ciCt/4e4mLRDogf8kqvj17IpZfXJoYlwL4CHn78D8db225
-         LqMHDhGz44GLZ/nkLMfHy9vc6oVaFUkxYzOJZhivpJCxKydTB0Veo3QvMiGv5/NUNR
-         nCa5mnUjHU3uxRll29sG37n2Xc5CY+ul43mWkT1E=
-Date:   Sat, 18 Jul 2020 17:29:37 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     =?UTF-8?B?T25kxZllag==?= Jirman <megous@megous.com>
-Cc:     linux-kernel@vger.kernel.org, Icenowy Zheng <icenowy@aosc.io>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Luca Weiss <luca@z3ntu.xyz>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: light: stk3310: add chip id for STK3311-X variant
-Message-ID: <20200718172937.59f24822@archlinux>
-In-Reply-To: <20200714104441.nrnaauqunjst67ix@core.my.home>
-References: <20200703194406.110855-1-megous@megous.com>
-        <20200704172916.7a8a7359@archlinux>
-        <20200714104441.nrnaauqunjst67ix@core.my.home>
-X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726736AbgGRQg5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jul 2020 12:36:57 -0400
+Received: from www381.your-server.de ([78.46.137.84]:50708 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726604AbgGRQg5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jul 2020 12:36:57 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=MuAF07/PLYpW3vDGuXu6XLibaUuocTYnjLIQeyAsQI0=; b=RmXTjFH1+pOtSPwnYZcb2DsfUK
+        jf1gsQQBazFVX/Ntfzfa1iptZXdb3uRKHeLwDQioklHhFkemG+QC1un/iVZixXYHfHFZMc9ZPg9wf
+        tMF95BGfusRR6Ki2PkAOSPVPPLtp7XCuXbI8jIDU23VQH/NSsQ1bSKOKASDpTHy2devf1AScVT717
+        N2+Ynnae8wHjGrEip6nQ5q57Gc81vhbS4LUd86cJ2u1O4BXWZ/57Gv4VKSgFGPTmcdRYugmFMyPem
+        VEXDLk7Pur/Spky6Uxlge+mkcBbQZoPWw7CSoYtQcVQkqj5lo2I5aV4yYTUMVRwbcOBmBzJe/e0Kt
+        hXXEBlKQ==;
+Received: from sslproxy02.your-server.de ([78.47.166.47])
+        by www381.your-server.de with esmtpsa (TLSv1.2:DHE-RSA-AES256-GCM-SHA384:256)
+        (Exim 4.89_1)
+        (envelope-from <lars@metafoo.de>)
+        id 1jwppU-0002Yl-8e; Sat, 18 Jul 2020 18:36:52 +0200
+Received: from [62.216.206.120] (helo=[192.168.178.20])
+        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1jwppU-0005jj-4K; Sat, 18 Jul 2020 18:36:52 +0200
+Subject: Re: [PATCH] iio: trigger: Staticise stub functions
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <20200714142456.67054-1-alexandru.ardelean@analog.com>
+ <20200718172501.4ba58924@archlinux>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <017b33b1-b6f9-107b-b9c4-8c0abd0d6a3b@metafoo.de>
+Date:   Sat, 18 Jul 2020 18:36:51 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200718172501.4ba58924@archlinux>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.3/25877/Sat Jul 18 16:24:08 2020)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 14 Jul 2020 12:44:41 +0200
-Ond=C5=99ej Jirman <megous@megous.com> wrote:
+On 7/18/20 6:25 PM, Jonathan Cameron wrote:
+> On Tue, 14 Jul 2020 17:24:56 +0300
+> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+>
+>> From: Lars-Peter Clausen <lars@metafoo.de>
+>>
+>> Make sure that the trigger function stubs are all static inline. Otherwise
+>> we'll get linker errors due to multiple definitions of the same function.
+>>
+>> Fixes f8c6f4e9a40d4: ("iio: trigger: Staticise stub functions")
+>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+>> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> I'm curious on what the actual build error is?  Static functions should
+> result in independent implementations in each C file that includes
+> them. Inline is normally considered a hint.  Hence what am I missing?
 
-> Hello Jonathan,
->=20
-> On Sat, Jul 04, 2020 at 05:29:16PM +0100, Jonathan Cameron wrote:
-> > On Fri,  3 Jul 2020 21:44:05 +0200
-> > Ondrej Jirman <megous@megous.com> wrote:
-> >  =20
-> > > From: Icenowy Zheng <icenowy@aosc.io>
-> > >=20
-> > > The STK3311 chip has a variant called STK3311-X, which has a different
-> > > chip id of 0x12.
-> > >=20
-> > > Add the chip id to the driver.
-> > >=20
-> > > Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
-> > > Signed-off-by: Ondrej Jirman <megous@megous.com> =20
-> >=20
-> > Given this is clearly not quite compatible with the stk3311 probably
-> > best to also add a an id to the of id table.  Any idea what else
-> > is different? =20
->=20
-> I've looked at it more, and there's no stk3311 either. It always has
-> some suffix, like -sa -9 -a -wv -x, .... So I don't think a new
-> ID in the table is neccessary. The driver can differentiate based on
-> chip id, in case it will ever become necessary.
->=20
-Thanks for info.  In that case, applied to the togreg branch of iio.git
-and pushed out as testing for the autobuilders to poke at it.
+It's a bad commit message, my fault. This should have been
 
-Thanks,
+Make sure that the trigger function stubs are all static inline. 
+Otherwise we might see compiler warnings about declared but unused 
+functions.
 
-Jonathan
-
-> regards,
-> 	o.
->=20
-> > Thanks,
-> >=20
-> > Jonathan
-> >  =20
-> > > ---
-> > >  drivers/iio/light/stk3310.c | 2 ++
-> > >  1 file changed, 2 insertions(+)
-> > >=20
-> > > diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
-> > > index 185c24a75ae6..1a8401d198a4 100644
-> > > --- a/drivers/iio/light/stk3310.c
-> > > +++ b/drivers/iio/light/stk3310.c
-> > > @@ -37,6 +37,7 @@
-> > > =20
-> > >  #define STK3310_CHIP_ID_VAL			0x13
-> > >  #define STK3311_CHIP_ID_VAL			0x1D
-> > > +#define STK3311X_CHIP_ID_VAL			0x12
-> > >  #define STK3335_CHIP_ID_VAL			0x51
-> > >  #define STK3310_PSINT_EN			0x01
-> > >  #define STK3310_PS_MAX_VAL			0xFFFF
-> > > @@ -453,6 +454,7 @@ static int stk3310_init(struct iio_dev *indio_dev)
-> > > =20
-> > >  	if (chipid !=3D STK3310_CHIP_ID_VAL &&
-> > >  	    chipid !=3D STK3311_CHIP_ID_VAL &&
-> > > +	    chipid !=3D STK3311X_CHIP_ID_VAL &&
-> > >  	    chipid !=3D STK3335_CHIP_ID_VAL) {
-> > >  		dev_err(&client->dev, "invalid chip id: 0x%x\n", chipid);
-> > >  		return -ENODEV; =20
-> >  =20
 
