@@ -7,101 +7,108 @@ X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9015C433E1
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 15:33:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 82528C433E0
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 15:39:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB5062076A
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 15:33:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5DA3B20829
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 15:39:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595086401;
-	bh=fgzI3qLM4aPdSKLycUITv5yItcQksA1tIB1bNjqV/Qo=;
+	s=default; t=1595086769;
+	bh=A21zkqHie0c/lAiPqKuKHl7yFQhPCvHWm/szIOcC8P4=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=2RMbqsn7AfyPlJdTlyNRj21ofrjw4MV1JU96+q/xb2hOFEnPRd2cR9ux95GkHN46t
-	 7/ZlZ8Awv7NiMXXytZHW6knGRSP0hhJhc8UqIh02PW6NHGmt0HWaoHzXrQMVg0rjM8
-	 2el1W3e8EpIqjnlwgl+qNMVyeuDZzCNGuyUrWOWE=
+	b=x1G/wl6f5YBYnrrwnSELkSYew3khIiK6xVEIZQObmrySrRmQ9/0QrkxUbUdqW9XsL
+	 GxXfPLBqognbsyEIRn0r1xvMr3wY6H5L5YId8rOI6w2GcqDHuIiFG+7pKUkmkxPa6Z
+	 NFPvxmcy+NTJ96TGMzmetuJhIFOdL01gHnUnYpzM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgGRPdV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jul 2020 11:33:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41698 "EHLO mail.kernel.org"
+        id S1728086AbgGRPj2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jul 2020 11:39:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726829AbgGRPdV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Jul 2020 11:33:21 -0400
+        id S1726155AbgGRPj2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 18 Jul 2020 11:39:28 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AC2E920734;
-        Sat, 18 Jul 2020 15:33:18 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D6A320734;
+        Sat, 18 Jul 2020 15:39:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595086400;
-        bh=fgzI3qLM4aPdSKLycUITv5yItcQksA1tIB1bNjqV/Qo=;
+        s=default; t=1595086768;
+        bh=A21zkqHie0c/lAiPqKuKHl7yFQhPCvHWm/szIOcC8P4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qzirfRVSK0Z1Nb2VomqUf2IChB7xsQ26iWOmhMnNBpjLNDI8J6kqvWjtHdBnnCxAk
-         6Btp5R4ikm/XBW7W6Ax5td9w2euQ9kMVi2nN0FQqWjZXpBFN1NHaatmTVIyw9AWRxQ
-         /DJCR0qQujAzupNtHSdqdLpRP7Rb5SU+R0bj9YVo=
-Date:   Sat, 18 Jul 2020 16:33:15 +0100
+        b=lO5ZVtAlOZaL6KKjNTNbJgYH0XFIWMLluoB8yA2/WNO/UxJzUB0IUXCGTyhkE/uCb
+         2m0qSBTaqyydsys0ccpVJRz7LryF+wQdsg1AUhlChMTBzTBDQgPjuMV99XPGhoRagK
+         wvIlIZRMutTBnzALdIoHdLs4EgmfAiES5vdpGkT4=
+Date:   Sat, 18 Jul 2020 16:39:23 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Lee Jones <lee.jones@linaro.org>
 Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, J Keerthy <j-keerthy@ti.com>,
-        Mikko Ylinen <mikko.k.ylinen@nokia.com>,
-        Amit Kucheria <amit.kucheria@canonical.com>
-Subject: Re: [PATCH 03/30] iio: adc: twl4030-madc: Fix misnamed struct
- attribute
-Message-ID: <20200718163315.631513b0@archlinux>
-In-Reply-To: <20200717165538.3275050-4-lee.jones@linaro.org>
+        linux-iio@vger.kernel.org, Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Silvan Murer <silvan.murer@gmail.com>,
+        Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
+Subject: Re: [PATCH 06/30] iio: dac: ltc2632: Fix formatting in kerneldoc
+ struct header
+Message-ID: <20200718163923.07536fdd@archlinux>
+In-Reply-To: <20200717165538.3275050-7-lee.jones@linaro.org>
 References: <20200717165538.3275050-1-lee.jones@linaro.org>
-        <20200717165538.3275050-4-lee.jones@linaro.org>
+        <20200717165538.3275050-7-lee.jones@linaro.org>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 17 Jul 2020 17:55:11 +0100
+On Fri, 17 Jul 2020 17:55:14 +0100
 Lee Jones <lee.jones@linaro.org> wrote:
 
-> Fixes the following W=1 kernel build warning(s):
-> 
->  drivers/iio/adc/twl4030-madc.c:170: warning: Function parameter or member 'usb3v1' not described in 'twl4030_madc_data'
-> 
-> Cc: J Keerthy <j-keerthy@ti.com>
-> Cc: Mikko Ylinen <mikko.k.ylinen@nokia.com>
-> Cc: Amit Kucheria <amit.kucheria@canonical.com>
+> Kerneldoc expects attributes/parameters to be in '@*.: ' format.
+>=20
+> Fixes the following W=3D1 kernel build warning(s):
+>=20
+>  drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'pow=
+erdown_cache_mask' not described in 'ltc2632_state'
+>  drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'vre=
+f_mv' not described in 'ltc2632_state'
+>  drivers/iio/dac/ltc2632.c:50: warning: Function parameter or member 'vre=
+f_reg' not described in 'ltc2632_state'
+>=20
+> Cc: Liam Girdwood <lgirdwood@gmail.com>
+> Cc: Mark Brown <broonie@kernel.org>
+> Cc: "Uwe Kleine-K=C3=B6nig" <u.kleine-koenig@pengutronix.de>
+> Cc: Silvan Murer <silvan.murer@gmail.com>
+> Cc: Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
 > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Applied with a note that this also cleans up the duplicate docs for lock.
+Applied.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/twl4030-madc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-> index 826d8295e9b3c..882a678b44690 100644
-> --- a/drivers/iio/adc/twl4030-madc.c
-> +++ b/drivers/iio/adc/twl4030-madc.c
-> @@ -153,7 +153,7 @@ enum sample_type {
->   * struct twl4030_madc_data - a container for madc info
->   * @dev:		Pointer to device structure for madc
->   * @lock:		Mutex protecting this data structure
-> - * @regulator:		Pointer to bias regulator for madc
-> + * @usb3v1:		Pointer to bias regulator for madc
->   * @requests:		Array of request struct corresponding to SW1, SW2 and RT
->   * @use_second_irq:	IRQ selection (main or co-processor)
->   * @imr:		Interrupt mask register of MADC
-> @@ -161,7 +161,7 @@ enum sample_type {
+>  drivers/iio/dac/ltc2632.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+>=20
+> diff --git a/drivers/iio/dac/ltc2632.c b/drivers/iio/dac/ltc2632.c
+> index f891311f05cfe..733f13d3e5df4 100644
+> --- a/drivers/iio/dac/ltc2632.c
+> +++ b/drivers/iio/dac/ltc2632.c
+> @@ -38,9 +38,9 @@ struct ltc2632_chip_info {
+>  /**
+>   * struct ltc2632_state - driver instance specific data
+>   * @spi_dev:			pointer to the spi_device struct
+> - * @powerdown_cache_mask	used to show current channel powerdown state
+> - * @vref_mv			used reference voltage (internal or external)
+> - * @vref_reg		regulator for the reference voltage
+> + * @powerdown_cache_mask:	used to show current channel powerdown state
+> + * @vref_mv:			used reference voltage (internal or external)
+> + * @vref_reg:		regulator for the reference voltage
 >   */
->  struct twl4030_madc_data {
->  	struct device *dev;
-> -	struct mutex lock;	/* mutex protecting this data structure */
-> +	struct mutex lock;
->  	struct regulator *usb3v1;
->  	struct twl4030_madc_request requests[TWL4030_MADC_NUM_METHODS];
->  	bool use_second_irq;
+>  struct ltc2632_state {
+>  	struct spi_device *spi_dev;
 
