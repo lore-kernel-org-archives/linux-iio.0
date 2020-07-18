@@ -4,125 +4,98 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22158C433E0
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:24:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D433C433E1
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:33:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DD26320775
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:24:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3284020775
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jul 2020 14:33:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595082284;
-	bh=5YO//9L/hKsayZKzu3oCnEDLo/YamLgoJh09Ng+5A2U=;
+	s=default; t=1595082834;
+	bh=aGwpt6WMtqY5/WwIWAUClRDNeEjX6lZPDr9q46ZIAzA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=NMTrTRcCFC/6dr6yG0h60PDK2dOXnZortaolwyFfxH5E0WgB4XtRK/FxUDD2ghygu
-	 YUNzPkMnRyVsPpiv2hS9ASrXET8C40RiSny+O2vEVJDlryO4CXgLcIXDbdbTl+cEh1
-	 aD5eMXj3veyaqSAaaPeLKa0rfkFhYglTs/fBZLf4=
+	b=himhpMHHlFFibcPK7p5amIaw3YCTR62gsRwPCHENxA8cF6nOJQi2Q7gWN1ZFhX1aG
+	 UKsmWanQPbfFXMBZi35dzveDI0WuQ+RL76XsJBpghXdvUpvGEJuha6frNIpoq+OdEo
+	 fCsGRXDeqlZX/lkqYSzlWRLaW1cf0LW497lt+sgI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726627AbgGROYo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jul 2020 10:24:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57232 "EHLO mail.kernel.org"
+        id S1726627AbgGROdv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jul 2020 10:33:51 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58500 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726574AbgGROYo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 18 Jul 2020 10:24:44 -0400
+        id S1726574AbgGROdu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 18 Jul 2020 10:33:50 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2F42E2073A;
-        Sat, 18 Jul 2020 14:24:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 843B22064B;
+        Sat, 18 Jul 2020 14:33:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595082283;
-        bh=5YO//9L/hKsayZKzu3oCnEDLo/YamLgoJh09Ng+5A2U=;
+        s=default; t=1595082830;
+        bh=aGwpt6WMtqY5/WwIWAUClRDNeEjX6lZPDr9q46ZIAzA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=P4F+nghObuMVBezJ0WlFpwmdMcTMKaSFtUaG3xxTkSsYeLXy6eAJvEO0ovXxGXRJ9
-         xUowJteOEgACxrmyYhJUlCviECf61Ja7P9va3U4Zzqghk24hTwZJZdJMzWv3g+ACdZ
-         dBmdJr7XSCV/MoSmzZ3/qqUTHcSKntsoFx0aHO8Q=
-Date:   Sat, 18 Jul 2020 15:24:39 +0100
+        b=Gge3LrrjfJKyzp//YFHSwSmJVxw7LfnupVN36U63PeAqSXkxRPKvxWsEHCV/LqNw7
+         m/EMa0BK62RgKjFd1YnGzoReJaUHRmQSSFzFAPtHYrefkFkPx6R4PFC+BFfN6pfmJH
+         ukVYIi2uU1CsfI2Iw0+T2mhjS1OJ1/vJiOOEru3I=
+Date:   Sat, 18 Jul 2020 15:33:45 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Lee Jones <lee.jones@linaro.org>
 Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH 01/30] iio: adc: ad_sigma_delta: Remove unused variable
- 'ret'
-Message-ID: <20200718152439.32a48328@archlinux>
-In-Reply-To: <20200716135928.1456727-2-lee.jones@linaro.org>
+        Andreas Brauchli <a.brauchli@elementarea.net>,
+        Pascal Sachs <pascal.sachs@sensirion.com>
+Subject: Re: [PATCH 05/30] iio: chemical: sgp30: Add description for
+ sgp_read_cmd()'s 'duration_us'
+Message-ID: <20200718153345.0a6a5720@archlinux>
+In-Reply-To: <20200716135928.1456727-6-lee.jones@linaro.org>
 References: <20200716135928.1456727-1-lee.jones@linaro.org>
-        <20200716135928.1456727-2-lee.jones@linaro.org>
+        <20200716135928.1456727-6-lee.jones@linaro.org>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 16 Jul 2020 14:58:59 +0100
+On Thu, 16 Jul 2020 14:59:03 +0100
 Lee Jones <lee.jones@linaro.org> wrote:
 
-> Fixes the following W=3D1 kernel build warning(s):
->=20
->  drivers/iio/adc/ad_sigma_delta.c: In function =E2=80=98ad_sd_trigger_han=
-dler=E2=80=99:
->  drivers/iio/adc/ad_sigma_delta.c:405:6: warning: variable =E2=80=98ret=
-=E2=80=99 set but not used [-Wunused-but-set-variable]
->  405 | int ret;
->  | ^~~
->=20
-> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> Fixes the following W=1 kernel build warning(s):
+> 
+>  drivers/iio/chemical/sgp30.c:236: warning: Function parameter or member 'duration_us' not described in 'sgp_read_cmd'
+> 
+> Cc: Andreas Brauchli <a.brauchli@elementarea.net>
+> Cc: Pascal Sachs <pascal.sachs@sensirion.com>
 > Signed-off-by: Lee Jones <lee.jones@linaro.org>
-Hi Lee,
 
-My only thought on this one is perhaps we should put a warning in there
-if ret isn't as expected.  Still never been one yet so I doubt anyone
-minds too much.
+Perhaps we can do better on the wording.
 
-Applied to the togreg branch of iio.git and pushed out as testing.
-Note there is time for reviews from others before I push this out as
-a non rebasing branch.  I'm also going to need to rebase it once
-as previous pull hasn't quite gotten into staging/staging-next yet.
+> ---
+>  drivers/iio/chemical/sgp30.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
+> index 403e8803471a9..82e407d48a0aa 100644
+> --- a/drivers/iio/chemical/sgp30.c
+> +++ b/drivers/iio/chemical/sgp30.c
+> @@ -227,6 +227,7 @@ static int sgp_verify_buffer(const struct sgp_data *data,
+>   * @cmd:         SGP Command to issue
+>   * @buf:         Raw data buffer to use
+>   * @word_count:  Num words to read, excluding CRC bytes
+> + * @duration_us: Time to sleep in microseconds
 
-Thanks,
+Time taken to sensor to take a reading and data to be ready.
+
+Something like that maybe?  I've not checked the datasheet but from
+code that looks to be what this describes..
 
 Jonathan
 
-> ---
->  drivers/iio/adc/ad_sigma_delta.c | 7 ++-----
->  1 file changed, 2 insertions(+), 5 deletions(-)
->=20
-> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_=
-delta.c
-> index dd3d54b3bc8bb..f269b926440da 100644
-> --- a/drivers/iio/adc/ad_sigma_delta.c
-> +++ b/drivers/iio/adc/ad_sigma_delta.c
-> @@ -402,7 +402,6 @@ static irqreturn_t ad_sd_trigger_handler(int irq, voi=
-d *p)
->  	unsigned int reg_size;
->  	unsigned int data_reg;
->  	uint8_t data[16];
-> -	int ret;
-> =20
->  	memset(data, 0x00, 16);
-> =20
-> @@ -419,14 +418,12 @@ static irqreturn_t ad_sd_trigger_handler(int irq, v=
-oid *p)
->  	case 4:
->  	case 2:
->  	case 1:
-> -		ret =3D ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
-> -			&data[0]);
-> +		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
->  		break;
->  	case 3:
->  		/* We store 24 bit samples in a 32 bit word. Keep the upper
->  		 * byte set to zero. */
-> -		ret =3D ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size,
-> -			&data[1]);
-> +		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
->  		break;
->  	}
-> =20
+>   *
+>   * Return:       0 on success, negative error otherwise.
+>   */
 
