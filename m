@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BE48C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jul 2020 20:54:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B7C6C433E7
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jul 2020 20:54:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 429102073A
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jul 2020 20:54:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F27EE2073A
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jul 2020 20:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726126AbgGSUyR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jul 2020 16:54:17 -0400
-Received: from relay9-d.mail.gandi.net ([217.70.183.199]:37081 "EHLO
+        id S1726700AbgGSUyZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jul 2020 16:54:25 -0400
+Received: from relay9-d.mail.gandi.net ([217.70.183.199]:53265 "EHLO
         relay9-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726073AbgGSUyR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2020 16:54:17 -0400
+        with ESMTP id S1726685AbgGSUyY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jul 2020 16:54:24 -0400
 X-Originating-IP: 195.189.32.242
 Received: from pc.localdomain (unknown [195.189.32.242])
         (Authenticated sender: contact@artur-rojek.eu)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id BF667FF804;
-        Sun, 19 Jul 2020 20:54:10 +0000 (UTC)
+        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id F21C7FF804;
+        Sun, 19 Jul 2020 20:54:19 +0000 (UTC)
 From:   Artur Rojek <contact@artur-rojek.eu>
 To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -35,11 +35,14 @@ To:     Dmitry Torokhov <dmitry.torokhov@gmail.com>,
 Cc:     Heiko Stuebner <heiko@sntech.de>,
         Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>,
         devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Artur Rojek <contact@artur-rojek.eu>
-Subject: [PATCH v9 1/5] IIO: Ingenic JZ47xx: Error check clk_enable calls.
-Date:   Sun, 19 Jul 2020 22:53:03 +0200
-Message-Id: <20200719205307.87385-1-contact@artur-rojek.eu>
+        linux-kernel@vger.kernel.org, Artur Rojek <contact@artur-rojek.eu>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v9 4/5] dt-bindings: iio/adc: Add touchscreen idx for JZ47xx SoC ADC
+Date:   Sun, 19 Jul 2020 22:53:06 +0200
+Message-Id: <20200719205307.87385-4-contact@artur-rojek.eu>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200719205307.87385-1-contact@artur-rojek.eu>
+References: <20200719205307.87385-1-contact@artur-rojek.eu>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -47,129 +50,40 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce error checks for the clk_enable calls used in this driver.
-As part of the changes, move clk_enable/clk_disable calls out of
-ingenic_adc_set_config and into respective logic of its callers.
+Introduce support for touchscreen channels found in JZ47xx SoCs.
 
 Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
 Tested-by: Paul Cercueil <paul@crapouillou.net>
+Acked-by: Rob Herring <robh@kernel.org>
 ---
 
  Changes:
 
- v6: new patch
+ v2-v7: no change
 
- v7: no change
+ v8: add XN/YN and XD/YD channels
 
- v8: move `clk_disable` outside the lock
+ v9: no change
 
- v9: remove `iio_priv_to_dev` usage
+ include/dt-bindings/iio/adc/ingenic,adc.h | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- drivers/iio/adc/ingenic-adc.c | 30 ++++++++++++++++++++++++------
- 1 file changed, 24 insertions(+), 6 deletions(-)
-
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 39c0a609fc94..059c2573e4a9 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -73,7 +73,6 @@ static void ingenic_adc_set_config(struct ingenic_adc *adc,
- {
- 	uint32_t cfg;
+diff --git a/include/dt-bindings/iio/adc/ingenic,adc.h b/include/dt-bindings/iio/adc/ingenic,adc.h
+index 42f871ab3272..4627a00e369e 100644
+--- a/include/dt-bindings/iio/adc/ingenic,adc.h
++++ b/include/dt-bindings/iio/adc/ingenic,adc.h
+@@ -7,5 +7,11 @@
+ #define INGENIC_ADC_AUX		0
+ #define INGENIC_ADC_BATTERY	1
+ #define INGENIC_ADC_AUX2	2
++#define INGENIC_ADC_TOUCH_XP	3
++#define INGENIC_ADC_TOUCH_YP	4
++#define INGENIC_ADC_TOUCH_XN	5
++#define INGENIC_ADC_TOUCH_YN	6
++#define INGENIC_ADC_TOUCH_XD	7
++#define INGENIC_ADC_TOUCH_YD	8
  
--	clk_enable(adc->clk);
- 	mutex_lock(&adc->lock);
- 
- 	cfg = readl(adc->base + JZ_ADC_REG_CFG) & ~mask;
-@@ -81,7 +80,6 @@ static void ingenic_adc_set_config(struct ingenic_adc *adc,
- 	writel(cfg, adc->base + JZ_ADC_REG_CFG);
- 
- 	mutex_unlock(&adc->lock);
--	clk_disable(adc->clk);
- }
- 
- static void ingenic_adc_enable(struct ingenic_adc *adc,
-@@ -124,6 +122,8 @@ static int ingenic_adc_write_raw(struct iio_dev *iio_dev,
- 				 long m)
- {
- 	struct ingenic_adc *adc = iio_priv(iio_dev);
-+	struct device *dev = iio_dev->dev.parent;
-+	int ret;
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_SCALE:
-@@ -131,6 +131,14 @@ static int ingenic_adc_write_raw(struct iio_dev *iio_dev,
- 		case INGENIC_ADC_BATTERY:
- 			if (!adc->soc_data->battery_vref_mode)
- 				return -EINVAL;
-+
-+			ret = clk_enable(adc->clk);
-+			if (ret) {
-+				dev_err(dev, "Failed to enable clock: %d\n",
-+					ret);
-+				return ret;
-+			}
-+
- 			if (val > JZ_ADC_BATTERY_LOW_VREF) {
- 				ingenic_adc_set_config(adc,
- 						       JZ_ADC_REG_CFG_BAT_MD,
-@@ -142,6 +150,9 @@ static int ingenic_adc_write_raw(struct iio_dev *iio_dev,
- 						       JZ_ADC_REG_CFG_BAT_MD);
- 				adc->low_vref_mode = true;
- 			}
-+
-+			clk_disable(adc->clk);
-+
- 			return 0;
- 		default:
- 			return -EINVAL;
-@@ -312,11 +323,19 @@ static int ingenic_adc_read_avail(struct iio_dev *iio_dev,
- 	};
- }
- 
--static int ingenic_adc_read_chan_info_raw(struct ingenic_adc *adc,
-+static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
- 					  struct iio_chan_spec const *chan,
- 					  int *val)
- {
- 	int bit, ret, engine = (chan->channel == INGENIC_ADC_BATTERY);
-+	struct ingenic_adc *adc = iio_priv(iio_dev);
-+
-+	ret = clk_enable(adc->clk);
-+	if (ret) {
-+		dev_err(iio_dev->dev.parent, "Failed to enable clock: %d\n",
-+			ret);
-+		return ret;
-+	}
- 
- 	/* We cannot sample AUX/AUX2 in parallel. */
- 	mutex_lock(&adc->aux_lock);
-@@ -325,7 +344,6 @@ static int ingenic_adc_read_chan_info_raw(struct ingenic_adc *adc,
- 		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, bit);
- 	}
- 
--	clk_enable(adc->clk);
- 	ret = ingenic_adc_capture(adc, engine);
- 	if (ret)
- 		goto out;
-@@ -342,8 +360,8 @@ static int ingenic_adc_read_chan_info_raw(struct ingenic_adc *adc,
- 
- 	ret = IIO_VAL_INT;
- out:
--	clk_disable(adc->clk);
- 	mutex_unlock(&adc->aux_lock);
-+	clk_disable(adc->clk);
- 
- 	return ret;
- }
-@@ -358,7 +376,7 @@ static int ingenic_adc_read_raw(struct iio_dev *iio_dev,
- 
- 	switch (m) {
- 	case IIO_CHAN_INFO_RAW:
--		return ingenic_adc_read_chan_info_raw(adc, chan, val);
-+		return ingenic_adc_read_chan_info_raw(iio_dev, chan, val);
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->channel) {
- 		case INGENIC_ADC_AUX:
+ #endif
 -- 
 2.27.0
 
