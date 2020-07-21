@@ -2,288 +2,167 @@ Return-Path: <SRS0=ZQOz=BA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EC57C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 00:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB12C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 02:41:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5863D2080D
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 00:13:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F0FE8206E9
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 02:41:32 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1595299293;
+	bh=naTltO2DM7NchiPHpNL1HrX5ZdvALgbMs+dxY3v1+PM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=0b8XxIOpfm6fkJWNnb4e8T6NQPmfPQjS86rjknFuS9nxLmfmY1cnc2qIz/SUY2j69
+	 mojVaGz4LIaWV+DLL35IJqnS6zbpTsKXJQef9kIZ3YT2FE78iCBpPg64MPW4NU10EJ
+	 mR2gGtGTAwa0vy40CWGv59TILHkcWPHl01D01rgg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726535AbgGUANR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jul 2020 20:13:17 -0400
-Received: from sender4-op-o17.zoho.com ([136.143.188.17]:17718 "EHLO
-        sender4-op-o17.zoho.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726390AbgGUANQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jul 2020 20:13:16 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1595290376; cv=none; 
-        d=zohomail.com; s=zohoarc; 
-        b=c04feixwmw0ORsyd7m6B9G7PbELzILNo1izJv3+LCP3dglJYVTFxXvy+dcJlehp1uM8hzoyi50oaujpJBlaaSSQ25L/CiJ8vFs/MyGnpCck40vBGvX72q925DfKkOC2npphZr+lBoG/sTknAzZmRnhs9FAJ+ZFa2DXGy+6S3sJQ=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=zohomail.com; s=zohoarc; 
-        t=1595290376; h=Content-Type:Cc:Date:From:In-Reply-To:MIME-Version:Message-ID:References:Subject:To; 
-        bh=HBh18ZeFYGnXvJ8nPFVO1avWOOm1oiKqv5JY3tNV4Xs=; 
-        b=IwSkvm6kQl4ld7f40chb0UEqxP8+cCk1bnAZFdc48rqdNimf4EO1KNk1Y3uvhC0QJhKpGKivGvwiBKWUbcHG8UZ9wZega82dEvsY971h7obstDqdiD7XA0DfEM3B5C2gQdtUUMaBCU7zS1yrQ/hAPA0tIjYwYbs34wmO5C20/2Y=
-ARC-Authentication-Results: i=1; mx.zohomail.com;
-        spf=pass  smtp.mailfrom=dan@dlrobertson.com;
-        dmarc=pass header.from=<dan@dlrobertson.com> header.from=<dan@dlrobertson.com>
-Received: from nessie (pool-108-28-30-30.washdc.fios.verizon.net [108.28.30.30]) by mx.zohomail.com
-        with SMTPS id 1595290372884776.3553577938961; Mon, 20 Jul 2020 17:12:52 -0700 (PDT)
-Date:   Mon, 20 Jul 2020 23:53:25 +0000
-From:   Dan Robertson <dan@dlrobertson.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: accel: bma400: add PM_SLEEP support
-Message-ID: <20200720235325.GB13636@nessie>
-References: <20200715050226.9751-1-dan@dlrobertson.com>
- <20200715050226.9751-2-dan@dlrobertson.com>
- <20200720122352.56846215@archlinux>
+        id S1728105AbgGUCla (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jul 2020 22:41:30 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:36836 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725857AbgGUCl3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jul 2020 22:41:29 -0400
+Received: by mail-io1-f65.google.com with SMTP id y2so19819947ioy.3;
+        Mon, 20 Jul 2020 19:41:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=BZy2xot0litRpRXUXxFeIS+8iZe62kRKLBlNU28eJM8=;
+        b=goxaWbDN7UbxgrLVNMoEcRWg1nmYGHBA0lgI4AUOjxNVlVs9zd7j6fi9k84exhsLgO
+         +pMTSKYQzashKrXqrXHBmVnC8EkD6OfDTjiate9hfBrEvWbZlDIl1iHd332iVQAhh66d
+         uRuwc0c8KmXhi5vPDh4+LDhlaxV5PO7mkAkus3G10am/YUgZIb4XXF0vkpuKWA/FlsuX
+         i8J3fYJYEKevfmssFmlll/i9m8xQu9D+TX4VwzYmZ9uSuJMe78H8rFGufGm79n0mYMMD
+         dDjbyvS8DpJlroCRh0HR2icOLUwM0N0ceiKJcxGv09hHMpT/jU9wkB0N331l2UMkBaL0
+         JZEg==
+X-Gm-Message-State: AOAM531zRxOJU6kW96zia08aq0MrNhftH5ZQ9LtCqJesM2ZtJT4mQKkI
+        6hrolBs0ZNWmQhoOAMvdTA==
+X-Google-Smtp-Source: ABdhPJx4wq0CR+X1AHsiljLR1qaEuDnmuF0lW90cd/SQASfiIUerJAsLgi1pCx0HCFuTeO43eQ1+aw==
+X-Received: by 2002:a5d:8f04:: with SMTP id f4mr26004570iof.33.1595299288770;
+        Mon, 20 Jul 2020 19:41:28 -0700 (PDT)
+Received: from xps15 ([64.188.179.252])
+        by smtp.gmail.com with ESMTPSA id w10sm9820954ilo.10.2020.07.20.19.41.27
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 20 Jul 2020 19:41:28 -0700 (PDT)
+Received: (nullmailer pid 3432124 invoked by uid 1000);
+        Tue, 21 Jul 2020 02:41:27 -0000
+Date:   Mon, 20 Jul 2020 20:41:27 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Nishant Malpani <nish.malpani25@gmail.com>
+Cc:     dragos.bogdan@analog.com, darius.berghe@analog.com,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 2/2] dt-bindings: iio: gyro: Add DT binding doc for
+ ADXRS290
+Message-ID: <20200721024127.GA3429416@bogus>
+References: <20200715092821.14625-1-nish.malpani25@gmail.com>
+ <20200720121633.7a9e5cd7@archlinux>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="s/l3CgOIzMHHjg/5"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200720122352.56846215@archlinux>
-X-Zoho-Virus-Status: 1
-X-ZohoMailClient: External
+In-Reply-To: <20200720121633.7a9e5cd7@archlinux>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
---s/l3CgOIzMHHjg/5
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Jul 20, 2020 at 12:23:52PM +0100, Jonathan Cameron wrote:
-> On Wed, 15 Jul 2020 01:02:26 -0400
-> Dan Robertson <dan@dlrobertson.com> wrote:
->=20
-> >  - Add system sleep ops if CONFIG_PM_SLEEP is set.
-> >  - Add attribute for setting the power mode of the
-> >    device.
->=20
-> This second part is a problem because power modes tend to be extremely
-> device specific.  Hence generic userspace is near impossible.
->=20
-> So what we try to do is to map these as much as possible to
-> things that the driver can figure out for itself, such as switching
-> parameters of how things are captured (sampling frequency etc) or
-> runtime pm.
->=20
-> Whilst this may not cover 'all' usecases, it will cover a lot more
-> than implementing a custom attribute.
-
-That makes sense. I'll drop this for now and think about it a bit, but
-I think runtime pm would make sense.
-
->=20
-> As a side note, a custom attribute also need Docs
-> in Documentation/ABI/testing/sysfs-bus-iio-*
->=20
-> Thanks,
->=20
-> Jonathan
->=20
->=20
-> >=20
-> > Signed-off-by: Dan Robertson <dan@dlrobertson.com>
+On Mon, Jul 20, 2020 at 12:16:33PM +0100, Jonathan Cameron wrote:
+> On Wed, 15 Jul 2020 14:58:21 +0530
+> Nishant Malpani <nish.malpani25@gmail.com> wrote:
+> 
+> > Add devicetree binding document for ADXRS290, a dual-axis MEMS gyroscope.
+> > 
+> > Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
 > > ---
-> >  drivers/iio/accel/bma400.h      |   3 +
-> >  drivers/iio/accel/bma400_core.c | 132 ++++++++++++++++++++++++--------
-> >  drivers/iio/accel/bma400_i2c.c  |   1 +
-> >  drivers/iio/accel/bma400_spi.c  |   1 +
-> >  4 files changed, 107 insertions(+), 30 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> > index 5ad10db9819f..e9dd9e918aac 100644
-> > --- a/drivers/iio/accel/bma400.h
-> > +++ b/drivers/iio/accel/bma400.h
-> > @@ -10,6 +10,7 @@
-> >  #define _BMA400_H_
-> > =20
-> >  #include <linux/bits.h>
-> > +#include <linux/pm_runtime.h>
-> >  #include <linux/regmap.h>
-> > =20
-> >  /*
-> > @@ -96,4 +97,6 @@ int bma400_probe(struct device *dev, struct regmap *r=
-egmap, const char *name);
-> > =20
-> >  int bma400_remove(struct device *dev);
-> > =20
-> > +extern const struct dev_pm_ops bma400_pm_ops;
+> >  .../bindings/iio/gyroscope/adi,adxrs290.yaml  | 52 +++++++++++++++++++
+> >  MAINTAINERS                                   |  1 +
+> >  2 files changed, 53 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+> > new file mode 100644
+> > index 000000000000..a997d945fdb0
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+> > @@ -0,0 +1,52 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +# Copyright 2020 Analog Devices Inc.
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/gyroscope/adi,adxrs290.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > > +
-> >  #endif
-> > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400=
-_core.c
-> > index cc77f89c048b..5af57b8e1fd7 100644
-> > --- a/drivers/iio/accel/bma400_core.c
-> > +++ b/drivers/iio/accel/bma400_core.c
-> > @@ -147,36 +147,6 @@ bma400_accel_get_mount_matrix(const struct iio_dev=
- *indio_dev,
-> >  	return &data->orientation;
-> >  }
-> > =20
-> > -static const struct iio_chan_spec_ext_info bma400_ext_info[] =3D {
-> > -	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bma400_accel_get_mount_matrix),
-> > -	{ }
-> > -};
->=20
-> It would be helpful to do this reorganizing as a precursor patch where
-> nothing functional changes.   Then we can see very quickly what is new
-> in the functional changes.
+> > +title: Analog Devices ADXRS290 Dual-Axis MEMS Gyroscope
+> > +
+> > +maintainers:
+> > +  - Nishant Malpani <nish.malpani25@gmail.com>
+> > +
+> > +description: |
+> > +  Bindings for the Analog Devices ADXRS290 dual-axis MEMS gyroscope device.
+> > +  https://www.analog.com/media/en/technical-documentation/data-sheets/ADXRS290.pdf
+> > +
+> > +properties:
+> > +  compatible:
+> > +    enum:
+> > +      - adi,adxrs290
+> 
+> I think we can use const here as only one item currently.
 
-I'll drop it for now. It isn't needed without the custom attribute.
+Yep. Really depends if you expect to add more.
 
-> > -
-> > -#define BMA400_ACC_CHANNEL(_axis) { \
-> > -	.type =3D IIO_ACCEL, \
-> > -	.modified =3D 1, \
-> > -	.channel2 =3D IIO_MOD_##_axis, \
-> > -	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW), \
-> > -	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> > -		BIT(IIO_CHAN_INFO_SCALE) | \
-> > -		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> > -	.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SAMP_FREQ) =
-| \
-> > -		BIT(IIO_CHAN_INFO_SCALE) | \
-> > -		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> > -	.ext_info =3D bma400_ext_info, \
-> > -}
-> > -
-> > -static const struct iio_chan_spec bma400_channels[] =3D {
-> > -	BMA400_ACC_CHANNEL(X),
-> > -	BMA400_ACC_CHANNEL(Y),
-> > -	BMA400_ACC_CHANNEL(Z),
-> > -	{
-> > -		.type =3D IIO_TEMP,
-> > -		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED),
-> > -		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> > -	},
-> > -};
-> > -
-> >  static int bma400_get_temp_reg(struct bma400_data *data, int *val, int=
- *val2)
-> >  {
-> >  	unsigned int raw_temp;
-> > @@ -542,6 +512,73 @@ static int bma400_set_power_mode(struct bma400_dat=
-a *data,
-> >  	return 0;
-> >  }
-> > =20
-> > +static const char * const bma400_power_modes[] =3D {
-> > +	"sleep",
-> > +	"low-power",
-> > +	"normal"
-> > +};
+> 
 > > +
-> > +int bma400_power_mode_enum_get(struct iio_dev *dev,
-> > +			       const struct iio_chan_spec *chan)
-> > +{
-> > +	struct bma400_data *data =3D iio_priv(dev);
+> > +  reg:
+> > +    maxItems: 1
 > > +
-> > +	return data->power_mode;
-> > +}
+> > +  spi-max-frequency:
+> > +    maximum: 5000000
 > > +
-> > +int bma400_power_mode_enum_set(struct iio_dev *dev,
-> > +			       const struct iio_chan_spec *chan,
-> > +			       unsigned int mode)
-> > +{
-> > +	struct bma400_data *data =3D iio_priv(dev);
-> > +	int ret;
+> > +  spi-cpol: true
 > > +
-> > +	mutex_lock(&data->mutex);
-> > +	ret =3D bma400_set_power_mode(data, mode);
-> > +	mutex_unlock(&data->mutex);
+> > +  spi-cpha: true
 > > +
-> > +	return ret;
-> > +}
-> > +
-> > +static const struct iio_enum bma400_power_mode_enum =3D {
-> > +	.items =3D bma400_power_modes,
-> > +	.num_items =3D ARRAY_SIZE(bma400_power_modes),
-> > +	.get =3D bma400_power_mode_enum_get,
-> > +	.set =3D bma400_power_mode_enum_set,
-> > +};
-> > +
-> > +static const struct iio_chan_spec_ext_info bma400_ext_info[] =3D {
-> > +	IIO_ENUM("power_mode", true, &bma400_power_mode_enum),
-> > +	IIO_ENUM_AVAILABLE("power_mode", &bma400_power_mode_enum),
-> > +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, bma400_accel_get_mount_matrix),
-> > +	{ }
-> > +};
-> > +
-> > +#define BMA400_ACC_CHANNEL(_axis) { \
-> > +	.type =3D IIO_ACCEL, \
-> > +	.modified =3D 1, \
-> > +	.channel2 =3D IIO_MOD_##_axis, \
-> > +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW), \
-> > +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
-> > +		BIT(IIO_CHAN_INFO_SCALE) | \
-> > +		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> > +	.info_mask_shared_by_type_available =3D BIT(IIO_CHAN_INFO_SAMP_FREQ) =
-| \
-> > +		BIT(IIO_CHAN_INFO_SCALE) | \
-> > +		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
-> > +	.ext_info =3D bma400_ext_info, \
-> > +}
-> > +
-> > +static const struct iio_chan_spec bma400_channels[] =3D {
-> > +	BMA400_ACC_CHANNEL(X),
-> > +	BMA400_ACC_CHANNEL(Y),
-> > +	BMA400_ACC_CHANNEL(Z),
-> > +	{
-> > +		.type =3D IIO_TEMP,
-> > +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_PROCESSED),
-> > +		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> > +	},
-> > +};
-> > +
-> >  static void bma400_init_tables(void)
-> >  {
-> >  	int raw;
-> > @@ -848,6 +885,41 @@ int bma400_remove(struct device *dev)
-> >  }
-> >  EXPORT_SYMBOL(bma400_remove);
-> > =20
-> > +#ifdef CONFIG_PM_SLEEP
->=20
-> Ifdef protections around PM functions tend to go wrong so usually
-> better to just mark them __maybe_unused and rely on the
-> linker removing them if they aren't.
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +  - spi-max-frequency
+> > +  - spi-cpol
+> > +  - spi-cpha
 
-Sounds good.
+Add:
 
-Cheers,
+additionalProperties: false
 
- - Dan
-
---s/l3CgOIzMHHjg/5
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCAAdFiEEF5dO2RaKc5C+SCJ9RcSmUsR+QqUFAl8WLnQACgkQRcSmUsR+
-QqWMgQ/9E+qDTqK5UQnqRHAStva0gEpwZgRlvlJ6RidrAYBGEnPwxq5kUChEHQb6
-J96pZnmtkIsLpEWCm/u3vbzirMFQPzT3iaZuhAS9A2VMR5PwFt+GCiKpfri2fBhy
-M9AM76T5iK1GE/eEqkvTBBdqrNyEVAcX1JRtDe3UmzjJ87ZfroqujWzJFvob1HN4
-3LQG5Pb7KO4F81SFahFo5xub/OQFS1UmuXg6lbr9utZ0owd2IGMdEtizpSkWyKV+
-gsDrqeojQRE5t7+TuqTiJSdLcSNhr3yrW3wOkfo5SreC7KTvlclndVbbKCuNZBUd
-/mIgA3eAjVVVXJFkVnwHmTwMeOSlh+id8NGjtlFGzaosKHWpGNdxh57+fmgf88/2
-nq10HM+0l8v1zeg6C+0FaO6HfR5HwM3N0Ln2mJAOzYZTiYrX8p+S/nepxoTQ/CYF
-TZDxTIwX+pijmMBS8B+0Nw6UQBAPTzZKxi76RTMZP6ODM/YQkH5ZVKORXW/kUGss
-mvIzwnUXCLgykRNCvBWFjzcIyu1Lmj7Dj7NTFgtzwOZKAR2plUGR3Ehpw7fCb3hW
-2v1uV+DMtvgIsDh8OsUC9aqOVOMea1tt00liOS3JrXigxJlR6aI9l0RXKa8WM4mN
-IE52Vk+FQOVpyxrnMbsGraQCkuCG+nHj6i8nQDQT9m/jLnN34MY=
-=hDs2
------END PGP SIGNATURE-----
-
---s/l3CgOIzMHHjg/5--
+> > +
+> > +examples:
+> > +  - |
+> > +    spi {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +        gyro@0 {
+> > +                   compatible = "adi,adxrs290";
+> > +                   reg = <0>;
+> > +                   spi-max-frequency = <5000000>;
+> > +                   spi-cpol;
+> > +                   spi-cpha;
+> > +        };
+> > +    };
+> > +...
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index dd02cfc410e8..0bb8ac90fba1 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -1103,6 +1103,7 @@ M:	Nishant Malpani <nish.malpani25@gmail.com>
+> >  L:	linux-iio@vger.kernel.org
+> >  S:	Supported
+> >  F:	drivers/iio/gyro/adxrs290.c
+> > +F:	Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+> >  
+> >  ANALOG DEVICES INC ASOC CODEC DRIVERS
+> >  M:	Lars-Peter Clausen <lars@metafoo.de>
+> 
