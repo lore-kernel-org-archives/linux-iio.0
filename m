@@ -2,50 +2,52 @@ Return-Path: <SRS0=ZQOz=BA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46FB3C433E4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A580C433E6
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 16F002065D
+	by mail.kernel.org (Postfix) with ESMTP id 6EDC52065D
 	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1595351815;
-	bh=MfPdozOyemA99HJNgFz0+GO6Fu/S01G7kgq4oq0GAEw=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=fCtpqo/WlyEKcbVYyfaG254xs8MZkHElhWaRXIPeEfIjzEjghuZd+uMgvWZtXKhkE
-	 qSb/am1I7HAjsp2EgX9muSqixf2G/UBuwtJOv7gFMOWbdqN29dZ75lI8csw7X/HUGy
-	 /gjq936EM1nXqaF5R3zrda07JeG/wPZWWiWv6LmM=
+	bh=JVhwIlzBLcTPaxL/9vZkWGfMRn9t9TqJg8QDSMKRhew=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=yK4bYfNvop94mdjM+p0jsjWW5JVSbzgv/wZMP+OXbMIFUi29cuMYccqekjhdY+Cir
+	 BQcOuaILiuCzYvSt/Lj4eh81/SDey9Tqi5egud5vw7cuZ/HSnRt6JbiXv+ffzNBOX4
+	 rp/IHzDsFOaBqYKCJtNt76R4+HvUY6Q5KyEsWLho=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730566AbgGURQx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Jul 2020 13:16:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55478 "EHLO mail.kernel.org"
+        id S1730778AbgGURQy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Jul 2020 13:16:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55510 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730028AbgGURQt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 21 Jul 2020 13:16:49 -0400
+        id S1730313AbgGURQv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 21 Jul 2020 13:16:51 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6E01B2065D;
-        Tue, 21 Jul 2020 17:16:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D6E72207BB;
+        Tue, 21 Jul 2020 17:16:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595351809;
-        bh=MfPdozOyemA99HJNgFz0+GO6Fu/S01G7kgq4oq0GAEw=;
-        h=From:To:Cc:Subject:Date:From;
-        b=jwDcuJZyb7UzKoML6d9iqod6+iiLg4e3baCO9lkBSxEQZt8i+prkdVgtGBgln+5Gy
-         4iIcKkwIwvkAK13ff426eZwgFi2Onluaz+Dbn7zeCVjayXQTp5ofUJ/9QBC2BVEY0X
-         dAESqdp5zfgyfkpwznR/s2Cw55yf03Tpr4UmuIVs=
+        s=default; t=1595351811;
+        bh=JVhwIlzBLcTPaxL/9vZkWGfMRn9t9TqJg8QDSMKRhew=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=Lh56TkvwYM/2YiLGJ5vDBjJzy5p1D+rPWDCn98YUQIkpfcQpqqOb0mwydgzMOf05D
+         +JeRlpMCkmLMvzTXiDY3dRkRAhknCuhHlfXlFtbSG80nKfoTcSijVP00UOIgNgBIU+
+         tkMrVTkTse4EiSIj6Ge5ZNs96rh6hwvluVtT1QH4=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 0/5] iio:adc more of_match_ptr and similar removal
-Date:   Tue, 21 Jul 2020 18:14:39 +0100
-Message-Id: <20200721171444.825099-1-jic23@kernel.org>
+Subject: [PATCH v2 2/5] iio:adc:ti-adc081c: Drop ACPI ids that seem very unlikely to be official.
+Date:   Tue, 21 Jul 2020 18:14:41 +0100
+Message-Id: <20200721171444.825099-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20200721171444.825099-1-jic23@kernel.org>
+References: <20200721171444.825099-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -55,48 +57,71 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Remaining set from v1 + one additional patch from comments in that
-series.
+We have no known users of these in the wild.
+it seems very unlikely these are real IDS having the form ADCXXXX
+as that ID is owned by Achnor Datacomm not TI.
 
-Changes since V1.
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+v1->v2
+New patch 
+ drivers/iio/adc/ti-adc081c.c | 24 +-----------------------
+ 1 file changed, 1 insertion(+), 23 deletions(-)
 
-* Most patches now merged this is cleaning up the leftovers.
-* Rephrase commit messages for cases where there is an ACPI ID.
-* Add a patch to drop the unlikely explicit ACPI support in adc081c.
-* Avoid the casting away of const in axp20x by keeping it const throughout.
-* bcm_adc add a kconfig protection to limit driver to being built when
-  CONFIG_OF enabled, or COMPILE_TEST for build tests.
-  
-Continuation of slow process to try and remove use of of_match_ptr
-to supress asignment of the of_device_id table when !CONFIG_OF.
-
-Usual argument that it prevents ACPI being used with these drivers
-via PRP0001 in DSDT.  Perhaps more usefully we are cutting down on the
-number of places it can be cut and paste from into new drivers.
-
-This is just the low hanging fruit.  I'm not yet sure if it makes
-sense to expend the effort to use generic firmware properties etc
-for some of the remaining drivers as it is unlikely they'll ever
-be used with anything other than device tree. There are 4 current
-ADC drivers in this more complex category.
-
-Jonathan Cameron (5):
-  iio:adc:axp20x: Convert from OF to generic fw / device properties
-  iio:adc:ti-adc081c: Drop ACPI ids that seem very unlikely to be
-    official.
-  iio:adc:ti-adc108s102: Drop CONFIG_OF and of_match_ptr protections
-  iio:adc:ti-adc128s052: drop of_match_ptr protection
-  iio:adc:bcm_iproc: Drop of_match_ptr protection and switch to
-    mod_devicetable.h
-
- drivers/iio/adc/Kconfig         |  2 +-
- drivers/iio/adc/axp20x_adc.c    | 14 +++++++-------
- drivers/iio/adc/bcm_iproc_adc.c |  4 ++--
- drivers/iio/adc/ti-adc081c.c    | 24 +-----------------------
- drivers/iio/adc/ti-adc108s102.c |  5 ++---
- drivers/iio/adc/ti-adc128s052.c |  3 ++-
- 6 files changed, 15 insertions(+), 37 deletions(-)
-
+diff --git a/drivers/iio/adc/ti-adc081c.c b/drivers/iio/adc/ti-adc081c.c
+index 9426f70a8005..8bc04cfae465 100644
+--- a/drivers/iio/adc/ti-adc081c.c
++++ b/drivers/iio/adc/ti-adc081c.c
+@@ -19,7 +19,6 @@
+ #include <linux/i2c.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+-#include <linux/acpi.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+@@ -153,17 +152,7 @@ static int adc081c_probe(struct i2c_client *client,
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
+ 		return -EOPNOTSUPP;
+ 
+-	if (ACPI_COMPANION(&client->dev)) {
+-		const struct acpi_device_id *ad_id;
+-
+-		ad_id = acpi_match_device(client->dev.driver->acpi_match_table,
+-					  &client->dev);
+-		if (!ad_id)
+-			return -ENODEV;
+-		model = &adcxx1c_models[ad_id->driver_data];
+-	} else {
+-		model = &adcxx1c_models[id->driver_data];
+-	}
++	model = &adcxx1c_models[id->driver_data];
+ 
+ 	iio = devm_iio_device_alloc(&client->dev, sizeof(*adc));
+ 	if (!iio)
+@@ -238,21 +227,10 @@ static const struct of_device_id adc081c_of_match[] = {
+ };
+ MODULE_DEVICE_TABLE(of, adc081c_of_match);
+ 
+-#ifdef CONFIG_ACPI
+-static const struct acpi_device_id adc081c_acpi_match[] = {
+-	{ "ADC081C", ADC081C },
+-	{ "ADC101C", ADC101C },
+-	{ "ADC121C", ADC121C },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(acpi, adc081c_acpi_match);
+-#endif
+-
+ static struct i2c_driver adc081c_driver = {
+ 	.driver = {
+ 		.name = "adc081c",
+ 		.of_match_table = adc081c_of_match,
+-		.acpi_match_table = ACPI_PTR(adc081c_acpi_match),
+ 	},
+ 	.probe = adc081c_probe,
+ 	.remove = adc081c_remove,
 -- 
 2.27.0
 
