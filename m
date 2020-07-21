@@ -2,337 +2,248 @@ Return-Path: <SRS0=ZQOz=BA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 923FCC433ED
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 19:36:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE732C433E1
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 19:46:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66BE42080D
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 19:36:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 95BB8206C1
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 19:46:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="LswHUBdq"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="XKWF4kx/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730696AbgGUTgO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Jul 2020 15:36:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45808 "EHLO
+        id S1730250AbgGUTqw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Jul 2020 15:46:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730639AbgGUTgN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2020 15:36:13 -0400
-Received: from mail-qk1-x743.google.com (mail-qk1-x743.google.com [IPv6:2607:f8b0:4864:20::743])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F007C0619DA;
-        Tue, 21 Jul 2020 12:36:13 -0700 (PDT)
-Received: by mail-qk1-x743.google.com with SMTP id e13so20540928qkg.5;
-        Tue, 21 Jul 2020 12:36:13 -0700 (PDT)
+        with ESMTP id S1728683AbgGUTqv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jul 2020 15:46:51 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AED36C061794;
+        Tue, 21 Jul 2020 12:46:51 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id k71so2063279pje.0;
+        Tue, 21 Jul 2020 12:46:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=EkmSpmhEZ7Vcfm2rjya4j142Ah+gIfxqSabZ9X2+OQk=;
-        b=LswHUBdqdFDzDoWaN5hiGPSzeG14JPwzq5oiZbcopOsfAfQMECrJZoYvZRJk3vRVS+
-         IYnOa4FQgrC/ATGbjm+TpIJuyS8RXAJKuHFY8Fb8+72i6psvcjb8eP7Et36GzODXUkFj
-         G0B17T1ZD0IiV4Wuv4B2/XhDp3HB7qCi1tSm6mGmLWS/cX1ZcP33wDYxCwUGUcc0PfJT
-         9hMhon0UZc0himDV8vSG2Yjzu9adZg6HDeDA0jmV+RRaOJ1mw7Ek8U9ve9NogXebsMY8
-         k+DQoItLyq+3pisZeiVnKmDYPvBZoa/nvBhIMuX8KyjfoOsMJZ4xGXjx0W8dL9D46TFE
-         F+sA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=emtnkyfOV2ggh6E9ksv03j+Pmvd7gDdXsJiz8QGxybQ=;
+        b=XKWF4kx/DVWVpxqZriz8KsdyBtxx91kmjf/0wDrR39GLSuESkMcXD93n6ddXS9Ry0y
+         pYsq4HKU6Bqs/AIfOVJl3erdchvuBtdboCxV4NkgLwXClu+01KLE+EqUA4w1XT4R7UXj
+         hXQG5JIjYVo8Z5Qlwy5AAthQ4cqZzV7a12c9vywO9QtQ5Ll3Ba+HJxxxsk/RQ18d6GRp
+         4Ryh9t9ur7qmsKwajeSb4UDYBPpXfYJUkWvSrw/KgGcfW5Jqo/ut5+08GQ0MeO/1WvIC
+         7uqZEL6/Cl6nWzuwR6ARnxMaZ51BLbmYJ6rfwi5+ca8LFrjnM8Cts79gumpua/ieUy7b
+         jjdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=EkmSpmhEZ7Vcfm2rjya4j142Ah+gIfxqSabZ9X2+OQk=;
-        b=JEh2WMUBQhqLSgbX2G5vjmKhzR2JLWpQbkHbUaq0sM6ej8IKkcHVPHfY6SFr7ju/Me
-         XV83BZNkSDg+5/YvRN6UWxQYZtKjF6fZuhn6Az9LimtSDhYPZhVTRzR3QUEan/5lrsX0
-         a7/5iC+IgTEweAQlejwOwCmkxg02v75vbMoH19Q2sxZg5AVML2Q7nPym3H9KtaV1YYIW
-         lgt+Uc3BWpgP6slV3B0tEAUaC2JPPBKqttO6QMGqs/sVnS9czhHPHfraFXuHyyQ917wc
-         UIWB8QLl6u3luT2PWyb4+bPkJjX8KMA4RAZMdXkpdV4HLaHFZs/VAjcNDYd60JTBFR6q
-         dfHA==
-X-Gm-Message-State: AOAM530Qbl8uN55U0EGBk42H2YB8dftmeCJxxMaL4mXlE/ilsQkYUvyi
-        uTH1Y5heEjfeLWlm76Py/go=
-X-Google-Smtp-Source: ABdhPJzWz1aEsBaigm4673xyKRgmVwtNkd72PAJG1KG5LD9K3GN8e60qf7VA+P4ubw/TBm4D726Kvg==
-X-Received: by 2002:ae9:dcc6:: with SMTP id q189mr29931803qkf.332.1595360172014;
-        Tue, 21 Jul 2020 12:36:12 -0700 (PDT)
-Received: from localhost.localdomain (072-189-064-225.res.spectrum.com. [72.189.64.225])
-        by smtp.gmail.com with ESMTPSA id j72sm3331351qke.20.2020.07.21.12.36.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 21 Jul 2020 12:36:11 -0700 (PDT)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     jic23@kernel.org
-Cc:     kamel.bouhara@bootlin.com, gwendal@chromium.org,
-        alexandre.belloni@bootlin.com, david@lechnology.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
-        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 2/5] docs: counter: Update to reflect sysfs internalization
-Date:   Tue, 21 Jul 2020 15:35:48 -0400
-Message-Id: <79e05c620129b35317684e8ef4e573bce531570d.1595358237.git.vilhelm.gray@gmail.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <cover.1595358237.git.vilhelm.gray@gmail.com>
-References: <cover.1595358237.git.vilhelm.gray@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=emtnkyfOV2ggh6E9ksv03j+Pmvd7gDdXsJiz8QGxybQ=;
+        b=jUbVSitNUg72AGeuPzZOc5NZD+VCRVvh7EDUWj7QuMYQW2tcX7sUzayKBugwcKAZXW
+         nVPWYR0eiykRuymguD8XlOYerRGH/2ik6IO+5L5cvr0yGSQnh1Z/ymSkJBeEpLuwtW5w
+         Ta9w/LJaXcaTFztZXxGlEhvgiOXYaQRlS9HsFdm+1G8tWsEdvvUTA9t3WcD0fPGjajT2
+         prjBdzqM9ZlCM/8hHP22i/UwdXEHwYKBfjXu4IH8mvObfIpYEieHHGO7X9e1OuhEvkmJ
+         1OMHHTOV4l0BRZI7RPNHY7UYX3vE9Mi2FUCaWXObg051Gdek7vY8pZDdIn4lNxI39uir
+         4bvA==
+X-Gm-Message-State: AOAM533fcA8FPZnlQwwcKX9VEtmA1JbOm9nkD3veU+sOKClfDWQS9lgN
+        hlaFvRZXdTamvT+Ul/gXXfYrBfb47Fws7I9YWV0=
+X-Google-Smtp-Source: ABdhPJxo31nBPjhkEE/1gV96iiqviUyTXpLJxQpU+mCt242thfkFWOSS6yGkbTtx0DUKOPYzPRIwlQVbysujE59HzTk=
+X-Received: by 2002:a17:90a:a393:: with SMTP id x19mr6589336pjp.228.1595360811110;
+ Tue, 21 Jul 2020 12:46:51 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200721181926.27046-1-nish.malpani25@gmail.com>
+In-Reply-To: <20200721181926.27046-1-nish.malpani25@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 21 Jul 2020 22:46:34 +0300
+Message-ID: <CAHp75Vdr+Uo2uw3mzYP+LMRgp-eyi+YjG=O+wGVqyYx-+MRCaw@mail.gmail.com>
+Subject: Re: [PATCH v2 1/2] iio: gyro: Add driver support for ADXRS290
+To:     Nishant Malpani <nish.malpani25@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        "Bogdan, Dragos" <dragos.bogdan@analog.com>,
+        darius.berghe@analog.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Counter subsystem architecture and driver implementations have
-changed in order to handle Counter sysfs interactions in a more
-consistent way. This patch updates the Generic Counter interface
-documentation to reflect the changes.
+On Tue, Jul 21, 2020 at 9:20 PM Nishant Malpani
+<nish.malpani25@gmail.com> wrote:
+>
+> ADXRS290 is a high performance MEMS pitch and roll (dual-axis in-plane)
+> angular rate sensor (gyroscope) designed for use in stabilization
+> applications. It also features an internal temperature sensor and
+> programmable high-pass and low-pass filters.
+>
+> Add support for ADXRS290 in direct-access mode for now.
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- Documentation/driver-api/generic-counter.rst | 216 +++++++++++++------
- 1 file changed, 150 insertions(+), 66 deletions(-)
+> Datasheet:
+> Link: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXRS290.pdf
 
-diff --git a/Documentation/driver-api/generic-counter.rst b/Documentation/driver-api/generic-counter.rst
-index b02c52cd69d6..fa2d699d44a5 100644
---- a/Documentation/driver-api/generic-counter.rst
-+++ b/Documentation/driver-api/generic-counter.rst
-@@ -250,8 +250,8 @@ for defining a counter device.
- .. kernel-doc:: drivers/counter/counter.c
-    :export:
- 
--Implementation
--==============
-+Driver Implementation
-+=====================
- 
- To support a counter device, a driver must first allocate the available
- Counter Signals via counter_signal structures. These Signals should
-@@ -267,25 +267,59 @@ respective counter_count structure. These counter_count structures are
- set to the counts array member of an allocated counter_device structure
- before the Counter is registered to the system.
- 
--Driver callbacks should be provided to the counter_device structure via
--a constant counter_ops structure in order to communicate with the
--device: to read and write various Signals and Counts, and to set and get
--the "action mode" and "function mode" for various Synapses and Counts
--respectively.
-+Driver callbacks must be provided to the counter_device structure in
-+order to communicate with the device: to read and write various Signals
-+and Counts, and to set and get the "action mode" and "function mode" for
-+various Synapses and Counts respectively.
- 
- A defined counter_device structure may be registered to the system by
- passing it to the counter_register function, and unregistered by passing
- it to the counter_unregister function. Similarly, the
--devm_counter_register and devm_counter_unregister functions may be used
--if device memory-managed registration is desired.
--
--Extension sysfs attributes can be created for auxiliary functionality
--and data by passing in defined counter_device_ext, counter_count_ext,
--and counter_signal_ext structures. In these cases, the
--counter_device_ext structure is used for global/miscellaneous exposure
--and configuration of the respective Counter device, while the
--counter_count_ext and counter_signal_ext structures allow for auxiliary
--exposure and configuration of a specific Count or Signal respectively.
-+devm_counter_register function may be used if device memory-managed
-+registration is desired.
-+
-+The struct counter_data structure is used to define counter extensions
-+for Signals, Synapses, and Counts.
-+
-+The "type" member specifies the type of high-level data (e.g. BOOL,
-+COUNT_DIRECTION, etc.) handled by this extension. The "`*_read`" and
-+"`*_write`" members can then be set by the counter device driver with
-+callbacks to handle that data using native C data types (i.e. u8, u64,
-+etc.).
-+
-+Convenience macros such as `COUNTER_DATA_COUNT_U64` are provided for use
-+by driver authors. In particular, driver authors are expected to use
-+the provided macros for standard Counter subsystem attributes in order
-+to maintain a consistent interface for userspace. For example, a counter
-+device driver may define several standard attributes like so::
-+
-+        struct counter_data count_ext[] = {
-+                COUNTER_DATA_DIRECTION(count_direction_read),
-+                COUNTER_DATA_ENABLE(count_enable_read, count_enable_write),
-+                COUNTER_DATA_CEILING(count_ceiling_read, count_ceiling_write),
-+        };
-+
-+This makes it simple to see, add, and modify the attributes that are
-+supported by this driver ("direction", "enable", and "ceiling") and to
-+maintain this code without getting lost in a web of struct braces.
-+
-+Callbacks must match the function type expected for the respective
-+component or extension. These function types are defined in the struct
-+counter_data structure as the "`*_read`" and "`*_write`" union members.
-+
-+The corresponding callback prototypes for the extensions mentioned in
-+the previous example above would be::
-+
-+        int count_direction_read(struct counter_device *counter,
-+                                 struct counter_count *count, u8 *direction);
-+        int count_enable_read(struct counter_device *counter,
-+                              struct counter_count *count, u8 *enable);
-+        int count_enable_write(struct counter_device *counter,
-+                               struct counter_count *count, u8 enable);
-+        int count_ceiling_read(struct counter_device *counter,
-+                               struct counter_count *count, u64 *ceiling);
-+        int count_ceiling_write(struct counter_device *counter,
-+                                struct counter_count *count, u64 ceiling);
- 
- Determining the type of extension to create is a matter of scope.
- 
-@@ -313,52 +347,102 @@ Determining the type of extension to create is a matter of scope.
-   chip overheated via a device extension called "error_overtemp":
-   /sys/bus/counter/devices/counterX/error_overtemp
- 
--Architecture
--============
--
--When the Generic Counter interface counter module is loaded, the
--counter_init function is called which registers a bus_type named
--"counter" to the system. Subsequently, when the module is unloaded, the
--counter_exit function is called which unregisters the bus_type named
--"counter" from the system.
--
--Counter devices are registered to the system via the counter_register
--function, and later removed via the counter_unregister function. The
--counter_register function establishes a unique ID for the Counter
--device and creates a respective sysfs directory, where X is the
--mentioned unique ID:
--
--    /sys/bus/counter/devices/counterX
--
--Sysfs attributes are created within the counterX directory to expose
--functionality, configurations, and data relating to the Counts, Signals,
--and Synapses of the Counter device, as well as options and information
--for the Counter device itself.
--
--Each Signal has a directory created to house its relevant sysfs
--attributes, where Y is the unique ID of the respective Signal:
--
--    /sys/bus/counter/devices/counterX/signalY
--
--Similarly, each Count has a directory created to house its relevant
--sysfs attributes, where Y is the unique ID of the respective Count:
--
--    /sys/bus/counter/devices/counterX/countY
--
--For a more detailed breakdown of the available Generic Counter interface
--sysfs attributes, please refer to the
--Documentation/ABI/testing/sysfs-bus-counter file.
--
--The Signals and Counts associated with the Counter device are registered
--to the system as well by the counter_register function. The
--signal_read/signal_write driver callbacks are associated with their
--respective Signal attributes, while the count_read/count_write and
--function_get/function_set driver callbacks are associated with their
--respective Count attributes; similarly, the same is true for the
--action_get/action_set driver callbacks and their respective Synapse
--attributes. If a driver callback is left undefined, then the respective
--read/write permission is left disabled for the relevant attributes.
--
--Similarly, extension sysfs attributes are created for the defined
--counter_device_ext, counter_count_ext, and counter_signal_ext
--structures that are passed in.
-+Subsystem Architecture
-+======================
-+
-+Counter drivers pass and take data natively (i.e. `u8`, `u64`, etc.) and
-+the shared counter module handles the translation between the sysfs
-+interface. This gurantees a standard userspace interface for all counter
-+drivers, and helps generalize the Generic Counter driver ABI in order to
-+support the Generic Counter chrdev interface without significant changes
-+to the existing counter drivers.
-+
-+A high-level view of how a count value is passed down from a counter
-+driver is exemplified by the following::
-+
-+       Count data request:
-+       ~~~~~~~~~~~~~~~~~~~
-+                 ----------------------
-+                / Counter device       \
-+                +----------------------+
-+                | Count register: 0x28 |
-+                +----------------------+
-+                        |
-+                 -----------------
-+                / raw count data /
-+                -----------------
-+                        |
-+                        V
-+                +----------------------------+
-+                | Counter device driver      |----------+
-+                +----------------------------+          |
-+                | Processes data from device |   -------------------
-+                |----------------------------|  / driver callbacks /
-+                | Type: u64                  |  -------------------
-+                | Value: 42                  |          |
-+                +----------------------------+          |
-+                        |                               |
-+                 ----------                             |
-+                / u64     /                             |
-+                ----------                              |
-+                        |                               |
-+                        |                               V
-+                        |               +----------------------+
-+                        |               | Counter core         |
-+                        |               +----------------------+
-+                        |               | Routes device driver |
-+                        |               | callbacks to the     |
-+                        |               | userspace interfaces |
-+                        |               +----------------------+
-+                        |                       |
-+                        |                -------------------
-+                        |               / driver callbacks /
-+                        |               -------------------
-+                        |                       |
-+                +-------+                       |
-+                |                               |
-+                |               +---------------+
-+                |               |
-+                V               |
-+        +--------------------+  |
-+        | Counter sysfs      |<-+
-+        +--------------------+
-+        | Translates to the  |
-+        | standard Counter   |
-+        | sysfs output       |
-+        |--------------------|
-+        | Type: const char * |
-+        | Value: "42"        |
-+        +--------------------+
-+                |
-+         ---------------
-+        / const char * /
-+        ---------------
-+                |
-+                V
-+        +--------------------------------------------------+
-+        | `/sys/bus/counter/devices/counterX/countY/count` |
-+        +--------------------------------------------------+
-+        \ Count: "42"                                      /
-+         --------------------------------------------------
-+
-+There are three primary components involved:
-+
-+Counter device driver
-+---------------------
-+Communicates with the hardware device to read/write data; e.g. counter
-+drivers for quadrature encoders, timers, etc.
-+
-+Counter core
-+------------
-+Registers the counter device driver to the system so that the respective
-+callbacks are called during userspace interaction.
-+
-+Counter sysfs
-+-------------
-+Translates counter data to the standard Counter sysfs interface format
-+and vice versa.
-+
-+Please refer to the `Documentation/ABI/testing/sysfs-bus-counter` file
-+for a detailed breakdown of the available Generic Counter interface
-+sysfs attributes.
+Drop that 'Link:' part and followed blank line, so get something like
+
+Datasheet: https://...
+Signed-off-by: ...
+
+> Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
+
+...
+
+> +config ADXRS290
+> +       tristate "Analog Devices ADXRS290 Dual-Axis MEMS Gyroscope SPI driver"
+> +       depends on SPI
+> +       help
+> +         Say yes here to build support for Analog Devices ADXRS290 programmable
+> +         digital output gyroscope.
+> +
+> +         This driver can also be built as a module. If so, the module will be
+> +         called adxrs290.
+
+
+> +enum adxrs290_mode {
+> +       STANDBY,
+> +       MEASUREMENT,
+> +};
+
+> +struct adxrs290_state {
+> +       struct spi_device       *spi;
+> +       /* Serialize reads and their subsequent processing */
+> +       struct mutex            lock;
+> +       enum adxrs290_mode      mode;
+> +       unsigned int            lpf_3db_freq_idx;
+> +       unsigned int            hpf_3db_freq_idx;
+> +};
+
+...
+
+> +/*
+> + * Available cut-off frequencies of the low pass filter in Hz.
+> + * The integer part and fractional part are represented separately.
+> + */
+
+> +static const int adxrs290_lpf_3db_freq_tbl[][2] = {
+
+What about adxrs290_lpf_3db_freq_hz_table ?
+
+> +};
+> +
+> +/*
+> + * Available cut-off frequencies of the high pass filter in Hz.
+> + * The integer part and fractional part are represented separately.
+> + */
+> +static const int adxrs290_hpf_3db_freq_tbl[][2] = {
+
+Ditto.
+
+> +};
+
+...
+
+> +static int adxrs290_get_rate_data(struct iio_dev *indio_dev, const u8 cmd,
+> +                                 unsigned int *val)
+> +{
+> +       struct adxrs290_state *st = iio_priv(indio_dev);
+
+> +       int ret = 0;
+
+Purpose of this?
+
+> +       u16 temp;
+> +
+> +       mutex_lock(&st->lock);
+> +       temp = spi_w8r16(st->spi, cmd);
+
+> +       if (temp < 0) {
+
+How can this ever happen?
+
+> +               ret = temp;
+> +               goto err_unlock;
+> +       }
+> +
+> +       *val = temp;
+> +
+> +err_unlock:
+> +       mutex_unlock(&st->lock);
+> +       return ret;
+> +}
+
+Ditto for the rest of the similar cases.
+
+...
+
+> +       case IIO_CHAN_INFO_SCALE:
+> +               switch (chan->type) {
+> +               case IIO_ANGL_VEL:
+> +                       *val = 0;
+
+
+> +                       *val2 = 87266;
+
+Magic!
+
+> +                       return IIO_VAL_INT_PLUS_NANO;
+> +               case IIO_TEMP:
+
+> +                       *val = 100;
+
+Magic!
+
+> +                       return IIO_VAL_INT;
+> +               default:
+> +                       return -EINVAL;
+> +               }
+
+...
+
+> +               *vals = (const int *)adxrs290_lpf_3db_freq_tbl;
+
+Why casting?
+
+...
+
+> +               *vals = (const int *)adxrs290_hpf_3db_freq_tbl;
+
+Ditto.
+
+...
+
+
+> +       struct iio_dev *indio_dev;
+> +       struct adxrs290_state *st;
+
+> +       int ret;
+> +       u8 val, val2;
+
+Swap them to have in reversed spruce tree order.
+
+...
+
+> +       indio_dev->dev.parent = &spi->dev;
+
+Do you need this?
+
+> +       /* max transition time to measurement mode */
+> +       msleep_interruptible(ADXRS290_MAX_TRANSITION_TIME_MS);
+
+I'm not sure what the point of interruptible variant here?
+
+...
+
+> +static const struct of_device_id adxrs290_of_match[] = {
+> +       { .compatible = "adi,adxrs290" },
+
+> +       { },
+
+No comma here!
+
+> +};
+
 -- 
-2.27.0
-
+With Best Regards,
+Andy Shevchenko
