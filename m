@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2A5EC433E7
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60CE5C433EA
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C3232207BB
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 345662065D
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jul 2020 17:16:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595351816;
-	bh=ucw080tQlfKhilxnj/V+gVSUilw/vxsoDGM2VnjUU6c=;
+	s=default; t=1595351817;
+	bh=yvn1cuTRX53siM51hQw6t4ITmNMCRxa+9xE0PsEy5fE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Iruaa64ZCAdLeY1X27FxeeVubyfcrCFUGNCCOMKPkh/jHlEpVrlD3hbwmFIhOR0P7
-	 r/ikN2Oxd13qE76aIgh/XzQM6aLvxeSfHftZvqKOytiTYQ9z5fVgxyVudAbexsHXc/
-	 5vz4DZM6rZOKF3iFegyqlmJ/KbpnPNFPMXw+fIgI=
+	b=ftn2z7n8RiP0vuA9wihN76Xu2X6/XtbhvKzXAD/b3QTTWLEusyPPxXCvAuo6+7bkx
+	 Srr98zaBcQUR7P43TWFnzb3zU84TsLFbgo+omC9xvNOKM2PhOI6ZO+w2kmzaTggegj
+	 8MdjWFdI7xqs8gIELFmda3apuYX+geJ79BdEYQxA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730313AbgGURQz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1730334AbgGURQz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 21 Jul 2020 13:16:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55496 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:55522 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730259AbgGURQv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 21 Jul 2020 13:16:51 -0400
+        id S1730344AbgGURQx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 21 Jul 2020 13:16:53 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8B5FD20792;
-        Tue, 21 Jul 2020 17:16:49 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F17AC22482;
+        Tue, 21 Jul 2020 17:16:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595351810;
-        bh=ucw080tQlfKhilxnj/V+gVSUilw/vxsoDGM2VnjUU6c=;
+        s=default; t=1595351812;
+        bh=yvn1cuTRX53siM51hQw6t4ITmNMCRxa+9xE0PsEy5fE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NEkWvHslzDrJ/BX4YLsILUQ6QbDJr9vFziMgNHln3tXalaOwvnxhUcADW7u4F4kaB
-         a2JZZrimFf7Ruq17UvVkRJ0kzAQS1YLDecBmOnNkV0KG6N1r5jXt8jIc0mAAVIy5sU
-         xap71kXrP8YSbRTJeLKLdrIGDMDAAR2hDeht1XNY=
+        b=fkcVSO2IZMApdK3PpDE/CJHsp5JVW31UE6zRs11qnIrrdWdViKc/09JS4I+pVVv7I
+         Wk7vNXKXOs5veIeX25n1QpyMWF/eztaRCrJJFJP3wUj7AK13e5wSt6WrlWBrEwRVqP
+         pGgXo2S48hwbc9KS8Kz4SPW7zCQGfWR+yey9CsWE=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Quentin Schulz <quentin.schulz@bootlin.com>
-Subject: [PATCH v2 1/5] iio:adc:axp20x: Convert from OF to generic fw / device properties
-Date:   Tue, 21 Jul 2020 18:14:40 +0100
-Message-Id: <20200721171444.825099-2-jic23@kernel.org>
+        Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH v2 3/5] iio:adc:ti-adc108s102: Drop CONFIG_OF and of_match_ptr protections
+Date:   Tue, 21 Jul 2020 18:14:42 +0100
+Message-Id: <20200721171444.825099-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200721171444.825099-1-jic23@kernel.org>
 References: <20200721171444.825099-1-jic23@kernel.org>
@@ -58,82 +58,58 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Whilst fairly unlikely anyone will ever use this driver with anything
-other than DT, we are trying to move IIO over to the generic interfaces
-where easy to do so.
+I'm trying to clean this (now) anti-pattern out of IIO to avoid
+cut and paste into new drivers.
 
-In this case this involved moving to generic check on presence
-of fw_node, generic device_get_match_data and dropping the of_match_ptr
-protection.  Also relevant header changes to have property.h and
-mod_devicetable.h only.
-
-Also drop the casting away of a const in favour of retaining
-the const throughout.
+Also add an include of mod_devicetable.h as the driver directly uses
+struct of_device_id which is defined in there.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Quentin Schulz <quentin.schulz@bootlin.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
 ---
+
 v1->v2
+* Drop reference to PRP0001 etc in this one as it has valid ACPI
+  IDs.
 
-* Avoid the casting away of const by keeping it const throughout.
+drivers/iio/adc/ti-adc108s102.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-drivers/iio/adc/axp20x_adc.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
-index 798ff2d89691..3e0c0233b431 100644
---- a/drivers/iio/adc/axp20x_adc.c
-+++ b/drivers/iio/adc/axp20x_adc.c
-@@ -9,10 +9,10 @@
+diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+index 9b9b27415c93..183b2245e89b 100644
+--- a/drivers/iio/adc/ti-adc108s102.c
++++ b/drivers/iio/adc/ti-adc108s102.c
+@@ -20,6 +20,7 @@
+ #include <linux/iio/trigger_consumer.h>
  #include <linux/interrupt.h>
- #include <linux/io.h>
  #include <linux/module.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/thermal.h>
+ #include <linux/property.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
+@@ -299,13 +300,11 @@ static int adc108s102_remove(struct spi_device *spi)
+ 	return 0;
+ }
  
-@@ -67,7 +67,7 @@ struct axp_data;
- 
- struct axp20x_adc_iio {
- 	struct regmap		*regmap;
--	struct axp_data		*data;
-+	const struct axp_data	*data;
+-#ifdef CONFIG_OF
+ static const struct of_device_id adc108s102_of_match[] = {
+ 	{ .compatible = "ti,adc108s102" },
+ 	{ }
  };
+ MODULE_DEVICE_TABLE(of, adc108s102_of_match);
+-#endif
  
- enum axp20x_adc_channel_v {
-@@ -670,15 +670,15 @@ static int axp20x_probe(struct platform_device *pdev)
- 	info->regmap = axp20x_dev->regmap;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	if (!pdev->dev.of_node) {
-+	if (!dev_fwnode(&pdev->dev)) {
- 		const struct platform_device_id *id;
- 
- 		id = platform_get_device_id(pdev);
--		info->data = (struct axp_data *)id->driver_data;
-+		info->data = (const struct axp_data *)id->driver_data;
- 	} else {
- 		struct device *dev = &pdev->dev;
- 
--		info->data = (struct axp_data *)of_device_get_match_data(dev);
-+		info->data = device_get_match_data(dev);
- 	}
- 
- 	indio_dev->name = platform_get_device_id(pdev)->name;
-@@ -742,7 +742,7 @@ static int axp20x_remove(struct platform_device *pdev)
- static struct platform_driver axp20x_adc_driver = {
+ #ifdef CONFIG_ACPI
+ static const struct acpi_device_id adc108s102_acpi_ids[] = {
+@@ -324,7 +323,7 @@ MODULE_DEVICE_TABLE(spi, adc108s102_id);
+ static struct spi_driver adc108s102_driver = {
  	.driver = {
- 		.name = "axp20x-adc",
--		.of_match_table = of_match_ptr(axp20x_adc_of_match),
-+		.of_match_table = axp20x_adc_of_match,
+ 		.name   = "adc108s102",
+-		.of_match_table = of_match_ptr(adc108s102_of_match),
++		.of_match_table = adc108s102_of_match,
+ 		.acpi_match_table = ACPI_PTR(adc108s102_acpi_ids),
  	},
- 	.id_table = axp20x_adc_id_match,
- 	.probe = axp20x_probe,
+ 	.probe		= adc108s102_probe,
 -- 
 2.27.0
 
