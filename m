@@ -7,46 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27DE5C433E2
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39F0BC433E5
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F1ACF20771
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15C402080D
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433191;
-	bh=wuvjViPkxYN+MygFOS8mGclaAqsSpkro5stAKw7+5AQ=;
+	s=default; t=1595433194;
+	bh=kgN38xlg5rt6u1iO3jr5SziroURYQCtFvw17Kfczz1w=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=SVFwZAo+pbotYzwC/IdFBU/2LH5a/j3OMgNixaXlVcS5beVMXRiw+oaF9z3ZAoh6h
-	 P3t1Yx5v+HrIEqFne8aBKEcnCTTZKyH0caS75o/GHlHvVS+i5UqOx/EwZPVfdatKHY
-	 TPgLjQzI5tAWNwauGQ9QaGKdZ0E+hyHnaqK/u89g=
+	b=qnUXl7hsMlQB28+XE3X3jt69W135LPaemWMGB0rmqojmohwDjwCQ/w2LtJV3TnGPP
+	 V6sYw2igfiTCVulQ6VDbjKSgzYENhmeiApvo1tqvkj3NegjS9Q4MxCZYuSq+rTvTr/
+	 96dMobGBM8Iatnrgjy6tqmNkHv5dQsf/qvXL0MTs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727863AbgGVPxK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35506 "EHLO mail.kernel.org"
+        id S1727933AbgGVPxN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35538 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:10 -0400
+        id S1726427AbgGVPxN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:13 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB29E20717;
-        Wed, 22 Jul 2020 15:53:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CCA3320771;
+        Wed, 22 Jul 2020 15:53:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433189;
-        bh=wuvjViPkxYN+MygFOS8mGclaAqsSpkro5stAKw7+5AQ=;
+        s=default; t=1595433193;
+        bh=kgN38xlg5rt6u1iO3jr5SziroURYQCtFvw17Kfczz1w=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=sIi2hgoeUPynoiTJlozJQD0uohod0vh0puXLgHqelGivf8knwsrqInMg6UkkhNjbc
-         P6ZzLDTBs+uBJyKIsitCyzZulPImSsytbWvmwIuIgFxsC5mRELdbX0Kl7qTjwhBZIa
-         dDRhfjZUSVmgLOoiWjaPyhcNf8QwMRqUknctFDZA=
+        b=izPF1xw4VRlUhMEJ5ONliN0OyLUC+8HT/0UFoyUMTTMPhUVHoaZdKqsKutmPSqii6
+         x8RfLcz0+7SnVWdrtS7ldlv4mDqLRFGbPxbNbOLAdSYIX500NzslJVIdU1V2tvFuQq
+         9bdIq6o7XyNWtlrVx6q9d3lxSE3V/MqesZP6ln7E=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 01/27] iio: accel: kxsd9: Fix alignment of local buffer.
-Date:   Wed, 22 Jul 2020 16:50:37 +0100
-Message-Id: <20200722155103.979802-2-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH v3 03/27] iio:accel:bmc150-accel: Fix timestamp alignment and prevent data leak.
+Date:   Wed, 22 Jul 2020 16:50:39 +0100
+Message-Id: <20200722155103.979802-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
@@ -59,58 +60,69 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-iio_push_to_buffers_with_timestamp assumes 8 byte alignment which
-is not guaranteed by an array of smaller elements.
+One of a class of bugs pointed out by Lars in a recent review.
+iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+to the size of the timestamp (8 bytes).  This is not guaranteed in
+this driver which uses a 16 byte array of smaller elements on the stack.
+As Lars also noted this anti pattern can involve a leak of data to
+userspace and that indeed can happen here.  We close both issues by moving
+to a suitable structure in the iio_priv() data with alignment
+ensured by use of an explicit c structure.  This data is allocated
+with kzalloc so no data can leak appart from previous readings.
 
-Note that whilst in this particular case the alignment forcing
-of the ts element is not strictly necessary it acts as good
-documentation.  Doing this where not necessary should cut
-down on the number of cut and paste introduced errors elsewhere.
+Fixes tag is beyond some major refactoring so likely manual backporting
+would be needed to get that far back.
 
+Whilst the force alignment of the ts is not strictly necessary, it
+does make the code less fragile.
+
+Fixes: 3bbec9773389 ("iio: bmc150_accel: add support for hardware fifo")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/accel/kxsd9.c | 16 +++++++++++-----
- 1 file changed, 11 insertions(+), 5 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 15 ++++++++++++---
+ 1 file changed, 12 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 66b2e4cf24cf..0e18b92e2099 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -209,14 +209,20 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
- 	const struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 24864d9dfab5..48435865fdaf 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -189,6 +189,14 @@ struct bmc150_accel_data {
+ 	struct mutex mutex;
+ 	u8 fifo_mode, watermark;
+ 	s16 buffer[8];
 +	/*
-+	 * Ensure correct positioning and alignment of timestamp.
-+	 * No need to zero initialize as all elements written.
++	 * Ensure there is sufficient space and correct alignment for
++	 * the timestamp if enabled
 +	 */
 +	struct {
-+		__be16 chan[4];
++		__le16 channels[3];
 +		s64 ts __aligned(8);
-+	} hw_values;
- 	int ret;
--	/* 4 * 16bit values AND timestamp */
--	__be16 hw_values[8];
++	} scan;
+ 	u8 bw_bits;
+ 	u32 slope_dur;
+ 	u32 slope_thres;
+@@ -922,15 +930,16 @@ static int __bmc150_accel_fifo_flush(struct iio_dev *indio_dev,
+ 	 * now.
+ 	 */
+ 	for (i = 0; i < count; i++) {
+-		u16 sample[8];
+ 		int j, bit;
  
- 	ret = regmap_bulk_read(st->map,
- 			       KXSD9_REG_X,
--			       &hw_values,
--			       8);
-+			       hw_values.chan,
-+			       sizeof(hw_values.chan));
- 	if (ret) {
- 		dev_err(st->dev,
- 			"error reading data\n");
-@@ -224,7 +230,7 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
+ 		j = 0;
+ 		for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 				 indio_dev->masklength)
+-			memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
++			memcpy(&data->scan.channels[j++], &buffer[i * 3 + bit],
++			       sizeof(data->scan.channels[0]));
+ 
+-		iio_push_to_buffers_with_timestamp(indio_dev, sample, tstamp);
++		iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
++						   tstamp);
+ 
+ 		tstamp += sample_period;
  	}
- 
- 	iio_push_to_buffers_with_timestamp(indio_dev,
--					   hw_values,
-+					   &hw_values,
- 					   iio_get_time_ns(indio_dev));
- 	iio_trigger_notify_done(indio_dev->trig);
- 
 -- 
 2.27.0
 
