@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADC60C433EC
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 17:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9576AC433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 17:14:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A4A3206D7
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 17:14:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72B12206F5
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 17:14:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595438072;
-	bh=hy/4WcXA8LfPbW1/1mwdmw2sETcGcxYhBgoiA4NkpNk=;
+	s=default; t=1595438081;
+	bh=GjUjbdMOXzZ7zvnhgBI+PToZohDSdnP4YTbKBRVL5jM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=n8VFjAakM06eUM6vq5Yvm57n3pitBR0ukaa5LgT0bS7moYA6tFkG8ot+NhXpcmWC/
-	 bMF6ddjJAlHoOG/+YSFF8eydNCrEDQ6Oa5qyhEMuTV6OAETGuSm5luDp24W5BxB8Sr
-	 sFJVB6UiFkaPCKBDwWqazE4o9iDdkmxYNfu/NATA=
+	b=eAK0+HD/X1DVaC8lOOPtrrH9pX44lnlXNLuYv7THr9WpJx00Oz5hnPETmKVswwBMQ
+	 Ro3heX23stSC8YQzXdAYLqsOYxH7LbYa61fXZSnh7/e/9ruvkm4eJUBrZv2yPnCGxW
+	 iJiq0KFs982msKNc8jUw7OMCVDCcH3AVUDd90uH4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732058AbgGVROb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 13:14:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33958 "EHLO mail.kernel.org"
+        id S1731566AbgGVROk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 13:14:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34064 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731843AbgGVROa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 13:14:30 -0400
+        id S1732119AbgGVROe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 13:14:34 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C0863207DD;
-        Wed, 22 Jul 2020 17:14:28 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EAB1A207E8;
+        Wed, 22 Jul 2020 17:14:31 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595438069;
-        bh=hy/4WcXA8LfPbW1/1mwdmw2sETcGcxYhBgoiA4NkpNk=;
+        s=default; t=1595438073;
+        bh=GjUjbdMOXzZ7zvnhgBI+PToZohDSdnP4YTbKBRVL5jM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MPeO1shUeWP79+OKhz4U3ivTkzvcuwJK3St7YyHLgXmxiXcTwJNIS/BxLbU/262jI
-         iM2t55zF7t5neRyCr6JF0nQLNF8N5x3MBQKFgTmN2sFXR4ZoAxBWmKaXc7PRcqOJ2v
-         a3rq2Zscl28zw1QPhLbKLNqTfy1h3jyKgGLiGvyk=
+        b=B2+LcZtTM7P4Ebp9YHQDDBobTMNE4Ez9FgqBH3xoPwAJI8s5dTTQRhCuYmptflQ3k
+         XhGuCwx4YhhW7lTRgSJ3qHCLis14h9uxj0YcJXC4GUjKgwqd6sZKdjqK8vIu/tPk9T
+         Wq4OwtahMXvsx0WDvsVMCyYZPCfJjdnvWNKuwtOE=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jacopo Mondi <jacopo@jmondi.org>,
         Akinobu Mita <akinobu.mita@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 1/3] dt-bindings: iio: adc: maxim,max11100 yaml conversion
-Date:   Wed, 22 Jul 2020 18:12:22 +0100
-Message-Id: <20200722171224.989138-2-jic23@kernel.org>
+Subject: [PATCH 3/3] dt-bindings: iio: adc: maxim,max9611 yaml conversions
+Date:   Wed, 22 Jul 2020 18:12:24 +0100
+Message-Id: <20200722171224.989138-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722171224.989138-1-jic23@kernel.org>
 References: <20200722171224.989138-1-jic23@kernel.org>
@@ -59,92 +59,101 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Straight forward conversion for this SPI ADC.
-Added limits on spi-max-frequency from datasheet (0.1 to 4.8MHz)
+Straight forward conversion of this binding for this
+current sense amplifier and ADC.
 
 Cc: Jacopo Mondi <jacopo@jmondi.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../devicetree/bindings/iio/adc/max11100.txt  | 18 -------
- .../bindings/iio/adc/maxim,max11100.yaml      | 49 +++++++++++++++++++
- 2 files changed, 49 insertions(+), 18 deletions(-)
+ .../devicetree/bindings/iio/adc/max9611.txt   | 27 ----------
+ .../bindings/iio/adc/maxim,max9611.yaml       | 49 +++++++++++++++++++
+ 2 files changed, 49 insertions(+), 27 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/max11100.txt b/Documentation/devicetree/bindings/iio/adc/max11100.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/max9611.txt b/Documentation/devicetree/bindings/iio/adc/max9611.txt
 deleted file mode 100644
-index b7f7177b8aca..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/max11100.txt
+index ab4f43145ae5..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/max9611.txt
 +++ /dev/null
-@@ -1,18 +0,0 @@
--* Maxim max11100 Analog to Digital Converter (ADC)
+@@ -1,27 +0,0 @@
+-* Maxim max9611/max9612 current sense amplifier with 12-bits ADC interface
 -
--Required properties:
--  - compatible: Should be "maxim,max11100"
--  - reg: the adc unit address
--  - vref-supply: phandle to the regulator that provides reference voltage
+-Maxim max9611/max9612 is an high-side current sense amplifier with integrated
+-12-bits ADC communicating over I2c bus.
+-The device node for this driver shall be a child of a I2c controller.
 -
--Optional properties:
--  - spi-max-frequency: SPI maximum frequency
+-Required properties
+-  - compatible: Should be "maxim,max9611" or "maxim,max9612"
+-  - reg: The 7-bits long I2c address of the device
+-  - shunt-resistor-micro-ohms: Value, in micro Ohms, of the current sense shunt
+-			        resistor
 -
 -Example:
 -
--max11100: adc@0 {
--        compatible = "maxim,max11100";
--        reg = <0>;
--        vref-supply = <&adc0_vref>;
--        spi-max-frequency = <240000>;
+-&i2c4 {
+-	csa: adc@7c {
+-		compatible = "maxim,max9611";
+-		reg = <0x7c>;
+-
+-		shunt-resistor-micro-ohms = <5000>;
+-	};
 -};
-diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11100.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11100.yaml
+-
+-This device node describes a current sense amplifier sitting on I2c4 bus
+-with address 0x7c (read address is 0xf9, write address is 0xf8).
+-A sense resistor of 0,005 Ohm is installed between RS+ and RS- current-sensing
+-inputs.
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml
 new file mode 100644
-index 000000000000..0cf87556ef82
+index 000000000000..a9fc05e6b62c
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11100.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max9611.yaml
 @@ -0,0 +1,49 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/maxim,max11100.yaml#
++$id: http://devicetree.org/schemas/iio/adc/maxim,max9611.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Maxim MAX11100 ADC
++title: Maxim MAX9611 and similar current sense amplifiers with integrated ADCs
 +
 +maintainers:
 +  - Jacopo Mondi <jacopo@jmondi.org>
 +
 +description: |
-+    Single channel 16 bit ADC with SPI interface.
++   These devices combine a high-side current sense amplifier with a 12 bit ADC.
++   They have an i2c interface.
 +
 +properties:
 +  compatible:
-+    const: maxim,max11100
++    enum:
++      - maxim,max9611
++      - maxim,max9612
 +
 +  reg:
 +    maxItems: 1
 +
-+  vref-supply:
-+    description: External reference, needed to establish input scaling.
-+
-+  spi-max-frequency:
-+    minimum: 100000
-+    maximum: 4800000
-+
-+additionalProperties: false
++  shunt-resistor-micro-ohms:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: |
++      Value in micro Ohms of the shunt resistor connected between the RS+ and
++      RS- inputs, across which the current is measured.  Value needed to compute
++      the scaling of the measured current.
 +
 +required:
 +  - compatible
 +  - reg
-+  - vref-supply
++  - shunt-resistor-micro-ohms
 +
 +examples:
 +  - |
-+    spi {
++    i2c {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
 +
-+        adc@0 {
-+            compatible = "maxim,max11100";
-+            reg = <0>;
-+            vref-supply = <&adc_vref>;
-+            spi-max-frequency = <240000>;
++        adc@7c {
++            compatible = "maxim,max9611";
++            reg = <0x7c>;
++            shunt-resistor-micro-ohms = <5000>;
 +        };
 +    };
 +...
