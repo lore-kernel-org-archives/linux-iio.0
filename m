@@ -7,50 +7,52 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A665C433FC
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91B95C43446
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 751F62084D
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B58B2080D
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433218;
-	bh=JvD7nhY9VfGsfS8vJGMtYvEtmAxdoF7RxvdVp+w7rTU=;
+	s=default; t=1595433221;
+	bh=Wlfui+VlY4bDZW0tV1inSNbem/cmMyKs1kjmlaZJbu4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=xqt2gM2OWTdYox/CsCqJjM1H4+9HIZbnFBiE65gcxrQX5WbbH6pLtVlQpYBGfGO+R
-	 AKvLLvtM1d5JaaE5G88jSXsfbnFHUDl2I3sFoo8ftk6vFyAXsPfNM1x+eOJergS3QI
-	 uYuZdz0Ry5Ay46PmLW7kTHNv4bLiG2zre2nUkqCc=
+	b=T2g42k+CzTMU8YvuXMrwM+Gg+b+vm1atvjKUFNopC5CZigOoe5Xb3bAkYDxbCQFRZ
+	 PtQ1F0CU4wFr/9dV+MPI7Bl4JvDN4EeijFt0Txi4SSuevFWOIUHUZju93sHTXD6u1j
+	 KFtz84mZxZtS6Q1YfCMR0t5TC5SC+J0ewPbcAeOM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730402AbgGVPxi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35806 "EHLO mail.kernel.org"
+        id S1730581AbgGVPxl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35846 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:37 -0400
+        id S1726427AbgGVPxk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:40 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4921B20771;
-        Wed, 22 Jul 2020 15:53:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 204B42084D;
+        Wed, 22 Jul 2020 15:53:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433217;
-        bh=JvD7nhY9VfGsfS8vJGMtYvEtmAxdoF7RxvdVp+w7rTU=;
+        s=default; t=1595433220;
+        bh=Wlfui+VlY4bDZW0tV1inSNbem/cmMyKs1kjmlaZJbu4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cthvhKvdMEUCcZT8TKwECACI+hVNwxe4KXAXAmG0+vuBNcenFADQsAEAL6RjRSVLa
-         zz5OOowPMPZwGqtgAwH2BC16xi3b1eoKQR0e4JWtOmGGBbiSuaWulnSmVx7WQGB3lq
-         ZR8lkamqBKE+NgiUF8daMnSLEjZLFDkBEPfkWSw8=
+        b=Hq0TM+F6Nfz5kUB41o3SvMR94PglPhTEmg5+fEXWnIikrjxi8uKZewypwDd00PVnK
+         NJ4lG/lBTFaAajHIXMuSfiDpcA8hk5i+8rNwW+bLbvGWPKBwWIP2jQRTurLRujsgx8
+         QVxmmqYMqfI1TaY+om7/Gg9BEiOrP8oNrYZvIuwM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 19/27] iio:pressure:mpl3115 Force alignment of buffer
-Date:   Wed, 22 Jul 2020 16:50:55 +0100
-Message-Id: <20200722155103.979802-20-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>
+Subject: [PATCH v3 21/27] iio:adc:ti-adc084s021 Fix alignment and data leak issues.
+Date:   Wed, 22 Jul 2020 16:50:57 +0100
+Message-Id: <20200722155103.979802-22-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -59,42 +61,61 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Whilst this is another case of the issue Lars reported with
-an array of elements of smaller than 8 bytes being passed
-to iio_push_to_buffers_with_timestamp, the solution here is
-a bit different from the other cases and relies on __aligned
-working on the stack (true since 4.6?)
+One of a class of bugs pointed out by Lars in a recent review.
+iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+to the size of the timestamp (8 bytes).  This is not guaranteed in
+this driver which uses an array of smaller elements on the stack.
+As Lars also noted this anti pattern can involve a leak of data to
+userspace and that indeed can happen here.  We close both issues by
+moving to a suitable structure in the iio_priv().
 
-This one is unusual.  We have to do an explicit memset each time
-as we are reading 3 bytes into a potential 4 byte channel which
-may sometimes be a 2 byte channel depending on what is enabled.
-As such, moving the buffer to the heap in the iio_priv structure
-doesn't save us much.  We can't use a nice explicit structure
-on the stack either as the data channels have different storage
-sizes and are all separately controlled.
+This data is allocated with kzalloc so no data can leak apart from
+previous readings.
 
-Fixes: cc26ad455f57 ("iio: Add Freescale MPL3115A2 pressure / temperature sensor driver")
+The force alignment of ts is not strictly necessary in this case
+but reduces the fragility of the code.
+
+Fixes: 3691e5a69449 ("iio: adc: add driver for the ti-adc084s021 chip")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
+Cc: Mårten Lindahl <martenli@axis.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/pressure/mpl3115.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/ti-adc084s021.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
-index ccdb0b70e48c..8a481dbe808c 100644
---- a/drivers/iio/pressure/mpl3115.c
-+++ b/drivers/iio/pressure/mpl3115.c
-@@ -144,7 +144,8 @@ static irqreturn_t mpl3115_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
+diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
+index 9017e1e24273..dfba34834a57 100644
+--- a/drivers/iio/adc/ti-adc084s021.c
++++ b/drivers/iio/adc/ti-adc084s021.c
+@@ -26,6 +26,11 @@ struct adc084s021 {
+ 	struct spi_transfer spi_trans;
+ 	struct regulator *reg;
+ 	struct mutex lock;
++	/* Buffer used to align data */
++	struct {
++		__be16 channels[4];
++		s64 ts __aligned(8);
++	} scan;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache line.
+@@ -141,14 +146,13 @@ static irqreturn_t adc084s021_buffer_trigger_handler(int irq, void *pollfunc)
+ 	struct iio_poll_func *pf = pollfunc;
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct mpl3115_data *data = iio_priv(indio_dev);
--	u8 buffer[16]; /* 32-bit channel + 16-bit channel + padding + ts */
-+	/* 32-bit channel + 16-bit channel + padding + ts */
-+	u8 buffer[16] __aligned(8);
- 	int ret, pos = 0;
+ 	struct adc084s021 *adc = iio_priv(indio_dev);
+-	__be16 data[8] = {0}; /* 4 * 16-bit words of data + 8 bytes timestamp */
  
- 	mutex_lock(&data->lock);
+ 	mutex_lock(&adc->lock);
+ 
+-	if (adc084s021_adc_conversion(adc, &data) < 0)
++	if (adc084s021_adc_conversion(adc, adc->scan.channels) < 0)
+ 		dev_err(&adc->spi->dev, "Failed to read data\n");
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data,
++	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
+ 					   iio_get_time_ns(indio_dev));
+ 	mutex_unlock(&adc->lock);
+ 	iio_trigger_notify_done(indio_dev->trig);
 -- 
 2.27.0
 
