@@ -7,47 +7,46 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52668C433E1
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E239AC433E2
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2B0B020717
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B99C2208E4
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433214;
-	bh=BrMikSOSP8rQfuWua//rncDQlSlapCNNxsWOW25/l14=;
+	s=default; t=1595433222;
+	bh=6gc1X0dWiUoU4cSntRDo7o1SLHOB2YUmtLeKTrCA+6M=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=jLqWmt3RV4tvcfb0TzaB2D3Ot6Ae0v67zAVJIr6pmHnP8XMQffFo00SMMVuGp/Y5J
-	 c75j88WFn2z2RyOfSjYN7hnNorhHGbKAQkR8lt3Rw9ZLr1bmG5Zho+3PkhE0MbYK7O
-	 ewE9uVONE8MIihwH6kT32wuEXaxNGZFNYRDca5OQ=
+	b=w1E93dNTU99Dii5qQilJH0mU1nIoITNm40vUQVvKEolR4tL3TlTIweLIN6zKhgfqq
+	 1qoH4u9q4tgbD/f4+uiBa2u5n85iKi9Cf+LFJzi7mQuQ8mYAgfL5QzsT/B/ewVBFuQ
+	 F2eJNDrX9LGvvS4oQyod88IXDhUOCaDbfj5S2NOI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729866AbgGVPxd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:33 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35748 "EHLO mail.kernel.org"
+        id S1730657AbgGVPxm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35858 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:33 -0400
+        id S1726427AbgGVPxm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:42 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 85E95206F5;
-        Wed, 22 Jul 2020 15:53:31 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id A3293207E8;
+        Wed, 22 Jul 2020 15:53:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433212;
-        bh=BrMikSOSP8rQfuWua//rncDQlSlapCNNxsWOW25/l14=;
+        s=default; t=1595433221;
+        bh=6gc1X0dWiUoU4cSntRDo7o1SLHOB2YUmtLeKTrCA+6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=S4mtAlA83544RlA4UcAlrsCNvm6Lv/JzmG71IvQFUUacScFctovXqNauLKB9hyu7R
-         FuBDnDPvuCETgeB18nuNT9MT8pNKSIY3ZhmBNmdO7wU+rOkg6IqKvhtwDvI7GPweD5
-         36jsa99k4GuQq7hDVHffTz/fSk5utbBAJ4Uhx36M=
+        b=uJEmWCMTjJVgBlY5Gr3sN62AdonyKPTpDx+ENZ5XVEvSmJL217qLUIGFlYFYPWlg1
+         k8/RjgnCSnpIEysxBy3ukabOKq3Y83pwaUlm6djk8hqJR1NzRAYYq8KIwZx2YRpv8/
+         I/3mjRVcxKRyF0gvpsjikcHyNWop6fFQR41trMNM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-Subject: [PATCH v3 16/27] iio:imu:st_lsm6dsx Fix alignment and data leak issues
-Date:   Wed, 22 Jul 2020 16:50:52 +0100
-Message-Id: <20200722155103.979802-17-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v3 22/27] iio:adc:ti-adc084s021 Tidy up endian types
+Date:   Wed, 22 Jul 2020 16:50:58 +0100
+Message-Id: <20200722155103.979802-23-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
@@ -60,138 +59,74 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-One of a class of bugs pointed out by Lars in a recent review.
-iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
-to the size of the timestamp (8 bytes).  This is not guaranteed in
-this driver which uses an array of smaller elements on the stack.
-As Lars also noted this anti pattern can involve a leak of data to
-userspace and that indeed can happen here.  We close both issues by
-moving to an array of suitable structures in the iio_priv() data.
+By adding a few local variables and avoiding a void * for
+a parameter we can easily make all the endian types explicit and
+get rid of the warnings from sparse:
 
-This data is allocated with kzalloc so no data can leak apart from
-previous readings.
+  CHECK   drivers/iio/adc/ti-adc084s021.c
+drivers/iio/adc/ti-adc084s021.c:84:26: warning: incorrect type in assignment (different base types)
+drivers/iio/adc/ti-adc084s021.c:84:26:    expected unsigned short [usertype]
+drivers/iio/adc/ti-adc084s021.c:84:26:    got restricted __be16
+drivers/iio/adc/ti-adc084s021.c:115:24: warning: cast to restricted __be16
+drivers/iio/adc/ti-adc084s021.c:115:24: warning: cast to restricted __be16
+drivers/iio/adc/ti-adc084s021.c:115:24: warning: cast to restricted __be16
+drivers/iio/adc/ti-adc084s021.c:115:24: warning: cast to restricted __be16
 
-For the tagged path the data is aligned by using __aligned(8) for
-the buffer on the stack.
-
-There has been a lot of churn in this driver, so likely backports
-may be needed for stable.
-
-Fixes: 290a6ce11d93 ("iio: imu: add support to lsm6dsx driver")
-Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h       |  6 ++++
- .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    | 36 ++++++++++---------
- 2 files changed, 26 insertions(+), 16 deletions(-)
+ drivers/iio/adc/ti-adc084s021.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index d80ba2e688ed..9275346a9cc1 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -383,6 +383,7 @@ struct st_lsm6dsx_sensor {
-  * @iio_devs: Pointers to acc/gyro iio_dev instances.
-  * @settings: Pointer to the specific sensor settings in use.
-  * @orientation: sensor chip orientation relative to main hardware.
-+ * @scan: Temporary buffers used to align data before iio_push_to_buffers()
+diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
+index dfba34834a57..fb14b92fa6e7 100644
+--- a/drivers/iio/adc/ti-adc084s021.c
++++ b/drivers/iio/adc/ti-adc084s021.c
+@@ -70,11 +70,10 @@ static const struct iio_chan_spec adc084s021_channels[] = {
+  * @adc: The ADC SPI data.
+  * @data: Buffer for converted data.
   */
- struct st_lsm6dsx_hw {
- 	struct device *dev;
-@@ -411,6 +412,11 @@ struct st_lsm6dsx_hw {
- 	const struct st_lsm6dsx_settings *settings;
- 
- 	struct iio_mount_matrix orientation;
-+	/* Ensure natural alignment of buffer elements */
-+	struct {
-+		__le16 channels[3];
-+		s64 ts __aligned(8);
-+	} scan[3];
- };
- 
- static __maybe_unused const struct iio_event_spec st_lsm6dsx_event = {
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-index 7de10bd636ea..9e0404e3581d 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -353,9 +353,6 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 	int err, sip, acc_sip, gyro_sip, ts_sip, ext_sip, read_len, offset;
- 	u16 fifo_len, pattern_len = hw->sip * ST_LSM6DSX_SAMPLE_SIZE;
- 	u16 fifo_diff_mask = hw->settings->fifo_ops.fifo_diff.mask;
--	u8 gyro_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
--	u8 acc_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
--	u8 ext_buff[ST_LSM6DSX_IIO_BUFF_SIZE];
- 	bool reset_ts = false;
- 	__le16 fifo_status;
- 	s64 ts = 0;
-@@ -416,19 +413,22 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 
- 		while (acc_sip > 0 || gyro_sip > 0 || ext_sip > 0) {
- 			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
--				memcpy(gyro_buff, &hw->buff[offset],
--				       ST_LSM6DSX_SAMPLE_SIZE);
--				offset += ST_LSM6DSX_SAMPLE_SIZE;
-+				memcpy(hw->scan[ST_LSM6DSX_ID_GYRO].channels,
-+				       &hw->buff[offset],
-+				       sizeof(hw->scan[ST_LSM6DSX_ID_GYRO].channels));
-+				offset += sizeof(hw->scan[ST_LSM6DSX_ID_GYRO].channels);
- 			}
- 			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
--				memcpy(acc_buff, &hw->buff[offset],
--				       ST_LSM6DSX_SAMPLE_SIZE);
--				offset += ST_LSM6DSX_SAMPLE_SIZE;
-+				memcpy(hw->scan[ST_LSM6DSX_ID_ACC].channels,
-+				       &hw->buff[offset],
-+				       sizeof(hw->scan[ST_LSM6DSX_ID_ACC].channels));
-+				offset += sizeof(hw->scan[ST_LSM6DSX_ID_ACC].channels);
- 			}
- 			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
--				memcpy(ext_buff, &hw->buff[offset],
--				       ST_LSM6DSX_SAMPLE_SIZE);
--				offset += ST_LSM6DSX_SAMPLE_SIZE;
-+				memcpy(hw->scan[ST_LSM6DSX_ID_EXT0].channels,
-+				       &hw->buff[offset],
-+				       sizeof(hw->scan[ST_LSM6DSX_ID_EXT0].channels));
-+				offset += sizeof(hw->scan[ST_LSM6DSX_ID_EXT0].channels);
- 			}
- 
- 			if (ts_sip-- > 0) {
-@@ -458,19 +458,22 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
- 			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_GYRO],
--					gyro_buff, gyro_sensor->ts_ref + ts);
-+					&hw->scan[ST_LSM6DSX_ID_GYRO],
-+					gyro_sensor->ts_ref + ts);
- 				gyro_sip--;
- 			}
- 			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_ACC],
--					acc_buff, acc_sensor->ts_ref + ts);
-+					&hw->scan[ST_LSM6DSX_ID_ACC],
-+					acc_sensor->ts_ref + ts);
- 				acc_sip--;
- 			}
- 			if (ext_sip > 0 && !(sip % ext_sensor->decimator)) {
- 				iio_push_to_buffers_with_timestamp(
- 					hw->iio_devs[ST_LSM6DSX_ID_EXT0],
--					ext_buff, ext_sensor->ts_ref + ts);
-+					&hw->scan[ST_LSM6DSX_ID_EXT0],
-+					ext_sensor->ts_ref + ts);
- 				ext_sip--;
- 			}
- 			sip++;
-@@ -555,7 +558,8 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
+-static int adc084s021_adc_conversion(struct adc084s021 *adc, void *data)
++static int adc084s021_adc_conversion(struct adc084s021 *adc, __be16 *data)
  {
- 	u16 pattern_len = hw->sip * ST_LSM6DSX_TAGGED_SAMPLE_SIZE;
- 	u16 fifo_len, fifo_diff_mask;
--	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE], tag;
-+	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
-+	u8 tag;
- 	bool reset_ts = false;
- 	int i, err, read_len;
- 	__le16 fifo_status;
+ 	int n_words = (adc->spi_trans.len >> 1) - 1; /* Discard first word */
+ 	int ret, i = 0;
+-	u16 *p = data;
+ 
+ 	/* Do the transfer */
+ 	ret = spi_sync(adc->spi, &adc->message);
+@@ -82,7 +81,7 @@ static int adc084s021_adc_conversion(struct adc084s021 *adc, void *data)
+ 		return ret;
+ 
+ 	for (; i < n_words; i++)
+-		*(p + i) = adc->rx_buf[i + 1];
++		*(data + i) = adc->rx_buf[i + 1];
+ 
+ 	return ret;
+ }
+@@ -93,6 +92,7 @@ static int adc084s021_read_raw(struct iio_dev *indio_dev,
+ {
+ 	struct adc084s021 *adc = iio_priv(indio_dev);
+ 	int ret;
++	__be16 be_val;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -107,13 +107,13 @@ static int adc084s021_read_raw(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		adc->tx_buf[0] = channel->channel << 3;
+-		ret = adc084s021_adc_conversion(adc, val);
++		ret = adc084s021_adc_conversion(adc, &be_val);
+ 		iio_device_release_direct_mode(indio_dev);
+ 		regulator_disable(adc->reg);
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		*val = be16_to_cpu(*val);
++		*val = be16_to_cpu(be_val);
+ 		*val = (*val >> channel->scan_type.shift) & 0xff;
+ 
+ 		return IIO_VAL_INT;
 -- 
 2.27.0
 
