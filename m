@@ -7,46 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88092C433E6
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 313E1C433EA
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 64AF42084D
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C10C20717
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433195;
-	bh=JPjPQTwurZOmRt6qpeWPLAIdDax89TZBB7giNHldGRQ=;
+	s=default; t=1595433200;
+	bh=uAyTlGFNquqTUFcruiE3JO6ffy37QQf5YgapKAU32WA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=gw20CJXxAf1uD5iAYuWC5Htgfy6ZAWwNcHOFUq5yk4tFImLiqy8Kp4+xvLdJXncrg
-	 ULR27DHjMpyWjTJq4j2hsRN3cfg4/o2VFlI2TifvgnhHF3ETktDHv1auZBeipow6Cg
-	 sLyO4/BygFAJAIhNtVInjKpqkAfjR+83bokQSn9E=
+	b=PstG5Cd499ZI0/1hjSDTfDdWsqR2ZVoFFI5ZHgS7fdYSs2H1NsMYGyyeVsI1y2OeP
+	 CtBnOdNqEkigC+i5tfBjNMD7EbYfjnA/+LUI+LDkAlfGHUTz8rPWo3UY9nJmJcn9L+
+	 X1XbMB4I7uGCMoLSCoR3mwYvSIiZGVQwp7B4SYmQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727985AbgGVPxP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35554 "EHLO mail.kernel.org"
+        id S1728687AbgGVPxT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35596 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:14 -0400
+        id S1726427AbgGVPxT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:19 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 6E18C207DD;
-        Wed, 22 Jul 2020 15:53:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CDB572084D;
+        Wed, 22 Jul 2020 15:53:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433194;
-        bh=JPjPQTwurZOmRt6qpeWPLAIdDax89TZBB7giNHldGRQ=;
+        s=default; t=1595433199;
+        bh=uAyTlGFNquqTUFcruiE3JO6ffy37QQf5YgapKAU32WA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=D64YmlOreutlTCHiIY6pWAweLbo9Yw3fefHZ7sCqC2dAfx2Dixsp5UM7kjjC7HFFn
-         2hOq/pE5UyBs8ryXNnRakcYl8H4sqB86aG05aogmILeXIfdnsF0b184tHcWdtXax7B
-         JMDwVWH8e2VeHbAXbOdzYQ6R4NgFKsdkSJf8HWtw=
+        b=d+EbHLCahSoyRJaQxeH9jDiXnZMONWnnQG2lPuhdgQN7KegfR7QlLPwfsUpmUBoq4
+         cFeAwY8PuTh/arWXV+ukqDTVGkdWnDe5uf18DeWImukEiEt7LoXZ0ZibRw9J+YP/IX
+         D8Rc0SmURoRHMDhq3wrpDauXTVji+EEf0vj60xfY=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 04/27] iio:accel:mma7455: Fix timestamp alignment and prevent data leak.
-Date:   Wed, 22 Jul 2020 16:50:40 +0100
-Message-Id: <20200722155103.979802-5-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH v3 07/27] iio:chemical:ccs811: Fix timestamp alignment and prevent data leak.
+Date:   Wed, 22 Jul 2020 16:50:43 +0100
+Message-Id: <20200722155103.979802-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
@@ -62,66 +63,62 @@ From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 One of a class of bugs pointed out by Lars in a recent review.
 iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
 to the size of the timestamp (8 bytes).  This is not guaranteed in
-this driver which uses a 16 byte u8 array on the stack   As Lars also noted
-this anti pattern can involve a leak of data to userspace and that
-indeed can happen here.  We close both issues by moving to
-a suitable structure in the iio_priv() data with alignment
-ensured by use of an explicit c structure.  This data is allocated
-with kzalloc so no data can leak appart from previous readings.
+this driver which uses an array of smaller elements on the stack.
+As Lars also noted this anti pattern can involve a leak of data to
+userspace and that indeed can happen here.  We close both issues by
+moving to a suitable structure in the iio_priv() data with alignment
+explicitly requested.  This data is allocated with kzalloc so no
+data can leak appart from previous readings.
 
-The force alignment of ts is not strictly necessary in this particularly
-case but does make the code less fragile.
+The explicit alignment of ts is necessary to ensure consistent
+padding for x86_32 in which the ts would otherwise be 4 byte aligned.
 
-Fixes: a84ef0d181d9 ("iio: accel: add Freescale MMA7455L/MMA7456L 3-axis accelerometer driver")
+Fixes: 283d26917ad6 ("iio: chemical: ccs811: Add triggered buffer support")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/accel/mma7455_core.c | 16 ++++++++++++----
- 1 file changed, 12 insertions(+), 4 deletions(-)
+ drivers/iio/chemical/ccs811.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/mma7455_core.c b/drivers/iio/accel/mma7455_core.c
-index 7e99bcb3398d..922bd38ff6ea 100644
---- a/drivers/iio/accel/mma7455_core.c
-+++ b/drivers/iio/accel/mma7455_core.c
-@@ -52,6 +52,14 @@
- 
- struct mma7455_data {
- 	struct regmap *regmap;
-+	/*
-+	 * Used to reorganize data.  Will ensure correct alignment of
-+	 * the timestamp if present
-+	 */
+diff --git a/drivers/iio/chemical/ccs811.c b/drivers/iio/chemical/ccs811.c
+index 2b007e7568b2..60dd87e96f5f 100644
+--- a/drivers/iio/chemical/ccs811.c
++++ b/drivers/iio/chemical/ccs811.c
+@@ -78,6 +78,11 @@ struct ccs811_data {
+ 	struct iio_trigger *drdy_trig;
+ 	struct gpio_desc *wakeup_gpio;
+ 	bool drdy_trig_on;
++	/* Ensures correct alignment of timestamp if present */
 +	struct {
-+		__le16 channels[3];
++		s16 channels[2];
 +		s64 ts __aligned(8);
 +	} scan;
  };
  
- static int mma7455_drdy(struct mma7455_data *mma7455)
-@@ -82,19 +90,19 @@ static irqreturn_t mma7455_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
+ static const struct iio_chan_spec ccs811_channels[] = {
+@@ -327,17 +332,17 @@ static irqreturn_t ccs811_trigger_handler(int irq, void *p)
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct mma7455_data *mma7455 = iio_priv(indio_dev);
--	u8 buf[16]; /* 3 x 16-bit channels + padding + ts */
+ 	struct ccs811_data *data = iio_priv(indio_dev);
+ 	struct i2c_client *client = data->client;
+-	s16 buf[8]; /* s16 eCO2 + s16 TVOC + padding + 8 byte timestamp */
  	int ret;
  
- 	ret = mma7455_drdy(mma7455);
- 	if (ret)
- 		goto done;
- 
--	ret = regmap_bulk_read(mma7455->regmap, MMA7455_REG_XOUTL, buf,
--			       sizeof(__le16) * 3);
-+	ret = regmap_bulk_read(mma7455->regmap, MMA7455_REG_XOUTL,
-+			       mma7455->scan.channels,
-+			       sizeof(mma7455->scan.channels));
- 	if (ret)
- 		goto done;
+-	ret = i2c_smbus_read_i2c_block_data(client, CCS811_ALG_RESULT_DATA, 4,
+-					    (u8 *)&buf);
++	ret = i2c_smbus_read_i2c_block_data(client, CCS811_ALG_RESULT_DATA,
++					    sizeof(data->scan.channels),
++					    (u8 *)data->scan.channels);
+ 	if (ret != 4) {
+ 		dev_err(&client->dev, "cannot read sensor data\n");
+ 		goto err;
+ 	}
  
 -	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-+	iio_push_to_buffers_with_timestamp(indio_dev, &mma7455->scan,
++	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
  					   iio_get_time_ns(indio_dev));
  
- done:
+ err:
 -- 
 2.27.0
 
