@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABD44C433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DC88C433E4
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 77AFB2084D
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B44B207DD
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433197;
-	bh=Qx6VAp2IInsTmEtO1B2pSFla9Ntl+3Z1V9YEjYutsus=;
+	s=default; t=1595433192;
+	bh=Zmnk4xZ1pGh8I1k4TrpFM63YFE/SARDLHj6dZZhfs7k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=bJXjXdpBFzR6LsDnyS7B8mU/3SwthnWPeHVjjn2Agd5qOkI/NOxzQj9inLyTczOSS
-	 vUW7lDYKGdh+UnpW75jze7+hjnoPaFqwcpLkTu5smf9FMTS55d3Zzu+n3ZB/7hmHtp
-	 i+6RSMMHwxHFTt8YDQ+IqivwzHnQlx/7whi8ozlY=
+	b=z5IOV0sicy/YxcfBVTcgStmbka2rYnwVpLRomAHh8EtvmI6d5hf7IMl0vUi8vt6BV
+	 65H/iXoNlMb+kGejaA1m3bMBEd0mG/7ANAHUIhIf0wu85SNlG6pF3VHVjvR0+J3e6A
+	 7MNbvkycq9TuCJo5yScdmOX7eaVkg+MWtd28svkA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728186AbgGVPxR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35568 "EHLO mail.kernel.org"
+        id S1727891AbgGVPxM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35526 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:16 -0400
+        id S1726427AbgGVPxL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:11 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DC505207E8;
-        Wed, 22 Jul 2020 15:53:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 63368207CD;
+        Wed, 22 Jul 2020 15:53:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433195;
-        bh=Qx6VAp2IInsTmEtO1B2pSFla9Ntl+3Z1V9YEjYutsus=;
+        s=default; t=1595433191;
+        bh=Zmnk4xZ1pGh8I1k4TrpFM63YFE/SARDLHj6dZZhfs7k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=kkIjRr9Lc2aQh5AZ7grdw+/cBraMCehS4Hj32vj5TkHabY8k7VDeckqRQqAVHUU6G
-         ryUANl9HX5HR4GjkAhUnoULjFM4pwQjK4tT0k7asvcIklWaIv76+wVJG7MHfV1ADJB
-         2DxHjaB0G+U0x83PEjqfEBlKYE/Ci2rci27dl03s=
+        b=kM2IC8p45ZZPnBIF2msHFKqXlBSdv32Hmrbq2l8ikpfGnUAgUdqVcBXHomyYL/ALD
+         NyHN9bqdlQmeYasYeDXZvfjElEr9J4UQkcmDbfp6oHL0+WAfL3ITQVncN+8WczjvzM
+         QFIo1tG/QO800k6gGDoiiREOqKCcry4Dy3ACNT40=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 05/27] iio:gyro:itg3200: Fix timestamp alignment and prevent data leak.
-Date:   Wed, 22 Jul 2020 16:50:41 +0100
-Message-Id: <20200722155103.979802-6-jic23@kernel.org>
+Subject: [PATCH v3 02/27] iio:accel:mma8452: Fix timestamp alignment and prevent data leak.
+Date:   Wed, 22 Jul 2020 16:50:38 +0100
+Message-Id: <20200722155103.979802-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
@@ -62,52 +62,59 @@ From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 One of a class of bugs pointed out by Lars in a recent review.
 iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
 to the size of the timestamp (8 bytes).  This is not guaranteed in
-this driver which uses a 16 byte array of smaller elements on the stack.
-This is fixed by using an explicit c structure. As there are no
-holes in the structure, there is no possiblity of data leakage
-in this case.
+this driver which uses a 16 byte u8 array on the stack.  As Lars also noted
+this anti pattern can involve a leak of data to userspace and that
+indeed can happen here.  We close both issues by moving to
+a suitable structure in the iio_priv() data with alignment
+ensured by use of an explicit c structure.  This data is allocated
+with kzalloc so no data can leak appart from previous readings.
 
-The explicit alignment of ts is not strictly necessary but potentially
-makes the code slightly less fragile.  It also removes the possibility
-of this being cut and paste into another driver where the alignment
-isn't already true.
+The additional forcing of the 8 byte alignment of the timestamp
+is not strictly necessary but makes the code less fragile by
+making this explicit.
 
-Fixes: 36e0371e7764 ("iio:itg3200: Use iio_push_to_buffers_with_timestamp()")
+Fixes: c7eeea93ac60 ("iio: Add Freescale MMA8452Q 3-axis accelerometer driver")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/gyro/itg3200_buffer.c | 15 +++++++++++----
- 1 file changed, 11 insertions(+), 4 deletions(-)
+ drivers/iio/accel/mma8452.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/gyro/itg3200_buffer.c b/drivers/iio/gyro/itg3200_buffer.c
-index d3fbe9d86467..1c3c1bd53374 100644
---- a/drivers/iio/gyro/itg3200_buffer.c
-+++ b/drivers/iio/gyro/itg3200_buffer.c
-@@ -46,13 +46,20 @@ static irqreturn_t itg3200_trigger_handler(int irq, void *p)
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index ba27f8673131..1cf2b5db26ca 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -110,6 +110,12 @@ struct mma8452_data {
+ 	int sleep_val;
+ 	struct regulator *vdd_reg;
+ 	struct regulator *vddio_reg;
++
++	/* Ensure correct alignment of time stamp when present */
++	struct {
++		__be16 channels[3];
++		s64 ts __aligned(8);
++	} buffer;
+ };
+ 
+  /**
+@@ -1091,14 +1097,13 @@ static irqreturn_t mma8452_trigger_handler(int irq, void *p)
  	struct iio_poll_func *pf = p;
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct itg3200 *st = iio_priv(indio_dev);
--	__be16 buf[ITG3200_SCAN_ELEMENTS + sizeof(s64)/sizeof(u16)];
--
--	int ret = itg3200_read_all_channels(st->i2c, buf);
-+	/*
-+	 * Ensure correct alignment and padding including for the
-+	 * timestamp that may be inserted.
-+	 */
-+	struct {
-+		__be16 buf[ITG3200_SCAN_ELEMENTS];
-+		s64 ts __aligned(8);
-+	} scan;
-+
-+	int ret = itg3200_read_all_channels(st->i2c, scan.buf);
+ 	struct mma8452_data *data = iio_priv(indio_dev);
+-	u8 buffer[16]; /* 3 16-bit channels + padding + ts */
+ 	int ret;
+ 
+-	ret = mma8452_read(data, (__be16 *)buffer);
++	ret = mma8452_read(data, data->buffer.channels);
  	if (ret < 0)
- 		goto error_ret;
+ 		goto done;
  
--	iio_push_to_buffers_with_timestamp(indio_dev, buf, pf->timestamp);
-+	iio_push_to_buffers_with_timestamp(indio_dev, &scan, pf->timestamp);
+-	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
++	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
+ 					   iio_get_time_ns(indio_dev));
  
- 	iio_trigger_notify_done(indio_dev->trig);
- 
+ done:
 -- 
 2.27.0
 
