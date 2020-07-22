@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03748C43445
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A796C433F4
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF6D6208E4
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00DA120717
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jul 2020 15:53:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595433224;
-	bh=BIatcbE+CfKNYNAPsaxb4Ys2/kUbi6raTVuQg4Z0Ct0=;
+	s=default; t=1595433213;
+	bh=bU/B4ZHBPu2q5zoajXKveNEYO5LK3+e8NB0+jBTWcak=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=TIvb+DhyE+//jq8JlBMwFDthVN5XiUdhVqlqmPBUGYUb9KVBz3CDl9Cqz1jsvECgQ
-	 wlULBEn42vTTVD9jiDhihHvLgMs+nj+ywVNCCblABltBPueQaW12UBJk9rafbyrSoH
-	 5bnd2egfZ3IjbT6UaPF1yLI16IK07ciIvKvpwrD4=
+	b=2R/QuT9ffmE10mnGLdjobxMDGn4W5Lwmg2IrkxyXpurmevN6+QVevJzPgnHrEeiHj
+	 xaSfj8I1BBNKqVVHH0Inq702N776BZkbd9P9VUs+dfgwhxjg5BRPKfeonp5wRviglM
+	 OBGBwDOscnwxGfa+Q3DamvwVJVd2dXhmqwBjP/W0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730591AbgGVPxo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jul 2020 11:53:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35872 "EHLO mail.kernel.org"
+        id S1729178AbgGVPxc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jul 2020 11:53:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726427AbgGVPxo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Jul 2020 11:53:44 -0400
+        id S1726427AbgGVPxb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Jul 2020 11:53:31 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1C4562080D;
-        Wed, 22 Jul 2020 15:53:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0019E2080D;
+        Wed, 22 Jul 2020 15:53:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595433223;
-        bh=BIatcbE+CfKNYNAPsaxb4Ys2/kUbi6raTVuQg4Z0Ct0=;
+        s=default; t=1595433211;
+        bh=bU/B4ZHBPu2q5zoajXKveNEYO5LK3+e8NB0+jBTWcak=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQsZ1n0WU3Ta4+FUBTZlfeY+NFRMf6wyNYFvgaL23fAKaHOdxrX6xDaQ5G5ayNRnO
-         SKRZUYgtMwsMKEvfoCtORjg8seS4etiH4eTh+/gasi7/rAhe7F3E9Fumz4ZdC9yyYI
-         e7RLa52gzgeVkPSO3NlcgTWIKMqlZSzHihVZcg+M=
+        b=y6BcVgGpPAeIUZ/oxXM+kS0H6Qqumluva5gkJsAN1lHAEHuadAas8pdGL0pU4ycV/
+         9HpHLVsbQ4LlzcjWuKi2cPA/5/r6cdzk2+Rq/4A/cL98MJbqvunpl5VH1s23bn2dcp
+         NE2pzHSLY6LO5h9qC3juevCcwUSyggz+7gMB4W9Y=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH v3 23/27] iio:adc:ti-ads124s08 Fix alignment and data leak issues.
-Date:   Wed, 22 Jul 2020 16:50:59 +0100
-Message-Id: <20200722155103.979802-24-jic23@kernel.org>
+        Daniel Baluta <daniel.baluta@gmail.com>
+Subject: [PATCH v3 15/27] iio:imu:bmi160 Fix alignment and data leak issues
+Date:   Wed, 22 Jul 2020 16:50:51 +0100
+Message-Id: <20200722155103.979802-16-jic23@kernel.org>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20200722155103.979802-1-jic23@kernel.org>
 References: <20200722155103.979802-1-jic23@kernel.org>
@@ -66,64 +66,62 @@ to the size of the timestamp (8 bytes).  This is not guaranteed in
 this driver which uses an array of smaller elements on the stack.
 As Lars also noted this anti pattern can involve a leak of data to
 userspace and that indeed can happen here.  We close both issues by
-moving to a suitable structure in the iio_priv() data with alignment
+moving to a suitable array in the iio_priv() data with alignment
 explicitly requested.  This data is allocated with kzalloc so no
 data can leak apart from previous readings.
 
-In this driver the timestamp can end up in various different locations
-depending on what other channels are enabled.  As a result, we don't
-use a structure to specify it's position as that would be missleading.
+In this driver, depending on which channels are enabled, the timestamp
+can be in a number of locations.  Hence we cannot use a structure
+to specify the datalayout without it being missleading.
 
-Fixes: e717f8c6dfec ("iio: adc: Add the TI ads124s08 ADC code")
+Fixes: 77c4ad2d6a9b ("iio: imu: Add initial support for Bosch BMI160")
 Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Dan Murphy <dmurphy@ti.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Daniel Baluta  <daniel.baluta@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/adc/ti-ads124s08.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+ drivers/iio/imu/bmi160/bmi160.h      | 2 ++
+ drivers/iio/imu/bmi160/bmi160_core.c | 5 ++---
+ 2 files changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-index 4b4fbe33930c..734ee5d82ff6 100644
---- a/drivers/iio/adc/ti-ads124s08.c
-+++ b/drivers/iio/adc/ti-ads124s08.c
-@@ -99,6 +99,11 @@ struct ads124s_private {
- 	struct gpio_desc *reset_gpio;
- 	struct spi_device *spi;
- 	struct mutex lock;
-+	/*
-+	 * Used to correctly align data.
-+	 * Ensure timestamp is naturally aligned.
-+	 */
-+	u32 buffer[ADS124S08_MAX_CHANNELS + sizeof(s64)/sizeof(u16)] __aligned(8);
- 	u8 data[5] ____cacheline_aligned;
+diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
+index a82e040bd109..d29f1b5d1658 100644
+--- a/drivers/iio/imu/bmi160/bmi160.h
++++ b/drivers/iio/imu/bmi160/bmi160.h
+@@ -10,6 +10,8 @@ struct bmi160_data {
+ 	struct iio_trigger *trig;
+ 	struct regulator_bulk_data supplies[2];
+ 	struct iio_mount_matrix orientation;
++	/* Ensure natural alignment for timestamp if present */
++	__le16 buf[16] __aligned(8);
  };
  
-@@ -269,7 +274,6 @@ static irqreturn_t ads124s_trigger_handler(int irq, void *p)
+ extern const struct regmap_config bmi160_regmap_config;
+diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+index 222ebb26f013..86cfd75ea125 100644
+--- a/drivers/iio/imu/bmi160/bmi160_core.c
++++ b/drivers/iio/imu/bmi160/bmi160_core.c
+@@ -427,7 +427,6 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
  	struct iio_poll_func *pf = p;
  	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ads124s_private *priv = iio_priv(indio_dev);
--	u32 buffer[ADS124S08_MAX_CHANNELS + sizeof(s64)/sizeof(u16)];
- 	int scan_index, j = 0;
- 	int ret;
- 
-@@ -284,7 +288,7 @@ static irqreturn_t ads124s_trigger_handler(int irq, void *p)
+ 	struct bmi160_data *data = iio_priv(indio_dev);
+-	__le16 buf[16];
+ 	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
+ 	int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
+ 	__le16 sample;
+@@ -438,10 +437,10 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
+ 				       &sample, sizeof(sample));
  		if (ret)
- 			dev_err(&priv->spi->dev, "Start ADC conversions failed\n");
- 
--		buffer[j] = ads124s_read(indio_dev, scan_index);
-+		priv->buffer[j] = ads124s_read(indio_dev, scan_index);
- 		ret = ads124s_write_cmd(indio_dev, ADS124S08_STOP_CONV);
- 		if (ret)
- 			dev_err(&priv->spi->dev, "Stop ADC conversions failed\n");
-@@ -292,7 +296,7 @@ static irqreturn_t ads124s_trigger_handler(int irq, void *p)
- 		j++;
+ 			goto done;
+-		buf[j++] = sample;
++		data->buf[j++] = sample;
  	}
  
--	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-+	iio_push_to_buffers_with_timestamp(indio_dev, priv->buffer,
- 			pf->timestamp);
- 
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf, pf->timestamp);
++	iio_push_to_buffers_with_timestamp(indio_dev, data->buf, pf->timestamp);
+ done:
  	iio_trigger_notify_done(indio_dev->trig);
+ 	return IRQ_HANDLED;
 -- 
 2.27.0
 
