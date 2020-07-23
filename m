@@ -6,39 +6,40 @@ X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F26D1C433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Jul 2020 11:24:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03A05C433E1
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Jul 2020 11:31:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CBD3620709
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Jul 2020 11:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D548F20709
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Jul 2020 11:31:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727769AbgGWLY4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 Jul 2020 07:24:56 -0400
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2514 "EHLO huawei.com"
+        id S1728068AbgGWLbB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 Jul 2020 07:31:01 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2516 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1727828AbgGWLYz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 23 Jul 2020 07:24:55 -0400
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
-        by Forcepoint Email with ESMTP id BE56941A084075BE5EA5;
-        Thu, 23 Jul 2020 12:24:53 +0100 (IST)
+        id S1725846AbgGWLbB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 23 Jul 2020 07:31:01 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.107])
+        by Forcepoint Email with ESMTP id 5E60A55E73338109DDD3;
+        Thu, 23 Jul 2020 12:31:00 +0100 (IST)
 Received: from localhost (10.52.125.229) by lhreml710-chm.china.huawei.com
  (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 23 Jul
- 2020 12:24:53 +0100
-Date:   Thu, 23 Jul 2020 12:23:33 +0100
+ 2020 12:30:59 +0100
+Date:   Thu, 23 Jul 2020 12:29:39 +0100
 From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 CC:     Jonathan Cameron <jic23@kernel.org>,
         linux-iio <linux-iio@vger.kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald" <pmeerw@pmeerw.net>, Dan Murphy <dmurphy@ti.com>
-Subject: Re: [PATCH v3 23/27] iio:adc:ti-ads124s08 Fix alignment and data
- leak issues.
-Message-ID: <20200723122333.00000222@Huawei.com>
-In-Reply-To: <CAHp75Vc5UiY1pBvyS=rQ1RjhVcDGNYgkVhvB6UB4kvuNg0a5CA@mail.gmail.com>
+        "Peter Meerwald" <pmeerw@pmeerw.net>,
+        Mikko Koivunen <mikko.koivunen@fi.rohmeurope.com>
+Subject: Re: [PATCH v3 10/27] iio:light:rpr0521 Fix timestamp alignment and
+ prevent data leak.
+Message-ID: <20200723122939.000003f0@Huawei.com>
+In-Reply-To: <CAHp75VcGDccaUwuyCBGhATTnFUEbXMw+=gq8Oe7jbYRcoArDyQ@mail.gmail.com>
 References: <20200722155103.979802-1-jic23@kernel.org>
-        <20200722155103.979802-24-jic23@kernel.org>
-        <CAHp75Vc5UiY1pBvyS=rQ1RjhVcDGNYgkVhvB6UB4kvuNg0a5CA@mail.gmail.com>
+        <20200722155103.979802-11-jic23@kernel.org>
+        <CAHp75VcGDccaUwuyCBGhATTnFUEbXMw+=gq8Oe7jbYRcoArDyQ@mail.gmail.com>
 Organization: Huawei Technologies Research and Development (UK) Ltd.
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
@@ -53,7 +54,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 22 Jul 2020 23:54:29 +0300
+On Wed, 22 Jul 2020 22:47:46 +0300
 Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
 > On Wed, Jul 22, 2020 at 6:53 PM Jonathan Cameron <jic23@kernel.org> wrote:
@@ -66,31 +67,40 @@ Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 > > this driver which uses an array of smaller elements on the stack.
 > > As Lars also noted this anti pattern can involve a leak of data to
 > > userspace and that indeed can happen here.  We close both issues by
-> > moving to a suitable structure in the iio_priv() data with alignment
-> > explicitly requested.  This data is allocated with kzalloc so no
-> > data can leak apart from previous readings.
+> > moving to a suitable structure in the iio_priv().  
+> 
+> > This data is allocated with kzalloc so no data can leak appart  
+> 
+> apart
+> 
+> > from previous readings and in this case the status byte from the device.
 > >
-> > In this driver the timestamp can end up in various different locations
-> > depending on what other channels are enabled.  As a result, we don't
-> > use a structure to specify it's position as that would be missleading.  
+> > The forced alignment of ts is not necessary in this case but it
+> > potentially makes the code less fragile.  
 > 
 > ...
 > 
-> > +       /*
-> > +        * Used to correctly align data.
-> > +        * Ensure timestamp is naturally aligned.
-> > +        */
-> > +       u32 buffer[ADS124S08_MAX_CHANNELS + sizeof(s64)/sizeof(u16)] __aligned(8);  
+> > +        * Note that the read will put garbage data into
+> > +        * the padding but this should not be a problem  
 > 
-> u32 vs. u16?
+> > +               u8 garbage;  
 > 
-Curious indeed.  My eyes jumped straight over that when cutting and
-pasting that line.  I guess too big is never a problem, but should definitely
-tidy that up.
+> >         err = regmap_bulk_read(data->regmap, RPR0521_REG_PXS_DATA,
+> > -               &buffer,
+> > +               data->scan.channels,
+> >                 (3 * 2) + 1);   /* 3 * 16-bit + (discarded) int clear reg. */  
+> 
+> But can't we read the interrupt clear register separately?
+> 
 
-Thanks,
+Potentially though I have no idea if there is an odd quirk there. I'm not
+immediately seeing anything on the datasheet about it.
+Would need a tested-by from someone with hardware to confirm it is fine to
+do it as two reads though.
+
+Would be nice to get rid of the non standard handling so well worth
+pursuing in v4 of this set.
 
 Jonathan
-
 
 
