@@ -2,120 +2,104 @@ Return-Path: <SRS0=/Hud=BD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 53E89C433EB
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jul 2020 21:33:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EDEAEC433E0
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Jul 2020 21:56:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2D634206F6
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jul 2020 21:33:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE8C2206F0
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Jul 2020 21:56:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="YI+6Na2c"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="CpGLRpEh"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726696AbgGXVdp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 24 Jul 2020 17:33:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57248 "EHLO
+        id S1726607AbgGXV41 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 24 Jul 2020 17:56:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726763AbgGXVdf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2020 17:33:35 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19F7BC0619D3
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2020 14:33:35 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id o13so6158995pgf.0
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2020 14:33:35 -0700 (PDT)
+        with ESMTP id S1726591AbgGXV40 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jul 2020 17:56:26 -0400
+Received: from mail-ua1-x942.google.com (mail-ua1-x942.google.com [IPv6:2607:f8b0:4864:20::942])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EB8DC0619D3
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2020 14:56:26 -0700 (PDT)
+Received: by mail-ua1-x942.google.com with SMTP id o25so3431643uar.1
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2020 14:56:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4A/xN+mXAd0EqJ9PitQzyrnaHXwvg7/Xc99KzMDWZ6w=;
-        b=YI+6Na2cEfWiYpn8cueJuwa/rEh9Eh3xNHKi83BjmkgAVNk0CTuHUwQIzIcKDuIcZr
-         l9QFMLcnYrtI+Mumkp9boy+k+7iZYRqGbxw1hnJl36JZ2D9d5q1UPjSu/qw5SnjL/4xg
-         xLwzDzDjh3Xy3P1lk019ShKO/cGDie18gz0/U=
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Wu9Z19uRtGtJ0NasFeWEnBkj7jELCMCGAKW7BoOuLmA=;
+        b=CpGLRpEhHAWmIvAZYKn0xvAoo10wA4C9CeUytti2gF630AeKnqsyVJEJzVOwEeJheO
+         aNgiUp32xACS0QVxGpuCCGANOs2ewM3UJio6fp8tOoFT4Ait2UiUBODk2u6763JCuFqq
+         PUmmGifrKE4B8YjocgrEo9u0+Zes/x2Bv2n2c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4A/xN+mXAd0EqJ9PitQzyrnaHXwvg7/Xc99KzMDWZ6w=;
-        b=XkfKNGpbac1+HMWApQ9Kl88oy26jOq2H/Cps30it7eqcNX7euL3154tLTJYjoeNah9
-         MuHh9zhH9x301IuZ9guP5ZeLHniFtsjuTqFNiW0VHcQxr3jVb2nc3l7imCPt0HE0ZPXI
-         6gTzAX+lr9E+7ymWF4pQiJyGd8tf0ez3XNUMzCzkqAI5SI/1FUybjsrhACJdbjzZColq
-         BzibTRB6FqfVbZ+S6sk/jtvM4WZO14OjqfhXImMciSrUDlmh2hYlzT8IW/c/h/pQ36s1
-         4fUY66uZwbGU5hQJ35SVheiAmn+PI2j7nT+VLkgpVD9WdoMSNUCT+7gT8nrEJ5iEZusA
-         LX9A==
-X-Gm-Message-State: AOAM531Xuhg9M6tt9IHDHW1o6I+NqApBuP4B9yX6wUS3KbmC9mfeRfOT
-        27ijrHZuEBnBDN2SFhvDXYyNFg==
-X-Google-Smtp-Source: ABdhPJwKephH8VtzFk07GkM8Dq9QzB0TSBf214Np+Lq3nSPVJM/VWnFzsOJl2E3Uv9tD+GrMv5xSCA==
-X-Received: by 2002:a62:79cd:: with SMTP id u196mr10322543pfc.152.1595626414664;
-        Fri, 24 Jul 2020 14:33:34 -0700 (PDT)
-Received: from smtp.gmail.com ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id z6sm7312919pfn.173.2020.07.24.14.33.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 24 Jul 2020 14:33:34 -0700 (PDT)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Wu9Z19uRtGtJ0NasFeWEnBkj7jELCMCGAKW7BoOuLmA=;
+        b=Cmq1LsvVIqFgkjrbWmU2JSB7TOJP/Sb4kQEE43USX0F7f5tiJxhEXCr37xmZ1JHxef
+         B1kXxzD7jrFPVkLDKZm2mSoOxNeXjnKPNDybWGoXDyQFI7Bu1NYCmUia3wp70SvvC07W
+         sSw38ZBVS4yCymXNt43lCRlZF5HKlmDz6uMAxWvp+3jgA/OmeyspJEP6AIYyvdhu9tfj
+         UypoItmiRrliGfUvz/U+vizvIqoaA2FN8ev623o7k7ojSELbpRVJKGvyMpO/q//EDn8i
+         IgSN6MmUQmh6A3ZjJuvq8q4UpmD8PqQkfvX2Q1KkyGxX0U5PeR0hXwTpS2ZdJzhfJuWf
+         zPag==
+X-Gm-Message-State: AOAM533vtrKGSI/16em0Rm17JXt0qWh2/+paM0xmSrb3dyiBdaflk1ii
+        O6s7HQ+3w5D2BKYHK/Zf183eIxsM9ts=
+X-Google-Smtp-Source: ABdhPJy2Ge5v2cVf7DXQbWwQxNDzkOXnb6UMXAASXO/0KeXmXLLT9pR/G9ddeQbt1nXlUOuC3+CJhw==
+X-Received: by 2002:a9f:21a3:: with SMTP id 32mr10031572uac.50.1595627785368;
+        Fri, 24 Jul 2020 14:56:25 -0700 (PDT)
+Received: from mail-vs1-f51.google.com (mail-vs1-f51.google.com. [209.85.217.51])
+        by smtp.gmail.com with ESMTPSA id b124sm285598vkb.0.2020.07.24.14.56.24
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Fri, 24 Jul 2020 14:56:24 -0700 (PDT)
+Received: by mail-vs1-f51.google.com with SMTP id b26so1116017vsa.13
+        for <linux-iio@vger.kernel.org>; Fri, 24 Jul 2020 14:56:24 -0700 (PDT)
+X-Received: by 2002:a67:e046:: with SMTP id n6mr9513301vsl.6.1595627783920;
+ Fri, 24 Jul 2020 14:56:23 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200724213329.899216-1-swboyd@chromium.org> <20200724213329.899216-4-swboyd@chromium.org>
+In-Reply-To: <20200724213329.899216-4-swboyd@chromium.org>
+From:   Doug Anderson <dianders@chromium.org>
+Date:   Fri, 24 Jul 2020 14:56:12 -0700
+X-Gmail-Original-Message-ID: <CAD=FV=WQUpfjk7r-w5f0uP0Xnx39Mv8WxLfjfwxfNoGa_1XBvw@mail.gmail.com>
+Message-ID: <CAD=FV=WQUpfjk7r-w5f0uP0Xnx39Mv8WxLfjfwxfNoGa_1XBvw@mail.gmail.com>
+Subject: Re: [PATCH v2 3/5] iio: sx9310: whoami is unsigned
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         Daniel Campello <campello@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Douglas Anderson <dianders@chromium.org>
-Subject: [PATCH v2 3/5] iio: sx9310: whoami is unsigned
-Date:   Fri, 24 Jul 2020 14:33:27 -0700
-Message-Id: <20200724213329.899216-4-swboyd@chromium.org>
-X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
-In-Reply-To: <20200724213329.899216-1-swboyd@chromium.org>
-References: <20200724213329.899216-1-swboyd@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is an unsigned value, actually it's a u8 but regmap doesn't handle
-that easily. Let's make it unsigned throughout so that we don't need to
-worry about signed vs. unsigned comparison behavior.
+Hi,
 
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Daniel Campello <campello@chromium.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Douglas Anderson <dianders@chromium.org>
-Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/iio/proximity/sx9310.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+On Fri, Jul 24, 2020 at 2:33 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> This is an unsigned value, actually it's a u8 but regmap doesn't handle
+> that easily. Let's make it unsigned throughout so that we don't need to
+> worry about signed vs. unsigned comparison behavior.
+>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: Daniel Campello <campello@chromium.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  drivers/iio/proximity/sx9310.c | 5 +++--
+>  1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 84c3c9ae80dc..fca871ad82ba 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -144,7 +144,7 @@ struct sx9310_data {
- 	struct completion completion;
- 	unsigned int chan_read, chan_event;
- 	int channel_users[SX9310_NUM_CHANNELS];
--	int whoami;
-+	unsigned int whoami;
- };
- 
- static const struct iio_event_spec sx9310_events[] = {
-@@ -864,7 +864,8 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
- 
- static int sx9310_set_indio_dev_name(struct device *dev,
- 				     struct iio_dev *indio_dev,
--				     const struct i2c_device_id *id, int whoami)
-+				     const struct i2c_device_id *id,
-+				     unsigned int whoami)
- {
- 	const struct acpi_device_id *acpi_id;
- 
--- 
-Sent by a computer, using git, on the internet
-
+Reviewed-by: Douglas Anderson <dianders@chromium.org>
