@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 981E0C433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0321AC433E1
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7494B20715
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D319B20789
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CdxD1K88"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="SStpM4mX"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727854AbgGZWBQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Jul 2020 18:01:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54964 "EHLO
+        id S1727775AbgGZWBM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Jul 2020 18:01:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727835AbgGZWBP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jul 2020 18:01:15 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E054EC0619D2;
-        Sun, 26 Jul 2020 15:01:14 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id e22so1025074pjt.3;
-        Sun, 26 Jul 2020 15:01:14 -0700 (PDT)
+        with ESMTP id S1727046AbgGZWBL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jul 2020 18:01:11 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 955A7C0619D4;
+        Sun, 26 Jul 2020 15:01:11 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id gc9so8060300pjb.2;
+        Sun, 26 Jul 2020 15:01:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=HZU+CLnTFoPQ1JpymZdUcH3mmJgipVbUCtqjlmDAw4Y=;
-        b=CdxD1K88z+pamrzdL50IXo3+fI/VewOlDiIsVj0yC9ux7QMRnYUYRnce+xaioIwu5w
-         K6rLBVZwaCGYF2RXjt6SA3i4iuH/DdR1XLE9OMPVkuuyDjjt0kxbbVeoWfsE4Esvo3xe
-         wv7Z4ikMuMy8v0QAIDbO4jimtiA63GpwrmB0No5zX67DucutM4Wc/s7gicfyHMvP+2F5
-         BPwy3ZYi5FoYLigOLnDF+ycy5As6724VO3oEf9jHZ82lAbooHkNijSRc0QxrWrWLTVn9
-         bTkQJQaWwbH94hOJ9AbvcgWFWsS1eSwMBSrFWi8duDFy+3OVwMb3lwXjsAWBXyLRCFs0
-         EZVQ==
+        bh=D0FjvCBud6M7Ooa+U2QMuqNklPJEapjHDwZLoN3fzsg=;
+        b=SStpM4mXtSymgmbKrWmgXmcYAzQ/gVEImp2FEvTvkoYqPuk4JkwT+Q1mhtVK/RKMTb
+         6P3Fj4Qx/T900X8dAeIVgtJt3BdIWNntgS9zL8Pvv/58TBe0wrd0evDTaNRhqmy3wLnP
+         udmMg9CsohZni6zaWs9kBTS3+xiP5DUcw74Wop9Xl6AiWHl5EBt7RPEDGFLkW9QQ8xUH
+         MQpYwY6YMZtmko8LuI+7eYEft0YkMlZ0IIvZJ3ddCWR8Chwj9k6EXW2hcP/YJ6F0kc2/
+         U3ZkNJDwNUaQmcFrhsAwWjePvXmptjZr4BeJ9HNd0b1DhpafOxVjD/K6QtOx0xMWVLYc
+         1yUQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references;
-        bh=HZU+CLnTFoPQ1JpymZdUcH3mmJgipVbUCtqjlmDAw4Y=;
-        b=him9WNvmu3/87KOqiG+K5rRC8RkXNRicnK074j8ahp0Bik8BSDE0RVwZyQ2egKmqcG
-         TvmaKfusnM6djxBECD1rf2SCfktvN23s1YuygM9vmIbAQhmwZIGcYO4UPN63M+6El9/6
-         QCg3WGBqnV8PRW1cJkUjyLRaA9CJZbZskQd3yQwKqkO4ha/+vDsug0nFDiaBq1t2AmM4
-         voWmCACQTA4YY1Pk3zwMdwbVnRn7yTDj2WTvqlph68ax7YgV3NI2W0ARL24bIo+TVR28
-         7qTCXCUoc/YPp+JEHgGtXPhVunUTJFKrbnway6X7lxk1mqcUMztTcdMdPgRiso2ZRprv
-         NzjQ==
-X-Gm-Message-State: AOAM530cOJJyoaiLwgN67IwLhAOvtCwv8EJPf8vKRDo1ks0Xu0snr+LG
-        mABLvehjRV3FztOT1rkhuJI=
-X-Google-Smtp-Source: ABdhPJyiR2/jzi0/mGeVbInjQrjH9JtBbofevJuQAdZAS21fYp/R60zxL4MAY3tywdlHrPPk3A/hcQ==
-X-Received: by 2002:a17:902:b685:: with SMTP id c5mr16430943pls.115.1595800874478;
-        Sun, 26 Jul 2020 15:01:14 -0700 (PDT)
+        bh=D0FjvCBud6M7Ooa+U2QMuqNklPJEapjHDwZLoN3fzsg=;
+        b=OYYUjTWySN5OpqLqkxs6b6qj99R7hAyp3fQycLTT8NeBPcrLPNTmxVxUamRp/OUsOy
+         p2vynS8kkJPXOj10yooj0rysZlGhOGsA5qmKbMR3tdnTXBRr59bOfmUNO4K01WG23zI1
+         QO6KoVAuD1oaDYxyEj/HvKlvwHRMP95DUGUVhqvSm/T7aP6uzknQoD3Y2Qd9bU3TuZzn
+         su0PKzqoljozcxDsiO//b+qcmEm7gIMUVwmabAKkXyo4EdE4bCv3uPasIFTwbOGYkLNX
+         VXilVC7jE+CML8TjrlY876ENFGGmz2yJuCV17rycNDHBQTRAlqF4iQU+auGZ/3QRrd/k
+         9/5w==
+X-Gm-Message-State: AOAM532ZA9hok3xZ6bppH7IwSK+Cr8OJjxmNnyDsBamBOtLafwq+lhFu
+        dAZCaxcA3Oe2Vg+G6pRxC7Q=
+X-Google-Smtp-Source: ABdhPJzq+9qhsdckOyjPbghpzvMnaavEGMu1FVqsHODnd4JiT+U5oG/8c3ApvsP3xBIXL/S7Rrf0LQ==
+X-Received: by 2002:a17:90a:2dcb:: with SMTP id q11mr15838703pjm.135.1595800871199;
+        Sun, 26 Jul 2020 15:01:11 -0700 (PDT)
 Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id s6sm12899414pfd.20.2020.07.26.15.01.13
+        by smtp.gmail.com with ESMTPSA id p1sm5861033pjp.10.2020.07.26.15.01.10
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 26 Jul 2020 15:01:14 -0700 (PDT)
+        Sun, 26 Jul 2020 15:01:10 -0700 (PDT)
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -71,9 +71,9 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Guenter Roeck <linux@roeck-us.net>,
         Yu-Hsuan Hsu <yuhsuan@chromium.org>,
         Prashant Malani <pmalani@chromium.org>
-Subject: [PATCH v3 5/6] platform/input: cros_ec: Replace -ENOTSUPP with -ENOPROTOOPT
-Date:   Sun, 26 Jul 2020 15:01:00 -0700
-Message-Id: <20200726220101.29059-6-linux@roeck-us.net>
+Subject: [PATCH v3 3/6] platform/chrome: cros_ec_sysfs: Report range of error codes from EC
+Date:   Sun, 26 Jul 2020 15:00:58 -0700
+Message-Id: <20200726220101.29059-4-linux@roeck-us.net>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200726220101.29059-1-linux@roeck-us.net>
 References: <20200726220101.29059-1-linux@roeck-us.net>
@@ -82,58 +82,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
--ENOTSUPP is not a SUSV4 error code and should not be used. Use
--ENOPROTOOPT instead to report EC_RES_INVALID_VERSION responses
-from the EC. This matches match the NFS response for unsupported
-protocol versions.
+Since commit c5cd2b47b203 ("platform/chrome: cros_ec_proto: Report command
+not supported") we can no longer assume that cros_ec_cmd_xfer_status()
+reports -EPROTO for all errors returned by the EC itself. A follow-up
+patch will change cros_ec_cmd_xfer_status() to report additional errors
+reported by the EC as distinguished Linux error codes.
+
+Prepare for this change by always reporting both the Linux error code
+and the EC error code in sysfs attributes.
 
 Cc: Gwendal Grignou <gwendal@chromium.org>
 Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
 Cc: Prashant Malani <pmalani@chromium.org>
 Cc: Brian Norris <briannorris@chromium.org>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-v3: Added patch
+v3: No change
+v2: Added patch
 
- drivers/input/keyboard/cros_ec_keyb.c   | 2 +-
- drivers/platform/chrome/cros_ec_proto.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/platform/chrome/cros_ec_sysfs.c | 24 +++++++++---------------
+ 1 file changed, 9 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
-index fc1793ca2f17..15d17c717081 100644
---- a/drivers/input/keyboard/cros_ec_keyb.c
-+++ b/drivers/input/keyboard/cros_ec_keyb.c
-@@ -348,7 +348,7 @@ static int cros_ec_keyb_info(struct cros_ec_device *ec_dev,
- 	params->event_type = event_type;
+diff --git a/drivers/platform/chrome/cros_ec_sysfs.c b/drivers/platform/chrome/cros_ec_sysfs.c
+index d45ea5d5bfa4..9c1e0998a721 100644
+--- a/drivers/platform/chrome/cros_ec_sysfs.c
++++ b/drivers/platform/chrome/cros_ec_sysfs.c
+@@ -150,12 +150,10 @@ static ssize_t version_show(struct device *dev,
+ 	msg->command = EC_CMD_GET_BUILD_INFO + ec->cmd_offset;
+ 	msg->insize = EC_HOST_PARAM_SIZE;
+ 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
+-	if (ret == -EPROTO) {
+-		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Build info:    EC error %d\n", msg->result);
+-	} else if (ret < 0) {
++	if (ret < 0) {
+ 		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Build info:    XFER ERROR %d\n", ret);
++				   "Build info:    XFER / EC ERROR %d / %d\n",
++				   ret, msg->result);
+ 	} else {
+ 		msg->data[EC_HOST_PARAM_SIZE - 1] = '\0';
+ 		count += scnprintf(buf + count, PAGE_SIZE - count,
+@@ -166,12 +164,10 @@ static ssize_t version_show(struct device *dev,
+ 	msg->command = EC_CMD_GET_CHIP_INFO + ec->cmd_offset;
+ 	msg->insize = sizeof(*r_chip);
+ 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
+-	if (ret == -EPROTO) {
+-		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Chip info:     EC error %d\n", msg->result);
+-	} else if (ret < 0) {
++	if (ret < 0) {
+ 		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Chip info:     XFER ERROR %d\n", ret);
++				   "Chip info:     XFER / EC ERROR %d / %d\n",
++				   ret, msg->result);
+ 	} else {
+ 		r_chip = (struct ec_response_get_chip_info *)msg->data;
  
- 	ret = cros_ec_cmd_xfer_status(ec_dev, msg);
--	if (ret == -ENOTSUPP) {
-+	if (ret == -ENOPROTOOPT) {
- 		/* With older ECs we just return 0 for everything */
- 		memset(result, 0, result_size);
- 		ret = 0;
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 3e745e0fe092..e5bbec979a2a 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -555,7 +555,7 @@ EXPORT_SYMBOL(cros_ec_cmd_xfer);
-  *
-  * Return:
-  * >=0 - The number of bytes transferred
-- * -ENOTSUPP - Operation not supported
-+ * -ENOPROTOOPT - Operation not supported
-  * -EPROTO - Protocol error
-  */
- int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-@@ -569,7 +569,7 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 	} else if (msg->result == EC_RES_INVALID_VERSION) {
- 		dev_dbg(ec_dev->dev, "Command invalid version (err:%d)\n",
- 			msg->result);
--		return -ENOTSUPP;
-+		return -ENOPROTOOPT;
- 	} else if (msg->result != EC_RES_SUCCESS) {
- 		dev_dbg(ec_dev->dev, "Command result (err: %d)\n", msg->result);
- 		return -EPROTO;
+@@ -190,12 +186,10 @@ static ssize_t version_show(struct device *dev,
+ 	msg->command = EC_CMD_GET_BOARD_VERSION + ec->cmd_offset;
+ 	msg->insize = sizeof(*r_board);
+ 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
+-	if (ret == -EPROTO) {
+-		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Board version: EC error %d\n", msg->result);
+-	} else if (ret < 0) {
++	if (ret < 0) {
+ 		count += scnprintf(buf + count, PAGE_SIZE - count,
+-				   "Board version: XFER ERROR %d\n", ret);
++				   "Board version: XFER / EC ERROR %d / %d\n",
++				   ret, msg->result);
+ 	} else {
+ 		r_board = (struct ec_response_board_version *)msg->data;
+ 
 -- 
 2.17.1
 
