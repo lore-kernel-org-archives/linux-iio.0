@@ -2,54 +2,51 @@ Return-Path: <SRS0=oppv=BF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 497FEC433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 12:34:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40DE3C433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 12:30:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1698B20719
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 12:34:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C48520714
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 12:30:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1595766872;
-	bh=eAlrwCkGaxj2oiht2tjkTxM5eF+LRyV8H2S//rwKV3U=;
+	s=default; t=1595766609;
+	bh=s4J6EOGEFA69R9t8lF7e6EZ5gSOJtEn0B6k80Px8dH0=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=MT/5M8Go5Xocd2y743ZPRisvjfjtzESEFAy/T86bzoHAzoztAi7Nl2guj5+2m8QoE
-	 FqBk/Je1fPf7pWiF6lO0x8ZnMZOsNoAK8fU54eaJA/hCHnZPyBBI+FsrgTZa/eNcrM
-	 NG2cj+giIbiQM/gSsCyIpI9PQuopFhzEToXJsO0U=
+	b=c0jCwo/CmyrUZE/bfVxrI5ye2ltdShqu7UOqeTfbIKuruNCBFck15+1NTnCZep6bi
+	 LFBgyPMtoMu6BSMFYZZMbJ+/2KiqQEkUuYyZuvrjhq+lyeC4jPi2zHy6FdqgAvZesr
+	 zqjn2wot1grvDFiEP9inrnpRTdaXbdAbQlWm9ItQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726106AbgGZMeb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Jul 2020 08:34:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36306 "EHLO mail.kernel.org"
+        id S1726144AbgGZMaI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Jul 2020 08:30:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58614 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725848AbgGZMeb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 26 Jul 2020 08:34:31 -0400
+        id S1726042AbgGZMaI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 26 Jul 2020 08:30:08 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 22D69206D8;
-        Sun, 26 Jul 2020 12:34:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7D1D3206D8;
+        Sun, 26 Jul 2020 12:30:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1595766871;
-        bh=eAlrwCkGaxj2oiht2tjkTxM5eF+LRyV8H2S//rwKV3U=;
+        s=default; t=1595766608;
+        bh=s4J6EOGEFA69R9t8lF7e6EZ5gSOJtEn0B6k80Px8dH0=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=EMBU7P7XKWlZRdrGObVzCaZwqdkb14rHsmAp7n15osZp8wx49LWa3Syiw2oA9TS5q
-         kSHyjJDwrdoLxwWOr5Ab49nMsKhDeBNMessWObwGf3Uwyj9kDGjOByrQCLJUyPZNGj
-         35bFaFl0wX/MMpw4OHFKP3RDJW/8bnW/1hfKpVX8=
-Date:   Sun, 26 Jul 2020 13:34:27 +0100
+        b=jyE5RME0fADgdc4yS8tRY3IywkvcpbELB3NEzhIbRHVro5oBFuaaz4wbcojPz/A1C
+         JpSKmAOFm0xeYtqVc0oC889MBV7KE6P0O2NE2gpIsTQ/2Gty07NgDXfo/BRVE70ZEy
+         hn4Vt6KbtX7inaFQDa1e5g7CkNlgHHf3qicHAZHM=
+Date:   Sun, 26 Jul 2020 13:30:04 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Matt Ranostay <matt.ranostay@konsulko.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH v2 2/3] dt-bindings: iio: chemical: add O2 EZO module
- documentation
-Message-ID: <20200726133427.711b4157@archlinux>
-In-Reply-To: <20200723174731.GA596034@bogus>
-References: <20200720070330.259954-1-matt.ranostay@konsulko.com>
-        <20200720070330.259954-3-matt.ranostay@konsulko.com>
-        <20200723174731.GA596034@bogus>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: adxl372_spi: change indentation for of_table
+Message-ID: <20200726133004.7336d99c@archlinux>
+In-Reply-To: <20200722072546.65742-1-alexandru.ardelean@analog.com>
+References: <20200720134839.71124-1-alexandru.ardelean@analog.com>
+        <20200722072546.65742-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.5 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,19 +56,36 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 23 Jul 2020 11:47:31 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Wed, 22 Jul 2020 10:25:46 +0300
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> On Mon, 20 Jul 2020 00:03:29 -0700, Matt Ranostay wrote:
-> > Cc: devicetree@vger.kernel.org
-> > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-> > ---
-> >  .../devicetree/bindings/iio/chemical/atlas,sensor.yaml          | 2 ++
-> >  1 file changed, 2 insertions(+)
-> >   
+> The change is mostly stylistic. The table should be indented with tabs
+> instead of spaces.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied.
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Applied
 
-Thanks,
+> ---
+> 
+> Changelog v1 -> v2:
+> * remove trailing comma at null terminator
+> 
+>  drivers/iio/accel/adxl372_spi.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/adxl372_spi.c b/drivers/iio/accel/adxl372_spi.c
+> index 3ef7e3a4804e..1f1352fee99a 100644
+> --- a/drivers/iio/accel/adxl372_spi.c
+> +++ b/drivers/iio/accel/adxl372_spi.c
+> @@ -40,8 +40,8 @@ static const struct spi_device_id adxl372_spi_id[] = {
+>  MODULE_DEVICE_TABLE(spi, adxl372_spi_id);
+>  
+>  static const struct of_device_id adxl372_of_match[] = {
+> -        { .compatible = "adi,adxl372" },
+> -        { },
+> +	{ .compatible = "adi,adxl372" },
+> +	{ }
+>  };
+>  MODULE_DEVICE_TABLE(of, adxl372_of_match);
+>  
 
