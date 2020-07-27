@@ -1,139 +1,142 @@
-Return-Path: <SRS0=oppv=BF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=m5bt=BG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F77C433FC
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B338C433E4
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Jul 2020 08:36:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 441A820738
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jul 2020 22:01:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 091FB20672
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Jul 2020 08:36:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="lZIAhLjL"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="p3Q3J+WA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727075AbgGZWBM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Jul 2020 18:01:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54942 "EHLO
+        id S1726992AbgG0IgD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Jul 2020 04:36:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39522 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726253AbgGZWBL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jul 2020 18:01:11 -0400
-Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50BAFC0619D2;
-        Sun, 26 Jul 2020 15:01:10 -0700 (PDT)
-Received: by mail-pl1-x644.google.com with SMTP id w17so7025552ply.11;
-        Sun, 26 Jul 2020 15:01:10 -0700 (PDT)
+        with ESMTP id S1726227AbgG0IgC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Jul 2020 04:36:02 -0400
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D24C061794;
+        Mon, 27 Jul 2020 01:36:02 -0700 (PDT)
+Received: by mail-ej1-x642.google.com with SMTP id g11so4413523ejr.0;
+        Mon, 27 Jul 2020 01:36:02 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=p2ZGaEvqbBo3caD5sMA/QnrK4wKw7E7gyzjsO5Ns6y0=;
-        b=lZIAhLjLmirYDu8HeccJ5MDOHmQHenXob0dzJmZAaNgjBzX9AJfPp/L8TNC3fKDjQq
-         vWViEXVNEJqJdnv5bkDfYQvF2D/LVThVUH4jtorm03bW3Qf3XV1soMh6OuCraCZ+FlEQ
-         +SfghS1kCSBLwXhjTC5BYTDNQb6K+SKriJpDZ57FiZXohRbUJX+qXNkR+TQUpfo/FCGG
-         yuCa5mF2O3VBrMRL0TLzUqYW+9nhOaDUTpM+mtCDy6hMwrM786A8AAwBLwDwKegj0v2h
-         kV1AiZdRJfDrHR+8amqAJ/eYyvzxNrU+gZte3cuaNdDqaxctYUx2vM6vy48X9NAUzLV1
-         g9BQ==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=H+xLAiBQ1pH8gECByy/1KrbQRjM9z76f1/RAtD3ZJ0E=;
+        b=p3Q3J+WAI8nKPKPg62+INQcxywjWgw6SNOscCCt6ytYnSiEpotAvraZ+nDjQLPHiVG
+         3WZdrdopCzSp1TR14OpmPqDZlqm8zkQoST6ni8oBJKZfO49SpA/95H9nhE07DSHNxyVw
+         BUJq4rkDqDwckcJZBiPfQCooeB7GzgYQsNzuPh/Ivx0vT3M374PX8qfbz4d0du29353N
+         15kEllK8b9B8JiiYRaZj7g5JI5krHN2rfdQLv3Qkw8WOT3dCOCcwlowds3ze28oh+Wjc
+         WzRXKBiVmjm3d2zmHdvEuqtdGWizkdcYThxvepgcO+zgMLwBcrDeQKL5Hyq9HVIAZzFV
+         XbdQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references;
-        bh=p2ZGaEvqbBo3caD5sMA/QnrK4wKw7E7gyzjsO5Ns6y0=;
-        b=oOXgXvsM7QJtRxY2lwY2e9ZlAWCrEHUn9t1rKi9zrGFTlpn7wCmBjcGezJ7kD6AONE
-         fPE7sgrtcKfaXK95bWQek4gkK/b2lkxdddUEzYRCIDjMuY99sRGV+cs97LohvHl1V6Pk
-         ASOA3bMP68YoL5/SYngHQ3r9dZ6b1OTTyMJ3VuCHDAIWxw3uATtVpM/1ZDuQwWO4PhW7
-         xN1NGV+G+AYJH3FZ3RjpsnvV2RLke7f6+QMk+mcAaNcv6sEszYTIWlfO+72w71rbhD4z
-         h08X1UHu8pI9Eavv+X1KMK2KznGicisC6OnZGdljmLD0jNrV61j23J3APyrOQbjXGbdc
-         QK7w==
-X-Gm-Message-State: AOAM530CLuVEQ0GuXdm71Rp1kKqwWPiNu1WJii9Zb3YZnS3SU+iVj4mu
-        y35jNw3BYNO9z0wP43N/osU=
-X-Google-Smtp-Source: ABdhPJzQhsWHwHIFLQVZNcXrpBs7Ty5n/9Rh3z/f/4DCVt5kvNDUdml+X9+STWqMiPbzGP4KB+zJeA==
-X-Received: by 2002:a17:90a:c207:: with SMTP id e7mr15997035pjt.49.1595800869857;
-        Sun, 26 Jul 2020 15:01:09 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a9sm12654566pfr.103.2020.07.26.15.01.09
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 26 Jul 2020 15:01:09 -0700 (PDT)
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=H+xLAiBQ1pH8gECByy/1KrbQRjM9z76f1/RAtD3ZJ0E=;
+        b=cKp+Jxuym2XAkdHpn0KRHF5eTIg3yHEao6h9Ykm4M4+CdT2Q3q0XRT4CipgyUxK3Mm
+         RwJ6fRdiz+EUq457lNNrrLeun7JmfqTtsQuS9XtEQMzwE+XgwZrKEDT6MWYzVcC0dmAE
+         4PaJ359ayyJgt0UredFkzkGHIKTrsUR13ttAp1/tv2Tb2Fm8a1sie+O30eK9QAy9ggqQ
+         1gDLWBkRZi7X3VjtIDFTwdrA+uWn2pFU5MRq0JMnKW1LF6x59Yy7v65ETjLEXaaeKnC5
+         RiAwqAAhbeckcQz5/bg7/zi4VXbu5tIWEASuDeyjI3GUmQgI7Hew6B3/te5nxnemNSyK
+         XUbw==
+X-Gm-Message-State: AOAM532KGAkNjKzRbukjx4x2W7ZYirFVvbsi10YqjO2d0t2K4UvoHYzt
+        7X6QKVKkR+FqBLBz66exR0Gh9Szy
+X-Google-Smtp-Source: ABdhPJzdWk1CsONTYOmHqvIRydh45tHT5jOnPly71GQxjIWeNYG2gVBmch+OpkGCQOVzans2fCnw0Q==
+X-Received: by 2002:a17:907:42cc:: with SMTP id nz20mr13567797ejb.429.1595838961237;
+        Mon, 27 Jul 2020 01:36:01 -0700 (PDT)
+Received: from localhost ([62.96.65.119])
+        by smtp.gmail.com with ESMTPSA id h10sm6902925eds.0.2020.07.27.01.35.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 27 Jul 2020 01:35:59 -0700 (PDT)
+Date:   Mon, 27 Jul 2020 10:35:58 +0200
+From:   Thierry Reding <thierry.reding@gmail.com>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Benson Leung <bleung@chromium.org>,
         Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Gwendal Grignou <gwendal@chromium.org>,
         Brian Norris <briannorris@chromium.org>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-input@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
         Yu-Hsuan Hsu <yuhsuan@chromium.org>,
         Prashant Malani <pmalani@chromium.org>
-Subject: [PATCH v3 2/6] cros_ec_lightbar: Accept more error codes from cros_ec_cmd_xfer_status
-Date:   Sun, 26 Jul 2020 15:00:57 -0700
-Message-Id: <20200726220101.29059-3-linux@roeck-us.net>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200726220101.29059-1-linux@roeck-us.net>
+Subject: Re: [PATCH v3 4/6] pwm: cros-ec: Accept more error codes from
+ cros_ec_cmd_xfer_status
+Message-ID: <20200727083558.GF2781612@ulmo>
 References: <20200726220101.29059-1-linux@roeck-us.net>
+ <20200726220101.29059-5-linux@roeck-us.net>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="QXO0/MSS4VvK6f+D"
+Content-Disposition: inline
+In-Reply-To: <20200726220101.29059-5-linux@roeck-us.net>
+User-Agent: Mutt/1.14.4 (2020-06-18)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since commit c5cd2b47b203 ("platform/chrome: cros_ec_proto: Report command
-not supported") we can no longer assume that cros_ec_cmd_xfer_status()
-reports -EPROTO for all errors returned by the EC itself. A follow-up
-patch will change cros_ec_cmd_xfer_status() to report additional errors
-reported by the EC as distinguished Linux error codes.
 
-Handle this change by no longer assuming that -EPROTO is used to report
-all errors returned by the EC itself. Since errors reported by the EC are
-already reported in text form through sysfs attributes, extend this form
-of error reporting to all errors reported by cros_ec_cmd_xfer_status().
+--QXO0/MSS4VvK6f+D
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
-Cc: Prashant Malani <pmalani@chromium.org>
-Cc: Brian Norris <briannorris@chromium.org>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v3: No change
-v2: Added patch
+On Sun, Jul 26, 2020 at 03:00:59PM -0700, Guenter Roeck wrote:
+> Since commit c5cd2b47b203 ("platform/chrome: cros_ec_proto: Report command
+> not supported") we can no longer assume that cros_ec_cmd_xfer_status()
+> reports -EPROTO for all errors returned by the EC itself. A follow-up
+> patch will change cros_ec_cmd_xfer_status() to report additional errors
+> reported by the EC as distinguished Linux error codes.
+>=20
+> Handle this change by no longer assuming that only -EPROTO is used
+> to report all errors returned by the EC itself. Instead, support both
+> the old and the new error codes.
+>=20
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
+> Cc: Prashant Malani <pmalani@chromium.org>
+> Cc: Brian Norris <briannorris@chromium.org>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+> v3: Added patch
+>=20
+>  drivers/pwm/pwm-cros-ec.c | 21 ++++++++++++++-------
+>  1 file changed, 14 insertions(+), 7 deletions(-)
 
- drivers/platform/chrome/cros_ec_lightbar.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+Acked-by: Thierry Reding <thierry.reding@gmail.com>
 
-diff --git a/drivers/platform/chrome/cros_ec_lightbar.c b/drivers/platform/chrome/cros_ec_lightbar.c
-index b59180bff5a3..8445cda57927 100644
---- a/drivers/platform/chrome/cros_ec_lightbar.c
-+++ b/drivers/platform/chrome/cros_ec_lightbar.c
-@@ -117,7 +117,7 @@ static int get_lightbar_version(struct cros_ec_dev *ec,
- 	param = (struct ec_params_lightbar *)msg->data;
- 	param->cmd = LIGHTBAR_CMD_VERSION;
- 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
--	if (ret < 0) {
-+	if (ret < 0 && ret != -EINVAL) {
- 		ret = 0;
- 		goto exit;
- 	}
-@@ -298,11 +298,9 @@ static ssize_t sequence_show(struct device *dev,
- 		goto exit;
- 
- 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
--	if (ret == -EPROTO) {
--		ret = scnprintf(buf, PAGE_SIZE,
--				"ERROR: EC returned %d\n", msg->result);
--		goto exit;
--	} else if (ret < 0) {
-+	if (ret < 0) {
-+		ret = scnprintf(buf, PAGE_SIZE, "XFER / EC ERROR %d / %d\n",
-+				ret, msg->result);
- 		goto exit;
- 	}
- 
--- 
-2.17.1
+--QXO0/MSS4VvK6f+D
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEiOrDCAFJzPfAjcif3SOs138+s6EFAl8eke4ACgkQ3SOs138+
+s6H7tBAAh58Ngu1hLcym7p1Z2mX0XksBPysYjynk4RvIe3RQbRGLOohuXfq0WAn5
+ZhBVjcuIB0VJ8L1TEioH2ErYLp6XVVsOTKx1krKxlxV5eKB30IhX2zJyjziXUtIj
+HlIqARKkwsJRqk/OhqSwgtdz8vlExufgn1Y8JTbQMNoMRdBfW/GHjPItvBHtbeZ/
+mxrOzlNUSUrX6syPy/KkY87i2D9tCwvXssnNh2LMNcSz7ZFB0ca1HZD5tODRRjPP
+EfOG+CRPHoB+H6/iYD0P7PaAZACRR/ski38HA9XehRR9p9AjZjx9X+zW4O4wM8Mg
+89aFGsH7UZGUXH5R0BEwHkQMfB3Sxvk5pe4aHVWRwcHOA6JXMeqa1Cf7Q++4RTm/
+G+/2tGfjqlBjmGNDbsZ+DMM3xycINg7r673bRZQ+ArbXFPMDRi6jSoQNTu1wiSeW
+V0cngps+K5oDJ9fl3mpckjuRu6wkGAYNi2vOmRveuM7alk8M8k4vO/Ws695BZuUG
+B+ctytEzW2jwRUv1SqCItSgVbmYiJdNG4RNE5SX9OcTezqrZ9xSdabGQL54chwUr
+YQ/nGDDiQB90OIs5Xa9eZ5zgKXP7HMYKfqegxE0ULPRthDq8vqle8mKQOxTZjypo
+rVzzlpkjjgn5+q+r6wE1AOXZN+aKKhbI9ARGECF8Nfxdvvs0sdA=
+=dYyC
+-----END PGP SIGNATURE-----
+
+--QXO0/MSS4VvK6f+D--
