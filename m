@@ -8,67 +8,68 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ABA9CC433EB
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 15:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2196FC433F1
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 15:13:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A17D20825
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 15:13:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00E4B2078E
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 15:13:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="CW0fy1nz"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ldt1Qqla"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730737AbgG1PNT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Jul 2020 11:13:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42374 "EHLO
+        id S1730756AbgG1PNX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Jul 2020 11:13:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730723AbgG1PNQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2020 11:13:16 -0400
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3397AC061794
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 08:13:16 -0700 (PDT)
-Received: by mail-io1-xd44.google.com with SMTP id e64so21074111iof.12
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 08:13:16 -0700 (PDT)
+        with ESMTP id S1730618AbgG1PNV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2020 11:13:21 -0400
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ABB5C0619DD
+        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 08:13:20 -0700 (PDT)
+Received: by mail-il1-x143.google.com with SMTP id l17so6259365ilq.13
+        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 08:13:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UXu1LI4EreJiPCGpDoc5eFU1VLFE8sDpcfNeo5EdH5U=;
-        b=CW0fy1nzyEScVEgQupl6l+tgIFLDYcNerhH8YNh0B+COR1awhJw+rrOEbSChQ0DpQt
-         1hZVOZqOjV+v0xPI4msvxw+MX2ArFCL+INIAfGxudPO2aybWdIFdKHWMBnbcqolrofOt
-         fIx9moaF3r0nGihk2ldFJ3ATQMOfkm24LsQss=
+        bh=FBxxg43y21daaJb2slakYjo79C/jv3+HeW/qSD1nJIA=;
+        b=ldt1QqlamitrLWI3C0KvuawslYN21v+uhA2FJ/Ee/zjJWKQ4HDJTD6eZmey75yN5fU
+         eAbNY9fgaAKGZLz3a5aU2QLJABQ4lbUEbxTk/7srnTul4aytLgIYLtPs1M593fo28h/T
+         r31SMK+n0vMqx/JcPyqVf14U5o5MTmm97A1IY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UXu1LI4EreJiPCGpDoc5eFU1VLFE8sDpcfNeo5EdH5U=;
-        b=gryhIrkdcfV5vl7x2FzD2hfZZpRPjtrIczNnwkV+0ZxAF/vQRCvzqxr2oF3xW0sBVJ
-         fo9sggM0COsuge8WjKQRZBQ2rvmAcdi+nnQ6HVGuN/JPA1mZVrcAzTQHhcIitzD1Pfgn
-         dvQeTgGZe+YFOtwCiuRt/JvZlMIy6SBGCdSIKI5URvNH8/RxlWOHX9zrSmtBfvP7nj2F
-         /jfNK0hh5q5IQWa8R3m6IzLodSr81iICv9yZj0WdRZx90SMWtpG/nswZ7jj0NQ0XQF9A
-         rs7xUUKhn5Vv9qACCzZAaSj3cxCPsRp96Tt6m84JZCS2CLJJlenTh8K+l+i3F0xpz16M
-         YAGQ==
-X-Gm-Message-State: AOAM533i+lcWmi6cKm+pAOqO5QVk/f8SK9hRj4Emnptr96UxFPpTTWPh
-        mQUGGhY1B5UuTEZhbnfs1SXbDg==
-X-Google-Smtp-Source: ABdhPJxM7VC9nu3erFc2LP9bXhgfPe5tRGvIPgx/QAwT2vEhHFHgM7cY+paS40z4V1Vt7rEyI8sPvA==
-X-Received: by 2002:a6b:bc82:: with SMTP id m124mr7069591iof.172.1595949195633;
-        Tue, 28 Jul 2020 08:13:15 -0700 (PDT)
+        bh=FBxxg43y21daaJb2slakYjo79C/jv3+HeW/qSD1nJIA=;
+        b=GBeHaJn9Kj6B1Xw0AtUIBYE/DpKv6JIMaxG0EGGZp0TwLyGMIwNPkHdXD7SQznF7/g
+         8uDJgngMHzVcYn/6XLoq3cR1jJQT9StwSGJcbOEZLLf3jfzJmpR8wPucSjHpBEKILir9
+         P3DxuOyYHTjGAigMeJsPAYaRBte660qWOp46RkrY2d3mhhQTCNczEMNyCm9ha7rtVFwB
+         ISnEyyvPHuyxPr1X0oM3bwaZapDzjTTXtgXMjjKnD9bZkk/W6qfJ5SgWFr9D/Jwa08z5
+         Bqsg4NydIwJYXMpRL+m7yLTfZ3PmTlUbXWXqJQnrVqIN2aDsxtgrQR/O/lhUF3LXRM/d
+         fwpQ==
+X-Gm-Message-State: AOAM530nKr7MhqzcEYRpwuBUaKI28gF4zgzUZnwBuhBSktmFHwxN7/Am
+        OCbchov6iuRkvEN1Y2TEf96Glw==
+X-Google-Smtp-Source: ABdhPJzHpqfHpVdzOgmWOQKFPQtZC44Y/MezvpPV2geBeMXx3gyAKAuxjipi7EN2sVPUZB1xsrQMCg==
+X-Received: by 2002:a05:6e02:c21:: with SMTP id q1mr22581160ilg.28.1595949199470;
+        Tue, 28 Jul 2020 08:13:19 -0700 (PDT)
 Received: from derch.Home (97-122-92-59.hlrn.qwest.net. [97.122.92.59])
-        by smtp.gmail.com with ESMTPSA id q70sm6399781ili.49.2020.07.28.08.13.14
+        by smtp.gmail.com with ESMTPSA id q70sm6399781ili.49.2020.07.28.08.13.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 08:13:15 -0700 (PDT)
+        Tue, 28 Jul 2020 08:13:19 -0700 (PDT)
 From:   Daniel Campello <campello@chromium.org>
 To:     LKML <devicetree@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Daniel Campello <campello@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
+        Enrico Granata <egranata@chromium.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org
-Subject: [PATCH 03/15] iio: sx9310: Fix irq handling
-Date:   Tue, 28 Jul 2020 09:12:46 -0600
-Message-Id: <20200728091057.3.I2a1314232ace4323af96f9981c1e1a4f31f78049@changeid>
+Subject: [PATCH 07/15] iio: sx9310: Use long instead of int for channel bitmaps
+Date:   Tue, 28 Jul 2020 09:12:50 -0600
+Message-Id: <20200728091057.7.I3a5582a3e1589e351f6335b39f52e5ccc5f46b61@changeid>
 X-Mailer: git-send-email 2.28.0.rc0.142.g3c755180ce-goog
 In-Reply-To: <20200728151258.1222876-1-campello@chromium.org>
 References: <20200724183954.1.I2e29ae25368ba8a72a9e44121cfbc36ead8ecc6b@changeid>
@@ -80,74 +81,83 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fixes enable/disable irq handling at various points. The driver needs to
-only enable/disable irqs if there is an actual irq handler installed.
+Uses for_each_set_bit() macro to loop over channel bitmaps.
 
 Signed-off-by: Daniel Campello <campello@chromium.org>
 ---
 
- drivers/iio/proximity/sx9310.c | 24 +++++++++++++++---------
- 1 file changed, 15 insertions(+), 9 deletions(-)
+ drivers/iio/proximity/sx9310.c | 24 +++++++++++++-----------
+ 1 file changed, 13 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 07895d4b935d12..76b8bedebeef50 100644
+index fb5c16f2aa6b1a..2465064971d0a7 100644
 --- a/drivers/iio/proximity/sx9310.c
 +++ b/drivers/iio/proximity/sx9310.c
-@@ -376,13 +376,15 @@ static int sx9310_read_proximity(struct sx9310_data *data,
- 	if (ret < 0)
- 		goto out;
+@@ -136,7 +136,8 @@ struct sx9310_data {
+ 	/* Remember enabled channels and sample rate during suspend. */
+ 	unsigned int suspend_ctrl0;
+ 	struct completion completion;
+-	unsigned int chan_read, chan_event;
++	unsigned long chan_read;
++	unsigned long chan_event;
+ 	int channel_users[SX9310_NUM_CHANNELS];
+ 	unsigned int whoami;
+ };
+@@ -279,15 +280,16 @@ static const struct regmap_config sx9310_regmap_config = {
+ };
  
--	ret = sx9310_enable_irq(data, SX9310_CONVDONE_IRQ);
--	if (ret < 0)
--		goto out_put_channel;
-+	if (data->client->irq) {
-+		ret = sx9310_enable_irq(data, SX9310_CONVDONE_IRQ);
-+		if (ret)
-+			goto out_put_channel;
-+	}
+ static int sx9310_update_chan_en(struct sx9310_data *data,
+-				 unsigned int chan_read,
+-				 unsigned int chan_event)
++				 unsigned long chan_read,
++				 unsigned long chan_event)
+ {
+ 	int ret;
++	unsigned long channels = chan_read | chan_event;
  
+-	if ((data->chan_read | data->chan_event) != (chan_read | chan_event)) {
++	if ((data->chan_read | data->chan_event) != channels) {
+ 		ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL0,
+ 					 SX9310_REG_PROX_CTRL0_SENSOREN_MASK,
+-					 chan_read | chan_event);
++					 channels);
+ 		if (ret)
+ 			return ret;
+ 	}
+@@ -538,13 +540,13 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
+ 		return;
+ 	}
+ 
+-	for (chan = 0; chan < SX9310_NUM_CHANNELS; chan++) {
++	for_each_set_bit(chan, &data->chan_event, SX9310_NUM_CHANNELS) {
+ 		int dir;
+ 		u64 ev;
+-		bool new_prox = val & BIT(chan);
++		bool new_prox;
++
++		new_prox = val & BIT(chan);
+ 
+-		if (!(data->chan_event & BIT(chan)))
+-			continue;
+ 		if (new_prox == data->prox_stat[chan])
+ 			/* No change on this channel. */
+ 			continue;
+@@ -712,13 +714,13 @@ static irqreturn_t sx9310_trigger_handler(int irq, void *private)
+ static int sx9310_buffer_preenable(struct iio_dev *indio_dev)
+ {
+ 	struct sx9310_data *data = iio_priv(indio_dev);
+-	unsigned int channels = 0;
++	unsigned long channels = 0;
+ 	int bit, ret;
+ 
+ 	mutex_lock(&data->mutex);
+ 	for_each_set_bit(bit, indio_dev->active_scan_mask,
+ 			 indio_dev->masklength)
+-		channels |= BIT(indio_dev->channels[bit].channel);
++		__set_bit(indio_dev->channels[bit].channel, &channels);
+ 
+ 	ret = sx9310_update_chan_en(data, channels, data->chan_event);
  	mutex_unlock(&data->mutex);
- 
--	if (data->client->irq > 0) {
-+	if (data->client->irq) {
- 		ret = wait_for_completion_interruptible(&data->completion);
- 		reinit_completion(&data->completion);
- 	} else {
-@@ -401,9 +403,11 @@ static int sx9310_read_proximity(struct sx9310_data *data,
- 	*val = sign_extend32(be16_to_cpu(rawval),
- 			     (chan->address == SX9310_REG_DIFF_MSB ? 11 : 15));
- 
--	ret = sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
--	if (ret < 0)
--		goto out_put_channel;
-+	if (data->client->irq) {
-+		ret = sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
-+		if (ret)
-+			goto out_put_channel;
-+	}
- 
- 	ret = sx9310_put_read_channel(data, chan->channel);
- 	if (ret < 0)
-@@ -414,7 +418,8 @@ static int sx9310_read_proximity(struct sx9310_data *data,
- 	return IIO_VAL_INT;
- 
- out_disable_irq:
--	sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
-+	if (data->client->irq)
-+		sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
- out_put_channel:
- 	sx9310_put_read_channel(data, chan->channel);
- out:
-@@ -1012,7 +1017,8 @@ static int __maybe_unused sx9310_resume(struct device *dev)
- out:
- 	mutex_unlock(&data->mutex);
- 
--	enable_irq(data->client->irq);
-+	if (!ret)
-+		enable_irq(data->client->irq);
- 
- 	return ret;
- }
 -- 
 2.28.0.rc0.142.g3c755180ce-goog
 
