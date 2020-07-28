@@ -2,154 +2,90 @@ Return-Path: <SRS0=ui5J=BH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 766C3C433E1
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 18:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAA27C433ED
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 19:32:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5FD9E2074F
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 18:33:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 86F6D207F5
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 19:32:11 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="lH4opCzK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732458AbgG1SdO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Jul 2020 14:33:14 -0400
-Received: from smtprelay0013.hostedemail.com ([216.40.44.13]:37338 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1732457AbgG1SdO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2020 14:33:14 -0400
-X-Greylist: delayed 534 seconds by postgrey-1.27 at vger.kernel.org; Tue, 28 Jul 2020 14:33:14 EDT
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave01.hostedemail.com (Postfix) with ESMTP id D2EDB1801D006
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 18:24:20 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay08.hostedemail.com (Postfix) with ESMTP id 3DBF1182CF689;
-        Tue, 28 Jul 2020 18:24:19 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: copy85_0111d2226f6c
-X-Filterd-Recvd-Size: 4570
-Received: from XPS-9350 (unknown [172.58.27.230])
-        (Authenticated sender: joe@perches.com)
-        by omf16.hostedemail.com (Postfix) with ESMTPA;
-        Tue, 28 Jul 2020 18:24:15 +0000 (UTC)
-Message-ID: <855ea08a4c41bc107f88699230309675bd9075b0.camel@perches.com>
-Subject: Re: [PATCH 13/15] iio: sx9310: Add newlines to printks
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Daniel Campello <campello@chromium.org>
-Cc:     LKML <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Stephen Boyd <swboyd@chromium.org>,
+        id S1732821AbgG1TcI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Jul 2020 15:32:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54300 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732819AbgG1TcH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2020 15:32:07 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EEAE3C0619D4
+        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 12:32:06 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id r11so3636284pfl.11
+        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 12:32:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:content-transfer-encoding:in-reply-to:references
+         :subject:from:cc:to:date:message-id:user-agent;
+        bh=kMhjJ3hvBgwbKsHhi3fqlBSIcNca41e66swSh7pO1VQ=;
+        b=lH4opCzKcnaxkoNblG1ud2QZbtBFLhw2H3rp5dDPbiW3HhSPtCkBbyCHXIbINNXpxP
+         UAyojB0odJhtwfhIB2tej5Wk3vnVMjUCsvDj6ltv/ot3+DN06yuN8vjzaiHPzYhCrhS3
+         pkCOpuBQ2Ud2WwjRbvNxw+zE1ouOO4fW+DxY0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:content-transfer-encoding
+         :in-reply-to:references:subject:from:cc:to:date:message-id
+         :user-agent;
+        bh=kMhjJ3hvBgwbKsHhi3fqlBSIcNca41e66swSh7pO1VQ=;
+        b=h/JMNoLrVxtTa1Ym+01wfkwyTV+ZXHImq+O+Em6Syy2rNqO2txjYzWK1Fy33ZU1J5c
+         XwHr6ijTXxCaJ8MLUbs1RjaXRME44vZIh4KQy9DQ6WQvedKAT3kRQaw1rQmzlrIhJCL8
+         RbMBTNljKd7RAddzpFoBKsyxV7sv43oC6Qe6xmSBFn2SAQ3CME7Q2AvQgXtdsPYXatgp
+         AOtmzLds0r1D9lYF+BALoR9dJqAcoyUUW8Ivy/bjTxG0BS5ew5weidkqIPXMsmI14Krx
+         Z6HDVzau3JWjApEakUSNvlz6NxzhDynC3J3mmvXRdDg3gYOoUFCgC20zcbQc+HWgoxvY
+         dHbg==
+X-Gm-Message-State: AOAM531MsSRhRPtrgUA0VHzCUqnSnTGSAZlcb2oe/9+iiQoqrq009mYV
+        GG92WAXPqz/81BV2SrMDg/KC1A==
+X-Google-Smtp-Source: ABdhPJwf4+mQndf+Efryc8XYmv3htvQaK+VS/A7pthKtDJT/NG+gtXYtnhykek9ejf8PLjN7bw9d4g==
+X-Received: by 2002:aa7:9186:: with SMTP id x6mr26598292pfa.103.1595964726370;
+        Tue, 28 Jul 2020 12:32:06 -0700 (PDT)
+Received: from chromium.org ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
+        by smtp.gmail.com with ESMTPSA id w3sm19358687pff.56.2020.07.28.12.32.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 28 Jul 2020 12:32:05 -0700 (PDT)
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20200728091057.5.I0ea31fe183b99838b28213df05b0e7912db3ba29@changeid>
+References: <20200724183954.1.I2e29ae25368ba8a72a9e44121cfbc36ead8ecc6b@changeid> <20200728151258.1222876-1-campello@chromium.org> <20200728091057.5.I0ea31fe183b99838b28213df05b0e7912db3ba29@changeid>
+Subject: Re: [PATCH 05/15] iio: sx9310: Change from .probe to .probe_new
+From:   Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Daniel Campello <campello@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
         Enrico Granata <egranata@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>
-Date:   Tue, 28 Jul 2020 11:24:07 -0700
-In-Reply-To: <CAHp75VdSxkgd-+CBTNUJD+WUdOX3e1x3Ysap=D9+33Yo1Kk+yA@mail.gmail.com>
-References: <20200724183954.1.I2e29ae25368ba8a72a9e44121cfbc36ead8ecc6b@changeid>
-         <20200728151258.1222876-1-campello@chromium.org>
-         <20200728091057.13.I14600506d0f725bf800c8da4ef89fdb3c3fb45cd@changeid>
-         <CAHp75VdSxkgd-+CBTNUJD+WUdOX3e1x3Ysap=D9+33Yo1Kk+yA@mail.gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.3-0ubuntu1 
-MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+        linux-iio@vger.kernel.org
+To:     Daniel Campello <campello@chromium.org>,
+        LKML <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Date:   Tue, 28 Jul 2020 12:32:04 -0700
+Message-ID: <159596472439.1360974.16024041965670839787@swboyd.mtv.corp.google.com>
+User-Agent: alot/0.9.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 2020-07-28 at 21:19 +0300, Andy Shevchenko wrote:
-> On Tue, Jul 28, 2020 at 6:14 PM Daniel Campello <campello@chromium.org> wrote:
-> > From: Stephen Boyd <swboyd@chromium.org>
-> > 
-> > Printks in the kernel have newlines at the end. Add them to the few
-> 
-> Printk()s
-> 
-> > printks in this driver.
-> 
-> printk()s
+Quoting Daniel Campello (2020-07-28 08:12:48)
+> Uses .probe_new in place of .probe. Also uses device_get_match_data()
+> for whoami matching.
+>=20
+> Signed-off-by: Daniel Campello <campello@chromium.org>
+> ---
 
-Random kernel pedantry.
-This patch should not need to be respun for any of these.
-
-> > Reviewed-by: Daniel Campello <campello@chromium.org>
-> > Reviewed-by: Douglas Anderson <dianders@chromium.org>
-> > Fixes: 72ad02b15d63 ("iio: Add SEMTECH SX9310/9311 sensor driver")
-> > Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> > Signed-off-by: Daniel Campello <campello@chromium.org>
-> 
-> It has ordering issues
-> Should be
-> 
-> Fixes:
-> SoB: Stephen
-> Rb: Douglas
-> Rb: Daniel
-> SoB: Daniel
-> 
-> 
-> > ---
-> > 
-> >  drivers/iio/proximity/sx9310.c | 8 ++++----
-> >  1 file changed, 4 insertions(+), 4 deletions(-)
-> > 
-> > diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-> > index 3f981d28ee4056..4553ee83a016a3 100644
-> > --- a/drivers/iio/proximity/sx9310.c
-> > +++ b/drivers/iio/proximity/sx9310.c
-> > @@ -809,7 +809,7 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
-> >         if (ret) {
-> >                 if (ret == -ETIMEDOUT)
-> >                         dev_err(&data->client->dev,
-> > -                               "0x02 << 3l compensation timed out: 0x%02x",
-> > +                               "0x02 << 3l compensation timed out: 0x%02x\n",
-> 
-> Looks like ping-pong style in the series, i.e. you may fix this when
-> you introduced this line.
-> 
-> Check the rest (and not only printk()s) for the similar style and
-> avoid the latter.
-> 
-> >                                 val);
-> >                 return ret;
-> >         }
-> > @@ -855,7 +855,7 @@ static int sx9310_set_indio_dev_name(struct device *dev,
-> > 
-> >         ddata = (uintptr_t)device_get_match_data(dev);
-> >         if (ddata != whoami) {
-> > -               dev_err(dev, "WHOAMI does not match device data: %u", whoami);
-> > +               dev_err(dev, "WHOAMI does not match device data: %u\n", whoami);
-> >                 return -ENODEV;
-> >         }
-> > 
-> > @@ -867,7 +867,7 @@ static int sx9310_set_indio_dev_name(struct device *dev,
-> >                 indio_dev->name = "sx9311";
-> >                 break;
-> >         default:
-> > -               dev_err(dev, "unexpected WHOAMI response: %u", whoami);
-> > +               dev_err(dev, "unexpected WHOAMI response: %u\n", whoami);
-> >                 return -ENODEV;
-> >         }
-> > 
-> > @@ -896,7 +896,7 @@ static int sx9310_probe(struct i2c_client *client)
-> > 
-> >         ret = regmap_read(data->regmap, SX9310_REG_WHOAMI, &data->whoami);
-> >         if (ret) {
-> > -               dev_err(dev, "error in reading WHOAMI register: %d", ret);
-> > +               dev_err(dev, "error in reading WHOAMI register: %d\n", ret);
-> >                 return ret;
-> >         }
-> > 
-> > --
-> > 2.28.0.rc0.142.g3c755180ce-goog
-> > 
-> 
-> 
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
