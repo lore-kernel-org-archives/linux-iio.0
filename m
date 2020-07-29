@@ -1,388 +1,338 @@
-Return-Path: <SRS0=ui5J=BH=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Q7qi=BI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C00CEC433E8
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 23:06:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6A40C433E4
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Jul 2020 00:20:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7F90720A8B
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jul 2020 23:06:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A08202078E
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Jul 2020 00:20:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="nybQXuHE"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=lechnology.com header.i=@lechnology.com header.b="H8MVtmk/"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730296AbgG1XGe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Jul 2020 19:06:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729974AbgG1XFg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jul 2020 19:05:36 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7FB77C0619D6
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 16:05:36 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id t18so17772465ilh.2
-        for <linux-iio@vger.kernel.org>; Tue, 28 Jul 2020 16:05:36 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=CHlkasNJ3mpK9suEh7YTJx+aXcFKhyEXr4ianS+4gGE=;
-        b=nybQXuHEnNOyg3rwsBaU0NN12S1BRfih80VuVNeC+ap1IEN5Q2kKzZbIGd3O9zsryJ
-         QVFMkzUWPYDY5cbD+XvAZOgmRXc8DrHi+bEbkPy2eDoAxxCBh88ArQObm1/anbxYg/1O
-         934rMCOzqz4E/VLzyAews2reKlI7DSs6raa+o=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=CHlkasNJ3mpK9suEh7YTJx+aXcFKhyEXr4ianS+4gGE=;
-        b=ozuQ3Yh8M5oafaExDxIBjl6gls7+xjRv/rPzzaYXp+x15FIq2zIL9Mdi/tC/ZjYaFX
-         k+zsoNL3Kxs1TsgHvZn9GDKAcRtvgrC6pr+Gop2uJpzuySafssr9WXGSevKCk+HXua1c
-         3i6o0alnmYgUUednrBcbGPmWklLH3XvSqPs2Zl1Lh7bY4kIY4LoWibpEeu/1sAg9gOy6
-         5wIiCsWNMNFgHzonhpqHSoJQQ6+JWVrOQYQvXrPSr1UCkbSrqGN5i5oOiYhabWuL8dEu
-         bi3CW8DkUCccXhCiehfhekR7EOmJ0/GRpw8DAdm3fpHv6LyugCn5sFERTDaq8cEhe98L
-         CZRA==
-X-Gm-Message-State: AOAM531j4JlDPmq1jdoMa+2NVsJ6OFt97DCDlN4c/uzdq4e7xjCekTSR
-        kG2PzAcsP+PHhv4sBOvaeaM1Wg==
-X-Google-Smtp-Source: ABdhPJyXsIb+F0H3JYvwadrJvZEGUtuy5z/sm0iUZ5VNAFlGTgELvkwBErIL+EnW+B76kspZ4a0K9A==
-X-Received: by 2002:a05:6e02:e05:: with SMTP id a5mr29074515ilk.92.1595977535779;
-        Tue, 28 Jul 2020 16:05:35 -0700 (PDT)
-Received: from derch.Home (97-122-92-59.hlrn.qwest.net. [97.122.92.59])
-        by smtp.gmail.com with ESMTPSA id w10sm148945ilo.10.2020.07.28.16.05.35
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 28 Jul 2020 16:05:35 -0700 (PDT)
-From:   Daniel Campello <campello@chromium.org>
-To:     LKML <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Daniel Campello <campello@chromium.org>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Douglas Anderson <dianders@chromium.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v2 02/14] iio: sx9310: Update macros declarations
-Date:   Tue, 28 Jul 2020 17:05:08 -0600
-Message-Id: <20200728170317.v2.2.I30721195b2f20ec785715f7a2757930302a2a7e8@changeid>
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-In-Reply-To: <20200728230520.2011240-1-campello@chromium.org>
-References: <20200728151258.1222876-1-campello@chromium.org>
- <20200728230520.2011240-1-campello@chromium.org>
+        id S1730139AbgG2AUO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Jul 2020 20:20:14 -0400
+Received: from vern.gendns.com ([98.142.107.122]:60212 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730011AbgG2AUN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 28 Jul 2020 20:20:13 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=lGZzSi+swXyoU/xq8RPtcZDENd+lrNhrISQyVJ5Lq0U=; b=H8MVtmk/wbeIhPOvcXKWmWaVeM
+        wQxT4jPQR3Hl12ZKnr+DYnRpNJ6sJ0z1AmsrLPaxhZk/wvNegV2xfkeJSeCcMEmZ8uT/iM28zZT3u
+        Yb576+p1fxlRnQEm0pWNPTopVMULe12nKpHFJzxXLlaLhFQDAjUt9zuZraef4C9H665yEWvwgMsoa
+        cKznHz6Ni7Es61b9PEW9HD0Gbko4XdEGGmvNLjvWxmM3utQbEPGvmHohrgv1NeXy5UEA0ew1N+CYX
+        S7cutsTod0cIrVE7fVAmbGncLHtGxy56JcSsuG/p1UXxkv4wocxpUW8QKri0y/Lyn5Xg2U3QXR8bx
+        fLfE0apg==;
+Received: from [2600:1700:4830:165f::19e] (port=56576)
+        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <david@lechnology.com>)
+        id 1k0ZpG-0005DN-7q; Tue, 28 Jul 2020 20:20:07 -0400
+Subject: Re: [PATCH v4 3/5] counter: Add character device interface
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>, jic23@kernel.org
+Cc:     kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        alexandre.belloni@bootlin.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com
+References: <cover.1595358237.git.vilhelm.gray@gmail.com>
+ <08b3ac7349a59ba7fa5cd438bbe78360842ccd11.1595358237.git.vilhelm.gray@gmail.com>
+From:   David Lechner <david@lechnology.com>
+Message-ID: <415ee9ad-255e-cee7-22a6-ffa977999691@lechnology.com>
+Date:   Tue, 28 Jul 2020 19:20:03 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <08b3ac7349a59ba7fa5cd438bbe78360842ccd11.1595358237.git.vilhelm.gray@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Follows spec sheet for macro declarations.
+On 7/21/20 2:35 PM, William Breathitt Gray wrote:
+> This patch introduces a character device interface for the Counter
+> subsystem. Device data is exposed through standard character device read
+> operations. Device data is gathered when a Counter event is pushed by
+> the respective Counter device driver. Configuration is handled via ioctl
+> operations on the respective Counter character device node.
 
-Signed-off-by: Daniel Campello <campello@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
+This sounds similar to triggers and buffers in the iio subsystem. And
+I can see how it might be useful in some cases. But I think it would not
+give the desired results when performance is important.
 
-Changes in v2: None
+Thinking through a few cases here...
 
- drivers/iio/proximity/sx9310.c | 143 +++++++++++++++------------------
- 1 file changed, 67 insertions(+), 76 deletions(-)
+Suppose there was a new counter device that used the I2C bus. This would
+either have to be periodically polled for events or it might have a
+separate GPIO line to notify the MCU. In any case, with the proposed
+implementation, there would be a separate I2C transaction for each data
+point for that event. So none of the data for that event would actually
+be from the same point in time. And with I2C, this time difference could
+be significant.
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index d161f3061e353d..07895d4b935d12 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -33,45 +33,45 @@
- #define SX9310_REG_IRQ_SRC				0x00
- #define SX9310_REG_STAT0				0x01
- #define SX9310_REG_STAT1				0x02
-+#define SX9310_REG_STAT1_COMPSTAT_MASK			GENMASK(3, 0)
- #define SX9310_REG_IRQ_MSK				0x03
- #define   SX9310_CONVDONE_IRQ				BIT(3)
- #define   SX9310_FAR_IRQ				BIT(5)
- #define   SX9310_CLOSE_IRQ				BIT(6)
--#define   SX9310_EVENT_IRQ				(SX9310_FAR_IRQ | \
--							 SX9310_CLOSE_IRQ)
- #define SX9310_REG_IRQ_FUNC				0x04
- 
- #define SX9310_REG_PROX_CTRL0				0x10
--#define   SX9310_REG_PROX_CTRL0_PROXSTAT2		0x10
--#define   SX9310_REG_PROX_CTRL0_EN_MASK			0x0F
-+#define   SX9310_REG_PROX_CTRL0_SENSOREN_MASK		GENMASK(3, 0)
-+#define   SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK		GENMASK(7, 4)
-+#define   SX9310_REG_PROX_CTRL0_SCANPERIOD_SHIFT	4
-+#define   SX9310_REG_PROX_CTRL0_SCANPERIOD_15MS		0x01
- #define SX9310_REG_PROX_CTRL1				0x11
- #define SX9310_REG_PROX_CTRL2				0x12
--#define   SX9310_REG_PROX_CTRL2_COMBMODE_ALL		0x80
--#define   SX9310_REG_PROX_CTRL2_SHIELDEN_DYNAMIC	0x04
-+#define   SX9310_REG_PROX_CTRL2_COMBMODE_CS1_CS2	(0x02 << 6)
-+#define   SX9310_REG_PROX_CTRL2_SHIELDEN_DYNAMIC	(0x01 << 2)
- #define SX9310_REG_PROX_CTRL3				0x13
--#define   SX9310_REG_PROX_CTRL3_GAIN0_X8		0x0c
-+#define   SX9310_REG_PROX_CTRL3_GAIN0_X8		(0x03 << 2)
- #define   SX9310_REG_PROX_CTRL3_GAIN12_X4		0x02
- #define SX9310_REG_PROX_CTRL4				0x14
- #define   SX9310_REG_PROX_CTRL4_RESOLUTION_FINEST	0x07
- #define SX9310_REG_PROX_CTRL5				0x15
--#define   SX9310_REG_PROX_CTRL5_RANGE_SMALL		0xc0
--#define   SX9310_REG_PROX_CTRL5_STARTUPSENS_CS1		0x04
-+#define   SX9310_REG_PROX_CTRL5_RANGE_SMALL		(0x03 << 6)
-+#define   SX9310_REG_PROX_CTRL5_STARTUPSENS_CS1		(0x01 << 2)
- #define   SX9310_REG_PROX_CTRL5_RAWFILT_1P25		0x02
- #define SX9310_REG_PROX_CTRL6				0x16
--#define   SX9310_REG_PROX_CTRL6_COMP_COMMON		0x20
-+#define   SX9310_REG_PROX_CTRL6_AVGTHRESH_DEFAULT	0x20
- #define SX9310_REG_PROX_CTRL7				0x17
--#define   SX9310_REG_PROX_CTRL7_AVGNEGFILT_2		0x08
-+#define   SX9310_REG_PROX_CTRL7_AVGNEGFILT_2		(0x01 << 3)
- #define   SX9310_REG_PROX_CTRL7_AVGPOSFILT_512		0x05
- #define SX9310_REG_PROX_CTRL8				0x18
- #define SX9310_REG_PROX_CTRL9				0x19
--#define   SX9310_REG_PROX_CTRL8_9_PTHRESH12_28		0x40
--#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_96		0x88
-+#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_28		(0x08 << 3)
-+#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_96		(0x11 << 3)
- #define   SX9310_REG_PROX_CTRL8_9_BODYTHRESH_900	0x03
- #define   SX9310_REG_PROX_CTRL8_9_BODYTHRESH_1500	0x05
- #define SX9310_REG_PROX_CTRL10				0x1a
--#define   SX9310_REG_PROX_CTRL10_HYST_6PCT		0x10
--#define   SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_8	0x12
--#define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_8		0x03
-+#define   SX9310_REG_PROX_CTRL10_HYST_6PCT		(0x01 << 4)
-+#define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_2		0x01
- #define SX9310_REG_PROX_CTRL11				0x1b
- #define SX9310_REG_PROX_CTRL12				0x1c
- #define SX9310_REG_PROX_CTRL13				0x1d
-@@ -82,8 +82,8 @@
- #define SX9310_REG_PROX_CTRL18				0x22
- #define SX9310_REG_PROX_CTRL19				0x23
- #define SX9310_REG_SAR_CTRL0				0x2a
--#define   SX9310_REG_SAR_CTRL0_SARDEB_4_SAMPLES		0x40
--#define   SX9310_REG_SAR_CTRL0_SARHYST_8		0x10
-+#define   SX9310_REG_SAR_CTRL0_SARDEB_4_SAMPLES		(0x02 << 5)
-+#define   SX9310_REG_SAR_CTRL0_SARHYST_8		(0x02 << 3)
- #define SX9310_REG_SAR_CTRL1				0x2b
- /* Each increment of the slope register is 0.0078125. */
- #define   SX9310_REG_SAR_CTRL1_SLOPE(_hnslope)		(_hnslope / 78125)
-@@ -107,7 +107,7 @@
- #define SX9310_REG_SAR_MSB				0x39
- #define SX9310_REG_SAR_LSB				0x3a
- 
--#define SX9310_REG_I2CADDR				0x40
-+#define SX9310_REG_I2C_ADDR				0x40
- #define SX9310_REG_PAUSE				0x41
- #define SX9310_REG_WHOAMI				0x42
- #define   SX9310_WHOAMI_VALUE				0x01
-@@ -116,14 +116,9 @@
- #define SX9310_REG_RESET				0x7f
- #define   SX9310_SOFT_RESET				0xde
- 
--#define SX9310_SCAN_PERIOD_MASK				GENMASK(7, 4)
--#define SX9310_SCAN_PERIOD_SHIFT			4
--
--#define SX9310_COMPSTAT_MASK				GENMASK(3, 0)
- 
- /* 4 hardware channels, as defined in STAT0: COMB, CS2, CS1 and CS0. */
- #define SX9310_NUM_CHANNELS				4
--#define SX9310_CHAN_ENABLED_MASK			GENMASK(3, 0)
- 
- struct sx9310_data {
- 	/* Serialize access to registers and channel configuration */
-@@ -251,7 +246,7 @@ static const struct regmap_range sx9310_readable_reg_ranges[] = {
- 	regmap_reg_range(SX9310_REG_PROX_CTRL0, SX9310_REG_PROX_CTRL19),
- 	regmap_reg_range(SX9310_REG_SAR_CTRL0, SX9310_REG_SAR_CTRL2),
- 	regmap_reg_range(SX9310_REG_SENSOR_SEL, SX9310_REG_SAR_LSB),
--	regmap_reg_range(SX9310_REG_I2CADDR, SX9310_REG_WHOAMI),
-+	regmap_reg_range(SX9310_REG_I2C_ADDR, SX9310_REG_WHOAMI),
- 	regmap_reg_range(SX9310_REG_RESET, SX9310_REG_RESET),
- };
- 
-@@ -292,7 +287,7 @@ static int sx9310_update_chan_en(struct sx9310_data *data,
- 
- 	if ((data->chan_read | data->chan_event) != (chan_read | chan_event)) {
- 		ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL0,
--					 SX9310_CHAN_ENABLED_MASK,
-+					 SX9310_REG_PROX_CTRL0_SENSOREN_MASK,
- 					 chan_read | chan_event);
- 		if (ret)
- 			return ret;
-@@ -361,7 +356,8 @@ static int sx9310_wait_for_sample(struct sx9310_data *data)
- 	if (ret < 0)
- 		return ret;
- 
--	val = (val & SX9310_SCAN_PERIOD_MASK) >> SX9310_SCAN_PERIOD_SHIFT;
-+	val = (val & SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK) >>
-+	      SX9310_REG_PROX_CTRL0_SCANPERIOD_SHIFT;
- 
- 	msleep(sx9310_scan_period_table[val]);
- 
-@@ -435,7 +431,8 @@ static int sx9310_read_samp_freq(struct sx9310_data *data, int *val, int *val2)
- 	if (ret < 0)
- 		return ret;
- 
--	regval = (regval & SX9310_SCAN_PERIOD_MASK) >> SX9310_SCAN_PERIOD_SHIFT;
-+	regval = (regval & SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK) >>
-+		 SX9310_REG_PROX_CTRL0_SCANPERIOD_SHIFT;
- 	*val = sx9310_samp_freq_table[regval].val;
- 	*val2 = sx9310_samp_freq_table[regval].val2;
- 
-@@ -483,8 +480,8 @@ static int sx9310_set_samp_freq(struct sx9310_data *data, int val, int val2)
- 	mutex_lock(&data->mutex);
- 
- 	ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL0,
--				 SX9310_SCAN_PERIOD_MASK,
--				 i << SX9310_SCAN_PERIOD_SHIFT);
-+				 SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK,
-+				 i << SX9310_REG_PROX_CTRL0_SCANPERIOD_SHIFT);
- 
- 	mutex_unlock(&data->mutex);
- 
-@@ -572,7 +569,7 @@ static irqreturn_t sx9310_irq_thread_handler(int irq, void *private)
- 		goto out;
- 	}
- 
--	if (val & SX9310_EVENT_IRQ)
-+	if (val & (SX9310_FAR_IRQ | SX9310_CLOSE_IRQ))
- 		sx9310_push_events(indio_dev);
- 
- 	if (val & SX9310_CONVDONE_IRQ)
-@@ -600,6 +597,7 @@ static int sx9310_write_event_config(struct iio_dev *indio_dev,
- 				     enum iio_event_direction dir, int state)
- {
- 	struct sx9310_data *data = iio_priv(indio_dev);
-+	unsigned int eventirq = SX9310_FAR_IRQ | SX9310_CLOSE_IRQ;
- 	int ret;
- 
- 	/* If the state hasn't changed, there's nothing to do. */
-@@ -612,7 +610,7 @@ static int sx9310_write_event_config(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			goto out_unlock;
- 		if (!(data->chan_event & ~BIT(chan->channel))) {
--			ret = sx9310_enable_irq(data, SX9310_EVENT_IRQ);
-+			ret = sx9310_enable_irq(data, eventirq);
- 			if (ret < 0)
- 				sx9310_put_event_channel(data, chan->channel);
- 		}
-@@ -621,7 +619,7 @@ static int sx9310_write_event_config(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			goto out_unlock;
- 		if (!data->chan_event) {
--			ret = sx9310_disable_irq(data, SX9310_EVENT_IRQ);
-+			ret = sx9310_disable_irq(data, eventirq);
- 			if (ret < 0)
- 				sx9310_get_event_channel(data, chan->channel);
- 		}
-@@ -746,53 +744,46 @@ struct sx9310_reg_default {
- 	u8 def;
- };
- 
--#define SX_INIT(_reg, _def)			\
--	{					\
--		.reg = SX9310_REG_##_reg,	\
--		.def = _def,			\
--	}
--
- static const struct sx9310_reg_default sx9310_default_regs[] = {
--	SX_INIT(IRQ_MSK, 0x00),
--	SX_INIT(IRQ_FUNC, 0x00),
-+	{ SX9310_REG_IRQ_MSK, 0x00 },
-+	{ SX9310_REG_IRQ_FUNC, 0x00 },
- 	/*
- 	 * The lower 4 bits should not be set as it enable sensors measurements.
- 	 * Turning the detection on before the configuration values are set to
- 	 * good values can cause the device to return erroneous readings.
- 	 */
--	SX_INIT(PROX_CTRL0, SX9310_REG_PROX_CTRL0_PROXSTAT2),
--	SX_INIT(PROX_CTRL1, 0x00),
--	SX_INIT(PROX_CTRL2, SX9310_REG_PROX_CTRL2_COMBMODE_ALL |
--			    SX9310_REG_PROX_CTRL2_SHIELDEN_DYNAMIC),
--	SX_INIT(PROX_CTRL3, SX9310_REG_PROX_CTRL3_GAIN0_X8 |
--			    SX9310_REG_PROX_CTRL3_GAIN12_X4),
--	SX_INIT(PROX_CTRL4, SX9310_REG_PROX_CTRL4_RESOLUTION_FINEST),
--	SX_INIT(PROX_CTRL5, SX9310_REG_PROX_CTRL5_RANGE_SMALL |
--			    SX9310_REG_PROX_CTRL5_STARTUPSENS_CS1 |
--			    SX9310_REG_PROX_CTRL5_RAWFILT_1P25),
--	SX_INIT(PROX_CTRL6, SX9310_REG_PROX_CTRL6_COMP_COMMON),
--	SX_INIT(PROX_CTRL7, SX9310_REG_PROX_CTRL7_AVGNEGFILT_2 |
--			    SX9310_REG_PROX_CTRL7_AVGPOSFILT_512),
--	SX_INIT(PROX_CTRL8, SX9310_REG_PROX_CTRL8_9_PTHRESH_96 |
--			    SX9310_REG_PROX_CTRL8_9_BODYTHRESH_1500),
--	SX_INIT(PROX_CTRL9, SX9310_REG_PROX_CTRL8_9_PTHRESH12_28 |
--			    SX9310_REG_PROX_CTRL8_9_BODYTHRESH_900),
--	SX_INIT(PROX_CTRL10, SX9310_REG_PROX_CTRL10_HYST_6PCT |
--			     SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_8 |
--			     SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_8),
--	SX_INIT(PROX_CTRL11, 0x00),
--	SX_INIT(PROX_CTRL12, 0x00),
--	SX_INIT(PROX_CTRL13, 0x00),
--	SX_INIT(PROX_CTRL14, 0x00),
--	SX_INIT(PROX_CTRL15, 0x00),
--	SX_INIT(PROX_CTRL16, 0x00),
--	SX_INIT(PROX_CTRL17, 0x00),
--	SX_INIT(PROX_CTRL18, 0x00),
--	SX_INIT(PROX_CTRL19, 0x00),
--	SX_INIT(SAR_CTRL0, SX9310_REG_SAR_CTRL0_SARDEB_4_SAMPLES |
--			   SX9310_REG_SAR_CTRL0_SARHYST_8),
--	SX_INIT(SAR_CTRL1, SX9310_REG_SAR_CTRL1_SLOPE(10781250)),
--	SX_INIT(SAR_CTRL2, SX9310_REG_SAR_CTRL2_SAROFFSET_DEFAULT),
-+	{ SX9310_REG_PROX_CTRL0, SX9310_REG_PROX_CTRL0_SCANPERIOD_15MS },
-+	{ SX9310_REG_PROX_CTRL1, 0x00 },
-+	{ SX9310_REG_PROX_CTRL2, SX9310_REG_PROX_CTRL2_COMBMODE_CS1_CS2 |
-+				 SX9310_REG_PROX_CTRL2_SHIELDEN_DYNAMIC },
-+	{ SX9310_REG_PROX_CTRL3, SX9310_REG_PROX_CTRL3_GAIN0_X8 |
-+				 SX9310_REG_PROX_CTRL3_GAIN12_X4 },
-+	{ SX9310_REG_PROX_CTRL4, SX9310_REG_PROX_CTRL4_RESOLUTION_FINEST },
-+	{ SX9310_REG_PROX_CTRL5, SX9310_REG_PROX_CTRL5_RANGE_SMALL |
-+				 SX9310_REG_PROX_CTRL5_STARTUPSENS_CS1 |
-+				 SX9310_REG_PROX_CTRL5_RAWFILT_1P25 },
-+	{ SX9310_REG_PROX_CTRL6, SX9310_REG_PROX_CTRL6_AVGTHRESH_DEFAULT },
-+	{ SX9310_REG_PROX_CTRL7, SX9310_REG_PROX_CTRL7_AVGNEGFILT_2 |
-+				 SX9310_REG_PROX_CTRL7_AVGPOSFILT_512 },
-+	{ SX9310_REG_PROX_CTRL8, SX9310_REG_PROX_CTRL8_9_PTHRESH_96 |
-+				 SX9310_REG_PROX_CTRL8_9_BODYTHRESH_1500 },
-+	{ SX9310_REG_PROX_CTRL9, SX9310_REG_PROX_CTRL8_9_PTHRESH_28 |
-+				 SX9310_REG_PROX_CTRL8_9_BODYTHRESH_900 },
-+	{ SX9310_REG_PROX_CTRL10, SX9310_REG_PROX_CTRL10_HYST_6PCT |
-+				  SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_2 },
-+	{ SX9310_REG_PROX_CTRL11, 0x00 },
-+	{ SX9310_REG_PROX_CTRL12, 0x00 },
-+	{ SX9310_REG_PROX_CTRL13, 0x00 },
-+	{ SX9310_REG_PROX_CTRL14, 0x00 },
-+	{ SX9310_REG_PROX_CTRL15, 0x00 },
-+	{ SX9310_REG_PROX_CTRL16, 0x00 },
-+	{ SX9310_REG_PROX_CTRL17, 0x00 },
-+	{ SX9310_REG_PROX_CTRL18, 0x00 },
-+	{ SX9310_REG_PROX_CTRL19, 0x00 },
-+	{ SX9310_REG_SAR_CTRL0, SX9310_REG_SAR_CTRL0_SARDEB_4_SAMPLES |
-+				SX9310_REG_SAR_CTRL0_SARHYST_8 },
-+	{ SX9310_REG_SAR_CTRL1, SX9310_REG_SAR_CTRL1_SLOPE(10781250) },
-+	{ SX9310_REG_SAR_CTRL2, SX9310_REG_SAR_CTRL2_SAROFFSET_DEFAULT },
- };
- 
- /* Activate all channels and perform an initial compensation. */
-@@ -809,7 +800,7 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
- 
- 	/* run the compensation phase on all channels */
- 	ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0,
--			   ctrl0 | SX9310_REG_PROX_CTRL0_EN_MASK);
-+			   ctrl0 | SX9310_REG_PROX_CTRL0_SENSOREN_MASK);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -992,7 +983,7 @@ static int __maybe_unused sx9310_suspend(struct device *dev)
- 	if (ret)
- 		goto out;
- 
--	ctrl0 = data->suspend_ctrl0 & ~SX9310_REG_PROX_CTRL0_EN_MASK;
-+	ctrl0 = data->suspend_ctrl0 & ~SX9310_REG_PROX_CTRL0_SENSOREN_MASK;
- 	ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0, ctrl0);
- 	if (ret)
- 		goto out;
--- 
-2.28.0.163.g6104cc2f0b6-goog
+With the TI eQEP I have been working with, there are special latched
+registers for some events. To make use of these with events, we would have
+add extensions for each one we want to use (and expose it in sysfs). But
+really, the fact that we are using a latched register should be an
+implementation detail in the driver and not something userspace should have
+to know about.
+
+So, I'm wondering if it would make sense to keep things simpler and have
+events like the input subsystem where the event value is directly tied
+to the event. It would probably be rare for an event to have more than
+one or two values. And error events probably would not have a value at
+all.
+
+For example, with the TI eQEP, there is a unit timer time out event.
+This latches the position count, the timer count and the timer period.
+To translate this to an event data structure, the latched time would
+be the event timestamp and the position count would be the event value.
+The timer period should already be known since we would have configured
+the timer ourselves. There is also a count event that works similarly.
+In this case, the latched time would be the event timestamp and the
+latched timer period would be the event value. We would know the count
+already since we get an event for each count (and a separate direction
+change event if the direction changes).
+
+
+> 
+> A high-level view of how a count value is passed down from a counter
+> driver is exemplified by the following:
+> 
+>                   ----------------------
+>                  / Counter device       \
+>                  +----------------------+
+>                  | Count register: 0x28 |
+>                  +----------------------+
+>                          |
+>                   -----------------
+>                  / raw count data /
+>                  -----------------
+>                          |
+>                          V
+>                  +----------------------------+
+>                  | Counter device driver      |----------+
+>                  +----------------------------+          |
+>                  | Processes data from device |   -------------------
+>                  |----------------------------|  / driver callbacks /
+>                  | Type: u64                  |  -------------------
+>                  | Value: 42                  |          |
+>                  +----------------------------+          |
+>                          |                               |
+>                   ----------                             |
+>                  / u64     /                             |
+>                  ----------                              |
+>                          |                               |
+>                          |                               V
+>                          |               +----------------------+
+>                          |               | Counter core         |
+>                          |               +----------------------+
+>                          |               | Routes device driver |
+>                          |               | callbacks to the     |
+>                          |               | userspace interfaces |
+>                          |               +----------------------+
+>                          |                       |
+>                          |                -------------------
+>                          |               / driver callbacks /
+>                          |               -------------------
+>                          |                       |
+>                  +-------+---------------+       |
+>                  |                       |       |
+>                  |               +-------|-------+
+>                  |               |       |
+>                  V               |       V
+>          +--------------------+  |  +---------------------+
+>          | Counter sysfs      |<-+->| Counter chrdev      |
+>          +--------------------+     +---------------------+
+>          | Translates to the  |     | Translates to the   |
+>          | standard Counter   |     | standard Counter    |
+>          | sysfs output       |     | character device    |
+>          |--------------------|     |---------------------+
+>          | Type: const char * |     | Type: u64           |
+>          | Value: "42"        |     | Value: 42           |
+>          +--------------------+     +---------------------+
+>                  |                               |
+>           ---------------                 -----------------------
+>          / const char * /                / struct counter_event /
+>          ---------------                 -----------------------
+>                  |                               |
+>                  |                               V
+>                  |                       +-----------+
+>                  |                       | read      |
+>                  |                       +-----------+
+>                  |                       \ Count: 42 /
+>                  |                        -----------
+>                  |
+>                  V
+>          +--------------------------------------------------+
+>          | `/sys/bus/counter/devices/counterX/countY/count` |
+>          +--------------------------------------------------+
+>          \ Count: "42"                                      /
+>           --------------------------------------------------
+> 
+> Counter character device nodes are created under the `/dev` directory as
+> `counterX`, where `X` is the respective counter device id. Defines for
+> the standard Counter data types are exposed via the userspace
+> `include/uapi/linux/counter.h` file.
+> 
+> Counter events
+> --------------
+> Counter device drivers can support Counter events by utilizing the
+> `counter_push_event` function:
+> 
+>      int counter_push_event(struct counter_device *const counter,
+>                             const u8 event);
+> 
+> The event id is specified by the `event` parameter. When this function
+> is called, the Counter data associated with the respective event is
+> gathered, and a `struct counter_event` is generated for each datum and
+> pushed to userspace.
+> 
+> Counter events can be configured by users to report various Counter
+> data of interest. This can be conceptualized as a list of Counter
+> component read calls to perform. For example:
+> 
+>      +------------------------+------------------------+
+>      | Event 0                | Event 1                |
+>      +------------------------+------------------------+
+>      | * Count 0              | * Signal 0             |
+>      | * Count 1              | * Signal 0 Extension 0 |
+>      | * Signal 3             | * Extension 4          |
+>      | * Count 4 Extension 2  |                        |
+>      | * Signal 5 Extension 0 |                        |
+>      +------------------------+------------------------+
+
+In the current implementation, I can't tell if the event number corresponds
+to the individual counter or some device-specific interrupt bits. In either
+case, it seems like it would be better to have a generic enum of possible
+counter events like overflow, underflow, direction change, etc.
+
+> 
+> When `counter_push_event(counter, 1)` is called for example, it will go
+> down the list for Event 1 and execute the read callbacks for Signal 0,
+> Signal 0 Extension 0, and Extension 4 -- the data returned for each is
+> pushed to a kfifo as a `struct counter_event`, which userspace can
+> retrieve via a standard read operation on the respective character
+> device node.
+> 
+> Userspace
+> ---------
+> Userspace applications can configure Counter events via ioctl operations
+> on the Counter character device node. There following ioctl codes are
+> supported and provided by the `linux/counter.h` userspace header file:
+> 
+> * COUNTER_CLEAR_WATCHES_IOCTL:
+>    Clear all Counter watches from all events
+> 
+> * COUNTER_SET_WATCH_IOCTL:
+>    Set a Counter watch on the specified event
+> 
+> To configure events to gather Counter data, users first populate a
+> `struct counter_watch` with the relevant event id and the information
+> for the desired Counter component from which to read, and then pass it
+> via the `COUNTER_SET_WATCH_IOCTL` ioctl command.
+> 
+> Userspace applications can then execute a `read` operation (optionally
+> calling `poll` first) on the Counter character device node to retrieve
+> `struct counter_event` elements with the desired data.
+> 
+> For example, the following userspace code opens `/dev/counter0`,
+> configures Event 0 to gather Count 0 and Count 1, and prints out the
+> data as it becomes available on the character device node:
+> 
+>      #include <fcntl.h>
+>      #include <linux/counter.h>
+>      #include <poll.h>
+>      #include <stdio.h>
+>      #include <sys/ioctl.h>
+>      #include <unistd.h>
+> 
+>      struct counter_watch watches[2] = {
+>              {
+>                      .event = 0,
+>                      .component.owner_type = COUNTER_OWNER_TYPE_COUNT,
+>                      .component.owner_id = 0,
+>                      .component.type = COUNTER_COMPONENT_TYPE_COUNT,
+>              },
+>              {
+>                      .event = 0,
+>                      .component.owner_type = COUNTER_OWNER_TYPE_COUNT,
+>                      .component.owner_id = 1,
+>                      .component.type = COUNTER_COMPONENT_TYPE_COUNT,
+>              },
+>      };
+> 
+>      int main(void)
+>      {
+>              struct pollfd pfd = { .events = POLLIN };
+>              struct counter_event event_data[2];
+> 
+>              pfd.fd = open("/dev/counter0", O_RDWR);
+> 
+>              ioctl(pfd.fd, COUNTER_SET_WATCH_IOCTL, watches);
+>              ioctl(pfd.fd, COUNTER_SET_WATCH_IOCTL, watches + 1);
+
+What enables events? If an event is enabled for each of these ioctls,
+then we have a race condition where events events from the first watch
+can start to be queued before the second watch is added. So we would
+have to flush the chardev first before polling, otherwise the assumption
+that event_data[0] is owner_id=0 and event_data[1] is owner_id=1 is
+not true.
+
+This is also racy if we want to clear watches and set up new watches
+at runtime. There would be a period of time where there were no watches
+and we could miss events.
+
+With my suggested changes of having fixed values per event and generic
+events, we could just have a single ioctl to enable and disable events.
+This would probably need to take an array of event descriptors as an
+argument where event descriptors contain the component type/id and the
+event to enable.
+
+> 
+>              for (;;) {
+>                      poll(&pfd, 1, -1);
+> 
+>                      read(pfd.fd, event_data, sizeof(event_data));
+> 
+>                      printf("Timestamp 0: %llu\nCount 0: %llu\n"
+>                             "Timestamp 1: %llu\nCount 1: %llu\n",
+>                             (unsigned long long)event_data[0].timestamp,
+>                             (unsigned long long)event_data[0].value_u64,
+>                             (unsigned long long)event_data[1].timestamp,
+>                             (unsigned long long)event_data[1].value_u64);
+>              }
+> 
+>              return 0;
+>      }
+> 
+> Cc: David Lechner <david@lechnology.com>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> ---
 
