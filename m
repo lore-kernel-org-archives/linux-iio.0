@@ -5,70 +5,69 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FF39C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92946C433E1
 	for <linux-iio@archiver.kernel.org>; Fri, 31 Jul 2020 16:49:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 08F0121744
+	by mail.kernel.org (Postfix) with ESMTP id 7044021744
 	for <linux-iio@archiver.kernel.org>; Fri, 31 Jul 2020 16:49:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="jYHgiVLG"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="UttcU3N3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731565AbgGaQtI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 31 Jul 2020 12:49:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43976 "EHLO
+        id S1733225AbgGaQtJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 31 Jul 2020 12:49:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1733121AbgGaQtD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jul 2020 12:49:03 -0400
-Received: from mail-io1-xd41.google.com (mail-io1-xd41.google.com [IPv6:2607:f8b0:4864:20::d41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 373ACC0617A1
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2020 09:49:03 -0700 (PDT)
-Received: by mail-io1-xd41.google.com with SMTP id q75so24133540iod.1
-        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2020 09:49:03 -0700 (PDT)
+        with ESMTP id S1733161AbgGaQtH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 31 Jul 2020 12:49:07 -0400
+Received: from mail-io1-xd43.google.com (mail-io1-xd43.google.com [IPv6:2607:f8b0:4864:20::d43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 345CEC06138D
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2020 09:49:06 -0700 (PDT)
+Received: by mail-io1-xd43.google.com with SMTP id l1so32262457ioh.5
+        for <linux-iio@vger.kernel.org>; Fri, 31 Jul 2020 09:49:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=V3XXXr/NVFbGCC1s552cmz/bn1PN5K8vbmeSX/RmmQA=;
-        b=jYHgiVLGCivn2lpFjTjutITT5r7/YUbo907n+JTdEXyCb1Oi7qDGABbh+LqutCFSbe
-         5fxC//D/hHepp1hReEI1Nf89X0dMpGjgTSevMXhE+iChXZubvfni9nOCfIOOVfMQd27T
-         6h0FxaFlLhUyZDs/P0eAX0WuCl4P5sTHz5EqQ=
+        bh=XHCUU2RRnfaW/xOy0tUCXIP889dh0URjbsp/iA2xySI=;
+        b=UttcU3N3nttvXlJ8qC5xBWXsvsAh+sqFPzkIM8khtexWu++q35V94rnwGyOB6FqUHG
+         j9Lf5QLydvMp2UmbUpFunMQKamV/WyYDR/Jz1b8x++OcDmZf6VwOUbwJa/FyYFaUNq3B
+         VeEKOEjEzFrX7+XJJJsqxSonhDjt08GNWPIIE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=V3XXXr/NVFbGCC1s552cmz/bn1PN5K8vbmeSX/RmmQA=;
-        b=nyq1D3Bj4G2vNoAh2NOdgy4uZE/hGW2BHSzG5f1WKovhX253j8Wbcl9VEO63WpBTXL
-         SA1fNBhB/2qHV2XTmbouBmMffgAE9Ta7g1ThjRqSVruHi9k+0/hDZ8AOyciqOXrFyYuJ
-         gG4/yv8tUEfmr9sTgYhwu3J2gMAhEkjXZQdikHRNxf9bhUco4Sv/aBNrIwyx91VxdI1U
-         B8DF8y+DpvuZQ8rK2FQRNiG04Tgtu/Q6n7rMBW3u8yRqeZAFAzxfoMp+8LJFW24JY4rd
-         1fuEbOv8P7CMvuYOHZi+uCtdEOP9WIbBB9Kdu0mAJ2IGRTwNip8DG3gC3tOdqxI4VkZw
-         /AKQ==
-X-Gm-Message-State: AOAM530GKrpDNLibx4heewEKRdVrq39Rm/V5ytyQuYabZcYvTXqx5hqw
-        OFDei5JJgq3YYQ6FF39bw9apNA==
-X-Google-Smtp-Source: ABdhPJwMh/TdbR8qXBpIumlJzrxe6FttNGIgLCMSpknQ3wVnexGeXAtyJY4eUK8Q3sCnzSttkAEDww==
-X-Received: by 2002:a02:2445:: with SMTP id q5mr6101205jae.104.1596214142669;
-        Fri, 31 Jul 2020 09:49:02 -0700 (PDT)
+        bh=XHCUU2RRnfaW/xOy0tUCXIP889dh0URjbsp/iA2xySI=;
+        b=RvUkoPSVkX/exdge7js12kAFFE/glWZRAyt1FmwqbBnBB2oxVQP/Q3TJkHYXPUeNxi
+         zBhUfUKlItlRhcrlaNAW9X+l8DCab392EUFcdUbY5ilPT6A39aMtlCCzA/rdpVXW+lOi
+         LsAEqqstRrJe0rdrQ9M4SloX9iB3C9J/A2n6foaJhrsaID93/zYmZJOMWUQJjI9trIBg
+         B67CFnloTjhmBIuI4CecF2fy1VFs5iot2D+yPbksgz9XPbbFdvUFlTgiRLErPWEk210U
+         mooYdY8g/mL2MWhK8ECTO+AK9qIZUwIcxShdcVA8dVK7XABxjCTti6PTXH+cNLezklLG
+         xSCg==
+X-Gm-Message-State: AOAM532/fcOjtni2FPbRtUIE14O8kmvIAI9GpdLoQxKBPjaoJSyqRyy4
+        XJtiXo7XH8RvuM+Mfr23EdCf0A==
+X-Google-Smtp-Source: ABdhPJzIMn/W3JE/0PZaHnMNnre5jGWm2flk0DVLrUPQfgEdwiQciGPBXUWRGcZXYBqJdEes/zE9pQ==
+X-Received: by 2002:a02:7092:: with SMTP id f140mr6145335jac.8.1596214145596;
+        Fri, 31 Jul 2020 09:49:05 -0700 (PDT)
 Received: from derch.Home (97-122-92-59.hlrn.qwest.net. [97.122.92.59])
-        by smtp.gmail.com with ESMTPSA id e84sm5122083ill.60.2020.07.31.09.49.01
+        by smtp.gmail.com with ESMTPSA id e84sm5122083ill.60.2020.07.31.09.49.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 31 Jul 2020 09:49:02 -0700 (PDT)
+        Fri, 31 Jul 2020 09:49:05 -0700 (PDT)
 From:   Daniel Campello <campello@chromium.org>
 To:     LKML <devicetree@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Daniel Campello <campello@chromium.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
         Douglas Anderson <dianders@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v3 05/15] iio: sx9310: Change from .probe to .probe_new
-Date:   Fri, 31 Jul 2020 10:48:42 -0600
-Message-Id: <20200731104555.v3.5.Ieb5fdf7381764835dad0b3099c7b19ba754e4c47@changeid>
+        Stephen Boyd <swboyd@chromium.org>, linux-iio@vger.kernel.org
+Subject: [PATCH v3 08/15] iio: sx9310: Use regmap_read_poll_timeout() for compensation
+Date:   Fri, 31 Jul 2020 10:48:45 -0600
+Message-Id: <20200731104555.v3.8.Ia205f0b0363bf663db7704026b5b7036b9748c56@changeid>
 X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
 In-Reply-To: <20200731164853.3020946-1-campello@chromium.org>
 References: <20200731164853.3020946-1-campello@chromium.org>
@@ -79,114 +78,64 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Uses .probe_new in place of .probe. Also uses device_get_match_data()
-for whoami matching.
+Simplify compensation stage by using regmap_read_poll_timeout().
 
 Signed-off-by: Daniel Campello <campello@chromium.org>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
 ---
 
 Changes in v3: None
 Changes in v2:
- - Added '\n' to dev_err()
+ - Fixed dev_err() message
 
- drivers/iio/proximity/sx9310.c | 39 ++++++++++++----------------------
- 1 file changed, 14 insertions(+), 25 deletions(-)
+ drivers/iio/proximity/sx9310.c | 25 ++++++++++---------------
+ 1 file changed, 10 insertions(+), 15 deletions(-)
 
 diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 66f7050d63ae97..2ed062d01634bc 100644
+index 8f80a4c20ac05e..9f6292cc86146d 100644
 --- a/drivers/iio/proximity/sx9310.c
 +++ b/drivers/iio/proximity/sx9310.c
-@@ -139,7 +139,7 @@ struct sx9310_data {
- 	struct completion completion;
- 	unsigned int chan_read, chan_event;
- 	int channel_users[SX9310_NUM_CHANNELS];
--	int whoami;
-+	unsigned int whoami;
- };
- 
- static const struct iio_event_spec sx9310_events[] = {
-@@ -861,24 +861,15 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
- 
- static int sx9310_set_indio_dev_name(struct device *dev,
- 				     struct iio_dev *indio_dev,
--				     const struct i2c_device_id *id, int whoami)
-+				     unsigned int whoami)
+@@ -802,7 +802,7 @@ static const struct sx9310_reg_default sx9310_default_regs[] = {
+ static int sx9310_init_compensation(struct iio_dev *indio_dev)
  {
--	const struct acpi_device_id *acpi_id;
--
--	/* id will be NULL when enumerated via ACPI */
--	if (id) {
--		if (id->driver_data != whoami)
--			dev_err(dev, "WHOAMI does not match i2c_device_id: %s",
--				id->name);
--	} else if (ACPI_HANDLE(dev)) {
--		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
--		if (!acpi_id)
--			return -ENODEV;
--		if (acpi_id->driver_data != whoami)
--			dev_err(dev, "WHOAMI does not match acpi_device_id: %s",
--				acpi_id->id);
--	} else
-+	unsigned int long ddata;
-+
-+	ddata = (uintptr_t)device_get_match_data(dev);
-+	if (ddata != whoami) {
-+		dev_err(dev, "WHOAMI does not match device data: %u\n", whoami);
- 		return -ENODEV;
-+	}
+ 	struct sx9310_data *data = iio_priv(indio_dev);
+-	int i, ret;
++	int ret;
+ 	unsigned int val;
+ 	unsigned int ctrl0;
  
- 	switch (whoami) {
- 	case SX9310_WHOAMI_VALUE:
-@@ -888,15 +879,14 @@ static int sx9310_set_indio_dev_name(struct device *dev,
- 		indio_dev->name = "sx9311";
- 		break;
- 	default:
--		dev_err(dev, "unexpected WHOAMI response: %u", whoami);
-+		dev_err(dev, "unexpected WHOAMI response: %u\n", whoami);
- 		return -ENODEV;
- 	}
- 
- 	return 0;
- }
- 
--static int sx9310_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
-+static int sx9310_probe(struct i2c_client *client)
- {
- 	int ret;
- 	struct iio_dev *indio_dev;
-@@ -922,8 +912,7 @@ static int sx9310_probe(struct i2c_client *client,
- 		return ret;
- 	}
- 
--	ret = sx9310_set_indio_dev_name(&client->dev, indio_dev, id,
--					data->whoami);
-+	ret = sx9310_set_indio_dev_name(&client->dev, indio_dev, data->whoami);
+@@ -816,22 +816,17 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
  	if (ret < 0)
  		return ret;
  
-@@ -1036,8 +1025,8 @@ static const struct acpi_device_id sx9310_acpi_match[] = {
- MODULE_DEVICE_TABLE(acpi, sx9310_acpi_match);
+-	for (i = 100; i >= 0; i--) {
+-		msleep(20);
+-		ret = regmap_read(data->regmap, SX9310_REG_STAT1, &val);
+-		if (ret < 0)
+-			goto out;
+-		if (!(val & SX9310_COMPSTAT_MASK))
+-			break;
+-	}
+-
+-	if (i < 0) {
+-		dev_err(&data->client->dev,
+-			"initial compensation timed out: 0x%02x", val);
+-		ret = -ETIMEDOUT;
++	ret = regmap_read_poll_timeout(data->regmap, SX9310_REG_STAT1, val,
++				       !(val & SX9310_REG_STAT1_COMPSTAT_MASK),
++				       20000, 2000000);
++	if (ret) {
++		if (ret == -ETIMEDOUT)
++			dev_err(&data->client->dev,
++				"initial compensation timed out: 0x%02x\n",
++				val);
++		return ret;
+ 	}
  
- static const struct of_device_id sx9310_of_match[] = {
--	{ .compatible = "semtech,sx9310" },
--	{ .compatible = "semtech,sx9311" },
-+	{ .compatible = "semtech,sx9310", (void *)SX9310_WHOAMI_VALUE },
-+	{ .compatible = "semtech,sx9311", (void *)SX9311_WHOAMI_VALUE },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, sx9310_of_match);
-@@ -1056,7 +1045,7 @@ static struct i2c_driver sx9310_driver = {
- 		.of_match_table = sx9310_of_match,
- 		.pm = &sx9310_pm_ops,
- 	},
--	.probe		= sx9310_probe,
-+	.probe_new	= sx9310_probe,
- 	.id_table	= sx9310_id,
- };
- module_i2c_driver(sx9310_driver);
+-out:
+ 	regmap_write(data->regmap, SX9310_REG_PROX_CTRL0, ctrl0);
+ 	return ret;
+ }
 -- 
 2.28.0.163.g6104cc2f0b6-goog
 
