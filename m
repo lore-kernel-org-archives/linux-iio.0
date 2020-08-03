@@ -2,91 +2,323 @@ Return-Path: <SRS0=LISt=BN=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA036C433E1
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 21:58:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74753C433E0
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 23:42:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B473E22CB1
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 21:58:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596491909;
-	bh=hwnVNvGnlHjxa3MzrkMn4tSgYkjk3xhHINWknygEIBA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ry7np8/Z6XCbKAz0IvXamJb2E1gDc2sPJ1iBSWqNHu5h4fl7z/wqvp2/B+0/YrnLv
-	 Ca+Mcmb03LTy2mIyX672nGSlXMFVVSxwSbyZiAAQ+Fj9FPu2j0DTOEgbFt920J/LEk
-	 avHIBIL88kwRdQ5W91B7e9iUy1qTYeSdw9SnSUrY=
+	by mail.kernel.org (Postfix) with ESMTP id 7B74920786
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 23:42:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="U2yUHmHh"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726825AbgHCV62 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Aug 2020 17:58:28 -0400
-Received: from mail-io1-f68.google.com ([209.85.166.68]:44938 "EHLO
-        mail-io1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726239AbgHCV62 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2020 17:58:28 -0400
-Received: by mail-io1-f68.google.com with SMTP id v6so24895386iow.11;
-        Mon, 03 Aug 2020 14:58:28 -0700 (PDT)
+        id S1728960AbgHCXmL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Aug 2020 19:42:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33730 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728951AbgHCXmK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2020 19:42:10 -0400
+Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFEF0C061756
+        for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2020 16:42:09 -0700 (PDT)
+Received: by mail-io1-xd42.google.com with SMTP id g19so28304656ioh.8
+        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2020 16:42:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cgcuBq5jHSYe9tQ6i4PG5OfxXeQhbT6N/XwGKE+NjOI=;
+        b=U2yUHmHhcvu/mBtiyhM1jv7Ry0ocXHKyTp5EcP7Z3OwBPyxmH0aaBBawIEG1Zp+F/5
+         CoU5KUTT8loPxM5XOqUQpvUMbby0MmojztMTziPDZVRth8V6jRbvql3ZlgNjKVdQkWAw
+         ps43BRoag7INeMVdoGvm3MVp6afTydpV5cQow=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=Tk9R+9ti9qwUNfwKpXRUC+vzSncyu3vSdfJgtp7CwUU=;
-        b=kzBOmE65ybLCj29oUwVkPnu8XZBqKjVbDyTq2U+RL06GR+egy4SycIlXnmBybO1YLk
-         NQgdKN8PEdb1bl5ViMi1efGQFWTaPr/7VQCrzPw8pmjAZ3iMbQ0951wDG4qwErfv0S7h
-         D4QEsgfuIdVAsst4qtRtQPm2ShjR7PRs8MwTgym+OVD0n7aTufg1vlc6J+0wATi3Bacp
-         yNYWGXvOsS7jSF21D/PsQz4AX1xZIRcjsMYvswHlCAz5ltkArtwfHwDEZ3uAz6VQ/IMS
-         2Tbb04yf4c8J//ULphyz0GCf7oMBerGU23hcUVkq/p1TLwWE8hQNyPEIUx3a4gA7qom7
-         7fMw==
-X-Gm-Message-State: AOAM5327+fVX9xP+bEusrhhXql26xZW2qXqiEsyrvNUqlnYW4CH3+NB/
-        aSbc0vVGt+3VDXRoGPVJVQ==
-X-Google-Smtp-Source: ABdhPJzZkYiklS4YCr+61tDmXUEFuV6zWukOJ7e4K8TI/LNRT9xwQpUwcG+0wzjSA//q2jkGmfwAQw==
-X-Received: by 2002:a02:76d0:: with SMTP id z199mr2075134jab.39.1596491907624;
-        Mon, 03 Aug 2020 14:58:27 -0700 (PDT)
-Received: from xps15 ([64.188.179.252])
-        by smtp.gmail.com with ESMTPSA id p3sm11398308ilc.45.2020.08.03.14.58.26
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cgcuBq5jHSYe9tQ6i4PG5OfxXeQhbT6N/XwGKE+NjOI=;
+        b=nUtJDfZnfDP6Vsy4s54z64l6cfBVQ9mnDBF8gTxNID4zaNC79eewUFiJLzaOUGfV8M
+         QC+opdWV/FGt3v8O4JxZ/clFVcrisuHQfi3xm0TfcJTPsEU35H6Zfkeo7Ce1Y8q4Ltbz
+         30VR7VrScMVvq4gbp30M0l0wPyhbZA5df6OWi3InzRxgXVGzZHlz9KMFQ3ReCRcFLUxT
+         BpebbAYYH86KzhLpSBzc1B04is5pd5pLSHK+0YTsvPR29LCJHzZoga32CuYylPlAtUEG
+         gUMaCL/XgZh8PXcYnqfQqfA0KwxiExYDOC20zWhYd2YOKrYMubh/VGkR060LhGAvOhQb
+         5TFg==
+X-Gm-Message-State: AOAM532GRJAT/kAfFnyWI8DualovZqaa7Mu34YaTY1WuvVrrrqyi5ZGT
+        2Fp8+kgtBNnv3HWP6CPUfBTcEw==
+X-Google-Smtp-Source: ABdhPJwv2fTnB+Rq2fK6YsQLu1jLeYv1LFlkDxw2Ajc1fqC4cDIIKUKd5EiTfyJkEJ7JRtntY3ZkEw==
+X-Received: by 2002:a02:84c1:: with SMTP id f59mr2565425jai.106.1596498129388;
+        Mon, 03 Aug 2020 16:42:09 -0700 (PDT)
+Received: from derch.Home (97-122-92-59.hlrn.qwest.net. [97.122.92.59])
+        by smtp.gmail.com with ESMTPSA id g2sm5468435ioe.4.2020.08.03.16.42.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 14:58:26 -0700 (PDT)
-Received: (nullmailer pid 3211639 invoked by uid 1000);
-        Mon, 03 Aug 2020 21:58:26 -0000
-Date:   Mon, 3 Aug 2020 15:58:26 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Mon, 03 Aug 2020 16:42:09 -0700 (PDT)
+From:   Daniel Campello <campello@chromium.org>
+To:     LKML <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Daniel Campello <campello@chromium.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Enrico Granata <egranata@chromium.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH V2] dt-bindings: iio: adc: maxim,max1118 yaml conversion
-Message-ID: <20200803215826.GA3211566@bogus>
-References: <20200801175850.1140006-1-jic23@kernel.org>
+Subject: [PATCH v4 10/15] iio: sx9310: Simplify error return handling
+Date:   Mon,  3 Aug 2020 17:41:49 -0600
+Message-Id: <20200803131544.v4.10.I071b118136317d3ff77fc598079f21e4ed0e347f@changeid>
+X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
+In-Reply-To: <20200803234154.320400-1-campello@chromium.org>
+References: <20200803234154.320400-1-campello@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200801175850.1140006-1-jic23@kernel.org>
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 01 Aug 2020 18:58:50 +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Simple device with a simple conversion.  Special handling needed
-> for the max1118 which is the only supported part that has an external
-> reference voltage.
-> 
-> Cc: Akinobu Mita <akinobu.mita@gmail.com>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
-> v2:
-> * Added additionalProperties: false. Other changes are to make this work.
-> * Move the vref-supply definition up
-> * Add an else clause
-> 
-> .../devicetree/bindings/iio/adc/max1118.txt   | 21 -------
->  .../bindings/iio/adc/maxim,max1118.yaml       | 62 +++++++++++++++++++
->  2 files changed, 62 insertions(+), 21 deletions(-)
-> 
+Checks for non-zero return values to signal error conditions.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Daniel Campello <campello@chromium.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+---
+
+Changes in v4: None
+Changes in v3: None
+Changes in v2: None
+
+ drivers/iio/proximity/sx9310.c | 56 +++++++++++++++++-----------------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index fa5009e39605ca..563ab08de37051 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -346,7 +346,7 @@ static int sx9310_read_prox_data(struct sx9310_data *data,
+ 	int ret;
+ 
+ 	ret = regmap_write(data->regmap, SX9310_REG_SENSOR_SEL, chan->channel);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	return regmap_bulk_read(data->regmap, chan->address, val, sizeof(*val));
+@@ -362,7 +362,7 @@ static int sx9310_wait_for_sample(struct sx9310_data *data)
+ 	unsigned int val;
+ 
+ 	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL0, &val);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	val = FIELD_GET(SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK, val);
+@@ -375,17 +375,17 @@ static int sx9310_wait_for_sample(struct sx9310_data *data)
+ static int sx9310_read_proximity(struct sx9310_data *data,
+ 				 const struct iio_chan_spec *chan, int *val)
+ {
+-	int ret = 0;
++	int ret;
+ 	__be16 rawval;
+ 
+ 	mutex_lock(&data->mutex);
+ 
+ 	ret = sx9310_get_read_channel(data, chan->channel);
+-	if (ret < 0)
++	if (ret)
+ 		goto out;
+ 
+ 	ret = sx9310_enable_irq(data, SX9310_CONVDONE_IRQ);
+-	if (ret < 0)
++	if (ret)
+ 		goto out_put_channel;
+ 
+ 	mutex_unlock(&data->mutex);
+@@ -399,22 +399,22 @@ static int sx9310_read_proximity(struct sx9310_data *data,
+ 
+ 	mutex_lock(&data->mutex);
+ 
+-	if (ret < 0)
++	if (ret)
+ 		goto out_disable_irq;
+ 
+ 	ret = sx9310_read_prox_data(data, chan, &rawval);
+-	if (ret < 0)
++	if (ret)
+ 		goto out_disable_irq;
+ 
+ 	*val = sign_extend32(be16_to_cpu(rawval),
+ 			     (chan->address == SX9310_REG_DIFF_MSB ? 11 : 15));
+ 
+ 	ret = sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
+-	if (ret < 0)
++	if (ret)
+ 		goto out_put_channel;
+ 
+ 	ret = sx9310_put_read_channel(data, chan->channel);
+-	if (ret < 0)
++	if (ret)
+ 		goto out;
+ 
+ 	mutex_unlock(&data->mutex);
+@@ -436,7 +436,7 @@ static int sx9310_read_samp_freq(struct sx9310_data *data, int *val, int *val2)
+ 	unsigned int regval;
+ 	int ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL0, &regval);
+ 
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	regval = FIELD_GET(SX9310_REG_PROX_CTRL0_SCANPERIOD_MASK, regval);
+@@ -538,7 +538,7 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
+ 
+ 	/* Read proximity state on all channels */
+ 	ret = regmap_read(data->regmap, SX9310_REG_STAT0, &val);
+-	if (ret < 0) {
++	if (ret) {
+ 		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+ 		return;
+ 	}
+@@ -572,7 +572,7 @@ static irqreturn_t sx9310_irq_thread_handler(int irq, void *private)
+ 	mutex_lock(&data->mutex);
+ 
+ 	ret = regmap_read(data->regmap, SX9310_REG_IRQ_SRC, &val);
+-	if (ret < 0) {
++	if (ret) {
+ 		dev_err(&data->client->dev, "i2c transfer error in irq\n");
+ 		goto out;
+ 	}
+@@ -615,20 +615,20 @@ static int sx9310_write_event_config(struct iio_dev *indio_dev,
+ 	mutex_lock(&data->mutex);
+ 	if (state) {
+ 		ret = sx9310_get_event_channel(data, chan->channel);
+-		if (ret < 0)
++		if (ret)
+ 			goto out_unlock;
+ 		if (!(data->chan_event & ~BIT(chan->channel))) {
+ 			ret = sx9310_enable_irq(data, eventirq);
+-			if (ret < 0)
++			if (ret)
+ 				sx9310_put_event_channel(data, chan->channel);
+ 		}
+ 	} else {
+ 		ret = sx9310_put_event_channel(data, chan->channel);
+-		if (ret < 0)
++		if (ret)
+ 			goto out_unlock;
+ 		if (!data->chan_event) {
+ 			ret = sx9310_disable_irq(data, eventirq);
+-			if (ret < 0)
++			if (ret)
+ 				sx9310_get_event_channel(data, chan->channel);
+ 		}
+ 	}
+@@ -667,7 +667,7 @@ static int sx9310_set_trigger_state(struct iio_trigger *trig, bool state)
+ 		ret = sx9310_enable_irq(data, SX9310_CONVDONE_IRQ);
+ 	else if (!data->chan_read)
+ 		ret = sx9310_disable_irq(data, SX9310_CONVDONE_IRQ);
+-	if (ret < 0)
++	if (ret)
+ 		goto out;
+ 
+ 	data->trigger_enabled = state;
+@@ -696,7 +696,7 @@ static irqreturn_t sx9310_trigger_handler(int irq, void *private)
+ 			 indio_dev->masklength) {
+ 		ret = sx9310_read_prox_data(data, &indio_dev->channels[bit],
+ 					    &val);
+-		if (ret < 0)
++		if (ret)
+ 			goto out;
+ 
+ 		data->buffer.channels[i++] = val;
+@@ -803,13 +803,13 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
+ 	unsigned int ctrl0;
+ 
+ 	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL0, &ctrl0);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	/* run the compensation phase on all channels */
+ 	ret = regmap_write(data->regmap, SX9310_REG_PROX_CTRL0,
+ 			   ctrl0 | SX9310_REG_PROX_CTRL0_SENSOREN_MASK);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	ret = regmap_read_poll_timeout(data->regmap, SX9310_REG_STAT1, val,
+@@ -835,21 +835,21 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
+ 	unsigned int i, val;
+ 
+ 	ret = regmap_write(data->regmap, SX9310_REG_RESET, SX9310_SOFT_RESET);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	usleep_range(1000, 2000); /* power-up time is ~1ms. */
+ 
+ 	/* Clear reset interrupt state by reading SX9310_REG_IRQ_SRC. */
+ 	ret = regmap_read(data->regmap, SX9310_REG_IRQ_SRC, &val);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	/* Program some sane defaults. */
+ 	for (i = 0; i < ARRAY_SIZE(sx9310_default_regs); i++) {
+ 		initval = &sx9310_default_regs[i];
+ 		ret = regmap_write(data->regmap, initval->reg, initval->def);
+-		if (ret < 0)
++		if (ret)
+ 			return ret;
+ 	}
+ 
+@@ -903,14 +903,14 @@ static int sx9310_probe(struct i2c_client *client)
+ 		return PTR_ERR(data->regmap);
+ 
+ 	ret = regmap_read(data->regmap, SX9310_REG_WHOAMI, &data->whoami);
+-	if (ret < 0) {
++	if (ret) {
+ 		dev_err(&client->dev, "error in reading WHOAMI register: %d",
+ 			ret);
+ 		return ret;
+ 	}
+ 
+ 	ret = sx9310_set_indio_dev_name(&client->dev, indio_dev, data->whoami);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(&client->dev));
+@@ -922,7 +922,7 @@ static int sx9310_probe(struct i2c_client *client)
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+ 	ret = sx9310_init_device(indio_dev);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	if (client->irq) {
+@@ -931,7 +931,7 @@ static int sx9310_probe(struct i2c_client *client)
+ 						sx9310_irq_thread_handler,
+ 						IRQF_TRIGGER_LOW | IRQF_ONESHOT,
+ 						"sx9310_event", indio_dev);
+-		if (ret < 0)
++		if (ret)
+ 			return ret;
+ 
+ 		data->trig =
+@@ -953,7 +953,7 @@ static int sx9310_probe(struct i2c_client *client)
+ 					      iio_pollfunc_store_time,
+ 					      sx9310_trigger_handler,
+ 					      &sx9310_buffer_setup_ops);
+-	if (ret < 0)
++	if (ret)
+ 		return ret;
+ 
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+-- 
+2.28.0.163.g6104cc2f0b6-goog
+
