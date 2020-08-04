@@ -2,175 +2,156 @@ Return-Path: <SRS0=wqnK=BO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46051C433E0
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 09:39:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3E09C433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:03:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 45BD92075D
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 09:39:11 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=axis.com header.i=@axis.com header.b="NFjOP9z8"
+	by mail.kernel.org (Postfix) with ESMTP id B14B12070A
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:03:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726036AbgHDJjK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 4 Aug 2020 05:39:10 -0400
-Received: from smtp2.axis.com ([195.60.68.18]:17802 "EHLO smtp2.axis.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725832AbgHDJjK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 4 Aug 2020 05:39:10 -0400
-X-Greylist: delayed 427 seconds by postgrey-1.27 at vger.kernel.org; Tue, 04 Aug 2020 05:39:09 EDT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; l=3621; q=dns/txt; s=axis-central1;
-  t=1596533949; x=1628069949;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=Ur+3d5KYc/6ZODjpCmOML5mGvcwU68NauvMIWuR/6Zw=;
-  b=NFjOP9z8Ec2EwW2IcXwM3ZaFk+3aTrUCM0gW2ltvVak7ycUYFKDYj73q
-   0qLhCP8FV84TNbtuhHsFm/vfHURK+e/MeJbT5zIP/PvZ1dY8MZR61N2KJ
-   MSfaRVhKZmsZ8jQwJvpOgX4BXqerx0DITgQRayCwEmQjaJVx7MLDxiYu+
-   Vzb1y/P7XPIW8az4A3Z0z8THv4glct1fUBRAI5Ha7PQar8UbGeD5iAYiX
-   eZbkkHqxCE4vsSfUtt4oGychFA3i1aSaGFGIdttB5QHR2QbCWqmNW24Mb
-   Qo72rBZF4J6Cr+mfzwi4f+YCAEAgbQOfH3r8Yox/Pg+GkeBe9V95DQjUc
-   g==;
-IronPort-SDR: W/ZhIggQ9sgXnQlPxeMjJeFMuoWE7tNFPVpMn0u4KtQ2/dd1yF3x94QqeWqXbDhk9eXjREClru
- TRtAOlNYCZmXQnZZlqMwTMN4U04TRGm8FKH2Thx7f8pZIvg8IpVahLXt6rwGZbQJPhaV3JkOhx
- YCEwz3FGHwgvF6qnqNBTRwcJwepn+dDgRscD/nyheQyfmPh0k7qDgIRJSiFBKJ/sxpSQmdcvkx
- IG/q0ccxMJNahsU9PloYmpmP+OxbtXG1AXQm9iPR6SFvvAxr6Skyc+/qR7NR1A+zBONhNw1wJ4
- blE=
-X-IronPort-AV: E=Sophos;i="5.75,433,1589234400"; 
-   d="scan'208";a="11151079"
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC:     <kernel@axis.com>, <sean@geanix.com>, <linux-iio@vger.kernel.org>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>
-Subject: [PATCH] iio: dac: dac5571: Support powerdown for multi-channel
-Date:   Tue, 4 Aug 2020 11:31:38 +0200
-Message-ID: <20200804093138.2114-1-vincent.whitchurch@axis.com>
-X-Mailer: git-send-email 2.25.1
+        id S1729698AbgHDKDT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 4 Aug 2020 06:03:19 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:16210 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1728726AbgHDKDT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Aug 2020 06:03:19 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 074A39Ni004120;
+        Tue, 4 Aug 2020 06:03:18 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 32n6cjsk1v-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 04 Aug 2020 06:03:18 -0400
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 074A3HHH055531
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 4 Aug 2020 06:03:17 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Tue, 4 Aug 2020
+ 06:03:16 -0400
+Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 4 Aug 2020 06:03:15 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 074A3CbR002099;
+        Tue, 4 Aug 2020 06:03:13 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, Stefan Popa <stefan.popa@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 2/2] iio: imu: adis16480: Add the option to enable/disable burst mode
+Date:   Tue, 4 Aug 2020 13:04:14 +0300
+Message-ID: <20200804100414.39002-2-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200804100414.39002-1-alexandru.ardelean@analog.com>
+References: <20200804100414.39002-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-08-04_03:2020-08-03,2020-08-04 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 spamscore=0
+ clxscore=1015 mlxlogscore=999 bulkscore=0 phishscore=0 adultscore=0
+ suspectscore=0 impostorscore=0 lowpriorityscore=0 priorityscore=1501
+ mlxscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2008040074
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The driver currently only allows channel 0 to be powered down but the
-multi-channel variants of the hardware allow each channel to be powered
-down separately and with separate power down modes.  Add support for
-this.
+From: Stefan Popa <stefan.popa@analog.com>
 
-Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+Although the burst read function does not require a stall time between
+each 16-bit segment, it however requires more processing since the
+software needs to look for the BURST_ID and take into account the offset
+to the first data channel. Some users might find it useful to be able to
+switch between the two modes.
+
+Signed-off-by: Stefan Popa <stefan.popa@analog.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/dac/ti-dac5571.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+ drivers/iio/imu/adis16480.c | 48 +++++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
-index 3a2bb0efe50d..ce8c3d646fb1 100644
---- a/drivers/iio/dac/ti-dac5571.c
-+++ b/drivers/iio/dac/ti-dac5571.c
-@@ -47,8 +47,8 @@ struct dac5571_data {
- 	struct mutex lock;
- 	struct regulator *vref;
- 	u16 val[4];
--	bool powerdown;
--	u8 powerdown_mode;
-+	bool powerdown[4];
-+	u8 powerdown_mode[4];
- 	struct dac5571_spec const *spec;
- 	int (*dac5571_cmd)(struct dac5571_data *data, int channel, u16 val);
- 	int (*dac5571_pwrdwn)(struct dac5571_data *data, int channel, u8 pwrdwn);
-@@ -125,7 +125,7 @@ static int dac5571_get_powerdown_mode(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index 9b100c8fb744..7d7712c33435 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -330,6 +330,45 @@ static int adis16480_debugfs_init(struct iio_dev *indio_dev)
+ 
+ #endif
+ 
++static ssize_t adis16495_burst_mode_enable_get(struct device *dev,
++					       struct device_attribute *attr,
++					       char *buf)
++{
++	struct adis16480 *st = iio_priv(dev_to_iio_dev(dev));
++
++	return sprintf(buf, "%d\n", st->adis.burst->en);
++}
++
++static ssize_t adis16495_burst_mode_enable_set(struct device *dev,
++					       struct device_attribute *attr,
++					       const char *buf, size_t len)
++{
++	struct adis16480 *st = iio_priv(dev_to_iio_dev(dev));
++	bool val;
++	int ret;
++
++	ret = kstrtobool(buf, &val);
++	if (ret)
++		return ret;
++
++	st->adis.burst->en = val;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(burst_mode_enable, 0644,
++		       adis16495_burst_mode_enable_get,
++		       adis16495_burst_mode_enable_set, 0);
++
++static struct attribute *adis16495_attributes[] = {
++	&iio_dev_attr_burst_mode_enable.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group adis16495_attribute_group = {
++	.attrs = adis16495_attributes,
++};
++
+ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
  {
- 	struct dac5571_data *data = iio_priv(indio_dev);
- 
--	return data->powerdown_mode;
-+	return data->powerdown_mode[chan->channel];
- }
- 
- static int dac5571_set_powerdown_mode(struct iio_dev *indio_dev,
-@@ -135,17 +135,17 @@ static int dac5571_set_powerdown_mode(struct iio_dev *indio_dev,
- 	struct dac5571_data *data = iio_priv(indio_dev);
- 	int ret = 0;
- 
--	if (data->powerdown_mode == mode)
-+	if (data->powerdown_mode[chan->channel] == mode)
- 		return 0;
- 
- 	mutex_lock(&data->lock);
--	if (data->powerdown) {
-+	if (data->powerdown[chan->channel]) {
- 		ret = data->dac5571_pwrdwn(data, chan->channel,
- 					   DAC5571_POWERDOWN(mode));
- 		if (ret)
- 			goto out;
- 	}
--	data->powerdown_mode = mode;
-+	data->powerdown_mode[chan->channel] = mode;
- 
-  out:
- 	mutex_unlock(&data->lock);
-@@ -167,7 +167,7 @@ static ssize_t dac5571_read_powerdown(struct iio_dev *indio_dev,
- {
- 	struct dac5571_data *data = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%d\n", data->powerdown);
-+	return sprintf(buf, "%d\n", data->powerdown[chan->channel]);
- }
- 
- static ssize_t dac5571_write_powerdown(struct iio_dev *indio_dev,
-@@ -183,19 +183,20 @@ static ssize_t dac5571_write_powerdown(struct iio_dev *indio_dev,
- 	if (ret)
- 		return ret;
- 
--	if (data->powerdown == powerdown)
-+	if (data->powerdown[chan->channel] == powerdown)
- 		return len;
- 
- 	mutex_lock(&data->lock);
- 	if (powerdown)
- 		ret = data->dac5571_pwrdwn(data, chan->channel,
--			    DAC5571_POWERDOWN(data->powerdown_mode));
-+			    DAC5571_POWERDOWN(data->powerdown_mode[chan->channel]));
- 	else
--		ret = data->dac5571_cmd(data, chan->channel, data->val[0]);
-+		ret = data->dac5571_cmd(data, chan->channel,
-+				data->val[chan->channel]);
- 	if (ret)
- 		goto out;
- 
--	data->powerdown = powerdown;
-+	data->powerdown[chan->channel] = powerdown;
- 
-  out:
- 	mutex_unlock(&data->lock);
-@@ -209,9 +210,9 @@ static const struct iio_chan_spec_ext_info dac5571_ext_info[] = {
- 		.name	   = "powerdown",
- 		.read	   = dac5571_read_powerdown,
- 		.write	   = dac5571_write_powerdown,
--		.shared	   = IIO_SHARED_BY_TYPE,
-+		.shared	   = IIO_SEPARATE,
- 	},
--	IIO_ENUM("powerdown_mode", IIO_SHARED_BY_TYPE, &dac5571_powerdown_mode),
-+	IIO_ENUM("powerdown_mode", IIO_SEPARATE, &dac5571_powerdown_mode),
- 	IIO_ENUM_AVAILABLE("powerdown_mode", &dac5571_powerdown_mode),
- 	{},
+ 	struct adis16480 *st = iio_priv(indio_dev);
+@@ -1131,6 +1170,14 @@ static const struct iio_info adis16480_info = {
+ 	.debugfs_reg_access = adis_debugfs_reg_access,
  };
-@@ -276,7 +277,7 @@ static int dac5571_write_raw(struct iio_dev *indio_dev,
- 		if (val >= (1 << data->spec->resolution) || val < 0)
- 			return -EINVAL;
  
--		if (data->powerdown)
-+		if (data->powerdown[chan->channel])
- 			return -EBUSY;
++static const struct iio_info adis16495_info = {
++	.attrs = &adis16495_attribute_group,
++	.read_raw = &adis16480_read_raw,
++	.write_raw = &adis16480_write_raw,
++	.update_scan_mode = adis_update_scan_mode,
++	.debugfs_reg_access = adis_debugfs_reg_access,
++};
++
+ static int adis16480_stop_device(struct iio_dev *indio_dev)
+ {
+ 	struct adis16480 *st = iio_priv(indio_dev);
+@@ -1365,6 +1412,7 @@ static int adis16480_probe(struct spi_device *spi)
+ 	if (st->chip_info->burst) {
+ 		st->adis.burst = st->chip_info->burst;
+ 		st->adis.burst_extra_len = st->chip_info->burst->extra_len;
++		indio_dev->info = &adis16495_info;
+ 	}
  
- 		mutex_lock(&data->lock);
+ 	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev,
 -- 
-2.25.1
+2.17.1
 
