@@ -2,290 +2,130 @@ Return-Path: <SRS0=wqnK=BO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F2388C433DF
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:03:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31DF6C433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:24:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 03AB722B40
-	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:03:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10AA222CA1
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 10:24:04 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=trafsysas.onmicrosoft.com header.i=@trafsysas.onmicrosoft.com header.b="ayqn6p6o"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730121AbgHDKDU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 4 Aug 2020 06:03:20 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:16208 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1728270AbgHDKDT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Aug 2020 06:03:19 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0749suB1015699;
-        Tue, 4 Aug 2020 06:03:18 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 32n69ehdk3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 04 Aug 2020 06:03:18 -0400
-Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 074A3H5G058003
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 4 Aug 2020 06:03:17 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 4 Aug 2020 06:03:16 -0400
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 4 Aug 2020 06:03:15 -0400
-Received: from zeus.spd.analog.com (10.64.82.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 4 Aug 2020 06:03:15 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 074A3CbQ002099;
-        Tue, 4 Aug 2020 06:03:12 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, Stefan Popa <stefan.popa@analog.com>,
-        "Alexandru Ardelean" <alexandru.ardelean@analog.com>
-Subject: [PATCH 1/2] iio: imu: adis16480: Add support for burst read function
-Date:   Tue, 4 Aug 2020 13:04:13 +0300
-Message-ID: <20200804100414.39002-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
+        id S1726190AbgHDKYD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 4 Aug 2020 06:24:03 -0400
+Received: from mail-am6eur05on2118.outbound.protection.outlook.com ([40.107.22.118]:11136
+        "EHLO EUR05-AM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726167AbgHDKYC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 4 Aug 2020 06:24:02 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=IgciYfxZwynAsDlb5LHUFiJe+spP2PRr7GPCKGWzdsNNHgGz/mg0BqCG89KuY4Vvg8xs1+YBv8sRFn0GH3G+cY5BzdcXEML7OulLA1knH8B5sARN3Puvu8Zvqo2vdM++ouWBFo5Vyp7lkGJAF48tg56Q6znf/UEb26QgjdZE8eXGAe1L/eUDqrNTdLny8JSjV7zyxbIYJjQ2Jw7BYp3MJHIsH+B2mmmklD5H9nap36Y65zUytd6gJs+t6nFEFlcq9YI7IV/TfKuZN3LWgbptzgvWSyCuPdckQXqmB6BaFThswTpNpQyauPbKPZhzYPV1I2nPKVxDqi1Pi3myywWkgA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9fEEi4lA9VECFAOa9BY8c27/4Y9RXDR/VpQWksNp+ic=;
+ b=JEKSpUOzM7Obui3arogiTl0kqyZHDDBepU+B8DYEix3HX/sr/bzQVmfLNeDCZnKt7hapfZWOiqkAYTZBTa6bCmMd7M58hIX7VkCTBWKBY6zBtHkm/KLxb7cZjv/2TJTU2L3+3gbvv4b7+Mse8Nvt37e0gaAjOS8CTH3B15YWwM5WtKYpBv1Q6U9DNnaZhvKCNvV0tIuV39MBoBeeN5Kw6tjrKfyyBzEGW0vLvnMNpHh6ZUnVw+/OC7x7eTb60wr85HxpVm5RqDnRkZ4mUE+m+I9KlqqbWS1NlrHSShjQTFRBepHxbuUXfKVtshyF7XSI+MJENMMHpEQmYawLrh5OVw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=norphonic.com; dmarc=pass action=none
+ header.from=norphonic.com; dkim=pass header.d=norphonic.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=trafsysas.onmicrosoft.com; s=selector2-trafsysas-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=9fEEi4lA9VECFAOa9BY8c27/4Y9RXDR/VpQWksNp+ic=;
+ b=ayqn6p6oXQdayqtgaC6qHkKHXwrf72SZETQPrJlWLjbxJJ3mY5Ylg3pAMlxeAWtcgORZqkUvU3OOrPAHB9ff/cXSukx40Ebd7INv6i6Gdt1OBWCCm9mtwz5YCj5R1/bqk6AY5tKaSNpYuTibck5DG63uLGPrId3jVocQVVZZBv8=
+Authentication-Results: vger.kernel.org; dkim=none (message not signed)
+ header.d=none;vger.kernel.org; dmarc=none action=none
+ header.from=norphonic.com;
+Received: from AM6PR06MB5430.eurprd06.prod.outlook.com (2603:10a6:20b:86::11)
+ by AM6PR06MB4787.eurprd06.prod.outlook.com (2603:10a6:20b:5d::32) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.20; Tue, 4 Aug
+ 2020 10:23:59 +0000
+Received: from AM6PR06MB5430.eurprd06.prod.outlook.com
+ ([fe80::3c50:d581:638e:fe8d]) by AM6PR06MB5430.eurprd06.prod.outlook.com
+ ([fe80::3c50:d581:638e:fe8d%6]) with mapi id 15.20.3239.022; Tue, 4 Aug 2020
+ 10:23:59 +0000
+References: <86d053d1re.fsf@norphonic.com> <CAHp75VfgFN9YBHo9T8fgswUCnhdb3L5nGEi3_yONvZp5_vduUw@mail.gmail.com> <20200712115444.49dc18c6@archlinux>
+User-agent: mu4e 0.9.18; emacs 25.2.2
+From:   Eugene Zaikonnikov <ez@norphonic.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        development@norphonic.com, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v9 1/2] iio: humidity: Add TI HDC20x0 support
+In-reply-to: <20200712115444.49dc18c6@archlinux>
+Date:   Tue, 04 Aug 2020 12:23:56 +0200
+Message-ID: <86zh7ak8ub.fsf@norphonic.com>
 Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-08-04_03:2020-08-03,2020-08-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 impostorscore=0
- lowpriorityscore=0 phishscore=0 adultscore=0 spamscore=0 clxscore=1015
- mlxscore=0 malwarescore=0 suspectscore=0 priorityscore=1501
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2008040073
+X-ClientProxiedBy: OL1P279CA0070.NORP279.PROD.OUTLOOK.COM
+ (2603:10a6:e10:15::21) To AM6PR06MB5430.eurprd06.prod.outlook.com
+ (2603:10a6:20b:86::11)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from sta-eugenez.norphonic.com (62.97.226.122) by OL1P279CA0070.NORP279.PROD.OUTLOOK.COM (2603:10a6:e10:15::21) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3239.16 via Frontend Transport; Tue, 4 Aug 2020 10:23:58 +0000
+X-Originating-IP: [62.97.226.122]
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 00a9fb8c-8801-49e4-348c-08d838608047
+X-MS-TrafficTypeDiagnostic: AM6PR06MB4787:
+X-MS-Exchange-Transport-Forked: True
+X-Microsoft-Antispam-PRVS: <AM6PR06MB47878EA7EC55B8B88E9036C2CA4A0@AM6PR06MB4787.eurprd06.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:9508;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PxjoHgym/hcAlqPdvyWFPlNsBaTwxtsqmtIYryjBoOAt+Bs8Itrel0oSSAvi6a0hWjC4JxPLmarPDd8gJD5hHmFNNO5y/m8OFFSeYQSM6BVK10ilLgLJwD/jpDkMsmY98DjkhXNWCB4lZ0qGfla9E7TyYAh8qpeBvnz4dSM8zXPPAuMuutjamxlE/D9pPWurOTX9hGTkJySouINvF4kt2M+NRbgDv2HjArY3WnOP0jqBpBuxNH1+t2AY3/6KlCZy3Kj4Prt6kYqK64/exAueSJBLl21E7J9w0itLMwN73flxdYV1FbSqsg41P8ZGGTwT
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM6PR06MB5430.eurprd06.prod.outlook.com;PTR:;CAT:NONE;SFTY:;SFS:(376002)(136003)(396003)(346002)(39830400003)(366004)(8676002)(6486002)(8936002)(956004)(26005)(4744005)(2616005)(2906002)(186003)(66556008)(16526019)(66476007)(4326008)(66946007)(54906003)(508600001)(5660300002)(6916009)(52116002)(316002)(7696005)(86362001)(36756003);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData: SmIGjzehkOa4VqJm1hRA9+C5EuYGZqga6KaHJ8Du3vZcbtaiRIr7Gvs/3QaEnLJmr2bykZi2sTKKDZobbI3HcakfOaFwK7M1u/SuoWVpCoVBjl3ddphMWooBuscb7fGyqoubhzuiBPQHdAVVRQNjtWecsxlbsuzzI9zvmIdkDz5PTDwHG79JAP7FV7ZcldQSxOUB5JAMdaPXJM1OnjNKJ327zGipPKJJ8WtcFivWSQJIT2NzibU/jUDTRFMieGiOnqrFkjSkJywiiqW5JgTaDChNqsIsD6G/TmV7s+z0D01fUBAcd66jveo1xNUz20vJDavC9UMguBcM6CBrcUCm/bmH0y1kTLSmEYAZEVV74U2eXUn3eIyfSqR8xKmcONF6I4QfThMDWDz5VETRW7UIzkBb33DKcF8F7VcZ19Wddb7E7jKm6IJYZFoGnnWPqb7BHXbPTPXC1OUc6FdM4qMfQVHsrB8Taq1lkGPQw/QHKtLSqGL2NFoQGL+k6pxlY/MraWIroRjWDR41oYKwe3HOh/ymEg30oMvNtw9Zmp/rGMEoR/CX2JqgK9B9dvES5RYrw3IKGF7O+n2ARh4eIXm0bNFqb71vv+yjk1vP0XlcnWl2WZ4bMoINIPzalK1XNSj3AnwDK+LF7JVLpRIn1FV+Xw==
+X-OriginatorOrg: norphonic.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 00a9fb8c-8801-49e4-348c-08d838608047
+X-MS-Exchange-CrossTenant-AuthSource: AM6PR06MB5430.eurprd06.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 04 Aug 2020 10:23:59.5529
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: cbf3f496-45ad-415e-97cb-4e62d6cd974f
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: csFBVOuSkJGMwWbtCPG0t31L0YGx8X6S+9HfaShUcYOp2LPX9D497eMuyDv1Awe5vwDuQGze+kPCRwQasnUmIQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR06MB4787
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Stefan Popa <stefan.popa@analog.com>
+Hello,
 
-The burst read function (BRF) provides a method for reading a batch of
-data (status, temperature, gyroscopes, accelerometers, timestamp/data
-counter and CRC code), which does not require a stall time between each
-16-bit sgment and only requires on command on the DIN line to initiate.
+Jonathan Cameron <jic23@kernel.org> writes:
 
-The BRF contains either 19 or 20 different data segments of 16-bits
-each. After making the burst request, the response can have one or two
-"don't care" 16-bit responses before the BURST_ID. This is why the
-received burst sequence needs to be followed until the BURST_ID is
-detected, which indicates that the data will be contained in the
-following 17 segments of 16-bits each. Temperature is the first data
-channel in the sequence.
+> On Sat, 11 Jul 2020 18:27:09 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+>
 
-Currently, the burst function is activated by default for all devices
-that support it. A future patch will offer the option to enable/disable
-this feature from userspace.
+[...]
 
-Also, the CRC code is not checked. This will be added in a future patch
-as well.
+>> 4. IIO_CONST_ATTR can be one line, but hey don't we have IIO core to
+>> take care of it?
+>
+> For that one, we could indeed use the read_avail callback here
+> for the out_current_heater_raw_available. I've not yet started insisting
+> on this because of the huge number of drivers that predate introduction of
+> that stuff to the core and as a result a lack of good examples.
+> Eugene, if you are happy to change this one over to that and hence act
+> as an example it would be great!
+>
+Just looked into that.
 
-Signed-off-by: Stefan Popa <stefan.popa@analog.com>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/imu/adis16480.c | 106 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 105 insertions(+), 1 deletion(-)
+We use this driver here with trees as early as 4.9.11, and it does not
+appear to have this callback in iio_info yet. Hope it's OK as it is in
+this iteration.
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index 1eb4f98076f1..9b100c8fb744 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -23,6 +23,9 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/imu/adis.h>
- 
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+
- #include <linux/debugfs.h>
- 
- #define ADIS16480_PAGE_SIZE 0x80
-@@ -101,6 +104,9 @@
-  * Available only for ADIS1649x devices
-  */
- #define ADIS16495_REG_SYNC_SCALE		ADIS16480_REG(0x03, 0x10)
-+#define ADIS16495_REG_BURST_CMD			ADIS16480_REG(0x00, 0x7C)
-+#define ADIS16495_BURST_ID			0xA5A5
-+#define ADIS16495_BURST_MAX_DATA		20
- 
- #define ADIS16480_REG_SERIAL_NUM		ADIS16480_REG(0x04, 0x20)
- 
-@@ -138,6 +144,7 @@ struct adis16480_chip_info {
- 	unsigned int max_dec_rate;
- 	const unsigned int *filter_freqs;
- 	bool has_pps_clk_mode;
-+	struct adis_burst *burst;
- 	const struct adis_data adis_data;
- };
- 
-@@ -163,6 +170,20 @@ struct adis16480 {
- 	unsigned int clk_freq;
- };
- 
-+static struct adis_burst adis16495_burst = {
-+	.en = true,
-+	.reg_cmd = ADIS16495_REG_BURST_CMD,
-+	/*
-+	 * adis_update_scan_mode_burst() sets the burst length in respect with
-+	 * the number of channels and allocates 16 bits for each. However, for
-+	 * adis1649x devices, the data for each channel is composed of a 16-bit
-+	 * low and 16-bit high part. Besides this, the burst sequence contains
-+	 * data for BURST_ID, SYS_E_FLAG, TIME_STAMP, CRC_LWR, CRC_UPR, one or
-+	 * two don't care segments.
-+	 */
-+	.extra_len = 12 * sizeof(u16),
-+};
-+
- static const char * const adis16480_int_pin_names[4] = {
- 	[ADIS16480_PIN_DIO1] = "DIO1",
- 	[ADIS16480_PIN_DIO2] = "DIO2",
-@@ -953,6 +974,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16495, &adis16495_1_timeouts),
- 	},
- 	[ADIS16495_2] = {
-@@ -967,6 +989,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16495, &adis16495_1_timeouts),
- 	},
- 	[ADIS16495_3] = {
-@@ -981,6 +1004,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16495, &adis16495_1_timeouts),
- 	},
- 	[ADIS16497_1] = {
-@@ -995,6 +1019,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16497, &adis16495_1_timeouts),
- 	},
- 	[ADIS16497_2] = {
-@@ -1009,6 +1034,7 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16497, &adis16495_1_timeouts),
- 	},
- 	[ADIS16497_3] = {
-@@ -1023,10 +1049,81 @@ static const struct adis16480_chip_info adis16480_chip_info[] = {
- 		.max_dec_rate = 4250,
- 		.filter_freqs = adis16495_def_filter_freqs,
- 		.has_pps_clk_mode = true,
-+		.burst = &adis16495_burst,
- 		.adis_data = ADIS16480_DATA(16497, &adis16495_1_timeouts),
- 	},
- };
- 
-+static irqreturn_t adis16480_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct adis16480 *st = iio_priv(indio_dev);
-+	struct adis *adis = &st->adis;
-+	int ret, bit, offset, i = 0;
-+	__be16 data[ADIS16495_BURST_MAX_DATA], *buffer, *d;
-+
-+	if (!adis->buffer)
-+		return -ENOMEM;
-+
-+	mutex_lock(&adis->state_lock);
-+	if (adis->current_page != 0) {
-+		adis->tx[0] = ADIS_WRITE_REG(ADIS_REG_PAGE_ID);
-+		adis->tx[1] = 0;
-+		spi_write(adis->spi, adis->tx, 2);
-+	}
-+
-+	ret = spi_sync(adis->spi, &adis->msg);
-+	if (ret)
-+		dev_err(&adis->spi->dev, "Failed to read data: %d\n", ret);
-+
-+	adis->current_page = 0;
-+	mutex_unlock(&adis->state_lock);
-+
-+	if (!(adis->burst && adis->burst->en)) {
-+		buffer = adis->buffer;
-+		goto push_to_buffers;
-+	}
-+	/*
-+	 * After making the burst request, the response can have one or two
-+	 * "don't care" 16-bit responses, before the BURST_ID.
-+	 */
-+	d = (__be16 *)adis->buffer;
-+	for (offset = 0; offset < 3; offset++) {
-+		if (d[offset] == ADIS16495_BURST_ID) {
-+			offset += 2; /* TEMP_OUT */
-+			break;
-+		}
-+	}
-+
-+	for_each_set_bit(bit, indio_dev->active_scan_mask,
-+			indio_dev->masklength) {
-+		/*
-+		 * When burst mode is used, temperature is the first data
-+		 * channel in the sequence, but the temperature scan index
-+		 * is 10.
-+		 */
-+		if (bit == ADIS16480_SCAN_TEMP) {
-+			data[2 * i] = d[offset];
-+		} else {
-+			/* The lower register data is sequenced first */
-+			data[2 * i] = d[2 * bit + offset + 2];
-+			data[2 * i + 1] = d[2 * bit + offset + 1];
-+		}
-+		i++;
-+	}
-+
-+	buffer = data;
-+
-+push_to_buffers:
-+	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
-+		pf->timestamp);
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static const struct iio_info adis16480_info = {
- 	.read_raw = &adis16480_read_raw,
- 	.write_raw = &adis16480_write_raw,
-@@ -1264,7 +1361,14 @@ static int adis16480_probe(struct spi_device *spi)
- 		st->clk_freq = st->chip_info->int_clk;
- 	}
- 
--	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev, NULL);
-+	/* If burst mode is supported, enable it by default */
-+	if (st->chip_info->burst) {
-+		st->adis.burst = st->chip_info->burst;
-+		st->adis.burst_extra_len = st->chip_info->burst->extra_len;
-+	}
-+
-+	ret = adis_setup_buffer_and_trigger(&st->adis, indio_dev,
-+					    adis16480_trigger_handler);
- 	if (ret)
- 		goto error_clk_disable_unprepare;
- 
--- 
-2.17.1
+--
+Regards,
 
+  Eugene Zaikonnikov
+
+  Norphonic AS
+  Tel: +47 98 23 97 73
