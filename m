@@ -1,129 +1,112 @@
-Return-Path: <SRS0=LISt=BN=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=wqnK=BO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5868C433DF
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 23:59:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A4A9C433DF
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 02:01:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B0DDE206F8
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Aug 2020 23:59:20 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="V88DoAJz"
+	by mail.kernel.org (Postfix) with ESMTP id 7C4CA20792
+	for <linux-iio@archiver.kernel.org>; Tue,  4 Aug 2020 02:01:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1596506480;
+	bh=4XVqqgwktGruGGFjT+GJfaOJ/4GWRFCLq8E7Ac4NJeM=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=HCPSYNFgErUxoYgUb2+YSJWcnvs8t09uSwGKWrksZ208sDGvfhF/bIyv6PEktv1zU
+	 T07gED7/bv6aDs2msJExu2PBFOi300CEpcIgEbYxnMoA02zS9dOdyshEAGdtKu9sYW
+	 pJF54xXoLtwCbJHwXi+W2MqVZYNkxNCznbXrP6ng=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729185AbgHCX7T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Aug 2020 19:59:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36266 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729175AbgHCX6Y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Aug 2020 19:58:24 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15142C06174A
-        for <linux-iio@vger.kernel.org>; Mon,  3 Aug 2020 16:58:24 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id s189so33168162iod.2
-        for <linux-iio@vger.kernel.org>; Mon, 03 Aug 2020 16:58:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=5cSkoNniKNC956C/ks1iOGmqLlwslZdR0J6VVIESB2A=;
-        b=V88DoAJzfQvpiH+5JxevlSU6EhKal8pET2oyqthvc2pFhCs3Sp9rwSgY5coM8nTZPO
-         wruV+Ufx3cSmBIt+yyoql6iJzRJmTpmrYvBC0A1UF9XPu5pIFNda+pySkz8y5Vl6zA22
-         cITV089oYBOg5Togk9Qdt83DQPR/anpO6qYE4=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=5cSkoNniKNC956C/ks1iOGmqLlwslZdR0J6VVIESB2A=;
-        b=M7THWNpFAfeq2gDChUbWB1laVKsVRoNe601iefquXYTPPVv2EDVqN02YOQ8qPM8YYd
-         3L1sIm6a60JQCAdaAi/V0nNUVC6kpIE0Qx9s/VeZaPPbVWkGTOXfkeCtwpPc/ARaHx88
-         qGFbs4MUG/3nYC+nzu+RtXC4WJVJhdoGID5YL2nzU52lP9LpW99sg/0DM+Kys8E75d7u
-         ncpu+qEpYG801FuLaC+Pc+W8DYvgP8WN5vvWLpMCbAoPJd/pUccgKtAXtVHBt7/gvyB3
-         WLvOseowpxp1sv1A3ieoLa7LTI6qU5AAOjiCJsedMKP9D1EjVP0F916j4zlmTKZsmMad
-         B65Q==
-X-Gm-Message-State: AOAM531Eu/QHIYz4ycHyXA1WV7m8gpQS1h5PEwvWZpJTTYQy94zTZJCs
-        VqX97SIqFQ2wMhPCEoHGvu4/vQ==
-X-Google-Smtp-Source: ABdhPJyqY7hE+U+7SMnQ+qMn5joVOAC/qjH45Yfs0wJshVR9Up1oVmmnvOB4rHGp4B9hYhCW0JjSJA==
-X-Received: by 2002:a05:6602:1343:: with SMTP id i3mr2388451iov.134.1596499103295;
-        Mon, 03 Aug 2020 16:58:23 -0700 (PDT)
-Received: from derch.Home (97-122-92-59.hlrn.qwest.net. [97.122.92.59])
-        by smtp.gmail.com with ESMTPSA id x185sm11075992iof.41.2020.08.03.16.58.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 03 Aug 2020 16:58:22 -0700 (PDT)
-From:   Daniel Campello <campello@chromium.org>
-To:     LKML <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Daniel Campello <campello@chromium.org>,
-        kbuild test robot <lkp@intel.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Enrico Granata <egranata@chromium.org>,
+        id S1726772AbgHDCBT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Aug 2020 22:01:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47614 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725840AbgHDCBT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 3 Aug 2020 22:01:19 -0400
+Received: from mail-oi1-f180.google.com (mail-oi1-f180.google.com [209.85.167.180])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8A95220792;
+        Tue,  4 Aug 2020 02:01:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596506478;
+        bh=4XVqqgwktGruGGFjT+GJfaOJ/4GWRFCLq8E7Ac4NJeM=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=s7Qh5+Lxr+2nDRrGsJ0Yq6A9rR6jlqp0FqJ/GFWzSLjwbl1ob1p2kW+orUqP/UbJk
+         2Xwqjt0wHyyMv/vkMx9rIMQ/78hIlHhANg6hlpQem6KNvWN8cwMjtVLLOyQ382649l
+         PLdpkXwlxAyRZ2msArinhyUhPJ7Yp1hqYpdnLViE=
+Received: by mail-oi1-f180.google.com with SMTP id l84so22494014oig.10;
+        Mon, 03 Aug 2020 19:01:18 -0700 (PDT)
+X-Gm-Message-State: AOAM531pb9nPlaBn2CqhbmbXm3HuRADXrr2QBahyK2NhWG/OFRpoz9dR
+        iP3PkIWsDwdAva9ejGrwUp9ROgEmgzA8vexKFw==
+X-Google-Smtp-Source: ABdhPJybkTGDHYJ7RbW8usE+aYAZuvyH9Qf4GxLxWv9aK7s5b4rphMB8CDwUhA8saSycpJZznnMHvSF2z7+MYaTpAkg=
+X-Received: by 2002:aca:c3d8:: with SMTP id t207mr1037981oif.152.1596506477732;
+ Mon, 03 Aug 2020 19:01:17 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200731164853.3020946-1-campello@chromium.org>
+ <20200731104555.v3.1.I0925046377211b8b6f06764857f03b4ab592bddb@changeid>
+ <20200801160639.1410944e@archlinux> <159648122347.1360974.1094560524092762187@swboyd.mtv.corp.google.com>
+In-Reply-To: <159648122347.1360974.1094560524092762187@swboyd.mtv.corp.google.com>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 3 Aug 2020 20:01:06 -0600
+X-Gmail-Original-Message-ID: <CAL_JsqLs99Q7o32mqZROQSLuaf-_6vVg_wSVbpMr0u3eD9LVEw@mail.gmail.com>
+Message-ID: <CAL_JsqLs99Q7o32mqZROQSLuaf-_6vVg_wSVbpMr0u3eD9LVEw@mail.gmail.com>
+Subject: Re: [PATCH v3 01/15] dt-bindings: iio: Add bindings for sx9310 sensor
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Daniel Campello <campello@chromium.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        LKML <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v5 04/15] iio: sx9310: Remove acpi and of table macros
-Date:   Mon,  3 Aug 2020 17:58:04 -0600
-Message-Id: <20200803175559.v5.4.I9bf713a86d6076b44441ef5f534f9c240271699a@changeid>
-X-Mailer: git-send-email 2.28.0.163.g6104cc2f0b6-goog
-In-Reply-To: <20200803235815.778997-1-campello@chromium.org>
-References: <20200803235815.778997-1-campello@chromium.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Douglas Anderson <dianders@chromium.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Avoids unused warnings due to acpi/of table macros.
+On Mon, Aug 3, 2020 at 1:00 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Jonathan Cameron (2020-08-01 08:06:39)
+> > On Fri, 31 Jul 2020 10:48:38 -0600
+> > Daniel Campello <campello@chromium.org> wrote:
+> > > diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
+> > > new file mode 100644
+> > > index 00000000000000..5739074d3592fe
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
+> > > @@ -0,0 +1,65 @@
+> [...]
+> > > +
+> > > +  "#io-channel-cells":
+> > > +    const: 1
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +  - "#io-channel-cells"
+> >
+> > Missed this in earlier review (only noticed when I saw whilst santity
+> > checking earlier versions.
+> >
+> > Fairly sure we should only need #io-channel-cells if we have
+> > a consumer of a channel somewhere else in DT.  So it's not
+> > required as far as I can see.
+> >
+>
+> This is mostly a decision for Rob to make, but I would make it required
+> because the device is always an io channel provider. It may be that it
+> isn't providing anything in the DT to something else in the DT but it is
+> providing this information somewhere so always having to spell that out
+> is simple and doesn't hurt.
 
-Reported-by: kbuild test robot <lkp@intel.com>
-Signed-off-by: Daniel Campello <campello@chromium.org>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
+I agree. If the user is split in a board file or overlay, we don't
+want to have to be adding it to the provider at that time.
 
-Changes in v5: None
-Changes in v4: None
-Changes in v3: None
-Changes in v2:
- - Added #include <linux/mod_devicetable.h>
-
- drivers/iio/proximity/sx9310.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
-
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index dafee85018aa6d..9daf2b8591a0a0 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -16,8 +16,8 @@
- #include <linux/i2c.h>
- #include <linux/irq.h>
- #include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
--#include <linux/of.h>
- #include <linux/pm.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-@@ -1049,8 +1049,8 @@ MODULE_DEVICE_TABLE(i2c, sx9310_id);
- static struct i2c_driver sx9310_driver = {
- 	.driver = {
- 		.name	= "sx9310",
--		.acpi_match_table = ACPI_PTR(sx9310_acpi_match),
--		.of_match_table = of_match_ptr(sx9310_of_match),
-+		.acpi_match_table = sx9310_acpi_match,
-+		.of_match_table = sx9310_of_match,
- 		.pm = &sx9310_pm_ops,
- 	},
- 	.probe		= sx9310_probe,
--- 
-2.28.0.163.g6104cc2f0b6-goog
-
+Rob
