@@ -2,204 +2,117 @@ Return-Path: <SRS0=+PUP=BQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87466C433E0
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:32:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29304C433E1
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:36:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D93D02310F
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:32:47 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596738767;
-	bh=ifE3q8dvN5O9kW6qxl8b0ad3j9sHHhi+zNx7/LqGEHY=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Q+spXKG9RgWljo6guBEBPs1rkeM81kFSA721CbVVWLdw7XURoOM7u2qy/PBmg01wE
-	 FSFXaebotEVGnC46H10nLDXWS16VlLzYhym5w7He+MjXo1H2qqE84VxduAaPIJ323F
-	 ERFB8SjLL0xE07CEEcIRtGFgIDym7UsQwae1BfgY=
+	by mail.kernel.org (Postfix) with ESMTP id 83CFA22CF7
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:36:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728675AbgHFScT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:32:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56134 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728460AbgHFSbS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:31:18 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 071CA2311E;
-        Thu,  6 Aug 2020 18:31:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596738662;
-        bh=ifE3q8dvN5O9kW6qxl8b0ad3j9sHHhi+zNx7/LqGEHY=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=COMD6VDLuWla/+lmK58mlUNjqv6lYcFIFiz36oWeov/YgPF3LKV1aecWHiCUaSiot
-         xs5FGqCiRlXyHFSPiukjSZ71BDEcwNaylxalW9E8ZGHkcBYKQfQyC4LGw64kLycJmX
-         RPAo5r/qH6ewcUL0bGLK+XnUiBnjBTf982vH6E8o=
-Date:   Thu, 6 Aug 2020 19:30:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Daniel Campello <campello@chromium.org>
-Cc:     LKML <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 07/15] iio: sx9310: Use long instead of int for
- channel bitmaps
-Message-ID: <20200806193057.163e2363@archlinux>
-In-Reply-To: <20200803175559.v5.7.Iecaa50e469918a385b3e5dab375e442540ea2ad4@changeid>
-References: <20200803235815.778997-1-campello@chromium.org>
-        <20200803175559.v5.7.Iecaa50e469918a385b3e5dab375e442540ea2ad4@changeid>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1729319AbgHFSgL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:36:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728498AbgHFSfe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Aug 2020 14:35:34 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FA9AC0617A5
+        for <linux-iio@vger.kernel.org>; Thu,  6 Aug 2020 11:35:21 -0700 (PDT)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1k3kjS-0004BS-94; Thu, 06 Aug 2020 20:35:14 +0200
+Received: from ukl by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1k3kjR-0007aU-Sj; Thu, 06 Aug 2020 20:35:13 +0200
+Date:   Thu, 6 Aug 2020 20:35:13 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Guenter Roeck <linux@roeck-us.net>
+Cc:     Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Brian Norris <briannorris@chromium.org>,
+        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 4/7] pwm: cros-ec: Accept more error codes from
+ cros_ec_cmd_xfer_status
+Message-ID: <20200806183513.nbaeonm5sevjvxkb@pengutronix.de>
+References: <20200806153308.204605-1-linux@roeck-us.net>
+ <20200806153308.204605-5-linux@roeck-us.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="prp6ta2dfdqjn5v6"
+Content-Disposition: inline
+In-Reply-To: <20200806153308.204605-5-linux@roeck-us.net>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  3 Aug 2020 17:58:07 -0600
-Daniel Campello <campello@chromium.org> wrote:
 
-> Uses for_each_set_bit() macro to loop over channel bitmaps.
-> 
-> Signed-off-by: Daniel Campello <campello@chromium.org>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Applied,
+--prp6ta2dfdqjn5v6
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks,
+Hello,
 
-Jonathan
+On Thu, Aug 06, 2020 at 08:33:05AM -0700, Guenter Roeck wrote:
+> Since commit c5cd2b47b203 ("platform/chrome: cros_ec_proto: Report command
+> not supported") we can no longer assume that cros_ec_cmd_xfer_status()
+> reports -EPROTO for all errors returned by the EC itself. A follow-up
+> patch will change cros_ec_cmd_xfer_status() to report additional errors
+> reported by the EC as distinguished Linux error codes.
+>=20
+> Handle this change by no longer assuming that only -EPROTO is used
+> to report all errors returned by the EC itself. Instead, support both
+> the old and the new error codes.
+>=20
+> Add a comment describing cros_ec_num_pwms() to explain its functionality.
+>=20
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
+> Cc: Prashant Malani <pmalani@chromium.org>
+> Cc: Brian Norris <briannorris@chromium.org>
+> Acked-by: Thierry Reding <thierry.reding@gmail.com>
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 
-> ---
-> 
-> Changes in v5: None
-> Changes in v4: None
-> Changes in v3:
->  - Added static assert for number of channels.
-> 
-> Changes in v2:
->  - Changed prox_stat to chan_prox_stat bitmap.
-> 
->  drivers/iio/proximity/sx9310.c | 39 ++++++++++++++++++----------------
->  1 file changed, 21 insertions(+), 18 deletions(-)
-> 
-> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-> index 127b1ba79e2dea..f78500b8a5841e 100644
-> --- a/drivers/iio/proximity/sx9310.c
-> +++ b/drivers/iio/proximity/sx9310.c
-> @@ -119,6 +119,7 @@
->  
->  /* 4 hardware channels, as defined in STAT0: COMB, CS2, CS1 and CS0. */
->  #define SX9310_NUM_CHANNELS				4
-> +static_assert(SX9310_NUM_CHANNELS < BITS_PER_LONG);
->  
->  struct sx9310_data {
->  	/* Serialize access to registers and channel configuration */
-> @@ -130,7 +131,7 @@ struct sx9310_data {
->  	 * Last reading of the proximity status for each channel.
->  	 * We only send an event to user space when this changes.
->  	 */
-> -	bool prox_stat[SX9310_NUM_CHANNELS];
-> +	unsigned long chan_prox_stat;
->  	bool trigger_enabled;
->  	/* Ensure correct alignment of timestamp when present. */
->  	struct {
-> @@ -140,7 +141,8 @@ struct sx9310_data {
->  	/* Remember enabled channels and sample rate during suspend. */
->  	unsigned int suspend_ctrl0;
->  	struct completion completion;
-> -	unsigned int chan_read, chan_event;
-> +	unsigned long chan_read;
-> +	unsigned long chan_event;
->  	int channel_users[SX9310_NUM_CHANNELS];
->  	unsigned int whoami;
->  };
-> @@ -283,15 +285,16 @@ static const struct regmap_config sx9310_regmap_config = {
->  };
->  
->  static int sx9310_update_chan_en(struct sx9310_data *data,
-> -				 unsigned int chan_read,
-> -				 unsigned int chan_event)
-> +				 unsigned long chan_read,
-> +				 unsigned long chan_event)
->  {
->  	int ret;
-> +	unsigned long channels = chan_read | chan_event;
->  
-> -	if ((data->chan_read | data->chan_event) != (chan_read | chan_event)) {
-> +	if ((data->chan_read | data->chan_event) != channels) {
->  		ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL0,
->  					 SX9310_REG_PROX_CTRL0_SENSOREN_MASK,
-> -					 chan_read | chan_event);
-> +					 channels);
->  		if (ret)
->  			return ret;
->  	}
-> @@ -532,6 +535,7 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
->  	unsigned int val, chan;
->  	struct sx9310_data *data = iio_priv(indio_dev);
->  	s64 timestamp = iio_get_time_ns(indio_dev);
-> +	unsigned long prox_changed;
->  
->  	/* Read proximity state on all channels */
->  	ret = regmap_read(data->regmap, SX9310_REG_STAT0, &val);
-> @@ -540,24 +544,23 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
->  		return;
->  	}
->  
-> -	for (chan = 0; chan < SX9310_NUM_CHANNELS; chan++) {
-> +	/*
-> +	 * Only iterate over channels with changes on proximity status that have
-> +	 * events enabled.
-> +	 */
-> +	prox_changed = (data->chan_prox_stat ^ val) & data->chan_event;
-> +
-> +	for_each_set_bit(chan, &prox_changed, SX9310_NUM_CHANNELS) {
->  		int dir;
->  		u64 ev;
-> -		bool new_prox = val & BIT(chan);
-> -
-> -		if (!(data->chan_event & BIT(chan)))
-> -			continue;
-> -		if (new_prox == data->prox_stat[chan])
-> -			/* No change on this channel. */
-> -			continue;
->  
-> -		dir = new_prox ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
-> +		dir = val & BIT(chan) ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
->  		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, chan,
->  					  IIO_EV_TYPE_THRESH, dir);
->  
->  		iio_push_event(indio_dev, ev, timestamp);
-> -		data->prox_stat[chan] = new_prox;
->  	}
-> +	data->chan_prox_stat = val;
->  }
->  
->  static irqreturn_t sx9310_irq_thread_handler(int irq, void *private)
-> @@ -714,13 +717,13 @@ static irqreturn_t sx9310_trigger_handler(int irq, void *private)
->  static int sx9310_buffer_preenable(struct iio_dev *indio_dev)
->  {
->  	struct sx9310_data *data = iio_priv(indio_dev);
-> -	unsigned int channels = 0;
-> +	unsigned long channels = 0;
->  	int bit, ret;
->  
->  	mutex_lock(&data->mutex);
->  	for_each_set_bit(bit, indio_dev->active_scan_mask,
->  			 indio_dev->masklength)
-> -		channels |= BIT(indio_dev->channels[bit].channel);
-> +		__set_bit(indio_dev->channels[bit].channel, &channels);
->  
->  	ret = sx9310_update_chan_en(data, channels, data->chan_event);
->  	mutex_unlock(&data->mutex);
+Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
 
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--prp6ta2dfdqjn5v6
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAl8sTV4ACgkQwfwUeK3K
+7Ak7Xwf/bIpQ0ms3aJzAL2lKasQAGjulu7pJpdL40M8US0eyiWsAEWMEbxFoO7Ha
+W2ICAFrAFn6KUTuSPzSOIWOxqcxKE4uDxXKTvh98I9FkFXAY7VKFn32Dbshh+hhZ
+7NxJfdO7YM1evP67JxWrADaNlKbRij0KSGRPFnJ3mzt4XaiDCdUJX3opo9cyDglP
+rX8m/vpdUF8GDgCyh9YjskLqEV56kEzb0WNEVc9jqwkuMEQ6g2silpvtmFnbPpa3
+ZmCPcH2eOqz61dAOdjPdCGAeQmTY7zrXBkw2I4zXWButDK4/9q7yelYOISMMkrO1
+qohHip3HBU5CTDOp52IMtEWlkZauTw==
+=x1Y7
+-----END PGP SIGNATURE-----
+
+--prp6ta2dfdqjn5v6--
