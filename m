@@ -2,63 +2,61 @@ Return-Path: <SRS0=+PUP=BQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50DADC433DF
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:40:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88B1DC433E0
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8E6E822C9F
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:40:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8799221E2
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:41:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596739223;
-	bh=8zguKyCfWypWM8hyJ77LIcdUtKkyyoE4Ky0FYhVvmeQ=;
+	s=default; t=1596739296;
+	bh=yE/94/6VDakHTCtm8imxPfkBwiiI/cB0kOHagnGFESA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=JuaDLw/QYcrKe8KNANPGtevHskTC4OWlmwgSD2/g0/MJw+uH2Ic0FaHE5gCq/SJxQ
-	 864sbdpwaiQaxikj4yBadQ1MbCoCxvgCsGCzwKC25FksDVQG3BpeiQXQSK9ieol3v2
-	 dR+5isUrcZ5PhK4Q5ubzTnsU4Lsg4D3g39u8Bynk=
+	b=2FzHD1YQkX+v6dHEK6KsgydX/A0WuT/l6+pPiVID4e6lVKTFWJMbD+GjdG5iJrtXv
+	 5/oXq/z2gR32sBGMLRZLuIj3282ND80vnHTQsAXzKhepPM57TiC1Bdo7pA9LZsCGan
+	 0v2I0DKjf2TXCI/Vq3LBg0EiPr8TlfqM3/d9hd9o=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729943AbgHFSkA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1729552AbgHFSkA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 6 Aug 2020 14:40:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54064 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:54946 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727976AbgHFS3z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727850AbgHFS3z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 6 Aug 2020 14:29:55 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D0DE20716;
-        Thu,  6 Aug 2020 18:14:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 243072310F;
+        Thu,  6 Aug 2020 18:28:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596737696;
-        bh=8zguKyCfWypWM8hyJ77LIcdUtKkyyoE4Ky0FYhVvmeQ=;
+        s=default; t=1596738507;
+        bh=yE/94/6VDakHTCtm8imxPfkBwiiI/cB0kOHagnGFESA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uWTLvWaH5zKSmC7BVEoGDkeBuhLJku628QYEY3Ord32GNJ9AmzpLIlWbFw5RjoQqI
-         rbEK3EPMb4wpnw+6DYBPqJkEiyQgDbeKlA0WbcbyxaQyRigFd6eVt/6guY2tGNBBxU
-         VESDB94fynRaFsWvIDqU0RJXNg1TTQweMJL0dpX8=
-Date:   Thu, 6 Aug 2020 19:14:51 +0100
+        b=e+AdTman6HMMXdvvzEJ2nA+c2im2TLB+s7J6CseSlWLlU0BFhyjwFqRQN+QL2I+wL
+         SHcW/ByAYCz7L07c9Gw41aw6koB3dC44VNsmFeks8XS2E59MHQuuhylkfL73PDwj4p
+         x0awvyM6J6M6SyuEJKaxxidu7K1ISoLE260M41lI=
+Date:   Thu, 6 Aug 2020 19:28:21 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh+dt@kernel.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Daniel Campello <campello@chromium.org>,
-        LKML <devicetree@vger.kernel.org>,
+To:     Daniel Campello <campello@chromium.org>
+Cc:     LKML <devicetree@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
+        kbuild test robot <lkp@intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Enrico Granata <egranata@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Douglas Anderson <dianders@chromium.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3 01/15] dt-bindings: iio: Add bindings for sx9310
- sensor
-Message-ID: <20200806191451.3ce5ec57@archlinux>
-In-Reply-To: <CAL_JsqLs99Q7o32mqZROQSLuaf-_6vVg_wSVbpMr0u3eD9LVEw@mail.gmail.com>
-References: <20200731164853.3020946-1-campello@chromium.org>
-        <20200731104555.v3.1.I0925046377211b8b6f06764857f03b4ab592bddb@changeid>
-        <20200801160639.1410944e@archlinux>
-        <159648122347.1360974.1094560524092762187@swboyd.mtv.corp.google.com>
-        <CAL_JsqLs99Q7o32mqZROQSLuaf-_6vVg_wSVbpMr0u3eD9LVEw@mail.gmail.com>
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 04/15] iio: sx9310: Remove acpi and of table macros
+Message-ID: <20200806192821.6452aba7@archlinux>
+In-Reply-To: <20200803175559.v5.4.I9bf713a86d6076b44441ef5f534f9c240271699a@changeid>
+References: <20200803235815.778997-1-campello@chromium.org>
+        <20200803175559.v5.4.I9bf713a86d6076b44441ef5f534f9c240271699a@changeid>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -68,61 +66,50 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 3 Aug 2020 20:01:06 -0600
-Rob Herring <robh+dt@kernel.org> wrote:
+On Mon,  3 Aug 2020 17:58:04 -0600
+Daniel Campello <campello@chromium.org> wrote:
 
-> On Mon, Aug 3, 2020 at 1:00 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> >
-> > Quoting Jonathan Cameron (2020-08-01 08:06:39)  
-> > > On Fri, 31 Jul 2020 10:48:38 -0600
-> > > Daniel Campello <campello@chromium.org> wrote:  
-> > > > diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
-> > > > new file mode 100644
-> > > > index 00000000000000..5739074d3592fe
-> > > > --- /dev/null
-> > > > +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
-> > > > @@ -0,0 +1,65 @@  
-> > [...]  
-> > > > +
-> > > > +  "#io-channel-cells":
-> > > > +    const: 1
-> > > > +
-> > > > +required:
-> > > > +  - compatible
-> > > > +  - reg
-> > > > +  - "#io-channel-cells"  
-> > >
-> > > Missed this in earlier review (only noticed when I saw whilst santity
-> > > checking earlier versions.
-> > >
-> > > Fairly sure we should only need #io-channel-cells if we have
-> > > a consumer of a channel somewhere else in DT.  So it's not
-> > > required as far as I can see.
-> > >  
-> >
-> > This is mostly a decision for Rob to make, but I would make it required
-> > because the device is always an io channel provider. It may be that it
-> > isn't providing anything in the DT to something else in the DT but it is
-> > providing this information somewhere so always having to spell that out
-> > is simple and doesn't hurt.  
+> Avoids unused warnings due to acpi/of table macros.
 > 
-> I agree. If the user is split in a board file or overlay, we don't
-> want to have to be adding it to the provider at that time.
-
-That is perhaps a reasonable view point for devices with channels that
-are likely to be used by consumer drivers, but in this particular case we
-are talking about a proximity sensor.  So far I don't think we
-have any consumer drivers for this type of sensor (I might have forgotten
-one of course!)
-
-I'm not that fussed though, so will leave it in.
-
-The argument is a lot stronger for ADCs and such like, so we can
-start encouraging it for those.
-
-Jonathan
-
-
+> Reported-by: kbuild test robot <lkp@intel.com>
+> Signed-off-by: Daniel Campello <campello@chromium.org>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Applied,
+> ---
 > 
-> Rob
+> Changes in v5: None
+> Changes in v4: None
+> Changes in v3: None
+> Changes in v2:
+>  - Added #include <linux/mod_devicetable.h>
+> 
+>  drivers/iio/proximity/sx9310.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+> index dafee85018aa6d..9daf2b8591a0a0 100644
+> --- a/drivers/iio/proximity/sx9310.c
+> +++ b/drivers/iio/proximity/sx9310.c
+> @@ -16,8 +16,8 @@
+>  #include <linux/i2c.h>
+>  #include <linux/irq.h>
+>  #include <linux/kernel.h>
+> +#include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+> -#include <linux/of.h>
+>  #include <linux/pm.h>
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+> @@ -1049,8 +1049,8 @@ MODULE_DEVICE_TABLE(i2c, sx9310_id);
+>  static struct i2c_driver sx9310_driver = {
+>  	.driver = {
+>  		.name	= "sx9310",
+> -		.acpi_match_table = ACPI_PTR(sx9310_acpi_match),
+> -		.of_match_table = of_match_ptr(sx9310_of_match),
+> +		.acpi_match_table = sx9310_acpi_match,
+> +		.of_match_table = sx9310_of_match,
+>  		.pm = &sx9310_pm_ops,
+>  	},
+>  	.probe		= sx9310_probe,
 
