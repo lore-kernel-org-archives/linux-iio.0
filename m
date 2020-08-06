@@ -5,56 +5,57 @@ X-Spam-Level:
 X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D1EEC433E0
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:39:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F3DC433E1
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:39:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EA324221E3
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:39:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3E9B221E3
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:39:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596739169;
-	bh=4Gk7D0MO/sNh3nZnLY13LdzWLPNi69k9gLeAgtM/VQM=;
+	s=default; t=1596739189;
+	bh=jD2yBCbhOW8PLc+72HGrYz/PLEHVEovpi/J0s74KXuk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=xvFpvZXhaRC/AnGuiwKMVMkf+SFeNk9x1HE7BNYLDnQnVdhaulgeNVBwShZOULO0Y
-	 J9BSQ+3qvqodTqkEY3PVGJUh2F4PlZR62RR0iwo62g+TCLRoNbxYp5IXVdO1Bh6dsy
-	 MHV6Giz9YuJYP9OknUZlLza6ncNI2fcVoKZdkh8o=
+	b=S2u+W2wGGsXTEwVpmYbVno54Ql4+UVi+a958R580+/p5TVgaaZF9GRw6YG3QnPlHe
+	 6pJ1I8HBLuaWFASxPb3yHHMhAMcR+Jda41HTesqXZQM52k5ummRPGyNjK0Wpxe9Qmm
+	 elPJITiAnGGpWVvTAoNoAAMCOIw/ewkD2laAsb8U=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728458AbgHFSjS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:39:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55010 "EHLO mail.kernel.org"
+        id S1727021AbgHFSjs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:39:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54738 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728045AbgHFS34 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727965AbgHFS34 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 6 Aug 2020 14:29:56 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9D58423110;
-        Thu,  6 Aug 2020 18:29:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F226A206C3;
+        Thu,  6 Aug 2020 18:14:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596738559;
-        bh=4Gk7D0MO/sNh3nZnLY13LdzWLPNi69k9gLeAgtM/VQM=;
+        s=default; t=1596737661;
+        bh=jD2yBCbhOW8PLc+72HGrYz/PLEHVEovpi/J0s74KXuk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f3OdALKW3CQXK9/2MfkNE1i+JDefpBiKHak75OTvoddwQOFByg+S9NxHQ+yGkHNJp
-         zjhmkHvol1lk86n8MFOmPJT4PqceteXsA9ZXCS0EFmNBAk88Qm55vNcoNhC89hSLjk
-         W2CXV1wvhZwIM3OdDpW8rNKWEb2GtfMdmaZdQpLE=
-Date:   Thu, 6 Aug 2020 19:29:14 +0100
+        b=E43hqRJau1bJUUxCkPeMjdUe487Wb4evuCdWpX5pihfQJFPlmTKSFjrz55qji79L2
+         9SHZdJgdt3h6MPqYbyseGeO+e/v5doPNHvetEHuheUev/qZBSuJHFFANYTQjOVjHaX
+         uVesxPqHPUwlHYWf67dsIRzN8nPKgfgiHDCRFeTU=
+Date:   Thu, 6 Aug 2020 19:14:16 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Daniel Campello <campello@chromium.org>
 Cc:     LKML <devicetree@vger.kernel.org>,
         LKML <linux-kernel@vger.kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Douglas Anderson <dianders@chromium.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v5 05/15] iio: sx9310: Change from .probe to .probe_new
-Message-ID: <20200806192914.71bfec22@archlinux>
-In-Reply-To: <20200803175559.v5.5.Ieb5fdf7381764835dad0b3099c7b19ba754e4c47@changeid>
+        Rob Herring <robh+dt@kernel.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 01/15] dt-bindings: iio: Add bindings for sx9310
+ sensor
+Message-ID: <20200806191416.379d7184@archlinux>
+In-Reply-To: <20200803175559.v5.1.I0925046377211b8b6f06764857f03b4ab592bddb@changeid>
 References: <20200803235815.778997-1-campello@chromium.org>
-        <20200803175559.v5.5.Ieb5fdf7381764835dad0b3099c7b19ba754e4c47@changeid>
+        <20200803175559.v5.1.I0925046377211b8b6f06764857f03b4ab592bddb@changeid>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -64,123 +65,111 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  3 Aug 2020 17:58:05 -0600
+On Mon,  3 Aug 2020 17:58:01 -0600
 Daniel Campello <campello@chromium.org> wrote:
 
-> Uses .probe_new in place of .probe. Also uses device_get_match_data()
-> for whoami matching.
+> Adds device tree bindings for sx9310 sensor.
 > 
 > Signed-off-by: Daniel Campello <campello@chromium.org>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
-Applied,
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Reviewed-by: Douglas Anderson <dianders@chromium.org>
+> [swboyd@chromium.org: Add both regulators and make them optional]
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> Reviewed-by: Rob Herring <robh@kernel.org>
+> ---
+I'm not totally sold on the io-channel-cells being required
+but lets leave it there.
+
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to poke at it.
 
 Thanks,
 
 Jonathan
 
-> ---
 > 
 > Changes in v5: None
 > Changes in v4: None
 > Changes in v3: None
 > Changes in v2:
->  - Added '\n' to dev_err()
+>  - Added #io-channel-cells as a required property
 > 
->  drivers/iio/proximity/sx9310.c | 39 ++++++++++++----------------------
->  1 file changed, 14 insertions(+), 25 deletions(-)
+>  .../iio/proximity/semtech,sx9310.yaml         | 65 +++++++++++++++++++
+>  1 file changed, 65 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
 > 
-> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-> index 9daf2b8591a0a0..66ecdd309e0ddc 100644
-> --- a/drivers/iio/proximity/sx9310.c
-> +++ b/drivers/iio/proximity/sx9310.c
-> @@ -139,7 +139,7 @@ struct sx9310_data {
->  	struct completion completion;
->  	unsigned int chan_read, chan_event;
->  	int channel_users[SX9310_NUM_CHANNELS];
-> -	int whoami;
-> +	unsigned int whoami;
->  };
->  
->  static const struct iio_event_spec sx9310_events[] = {
-> @@ -858,24 +858,15 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
->  
->  static int sx9310_set_indio_dev_name(struct device *dev,
->  				     struct iio_dev *indio_dev,
-> -				     const struct i2c_device_id *id, int whoami)
-> +				     unsigned int whoami)
->  {
-> -	const struct acpi_device_id *acpi_id;
-> -
-> -	/* id will be NULL when enumerated via ACPI */
-> -	if (id) {
-> -		if (id->driver_data != whoami)
-> -			dev_err(dev, "WHOAMI does not match i2c_device_id: %s",
-> -				id->name);
-> -	} else if (ACPI_HANDLE(dev)) {
-> -		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> -		if (!acpi_id)
-> -			return -ENODEV;
-> -		if (acpi_id->driver_data != whoami)
-> -			dev_err(dev, "WHOAMI does not match acpi_device_id: %s",
-> -				acpi_id->id);
-> -	} else
-> +	unsigned int long ddata;
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
+> new file mode 100644
+> index 00000000000000..5739074d3592fe
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/proximity/semtech,sx9310.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +	ddata = (uintptr_t)device_get_match_data(dev);
-> +	if (ddata != whoami) {
-> +		dev_err(dev, "WHOAMI does not match device data: %u\n", whoami);
->  		return -ENODEV;
-> +	}
->  
->  	switch (whoami) {
->  	case SX9310_WHOAMI_VALUE:
-> @@ -885,15 +876,14 @@ static int sx9310_set_indio_dev_name(struct device *dev,
->  		indio_dev->name = "sx9311";
->  		break;
->  	default:
-> -		dev_err(dev, "unexpected WHOAMI response: %u", whoami);
-> +		dev_err(dev, "unexpected WHOAMI response: %u\n", whoami);
->  		return -ENODEV;
->  	}
->  
->  	return 0;
->  }
->  
-> -static int sx9310_probe(struct i2c_client *client,
-> -			const struct i2c_device_id *id)
-> +static int sx9310_probe(struct i2c_client *client)
->  {
->  	int ret;
->  	struct iio_dev *indio_dev;
-> @@ -919,8 +909,7 @@ static int sx9310_probe(struct i2c_client *client,
->  		return ret;
->  	}
->  
-> -	ret = sx9310_set_indio_dev_name(&client->dev, indio_dev, id,
-> -					data->whoami);
-> +	ret = sx9310_set_indio_dev_name(&client->dev, indio_dev, data->whoami);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -1033,8 +1022,8 @@ static const struct acpi_device_id sx9310_acpi_match[] = {
->  MODULE_DEVICE_TABLE(acpi, sx9310_acpi_match);
->  
->  static const struct of_device_id sx9310_of_match[] = {
-> -	{ .compatible = "semtech,sx9310" },
-> -	{ .compatible = "semtech,sx9311" },
-> +	{ .compatible = "semtech,sx9310", (void *)SX9310_WHOAMI_VALUE },
-> +	{ .compatible = "semtech,sx9311", (void *)SX9311_WHOAMI_VALUE },
->  	{},
->  };
->  MODULE_DEVICE_TABLE(of, sx9310_of_match);
-> @@ -1053,7 +1042,7 @@ static struct i2c_driver sx9310_driver = {
->  		.of_match_table = sx9310_of_match,
->  		.pm = &sx9310_pm_ops,
->  	},
-> -	.probe		= sx9310_probe,
-> +	.probe_new	= sx9310_probe,
->  	.id_table	= sx9310_id,
->  };
->  module_i2c_driver(sx9310_driver);
+> +title: Semtech's SX9310 capacitive proximity sensor
+> +
+> +maintainers:
+> +  - Daniel Campello <campello@chromium.org>
+> +
+> +description: |
+> +  Semtech's SX9310/SX9311 capacitive proximity/button solution.
+> +
+> +  Specifications about the devices can be found at:
+> +  https://www.semtech.com/products/smart-sensing/sar-sensors/sx9310
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - semtech,sx9310
+> +      - semtech,sx9311
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description:
+> +      The sole interrupt generated by the device used to announce the
+> +      preceding reading request has finished and that data is
+> +      available or that a close/far proximity event has happened.
+> +    maxItems: 1
+> +
+> +  vdd-supply:
+> +    description: Main power supply
+> +
+> +  svdd-supply:
+> +    description: Host interface power supply
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#io-channel-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      proximity@28 {
+> +        compatible = "semtech,sx9310";
+> +        reg = <0x28>;
+> +        interrupt-parent = <&pio>;
+> +        interrupts = <5 IRQ_TYPE_LEVEL_LOW 5>;
+> +        vdd-supply = <&pp3300_a>;
+> +        svdd-supply = <&pp1800_prox>;
+> +        #io-channel-cells = <1>;
+> +      };
+> +    };
 
