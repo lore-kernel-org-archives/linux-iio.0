@@ -2,54 +2,60 @@ Return-Path: <SRS0=+PUP=BQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93A1FC433E0
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:07:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87466C433E0
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:32:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E81E0206A2
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:07:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D93D02310F
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Aug 2020 18:32:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596737240;
-	bh=7sDGk0cuRvKpwl0wjGQQORXcJOfy5qUAfrD9AR4suV4=;
+	s=default; t=1596738767;
+	bh=ifE3q8dvN5O9kW6qxl8b0ad3j9sHHhi+zNx7/LqGEHY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Qm93FXPzzha4SKnAAu9kkqe5uH95FKb5G5KLpY80shkSaK/GJAh7vYZljVk7wY5KR
-	 lQCE5N2g2AA87MJS4/JwJxWQ5kh1lFRa5BIQLKv1uQsbE5UoICtNhZriZleClL45tk
-	 Y/xcRrc5nwF/GMdlNmx26FiocnWYqslZRkfNG+r0=
+	b=Q+spXKG9RgWljo6guBEBPs1rkeM81kFSA721CbVVWLdw7XURoOM7u2qy/PBmg01wE
+	 FSFXaebotEVGnC46H10nLDXWS16VlLzYhym5w7He+MjXo1H2qqE84VxduAaPIJ323F
+	 ERFB8SjLL0xE07CEEcIRtGFgIDym7UsQwae1BfgY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726934AbgHFSFx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Aug 2020 14:05:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44606 "EHLO mail.kernel.org"
+        id S1728675AbgHFScT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Aug 2020 14:32:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56134 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726927AbgHFSF3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Aug 2020 14:05:29 -0400
+        id S1728460AbgHFSbS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 6 Aug 2020 14:31:18 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8982206A2;
-        Thu,  6 Aug 2020 18:05:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 071CA2311E;
+        Thu,  6 Aug 2020 18:31:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596737128;
-        bh=7sDGk0cuRvKpwl0wjGQQORXcJOfy5qUAfrD9AR4suV4=;
+        s=default; t=1596738662;
+        bh=ifE3q8dvN5O9kW6qxl8b0ad3j9sHHhi+zNx7/LqGEHY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=qDVKR1Q8SOhlcBYyvzGbAx6d/ZXEhGCx+WAd5yDqWr54rlRGXKe07Parn0LftjmGM
-         U6wY6LBST7W8oOx2MwnSWuRvuc0NyXbpnNzc8rv9YKaFdQsilTIptKL7x8+tzyfwEM
-         G1y9cQI+//X8o6qkuRmFDV8J39knvZKei+WXxXxw=
-Date:   Thu, 6 Aug 2020 19:05:23 +0100
+        b=COMD6VDLuWla/+lmK58mlUNjqv6lYcFIFiz36oWeov/YgPF3LKV1aecWHiCUaSiot
+         xs5FGqCiRlXyHFSPiukjSZ71BDEcwNaylxalW9E8ZGHkcBYKQfQyC4LGw64kLycJmX
+         RPAo5r/qH6ewcUL0bGLK+XnUiBnjBTf982vH6E8o=
+Date:   Thu, 6 Aug 2020 19:30:57 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        devicetree@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+To:     Daniel Campello <campello@chromium.org>
+Cc:     LKML <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Subject: Re: [PATCH V2] dt-bindings: iio: adc: maxim,max1118 yaml conversion
-Message-ID: <20200806190523.712d2115@archlinux>
-In-Reply-To: <20200803215826.GA3211566@bogus>
-References: <20200801175850.1140006-1-jic23@kernel.org>
-        <20200803215826.GA3211566@bogus>
+Subject: Re: [PATCH v5 07/15] iio: sx9310: Use long instead of int for
+ channel bitmaps
+Message-ID: <20200806193057.163e2363@archlinux>
+In-Reply-To: <20200803175559.v5.7.Iecaa50e469918a385b3e5dab375e442540ea2ad4@changeid>
+References: <20200803235815.778997-1-campello@chromium.org>
+        <20200803175559.v5.7.Iecaa50e469918a385b3e5dab375e442540ea2ad4@changeid>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,34 +65,141 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 3 Aug 2020 15:58:26 -0600
-Rob Herring <robh@kernel.org> wrote:
+On Mon,  3 Aug 2020 17:58:07 -0600
+Daniel Campello <campello@chromium.org> wrote:
 
-> On Sat, 01 Aug 2020 18:58:50 +0100, Jonathan Cameron wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > Simple device with a simple conversion.  Special handling needed
-> > for the max1118 which is the only supported part that has an external
-> > reference voltage.
-> > 
-> > Cc: Akinobu Mita <akinobu.mita@gmail.com>
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > ---
-> > v2:
-> > * Added additionalProperties: false. Other changes are to make this work.
-> > * Move the vref-supply definition up
-> > * Add an else clause
-> > 
-> > .../devicetree/bindings/iio/adc/max1118.txt   | 21 -------
-> >  .../bindings/iio/adc/maxim,max1118.yaml       | 62 +++++++++++++++++++
-> >  2 files changed, 62 insertions(+), 21 deletions(-)
-> >   
+> Uses for_each_set_bit() macro to loop over channel bitmaps.
 > 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-Thanks,  
+> Signed-off-by: Daniel Campello <campello@chromium.org>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+Applied,
 
-Applied to the togreg branch off iio.git and pushed out as testing for autobuilders
-etc.
+Thanks,
 
 Jonathan
+
+> ---
+> 
+> Changes in v5: None
+> Changes in v4: None
+> Changes in v3:
+>  - Added static assert for number of channels.
+> 
+> Changes in v2:
+>  - Changed prox_stat to chan_prox_stat bitmap.
+> 
+>  drivers/iio/proximity/sx9310.c | 39 ++++++++++++++++++----------------
+>  1 file changed, 21 insertions(+), 18 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+> index 127b1ba79e2dea..f78500b8a5841e 100644
+> --- a/drivers/iio/proximity/sx9310.c
+> +++ b/drivers/iio/proximity/sx9310.c
+> @@ -119,6 +119,7 @@
+>  
+>  /* 4 hardware channels, as defined in STAT0: COMB, CS2, CS1 and CS0. */
+>  #define SX9310_NUM_CHANNELS				4
+> +static_assert(SX9310_NUM_CHANNELS < BITS_PER_LONG);
+>  
+>  struct sx9310_data {
+>  	/* Serialize access to registers and channel configuration */
+> @@ -130,7 +131,7 @@ struct sx9310_data {
+>  	 * Last reading of the proximity status for each channel.
+>  	 * We only send an event to user space when this changes.
+>  	 */
+> -	bool prox_stat[SX9310_NUM_CHANNELS];
+> +	unsigned long chan_prox_stat;
+>  	bool trigger_enabled;
+>  	/* Ensure correct alignment of timestamp when present. */
+>  	struct {
+> @@ -140,7 +141,8 @@ struct sx9310_data {
+>  	/* Remember enabled channels and sample rate during suspend. */
+>  	unsigned int suspend_ctrl0;
+>  	struct completion completion;
+> -	unsigned int chan_read, chan_event;
+> +	unsigned long chan_read;
+> +	unsigned long chan_event;
+>  	int channel_users[SX9310_NUM_CHANNELS];
+>  	unsigned int whoami;
+>  };
+> @@ -283,15 +285,16 @@ static const struct regmap_config sx9310_regmap_config = {
+>  };
+>  
+>  static int sx9310_update_chan_en(struct sx9310_data *data,
+> -				 unsigned int chan_read,
+> -				 unsigned int chan_event)
+> +				 unsigned long chan_read,
+> +				 unsigned long chan_event)
+>  {
+>  	int ret;
+> +	unsigned long channels = chan_read | chan_event;
+>  
+> -	if ((data->chan_read | data->chan_event) != (chan_read | chan_event)) {
+> +	if ((data->chan_read | data->chan_event) != channels) {
+>  		ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL0,
+>  					 SX9310_REG_PROX_CTRL0_SENSOREN_MASK,
+> -					 chan_read | chan_event);
+> +					 channels);
+>  		if (ret)
+>  			return ret;
+>  	}
+> @@ -532,6 +535,7 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
+>  	unsigned int val, chan;
+>  	struct sx9310_data *data = iio_priv(indio_dev);
+>  	s64 timestamp = iio_get_time_ns(indio_dev);
+> +	unsigned long prox_changed;
+>  
+>  	/* Read proximity state on all channels */
+>  	ret = regmap_read(data->regmap, SX9310_REG_STAT0, &val);
+> @@ -540,24 +544,23 @@ static void sx9310_push_events(struct iio_dev *indio_dev)
+>  		return;
+>  	}
+>  
+> -	for (chan = 0; chan < SX9310_NUM_CHANNELS; chan++) {
+> +	/*
+> +	 * Only iterate over channels with changes on proximity status that have
+> +	 * events enabled.
+> +	 */
+> +	prox_changed = (data->chan_prox_stat ^ val) & data->chan_event;
+> +
+> +	for_each_set_bit(chan, &prox_changed, SX9310_NUM_CHANNELS) {
+>  		int dir;
+>  		u64 ev;
+> -		bool new_prox = val & BIT(chan);
+> -
+> -		if (!(data->chan_event & BIT(chan)))
+> -			continue;
+> -		if (new_prox == data->prox_stat[chan])
+> -			/* No change on this channel. */
+> -			continue;
+>  
+> -		dir = new_prox ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
+> +		dir = val & BIT(chan) ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
+>  		ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, chan,
+>  					  IIO_EV_TYPE_THRESH, dir);
+>  
+>  		iio_push_event(indio_dev, ev, timestamp);
+> -		data->prox_stat[chan] = new_prox;
+>  	}
+> +	data->chan_prox_stat = val;
+>  }
+>  
+>  static irqreturn_t sx9310_irq_thread_handler(int irq, void *private)
+> @@ -714,13 +717,13 @@ static irqreturn_t sx9310_trigger_handler(int irq, void *private)
+>  static int sx9310_buffer_preenable(struct iio_dev *indio_dev)
+>  {
+>  	struct sx9310_data *data = iio_priv(indio_dev);
+> -	unsigned int channels = 0;
+> +	unsigned long channels = 0;
+>  	int bit, ret;
+>  
+>  	mutex_lock(&data->mutex);
+>  	for_each_set_bit(bit, indio_dev->active_scan_mask,
+>  			 indio_dev->masklength)
+> -		channels |= BIT(indio_dev->channels[bit].channel);
+> +		__set_bit(indio_dev->channels[bit].channel, &channels);
+>  
+>  	ret = sx9310_update_chan_en(data, channels, data->chan_event);
+>  	mutex_unlock(&data->mutex);
 
