@@ -5,66 +5,66 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB47CC433E0
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:13:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1713C433DF
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:13:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 965CC20866
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:13:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7E88320759
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:13:58 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="awV+k81W"
+	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="LyblSclQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbgHHMMh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Aug 2020 08:12:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47304 "EHLO
+        id S1726291AbgHHMNc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Aug 2020 08:13:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47258 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726312AbgHHMLP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2020 08:11:15 -0400
-Received: from mail-ej1-x643.google.com (mail-ej1-x643.google.com [IPv6:2a00:1450:4864:20::643])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FEDEC061A30
-        for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2020 05:11:06 -0700 (PDT)
-Received: by mail-ej1-x643.google.com with SMTP id o18so4755164eje.7
-        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2020 05:11:06 -0700 (PDT)
+        with ESMTP id S1726359AbgHHMLG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2020 08:11:06 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BF85C061A27
+        for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2020 05:11:01 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id a26so4771442ejc.2
+        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2020 05:11:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=melexis.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/XWY4gvQRYHXEyWmE4WsXwZ1nN+0si4ZlbIfngpHZ5M=;
-        b=awV+k81WnzaxYEO9gsxcGspjzXsyKu03ExAJEbK9V/ZL3FfU2Nj1gdRph/ixyi65Rk
-         jfIun1AY/HiBnDJVnRqedB1bV3fPirB79TaRcxNKY3r2qYkKLb7wKha8Z60S1Tk/lK+5
-         kStUyHD0H6iu1uI8qwM2RnoBj8EKttgGc8k8SIU4oz2n2gCYjNyd6+eEa9fYVy3NB7Yf
-         j52xN1L+DnnztgzcDWAhlIJyBpP/kgiHA3oxcInwJ7MO7/jcMwU0xq0RCimqrThsLQYj
-         qyxavCKanOWsEAKpByVVRmc+FtDiy65xRcKihp1//lvK25CauS8V3W/vWiQL+++aLMMU
-         hMog==
+        bh=AIzoyOqsmvq2UL6ht5EBrZhZITvwdcSbBz+FO/uaKCQ=;
+        b=LyblSclQpF5crcdFVVNLh5GR6t/10gHDiCpaCcye5I3bANIIXnNhx/kjSO0QghXDNI
+         RyrUoJ8DjDoQ5IzPKKIJB1nKQZnFFF2BUBsq9fRVXQsbBUfOOT2W5Bv0k+ryGtun9ffZ
+         UuAchgJNtd1ZpQ531U1tArWf+URhm+u75sG5ME+qzmc0GNvfmd+Uty8mFheRqkuji7eP
+         75A6QdPvTI7+m5ykdZpLrh0Jhx+Mt8zhuwjKx/Zt0xoa7ox2uGg+v3yary1dJpqY/xgD
+         ZAX/jmYHZaiTqw/iyQ/lzkwPUY58PrHmy+rF3U3ZtvwQ4+XQNcI34zakwcQIWxSzBg6k
+         1uEg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/XWY4gvQRYHXEyWmE4WsXwZ1nN+0si4ZlbIfngpHZ5M=;
-        b=tAlC1rEfVhfPoiw3LXi2jNVO2SiNFT+NivO0LdlKcFoWpCvTN7UWAg+jID8kfPuz8T
-         aahl3rF4i450ttL1YingxsZcXkUa0aj6Uc2CyF3ujLabLdEFojbtilUjQYqa2DcmyR+8
-         3g+H/aPn/1VMWUK3yx13ZffG2eIEUu2Lz2q90denAgkJu4KZitQFc6Xb2gIiDsx6ejqz
-         D6d748p63Yv/wunfZt7+H3qaJMbbmxcZq5kNGibyDHNowCTD/Bu+OuEw1d+hQuXf9vKL
-         fl7t+A81XBDYo1i8+d6FeEhcZBkV723fOggIoiCxipdn5ELf+KphtiIY2tshYr/DEFsv
-         JBDQ==
-X-Gm-Message-State: AOAM5326S/Nn6DGvMx5MBMhSTLrHpHQEC2SsiNeZoH1zX4ByQIDfUZki
-        5g5qBqaptK80yQ+7ZijhkG5fxQ==
-X-Google-Smtp-Source: ABdhPJxQzvJnqokhx97YNGfRwinM7IAeYCnLYiHfVMfvK3qytGjU16LoWecSxOgwsXIzu1cScWZ/LA==
-X-Received: by 2002:a17:906:f905:: with SMTP id lc5mr13207897ejb.340.1596888665305;
-        Sat, 08 Aug 2020 05:11:05 -0700 (PDT)
+        bh=AIzoyOqsmvq2UL6ht5EBrZhZITvwdcSbBz+FO/uaKCQ=;
+        b=lkyxfnNbtB68+pj262SjecDWaU0J4BnZKL4ID0++97OgoWeAqkft3f5vfXVYzk1Coz
+         C5gxzx/NPB9cEE51M8aP0V7pkvvumEnxplTIIRbqEYWiXX2mNL+nNG9sWJAGFGbhkMuO
+         Hwz5aBY0WG968/3cbBMEGZHzrBEh3BtsEnQvMzV28hPp5fw5pcP935FeUNvCMzEUzHR3
+         y4gtJzLB/R8/oogDIfv1uwp34Qjz5kbYi2mtInPhJBc3jmi1gJzOYT1EhFV3BfvcVO5l
+         HYUCrwjXDd/Dj+7Lfnmn2QlbA4xNbSXZndGOXl4KYdbrAdU0y/A/8Bkk2KJykcgHV4KD
+         PHOA==
+X-Gm-Message-State: AOAM530fhL2qgYy9qU1VpD6eIapop9MRguAxBxSNltFKX2FcliwlfIv7
+        MNTtVCJ8ozSVG9kuGmFu99xo1X/CNgCUnA==
+X-Google-Smtp-Source: ABdhPJwlFvwjxLUDV8XeezUFPyAzMz7NFUXWNsDc9b6F2mY+eT4xy28+Bn61wngvBNrtD8502sM11A==
+X-Received: by 2002:a17:906:7104:: with SMTP id x4mr14336172ejj.417.1596888658132;
+        Sat, 08 Aug 2020 05:10:58 -0700 (PDT)
 Received: from localhost.localdomain (ptr-4xajgywt9p1tstfsdfc.18120a2.ip6.access.telenet.be. [2a02:1810:a421:dd00:b0e6:1cd9:30c1:35f8])
-        by smtp.gmail.com with ESMTPSA id b2sm8130833ejg.70.2020.08.08.05.11.04
+        by smtp.gmail.com with ESMTPSA id b2sm8130833ejg.70.2020.08.08.05.10.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Aug 2020 05:11:04 -0700 (PDT)
+        Sat, 08 Aug 2020 05:10:57 -0700 (PDT)
 From:   Crt Mori <cmo@melexis.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Crt Mori <cmo@melexis.com>
-Subject: [PATCH v4 4/4] iio:temperature:mlx90632: Convert polling while loops to do-while
-Date:   Sat,  8 Aug 2020 14:10:26 +0200
-Message-Id: <20200808121026.1300375-5-cmo@melexis.com>
+Subject: [PATCH v4 1/4] iio:temperature:mlx90632: Reduce number of equal calulcations
+Date:   Sat,  8 Aug 2020 14:10:23 +0200
+Message-Id: <20200808121026.1300375-2-cmo@melexis.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200808121026.1300375-1-cmo@melexis.com>
 References: <20200808121026.1300375-1-cmo@melexis.com>
@@ -75,66 +75,76 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reduce number of lines and improve readability to convert polling while
-loops to do-while. The iopoll.h interface was not used, because we
-require more than 20ms timeout, because time for sensor to perform a
-measurement is around 10ms and it needs to perform measurements for each
-channel (which currently is 3).
+TAdut4 was calculated each iteration although it did not change. In light
+of near future additions of the Extended range DSP calculations, this
+function refactoring will help reduce unrelated changes in that series as
+well as reduce the number of new functions needed.
 
 Signed-off-by: Crt Mori <cmo@melexis.com>
 ---
- drivers/iio/temperature/mlx90632.c | 15 ++++++---------
- 1 file changed, 6 insertions(+), 9 deletions(-)
+ drivers/iio/temperature/mlx90632.c | 21 +++++++++++++--------
+ 1 file changed, 13 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-index 4e0131705c11..24ffcce9ad74 100644
+index 51b812bcff2e..c3de10ba5b1e 100644
 --- a/drivers/iio/temperature/mlx90632.c
 +++ b/drivers/iio/temperature/mlx90632.c
-@@ -214,15 +214,13 @@ static int mlx90632_perform_measurement(struct mlx90632_data *data)
- 	if (ret < 0)
- 		return ret;
+@@ -374,11 +374,11 @@ static s32 mlx90632_calc_temp_ambient(s16 ambient_new_raw, s16 ambient_old_raw,
+ }
  
--	while (tries-- > 0) {
-+	do {
- 		ret = regmap_read(data->regmap, MLX90632_REG_STATUS,
- 				  &reg_status);
- 		if (ret < 0)
- 			return ret;
--		if (reg_status & MLX90632_STAT_DATA_RDY)
--			break;
- 		usleep_range(10000, 11000);
--	}
-+	} while (!(reg_status & MLX90632_STAT_DATA_RDY) && tries--);
- 
- 	if (tries < 0) {
- 		dev_err(&data->client->dev, "data not ready");
-@@ -419,7 +417,7 @@ static int mlx90632_read_object_raw_extended(struct regmap *regmap, s16 *object_
- static int mlx90632_read_all_channel_extended(struct mlx90632_data *data, s16 *object_new_raw,
- 					      s16 *ambient_new_raw, s16 *ambient_old_raw)
+ static s32 mlx90632_calc_temp_object_iteration(s32 prev_object_temp, s64 object,
+-					       s64 TAdut, s32 Fa, s32 Fb,
++					       s64 TAdut, s64 TAdut4, s32 Fa, s32 Fb,
+ 					       s32 Ga, s16 Ha, s16 Hb,
+ 					       u16 emissivity)
  {
--	int tries = 4;
-+	int tries = 5;
- 	int ret;
+-	s64 calcedKsTO, calcedKsTA, ir_Alpha, TAdut4, Alpha_corr;
++	s64 calcedKsTO, calcedKsTA, ir_Alpha, Alpha_corr;
+ 	s64 Ha_customer, Hb_customer;
  
- 	mutex_lock(&data->lock);
-@@ -427,14 +425,13 @@ static int mlx90632_read_all_channel_extended(struct mlx90632_data *data, s16 *o
- 	if (ret < 0)
- 		goto read_unlock;
+ 	Ha_customer = ((s64)Ha * 1000000LL) >> 14ULL;
+@@ -393,30 +393,35 @@ static s32 mlx90632_calc_temp_object_iteration(s32 prev_object_temp, s64 object,
+ 	Alpha_corr = emissivity * div64_s64(Alpha_corr, 100000LL);
+ 	Alpha_corr = div64_s64(Alpha_corr, 1000LL);
+ 	ir_Alpha = div64_s64((s64)object * 10000000LL, Alpha_corr);
+-	TAdut4 = (div64_s64(TAdut, 10000LL) + 27315) *
+-		(div64_s64(TAdut, 10000LL) + 27315) *
+-		(div64_s64(TAdut, 10000LL)  + 27315) *
+-		(div64_s64(TAdut, 10000LL) + 27315);
  
--	while (tries-- > 0) {
-+	do {
- 		ret = mlx90632_perform_measurement(data);
- 		if (ret < 0)
- 			goto read_unlock;
+ 	return (int_sqrt64(int_sqrt64(ir_Alpha * 1000000000000LL + TAdut4))
+ 		- 27315 - Hb_customer) * 10;
+ }
  
--		if (ret == 19)
--			break;
--	}
-+	} while ((ret != 19) && tries--);
++static s64 mlx90632_calc_ta4(s64 TAdut, s64 scale)
++{
++	return (div64_s64(TAdut, scale) + 27315) *
++		(div64_s64(TAdut, scale) + 27315) *
++		(div64_s64(TAdut, scale) + 27315) *
++		(div64_s64(TAdut, scale) + 27315);
++}
 +
- 	if (tries < 0) {
- 		ret = -ETIMEDOUT;
- 		goto read_unlock;
+ static s32 mlx90632_calc_temp_object(s64 object, s64 ambient, s32 Ea, s32 Eb,
+ 				     s32 Fa, s32 Fb, s32 Ga, s16 Ha, s16 Hb,
+ 				     u16 tmp_emi)
+ {
+-	s64 kTA, kTA0, TAdut;
++	s64 kTA, kTA0, TAdut, TAdut4;
+ 	s64 temp = 25000;
+ 	s8 i;
+ 
+ 	kTA = (Ea * 1000LL) >> 16LL;
+ 	kTA0 = (Eb * 1000LL) >> 8LL;
+ 	TAdut = div64_s64(((ambient - kTA0) * 1000000LL), kTA) + 25 * 1000000LL;
++	TAdut4 = mlx90632_calc_ta4(TAdut, 10000LL);
+ 
+ 	/* Iterations of calculation as described in datasheet */
+ 	for (i = 0; i < 5; ++i) {
+-		temp = mlx90632_calc_temp_object_iteration(temp, object, TAdut,
++		temp = mlx90632_calc_temp_object_iteration(temp, object, TAdut, TAdut4,
+ 							   Fa, Fb, Ga, Ha, Hb,
+ 							   tmp_emi);
+ 	}
 -- 
 2.25.1
 
