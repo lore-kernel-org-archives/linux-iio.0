@@ -2,112 +2,105 @@ Return-Path: <SRS0=Ar39=BS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F340C433E1
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:14:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7228C433E0
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 16:14:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2FBDC20866
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 12:14:29 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="cWjYfVl6"
+	by mail.kernel.org (Postfix) with ESMTP id C6C3E20748
+	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 16:14:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1596903291;
+	bh=UhfRsD3gCNBaDuX7v23KYcWuUlaYedsYaBZ1AvOdqr4=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=Sae9+MwMqRYaQyAA5mLe1flH5azpL85FgYUSKToub+6lS5/wCFnnv6ytaufQXQdPC
+	 e7ZnoFg9pt8cOrzhoCqCyMxcOtwjl6AzUIzdmY00jUaNsYw/2ZMWIDWa1+WY2fIDI1
+	 yvg9faAO5Dtm9Pax1/fB1s2HDdRRn0y6muYroAXY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726240AbgHHMO2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Aug 2020 08:14:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47238 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726323AbgHHMK5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2020 08:10:57 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33546C061A28
-        for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2020 05:10:54 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id kq25so4760525ejb.3
-        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2020 05:10:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D2hXjWV+Su7SyzOjgKgoYJpz+6E+ZQ5ynmL9qrjMvwI=;
-        b=cWjYfVl6qJDE6NyhUy7/UB9flUt/T86iuRQBMa5PL5BeddTjpUF+EPg0fZaKLqW4AA
-         NXY/cbgHqmB75Q6lZbLStYBxi2DXBQSYSymS95NKbQ+vuuLRk+pdO+kFPANQophFnWzc
-         l0ZJksdSIH7bVE1WB5+sTz1ysesa1wcSnstMa0nr9DF/TBPMN6HLUY/3JJIC6FIZeQXA
-         5hWdToTUzAkogy8SbYrtOGVx/86oVdn7niWyrK8759zFOw+cv7BCXVcLD2owC5TYZpXA
-         1jmOkPxRw7hjswrmf9oE8UsHiIpWUh5rbMMOtQjjBE5/pPw5l+R/X5OHjtRUCMEK0Sng
-         U9xA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=D2hXjWV+Su7SyzOjgKgoYJpz+6E+ZQ5ynmL9qrjMvwI=;
-        b=myH5Ho9zjcDCQyYGVGfGpvyxllUJ7cYeNZoVFRve2bm74rbWmvZ0aFllUSNfgyuFPA
-         lGy4EqOteUC7dHytvtkpQUVvExhQ7GAl52Wa0E5M5b6ofjJxSkTo0E21piNJMd0ixOHa
-         Jc00sjfNjiN/OcY0NsMMPUgXnOWoKBWmZ1q93zKwuw/MqJs+RrxoWYeqysVhqBp8pJ41
-         ngF7k0Jh+E3oQYvLSJpy75FCVvlzj9b0xj4Ej5yXsGiXN/Yykb/MOkjVjWEsD+5e8QUw
-         fdUnq+kOsWsgLCbUdW7+VkV1106VIdd4W2bAHAhJwQcThmNwBl/w8BDDkuY6YWAS23DX
-         C6RQ==
-X-Gm-Message-State: AOAM531VOf0prhZn6+Fe2P1w4YGx54oJGoO/q1IL4dy9ikA28Iacyhxe
-        +YCWWRZf5jRwJHJraitHyWZErQ==
-X-Google-Smtp-Source: ABdhPJzgmdjIlMg74g4gc/3gfbiL+mo8XPUq/KwnPQLc0JNolNcTSpTd7m12QqQ8Vg0JELOJ7Ezcdg==
-X-Received: by 2002:a17:906:dbcb:: with SMTP id yc11mr12988891ejb.399.1596888647537;
-        Sat, 08 Aug 2020 05:10:47 -0700 (PDT)
-Received: from localhost.localdomain (ptr-4xajgywt9p1tstfsdfc.18120a2.ip6.access.telenet.be. [2a02:1810:a421:dd00:b0e6:1cd9:30c1:35f8])
-        by smtp.gmail.com with ESMTPSA id b2sm8130833ejg.70.2020.08.08.05.10.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 08 Aug 2020 05:10:46 -0700 (PDT)
-From:   Crt Mori <cmo@melexis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S1726248AbgHHQOt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 Aug 2020 12:14:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35636 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726200AbgHHQOs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 Aug 2020 12:14:48 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6F68D20716;
+        Sat,  8 Aug 2020 16:14:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596903288;
+        bh=UhfRsD3gCNBaDuX7v23KYcWuUlaYedsYaBZ1AvOdqr4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=K8/IxSO6ttFIPtbFPN71HU11kXTWDdIpysuVBcv6RtDrO+6GdVFNqeG7N3nFnBU3r
+         n2N80CPA28Kh1H2o2RIurfSuBBgjTIP7y46B0lcmnpekPJ9qn3+CHZhsQdZUOqDGbQ
+         VxphEr9eqW+iaeqYKISSkXdYb2y0x5rBPkXmfGHM=
+Date:   Sat, 8 Aug 2020 17:14:43 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH v4 0/4] iio: temperature: mlx90632: Add extended calibration calculations
-Date:   Sat,  8 Aug 2020 14:10:22 +0200
-Message-Id: <20200808121026.1300375-1-cmo@melexis.com>
-X-Mailer: git-send-email 2.25.1
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v6 2/2] iio: light: as73211: New driver
+Message-ID: <20200808171443.114c8e05@archlinux>
+In-Reply-To: <4466981.tjO45I7u8z@n95hx1g2>
+References: <20200805055744.31909-1-ceggers@arri.de>
+        <20200805055744.31909-3-ceggers@arri.de>
+        <20200806184451.04293626@archlinux>
+        <4466981.tjO45I7u8z@n95hx1g2>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since the second patch is dependent on the first and was still not
-merged, I have decided to send them together. First patch just makes
-second one more readable as it splits out the repeated calculation and
-that enables the second patch to tweak the variable to the new
-condition.
+On Fri, 7 Aug 2020 17:46:36 +0200
+Christian Eggers <ceggers@arri.de> wrote:
 
-V4 review comments from Andy Shevchenko <andy.shevchenko@gmail.com>:
-	 - Move the function creation for Ta4 to first patch
-	 - Add kernel doc patch for documenting internal struct
-	 - Add patch to convert while loops to do-while loops for
-	   polling
+> Hi Jonathan,
+> 
+> On Thursday, 6 August 2020, 19:44:51 CEST, Jonathan Cameron wrote:
+> > Hi Christian,
+> > 
+> > I'll take this, but please send a follow up patch to add documentation
+> > for in_intensity_x_raw and all the other new ABI this adds in
+> > Documentation/ABI/testing/sysfs-bus-iio
+> > I should have mentioned that earlier, but kind of assumed we already
+> > had these documented for some reason!  
+> where to add these entries in Documentation/ABI/testing/sysfs-bus-iio?
+> Shall all missing entries be added together at the bottom (as AS73211
+> is the first device using it) , or inserted in different existing paragraphs
+> (when the enums where introduced)?
 
-V3 review comments from Andy Shevchenko <andy.shevchenko@gmail.com>:
-	 - Change commit message text to more proper English as per suggestions
-	 - Drop unneeded brackets and parentheses
-	 - Use defines from limits.h
-	 - Remove userspace typedefs as leftovers from porting
-	 - Testing of timeout loops with iopoll.h was no successful,
-	   because delay between measurements is 10ms, but we need to
-	   fill at least 3 channels, so final timeout should be 40ms
-	   which is out of scope of usleep function
-	 - Fixing some typos in comments
+Insert them into the relevant groups that already exist.  In some cases
+it will just be adding an entry with no specific explanation.
+For the _raw attribute add a bit more info about what x, y and z are
+(basically just say they are from cie1931 (I think?)
 
-V2 review comments from Andy Shevchenko <andy.shevchenko@gmail.com>:
-	 - Convert divison back to shifts to make it more readable
+> 
+> Which kernel version shall I use (5.10)?
+This file doesn't change that quickly so that should be fine. I'll deal
+with any merge conflicts that do occur.
 
-Crt Mori (4):
-  iio:temperature:mlx90632: Reduce number of equal calulcations
-  iio:temperature:mlx90632: Adding extended calibration option
-  iio:temperature:mlx90632: Add kerneldoc to the internal struct
-  iio:temperature:mlx90632: Convert polling while loops to do-while
+Thanks,
 
- drivers/iio/temperature/mlx90632.c | 251 +++++++++++++++++++++++++++--
- 1 file changed, 236 insertions(+), 15 deletions(-)
+Jonathan
 
--- 
-2.25.1
+> 
+> regards
+> Christian
+> 
+> 
+> 
+> 
 
