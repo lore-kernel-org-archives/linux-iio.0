@@ -2,51 +2,54 @@ Return-Path: <SRS0=CopR=BT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0528C433DF
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 11:20:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7C11C433EA
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 11:20:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8C7FE20716
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 11:20:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93A522075D
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 11:20:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596972000;
-	bh=qezfHXu7d4uZ1zFJ3qL4F+s7KmzK69YZvv4gZhRXFH0=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=pAnQGJ2Ab5F2TnCa39eXd8tj+Hov3irEnkc+Txrcgparr0KF27FJZSMWtHt2q8o85
-	 jqa8yZSNhXKgS83aDnW0GcVF776F7o3BkU1y3MDPEX8JHECsOfB6oS8YsVBSP8/L90
-	 OOwFPd1H4uui17p5Hp2HAsSR83J8cxL15D5wzRyQ=
+	s=default; t=1596972005;
+	bh=WbQLTXNbjRMQftFIIOZ4GiMYlCKeyiFb4uALYzHXB4M=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=h564vok3risX0ygpwhnBE57CnA9OoO1cunHQKApxg9go/EKMekvWUZZqMb8kQ6s4D
+	 mH6cjxnp2gbtL2qxGZhD9gKrKNTTUSU9jA3XjeQTGSEnAn7fgrfAtehRO9iWf85wE1
+	 ku8bb/Da7idE/aqXcVUbgGQ1GcBd2tQebU62G66I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726207AbgHILUA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Aug 2020 07:20:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53912 "EHLO mail.kernel.org"
+        id S1726370AbgHILUE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Aug 2020 07:20:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53962 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726199AbgHILT7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 9 Aug 2020 07:19:59 -0400
+        id S1726199AbgHILUD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Aug 2020 07:20:03 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 17EA02065D;
-        Sun,  9 Aug 2020 11:19:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3AA6B20729;
+        Sun,  9 Aug 2020 11:20:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596971999;
-        bh=qezfHXu7d4uZ1zFJ3qL4F+s7KmzK69YZvv4gZhRXFH0=;
-        h=From:To:Cc:Subject:Date:From;
-        b=ARlSaoqxJWSu33zkHWOJAXZUqdlH0M/qik7tElZnbNt00JH8aQwz9DABJP8hHeh8N
-         uMOM+rio/zAcH6O7JCzjBNqPpJ6hKGGghJFIFC2CovPciPqK3JTRf4MGKzLXlvKTtr
-         obC6mY90o5b+fOirkw72xrXsWlz05sL47gZCRzDE=
+        s=default; t=1596972003;
+        bh=WbQLTXNbjRMQftFIIOZ4GiMYlCKeyiFb4uALYzHXB4M=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=HAs6g7GqIqdYEfCex97mPrbW5xmGnJVKkD1CkghjUUS+uq3KiFfvtLakmdxv/o4D4
+         cm/RatgTSVNp0oZNCpPW946MkyqdYYGEeV9lmuKn1BcsM+qnGtc+WB/6e4KzgaVbtR
+         PC1/SwQqKYtbyG8AgVZhBsqW5Zd5BDsPIowNxcSk=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 00/13] dt-bindings: yaml conversions of some simple ADC bindings.
-Date:   Sun,  9 Aug 2020 12:17:40 +0100
-Message-Id: <20200809111753.156236-1-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jan Kiszka <jan.kiszka@siemens.com>
+Subject: [PATCH 03/13] dt-bindings: iio: adc: ti,adc108s102 yaml conversion
+Date:   Sun,  9 Aug 2020 12:17:43 +0100
+Message-Id: <20200809111753.156236-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200809111753.156236-1-jic23@kernel.org>
+References: <20200809111753.156236-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -55,92 +58,94 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This set coverts over some of the low hanging fruit from amongst the IIO
-ADC bindings.  Mostly they are very straight forward bindings.
+Very simple conversion of spi device with reference supply.
 
-One quirk is that I found I had one old binding doc in my local
-checked out copy that never made it into mainline. I've created
-a special patch for that so we don't lose the history.  It reflects
-the tags from the original patch that I seem to have messed up applying.
+Added the #io-channel-cells property to allow for consumers.
 
-I've added the #io-channel-cells property to  most of them, so that
-additionalProperties: false works if they are used as providers
-of channels to consumers.  For ADCs it is fairly likely they
-will be providing measurement services to another device in DT.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Jan Kiszka <jan.kiszka@siemens.com>
+---
+ .../bindings/iio/adc/ti,adc108s102.yaml       | 47 +++++++++++++++++++
+ .../bindings/iio/adc/ti-adc108s102.txt        | 18 -------
+ 2 files changed, 47 insertions(+), 18 deletions(-)
 
-I have put the Maintainer as the original author of the old bindings
-/ driver. Hopefully everyone is fine with that. If not, let me know
-and I'll put my own details in there as I'll end up reviewing pretty
-much anything that touches these anyway.
-
-All comments welcome.
-
-Jonathan Cameron (12):
-  dt-bindings: iio: adc: microchip,mcp3201 yaml conversion.
-  dt-bindings: trivial-devices: Add mcp342x ADCs and drop separate
-    binding doc.
-  dt-bindings: iio: adc: ti,adc108s102 yaml conversion
-  dt-bindings: iio: adc: lltc,ltc2497 yaml conversion.
-  dt-bindings: iio: adc: ti,adc161s626 yaml conversion.
-  dt-bindings: iio: adc: ti,adc0832 yaml conversion.
-  dt-bindings: iio: adc: ti,adc084s021 yaml conversion
-  dt-bindings: iio: adc: ti,adc12138 yaml conversion.
-  dt-bindings: iio: adc: ti,adc128s052 yaml conversion.
-  dt-bindings: iio: adc: ti,ads7950 binding conversion
-  dt-bindings: iio: adc: ti,ads8344 yaml conversion
-  dt-bindings: iio: adc: ti,tlc4541 binding conversion
-
-Phil Reid (1):
-  dt-bindings: iio: adc: tlc4541 - recover accidentally dropped binding
-    doc
-
- .../bindings/iio/adc/lltc,ltc2497.yaml        | 44 +++++++++
- .../devicetree/bindings/iio/adc/ltc2497.txt   | 13 ---
- .../devicetree/bindings/iio/adc/mcp320x.txt   | 57 ------------
- .../devicetree/bindings/iio/adc/mcp3422.txt   | 19 ----
- .../bindings/iio/adc/microchip,mcp3201.yaml   | 93 +++++++++++++++++++
- .../bindings/iio/adc/ti,adc0832.yaml          | 56 +++++++++++
- .../bindings/iio/adc/ti,adc084s021.yaml       | 58 ++++++++++++
- .../bindings/iio/adc/ti,adc108s102.yaml       | 47 ++++++++++
- .../bindings/iio/adc/ti,adc12138.yaml         | 85 +++++++++++++++++
- .../bindings/iio/adc/ti,adc128s052.yaml       | 59 ++++++++++++
- .../bindings/iio/adc/ti,adc161s626.yaml       | 51 ++++++++++
- .../bindings/iio/adc/ti,ads7950.yaml          | 64 +++++++++++++
- .../bindings/iio/adc/ti,ads8344.yaml          | 51 ++++++++++
- .../bindings/iio/adc/ti,tlc4541.yaml          | 52 +++++++++++
- .../bindings/iio/adc/ti-adc0832.txt           | 19 ----
- .../bindings/iio/adc/ti-adc084s021.txt        | 19 ----
- .../bindings/iio/adc/ti-adc108s102.txt        | 18 ----
- .../bindings/iio/adc/ti-adc12138.txt          | 37 --------
- .../bindings/iio/adc/ti-adc128s052.txt        | 25 -----
- .../bindings/iio/adc/ti-adc161s626.txt        | 18 ----
- .../bindings/iio/adc/ti-ads7950.txt           | 23 -----
- .../bindings/iio/adc/ti-ads8344.txt           | 19 ----
- .../devicetree/bindings/trivial-devices.yaml  | 16 ++++
- 23 files changed, 676 insertions(+), 267 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ltc2497.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/mcp320x.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/mcp3422.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/microchip,mcp3201.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc0832.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc084s021.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc108s102.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc12138.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc128s052.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc161s626.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads7950.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads8344.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,tlc4541.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc0832.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc084s021.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc108s102.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc128s052.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc161s626.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads8344.txt
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,adc108s102.yaml b/Documentation/devicetree/bindings/iio/adc/ti,adc108s102.yaml
+new file mode 100644
+index 000000000000..54955f03df93
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,adc108s102.yaml
+@@ -0,0 +1,47 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,adc108s102.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments ADC108S102 and ADC128S102
++
++maintainers:
++  - Bogdan Pricop <bogdan.pricop@emutex.com>
++
++description: |
++  Family of 8 channel, 10/12 bit, SPI, single ended ADCs.
++
++properties:
++  compatible:
++    const:
++      ti,adc108s102
++
++  reg: true
++  vref-supply: true
++  spi-max-frequency: true
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - vref-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++        #address-cells= <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "ti,adc108s102";
++            reg = <0>;
++            vref-supply = <&vdd_supply>;
++            spi-max-frequency = <1000000>;
++            #io-channel-cells = <1>;
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc108s102.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc108s102.txt
+deleted file mode 100644
+index bbbbb4a9f58f..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/ti-adc108s102.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-* Texas Instruments' ADC108S102 and ADC128S102 ADC chip
+-
+-Required properties:
+- - compatible: Should be "ti,adc108s102"
+- - reg: spi chip select number for the device
+- - vref-supply: The regulator supply for ADC reference voltage
+-
+-Recommended properties:
+- - spi-max-frequency: Definition as per
+-		Documentation/devicetree/bindings/spi/spi-bus.txt
+-
+-Example:
+-adc@0 {
+-	compatible = "ti,adc108s102";
+-	reg = <0>;
+-	vref-supply = <&vdd_supply>;
+-	spi-max-frequency = <1000000>;
+-};
 -- 
 2.28.0
 
