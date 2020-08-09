@@ -2,119 +2,130 @@ Return-Path: <SRS0=CopR=BT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 59F4EC433E0
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 15:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53509C433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:17:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 291EE2070B
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 15:59:49 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="dxBNrcTa"
+	by mail.kernel.org (Postfix) with ESMTP id 311E8206C3
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:17:44 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1596993464;
+	bh=uc26ozDmw+sC1xVWwb6POwL36K609S5X/oUFQeNBNjc=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=dE+gDifJrAFIUk+/nUBPvk8a3UqntzzBMX/sv4GoNeYKU/9rP4/lL44BO72ozMJQ7
+	 MPtmubGIViEplfoC9zDC92nN+qygb7ZDSm9ErfgK0fiK6Gq+3oXQtWiwWqAFqlhLPb
+	 QXr97dKF4QAXeEHxxe2U5muQOEx4uquGOcUArdI8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726229AbgHIP7s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Aug 2020 11:59:48 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:35803 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726175AbgHIP7r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Aug 2020 11:59:47 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1596988784;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc; bh=xG+8uieNrMAP0UGTh1w832zRGIBKTtCxlShJe5RBqBY=;
-        b=dxBNrcTa6ohjcTdxtSU3u/KqS2oh4TwuGdGJ4BaHXyBNURZQ9XBny0isOVWIIRNGc1jTqW
-        C+hB+dBip1+mXlW326TKj9GKlQwT1phAo+o7k8vUeDzze85ely+8hAR//INedhLTQWPSM8
-        vNDDS8Andd1gsdEtKnYnkrDsoW5kl+0=
-Received: from mail-qt1-f199.google.com (mail-qt1-f199.google.com
- [209.85.160.199]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-386-B1gTnhZjPCOqTS5jnsp74g-1; Sun, 09 Aug 2020 11:59:42 -0400
-X-MC-Unique: B1gTnhZjPCOqTS5jnsp74g-1
-Received: by mail-qt1-f199.google.com with SMTP id q7so5817606qtd.1
-        for <linux-iio@vger.kernel.org>; Sun, 09 Aug 2020 08:59:42 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=xG+8uieNrMAP0UGTh1w832zRGIBKTtCxlShJe5RBqBY=;
-        b=bLyyuNzxk/9uDOgcGvEzyw7AegrPY2MXNgS0yb/dyqE8ARCmiRDrbLu7GdTRbiYA7x
-         CPb9LTVyzKdVyXAV6TCBN0icH2kpMwSAQvT+h8+Ev58imnDtUu9lSthNUC1z9hDfwfle
-         NKWq+CnZ0hjM+uJ01CWmpTR1vdj8N+cSptJHtXxxlmkQ6sM8SfRXGXCTcep1hObpnLoG
-         Q9Xgqby1eIqh5x4BYrFO851FtN37GJtGfES3k/vVAfYF2JSvUFSRL1sMFDHkiepyRLad
-         TZFuxUvfkH8eXn7OPR7i131T1FVl7Mk1/UwZSJkTQgJLKrrvCTHwocazrCKimdYDlLpe
-         z0Bg==
-X-Gm-Message-State: AOAM532/LuHkSduxV2w50JxZCYFLRNzXXW6dENuzYqjjgquro9HY23ox
-        nxjYH2SPxdv7Xoq+bYa1eq4K6ni7XQyz0vdYcyaVQNABSCSdyi2DKel9jgq9AKcEzqUqQLEQppo
-        ZoRKYFXNLbpjZzC8zwDPt
-X-Received: by 2002:a05:620a:676:: with SMTP id a22mr22806363qkh.8.1596988782402;
-        Sun, 09 Aug 2020 08:59:42 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJzek1KpoZ0Rpa2MTqiHLJFcD8g4Cwdl2ExzIA00XyXHgllNcIpXqt/H9tlORP5vMgXoeqUj/w==
-X-Received: by 2002:a05:620a:676:: with SMTP id a22mr22806349qkh.8.1596988782146;
-        Sun, 09 Aug 2020 08:59:42 -0700 (PDT)
-Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
-        by smtp.gmail.com with ESMTPSA id k48sm14978268qtk.44.2020.08.09.08.59.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 09 Aug 2020 08:59:41 -0700 (PDT)
-From:   trix@redhat.com
-To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, jmaneyrol@invensense.com,
-        mirq-linux@rere.qmqm.pl, lee.jones@linaro.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Tom Rix <trix@redhat.com>
-Subject: [PATCH] iio: imu: inv_mpu6050: check for temp_fifo_enable
-Date:   Sun,  9 Aug 2020 08:59:36 -0700
-Message-Id: <20200809155936.16898-1-trix@redhat.com>
-X-Mailer: git-send-email 2.18.1
+        id S1726321AbgHIRRn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Aug 2020 13:17:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53954 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726175AbgHIRRn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Aug 2020 13:17:43 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 37166206A2;
+        Sun,  9 Aug 2020 17:17:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1596993463;
+        bh=uc26ozDmw+sC1xVWwb6POwL36K609S5X/oUFQeNBNjc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SkyhqvUzjn9U8qm5ZjAKswO1gyFi4lHOCOC8fxhtmWoCqvCgYd6ieverA8QgFPVBD
+         To7nQI4KVUQmL8f79YzKKrIHkc3Adzqy5yPFSla4Ot7Vq6XYZId03OnHbgqb/1z0jE
+         UumkywbUPQVHe5pPaDctREN4lFEaCbNslEml76SY=
+Date:   Sun, 9 Aug 2020 18:14:20 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 02/27] iio:accel:mma8452: Fix timestamp alignment and
+ prevent data leak.
+Message-ID: <20200809181420.337909ec@archlinux>
+In-Reply-To: <20200722155103.979802-3-jic23@kernel.org>
+References: <20200722155103.979802-1-jic23@kernel.org>
+        <20200722155103.979802-3-jic23@kernel.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Tom Rix <trix@redhat.com>
+On Wed, 22 Jul 2020 16:50:38 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-clang static analysis reports this problem
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> One of a class of bugs pointed out by Lars in a recent review.
+> iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+> to the size of the timestamp (8 bytes).  This is not guaranteed in
+> this driver which uses a 16 byte u8 array on the stack.  As Lars also noted
+> this anti pattern can involve a leak of data to userspace and that
+> indeed can happen here.  We close both issues by moving to
+> a suitable structure in the iio_priv() data with alignment
+> ensured by use of an explicit c structure.  This data is allocated
+> with kzalloc so no data can leak appart from previous readings.
+> 
+> The additional forcing of the 8 byte alignment of the timestamp
+> is not strictly necessary but makes the code less fragile by
+> making this explicit.
+> 
+> Fixes: c7eeea93ac60 ("iio: Add Freescale MMA8452Q 3-axis accelerometer driver")
+> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-inv_mpu_ring.c:181:18: warning: Division by zero
-        nb = fifo_count / bytes_per_datum;
-             ~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+Applied to the fixes-togreg branch of iio.git.
 
-This is a false positive.
-Dividing by 0 is protected by this check
+Thanks,
 
-	if (!(st->chip_config.accl_fifo_enable |
-		st->chip_config.gyro_fifo_enable |
-		st->chip_config.magn_fifo_enable))
-		goto end_session;
-	bytes_per_datum = 0;
+Jonathan
 
-But there is another fifo, temp_fifo
-
-	if (st->chip_config.temp_fifo_enable)
-		bytes_per_datum += INV_MPU6050_BYTES_PER_TEMP_SENSOR;
-
-Which would be skipped if it was the only enabled fifo.
-So add to the check.
-
-Fixes: 2e4c0a5e2576 ("iio: imu: inv_mpu6050: add fifo temperature data support")
-
-Signed-off-by: Tom Rix <trix@redhat.com>
----
- drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-index b533fa2dad0a..5240a400dcb4 100644
---- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-+++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
-@@ -141,6 +141,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
- 
- 	if (!(st->chip_config.accl_fifo_enable |
- 		st->chip_config.gyro_fifo_enable |
-+		st->chip_config.temp_fifo_enable |
- 		st->chip_config.magn_fifo_enable))
- 		goto end_session;
- 	bytes_per_datum = 0;
--- 
-2.18.1
+> ---
+>  drivers/iio/accel/mma8452.c | 11 ++++++++---
+>  1 file changed, 8 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index ba27f8673131..1cf2b5db26ca 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -110,6 +110,12 @@ struct mma8452_data {
+>  	int sleep_val;
+>  	struct regulator *vdd_reg;
+>  	struct regulator *vddio_reg;
+> +
+> +	/* Ensure correct alignment of time stamp when present */
+> +	struct {
+> +		__be16 channels[3];
+> +		s64 ts __aligned(8);
+> +	} buffer;
+>  };
+>  
+>   /**
+> @@ -1091,14 +1097,13 @@ static irqreturn_t mma8452_trigger_handler(int irq, void *p)
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+>  	struct mma8452_data *data = iio_priv(indio_dev);
+> -	u8 buffer[16]; /* 3 16-bit channels + padding + ts */
+>  	int ret;
+>  
+> -	ret = mma8452_read(data, (__be16 *)buffer);
+> +	ret = mma8452_read(data, data->buffer.channels);
+>  	if (ret < 0)
+>  		goto done;
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buffer,
+> +	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
+>  					   iio_get_time_ns(indio_dev));
+>  
+>  done:
 
