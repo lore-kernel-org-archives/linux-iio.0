@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6890C433E0
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 14:05:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CDDFFC433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 14:07:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8C0B92070B
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 14:05:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9A4F42070B
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 14:07:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596981959;
-	bh=E8pdcQefksj6ezRyMJ4aaYsCS2+ceUhuLgL1ee3DFTY=;
+	s=default; t=1596982028;
+	bh=UYU/xFGpXCKIgoPl8PZr1JCwYSgjuX6jwd7DhXZgdWw=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=vm9kwmniOOvh4h1cO08AHBwm0PRzlABkkE/u2ELDV/DaJ6PHKOsJTJiegypXUX6O0
-	 uZKwujGCtvaBpkc9vG8WbG8IGcGwVCRPH5BHjpHtM2k/dSKd1yIXUO1BKfic/wllQO
-	 loq/IO7hLQ9jzUg9V0KqD4oAv1oIqGM0RhkT/Wjs=
+	b=Wul47tBmwJco56HuJ66fnNbV55pD0heZRUq/DZiHwMQBtl28+Nysx2p6f/VLt8Ayp
+	 y5y31Twq5djx/tL7L+/Ni4QD8+G2GC4a4D+0/qexzZx7Y+g44Iqy7rZq0T9RKBtpe+
+	 IpjScwj4X+mcWyA4O5anKHPgFVE5n6tmIOCb605A=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726293AbgHIOF7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Aug 2020 10:05:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55894 "EHLO mail.kernel.org"
+        id S1726207AbgHIOHH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Aug 2020 10:07:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56790 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726210AbgHIOF6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 9 Aug 2020 10:05:58 -0400
+        id S1726200AbgHIOHH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Aug 2020 10:07:07 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D8BF1206E9;
-        Sun,  9 Aug 2020 14:05:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17293206E9;
+        Sun,  9 Aug 2020 14:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596981957;
-        bh=E8pdcQefksj6ezRyMJ4aaYsCS2+ceUhuLgL1ee3DFTY=;
+        s=default; t=1596982026;
+        bh=UYU/xFGpXCKIgoPl8PZr1JCwYSgjuX6jwd7DhXZgdWw=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ndKbxIXzrRjuFpfTAQANn9uLoChEyhUG/5P4oA0C5ZECIDyXc0zO2emYk+obny1tr
-         QKH7hP5RM9jPFOymxw68MEelUNsTbtLPviHCkYPO4R7AYXLu48ZgMRuaWuI7yAXiMV
-         s4rmod9X9qBfy+qhbiBYIU2gO6/PiKFc4Xvde+JQ=
-Date:   Sun, 9 Aug 2020 15:05:54 +0100
+        b=ENx3xTKv2SV4di5186qD+ppwnO5LPzA76E3SLeAsR+d2aJtPk6GPxktlzmOrCE4At
+         tZkuNCQHLJzTq1Ee1jOqlwBrx8XLf088t41w2JlDfduxu7OYOh2p/8F76uasOzbxPy
+         PxjzuYujZSPjqzwnbk0VH2ciJaUOyIRzvcMT8A28=
+Date:   Sun, 9 Aug 2020 15:07:03 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     linux-iio <linux-iio@vger.kernel.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
-Subject: Re: [PATCH v2 5/5] iio:adc:bcm_iproc: Drop of_match_ptr protection
- and switch to mod_devicetable.h
-Message-ID: <20200809150554.167e9ec2@archlinux>
-In-Reply-To: <CAHp75VftkmabMn1qdJy4Pp0dQPsX1Fcia84PjTAv-xr1BdJStQ@mail.gmail.com>
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Subject: Re: [PATCH v2 4/5] iio:adc:ti-adc128s052: drop of_match_ptr
+ protection
+Message-ID: <20200809150703.01c0b806@archlinux>
+In-Reply-To: <CAHp75Vfh5PjaMLkAL_N6UCVFttSe+qF_pZ75bqo8jinSDXmqug@mail.gmail.com>
 References: <20200721171444.825099-1-jic23@kernel.org>
-        <20200721171444.825099-6-jic23@kernel.org>
-        <CAHp75VftkmabMn1qdJy4Pp0dQPsX1Fcia84PjTAv-xr1BdJStQ@mail.gmail.com>
+        <20200721171444.825099-5-jic23@kernel.org>
+        <CAHp75Vfh5PjaMLkAL_N6UCVFttSe+qF_pZ75bqo8jinSDXmqug@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,26 +60,23 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 21 Jul 2020 21:34:48 +0300
+On Tue, 21 Jul 2020 21:32:03 +0300
 Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
 > On Tue, Jul 21, 2020 at 8:16 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > >
 > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > >
-> > This driver cannot be instantiated from ACPI due to it's use of
-> > syscon_regmap_lookup_by_phandle() but in the interests of clearing
-> > this anti pattern out of IIO, let us switch to an explicit
-> > check in kconfig and remove the protections on the of_match_table  
-> 
-> Kconfig
-> 
-> > The switch of header is because we only use of_device_id
-> > in here and that is defined in mod_devicetable.h not of.h.  
+> > There is no real advantage in having these protections and
+> > for parts that do not have an explicit ACPI ID, it prevents the
+> > use of PRP0001. I'm trying to clear this out of IIO in general
+> > to avoid copying in new drivers.
+> >
+> > Include mod_devicetable.h as we are using of_device_id in here so
+> > including that header is best practice.  
 > 
 > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to poke at it.
+Applied,
 
 Thanks,
 
@@ -87,49 +84,36 @@ Jonathan
 
 > 
 > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+> > Cc: Angelo Compagnucci <angelo.compagnucci@gmail.com>
 > > ---
-> >  * Use Kconfig change to make it explicit you can build the driver
-> >    without OF, but it won't do anything terribly useful.
-> >  drivers/iio/adc/Kconfig         | 2 +-
-> >  drivers/iio/adc/bcm_iproc_adc.c | 4 ++--
-> >  2 files changed, 3 insertions(+), 3 deletions(-)
+> >  v1->v2
+> >  * Mention that some parts of valid IDs, so we are interesting in
+> >    enabling PRP0001 option for those that don't.
 > >
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 66d9cc073157..f495d01a79b9 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -340,7 +340,7 @@ config AXP288_ADC
+> >  drivers/iio/adc/ti-adc128s052.c | 3 ++-
+> >  1 file changed, 2 insertions(+), 1 deletion(-)
 > >
-> >  config BCM_IPROC_ADC
-> >         tristate "Broadcom IPROC ADC driver"
-> > -       depends on ARCH_BCM_IPROC || COMPILE_TEST
-> > +       depends on (ARCH_BCM_IPROC && OF) || COMPILE_TEST
-> >         depends on MFD_SYSCON
-> >         default ARCH_BCM_CYGNUS
-> >         help
-> > diff --git a/drivers/iio/adc/bcm_iproc_adc.c b/drivers/iio/adc/bcm_iproc_adc.c
-> > index 936da32faa9d..44e1e53ada72 100644
-> > --- a/drivers/iio/adc/bcm_iproc_adc.c
-> > +++ b/drivers/iio/adc/bcm_iproc_adc.c
-> > @@ -4,7 +4,7 @@
-> >   */
-> >
+> > diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
+> > index e86f55ce093f..3143f35a6509 100644
+> > --- a/drivers/iio/adc/ti-adc128s052.c
+> > +++ b/drivers/iio/adc/ti-adc128s052.c
+> > @@ -13,6 +13,7 @@
+> >  #include <linux/err.h>
+> >  #include <linux/spi/spi.h>
 > >  #include <linux/module.h>
-> > -#include <linux/of.h>
 > > +#include <linux/mod_devicetable.h>
-> >  #include <linux/io.h>
-> >  #include <linux/clk.h>
-> >  #include <linux/mfd/syscon.h>
-> > @@ -617,7 +617,7 @@ static struct platform_driver iproc_adc_driver = {
-> >         .remove = iproc_adc_remove,
+> >  #include <linux/iio/iio.h>
+> >  #include <linux/property.h>
+> >  #include <linux/regulator/consumer.h>
+> > @@ -220,7 +221,7 @@ MODULE_DEVICE_TABLE(acpi, adc128_acpi_match);
+> >  static struct spi_driver adc128_driver = {
 > >         .driver = {
-> >                 .name   = "iproc-static-adc",
-> > -               .of_match_table = of_match_ptr(iproc_adc_of_match),
-> > +               .of_match_table = iproc_adc_of_match,
+> >                 .name = "adc128s052",
+> > -               .of_match_table = of_match_ptr(adc128_of_match),
+> > +               .of_match_table = adc128_of_match,
+> >                 .acpi_match_table = ACPI_PTR(adc128_acpi_match),
 > >         },
-> >  };
-> >  module_platform_driver(iproc_adc_driver);
+> >         .probe = adc128_probe,
 > > --
 > > 2.27.0
 > >  
