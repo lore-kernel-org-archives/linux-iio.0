@@ -1,171 +1,188 @@
-Return-Path: <SRS0=Ar39=BS=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=CopR=BT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D03ECC433E0
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 21:58:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 348F2C433DF
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 07:44:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 90497206B6
-	for <linux-iio@archiver.kernel.org>; Sat,  8 Aug 2020 21:58:40 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="io+N8rea"
+	by mail.kernel.org (Postfix) with ESMTP id 106622070B
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 07:44:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726049AbgHHV6k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 Aug 2020 17:58:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725988AbgHHV6j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Aug 2020 17:58:39 -0400
-Received: from mail-io1-xd42.google.com (mail-io1-xd42.google.com [IPv6:2607:f8b0:4864:20::d42])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EAED8C061A27
-        for <linux-iio@vger.kernel.org>; Sat,  8 Aug 2020 14:58:38 -0700 (PDT)
-Received: by mail-io1-xd42.google.com with SMTP id w12so5348274iom.4
-        for <linux-iio@vger.kernel.org>; Sat, 08 Aug 2020 14:58:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=s1t2lfaQk0rkTR+UCCj+M+q5gcbres1wVwog9hP9D1M=;
-        b=io+N8reaIoOxRW0E9XgigMLCSPG90DOUMnVEkr4qEYcOHkVbfCLU/09SEL9hVgNsEc
-         u8Fj5HgWdhKp9hR6eOUiKu4B/icHXrHZsUx+Z54yp3VkpCG3B18Kt+3MLB4nBUYgw8Or
-         ajJxsa2k0+N+ec0oiM+NaNAdWcTHvSQmRfZu+2LS2tsdSy1C79gViKV6QutT8uMAe8gF
-         U7ktob30rtXgH7XHhDTlk9sW5/rWkhSJtfMdharAw8gX9nSZMWRzENV0bgvSCRSkQGgE
-         l5vltjjSpMVBgi7+ibQ96zQbjqJiUaCoavLAgUPVhpwA5u7qLrAimx3ymAkIofcB3efx
-         0GDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=s1t2lfaQk0rkTR+UCCj+M+q5gcbres1wVwog9hP9D1M=;
-        b=MtHJyeG+FVXIthpw14PQE3UcC1rP2v8S8g8+uc7wI7gCww53ngxtEUq4SFMVC55Jez
-         ayIVUssEzQoC9JKWjnM5Kn4TGTU2C/db0YhOvjZqtokPW3poHhw647UNxlfaMzowOTqX
-         G9xLOzqVVTlg0cDtNWDo6+nVjvT5PqZrIerXa/k3+ZDoTHRmtb3DZtF1Vq0MAp1Wetdt
-         Ntuf/Kx5Xo5dub8pOnJcinrtRVlN2r2Wrzy/iEkhHfp984vwTLS2lyy80L8jux9tIIko
-         TtJuum2MVXdU88/eemb55Kq34t9mVQurdW0R3AQCxj4jjxmS/YdIpwdAWK8chnvQQOWL
-         bAuw==
-X-Gm-Message-State: AOAM533lnXmsjPIDlbnihZ8txOMWIwf3YDrNlakLT7jJheZhLvt7y5dN
-        7HmsoJ4XZy21Au/58TMDOcudWGe4pFDSr6xCAcX4RQ==
-X-Google-Smtp-Source: ABdhPJztroBCCsCQrE+r6q62a+gZPZLv+gHslDbOpPdBBALSdvQzgkrF2CpsUBb0HRGN5kd3RKsMlIvmqIqkIzy/Do4=
-X-Received: by 2002:a02:8792:: with SMTP id t18mr11928881jai.117.1596923916194;
- Sat, 08 Aug 2020 14:58:36 -0700 (PDT)
+        id S1726098AbgHIHo2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Aug 2020 03:44:28 -0400
+Received: from mailout05.rmx.de ([94.199.90.90]:53858 "EHLO mailout05.rmx.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726050AbgHIHo1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Aug 2020 03:44:27 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mailout05.rmx.de (Postfix) with ESMTPS id 4BPWMB117cz9x91;
+        Sun,  9 Aug 2020 09:44:22 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4BPWLg2sk0z2xDN;
+        Sun,  9 Aug 2020 09:43:55 +0200 (CEST)
+Received: from N95HX1G2.wgnetz.xx (192.168.54.10) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Sun, 9 Aug
+ 2020 09:43:55 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jonathan Cameron <jic23@kernel.org>
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        Christian Eggers <ceggers@arri.de>
+Subject: [PATCH] iio: documentation: light: Add as73211 sysfs documentation
+Date:   Sun, 9 Aug 2020 09:43:35 +0200
+Message-ID: <20200809074335.23734-1-ceggers@arri.de>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20200808171443.114c8e05@archlinux>
+References: <20200808171443.114c8e05@archlinux>
 MIME-Version: 1.0
-References: <20200808121026.1300375-1-cmo@melexis.com> <20200808121026.1300375-3-cmo@melexis.com>
- <CAHp75VfWk7pCy4Osv0uY0UH4yFS=PRGbE1CNCakuRFTE33SDJg@mail.gmail.com>
-In-Reply-To: <CAHp75VfWk7pCy4Osv0uY0UH4yFS=PRGbE1CNCakuRFTE33SDJg@mail.gmail.com>
-From:   Crt Mori <cmo@melexis.com>
-Date:   Sat, 8 Aug 2020 23:57:59 +0200
-Message-ID: <CAKv63uv-+r6M=G2rviSedgdCUd_0nzHKWXK363bJNERTQHRYXA@mail.gmail.com>
-Subject: Re: [PATCH v4 2/4] iio:temperature:mlx90632: Adding extended
- calibration option
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.54.10]
+X-RMX-ID: 20200809-094355-4BPWLg2sk0z2xDN-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-I am very sorry you missed them, I thought you saw it (reply on v3 of
-the patch). Maybe something happened to that mail, as it contained
-link to datasheet, so I will omit it now.
+The driver for the as73211 light sensor provides the following not yet
+documented sysfs entries:
+- in_intensity_(x|y|z)_raw
+- in_intensity_(x|y|z)_scale
+- in_intensity_sampling_frequency(_available)
+- in_intensity_hardwaregain(_available)
+- in_intensity_integration_time
 
-Except for the order, only the remarks below are still open (did you
-get the polling trail I did?)
+Signed-off-by: Christian Eggers <ceggers@arri.de>
+---
 
-On Sat, 8 Aug 2020 at 22:04, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->
-> On Sat, Aug 8, 2020 at 3:11 PM Crt Mori <cmo@melexis.com> wrote:
-> >
-> > For some time the market wants medical grade accuracy in medical range,
-> > while still retaining the declared accuracy outside of the medical range
-> > within the same sensor. That is why we created extended calibration
-> > which is automatically switched to when object temperature is too high.
-> >
-> > This patch also introduces the object_ambient_temperature variable which
-> > is needed for more accurate calculation of the object infra-red
-> > footprint as sensor's ambient temperature might be totally different
-> > than what the ambient temperature is at object and that is why we can
-> > have some more errors which can be eliminated. Currently this temperature
-> > is fixed at 25, but the interface to adjust it by user (with external
-> > sensor or just IR measurement of the other object which acts as ambient),
-> > will be introduced in another commit.
->
-> The kernel doc patch should go before this patch.
->
-> ...
->
-> > +       *ambient_new_raw = (s16)read_tmp;
->
-> > +       *ambient_old_raw = (s16)read_tmp;
->
-> Sorry, did I miss your answer about these castings all over the patch?
->
+On Thursday, 6 August 2020, 19:44:51 CEST, Jonathan Cameron wrote:
+Hi Jonathan,
 
-These castings are in fact needed. You read unsigned integer, but the
-return value is signed integer. Without the cast it did not extend the
-signed bit, but just wrote the value to signed. Also I find it more
-obvious with casts, that I did not "accidentally" convert to signed.
+> Hi Christian,
+> 
+> I'll take this, but please send a follow up patch to add documentation
+> for in_intensity_x_raw and all the other new ABI this adds in
+> Documentation/ABI/testing/sysfs-bus-iio
+> I should have mentioned that earlier, but kind of assumed we already
+> had these documented for some reason!  
+> [...]
+> Insert them into the relevant groups that already exist.  In some cases
+> it will just be adding an entry with no specific explanation.
+> For the _raw attribute add a bit more info about what x, y and z are
+> (basically just say they are from cie1931 (I think?)
 
-> ...
->
-> > +       ret = regmap_read(regmap, MLX90632_RAM_1(17), &read_tmp);
-> > +       ret = regmap_read(regmap, MLX90632_RAM_2(17), &read_tmp);
-> > +       ret = regmap_read(regmap, MLX90632_RAM_1(18), &read_tmp);
-> > +       ret = regmap_read(regmap, MLX90632_RAM_2(18), &read_tmp);
-> > +       ret = regmap_read(regmap, MLX90632_RAM_1(19), &read_tmp);
-> > +       ret = regmap_read(regmap, MLX90632_RAM_2(19), &read_tmp);
->
-> What so special about these magic 17, 18, 19? Can you provide definitions?
->
-When we started 0 to 19 were all open for access, from userspace, then
-only 1 and 2 were used with calculations, and now we use 17, 18 and
-19. Matter of fact is, I can't provide a descriptive name as it
-depends on DSP version and as you can see now within the same DSP
-version, also on the ID part. While RAM3 vs RAM1 and RAM2 could be
-named RAM_OBJECT1, RAM_OBJECT2, RAM_AMBIENT, knowing our development
-that might not be true in the next configuration, so I rather keep the
-naming as in the datasheet.
+I added all sysfs entries which were not present in 5.8-rc6.
 
-> ...
->
-> > +       int tries = 4;
->
-> > +       while (tries-- > 0) {
-> > +               ret = mlx90632_perform_measurement(data);
-> > +               if (ret < 0)
-> > +                       goto read_unlock;
-> > +
-> > +               if (ret == 19)
-> > +                       break;
-> > +       }
-> > +       if (tries < 0) {
-> > +               ret = -ETIMEDOUT;
-> > +               goto read_unlock;
-> > +       }
->
-> Please avoid ping-pong type of changes in the same series (similar way
-> as for kernel doc), which means don't introduce something you are
-> going to change later on. Patch to move to do {} while () should go
-> before this one.
+Best regards
+Christian
 
-OK, will fix that ordering in v5, but will wait till we solve also
-above discussions to avoid adding new versions.
+ Documentation/ABI/testing/sysfs-bus-iio | 26 ++++++++++++++++++++++++-
+ 1 file changed, 25 insertions(+), 1 deletion(-)
 
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index d3e53a6d8331..14ae4bf053c5 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -40,6 +40,7 @@ Description:
+ 		buffered samples and events for device X.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_sampling_frequency
+ What:		/sys/bus/iio/devices/iio:deviceX/buffer/sampling_frequency
+ What:		/sys/bus/iio/devices/triggerX/sampling_frequency
+ KernelVersion:	2.6.35
+@@ -55,6 +56,7 @@ Description:
+ 		then it is to be found in the base device directory.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_sampling_frequency_available
+ What:		/sys/bus/iio/devices/iio:deviceX/in_proximity_sampling_frequency_available
+ What:		/sys/.../iio:deviceX/buffer/sampling_frequency_available
+ What:		/sys/bus/iio/devices/triggerX/sampling_frequency_available
+@@ -374,6 +376,9 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_x_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_y_scale
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_z_scale
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -484,6 +489,7 @@ Description:
+ 		are listed in this attribute.
+ 
+ What		/sys/bus/iio/devices/iio:deviceX/out_voltageY_hardwaregain
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_hardwaregain
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_red_hardwaregain
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_green_hardwaregain
+ What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_blue_hardwaregain
+@@ -494,6 +500,13 @@ Description:
+ 		Hardware applied gain factor. If shared across all channels,
+ 		<type>_hardwaregain is used.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_hardwaregain_available
++KernelVersion:	5.10
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Lists all available hardware applied gain factors. Shared across all
++		channels.
++
+ What:		/sys/.../in_accel_filter_low_pass_3db_frequency
+ What:		/sys/.../in_magn_filter_low_pass_3db_frequency
+ What:		/sys/.../in_anglvel_filter_low_pass_3db_frequency
+@@ -1333,6 +1346,7 @@ Description:
+ 		standardised CIE Erythemal Action Spectrum. UV index values range
+ 		from 0 (low) to >=11 (extreme).
+ 
++What:		/sys/.../iio:deviceX/in_intensity_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_red_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_green_integration_time
+ What:		/sys/.../iio:deviceX/in_intensity_blue_integration_time
+@@ -1342,7 +1356,8 @@ KernelVersion:	3.12
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This attribute is used to get/set the integration time in
+-		seconds.
++		seconds. If shared across all channels, <type>_integration_time
++		is used.
+ 
+ What:		/sys/.../iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_integration_time
+ KernelVersion:	4.0
+@@ -1739,3 +1754,12 @@ KernelVersion:	5.5
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		One of the following thermocouple types: B, E, J, K, N, R, S, T.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_z_raw
++KernelVersion:	5.10
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Unscaled light intensity according to CIE 1931/DIN 5033 color space.
++		Units after application of scale are nano nanowatts per square meter.
+-- 
+Christian Eggers
+Embedded software developer
 
-And about that voodoo stuff with numbers:
+Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
+Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
+Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
+Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
 
-Honestly, the equation is in the datasheet[1] and this is just making
-floating point to fixed point with proper intermediate scaling
-(initially I had defines of TENTOX, but that was not desired). There
-is no better explanation of this voodoo.
