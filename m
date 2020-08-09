@@ -7,50 +7,52 @@ X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B94DC433DF
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:17:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DE57C433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:18:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 04861206C3
-	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:17:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BD4C206CD
+	for <linux-iio@archiver.kernel.org>; Sun,  9 Aug 2020 17:18:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1596993467;
-	bh=HqCmB91dp9wJXUfZ4P5DScloKB8YtYKjt9MQu6txdqg=;
+	s=default; t=1596993520;
+	bh=DmmOjsza01cCSfRJpqdjVqoAkwqm/jP/fpcm2ODQJ4Q=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=S5l+rKP875FLSxQR8KWBzQNS5w6NQFoFFkDI/oozaylYzEOm5hJ80/vSPwsH1num9
-	 NQW3RpGh4sVHBQxxDrv39jn5Be8ELBBOb5R+QhiV1dbtna0p2FCcu38RhQQVcyNH2B
-	 QZfTBNgROXWweErTZ5pRZd9VE3RHGOIbiDu9/IcQ=
+	b=g3muflws+mvSMwvexLg4ZQWBwxUwD1JVpWyCnhBlHkP60/629RO4IA1dixXYj/+OI
+	 f3ikxghEb10AQEGGAJ6QcjnTopBeNG5DPDNxyWZRy68t20Qs3QJGU6hq3y0gR+6RN4
+	 PhOCJug2PIgzQY4KMqvlFTsSnZnhSNC2ObLLbgT4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726323AbgHIRRq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 9 Aug 2020 13:17:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53972 "EHLO mail.kernel.org"
+        id S1726399AbgHIRSj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 9 Aug 2020 13:18:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54152 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726175AbgHIRRp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 9 Aug 2020 13:17:45 -0400
+        id S1726175AbgHIRSj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 9 Aug 2020 13:18:39 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4437C206CD;
-        Sun,  9 Aug 2020 17:17:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D2AB3206C3;
+        Sun,  9 Aug 2020 17:18:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1596993465;
-        bh=HqCmB91dp9wJXUfZ4P5DScloKB8YtYKjt9MQu6txdqg=;
+        s=default; t=1596993518;
+        bh=DmmOjsza01cCSfRJpqdjVqoAkwqm/jP/fpcm2ODQJ4Q=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=fLdTc83DSJBXydjL8xsSdkGOFtvcZaODxnZ9PXYicXoeA3It8/S8Y9UbvAgssERZj
-         Jcs3YHDKZ0kXI6450A/y9RKCxcnck58sH4pCP75mRxaLA1COIqfKurqZl45PFLhNDU
-         nlXjDhcXzufco+Y7OwSZKha+V66BMIC8sKnr+YXs=
-Date:   Sun, 9 Aug 2020 18:07:21 +0100
+        b=bUJ4TlOSIs12mW7RN4Qf2WBJtki5VBZLuhW3sQZhNqQ0QaUgnaTsuvzBf3lhj923B
+         gchvUvi5LBTAEP2k8yRNe5+f9lkXiSd9+xSLMYLHun0WoWnOyGTtHl3s0JYm7+ZEHY
+         uMPjQXMNsbvUcmTzOJo0o/fYznsKJrYfodmN2Pos=
+Date:   Sun, 9 Aug 2020 18:18:35 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v3 01/27] iio: accel: kxsd9: Fix alignment of local
- buffer.
-Message-ID: <20200809180721.643946ab@archlinux>
-In-Reply-To: <20200722155103.979802-2-jic23@kernel.org>
+Subject: Re: [PATCH v3 03/27] iio:accel:bmc150-accel: Fix timestamp
+ alignment and prevent data leak.
+Message-ID: <20200809181835.678e7a64@archlinux>
+In-Reply-To: <a870c6cc8a498e46d06106be9d83e4f7cbebf717.camel@linux.intel.com>
 References: <20200722155103.979802-1-jic23@kernel.org>
-        <20200722155103.979802-2-jic23@kernel.org>
+        <20200722155103.979802-4-jic23@kernel.org>
+        <a870c6cc8a498e46d06106be9d83e4f7cbebf717.camel@linux.intel.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,69 +62,91 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 22 Jul 2020 16:50:37 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 29 Jul 2020 10:12:36 -0700
+Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> iio_push_to_buffers_with_timestamp assumes 8 byte alignment which
-> is not guaranteed by an array of smaller elements.
-> 
-> Note that whilst in this particular case the alignment forcing
-> of the ts element is not strictly necessary it acts as good
-> documentation.  Doing this where not necessary should cut
-> down on the number of cut and paste introduced errors elsewhere.
-> 
-> Reported-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> On Wed, 2020-07-22 at 16:50 +0100, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > One of a class of bugs pointed out by Lars in a recent review.
+> > iio_push_to_buffers_with_timestamp assumes the buffer used is aligned
+> > to the size of the timestamp (8 bytes).  This is not guaranteed in
+> > this driver which uses a 16 byte array of smaller elements on the
+> > stack.
+> > As Lars also noted this anti pattern can involve a leak of data to
+> > userspace and that indeed can happen here.  We close both issues by
+> > moving
+> > to a suitable structure in the iio_priv() data with alignment
+> > ensured by use of an explicit c structure.  This data is allocated
+> > with kzalloc so no data can leak appart from previous readings.
+> > 
+> > Fixes tag is beyond some major refactoring so likely manual
+> > backporting
+> > would be needed to get that far back.
+> > 
+> > Whilst the force alignment of the ts is not strictly necessary, it
+> > does make the code less fragile.
+> > 
+> > Fixes: 3bbec9773389 ("iio: bmc150_accel: add support for hardware
+> > fifo")
+> > Reported-by: Lars-Peter Clausen <lars@metafoo.de>
+> > Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>  
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 Applied to the fixes-togreg branch of iio.git and marked for stable.
 
 Thanks,
 
 Jonathan
 
-
-
-> ---
->  drivers/iio/accel/kxsd9.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 66b2e4cf24cf..0e18b92e2099 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -209,14 +209,20 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
->  	const struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	/*
-> +	 * Ensure correct positioning and alignment of timestamp.
-> +	 * No need to zero initialize as all elements written.
-> +	 */
-> +	struct {
-> +		__be16 chan[4];
-> +		s64 ts __aligned(8);
-> +	} hw_values;
->  	int ret;
-> -	/* 4 * 16bit values AND timestamp */
-> -	__be16 hw_values[8];
->  
->  	ret = regmap_bulk_read(st->map,
->  			       KXSD9_REG_X,
-> -			       &hw_values,
-> -			       8);
-> +			       hw_values.chan,
-> +			       sizeof(hw_values.chan));
->  	if (ret) {
->  		dev_err(st->dev,
->  			"error reading data\n");
-> @@ -224,7 +230,7 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
->  	}
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev,
-> -					   hw_values,
-> +					   &hw_values,
->  					   iio_get_time_ns(indio_dev));
->  	iio_trigger_notify_done(indio_dev->trig);
->  
+> > ---
+> >  drivers/iio/accel/bmc150-accel-core.c | 15 ++++++++++++---
+> >  1 file changed, 12 insertions(+), 3 deletions(-)
+> > 
+> > diff --git a/drivers/iio/accel/bmc150-accel-core.c
+> > b/drivers/iio/accel/bmc150-accel-core.c
+> > index 24864d9dfab5..48435865fdaf 100644
+> > --- a/drivers/iio/accel/bmc150-accel-core.c
+> > +++ b/drivers/iio/accel/bmc150-accel-core.c
+> > @@ -189,6 +189,14 @@ struct bmc150_accel_data {
+> >  	struct mutex mutex;
+> >  	u8 fifo_mode, watermark;
+> >  	s16 buffer[8];
+> > +	/*
+> > +	 * Ensure there is sufficient space and correct alignment for
+> > +	 * the timestamp if enabled
+> > +	 */
+> > +	struct {
+> > +		__le16 channels[3];
+> > +		s64 ts __aligned(8);
+> > +	} scan;
+> >  	u8 bw_bits;
+> >  	u32 slope_dur;
+> >  	u32 slope_thres;
+> > @@ -922,15 +930,16 @@ static int __bmc150_accel_fifo_flush(struct
+> > iio_dev *indio_dev,
+> >  	 * now.
+> >  	 */
+> >  	for (i = 0; i < count; i++) {
+> > -		u16 sample[8];
+> >  		int j, bit;
+> >  
+> >  		j = 0;
+> >  		for_each_set_bit(bit, indio_dev->active_scan_mask,
+> >  				 indio_dev->masklength)
+> > -			memcpy(&sample[j++], &buffer[i * 3 + bit], 2);
+> > +			memcpy(&data->scan.channels[j++], &buffer[i * 3
+> > + bit],
+> > +			       sizeof(data->scan.channels[0]));
+> >  
+> > -		iio_push_to_buffers_with_timestamp(indio_dev, sample,
+> > tstamp);
+> > +		iio_push_to_buffers_with_timestamp(indio_dev, &data-  
+> > >scan,  
+> > +						   tstamp);
+> >  
+> >  		tstamp += sample_period;
+> >  	}  
+> 
 
