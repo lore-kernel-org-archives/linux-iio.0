@@ -4,40 +4,42 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CB54C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Aug 2020 03:48:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA3EDC433E1
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Aug 2020 03:48:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3A7012075F
-	for <linux-iio@archiver.kernel.org>; Tue, 11 Aug 2020 03:48:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 95C4D206EF
+	for <linux-iio@archiver.kernel.org>; Tue, 11 Aug 2020 03:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728194AbgHKDsN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Aug 2020 23:48:13 -0400
-Received: from inva021.nxp.com ([92.121.34.21]:41262 "EHLO inva021.nxp.com"
+        id S1728182AbgHKDsR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Aug 2020 23:48:17 -0400
+Received: from inva021.nxp.com ([92.121.34.21]:41374 "EHLO inva021.nxp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727861AbgHKDsN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 10 Aug 2020 23:48:13 -0400
+        id S1727861AbgHKDsP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 10 Aug 2020 23:48:15 -0400
 Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 21CC6201D83;
-        Tue, 11 Aug 2020 05:48:12 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 10EE820072D;
+        Tue, 11 Aug 2020 05:48:14 +0200 (CEST)
 Received: from invc005.ap-rdc01.nxp.com (invc005.ap-rdc01.nxp.com [165.114.16.14])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 632EB20073C;
-        Tue, 11 Aug 2020 05:48:08 +0200 (CEST)
+        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id 5219E200729;
+        Tue, 11 Aug 2020 05:48:10 +0200 (CEST)
 Received: from 10.192.242.69 (shlinux2.ap.freescale.net [10.192.224.44])
-        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 3982D402DD;
-        Tue, 11 Aug 2020 05:48:03 +0200 (CEST)
+        by invc005.ap-rdc01.nxp.com (Postfix) with ESMTP id 4D4F8402EB;
+        Tue, 11 Aug 2020 05:48:05 +0200 (CEST)
 From:   Anson Huang <Anson.Huang@nxp.com>
 To:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, alexandru.ardelean@analog.com,
         hslester96@gmail.com, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org
 Cc:     Linux-imx@nxp.com
-Subject: [PATCH 1/3] iio: accel: mma8452: Use dev_err_probe() to simplify error handling
-Date:   Tue, 11 Aug 2020 11:43:14 +0800
-Message-Id: <1597117396-2894-1-git-send-email-Anson.Huang@nxp.com>
+Subject: [PATCH 3/3] iio: magnetometer: mag3110: Use dev_err_probe() to simplify error handling
+Date:   Tue, 11 Aug 2020 11:43:16 +0800
+Message-Id: <1597117396-2894-3-git-send-email-Anson.Huang@nxp.com>
 X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1597117396-2894-1-git-send-email-Anson.Huang@nxp.com>
+References: <1597117396-2894-1-git-send-email-Anson.Huang@nxp.com>
 X-Virus-Scanned: ClamAV using ClamSMTP
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
@@ -49,15 +51,15 @@ defer probe reason etc., use it to simplify the code.
 
 Signed-off-by: Anson Huang <Anson.Huang@nxp.com>
 ---
- drivers/iio/accel/mma8452.c | 20 ++++++--------------
+ drivers/iio/magnetometer/mag3110.c | 20 ++++++--------------
  1 file changed, 6 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index ba27f86..9b5f23b 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1538,22 +1538,14 @@ static int mma8452_probe(struct i2c_client *client,
- 	data->chip_info = match->data;
+diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+index 4d305a2..838b13c 100644
+--- a/drivers/iio/magnetometer/mag3110.c
++++ b/drivers/iio/magnetometer/mag3110.c
+@@ -476,22 +476,14 @@ static int mag3110_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
  
  	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
 -	if (IS_ERR(data->vdd_reg)) {
