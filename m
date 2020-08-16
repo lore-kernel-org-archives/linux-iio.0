@@ -2,117 +2,187 @@ Return-Path: <SRS0=2qef=CW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
+	DKIMWL_WL_HIGH,DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BF025C43461
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:21:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2A872C433E2
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:22:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 84BA32177B
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:21:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DB69B2158C
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:22:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599992491;
-	bh=qrXlPjdhm46n8PqoKDSkLIH/KCyIpGttHxR5823h9/w=;
+	s=default; t=1599992556;
+	bh=VjtbrwFeUIaNBlmRVt0IUVaHfpAQ7vtVrZrm9A23mcY=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=u8u40kfZJiyuKzvV30Nyknttz7NzzafNqy2b5lveWS8QqCNU8+4F/L8+v9AEM9kzy
-	 xK/itANSoekiibUzEz+0Jhv4lAFjXFs0f/CDvHcGIFxSOC6v8wvufkpoA3HpyMRiFG
-	 kCQYnvaRzdieO8kcruvR8z056pvy7313y+bmNlPY=
+	b=GgM47YYBE1J3WeDsl+RfQmBwOxVPG36sqEpFwW6aFlyIqlScnV0x6kRIDzdM21bsx
+	 eZseF9eZSPO7M5rZossRHG91tG+emdWKrspsIoNXo+48d1YiwlGnJN2wclThMeozEo
+	 Nw4f7Fcm5mlXsiiQAbWKhikhhu8gKsaeO9RiIcKM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725929AbgIMKVa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Sep 2020 06:21:30 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57888 "EHLO mail.kernel.org"
+        id S1725924AbgIMKWf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Sep 2020 06:22:35 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58276 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725924AbgIMKV3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Sep 2020 06:21:29 -0400
+        id S1725921AbgIMKWf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Sep 2020 06:22:35 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D41320709;
-        Sun, 13 Sep 2020 10:21:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 20AA820709;
+        Sun, 13 Sep 2020 10:22:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599992488;
-        bh=qrXlPjdhm46n8PqoKDSkLIH/KCyIpGttHxR5823h9/w=;
+        s=default; t=1599992554;
+        bh=VjtbrwFeUIaNBlmRVt0IUVaHfpAQ7vtVrZrm9A23mcY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=weVNjj2alHKqBcCuws07QUbCYG/Byuyua+HLPeKGfMmV4IVYvtcumPU8GyWhjgAg8
-         0qC127o7njBpUSnWa/XN1NMlIFF9utaRmV6AiOv+d6yXaBqLFsDQrTCa9DK3xwGOoZ
-         YaO2dkpiuNsB8gANSro6LYzMwck1dTTP66+qIiwY=
-Date:   Sun, 13 Sep 2020 11:21:22 +0100
+        b=RRzfYYSFADPgfh68uCeXXMNFRCJEs9eKGw92ImOz5696tiYATv/roGQjfhRQCznrv
+         99YeeYsO+CwRDjFNSaWC/y5Mm5wLYUi2kOIrfMDmHyJcXfNtGUVtVtTqb1TDiK/NpS
+         ZaGRW8F1MGQHS+Rnb/frJ5LeO0iqMI6N9dlqLUK8=
+Date:   Sun, 16 Aug 2020 09:58:30 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
+To:     Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        "trix@redhat.com" <trix@redhat.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH v3 00/10] qcom: pm8150: add support for thermal
- monitoring
-Message-ID: <20200913112122.0f4ee51b@archlinux>
-In-Reply-To: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
-References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        =?UTF-8?B?TWljaGE=?= =?UTF-8?B?xYIgTWlyb3PFgmF3?= 
+        <mirq-linux@rere.qmqm.pl>, Lee Jones <lee.jones@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: check for temp_fifo_enable
+Message-ID: <20200816095830.64650d0a@archlinux>
+In-Reply-To: <MN2PR12MB43905A48FB51A0B33198CC56C4430@MN2PR12MB4390.namprd12.prod.outlook.com>
+References: <20200809155936.16898-1-trix@redhat.com>
+        <CAHp75VdEBjxYS_4g2j=ofjFWuGyTK5Me=9mMNcy5ienUUs67Ag@mail.gmail.com>
+        <MN2PR12MB43905A48FB51A0B33198CC56C4430@MN2PR12MB4390.namprd12.prod.outlook.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 10 Sep 2020 16:59:50 +0300
-Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+On Thu, 13 Aug 2020 08:04:06 +0000
+Jean-Baptiste Maneyrol <JManeyrol@invensense.com> wrote:
 
-> This patch serie adds support for thermal monitoring block on Qualcomm's
-> PMIC5 chips. PM8150{,b,l} and sm8250-mtp board device trees are extended
-> to support thermal zones provided by this thermal monitoring block.
-> Unlike the rest of PMIC thermal senses, these thermal zones describe
-> particular thermistors, which differ between from board to board.
-> 
+> Hello,
+>=20
+> this is a case that should never be happening since available scan mask o=
+nly advertise Accel + Temp, Gyro + Temp, or Accel + Gyro + Temp.
+> More than that, temperature sensor is not working when MEMS engine is off=
+. (it's only purpose it to measure temperature of the MEMS to do data tempe=
+rature compensation).
+>=20
+> So I think we can let this check as it is currently, since this is not a =
+supported configuration.
+>=20
 
-As far as I am concerned this series is now ready to go up to one or two
-things in patch 8.  So on to the normal question based on the assumption
-it will pick up other necessary reviews shortly...
-
-What route do we want this to take? 
-I can do an immutable branch in IIO if that works for patches 1-8 and assume
-the dt file changes will got via usual SoC path?  We are getting a fair way
-into this cycle, so this may well end up happening next cycle depending
-on how quick reviews come in.
+Perhaps a good option would be to add a suitably positioned comment to make
+this clear so we don't get further patches 'fixing' this in the future?
 
 Thanks,
 
 Jonathan
 
-> Changes since v3:
->  - Fix DT description to spell "thermal monitoring" instead of just TM
->  - Fix warnings in DT example
->  - Add EXPORT_SYMBOL_GPL(of_iio_channel_get_by_name)
->  - Fixed whitespace chanes in qcom-vadc-common.c
->  - Removed error message if IIO chanel get returns -EPROBE_DEFER
-> 
-> Changes since v2:
->  - IIO: export of_iio_channel_get_by_name() function
->  - dt-bindings: move individual io-channels to each thermal monitoring
->    channel rather than listing them all in device node
->  - added fallback defaults to of_device_get_match_data calls in
->    qcom-spmi-adc5 and qcom-spmi-adc-tm5 drivers
->  - minor typo fixes
-> 
-> Changes since v1:
->  - Introduce fixp_linear_interpolate() by Craig Tatlor
->  - Lots of syntax/whitespace changes
->  - Cleaned up register definitions per Jonathan's suggestion
->  - Implemented most of the suggestions from Bjorn's and Jonathan's
->    review
-> 
-> 
-> 
-
+> Best regards,
+> JB
+>=20
+>=20
+> From: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Sent: Monday, August 10, 2020 10:02
+> To: trix@redhat.com <trix@redhat.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>; Hartmut Knaack <knaack.h@gmx.de>=
+; Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald <pmeerw@pmeerw.net>;=
+ Jean-Baptiste Maneyrol <JManeyrol@invensense.com>; Micha=C5=82 Miros=C5=82=
+aw <mirq-linux@rere.qmqm.pl>; Lee Jones <lee.jones@linaro.org>; linux-iio <=
+linux-iio@vger.kernel.org>; Linux Kernel Mailing List <linux-kernel@vger.ke=
+rnel.org>
+> Subject: Re: [PATCH] iio: imu: inv_mpu6050: check for temp_fifo_enable=20
+> =C2=A0
+> =C2=A0CAUTION: This email originated from outside of the organization. Pl=
+ease make sure the sender is who they say they are and do not click links o=
+r open attachments unless you recognize the sender and know the content is =
+safe.
+>=20
+> On Sun, Aug 9, 2020 at 7:00 PM <trix@redhat.com> wrote:
+> >
+> > From: Tom Rix <trix@redhat.com>
+> >
+> > clang static analysis reports this problem
+> >
+> > inv_mpu_ring.c:181:18: warning: Division by zero
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 nb =3D fifo_count / byt=
+es_per_datum;
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0 ~~~~~~~~~~~^~~~~~~~~~~~~~~~~
+> >
+> > This is a false positive.
+> > Dividing by 0 is protected by this check
+> >
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!(st->chip_config.a=
+ccl_fifo_enable |
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 st->chip_config.gyro_fifo_enable |
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 st->chip_config.magn_fifo_enable))
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 goto end_session;
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bytes_per_datum =3D 0;
+> >
+> > But there is another fifo, temp_fifo
+> >
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (st->chip_config.tem=
+p_fifo_enable)
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 bytes_per_datum +=3D INV_MPU6050_BYTES_PER_TEMP_SE=
+NSOR;
+> >
+> > Which would be skipped if it was the only enabled fifo.
+> > So add to the check.
+> > =20
+>=20
+> > Fixes: 2e4c0a5e2576 ("iio: imu: inv_mpu6050: add fifo temperature data =
+support")
+> >
+> > Signed-off-by: Tom Rix <trix@redhat.com> =20
+>=20
+> There shouldn't be a blank line in between.
+>=20
+> Other than that,
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+>=20
+>=20
+>=20
+> > ---
+> >=C2=A0 drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c | 1 +
+> >=C2=A0 1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c b/drivers/iio/i=
+mu/inv_mpu6050/inv_mpu_ring.c
+> > index b533fa2dad0a..5240a400dcb4 100644
+> > --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> > +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_ring.c
+> > @@ -141,6 +141,7 @@ irqreturn_t inv_mpu6050_read_fifo(int irq, void *p)
+> >
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 if (!(st->chip_config.a=
+ccl_fifo_enable |
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 st->chip_config.gyro_fifo_enable |
+> > +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0 st->chip_config.temp_fifo_enable |
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 st->chip_config.magn_fifo_enable))
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0 goto end_session;
+> >=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 bytes_per_datum =3D 0;
+> > --
+> > 2.18.1
+> > =20
+>=20
+>=20
+> --
+> With Best Regards,
+> Andy Shevchenko
