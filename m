@@ -4,85 +4,106 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84F83C433E1
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Aug 2020 12:00:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D87C433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Aug 2020 22:19:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59CE820716
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Aug 2020 12:00:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A67242078D
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Aug 2020 22:19:39 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=0x0f.com header.i=@0x0f.com header.b="fNbnChqg"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="oLoM24c9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726162AbgHPMAV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Aug 2020 08:00:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34362 "EHLO
+        id S1728057AbgHPWTj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Aug 2020 18:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726259AbgHPL74 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Aug 2020 07:59:56 -0400
-Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D09EC061786
-        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2020 04:59:55 -0700 (PDT)
-Received: by mail-wm1-x342.google.com with SMTP id t14so11664718wmi.3
-        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2020 04:59:54 -0700 (PDT)
+        with ESMTP id S1726089AbgHPWTh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Aug 2020 18:19:37 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E2FCC061786
+        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2020 15:19:37 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id p18so9101015ilm.7
+        for <linux-iio@vger.kernel.org>; Sun, 16 Aug 2020 15:19:37 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=0x0f.com; s=google;
+        d=konsulko.com; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=Jgq0Z6pXlni31D4ItEMINr7qL6V0bVNcfG6H+Jh9kBo=;
-        b=fNbnChqgev9RLJAdISUKWLt/xqBHKZ5rGjA4vDvUM+sL00Kr8xyKPwpj6K8wvkNrVj
-         eKdFV/I4tAGApmnMBuc88sNUSlt15q82/Cy+DXguQM1Y2whPMfIq673DFY9ECb+e0Jvz
-         tME7oDr45qm21gJS6VMVQLTRkZLkEQbtcXwvk=
+        bh=AkcZzuMa0KWX54HQ/i8rwQk69v0uhXTqDlHr6CvRGf0=;
+        b=oLoM24c9W9QDfQEka2Py1zyaf4vtAeCE3QWy7IyEXp3VfZte+2RzrAIcXnc/Nft6gO
+         s96HwoD3W5h64atKhTUzx7hpVlDArLHuiI4svL79mBWpM+3b5Gue/1x4hmhvMu/2a7Hg
+         y3FqV2Hu3t1YQmdQRlpHIXiVWPBK8prlJ4XYs=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=Jgq0Z6pXlni31D4ItEMINr7qL6V0bVNcfG6H+Jh9kBo=;
-        b=KJgN5hmReEQVvoLoOwuzsVOmMUABuTbiDmwIsUj1OOrP61avCqRR04kv9M7ma5ea9P
-         9iVq14IV499aWNgko3g+V8Pi1102NkBfDdNrtBZ99+h3Fd9m56x6TG/wNE4BEgWVoe02
-         uxdqWY9gcBWYANafjL3smjCFPLwWcnLYuSzcSa8flThGBJah5mHlDU67PafMzUUmLWNF
-         mx1OwbX0pqd+VnthQ4qUmSqCGpxg2ETtAJgXGAHAYXnb+ISmrNaE+5d9+1zcsMOlVFhN
-         2n7M3IPOeE6xPBbCgCyFHyru7kbuMwZ2yLJVky/gPqjs/M7ziYkJ7AXPa5CofJeoF3hc
-         xR0w==
-X-Gm-Message-State: AOAM533qboWmFXmKq4uZ1SYYbnyWnulQYpSwRk3Ifucv8gYy/OyhLbgg
-        mVofuJnsp879MX1sJllhhWrO327EYY6nerqRCSlvFQ==
-X-Google-Smtp-Source: ABdhPJxqA03wzmb66p7Q48xNLzQOVhftQxNRBj0TSrjWM2XAXVUigh/RZJKfUpkEpySJysOMJ5OergccG3d0wK350X0=
-X-Received: by 2002:a1c:5f54:: with SMTP id t81mr10249596wmb.2.1597579193031;
- Sun, 16 Aug 2020 04:59:53 -0700 (PDT)
+        bh=AkcZzuMa0KWX54HQ/i8rwQk69v0uhXTqDlHr6CvRGf0=;
+        b=qcyMlAf1m51sWswg/KylE/6z3d6e2MUybOM1+sGZJ0JqoGz1wS9mMZd7NQY/wzrmSN
+         cfAxkMeXxlUwq6oY4vMJxG01zQ3WiJFNN16YKI8EYOaoTaoU/P6rOj6Cl1JciLgTmvFT
+         mBVtHcru2wF9yGJtRFP9Wnr1UA3oJstPGBrwD11lSWOU6f4EUSFFAjIJZzIu7NkBHdw1
+         7xQgCnjpgzBJ/qsWIfPI9YqEsgT7RZ4AHSY7jbuj1t+NBX368UDn1kxnnMWpkMaTppQl
+         OAyYy2EcjQIK7KRr0+UGb4OseQPcF3uBaz3dszl8VnTd1VdhIidgzQzLdqpInLZD8Jas
+         SKbA==
+X-Gm-Message-State: AOAM531DDXOlYq9EZI7L1zFLv2UEiu+m924oTLnMJ+rXlZZXYYaZrQVx
+        bbSrRJDhSCluszX33DpXmteXkc3m+5Fqoxny7di2eA==
+X-Google-Smtp-Source: ABdhPJySERcXu7AlxAUAMVgLDOch9W2eq584oKVC2lPlxK3oODrvqWnqNer+pnocJ0TnvtP9X2c1lomIajxcwzFU8/o=
+X-Received: by 2002:a92:4989:: with SMTP id k9mr11882013ilg.177.1597616376543;
+ Sun, 16 Aug 2020 15:19:36 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200811134846.3981475-1-daniel@0x0f.com> <20200811134846.3981475-3-daniel@0x0f.com>
- <CAHp75VcreDeik-pCQPXV2RQVAEPFNRjGS8Mutvxwog1khVka4g@mail.gmail.com>
-In-Reply-To: <CAHp75VcreDeik-pCQPXV2RQVAEPFNRjGS8Mutvxwog1khVka4g@mail.gmail.com>
-From:   Daniel Palmer <daniel@0x0f.com>
-Date:   Sun, 16 Aug 2020 20:59:57 +0900
-Message-ID: <CAFr9PXma7_FUVZbGk7kzfc1xgYH8WdMWj6FZuO4wO=kNp=iR-w@mail.gmail.com>
-Subject: Re: [RFC PATCH 2/2] iio: st-accel: Add support for Silan SC7A20 and SC7A30E
+References: <20200814134941.10576-1-matt.ranostay@konsulko.com> <CAHp75VeP24wrWk49Gic-fR72kU+1sBQD-OCW88ji1ZYShSsNXQ@mail.gmail.com>
+In-Reply-To: <CAHp75VeP24wrWk49Gic-fR72kU+1sBQD-OCW88ji1ZYShSsNXQ@mail.gmail.com>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Sun, 16 Aug 2020 15:19:25 -0700
+Message-ID: <CAJCx=gkDBUZ+ozJAsi43ff_frRGTZXdE1PEbtpyYjcFUubvi8g@mail.gmail.com>
+Subject: Re: [PATCH] iio: health: max30102: update author's email
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
-
-On Sun, 16 Aug 2020 at 18:55, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> No SoB tag?! Hint: `git commit -a -s --amend` would fix this if you
-> have properly configured Git.
+On Sun, Aug 16, 2020 at 2:52 AM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
 >
+> On Sun, Aug 16, 2020 at 1:06 AM Matt Ranostay
+> <matt.ranostay@konsulko.com> wrote:
+> >
+> > Update email to author's current employer
+>
+> > - * Copyright (C) 2017 Matt Ranostay <matt@ranostay.consulting>
+> > + * Copyright (C) 2017 Matt Ranostay <matt.ranostay@konsulko.com>
+>
+> > -MODULE_AUTHOR("Matt Ranostay <matt@ranostay.consulting>");
+> > +MODULE_AUTHOR("Matt Ranostay <matt.ranostay@konsulko.com>");
+>
+> This is actually an interesting question, had you been working already
+> for your current employer?
 
-Sorry I wasn't aware it was needed for an RFC.
+Yes I was, but this was for my independent contracting company (that
+has been dissolved, and the email clearly won't work anymore)
+for a presentation on iio.
 
-> On top of that, can you add Datasheet: tag with links to the actual
-> component datasheets?
+Pretty sure Konsulko doesn't have any issue with copyright assignment
+to them :).
+Also retroactive assignments are quite legal (under US law at least,
+also IANAL) as long you of course own the copyright.
 
-I will do that for the v1 of the patch series. All of the datasheets
-I've found so far are mostly Chinese
-but the register tables are in English. I've collected them together
-here: http://linux-chenxing.org/silan/index.html
+Good questions though!
 
-Cheers,
+- Matt
 
-Daniel
+> If no, I don't think this is a proper change in the code (of course it
+> might require your new contract, then it's probably fine, I dunno). It
+> would be a good change for MAINTAINERS, though.
+> If yes, the commit message doesn't clarify this.
+>
+> In any case, just my 2 cents for the future changes like this, since
+> the patch already applied.
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
