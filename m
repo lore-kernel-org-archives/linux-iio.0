@@ -2,222 +2,165 @@ Return-Path: <SRS0=p69X=B3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF247C433DF
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Aug 2020 14:18:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C7931C433DF
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Aug 2020 17:09:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BF56F22B49
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Aug 2020 14:18:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1597673887;
-	bh=4qw0p6oQML7YmbV0GkEi7fZNxZopyXODUoJ+09bMFJc=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=t+JlhPn1bGS8k32IkJcfI9gsic/v+S5mehVbxgsMimXEROajjg+1WhOJeSYHNY88d
-	 AyIAKLYQryY0Wy6RYNL6dP1uRqljfqnasTwDG4BHCFswtHS+IoAKewSLBTIC1f5TzU
-	 dvsd0T3y5cDBd8lCWBLI9GcKUE/hG5j6oWIM8Vzs=
+	by mail.kernel.org (Postfix) with ESMTP id 9FF02206FA
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Aug 2020 17:09:52 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="YuiXi/ki"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728824AbgHQOSH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Aug 2020 10:18:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56816 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728669AbgHQOSF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 Aug 2020 10:18:05 -0400
-Received: from mail-ot1-f46.google.com (mail-ot1-f46.google.com [209.85.210.46])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3A7C220674;
-        Mon, 17 Aug 2020 14:18:05 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1597673885;
-        bh=4qw0p6oQML7YmbV0GkEi7fZNxZopyXODUoJ+09bMFJc=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=0tSkDjBnDUvb4dObmXkHRkv4wNbP/FENorV2+midoKh8vfEg8imCLoCmL77KCHNmG
-         +WCUr3G0xyhgq1TCRW8eZg1juTucC98Aoht8+yn3i0TPi86EJgz8fjYnobov+scOnF
-         vGY2jjWmmHg1ALuQDM3oYZfoWFwaFtf2DoZzJXIg=
-Received: by mail-ot1-f46.google.com with SMTP id v21so13492334otj.9;
-        Mon, 17 Aug 2020 07:18:05 -0700 (PDT)
-X-Gm-Message-State: AOAM530WftMwROK8PvBsxPCrqb//OGChZQo0Mu8nfAcdXSNaX9z/DR+R
-        /sGSSLbXVnpaKUX+5NfFScp8sNAIv37TwfGF+w==
-X-Google-Smtp-Source: ABdhPJzVNykJU1/t96e6tbnhJqBq8O2bJ4YGJ60Yrkf++i1GLKvXKQh05ZLBs34g02cjue7lJi6nmCuaHF1eUid5uGI=
-X-Received: by 2002:a9d:7f84:: with SMTP id t4mr11508847otp.192.1597673884538;
- Mon, 17 Aug 2020 07:18:04 -0700 (PDT)
+        id S2389378AbgHQRJr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Aug 2020 13:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48762 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388507AbgHQRGG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Aug 2020 13:06:06 -0400
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2E17C061348
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2020 10:05:44 -0700 (PDT)
+Received: by mail-wr1-x443.google.com with SMTP id z18so15690330wrm.12
+        for <linux-iio@vger.kernel.org>; Mon, 17 Aug 2020 10:05:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=QPQnmI/58kOYJX5JO2+CM6DvjdssZDc2jVBjt8SVn9Y=;
+        b=YuiXi/kinFP88R0aPiCU55Nprn56KeOKbH+KhhoCxduo6j7FzXH12C+I/rUVFF2MTP
+         rUNab8Es+pEUJ0mOl0o47LkZ9vxB88jk2clqVQO4YC3EMN54iij8Dg8f1X9T9s8V8I+t
+         K67UfagZ+rIkHxaCUmX6dl/fnHdP01O4+yLsnKvnlNwfJ0VVDsBuk2m/Wi0mwtG58Ypl
+         AT44t4dH86MBjKLlQOp8xEQEF9c3YypxpUYLgQAuAR9MU4UWZR68FGdiuu+hNZEmv4Tm
+         pX8UkOQzp2mYLfUXDwUq29cTK6tNS0ySm+dy5EOekUvDleo+l/oguSRijKxKZraz93xt
+         27hQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=QPQnmI/58kOYJX5JO2+CM6DvjdssZDc2jVBjt8SVn9Y=;
+        b=lM9BhcR51De1VLZFqNkneV1j+bllB8WeoQ96MPyBcg3hyK1A4pho7U/B3pnoE1FydY
+         1xttHx3QniGgulTrlctXQOm9xhyU0s3i4UL7NKn+y58zHa5y9IBS1CLI/f8f/1PZrCZi
+         iYFn6PMPSNBVwETzC+j5A2Wk/mYjahIcqiToOjiKEy67daetUZFkRkyaqfySSF9hU/rs
+         7Pop/vt/amWSKwNb8aGZwUnCTOkKhttn85uH3hTbpPOHPI4Vc09bcfojPJ4L6Xc+WnVQ
+         wdELSvE4TJHqu41AfytmZO+/W4tWTFGIfzrSQltWTQDg+yjPolhP6zzpOUFXaNeIiwfx
+         IfKg==
+X-Gm-Message-State: AOAM533cdBxyg7+HbzSNTxg36LYHgsBb+S0XBQNC/SXoA4frCGwY3zcK
+        34qo+w5q4EBQyQBIOb7R/jxj0Q==
+X-Google-Smtp-Source: ABdhPJzidFcB7ZIzIx5H9eHYngnMFhnJsHpdbQQUC3IPtgHxLJxrUgwpePI6OmXWPyKufiK3Jko02g==
+X-Received: by 2002:adf:ef92:: with SMTP id d18mr17541341wro.71.1597683943032;
+        Mon, 17 Aug 2020 10:05:43 -0700 (PDT)
+Received: from debian-brgl.home (lfbn-nic-1-68-20.w2-15.abo.wanadoo.fr. [2.15.159.20])
+        by smtp.gmail.com with ESMTPSA id k184sm29747177wme.1.2020.08.17.10.05.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 17 Aug 2020 10:05:42 -0700 (PDT)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v7 3/3] iio: adc: xilinx-xadc: use devm_krealloc()
+Date:   Mon, 17 Aug 2020 19:05:35 +0200
+Message-Id: <20200817170535.17041-4-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.26.1
+In-Reply-To: <20200817170535.17041-1-brgl@bgdev.pl>
+References: <20200817170535.17041-1-brgl@bgdev.pl>
 MIME-Version: 1.0
-References: <20200809111753.156236-1-jic23@kernel.org> <20200809111753.156236-9-jic23@kernel.org>
-In-Reply-To: <20200809111753.156236-9-jic23@kernel.org>
-From:   Rob Herring <robh+dt@kernel.org>
-Date:   Mon, 17 Aug 2020 08:17:52 -0600
-X-Gmail-Original-Message-ID: <CAL_JsqLRdXHu9mrqvZEYDQBmh0vWC4TFZWmB7dK4D-WAaRdERg@mail.gmail.com>
-Message-ID: <CAL_JsqLRdXHu9mrqvZEYDQBmh0vWC4TFZWmB7dK4D-WAaRdERg@mail.gmail.com>
-Subject: Re: [PATCH 08/13] dt-bindings: iio: adc: ti,adc12138 yaml conversion.
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Aug 9, 2020 at 5:20 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Simple binding conversion.  Only addition was #io-channel-cells to
-> allow for potential consumers of the channels on this device.
->
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Akinobu Mita <akinobu.mita@gmail.com>
-> ---
->  .../bindings/iio/adc/ti,adc12138.yaml         | 85 +++++++++++++++++++
->  .../bindings/iio/adc/ti-adc12138.txt          | 37 --------
->  2 files changed, 85 insertions(+), 37 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,adc12138.yaml b/Documentation/devicetree/bindings/iio/adc/ti,adc12138.yaml
-> new file mode 100644
-> index 000000000000..3e8c43aa8ef3
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,adc12138.yaml
-> @@ -0,0 +1,85 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,adc12138.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments ADC12138 and similar self-calibrating ADCs
-> +
-> +maintainers:
-> +  - Akinobu Mita <akinobu.mita@gmail.com>
-> +
-> +description: |
-> +  13 bit ADCs with 1, 2 or 8 inputs and self calibrating circuitry to
-> +  correct for linearity, zero and full scale errors.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,adc12130
-> +      - ti,adc12132
-> +      - ti,adc12138
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    maxItems: 1
-> +    description: End of Conversion (EOC) interrupt
-> +
-> +  clocks:
-> +    maxItems: 1
-> +    description: Conversion clock input.
-> +
-> +  spi-max-frequency: true
-> +
-> +  vref-p-supply:
-> +    description: The regulator supply for positive analog voltage reference
-> +
-> +  vref-n-suppy:
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-typo
+Use the managed variant of krealloc() and shrink the code a bit.
 
-> +    description: |
-> +      The regulator supply for negative analog voltage reference
-> +      (Note that this must not go below GND or exceed vref-p)
-> +      If not specified, this is assumed to be analog ground.
-> +
-> +  ti,acquisition-time:
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [ 6, 10, 18, 34]
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Inconsistent spacing for brackets. 0 or 1 space is fine.
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index d0b7ef296afb..f93c34fe5873 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -1092,6 +1092,7 @@ MODULE_DEVICE_TABLE(of, xadc_of_match_table);
+ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 	unsigned int *conf)
+ {
++	struct device *dev = indio_dev->dev.parent;
+ 	struct xadc *xadc = iio_priv(indio_dev);
+ 	struct iio_chan_spec *channels, *chan;
+ 	struct device_node *chan_node, *child;
+@@ -1136,7 +1137,8 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 		*conf |= XADC_CONF0_MUX | XADC_CONF0_CHAN(ext_mux_chan);
+ 	}
+ 
+-	channels = kmemdup(xadc_channels, sizeof(xadc_channels), GFP_KERNEL);
++	channels = devm_kmemdup(dev, xadc_channels,
++				sizeof(xadc_channels), GFP_KERNEL);
+ 	if (!channels)
+ 		return -ENOMEM;
+ 
+@@ -1172,8 +1174,9 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 	of_node_put(chan_node);
+ 
+ 	indio_dev->num_channels = num_channels;
+-	indio_dev->channels = krealloc(channels, sizeof(*channels) *
+-					num_channels, GFP_KERNEL);
++	indio_dev->channels = devm_krealloc(dev, channels,
++					    sizeof(*channels) * num_channels,
++					    GFP_KERNEL);
+ 	/* If we can't resize the channels array, just use the original */
+ 	if (!indio_dev->channels)
+ 		indio_dev->channels = channels;
+@@ -1225,14 +1228,14 @@ static int xadc_probe(struct platform_device *pdev)
+ 
+ 	ret = xadc_parse_dt(indio_dev, pdev->dev.of_node, &conf0);
+ 	if (ret)
+-		goto err_device_free;
++		return ret;
+ 
+ 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+ 		ret = iio_triggered_buffer_setup(indio_dev,
+ 			&iio_pollfunc_store_time, &xadc_trigger_handler,
+ 			&xadc_buffer_ops);
+ 		if (ret)
+-			goto err_device_free;
++			return ret;
+ 
+ 		xadc->convst_trigger = xadc_alloc_trigger(indio_dev, "convst");
+ 		if (IS_ERR(xadc->convst_trigger)) {
+@@ -1350,8 +1353,6 @@ static int xadc_probe(struct platform_device *pdev)
+ err_triggered_buffer_cleanup:
+ 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+ 		iio_triggered_buffer_cleanup(indio_dev);
+-err_device_free:
+-	kfree(indio_dev->channels);
+ 
+ 	return ret;
+ }
+@@ -1371,7 +1372,6 @@ static int xadc_remove(struct platform_device *pdev)
+ 	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+ 	clk_disable_unprepare(xadc->clk);
+ 	kfree(xadc->data);
+-	kfree(indio_dev->channels);
+ 
+ 	return 0;
+ }
+-- 
+2.26.1
 
-> +    description: |
-> +      The number of conversion clock periods for the S/H's acquisition time.
-> +      For high source impedances, this value can be increased to 18 or 34.
-> +      For less ADC accuracy and/or slower CCLK frequencies this value may be
-> +      decreased to 6.  See section 6.0 INPUT SOURCE RESISTANCE in the
-> +      datasheet for details.
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - clocks
-> +  - vref-p-supply
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        adc@0 {
-> +            compatible = "ti,adc12138";
-> +            reg = <0>;
-> +            interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-> +            interrupt-parent = <&gpio1>;
-> +            clocks = <&cclk>;
-> +            vref-p-supply = <&ldo4_reg>;
-> +            spi-max-frequency = <5000000>;
-> +            ti,acquisition-time = <6>;
-> +            #io-channel-cells = <1>;
-> +        };
-> +    };
-> +...
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-> deleted file mode 100644
-> index 049a1d36f013..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-> +++ /dev/null
-> @@ -1,37 +0,0 @@
-> -* Texas Instruments' ADC12130/ADC12132/ADC12138
-> -
-> -Required properties:
-> - - compatible: Should be one of
-> -       * "ti,adc12130"
-> -       * "ti,adc12132"
-> -       * "ti,adc12138"
-> - - reg: SPI chip select number for the device
-> - - interrupts: Should contain interrupt for EOC (end of conversion)
-> - - clocks: phandle to conversion clock input
-> - - spi-max-frequency: Definision as per
-> -       Documentation/devicetree/bindings/spi/spi-bus.txt
-> - - vref-p-supply: The regulator supply for positive analog voltage reference
-> -
-> -Optional properties:
-> - - vref-n-supply: The regulator supply for negative analog voltage reference
-> -       (Note that this must not go below GND or exceed vref-p)
-> -       If not specified, this is assumed to be analog ground.
-> - - ti,acquisition-time: The number of conversion clock periods for the S/H's
-> -       acquisition time.  Should be one of 6, 10, 18, 34.  If not specified,
-> -       default value of 10 is used.
-> -       For high source impedances, this value can be increased to 18 or 34.
-> -       For less ADC accuracy and/or slower CCLK frequencies this value may be
-> -       decreased to 6.  See section 6.0 INPUT SOURCE RESISTANCE in the
-> -       datasheet for details.
-> -
-> -Example:
-> -adc@0 {
-> -       compatible = "ti,adc12138";
-> -       reg = <0>;
-> -       interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-> -       interrupt-parent = <&gpio1>;
-> -       clocks = <&cclk>;
-> -       vref-p-supply = <&ldo4_reg>;
-> -       spi-max-frequency = <5000000>;
-> -       ti,acquisition-time = <6>;
-> -};
-> --
-> 2.28.0
->
