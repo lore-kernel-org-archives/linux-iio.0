@@ -7,64 +7,64 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EBFB6C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Aug 2020 21:38:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72712C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Aug 2020 21:38:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CAEEB2075E
-	for <linux-iio@archiver.kernel.org>; Tue, 18 Aug 2020 21:38:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4F50D2075E
+	for <linux-iio@archiver.kernel.org>; Tue, 18 Aug 2020 21:38:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="Te28b6Gr"
+	dkim=pass (2048-bit key) header.d=melexis.com header.i=@melexis.com header.b="Q5dJyq9k"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726711AbgHRVi0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 Aug 2020 17:38:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34704 "EHLO
+        id S1726968AbgHRVim (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 Aug 2020 17:38:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726790AbgHRViP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Aug 2020 17:38:15 -0400
-Received: from mail-wr1-x442.google.com (mail-wr1-x442.google.com [IPv6:2a00:1450:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4079C061389
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2020 14:38:13 -0700 (PDT)
-Received: by mail-wr1-x442.google.com with SMTP id c15so19557128wrs.11
-        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2020 14:38:13 -0700 (PDT)
+        with ESMTP id S1726735AbgHRViT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Aug 2020 17:38:19 -0400
+Received: from mail-wm1-x343.google.com (mail-wm1-x343.google.com [IPv6:2a00:1450:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BBDEC061347
+        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2020 14:38:18 -0700 (PDT)
+Received: by mail-wm1-x343.google.com with SMTP id x5so269018wmi.2
+        for <linux-iio@vger.kernel.org>; Tue, 18 Aug 2020 14:38:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=melexis.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=kCKkfI4KUgwhE7z/MGIgFuxJr6A36cU9I1dFPpHRlos=;
-        b=Te28b6GraM5AAO5E5d9a7pbomPCfaBFiUh1IlgdWQp7iRYae5+R+sV3xKyOn2oDIkV
-         odfxpeWDKt1Ai24PpuW+Vvf0tFwI9ePJXbAZUUPJcQ4CzcmcxN7XzzgZDmLrLQAxwYjE
-         JLldjyhrcJZXeiaRA67gLVd4z+2AjSQBruM9vzoLITm7SzsXnawRjrIz72s0ovegdXNw
-         x7O5PbRwiCWiXBH2AOihqu4w5Dr65r927pDIqLSlrmTJIL2ZgoaxBJzGtmOzKwn91Pth
-         uUSKINmo6BsCWKj0/lEi+/bHL05g0JnoO+5C5qhziEBt3qjqqBPCw3yDaBiFb5L02z2C
-         SIpA==
+        bh=KGbYgC10yEAQ0N/WNh4ekyP+m4b8XDZy+5vjdPR5yp4=;
+        b=Q5dJyq9kIvH/s+LzOxf3acSRtCSjwRnYzmzPenCx+Kfw1xbvH5cXWbrQwhRa7CUTxe
+         sJQoq7jg6pEyh++m2GKDyixMuE5tk1xemCoc0XPpnFQkoRsZxOPbJxqw3XTO5flm62uB
+         ZoTVmg2M241qfE+HfdvxFB8VyyrYJ6kLRfAzY8BSAzMK4kzaOtR9fFMTZ7mAZ3+q7Bxp
+         JBK+NRv0dTxIs/YCfqPS0LNi6fXyYArsfBk18uPdrGqpRoYnty3caLiaV6ahfBeuPkps
+         elGRhNfajX5YNnnhgaJxmGLXjavt7GtIPktdH13cP1l4C9sSJvdlXNFbE3VcNskm8Tni
+         kDjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=kCKkfI4KUgwhE7z/MGIgFuxJr6A36cU9I1dFPpHRlos=;
-        b=StHbUsRh7CrhBnKp+Drr8rrWagdUDch9ij3Ujtz1tREPqGJtU/q3bY1VDRNmtbhbSW
-         FXSYXHPojNtkGFmZOKjsiWKqvGko2hC4uG612PL5z4+lfuCttSYUwHnoE9tJgYB+tpo/
-         M1ssVuSVniixq1+vqbO/93R3RRl1249tLV3FHndqguDES0LTxASw4r7JlgADHOXL8CvZ
-         lfMVheh7fIW6+BDq8Z50BTKNp4ZAFeSD2+nkVhKJ9/BHgOstZr/GcgzsIj+b4F7snh4t
-         ozs0/PuxRhamVcRcpsEhNw8z8f70CRGMwAD+ZibSnMJNSmMsmalFivzB+FQnKyXiRAUm
-         zP3w==
-X-Gm-Message-State: AOAM532If8ptPCr8f1OUBJST1a3R4rzVaMTUJNwsByZTtWFEbHm6Ywzs
-        n3yDlGhwWmKv914qV5vSqThlcg==
-X-Google-Smtp-Source: ABdhPJzzLziDaSiiV6C5/msWuEDrAjETq4OW0ouB5eldrg1N+W3o2BnVXNTMG2xvY3VpZFRIcS6cuA==
-X-Received: by 2002:a5d:6a4a:: with SMTP id t10mr23083894wrw.360.1597786692207;
-        Tue, 18 Aug 2020 14:38:12 -0700 (PDT)
+        bh=KGbYgC10yEAQ0N/WNh4ekyP+m4b8XDZy+5vjdPR5yp4=;
+        b=BRV5u4VD9okF1h0TL7QYjgFB59T/DA5kDtqfOLuyVpMj1k806u0mJLZF6vjrL+Kq4R
+         NZvcYgocL4FTWbG5/sMoLGVGqbiBjfc+CsAgTOybtOPZOGspKoZ0wYdhLXGYtt9SMmzD
+         +UJpRnMQNNpD2OQIbUvTWATX0O+95LWxIXDauigdRauPkotBTBhtKkrr6tJYApY9zl8O
+         OiswdBKLODDtxfKAPsXjo3lOQhxvkSkNpIseUdazsGZME/hC85lvs/RBBUEvRybSZUCP
+         KYJeEdQzbdSHlnIb14jMMSBeXr4YmoO9utNSF59mqSmWof/FOTXdox6Ih8F186qREEVU
+         Bcbw==
+X-Gm-Message-State: AOAM533bCS9paYrsuA2X6GgHsEq8rA57h0sJW7VaVjQwND7/S+8hs9qm
+        00IraQskPRX63q1gYQa2wn/VxQ==
+X-Google-Smtp-Source: ABdhPJx63POYH5gXMHacZ8NmF7VSSR4RXWfPc1Q5bl7FQgmjkhB04gL1Q2InO4pZKZTdbCjIVlBz1Q==
+X-Received: by 2002:a1c:dc86:: with SMTP id t128mr1841138wmg.6.1597786697216;
+        Tue, 18 Aug 2020 14:38:17 -0700 (PDT)
 Received: from localhost.localdomain ([88.116.83.106])
-        by smtp.gmail.com with ESMTPSA id z207sm1797860wmc.2.2020.08.18.14.38.10
+        by smtp.gmail.com with ESMTPSA id z207sm1797860wmc.2.2020.08.18.14.38.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 Aug 2020 14:38:11 -0700 (PDT)
+        Tue, 18 Aug 2020 14:38:16 -0700 (PDT)
 From:   Crt Mori <cmo@melexis.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Crt Mori <cmo@melexis.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v6 2/5] iio:temperature:mlx90632: Add kerneldoc to the internal struct
-Date:   Tue, 18 Aug 2020 23:37:34 +0200
-Message-Id: <20200818213737.140613-3-cmo@melexis.com>
+Subject: [PATCH v6 5/5] iio:temperature:mlx90632: Some stylefixing leftovers
+Date:   Tue, 18 Aug 2020 23:37:37 +0200
+Message-Id: <20200818213737.140613-6-cmo@melexis.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20200818213737.140613-1-cmo@melexis.com>
 References: <20200818213737.140613-1-cmo@melexis.com>
@@ -75,36 +75,43 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document internal/private struct for mlx90632 device.
+There is some inconsistency and whitespace cleanup performed in this
+patch. It was done on top of my other patches, but I can rebase to head
+of the togreg branch if it would go in sooner.
 
 Signed-off-by: Crt Mori <cmo@melexis.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/temperature/mlx90632.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+ drivers/iio/temperature/mlx90632.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/temperature/mlx90632.c b/drivers/iio/temperature/mlx90632.c
-index c3de10ba5b1e..ce75f5a3486b 100644
+index 94bca2b2866a..472a7fb20615 100644
 --- a/drivers/iio/temperature/mlx90632.c
 +++ b/drivers/iio/temperature/mlx90632.c
-@@ -89,9 +89,16 @@
- #define MLX90632_MAX_MEAS_NUM	31 /**< Maximum measurements in list */
- #define MLX90632_SLEEP_DELAY_MS 3000 /**< Autosleep delay */
+@@ -112,10 +112,10 @@
+ #define MLX90632_DSP_VERSION	5 /* DSP version */
+ #define MLX90632_DSP_MASK	GENMASK(7, 0) /* DSP version in EE_VERSION */
+ #define MLX90632_RESET_CMD	0x0006 /* Reset sensor (address or global) */
+-#define MLX90632_REF_12		12LL /**< ResCtrlRef value of Ch 1 or Ch 2 */
+-#define MLX90632_REF_3		12LL /**< ResCtrlRef value of Channel 3 */
+-#define MLX90632_MAX_MEAS_NUM	31 /**< Maximum measurements in list */
+-#define MLX90632_SLEEP_DELAY_MS 3000 /**< Autosleep delay */
++#define MLX90632_REF_12 	12LL /* ResCtrlRef value of Ch 1 or Ch 2 */
++#define MLX90632_REF_3		12LL /* ResCtrlRef value of Channel 3 */
++#define MLX90632_MAX_MEAS_NUM	31 /* Maximum measurements in list */
++#define MLX90632_SLEEP_DELAY_MS 3000 /* Autosleep delay */
+ #define MLX90632_EXTENDED_LIMIT 27000 /* Extended mode raw value limit */
  
-+/**
-+ * struct mlx90632_data - private data for the MLX90632 device
-+ * @client: I2C client of the device
-+ * @lock: Internal mutex for multiple reads for single measurement
-+ * @regmap: Regmap of the device
-+ * @emissivity: Object emissivity from 0 to 1000 where 1000 = 1.
-+ */
- struct mlx90632_data {
- 	struct i2c_client *client;
--	struct mutex lock; /* Multiple reads for single measurement */
-+	struct mutex lock;
- 	struct regmap *regmap;
- 	u16 emissivity;
- };
+ /**
+@@ -889,7 +889,7 @@ static int mlx90632_probe(struct i2c_client *client,
+ 		mlx90632->mtyp = MLX90632_MTYP_EXTENDED;
+ 	} else if ((read & MLX90632_DSP_MASK) == MLX90632_DSP_VERSION) {
+ 		dev_dbg(&client->dev,
+-			"Detected Unknown EEPROM calibration %x\n", read);	
++			"Detected Unknown EEPROM calibration %x\n", read);
+ 	} else {
+ 		dev_err(&client->dev,
+ 			"Wrong DSP version %x (expected %x)\n",
 -- 
 2.25.1
 
