@@ -4,59 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B7EBC433E3
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF5D5C433E1
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DD29B2080D
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AC63D207DF
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TreoCnNR"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="FYMHfmyQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728207AbgHVPJK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Aug 2020 11:09:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46590 "EHLO
+        id S1728244AbgHVPJM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Aug 2020 11:09:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728196AbgHVPJJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:09 -0400
-Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 98D0AC061575;
-        Sat, 22 Aug 2020 08:09:08 -0700 (PDT)
-Received: by mail-pj1-x1043.google.com with SMTP id kr4so2091713pjb.2;
-        Sat, 22 Aug 2020 08:09:08 -0700 (PDT)
+        with ESMTP id S1728173AbgHVPJF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:05 -0400
+Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A3AE0C061573;
+        Sat, 22 Aug 2020 08:09:05 -0700 (PDT)
+Received: by mail-pj1-x1041.google.com with SMTP id j13so2068559pjd.4;
+        Sat, 22 Aug 2020 08:09:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=aWfg/p1bEEsF9VR7qbKwXbT4prM1ax9SkBLPqSVouws=;
-        b=TreoCnNRUV59m5H5mc54POb5e9AKUfujBJtw6CIU7DJ7TlGxX+yWWCP90io+UvOhtI
-         6lN6VARFlIqBKPqYLlaGNDPnM9Q3+Fsd5EiE77WcG1FjMNbhUiTgw+eHU9Odthuh81lh
-         BY+V/CK+INs+HgCEm8drPMVSUzhSMeEGuR33FpIiedWXcilR1XxjcbF3SHrkRzPyH56f
-         baurpXfeJMVOEuh5wP4ETfaQXhStCqc6nMOycfWwUbB7ksdW8nnvtGzXBBKHgb2FTwet
-         3BqxDuzR3/1LGrjg1flO1cB++9SUh1+CP3TNx9S7/0sxZxUkPvbe+FsBqSSJfHyMphfn
-         oGiw==
+        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=3ojjDGinYxNQUXg0N/YZCfPJhsS5y6qCv15zZNisimw=;
+        b=FYMHfmyQcP6r87y54D39SU0U/EXItY7BuTkYJg//dksggcAH0PmjNsG2HLFYlwLgsL
+         +iAJHEBCM50FyAWpXX8ktBcxGV5aj9bN7hTgngLpw+9rM0xhvBix3c/zk96h2RR0TJIF
+         1u6MRRf5jclW2sk8ZIT+49NMprGPCUC8txAG0fPwSwSAk6eyuGIdkgFOxxIdE+KrsAeU
+         cLi9ub+ChT1VakxFRXma4xICnvC6AnFl3mmh6bZcn0vDIZ6ejNR0HkYQ2Uo9RNWiuEAV
+         0TyDRfQUrjz/sohswEGdGfurDntNNg7vo2OM+0R46rBfumdvVwQq56cHl888YxEfKcZ7
+         AypQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references:mime-version:content-transfer-encoding;
-        bh=aWfg/p1bEEsF9VR7qbKwXbT4prM1ax9SkBLPqSVouws=;
-        b=b9XiuoU01BLGuQCJyVU7COCO63YBASXCjsW+yLXpfiaadDIZAWLvIyOGXVF6Ua9Zi0
-         O0dl4j89f+7vKnWr7MXBPd5CBlChMVmynVrsXglu3q2Xypy3fJFwdmKiFhpo6xqit3P5
-         jOh6VmR12aEE++2BBzw5TlqWTwVC+PSemthapbl1LtwbHi/9cJjI7dL0EEZaODcBHMmh
-         5exK9XgJRa98DQRmoCL93dPa1hSrX0TxfhcOUxBVk9wTkYFSYR4DiC2KBgLNEU3jIebX
-         MACGmRk6SBiVnmXi3cyi/2mRC6bXy1Q43zApustOTwepFICziL6DWL/2rTJX/BSg/WuT
-         CqxQ==
-X-Gm-Message-State: AOAM530a2WubOv2eTbJYYvgmlyKjMt6OBlgTKiKlXrytfMOMr8nsERbb
-        x9FPIS/3CN9WdEadDKYWY/U=
-X-Google-Smtp-Source: ABdhPJys2OLCfUIKzWTMevNyztH0683b7F8X4R7+XyRTVJJiiPVel4kLEjsxFqZHvK3QajGoT+87wA==
-X-Received: by 2002:a17:90b:154:: with SMTP id em20mr6778169pjb.173.1598108948143;
-        Sat, 22 Aug 2020 08:09:08 -0700 (PDT)
+         :in-reply-to:references;
+        bh=3ojjDGinYxNQUXg0N/YZCfPJhsS5y6qCv15zZNisimw=;
+        b=qZBwGwwHB8rZ4vZSK30YO0CXYmKxZNbT/qrHV/KVsZIx+9U3XfsS6yEVRJ+umxTWGp
+         Y12DSsC0jPckFb/tF+vLKgsh6yfYwUcMj0Zh+QXSYsSlA/0vUJaB+qLg39mh5Yxv2oGF
+         LIUiLBsqcnMG+Z6HRBgQz0261XnIcsuAzkbWaQK0zxLtG5Jiu4ToMQBrkDtAcrW+iNiP
+         GGaY7HbV4VpLT2qvagTgFXldf0ig3Z07EyOWxlgh+TnrHhmAYTTDAxZD7yg9LI7HR+BW
+         jBdhC9/Ulxl2swterqm1CnH+q+qDKfFI6fNj4+g1VmfrglbgN0SfFMi+3Pxv6zWfU7b1
+         rGag==
+X-Gm-Message-State: AOAM531Z4xIXSkCAS/32EnyewYlrIHkHG8z3NhXJlnYvQXK79fe5sR0I
+        CdtPWSp2t0n/bo0s8vMzY/c=
+X-Google-Smtp-Source: ABdhPJxdqCjvAVsoNTQz4p/S3SBkxECC2lx6F079AYS6/n65xj8rZ65zisMod2OMZx3jjLjbAP/5Pg==
+X-Received: by 2002:a17:90a:f0d7:: with SMTP id fa23mr1874486pjb.91.1598108945205;
+        Sat, 22 Aug 2020 08:09:05 -0700 (PDT)
 Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id n18sm5066040pgd.91.2020.08.22.08.09.07
+        by smtp.gmail.com with ESMTPSA id q66sm4684090pjq.17.2020.08.22.08.09.04
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Aug 2020 08:09:07 -0700 (PDT)
+        Sat, 22 Aug 2020 08:09:04 -0700 (PDT)
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -72,15 +71,12 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Guenter Roeck <linux@roeck-us.net>,
         Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v5 4/7] pwm: cros-ec: Accept more error codes from cros_ec_cmd_xfer_status
-Date:   Sat, 22 Aug 2020 08:08:54 -0700
-Message-Id: <20200822150857.205775-5-linux@roeck-us.net>
+Subject: [PATCH v5 2/7] cros_ec_lightbar: Accept more error codes from cros_ec_cmd_xfer_status
+Date:   Sat, 22 Aug 2020 08:08:52 -0700
+Message-Id: <20200822150857.205775-3-linux@roeck-us.net>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200822150857.205775-1-linux@roeck-us.net>
 References: <20200822150857.205775-1-linux@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -92,82 +88,54 @@ reports -EPROTO for all errors returned by the EC itself. A follow-up
 patch will change cros_ec_cmd_xfer_status() to report additional errors
 reported by the EC as distinguished Linux error codes.
 
-Handle this change by no longer assuming that only -EPROTO is used
-to report all errors returned by the EC itself. Instead, support both
-the old and the new error codes.
-
-Add a comment describing cros_ec_num_pwms() to explain its functionality.
+Handle this change by no longer assuming that -EPROTO is used to report
+all errors returned by the EC itself. Since errors reported by the EC are
+already reported in text form through sysfs attributes, extend this form
+of error reporting to all errors reported by cros_ec_cmd_xfer_status().
 
 Cc: Gwendal Grignou <gwendal@chromium.org>
 Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
 Cc: Prashant Malani <pmalani@chromium.org>
 Cc: Brian Norris <briannorris@chromium.org>
-Acked-by: Thierry Reding <thierry.reding@gmail.com>
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-v5: Added Uwe's Acked-by: tag
-v4: Added comments describing cros_ec_num_pwms() in more detail
-    Added Thierry's Acked-by: tag
-v3: Added patch
+v5: No change
+v4: No change
+v3: No change
+v2: Added patch
 
- drivers/pwm/pwm-cros-ec.c | 29 ++++++++++++++++++++++-------
- 1 file changed, 22 insertions(+), 7 deletions(-)
+ drivers/platform/chrome/cros_ec_lightbar.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/pwm/pwm-cros-ec.c b/drivers/pwm/pwm-cros-ec.c
-index 09c08dee099e..94d3dff9b0e5 100644
---- a/drivers/pwm/pwm-cros-ec.c
-+++ b/drivers/pwm/pwm-cros-ec.c
-@@ -204,6 +204,11 @@ static const struct pwm_ops cros_ec_pwm_ops = {
- 	.owner		= THIS_MODULE,
- };
+diff --git a/drivers/platform/chrome/cros_ec_lightbar.c b/drivers/platform/chrome/cros_ec_lightbar.c
+index b59180bff5a3..8445cda57927 100644
+--- a/drivers/platform/chrome/cros_ec_lightbar.c
++++ b/drivers/platform/chrome/cros_ec_lightbar.c
+@@ -117,7 +117,7 @@ static int get_lightbar_version(struct cros_ec_dev *ec,
+ 	param = (struct ec_params_lightbar *)msg->data;
+ 	param->cmd = LIGHTBAR_CMD_VERSION;
+ 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
+-	if (ret < 0) {
++	if (ret < 0 && ret != -EINVAL) {
+ 		ret = 0;
+ 		goto exit;
+ 	}
+@@ -298,11 +298,9 @@ static ssize_t sequence_show(struct device *dev,
+ 		goto exit;
  
-+/*
-+ * Determine the number of supported PWMs. The EC does not return the number
-+ * of PWMs it supports directly, so we have to read the pwm duty cycle for
-+ * subsequent channels until we get an error.
-+ */
- static int cros_ec_num_pwms(struct cros_ec_device *ec)
- {
- 	int i, ret;
-@@ -213,20 +218,30 @@ static int cros_ec_num_pwms(struct cros_ec_device *ec)
- 		u32 result = 0;
- 
- 		ret = __cros_ec_pwm_get_duty(ec, i, &result);
--		/* We want to parse EC protocol errors */
--		if (ret < 0 && !(ret == -EPROTO && result))
--			return ret;
--
- 		/*
- 		 * We look for SUCCESS, INVALID_COMMAND, or INVALID_PARAM
- 		 * responses; everything else is treated as an error.
-+		 * The EC error codes either map to -EOPNOTSUPP / -EINVAL,
-+		 * or -EPROTO is returned and the EC error is in the result
-+		 * field. Check for both.
- 		 */
--		if (result == EC_RES_INVALID_COMMAND)
-+		switch (ret) {
-+		case -EOPNOTSUPP:	/* invalid command */
- 			return -ENODEV;
--		else if (result == EC_RES_INVALID_PARAM)
-+		case -EINVAL:		/* invalid parameter */
- 			return i;
--		else if (result)
-+		case -EPROTO:
-+			/* Old or new error return code: Handle both */
-+			if (result == EC_RES_INVALID_COMMAND)
-+				return -ENODEV;
-+			else if (result == EC_RES_INVALID_PARAM)
-+				return i;
- 			return -EPROTO;
-+		default:
-+			if (ret < 0)
-+				return ret;
-+			break;
-+		}
+ 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
+-	if (ret == -EPROTO) {
+-		ret = scnprintf(buf, PAGE_SIZE,
+-				"ERROR: EC returned %d\n", msg->result);
+-		goto exit;
+-	} else if (ret < 0) {
++	if (ret < 0) {
++		ret = scnprintf(buf, PAGE_SIZE, "XFER / EC ERROR %d / %d\n",
++				ret, msg->result);
+ 		goto exit;
  	}
  
- 	return U8_MAX;
 -- 
 2.17.1
 
