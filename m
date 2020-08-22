@@ -2,119 +2,193 @@ Return-Path: <SRS0=leo/=CA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D63C433E1
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EE7C433E1
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 22:48:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8214A2086A
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CDBE82080D
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 22:48:19 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l41Zzxas"
+	dkim=pass (1024-bit key) header.d=konsulko.com header.i=@konsulko.com header.b="k+DPAuEc"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726728AbgHVPJr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Aug 2020 11:09:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
+        id S1727940AbgHVWsT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Aug 2020 18:48:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33452 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728106AbgHVPJE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:04 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329E8C061573;
-        Sat, 22 Aug 2020 08:09:04 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id g6so179633pjl.0;
-        Sat, 22 Aug 2020 08:09:04 -0700 (PDT)
+        with ESMTP id S1727039AbgHVWsQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 18:48:16 -0400
+Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EAEC061573
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2020 15:48:16 -0700 (PDT)
+Received: by mail-io1-xd44.google.com with SMTP id h4so5147490ioe.5
+        for <linux-iio@vger.kernel.org>; Sat, 22 Aug 2020 15:48:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=4x4afjEuVHn+zEV5wCvJkjFDf4xgBLyslqYhfcwaoFI=;
-        b=l41ZzxasALiq3GtUf+YfngG6SFwClg2LAvtO+OAqXoDeM+gGfG7u1b/NBUwK8yUgrG
-         xaWZrgfoG3HxZbUY+aFcVTAVTL7f/xpmFJiFlu5BnqaE7cBcQVw8BF1KswxXK76S3MG7
-         O36kzQeRMnXOoYfcBJbeNx0L5P0SDyNFqcpSniZjxkHb2I40T9MRtL3pEYYOSk3o0OTv
-         NJPNdWH7VSBwlvlB/4uLmDTNXZwuegPMl8TTm5IigkevbnQVlZ+F90q1tfjxAYkSK922
-         CoIV64vzCNEZzDk4AIBpIMkcWNF+k6kb8jcT4aQpawp2KtZK+FOVid7ma646wLi17mVg
-         KKoQ==
+        d=konsulko.com; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=yuQXF3Z78FnjlKAbtX0UaK1svJGxRlpoN5dcaoLan3I=;
+        b=k+DPAuEc13yCtSXpSX+1alYZp9ReRT7JvXwKWL6/XOEBv+r6J7NbR5ldn5o5X/MU8K
+         JBrlLdyLafuN7iqG5pKHeQ7QP0Wb4eTmxJ37MVZUPi3+4lnvJ+TmUAUZaR91I/5Zhxhq
+         qkS2zotk17bOUkVO8bl3LUeh8MUeIsDh/P2lY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
-         :in-reply-to:references;
-        bh=4x4afjEuVHn+zEV5wCvJkjFDf4xgBLyslqYhfcwaoFI=;
-        b=lyqG+Gt3Mj24urYZDwofSv8/9OI7Q6AoQsI0dA4lxwSo38ujq6CWmvFa1B2v30mUg9
-         kWqVvPyFIEZ82keUNIIcq7gQhzwtZpwfkjg9gql81+a9/B7b/Bgjesa29e5ZQaNRANEW
-         kvtCyhL83aWrx1rY6ajUMocB7qYyATX64byo/Y7JQDy4QmrYhaUCrriphPdTjsS3zkB0
-         KmCtUtpY/ceYsI5TfM+MCZcuKG8Bfvg1o2tQSWVcsBTzQmlvWCnvjf0bGoEBnVIyvpLU
-         5BsHZsyDX5gpVbwxXVACiQJ3mGUIi3Vq2kazBkMscYdInSNpqFiVjgU36o0dLvzwps2d
-         Lqmw==
-X-Gm-Message-State: AOAM530peTg5DursNGLuXKHIHdMHEIS6hdU/KSxscvYlR+Cyfh5u/z4c
-        K4i5lG9KdgHuTU31NbCwxUk=
-X-Google-Smtp-Source: ABdhPJzWAsGWaIN7KhDuWtE9gvakScLvPA2dDboXnoFZwHCggj3iIeyZj2k6IEnIm87gMJKfS1/lqw==
-X-Received: by 2002:a17:902:c244:: with SMTP id 4mr66765plg.93.1598108943728;
-        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
-Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id mp3sm11405445pjb.0.2020.08.22.08.09.03
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
-From:   Guenter Roeck <linux@roeck-us.net>
-To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v5 1/7] iio: cros_ec: Accept -EOPNOTSUPP as 'not supported' error code
-Date:   Sat, 22 Aug 2020 08:08:51 -0700
-Message-Id: <20200822150857.205775-2-linux@roeck-us.net>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200822150857.205775-1-linux@roeck-us.net>
-References: <20200822150857.205775-1-linux@roeck-us.net>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=yuQXF3Z78FnjlKAbtX0UaK1svJGxRlpoN5dcaoLan3I=;
+        b=Te7WPx8rtgI7SMhGjjjpB6p/rflO95ZYRZKd0FBzJwrxBE2x5Qnc6biYhzyYQ40raJ
+         8YVxt2HK1L8SthbzKHVx9riUPiLCbQV3Q+5lEmKhhW+otdVGX93aGSKt/RqrYXmHne6A
+         xMPRvp50CUOKKWW1W8kmMpaCAQMWhXvR2S4BtpYkooiJU+d4cS1fXhBH2Ml7QoYDpQvq
+         a4txYwUDp0cpGnXOKlSCtfDKjYYxSY3eN/IJ/GqI4QZMTqnjZqVYejGOCSX+6GGP+tDs
+         j1hh2AJQ/JMbUL3srU8UV7qYGO/Qs5Svn1W+bLt4NllwHLPE09qPLKWJxjlb8bSI6NNV
+         fwNg==
+X-Gm-Message-State: AOAM5316+k8Z0slb/spyNqHa1lWKc22dyqidgcCF+n9KlDxSLngxu+8M
+        dpkg+6pJKCSNHJuPvHEk73sCKTWK6enpFZlO6TxlO0EYcA8=
+X-Google-Smtp-Source: ABdhPJzhGDfw6se31XpUSnJEmSpEPElT3B2h382dwTVfAbnThOZApz1k7wnuivVgIrUFHa/+YBh5dIDA2xdkoypT2TE=
+X-Received: by 2002:a05:6638:1116:: with SMTP id n22mr8284951jal.117.1598136490501;
+ Sat, 22 Aug 2020 15:48:10 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200817005052.11565-1-matt.ranostay@konsulko.com>
+ <20200817005052.11565-3-matt.ranostay@konsulko.com> <20200822120140.0a2c6d0f@archlinux>
+In-Reply-To: <20200822120140.0a2c6d0f@archlinux>
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+Date:   Sat, 22 Aug 2020 15:47:58 -0700
+Message-ID: <CAJCx=gngQNkwFuG3TtUrOLp04G1gmbsf5+6Js88EbwtRK-wxRA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] iio: chemical: atlas-ezo-sensor: add humidity
+ sensor support
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A follow-up patch will extend the number of errors reported by
-cros_ec_cmd_xfer_status(). Specifically, the function will return
--EOPNOTSUPP if a command is not supported by the EC. Prepare for it.
+On Sat, Aug 22, 2020 at 4:01 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Mon, 17 Aug 2020 03:50:52 +0300
+> Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+>
+> > Add support for atlas,hum-ezo / humidity sensor which with scaling
+> > provides respective data in millipercent
+> >
+> > Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
+> One comment inline.
+>
+> Applied to the togreg branch of iio.git and pushed out as testing for
+> the autobuilders to play with it.
+>
+> Thanks,
+>
+> Jonathan
+>
+> > ---
+> >  drivers/iio/chemical/atlas-ezo-sensor.c | 37 ++++++++++++++++++++++++-
+> >  1 file changed, 36 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
+> > index 60a0c752fbc5..b1bacfe3c3ce 100644
+> > --- a/drivers/iio/chemical/atlas-ezo-sensor.c
+> > +++ b/drivers/iio/chemical/atlas-ezo-sensor.c
+> > @@ -17,10 +17,12 @@
+> >
+> >  #define ATLAS_EZO_DRV_NAME           "atlas-ezo-sensor"
+> >  #define ATLAS_INT_TIME_IN_MS         950
+> > +#define ATLAS_INT_HUM_TIME_IN_MS     350
+> >
+> >  enum {
+> >       ATLAS_CO2_EZO,
+> >       ATLAS_O2_EZO,
+> > +     ATLAS_HUM_EZO,
+> >  };
+> >
+> >  struct atlas_ezo_device {
+> > @@ -63,6 +65,21 @@ static const struct iio_chan_spec atlas_o2_ezo_channels[] = {
+> >       ATLAS_CONCENTRATION_CHANNEL(IIO_MOD_O2),
+> >  };
+> >
+> > +static const struct iio_chan_spec atlas_hum_ezo_channels[] = {
+> > +     {
+> > +             .type = IIO_HUMIDITYRELATIVE,
+> > +             .info_mask_separate =
+> > +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+> > +             .scan_index = 0,
+> > +             .scan_type =  {
+> > +                     .sign = 'u',
+> > +                     .realbits = 32,
+> > +                     .storagebits = 32,
+> > +                     .endianness = IIO_CPU,
+> > +             },
+> > +     },
+> > +};
+> > +
+> >  static struct atlas_ezo_device atlas_ezo_devices[] = {
+> >       [ATLAS_CO2_EZO] = {
+> >               .channels = atlas_co2_ezo_channels,
+> > @@ -73,7 +90,12 @@ static struct atlas_ezo_device atlas_ezo_devices[] = {
+> >               .channels = atlas_o2_ezo_channels,
+> >               .num_channels = 1,
+> >               .delay = ATLAS_INT_TIME_IN_MS,
+> > -     }
+> > +     },
+> > +     [ATLAS_HUM_EZO] = {
+> > +             .channels = atlas_hum_ezo_channels,
+> > +             .num_channels = 1,
+> > +             .delay = ATLAS_INT_HUM_TIME_IN_MS,
+> > +     },
+> >  };
+> >
+> >  static void atlas_ezo_sanitize(char *buf)
+> > @@ -131,6 +153,17 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
+> >               return ret ? ret : IIO_VAL_INT;
+> >       }
+> >       case IIO_CHAN_INFO_SCALE:
+> > +             switch (chan->type) {
+> > +             case IIO_HUMIDITYRELATIVE:
+> > +                     *val = 10;
+> > +                     return IIO_VAL_INT;
+> > +             case IIO_CONCENTRATION:
+> > +                     break;
+> > +             default:
+> > +                     return -EINVAL;
+> > +             }
+>
+> This structure strikes me as something that might get rather ugly if it
+> gets much more complex.
+>
+> I'll take this one, but keep in mind for any future additions to the driver!
 
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
-Cc: Prashant Malani <pmalani@chromium.org>
-Cc: Brian Norris <briannorris@chromium.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Brian Norris <briannorris@chromium.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v5: No change
-v4: No change
-v3: No change
-v2: No change
+Yeah I agree, and future additions will probably need a much less
+hacky switch {} assortment.
 
- drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-index 130ab8ce0269..d71e9064c789 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -73,7 +73,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
- 		st->core.param.sensor_offset.flags = 0;
- 
- 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
--		if (ret == -EPROTO) {
-+		if (ret == -EPROTO || ret == -EOPNOTSUPP) {
- 			/* Reading calibscale is not supported on older EC. */
- 			*val = 1;
- 			*val2 = 0;
--- 
-2.17.1
+- Matt
 
+>
+> Jonathan
+>
+> > +
+> > +             /* IIO_CONCENTRATION modifiers */
+> >               switch (chan->channel2) {
+> >               case IIO_MOD_CO2:
+> >                       *val = 0;
+> > @@ -153,6 +186,7 @@ static const struct iio_info atlas_info = {
+> >  static const struct i2c_device_id atlas_ezo_id[] = {
+> >       { "atlas-co2-ezo", ATLAS_CO2_EZO },
+> >       { "atlas-o2-ezo", ATLAS_O2_EZO },
+> > +     { "atlas-hum-ezo", ATLAS_HUM_EZO },
+> >       {}
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
+> > @@ -160,6 +194,7 @@ MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
+> >  static const struct of_device_id atlas_ezo_dt_ids[] = {
+> >       { .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
+> >       { .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
+> > +     { .compatible = "atlas,hum-ezo", .data = (void *)ATLAS_HUM_EZO, },
+> >       {}
+> >  };
+> >  MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
+>
