@@ -7,55 +7,55 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABB0C433E3
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A2D63C433E1
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5E34A2080D
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8214A2086A
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:48 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="eiJGeoAi"
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="l41Zzxas"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728357AbgHVPJh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Aug 2020 11:09:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46598 "EHLO
+        id S1726728AbgHVPJr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Aug 2020 11:09:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46574 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726728AbgHVPJK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:10 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19A3CC061573;
-        Sat, 22 Aug 2020 08:09:10 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id d4so2066976pjx.5;
-        Sat, 22 Aug 2020 08:09:10 -0700 (PDT)
+        with ESMTP id S1728106AbgHVPJE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:04 -0400
+Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 329E8C061573;
+        Sat, 22 Aug 2020 08:09:04 -0700 (PDT)
+Received: by mail-pj1-x1044.google.com with SMTP id g6so179633pjl.0;
+        Sat, 22 Aug 2020 08:09:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=sender:from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=XvKl02jufHLLnMJt3E8B12KOP7zAos8o1w+WI8beqQM=;
-        b=eiJGeoAiy9iTITHjCX2YB16/FP0kudN3tuamVNNOt4/6rE420/YRkMRyYI50lKAc6Z
-         meJq10torKmO5TGxw7cdNAdXC97dFO+fsWTy1EQJLhzXBEt/OPQR4IYqZdoCyMuK7g9b
-         qVAWPMRMZ2vRbJg9UbapsosDBOCseDQ0C3xmpf57YPDBGnU6wdPyEkmm0OJcegJ8muVg
-         DrE/1xnFjxb3reyDoEp4CJmnHuWMK7ALsYtD4Tg4wJ7kXoqhZseONT36xwQ8Oj6USz+5
-         mKFcax61i5ZDB7vfW7gtnGzio0g7Vx0YvK+QeRlKbJkzLF7uSDk15pDs1XIs2PenOJel
-         dxkQ==
+        bh=4x4afjEuVHn+zEV5wCvJkjFDf4xgBLyslqYhfcwaoFI=;
+        b=l41ZzxasALiq3GtUf+YfngG6SFwClg2LAvtO+OAqXoDeM+gGfG7u1b/NBUwK8yUgrG
+         xaWZrgfoG3HxZbUY+aFcVTAVTL7f/xpmFJiFlu5BnqaE7cBcQVw8BF1KswxXK76S3MG7
+         O36kzQeRMnXOoYfcBJbeNx0L5P0SDyNFqcpSniZjxkHb2I40T9MRtL3pEYYOSk3o0OTv
+         NJPNdWH7VSBwlvlB/4uLmDTNXZwuegPMl8TTm5IigkevbnQVlZ+F90q1tfjxAYkSK922
+         CoIV64vzCNEZzDk4AIBpIMkcWNF+k6kb8jcT4aQpawp2KtZK+FOVid7ma646wLi17mVg
+         KKoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
          :in-reply-to:references;
-        bh=XvKl02jufHLLnMJt3E8B12KOP7zAos8o1w+WI8beqQM=;
-        b=e/2GWshzClKsYOdApdmcAUvcFP/4Hmb3ICmhfu1mzvtoe3TZ+7r9Xl1uW55edBSEtN
-         iTLO5LmpL2PkPA0YpW8VgIJlYsNVva06DbWSHyO7Movpl12lNFSaFbbaeqCPkddvTSK0
-         M0oEiAVVu4EPWD+k5RDdik1NGkJPPCMTUL7VF0ekAlJvUg2jfBEks2XfwqF/+OCWjZZM
-         98M6xsq9uCBdv//c8kLqAGuBjH+0Z/jnk1V+gGIIXNHV6npiif8d93kN/r0lLi/KO++F
-         7LBAaaIYjKb8lgb5OwiIE3kZu9VdMlzAaBNdMFr3TxNwiuKpwboxrT+iAmTtBc0+mlpP
-         PAXA==
-X-Gm-Message-State: AOAM533wY3QVvqXsleV1OUI/x8mzt6+Y2QH9FzVbaCHGRLpdj+HANW8G
-        wReqJeZJXU0GpZtlSrX9TnA=
-X-Google-Smtp-Source: ABdhPJwA7x12JBUNVJ9JFUNiAOAwVhlsfBacnRFL3Z9rpk7Vnl3O4wTD7kKuTT2PnHENA8gXWnZF7g==
-X-Received: by 2002:a17:90a:19dc:: with SMTP id 28mr6324439pjj.103.1598108949630;
-        Sat, 22 Aug 2020 08:09:09 -0700 (PDT)
+        bh=4x4afjEuVHn+zEV5wCvJkjFDf4xgBLyslqYhfcwaoFI=;
+        b=lyqG+Gt3Mj24urYZDwofSv8/9OI7Q6AoQsI0dA4lxwSo38ujq6CWmvFa1B2v30mUg9
+         kWqVvPyFIEZ82keUNIIcq7gQhzwtZpwfkjg9gql81+a9/B7b/Bgjesa29e5ZQaNRANEW
+         kvtCyhL83aWrx1rY6ajUMocB7qYyATX64byo/Y7JQDy4QmrYhaUCrriphPdTjsS3zkB0
+         KmCtUtpY/ceYsI5TfM+MCZcuKG8Bfvg1o2tQSWVcsBTzQmlvWCnvjf0bGoEBnVIyvpLU
+         5BsHZsyDX5gpVbwxXVACiQJ3mGUIi3Vq2kazBkMscYdInSNpqFiVjgU36o0dLvzwps2d
+         Lqmw==
+X-Gm-Message-State: AOAM530peTg5DursNGLuXKHIHdMHEIS6hdU/KSxscvYlR+Cyfh5u/z4c
+        K4i5lG9KdgHuTU31NbCwxUk=
+X-Google-Smtp-Source: ABdhPJzWAsGWaIN7KhDuWtE9gvakScLvPA2dDboXnoFZwHCggj3iIeyZj2k6IEnIm87gMJKfS1/lqw==
+X-Received: by 2002:a17:902:c244:: with SMTP id 4mr66765plg.93.1598108943728;
+        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
 Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id a10sm5906611pfk.26.2020.08.22.08.09.09
+        by smtp.gmail.com with ESMTPSA id mp3sm11405445pjb.0.2020.08.22.08.09.03
         (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sat, 22 Aug 2020 08:09:09 -0700 (PDT)
+        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
 From:   Guenter Roeck <linux@roeck-us.net>
 To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
@@ -71,9 +71,9 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
         Guenter Roeck <linux@roeck-us.net>,
         Brian Norris <briannorris@chromium.org>
-Subject: [PATCH v5 5/7] platform/input: cros_ec: Replace -ENOTSUPP with -ENOPROTOOPT
-Date:   Sat, 22 Aug 2020 08:08:55 -0700
-Message-Id: <20200822150857.205775-6-linux@roeck-us.net>
+Subject: [PATCH v5 1/7] iio: cros_ec: Accept -EOPNOTSUPP as 'not supported' error code
+Date:   Sat, 22 Aug 2020 08:08:51 -0700
+Message-Id: <20200822150857.205775-2-linux@roeck-us.net>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200822150857.205775-1-linux@roeck-us.net>
 References: <20200822150857.205775-1-linux@roeck-us.net>
@@ -82,61 +82,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
--ENOTSUPP is not a SUSV4 error code and should not be used. Use
--ENOPROTOOPT instead to report EC_RES_INVALID_VERSION responses
-from the EC. This matches match the NFS response for unsupported
-protocol versions.
+A follow-up patch will extend the number of errors reported by
+cros_ec_cmd_xfer_status(). Specifically, the function will return
+-EOPNOTSUPP if a command is not supported by the EC. Prepare for it.
 
 Cc: Gwendal Grignou <gwendal@chromium.org>
 Cc: Yu-Hsuan Hsu <yuhsuan@chromium.org>
 Cc: Prashant Malani <pmalani@chromium.org>
 Cc: Brian Norris <briannorris@chromium.org>
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Brian Norris <briannorris@chromium.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
 v5: No change
-v4: Added Dmitry's Acked-by: tag
-v3: Added patch
+v4: No change
+v3: No change
+v2: No change
 
- drivers/input/keyboard/cros_ec_keyb.c   | 2 +-
- drivers/platform/chrome/cros_ec_proto.c | 4 ++--
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/input/keyboard/cros_ec_keyb.c b/drivers/input/keyboard/cros_ec_keyb.c
-index fc1793ca2f17..15d17c717081 100644
---- a/drivers/input/keyboard/cros_ec_keyb.c
-+++ b/drivers/input/keyboard/cros_ec_keyb.c
-@@ -348,7 +348,7 @@ static int cros_ec_keyb_info(struct cros_ec_device *ec_dev,
- 	params->event_type = event_type;
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index 130ab8ce0269..d71e9064c789 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -73,7 +73,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
+ 		st->core.param.sensor_offset.flags = 0;
  
- 	ret = cros_ec_cmd_xfer_status(ec_dev, msg);
--	if (ret == -ENOTSUPP) {
-+	if (ret == -ENOPROTOOPT) {
- 		/* With older ECs we just return 0 for everything */
- 		memset(result, 0, result_size);
- 		ret = 0;
-diff --git a/drivers/platform/chrome/cros_ec_proto.c b/drivers/platform/chrome/cros_ec_proto.c
-index 8d52b3b4bd4e..f4727511fb41 100644
---- a/drivers/platform/chrome/cros_ec_proto.c
-+++ b/drivers/platform/chrome/cros_ec_proto.c
-@@ -579,7 +579,7 @@ static int cros_ec_cmd_xfer(struct cros_ec_device *ec_dev,
-  *
-  * Return:
-  * >=0 - The number of bytes transferred
-- * -ENOTSUPP - Operation not supported
-+ * -ENOPROTOOPT - Operation not supported
-  * -EPROTO - Protocol error
-  */
- int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
-@@ -593,7 +593,7 @@ int cros_ec_cmd_xfer_status(struct cros_ec_device *ec_dev,
- 	} else if (msg->result == EC_RES_INVALID_VERSION) {
- 		dev_dbg(ec_dev->dev, "Command invalid version (err:%d)\n",
- 			msg->result);
--		return -ENOTSUPP;
-+		return -ENOPROTOOPT;
- 	} else if (msg->result != EC_RES_SUCCESS) {
- 		dev_dbg(ec_dev->dev, "Command result (err: %d)\n", msg->result);
- 		return -EPROTO;
+ 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+-		if (ret == -EPROTO) {
++		if (ret == -EPROTO || ret == -EOPNOTSUPP) {
+ 			/* Reading calibscale is not supported on older EC. */
+ 			*val = 1;
+ 			*val2 = 0;
 -- 
 2.17.1
 
