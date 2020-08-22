@@ -2,174 +2,120 @@ Return-Path: <SRS0=leo/=CA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 292D3C433DF
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 11:01:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B926C433DF
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F20AB20714
-	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 11:01:55 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598094116;
-	bh=IT50F+47ubbA8dTOvO0j0cgKHHtEc++MMpOAVHL76xg=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Sdy4h4ukuB9n7s1W0RBbRGW6g0jmbAMrjLejfM8/gQaQzzUNE/+CA5zn7QVgNorFp
-	 ELEs9E6UVPhaWBCtdQCxAe2Ugp5U1suyuwDaeuZngB+iXiNVOgOM7eYDAmw6LISE9N
-	 sOdmhLwxbfjrgn+C6gm+Xka/e52fLuG5Pu/i98BQ=
+	by mail.kernel.org (Postfix) with ESMTP id 3989D20825
+	for <linux-iio@archiver.kernel.org>; Sat, 22 Aug 2020 15:09:05 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=fail reason="signature verification failed" (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="HT23YsV+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgHVLBx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 Aug 2020 07:01:53 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727113AbgHVLBp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Aug 2020 07:01:45 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 93C5D20714;
-        Sat, 22 Aug 2020 11:01:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598094105;
-        bh=IT50F+47ubbA8dTOvO0j0cgKHHtEc++MMpOAVHL76xg=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=W2F3b+dLLOYn9KlCoEHdfAk0tZUFT2eIG8UP3PeOTQpxC3fiPTMiZi/S3IGmZo2ji
-         W1EkmF2e61V21x2bPE4DMHVjNkz6B9vRkCKPnEugAiV0m0zuV15OHJ1HzKVBUqbGSD
-         5k7vQjrARQ8NGvnh2pXIKZGL5EIqnKNgY/q981EM=
-Date:   Sat, 22 Aug 2020 12:01:40 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 2/2] iio: chemical: atlas-ezo-sensor: add humidity
- sensor support
-Message-ID: <20200822120140.0a2c6d0f@archlinux>
-In-Reply-To: <20200817005052.11565-3-matt.ranostay@konsulko.com>
-References: <20200817005052.11565-1-matt.ranostay@konsulko.com>
-        <20200817005052.11565-3-matt.ranostay@konsulko.com>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S1727856AbgHVPJE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 Aug 2020 11:09:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726728AbgHVPJD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Aug 2020 11:09:03 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD59AC061573;
+        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id d19so2386404pgl.10;
+        Sat, 22 Aug 2020 08:09:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id;
+        bh=IsBEuRUo1D1VfOkGVFKpLZwxuOQKB6UbMiR6vQ0NAHA=;
+        b=HT23YsV+CAfOx1K5NfvNUiykOrJzwSCssXaK+JzFaFRGSAFpEgyS3j23xhlOVPQgOy
+         r3+PL5XOf/2NefvsCLnDpsChzlmthPtlVERSn4RsX12Mdprr2aLCUSYrR9ZiFjT+IKKM
+         nYXw9Q+2zlpWLkFNKEglf2LBs/HB87ADSdlPbzTjOYZwAwd+3NZoWE1iQ1umQaqkGQV2
+         CNAYrOBPcVBMObzNvrox6ChtLC4Cl90L03xHHUN/w9+MlRSl52vzPtsa0ifusOjLKAL3
+         3MUi3UyYig1Z4TE2oy6fLQsUoID+Z8sFsIEzP2tojUOt1jI85z94V9J5O4KdQ/Ev4KCa
+         YepA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id;
+        bh=IsBEuRUo1D1VfOkGVFKpLZwxuOQKB6UbMiR6vQ0NAHA=;
+        b=BtnQI5S/Y5qvQs7bdnddy28XPoeKgLgnJfvF23UquP/ona2QeeYmY+3befGWP+0JfR
+         UhTHFpFuLhR3MrUhb99uIjZ5noWfaWeXtxiXc8LhYCLpC/HltBPUGcGg/KzlAgQF5CEr
+         9y8//BUxIAQ0k9uTd8e12Ws4YnJKdeNn+zfyZRjf3HFGdEgBaMqMDXEE5J64x8EsUUly
+         A6yK0EcdN1lgQhbU8hLJUwW3iVGUp8RkPslHrp/016Q+PB5w/imwArJWYdhjEKn3k+RR
+         2N73L9J4fLhxKUhB7gci6x5CdnwjfMRR6LfCUSzswetJ4c1A0nL58Jjnb476cYOqRlc2
+         q59g==
+X-Gm-Message-State: AOAM533KaHuuWBI+Zy0jFFhiwMhe14vK3lVAQJPu/Vzlol7Qef0jRwLJ
+        n1aIn7pU+KDv/visshLc16Y=
+X-Google-Smtp-Source: ABdhPJwal4bcpoUHI1whCOze0UQwSQw22dAbS+E1xlIAHuM8DTfvBqvZzBuAXUnVLB2RqPipTnRaug==
+X-Received: by 2002:a62:18ce:: with SMTP id 197mr6325913pfy.85.1598108942306;
+        Sat, 22 Aug 2020 08:09:02 -0700 (PDT)
+Received: from localhost ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
+        by smtp.gmail.com with ESMTPSA id s1sm5491316pgh.47.2020.08.22.08.09.01
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Sat, 22 Aug 2020 08:09:01 -0700 (PDT)
+From:   Guenter Roeck <linux@roeck-us.net>
+To:     Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Benson Leung <bleung@chromium.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>, Lee Jones <lee.jones@linaro.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
+        Prashant Malani <pmalani@chromium.org>,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH v5 0/7] platform/chrome: cros_ec_proto: Convert EC error codes to Linux error codes
+Date:   Sat, 22 Aug 2020 08:08:50 -0700
+Message-Id: <20200822150857.205775-1-linux@roeck-us.net>
+X-Mailer: git-send-email 2.17.1
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 17 Aug 2020 03:50:52 +0300
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+The EC reports a variety of error codes. Most of those, with the exception
+of EC_RES_INVALID_VERSION, are converted to -EPROTO. As result, the actual
+error code gets lost. In cros_ec_cmd_xfer_status(), convert all EC errors
+to Linux error codes to report a more meaningful error to the caller to aid
+debugging.
 
-> Add support for atlas,hum-ezo / humidity sensor which with scaling
-> provides respective data in millipercent
-> 
-> Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
-One comment inline.
+To prepare for this change, handle error codes other than -EPROTO for all
+callers of cros_ec_cmd_xfer_status(). Specifically, no longer assume that
+-EPROTO reflects an error from the EC and all other error codes reflect a
+transfer error.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+v2: Add patches 1/4 to 3/4 to handle callers of cros_ec_cmd_xfer_status()
+v3: Add patches 4/6 and 5/6 to handle additional callers of
+	cros_ec_cmd_xfer_status()
+    Use -ENOPROTOOPT for EC_RES_INVALID_VERSION
+    Implement function to convert error codes
+v4: Add coments describing the functionality of cros_ec_num_pwms().
+    Add patch 7/7 to clean up cros_ec_num_pwms() after the new error code
+    support has been implemented.
+    Rebased series to v5.8.
+v5: If there is no error, cros_ec_cmd_xfer_status() needs to return the
+    number of received bytes, not 0. While fixing that (in patch 6/7),
+    rearranged the function to reduce its indentation.
+    Rebased series to v5.9-rc1
 
-Thanks,
+----------------------------------------------------------------
+Guenter Roeck (7):
+      iio: cros_ec: Accept -EOPNOTSUPP as 'not supported' error code
+      cros_ec_lightbar: Accept more error codes from cros_ec_cmd_xfer_status
+      platform/chrome: cros_ec_sysfs: Report range of error codes from EC
+      pwm: cros-ec: Accept more error codes from cros_ec_cmd_xfer_status
+      platform/input: cros_ec: Replace -ENOTSUPP with -ENOPROTOOPT
+      platform/chrome: cros_ec_proto: Convert EC error codes to Linux error codes
+      pwm: cros-ec: Simplify EC error handling
 
-Jonathan
-
-> ---
->  drivers/iio/chemical/atlas-ezo-sensor.c | 37 ++++++++++++++++++++++++-
->  1 file changed, 36 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/chemical/atlas-ezo-sensor.c b/drivers/iio/chemical/atlas-ezo-sensor.c
-> index 60a0c752fbc5..b1bacfe3c3ce 100644
-> --- a/drivers/iio/chemical/atlas-ezo-sensor.c
-> +++ b/drivers/iio/chemical/atlas-ezo-sensor.c
-> @@ -17,10 +17,12 @@
->  
->  #define ATLAS_EZO_DRV_NAME		"atlas-ezo-sensor"
->  #define ATLAS_INT_TIME_IN_MS		950
-> +#define ATLAS_INT_HUM_TIME_IN_MS	350
->  
->  enum {
->  	ATLAS_CO2_EZO,
->  	ATLAS_O2_EZO,
-> +	ATLAS_HUM_EZO,
->  };
->  
->  struct atlas_ezo_device {
-> @@ -63,6 +65,21 @@ static const struct iio_chan_spec atlas_o2_ezo_channels[] = {
->  	ATLAS_CONCENTRATION_CHANNEL(IIO_MOD_O2),
->  };
->  
-> +static const struct iio_chan_spec atlas_hum_ezo_channels[] = {
-> +	{
-> +		.type = IIO_HUMIDITYRELATIVE,
-> +		.info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> +		.scan_index = 0,
-> +		.scan_type =  {
-> +			.sign = 'u',
-> +			.realbits = 32,
-> +			.storagebits = 32,
-> +			.endianness = IIO_CPU,
-> +		},
-> +	},
-> +};
-> +
->  static struct atlas_ezo_device atlas_ezo_devices[] = {
->  	[ATLAS_CO2_EZO] = {
->  		.channels = atlas_co2_ezo_channels,
-> @@ -73,7 +90,12 @@ static struct atlas_ezo_device atlas_ezo_devices[] = {
->  		.channels = atlas_o2_ezo_channels,
->  		.num_channels = 1,
->  		.delay = ATLAS_INT_TIME_IN_MS,
-> -	}
-> +	},
-> +	[ATLAS_HUM_EZO] = {
-> +		.channels = atlas_hum_ezo_channels,
-> +		.num_channels = 1,
-> +		.delay = ATLAS_INT_HUM_TIME_IN_MS,
-> +	},
->  };
->  
->  static void atlas_ezo_sanitize(char *buf)
-> @@ -131,6 +153,17 @@ static int atlas_ezo_read_raw(struct iio_dev *indio_dev,
->  		return ret ? ret : IIO_VAL_INT;
->  	}
->  	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_HUMIDITYRELATIVE:
-> +			*val = 10;
-> +			return IIO_VAL_INT;
-> +		case IIO_CONCENTRATION:
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-
-This structure strikes me as something that might get rather ugly if it
-gets much more complex.
-
-I'll take this one, but keep in mind for any future additions to the driver!
-
-Jonathan
-
-> +
-> +		/* IIO_CONCENTRATION modifiers */
->  		switch (chan->channel2) {
->  		case IIO_MOD_CO2:
->  			*val = 0;
-> @@ -153,6 +186,7 @@ static const struct iio_info atlas_info = {
->  static const struct i2c_device_id atlas_ezo_id[] = {
->  	{ "atlas-co2-ezo", ATLAS_CO2_EZO },
->  	{ "atlas-o2-ezo", ATLAS_O2_EZO },
-> +	{ "atlas-hum-ezo", ATLAS_HUM_EZO },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
-> @@ -160,6 +194,7 @@ MODULE_DEVICE_TABLE(i2c, atlas_ezo_id);
->  static const struct of_device_id atlas_ezo_dt_ids[] = {
->  	{ .compatible = "atlas,co2-ezo", .data = (void *)ATLAS_CO2_EZO, },
->  	{ .compatible = "atlas,o2-ezo", .data = (void *)ATLAS_O2_EZO, },
-> +	{ .compatible = "atlas,hum-ezo", .data = (void *)ATLAS_HUM_EZO, },
->  	{}
->  };
->  MODULE_DEVICE_TABLE(of, atlas_ezo_dt_ids);
-
+ .../iio/common/cros_ec_sensors/cros_ec_sensors.c   |  2 +-
+ drivers/input/keyboard/cros_ec_keyb.c              |  2 +-
+ drivers/platform/chrome/cros_ec_lightbar.c         | 10 ++--
+ drivers/platform/chrome/cros_ec_proto.c            | 57 +++++++++++++++++-----
+ drivers/platform/chrome/cros_ec_sysfs.c            | 24 ++++-----
+ drivers/pwm/pwm-cros-ec.c                          | 37 +++++++-------
+ 6 files changed, 78 insertions(+), 54 deletions(-)
