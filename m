@@ -2,267 +2,179 @@ Return-Path: <SRS0=L9YR=CC=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B410C433E3
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Aug 2020 06:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C52ABC433E5
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Aug 2020 09:06:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C01B22B4B
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Aug 2020 05:53:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 93B39206F0
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Aug 2020 09:06:57 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Z7JfQloK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725836AbgHXFxy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Aug 2020 01:53:54 -0400
-Received: from aclms1.advantech.com.tw ([61.58.41.199]:19708 "EHLO
-        ACLMS1.advantech.com.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725817AbgHXFxw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Aug 2020 01:53:52 -0400
-X-Greylist: delayed 602 seconds by postgrey-1.27 at vger.kernel.org; Mon, 24 Aug 2020 01:53:51 EDT
-Received: from taipei09.ADVANTECH.CORP (unverified [172.20.0.236]) by ACLMS1.advantech.com.tw
- (Clearswift SMTPRS 5.6.0) with ESMTP id <Te12d1eb07fac14014b1204@ACLMS1.advantech.com.tw>;
- Mon, 24 Aug 2020 13:43:47 +0800
-Received: from localhost (172.16.12.96) by taipei09.ADVANTECH.CORP
- (172.20.0.236) with Microsoft SMTP Server (TLS) id 15.0.1395.4; Mon, 24 Aug
- 2020 13:43:46 +0800
-From:   William Sung <william.sung@advantech.com.tw>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        AceLan Kao <acelan.kao@canonical.com>,
-        Campion Kang <Campion.Kang@advantech.com.tw>
-Subject: [PATCH] iio: dac: ad5593r: Dynamically set AD5593R channel modes
-Date:   Mon, 24 Aug 2020 13:43:47 +0800
-Message-ID: <20200824054347.3805-1-william.sung@advantech.com.tw>
-X-Mailer: git-send-email 2.17.1
-MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.16.12.96]
-X-ClientProxiedBy: ACLDAG.ADVANTECH.CORP (172.20.2.88) To
- taipei09.ADVANTECH.CORP (172.20.0.236)
-X-StopIT: No
+        id S1729486AbgHXJG4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Aug 2020 05:06:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39278 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728790AbgHXJGy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Aug 2020 05:06:54 -0400
+Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F19CDC061573;
+        Mon, 24 Aug 2020 02:06:53 -0700 (PDT)
+Received: by mail-pf1-x444.google.com with SMTP id f193so4480120pfa.12;
+        Mon, 24 Aug 2020 02:06:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=kUkHyWifMBTnLUKfuOlzPEWC4L6WTYZmfRcQtW7YpF0=;
+        b=Z7JfQloKaTjiT0H4ASAyjMkzOVg0yvKyOhrTwAaHBfJbVfCJcgfcC/td6BJwaNPz4C
+         ff9ViiFoPralIJ8iinxqg7EGJesq/N2dB6tFIsnDAyq1IwXuvT2ySJe6YoK0eLBEko46
+         0gfp6pg5DKGU5U+h2TigbaH1m/PVqGMqTfJSkcgUAduItvIzaIFLJ9uX00Yh2EHCHyBh
+         YcrWAACm2yCl8VSUoxJh+oo406KRROv9VENVUPjD/59wOX2eXxvtyBY80Y7yo6BqS4t1
+         fbMGY+0drYrqVOB04LqRnl/lgluQ/L7NZMK1/3dMZH0sBEJwYUeuJh0342DPyCrTr+I2
+         kjdg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=kUkHyWifMBTnLUKfuOlzPEWC4L6WTYZmfRcQtW7YpF0=;
+        b=Z7BH/W7901IBeO8jFQIaCnkPYhpOXgrHkVlMOjOCGqoXdm65gdFUHgtHuXVjYvMGfd
+         g6trMIUw779RuyvScIJOWzjIHKsdwwo2W2GjmlaR5z63i7YhLu1mR6SswSOsYlsSG/ZJ
+         CMTRYlLQeGvT5/5feosdmPbJtLAOxcvW3xe9n626S+XCFJ+rkxLXYWvGbzma5apM9vkv
+         URhe8YeN/Fd73D7WGdyyyAGC93zuWvex/3W+4Ef/mKbWu4Dn8XmUO+oeToNg1pPnHZz/
+         gpuFv20XuJif6SNt0LoIYR7SGFy4lGSgI8oJhCuGXJ0XsVjAHBkrggZMp11R+3dTPoQt
+         Hbig==
+X-Gm-Message-State: AOAM5321WX/9h9g0JCHWwyQuAyHsJ7tM6WuMkONUol5UWXTuLznHff+2
+        DvLZ4IRexeiwpPBX8RwpQdw=
+X-Google-Smtp-Source: ABdhPJw14xcNmXa1rR9IVlAIv+z1Xu6egOA/ZqBXZ3+NIiQOsygfcNGkj27A9h4zWhIQbWn+tiZxpQ==
+X-Received: by 2002:a63:5c08:: with SMTP id q8mr2956738pgb.222.1598260013533;
+        Mon, 24 Aug 2020 02:06:53 -0700 (PDT)
+Received: from localhost.localdomain ([2402:7500:484:931d:1b34:35e8:fe10:8c7a])
+        by smtp.gmail.com with ESMTPSA id c20sm9220988pjv.31.2020.08.24.02.06.48
+        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
+        Mon, 24 Aug 2020 02:06:53 -0700 (PDT)
+From:   Gene Chen <gene.chen.richtek@gmail.com>
+To:     jic23@kernel.org, matthias.bgg@gmail.com
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        gene_chen@richtek.com, Wilma.Wu@mediatek.com,
+        shufan_lee@richtek.com, cy_huang@richtek.com,
+        benjamin.chao@mediatek.com
+Subject: [PATCH v3 2/2] Documentation: ABI: testing: mt6360: Add ADC sysfs guideline
+Date:   Mon, 24 Aug 2020 17:06:25 +0800
+Message-Id: <1598259985-12517-3-git-send-email-gene.chen.richtek@gmail.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1598259985-12517-1-git-send-email-gene.chen.richtek@gmail.com>
+References: <1598259985-12517-1-git-send-email-gene.chen.richtek@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-To use ad5593r more flexibly, we use the module parameter to setting the
-channel modes dynamically whenever the module probe up. Users can pass
-the channel modes to the module parameter for allocating the
-functionality of channels as desired.
+From: Gene Chen <gene_chen@richtek.com>
 
-For example:
-* Use in the kernel command line:
-Users can add the module parameter in the kernel command line such as
+Add ABI documentation for mt6360 ADC sysfs interfaces.
 
-    "ad5593r.ch_mode_cmdline=88001122"
-
-"88001122" means the channel mode setting for each channel. The most
-left side indicates the mode of channel 7, and the most right side
-indicates the mode of channel 0.
-
-* Use when manually probe the module:
-Similar to the kernel command line usage, users can enter
-
-    "modprobe ad5593r ch_mode_probe=88001122"
-
-to start the ad5593r module with the desired channel mode setting.
-
-Signed-off-by: William Sung <william.sung@advantech.com.tw>
+Signed-off-by: Gene Chen <gene_chen@richtek.com>
 ---
- drivers/iio/dac/ad5592r-base.c | 33 ++++++++++++++++++--
- drivers/iio/dac/ad5592r-base.h |  4 +++
- drivers/iio/dac/ad5593r.c      | 55 ++++++++++++++++++++++++++++++++++
- 3 files changed, 89 insertions(+), 3 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360 | 83 ++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
 
-diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-index cc4875660a69..cd69a34fa21e 100644
---- a/drivers/iio/dac/ad5592r-base.c
-+++ b/drivers/iio/dac/ad5592r-base.c
-@@ -21,6 +21,10 @@
- 
- #include "ad5592r-base.h"
- 
-+/* Parameters for dynamic channel mode setting */
-+static u8 update_channel_mode;
-+static u8 new_channel_modes[AD559XR_CHANNEL_NR];
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360 b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
+new file mode 100644
+index 0000000..9dab17e
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
+@@ -0,0 +1,83 @@
++What:		/sys/bus/iio/devices/iio:deviceX/usbid_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 USBID ADC
++		Reading returns current voltage in uV
 +
- static int ad5592r_gpio_get(struct gpio_chip *chip, unsigned offset)
- {
- 	struct ad5592r_state *st = gpiochip_get_data(chip);
-@@ -132,7 +136,7 @@ static int ad5592r_gpio_init(struct ad5592r_state *st)
- 
- 	st->gpiochip.label = dev_name(st->dev);
- 	st->gpiochip.base = -1;
--	st->gpiochip.ngpio = 8;
-+	st->gpiochip.ngpio = AD559XR_CHANNEL_NR;
- 	st->gpiochip.parent = st->dev;
- 	st->gpiochip.can_sleep = true;
- 	st->gpiochip.direction_input = ad5592r_gpio_direction_input;
-@@ -287,6 +291,14 @@ static int ad5592r_set_channel_modes(struct ad5592r_state *st)
- 	return ret;
- }
- 
-+static void ad5592r_set_def_channel_modes(struct ad5592r_state *st)
-+{
-+	int i;
++What:		/sys/bus/iio/devices/iio:deviceX/vbusdiv5_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 VBUS ADC with high accuracy
++		Reading returns current voltage in uV
 +
-+	for (i = 0; i < ARRAY_SIZE(st->channel_modes); i++)
-+		st->channel_modes[i] = new_channel_modes[i];
-+}
++What:		/sys/bus/iio/devices/iio:deviceX/vbusdiv2_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 VBUS ADC with low accuracy
++		Reading returns current voltage in uV
 +
- static int ad5592r_reset_channel_modes(struct ad5592r_state *st)
- {
- 	int i;
-@@ -532,6 +544,10 @@ static int ad5592r_alloc_channels(struct iio_dev *iio_dev)
- 			st->channel_offstate[reg] = tmp;
- 	}
- 
-+	/* Update default channel modes set by external module */
-+	if (update_channel_mode == 1)
-+		ad5592r_set_def_channel_modes(st);
++What:		/sys/bus/iio/devices/iio:deviceX/vsys_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 VSYS ADC
++		Reading returns current voltage in uV
 +
- 	channels = devm_kcalloc(st->dev,
- 			1 + 2 * num_channels, sizeof(*channels),
- 			GFP_KERNEL);
-@@ -567,7 +583,7 @@ static int ad5592r_alloc_channels(struct iio_dev *iio_dev)
- 	}
- 
- 	channels[curr_channel].type = IIO_TEMP;
--	channels[curr_channel].channel = 8;
-+	channels[curr_channel].channel = AD559XR_CHANNEL_NR;
- 	channels[curr_channel].info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				   BIT(IIO_CHAN_INFO_SCALE) |
- 				   BIT(IIO_CHAN_INFO_OFFSET);
-@@ -589,6 +605,17 @@ static void ad5592r_init_scales(struct ad5592r_state *st, int vref_mV)
- 		div_s64_rem(tmp * 2, 1000000000LL, &st->scale_avail[1][1]);
- }
- 
-+void ad5592r_update_default_channel_modes(u8 *new_modes)
-+{
-+	int idx = 0;
++What:		/sys/bus/iio/devices/iio:deviceX/vbat_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 VBAT ADC
++		Reading returns current voltage in uV
 +
-+	update_channel_mode = 1;
-+	for (idx = 0; idx < AD559XR_CHANNEL_NR; idx++)
-+		new_channel_modes[idx] = new_modes[idx];
++What:		/sys/bus/iio/devices/iio:deviceX/ibus_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 IBUS ADC
++		Reading returns current in uA
 +
-+}
-+EXPORT_SYMBOL_GPL(ad5592r_update_default_channel_modes);
++What:		/sys/bus/iio/devices/iio:deviceX/ibat_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 IBAT ADC
++		Reading returns current in uA
 +
- int ad5592r_probe(struct device *dev, const char *name,
- 		const struct ad5592r_rw_ops *ops)
- {
-@@ -603,7 +630,7 @@ int ad5592r_probe(struct device *dev, const char *name,
- 	st = iio_priv(iio_dev);
- 	st->dev = dev;
- 	st->ops = ops;
--	st->num_channels = 8;
-+	st->num_channels = AD559XR_CHANNEL_NR;
- 	dev_set_drvdata(dev, iio_dev);
- 
- 	st->reg = devm_regulator_get_optional(dev, "vref");
-diff --git a/drivers/iio/dac/ad5592r-base.h b/drivers/iio/dac/ad5592r-base.h
-index 23dac2f1ff8a..40ad6369e660 100644
---- a/drivers/iio/dac/ad5592r-base.h
-+++ b/drivers/iio/dac/ad5592r-base.h
-@@ -39,6 +39,9 @@ enum ad5592r_registers {
- #define AD5592R_REG_CTRL_ADC_RANGE	BIT(5)
- #define AD5592R_REG_CTRL_DAC_RANGE	BIT(4)
- 
-+/* Define quantity of channels of AD5592R/AD5593R */
-+#define AD559XR_CHANNEL_NR		8
++What:		/sys/bus/iio/devices/iio:deviceX/chg_vddp_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 CHG_VDDP ADC
++		Reading returns current voltage in uV
 +
- struct ad5592r_rw_ops {
- 	int (*write_dac)(struct ad5592r_state *st, unsigned chan, u16 value);
- 	int (*read_adc)(struct ad5592r_state *st, unsigned chan, u16 *value);
-@@ -69,6 +72,7 @@ struct ad5592r_state {
- 	__be16 spi_msg_nop;
- };
- 
-+void ad5592r_update_default_channel_modes(u8 *new_modes);
- int ad5592r_probe(struct device *dev, const char *name,
- 		const struct ad5592r_rw_ops *ops);
- int ad5592r_remove(struct device *dev);
-diff --git a/drivers/iio/dac/ad5593r.c b/drivers/iio/dac/ad5593r.c
-index 1fbe9c019c7f..dfc453a75ad6 100644
---- a/drivers/iio/dac/ad5593r.c
-+++ b/drivers/iio/dac/ad5593r.c
-@@ -21,6 +21,10 @@
- #define AD5593R_MODE_GPIO_READBACK	(6 << 4)
- #define AD5593R_MODE_REG_READBACK	(7 << 4)
- 
-+/* Parameters for dynamic channel mode setting */
-+static char *ch_mode = "";
-+module_param(ch_mode, charp, 0400);
++What:		/sys/bus/iio/devices/iio:deviceX/temp_jc_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 IC junction temperature
++		Reading returns current temperature in degree
 +
- static int ad5593r_write_dac(struct ad5592r_state *st, unsigned chan, u16 value)
- {
- 	struct i2c_client *i2c = to_i2c_client(st->dev);
-@@ -92,9 +96,60 @@ static const struct ad5592r_rw_ops ad5593r_rw_ops = {
- 	.gpio_read = ad5593r_gpio_read,
- };
- 
-+static void ad5593r_check_new_channel_mode(void)
-+{
-+	char *new_mode[2] = {NULL, NULL}, tmp[2];
-+	u8 new_ch_modes[AD559XR_CHANNEL_NR];
-+	int idx = 0, cnt = 0, i;
++What:		/sys/bus/iio/devices/iio:deviceX/vref_ts_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 VREF_TS ADC
++		Reading returns current voltage in uV
 +
-+	if (strlen(ch_mode) == AD559XR_CHANNEL_NR)
-+		new_mode[cnt++] = ch_mode;
++What:		/sys/bus/iio/devices/iio:deviceX/ts_input
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 TS ADC
++		Reading returns current voltage in uV
 +
-+	for (i = 0; i < cnt; i++) {
-+		/* Check if all channel modes are valid */
-+		for (idx = 0; idx < AD559XR_CHANNEL_NR; idx++) {
-+			switch (new_mode[i][idx]) {
-+			case '0':
-+			case '1':
-+			case '2':
-+			case '3':
-+			case '8':
-+				continue;
-+			default:
-+				/* There is invalid mode exist, ignore the settings */
-+				pr_err("%s: invalid(%c) in index(%d)\n",
-+					__func__, new_mode[i][idx], idx);
-+				goto inval_para;
-+			}
-+		}
-+
-+inval_para:
-+		/* There is invalid parameters setting in current parameter, so ignore it */
-+		if (idx < AD559XR_CHANNEL_NR)
-+			continue;
-+
-+		/* Set the new modes to ad5592r-base driver to setup the new channe modes */
-+		memset(tmp, 0, 2);
-+		for (idx = 0; idx < AD559XR_CHANNEL_NR; idx++) {
-+			tmp[0] = new_mode[i][idx];
-+			if (kstrtou8(tmp, 10, &new_ch_modes[AD559XR_CHANNEL_NR - idx - 1])) {
-+				pr_err("%s: kstr error idx(%d)\n", __func__, idx);
-+				break;
-+			}
-+		}
-+		/* Something error when convering the string to integer, ignore the settings */
-+		if (idx < AD559XR_CHANNEL_NR)
-+			continue;
-+
-+		ad5592r_update_default_channel_modes(new_ch_modes);
-+		break;
-+	}
-+}
-+
- static int ad5593r_i2c_probe(struct i2c_client *i2c,
- 		const struct i2c_device_id *id)
- {
-+	ad5593r_check_new_channel_mode();
- 	return ad5592r_probe(&i2c->dev, id->name, &ad5593r_rw_ops);
- }
- 
++What:		/sys/bus/iio/devices/iio:deviceX/timestamp
++KernelVersion:	5.8.0
++Contact:	gene_chen@richtek.com
++Description:
++		Indicated MT6360 timestamp
++		Reading returns current timestamp in ms
 -- 
-2.17.1
+2.7.4
 
