@@ -5,61 +5,61 @@ X-Spam-Level:
 X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8FDB6C433DF
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Aug 2020 19:48:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DCE1C433E1
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Aug 2020 19:49:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 70278207DF
-	for <linux-iio@archiver.kernel.org>; Thu, 27 Aug 2020 19:48:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A5AC207DF
+	for <linux-iio@archiver.kernel.org>; Thu, 27 Aug 2020 19:49:47 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uCHxCyol"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Ix3Va+o+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbgH0Ts0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 27 Aug 2020 15:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51590 "EHLO
+        id S1728082AbgH0Ttp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 27 Aug 2020 15:49:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51796 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726243AbgH0TsZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2020 15:48:25 -0400
-Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99A40C061264;
-        Thu, 27 Aug 2020 12:48:24 -0700 (PDT)
-Received: by mail-pg1-x543.google.com with SMTP id 67so4087006pgd.12;
-        Thu, 27 Aug 2020 12:48:24 -0700 (PDT)
+        with ESMTP id S1728046AbgH0Ttm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Aug 2020 15:49:42 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9916DC061264;
+        Thu, 27 Aug 2020 12:49:42 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id d22so4315900pfn.5;
+        Thu, 27 Aug 2020 12:49:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=kacN1ThtNH5U40mcv/4k6dMARnX9bfV0PWOTTEKKot4=;
-        b=uCHxCyolCflVbO+WUbO5LZqzBxHhrvlh9Pfc4sUAey8ZLgzdCoqYIrLEdx8BpwQcBh
-         s2GFIussGGUrYPA0MF7HrS5LyrCzsMV7f3icVtHxQDnUdBsayujKjO4yklbNWparyLk6
-         6s/hYZYO7z9qF50wRRq3vSxKkZRtHXpiiZPUoABcbB8tpDAXLFRK8W47KyZVcZSsbKFl
-         GcpeBcMwA/NHfGzT7yOp5nwKgLoqG3eJzac9x4Zrkxu9rtMnmOVUdbEfRzxdmbXvjGpK
-         VnntcUFcoKeILOSwGYEdjuUalT1APy+Ayiduu0gb6oeP6w5roa17Qj+Rtnan3NJD4kzq
-         Izgg==
+        bh=J3gzyzO1gbxLdidSqR6d1wlDjGQFBUJvUcq8FiJnVtg=;
+        b=Ix3Va+o+3XbmB70WBqBC725rnsHUyDm6ZoPZy2b6hcZ+38QrgQbROqTVcHhuzh8SXK
+         rMQANp0HWGAK0S3jGGDuzX8pV7jIMANFnK9ew4PiVoz4gml/9QsbVZBlaad6zaN1zTHh
+         L56Wy4g5LQD9tNdVMaYcFb7N6DSCrhozT7oT7ICoIwsrJXoKJ35rzoD+7dpGgpwdSemG
+         QSZ1F8DLFO0OU5j/xtnuxVyj9N16sMJ07M9DSs8l6Ckbjdjz+9xWDA08Xegmz7/mZkJG
+         XlgePyfePvWDzYQBw5KQxNn3PpFfJTT0e70LTT9XoS7BmcRJcAJrKFseBYXuCfY+VAcz
+         tHeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=kacN1ThtNH5U40mcv/4k6dMARnX9bfV0PWOTTEKKot4=;
-        b=PTVrxoC6Aq8WsUFosIuRYITdoY/mGXxZ6HZVHB0QP7dnVgNFDezq7MxOszfhWppgIj
-         O993P1gaNgaLGMZqr1ZgT7CFS0OVd7Z9faQGcwrj15/yZpx3Ch0fh26kCgQpYReuhu9W
-         K84mjp5ZWHlwXEVEdPNZQLG3RRvjheMhrkyAW1mKSoZaILi0aY3VJxAhrHdEXfp0HJYg
-         cTkfHi3A0VIAoRgXAeqRq2rTbli4aqgtCG2LOrhrS1AjLIkyfvmccFlER5Wf/2SI0ayd
-         TQJIfEJu1T6MKq82liG7Q0XYcu+dyqi1I7JWi5q8yYbdPHHH6KBXjy9RsRbapdAzY6BV
-         UWdg==
-X-Gm-Message-State: AOAM531oMJe4txpYVB0wHcmn1c8fI3Nf5zJud90sNgx1nlGTl2bgLfgw
-        /PHHDNfizqlOXf8nGlo+z8/v3/U2bVnygH7gBko=
-X-Google-Smtp-Source: ABdhPJzMBvf3SlQ4MXHwemF7WLO50QwdlrwNqcBo2uex50d1LsuaXz279AsMkddgVB3byOEu0XId2Ie0ozFdCkvrviw=
-X-Received: by 2002:a17:902:407:: with SMTP id 7mr17541240ple.167.1598557703780;
- Thu, 27 Aug 2020 12:48:23 -0700 (PDT)
+        bh=J3gzyzO1gbxLdidSqR6d1wlDjGQFBUJvUcq8FiJnVtg=;
+        b=KQMt2UWmN/7qvR49jOj55L8Aeudj0TQlLTpQhAlb2XBVx/MgeZUKlWD9vn5rpWHl+6
+         bBWVxwmZpJV3RmQ2wNIEOrXwpWSgEzdPfFo/IQgCSWzf2MhA+vzVpN4IWU/8lIN30tX+
+         lTEGw3qUtqL33YhBOVGHbm7Bl3/gwI3YbyZaE9BgUNCUSMHaa/2byQFOzjWWC05ekrA/
+         3ypZKA2GRVNXpBsAFM9Ymmjr+l6BuxvujDHcOtuJlRgDj040aYYIVSefy2c/FhY6ZpvG
+         jwxm3oVW+5vTkGy5kNbhuUa/EkZ9K+44EvxTKSU2XKjjb145Q1UyWc+ErncL/Jx5QTtl
+         48sg==
+X-Gm-Message-State: AOAM530AnCyKokKO6Y3I762fcf/SWao20PKoqsIiAcF6G0S9lupMS0hn
+        SOvRnFnD9p4b7QMoXcpvdjs2DVPIffKg/QkgJiU=
+X-Google-Smtp-Source: ABdhPJywOKJ7nbos0Vl5TfFihLljc3WSP3/cAdSxhBmVa6rR4UoZP9/yzEnECmoNYbP22WFTY+hpwLKOC2YaPImjw0A=
+X-Received: by 2002:a17:902:8208:: with SMTP id x8mr6288066pln.65.1598557780819;
+ Thu, 27 Aug 2020 12:49:40 -0700 (PDT)
 MIME-Version: 1.0
-References: <20200827192642.1725-1-krzk@kernel.org> <20200827192642.1725-5-krzk@kernel.org>
-In-Reply-To: <20200827192642.1725-5-krzk@kernel.org>
+References: <20200827192642.1725-1-krzk@kernel.org> <20200827192642.1725-7-krzk@kernel.org>
+In-Reply-To: <20200827192642.1725-7-krzk@kernel.org>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 27 Aug 2020 22:48:07 +0300
-Message-ID: <CAHp75VepFzdeN=jaXvmSmkQauDJfgSU5ut3hA6a+Cer_SC52Og@mail.gmail.com>
-Subject: Re: [PATCH v2 05/18] iio: adc: ltc2497: Simplify with dev_err_probe()
+Date:   Thu, 27 Aug 2020 22:49:24 +0300
+Message-ID: <CAHp75VezjCWG+_qLWevc9nX5zQUoB+2UpLJo9HXqnV5svmwX-Q@mail.gmail.com>
+Subject: Re: [PATCH v2 07/18] iio: adc: rcar-gyroadc: Simplify with dev_err_probe()
 To:     Krzysztof Kozlowski <krzk@kernel.org>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -89,7 +89,7 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Aug 27, 2020 at 10:27 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Thu, Aug 27, 2020 at 10:28 PM Krzysztof Kozlowski <krzk@kernel.org> wrote:
 >
 > Common pattern of handling deferred probe can be simplified with
 > dev_err_probe().  Less code and also it prints the error value.
@@ -103,29 +103,28 @@ Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > Changes since v1:
 > 1. Wrap dev_err_probe() lines at 100 character
 > ---
->  drivers/iio/adc/ltc2497-core.c | 9 ++-------
->  1 file changed, 2 insertions(+), 7 deletions(-)
+>  drivers/iio/adc/rcar-gyroadc.c | 8 ++------
+>  1 file changed, 2 insertions(+), 6 deletions(-)
 >
-> diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
-> index 9b8fd9c32364..d337ed96bbb0 100644
-> --- a/drivers/iio/adc/ltc2497-core.c
-> +++ b/drivers/iio/adc/ltc2497-core.c
-> @@ -180,13 +180,8 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
->                 return ret;
+> diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
+> index d2c1419e72a0..e1a7c93fc2db 100644
+> --- a/drivers/iio/adc/rcar-gyroadc.c
+> +++ b/drivers/iio/adc/rcar-gyroadc.c
+> @@ -495,12 +495,8 @@ static int rcar_gyroadc_probe(struct platform_device *pdev)
+>                 return PTR_ERR(priv->regs);
 >
->         ddata->ref = devm_regulator_get(dev, "vref");
-> -       if (IS_ERR(ddata->ref)) {
-> -               if (PTR_ERR(ddata->ref) != -EPROBE_DEFER)
-> -                       dev_err(dev, "Failed to get vref regulator: %pe\n",
-> -                               ddata->ref);
-> -
-> -               return PTR_ERR(ddata->ref);
+>         priv->clk = devm_clk_get(dev, "fck");
+> -       if (IS_ERR(priv->clk)) {
+> -               ret = PTR_ERR(priv->clk);
+> -               if (ret != -EPROBE_DEFER)
+> -                       dev_err(dev, "Failed to get IF clock (ret=%i)\n", ret);
+> -               return ret;
 > -       }
-> +       if (IS_ERR(ddata->ref))
-> +               return dev_err_probe(dev, PTR_ERR(ddata->ref), "Failed to get vref regulator\n");
+> +       if (IS_ERR(priv->clk))
+> +               return dev_err_probe(dev, PTR_ERR(priv->clk), "Failed to get IF clock\n");
 >
->         ret = regulator_enable(ddata->ref);
->         if (ret < 0) {
+>         ret = rcar_gyroadc_parse_subdevs(indio_dev);
+>         if (ret)
 > --
 > 2.17.1
 >
