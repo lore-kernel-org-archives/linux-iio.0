@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32688C433E7
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:49:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD826C433E6
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:49:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0771220E65
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:49:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8D5A520E65
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:49:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598683766;
-	bh=+9ZHsUV0y46Ja0TiXAlSDjBe8qgvjNNrJDCcRfHGJs8=;
+	s=default; t=1598683772;
+	bh=6UjWOMAikeIKWUaBl4tPRLctxnQGbZpjLVEks3gNgKw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wIGucIPOqdDRWUD0JwUTb4h55OopGsN3COZAPQjUhxJYI5RBWOlzE6V/dxMhJjlD9
-	 15nGypBRooh/2D9Uk30pLLxOTbR9CMWKWQ2sZsHb+DAjlsC8jy+WNwZ7PdKXO2fMNL
-	 nq0lYu49m5Toro5OEktZxylTFLYR90SGsSi3l9EU=
+	b=qv6YIZoFKxUeV+WzdBJMfTj/VHQ4BL+PWvbROjADrMEmYDAbMqyOwL/c74bJ3453K
+	 UiRNAGhZDFV9XKvWVvV1IF1HJ+ukMVIdUmo5CU5GjE7WFs7CnJhiKfqiW4PvDZTxWT
+	 KwxvfZmIYDzblU93i5sSIe48ji0bzHPLSTfslPfg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726301AbgH2GsY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 Aug 2020 02:48:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40920 "EHLO mail.kernel.org"
+        id S1727963AbgH2Gt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 29 Aug 2020 02:49:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40664 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726981AbgH2GsX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 29 Aug 2020 02:48:23 -0400
+        id S1726876AbgH2GsQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 29 Aug 2020 02:48:16 -0400
 Received: from localhost.localdomain (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ECC4A212CC;
-        Sat, 29 Aug 2020 06:48:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1023B2145D;
+        Sat, 29 Aug 2020 06:48:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598683702;
-        bh=+9ZHsUV0y46Ja0TiXAlSDjBe8qgvjNNrJDCcRfHGJs8=;
+        s=default; t=1598683696;
+        bh=6UjWOMAikeIKWUaBl4tPRLctxnQGbZpjLVEks3gNgKw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KIeViUeY6QyTX92YBy2Cu08o+4iOH/rmeVUGnTZsxx1fz529OQybhMrqmUPpmS2eQ
-         Wlvt3lUkfvE0ZPh5IXXdFSxAZ0xQ9LZl4mdhdoA2HDNroIJQvSb1uGynZ2GnTe7A9Y
-         vTR2diwZNHhhkSso8ozxl0HX0nc0EAloutIphD/8=
+        b=uSXg2zIxy8JCQQMU9GNo8vzeCcIH9Cl8GLGs31FuNsQFSjWQ/WODKkPey/7NiX7YT
+         FKYLIBOi8lPv8/6Cz5mu4QT5EikjWMxZRBTuJtOoWzwyrlzvpUVNn4TfUm7FQHDIeo
+         yZ+kVAsZJLS5U6RHnRv+oYSPioypghIe05aqCujI=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -53,9 +53,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-stm32@st-md-mailman.stormreply.com
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 06/18] iio: adc: meson_saradc: Simplify with dev_err_probe()
-Date:   Sat, 29 Aug 2020 08:47:14 +0200
-Message-Id: <20200829064726.26268-6-krzk@kernel.org>
+Subject: [PATCH v3 04/18] iio: adc: exynos_adc: Simplify with dev_err_probe()
+Date:   Sat, 29 Aug 2020 08:47:12 +0200
+Message-Id: <20200829064726.26268-4-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200829064726.26268-1-krzk@kernel.org>
 References: <20200829064726.26268-1-krzk@kernel.org>
@@ -69,28 +69,39 @@ dev_err_probe().  Less code and also it prints the error value.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/iio/adc/meson_saradc.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 93c2252c0b89..a9d06e8a576a 100644
---- a/drivers/iio/adc/meson_saradc.c
-+++ b/drivers/iio/adc/meson_saradc.c
-@@ -719,11 +719,8 @@ static int meson_sar_adc_temp_sensor_init(struct iio_dev *indio_dev)
- 		if (ret == -ENODEV)
- 			return 0;
- 
--		if (ret != -EPROBE_DEFER)
--			dev_err(indio_dev->dev.parent,
--				"failed to get temperature_calib cell\n");
--
--		return ret;
-+		return dev_err_probe(indio_dev->dev.parent, ret,
-+				     "failed to get temperature_calib cell\n");
+---
+
+Changes since v2:
+1. Wrap dev_err_probe() lines at 80 character
+
+Changes since v1:
+1. Wrap dev_err_probe() lines at 100 character
+---
+ drivers/iio/adc/exynos_adc.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/adc/exynos_adc.c b/drivers/iio/adc/exynos_adc.c
+index 7d23b6c33284..20477b249f2a 100644
+--- a/drivers/iio/adc/exynos_adc.c
++++ b/drivers/iio/adc/exynos_adc.c
+@@ -844,13 +844,9 @@ static int exynos_adc_probe(struct platform_device *pdev)
  	}
  
- 	priv->tsc_regmap =
+ 	info->vdd = devm_regulator_get(&pdev->dev, "vdd");
+-	if (IS_ERR(info->vdd)) {
+-		if (PTR_ERR(info->vdd) != -EPROBE_DEFER)
+-			dev_err(&pdev->dev,
+-				"failed getting regulator, err = %ld\n",
+-				PTR_ERR(info->vdd));
+-		return PTR_ERR(info->vdd);
+-	}
++	if (IS_ERR(info->vdd))
++		return dev_err_probe(&pdev->dev, PTR_ERR(info->vdd),
++				     "failed getting regulator");
+ 
+ 	ret = regulator_enable(info->vdd);
+ 	if (ret)
 -- 
 2.17.1
 
