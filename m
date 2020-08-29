@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-14.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8792CC433E6
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:48:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30C31C433E2
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:48:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6438921527
-	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:48:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0B35420E65
+	for <linux-iio@archiver.kernel.org>; Sat, 29 Aug 2020 06:48:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1598683697;
-	bh=33QUtFhKd3vgFdrs9V7vjN8bhfHfPOFBEs807yqJTy0=;
+	s=default; t=1598683703;
+	bh=yN2CXKQfY/uZdOl3rgqKv39aMA7Qb1yuEX/j8QscrAQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Of2pcp3/+/orybf0bqP3q4K3jSBWmjHbEZuehIkDvZoYG+WtmaSd3uU9km3Dn18q2
-	 E5EeVx9JgkXXbPba0t3/AFljT/qkSYQWbJ/xUb3TN6dwK3qr46bZuKTD9h3i6n3kJS
-	 VhNgaHMEZs1MEL+6BZhElUNRFmucg+H1bjrLqQ1c=
+	b=LqhDqHzI+Im/0n++jhhIfpkfTsOTE4GBpH17BjSj4WG/yT1JG0KBCTyXXlBQ3TUM/
+	 23sWLW3OkolhPVBdoiJX8mDzQE81DNsWff4vndxzgqCrz7F9MtGBuklObKSq5X2H4N
+	 Ulz9oqVjveoMeB82G4VVnzvPhu/0izwVjtXC1b40=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726537AbgH2GsP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 Aug 2020 02:48:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40552 "EHLO mail.kernel.org"
+        id S1726929AbgH2GsU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 29 Aug 2020 02:48:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40756 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725886AbgH2GsM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 29 Aug 2020 02:48:12 -0400
+        id S1725886AbgH2GsT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 29 Aug 2020 02:48:19 -0400
 Received: from localhost.localdomain (unknown [194.230.155.216])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8F36F21473;
-        Sat, 29 Aug 2020 06:48:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8023E214D8;
+        Sat, 29 Aug 2020 06:48:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1598683692;
-        bh=33QUtFhKd3vgFdrs9V7vjN8bhfHfPOFBEs807yqJTy0=;
+        s=default; t=1598683699;
+        bh=yN2CXKQfY/uZdOl3rgqKv39aMA7Qb1yuEX/j8QscrAQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t/KnJ9CCBKHeRoBU9R9NcQBXtGQUvnGSSp/nMljOr+8LyxPl6dyVxWp2EtdN1LJrP
-         jBY4dpR7F0VB6pwiBn5q5gTPnff4zZIx/5OHZcqdEJSIlAce1BOGkV3sPhacGPBEtv
-         y+8GauNsfHY8duxUSJ274xajuI6MYgGzCLwMIL20=
+        b=GpwEXvL9qr/48IVmL4F6CQvkM2Et247vmZQD1fZ8sDc2nHJfg2ENTpNrjb3oHGy6+
+         4AffxnMZWvXHtYlHuP1dTYidoVKasMJD6YBsm3nVUrS18Pj/HXXBtTeinPZQ8JyX9C
+         TtRo1Xjrzvm6reSLMOB9fiNB8VSYs2nBGfYkkD8Y=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -53,9 +53,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         linux-stm32@st-md-mailman.stormreply.com
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v3 03/18] iio: adc: envelope-detector: Simplify with dev_err_probe()
-Date:   Sat, 29 Aug 2020 08:47:11 +0200
-Message-Id: <20200829064726.26268-3-krzk@kernel.org>
+Subject: [PATCH v3 05/18] iio: adc: ltc2497: Simplify with dev_err_probe()
+Date:   Sat, 29 Aug 2020 08:47:13 +0200
+Message-Id: <20200829064726.26268-5-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200829064726.26268-1-krzk@kernel.org>
 References: <20200829064726.26268-1-krzk@kernel.org>
@@ -69,6 +69,7 @@ dev_err_probe().  Less code and also it prints the error value.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
 ---
 
 Changes since v2:
@@ -77,43 +78,30 @@ Changes since v2:
 Changes since v1:
 1. Wrap dev_err_probe() lines at 100 character
 ---
- drivers/iio/adc/envelope-detector.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+ drivers/iio/adc/ltc2497-core.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/adc/envelope-detector.c b/drivers/iio/adc/envelope-detector.c
-index 2a4fd3bb64cf..d73eac36153f 100644
---- a/drivers/iio/adc/envelope-detector.c
-+++ b/drivers/iio/adc/envelope-detector.c
-@@ -348,11 +348,9 @@ static int envelope_detector_probe(struct platform_device *pdev)
- 	indio_dev->num_channels = 1;
+diff --git a/drivers/iio/adc/ltc2497-core.c b/drivers/iio/adc/ltc2497-core.c
+index 9b8fd9c32364..2a485c8a1940 100644
+--- a/drivers/iio/adc/ltc2497-core.c
++++ b/drivers/iio/adc/ltc2497-core.c
+@@ -180,13 +180,9 @@ int ltc2497core_probe(struct device *dev, struct iio_dev *indio_dev)
+ 		return ret;
  
- 	env->dac = devm_iio_channel_get(dev, "dac");
--	if (IS_ERR(env->dac)) {
--		if (PTR_ERR(env->dac) != -EPROBE_DEFER)
--			dev_err(dev, "failed to get dac input channel\n");
--		return PTR_ERR(env->dac);
+ 	ddata->ref = devm_regulator_get(dev, "vref");
+-	if (IS_ERR(ddata->ref)) {
+-		if (PTR_ERR(ddata->ref) != -EPROBE_DEFER)
+-			dev_err(dev, "Failed to get vref regulator: %pe\n",
+-				ddata->ref);
+-
+-		return PTR_ERR(ddata->ref);
 -	}
-+	if (IS_ERR(env->dac))
-+		return dev_err_probe(dev, PTR_ERR(env->dac),
-+				     "failed to get dac input channel\n");
++	if (IS_ERR(ddata->ref))
++		return dev_err_probe(dev, PTR_ERR(ddata->ref),
++				     "Failed to get vref regulator\n");
  
- 	env->comp_irq = platform_get_irq_byname(pdev, "comp");
- 	if (env->comp_irq < 0)
-@@ -360,11 +358,9 @@ static int envelope_detector_probe(struct platform_device *pdev)
- 
- 	ret = devm_request_irq(dev, env->comp_irq, envelope_detector_comp_isr,
- 			       0, "envelope-detector", env);
--	if (ret) {
--		if (ret != -EPROBE_DEFER)
--			dev_err(dev, "failed to request interrupt\n");
--		return ret;
--	}
-+	if (ret)
-+		return dev_err_probe(dev, ret, "failed to request interrupt\n");
-+
- 	env->comp_irq_trigger = irq_get_trigger_type(env->comp_irq);
- 	if (env->comp_irq_trigger & IRQF_TRIGGER_RISING)
- 		env->comp_irq_trigger_inv |= IRQF_TRIGGER_FALLING;
+ 	ret = regulator_enable(ddata->ref);
+ 	if (ret < 0) {
 -- 
 2.17.1
 
