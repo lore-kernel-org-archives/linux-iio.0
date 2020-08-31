@@ -2,95 +2,157 @@ Return-Path: <SRS0=gatg=CJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E1C0C433E2
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:39:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A8B6C433E2
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:52:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 43F9C2068F
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:39:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="vgUdgwfE"
+	by mail.kernel.org (Postfix) with ESMTP id 5A0932098B
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:52:20 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1598867540;
+	bh=OzJlyv6zfpLrfE/xsKIDjF9+3akmz0L+WDLmlsU0RIA=;
+	h=Date:From:To:Subject:List-ID:From;
+	b=CaI3CaLhF6CZ/8iMC4caoImbFUJQHrgFmqnu9BpCsmJhCOqB62SQ6WjbHosH0757I
+	 6LNZHb+VCOstH9mixvbwo7MQyjGtu4bq2EfQXBkL/IPVCdcbbdCME6nhBLNbAvLx9t
+	 kpi5twQyrqzSVharzqM6E+Tnnm0DxB94tzbjxWyA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726044AbgHaJjb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Aug 2020 05:39:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56720 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725915AbgHaJj3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Aug 2020 05:39:29 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4AA65C061573
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2020 02:39:28 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id x18so1535975pll.6
-        for <linux-iio@vger.kernel.org>; Mon, 31 Aug 2020 02:39:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=RhIxCN7C5TTT1RKbnemiv1afYhmV0WLyWoA2e+4E1vk=;
-        b=vgUdgwfEaAhNZ0W049EuUbCnfuC4lq/H+izO4LgyL9ntFio4OvJ6F0HGq9fTHjV1Nh
-         p77CtHQHmvGV3zwfidtlBiiZOn7zkHPB7bPZd/ofaEmRjYaI3IIzWJf8YwueEhrNERI/
-         U4AUY7mJM11JoakImt2p6vFBCCyjpPuLfv4sd1pZ2hAIPwOcAGaVfOPOCSRE0iNP34Xh
-         6+kOiTF/Nh0PCFo1hu7P7xVMIdJ3HDHQP5niXjIdc/7df48AmXI3I7p24IcjMHZXdudD
-         P3yWaKgeNqSAAQySFhTQb3bJOi+CHbHvCJ9LQgd73SAEIHw18D4xa+OdvN7wPu2lNIWM
-         lH3Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=RhIxCN7C5TTT1RKbnemiv1afYhmV0WLyWoA2e+4E1vk=;
-        b=lYBLCofMcTZPRk3BW+F8yQDUZ5ebT/JzVoJOz9Gjb7fsa5jxEXkQuAxsUE+fPJfl7F
-         b/BHo3zgjLwEd4CWGdT8tIwGFlwafIeV/VfhpUYw9T8W0UubkX0CYhFYvr7UBdL3diaw
-         HC7C5mHUJZmAr8LfECTGpXggBnR6ZwnzS1c/jHX75uAYOpCWN7zWrWO0ggVxhvQPi/Qv
-         2UBp3WNtHEOtq2uAGvQi2btr0ebHwh7tP/QvixmAPiN2YKD31xyvA9htwtyeH2WJVybv
-         JLmZsEbT64f1uLm/8afYxB34SzGVTbAwTJ/eA4vpw4uGmGQeOy7syq8XfQql3mOL3rkh
-         wiWA==
-X-Gm-Message-State: AOAM530CQXX3KYOlAsRWrLtPnx6lMAKCfLTXTdDm2Jywz86AHEmVkeW4
-        wxXZZ7NDmfnk8+u0L4CFNm769exjKzWVxWzpr6N4Y9ZM7PfSYg==
-X-Google-Smtp-Source: ABdhPJx5OhDZRcEcrkh5SAzZG+XKOZwuYGDoaKyTC2e4FydcGRkirbl+W5iPoosCl1z/Wda/NugMgmeEbyUrmhd+p1U=
-X-Received: by 2002:a17:902:b194:: with SMTP id s20mr412702plr.321.1598866767659;
- Mon, 31 Aug 2020 02:39:27 -0700 (PDT)
+        id S1726107AbgHaJwR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Aug 2020 05:52:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51712 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726081AbgHaJwP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 Aug 2020 05:52:15 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 241072098B;
+        Mon, 31 Aug 2020 09:52:13 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1598867534;
+        bh=OzJlyv6zfpLrfE/xsKIDjF9+3akmz0L+WDLmlsU0RIA=;
+        h=Date:From:To:Subject:From;
+        b=eu+c4byJW4Xzl0Jmf2qpflHXmQEni1zUR8QTI2/bWV/NRHTnyzloQkxXBOJ4rGLBr
+         ++MMMUhGBu38gE5S8pKHlXDVXgnJTDV+lnXqtS5BW2oWgJbT3JSl633y8HTRRw70qj
+         x+E8HmsbHZtVR+mWKCCypI8+BtBrVzTcszTr1yik=
+Date:   Mon, 31 Aug 2020 10:52:07 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] IIO fixes for 5.9 set 1
+Message-ID: <20200831104333.6ceffa04@archlinux>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20200831090813.78841-1-andriy.shevchenko@linux.intel.com>
- <20200831090813.78841-5-andriy.shevchenko@linux.intel.com> <20200831101908.52cb216e@archlinux>
-In-Reply-To: <20200831101908.52cb216e@archlinux>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Aug 2020 12:39:10 +0300
-Message-ID: <CAHp75Ve=p2fNWWAJ5SpQNfA0rH9vDg27YZhFh4vJgzXVhHxL8w@mail.gmail.com>
-Subject: Re: [PATCH v1 5/8] iio: accel: bma220: Drop ACPI_PTR() and
- accompanying ifdeffery
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 31, 2020 at 12:19 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Mon, 31 Aug 2020 12:08:10 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
-> > The driver is quite likely used only on ACPI based platforms and
-> > rarely build with CONFIG_ACPI=n. Even though, the few dozens of bytes
-> > is better than ugly ifdeffery and inclusion of heavy header.
->
-> Given this part is readily available on maker type break out boards
-> I doubt it is mostly ACPI.  Rest of the comment is fine though.
+The following changes since commit 1dffeb8b8b4c261c45416d53c75ea51e6ece1770:
 
-In-kernel use seems only ACPI (I grepped for pure SPI driver by name
-and didn't find anything).
-I hope we will have DT support for that as well (basically means
-adding OF ID table).
+  staging: greybus: audio: fix uninitialized value issue (2020-08-18 16:12:54 +0200)
 
--- 
-With Best Regards,
-Andy Shevchenko
+are available in the Git repository at:
+
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-5.9a
+
+for you to fetch changes up to 3f1093d83d7164e4705e4232ccf76da54adfda85:
+
+  iio: adc: mcp3422: fix locking scope (2020-08-31 10:47:53 +0100)
+
+----------------------------------------------------------------
+First set of IIO fixes for the 5.9 cycle
+
+Most of the fixes this time are for a long term issue that Lars-Peter
+Clausen identified recently.
+
+IIO assumes that any data pushed to the buffer interface (either kfifo
+or another in kernel consumer) are naturally aligned.  Unfortunately
+this isn't true in a number of drivers, mostly by failing to ensure
+the buffer used is aligned suitably for an s64 timestamp.
+
+For the ones covered this time we use a structure to enforce this
+alignment, with the added need for __aligned(8) to ensure 8 byte
+alignment of the timestamp on x86_32 and similar platforms where
+it would be 4 byte aligned giving different padded from some other
+architectures.
+
+Patches to make this requirement clearer and potentially cause an
+error print will follow once we've cleaned up existing cases.
+Note that it is a very hard to hit problem and as a result of this
+as we only have one bug report despite the problem being present
+for many years.
+
+Other fixes:
+* cros_ec:
+  - set gyroscope default frequency. For some older boards not having
+    this set can lead to a choice that doesn't work.
+* counter,microchip-tcb-capture:
+  - Fix a wrong value check in error check.
+* mcp3422
+  - Fix locking to protect against race condition.
+* meson-adc
+  - Use right device when looking up fuse values for calibration.
+* rockchip-adc
+  - Fix missing Kconfig dependency.
+* ti-ads1015:
+  - Fix reading when CONFIG_PM not set.
+
+----------------------------------------------------------------
+Angelo Compagnucci (1):
+      iio: adc: mcp3422: fix locking scope
+
+Dan Carpenter (1):
+      counter: microchip-tcb-capture: check the correct variable
+
+Gwendal Grignou (1):
+      iio: cros_ec: Set Gyroscope default frequency to 25Hz
+
+Jonathan Cameron (13):
+      iio: accel: kxsd9: Fix alignment of local buffer.
+      iio:accel:mma8452: Fix timestamp alignment and prevent data leak.
+      iio:accel:bmc150-accel: Fix timestamp alignment and prevent data leak.
+      iio:accel:mma7455: Fix timestamp alignment and prevent data leak.
+      iio:proximity:mb1232: Fix timestamp alignment and prevent data leak.
+      iio:chemical:ccs811: Fix timestamp alignment and prevent data leak.
+      iio:light:max44000 Fix timestamp alignment and prevent data leak.
+      iio:light:ltr501 Fix timestamp alignment issue.
+      iio:magnetometer:ak8975 Fix alignment and data leak issues.
+      iio:adc:ti-adc081c Fix alignment and data leak issues
+      iio:adc:ti-adc084s021 Fix alignment and data leak issues.
+      iio:adc:ina2xx Fix timestamp alignment issue.
+      iio:adc:max1118 Fix alignment of timestamp and data leak issues
+
+Martin Blumenstingl (1):
+      iio: adc: meson-saradc: Use the parent device to look up the calib data
+
+Maxim Kochetkov (1):
+      iio: adc: ti-ads1015: fix conversion when CONFIG_PM is not set
+
+Michael Walle (1):
+      iio: adc: rockchip_saradc: select IIO_TRIGGERED_BUFFER
+
+ drivers/counter/microchip-tcb-capture.c                 |  4 ++--
+ drivers/iio/accel/bmc150-accel-core.c                   | 15 ++++++++++++---
+ drivers/iio/accel/kxsd9.c                               | 16 +++++++++++-----
+ drivers/iio/accel/mma7455_core.c                        | 16 ++++++++++++----
+ drivers/iio/accel/mma8452.c                             | 11 ++++++++---
+ drivers/iio/adc/Kconfig                                 |  2 ++
+ drivers/iio/adc/ina2xx-adc.c                            | 11 +++++++----
+ drivers/iio/adc/max1118.c                               | 10 +++++++---
+ drivers/iio/adc/mcp3422.c                               | 12 +++++++-----
+ drivers/iio/adc/meson_saradc.c                          |  2 +-
+ drivers/iio/adc/ti-adc081c.c                            | 11 ++++++++---
+ drivers/iio/adc/ti-adc084s021.c                         | 10 +++++++---
+ drivers/iio/adc/ti-ads1015.c                            | 10 ++++++++++
+ drivers/iio/chemical/ccs811.c                           | 13 +++++++++----
+ .../iio/common/cros_ec_sensors/cros_ec_sensors_core.c   |  5 ++++-
+ drivers/iio/light/ltr501.c                              | 15 +++++++++------
+ drivers/iio/light/max44000.c                            | 12 ++++++++----
+ drivers/iio/magnetometer/ak8975.c                       | 16 +++++++++++-----
+ drivers/iio/proximity/mb1232.c                          | 17 +++++++++--------
+ 19 files changed, 144 insertions(+), 64 deletions(-)
