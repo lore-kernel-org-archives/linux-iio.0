@@ -1,308 +1,191 @@
-Return-Path: <SRS0=4tHJ=CI=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=gatg=CJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2373BC433E6
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Aug 2020 17:40:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3188C433E2
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 08:55:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E509E20707
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Aug 2020 17:40:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9916A206F0
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 08:55:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="tUffjiQ1"
+	dkim=pass (1024-bit key) header.d=xilinx.onmicrosoft.com header.i=@xilinx.onmicrosoft.com header.b="kmysz6TS"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725934AbgH3RkK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 30 Aug 2020 13:40:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50020 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725825AbgH3RkJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Aug 2020 13:40:09 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5C326C061573;
-        Sun, 30 Aug 2020 10:40:09 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id l191so2992377pgd.5;
-        Sun, 30 Aug 2020 10:40:09 -0700 (PDT)
+        id S1728070AbgHaIzg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Aug 2020 04:55:36 -0400
+Received: from mail-bn8nam11on2070.outbound.protection.outlook.com ([40.107.236.70]:48960
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1725978AbgHaIzc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 Aug 2020 04:55:32 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=GxsK09w86oyJDtpWVukZpBQsgcu9T3ALYtxUDKBXx2TEnZiWQIZUEZYp5ity0VSeP1F5u8bhxSfNTYj2Hm/6tybYbCLiddgC1yU5u9givMIyavjL2vKaKW1NkR8Lu6Vhc8iZfS19YHqd5+8+UZcKnjTr4wv0J+yb3riu8jdrVDujEiPh62idwLyTL0oQNS58LNNCJNEZoAwvAG+ZCO9k44G2JZKLNtUVRDRCHur7KBxTpw9kYxbIfamp86fhzOJLPCBVh7ax6MAhM00J51Zv4jdr4SJ/nCtkb+ERK79unDNsCjV0ni0h1RSA2xTqkYAWafhbQ6ZrGONQTF+zhgy3wQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AMmVtI61DcrAFt5yYGJgeCH7YY4lZsfM3Oagm8qpTWI=;
+ b=lj1dFxuTcFWwyfokqC5NbFCnyNru4H0fq3jCiOQRvHNck5K9/naB0CNYFOLV9cyKJ9lJus554JNxBxbn0OFX/cbyEAV35FLVgNP/YpMpk5vnCAu47yEznZYD8ay6HSCkuJ6j7/KzsLOl9VDzZTTziig2zOkLwHBceL7rC1x3evXCXbgDghTUUfME1ot2g1ebtw7F1Rz5QANysf6FpSzooT+9hkFUo56iiGuL93uYtfrHqKFiroDK7EqpruOqIRxhh6QmsLwPdWFRprngOewKkPEpzTxV1+BW7WpuuVSNI7X2JwY1jGl7qIO3W57yhLg7uxFv6CDT8e1HOphEb4tV0w==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=xilinx.com; dmarc=pass action=none header.from=xilinx.com;
+ dkim=pass header.d=xilinx.com; arc=none
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=X723aEDZab551p4YPovWdlB8+uUD9xkovcO1mRr3nko=;
-        b=tUffjiQ1/Yl3+XS5cw2GTmvnGn5kbNZYNt7GVW3IeClGL6N7CteNtHxVIKOHI7Nueu
-         d30lE5OUjSbeg/o3atMmKxo0lEuV+cTb3FWGP6EjDs488DL/U8bZxS7xNSSIMdJwZPj4
-         1pp/+yDFm/PNjcxZqbcNq9GWKlxuRvvDQBxCzDbVCuTD97MPZANszNFdPEw1BH0dYJIw
-         ojpw1F47YtFd2XEcVupLJuL93Ux4gDOLde79XZoeWN6uRJGZ95/0h4ykaLdkw5T6re7U
-         BH24moiO1rMJiBK8UxNmZq4pPgUzFPJ3AWVx/YNhi8V6XzpZxfYLqqWMSmQ+PwJNKwTl
-         IB5w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=X723aEDZab551p4YPovWdlB8+uUD9xkovcO1mRr3nko=;
-        b=HTSk6JZ/KI4z7nSBaT3cwo71NQn8MKsJ8cMD3LC/tqAgY1B6OFjcbVOmohC6oQDdOy
-         JFDpdemDhDS1M4NrbWdT8jS3KPtvmhZ5DGzvwFC+9GiXoQ0RPNrWE5rLRMjbVAZGV8rO
-         BF043ZlcxE/vEGOhoFq4OyfFuRzq4pPqCaHx78Lt0hFnF26M7taOALbpTBxBGfmYE1VX
-         w2DyhlAteVDgLXRrZxdUq8sN9G/2lZ+qj8+K7uzgDGEYtxk/SpHpWqaG7pmysA1T0KVK
-         zbKc8M4B0CgjNXoaAGQVgRXQ85NNwsu1EYvTjeA5AdeQcD0eJCi69TE3tiF+ElJ7KwYM
-         DkBQ==
-X-Gm-Message-State: AOAM533pyeDB4QfO0g8SyKetLct8VtQSrsnA7vnWSeXK1KdOjZ3OHQ7p
-        4k7GJR9zzO223M4ODPrRqdtl3P4bAXWkkbhQJ2U=
-X-Google-Smtp-Source: ABdhPJybwiDaC0Kgjc3ue8z1ZXQZWjlwcmOPK8godMBjRwwDDBANG3jTHYPKKr6N705Bp/GHxvNsgwZPdsiKF9vPhms=
-X-Received: by 2002:a63:ec4c:: with SMTP id r12mr5412712pgj.74.1598809208515;
- Sun, 30 Aug 2020 10:40:08 -0700 (PDT)
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=AMmVtI61DcrAFt5yYGJgeCH7YY4lZsfM3Oagm8qpTWI=;
+ b=kmysz6TSoqkLbdPXKOEi5IInxAMujaI+HbeHd26V6C1o/WZZnDPglkHDu+yzY44Ie38pf/rmKJBctUtK/vwYX6V6Yex3XkpD6O4VPKudlBqnJILVRzL0HiOOqjHngsikgMwviu5CPdxuxnS9KB2kwAjwsqckZiiW6G9yEfTC9a4=
+Received: from BY5PR02MB6916.namprd02.prod.outlook.com (2603:10b6:a03:234::18)
+ by BY5PR02MB6946.namprd02.prod.outlook.com (2603:10b6:a03:239::10) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3326.19; Mon, 31 Aug
+ 2020 08:55:26 +0000
+Received: from BY5PR02MB6916.namprd02.prod.outlook.com
+ ([fe80::80e5:d8d9:6bff:8a96]) by BY5PR02MB6916.namprd02.prod.outlook.com
+ ([fe80::80e5:d8d9:6bff:8a96%5]) with mapi id 15.20.3326.025; Mon, 31 Aug 2020
+ 08:55:26 +0000
+From:   Anand Ashok Dumbre <ANANDASH@xilinx.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        Michal Simek <michals@xilinx.com>, git <git@xilinx.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org" 
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: RE: [PATCH v2] iio: core: Fix IIO_VAL_FRACTIONAL calculation for
+ negative values
+Thread-Topic: [PATCH v2] iio: core: Fix IIO_VAL_FRACTIONAL calculation for
+ negative values
+Thread-Index: AQHWe9Uy2J6wql2dV0mNnaIWIGIkoqlPN8YAgAK0ytA=
+Date:   Mon, 31 Aug 2020 08:55:26 +0000
+Message-ID: <BY5PR02MB6916B943FBBFD6B1733E5C1EA9510@BY5PR02MB6916.namprd02.prod.outlook.com>
+References: <1598465676-28912-1-git-send-email-anand.ashok.dumbre@xilinx.com>
+ <20200829161900.713541cd@archlinux>
+In-Reply-To: <20200829161900.713541cd@archlinux>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=xilinx.com;
+x-originating-ip: [37.228.255.114]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-ht: Tenant
+x-ms-office365-filtering-correlation-id: 64250474-ebde-4071-9799-08d84d8b9ad5
+x-ms-traffictypediagnostic: BY5PR02MB6946:
+x-ld-processed: 657af505-d5df-48d0-8300-c31994686c5c,ExtAddr
+x-ms-exchange-transport-forked: True
+x-microsoft-antispam-prvs: <BY5PR02MB694629AAA1D2EC9D3DFFC515A9510@BY5PR02MB6946.namprd02.prod.outlook.com>
+x-ms-oob-tlc-oobclassifiers: OLM:3044;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: V0bq/6V4ZCvZSZhXlrbuG7Aqzz0yyn+gUMZGqNYb5/9e6n42NrYrJT/Uoq+O/k8iJybDa+wd5uk55/VnFWILxjcax1hfLVW6rHJSz7T4XkH5VotNvfOhe/EAFZNkj7dxrVKx0kIkrT26SAwlL3/5hMSsR+e34tDV+jTHitUuluXNtT+cn2w9niH+6wuxAi0Cw3ICxiwFRIGDJFpV03y+jaD0CCU6/VoaCIxPhEKw0JkZuVvGJ5lPyD+ULCioLdu7rec2Nr9JPUMRQyRmO4PASNHWss/bydErIaTa0zQjq59nxaXG69Qw3PlUpXEbaukiZUA02QccqF9lECXQbjsfsw==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BY5PR02MB6916.namprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(39850400004)(136003)(366004)(396003)(376002)(346002)(66556008)(7696005)(8676002)(66946007)(478600001)(66446008)(53546011)(6506007)(64756008)(8936002)(66476007)(55016002)(26005)(83380400001)(186003)(316002)(76116006)(86362001)(5660300002)(52536014)(54906003)(33656002)(71200400001)(4326008)(9686003)(2906002)(6916009);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: c0DjG4sfJIQlRZOZnYYSH3p0fdWj7L2cIPXgOgg/eV5+U+eY0OkJI2X5lPCjs06zgsW/CLLlnJkpVsZ7jolCYJ7y4ZTtH8hEaWpVqKCan6yF2yYysSPUGiswPGHK+GYUTCnKapSrFboHforNX29UoioE0rBqJyQpFCjDxK/DbWI/HyzF2/paj8lpIYVQro06sECxH5DCvQRbTgH8dHftaDQHiPhlB7G5oeGsL9nKJk67+N1Lj7eCB4Ih+v8ePdYsZ2PbC4KSC6J4cUJxU0aweIaVU09cnpThiUuBiNSDLZQeeK7Aji5vEQk+CMnBadgDC4OQVa0c0QGjShjyu6LM6FRljdM0Ff8xiVCRCz21WXAItVDHpzsgWo4/RviPfF4vycPAC54DY1c6UV9oRTnThX3/e7lsi4O8ZvQYoA7cWMZLRJTSpfWrjxRQaUTJ5mkt/lAsfIgA/XskICeQcBTi50bqkwXefaMjWT4I5lmUN0ZOK9jaLS3VnuYl3xdOAWyFSBS5jBEGbHV9T+iI72KOX+ArM7TDZ5qsB17cPgQ+UE8/9LxZ32PP4cZuEKGUIh6Y02/qEqfXskwgWWfWmD9MGCmXSrfpvunqKe9Bgj+vCVo+bZuETp01hihDMl6YroSWPcP9nLVtrgiWiDUJqV2qsw==
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <1598259985-12517-1-git-send-email-gene.chen.richtek@gmail.com> <1598259985-12517-2-git-send-email-gene.chen.richtek@gmail.com>
-In-Reply-To: <1598259985-12517-2-git-send-email-gene.chen.richtek@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 30 Aug 2020 20:39:52 +0300
-Message-ID: <CAHp75VdmzurQQB2597VB=PCt0THV0TRVdhXdvO3Z3qcdLCeEPg@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] iio: adc: mt6360: Add ADC driver for MT6360
-To:     Gene Chen <gene.chen.richtek@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        "moderated list:ARM/Mediatek SoC support" 
-        <linux-mediatek@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        gene_chen@richtek.com, Wilma.Wu@mediatek.com,
-        shufan_lee@richtek.com, cy_huang@richtek.com,
-        benjamin.chao@mediatek.com
-Content-Type: text/plain; charset="UTF-8"
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: BY5PR02MB6916.namprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 64250474-ebde-4071-9799-08d84d8b9ad5
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Aug 2020 08:55:26.4933
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: K9eBWr94FM96X06gtC3TEje3DXGtk1K3mzXmXKzSCg8UgcSWFeNKP7T8XeZFtSmS5Wedmib+fwTTQ9EwYDXNTg==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR02MB6946
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 24, 2020 at 12:07 PM Gene Chen <gene.chen.richtek@gmail.com> wrote:
->
-> Add MT6360 ADC driver include Charger Current, Voltage, and
+Hi Jonathan,
+
+I encountered this when I was developing a new driver.
+If you look at the function where this is used, all other IIO_VAL_MICRO and=
+ NANO
+have this fix added at some point.
+
+Thanks,
+Anand
+
+> -----Original Message-----
+> From: Jonathan Cameron <jic23@kernel.org>
+> Sent: Saturday, August 29, 2020 4:19 PM
+> To: Anand Ashok Dumbre <ANANDASH@xilinx.com>
+> Cc: knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net; Michal
+> Simek <michals@xilinx.com>; git <git@xilinx.com>; linux-
+> iio@vger.kernel.org; linux-arm-kernel@lists.infradead.org; linux-
+> kernel@vger.kernel.org; Anand Ashok Dumbre <ANANDASH@xilinx.com>
+> Subject: Re: [PATCH v2] iio: core: Fix IIO_VAL_FRACTIONAL calculation for
+> negative values
+>=20
+> On Wed, 26 Aug 2020 11:14:36 -0700
+> Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com> wrote:
+>=20
+> > Fixes IIO_VAL_FRACTIONAL for case when the result is negative and
+> > exponent is 0.
+> >
+> > example: if the result is -0.75, tmp0 will be 0 and tmp1 =3D 75 This
+> > causes the output to lose sign because of %d in snprintf which works
+> > for tmp0 <=3D -1.
+> >
+> > Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+>=20
+> Looks good.  Just one last thing.
+>=20
+> Is this actually hit in an existing driver?  I'm just wondering how far b=
+ack we
+> need to push it in stable etc.
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
+> > ---
+> > changes since v1:
+> > 	Changed -%d to -0 to make the fix clearer.
+> > 	Removed the email footer.
+> > 	Updated the commit description with an example
+> > --
+> >  drivers/iio/industrialio-core.c | 8 ++++++--
+> >  1 file changed, 6 insertions(+), 2 deletions(-)
+> >
+> > diff --git a/drivers/iio/industrialio-core.c
+> > b/drivers/iio/industrialio-core.c index cdcd16f1..a239fa2 100644
+> > --- a/drivers/iio/industrialio-core.c
+> > +++ b/drivers/iio/industrialio-core.c
+> > @@ -592,6 +592,7 @@ static ssize_t __iio_format_value(char *buf,
+> > size_t len, unsigned int type,  {
+> >  	unsigned long long tmp;
+> >  	int tmp0, tmp1;
+> > +	s64 tmp2;
+> >  	bool scale_db =3D false;
+> >
+> >  	switch (type) {
+> > @@ -614,10 +615,13 @@ static ssize_t __iio_format_value(char *buf,
+> size_t len, unsigned int type,
+> >  		else
+> >  			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
+> >  	case IIO_VAL_FRACTIONAL:
+> > -		tmp =3D div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> > +		tmp2 =3D div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> >  		tmp1 =3D vals[1];
+> >  		tmp0 =3D (int)div_s64_rem(tmp, 1000000000, &tmp1);
+> > -		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+> > +		if ((tmp2 < 0) && (tmp0 =3D=3D 0))
+> > +			return snprintf(buf, len, "-0.%09u", abs(tmp1));
+> > +		else
+> > +			return snprintf(buf, len, "%d.%09u", tmp0,
+> abs(tmp1));
+> >  	case IIO_VAL_FRACTIONAL_LOG2:
+> >  		tmp =3D shift_right((s64)vals[0] * 1000000000LL, vals[1]);
+> >  		tmp0 =3D (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
 
-include -> that includes
-
-> Temperature.
-
-...
-
-> +       help
-> +         Say Y here to enable MT6360 ADC Part.
-> +         Integrated for System Monitoring include
-> +         Charger and Battery Current, Voltage and
-> +         Temperature
-
-We have a wider field for this text. Also, use proper punctuation.
-
-...
-
-> +#include <linux/completion.h>
-> +#include <linux/interrupt.h>
-
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-
-I would rather move this block after linux/* headers because it's
-subsystem related (not so generic).
-
-> +#include <linux/irq.h>
-
-Are you sure about this?
-
-> +#include <linux/kernel.h>
-> +#include <linux/ktime.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-
-...
-
-> +#define MT6360_AICR_MASK       0xFC
-
-GENMASK() (and include bits.h for that).
-
-> +#define MT6360_ADCEN_MASK      0x8000
-
-> +#define MT6360_PREFERCH_MASK   0xF0
-
-> +#define MT6360_RPTCH_MASK      0x0F
-
-Ditto for all above.
-
-...
-
-> +enum {
-> +       MT6360_CHAN_USBID = 0,
-> +       MT6360_CHAN_VBUSDIV5,
-> +       MT6360_CHAN_VBUSDIV2,
-> +       MT6360_CHAN_VSYS,
-> +       MT6360_CHAN_VBAT,
-> +       MT6360_CHAN_IBUS,
-> +       MT6360_CHAN_IBAT,
-> +       MT6360_CHAN_CHG_VDDP,
-> +       MT6360_CHAN_TEMP_JC,
-> +       MT6360_CHAN_VREF_TS,
-> +       MT6360_CHAN_TS,
-
-> +       MT6360_CHAN_MAX,
-
-No comma for terminator.
-
-> +};
-
-...
-
-> +       const struct converter {
-> +               int multiplier;
-> +               int offset;
-> +               int divisor;
-> +       } adc_converter[MT6360_CHAN_MAX] = {
-> +               { 1250, 0, 1}, /* USBID */
-> +               { 6250, 0, 1}, /* VBUSDIV5 */
-> +               { 2500, 0, 1}, /* VBUSDIV2 */
-> +               { 1250, 0, 1}, /* VSYS */
-> +               { 1250, 0, 1}, /* VBAT */
-> +               { 2500, 0, 1}, /* IBUS */
-> +               { 2500, 0, 1}, /* IBAT */
-> +               { 1250, 0, 1}, /* CHG_VDDP */
-> +               { 105, -8000, 100}, /* TEMP_JC */
-> +               { 1250, 0, 1}, /* VREF_TS */
-> +               { 1250, 0, 1}, /* TS */
-> +       }, sp_ibus_adc_converter = { 1900, 0, 1 }, *sel_converter;
-
-This is quite hidden in the code. Better to move out from the function at least.
-
-...
-
-> +       start_t = ktime_get();
-> +       predict_end_t = ktime_add_ms(mad->last_off_timestamps[channel], 50);
-> +
-> +       if (ktime_after(start_t, predict_end_t))
-> +               predict_end_t = ktime_add_ms(start_t, 25);
-> +       else
-> +               predict_end_t = ktime_add_ms(start_t, 75);
-> +
-
-> +       timeout = wait_for_completion_timeout(&mad->adc_complete, msecs_to_jiffies(200));
-
-Above code full of magic numbers.
-
-...
-
-> +       value = (rpt[1] << 8) | rpt[2];
-
-put_unaligned_be16() (or what is this?)
-
-...
-
-> +       /* set prefer channel to 0xf */
-
-What 0x0f is?
-
-> +       regmap_update_bits(mad->regmap, MT6360_REG_PMUADCRPT1, MT6360_PREFERCH_MASK,
-> +                          0xF << MT6360_PREFERCH_SHFT);
-
-0xf should be GENMASK() and have its descriptive name.
-
-> +out_adc:
-
-The rule of thumb is to explain in the label what is going to do,
-rather than some abstract words. Here, i.e.,
-out_mutex_unlock:
-
-> +       mutex_unlock(&mad->adc_lock);
-
-...
-
-> +       if (mask == IIO_CHAN_INFO_PROCESSED)
-> +               return mt6360_adc_read_processed(mad, chan->channel, val);
-> +
-> +       return -EINVAL;
-
-Usual pattern is
- if (err_condition)
-  ...handle error...
-
-...
-
-> +       /* 11 ch s32 numbers + 1 s64 timestamp */
-> +       s32 data[MT6360_CHAN_MAX + 2] __aligned(8);
-
-We have a better approach now (with a struct being used).
-
-...
-
-> +       u8 configs[3] = {0x80, 0, 0};
-
-Magic.
-
-...
-
-> +static int mt6360_adc_probe(struct platform_device *pdev)
-> +{
-
-> +       mad->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +       if (!mad->regmap) {
-> +               dev_err(&pdev->dev, "Failed to get parent regmap\n");
-> +               return -ENODEV;
-> +       }
-
-You may do this before allocation happens. Also consider to introduce
-temporary variable to simplify below code, i.e.
-
-struct device *dev = &pdev->dev;
-struct regmap *regmap;
-
-...
-
-> +       mad->irq = platform_get_irq_byname(pdev, "adc_donei");
-> +       if (mad->irq < 0) {
-
-> +               dev_err(&pdev->dev, "Failed to get adc_done irq\n");
-
-This duplicates the core message.
-
-> +               return mad->irq;
-> +       }
-
-...
-
-> +       irq_set_status_flags(mad->irq, IRQ_NOAUTOEN);
-
-Why?
-
-
-> +       ret = devm_iio_device_register(&pdev->dev, indio_dev);
-> +       if (ret) {
-> +               dev_err(&pdev->dev, "Failed to register iio device\n");
-
-> +               return ret;
-> +       }
-> +
-> +       return 0;
-
-return ret; (At least, but I would go even further and do return
-devm_iio_device_register(); directly)
-
-> +}
-
-...
-
-> +static const struct of_device_id __maybe_unused mt6360_adc_of_id[] = {
-> +       { .compatible = "mediatek,mt6360-adc", },
-> +       {},
-
-No comma for terminator line.
-
-> +};
-
--- 
-With Best Regards,
-Andy Shevchenko
