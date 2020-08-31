@@ -2,50 +2,50 @@ Return-Path: <SRS0=gatg=CJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A909FC43461
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AF0EC433E6
 	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:08:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E483208CA
+	by mail.kernel.org (Postfix) with ESMTP id 4CAE5208CA
 	for <linux-iio@archiver.kernel.org>; Mon, 31 Aug 2020 09:08:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726102AbgHaJIa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Aug 2020 05:08:30 -0400
-Received: from mga05.intel.com ([192.55.52.43]:6893 "EHLO mga05.intel.com"
+        id S1727984AbgHaJI3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Aug 2020 05:08:29 -0400
+Received: from mga14.intel.com ([192.55.52.115]:4952 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728033AbgHaJIR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 31 Aug 2020 05:08:17 -0400
-IronPort-SDR: QcIESwMunFHjd8Ci0JdHKphmYHBQFEBwqYXcSjSHHrwzpyM5XbCexUB9YVHPSeZqwdVeusQMr+
- 1VW5zNjoEOLw==
-X-IronPort-AV: E=McAfee;i="6000,8403,9729"; a="241747285"
+        id S1726102AbgHaJIS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 Aug 2020 05:08:18 -0400
+IronPort-SDR: tlwJoegQ4QilfVWsfdxupVjp0agYyLXg9M/9rMJCghBgW0Ile5cWFkP3LPa8zYvhACpJqtqovh
+ OgWXt2J53A/g==
+X-IronPort-AV: E=McAfee;i="6000,8403,9729"; a="156194074"
 X-IronPort-AV: E=Sophos;i="5.76,375,1592895600"; 
-   d="scan'208";a="241747285"
+   d="scan'208";a="156194074"
 X-Amp-Result: SKIPPED(no attachment in message)
 X-Amp-File-Uploaded: False
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2020 02:08:16 -0700
-IronPort-SDR: tldvvm5KGn7kdStVNrs5Xh2X1lbMXeTBd7NaKBD+IUzwStzb37JRJsZ4NwOvJct1meEz6B/ADE
- D35evcZgRZMw==
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 Aug 2020 02:08:17 -0700
+IronPort-SDR: yhkEvU2fz4xplUgOenK6O9OBWsUC20D+Wh2HW0BZAOmaGfxq9fY3kv7X4lcJaZAhqXCbrDSl8l
+ BJxbv25+YtBQ==
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.76,375,1592895600"; 
-   d="scan'208";a="330630268"
+   d="scan'208";a="300978867"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 31 Aug 2020 02:08:15 -0700
+  by orsmga006.jf.intel.com with ESMTP; 31 Aug 2020 02:08:15 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4D894302; Mon, 31 Aug 2020 12:08:14 +0300 (EEST)
+        id 60E4E4F2; Mon, 31 Aug 2020 12:08:14 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 3/8] iio: accel: bma220: Use dev_get_drvdata() directly
-Date:   Mon, 31 Aug 2020 12:08:08 +0300
-Message-Id: <20200831090813.78841-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 5/8] iio: accel: bma220: Drop ACPI_PTR() and accompanying ifdeffery
+Date:   Mon, 31 Aug 2020 12:08:10 +0300
+Message-Id: <20200831090813.78841-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200831090813.78841-1-andriy.shevchenko@linux.intel.com>
 References: <20200831090813.78841-1-andriy.shevchenko@linux.intel.com>
@@ -56,8 +56,11 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Instead of using to_spi_dev() + spi_get_drvdata(),
-use dev_get_drvdata() to make code simpler.
+The driver is quite likely used only on ACPI based platforms and
+rarely build with CONFIG_ACPI=n. Even though, the few dozens of bytes
+is better than ugly ifdeffery and inclusion of heavy header.
+
+As a result, replace acpi.h with mod_devicetable.h.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
@@ -65,29 +68,41 @@ Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
  1 file changed, 2 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/accel/bma220_spi.c b/drivers/iio/accel/bma220_spi.c
-index cb634a3a995d..529c88fc2949 100644
+index e55c5f5dd6b4..105c1dece890 100644
 --- a/drivers/iio/accel/bma220_spi.c
 +++ b/drivers/iio/accel/bma220_spi.c
-@@ -291,8 +291,7 @@ static int bma220_remove(struct spi_device *spi)
- #ifdef CONFIG_PM_SLEEP
- static int bma220_suspend(struct device *dev)
- {
--	struct bma220_data *data =
--			iio_priv(spi_get_drvdata(to_spi_device(dev)));
-+	struct bma220_data *data = iio_priv(dev_get_drvdata(dev));
+@@ -5,8 +5,8 @@
+  * Copyright (c) 2016, Intel Corporation.
+  */
  
- 	/* The chip can be suspended/woken up by a simple register read. */
- 	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
-@@ -300,8 +299,7 @@ static int bma220_suspend(struct device *dev)
+-#include <linux/acpi.h>
+ #include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+ #include <linux/iio/buffer.h>
+ #include <linux/iio/iio.h>
+@@ -310,20 +310,18 @@ static const struct spi_device_id bma220_spi_id[] = {
+ 	{}
+ };
  
- static int bma220_resume(struct device *dev)
- {
--	struct bma220_data *data =
--			iio_priv(spi_get_drvdata(to_spi_device(dev)));
-+	struct bma220_data *data = iio_priv(dev_get_drvdata(dev));
+-#ifdef CONFIG_ACPI
+ static const struct acpi_device_id bma220_acpi_id[] = {
+ 	{"BMA0220", 0},
+ 	{}
+ };
  
- 	return bma220_read_reg(data->spi_device, BMA220_REG_SUSPEND);
- }
+ MODULE_DEVICE_TABLE(spi, bma220_spi_id);
+-#endif
+ 
+ static struct spi_driver bma220_driver = {
+ 	.driver = {
+ 		.name = "bma220_spi",
+ 		.pm = &bma220_pm_ops,
+-		.acpi_match_table = ACPI_PTR(bma220_acpi_id),
++		.acpi_match_table = bma220_acpi_id,
+ 	},
+ 	.probe =            bma220_probe,
+ 	.remove =           bma220_remove,
 -- 
 2.28.0
 
