@@ -2,105 +2,102 @@ Return-Path: <SRS0=wght=CK=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.6 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E8DC433E6
-	for <linux-iio@archiver.kernel.org>; Tue,  1 Sep 2020 09:10:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1BD5C433E6
+	for <linux-iio@archiver.kernel.org>; Tue,  1 Sep 2020 09:32:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D58AB2083B
-	for <linux-iio@archiver.kernel.org>; Tue,  1 Sep 2020 09:10:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BCF99205CB
+	for <linux-iio@archiver.kernel.org>; Tue,  1 Sep 2020 09:32:40 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="j2lLNXek"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726107AbgIAJKM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 1 Sep 2020 05:10:12 -0400
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:52458 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726064AbgIAJKL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Sep 2020 05:10:11 -0400
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id 50D5F28C318
-Subject: Re: [PATCH v5 0/7] platform/chrome: cros_ec_proto: Convert EC error
- codes to Linux error codes
-To:     Guenter Roeck <linux@roeck-us.net>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Yu-Hsuan Hsu <yuhsuan@chromium.org>,
-        Prashant Malani <pmalani@chromium.org>,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20200822150857.205775-1-linux@roeck-us.net>
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <5fe68c6d-ae3d-e756-ca5d-873f3ca1cc45@collabora.com>
-Date:   Tue, 1 Sep 2020 11:10:06 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.11.0
+        id S1726050AbgIAJcj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 1 Sep 2020 05:32:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55398 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726064AbgIAJcj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Sep 2020 05:32:39 -0400
+Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4320C061244
+        for <linux-iio@vger.kernel.org>; Tue,  1 Sep 2020 02:32:38 -0700 (PDT)
+Received: by mail-wr1-x441.google.com with SMTP id k15so703257wrn.10
+        for <linux-iio@vger.kernel.org>; Tue, 01 Sep 2020 02:32:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fjzYRnlLP3NDVTbtqa0TtTnoLtPLqGtsTI87vfoQgbs=;
+        b=j2lLNXeksADJzDW1uQToY7XNNjkjJHIjOwsHpqtYKk1XFui1n0zMUyMa6FnWftcbLM
+         3bxPyqpGRR9WicJOTRAQDGvcCWUIeEuN8iHWGM71H43C6TuRkq0ZYsRisvLA3Wc9M+EQ
+         TlBTBchswtzlx90ufM6CilXvZwsFu86eyPRzb8j/KkoOLb+6Ms/6Gahng1l3XvkX5CRx
+         jYk0gDbcSb+Mw5N0SSHXU8UJUUmMu84j+2+dS846pcsFMGo0Ztftr4WcgyuX3+Rt3YZz
+         DGCTQVnigSSuHpQBlioWyxeh5c2fdeXXOpjZ6syWpIwapaaJXq6vW/4ZUuymeoEkMpkR
+         F4TQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=fjzYRnlLP3NDVTbtqa0TtTnoLtPLqGtsTI87vfoQgbs=;
+        b=qzProhYH88jZeeFKO8VuEBoaAy/CT0DpmE0AK1rQJ1SuXzxh2QP2GCj4rUxwX5u7Yg
+         KqxUMAc7RkBYAUr4IAYF19KfX0nHn4CTZ6UGvyw1eZU/6S3A0kHR2zHkjLtvYLpubcqk
+         hSutD+SGQvmPWML1R1/MT7nrgTLJ11Y+AeFyk7YK3mNRZwGrCrqHTLXh5sw6ClNCEohr
+         4qQql4zZ50LQ5COLZngZSiuqdXCNN0SHMGFtMyDbDgNUZgBwjQFNXUWdvHFC/+1epBBn
+         Wdqh5TE/4ON19Ovdc2RcO7PCsCiCiM3Jt9QYZDPjcXflV0t1LV9irCkR4/ZS7oPqHwjK
+         Ng6Q==
+X-Gm-Message-State: AOAM532E+0JcuMZRANPrAKafl/zD9g2RfyaHPrafx8p/ERsGFNqI4c0y
+        flg/z5U0krIAFQ5bovW2+bzNESpvjp7ZLA==
+X-Google-Smtp-Source: ABdhPJzoCTXvNp+ALiDiKBuhYdzYaIK2KCY/RhEAXp7FO+Py9oOJdjRyTZoWrd+eA4MPjjnxN9YmJw==
+X-Received: by 2002:adf:dd0e:: with SMTP id a14mr884670wrm.151.1598952756726;
+        Tue, 01 Sep 2020 02:32:36 -0700 (PDT)
+Received: from localhost.localdomain (host085115198017.static.fidoka.tech. [85.115.198.17])
+        by smtp.gmail.com with ESMTPSA id k8sm1085496wma.16.2020.09.01.02.32.35
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 01 Sep 2020 02:32:36 -0700 (PDT)
+From:   Angelo Compagnucci <angelo.compagnucci@gmail.com>
+To:     linux-iio@vger.kernel.org
+Cc:     gregkh@linuxfoundation.org, jic23@kernel.org,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>
+Subject: [PATCH] iio: adc: mcp3422: fix locking on error path
+Date:   Tue,  1 Sep 2020 11:32:18 +0200
+Message-Id: <20200901093218.1500845-1-angelo.compagnucci@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200822150857.205775-1-linux@roeck-us.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dear all,
+Reading from the chip should be unlocked on error path else the lock
+could never being released.
 
-On 22/8/20 17:08, Guenter Roeck wrote:
-> The EC reports a variety of error codes. Most of those, with the exception
-> of EC_RES_INVALID_VERSION, are converted to -EPROTO. As result, the actual
-> error code gets lost. In cros_ec_cmd_xfer_status(), convert all EC errors
-> to Linux error codes to report a more meaningful error to the caller to aid
-> debugging.
-> 
-> To prepare for this change, handle error codes other than -EPROTO for all
-> callers of cros_ec_cmd_xfer_status(). Specifically, no longer assume that
-> -EPROTO reflects an error from the EC and all other error codes reflect a
-> transfer error.
-> 
-> v2: Add patches 1/4 to 3/4 to handle callers of cros_ec_cmd_xfer_status()
-> v3: Add patches 4/6 and 5/6 to handle additional callers of
-> 	cros_ec_cmd_xfer_status()
->     Use -ENOPROTOOPT for EC_RES_INVALID_VERSION
->     Implement function to convert error codes
-> v4: Add coments describing the functionality of cros_ec_num_pwms().
->     Add patch 7/7 to clean up cros_ec_num_pwms() after the new error code
->     support has been implemented.
->     Rebased series to v5.8.
-> v5: If there is no error, cros_ec_cmd_xfer_status() needs to return the
->     number of received bytes, not 0. While fixing that (in patch 6/7),
->     rearranged the function to reduce its indentation.
->     Rebased series to v5.9-rc1
-> 
-> ----------------------------------------------------------------
-> Guenter Roeck (7):
->       iio: cros_ec: Accept -EOPNOTSUPP as 'not supported' error code
->       cros_ec_lightbar: Accept more error codes from cros_ec_cmd_xfer_status
->       platform/chrome: cros_ec_sysfs: Report range of error codes from EC
->       pwm: cros-ec: Accept more error codes from cros_ec_cmd_xfer_status
->       platform/input: cros_ec: Replace -ENOTSUPP with -ENOPROTOOPT
->       platform/chrome: cros_ec_proto: Convert EC error codes to Linux error codes
->       pwm: cros-ec: Simplify EC error handling
-> 
->  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   |  2 +-
->  drivers/input/keyboard/cros_ec_keyb.c              |  2 +-
->  drivers/platform/chrome/cros_ec_lightbar.c         | 10 ++--
->  drivers/platform/chrome/cros_ec_proto.c            | 57 +++++++++++++++++-----
->  drivers/platform/chrome/cros_ec_sysfs.c            | 24 ++++-----
->  drivers/pwm/pwm-cros-ec.c                          | 37 +++++++-------
->  6 files changed, 78 insertions(+), 54 deletions(-)
-> 
+Fixes: 07914c84ba30 ("iio: adc: Add driver for Microchip MCP3422/3/4 high resolution ADC")
+Signed-off-by: Angelo Compagnucci <angelo.compagnucci@gmail.com>
+---
+ drivers/iio/adc/mcp3422.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-I applied all the patches and queued for 5.10 in the chrome-platform tree. If at
-some point we need to create an immutable branch I can provide it.
+diff --git a/drivers/iio/adc/mcp3422.c b/drivers/iio/adc/mcp3422.c
+index 219adac2384b..da353dcb1e9d 100644
+--- a/drivers/iio/adc/mcp3422.c
++++ b/drivers/iio/adc/mcp3422.c
+@@ -143,8 +143,10 @@ static int mcp3422_read_channel(struct mcp3422 *adc,
+ 		config &= ~MCP3422_PGA_MASK;
+ 		config |= MCP3422_PGA_VALUE(adc->pga[req_channel]);
+ 		ret = mcp3422_update_config(adc, config);
+-		if (ret < 0)
++		if (ret < 0) {
++			mutex_unlock(&adc->lock);
+ 			return ret;
++		}
+ 		msleep(mcp3422_read_times[MCP3422_SAMPLE_RATE(adc->config)]);
+ 	}
+ 
+-- 
+2.25.1
 
-Thanks,
- Enric
