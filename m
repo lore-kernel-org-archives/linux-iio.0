@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EFD9CC433E2
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 15:00:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D9AC433E2
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 15:00:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BD9EC20773
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 15:00:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 982772078E
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 15:00:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599058828;
-	bh=FUElcGoCh8MVrhlx2sOneakaehau9/YLSKtASFYEWlA=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=UUWJ781F192pmRhnmvHDkP32HkVpULk8s1qQNxeujV2UIhjic4xDgQWePUJ6GAJj8
-	 ui6WGNHgh25AI4IgGfqvz6ALNdwbsLqMHMirRbnb8eDrynBDZ9MAF5NeIyScNc+5QB
-	 Y8kdoap0Q6Bq6lkI1Yks6sRaMo0v9pog3fiYSsek=
+	s=default; t=1599058830;
+	bh=NFFcFfcgR6lW5+zjEHMMHql6rarIPzttaDhwjZoAU6s=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=eu64iEamCvyi8ETvzS92AwxbdiOpF/+LkVXLkfi5XteqPSwiEmluzjpfmY3N5jtni
+	 BWL4KHmBmftfe0cci5rOZPV4ar1OzhgaK2uothUb9ntrPhGj9AU2Nx+YqvkRGi/0MS
+	 1Rrh6QdH5iLuZzQDV2Ix4as/0fbxKAIgZKnIjvmU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727818AbgIBPAL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726489AbgIBPAL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 2 Sep 2020 11:00:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39310 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:39242 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726967AbgIBPAH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 2 Sep 2020 11:00:07 -0400
+        id S1726674AbgIBPAF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 2 Sep 2020 11:00:05 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.106])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 40BC62087D;
-        Wed,  2 Sep 2020 15:00:05 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 60B432078E;
+        Wed,  2 Sep 2020 15:00:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599058807;
-        bh=FUElcGoCh8MVrhlx2sOneakaehau9/YLSKtASFYEWlA=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oNHPIuSjx+nnAho8lk7xpWj45550wq0k7g3ePG1VBb15VJGXwZeXvlUDXArhZuV57
-         W0Xdcbj7YioscD6Ke6vAYOgplWCDCOhAA8Li0r1vD6OjHzrlTfXHVi8vXMv+C1muhT
-         7ojgbpHVP7ZP2Qv6Vnh0z53AYshayuysllEzCaQ4=
+        s=default; t=1599058804;
+        bh=NFFcFfcgR6lW5+zjEHMMHql6rarIPzttaDhwjZoAU6s=;
+        h=From:To:Cc:Subject:Date:From;
+        b=DQfkiby/xygiMhv1NB8PiP/R/7ozpMbu5hGsDwHNq1vcaTtCAG8S5YAKbp++uuyaw
+         d3zC0ML1W5o87gv3wy858QtzS5TX74Y44tJmCbGuqb5B20f3pP+OWnzRzEDPeX8gFH
+         YcH0ILkxrDRnot2og1JW2D/VkOEHq01YJhcBPuTE=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -45,24 +45,22 @@ To:     Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzk@kernel.org>
-Subject: [PATCH v2 2/2] MAINTAINERS: Move Hartmut Knaack to Credits
-Date:   Wed,  2 Sep 2020 16:59:57 +0200
-Message-Id: <20200902145957.13861-2-krzk@kernel.org>
+Subject: [PATCH v2 1/2] MAINTAINERS: Consolidate Analog Devices IIO entries and remove Beniamin Bia
+Date:   Wed,  2 Sep 2020 16:59:56 +0200
+Message-Id: <20200902145957.13861-1-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200902145957.13861-1-krzk@kernel.org>
-References: <20200902145957.13861-1-krzk@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hartmut Knaack was an active reviewer and contributor to the IIO
-subsystem and drivers.  However his last message on LKML is from
-October 2015.
-
-In thanks for Hartmut's effort, move him name to the Credits.
+Emails to Beniamin Bia bounce with no such address so remove him from
+maintainers.  After this removal, many entries for Analog Devices Inc
+IIO drivers look exactly the same so consolidate them.
 
 Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Suggested-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 Cc: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio <linux-iio@vger.kernel.org>
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
@@ -70,39 +68,115 @@ Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
 
 Changes since v1:
-1. Fix order in CREDITS
+1. Consolidate IIO entries
 ---
- CREDITS     | 4 ++++
- MAINTAINERS | 1 -
- 2 files changed, 4 insertions(+), 1 deletion(-)
+ MAINTAINERS | 56 ++++-------------------------------------------------
+ 1 file changed, 4 insertions(+), 52 deletions(-)
 
-diff --git a/CREDITS b/CREDITS
-index 32ee70a7562e..c741455498a4 100644
---- a/CREDITS
-+++ b/CREDITS
-@@ -1942,6 +1942,10 @@ S: Post Office Box 611311
- S: San Jose, California 95161-1311
- S: USA
- 
-+N: Hartmut Knaack
-+E: knaack.h@gmx.de
-+D: IIO subsystem and drivers
-+
- N: Thorsten Knabe
- E: Thorsten Knabe <tek@rbg.informatik.tu-darmstadt.de>
- E: Thorsten Knabe <tek01@hrzpub.tu-darmstadt.de>
 diff --git a/MAINTAINERS b/MAINTAINERS
-index facffcf7b1d1..94dda8ae202c 100644
+index 8107b3d5d6df..facffcf7b1d1 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -8489,7 +8489,6 @@ F:	drivers/iio/multiplexer/iio-mux.c
+@@ -950,38 +950,6 @@ S:	Supported
+ F:	arch/arm64/boot/dts/amd/amd-seattle-xgbe*.dtsi
+ F:	drivers/net/ethernet/amd/xgbe/
  
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
--R:	Hartmut Knaack <knaack.h@gmx.de>
- R:	Lars-Peter Clausen <lars@metafoo.de>
- R:	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+-ANALOG DEVICES INC AD5686 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-L:	linux-pm@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	drivers/iio/dac/ad5686*
+-F:	drivers/iio/dac/ad5696*
+-
+-ANALOG DEVICES INC AD5758 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+-F:	drivers/iio/dac/ad5758.c
+-
+-ANALOG DEVICES INC AD7091R5 DRIVER
+-M:	Beniamin Bia <beniamin.bia@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7091r5.yaml
+-F:	drivers/iio/adc/ad7091r5.c
+-
+-ANALOG DEVICES INC AD7124 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+-F:	drivers/iio/adc/ad7124.c
+-
+ ANALOG DEVICES INC AD7192 DRIVER
+ M:	Alexandru Tachici <alexandru.tachici@analog.com>
  L:	linux-iio@vger.kernel.org
+@@ -998,15 +966,6 @@ W:	http://ez.analog.com/community/linux-device-drivers
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7292.yaml
+ F:	drivers/iio/adc/ad7292.c
+ 
+-ANALOG DEVICES INC AD7606 DRIVER
+-M:	Michael Hennerich <Michael.Hennerich@analog.com>
+-M:	Beniamin Bia <beniamin.bia@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
+-F:	drivers/iio/adc/ad7606.c
+-
+ ANALOG DEVICES INC AD7768-1 DRIVER
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+ L:	linux-iio@vger.kernel.org
+@@ -1068,7 +1027,6 @@ F:	drivers/iio/imu/adis16475.c
+ F:	Documentation/devicetree/bindings/iio/imu/adi,adis16475.yaml
+ 
+ ANALOG DEVICES INC ADM1177 DRIVER
+-M:	Beniamin Bia <beniamin.bia@analog.com>
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+ L:	linux-hwmon@vger.kernel.org
+ S:	Supported
+@@ -1135,15 +1093,6 @@ S:	Supported
+ W:	http://ez.analog.com/community/linux-device-drivers
+ F:	drivers/dma/dma-axi-dmac.c
+ 
+-ANALOG DEVICES INC HMC425A DRIVER
+-M:	Beniamin Bia <beniamin.bia@analog.com>
+-M:	Michael Hennerich <michael.hennerich@analog.com>
+-L:	linux-iio@vger.kernel.org
+-S:	Supported
+-W:	http://ez.analog.com/community/linux-device-drivers
+-F:	Documentation/devicetree/bindings/iio/amplifiers/adi,hmc425a.yaml
+-F:	drivers/iio/amplifiers/hmc425a.c
+-
+ ANALOG DEVICES INC IIO DRIVERS
+ M:	Lars-Peter Clausen <lars@metafoo.de>
+ M:	Michael Hennerich <Michael.Hennerich@analog.com>
+@@ -1152,8 +1101,12 @@ W:	http://wiki.analog.com/
+ W:	http://ez.analog.com/community/linux-device-drivers
+ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
+ F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
++F:	Documentation/devicetree/bindings/iio/adc/adi*
++F:	Documentation/devicetree/bindings/iio/amplifiers/adi*
++F:	Documentation/devicetree/bindings/iio/dac/ad5758.txt
+ F:	drivers/iio/*/ad*
+ F:	drivers/iio/adc/ltc249*
++F:	drivers/iio/amplifiers/hmc425a.c
+ F:	drivers/staging/iio/*/ad*
+ X:	drivers/iio/*/adjd*
+ 
+@@ -16537,7 +16490,6 @@ F:	drivers/staging/rtl8712/
+ 
+ STAGING - SEPS525 LCD CONTROLLER DRIVERS
+ M:	Michael Hennerich <michael.hennerich@analog.com>
+-M:	Beniamin Bia <beniamin.bia@analog.com>
+ L:	linux-fbdev@vger.kernel.org
+ S:	Supported
+ F:	Documentation/devicetree/bindings/iio/adc/adi,ad7606.yaml
 -- 
 2.17.1
 
