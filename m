@@ -2,123 +2,256 @@ Return-Path: <SRS0=MyQ9=CL=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.5 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B453AC433E7
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 13:46:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C305CC433E7
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 14:09:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 91C1420767
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 13:46:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599054387;
-	bh=mlVSzvECMBL4DuwaHxiiBTcwnXHH869ZUNFNn5ZDfIE=;
-	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
-	b=T4Rwz+tIPjfzYm/ydk0EqA7VnpoK4Jk4d1YixS1XqBz9GNtvZBN40Zuk4tV8t6GjP
-	 v9FxHo831uTuj4uuCo37HXN/pjaDlX3YsEGPBvyAjHsbEij7xxV/5/n432MZjgTEfz
-	 e7ueCuCClQVQSMOgYuPzMzQkDJvLFOhIq+OE7/M8=
+	by mail.kernel.org (Postfix) with ESMTP id 9E61B207D3
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Sep 2020 14:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726895AbgIBNqK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Sep 2020 09:46:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37120 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726722AbgIBNp2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 2 Sep 2020 09:45:28 -0400
-Received: from mail-ed1-f51.google.com (mail-ed1-f51.google.com [209.85.208.51])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F16C72083B;
-        Wed,  2 Sep 2020 13:35:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599053758;
-        bh=mlVSzvECMBL4DuwaHxiiBTcwnXHH869ZUNFNn5ZDfIE=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=DwzP+62VAkbSZJH8gW+nur/seLAwcNH8Ot1zw2vohP9iERCpl+JdNyWK+dAjlIBnm
-         FggnPXJH4LDrWLkgYmIpCe4olylTBdsvVLMkwhMcsq63oBMMBJ+AEUHGzVgkisBFIy
-         MavokkFPF7CcXwUWfrLhL5UlGLpKzoT3KeMfLI4M=
-Received: by mail-ed1-f51.google.com with SMTP id ba12so4951029edb.2;
-        Wed, 02 Sep 2020 06:35:57 -0700 (PDT)
-X-Gm-Message-State: AOAM533GsUM+0dZ3Pl1SDkzZ3skkYTgjfzm73wAeMX1PuCPbE5GA7KKL
-        N+Yswd37JpLFXR5M4TpkHAev9vI591tqPdDUl3U=
-X-Google-Smtp-Source: ABdhPJz83yuoWiKxgnivqzO50jIviESHbD2DdRL9JF0O0+pfD5vS2zg0SRBJnAffD9VLx1ZV5W17UvR9A9KJ7ydvdaM=
-X-Received: by 2002:a05:6402:ca7:: with SMTP id cn7mr70494edb.143.1599053756468;
- Wed, 02 Sep 2020 06:35:56 -0700 (PDT)
+        id S1726853AbgIBOIq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Sep 2020 10:08:46 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2741 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727965AbgIBOIc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 2 Sep 2020 10:08:32 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.106])
+        by Forcepoint Email with ESMTP id 8E65A4BAA80922454AE3;
+        Wed,  2 Sep 2020 14:18:15 +0100 (IST)
+Received: from localhost (10.52.121.91) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 2 Sep 2020
+ 14:18:15 +0100
+Date:   Wed, 2 Sep 2020 14:16:40 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Darren Schachter <dts86@cornell.edu>
+CC:     Jonathan Cameron <jic23@kernel.org>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        Matthew Porter <mporter@konsulko.com>,
+        <robertcnelson@beagleboard.org>, <drew@beagleboard.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: pulse: Support PWM capture with TI AM3358 eCAP
+ module
+Message-ID: <20200902141640.00006b53@Huawei.com>
+In-Reply-To: <CAMEcr2-0_ZPE4uNGZJZDe8G-GtqchvyTLVGG+QZRYGEMMBwfiw@mail.gmail.com>
+References: <20200818153614.6438-1-dts86@cornell.edu>
+        <20200830134239.449bf411@archlinux>
+        <CAMEcr2-0_ZPE4uNGZJZDe8G-GtqchvyTLVGG+QZRYGEMMBwfiw@mail.gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-References: <20200827201707.27075-1-krzk@kernel.org> <CAHp75VcnV8_SRQuiTnzzaWxfA1m37gVXfxgPkH51tbMT+-T2RA@mail.gmail.com>
- <20200829155410.6d34a8b9@archlinux> <CAJKOXPd78m-3jMsFRa7ySREDdx+GMZ_YHMG3AcqCHTABLBwqVA@mail.gmail.com>
- <DM6PR03MB441122FDB3323690166C21A0F92F0@DM6PR03MB4411.namprd03.prod.outlook.com>
- <CAHp75VeOQpR00AZhaw=Dy3sEArhSQAPHXb7mhJGB80uyrSZ3Qg@mail.gmail.com> <20200902142656.00007ad1@Huawei.com>
-In-Reply-To: <20200902142656.00007ad1@Huawei.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Date:   Wed, 2 Sep 2020 15:35:45 +0200
-X-Gmail-Original-Message-ID: <CAJKOXPcSctHLWGWwSPCyCR-U4QsB=WYBX3JMRqE7U9RHVKhNHA@mail.gmail.com>
-Message-ID: <CAJKOXPcSctHLWGWwSPCyCR-U4QsB=WYBX3JMRqE7U9RHVKhNHA@mail.gmail.com>
-Subject: Re: [PATCH] MAINTAINERS: Remove bouncing email of Beniamin Bia
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        "Ardelean, Alexandru" <alexandru.Ardelean@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.52.121.91]
+X-ClientProxiedBy: lhreml732-chm.china.huawei.com (10.201.108.83) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 2 Sep 2020 at 15:28, Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
->
-> On Wed, 2 Sep 2020 10:49:04 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
->
-> > On Wed, Sep 2, 2020 at 8:56 AM Ardelean, Alexandru
-> > <alexandru.Ardelean@analog.com> wrote:
-> > >
-> > > [yes, I know, bad-email format, but I wanted this to come from my work email]
-> > >
-> > > Apologies also for the delay here. Things pile-up on my side and I defer things a bit.
-> > >
-> > > Talked to Michael Hennerich about this [since he's the more senior contact at Analog].
-> > > We can replace the email from Beniamin Bia with Michael's.
-> > > Or, we can remove the "Orphan" blocks and just have the catch-all "drivers/iio/*/ad*" cover this driver and others that were upstreamed by Beniamin.
-> > >
-> > > Either option is fine from us.
-> >
-> > As a participant of activity to put MAINTAINERS in some order, I
-> > prefer to have similar blocks be squashed.
-> > If there will be a dedicated maintainer for a certain driver in the
-> > future, we can always split into separate sections.
-> >
-> > So, something like
-> > ANALOG DEVICES ADC (I guess it makes sense to have some grouping still)
-> > ...
-> > F: .../ad1234
-> > F: .../ad2345
-> >
-> > In one section (no need to have wildcards right now).
-> >
->
-> ANALOG DEVICES INC IIO DRIVERS
-> M:      Lars-Peter Clausen <lars@metafoo.de>
-> M:      Michael Hennerich <Michael.Hennerich@analog.com>
-> S:      Supported
-> W:      http://wiki.analog.com/
-> W:      http://ez.analog.com/community/linux-device-drivers
-> F:      Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-> F:      Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> F:      drivers/iio/*/ad*
-> F:      drivers/iio/adc/ltc249*
-> F:      drivers/staging/iio/*/ad*
-> X:      drivers/iio/*/adjd*
->
-> Already exists.  We could potentially clean that up.
->
-> For the block that started this thread, we can just drop it.
+On Tue, 1 Sep 2020 17:11:46 -0400
+Darren Schachter <dts86@cornell.edu> wrote:
 
-I can send a follow up to merge/remove the entries.
+> On Sun, Aug 30, 2020 at 8:42 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Tue, 18 Aug 2020 10:36:14 -0500
+> > Darren Schachter <dts86@cornell.edu> wrote:
+> >  
+> > > This IIO driver adds support for PWM capture with the TI eCAP module.
+> > > This driver is based on Matt Porter's eCAP driver from January 2014,
+> > > which was never merged into the mainline [1]. Like Matt's code, this
+> > > driver implements interrupt driven triggered buffer capture. However,
+> > > the driver has been updated based on previous suggestions in the IIO
+> > > mailing list. Additionally, support for prescalar control and finer
+> > > polarity control has been included. Users can now configure the
+> > > polarities of CAP1 and CAP2 individually, allowing for the measurement
+> > > of a signal's high-time, low-time, or period.
+> > >
+> > > [1] https://marc.info/?l=linux-iio&m=145968010427392&w=2
+> > >
+> > > Signed-off-by: Darren Schachter <dts86@cornell.edu>  
+> > Hi Darren,
+> >
+> > I'll review this as is, but from earlier feedback it seems we have
+> > some other questions to answer before potentially taking this
+> > into IIO.
+> >
+> > There is a fair bit of new ABI in here that all needs documenting.
+> >
+> > Thanks,
+> >
+> > Jonathan  
+> Thank you for the feedback, Jonathan. I am working through your
+> suggestions now. I have most of the requested modifications completed.
+> However, I was hoping to receive clarifications on some of the notes
+> you left (see below). I really appreciate your help.
+> 
+> Best,
+> Darren
+> 
+Hi Darren,
 
-Best regards,
-Krzysztof
+Replies below.
+
+Thanks,
+
+Jonathan
+
+
+> > > +static ssize_t ecap_attr_pol_cap2_store(struct device *dev,
+> > > +                                     struct device_attribute *attr,
+> > > +                                     const char *buf,
+> > > +                                     size_t len)
+> > > +{
+> > > +     int ret;
+> > > +     bool val;
+> > > +     struct ecap_state *state = dev_to_ecap_state(dev);
+> > > +
+> > > +     if (test_bit(ECAP_ENABLED, &state->flags))
+> > > +             return -EINVAL;
+> > > +
+> > > +     ret = strtobool(buf, &val);
+> > > +     if (ret)
+> > > +             return ret;
+> > > +  
+> >
+> > The locking around state->flags is a bit uneven.
+> > Whilst these are atomic they could happen mid way through
+> > the read modify write cycles elsewhere and leave things in an odd state.  
+> 
+> I understand what you mean with this. I have combed through the code
+> and ensured that all non-atomic reads/writes are surrounded by mutex
+> locks. I believe you are suggesting that, in addition, I surround
+> these atomic functions with mutex locks to ensure they are not
+> executed in the middle of some other read-modify-writes to
+> state->flags. Is this correct?
+
+Exactly. An atomic update can otherwise occur somewhere after the
+read and before the write in rmw.
+
+> 
+> >  
+> > > +     if (val)
+> > > +             set_bit(ECAP_POL_CAP2_OFFSET, &state->flags);
+> > > +     else
+> > > +             clear_bit(ECAP_POL_CAP2_OFFSET, &state->flags);
+> > > +
+> > > +     return len;
+> > > +}
+> > > +
+
+...
+
+> > > +static struct attribute_group ecap_attribute_group = {
+> > > +     .attrs = ecap_attributes,
+> > > +};
+> > > +
+> > > +static const struct iio_trigger_ops iio_interrupt_trigger_ops = {
+> > > +     //.owner = THIS_MODULE;  
+> > Unusual to not have at least an enable tied up to a trigger.
+> >
+> > If the trigger is only useful for this device and is sufficiently
+> > tightly coupled to the buffer (like here) then there is no need to
+> > expose the trigger at all.
+> >
+> > We have other devices that provide buffered access without triggers.
+> >  
+> 
+> I have looked through other IIO drivers and I assume that, by enable,
+> you are referring to the set_trigger_state function. I have added this
+> function to trigger ops. Right now, I am not entirely sure if it is
+> necessary -- I am still seeing if there is any useful functionality I
+> could include in it -- but I will continue researching this. I should
+> hopefully have more to say on this with v2.
+
+It's possible it isn't required here because we are effectively enabling
+the interrupt as part of the buffer setup.  That indicates we shouldn't
+really be exposing this as a trigger at all.
+
+> 
+> With regards to not exposing the trigger, would your recommendation be
+> to use a pure buffer instead of a triggered buffer? If not, is there a
+> way to prevent the exposure of a trigger used in a triggered buffer?
+
+Yes, setup the buffer without using the triggered_buffer helpers..
+
+> My apologies if this problem has an obvious solution -- I have tried
+> looking through the documentation and other IIO drivers, but I can't
+> seem to find the answer to this.
+> 
+
+No problem. I should have given an example.  This particular combination
+tends to happen when there is a hardware kfifo involved.  In most drivers
+where that happens, we also have a mode where a conventional trigger can
+be used to capture one scan of the channels at a time.  Those take no
+supplied trigger as meaning we should use route that skips it.
+
+IIRC
+
+https://elixir.bootlin.com/linux/latest/source/drivers/iio/adc/ti_am335x_adc.c#L390
+
+Is an example where we only support buffered capture with no option for
+triggers.
+
+> > > +};
+> > > +
+> > > +
+
+...
+
+
+> > > +static irqreturn_t ecap_interrupt_handler(int irq, void *private)
+> > > +{
+> > > +     struct iio_dev *idev = private;
+> > > +     struct ecap_state *state = iio_priv(idev);
+> > > +     u16 ints;
+> > > +
+> > > +     dev_dbg(&idev->dev, "TIECAP: Interrupt handling...\n");
+> > > +
+> > > +     iio_trigger_poll(idev->trig);
+> > > +
+> > > +     /* Clear CAP2 interrupt */
+> > > +     ints = readw(state->regs + ECAP_ECFLG);
+> > > +     if (ints & ECAP_ECINT_CEVT2)
+> > > +             writew(ECAP_ECINT_CEVT2, state->regs + ECAP_ECCLR);
+> > > +     else
+> > > +             dev_warn(&idev->dev, "unhandled interrupt flag: %04x\n", ints);  
+> >
+> > This should be in the try_reenable callback I think to ensure we are actually
+> > done with the interrupt.  Will also allow us to use the trigger to gather
+> > other measurements at roughly the same time.  
+> 
+> I have tried moving this section of code to the try_reenable callback
+> of the trigger, but I am running into issues. It seems like the kernel
+> is getting stuck in interrupt mode if I do this. I have spent a few
+> hours looking into this. My understanding of why this is happening is
+> that try_reenable is called in the bottom half of the IRQ (at least
+> with my set-up). In particular, try_reenable is only called after
+> iio_trigger_notify_done is called, which occurs in
+> ecap_trigger_handler in my code (i.e. the bottom half of the trigger's
+> pollfun). Therefore, because the interrupt is not getting cleared, the
+> ISR is continuously being called and the bottom half never has the
+> chance to be executed.
+> 
+> Does this seem reasonable? Would you recommend keeping the interrupt
+> clearing in this function, or do you think there is a better solution?
+> Please let me know if I am misunderstanding something.
+
+Mark the interrupt as ONESHOT when you request it and it should be masked
+until we are ready for another one. This is often needed for level interrupts
+with threaded handlers. 
+
+> 
+> >  
+> > > +
+> > > +     return IRQ_HANDLED;
+> > > +}
+> > > +
+
+...
+
