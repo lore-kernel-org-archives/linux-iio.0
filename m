@@ -2,129 +2,300 @@ Return-Path: <SRS0=cOXL=CM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3389CC433E9
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A7FC433E9
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:07:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 03EDB20716
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:05:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7BDCD20716
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:07:28 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qE6o2n8H"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="NS2xjIIr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728924AbgICPEg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Sep 2020 11:04:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59180 "EHLO
+        id S1729276AbgICPFp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Sep 2020 11:05:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729014AbgICN6P (ORCPT
+        with ESMTP id S1728972AbgICN6P (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Sep 2020 09:58:15 -0400
-Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CED08C061249;
-        Thu,  3 Sep 2020 06:10:14 -0700 (PDT)
-Received: by mail-pg1-x541.google.com with SMTP id h12so2098016pgm.7;
-        Thu, 03 Sep 2020 06:10:14 -0700 (PDT)
+Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 967D6C061A1C;
+        Thu,  3 Sep 2020 06:47:01 -0700 (PDT)
+Received: by mail-qt1-x843.google.com with SMTP id v54so1900791qtj.7;
+        Thu, 03 Sep 2020 06:47:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=/WIT3+UL+FpungvYV1D9IfW97J9W5tsesmZlOnRL4KU=;
-        b=qE6o2n8HJKYzr8LQaFzdJ57s8ECaNNIEBAKj+FvAXWdE+VE/mTIGhjc4Qg4zlvXooF
-         s7PLRYxjyADHCtuiPGQ7aryX95MmnRUj8GlEn8M+qW1Vqac7RM+TAFtNZZnjTUlILZbr
-         n9WUYcuXzPQyao1h0l7bXfN3uVvH10bfG/RxxTBugi38UTqmzBO4RkjFvJJ1ieGMrx1r
-         vEg7/JHmsKK2WQYAZumSLzZFWRFiJl+8/3eGdCa6oFziFGQkJXbAEfwMLwriWQFCnh3L
-         zHXJmVCa8f2oqPOTdWqCc7Iq8Uxf20oK56b2aUOJ6k5u/kuJQUHbub6wVWxBtp2paj92
-         pi4Q==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=/1zUgRbLsFEeGpq6qPl8QkF9aFlbywUVunqjqh+DadA=;
+        b=NS2xjIIrgMfG6fHEkZ2tKgZsiB5c5jufyPfDsrWkkwsQN3aGPVImUNFhAU5pGZLCVW
+         QzqhTd5yZ4gU172X0vyk+/QuRFMGBiRgtOiKi5CY015MLf69W+BClpzrzmeAUF5WVSB1
+         PDCjSM9xIe1N0/IcaukeQuoG3ka1as/5AFZpDwj+Q9Ut492IVbHApZOeotauloT5kpjB
+         GZyPBAtm19+QrckGNRl2zp/5ubJ1GShk8D6BL+zdizaZ+7F12WAcnSf/ATrUMhvn6lzu
+         wvSHNpwhoUk1yAZHZ1wIo3Wswjp71n2q3t3FedngCX5szlU4oQEsQAszBcaUzkrcyY+M
+         j7+Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=/WIT3+UL+FpungvYV1D9IfW97J9W5tsesmZlOnRL4KU=;
-        b=ksqpTF44Hzu0MjGFc09TwnSDYD9rYNGrFYa8uTKdb9ecpAu/K0XX72FJfya5RttpnW
-         svI88iAicil1uQ+YO8XGYTcnZ47XIKSVjCaPDZsZoYKOUsO4JJGFzwD8Fiza5qL4y07c
-         pdBRlg/q12ZZT6Qm8h3t2eZ++TK/3BuIemOLbU52VYvktAjapNZkqGbgk60GguUjJY0u
-         CsM+OzKRcMftTOeE//3BWidTBbn+Qbodk2LNW8opjSESkH45MTLHvJqLJVcsR0lmMgUh
-         +ALKxandphQ7IFR5L8tg27QySKEh0/wNbxSBcZXh22j24AxP+ano+cWW7tUQks7rS82D
-         SPlA==
-X-Gm-Message-State: AOAM533aEEkUuWiJmgCS5VyBFf4J+dG6jGsWnzyssKrsjq2ku+m3k1zH
-        vredohjE55242g/eWfeY/u8=
-X-Google-Smtp-Source: ABdhPJwninxVNGhpsTohv0jmInMy1KARspw9LnVSe+jAaMtNOlAQj38XIlfkUm5bYScFOYFA/RnRcw==
-X-Received: by 2002:a63:fb4a:: with SMTP id w10mr2877677pgj.114.1599138614380;
-        Thu, 03 Sep 2020 06:10:14 -0700 (PDT)
-Received: from nish-HP-Pavilion ([2409:4072:6085:e35d:a526:a3b6:4686:f6fb])
-        by smtp.gmail.com with ESMTPSA id d20sm2538270pjv.39.2020.09.03.06.10.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 06:10:13 -0700 (PDT)
-From:   Nishant Malpani <nish.malpani25@gmail.com>
-To:     jic23@kernel.org, robh+dt@kernel.org
-Cc:     dragos.bogdan@analog.com, darius.berghe@analog.com,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, andy.shevchenko@gmail.com,
-        Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v2 3/3] iio: gyro: adxrs290: Add debugfs register access support
-Date:   Thu,  3 Sep 2020 18:39:50 +0530
-Message-Id: <20200903130950.6274-4-nish.malpani25@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200903130950.6274-1-nish.malpani25@gmail.com>
-References: <20200903130950.6274-1-nish.malpani25@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=/1zUgRbLsFEeGpq6qPl8QkF9aFlbywUVunqjqh+DadA=;
+        b=MsPVV0rGp96ja4orVwyE4mvdVbiLBDpqH6xAF/4AeYHV7Ja+cKSV/FTyFCROj6P3uy
+         LHfeLLf6QURteSWphRpMb0X51MSKjjzl2Kcu+Dq2mIy34iprxIdajlX5Mwn9Oj6+sim4
+         5kwMn9Rb64+ep8lRH1zkgm6P57VTHbhr48h/sfp0SJ0wgnX+EXtziZztjGkjI83pb7uo
+         xFASIQjCiO1u7Kni1paRm6yw/LIR7AjsnBQm2FOdRe2vik4Q26/DyENJYa9zD0UHydos
+         hdTyKb0wjxiAWqfBFEdbtyRw2FAk2UAY4tZSNiaxwfB6TJu6xANcn5VMGtCFfwkLntUZ
+         +4ng==
+X-Gm-Message-State: AOAM533+VyRVBppJa8UvvgtRXNMNcanE3QAGRSuDzGHhYrZYcUmhgTis
+        wwtUthJ52gy/2cnrm1IDX/Ee8PhXElA4dZjHxsI=
+X-Google-Smtp-Source: ABdhPJwoqGp8Nybiy91lZwd8lFz0++lRfOZmaGZN+trRIggnRVcc6FYSxM1ILF1U+GxJLSEoRDvmszFmunBsMrdB7uE=
+X-Received: by 2002:aed:26c4:: with SMTP id q62mr3567362qtd.64.1599140820713;
+ Thu, 03 Sep 2020 06:47:00 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200903130950.6274-1-nish.malpani25@gmail.com>
+ <20200903130950.6274-2-nish.malpani25@gmail.com> <CAHp75Vc4hgvgoHrPaxDikqmAoqjpfOwPFTM-AvNvR3Ep=dQEfg@mail.gmail.com>
+In-Reply-To: <CAHp75Vc4hgvgoHrPaxDikqmAoqjpfOwPFTM-AvNvR3Ep=dQEfg@mail.gmail.com>
+From:   Nishant Malpani <nish.malpani25@gmail.com>
+Date:   Thu, 3 Sep 2020 19:16:48 +0530
+Message-ID: <CAEtfd9YioLi=Nr0tMjombhdhyLy_65XUok_viH9_9CPKTz5+5w@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] iio: gyro: adxrs290: Add triggered buffer support
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Bogdan, Dragos" <dragos.bogdan@analog.com>,
+        Darius <darius.berghe@analog.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Extend support to read/write byte data from/to the device using
-debugfs iio interface.
+Hello,
 
-Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
----
+Thanks for the review, Andy.
 
-No changes in v2
----
- drivers/iio/gyro/adxrs290.c | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
+...
 
-diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-index 4099b8917d3e..132fd16789f0 100644
---- a/drivers/iio/gyro/adxrs290.c
-+++ b/drivers/iio/gyro/adxrs290.c
-@@ -434,6 +434,24 @@ static int adxrs290_read_avail(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int adxrs290_reg_access(struct iio_dev *indio_dev, unsigned int reg,
-+			       unsigned int writeval, unsigned int *readval)
-+{
-+	struct adxrs290_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (!readval)
-+		return adxrs290_spi_write_reg(st->spi, reg, writeval);
-+
-+	ret = spi_w8r8(st->spi, ADXRS290_READ_REG(reg));
-+	if (ret < 0)
-+		return ret;
-+
-+	*readval = ret;
-+
-+	return 0;
-+}
-+
- static int adxrs290_data_rdy_trigger_set_state(struct iio_trigger *trig, bool state)
- {
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-@@ -546,6 +564,7 @@ static const struct iio_info adxrs290_info = {
- 	.read_raw = &adxrs290_read_raw,
- 	.write_raw = &adxrs290_write_raw,
- 	.read_avail = &adxrs290_read_avail,
-+	.debugfs_reg_access = &adxrs290_reg_access,
- };
- 
- static int adxrs290_probe_trigger(struct iio_dev *indio_dev)
--- 
-2.20.1
+On Thu, Sep 3, 2020 at 6:50 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Thu, Sep 3, 2020 at 4:10 PM Nishant Malpani <nish.malpani25@gmail.com> wrote:
+> >
+> > Provide a way for continuous data capture by setting up buffer support. The
+> > data ready signal exposed at the SYNC pin of the ADXRS290 is exploited as
+> > a hardware interrupt which triggers to fill the buffer.
+> >
+> > Triggered buffer setup was tested with both hardware trigger (DATA_RDY) and
+> > software triggers (sysfs-trig & hrtimer).
+>
+> ...
+>
+> > +static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+> > +{
+> > +       struct adxrs290_state *st = iio_priv(indio_dev);
+> > +       int val, ret;
+> > +
+> > +       if (st->mode == mode) {
+>
+> > +               ret = 0;
+> > +               goto done;
+>
+> Unlocking the not locked mutex is not good. Have you followed the
+> Submitting Patches Checklist? It in particular suggests few debug
+> options, like LOCKDEP, to be enabled.
+>
 
+Yikes, silly me. Thanks for the suggestion. Will fix this in v3.
+
+> > +       }
+> > +
+> > +       mutex_lock(&st->lock);
+> > +
+> > +       ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
+> > +       if (ret < 0)
+> > +               goto done;
+> > +
+> > +       val = ret;
+> > +
+> > +       switch (mode) {
+> > +       case ADXRS290_MODE_STANDBY:
+> > +               val &= ~ADXRS290_MEASUREMENT;
+> > +               break;
+> > +       case ADXRS290_MODE_MEASUREMENT:
+> > +               val |= ADXRS290_MEASUREMENT;
+> > +               break;
+> > +       default:
+> > +               ret = -EINVAL;
+> > +               goto done;
+> > +       }
+> > +
+> > +       ret = adxrs290_spi_write_reg(st->spi,
+> > +                                    ADXRS290_REG_POWER_CTL,
+> > +                                    val);
+> > +       if (ret < 0) {
+> > +               dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
+> > +               goto done;
+> > +       }
+> > +
+> > +       /* update cached mode */
+> > +       st->mode = mode;
+> > +
+>
+> > +done:
+>
+> Much better to call it out_unlock. It will help eliminate the mistakes
+> like above.
+>
+
+Yes, makes sense.
+
+> > +       mutex_unlock(&st->lock);
+> > +       return ret;
+> > +}
+>
+> ...
+>
+>
+> What about
+>
+>   ret = -EINVAL;
+>
+> >         switch (mask) {
+> >         case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> >                 lpf_idx = adxrs290_find_match(adxrs290_lpf_3db_freq_hz_table,
+> >                                               ARRAY_SIZE(adxrs290_lpf_3db_freq_hz_table),
+> >                                               val, val2);
+> > -               if (lpf_idx < 0)
+> > -                       return -EINVAL;
+>
+> > +               if (lpf_idx < 0) {
+>
+> > +                       ret = -EINVAL;
+> > +                       break;
+> > +               }
+>
+> Simple
+>   break;
+>
+> and so on?
+>
+
+Umm, sure would save us a few lines but it seems to me like we are
+trading off readability here. If no one agrees, will change it the way
+you pointed out.
+
+> > +
+> >                 /* caching the updated state of the low-pass filter */
+> >                 st->lpf_3db_freq_idx = lpf_idx;
+> >                 /* retrieving the current state of the high-pass filter */
+> >                 hpf_idx = st->hpf_3db_freq_idx;
+> > -               return adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
+> > +               ret = adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
+> > +               break;
+> > +
+> >         case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
+> >                 hpf_idx = adxrs290_find_match(adxrs290_hpf_3db_freq_hz_table,
+> >                                               ARRAY_SIZE(adxrs290_hpf_3db_freq_hz_table),
+> >                                               val, val2);
+> > -               if (hpf_idx < 0)
+> > -                       return -EINVAL;
+> > +               if (hpf_idx < 0) {
+> > +                       ret = -EINVAL;
+> > +                       break;
+> > +               }
+> > +
+> >                 /* caching the updated state of the high-pass filter */
+> >                 st->hpf_3db_freq_idx = hpf_idx;
+> >                 /* retrieving the current state of the low-pass filter */
+> >                 lpf_idx = st->lpf_3db_freq_idx;
+> > -               return adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
+> > +               ret = adxrs290_set_filter_freq(indio_dev, lpf_idx, hpf_idx);
+> > +               break;
+> > +
+> > +       default:
+> > +               ret = -EINVAL;
+> > +               break;
+> >         }
+> >
+> > -       return -EINVAL;
+> > +       iio_device_release_direct_mode(indio_dev);
+> > +       return ret;
+> >  }
+>
+> ...
+>
+> > +static irqreturn_t adxrs290_trigger_handler(int irq, void *p)
+> > +{
+>
+> > +       /* exercise a bulk data capture starting from reg DATAX0... */
+> > +       ret = spi_write_then_read(st->spi, &tx, sizeof(tx), st->buffer.channels,
+> > +                                 sizeof(st->buffer.channels));
+> > +       if (ret < 0)
+> > +               goto done;
+> > +
+> > +       iio_push_to_buffers_with_timestamp(indio_dev, &st->buffer,
+> > +                                          pf->timestamp);
+> > +
+> > +done:
+>
+> out_unlock_notify:
+>
+
+Okay.
+
+> > +       mutex_unlock(&st->lock);
+> > +       iio_trigger_notify_done(indio_dev->trig);
+> > +
+> > +       return IRQ_HANDLED;
+> > +}
+>
+> ...
+>
+> > +static int adxrs290_probe_trigger(struct iio_dev *indio_dev)
+> > +{
+> > +       struct adxrs290_state *st = iio_priv(indio_dev);
+> > +       int ret;
+>
+> > +       if (!st->spi->irq) {
+> > +               dev_info(&st->spi->dev, "no irq, using polling\n");
+> > +               return 0;
+> > +       }
+>
+> Wouldn't it be better to have this check outside of the function?
+
+I think this function making an early exit makes more sense. The
+CHIP_probe() looks less "noisy" that way.
+
+> And taking this into account...
+>
+> > +}
+>
+> ...
+>
+> > +       ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+> > +                                             &iio_pollfunc_store_time,
+> > +                                             &adxrs290_trigger_handler, NULL);
+> > +       if (ret < 0)
+> > +               return dev_err_probe(&spi->dev, ret,
+> > +                                    "iio triggered buffer setup failed\n");
+>
+> ...do you really have to set up a trigger buffer w/o trigger being probed?
+>
+
+I suppose one can use software triggers like hrtimer and sysfs-trig...
+
+With regards,
+Nishant Malpani
+
+> > +       ret = adxrs290_probe_trigger(indio_dev);
+> > +       if (ret < 0)
+> > +               return ret;
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
