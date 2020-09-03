@@ -2,107 +2,119 @@ Return-Path: <SRS0=cOXL=CM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60736C433E2
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 14:04:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AA8C43461
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 14:14:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1381421655
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 14:04:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 522FB20665
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 14:14:14 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Oawjzr9v"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="OgiACbcb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729021AbgICOD5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Sep 2020 10:03:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59570 "EHLO
+        id S1729203AbgICONn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Sep 2020 10:13:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33438 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728944AbgICN70 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Sep 2020 09:59:26 -0400
-Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0E3CC06123E
-        for <linux-iio@vger.kernel.org>; Thu,  3 Sep 2020 06:21:29 -0700 (PDT)
-Received: by mail-lj1-x243.google.com with SMTP id w3so3663193ljo.5
-        for <linux-iio@vger.kernel.org>; Thu, 03 Sep 2020 06:21:29 -0700 (PDT)
+        with ESMTP id S1728731AbgICOMi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Sep 2020 10:12:38 -0400
+Received: from mail-pg1-x543.google.com (mail-pg1-x543.google.com [IPv6:2607:f8b0:4864:20::543])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC627C0619CC;
+        Thu,  3 Sep 2020 06:25:26 -0700 (PDT)
+Received: by mail-pg1-x543.google.com with SMTP id h12so2132105pgm.7;
+        Thu, 03 Sep 2020 06:25:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=AXk2DRDPFaxpsHdzRe63wBIuTTXve+FKPVYE5CUnDo4=;
-        b=Oawjzr9vgHJvnLOxj5UJZV4sEvTPNZD09yISgS21ZAJA1uMxM0YVj7ZeiqGBT3Klwt
-         nHiOV5EdlXBTfBvouAlPLYCRAS9D1CEcS7Aow4dIIFTWA1Q+lH9oQGPgK1HGRjxXZI1m
-         tRqCeZ0bMDRJBnt9ZUd7O5eRzTBC4Gv3EXkxeEMyMCx+Ub9eVNwxu2C+hEXjDQokhl/f
-         Q6C2aiwVzh8f58ewvJJVAxoYyduzCWjBkq18EiE8+t5u3K7ZhKitMoea5u+jCJdc1dKM
-         pkVZPB+dnnZWrSEdYHm0XGU/81gTlOYpjgq6ZQPjQZcfLEImOFcyevKHN2qyUEdWUT1U
-         cXIg==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8rBLHCW+xCPafeIkvVVQSL44AW9YIX51FOu10BKIiLw=;
+        b=OgiACbcbQ1ItN0Rs6SHierX23wZ3W0QcSSP6eHDn26H6ndV6FVvyAPfzddT63ATKJ0
+         j20K6Qun/pU/eTF15WCngzAcNZekk0cCrl5XV9cAScvAwA3M4JQrrdmh/0/XXJ1yYzc5
+         auls8Zngp7jLOtlmd6vlb/AQMblOo/0eoaP8Aft9XRyijNkiG/93XP9jlW8+HoTG5zTz
+         PgcXNTaXhjb+IOHaAL8TNTXE3sWpQ7gRKc3BTt9YcoactbZeouPK/MwojZhbkY3Ql8M6
+         5zc1xe4CjGj7XXJNE8lt/Rl2LsQnSUcXJdm6g69l1qbRYwnpzYqmwhMD3ifUehAFGv0J
+         spMQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=AXk2DRDPFaxpsHdzRe63wBIuTTXve+FKPVYE5CUnDo4=;
-        b=Nb6vMA9BAneVDoGfvp3SxeJsacLUYc4u88QDC0ytbJSftAOw248DlJyDMeIeuRb3gE
-         5WIbF3zS/SWeNjjtyjNuSosfkNO+KbGpSu1eabyn467APnyu2fT5k+Kd3lgS4/23wJ+G
-         JdNCqtcbJdTWHZ4ILX3jWuK8aIrGVK2iFcJj0WTrJ1AWeTXlhj95zVDxylQbDTye9F6A
-         kSjXP9nem7y97iyEs3tANLiN2VbGJ6vp/fvddf/Y9cdEJoZTW6UKsimqMxwiYcyLiJzQ
-         h2Al//gxf81DKt3B3sJL0ifGXy5HOCjnd9c5pdD0nsQxw/i8+LY7adyAWPszr0TpO9pc
-         LqDg==
-X-Gm-Message-State: AOAM530SurztgmtPFjM/zeZ0ivpSHF/pBSstPorXFp2jnVWPzxPshFdQ
-        gB31APXMs1dzOzCSeW7rKJBq/Q==
-X-Google-Smtp-Source: ABdhPJxpYZE3X4d30GKvZel54/zbb76gwu/P3GTWbd0QDstXkqBieq1IDsexJWonUMfJdWJelFPuzg==
-X-Received: by 2002:a2e:7216:: with SMTP id n22mr1332916ljc.37.1599139288299;
-        Thu, 03 Sep 2020 06:21:28 -0700 (PDT)
-Received: from eriador.lan ([188.162.64.138])
-        by smtp.gmail.com with ESMTPSA id e23sm584220lfj.80.2020.09.03.06.21.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 06:21:27 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH v2 5/9] iio: adc: qcom-spmi-adc5: fix driver name
-Date:   Thu,  3 Sep 2020 16:21:05 +0300
-Message-Id: <20200903132109.1914011-6-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200903132109.1914011-1-dmitry.baryshkov@linaro.org>
-References: <20200903132109.1914011-1-dmitry.baryshkov@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8rBLHCW+xCPafeIkvVVQSL44AW9YIX51FOu10BKIiLw=;
+        b=qdsjSrmKdsiukpSqogdso7HbbarUYCZd/pRFi8BO+0GCeBGilxM1XhR76oybwQ2pp4
+         SCgGtW+Nig6ueAUw+9Ecv3uVtw1ew0u9j2nZyn+qrpIJlX2C6SBOJ842XBYimxZ1wNbT
+         JJ3lw5kVXrMkPK5TZoTjUdMvMkV5pHRKxZQxE3SXtG1TB0q/g2KDGfRcsyhAybxdJo9y
+         QCcvRNdSmbmGpU6czpzOaOgoNHvfIrg51hsyEQK8ftbW+gAg+bvhPBXBwXEXCSJECScl
+         koZ3I6DkmRv05ATf2i3wH5QF4mUGqwjjrYeFhNyyQ3T7s6B0xHwfmwsgdv4r6mgBiTQS
+         I8yQ==
+X-Gm-Message-State: AOAM532jcwYqEBeNY+0IxlTXNK0F3DNkx6IpiCxB8SIPMehDtVr5q/He
+        UNjRqjmNIdpMnbBNU2LifFxKgTi1yX3cLk4fcR3ds1OcsbkFwEb/
+X-Google-Smtp-Source: ABdhPJzimILiNCSgnKp/qJ9/9071OtoXwPPCV8ZOTnov1Okg3uUJ9PSdnnWUgfLq+tSjngGf5i/NlRBPuXDUiWzdlSE=
+X-Received: by 2002:a17:902:b289:: with SMTP id u9mr3949007plr.226.1599139525682;
+ Thu, 03 Sep 2020 06:25:25 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200903130950.6274-1-nish.malpani25@gmail.com> <20200903130950.6274-4-nish.malpani25@gmail.com>
+In-Reply-To: <20200903130950.6274-4-nish.malpani25@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 3 Sep 2020 16:25:08 +0300
+Message-ID: <CAHp75VfReT-EjCV=cW8mV1MmoMPPdY9q1scoPwbD_DEHpQHd3g@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] iio: gyro: adxrs290: Add debugfs register access support
+To:     Nishant Malpani <nish.malpani25@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Bogdan, Dragos" <dragos.bogdan@analog.com>,
+        darius.berghe@analog.com,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove superfluous '.c' from qcom-spmi-adc5 device driver name.
+On Thu, Sep 3, 2020 at 4:10 PM Nishant Malpani <nish.malpani25@gmail.com> wrote:
+>
+> Extend support to read/write byte data from/to the device using
+> debugfs iio interface.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- drivers/iio/adc/qcom-spmi-adc5.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+...
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-index 30b8867b31e4..c2da8f068b87 100644
---- a/drivers/iio/adc/qcom-spmi-adc5.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5.c
-@@ -919,7 +919,7 @@ static int adc5_probe(struct platform_device *pdev)
- 
- static struct platform_driver adc5_driver = {
- 	.driver = {
--		.name = "qcom-spmi-adc5.c",
-+		.name = "qcom-spmi-adc5",
- 		.of_match_table = adc5_match_table,
- 	},
- 	.probe = adc5_probe,
+> +static int adxrs290_reg_access(struct iio_dev *indio_dev, unsigned int reg,
+> +                              unsigned int writeval, unsigned int *readval)
+> +{
+> +       struct adxrs290_state *st = iio_priv(indio_dev);
+> +       int ret;
+> +
+> +       if (!readval)
+> +               return adxrs290_spi_write_reg(st->spi, reg, writeval);
+> +
+> +       ret = spi_w8r8(st->spi, ADXRS290_READ_REG(reg));
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       *readval = ret;
+> +
+> +       return 0;
+> +}
+
+Hmm... I would suggest to have it like
+
+adxrs290_reg_access_rw()
+{
+ ...
+ return 0;
+}
+
+adxrs290_reg_access()
+{
+ if (readval)
+  return adxrs290_reg_access_rw();
+ else // it's redundant, but someone can use for better formatting
+  return adxrs290_spi_write_reg();
+}
+
 -- 
-2.28.0
-
+With Best Regards,
+Andy Shevchenko
