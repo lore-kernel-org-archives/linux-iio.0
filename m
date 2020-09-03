@@ -2,127 +2,108 @@ Return-Path: <SRS0=cOXL=CM=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BF09C433E2
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:09:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3901C2BC11
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 16:35:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D970D20716
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 15:09:47 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="uDQKIdW6"
+	by mail.kernel.org (Postfix) with ESMTP id 81E2A20578
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Sep 2020 16:35:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599150912;
+	bh=AJQI88QsRnVC3HhB9kVC2ZMkZ4WbOOrxfSQJhbhEEJM=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=QBJURcmIun9xd2HRYC1ikXN+haPVXXTigBZaAI22zZWtYN0SfYaFAP4SORPtKLcVe
+	 5TjJy6KCbPf4RyHAzFVMLTvFdI/oT9svCBuRdsKHciSQD+xiBNvrFebnRJ+c39lJ3p
+	 PhmDUpKIgh2DhK9xNY8AUl/tcRJZdWIuvyzMwOAc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729328AbgICPJd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Sep 2020 11:09:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59164 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728949AbgICN6P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Sep 2020 09:58:15 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 99482C061247;
-        Thu,  3 Sep 2020 06:10:09 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id gf14so1444244pjb.5;
-        Thu, 03 Sep 2020 06:10:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=7a9czeHx1WaehdjYOh4c7Ybw7Lr7mUZE1bLwOuZyr+k=;
-        b=uDQKIdW6nFsQhpyMvKSXhPBLoW4lNZWf3KnQPF/INyG3dnqvwClq7KFVMQUzr63bIl
-         CNiFIEBaqS6rLKVAddY6n+QUuJfvY6sUbDOIS4tuCkO6jmiEWxC3ul08yTwwSD45kq6f
-         SpVlmPDDsuZZ6YzOo9AnTnjtINWpUigZHBw3Gz4Z/30QrELWOklVZeh8m/GdtY8k1eTk
-         i0WodxY3eVSxjSfRMvhDZPe+eXSZwf/cOpuB24fTcUKUWCB/Q/iNKNIZk5qmhEkDx9eJ
-         gOF7DK5qT5h51Oh8ucSvnUG5DoP69Io2xp3tsq/vE5+Yqn8Yp8m0Xj5Z7VGpPHcR/9cM
-         YAyw==
+        id S1728422AbgICQfK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Sep 2020 12:35:10 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:37689 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726292AbgICQfE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Sep 2020 12:35:04 -0400
+Received: by mail-il1-f195.google.com with SMTP id b17so3273200ilh.4;
+        Thu, 03 Sep 2020 09:35:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=7a9czeHx1WaehdjYOh4c7Ybw7Lr7mUZE1bLwOuZyr+k=;
-        b=P324reEtF5wjaj3I8AjFYx7C8jybvPoHOuBc1U2id7xbe9s68ctbGjV0mJ6Gkue3Df
-         VttG5objxZfk3AlUvyqwo8HdnKEQeWLZj/ErKq1Hkl/o5Kl1QD7id7sY0Wlgyp045HKc
-         MCg1waWV6c630+xq6qWFR19lHoCgNlXUgwZAw6uYD4GnWmSXLscZYPV3l9abZoTxTKQq
-         VUPGptY5VUXTD/YjueyVTFjlU8RSdZob8HmImhzDNL0F4zsTWh2usKK7Hf+l7towcTqo
-         ThukNfkMwYdHLDCmG0NUiduS5XjuEsNGHFHVtn5STvzIR3i5rib3gNQL/Cj7pY3mwEny
-         heTw==
-X-Gm-Message-State: AOAM5329gU9AAzTKiBvOMn6B0zXunLQucCUH1iV2qc4Jcb+xLd4DOEBv
-        Bp6i/nAt+4bKRTKONKlVzy0=
-X-Google-Smtp-Source: ABdhPJzkp3rDbFqzGkkdj3P3Q5mTKZgz9MZmbQHQVVLRXloiMwmwITc8VOGi+MgiXj0Bm2my5d0pgw==
-X-Received: by 2002:a17:90a:fcc:: with SMTP id 70mr3097179pjz.220.1599138609200;
-        Thu, 03 Sep 2020 06:10:09 -0700 (PDT)
-Received: from nish-HP-Pavilion ([2409:4072:6085:e35d:a526:a3b6:4686:f6fb])
-        by smtp.gmail.com with ESMTPSA id o23sm3052249pgm.18.2020.09.03.06.10.07
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iIfLZ14oR+6kVVplGeYdY3QZelcTYNmiPq+fUE3RZP4=;
+        b=sCXDsd1ndeUvn1hXSgDSo19yqG+ius/m2Q8eEq8Ijmi/0ZymIEpV4Qr04VxMYXxvai
+         jiQ9+4bRiEXwJD8jnYBGJ0KpGaEMrY+jG95/YGxYecqLav/vc6JPC28i8NV2tyLoq94M
+         eAgpj+MIuGyGgcJfz9bG6UxHD/VaI09s7DhyigBbMPJSiOyp+hSA/H5Ga8Rpm0HKc+M4
+         Xt9f8egzb57xyYNSHI38HYUBcwJy90c9n3C1jHD4DCGOSjMhXzRsQ6bQw1nJRH3JfYe1
+         t0pkJGUktfbePMOKpTvreMGaBnJ/aTbKEc5GDnEG68cToJP40gHePjVTcz0eD3nfFp/J
+         AnKQ==
+X-Gm-Message-State: AOAM530wOJeeqzDm+ItcB239Kol+ghldG3Yb965ijzHK9n+II+aiMCRy
+        5RLm+mPFbp34z3Erv+ZLVw==
+X-Google-Smtp-Source: ABdhPJzAEffp2WonM7repJTb9yyQNn/3Nmi+Nn/JwPHkxriL04JXnRwvW1ue7iajeKEDm4+9ErJo6Q==
+X-Received: by 2002:a05:6e02:1141:: with SMTP id o1mr1095908ill.275.1599150902693;
+        Thu, 03 Sep 2020 09:35:02 -0700 (PDT)
+Received: from xps15 ([64.188.179.249])
+        by smtp.gmail.com with ESMTPSA id w70sm1713310ilk.87.2020.09.03.09.35.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Sep 2020 06:10:08 -0700 (PDT)
-From:   Nishant Malpani <nish.malpani25@gmail.com>
-To:     jic23@kernel.org, robh+dt@kernel.org
-Cc:     dragos.bogdan@analog.com, darius.berghe@analog.com,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, andy.shevchenko@gmail.com,
-        Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v2 2/3] dt-bindings: iio: gyro: adxrs290: Add interrupts support
-Date:   Thu,  3 Sep 2020 18:39:49 +0530
-Message-Id: <20200903130950.6274-3-nish.malpani25@gmail.com>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20200903130950.6274-1-nish.malpani25@gmail.com>
-References: <20200903130950.6274-1-nish.malpani25@gmail.com>
+        Thu, 03 Sep 2020 09:35:02 -0700 (PDT)
+Received: (nullmailer pid 2909825 invoked by uid 1000);
+        Thu, 03 Sep 2020 16:34:58 -0000
+Date:   Thu, 3 Sep 2020 10:34:58 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     devicetree@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>, linux-pm@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org, Amit Kucheria <amitk@kernel.org>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2 1/9] dt-bindings: thermal: qcom: add adc-thermal
+ monitor bindings
+Message-ID: <20200903163458.GA2909612@bogus>
+References: <20200903132109.1914011-1-dmitry.baryshkov@linaro.org>
+ <20200903132109.1914011-2-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200903132109.1914011-2-dmitry.baryshkov@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Include 'interrupts' property and provide a suitable example for using
-a GPIO interrupt line.
+On Thu, 03 Sep 2020 16:21:01 +0300, Dmitry Baryshkov wrote:
+> Add bindings for thermal monitor, part of Qualcomm PMIC5 chips. It is a
+> close counterpart of VADC part of those PMICs.
+> 
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  .../bindings/thermal/qcom-spmi-adc-tm5.yaml   | 142 ++++++++++++++++++
+>  1 file changed, 142 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml
+> 
 
-Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
----
 
-Changes in v2:
+My bot found errors running 'make dt_binding_check' on your patch:
 
-  - remove 'interrupts' property from the required properties list
-  - rewrite commit message
----
- .../devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml    | 7 +++++++
- 1 file changed, 7 insertions(+)
+Error: Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.example.dts:23.24-25 syntax error
+FATAL ERROR: Unable to parse input tree
+make[1]: *** [scripts/Makefile.lib:342: Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.example.dt.yaml] Error 1
+make[1]: *** Waiting for unfinished jobs....
+make: *** [Makefile:1366: dt_binding_check] Error 2
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-index 61adb2c2454b..a5f209e8bbef 100644
---- a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-@@ -28,6 +28,9 @@ properties:
- 
-   spi-cpha: true
- 
-+  interrupts:
-+    maxItems: 1
-+
- required:
-   - compatible
-   - reg
-@@ -39,6 +42,8 @@ additionalProperties: false
- 
- examples:
-   - |
-+    #include <dt-bindings/gpio/gpio.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-     spi {
-         #address-cells = <1>;
-         #size-cells = <0>;
-@@ -48,6 +53,8 @@ examples:
-                    spi-max-frequency = <5000000>;
-                    spi-cpol;
-                    spi-cpha;
-+                   interrupt-parent = <&gpio>;
-+                   interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-         };
-     };
- ...
--- 
-2.20.1
+
+See https://patchwork.ozlabs.org/patch/1356633
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure dt-schema is up to date:
+
+pip3 install git+https://github.com/devicetree-org/dt-schema.git@master --upgrade
+
+Please check and re-submit.
 
