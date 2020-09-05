@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE3DAC2D0E0
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DB28C43461
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7DB9720C09
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F33012086A
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599327164;
-	bh=yVzMrl68x91g4MIaNHgNpaL4VqCsGXD9sO86U7mJ/wY=;
+	s=default; t=1599327171;
+	bh=XpngdjpF08FQex0xcA2ugQ5BaeqEMiH6ImmMdQcJOM8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=09rRPsGTpg0uxBeRV3ytdiCCWNbjZ+d8Wnx3GYRgWFh1cfi9eERRd1fBjJBWVSx3Z
-	 pFDgO3UqJQWLq7ZcwCpkAe/WJ2ds3lgk+Loh5ETTmeo2YCNl4eIHx+4yA1Xd5HR+Dl
-	 cwxd2j6wtIm71tTPxbL5gBH+wWFL93Wjh/SGwjr4=
+	b=1udGKXojA10e8QrUWLq/Q2Wy4Md3GLPUrw+c5SJha0qdXeC0ONZhZaxWFVc/YISy6
+	 B05HRyvSA/f98XSFKn0LdNOPmoGLgckL1G99U0zuoHv0YpNz7raxiMY0fIDXeyT3Ow
+	 +zQX7DIhnnuYWuNAf0aDABSSsKdOhiSzgQbXZnC8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728405AbgIERcm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Sep 2020 13:32:42 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60298 "EHLO mail.kernel.org"
+        id S1728393AbgIERcp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Sep 2020 13:32:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727875AbgIERci (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Sep 2020 13:32:38 -0400
+        id S1728426AbgIERcn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Sep 2020 13:32:43 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1373420760;
-        Sat,  5 Sep 2020 17:32:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 513512098B;
+        Sat,  5 Sep 2020 17:32:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599327158;
-        bh=yVzMrl68x91g4MIaNHgNpaL4VqCsGXD9sO86U7mJ/wY=;
+        s=default; t=1599327162;
+        bh=XpngdjpF08FQex0xcA2ugQ5BaeqEMiH6ImmMdQcJOM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BFRor7VH2/K61atCVGhCPrdsE7kmjg6CCeB7T1oD4TxG2N/ESCiPfnN6lgCAJKfhv
-         RDd5ou0JPLlJWhl67YlTH+9aEoAluk8vRy/2Q9Z3KJ5/pnGWHjj8lkTojBigBXdNQC
-         xcpz0es0ikJ73hG6b+Z/O7ajeKaQnGB+tqHgHPJ4=
+        b=O+z0XvlWfcptQ4ypMjyQ13xcsk+UvRXXZvMFoPgZiBtecrtRH9ql8NvcX0M593mvS
+         YzPPAGR3K3j/0G5KSMtbrzvuoWGNPASEXPY+zyKH90Xp4vRWDMy3MXIWmirAd12wzL
+         U7MrFh2xlHQ4226rGfeoLz/xag8ag0UEmUMy2xDM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH 08/20] dt-bindings:iio:adc:nuvoton,npcm750-adc yaml conversion
-Date:   Sat,  5 Sep 2020 18:29:52 +0100
-Message-Id: <20200905173004.216081-9-jic23@kernel.org>
+        Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 11/20] dt-bindings:iio:adc:motorola,cpcap-adc yaml conversion
+Date:   Sat,  5 Sep 2020 18:29:55 +0100
+Message-Id: <20200905173004.216081-12-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200905173004.216081-1-jic23@kernel.org>
 References: <20200905173004.216081-1-jic23@kernel.org>
@@ -58,116 +58,94 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Renamed the file to reflect the only compatible.
-Added #io-channel-cells to make it easier to support consumers of the
-ADC channels this device provides.
+Conversion from txt to yaml.
+Slightly expanded example to give a bit more context.
+Description lifted from the original driver commit.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Tomer Maimon <tmaimon77@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>
 ---
- .../bindings/iio/adc/nuvoton,npcm-adc.txt     | 26 --------
- .../bindings/iio/adc/nuvoton,npcm750-adc.yaml | 64 +++++++++++++++++++
- 2 files changed, 64 insertions(+), 26 deletions(-)
+ .../devicetree/bindings/iio/adc/cpcap-adc.txt | 17 -------
+ .../bindings/iio/adc/motorola,cpcap-adc.yaml  | 51 +++++++++++++++++++
+ 2 files changed, 51 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt b/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
 deleted file mode 100644
-index ef8eeec1a997..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+index ec04008e8f4f..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
 +++ /dev/null
-@@ -1,26 +0,0 @@
--Nuvoton NPCM Analog to Digital Converter (ADC)
--
--The NPCM ADC is a 10-bit converter for eight channel inputs.
+@@ -1,17 +0,0 @@
+-Motorola CPCAP PMIC ADC binding
 -
 -Required properties:
--- compatible: "nuvoton,npcm750-adc" for the NPCM7XX BMC.
--- reg: specifies physical base address and size of the registers.
--- interrupts: Contain the ADC interrupt with flags for falling edge.
--- resets : phandle to the reset control for this device.
--
--Optional properties:
--- clocks: phandle of ADC reference clock, in case the clock is not
--		  added the ADC will use the default ADC sample rate.
--- vref-supply: The regulator supply ADC reference voltage, in case the
--			   vref-supply is not added the ADC will use internal voltage
--			   reference.
+-- compatible: Should be "motorola,cpcap-adc" or "motorola,mapphone-cpcap-adc"
+-- interrupts: The interrupt number for the ADC device
+-- interrupt-names: Should be "adcdone"
+-- #io-channel-cells: Number of cells in an IIO specifier
 -
 -Example:
 -
--adc: adc@f000c000 {
--	compatible = "nuvoton,npcm750-adc";
--	reg = <0xf000c000 0x8>;
--	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
--	clocks = <&clk NPCM7XX_CLK_ADC>;
--	resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
+-cpcap_adc: adc {
+-	compatible = "motorola,mapphone-cpcap-adc";
+-	interrupt-parent = <&cpcap>;
+-	interrupts = <8 IRQ_TYPE_NONE>;
+-	interrupt-names = "adcdone";
+-	#io-channel-cells = <1>;
 -};
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml b/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
 new file mode 100644
-index 000000000000..59382e2805d1
+index 000000000000..7811c0abd5d0
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-@@ -0,0 +1,64 @@
++++ b/Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
+@@ -0,0 +1,51 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/nuvoton,npcm750-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/motorola,cpcap-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Nuvoton NPCM BMC Analog to Digital Converter (ADC)
++title: Motorola CPCAP PMIC ADC binding
 +
 +maintainers:
-+  - Tomer Maimon <tmaimon77@gmail.com>
++  - Tony Lindgren <tony@atomide.com>
 +
 +description:
-+  The NPCM ADC is a 10-bit converter for eight channel inputs.
++  On Motorola phones like droid 4 there is a custom CPCAP PMIC. This PMIC
++  has ADCs that are used for battery charging and USB PHY VBUS and ID pin
++  detection.
 +
 +properties:
 +  compatible:
-+    const: nuvoton,npcm750-adc
-+
-+  reg:
-+    maxItems: 1
++    enum:
++      - motorola,cpcap-adc
++      - motorola,mapphone-cpcap-adc
 +
 +  interrupts:
 +    maxItems: 1
-+    description: ADC interrupt, should be set for falling edge.
 +
-+  resets:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+    description: If not provided the defulat ADC sample rate will be used.
-+
-+  vref-supply:
-+    description: If not supplied, the internal voltage reference will be used.
++  interrupt-names:
++    const: adcdone
 +
 +  "#io-channel-cells":
 +    const: 1
-+      
++
 +required:
 +  - compatible
-+  - reg
 +  - interrupts
-+  - resets
-+
-+additionalProperties: false
++  - "#io-channel-cells"
 +
 +examples:
 +  - |
 +    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/nuvoton,npcm7xx-clock.h>
-+    #include <dt-bindings/reset/nuvoton,npcm7xx-reset.h>
-+    soc {
++    pmic {
 +        #address-cells = <1>;
-+        #size-cells = <1>;
-+        adc@f000c000 {
-+            compatible = "nuvoton,npcm750-adc";
-+            reg = <0xf000c000 0x8>;
-+            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&clk NPCM7XX_CLK_ADC>;
-+            resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
++        #size-cells = <0>;
++        adc {
++            compatible = "motorola,mapphone-cpcap-adc";
++            interrupt-parent = <&cpcap>;
++            interrupts = <8 IRQ_TYPE_NONE>;
++            interrupt-names = "adcdone";
++            #io-channel-cells = <1>;
 +        };
 +    };
 +...
