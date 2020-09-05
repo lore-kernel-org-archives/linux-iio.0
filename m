@@ -2,53 +2,49 @@ Return-Path: <SRS0=PRbX=CO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1A6FC2D0E0
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E3D5C433E2
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:49:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 726FD2078E
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07982208C7
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:49:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599327192;
-	bh=dj7sY8XR4e2NJSncNf247eOtg7Oz4MBwoP7y68zXUEM=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=kGYRInPNHAmVAj0fldr7eFfQuQP8qero5VkhWL9H5xebnMB7TKG/sWVDk7ibWT7Po
-	 dUys6Ng1+kOQr+rDk+vyplurhEMOaA1fVvIEKxhsRXbd2NMZbsmrq50HhURwrNyY5w
-	 vsgTxexH/ETi3niBN2nw2i1iSggo8OTRYjZHXcX8=
+	s=default; t=1599328179;
+	bh=l0mdy6clGOUXEGqWb1QsHWlR6a21Twx0qC9528juNX8=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=GNeU7e29syOVAPfwzIIpVN3ngU/MKCtpa0vVt+LCf+k+VHQIt3nWaohS0qlz71AT2
+	 SJ1u3lus+ePBx1QWlEPRKCuK8vWjVRk3YbVJv9TYXK99aAtWRTSYu+EjpMDJar/U8C
+	 PDFjd4JALcsR/1GcWODbYd0W+OSIDJ8Q6CUzV/EA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728459AbgIERdK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Sep 2020 13:33:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60230 "EHLO mail.kernel.org"
+        id S1728103AbgIERti (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Sep 2020 13:49:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37566 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728376AbgIERce (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Sep 2020 13:32:34 -0400
+        id S1727875AbgIERth (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Sep 2020 13:49:37 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5702C208FE;
-        Sat,  5 Sep 2020 17:32:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E7BB420760;
+        Sat,  5 Sep 2020 17:49:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599327153;
-        bh=dj7sY8XR4e2NJSncNf247eOtg7Oz4MBwoP7y68zXUEM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YwHFc6O4rgNmkW7IF5Jn+2eZqlt7LO4PpniTqIgKBk78wAv76EsPj7QpmdvJ8ssYp
-         M3n1HdWxLLKMCxuJjx0My3m/xXF+1U+HDNC49asauLg53nEo3Tj1mywWdzuIgFj7up
-         eMYZTJgGNKZshwo2GhYWd8rBWgWjr1ZKeCxrCZtw=
+        s=default; t=1599328176;
+        bh=l0mdy6clGOUXEGqWb1QsHWlR6a21Twx0qC9528juNX8=;
+        h=From:To:Cc:Subject:Date:From;
+        b=mpqy7pe7gYAayh93kcAFf8Z3I+EwIaUWRJTu8vzeC3G57IZX/zQarlgAjuZwznDU+
+         hKHK/ZPfEMvkF4jlNgd7wuWMI2aLRxCwB91V2ZdMZLmNBc5K1msI18ZF7X2ZiwFcVk
+         e53Eqn6/mWr2RPwASAKEWYYWAQxRgQKC0RfZ52Rg=
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Antoine Tenart <antoine.tenart@free-electrons.com>
-Subject: [PATCH 05/20] dt-bindings:iio:adc:marvell,berlin2-adc yaml conversion
-Date:   Sat,  5 Sep 2020 18:29:49 +0100
-Message-Id: <20200905173004.216081-6-jic23@kernel.org>
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 0/4] staging: iio: Cleanup some docs in staging
+Date:   Sat,  5 Sep 2020 18:47:17 +0100
+Message-Id: <20200905174721.216452-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200905173004.216081-1-jic23@kernel.org>
-References: <20200905173004.216081-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -58,96 +54,47 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Part of a general move of IIO bindings over to yaml.
+Some of these simply got left behind when drivers moved out of staging.
+Others were improved upon no end by more recent documentation under
+Documentation/ and are inaccurate or incomplete.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Antoine Tenart <antoine.tenart@free-electrons.com>
----
- .../bindings/iio/adc/berlin2_adc.txt          | 19 -------
- .../bindings/iio/adc/marvell,berlin2-adc.yaml | 50 +++++++++++++++++++
- 2 files changed, 50 insertions(+), 19 deletions(-)
+For now I've left a few files in the staging/iio/Documentation directory
+* inkernel.txt:  We need an equivalent in the main IIO docs but more than
+  a simple rst conversion and move is needed.
+* sysfs-bus-iio-dds: DDS drivers are still in staging so let us keep this
+  with them for now.
+* sysfs-bus-iio-adc-ad7280a: The driver is still in staging, so we need
+  to deal with that before moving or removing this one.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt b/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
-deleted file mode 100644
-index 908334c6b07f..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
-+++ /dev/null
-@@ -1,19 +0,0 @@
--* Berlin Analog to Digital Converter (ADC)
--
--The Berlin ADC has 8 channels, with one connected to a temperature sensor.
--It is part of the system controller register set. The ADC node should be a
--sub-node of the system controller node.
--
--Required properties:
--- compatible: must be "marvell,berlin2-adc"
--- interrupts: the interrupts for the ADC and the temperature sensor
--- interrupt-names: should be "adc" and "tsen"
--
--Example:
--
--adc: adc {
--	compatible = "marvell,berlin2-adc";
--	interrupt-parent = <&sic>;
--	interrupts = <12>, <14>;
--	interrupt-names = "adc", "tsen";
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/marvell,berlin2-adc.yaml b/Documentation/devicetree/bindings/iio/adc/marvell,berlin2-adc.yaml
-new file mode 100644
-index 000000000000..496cddbe96ca
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/marvell,berlin2-adc.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/marvell,belin2-adc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Berlin 2 Analog to Digital Convertor (ADC)
-+
-+maintainers:
-+  - Antoine Tenart <antoine.tenart@free-electrons.com>
-+
-+description:
-+  The Berlin ADC has 8 channels, with one connected to a temperature sensor.
-+  It is part of the system controller register set. The ADC node should be a
-+  sub-node of the system controller node.
-+
-+properties:
-+  compatible:
-+    const: marvell,berlin2-adc
-+
-+  interrupts:
-+    minItems: 2
-+    maxItems: 2
-+
-+  interrupt-names:
-+    items:
-+      - const: adc
-+      - const: tsen
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - interrupts
-+  - interrupt-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    sysctrl {
-+        adc {
-+            compatible = "marvell,berlin2-adc";
-+            interrupt-parent = <&sic>;
-+            interrupts = <12>, <14>;
-+            interrupt-names = "adc", "tsen";
-+        };
-+    };
-+...
+Comments on removing these of course welcome, but this is a rare occasion
+when I'll probably just apply these whether or not anyone reviews the series.
+
+Thanks,
+
+Jonathan
+
+Jonathan Cameron (4):
+  staging:iio:dac:max517 remove documentation
+  staging:iio:light: Move tsl2x7x ABI docs to correct location.
+  staging:iio:light: drop stale ABI docs
+  staging:iio:documentation: Drop most generic docs
+
+ .../ABI/testing/sysfs-bus-iio-light-tsl2772   |  0
+ drivers/staging/iio/Documentation/dac/max517  | 41 ----------
+ drivers/staging/iio/Documentation/device.txt  | 74 -----------------
+ .../staging/iio/Documentation/overview.txt    | 57 -------------
+ drivers/staging/iio/Documentation/ring.txt    | 47 -----------
+ .../iio/Documentation/sysfs-bus-iio-light     | 79 -------------------
+ drivers/staging/iio/Documentation/trigger.txt | 31 --------
+ 7 files changed, 329 deletions(-)
+ rename drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2x7x => Documentation/ABI/testing/sysfs-bus-iio-light-tsl2772 (100%)
+ delete mode 100644 drivers/staging/iio/Documentation/dac/max517
+ delete mode 100644 drivers/staging/iio/Documentation/device.txt
+ delete mode 100644 drivers/staging/iio/Documentation/overview.txt
+ delete mode 100644 drivers/staging/iio/Documentation/ring.txt
+ delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light
+ delete mode 100644 drivers/staging/iio/Documentation/trigger.txt
+
 -- 
 2.28.0
 
