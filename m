@@ -5,47 +5,48 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6B7C2D0E2
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5C5C2BBD0
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67DB72078E
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2EC55208DB
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599327183;
-	bh=1IL0MVyoisyJ6afqne2x4ewY/YCiP8wNlnqRsz+1SE0=;
+	s=default; t=1599327189;
+	bh=4WGAK8AbbHJfYhD9ddvP6Zim7kuzGr7UghvSwQy6YRo=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=bIXcAGUttV+PeGkZmn+I8RZ0CxqW90SvQrbtC1jzWIN8OoFUTceSTN0TRkH/GwtNL
-	 YLO53lkZ8MTICuohgZZf3Aks8alqG/lV8oDSo2UtrqwKB4c2r6B1Lx9fyzrziUH14K
-	 jht5RmJmQO7szHscLougcasi247uPp92IL97s4hg=
+	b=EkfPTKxwnbHDhEL426GeVQWaHHv9L75Hoawyk6XOYZy3YQiN7kCTYxyhsHIOXMlHk
+	 jTXi2qKP9aMlSu2j2n9d+qoFZaK2IIOgl3O+nmP7lIf92r3Z+8juhVmooE3j7pZyRE
+	 zs+Qv93I1mF6w228n7FVmkQfos/9Nb+/FAyMaenM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728426AbgIERct (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Sep 2020 13:32:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60418 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728445AbgIERco (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1728449AbgIERco (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 5 Sep 2020 13:32:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60288 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728393AbgIERch (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Sep 2020 13:32:37 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B342E20DD4;
-        Sat,  5 Sep 2020 17:32:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 80280208DB;
+        Sat,  5 Sep 2020 17:32:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599327163;
-        bh=1IL0MVyoisyJ6afqne2x4ewY/YCiP8wNlnqRsz+1SE0=;
+        s=default; t=1599327156;
+        bh=4WGAK8AbbHJfYhD9ddvP6Zim7kuzGr7UghvSwQy6YRo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cQ6IGkmbzY/478Bbsr8I5ZPAio/lizum3yqtkLYl+0UB+d6oeJAjMgFyJVpYlmn3D
-         k8gIZYIUpAForI2Ey7hACd9VEK3onVEWVjC+RXec4D+za0frK8H5PlxRoJBB1Bm2IW
-         h62EhvZodijWrrVx+OCFkYDXFlEr/MoeM6Z2EEjQ=
+        b=n6ht+dl7eb8KORmudM5jKs+Bl2/heHXE20ZZwYcba7EAyV9JwWg7ZqSYtPHzhNuuI
+         +YHqLTKf6Ia+pL46Ml/SSh9xPN6SEMLzFvEsC9OS9lLeFxVscUzY4wvw/VjhHB+609
+         TZtWGykiG1aVGxfHsS+ZVIKXYwE5DW6iPlPj6jvA=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Subject: [PATCH 12/20] dt-bindings:iio:adc:dlg,da9150-gpadc yaml conversion
-Date:   Sat,  5 Sep 2020 18:29:56 +0100
-Message-Id: <20200905173004.216081-13-jic23@kernel.org>
+        Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>
+Subject: [PATCH 07/20] dt-bindings:iio:adc:nuvoton,nau7802 yaml conversion
+Date:   Sat,  5 Sep 2020 18:29:51 +0100
+Message-Id: <20200905173004.216081-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200905173004.216081-1-jic23@kernel.org>
 References: <20200905173004.216081-1-jic23@kernel.org>
@@ -58,79 +59,99 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This is a small part of an MFD so perhaps ultimately it makes more
-sense to document it with that MFD binding rather than separately.
-
-In the meantime it's a straightforward conversion from txt to yaml.
+A simple conversion from txt file to yaml.  I added the #io-channel-cells
+property as optional to allow the channels of this ADCs to be used
+to provide services to other drivers, for example if an analog
+accelerometer is connected.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
 ---
- .../bindings/iio/adc/da9150-gpadc.txt         | 16 ---------
- .../bindings/iio/adc/dlg,da9150-gpadc.yaml    | 33 +++++++++++++++++++
- 2 files changed, 33 insertions(+), 16 deletions(-)
+ .../bindings/iio/adc/nuvoton,nau7802.yaml     | 50 +++++++++++++++++++
+ .../bindings/iio/adc/nuvoton-nau7802.txt      | 18 -------
+ 2 files changed, 50 insertions(+), 18 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-deleted file mode 100644
-index c07228da92ac..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--Dialog Semiconductor DA9150 IIO GPADC bindings
--
--Required properties:
--- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
--- #io-channel-cells: Should be set to <1>
--  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
--
--For further information on GPADC channels, see device datasheet.
--
--
--Example:
--
--	gpadc: da9150-gpadc {
--		compatible = "dlg,da9150-gpadc";
--		#io-channel-cells = <1>;
--	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml
 new file mode 100644
-index 000000000000..15c51d337108
+index 000000000000..bcd041ea28a8
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
-@@ -0,0 +1,33 @@
++++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml
+@@ -0,0 +1,50 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/dlg,da9150-gpadc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/nuvoton,nau7802.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Dialog Semiconductor DA9150 IIO GPADC
++title: Nuvoton NAU7802 I2c Analog to Digital Converter (ADC)
 +
 +maintainers:
-+  - Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-+
-+description:
-+  This patch adds support for general purpose ADC within the
-+  DA9150 Charger & Fuel-Gauge IC.
++  - Alexandre Belloni <alexandre.belloni@free-electrons.com>
++  - Maxime Ripard <maxime.ripard@free-electrons.com>
 +
 +properties:
 +  compatible:
-+    const: dlg,da9150-gpadc
++    const: nuvoton,nau7802
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  nuvoton,vldo:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Internal reference voltage in millivolts to be configured.
++    minimum: 2400
++    maximum: 4500
 +
 +  "#io-channel-cells":
 +    const: 1
 +
 +required:
 +  - compatible
-+  - "#io-channel-cells"
++  - reg
++
++additionalProperties: false
 +
 +examples:
 +  - |
-+    adc {
-+        compatible = "dlg,da9150-gpadc";
-+        #io-channel-cells = <1>;
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        nau7802@2a {
++            compatible = "nuvoton,nau7802";
++            reg = <0x2a>;
++            nuvoton,vldo = <3000>;
++        };
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
+deleted file mode 100644
+index e9582e6fe350..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
++++ /dev/null
+@@ -1,18 +0,0 @@
+-* Nuvoton NAU7802 Analog to Digital Converter (ADC)
+-
+-Required properties:
+-  - compatible: Should be "nuvoton,nau7802"
+-  - reg: Should contain the ADC I2C address
+-
+-Optional properties:
+-  - nuvoton,vldo: Internal reference voltage in millivolts to be
+-    configured valid values are between 2400 mV and 4500 mV.
+-  - interrupts: IRQ line for the ADC. If not used the driver will use
+-    polling.
+-
+-Example:
+-adc2: nau7802@2a {
+-	compatible = "nuvoton,nau7802";
+-	reg = <0x2a>;
+-	nuvoton,vldo = <3000>;
+-};
 -- 
 2.28.0
 
