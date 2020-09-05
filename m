@@ -5,48 +5,50 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1225AC2BC11
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E2BC2D0E1
 	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CE6B6214D8
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1220D2086A
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:32:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599327178;
-	bh=ZHLq/myecu/flZM0tIz8OTjV/nj46E8SpKq8pgcSX3Q=;
+	s=default; t=1599327179;
+	bh=qy01rmyWth+JbNoz0SAKoaOPUAA74MAp1IUG3oTg0pM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=U61DqQgWeOKUTw0BKfUab+LvRiRXLPk19wRch4iYFRnYnZv00VHRpl4rlTcE93Myk
-	 WJFOA+fD1WPeBW5FeHV+ZHXrCBdbZLqeCfUT0VaUk9NWVc7G7aI7T6dNPSpiRocfQA
-	 +TDWPndxPXF3x3MVwtrSwIsK2es4ksiAGHaAqguE=
+	b=Fnc+ssbHAUE/n6imnpJmB2Tg29APq5WgP19vG0p8+CslcPpPKxaangAuUs5ElN0PT
+	 pdo1GGozniJtuxpg172Mfqtf2t8klQd4Qtrpc29aCkvK/+f2v/lMOXxuhE1iT8b07U
+	 vhC/JoOI9AEZuegNDCqgyqnIPzl6sIvn5wSa43Gw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728463AbgIERcz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Sep 2020 13:32:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60508 "EHLO mail.kernel.org"
+        id S1728564AbgIERc5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Sep 2020 13:32:57 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60552 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728491AbgIERcu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Sep 2020 13:32:50 -0400
+        id S1728505AbgIERcx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Sep 2020 13:32:53 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 572E720C09;
-        Sat,  5 Sep 2020 17:32:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 514992086A;
+        Sat,  5 Sep 2020 17:32:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599327169;
-        bh=ZHLq/myecu/flZM0tIz8OTjV/nj46E8SpKq8pgcSX3Q=;
+        s=default; t=1599327172;
+        bh=qy01rmyWth+JbNoz0SAKoaOPUAA74MAp1IUG3oTg0pM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gzJfw2uvXP4Z3gTUsQ7OlJrPzjslNpghdm3wQlhLJWCAcxxDmxtfM3cOX9KbRU+Cj
-         tFmCGkvSix8r/cUYiKidJEwsPch+IcijtW+7Ji6CSf8wOTrN09EtIg58N8KK5fJ8rJ
-         FtacF0fvsqTiHIlr9Dd1yu3rQuw3uey4p1XHWg6I=
+        b=0vlhsZKAg9RsSW6m3o6t4mSdP6qPRz+X3B//Q2mJ+42mGmPzF+9Ky9v+d0pisOFwL
+         Kpw4nkulBtZfjp5aSYqS7HWbxPdn8CD13dVkw3BaCgjUuR+coI4GFvdsTFhrD0P6p0
+         M4hI885lLjQPinBS7jTKFrGgJdA7KovHLXw22fvA=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Dirk Eibach <eibach@gdsys.de>,
-        Daniel Baluta <daniel.baluta@nxp.com>
-Subject: [PATCH 16/20] dt-bindings:iio:adc:ti,ads1015 yaml conversion
-Date:   Sat,  5 Sep 2020 18:30:00 +0100
-Message-Id: <20200905173004.216081-17-jic23@kernel.org>
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Subject: [PATCH 18/20] dt-bindings:iio:adc:amlogic,meson-saradc yaml conversion
+Date:   Sat,  5 Sep 2020 18:30:02 +0100
+Message-Id: <20200905173004.216081-19-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200905173004.216081-1-jic23@kernel.org>
 References: <20200905173004.216081-1-jic23@kernel.org>
@@ -59,216 +61,228 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This binding was moved over from hwmon some time ago so is a bit
-unusual in terms of IIO bindings.  However, conversion was fairly
-straight forwards.
+This binding is non trivial due to the range of different parts
+supported having several subtle quirks.
+I am far from sure I have these correct. For example:
+1) Can we have the clock adc_sel without adc_clk?
+2) I haven't restricted the amlogic,hhi-sysctrl to only
+   be present on the relevant parts if nvmem stuff also is, but
+   it would seem to be rather odd if it were otherwise.
 
-I've listed both Dirk (who think wrote original binding) and Daniel
-who added the IIO driver for this device.
+Perhaps we look to make this binding more restrictive at a later date.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Dirk Eibach <eibach@gdsys.de>
-Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: Kevin Hilman <khilman@baylibre.com>
+Cc: Neil Armstrong <narmstrong@baylibre.com>
+Cc: Jerome Brunet <jbrunet@baylibre.com>
 ---
- .../devicetree/bindings/iio/adc/ads1015.txt   |  73 -----------
- .../bindings/iio/adc/ti,ads1015.yaml          | 113 ++++++++++++++++++
- 2 files changed, 113 insertions(+), 73 deletions(-)
+ .../bindings/iio/adc/amlogic,meson-saradc.txt |  48 ------
+ .../iio/adc/amlogic,meson-saradc.yaml         | 145 ++++++++++++++++++
+ 2 files changed, 145 insertions(+), 48 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ads1015.txt b/Documentation/devicetree/bindings/iio/adc/ads1015.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
 deleted file mode 100644
-index 918a507d1159..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/ads1015.txt
+index d57e9df25f4f..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
 +++ /dev/null
-@@ -1,73 +0,0 @@
--ADS1015 (I2C)
+@@ -1,48 +0,0 @@
+-* Amlogic Meson SAR (Successive Approximation Register) A/D converter
 -
--This device is a 12-bit A-D converter with 4 inputs.
+-Required properties:
+-- compatible:	depending on the SoC this should be one of:
+-			- "amlogic,meson8-saradc" for Meson8
+-			- "amlogic,meson8b-saradc" for Meson8b
+-			- "amlogic,meson8m2-saradc" for Meson8m2
+-			- "amlogic,meson-gxbb-saradc" for GXBB
+-			- "amlogic,meson-gxl-saradc" for GXL
+-			- "amlogic,meson-gxm-saradc" for GXM
+-			- "amlogic,meson-axg-saradc" for AXG
+-			- "amlogic,meson-g12a-saradc" for AXG
+-		along with the generic "amlogic,meson-saradc"
+-- reg:		the physical base address and length of the registers
+-- interrupts:	the interrupt indicating end of sampling
+-- clocks:	phandle and clock identifier (see clock-names)
+-- clock-names:	mandatory clocks:
+-			- "clkin" for the reference clock (typically XTAL)
+-			- "core" for the SAR ADC core clock
+-		optional clocks:
+-			- "adc_clk" for the ADC (sampling) clock
+-			- "adc_sel" for the ADC (sampling) clock mux
+-- vref-supply:	the regulator supply for the ADC reference voltage
+-- #io-channel-cells: must be 1, see ../iio-bindings.txt
 -
--The inputs can be used single ended or in certain differential combinations.
+-Optional properties:
+-- amlogic,hhi-sysctrl:	phandle to the syscon which contains the 5th bit
+-			of the TSC (temperature sensor coefficient) on
+-			Meson8b and Meson8m2 (which used to calibrate the
+-			temperature sensor)
+-- nvmem-cells:		phandle to the temperature_calib eFuse cells
+-- nvmem-cell-names:	if present (to enable the temperature sensor
+-			calibration) this must contain "temperature_calib"
 -
--For configuration all possible combinations are mapped to 8 channels:
--  0: Voltage over AIN0 and AIN1.
--  1: Voltage over AIN0 and AIN3.
--  2: Voltage over AIN1 and AIN3.
--  3: Voltage over AIN2 and AIN3.
--  4: Voltage over AIN0 and GND.
--  5: Voltage over AIN1 and GND.
--  6: Voltage over AIN2 and GND.
--  7: Voltage over AIN3 and GND.
 -
--Each channel can be configured individually:
-- - pga is the programmable gain amplifier (values are full scale)
--    0: +/- 6.144 V
--    1: +/- 4.096 V
--    2: +/- 2.048 V (default)
--    3: +/- 1.024 V
--    4: +/- 0.512 V
--    5: +/- 0.256 V
-- - data_rate in samples per second
--    0: 128
--    1: 250
--    2: 490
--    3: 920
--    4: 1600 (default)
--    5: 2400
--    6: 3300
--
--1) The /ads1015 node
--
--  Required properties:
--
--   - compatible : must be "ti,ads1015"
--   - reg : I2C bus address of the device
--   - #address-cells : must be <1>
--   - #size-cells : must be <0>
--
--  The node contains child nodes for each channel that the platform uses.
--
--  Example ADS1015 node:
--
--    ads1015@49 {
--	    compatible = "ti,ads1015";
--	    reg = <0x49>;
--	    #address-cells = <1>;
--	    #size-cells = <0>;
--
--	    [ child node definitions... ]
--    }
--
--2) channel nodes
--
--  Required properties:
--
--   - reg : the channel number
--
--  Optional properties:
--
--   - ti,gain : the programmable gain amplifier setting
--   - ti,datarate : the converter data rate
--
--  Example ADS1015 channel node:
--
--    channel@4 {
--	    reg = <4>;
--	    ti,gain = <3>;
--	    ti,datarate = <5>;
--    };
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+-Example:
+-	saradc: adc@8680 {
+-		compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
+-		#io-channel-cells = <1>;
+-		reg = <0x0 0x8680 0x0 0x34>;
+-		interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
+-		clocks = <&xtal>,
+-			 <&clkc CLKID_SAR_ADC>,
+-			 <&clkc CLKID_SANA>,
+-			 <&clkc CLKID_SAR_ADC_CLK>,
+-			 <&clkc CLKID_SAR_ADC_SEL>;
+-		clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
 new file mode 100644
-index 000000000000..9922ca78ccd0
+index 000000000000..5b2e07828c3d
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-@@ -0,0 +1,113 @@
-+# SPDX-License-Identifier: GPL-2.0
++++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+@@ -0,0 +1,145 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/ti,ads1015.yaml#
++$id: http://devicetree.org/schemas/iio/adc/amlogic,meson-saradc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: TI ADS1015 4 channel I2C analog to digital converter
++title: Amlogic Meson SAR (Successive Approximation Register) A/D converter
 +
 +maintainers:
-+  - Dirk Eibach <eibach@gdsys.de>
-+  - Daniel Baluta <daniel.baluta@nxp.com>
++  - Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 +
-+description: |
-+  Datasheet at: https://www.ti.com/lit/gpn/ads1015
-+  Supports both single ended and differential channels.
++description:
++  Binding covers a range of ADCs found on amlogic meson SoCs.
 +
 +properties:
 +  compatible:
-+    const: ti,ads1015
++    oneOf:
++      - const: amlogic,meson-saradc
++      - items:
++          - enum:
++              - amlogic,meson8-saradc
++              - amlogic,meson8b-saradc
++              - amlogic,meson8m2-saradc
++              - amlogic,meson-gxbb-saradc
++              - amlogic,meson-gxl-saradc
++              - amlogic,meson-gxm-saradc
++              - amlogic,meson-axg-saradc
++              - amlogic,meson-g12a-saradc
++          - const: amlogic,meson-saradc
 +
 +  reg:
 +    maxItems: 1
 +
-+  "#address-cells":
-+    const: 1
++  interrupts:
++    description: Interrupt indicates end of sampling.
++    maxItems: 1
 +
-+  "#size-cells":
-+    const: 0
++  clocks:
++    minItems: 2
++    maxItems: 4
++
++  clock-names:
++    items:
++      - const: clkin
++      - const: core
++      - const: adc_clk
++      - const: adc_sel
++    minItems: 2
++    maxItems: 4
++
++  vref-supply: true
 +
 +  "#io-channel-cells":
 +    const: 1
 +
++  amlogic,hhi-sysctrl:
++    $ref: /schemas/types.yaml#/definitions/phandle
++    description:
++      Syscon which contains the 5th bit of the TSC (temperature sensor
++      coefficient) on Meson8b and Meson8m2 (which used to calibrate the
++      temperature sensor)
++
++  nvmem-cells:
++    description: phandle to the temperature_calib eFuse cells
++
++  nvmem-cell-names:
++    const: temperature_calib
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson8-saradc
++              - amlogic,meson8b-saradc
++              - amlogic,meson8m2-saradc
++    then:
++      properties:
++        nvmem-cells: true
++        nvmem-cell-names: true
++    else:
++      properties:
++        nvmem-cells: false
++        mvmem-cel-names: false
++
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - amlogic,meson8b-saradc
++              - amlogic,meson8m2-saradc
++    then:
++      properties:
++        amlogic,hhi-sysctrl: true
++    else:
++      properties:
++        amlogic,hhi-sysctrl: false
++
 +required:
 +  - compatible
 +  - reg
-+  - "#address-cells"
-+  - "#size-cells"
++  - interrupts
++  - clocks
++  - clock-names
++  - "#io-channel-cells"
 +
 +additionalProperties: false
 +
-+patternProperties:
-+  "^channel@[0-7]+$":
-+    type: object
-+    description:
-+      Child nodes needed for each channel that the platform uses.
-+
-+    properties:
-+      reg:
-+        description: |
-+          0: Voltage over AIN0 and AIN1.
-+          1: Voltage over AIN0 and AIN3.
-+          2: Voltage over AIN1 and AIN3.
-+          3: Voltage over AIN2 and AIN3.
-+          4: Voltage over AIN0 and GND.
-+          5: Voltage over AIN1 and GND.
-+          6: Voltage over AIN2 and GND.
-+          7: Voltage over AIN3 and GND.
-+        items:
-+          - minimum: 0
-+            maximum: 7
-+
-+      ti,gain:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        minimum: 0
-+        maximum: 5
-+        description: |
-+          pga is the programmable gain amplifier (values are full scale)
-+          0: +/- 6.144 V
-+          1: +/- 4.096 V
-+          2: +/- 2.048 V (default)
-+          3: +/- 1.024 V
-+          4: +/- 0.512 V
-+          5: +/- 0.256 V
-+
-+      ti,datarate:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        minimum: 0
-+        maximum: 6
-+        description: |
-+          Data aquisition rate in samples per second
-+          0: 128
-+          1: 250
-+          2: 490
-+          3: 920
-+          4: 1600 (default)
-+          5: 2400
-+          6: 3300
-+
-+    required:
-+      - reg
-+
 +examples:
 +  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        adc@49 {
-+            compatible = "ti,ads1015";
-+            reg = <0x49>;
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            channel@0 {
-+              reg = <0>;
-+            };
-+            channel@4 {
-+              reg = <4>;
-+              ti,gain = <3>;
-+              ti,datarate = <5>;
-+            };
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/gxbb-clkc.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    soc {
++        #address-cells = <2>;
++        #size-cells = <2>;
++        adc@8680 {
++            compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
++            #io-channel-cells = <1>;
++            reg = <0x0 0x8680 0x0 0x34>;
++            interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
++            clocks = <&xtal>,
++                <&clkc CLKID_SAR_ADC>,
++                <&clkc CLKID_SAR_ADC_CLK>,
++                <&clkc CLKID_SAR_ADC_SEL>;
++            clock-names = "clkin", "core", "adc_clk", "adc_sel";
++        };
++        adc@9680 {
++            compatible = "amlogic,meson8b-saradc", "amlogic,meson-saradc";
++            #io-channel-cells = <1>;
++            reg = <0x0 0x9680 0x0 0x34>;
++            interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
++            clocks = <&xtal>,
++                <&clkc CLKID_SAR_ADC>,
++                <&clkc CLKID_SAR_ADC_CLK>,
++                <&clkc CLKID_SAR_ADC_SEL>;
++            clock-names = "clkin", "core";
++            nvmem-cells = <&tsens_caldata>;
++            nvmem-cell-names = "temperature_calib";
++            amlogic,hhi-sysctrl = <&hhi>;
 +        };
 +    };
 +...
