@@ -7,46 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5C5C2BBD0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 412D3C433E2
 	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2EC55208DB
+	by mail.kernel.org (Postfix) with ESMTP id 0C4732086A
 	for <linux-iio@archiver.kernel.org>; Sat,  5 Sep 2020 17:33:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1599327189;
-	bh=4WGAK8AbbHJfYhD9ddvP6Zim7kuzGr7UghvSwQy6YRo=;
+	bh=E38bXaztWbprGXLGB3ZptLRYv4BC3A7eIgpDTMmcQ14=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=EkfPTKxwnbHDhEL426GeVQWaHHv9L75Hoawyk6XOYZy3YQiN7kCTYxyhsHIOXMlHk
-	 jTXi2qKP9aMlSu2j2n9d+qoFZaK2IIOgl3O+nmP7lIf92r3Z+8juhVmooE3j7pZyRE
-	 zs+Qv93I1mF6w228n7FVmkQfos/9Nb+/FAyMaenM=
+	b=oj4m8Hd4VHKWCW3tWHZxJIvvTaK1Vg3+rBgBu1+j0VV5G305W581J5UTX2m9N5PY2
+	 36HjREfwnZVMy2bBgCvkPK06bMOVt6UQA4Qx2xQuG6NOev8kXBofMD6g1AwRGcT6gp
+	 GTgDRUuEUw8Tgda590QqJ7jW2VsfOAj179BErIoU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728449AbgIERco (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Sep 2020 13:32:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60288 "EHLO mail.kernel.org"
+        id S1727875AbgIERcn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Sep 2020 13:32:43 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728393AbgIERch (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Sep 2020 13:32:37 -0400
+        id S1728387AbgIERcl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Sep 2020 13:32:41 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 80280208DB;
-        Sat,  5 Sep 2020 17:32:35 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E2414208FE;
+        Sat,  5 Sep 2020 17:32:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599327156;
-        bh=4WGAK8AbbHJfYhD9ddvP6Zim7kuzGr7UghvSwQy6YRo=;
+        s=default; t=1599327160;
+        bh=E38bXaztWbprGXLGB3ZptLRYv4BC3A7eIgpDTMmcQ14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n6ht+dl7eb8KORmudM5jKs+Bl2/heHXE20ZZwYcba7EAyV9JwWg7ZqSYtPHzhNuuI
-         +YHqLTKf6Ia+pL46Ml/SSh9xPN6SEMLzFvEsC9OS9lLeFxVscUzY4wvw/VjhHB+609
-         TZtWGykiG1aVGxfHsS+ZVIKXYwE5DW6iPlPj6jvA=
+        b=sgicZQzFKsBeyZiSxeRpzebkXK4FZo5JwMq5/hIgD8gYnYX8OPA/Z5/VTme3ZtHrv
+         j+GGu1QEIWjshH6yIvgWU1ha+QHgOOhgk+L7mH3RFkfRDpnt416aZLtWlNhPwsqSZk
+         U4YYb646wWoyMSn3tydO5HQnHwQ7B/rWMbZBFCUM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>
-Subject: [PATCH 07/20] dt-bindings:iio:adc:nuvoton,nau7802 yaml conversion
-Date:   Sat,  5 Sep 2020 18:29:51 +0100
-Message-Id: <20200905173004.216081-8-jic23@kernel.org>
+        Gregory Clement <gregory.clement@bootlin.com>
+Subject: [PATCH 10/20] dt-bindings:iio:adc:lpc3220-adc yaml conversion
+Date:   Sat,  5 Sep 2020 18:29:54 +0100
+Message-Id: <20200905173004.216081-11-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200905173004.216081-1-jic23@kernel.org>
 References: <20200905173004.216081-1-jic23@kernel.org>
@@ -59,40 +58,67 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-A simple conversion from txt file to yaml.  I added the #io-channel-cells
-property as optional to allow the channels of this ADCs to be used
-to provide services to other drivers, for example if an analog
-accelerometer is connected.
+Renamed to remove the wild cards.  These go wrong far too often so
+in general preferred to use the name of a specific part.  As this
+binding only provides one compatible, I went with that.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>
+Cc: Gregory Clement <gregory.clement@bootlin.com>
 ---
- .../bindings/iio/adc/nuvoton,nau7802.yaml     | 50 +++++++++++++++++++
- .../bindings/iio/adc/nuvoton-nau7802.txt      | 18 -------
- 2 files changed, 50 insertions(+), 18 deletions(-)
+ .../bindings/iio/adc/lpc32xx-adc.txt          | 21 --------
+ .../bindings/iio/adc/nxp,lpc3220-adc.yaml     | 50 +++++++++++++++++++
+ 2 files changed, 50 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
+deleted file mode 100644
+index 3a1bc669bd51..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
++++ /dev/null
+@@ -1,21 +0,0 @@
+-* NXP LPC32xx SoC ADC controller
+-
+-Required properties:
+-- compatible: must be "nxp,lpc3220-adc"
+-- reg: physical base address of the controller and length of memory mapped
+-  region.
+-- interrupts: The ADC interrupt
+-
+-Optional:
+- - vref-supply: The regulator supply ADC reference voltage, optional
+-   for legacy reason, but highly encouraging to us in new device tree
+-
+-Example:
+-
+-	adc@40048000 {
+-		compatible = "nxp,lpc3220-adc";
+-		reg = <0x40048000 0x1000>;
+-		interrupt-parent = <&mic>;
+-		interrupts = <39 0>;
+-		vref-supply = <&vcc>;
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml
 new file mode 100644
-index 000000000000..bcd041ea28a8
+index 000000000000..2c5032be83bd
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml
 @@ -0,0 +1,50 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/nuvoton,nau7802.yaml#
++$id: http://devicetree.org/schemas/iio/adc/nxp,lpc3220-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Nuvoton NAU7802 I2c Analog to Digital Converter (ADC)
++title: NXP LPC3220 SoC ADC controller
 +
 +maintainers:
-+  - Alexandre Belloni <alexandre.belloni@free-electrons.com>
-+  - Maxime Ripard <maxime.ripard@free-electrons.com>
++  - Gregory Clement <gregory.clement@bootlin.com>
++
++description:
++  This hardware block has been used on several LPC32XX SoCs.
 +
 +properties:
 +  compatible:
-+    const: nuvoton,nau7802
++    const: nxp,lpc3220-adc
 +
 +  reg:
 +    maxItems: 1
@@ -100,12 +126,7 @@ index 000000000000..bcd041ea28a8
 +  interrupts:
 +    maxItems: 1
 +
-+  nuvoton,vldo:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Internal reference voltage in millivolts to be configured.
-+    minimum: 2400
-+    maximum: 4500
++  vref-supply: true
 +
 +  "#io-channel-cells":
 +    const: 1
@@ -113,45 +134,24 @@ index 000000000000..bcd041ea28a8
 +required:
 +  - compatible
 +  - reg
++  - interrupts
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    i2c {
++    soc {
 +        #address-cells = <1>;
-+        #size-cells = <0>;
-+        nau7802@2a {
-+            compatible = "nuvoton,nau7802";
-+            reg = <0x2a>;
-+            nuvoton,vldo = <3000>;
++        #size-cells = <1>;
++        adc@40048000 {
++            compatible = "nxp,lpc3220-adc";
++            reg = <0x40048000 0x1000>;
++            interrupt-parent = <&mic>;
++            interrupts = <39 0>;
++            vref-supply = <&vcc>;
 +        };
 +    };
 +...
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
-deleted file mode 100644
-index e9582e6fe350..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
-+++ /dev/null
-@@ -1,18 +0,0 @@
--* Nuvoton NAU7802 Analog to Digital Converter (ADC)
--
--Required properties:
--  - compatible: Should be "nuvoton,nau7802"
--  - reg: Should contain the ADC I2C address
--
--Optional properties:
--  - nuvoton,vldo: Internal reference voltage in millivolts to be
--    configured valid values are between 2400 mV and 4500 mV.
--  - interrupts: IRQ line for the ADC. If not used the driver will use
--    polling.
--
--Example:
--adc2: nau7802@2a {
--	compatible = "nuvoton,nau7802";
--	reg = <0x2a>;
--	nuvoton,vldo = <3000>;
--};
 -- 
 2.28.0
 
