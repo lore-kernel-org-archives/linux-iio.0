@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B674C433E2
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A941C43461
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DF9AE207DE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3B1F20757
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495893;
-	bh=wpdHkjWJjuNWTZckDc5yTTA+zkcQQYAV5zyE6Evwps8=;
+	s=default; t=1599495896;
+	bh=GtKhtYeqhoFhkk4l+56UWm2i17dljFhd74agdK6C2Ew=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=E5jqfe2OApjHAz6EwgbRVaWJPySRJsu8OdKQtIxqs35erFem8SwK8HaUtdv4ZrPq0
-	 kvXokBkyo7mz5FiNHEsKNAl9rfiE4k+FVk6lgN0lCGqxacEhtJJKdm/7NTllmCen5B
-	 uNzq859irUOPzlAZbidepNH4qq/V5g+G2M/1NMD0=
+	b=G49pvxmxgXlF0Xi6jJb6UBikba87ZWUqLly5Mvr61s0sA4IIBHqHOLXrMrmobgsxP
+	 IWkPVVPWVJZ56mEQkTiN5pl3NRj8/5zcx8ZKUHly3poKWRlSp6H5lufV/Fqv+ekgdm
+	 Pc9zyHvisG+HMrKn8+b3ajVQP9dsDEWXuMuX0efc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730352AbgIGQYf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:24:35 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33164 "EHLO mail.kernel.org"
+        id S1729978AbgIGQYx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:24:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33062 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730004AbgIGQNH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:07 -0400
+        id S1729944AbgIGQNA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:00 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51A2321919;
-        Mon,  7 Sep 2020 16:13:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 4A91021789;
+        Mon,  7 Sep 2020 16:12:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495187;
-        bh=wpdHkjWJjuNWTZckDc5yTTA+zkcQQYAV5zyE6Evwps8=;
+        s=default; t=1599495180;
+        bh=GtKhtYeqhoFhkk4l+56UWm2i17dljFhd74agdK6C2Ew=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=TheR5lpMgTv+Xg8ocpJ4CTPM7Q79eP4d8ReEvNyh5YjFsqaQ9FWLyRzZGUXjZHyQJ
-         TVOIKnsNj2hHZN+7uFTJFWOwLKy70ecYn3neIezmhtMEVG4C+Zz3pt/dkVPXPh1UGl
-         rhQ/drqMntAmiPoBvCb9OOiYy5i83tBFMEK5uHdg=
+        b=1HtKxRs+iHnNOY6R6jfZ5BjznDhzhDljRmRFsaA+oDVT7biI+paXbhSVSYefBbH5c
+         RWilAlgGup9PDTDvQF4NK/kbiRwvTiMby/9/r43rcNd/ygb08hYwoCtEZwqCxI73ZM
+         qiX3bUrZveJfPjCkY/XQ3Q39CjSsqM1f0oCdurnI=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [RFT 09/25] ARM: dts: s5pv210: fix number of I2S DAI cells
-Date:   Mon,  7 Sep 2020 18:11:25 +0200
-Message-Id: <20200907161141.31034-10-krzk@kernel.org>
+Subject: [RFT 07/25] ARM: dts: s5pv210: move PMU node out of clock controller
+Date:   Mon,  7 Sep 2020 18:11:23 +0200
+Message-Id: <20200907161141.31034-8-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -61,76 +61,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The bindings describe I2S DAI has 1 cells.  This makes especially sense
-for i2s0 which registers two DAIs.  Adjust the cells to fix dtbs_check
-warnings like:
+The Power Management Unit (PMU) is a separate device which has little
+common with clock controller.  Moving it to one level up (from clock
+controller child to SoC) allows to remove fake simple-bus compatible and
+dtbs_check warnings like:
 
-  i2s@e2100000: #sound-dai-cells:0:0: 1 was expected
+  clock-controller@e0100000: $nodename:0:
+    'clock-controller@e0100000' does not match '^([a-z][a-z0-9\\-]+-bus|bus|soc|axi|ahb|apb)(@[0-9a-f]+)?$'
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-fascinate4g.dts | 2 +-
- arch/arm/boot/dts/s5pv210-galaxys.dts     | 2 +-
- arch/arm/boot/dts/s5pv210.dtsi            | 6 +++---
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ arch/arm/boot/dts/s5pv210.dtsi | 13 +++++--------
+ 1 file changed, 5 insertions(+), 8 deletions(-)
 
-diff --git a/arch/arm/boot/dts/s5pv210-fascinate4g.dts b/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-index ca064359dd30..a6dc8a173af1 100644
---- a/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-+++ b/arch/arm/boot/dts/s5pv210-fascinate4g.dts
-@@ -102,7 +102,7 @@
- 		pinctrl-0 = <&headset_det &earpath_sel>;
- 
- 		cpu {
--			sound-dai = <&i2s0>, <&bt_codec>;
-+			sound-dai = <&i2s0 0>, <&bt_codec>;
- 		};
- 
- 		codec {
-diff --git a/arch/arm/boot/dts/s5pv210-galaxys.dts b/arch/arm/boot/dts/s5pv210-galaxys.dts
-index 560f830b6f6b..0eba06f56ac7 100644
---- a/arch/arm/boot/dts/s5pv210-galaxys.dts
-+++ b/arch/arm/boot/dts/s5pv210-galaxys.dts
-@@ -132,7 +132,7 @@
- 		pinctrl-0 = <&headset_det &earpath_sel>;
- 
- 		cpu {
--			sound-dai = <&i2s0>, <&bt_codec>;
-+			sound-dai = <&i2s0 0>, <&bt_codec>;
- 		};
- 
- 		codec {
 diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
-index 2871351ab907..96e667ba1c3f 100644
+index 5c760a6d7955..46221a5c8ce5 100644
 --- a/arch/arm/boot/dts/s5pv210.dtsi
 +++ b/arch/arm/boot/dts/s5pv210.dtsi
-@@ -251,7 +251,7 @@
- 			samsung,idma-addr = <0xc0010000>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&i2s0_bus>;
--			#sound-dai-cells = <0>;
-+			#sound-dai-cells = <1>;
- 			status = "disabled";
+@@ -92,19 +92,16 @@
  		};
  
-@@ -266,7 +266,7 @@
- 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&i2s1_bus>;
--			#sound-dai-cells = <0>;
-+			#sound-dai-cells = <1>;
- 			status = "disabled";
+ 		clocks: clock-controller@e0100000 {
+-			compatible = "samsung,s5pv210-clock", "simple-bus";
++			compatible = "samsung,s5pv210-clock";
+ 			reg = <0xe0100000 0x10000>;
+ 			clock-names = "xxti", "xusbxti";
+ 			clocks = <&xxti>, <&xusbxti>;
+ 			#clock-cells = <1>;
+-			#address-cells = <1>;
+-			#size-cells = <1>;
+-			ranges;
++		};
+ 
+-			pmu_syscon: syscon@e0108000 {
+-				compatible = "samsung-s5pv210-pmu", "syscon";
+-				reg = <0xe0108000 0x8000>;
+-			};
++		pmu_syscon: syscon@e0108000 {
++			compatible = "samsung-s5pv210-pmu", "syscon";
++			reg = <0xe0108000 0x8000>;
  		};
  
-@@ -281,7 +281,7 @@
- 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
- 			pinctrl-names = "default";
- 			pinctrl-0 = <&i2s2_bus>;
--			#sound-dai-cells = <0>;
-+			#sound-dai-cells = <1>;
- 			status = "disabled";
- 		};
- 
+ 		pinctrl0: pinctrl@e0200000 {
 -- 
 2.17.1
 
