@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04708C43461
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93B5EC43461
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B730C207DE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5633620757
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495860;
-	bh=yx/xrKwi3d342OuVJ6+t5DVvoWKbXVtqclPlrgpbk3Y=;
+	s=default; t=1599495873;
+	bh=IvIoj2K7TIRgwMp4PonToROYopW9M5mo7TeBE51xjo0=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=QHoXwm4TScqM19K6xmwLdh4yix7IfbB+pGPqYUZumwda7karkaLUfSXK+H3BNtCZp
-	 ZFOWwe2o2v0aAoTqdgmvIyQqNJ9LO7rOEO4qN/VOP7BRJnxkETyBzpRK0UjZ4UOxXe
-	 nAEXJur+eXlZFMkGciaM+bLNhsik4lQCd62hbv24=
+	b=PbQCGStrYDxvs4VfJZk8BEHmLLVXsaEOYWMfa7yxVE2o/HYlLdodM/FPF5F5q/1ar
+	 9jD6j40VwkHf1axYqjAj/Qj839mOjkw9cL0NQmCluV1tJ8vruBP4zlV4TjjJxeZl2t
+	 cxRA/cJfO4vuaVORk7+pNixhc7EL5RSoK9gBM6Yo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730401AbgIGQYB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:24:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33292 "EHLO mail.kernel.org"
+        id S1730560AbgIGQYV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:24:21 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33208 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729937AbgIGQNS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:18 -0400
+        id S1729924AbgIGQNK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:10 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 39503207DE;
-        Mon,  7 Sep 2020 16:13:14 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE70221775;
+        Mon,  7 Sep 2020 16:13:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495197;
-        bh=yx/xrKwi3d342OuVJ6+t5DVvoWKbXVtqclPlrgpbk3Y=;
+        s=default; t=1599495190;
+        bh=IvIoj2K7TIRgwMp4PonToROYopW9M5mo7TeBE51xjo0=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=AvZnRTKZawYE3HQooBh8Fj2d4hN/5dCV9Kt4ZgIPQouJdeq/+bazDiPaEgGeCW4V2
-         ZAPxuKbRNKpo88YfNvxNxs0DB2HO8xoKg2K9Yvv9rJ/EMc0EeuadiOKjDZxKkZJb3v
-         EoDlBPgID3PfgjjKpnCeqwOFOa7Y0cgpEF6mPfNc=
+        b=nAA805Fqp3EYfc9xrjR3f18Q6EcfDrLkpSJ0h2oGbmmVqtFRrdA4GXxl0ndhqjxDs
+         LiDEMZm+2eokreabKhc1ESbH/NZVLBv7Ih4ocMKXz2k3Gm06fRoHkuu2GU/R5+RDde
+         T9K4fsf4K9f3Po0qyFcoQj/+XglB1tXFqqpMDUH8=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH 12/25] ARM: dts: s5pv210: add RTC 32 KHz clock in Goni
-Date:   Mon,  7 Sep 2020 18:11:28 +0200
-Message-Id: <20200907161141.31034-13-krzk@kernel.org>
+Subject: [PATCH 10/25] ARM: dts: s5pv210: add RTC 32 KHz clock in Aquilla
+Date:   Mon,  7 Sep 2020 18:11:26 +0200
+Message-Id: <20200907161141.31034-11-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -74,15 +74,15 @@ This fixes dtbs_check warnings:
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-goni.dts | 17 +++++++++++++++++
+ arch/arm/boot/dts/s5pv210-aquila.dts | 17 +++++++++++++++++
  1 file changed, 17 insertions(+)
 
-diff --git a/arch/arm/boot/dts/s5pv210-goni.dts b/arch/arm/boot/dts/s5pv210-goni.dts
-index fbbd93707404..c8714bf0b6e4 100644
---- a/arch/arm/boot/dts/s5pv210-goni.dts
-+++ b/arch/arm/boot/dts/s5pv210-goni.dts
-@@ -33,6 +33,13 @@
- 			0x50000000 0x08000000>;
+diff --git a/arch/arm/boot/dts/s5pv210-aquila.dts b/arch/arm/boot/dts/s5pv210-aquila.dts
+index 14969b6529e8..eaeb0e921aaa 100644
+--- a/arch/arm/boot/dts/s5pv210-aquila.dts
++++ b/arch/arm/boot/dts/s5pv210-aquila.dts
+@@ -32,6 +32,13 @@
+ 			0x40000000 0x18000000>;
  	};
  
 +	pmic_ap_clk: clock-0 {
@@ -95,19 +95,19 @@ index fbbd93707404..c8714bf0b6e4 100644
  	regulators {
  		compatible = "simple-bus";
  		#address-cells = <1>;
-@@ -224,6 +231,11 @@
- 					regulator-max-microvolt = <1200000>;
+@@ -228,6 +235,11 @@
  					regulator-always-on;
  				};
-+
+ 
 +				ap32khz_reg: EN32KHz-AP {
 +					regulator-name = "32KHz AP";
 +					regulator-always-on;
 +				};
- 			};
- 		};
- 	};
-@@ -308,6 +320,11 @@
++
+ 				vichg_reg: ENVICHG {
+ 					regulator-name = "VICHG";
+ 				};
+@@ -326,6 +338,11 @@
  	status = "okay";
  };
  
