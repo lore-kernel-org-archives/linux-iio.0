@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46DD1C2D0A8
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3F50C43461
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:18:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 105F021789
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:13:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B36A3207DE
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:18:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495221;
-	bh=hCa1lfqQh5Q/rKTvpN58exv+OgW3HLbegrw+Jx02Gwk=;
+	s=default; t=1599495519;
+	bh=bwtOi8QElP0mGjZhVUaaYJrre3PcACxIN1rrV3SxlNw=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Ig0dGGisKXZM5X4xEY9B+JKVUv0683nsoDUmXDnXhnw1s86XJCGgXwr0wyUcLUnxc
-	 CG1niiTd4cw4fxdIznAZqcZxDu/ZO2T6gh32Std1PWWg9ahHtw2N98CYkTkzF940kf
-	 c4dYqwLnI5q0di58pfIniql88v7BqJsvmLWrhfro=
+	b=SoWyQmNCZeFLCzRer+bl+3L+0JYie9LA0+hgH0mInrMCFxY6GhOVCu1+3fejueZav
+	 Y85ZoN1+1kbbDO78UhMU8i7Kjpg0qF/tdrlbRjKFzjDycwd7f303nnYgTpSR1+MbO8
+	 VLsR9xJQb9XPH2bcpO8++UEtTYncw+zrO/6HC8SE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730409AbgIGQNk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:13:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33540 "EHLO mail.kernel.org"
+        id S1730456AbgIGQOI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:14:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34096 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730318AbgIGQN3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:29 -0400
+        id S1730453AbgIGQOG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:14:06 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8245A21919;
-        Mon,  7 Sep 2020 16:13:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2D1AB207DE;
+        Mon,  7 Sep 2020 16:14:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495208;
-        bh=hCa1lfqQh5Q/rKTvpN58exv+OgW3HLbegrw+Jx02Gwk=;
+        s=default; t=1599495245;
+        bh=bwtOi8QElP0mGjZhVUaaYJrre3PcACxIN1rrV3SxlNw=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=11vf3Va/Vc9DRGOMYZamRit9H9IEaPFZlD4LAQsKbOuFnIgs5e3GtwewKW1I2oeKQ
-         Rv1+ghFjyP0D0KoS1Nh6hWQQkny+TSvbF+7I929kpmq7paymYBltUWHIJYWoTfPDYZ
-         o7meOrUnNo8D2v0hoBc360jr9zQY0BXQj10xehOU=
+        b=UYSZxr7VgfQX85+efnx0NAZinxygKy1kqfcI7NL163KkguKnH6Q6dd6fGPoc7+E0Z
+         wxtyeFS25ChjYbXllL/KHWggeCnRQvDmF7P85PVn9/oUtIecD3rE+pknvEsLHJsstj
+         R5STZXc7cq6FhMu0OvpuG97q4DvqJIDNW8EpzziY=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH 14/25] ARM: dts: s5pv210: add RTC 32 KHz clock in SMDKV210
-Date:   Mon,  7 Sep 2020 18:11:30 +0200
-Message-Id: <20200907161141.31034-15-krzk@kernel.org>
+Subject: [RFT 25/25] ARM: dts: s5pv210: align DMA channels with dtschema
+Date:   Mon,  7 Sep 2020 18:11:41 +0200
+Message-Id: <20200907161141.31034-26-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -61,47 +61,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The S3C RTC requires 32768 Hz clock as input which is provided by PMIC.
-However the PMIC is not described in DTS at all so at least add
-a workaround to model its clock with a fixed-clock.
+dtschema expects DMA channels in specific order (tx, rx and tx-sec).
+The order actually should not matter because dma-names is used however
+let's make it aligned with dtschema to suppress warnings like:
 
-This fixes dtbs_check warnings:
-
-  rtc@e2800000: clocks: [[2, 145]] is too short
-  rtc@e2800000: clock-names: ['rtc'] is too short
+  i2s@eee30000: dma-names: ['rx', 'tx', 'tx-sec'] is not valid under any of the given schemas
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-smdkv210.dts | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm/boot/dts/s5pv210.dtsi | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/arch/arm/boot/dts/s5pv210-smdkv210.dts b/arch/arm/boot/dts/s5pv210-smdkv210.dts
-index 84b38f185199..1f20622da719 100644
---- a/arch/arm/boot/dts/s5pv210-smdkv210.dts
-+++ b/arch/arm/boot/dts/s5pv210-smdkv210.dts
-@@ -31,6 +31,13 @@
- 		reg = <0x20000000 0x40000000>;
- 	};
- 
-+	pmic_ap_clk: clock-0 {
-+		/* Workaround for missing PMIC and its clock */
-+		compatible = "fixed-clock";
-+		#clock-cells = <0>;
-+		clock-frequency = <32768>;
-+	};
-+
- 	ethernet@18000000 {
- 		compatible = "davicom,dm9000";
- 		reg = <0xA8000000 0x2 0xA8000002 0x2>;
-@@ -147,6 +154,8 @@
- 
- &rtc {
- 	status = "okay";
-+	clocks = <&clocks CLK_RTC>, <&pmic_ap_clk>;
-+	clock-names = "rtc", "rtc_src";
- };
- 
- &sdhci0 {
+diff --git a/arch/arm/boot/dts/s5pv210.dtsi b/arch/arm/boot/dts/s5pv210.dtsi
+index 96e667ba1c3f..72fb9d9f7ba3 100644
+--- a/arch/arm/boot/dts/s5pv210.dtsi
++++ b/arch/arm/boot/dts/s5pv210.dtsi
+@@ -240,8 +240,8 @@
+ 			reg = <0xeee30000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <16>;
+-			dma-names = "rx", "tx", "tx-sec";
+-			dmas = <&pdma1 9>, <&pdma1 10>, <&pdma1 11>;
++			dma-names = "tx", "rx", "tx-sec";
++			dmas = <&pdma1 10>, <&pdma1 9>, <&pdma1 11>;
+ 			clock-names = "iis",
+ 				      "i2s_opclk0",
+ 				      "i2s_opclk1";
+@@ -260,8 +260,8 @@
+ 			reg = <0xe2100000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <17>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 12>, <&pdma1 13>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 13>, <&pdma1 12>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S1>, <&clocks SCLK_AUDIO1>;
+ 			pinctrl-names = "default";
+@@ -275,8 +275,8 @@
+ 			reg = <0xe2a00000 0x1000>;
+ 			interrupt-parent = <&vic2>;
+ 			interrupts = <18>;
+-			dma-names = "rx", "tx";
+-			dmas = <&pdma1 14>, <&pdma1 15>;
++			dma-names = "tx", "rx";
++			dmas = <&pdma1 15>, <&pdma1 14>;
+ 			clock-names = "iis", "i2s_opclk0";
+ 			clocks = <&clocks CLK_I2S2>, <&clocks SCLK_AUDIO2>;
+ 			pinctrl-names = "default";
 -- 
 2.17.1
 
