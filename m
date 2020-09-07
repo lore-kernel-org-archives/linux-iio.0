@@ -4,40 +4,40 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDDEC433E2
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67ECDC43461
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:21:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5C1CB2080A
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2643120757
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:21:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495580;
-	bh=2r+P12MEW4n8TZv7IWA3L/5cznKkKx6Gr9KtqUPmiEk=;
+	s=default; t=1599495699;
+	bh=d6nxgR6+j5Zbg+AO77PXZlBaFeLEf/v+AR96N8SGLtY=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=wcTJ2lQXRd01car/FMfsLstLBtr+S/cYLcZighyaCUS/7Jbs9shrCT/zHeff8EluK
-	 vndjqseXX1MRodw83fFNdjEdxqcqKED59LYgDRD2ZIFwrPxpZ7MN0udQXBjhUUEhqP
-	 w15Te7OoDq4UUtMaUktJbe4EV9CkNMi8UTwGQiaQ=
+	b=a+S9cJDwyc9QJ/dEDKizmxg99P3MjfoCpzlBRn5AWdSc/4P+k6ZxTv7Bbzv50Hy1o
+	 vyBcHhHKi2hl9w5oVTOi2MajIhS2FJxFMfj3eR+n3awn6Yqt05v9DnKgyCKjLQeZcV
+	 /AhO7gFlgwl646v+gnQ2bBuDTv6of58c2UTbWl7c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730259AbgIGQTi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:19:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33900 "EHLO mail.kernel.org"
+        id S1730412AbgIGQNp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:13:45 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33784 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730427AbgIGQNt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:49 -0400
+        id S1729814AbgIGQNm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:42 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 06086217A0;
-        Mon,  7 Sep 2020 16:13:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9E0521556;
+        Mon,  7 Sep 2020 16:13:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495228;
-        bh=2r+P12MEW4n8TZv7IWA3L/5cznKkKx6Gr9KtqUPmiEk=;
+        s=default; t=1599495222;
+        bh=d6nxgR6+j5Zbg+AO77PXZlBaFeLEf/v+AR96N8SGLtY=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=oK+cr7fTgwPkYOEdgPxZMBnyzsrKXWDjUZ2s2Gz8eAdyX3WDPRMxcdVXWbYU+Q5Ub
-         xNVqehm1Upzv5FOHtgfP4CcLU0xyB6DR/i/kDBUcLEc4IINL3a4zEDskzBiv2YFXhG
-         kXc4KolRxMTZTXsr2+Xi7R3dTGYUf0ePCs/2Bx1M=
+        b=wlKnIngE2WWDG6839i0blXgsE0TlBXqx138C9ZdkiD/Cz6DS292UAaPP1QMCpBiRc
+         k3kJi32N4gxOigV+Ah2Bz5P/G5/KMyQnFL45sRkDwKQgh5tvCi3cJVEU0NMWWb7+Iw
+         k0lPZhtEf95jRiU0nHUiNg8dA9IYo+wppUWb3Np0=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [RFT 20/25] ARM: dts: s5pv210: move fixed regulators under root node in Aquila
-Date:   Mon,  7 Sep 2020 18:11:36 +0200
-Message-Id: <20200907161141.31034-21-krzk@kernel.org>
+Subject: [PATCH 18/25] ARM: dts: s5pv210: use defines for IRQ flags in SMDKV210
+Date:   Mon,  7 Sep 2020 18:11:34 +0200
+Message-Id: <20200907161141.31034-19-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -61,80 +61,35 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The fixed regulators are kept under dedicated "regulators" node but this
-causes multiple dtschema warnings:
-
-  regulators: $nodename:0: 'regulators' does not match '^([a-z][a-z0-9\\-]+-bus|bus|soc|axi|ahb|apb)(@[0-9a-f]+)?$'
-  regulators: #size-cells:0:0: 0 is not one of [1, 2]
-  regulators: fixed-regulator@0:reg:0: [0] is too short
-  regulators: fixed-regulator@1:reg:0: [1] is too short
-  regulators: fixed-regulator@2:reg:0: [2] is too short
+Replace hard-coded flags with defines for readability.  No functional
+change.
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-aquila.dts | 47 +++++++++++-----------------
- 1 file changed, 19 insertions(+), 28 deletions(-)
+ arch/arm/boot/dts/s5pv210-smdkv210.dts | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/arch/arm/boot/dts/s5pv210-aquila.dts b/arch/arm/boot/dts/s5pv210-aquila.dts
-index 25d4ab4a52c5..28e9e81bb2d1 100644
---- a/arch/arm/boot/dts/s5pv210-aquila.dts
-+++ b/arch/arm/boot/dts/s5pv210-aquila.dts
-@@ -40,36 +40,27 @@
- 		clock-frequency = <32768>;
+diff --git a/arch/arm/boot/dts/s5pv210-smdkv210.dts b/arch/arm/boot/dts/s5pv210-smdkv210.dts
+index 1f20622da719..1e1570d66d89 100644
+--- a/arch/arm/boot/dts/s5pv210-smdkv210.dts
++++ b/arch/arm/boot/dts/s5pv210-smdkv210.dts
+@@ -15,6 +15,7 @@
+  */
+ 
+ /dts-v1/;
++#include <dt-bindings/interrupt-controller/irq.h>
+ #include <dt-bindings/input/input.h>
+ #include "s5pv210.dtsi"
+ 
+@@ -42,7 +43,7 @@
+ 		compatible = "davicom,dm9000";
+ 		reg = <0xA8000000 0x2 0xA8000002 0x2>;
+ 		interrupt-parent = <&gph1>;
+-		interrupts = <1 4>;
++		interrupts = <1 IRQ_TYPE_LEVEL_HIGH>;
+ 		local-mac-address = [00 00 de ad be ef];
+ 		davicom,no-eeprom;
  	};
- 
--	regulators {
--		compatible = "simple-bus";
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		vtf_reg: fixed-regulator@0 {
--			compatible = "regulator-fixed";
--			reg = <0>;
--			regulator-name = "V_TF_2.8V";
--			regulator-min-microvolt = <2800000>;
--			regulator-max-microvolt = <2800000>;
--			gpio = <&mp05 4 GPIO_ACTIVE_HIGH>;
--			enable-active-high;
--		};
-+	vtf_reg: regulator-0 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "V_TF_2.8V";
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+		gpio = <&mp05 4 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
-+	};
- 
--		pda_reg: fixed-regulator@1 {
--			compatible = "regulator-fixed";
--			regulator-name = "VCC_1.8V_PDA";
--			regulator-min-microvolt = <1800000>;
--			regulator-max-microvolt = <1800000>;
--			reg = <1>;
--		};
-+	pda_reg: regulator-1 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "VCC_1.8V_PDA";
-+		regulator-min-microvolt = <1800000>;
-+		regulator-max-microvolt = <1800000>;
-+	};
- 
--		bat_reg: fixed-regulator@2 {
--			compatible = "regulator-fixed";
--			regulator-name = "V_BAT";
--			regulator-min-microvolt = <3700000>;
--			regulator-max-microvolt = <3700000>;
--			reg = <2>;
--		};
-+	bat_reg: regulator-2 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "V_BAT";
-+		regulator-min-microvolt = <3700000>;
-+		regulator-max-microvolt = <3700000>;
- 	};
- 
- 	i2c_pmic: i2c-pmic {
 -- 
 2.17.1
 
