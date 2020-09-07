@@ -2,41 +2,42 @@ Return-Path: <SRS0=NC80=CQ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 02827C43461
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:12:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93BD2C2BB84
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:13:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C2C5221556
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:12:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56A4F21789
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:13:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495142;
-	bh=EgcGYI2rVd7bR3g7yzbftA3wisdwdNpGYVOuaoZF1uw=;
-	h=From:To:Subject:Date:List-ID:From;
-	b=AWPjAtRMh/nJcg57oKuVeDgLsX9GLdQB+fpYgYfa6bSdP2xxH51xETKA67WIrbX9O
-	 kFsPDoun7QykDle9pTZj7/6LCty370xqz6Cye3G8kY/vRFqEBxaQyGQO/V99yAio5K
-	 UUyVGEoR2BkfzcO9U41Q3UBKnQNNAwocGJg189pE=
+	s=default; t=1599495203;
+	bh=INsnJaELqRYsET4RRsxOzKJWpIsKuNPsUd4VuZL+kig=;
+	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=HfjLVG7PYqpqs5uZ56oWoh0ZwQ6+acyzShPjOuDI20G0Dp46WANowNJGacIZ6AuAd
+	 AVcn3fh73jnfAJMiNUMBHsrWWsJSVesJIRxz3xiPJIiyo3PDZILkWP8ogBvRPVUZ42
+	 I10tPwXzKnFv3MPYVLLcT5BL767Cw2w+dAQ1TPHA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729923AbgIGQMI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:12:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60616 "EHLO mail.kernel.org"
+        id S1730390AbgIGQNS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:13:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33244 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729821AbgIGQME (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:12:04 -0400
+        id S1730386AbgIGQNO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:14 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0689C206E6;
-        Mon,  7 Sep 2020 16:11:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A703206E6;
+        Mon,  7 Sep 2020 16:13:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495124;
-        bh=EgcGYI2rVd7bR3g7yzbftA3wisdwdNpGYVOuaoZF1uw=;
-        h=From:To:Subject:Date:From;
-        b=pxiV/AJBlGNy8ZHR6Z8x38a0poEEfzUKVHS7Cb32JKvz1ZgEt5gBx7TC3Q7J3BN8N
-         rXRiyTmTsFpe9mITp5oU0WNAHgxcrxI+NUd2HmwG3HZtIt1Ahwp0Jc2Ii0nYuvRoJ/
-         Pa7gelW4fJ1U+9Az06VsxsOKUk2phXa5amm7OPC0=
+        s=default; t=1599495193;
+        bh=INsnJaELqRYsET4RRsxOzKJWpIsKuNPsUd4VuZL+kig=;
+        h=From:To:Subject:Date:In-Reply-To:References:From;
+        b=Z/xvc2E0pU0W7wifdwH6nXDDK8ZLaQVF/rtfD7l3/YbRIIv4MmQjtHbOq1pzT0vxg
+         S3VFMWnUnNWGIJsMdsvlMyL81ZbDWE+ONNyxX1HXCnqttgNUzDX9gpj/uNgNXc3yOf
+         0I/Ce/wW1oqj/gjsaKhJcOpIpkjvCoHujfUXs1Xk=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -49,69 +50,63 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH 00/25] ARM: dts: s5pv210: Cleanup - dtschema warnings
-Date:   Mon,  7 Sep 2020 18:11:16 +0200
-Message-Id: <20200907161141.31034-1-krzk@kernel.org>
+Subject: [PATCH 11/25] ARM: dts: s5pv210: add RTC 32 KHz clock in Aries family
+Date:   Mon,  7 Sep 2020 18:11:27 +0200
+Message-Id: <20200907161141.31034-12-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
+References: <20200907161141.31034-1-krzk@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi
+The S3C RTC requires 32768 Hz clock as input which is provided by PMIC.
+However there is no such clock provider but rather a regulator driver
+which registers the clock as a regulator.  This is an old driver which
+will not be updated so add a workaround - a fixed-clock to fill missing
+clock phandle reference in S3C RTC.
 
-The patchset tries to remove most of the dtschema warnings.  Due to lack
-of hardware it was not tested.
+This fixes dtbs_check warnings:
 
-Best regards,
-Krzysztof
+  rtc@e2800000: clocks: [[2, 145]] is too short
+  rtc@e2800000: clock-names: ['rtc'] is too short
 
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+---
+ arch/arm/boot/dts/s5pv210-aries.dtsi | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-Krzysztof Kozlowski (25):
-  dt-bindings: samsung: pmu: document S5Pv210
-  dt-bindings: iio: adc: exynos-adc: require second interrupt with touch
-    screen
-  dt-bindings: iio: adc: exynos-adc: do not require syscon on S5Pv210
-  ARM: dts: s5pv210: fix pinctrl property of "vibrator-en" regulator in
-    Aries
-  ARM: dts: s5pv210: remove DMA controller bus node name to fix dtschema
-    warnings
-  ARM: dts: s5pv210: move fixed clocks under root node
-  ARM: dts: s5pv210: move PMU node out of clock controller
-  ARM: dts: s5pv210: remove dedicated 'audio-subsystem' node
-  ARM: dts: s5pv210: fix number of I2S DAI cells
-  ARM: dts: s5pv210: add RTC 32 KHz clock in Aquilla
-  ARM: dts: s5pv210: add RTC 32 KHz clock in Aries family
-  ARM: dts: s5pv210: add RTC 32 KHz clock in Goni
-  ARM: dts: s5pv210: add RTC 32 KHz clock in SMDKC110
-  ARM: dts: s5pv210: add RTC 32 KHz clock in SMDKV210
-  ARM: dts: s5pv210: add RTC 32 KHz clock in Torbreck
-  ARM: dts: s5pv210: use defines for GPIO flags in Aquila
-  ARM: dts: s5pv210: use defines for GPIO flags in Goni
-  ARM: dts: s5pv210: use defines for IRQ flags in SMDKV210
-  ARM: dts: s5pv210: use defines for IRQ flags in Goni
-  ARM: dts: s5pv210: move fixed regulators under root node in Aquila
-  ARM: dts: s5pv210: move fixed regulators under root node in Goni
-  ARM: dts: s5pv210: replace deprecated "gpios" i2c-gpio property in
-    Aquila
-  ARM: dts: s5pv210: replace deprecated "gpios" i2c-gpio property in
-    Goni
-  ARM: dts: s5pv210: align SPI GPIO node name with dtschema in Aries
-  ARM: dts: s5pv210: align DMA channels with dtschema
-
- .../devicetree/bindings/arm/samsung/pmu.yaml  |   2 +
- .../bindings/iio/adc/samsung,exynos-adc.yaml  |  16 +-
- arch/arm/boot/dts/s5pv210-aquila.dts          |  73 ++++----
- arch/arm/boot/dts/s5pv210-aries.dtsi          |  16 +-
- arch/arm/boot/dts/s5pv210-fascinate4g.dts     |   2 +-
- arch/arm/boot/dts/s5pv210-galaxys.dts         |   2 +-
- arch/arm/boot/dts/s5pv210-goni.dts            |  97 +++++-----
- arch/arm/boot/dts/s5pv210-smdkc110.dts        |   9 +
- arch/arm/boot/dts/s5pv210-smdkv210.dts        |  12 +-
- arch/arm/boot/dts/s5pv210-torbreck.dts        |   9 +
- arch/arm/boot/dts/s5pv210.dtsi                | 175 ++++++++----------
- 11 files changed, 230 insertions(+), 183 deletions(-)
-
+diff --git a/arch/arm/boot/dts/s5pv210-aries.dtsi b/arch/arm/boot/dts/s5pv210-aries.dtsi
+index 6ba23562da46..86c3b26fd21e 100644
+--- a/arch/arm/boot/dts/s5pv210-aries.dtsi
++++ b/arch/arm/boot/dts/s5pv210-aries.dtsi
+@@ -47,6 +47,13 @@
+ 		};
+ 	};
+ 
++	pmic_ap_clk: clock-0 {
++		/* Workaround for missing clock on PMIC */
++		compatible = "fixed-clock";
++		#clock-cells = <0>;
++		clock-frequency = <32768>;
++	};
++
+ 	bt_codec: bt_sco {
+ 		compatible = "linux,bt-sco";
+ 		#sound-dai-cells = <0>;
+@@ -825,6 +832,11 @@
+ 	samsung,pwm-outputs = <1>;
+ };
+ 
++&rtc {
++	clocks = <&clocks CLK_RTC>, <&pmic_ap_clk>;
++	clock-names = "rtc", "rtc_src";
++};
++
+ &sdhci1 {
+ 	#address-cells = <1>;
+ 	#size-cells = <0>;
 -- 
 2.17.1
 
