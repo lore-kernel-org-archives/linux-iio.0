@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DEAFEC2D0A8
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CDDEC433E2
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A544A207DE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5C1CB2080A
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:19:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495559;
-	bh=LCZiNPIu8jZhAFtcfPg9X65S8kNcPL3i2BZfvFXvaVM=;
+	s=default; t=1599495580;
+	bh=2r+P12MEW4n8TZv7IWA3L/5cznKkKx6Gr9KtqUPmiEk=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Rcdf/d9yzI5koWdmt91hpQgqJDnfycairc1Ljo4PxcxE07Q8bObCQ+Ih9usKutCkS
-	 ccH0+nJmZ19QjRzyRB3s5iTBZcQo3ienhfPocVr26mUjCLcyJ24Xq/rIyZPhrZxZjp
-	 ODkq2dbMe1CAhYaX6iciJwVlfNQz4bNEzSAWjSAI=
+	b=wcTJ2lQXRd01car/FMfsLstLBtr+S/cYLcZighyaCUS/7Jbs9shrCT/zHeff8EluK
+	 vndjqseXX1MRodw83fFNdjEdxqcqKED59LYgDRD2ZIFwrPxpZ7MN0udQXBjhUUEhqP
+	 w15Te7OoDq4UUtMaUktJbe4EV9CkNMi8UTwGQiaQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730321AbgIGQTS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:19:18 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33922 "EHLO mail.kernel.org"
+        id S1730259AbgIGQTi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:19:38 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33900 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729986AbgIGQNw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:52 -0400
+        id S1730427AbgIGQNt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:49 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 21C0921789;
-        Mon,  7 Sep 2020 16:13:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 06086217A0;
+        Mon,  7 Sep 2020 16:13:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495232;
-        bh=LCZiNPIu8jZhAFtcfPg9X65S8kNcPL3i2BZfvFXvaVM=;
+        s=default; t=1599495228;
+        bh=2r+P12MEW4n8TZv7IWA3L/5cznKkKx6Gr9KtqUPmiEk=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=MpNx5OKX8ND25kEGqAv67cBNVnPCrNRD5idk6KCBbLRucUK8v6NwfjLaiItYc7f0R
-         yWFxB1O6hVraOXJsqOsncVQAjr+K/UyRUc4UIRvzhmg/q5laLEja1dkjQagxVvmlxV
-         p6uDmMsFLwLyYWAqilto+JEOA9DaW//5zSxuBbuo=
+        b=oK+cr7fTgwPkYOEdgPxZMBnyzsrKXWDjUZ2s2Gz8eAdyX3WDPRMxcdVXWbYU+Q5Ub
+         xNVqehm1Upzv5FOHtgfP4CcLU0xyB6DR/i/kDBUcLEc4IINL3a4zEDskzBiv2YFXhG
+         kXc4KolRxMTZTXsr2+Xi7R3dTGYUf0ePCs/2Bx1M=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [RFT 21/25] ARM: dts: s5pv210: move fixed regulators under root node in Goni
-Date:   Mon,  7 Sep 2020 18:11:37 +0200
-Message-Id: <20200907161141.31034-22-krzk@kernel.org>
+Subject: [RFT 20/25] ARM: dts: s5pv210: move fixed regulators under root node in Aquila
+Date:   Mon,  7 Sep 2020 18:11:36 +0200
+Message-Id: <20200907161141.31034-21-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -69,18 +69,17 @@ causes multiple dtschema warnings:
   regulators: fixed-regulator@0:reg:0: [0] is too short
   regulators: fixed-regulator@1:reg:0: [1] is too short
   regulators: fixed-regulator@2:reg:0: [2] is too short
-  regulators: fixed-regulator@3:reg:0: [3] is too short
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-goni.dts | 64 +++++++++++++-----------------
- 1 file changed, 27 insertions(+), 37 deletions(-)
+ arch/arm/boot/dts/s5pv210-aquila.dts | 47 +++++++++++-----------------
+ 1 file changed, 19 insertions(+), 28 deletions(-)
 
-diff --git a/arch/arm/boot/dts/s5pv210-goni.dts b/arch/arm/boot/dts/s5pv210-goni.dts
-index 20f1c2773805..eec6531e6ef8 100644
---- a/arch/arm/boot/dts/s5pv210-goni.dts
-+++ b/arch/arm/boot/dts/s5pv210-goni.dts
-@@ -42,46 +42,36 @@
+diff --git a/arch/arm/boot/dts/s5pv210-aquila.dts b/arch/arm/boot/dts/s5pv210-aquila.dts
+index 25d4ab4a52c5..28e9e81bb2d1 100644
+--- a/arch/arm/boot/dts/s5pv210-aquila.dts
++++ b/arch/arm/boot/dts/s5pv210-aquila.dts
+@@ -40,36 +40,27 @@
  		clock-frequency = <32768>;
  	};
  
@@ -91,10 +90,10 @@ index 20f1c2773805..eec6531e6ef8 100644
 -
 -		vtf_reg: fixed-regulator@0 {
 -			compatible = "regulator-fixed";
+-			reg = <0>;
 -			regulator-name = "V_TF_2.8V";
 -			regulator-min-microvolt = <2800000>;
 -			regulator-max-microvolt = <2800000>;
--			reg = <0>;
 -			gpio = <&mp05 4 GPIO_ACTIVE_HIGH>;
 -			enable-active-high;
 -		};
@@ -133,24 +132,6 @@ index 20f1c2773805..eec6531e6ef8 100644
 +		regulator-name = "V_BAT";
 +		regulator-min-microvolt = <3700000>;
 +		regulator-max-microvolt = <3700000>;
-+	};
- 
--		tsp_reg: fixed-regulator@3 {
--			compatible = "regulator-fixed";
--			regulator-name = "TSP_VDD";
--			regulator-min-microvolt = <2800000>;
--			regulator-max-microvolt = <2800000>;
--			reg = <3>;
--			gpio = <&gpj1 3 GPIO_ACTIVE_HIGH>;
--			enable-active-high;
--		};
-+	tsp_reg: regulator-3 {
-+		compatible = "regulator-fixed";
-+		regulator-name = "TSP_VDD";
-+		regulator-min-microvolt = <2800000>;
-+		regulator-max-microvolt = <2800000>;
-+		gpio = <&gpj1 3 GPIO_ACTIVE_HIGH>;
-+		enable-active-high;
  	};
  
  	i2c_pmic: i2c-pmic {
