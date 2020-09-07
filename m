@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-13.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5590C43461
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:23:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04708C43461
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A60B221532
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:23:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B730C207DE
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Sep 2020 16:24:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599495824;
-	bh=ejtq/VIVsktLn4Dgw4vy86y+KtXeh8BqyiiI41C0oYM=;
+	s=default; t=1599495860;
+	bh=yx/xrKwi3d342OuVJ6+t5DVvoWKbXVtqclPlrgpbk3Y=;
 	h=From:To:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=1guXoCHQuOjkq9y4N6XOeVSmb4OZGp0cRxMEFRf1jR02hzh0bQEE74RXOEHYvTPvP
-	 EdsPh4Eifg12OPcwzLzopbtAkKCLxPSz5n26CdMNWfyDu/eEXXoTjR0lEZrO0Fs/kV
-	 mQjfCeZLMUeQ6h1mFD+hExx3RjCYY95uwgyr1OQE=
+	b=QHoXwm4TScqM19K6xmwLdh4yix7IfbB+pGPqYUZumwda7karkaLUfSXK+H3BNtCZp
+	 ZFOWwe2o2v0aAoTqdgmvIyQqNJ9LO7rOEO4qN/VOP7BRJnxkETyBzpRK0UjZ4UOxXe
+	 nAEXJur+eXlZFMkGciaM+bLNhsik4lQCd62hbv24=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730470AbgIGQV4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Sep 2020 12:21:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33378 "EHLO mail.kernel.org"
+        id S1730401AbgIGQYB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Sep 2020 12:24:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33292 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730389AbgIGQNV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 7 Sep 2020 12:13:21 -0400
+        id S1729937AbgIGQNS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Sep 2020 12:13:18 -0400
 Received: from kozik-lap.mshome.net (unknown [194.230.155.174])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DEDE921897;
-        Mon,  7 Sep 2020 16:13:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 39503207DE;
+        Mon,  7 Sep 2020 16:13:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599495201;
-        bh=ejtq/VIVsktLn4Dgw4vy86y+KtXeh8BqyiiI41C0oYM=;
+        s=default; t=1599495197;
+        bh=yx/xrKwi3d342OuVJ6+t5DVvoWKbXVtqclPlrgpbk3Y=;
         h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=nNkR14erhjM+1VUXixXRp1KJe6Zdmr2ez4f0PwcJ4p8eEzRNgNJ6DjxDty7fxYr+l
-         8fMvogRLvor3RRwwLPnT8HOvXMOTIYpMGsB37OvspsErCVf788XlVeXWIDYezWyeKm
-         0/5E7+5HVT2HJdrjsMXM7xpv07bIXaLPLVml5rjA=
+        b=AvZnRTKZawYE3HQooBh8Fj2d4hN/5dCV9Kt4ZgIPQouJdeq/+bazDiPaEgGeCW4V2
+         ZAPxuKbRNKpo88YfNvxNxs0DB2HO8xoKg2K9Yvv9rJ/EMc0EeuadiOKjDZxKkZJb3v
+         EoDlBPgID3PfgjjKpnCeqwOFOa7Y0cgpEF6mPfNc=
 From:   Krzysztof Kozlowski <krzk@kernel.org>
 To:     Kukjin Kim <kgene@kernel.org>,
         Krzysztof Kozlowski <krzk@kernel.org>,
@@ -50,9 +50,9 @@ To:     Kukjin Kim <kgene@kernel.org>,
         linux-arm-kernel@lists.infradead.org,
         linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH 13/25] ARM: dts: s5pv210: add RTC 32 KHz clock in SMDKC110
-Date:   Mon,  7 Sep 2020 18:11:29 +0200
-Message-Id: <20200907161141.31034-14-krzk@kernel.org>
+Subject: [PATCH 12/25] ARM: dts: s5pv210: add RTC 32 KHz clock in Goni
+Date:   Mon,  7 Sep 2020 18:11:28 +0200
+Message-Id: <20200907161141.31034-13-krzk@kernel.org>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20200907161141.31034-1-krzk@kernel.org>
 References: <20200907161141.31034-1-krzk@kernel.org>
@@ -62,8 +62,10 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 The S3C RTC requires 32768 Hz clock as input which is provided by PMIC.
-However the PMIC is not described in DTS at all so at least add
-a workaround to model its clock with a fixed-clock.
+However there is no such clock provider but rather a regulator driver
+which registers the clock as a regulator.  This is an old driver which
+will not be updated so add a workaround - a fixed-clock to fill missing
+clock phandle reference in S3C RTC.
 
 This fixes dtbs_check warnings:
 
@@ -72,36 +74,51 @@ This fixes dtbs_check warnings:
 
 Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 ---
- arch/arm/boot/dts/s5pv210-smdkc110.dts | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ arch/arm/boot/dts/s5pv210-goni.dts | 17 +++++++++++++++++
+ 1 file changed, 17 insertions(+)
 
-diff --git a/arch/arm/boot/dts/s5pv210-smdkc110.dts b/arch/arm/boot/dts/s5pv210-smdkc110.dts
-index e5aec6c526fb..0c623b78af72 100644
---- a/arch/arm/boot/dts/s5pv210-smdkc110.dts
-+++ b/arch/arm/boot/dts/s5pv210-smdkc110.dts
-@@ -30,6 +30,13 @@
- 		device_type = "memory";
- 		reg = <0x20000000 0x20000000>;
+diff --git a/arch/arm/boot/dts/s5pv210-goni.dts b/arch/arm/boot/dts/s5pv210-goni.dts
+index fbbd93707404..c8714bf0b6e4 100644
+--- a/arch/arm/boot/dts/s5pv210-goni.dts
++++ b/arch/arm/boot/dts/s5pv210-goni.dts
+@@ -33,6 +33,13 @@
+ 			0x50000000 0x08000000>;
  	};
-+
+ 
 +	pmic_ap_clk: clock-0 {
-+		/* Workaround for missing PMIC and its clock */
++		/* Workaround for missing clock on PMIC */
 +		compatible = "fixed-clock";
 +		#clock-cells = <0>;
 +		clock-frequency = <32768>;
 +	};
++
+ 	regulators {
+ 		compatible = "simple-bus";
+ 		#address-cells = <1>;
+@@ -224,6 +231,11 @@
+ 					regulator-max-microvolt = <1200000>;
+ 					regulator-always-on;
+ 				};
++
++				ap32khz_reg: EN32KHz-AP {
++					regulator-name = "32KHz AP";
++					regulator-always-on;
++				};
+ 			};
+ 		};
+ 	};
+@@ -308,6 +320,11 @@
+ 	status = "okay";
  };
  
- &xusbxti {
-@@ -54,6 +61,8 @@
- 
- &rtc {
- 	status = "okay";
++&rtc {
 +	clocks = <&clocks CLK_RTC>, <&pmic_ap_clk>;
 +	clock-names = "rtc", "rtc_src";
- };
- 
- &i2c0 {
++};
++
+ &sdhci0 {
+ 	bus-width = <4>;
+ 	non-removable;
 -- 
 2.17.1
 
