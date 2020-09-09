@@ -2,135 +2,76 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 26D45C2D0E0
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AFFC43461
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C5F8E2065E
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674744;
-	bh=LXwmjBNNxQhHZ1OQIxynrn4oVDZJ0D7lt0BpKadQpOc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=UYxAkGIRbrti1+K1Sa56Dl1ui9DQpY9Nx3h3s3nSZ4KhxPgPmjx+d1kLqwuavrTm1
-	 zpR0eCJZCk1Oai4WFCqF+/9Sdiqz8Znd28PQzQuAIKKLyWu5xlIt+x3FtYbZ3ek8wg
-	 YUiAc7mi8zwl3Ey9i5buHYQSnsfrp/rQ0OXqsktE=
+	by mail.kernel.org (Postfix) with ESMTP id 515842065E
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728015AbgIISFh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:05:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60318 "EHLO mail.kernel.org"
+        id S1726440AbgIISFp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:05:45 -0400
+Received: from mailout09.rmx.de ([94.199.88.74]:35137 "EHLO mailout09.rmx.de"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726440AbgIISEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:04:30 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1728709AbgIISFe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:05:34 -0400
+Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ECAD3221E8;
-        Wed,  9 Sep 2020 18:02:36 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674558;
-        bh=LXwmjBNNxQhHZ1OQIxynrn4oVDZJ0D7lt0BpKadQpOc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=rs1iOxfYBCVpDSSNKsFnVn5FLjhDNnlMR5Zdf/vaBWqGdFvT3k9YHTNNPyB0IuQUt
-         yoDDRNw88cGOHru5QKmPA6d8Ln7HQKve+7zQe1IDbt/ARup/+XweMrfBHQ3CL2NTKA
-         K3jvPQIraXICGZ9BvK49cD14i4BHEDjNv4HFDAKM=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Subject: [PATCH v2 12/20] dt-bindings:iio:adc:dlg,da9150-gpadc yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:38 +0100
-Message-Id: <20200909175946.395313-13-jic23@kernel.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
-References: <20200909175946.395313-1-jic23@kernel.org>
+        by mailout09.rmx.de (Postfix) with ESMTPS id 4BmqgW0m44zbgxm;
+        Wed,  9 Sep 2020 20:05:27 +0200 (CEST)
+Received: from mta.arri.de (unknown [217.111.95.66])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by kdin01.retarus.com (Postfix) with ESMTPS id 4BmqgJ31gnz2xDN;
+        Wed,  9 Sep 2020 20:05:16 +0200 (CEST)
+Received: from n95hx1g2.localnet (192.168.54.12) by mta.arri.de
+ (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 9 Sep
+ 2020 20:04:54 +0200
+From:   Christian Eggers <ceggers@arri.de>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: light: as73211: Increase measurement timeout
+Date:   Wed, 9 Sep 2020 20:04:24 +0200
+Message-ID: <6187855.5mNlXCv1x4@n95hx1g2>
+Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
+In-Reply-To: <CAHp75VeAoDaBtaSb0Qeb=kHPg6kGvx71_iL2snC5iHh4cKPhRA@mail.gmail.com>
+References: <20200909154439.10308-1-ceggers@arri.de> <CAHp75VeAoDaBtaSb0Qeb=kHPg6kGvx71_iL2snC5iHh4cKPhRA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7Bit
+Content-Type: text/plain; charset="us-ascii"
+X-Originating-IP: [192.168.54.12]
+X-RMX-ID: 20200909-200524-4BmqgJ31gnz2xDN-0@kdin01
+X-RMX-SOURCE: 217.111.95.66
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Wednesday, 9 September 2020, 18:58:39 CEST, Andy Shevchenko wrote:
+> On Wed, Sep 9, 2020 at 6:45 PM Christian Eggers <ceggers@arri.de> wrote:
+> > We found some sensors which are much slower (20% at room temperature)
+> > than nominal. According to the data sheet, up to 27% is possible. Now I
+> > add 33% to the nominal time out, hopefully this is enough.
+> 
+> I'm wondering if this is a function of temperature.
+> And if that has an actual thermistor inside...
+ I haven't designed the hardware, but I guess that clock generation is done 
+using an RC oscillator which depends on temperature. Temperature measurement 
+is possible, but I think the recommended way is to externally control the 
+integration time using the SYN pin and to get the actual number of RC cycles 
+from a register. But generating the required waveform for the SYN pin using a 
+uC general purpose timer seems challenging.
 
-This is a small part of an MFD so perhaps ultimately it makes more
-sense to document it with that MFD binding rather than separately.
+I wouldn't be surprised if the measurement results also depend on the exact 
+value of the supply voltage.
 
-In the meantime it's a straightforward conversion from txt to yaml.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
----
- .../bindings/iio/adc/da9150-gpadc.txt         | 16 ---------
- .../bindings/iio/adc/dlg,da9150-gpadc.yaml    | 33 +++++++++++++++++++
- 2 files changed, 33 insertions(+), 16 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-deleted file mode 100644
-index c07228da92ac..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-+++ /dev/null
-@@ -1,16 +0,0 @@
--Dialog Semiconductor DA9150 IIO GPADC bindings
--
--Required properties:
--- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
--- #io-channel-cells: Should be set to <1>
--  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
--
--For further information on GPADC channels, see device datasheet.
--
--
--Example:
--
--	gpadc: da9150-gpadc {
--		compatible = "dlg,da9150-gpadc";
--		#io-channel-cells = <1>;
--	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
-new file mode 100644
-index 000000000000..15c51d337108
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
-@@ -0,0 +1,33 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/dlg,da9150-gpadc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Dialog Semiconductor DA9150 IIO GPADC
-+
-+maintainers:
-+  - Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-+
-+description:
-+  This patch adds support for general purpose ADC within the
-+  DA9150 Charger & Fuel-Gauge IC.
-+
-+properties:
-+  compatible:
-+    const: dlg,da9150-gpadc
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - "#io-channel-cells"
-+
-+examples:
-+  - |
-+    adc {
-+        compatible = "dlg,da9150-gpadc";
-+        #io-channel-cells = <1>;
-+    };
-+...
--- 
-2.28.0
 
