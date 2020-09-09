@@ -2,135 +2,222 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A80C43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B304C2D0E2
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AD69C206B5
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E0F2D21D7F
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674760;
-	bh=P2PJd2Cj1YO32Kcj40Y0x+JDFRs0I/YINmaP2FrUJCE=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=Tcc7tU6LhOW+3n85ZipQTjhyoRq2epUjk7dcqBQyeGMhzMIG6KtE1Xxu8iKYLrlGD
-	 Dtg3ZdD2HR2Xhm/e1GR7vJoGjpAsfecnY+oQsQDY3QV9PZq7tky188OYyyN3JxPf7v
-	 nynkuIYWG3f1s1ABF8oAc5g33hgJaMneUVL9/rJ0=
+	s=default; t=1599674762;
+	bh=jPSQ5f2VhFS8sUid0ibRHmjsn7fdN/hAJrcv0JAeDtA=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=qXenRnPx0oHpWSDm2njnC0zLVFUiZIYtDl5TLy/27sSKpqu4fwZ4TMJt00qVpeX2W
+	 ygtYBNaWdd1xbrBczDUiE76OkHeaj3yfPciUxPrppH3jEDBdLSa/8XZbiyMo9eLger
+	 a37ikh+T4jJtnxBb/+xd+hdvs0KEbypV+bIoxYgE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729993AbgIISF6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:05:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32824 "EHLO mail.kernel.org"
+        id S1729822AbgIISGA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:06:00 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60328 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728663AbgIISFz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:05:55 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1728970AbgIISEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:04:30 -0400
+Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 884A52065E;
-        Wed,  9 Sep 2020 18:05:52 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7762321D94;
+        Wed,  9 Sep 2020 18:02:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674755;
-        bh=P2PJd2Cj1YO32Kcj40Y0x+JDFRs0I/YINmaP2FrUJCE=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Y7VspjkE+FMJjGtUQGOQgINgRntSZM1pSFMFoRT7KUQdkiZxWuHKBads+W9KwtEPX
-         hmWxIwfddxp9pOR+RfEyYdOR+Howebbx6wcxpJin/NRtkZEGFW8/Eg/LrWCCTM4bnI
-         9f6GaHF6iAi13fGKiXBbv+s3mssaGw03EEzu/bLk=
-Date:   Wed, 9 Sep 2020 19:05:48 +0100
+        s=default; t=1599674562;
+        bh=jPSQ5f2VhFS8sUid0ibRHmjsn7fdN/hAJrcv0JAeDtA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=W24mOEv0gIZV09yyg3JBUWCIFwB4j0moz5WL1EjyQV7FqHeXrmgWmOKq8YNOl8uX3
+         /hlodM5VNuOukXlVsWIBIKWB1jJ+X4OufYEV1riNrt43mpG3DcBRK+BlYhYuLpuX1V
+         9H5VVp+gvQjWGCwLQdKO2+qRT/T0/0p7jyl7nK0Q=
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: Re: [PATCH v3 06/10] iio: adc: qcom-spmi-adc5: use
- of_device_get_match_data
-Message-ID: <20200909190548.22153db9@archlinux>
-In-Reply-To: <20200909144248.54327-7-dmitry.baryshkov@linaro.org>
-References: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
-        <20200909144248.54327-7-dmitry.baryshkov@linaro.org>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH v2 15/20] dt-bindings:iio:adc:ad7768-1 yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:41 +0100
+Message-Id: <20200909175946.395313-16-jic23@kernel.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
+References: <20200909175946.395313-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  9 Sep 2020 17:42:44 +0300
-Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> Use of_device_get_match_data() instead of hand-coding it manually.
-> 
-> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Fairly straight conversion.  The one oddity in the original binding
+is that spi-cpha and spi-cpol were not marked as required, but were
+in the example.  Looking at the datasheet, there isn't any documented
+flexibility in the possible SPI modes, so I have moved these to requires.
+For spi-max-frequency I have gone the other way.  I absolutely agree
+that it is good to specify this in the dt-binding, but it's not
+strictly required.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+As Stefan's email is bouncing I have gone with Michael as maintainer
+of this one as it falls under the ADI catch all entry in MAINTAINERS.
 
-> ---
->  drivers/iio/adc/qcom-spmi-adc5.c | 18 +++++++-----------
->  1 file changed, 7 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-> index c2da8f068b87..ae27ed7a26ff 100644
-> --- a/drivers/iio/adc/qcom-spmi-adc5.c
-> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
-> @@ -14,6 +14,7 @@
->  #include <linux/math64.h>
->  #include <linux/module.h>
->  #include <linux/of.h>
-> +#include <linux/of_device.h>
->  #include <linux/platform_device.h>
->  #include <linux/regmap.h>
->  #include <linux/slab.h>
-> @@ -807,8 +808,6 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
->  	struct adc5_channel_prop prop, *chan_props;
->  	struct device_node *child;
->  	unsigned int index = 0;
-> -	const struct of_device_id *id;
-> -	const struct adc5_data *data;
->  	int ret;
->  
->  	adc->nchannels = of_get_available_child_count(node);
-> @@ -827,24 +826,21 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
->  
->  	chan_props = adc->chan_props;
->  	iio_chan = adc->iio_chans;
-> -	id = of_match_node(adc5_match_table, node);
-> -	if (id)
-> -		data = id->data;
-> -	else
-> -		data = &adc5_data_pmic;
-> -	adc->data = data;
-> +	adc->data = of_device_get_match_data(adc->dev);
-> +	if (!adc->data)
-> +		adc->data = &adc5_data_pmic;
->  
->  	for_each_available_child_of_node(node, child) {
-> -		ret = adc5_get_dt_channel_data(adc, &prop, child, data);
-> +		ret = adc5_get_dt_channel_data(adc, &prop, child, adc->data);
->  		if (ret) {
->  			of_node_put(child);
->  			return ret;
->  		}
->  
->  		prop.scale_fn_type =
-> -			data->adc_chans[prop.channel].scale_fn_type;
-> +			adc->data->adc_chans[prop.channel].scale_fn_type;
->  		*chan_props = prop;
-> -		adc_chan = &data->adc_chans[prop.channel];
-> +		adc_chan = &adc->data->adc_chans[prop.channel];
->  
->  		iio_chan->channel = prop.channel;
->  		iio_chan->datasheet_name = prop.datasheet_name;
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+---
+ .../bindings/iio/adc/adi,ad7768-1.txt         | 41 ---------
+ .../bindings/iio/adc/adi,ad7768-1.yaml        | 89 +++++++++++++++++++
+ 2 files changed, 89 insertions(+), 41 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+deleted file mode 100644
+index 9f5b88cf680d..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
++++ /dev/null
+@@ -1,41 +0,0 @@
+-Analog Devices AD7768-1 ADC device driver
+-
+-Required properties for the AD7768-1:
+-
+-- compatible: Must be "adi,ad7768-1"
+-- reg: SPI chip select number for the device
+-- spi-max-frequency: Max SPI frequency to use
+-	see: Documentation/devicetree/bindings/spi/spi-bus.txt
+-- clocks: phandle to the master clock (mclk)
+-	see: Documentation/devicetree/bindings/clock/clock-bindings.txt
+-- clock-names: Must be "mclk".
+-- interrupts: IRQ line for the ADC
+-	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+-- vref-supply: vref supply can be used as reference for conversion
+-- adi,sync-in-gpios: must be the device tree identifier of the SYNC-IN pin. Enables
+-	synchronization of multiple devices that require simultaneous sampling.
+-	A pulse is always required if the configuration is changed in any way, for example
+-	if the filter decimation rate changes. As the line is active low, it should
+-	be marked GPIO_ACTIVE_LOW.
+-
+-Optional properties:
+-
+- - reset-gpios : GPIO spec for the RESET pin. If specified, it will be asserted during
+-	driver probe. As the line is active low, it should be marked GPIO_ACTIVE_LOW.
+-
+-Example:
+-
+-	adc@0 {
+-		compatible = "adi,ad7768-1";
+-		reg = <0>;
+-		spi-max-frequency = <2000000>;
+-		spi-cpol;
+-		spi-cpha;
+-		vref-supply = <&adc_vref>;
+-		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+-		interrupt-parent = <&gpio>;
+-		adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
+-		reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
+-		clocks = <&ad7768_mclk>;
+-		clock-names = "mclk";
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+new file mode 100644
+index 000000000000..d3733ad8785a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+@@ -0,0 +1,89 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad7768-1.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD7768-1 ADC device driver
++
++maintainers:
++  - Michael Hennerich <michael.hennerich@analog.com>
++
++description: |
++  Datasheet at:
++    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-1.pdf
++
++properties:
++  compatible:
++    const: adi,ad7768-1
++
++  reg:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++  clock-names:
++    const: mclk
++
++  interrupts:
++    maxItems: 1
++
++  vref-supply:
++    description:
++      ADC reference voltage supply
++
++  adi,sync-in-gpios:
++    description:
++      Enables synchronization of multiple devices that require simultaneous
++      sampling. A pulse is always required if the configuration is changed
++      in any way, for example if the filter decimation rate changes.
++      As the line is active low, it should be marked GPIO_ACTIVE_LOW.
++
++  reset-gpios:
++    maxItems: 1
++
++  spi-max-frequency: true
++
++  spi-cpol: true
++  spi-cpha : true
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - vref-supply
++  - spi-cpol
++  - spi-cpha
++  - adi,sync-in-gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "adi,ad7768-1";
++            reg = <0>;
++            spi-max-frequency = <2000000>;
++            spi-cpol;
++            spi-cpha;
++            vref-supply = <&adc_vref>;
++            interrupts = <25 IRQ_TYPE_EDGE_RISING>;
++            interrupt-parent = <&gpio>;
++            adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
++            reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
++            clocks = <&ad7768_mclk>;
++            clock-names = "mclk";
++        };
++    };
++...
+-- 
+2.28.0
 
