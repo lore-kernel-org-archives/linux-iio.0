@@ -5,47 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0927EC10DAA
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 271DFC43461
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B70E621D46
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D49E021D46
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674694;
-	bh=Vkxc4nvRxLNd/4fVhUI0rHJQwWPuuRyejX1IfR3WD3k=;
+	s=default; t=1599674701;
+	bh=E38bXaztWbprGXLGB3ZptLRYv4BC3A7eIgpDTMmcQ14=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=SGyEn85FKwRPBM8fvnx6Xe3dVhWa7jyJyboUwPGMueMwOOrRyiJqWnnR05wW16o9D
-	 6G42BFXP0TKYUmixCE/Hq31UX4xBUvLlJKMUIGGk1yyndnGHgOnwJId7lRLudYq0yP
-	 sA3FBXcave9dLXC0nY/8+0kdHFZe2w4nn/6GZdz4=
+	b=kdPEq09S4AiUSn5rN06E0Mk/TcvCSveFKWFp/CDvp8SK9BQgfwuWJqK54LOKYt5ai
+	 G27FTt65LN2V+CQqDzkcb3bHJVLYrRF5Ny0HoYOIRPlYmAW4aZB1N3vLNuQ9dBIy4G
+	 ZvXqLS6GfBCK7RtLa7xHMMC93DzS32MAN7Zlrd5s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729449AbgIISEt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:04:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59342 "EHLO mail.kernel.org"
+        id S1729005AbgIISE7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:04:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59374 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730150AbgIISCc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:02:32 -0400
+        id S1727055AbgIISCf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:35 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 04EEC21D7F;
-        Wed,  9 Sep 2020 18:02:30 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB14D21D91;
+        Wed,  9 Sep 2020 18:02:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674552;
-        bh=Vkxc4nvRxLNd/4fVhUI0rHJQwWPuuRyejX1IfR3WD3k=;
+        s=default; t=1599674555;
+        bh=E38bXaztWbprGXLGB3ZptLRYv4BC3A7eIgpDTMmcQ14=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=SCnqyJKJVtGZjKRo/BwveSZQtbpE2XRJ9R48NcNH40tnPXCz4rlA/ViAKp65QfI9s
-         PYSwS5fd7f+F4a/Mr+mJC2wv58addF4ufOxMsZXS4Y9uCuGDgP6KDVP78qijyeh0yW
-         F4ue2leHULwQPu9d9a2AYoosvqIbjheQoKjaDaHE=
+        b=mgqPjG+D69xI2ciYzYhieqhVli2zRwhIqutPsrb8+JT9dn5UNOeLdxs1gv+ROAmC8
+         JvMxT4kD5jiInho7lL+WtUC/ofn/C3L7ynMTCmyUuzjywfh1CchfBaZ+OYY6A4xoS7
+         dsYNZ53mhrTZn7M6OncnK7NxT7IrzA0JcmHIHCxA=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 08/20] dt-bindings:iio:adc:nuvoton,npcm750-adc yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:34 +0100
-Message-Id: <20200909175946.395313-9-jic23@kernel.org>
+        Gregory Clement <gregory.clement@bootlin.com>
+Subject: [PATCH v2 10/20] dt-bindings:iio:adc:lpc3220-adc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:36 +0100
+Message-Id: <20200909175946.395313-11-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -58,89 +58,75 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Renamed the file to reflect the only compatible.
-Added #io-channel-cells to make it easier to support consumers of the
-ADC channels this device provides.
+Renamed to remove the wild cards.  These go wrong far too often so
+in general preferred to use the name of a specific part.  As this
+binding only provides one compatible, I went with that.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Tomer Maimon <tmaimon77@gmail.com>
+Cc: Gregory Clement <gregory.clement@bootlin.com>
 ---
- .../bindings/iio/adc/nuvoton,npcm-adc.txt     | 26 --------
- .../bindings/iio/adc/nuvoton,npcm750-adc.yaml | 64 +++++++++++++++++++
- 2 files changed, 64 insertions(+), 26 deletions(-)
+ .../bindings/iio/adc/lpc32xx-adc.txt          | 21 --------
+ .../bindings/iio/adc/nxp,lpc3220-adc.yaml     | 50 +++++++++++++++++++
+ 2 files changed, 50 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
 deleted file mode 100644
-index ef8eeec1a997..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
+index 3a1bc669bd51..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
 +++ /dev/null
-@@ -1,26 +0,0 @@
--Nuvoton NPCM Analog to Digital Converter (ADC)
--
--The NPCM ADC is a 10-bit converter for eight channel inputs.
+@@ -1,21 +0,0 @@
+-* NXP LPC32xx SoC ADC controller
 -
 -Required properties:
--- compatible: "nuvoton,npcm750-adc" for the NPCM7XX BMC.
--- reg: specifies physical base address and size of the registers.
--- interrupts: Contain the ADC interrupt with flags for falling edge.
--- resets : phandle to the reset control for this device.
+-- compatible: must be "nxp,lpc3220-adc"
+-- reg: physical base address of the controller and length of memory mapped
+-  region.
+-- interrupts: The ADC interrupt
 -
--Optional properties:
--- clocks: phandle of ADC reference clock, in case the clock is not
--		  added the ADC will use the default ADC sample rate.
--- vref-supply: The regulator supply ADC reference voltage, in case the
--			   vref-supply is not added the ADC will use internal voltage
--			   reference.
+-Optional:
+- - vref-supply: The regulator supply ADC reference voltage, optional
+-   for legacy reason, but highly encouraging to us in new device tree
 -
 -Example:
 -
--adc: adc@f000c000 {
--	compatible = "nuvoton,npcm750-adc";
--	reg = <0xf000c000 0x8>;
--	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
--	clocks = <&clk NPCM7XX_CLK_ADC>;
--	resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
+-	adc@40048000 {
+-		compatible = "nxp,lpc3220-adc";
+-		reg = <0x40048000 0x1000>;
+-		interrupt-parent = <&mic>;
+-		interrupts = <39 0>;
+-		vref-supply = <&vcc>;
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml
 new file mode 100644
-index 000000000000..001cf263b7d5
+index 000000000000..2c5032be83bd
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
-@@ -0,0 +1,64 @@
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml
+@@ -0,0 +1,50 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/nuvoton,npcm750-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/nxp,lpc3220-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Nuvoton NPCM BMC Analog to Digital Converter (ADC)
++title: NXP LPC3220 SoC ADC controller
 +
 +maintainers:
-+  - Tomer Maimon <tmaimon77@gmail.com>
++  - Gregory Clement <gregory.clement@bootlin.com>
 +
 +description:
-+  The NPCM ADC is a 10-bit converter for eight channel inputs.
++  This hardware block has been used on several LPC32XX SoCs.
 +
 +properties:
 +  compatible:
-+    const: nuvoton,npcm750-adc
++    const: nxp,lpc3220-adc
 +
 +  reg:
 +    maxItems: 1
 +
 +  interrupts:
 +    maxItems: 1
-+    description: ADC interrupt, should be set for falling edge.
 +
-+  resets:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+    description: If not provided the defulat ADC sample rate will be used.
-+
-+  vref-supply:
-+    description: If not supplied, the internal voltage reference will be used.
++  vref-supply: true
 +
 +  "#io-channel-cells":
 +    const: 1
@@ -149,25 +135,20 @@ index 000000000000..001cf263b7d5
 +  - compatible
 +  - reg
 +  - interrupts
-+  - resets
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/clock/nuvoton,npcm7xx-clock.h>
-+    #include <dt-bindings/reset/nuvoton,npcm7xx-reset.h>
 +    soc {
 +        #address-cells = <1>;
 +        #size-cells = <1>;
-+        adc@f000c000 {
-+            compatible = "nuvoton,npcm750-adc";
-+            reg = <0xf000c000 0x8>;
-+            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&clk NPCM7XX_CLK_ADC>;
-+            resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
++        adc@40048000 {
++            compatible = "nxp,lpc3220-adc";
++            reg = <0x40048000 0x1000>;
++            interrupt-parent = <&mic>;
++            interrupts = <39 0>;
++            vref-supply = <&vcc>;
 +        };
 +    };
 +...
