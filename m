@@ -2,50 +2,53 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 25C1BC10DAA
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:03:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DFB1C43461
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BDB2621D46
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:03:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8F6221D7E
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674618;
-	bh=x+AENQgE5sQw7JrK4Mcwc/c8kJjrYCcm4fU+wOE0Nzc=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=XvYMO6zOVPy8+wH+X7XMLM8C7XUbkcFn5YxFrh5GyHGFYr9yOYkGg4GmZynk1uQza
-	 LwrxZHwuxbAPlxeTqfHYELkKhuWaAG5KYWcFlHJhw4eSxd5NWUIHWty8rAj07q3f7v
-	 CEkDgMTFstIgrcnKpJKZ+JKiycWdbWfJGlFE3J0E=
+	s=default; t=1599674686;
+	bh=FdK1l3fo6UgGdK6dGnHyf2ZFaNBIdLfR1npsQ9CW2AY=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=fN2rfKKcWA0Rwk/Q5wYxC+D1sF6+VmxfH6qicFgixpnjkEWfvzUcU163jtXQGBL1x
+	 oJsPhylQ6Fsm/nlNJApw9ICO4l7+/FwyBCZhie0EbLp9KKtmVUQt4EVp9ksesFKS/h
+	 6sibhuQE+PVqs8QCnVoD0LmYaLIU4tpshoSFsWjE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727010AbgIISCq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:02:46 -0400
+        id S1729525AbgIISEd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:04:33 -0400
 Received: from mail.kernel.org ([198.145.29.99]:59114 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730077AbgIISCT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:02:19 -0400
+        id S1730099AbgIISCZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:25 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE10921D7E;
-        Wed,  9 Sep 2020 18:02:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id ACE2821D93;
+        Wed,  9 Sep 2020 18:02:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674538;
-        bh=x+AENQgE5sQw7JrK4Mcwc/c8kJjrYCcm4fU+wOE0Nzc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=FB56DlaVIRvKuguvpCUrY8Mea7qm0HLMDbAB6EN29Rf2QVawvL2t2n4NqHuOjbrYS
-         kOWG4zF8FfPjiRlIIWf79HtEyIVbKavSdNhZcFMv6pftMrq5nGb5T27mDqu8bum0b9
-         cln1/92rOfuL73jYC4hSh5lRN2Giad4LgrH04ZnQ=
+        s=default; t=1599674543;
+        bh=FdK1l3fo6UgGdK6dGnHyf2ZFaNBIdLfR1npsQ9CW2AY=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IjsfJLnd5vFT8rkBErobJSoiZFLtX5E6bliKTDIylUABmueCPPRTawc5ZTpf7GQI2
+         C141Zd5ctxzVSx2EtzulcwLOGiJcmbcSXSXEEynGUbLgP9pWtHFZKm1wUbtDt8Zu3I
+         93gYV7xjfrPKHxfd5eg7CXelSVrY/4v7yFIfxZcU=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 00/20]  dt-bindings:iio:adc: Another set of yaml conversions.
-Date:   Wed,  9 Sep 2020 18:59:26 +0100
-Message-Id: <20200909175946.395313-1-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Stefan Agner <stefan@agner.ch>
+Subject: [PATCH v2 03/20] dt-bindings:iio:adc:st,stmpe-adc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:29 +0100
+Message-Id: <20200909175946.395313-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
+References: <20200909175946.395313-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -55,143 +58,96 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Changes since V1:
-- Fixed wrong file naming in the marvell,berlin2-adc header caught
-  by Rob's scripts.
-- Rolled in Martin's patch for amlogic,meson-saradc
-- Changed maitainer for adi,ad7768-1 given Stefan's email address
-  is bouncing.  I went with Michael Hennerich as the ADI catch all
-  MAINTAINERS entry means this is his problem anyway.
-- Fixed some white space issues and typos (yup I didn't run checkpatch
-  on v1 :(
-- Add tags where given
+Conversion from freeform text to yaml.
+One oddity in this binding is that, for historical reasons it requires
+the node name to be stmpe_adc.  I've put that in the decription field
+but I'm not sure if there is a better way to specify this?
 
-It is somewhat easier to do these all at once as then the yaml syntax
-knowledge builds up and Rob once said he preferred to review them
-in groups. Hence here are 20 binding conversions to enjoy.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Stefan Agner <stefan@agner.ch>
+---
+ .../bindings/iio/adc/st,stmpe-adc.yaml        | 45 +++++++++++++++++++
+ .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 ---------
+ 2 files changed, 45 insertions(+), 21 deletions(-)
 
-There are 2 other bindings currently awaiting v2 review and it may
-take a while to convert over the remaining IIO ADC ones as they
-are mostly the complex cases. There are also quite a few drivers
-that have undocumented bindings. I plan to do a sweep for those once
-yaml conversions are finished.
-
-For maintainers, I've mostly gone with the original author of the
-txt file. If anyone wants to claim responsibility for any or
-reject it then that is great.  I'll act as backup maintainer
-for all of these by default anyway.
-
-There are a few places I think we could look to tighten the binding
-definitions if we wish. Hopefully this will be a good layer to build on.
-
-Thanks,
-
-Jonathan
-
-Jonathan Cameron (20):
-  dt-bindings:iio:adc:fsl,vf610-adc conversion to yaml.
-  dt-bindings:iio:adc:ti,twl4030-madc yaml conversion
-  dt-bindings:iio:adc:st,stmpe-adc yaml conversion
-  dt-bindings:iio:adc: aspeed,ast2400 yaml conversion
-  dt-bindings:iio:adc:marvell,berlin2-adc yaml conversion
-  dt-bindings:iio:adc:sprd,sc2720-adc yaml conversion.
-  dt-bindings:iio:adc:nuvoton,nau7802 yaml conversion
-  dt-bindings:iio:adc:nuvoton,npcm750-adc yaml conversion
-  dt-bindings:iio:adc:nxp,lpc1850-adc yaml conversion
-  dt-bindings:iio:adc:lpc3220-adc yaml conversion
-  dt-bindings:iio:adc:motorola,cpcap-adc yaml conversion
-  dt-bindings:iio:adc:dlg,da9150-gpadc yaml conversion
-  dt-bindings:iio:adc:cosmic,10001-adc yaml conversion
-  dt-bindings:iio:adc:adi,ad7949 yaml conversion
-  dt-bindings:iio:adc:ad7768-1 yaml conversion
-  dt-bindings:iio:adc:ti,ads1015 yaml conversion
-  dt-bindings:iio:adc:holt,hi8435 yaml conversion
-  dt-bindings:iio:adc:amlogic,meson-saradc yaml conversion
-  dt-bindings:iio:adc:fsl,imx7d-adc yaml conversion
-  dt-bindings:iio:adc:fsl,imx25-gcq yaml conversion
-
- .../devicetree/bindings/iio/adc/ad7949.txt    |  16 --
- .../bindings/iio/adc/adi,ad7768-1.txt         |  41 -----
- .../bindings/iio/adc/adi,ad7768-1.yaml        |  89 +++++++++++
- .../bindings/iio/adc/adi,ad7949.yaml          |  57 +++++++
- .../devicetree/bindings/iio/adc/ads1015.txt   |  73 ---------
- .../bindings/iio/adc/amlogic,meson-saradc.txt |  48 ------
- .../iio/adc/amlogic,meson-saradc.yaml         | 149 ++++++++++++++++++
- .../bindings/iio/adc/aspeed,ast2400-adc.yaml  |  54 +++++++
- .../bindings/iio/adc/aspeed_adc.txt           |  22 ---
- .../bindings/iio/adc/berlin2_adc.txt          |  19 ---
- .../bindings/iio/adc/cc10001_adc.txt          |  22 ---
- .../bindings/iio/adc/cosmic,10001-adc.yaml    |  59 +++++++
- .../devicetree/bindings/iio/adc/cpcap-adc.txt |  17 --
- .../bindings/iio/adc/da9150-gpadc.txt         |  16 --
- .../bindings/iio/adc/dlg,da9150-gpadc.yaml    |  33 ++++
- .../bindings/iio/adc/fsl,imx25-gcq.txt        |  57 -------
- .../bindings/iio/adc/fsl,imx25-gcq.yaml       | 129 +++++++++++++++
- .../bindings/iio/adc/fsl,imx7d-adc.yaml       |  62 ++++++++
- .../bindings/iio/adc/fsl,vf610-adc.yaml       |  81 ++++++++++
- .../devicetree/bindings/iio/adc/hi8435.txt    |  21 ---
- .../bindings/iio/adc/holt,hi8435.yaml         |  49 ++++++
- .../devicetree/bindings/iio/adc/imx7d-adc.txt |  24 ---
- .../bindings/iio/adc/lpc1850-adc.txt          |  20 ---
- .../bindings/iio/adc/lpc32xx-adc.txt          |  21 ---
- .../bindings/iio/adc/marvell,berlin2-adc.yaml |  50 ++++++
- .../bindings/iio/adc/motorola,cpcap-adc.yaml  |  51 ++++++
- .../bindings/iio/adc/nuvoton,nau7802.yaml     |  50 ++++++
- .../bindings/iio/adc/nuvoton,npcm-adc.txt     |  26 ---
- .../bindings/iio/adc/nuvoton,npcm750-adc.yaml |  64 ++++++++
- .../bindings/iio/adc/nuvoton-nau7802.txt      |  18 ---
- .../bindings/iio/adc/nxp,lpc1850-adc.yaml     |  61 +++++++
- .../bindings/iio/adc/nxp,lpc3220-adc.yaml     |  50 ++++++
- .../bindings/iio/adc/sprd,sc2720-adc.yaml     |  72 +++++++++
- .../bindings/iio/adc/sprd,sc27xx-adc.txt      |  40 -----
- .../bindings/iio/adc/st,stmpe-adc.yaml        |  45 ++++++
- .../devicetree/bindings/iio/adc/stmpe-adc.txt |  21 ---
- .../bindings/iio/adc/ti,ads1015.yaml          | 113 +++++++++++++
- .../bindings/iio/adc/ti,twl4030-madc.yaml     |  48 ++++++
- .../bindings/iio/adc/twl4030-madc.txt         |  24 ---
- .../devicetree/bindings/iio/adc/vf610-adc.txt |  36 -----
- 40 files changed, 1366 insertions(+), 582 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ad7949.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/ads1015.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed,ast2400-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/berlin2_adc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/cosmic,10001-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,imx7d-adc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/hi8435.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/lpc32xx-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/marvell,berlin2-adc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/motorola,cpcap-adc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,nau7802.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/nuvoton-nau7802.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,lpc3220-adc.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+new file mode 100644
+index 000000000000..9049c699152f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/st,stmpe-adc.yaml
+@@ -0,0 +1,45 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/st,stmpe-adc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADC on an STMPE multifunction device.
++
++maintainers:
++  - Stefan Agner <stefan@agner.ch>
++
++description:
++  This ADC forms part of an ST microelectronics STMPE multifunction device .
++  The ADC is shared with the STMPE touchscreen. As a result some ADC related
++  settings are specified in the parent node.
++  The node name myst be stmpe_adc and should be a child node of the stmpe node
++  to which it belongs.
++
++properties:
++  compatible:
++    const: st,stmpe-adc
++
++  st,norequest-mask:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Bitmask specifying which ADC channels should _not_ be
++      requestable due to different usage (e.g. touch).
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++  - |
++    stmpe {
++        stmpe_adc {
++            compatible = "st,stmpe-adc";
++            st,norequest-mask = <0x0F>; /* dont use ADC CH3-0 */
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt b/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
+deleted file mode 100644
+index 480e66422625..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/stmpe-adc.txt
++++ /dev/null
+@@ -1,21 +0,0 @@
+-STMPE ADC driver
+-----------------
+-
+-Required properties:
+- - compatible: "st,stmpe-adc"
+-
+-Optional properties:
+-Note that the ADC is shared with the STMPE touchscreen. ADC related settings
+-have to be done in the mfd.
+-- st,norequest-mask: bitmask specifying which ADC channels should _not_ be
+-  requestable due to different usage (e.g. touch)
+-
+-Node name must be stmpe_adc and should be child node of stmpe node to
+-which it belongs.
+-
+-Example:
+-
+-	stmpe_adc {
+-		compatible = "st,stmpe-adc";
+-		st,norequest-mask = <0x0F>; /* dont use ADC CH3-0 */
+-	};
 -- 
 2.28.0
 
