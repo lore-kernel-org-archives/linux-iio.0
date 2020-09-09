@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A43C2D0E1
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0927EC10DAA
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B60DA21D46
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B70E621D46
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674698;
-	bh=32NlETNlgjAzx6DtnmnvP+RC6sufGpUZINDy8r4BguE=;
+	s=default; t=1599674694;
+	bh=Vkxc4nvRxLNd/4fVhUI0rHJQwWPuuRyejX1IfR3WD3k=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=C6/pk9Q2I9q6D86RMeOutMmcArc2dvwVdyPSqxyMQFLg323ZoerQi2TRPcvDvT+EA
-	 Wwodmb/KngLec8b8Ix+4u5/OLZrpm4FFlf8CdLnghWfto52fDgIzsXhSnSxDO4cIng
-	 6suRrtvo2WdWcPUsAPLUAiy1HIuNSM2SzphluslQ=
+	b=SGyEn85FKwRPBM8fvnx6Xe3dVhWa7jyJyboUwPGMueMwOOrRyiJqWnnR05wW16o9D
+	 6G42BFXP0TKYUmixCE/Hq31UX4xBUvLlJKMUIGGk1yyndnGHgOnwJId7lRLudYq0yP
+	 sA3FBXcave9dLXC0nY/8+0kdHFZe2w4nn/6GZdz4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727005AbgIISEy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:04:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59356 "EHLO mail.kernel.org"
+        id S1729449AbgIISEt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:04:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59342 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730154AbgIISCe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:02:34 -0400
+        id S1730150AbgIISCc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:32 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 73CD3221E5;
-        Wed,  9 Sep 2020 18:02:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 04EEC21D7F;
+        Wed,  9 Sep 2020 18:02:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674553;
-        bh=32NlETNlgjAzx6DtnmnvP+RC6sufGpUZINDy8r4BguE=;
+        s=default; t=1599674552;
+        bh=Vkxc4nvRxLNd/4fVhUI0rHJQwWPuuRyejX1IfR3WD3k=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=KRnrnE7cUb7c++rgCOkITTPpXd8gpk6o7WtRG2aJ5VLTdBCRWThfAbLm2ckBAeVuF
-         SsGwnmtIk9Vbob3ISwr8R44zPjKxrUzUNUV4KfZs/sItX62aDO2Q1cTjQ+cVXy5unp
-         Va2VSYYsJqPE/3NwZmqDlSCcClnvfnaJWnia3d1Q=
+        b=SCnqyJKJVtGZjKRo/BwveSZQtbpE2XRJ9R48NcNH40tnPXCz4rlA/ViAKp65QfI9s
+         PYSwS5fd7f+F4a/Mr+mJC2wv58addF4ufOxMsZXS4Y9uCuGDgP6KDVP78qijyeh0yW
+         F4ue2leHULwQPu9d9a2AYoosvqIbjheQoKjaDaHE=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Joachim Eastwood <manabian@gmail.com>
-Subject: [PATCH v2 09/20] dt-bindings:iio:adc:nxp,lpc1850-adc yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:35 +0100
-Message-Id: <20200909175946.395313-10-jic23@kernel.org>
+        Tomer Maimon <tmaimon77@gmail.com>
+Subject: [PATCH v2 08/20] dt-bindings:iio:adc:nuvoton,npcm750-adc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:34 +0100
+Message-Id: <20200909175946.395313-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -58,82 +58,89 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Most of the description in the original doc is effectively boilerplate
-and does not bring much value so I have not carried it over into the yaml.
-
-Added #io-channel-cells to simplify use of channels on this ADC by
-consumer drivers.
+Renamed the file to reflect the only compatible.
+Added #io-channel-cells to make it easier to support consumers of the
+ADC channels this device provides.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Joachim Eastwood <manabian@gmail.com>
+Cc: Tomer Maimon <tmaimon77@gmail.com>
 ---
- .../bindings/iio/adc/lpc1850-adc.txt          | 20 ------
- .../bindings/iio/adc/nxp,lpc1850-adc.yaml     | 61 +++++++++++++++++++
- 2 files changed, 61 insertions(+), 20 deletions(-)
+ .../bindings/iio/adc/nuvoton,npcm-adc.txt     | 26 --------
+ .../bindings/iio/adc/nuvoton,npcm750-adc.yaml | 64 +++++++++++++++++++
+ 2 files changed, 64 insertions(+), 26 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
 deleted file mode 100644
-index 9ada5abd45fa..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
+index ef8eeec1a997..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm-adc.txt
 +++ /dev/null
-@@ -1,20 +0,0 @@
--NXP LPC1850 ADC bindings
+@@ -1,26 +0,0 @@
+-Nuvoton NPCM Analog to Digital Converter (ADC)
+-
+-The NPCM ADC is a 10-bit converter for eight channel inputs.
 -
 -Required properties:
--- compatible: Should be "nxp,lpc1850-adc"
--- reg: Offset and length of the register set for the ADC device
--- interrupts: The interrupt number for the ADC device
--- clocks: The root clock of the ADC controller
--- vref-supply: The regulator supply ADC reference voltage
--- resets: phandle to reset controller and line specifier
+-- compatible: "nuvoton,npcm750-adc" for the NPCM7XX BMC.
+-- reg: specifies physical base address and size of the registers.
+-- interrupts: Contain the ADC interrupt with flags for falling edge.
+-- resets : phandle to the reset control for this device.
+-
+-Optional properties:
+-- clocks: phandle of ADC reference clock, in case the clock is not
+-		  added the ADC will use the default ADC sample rate.
+-- vref-supply: The regulator supply ADC reference voltage, in case the
+-			   vref-supply is not added the ADC will use internal voltage
+-			   reference.
 -
 -Example:
 -
--adc0: adc@400e3000 {
--	compatible = "nxp,lpc1850-adc";
--	reg = <0x400e3000 0x1000>;
--	interrupts = <17>;
--	clocks = <&ccu1 CLK_APB3_ADC0>;
--	vref-supply = <&reg_vdda>;
--	resets = <&rgu 40>;
+-adc: adc@f000c000 {
+-	compatible = "nuvoton,npcm750-adc";
+-	reg = <0xf000c000 0x8>;
+-	interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
+-	clocks = <&clk NPCM7XX_CLK_ADC>;
+-	resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
 -};
-diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
 new file mode 100644
-index 000000000000..6404fb73f8ed
+index 000000000000..001cf263b7d5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
-@@ -0,0 +1,61 @@
++++ b/Documentation/devicetree/bindings/iio/adc/nuvoton,npcm750-adc.yaml
+@@ -0,0 +1,64 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/nxp,lpc1850-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/nuvoton,npcm750-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: NXP LPC1850 ADC bindings
++title: Nuvoton NPCM BMC Analog to Digital Converter (ADC)
 +
 +maintainers:
-+  - Joachim Eastwood <manabian@gmail.com>
++  - Tomer Maimon <tmaimon77@gmail.com>
 +
 +description:
-+  Supports the ADC found on the LPC1850 SoC.
++  The NPCM ADC is a 10-bit converter for eight channel inputs.
 +
 +properties:
 +  compatible:
-+    const: nxp,lpc1850-adc
++    const: nuvoton,npcm750-adc
 +
 +  reg:
 +    maxItems: 1
 +
 +  interrupts:
 +    maxItems: 1
-+
-+  clocks:
-+    maxItems: 1
-+
-+  vref-supply: true
++    description: ADC interrupt, should be set for falling edge.
 +
 +  resets:
 +    maxItems: 1
++
++  clocks:
++    maxItems: 1
++    description: If not provided the defulat ADC sample rate will be used.
++
++  vref-supply:
++    description: If not supplied, the internal voltage reference will be used.
 +
 +  "#io-channel-cells":
 +    const: 1
@@ -142,26 +149,26 @@ index 000000000000..6404fb73f8ed
 +  - compatible
 +  - reg
 +  - interrupts
-+  - clocks
-+  - vref-supply
 +  - resets
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/lpc18xx-ccu.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/clock/nuvoton,npcm7xx-clock.h>
++    #include <dt-bindings/reset/nuvoton,npcm7xx-reset.h>
 +    soc {
 +        #address-cells = <1>;
 +        #size-cells = <1>;
-+        adc@400e3000 {
-+            compatible = "nxp,lpc1850-adc";
-+            reg = <0x400e3000 0x1000>;
-+            interrupts = <17>;
-+            clocks = <&ccu1 CLK_APB3_ADC0>;
-+            vref-supply = <&reg_vdda>;
-+            resets = <&rgu 40>;
-+         };
++        adc@f000c000 {
++            compatible = "nuvoton,npcm750-adc";
++            reg = <0xf000c000 0x8>;
++            interrupts = <GIC_SPI 0 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&clk NPCM7XX_CLK_ADC>;
++            resets = <&rstc NPCM7XX_RESET_IPSRST1 NPCM7XX_RESET_ADC>;
++        };
 +    };
 +...
 -- 
