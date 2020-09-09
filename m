@@ -2,82 +2,53 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 67D07C43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 17:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 655E4C43461
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 30CA521556
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 17:21:46 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="sOj1ib2k"
+	by mail.kernel.org (Postfix) with ESMTP id 1A46921D94
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:39 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599674559;
+	bh=ZN6NGpvZGo3yujVKM7KhX/BMrihZUNzLTI7BVhYHBnk=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=Hx0LaeL3SMEEIgyWUWgX3W6Ep2EDDlcK0H6TDTVTO+rsmVzYRFzafBlx4cxgryf3q
+	 0HuXIoCxYTU9gneON+RgwJboWoQyU2p+eYtDBvrEk7XuyKdVHaN/nY4Romhz1FOis5
+	 Pytvd25jHq5iLxJIaOb3/RzQNQ7NWG28Rl8T5C0M=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726714AbgIIRVo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 13:21:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45960 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730025AbgIIPXP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Sep 2020 11:23:15 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8E56EC061243
-        for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2020 07:43:15 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id b19so3855787lji.11
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2020 07:43:15 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=SyrNRlrzgocwFtm4m1D+vgyjZWlJZcz7p/Dz+/oWD3I=;
-        b=sOj1ib2kl2SlVlUTM5hhtz7BMqvh2WSXwUCwvheygvKndh2ngHXDqcKNoc7mj8tYZk
-         01QtqZ0bxAWLEZ4WudeP6XKfC77xSfbEuYiJKkkb4u5AvEE7P6POu5pYSNWs8+yKaxd1
-         GfGyBAa6JywuElKfh3ASexqtPzVXubBXKO+KNhas2UbpFdGmVoNm16aURJLVm5M40p/p
-         BUwT0qHygUiWcMVE03rPHC0/8QyZe2jyWehhW1WILAYmQFQcKv8Xc9MnhBNz5ok+ftQh
-         T4K9KDD0uYhSoIAa0AcWpgL+oOXEklu53fwye3Tdx6FLAYax0gpgboJMl6zeIT2h2WF0
-         fIDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=SyrNRlrzgocwFtm4m1D+vgyjZWlJZcz7p/Dz+/oWD3I=;
-        b=Y28Jia++GgRLftO1ovXqA+Qtlfl8wr6UVLyznWnpDEw5nD0DrVUJ4wqA+NnzXwSpFW
-         5SorfUGtnabSFCYTu18kUrM/coHxt1x45nZVlEsdL9OM7tcGFHh2NYRNATPlzvsnZ4Q/
-         fpU1sImKNDP4y2tOl/rzrB2JNGeV0ZOG+hTh5fuwHFF6rloC9iTcBLvJ8WvggBfMLae0
-         Yd534UMZOJHOtZ4Dj56ucMibgF52R6bK2+48qCwASg8SP6I2hh0Ul3IOKuzujmd065fU
-         Nt+93eLBUMUbP4uqYQrdPU1Pum34HU9uIDOAlStdKYSbl4H+r+daROR+E8zh/pypA+5g
-         eNfg==
-X-Gm-Message-State: AOAM533HRpEruwbAYBD8OL0d3YotIg975DLRhJVNwzfxDqrhZClqjBpN
-        ipKPH8eogWs8w/W9VSvoJTrMYg==
-X-Google-Smtp-Source: ABdhPJw8HdhOumlwdp8/MgSIGzxjxCxBSs2n81KNfPpTNEZiW+9kSOqYfdiVoXJpyEyBoqTxdNCL4g==
-X-Received: by 2002:a2e:8798:: with SMTP id n24mr1956427lji.373.1599662592137;
-        Wed, 09 Sep 2020 07:43:12 -0700 (PDT)
-Received: from eriador.lan ([188.162.64.155])
-        by smtp.gmail.com with ESMTPSA id t12sm621665lfk.26.2020.09.09.07.43.08
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 07:43:11 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 05/10] iio: adc: qcom-vadc-common: use fixp_linear_interpolate
-Date:   Wed,  9 Sep 2020 17:42:43 +0300
-Message-Id: <20200909144248.54327-6-dmitry.baryshkov@linaro.org>
+        id S1730083AbgIISC2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:02:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59154 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730085AbgIISCX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:23 -0400
+Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2E02F21D81;
+        Wed,  9 Sep 2020 18:02:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599674542;
+        bh=ZN6NGpvZGo3yujVKM7KhX/BMrihZUNzLTI7BVhYHBnk=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=ZdhAi+G7apVMEHq/aHkQhY6WTNO38epa3PIh8dB2HtRYRDN85CBHKfn3bkjNJqxL7
+         DisqU4yVAx3qT34ymXfM5XpsDTlgiiFKLIEsT2R3rcdu02Ku/IHwXHQ4yjgXm6n/nh
+         VsDo9iysONmY9WKhXBscHYURZ6F62lQKqRSXN+Us=
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org
+Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Sebastian Reichel <sre@kernel.org>
+Subject: [PATCH v2 02/20] dt-bindings:iio:adc:ti,twl4030-madc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:28 +0100
+Message-Id: <20200909175946.395313-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
-References: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
+In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
+References: <20200909175946.395313-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -85,41 +56,102 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use new function fixp_linear_interpolate() instead of hand-coding the
-linear interpolation.
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Conversion from txt to yaml as part of a general move of IIO bindings
+to the new format.
+
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Sebastian Reichel <sre@kernel.org>
 ---
- drivers/iio/adc/qcom-vadc-common.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ .../bindings/iio/adc/ti,twl4030-madc.yaml     | 48 +++++++++++++++++++
+ .../bindings/iio/adc/twl4030-madc.txt         | 24 ----------
+ 2 files changed, 48 insertions(+), 24 deletions(-)
 
-diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
-index d11f3343ad52..40d77b3af1bb 100644
---- a/drivers/iio/adc/qcom-vadc-common.c
-+++ b/drivers/iio/adc/qcom-vadc-common.c
-@@ -2,6 +2,7 @@
- #include <linux/bug.h>
- #include <linux/kernel.h>
- #include <linux/bitops.h>
-+#include <linux/fixp-arith.h>
- #include <linux/math64.h>
- #include <linux/log2.h>
- #include <linux/err.h>
-@@ -368,10 +369,9 @@ static int qcom_vadc_map_voltage_temp(const struct vadc_map_pt *pts,
- 	} else {
- 		/* result is between search_index and search_index-1 */
- 		/* interpolate linearly */
--		*output = (((s32)((pts[i].y - pts[i - 1].y) *
--			(input - pts[i - 1].x)) /
--			(pts[i].x - pts[i - 1].x)) +
--			pts[i - 1].y);
-+		*output = fixp_linear_interpolate(pts[i - 1].x, pts[i - 1].y,
-+						  pts[i].x, pts[i].y,
-+						  input);
- 	}
- 
- 	return 0;
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml
+new file mode 100644
+index 000000000000..6781ad2f0f51
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,twl4030-madc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: MADC subsystem in the TWL4030 power module
++
++maintainers:
++  - Sebastian Reichel <sre@kernel.org>
++
++description:
++  The MADC subsystem in the TWL4030 consists of a 10-bit ADC
++  combined with a 16-input analog multiplexer.
++
++properties:
++  compatible:
++    const: ti,twl4030-madc
++
++  interrupts:
++    maxItems: 1
++
++  ti,system-uses-second-madc-irq:
++    type: boolean
++    description:
++      Set if the second madc irq register should be used, which is intended
++      to be used  by Co-Processors (e.g. a modem).
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - interrupts
++  - "#io-channel-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    twl {
++        madc {
++            compatible = "ti,twl4030-madc";
++            interrupts = <3>;
++            #io-channel-cells = <1>;
++        };
++    };
++...
+diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+deleted file mode 100644
+index 6bdd21404b57..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
++++ /dev/null
+@@ -1,24 +0,0 @@
+-* TWL4030 Monitoring Analog to Digital Converter (MADC)
+-
+-The MADC subsystem in the TWL4030 consists of a 10-bit ADC
+-combined with a 16-input analog multiplexer.
+-
+-Required properties:
+-  - compatible: Should contain "ti,twl4030-madc".
+-  - interrupts: IRQ line for the MADC submodule.
+-  - #io-channel-cells: Should be set to <1>.
+-
+-Optional properties:
+-  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
+-				    should be used, which is intended to be used
+-				    by Co-Processors (e.g. a modem).
+-
+-Example:
+-
+-&twl {
+-	madc {
+-		compatible = "ti,twl4030-madc";
+-		interrupts = <3>;
+-		#io-channel-cells = <1>;
+-	};
+-};
 -- 
 2.28.0
 
