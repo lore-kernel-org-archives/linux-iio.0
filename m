@@ -2,122 +2,128 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A4BC43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A9333C433E2
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:43:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B816E206B8
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:24:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6CB7F21919
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:43:13 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="OqjBqEAW"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730315AbgIIQYx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 12:24:53 -0400
-Received: from mailout06.rmx.de ([94.199.90.92]:47913 "EHLO mailout06.rmx.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730570AbgIIQXM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 12:23:12 -0400
-Received: from kdin02.retarus.com (kdin02.dmz1.retloc [172.19.17.49])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
-        (No client certificate requested)
-        by mailout06.rmx.de (Postfix) with ESMTPS id 4BmnP26wDzz9sp2;
-        Wed,  9 Sep 2020 18:22:46 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin02.retarus.com (Postfix) with ESMTPS id 4BmnNc1mPXz2TSDs;
-        Wed,  9 Sep 2020 18:22:24 +0200 (CEST)
-Received: from N95HX1G2.wgnetz.xx (192.168.54.16) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 9 Sep
- 2020 18:22:23 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     Hartmut Knaack <knaack.h@gmx.de>,
+        id S1726920AbgIIQm4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 12:42:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53992 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730783AbgIIQMt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Sep 2020 12:12:49 -0400
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C155C0612A5
+        for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2020 07:43:07 -0700 (PDT)
+Received: by mail-lj1-x242.google.com with SMTP id b19so3855212lji.11
+        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2020 07:43:06 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wcVYXgQ5pttw1IKCDgQFlSKYdGXdwjbBjMlIEbUjqiQ=;
+        b=OqjBqEAWPDnfTgGoQjNBjYeKg4K9GLkX+Bw8XJ40eGAnEnptk7yRupxf6JWaCD3JmN
+         5RsG/GLVMzpJiJHXxHhGdf2uNA8I5Ti9uw3PbTjKXGjl7tXt/Lh+00q2uqsGRLua4bpz
+         c0xwDeKX8dqKrNq1y6poqRfUh+qMciJUiOGJ1aEbPxjGGqtUdA1xchxaDu0XrEBPxg2t
+         2EtWKUuNJThIs44LYt4kbj5pee+7qcsqeQorMdD1UcHjN5e7IFGFQAW4kqhOXP47C5sS
+         sq40F/txN46g5H8AVsWXBkPwPDLuurGMmnKh5rU/9dl2kro650tFs24zR8g1lE8OeIOt
+         cn7g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wcVYXgQ5pttw1IKCDgQFlSKYdGXdwjbBjMlIEbUjqiQ=;
+        b=aJ5mU8j2yKPSNzXfWMkfmQ2WYF9oyvzdd9bqY2kTWbYFUkH1wfkHt1o797tSzJBUz3
+         M8DOHICf/evU/FhR3l3QBilbbbyWjs5JQZn18yR4yr0h9KYIuxfxoyEz/BELnohrhpVa
+         8yFjMADcv0i0dpUojw5znqmjJ94CewPXlhq6MdVDd8oTsKDmOJJWjlI+mcHo2PSHMGbg
+         tXMLzmG0s9JhoaxS3lMaNCfnxZHKecLEdPS3NcuBYuUL/BBCOyUO7iCp8KzYDvKlt52+
+         Libsxie23EHFuc36fhNgDdvrKiXVNnHBfz1mEXS18ah/NJuZe/BtCT6KC5HxwSsrsdTk
+         8IZw==
+X-Gm-Message-State: AOAM530JTo1qvVvAKJV1mOBO8CFYeStkH6HxEUqw9+zR1pIxdV3Bg5aq
+        D8XWFKcZo6UFS8yvrFNvUjdS1A==
+X-Google-Smtp-Source: ABdhPJyWwfksQxPk2Tnm2ER0m9k37Twox0OGJe88A6KO3gv3HM/BUcjQ+SFEmloMY+FO5ietjnqs7A==
+X-Received: by 2002:a2e:6c08:: with SMTP id h8mr2031092ljc.66.1599662584166;
+        Wed, 09 Sep 2020 07:43:04 -0700 (PDT)
+Received: from eriador.lan ([188.162.64.155])
+        by smtp.gmail.com with ESMTPSA id t12sm621665lfk.26.2020.09.09.07.43.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 09 Sep 2020 07:43:03 -0700 (PDT)
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Christian Eggers <ceggers@arri.de>, <stable@vger.kernel.org>
-Subject: [PATCH] iio: trigger: Don't use RT priority
-Date:   Wed, 9 Sep 2020 18:22:16 +0200
-Message-ID: <20200909162216.13765-1-ceggers@arri.de>
-X-Mailer: git-send-email 2.26.2
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Craig Tatlor <ctatlor97@gmail.com>
+Subject: [PATCH v3 03/10] fixp-arith: add a linear interpolation function
+Date:   Wed,  9 Sep 2020 17:42:41 +0300
+Message-Id: <20200909144248.54327-4-dmitry.baryshkov@linaro.org>
+X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
+References: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.54.16]
-X-RMX-ID: 20200909-182224-4BmnNc1mPXz2TSDs-0@kdin02
-X-RMX-SOURCE: 217.111.95.66
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Triggers may raise transactions on slow busses like I2C.  Using the
-original RT priority of a threaded IRQ may prevent other important IRQ
-handlers from being run.
+From: Craig Tatlor <ctatlor97@gmail.com>
 
-In my particular case (on a RT kernel), the RT priority of the sysfstrig
-threaded IRQ handler caused (temporarily) raising the prio of a user
-space process which was holding the I2C bus mutex.
+Adds a function to interpolate against two points,
+this is carried arount as a helper function by tons of drivers.
 
-Although this process did nothing more than blocking on i2c-dev ioctl(),
-no other threaded IRQ handlers (like DMA) were switched in during this
-time.
-
-Signed-off-by: Christian Eggers <ceggers@arri.de>
-Cc: stable@vger.kernel.org
+Signed-off-by: Craig Tatlor <ctatlor97@gmail.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
- drivers/iio/industrialio-trigger.c | 12 ++++++++++++
- 1 file changed, 12 insertions(+)
+ include/linux/fixp-arith.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 6f16357fd732..b74180293da2 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -9,8 +9,12 @@
- #include <linux/err.h>
- #include <linux/device.h>
- #include <linux/interrupt.h>
-+#include <linux/irq.h>
-+#include <linux/irqdesc.h>
- #include <linux/list.h>
-+#include <linux/sched.h>
- #include <linux/slab.h>
-+#include <uapi/linux/sched/types.h>
+diff --git a/include/linux/fixp-arith.h b/include/linux/fixp-arith.h
+index 8396013785ef..281cb4f83dbe 100644
+--- a/include/linux/fixp-arith.h
++++ b/include/linux/fixp-arith.h
+@@ -141,4 +141,23 @@ static inline s32 fixp_sin32_rad(u32 radians, u32 twopi)
+ #define fixp_cos32_rad(rad, twopi)	\
+ 	fixp_sin32_rad(rad + twopi / 4, twopi)
  
- #include <linux/iio/iio.h>
- #include <linux/iio/trigger.h>
-@@ -245,6 +249,8 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
- 	int ret = 0;
- 	bool notinuse
- 		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
-+	struct sched_param sched_param = { .sched_priority = 0 };
-+	struct irq_desc *irq_desc;
- 
- 	/* Prevent the module from being removed whilst attached to a trigger */
- 	__module_get(pf->indio_dev->driver_module);
-@@ -264,6 +270,12 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
- 	if (ret < 0)
- 		goto out_put_irq;
- 
-+	/* Triggers may raise transactions on slow busses like I2C.  Using the original RT priority
-+	 * of a threaded IRQ may prevent other threaded IRQ handlers from being run.
-+	 */
-+	irq_desc = irq_to_desc(pf->irq);
-+	sched_setscheduler_nocheck(irq_desc->action->thread, SCHED_NORMAL, &sched_param);
++/**
++ * fixp_linear_interpolate() - interpolates a value from two known points
++ *
++ * @x0: x value of point 0
++ * @y0: y value of point 0
++ * @x1: x value of point 1
++ * @y1: y value of point 1
++ * @x: the linear interpolant
++ */
++static inline int fixp_linear_interpolate(int x0, int y0, int x1, int y1, int x)
++{
++	if (y0 == y1 || x == x0)
++		return y0;
++	if (x1 == x0 || x == x1)
++		return y1;
 +
- 	/* Enable trigger in driver */
- 	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
- 		ret = trig->ops->set_trigger_state(trig, true);
++	return y0 + ((y1 - y0) * (x - x0) / (x1 - x0));
++}
++
+ #endif
 -- 
-Christian Eggers
-Embedded software developer
-
-Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRA 57918
-Persoenlich haftender Gesellschafter: Arnold & Richter Cine Technik GmbH
-Sitz: Muenchen - Registergericht: Amtsgericht Muenchen - Handelsregisternummer: HRB 54477
-Geschaeftsfuehrer: Dr. Michael Neuhaeuser; Stephan Schenk; Walter Trauninger; Markus Zeiler
+2.28.0
 
