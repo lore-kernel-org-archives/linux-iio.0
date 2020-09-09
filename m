@@ -2,78 +2,202 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAFF1C43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86B7DC2D0E0
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:10:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A78222065E
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 35F8321D81
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:10:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599675005;
+	bh=WcN7o0WoCWMarIj18Tvm9gWbjTAzLh3VHAQ7PUzuDtM=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=cdQ/nReSXW2P3aDvyygOgMWfzQjJwZy/G4ppbX89en/pXfVjd/x8knlVo9D3WliKz
+	 R9BZ1Q/41lhp/7RWlG+iy79V+1OQNNNs+9JvZ/SWxrkk6IRp8RJJ2H+0Nv2jLUUAnk
+	 j8UFBRZJMFUG2oMkMI+/OHW05+hKgN5uRBDJzpBk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726534AbgIISGW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:06:22 -0400
-Received: from mailout11.rmx.de ([94.199.88.76]:53510 "EHLO mailout11.rmx.de"
+        id S1728264AbgIISKB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:10:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34188 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725772AbgIISGV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:06:21 -0400
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1725772AbgIISKA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:10:00 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailout11.rmx.de (Postfix) with ESMTPS id 4BmqhS4G7Bz41XB;
-        Wed,  9 Sep 2020 20:06:16 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4Bmqh76S15z2xDp;
-        Wed,  9 Sep 2020 20:05:59 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.12) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 9 Sep
- 2020 20:05:26 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-CC:     Rob Herring <robh+dt@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        by mail.kernel.org (Postfix) with ESMTPSA id 858072065E;
+        Wed,  9 Sep 2020 18:09:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599674999;
+        bh=WcN7o0WoCWMarIj18Tvm9gWbjTAzLh3VHAQ7PUzuDtM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=i57prO7jEhE/uEz8luWjOvChuHKX8A/3Ni0WqqD/DLVnDJDcY6w5VqGDlamCY7tYw
+         oAh67V+0T6C4T7Evran2bIVgRPeNGvnqWdTXudHkF5Gp0YDSlPn+yGRUKgBSa5UM0T
+         QSWbMOwD1BmtpUQPr6rilsfUwkalVQeB72EKvjis=
+Date:   Wed, 9 Sep 2020 19:09:53 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v6 2/2] iio: light: as73211: New driver
-Date:   Wed, 9 Sep 2020 20:05:06 +0200
-Message-ID: <2755372.56de54GTkM@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <20200903194352.38a4a850@archlinux>
-References: <20200805055744.31909-1-ceggers@arri.de> <20200901194600.4e9e7db6@archlinux> <20200903194352.38a4a850@archlinux>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: Re: [PATCH v3 07/10] iio: provide of_iio_channel_get_by_name() and
+ devm_ version it
+Message-ID: <20200909190953.6cee7020@archlinux>
+In-Reply-To: <20200909144248.54327-8-dmitry.baryshkov@linaro.org>
+References: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
+        <20200909144248.54327-8-dmitry.baryshkov@linaro.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.12]
-X-RMX-ID: 20200909-200605-4Bmqh76S15z2xDp-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Wed,  9 Sep 2020 17:42:45 +0300
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
 
-sorry for the delay, I was on holiday last week.
-
-On Thursday, 3 September 2020, 20:43:52 CEST, Jonathan Cameron wrote:
+> There might be cases when the IIO channel is attached to the device
+> subnode instead of being attached to the main device node. Allow drivers
+> to query IIO channels by using device tree nodes.
 > 
-> I've done this halving change because I'm fairly sure it's right and want
-> to get a clean report from 0-day before I do a pull request at the
-> weekend.  Still time to change if anyone shouts quickly. If not
-> there is still plenty of time for a fix.
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> ---
+>  drivers/iio/inkern.c         | 33 +++++++++++++++++++++++++--------
+>  include/linux/iio/consumer.h | 36 ++++++++++++++++++++++++++++++++++++
+>  2 files changed, 61 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index ede99e0d5371..3083f886d3da 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -180,8 +180,8 @@ static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
+>  	return ERR_PTR(err);
+>  }
+>  
+> -static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> -						      const char *name)
+> +struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
+> +					       const char *name)
 
-looks correct for me.
+Doesn't this need and EXPORT_SYMBOL_GPL?
 
-Thanks
-Christian
+Otherwise I'm fine with the patch.
 
+Jonathan
 
-
+>  {
+>  	struct iio_channel *chan = NULL;
+>  
+> @@ -261,12 +261,6 @@ static struct iio_channel *of_iio_channel_get_all(struct device *dev)
+>  
+>  #else /* CONFIG_OF */
+>  
+> -static inline struct iio_channel *
+> -of_iio_channel_get_by_name(struct device_node *np, const char *name)
+> -{
+> -	return NULL;
+> -}
+> -
+>  static inline struct iio_channel *of_iio_channel_get_all(struct device *dev)
+>  {
+>  	return NULL;
+> @@ -382,6 +376,29 @@ struct iio_channel *devm_iio_channel_get(struct device *dev,
+>  }
+>  EXPORT_SYMBOL_GPL(devm_iio_channel_get);
+>  
+> +struct iio_channel *devm_of_iio_channel_get_by_name(struct device *dev,
+> +						    struct device_node *np,
+> +						    const char *channel_name)
+> +{
+> +	struct iio_channel **ptr, *channel;
+> +
+> +	ptr = devres_alloc(devm_iio_channel_free, sizeof(*ptr), GFP_KERNEL);
+> +	if (!ptr)
+> +		return ERR_PTR(-ENOMEM);
+> +
+> +	channel = of_iio_channel_get_by_name(np, channel_name);
+> +	if (IS_ERR(channel)) {
+> +		devres_free(ptr);
+> +		return channel;
+> +	}
+> +
+> +	*ptr = channel;
+> +	devres_add(dev, ptr);
+> +
+> +	return channel;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_of_iio_channel_get_by_name);
+> +
+>  struct iio_channel *iio_channel_get_all(struct device *dev)
+>  {
+>  	const char *name;
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index c4118dcb8e05..0a90ba8fa1bb 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -13,6 +13,7 @@
+>  struct iio_dev;
+>  struct iio_chan_spec;
+>  struct device;
+> +struct device_node;
+>  
+>  /**
+>   * struct iio_channel - everything needed for a consumer to use a channel
+> @@ -97,6 +98,41 @@ void iio_channel_release_all(struct iio_channel *chan);
+>   */
+>  struct iio_channel *devm_iio_channel_get_all(struct device *dev);
+>  
+> +/**
+> + * of_iio_channel_get_by_name() - get description of all that is needed to access channel.
+> + * @np:			Pointer to consumer device tree node
+> + * @consumer_channel:	Unique name to identify the channel on the consumer
+> + *			side. This typically describes the channels use within
+> + *			the consumer. E.g. 'battery_voltage'
+> + */
+> +#ifdef CONFIG_OF
+> +struct iio_channel *of_iio_channel_get_by_name(struct device_node *np, const char *name);
+> +#else
+> +static inline struct iio_channel *
+> +of_iio_channel_get_by_name(struct device_node *np, const char *name)
+> +{
+> +	return NULL;
+> +}
+> +#endif
+> +
+> +/**
+> + * devm_of_iio_channel_get_by_name() - Resource managed version of of_iio_channel_get_by_name().
+> + * @dev:		Pointer to consumer device.
+> + * @np:			Pointer to consumer device tree node
+> + * @consumer_channel:	Unique name to identify the channel on the consumer
+> + *			side. This typically describes the channels use within
+> + *			the consumer. E.g. 'battery_voltage'
+> + *
+> + * Returns a pointer to negative errno if it is not able to get the iio channel
+> + * otherwise returns valid pointer for iio channel.
+> + *
+> + * The allocated iio channel is automatically released when the device is
+> + * unbound.
+> + */
+> +struct iio_channel *devm_of_iio_channel_get_by_name(struct device *dev,
+> +						    struct device_node *np,
+> +						    const char *consumer_channel);
+> +
+>  struct iio_cb_buffer;
+>  /**
+>   * iio_channel_get_all_cb() - register callback for triggered capture
 
