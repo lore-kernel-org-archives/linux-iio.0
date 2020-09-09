@@ -7,45 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B304C2D0E2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E5FEC2D0E1
 	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E0F2D21D7F
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27352206B5
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1599674762;
-	bh=jPSQ5f2VhFS8sUid0ibRHmjsn7fdN/hAJrcv0JAeDtA=;
+	bh=EUvGSJXR4DV422/EfdQe9chtpD8V1CVrITsxwOrFfEE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=qXenRnPx0oHpWSDm2njnC0zLVFUiZIYtDl5TLy/27sSKpqu4fwZ4TMJt00qVpeX2W
-	 ygtYBNaWdd1xbrBczDUiE76OkHeaj3yfPciUxPrppH3jEDBdLSa/8XZbiyMo9eLger
-	 a37ikh+T4jJtnxBb/+xd+hdvs0KEbypV+bIoxYgE=
+	b=VDIyFmm3UZopoS74Va3Uap+Jx9wxd/a3A9tBUKzDCDV7Kf6FN0Oivr8FHeRVuIHxv
+	 j2Oj3pLDkd6pNsadgMBFK2E73vXoJlSO+Ks4JRTxHlbiyUk24yeCeqcGKkZi+o1fhp
+	 3s2BA0TcQT56U9kdG5w35dKYrP2GPtpORMbI4dTQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729822AbgIISGA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:06:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60328 "EHLO mail.kernel.org"
+        id S1730025AbgIISF6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:05:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728970AbgIISEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:04:30 -0400
+        id S1729692AbgIISEd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:04:33 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7762321D94;
-        Wed,  9 Sep 2020 18:02:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D1DC9221F0;
+        Wed,  9 Sep 2020 18:02:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674562;
-        bh=jPSQ5f2VhFS8sUid0ibRHmjsn7fdN/hAJrcv0JAeDtA=;
+        s=default; t=1599674571;
+        bh=EUvGSJXR4DV422/EfdQe9chtpD8V1CVrITsxwOrFfEE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=W24mOEv0gIZV09yyg3JBUWCIFwB4j0moz5WL1EjyQV7FqHeXrmgWmOKq8YNOl8uX3
-         /hlodM5VNuOukXlVsWIBIKWB1jJ+X4OufYEV1riNrt43mpG3DcBRK+BlYhYuLpuX1V
-         9H5VVp+gvQjWGCwLQdKO2+qRT/T0/0p7jyl7nK0Q=
+        b=wEBWPEWpbnUsohxqr7tDQNtDJS0xZrqi7jd7S9JWmaUu6s6DCR7m44cWazoNoULTf
+         YdmDMjEN88jqIt7di4XJoIy40h4LMJx8XvkHTYFvG1p1QOKlSd9aov19iC76cSseBm
+         GTrLZGavHdnSJND1QKJ+tBdXMc/NqCQeKReM+r3M=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH v2 15/20] dt-bindings:iio:adc:ad7768-1 yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:41 +0100
-Message-Id: <20200909175946.395313-16-jic23@kernel.org>
+        Markus Pargmann <mpa@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2 20/20] dt-bindings:iio:adc:fsl,imx25-gcq yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:46 +0100
+Message-Id: <20200909175946.395313-21-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -58,163 +60,221 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Fairly straight conversion.  The one oddity in the original binding
-is that spi-cpha and spi-cpol were not marked as required, but were
-in the example.  Looking at the datasheet, there isn't any documented
-flexibility in the possible SPI modes, so I have moved these to requires.
-For spi-max-frequency I have gone the other way.  I absolutely agree
-that it is good to specify this in the dt-binding, but it's not
-strictly required.
+This binding has a few corners that would have been done different today
+but hopefully the yaml schema captures the constraints correctly.
 
-As Stefan's email is bouncing I have gone with Michael as maintainer
-of this one as it falls under the ADI catch all entry in MAINTAINERS.
+The child node names are not constrained hence the fairly open regexp.
+I've also documented the defaults for the two references that the
+driver seems to use and copied the value descriptions from the header
+because I think they should be in the dt-binding itself.
+
+This is part of a general effort to convert all the IIO bindings
+over to yaml
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+Cc: Markus Pargmann <mpa@pengutronix.de>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- .../bindings/iio/adc/adi,ad7768-1.txt         | 41 ---------
- .../bindings/iio/adc/adi,ad7768-1.yaml        | 89 +++++++++++++++++++
- 2 files changed, 89 insertions(+), 41 deletions(-)
+ .../bindings/iio/adc/fsl,imx25-gcq.txt        |  57 --------
+ .../bindings/iio/adc/fsl,imx25-gcq.yaml       | 129 ++++++++++++++++++
+ 2 files changed, 129 insertions(+), 57 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
 deleted file mode 100644
-index 9f5b88cf680d..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.txt
+index eebdcec3dab5..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
 +++ /dev/null
-@@ -1,41 +0,0 @@
--Analog Devices AD7768-1 ADC device driver
+@@ -1,57 +0,0 @@
+-Freescale i.MX25 ADC GCQ device
 -
--Required properties for the AD7768-1:
+-This is a generic conversion queue device that can convert any of the
+-analog inputs using the ADC unit of the i.MX25.
 -
--- compatible: Must be "adi,ad7768-1"
--- reg: SPI chip select number for the device
--- spi-max-frequency: Max SPI frequency to use
--	see: Documentation/devicetree/bindings/spi/spi-bus.txt
--- clocks: phandle to the master clock (mclk)
--	see: Documentation/devicetree/bindings/clock/clock-bindings.txt
--- clock-names: Must be "mclk".
--- interrupts: IRQ line for the ADC
--	see: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
--- vref-supply: vref supply can be used as reference for conversion
--- adi,sync-in-gpios: must be the device tree identifier of the SYNC-IN pin. Enables
--	synchronization of multiple devices that require simultaneous sampling.
--	A pulse is always required if the configuration is changed in any way, for example
--	if the filter decimation rate changes. As the line is active low, it should
--	be marked GPIO_ACTIVE_LOW.
+-Required properties:
+- - compatible: Should be "fsl,imx25-gcq".
+- - reg: Should be the register range of the module.
+- - interrupts: Should be the interrupt number of the module.
+-   Typically this is <1>.
+- - #address-cells: Should be <1> (setting for the subnodes)
+- - #size-cells: Should be <0> (setting for the subnodes)
 -
 -Optional properties:
+- - vref-ext-supply: The regulator supplying the ADC reference voltage.
+-   Required when at least one subnode uses the this reference.
+- - vref-xp-supply: The regulator supplying the ADC reference voltage on pin XP.
+-   Required when at least one subnode uses this reference.
+- - vref-yp-supply: The regulator supplying the ADC reference voltage on pin YP.
+-   Required when at least one subnode uses this reference.
 -
-- - reset-gpios : GPIO spec for the RESET pin. If specified, it will be asserted during
--	driver probe. As the line is active low, it should be marked GPIO_ACTIVE_LOW.
+-Sub-nodes:
+-Optionally you can define subnodes which define the reference voltage
+-for the analog inputs.
+-
+-Required properties for subnodes:
+- - reg: Should be the number of the analog input.
+-     0: xp
+-     1: yp
+-     2: xn
+-     3: yn
+-     4: wiper
+-     5: inaux0
+-     6: inaux1
+-     7: inaux2
+-Optional properties for subnodes:
+- - fsl,adc-refp: specifies the positive reference input as defined in
+-     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+- - fsl,adc-refn: specifies the negative reference input as defined in
+-     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
 -
 -Example:
 -
--	adc@0 {
--		compatible = "adi,ad7768-1";
--		reg = <0>;
--		spi-max-frequency = <2000000>;
--		spi-cpol;
--		spi-cpha;
--		vref-supply = <&adc_vref>;
--		interrupts = <25 IRQ_TYPE_EDGE_RISING>;
--		interrupt-parent = <&gpio>;
--		adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
--		reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
--		clocks = <&ad7768_mclk>;
--		clock-names = "mclk";
+-	adc: adc@50030800 {
+-		compatible = "fsl,imx25-gcq";
+-		reg = <0x50030800 0x60>;
+-		interrupt-parent = <&tscadc>;
+-		interrupts = <1>;
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		inaux@5 {
+-			reg = <5>;
+-			fsl,adc-refp = <MX25_ADC_REFP_INT>;
+-			fsl,adc-refn = <MX25_ADC_REFN_NGND>;
+-		};
 -	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
 new file mode 100644
-index 000000000000..d3733ad8785a
+index 000000000000..6c4e3ef0862c
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7768-1.yaml
-@@ -0,0 +1,89 @@
-+# SPDX-License-Identifier: GPL-2.0
++++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
+@@ -0,0 +1,129 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7768-1.yaml#
++$id: http://devicetree.org/schemas/iio/adc/fsl,imx25-gcq.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Analog Devices AD7768-1 ADC device driver
++title: Freescale ADC GCQ device
++
++description:
++  This is a generic conversion queue device that can convert any of the
++  analog inputs using the ADC unit of the i.MX25.
 +
 +maintainers:
-+  - Michael Hennerich <michael.hennerich@analog.com>
-+
-+description: |
-+  Datasheet at:
-+    https://www.analog.com/media/en/technical-documentation/data-sheets/ad7768-1.pdf
++  - Markus Pargmann <mpa@pengutronix.de>
 +
 +properties:
 +  compatible:
-+    const: adi,ad7768-1
++    const: fsl,imx25-gcq
 +
 +  reg:
 +    maxItems: 1
 +
-+  clocks:
-+    maxItems: 1
-+
-+  clock-names:
-+    const: mclk
-+
 +  interrupts:
 +    maxItems: 1
 +
-+  vref-supply:
++  vref-ext-supply:
 +    description:
-+      ADC reference voltage supply
++      The regulator supplying the ADC reference voltage.
++      Required when at least one subnode uses the this reference.
 +
-+  adi,sync-in-gpios:
++  vref-xp-supply:
 +    description:
-+      Enables synchronization of multiple devices that require simultaneous
-+      sampling. A pulse is always required if the configuration is changed
-+      in any way, for example if the filter decimation rate changes.
-+      As the line is active low, it should be marked GPIO_ACTIVE_LOW.
++      The regulator supplying the ADC reference voltage on pin XP.
++      Required when at least one subnode uses this reference.
 +
-+  reset-gpios:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  spi-cpol: true
-+  spi-cpha : true
++  vref-yp-supply:
++    description:
++      The regulator supplying the ADC reference voltage on pin YP.
++      Required when at least one subnode uses this reference.
 +
 +  "#io-channel-cells":
 +    const: 1
 +
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
 +required:
 +  - compatible
 +  - reg
-+  - clocks
-+  - clock-names
-+  - vref-supply
-+  - spi-cpol
-+  - spi-cpha
-+  - adi,sync-in-gpios
++  - interrupts
++  - "#address-cells"
++  - "#size-cells"
++
++patternProperties:
++  "[a-z][a-z0-9]+@[0-9a-f]+$":
++    type: object
++    description:
++      Child nodes used to define the reference voltages used for each channel
++
++    properties:
++      reg:
++        description: |
++          Number of the analog input.
++          0: xp
++          1: yp
++          2: xn
++          3: yn
++          4: wiper
++          5: inaux0
++          6: inaux1
++          7: inaux2
++        items:
++          - minimum: 0
++            maximum: 7
++
++      fsl,adc-refp:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: |
++          Specifies the positive reference input as defined in
++          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
++          0: YP voltage reference
++          1: XP voltage reference
++          2: External voltage reference
++          3: Internal voltage reference (default)
++        minimum: 0
++        maximum: 3
++
++      fsl,adc-refn:
++        $ref: /schemas/types.yaml#/definitions/uint32
++        description: |
++          Specifies the negative reference input as defined in
++          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
++          0: XN ground reference
++          1: YN ground reference
++          2: Internal ground reference
++          3: External ground reference (default)
++        minimum: 0
++        maximum: 3
++
++    required:
++      - reg
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    spi {
++    #include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
++    soc {
 +        #address-cells = <1>;
-+        #size-cells = <0>;
++        #size-cells = <1>;
++        adc@50030800 {
++            compatible = "fsl,imx25-gcq";
++            reg = <0x50030800 0x60>;
++            interrupt-parent = <&tscadc>;
++            interrupts = <1>;
++            #address-cells = <1>;
++            #size-cells = <0>;
 +
-+        adc@0 {
-+            compatible = "adi,ad7768-1";
-+            reg = <0>;
-+            spi-max-frequency = <2000000>;
-+            spi-cpol;
-+            spi-cpha;
-+            vref-supply = <&adc_vref>;
-+            interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+            interrupt-parent = <&gpio>;
-+            adi,sync-in-gpios = <&gpio 22 GPIO_ACTIVE_LOW>;
-+            reset-gpios = <&gpio 27 GPIO_ACTIVE_LOW>;
-+            clocks = <&ad7768_mclk>;
-+            clock-names = "mclk";
++            inaux@5 {
++                reg = <5>;
++                fsl,adc-refp = <MX25_ADC_REFP_INT>;
++                fsl,adc-refn = <MX25_ADC_REFN_NGND>;
++            };
 +        };
 +    };
 +...
