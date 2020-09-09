@@ -7,47 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CD7CC2D0E0
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A43C2D0E1
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D6E8D21D80
+	by mail.kernel.org (Postfix) with ESMTP id B60DA21D46
 	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:04:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1599674698;
-	bh=jJ6/vRVlaXclyjLorv6S5zdfZ+9h/7a1/g0DbYt3LXA=;
+	bh=32NlETNlgjAzx6DtnmnvP+RC6sufGpUZINDy8r4BguE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=2n9vDIJrM/EHTBC+kU1NreLvsjeZWrTn/NuyeFrQxhc3t5TzO+OnqZ00wZcqabnZo
-	 K+2PtGoocvYtav9Ac8FIQosj4iZWIx1QTYmCq7/+c/CxqwIs0jgiJt/O8K8DsoymXm
-	 QkUBOqoTvAg5ylS31K6S985vhOUtIPmct8fT1euA=
+	b=C6/pk9Q2I9q6D86RMeOutMmcArc2dvwVdyPSqxyMQFLg323ZoerQi2TRPcvDvT+EA
+	 Wwodmb/KngLec8b8Ix+4u5/OLZrpm4FFlf8CdLnghWfto52fDgIzsXhSnSxDO4cIng
+	 6suRrtvo2WdWcPUsAPLUAiy1HIuNSM2SzphluslQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726605AbgIISEq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:04:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59294 "EHLO mail.kernel.org"
+        id S1727005AbgIISEy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:04:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726226AbgIISC3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:02:29 -0400
+        id S1730154AbgIISCe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:34 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 98DDE21D90;
-        Wed,  9 Sep 2020 18:02:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 73CD3221E5;
+        Wed,  9 Sep 2020 18:02:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674549;
-        bh=jJ6/vRVlaXclyjLorv6S5zdfZ+9h/7a1/g0DbYt3LXA=;
+        s=default; t=1599674553;
+        bh=32NlETNlgjAzx6DtnmnvP+RC6sufGpUZINDy8r4BguE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DzpEj0GFsDLV55JZAk/EkelrAsjlRRL+VpYgsN8dmZ8tHx5vbUvuLSXf1bIOujsfF
-         /8sAvUaPk5nh15Yo2EHV/tPecae2bmM74VwANegYcg6H7giDE4JiH5csdgR0qwhLg5
-         8d2GpkqaEUwhZXkMbraTNy8QEwds2xZlSbfw6i6Y=
+        b=KRnrnE7cUb7c++rgCOkITTPpXd8gpk6o7WtRG2aJ5VLTdBCRWThfAbLm2ckBAeVuF
+         SsGwnmtIk9Vbob3ISwr8R44zPjKxrUzUNUV4KfZs/sItX62aDO2Q1cTjQ+cVXy5unp
+         Va2VSYYsJqPE/3NwZmqDlSCcClnvfnaJWnia3d1Q=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: [PATCH v2 06/20] dt-bindings:iio:adc:sprd,sc2720-adc yaml conversion.
-Date:   Wed,  9 Sep 2020 18:59:32 +0100
-Message-Id: <20200909175946.395313-7-jic23@kernel.org>
+        Joachim Eastwood <manabian@gmail.com>
+Subject: [PATCH v2 09/20] dt-bindings:iio:adc:nxp,lpc1850-adc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:35 +0100
+Message-Id: <20200909175946.395313-10-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -60,50 +58,68 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I changed the name to reflect a specific part in line with normal
-naming conventions. If there is a particularly strong reason to
-keep the wild cards let me know.
+Most of the description in the original doc is effectively boilerplate
+and does not bring much value so I have not carried it over into the yaml.
 
-Otherwise this was a fairly simple conversion as part of converting
-all the IIO bindings to yaml.
+Added #io-channel-cells to simplify use of channels on this ADC by
+consumer drivers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Orson Zhai <orsonzhai@gmail.com>
-Cc: Baolin Wang <baolin.wang7@gmail.com>
-Cc: Chunyan Zhang <zhang.lyra@gmail.com>
+Cc: Joachim Eastwood <manabian@gmail.com>
 ---
- .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 72 +++++++++++++++++++
- .../bindings/iio/adc/sprd,sc27xx-adc.txt      | 40 -----------
- 2 files changed, 72 insertions(+), 40 deletions(-)
+ .../bindings/iio/adc/lpc1850-adc.txt          | 20 ------
+ .../bindings/iio/adc/nxp,lpc1850-adc.yaml     | 61 +++++++++++++++++++
+ 2 files changed, 61 insertions(+), 20 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt b/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
+deleted file mode 100644
+index 9ada5abd45fa..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/lpc1850-adc.txt
++++ /dev/null
+@@ -1,20 +0,0 @@
+-NXP LPC1850 ADC bindings
+-
+-Required properties:
+-- compatible: Should be "nxp,lpc1850-adc"
+-- reg: Offset and length of the register set for the ADC device
+-- interrupts: The interrupt number for the ADC device
+-- clocks: The root clock of the ADC controller
+-- vref-supply: The regulator supply ADC reference voltage
+-- resets: phandle to reset controller and line specifier
+-
+-Example:
+-
+-adc0: adc@400e3000 {
+-	compatible = "nxp,lpc1850-adc";
+-	reg = <0x400e3000 0x1000>;
+-	interrupts = <17>;
+-	clocks = <&ccu1 CLK_APB3_ADC0>;
+-	vref-supply = <&reg_vdda>;
+-	resets = <&rgu 40>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
 new file mode 100644
-index 000000000000..caa3ee0b4b8c
+index 000000000000..6404fb73f8ed
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-@@ -0,0 +1,72 @@
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,lpc1850-adc.yaml
+@@ -0,0 +1,61 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/sprd,sc2720-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/nxp,lpc1850-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Spreadtrum SC27XX series PMICs ADC binding
++title: NXP LPC1850 ADC bindings
 +
 +maintainers:
-+  - Baolin Wang <baolin.wang7@gmail.com>
++  - Joachim Eastwood <manabian@gmail.com>
 +
 +description:
-+  Supports the ADC found on these PMICs.
++  Supports the ADC found on the LPC1850 SoC.
 +
 +properties:
 +  compatible:
-+    enum:
-+      - sprd,sc2720-adc
-+      - sprd,sc2721-adc
-+      - sprd,sc2723-adc
-+      - sprd,sc2730-adc
-+      - sprd,sc2731-adc
++    const: nxp,lpc1850-adc
 +
 +  reg:
 +    maxItems: 1
@@ -111,95 +127,43 @@ index 000000000000..caa3ee0b4b8c
 +  interrupts:
 +    maxItems: 1
 +
-+  "#io-channel-cells":
-+    const: 1
-+
-+  hwlocks:
++  clocks:
 +    maxItems: 1
 +
-+  nvmem-cells:
-+    maxItems: 2
++  vref-supply: true
 +
-+  nvmem-cell-names:
-+    items:
-+      - const: big_scale_calib
-+      - const: small_scale_calib
++  resets:
++    maxItems: 1
++
++  "#io-channel-cells":
++    const: 1
 +
 +required:
 +  - compatible
 +  - reg
 +  - interrupts
-+  - "#io-channel-cells"
-+  - hwlocks
-+  - nvmem-cells
-+  - nvmem-cell-names
++  - clocks
++  - vref-supply
++  - resets
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    pmic {
++    #include <dt-bindings/clock/lpc18xx-ccu.h>
++    soc {
 +        #address-cells = <1>;
-+        #size-cells = <0>;
-+        adc@480 {
-+            compatible = "sprd,sc2731-adc";
-+            reg = <0x480>;
-+            interrupt-parent = <&sc2731_pmic>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+            #io-channel-cells = <1>;
-+            hwlocks = <&hwlock 4>;
-+            nvmem-cells = <&adc_big_scale>, <&adc_small_scale>;
-+            nvmem-cell-names = "big_scale_calib", "small_scale_calib";
-+        };
++        #size-cells = <1>;
++        adc@400e3000 {
++            compatible = "nxp,lpc1850-adc";
++            reg = <0x400e3000 0x1000>;
++            interrupts = <17>;
++            clocks = <&ccu1 CLK_APB3_ADC0>;
++            vref-supply = <&reg_vdda>;
++            resets = <&rgu 40>;
++         };
 +    };
 +...
-diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt b/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
-deleted file mode 100644
-index b4daa15dcf15..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/sprd,sc27xx-adc.txt
-+++ /dev/null
-@@ -1,40 +0,0 @@
--Spreadtrum SC27XX series PMICs ADC binding
--
--Required properties:
--- compatible: Should be one of the following.
--	"sprd,sc2720-adc"
--	"sprd,sc2721-adc"
--	"sprd,sc2723-adc"
--	"sprd,sc2730-adc"
--	"sprd,sc2731-adc"
--- reg: The address offset of ADC controller.
--- interrupt-parent: The interrupt controller.
--- interrupts: The interrupt number for the ADC device.
--- #io-channel-cells: Number of cells in an IIO specifier.
--- hwlocks: Reference to a phandle of a hwlock provider node.
--- nvmem-cells: A phandle to the calibration cells provided by eFuse device.
--- nvmem-cell-names: Should be "big_scale_calib", "small_scale_calib".
--
--Example:
--
--	sc2731_pmic: pmic@0 {
--		compatible = "sprd,sc2731";
--		reg = <0>;
--		spi-max-frequency = <26000000>;
--		interrupts = <GIC_SPI 31 IRQ_TYPE_LEVEL_HIGH>;
--		interrupt-controller;
--		#interrupt-cells = <2>;
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		pmic_adc: adc@480 {
--			compatible = "sprd,sc2731-adc";
--			reg = <0x480>;
--			interrupt-parent = <&sc2731_pmic>;
--			interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
--			#io-channel-cells = <1>;
--			hwlocks = <&hwlock 4>;
--			nvmem-cells = <&adc_big_scale>, <&adc_small_scale>;
--			nvmem-cell-names = "big_scale_calib", "small_scale_calib";
--		};
--	};
 -- 
 2.28.0
 
