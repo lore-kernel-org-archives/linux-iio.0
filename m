@@ -2,105 +2,86 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06109C433E2
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:49:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 339CCC433E2
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:59:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BE2BE2166E
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:49:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E36B52166E
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 16:59:11 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="tD1KRG99"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="UbTIs2+2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730949AbgIIQtD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 12:49:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53088 "EHLO
+        id S1731179AbgIIQ7H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 12:59:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730878AbgIIQHR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Sep 2020 12:07:17 -0400
-Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0E6CC0612FF
-        for <linux-iio@vger.kernel.org>; Wed,  9 Sep 2020 07:43:01 -0700 (PDT)
-Received: by mail-lj1-x236.google.com with SMTP id n25so3899264ljj.4
-        for <linux-iio@vger.kernel.org>; Wed, 09 Sep 2020 07:43:01 -0700 (PDT)
+        with ESMTP id S1731065AbgIIQ67 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Sep 2020 12:58:59 -0400
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A665C061573;
+        Wed,  9 Sep 2020 09:58:57 -0700 (PDT)
+Received: by mail-pj1-x1043.google.com with SMTP id o16so1638583pjr.2;
+        Wed, 09 Sep 2020 09:58:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6qDammCrp0EwptO3CtGoLqfo/rfLYjc1bnqq0Kza7Dk=;
-        b=tD1KRG99K87Slut9PsLD50bnWV9IHs11Nt4RlM90goxiLCSr9qyu1410xG6SClag6H
-         YY0ODvIYZojAHdwdoKhUe2PXv3AJVY7jLbZDYDuqX65dp93gxqhr/0EcTkH/VBl71W0k
-         80vfCfofoM4PYefyjo8pEwfKufwtJu+jfONlJ3MsIjZ4ers1TbTk8USOODO1UUgwpF1I
-         vlriawyCAdUTXHwyQQntwnEnbAE/3qSyLOC/UpyfNKMTY2qt2aSKsa8jSyJhFDIuqDrp
-         1BeY6PwsaJCIDYdKMDwSzF/nBr/8mhM3l1gc6s+P+iTlk6Jb0Xw62GFWRWLmuKOAkkIO
-         enoA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=YwWId/wck3bd+vLBnYQNSdgBdWb7exMcGqB9S1NWJKE=;
+        b=UbTIs2+2ydRVwB+sLVePiz7hJjucPqR+ntLyd137U6pdYBnUTo/6A9Rb77ECihq95S
+         sFATauSuQMctvBVq1NJQ8q93gdLaMg4i+g+lxRbFlE1792i5YNORNVJkdl9aoDF332i4
+         f7TpQgbVTlMiKeR0KdGCTs/xB4eHJ6SfTSrdyhWuRF3hQ34hqScbdSfkSX79PX2OAJw1
+         EUqyUm9eDZe/Qh8NbMBgtyCneuDzF4n7CLDSEhwl55hdXuD7L+zbKq9zg94jiQKYoQCx
+         aehyZEJ3fPMsiMM6wy1Krz+j2muU794mY1VlgKgmcog+UscpVDkHoDy9TFr71RM+W7tN
+         cTIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6qDammCrp0EwptO3CtGoLqfo/rfLYjc1bnqq0Kza7Dk=;
-        b=KfMGRq/Igo4/rpMnbIA/adBBm1SF5kZc+hu9DbUpOwUmXU6oKFaRI4HycjZfwifNFQ
-         +Y5JpgXsZC/DDAqZm05dDkXz48aMiHgNdvxa4dvNLsDRNupMyqJntFAtUE90IeUigool
-         t4nfhw7qT3qDUiMetbF+j0DH/g2HyMw+5tNZM4xuvjT2LlIATNncM9EESKHWGj39QqE+
-         W8dvu7B+EB9DlSy8v/DB0G55AzHH/dmqWFeHbmGGseTNsJ2FTffNrmz2MEIc6mzQpWx8
-         flwB25abI/66TqPgpBWoefdkTrBw9fObBlhMQQ4EZOIN8U4KBUlQb/sPNjipdHNfHoVk
-         +72g==
-X-Gm-Message-State: AOAM533p5ovC9QtShr5bf+5kad+G2zvDRjCfd9s3Gqa9iaAemUthfvpe
-        wf6T89Ywy9nyRkRcQoh7fF+mnw==
-X-Google-Smtp-Source: ABdhPJxEuBTT8aEEjg3YXCValq4V9u4nYF0bTkCsaxt0ed3aIi4553PjjA3SvY86niYRjVh+SNxeDg==
-X-Received: by 2002:a2e:b615:: with SMTP id r21mr1938629ljn.341.1599662575775;
-        Wed, 09 Sep 2020 07:42:55 -0700 (PDT)
-Received: from eriador.lan ([188.162.64.155])
-        by smtp.gmail.com with ESMTPSA id t12sm621665lfk.26.2020.09.09.07.42.53
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Sep 2020 07:42:55 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=YwWId/wck3bd+vLBnYQNSdgBdWb7exMcGqB9S1NWJKE=;
+        b=sY4YM1yAPa565cBDMPygaUaOD++4rdPuYDaNFvhzZW4MSZMqi6PMoxrPSwdhEp1Y2x
+         /qy5gO9RVHpP16yM34RKhMpMO3fGpuZdvi7BiPjALd0lveBqH4G9Cr9CeMcSX/tYmYTV
+         Qgf7E+2X1zMscGaUBPz7VucJEtYgxMPCADeSO7VII06jSV+TztJcK6TwZVmw4krUZsvr
+         B+kCqQ8zCnbJEzj+U73joFIny611WmAgpWmUcp1LHv24Eo6wW15b3zMdBBhF64NVXhYi
+         /aQKdkQckClD7e0jH4Q0JenyE3nSzm6iBffM06u4BnGv/478XzjS9WjIZeqhR3SQ40og
+         xI9w==
+X-Gm-Message-State: AOAM530xQVqpwmhIE5Ei8QkUxMlutJQ0nCVGB/fUtS0ZCBQQaO2z4xKm
+        00umvGbl94+VFS5PmluBCJCc2lL6U9YCeaV/Sgx87MyAU7Nzdg==
+X-Google-Smtp-Source: ABdhPJzheBF5r0rY0eVQhDpQnLbgUkatHbevzu+QTXFNxqXzrPI6QkJ1AbupNIWBFOxMGd2Z9B0v0iBmSZl9C5oIpfw=
+X-Received: by 2002:a17:90b:fc4:: with SMTP id gd4mr1608163pjb.129.1599670737094;
+ Wed, 09 Sep 2020 09:58:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200909154439.10308-1-ceggers@arri.de>
+In-Reply-To: <20200909154439.10308-1-ceggers@arri.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 9 Sep 2020 19:58:39 +0300
+Message-ID: <CAHp75VeAoDaBtaSb0Qeb=kHPg6kGvx71_iL2snC5iHh4cKPhRA@mail.gmail.com>
+Subject: Re: [PATCH] iio: light: as73211: Increase measurement timeout
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v3 00/10] qcom: pm8150: add support for thermal monitoring
-Date:   Wed,  9 Sep 2020 17:42:38 +0300
-Message-Id: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.28.0
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch serie adds support for thermal monitoring block on Qualcomm's
-PMIC5 chips. PM8150{,b,l} and sm8250-mtp board device trees are extended
-to support thermal zones provided by this thermal monitoring block.
-Unlike the rest of PMIC thermal senses, these thermal zones describe
-particular thermistors, which differ between from board to board.
+On Wed, Sep 9, 2020 at 6:45 PM Christian Eggers <ceggers@arri.de> wrote:
+>
+> We found some sensors which are much slower (20% at room temperature)
+> than nominal. According to the data sheet, up to 27% is possible. Now I
+> add 33% to the nominal time out, hopefully this is enough.
 
-Changes since v2:
- - IIO: export of_iio_channel_get_by_name() function
- - dt-bindings: move individual io-channels to each thermal monitoring
-   channel rather than listing them all in device node
- - added fallback defaults to of_device_get_match_data calls in
-   qcom-spmi-adc5 and qcom-spmi-adc-tm5 drivers
- - minor typo fixes
+I'm wondering if this is a function of temperature.
+And if that has an actual thermistor inside...
 
-Changes since v1:
- - Introduce fixp_linear_interpolate() by Craig Tatlor
- - Lots of syntax/whitespace changes
- - Cleaned up register definitions per Jonathan's suggestion
- - Implemented most of the suggestions from Bjorn's and Jonathan's
-   review
-
-
+-- 
+With Best Regards,
+Andy Shevchenko
