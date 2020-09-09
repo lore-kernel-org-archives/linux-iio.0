@@ -5,47 +5,49 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 655E4C43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BD38C2D0E2
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A46921D94
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC910221EF
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:02:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674559;
-	bh=ZN6NGpvZGo3yujVKM7KhX/BMrihZUNzLTI7BVhYHBnk=;
+	s=default; t=1599674563;
+	bh=LEeUU+rrD5hpO7lkr4ZcwemfFSGeHmj8P3ohRK9wtLM=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Hx0LaeL3SMEEIgyWUWgX3W6Ep2EDDlcK0H6TDTVTO+rsmVzYRFzafBlx4cxgryf3q
-	 0HuXIoCxYTU9gneON+RgwJboWoQyU2p+eYtDBvrEk7XuyKdVHaN/nY4Romhz1FOis5
-	 Pytvd25jHq5iLxJIaOb3/RzQNQ7NWG28Rl8T5C0M=
+	b=oxSZdZaea67+0l0m8VKpR4WxXdrBQnoijns9lJX7RN4UAEny2oGhhJShoGN8mMMOO
+	 kpqm35mcU3DvuL25foqSpJi130xoca37VcEXaPdZysz2sj+xYn4R7GQEGqDnHZZCQW
+	 koDOyqn4ptYFoqvFdV4tAjI+gYrxYtNyBc59Gg4E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730083AbgIISC2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:02:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59154 "EHLO mail.kernel.org"
+        id S1730127AbgIISCZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:02:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59138 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730085AbgIISCX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:02:23 -0400
+        id S1730083AbgIISCV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:02:21 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E02F21D81;
-        Wed,  9 Sep 2020 18:02:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A29321D80;
+        Wed,  9 Sep 2020 18:02:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674542;
-        bh=ZN6NGpvZGo3yujVKM7KhX/BMrihZUNzLTI7BVhYHBnk=;
+        s=default; t=1599674540;
+        bh=LEeUU+rrD5hpO7lkr4ZcwemfFSGeHmj8P3ohRK9wtLM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ZdhAi+G7apVMEHq/aHkQhY6WTNO38epa3PIh8dB2HtRYRDN85CBHKfn3bkjNJqxL7
-         DisqU4yVAx3qT34ymXfM5XpsDTlgiiFKLIEsT2R3rcdu02Ku/IHwXHQ4yjgXm6n/nh
-         VsDo9iysONmY9WKhXBscHYURZ6F62lQKqRSXN+Us=
+        b=NesZeOcqEF8qei9KS3vzwIQft8h7WNsnmV6+I6ds8qDyuJq+OvwUwH5oK4g7RnV0Q
+         IiA98YMSQztbyMCo8z6L4oqqflnA7Ysc887cKJL887exJ9NvWCumDtJnkM+H+capZm
+         zCwJxxbOVxPwUzrg2m/rXemqflZU8obDxsHC/aXY=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sebastian Reichel <sre@kernel.org>
-Subject: [PATCH v2 02/20] dt-bindings:iio:adc:ti,twl4030-madc yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:28 +0100
-Message-Id: <20200909175946.395313-3-jic23@kernel.org>
+        Fugang Duan <B38611@freescale.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2 01/20] dt-bindings:iio:adc:fsl,vf610-adc conversion to yaml.
+Date:   Wed,  9 Sep 2020 18:59:27 +0100
+Message-Id: <20200909175946.395313-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -58,99 +60,147 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Conversion from txt to yaml as part of a general move of IIO bindings
-to the new format.
+A simple conversion of this freescale ADC binding from txt to yaml.
+For maintainer I went with Fugang Duan as the original author of the
+binding. Would be great to have confirmation of this.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Sebastian Reichel <sre@kernel.org>
+Cc: Fugang Duan <B38611@freescale.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- .../bindings/iio/adc/ti,twl4030-madc.yaml     | 48 +++++++++++++++++++
- .../bindings/iio/adc/twl4030-madc.txt         | 24 ----------
- 2 files changed, 48 insertions(+), 24 deletions(-)
+ .../bindings/iio/adc/fsl,vf610-adc.yaml       | 81 +++++++++++++++++++
+ .../devicetree/bindings/iio/adc/vf610-adc.txt | 36 ---------
+ 2 files changed, 81 insertions(+), 36 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
 new file mode 100644
-index 000000000000..6781ad2f0f51
+index 000000000000..99b6b55fd0a3
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,twl4030-madc.yaml
-@@ -0,0 +1,48 @@
++++ b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+@@ -0,0 +1,81 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/ti,twl4030-madc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/fsl,vf610-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: MADC subsystem in the TWL4030 power module
++title: ADC found on Freescale vf610 and similar SoCs
 +
 +maintainers:
-+  - Sebastian Reichel <sre@kernel.org>
++  - Fugang Duan <B38611@freescale.com>
 +
 +description:
-+  The MADC subsystem in the TWL4030 consists of a 10-bit ADC
-+  combined with a 16-input analog multiplexer.
++  ADCs found on vf610/i.MX6slx and upward SoCs from Freescale.
 +
 +properties:
 +  compatible:
-+    const: ti,twl4030-madc
++    const: fsl,vf610-adc
++
++  reg:
++    maxItems: 1
 +
 +  interrupts:
 +    maxItems: 1
 +
-+  ti,system-uses-second-madc-irq:
-+    type: boolean
++  clocks:
++    description: ADC source clock (ipg clock)
++    maxItems: 1
++
++  clock-names:
++    const: adc
++
++  vref-supply:
++    description: ADC reference voltage supply.
++
++  fsl,adck-max-frequency:
++    $ref: /schemas/types.yaml#/definitions/uint32-array
++    minItems: 3
++    maxItems: 3
++    description: |
++      Maximum frequencies from datasheet operating requirements.
++      Three values necessary to cover the 3 conversion modes.
++      * Frequency in normal mode (ADLPC=0, ADHSC=0)
++      * Frequency in high-speed mode (ADLPC=0, ADHSC=1)
++      * Frequency in low-power mode (ADLPC=1, ADHSC=0)
++
++  min-sample-time:
++    $ref: /schemas/types.yaml#/definitions/uint32
 +    description:
-+      Set if the second madc irq register should be used, which is intended
-+      to be used  by Co-Processors (e.g. a modem).
++      Minimum sampling time in nanoseconds. This value has
++      to be chosen according to the conversion mode and the connected analog
++      source resistance (R_as) and capacitance (C_as). Refer the datasheet's
++      operating requirements. A safe default across a wide range of R_as and
++      C_as as well as conversion modes is 1000ns.
 +
 +  "#io-channel-cells":
 +    const: 1
 +
 +required:
 +  - compatible
++  - reg
 +  - interrupts
-+  - "#io-channel-cells"
++  - clocks
++  - clock-names
++  - vref-supply
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    twl {
-+        madc {
-+            compatible = "ti,twl4030-madc";
-+            interrupts = <3>;
-+            #io-channel-cells = <1>;
-+        };
++    #include <dt-bindings/clock/vf610-clock.h>
++    adc@4003b000 {
++        compatible = "fsl,vf610-adc";
++        reg = <0x4003b000 0x1000>;
++        interrupts = <0 53 0x04>;
++        clocks = <&clks VF610_CLK_ADC0>;
++        clock-names = "adc";
++        fsl,adck-max-frequency = <30000000>, <40000000>, <20000000>;
++        vref-supply = <&reg_vcc_3v3_mcu>;
++        min-sample-time = <10000>;
 +    };
 +...
-diff --git a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt b/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt b/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
 deleted file mode 100644
-index 6bdd21404b57..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/twl4030-madc.txt
+index 1aad0514e647..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/vf610-adc.txt
 +++ /dev/null
-@@ -1,24 +0,0 @@
--* TWL4030 Monitoring Analog to Digital Converter (MADC)
+@@ -1,36 +0,0 @@
+-Freescale vf610 Analog to Digital Converter bindings
 -
--The MADC subsystem in the TWL4030 consists of a 10-bit ADC
--combined with a 16-input analog multiplexer.
+-The devicetree bindings are for the new ADC driver written for
+-vf610/i.MX6slx and upward SoCs from Freescale.
 -
 -Required properties:
--  - compatible: Should contain "ti,twl4030-madc".
--  - interrupts: IRQ line for the MADC submodule.
--  - #io-channel-cells: Should be set to <1>.
+-- compatible: Should contain "fsl,vf610-adc"
+-- reg: Offset and length of the register set for the device
+-- interrupts: Should contain the interrupt for the device
+-- clocks: The clock is needed by the ADC controller, ADC clock source is ipg clock.
+-- clock-names: Must contain "adc", matching entry in the clocks property.
+-- vref-supply: The regulator supply ADC reference voltage.
 -
--Optional properties:
--  - ti,system-uses-second-madc-irq: boolean, set if the second madc irq register
--				    should be used, which is intended to be used
--				    by Co-Processors (e.g. a modem).
+-Recommended properties:
+-- fsl,adck-max-frequency: Maximum frequencies according to datasheets operating
+-  requirements. Three values are required, depending on conversion mode:
+-  - Frequency in normal mode (ADLPC=0, ADHSC=0)
+-  - Frequency in high-speed mode (ADLPC=0, ADHSC=1)
+-  - Frequency in low-power mode (ADLPC=1, ADHSC=0)
+-- min-sample-time: Minimum sampling time in nanoseconds. This value has
+-  to be chosen according to the conversion mode and the connected analog
+-  source resistance (R_as) and capacitance (C_as). Refer the datasheet's
+-  operating requirements. A safe default across a wide range of R_as and
+-  C_as as well as conversion modes is 1000ns.
 -
 -Example:
--
--&twl {
--	madc {
--		compatible = "ti,twl4030-madc";
--		interrupts = <3>;
--		#io-channel-cells = <1>;
--	};
+-adc0: adc@4003b000 {
+-	compatible = "fsl,vf610-adc";
+-	reg = <0x4003b000 0x1000>;
+-	interrupts = <0 53 0x04>;
+-	clocks = <&clks VF610_CLK_ADC0>;
+-	clock-names = "adc";
+-	fsl,adck-max-frequency = <30000000>, <40000000>,
+-				<20000000>;
+-	vref-supply = <&reg_vcc_3v3_mcu>;
 -};
 -- 
 2.28.0
