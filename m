@@ -2,76 +2,135 @@ Return-Path: <SRS0=ZcV1=CS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0AFFC43461
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06A80C43461
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 515842065E
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AD69C206B5
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:06:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599674760;
+	bh=P2PJd2Cj1YO32Kcj40Y0x+JDFRs0I/YINmaP2FrUJCE=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=Tcc7tU6LhOW+3n85ZipQTjhyoRq2epUjk7dcqBQyeGMhzMIG6KtE1Xxu8iKYLrlGD
+	 Dtg3ZdD2HR2Xhm/e1GR7vJoGjpAsfecnY+oQsQDY3QV9PZq7tky188OYyyN3JxPf7v
+	 nynkuIYWG3f1s1ABF8oAc5g33hgJaMneUVL9/rJ0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726440AbgIISFp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:05:45 -0400
-Received: from mailout09.rmx.de ([94.199.88.74]:35137 "EHLO mailout09.rmx.de"
+        id S1729993AbgIISF6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:05:58 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32824 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728709AbgIISFe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Sep 2020 14:05:34 -0400
-Received: from kdin01.retarus.com (kdin01.dmz1.retloc [172.19.17.48])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S1728663AbgIISFz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Sep 2020 14:05:55 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mailout09.rmx.de (Postfix) with ESMTPS id 4BmqgW0m44zbgxm;
-        Wed,  9 Sep 2020 20:05:27 +0200 (CEST)
-Received: from mta.arri.de (unknown [217.111.95.66])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by kdin01.retarus.com (Postfix) with ESMTPS id 4BmqgJ31gnz2xDN;
-        Wed,  9 Sep 2020 20:05:16 +0200 (CEST)
-Received: from n95hx1g2.localnet (192.168.54.12) by mta.arri.de
- (192.168.100.104) with Microsoft SMTP Server (TLS) id 14.3.408.0; Wed, 9 Sep
- 2020 20:04:54 +0200
-From:   Christian Eggers <ceggers@arri.de>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
+        by mail.kernel.org (Postfix) with ESMTPSA id 884A52065E;
+        Wed,  9 Sep 2020 18:05:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599674755;
+        bh=P2PJd2Cj1YO32Kcj40Y0x+JDFRs0I/YINmaP2FrUJCE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Y7VspjkE+FMJjGtUQGOQgINgRntSZM1pSFMFoRT7KUQdkiZxWuHKBads+W9KwtEPX
+         hmWxIwfddxp9pOR+RfEyYdOR+Howebbx6wcxpJin/NRtkZEGFW8/Eg/LrWCCTM4bnI
+         9f6GaHF6iAi13fGKiXBbv+s3mssaGw03EEzu/bLk=
+Date:   Wed, 9 Sep 2020 19:05:48 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "Linux Kernel Mailing List" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: light: as73211: Increase measurement timeout
-Date:   Wed, 9 Sep 2020 20:04:24 +0200
-Message-ID: <6187855.5mNlXCv1x4@n95hx1g2>
-Organization: Arnold & Richter Cine Technik GmbH & Co. Betriebs KG
-In-Reply-To: <CAHp75VeAoDaBtaSb0Qeb=kHPg6kGvx71_iL2snC5iHh4cKPhRA@mail.gmail.com>
-References: <20200909154439.10308-1-ceggers@arri.de> <CAHp75VeAoDaBtaSb0Qeb=kHPg6kGvx71_iL2snC5iHh4cKPhRA@mail.gmail.com>
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: Re: [PATCH v3 06/10] iio: adc: qcom-spmi-adc5: use
+ of_device_get_match_data
+Message-ID: <20200909190548.22153db9@archlinux>
+In-Reply-To: <20200909144248.54327-7-dmitry.baryshkov@linaro.org>
+References: <20200909144248.54327-1-dmitry.baryshkov@linaro.org>
+        <20200909144248.54327-7-dmitry.baryshkov@linaro.org>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
-X-Originating-IP: [192.168.54.12]
-X-RMX-ID: 20200909-200524-4BmqgJ31gnz2xDN-0@kdin01
-X-RMX-SOURCE: 217.111.95.66
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wednesday, 9 September 2020, 18:58:39 CEST, Andy Shevchenko wrote:
-> On Wed, Sep 9, 2020 at 6:45 PM Christian Eggers <ceggers@arri.de> wrote:
-> > We found some sensors which are much slower (20% at room temperature)
-> > than nominal. According to the data sheet, up to 27% is possible. Now I
-> > add 33% to the nominal time out, hopefully this is enough.
+On Wed,  9 Sep 2020 17:42:44 +0300
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+
+> Use of_device_get_match_data() instead of hand-coding it manually.
 > 
-> I'm wondering if this is a function of temperature.
-> And if that has an actual thermistor inside...
- I haven't designed the hardware, but I guess that clock generation is done 
-using an RC oscillator which depends on temperature. Temperature measurement 
-is possible, but I think the recommended way is to externally control the 
-integration time using the SYN pin and to get the actual number of RC cycles 
-from a register. But generating the required waveform for the SYN pin using a 
-uC general purpose timer seems challenging.
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 
-I wouldn't be surprised if the measurement results also depend on the exact 
-value of the supply voltage.
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
+> ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 18 +++++++-----------
+>  1 file changed, 7 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index c2da8f068b87..ae27ed7a26ff 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -14,6 +14,7 @@
+>  #include <linux/math64.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+> +#include <linux/of_device.h>
+>  #include <linux/platform_device.h>
+>  #include <linux/regmap.h>
+>  #include <linux/slab.h>
+> @@ -807,8 +808,6 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
+>  	struct adc5_channel_prop prop, *chan_props;
+>  	struct device_node *child;
+>  	unsigned int index = 0;
+> -	const struct of_device_id *id;
+> -	const struct adc5_data *data;
+>  	int ret;
+>  
+>  	adc->nchannels = of_get_available_child_count(node);
+> @@ -827,24 +826,21 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
+>  
+>  	chan_props = adc->chan_props;
+>  	iio_chan = adc->iio_chans;
+> -	id = of_match_node(adc5_match_table, node);
+> -	if (id)
+> -		data = id->data;
+> -	else
+> -		data = &adc5_data_pmic;
+> -	adc->data = data;
+> +	adc->data = of_device_get_match_data(adc->dev);
+> +	if (!adc->data)
+> +		adc->data = &adc5_data_pmic;
+>  
+>  	for_each_available_child_of_node(node, child) {
+> -		ret = adc5_get_dt_channel_data(adc, &prop, child, data);
+> +		ret = adc5_get_dt_channel_data(adc, &prop, child, adc->data);
+>  		if (ret) {
+>  			of_node_put(child);
+>  			return ret;
+>  		}
+>  
+>  		prop.scale_fn_type =
+> -			data->adc_chans[prop.channel].scale_fn_type;
+> +			adc->data->adc_chans[prop.channel].scale_fn_type;
+>  		*chan_props = prop;
+> -		adc_chan = &data->adc_chans[prop.channel];
+> +		adc_chan = &adc->data->adc_chans[prop.channel];
+>  
+>  		iio_chan->channel = prop.channel;
+>  		iio_chan->datasheet_name = prop.datasheet_name;
 
