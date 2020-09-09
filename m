@@ -7,45 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFF5CC433E2
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D383C10DAA
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 87E6B206B5
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C6352065E
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Sep 2020 18:05:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599674734;
-	bh=oR2e7KTlOJXHjrle7xG5qsZ13sayZ38P4sCsd50ANTc=;
+	s=default; t=1599674732;
+	bh=/O5xMlBLoa1fQ2/9iy12YsyhTYvUp2gU+bzHqJg7V8o=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=M3tAoU3WCGEVlUmSEA++bN1Zharj6EbPoLEWOcOrVP8/5rrVw9CRXdp5IXXgiOKqo
-	 uOUQCtK8Qj0sH3+z9cfrqVceE+Ak+CBsGHq8C1lBIh1uOcxyCvCzdvxwISjmLQlYB5
-	 7FegAUnLgI4Op0KR5n2itp0JwLu8tCEXhcmY8I1A=
+	b=N1fyaR/908+Pj3ClMcaOSQAFgTjYzxHp7p34V1QgRGt5rzo7t3iz+Epf49iXFNH1C
+	 3P4tA2qQaB4cWaYJMw17fNcaIPzkSlrXSpGQoV5v5RHWmu3wiQH/+M4r0rsyTZTDzW
+	 VI3XV3PyzKFG1v3Ivd1d2lQF6Z4oCfyzt56HwEy0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728971AbgIISF3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Sep 2020 14:05:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59114 "EHLO mail.kernel.org"
+        id S1726726AbgIISF2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Sep 2020 14:05:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60336 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726415AbgIISEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1729717AbgIISEa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Wed, 9 Sep 2020 14:04:30 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7357B221E9;
-        Wed,  9 Sep 2020 18:02:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 17B2A221EE;
+        Wed,  9 Sep 2020 18:02:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599674559;
-        bh=oR2e7KTlOJXHjrle7xG5qsZ13sayZ38P4sCsd50ANTc=;
+        s=default; t=1599674569;
+        bh=/O5xMlBLoa1fQ2/9iy12YsyhTYvUp2gU+bzHqJg7V8o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K7D9KskoQ97wh+SxXNsEpmOIitbsjirR9HSJnD/9lt2cWTnQntbKyizwzT9k/Khxh
-         dVHJIqYDYcr6vy8DuLtZ9SgBOXAL/0j3IhjeB2EDreRDXRhTlS2eD24umCZr6GSslD
-         Nom6HoXUub8xe3Cp8Z3fwtRWlXhr2DoAfDfWA5LM=
+        b=ABRS/D5Un37VX+NKCyrC9XXvtyXS5hROlQLoEOTpSMknd8DIN8JQX42P/8vDOlKHl
+         GPF/NsokVNjhfRd7j6IPl6H8UTTn9Gk1Ex5ItiuFYdCdH9Rxf0LyOMBZ6gcqZrMbBL
+         +Pk5PdzA9hOEnOV++4gvRWbOI0S4IYaTqqAjV2iE=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Phani Movva <Phani.Movva@imgtec.com>
-Subject: [PATCH v2 13/20] dt-bindings:iio:adc:cosmic,10001-adc yaml conversion
-Date:   Wed,  9 Sep 2020 18:59:39 +0100
-Message-Id: <20200909175946.395313-14-jic23@kernel.org>
+        Haibo Chen <haibo.chen@freescale.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: [PATCH v2 19/20] dt-bindings:iio:adc:fsl,imx7d-adc yaml conversion
+Date:   Wed,  9 Sep 2020 18:59:45 +0100
+Message-Id: <20200909175946.395313-20-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200909175946.395313-1-jic23@kernel.org>
 References: <20200909175946.395313-1-jic23@kernel.org>
@@ -58,76 +60,44 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I don't really know much about this one, hence the binding is
-a simple conversion of what was in the txt file.
+A nice simple binding.  Only real different from txt is that I dropped
+some descriptions where the naming of the parameter was self explanatory
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Phani Movva <Phani.Movva@imgtec.com>
+Cc: Haibo Chen <haibo.chen@freescale.com>
+Cc: Shawn Guo <shawnguo@kernel.org>
+Cc: Sascha Hauer <s.hauer@pengutronix.de>
 ---
- .../bindings/iio/adc/cc10001_adc.txt          | 22 -------
- .../bindings/iio/adc/cosmic,10001-adc.yaml    | 59 +++++++++++++++++++
- 2 files changed, 59 insertions(+), 22 deletions(-)
+ .../bindings/iio/adc/fsl,imx7d-adc.yaml       | 62 +++++++++++++++++++
+ .../devicetree/bindings/iio/adc/imx7d-adc.txt | 24 -------
+ 2 files changed, 62 insertions(+), 24 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt b/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-deleted file mode 100644
-index 904f76de9055..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/cc10001_adc.txt
-+++ /dev/null
-@@ -1,22 +0,0 @@
--* Cosmic Circuits - Analog to Digital Converter (CC-10001-ADC)
--
--Required properties:
--  - compatible: Should be "cosmic,10001-adc"
--  - reg: Should contain adc registers location and length.
--  - clock-names: Should contain "adc".
--  - clocks: Should contain a clock specifier for each entry in clock-names
--  - vref-supply: The regulator supply ADC reference voltage.
--
--Optional properties:
--  - adc-reserved-channels: Bitmask of reserved channels,
--    i.e. channels that cannot be used by the OS.
--
--Example:
--adc: adc@18101600 {
--	compatible = "cosmic,10001-adc";
--	reg = <0x18101600 0x24>;
--	adc-reserved-channels = <0x2>;
--	clocks = <&adc_clk>;
--	clock-names = "adc";
--	vref-supply = <&reg_1v8>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/cosmic,10001-adc.yaml b/Documentation/devicetree/bindings/iio/adc/cosmic,10001-adc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx7d-adc.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,imx7d-adc.yaml
 new file mode 100644
-index 000000000000..1c4838d4a547
+index 000000000000..dc5eacb38046
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/cosmic,10001-adc.yaml
-@@ -0,0 +1,59 @@
++++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx7d-adc.yaml
+@@ -0,0 +1,62 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/cosmic,10001-adc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/fsl,imx7d-adc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Cosmic Circuits CC-10001 ADC
++title: Freescale ADC found on the imx7d SoC
 +
 +maintainers:
-+  - Phani Movva <Phani.Movva@imgtec.com>
-+
-+description:
-+  Cosmic Circuits 10001 10-bit ADC device.
++  - Haibo Chen <haibo.chen@freescale.com>
 +
 +properties:
 +  compatible:
-+    const: cosmic,10001-adc
++    const: fsl,imx7d-adc
 +
 +  reg:
 +    maxItems: 1
 +
-+  adc-reserved-channels:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+       Bitmask of reserved channels, i.e. channels that cannot be
-+       used by the OS.
++  interrupts:
++    maxItems: 1
 +
 +  clocks:
 +    maxItems: 1
@@ -140,27 +110,66 @@ index 000000000000..1c4838d4a547
 +  "#io-channel-cells":
 +    const: 1
 +
-+
 +required:
 +  - compatible
 +  - reg
++  - interrupts
 +  - clocks
 +  - clock-names
 +  - vref-supply
++  - "#io-channel-cells"
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    adc@18101600 {
-+        compatible = "cosmic,10001-adc";
-+        reg = <0x18101600 0x24>;
-+        adc-reserved-channels = <0x2>;
-+        clocks = <&adc_clk>;
-+        clock-names = "adc";
-+        vref-supply = <&reg_1v8>;
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/clock/imx7d-clock.h>
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    soc {
++        #address-cells = <1>;
++        #size-cells = <1>;
++        adc@30610000 {
++            compatible = "fsl,imx7d-adc";
++            reg = <0x30610000 0x10000>;
++            interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&clks IMX7D_ADC_ROOT_CLK>;
++            clock-names = "adc";
++            vref-supply = <&reg_vcc_3v3_mcu>;
++            #io-channel-cells = <1>;
++        };
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt b/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
+deleted file mode 100644
+index f1f3a552459b..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/imx7d-adc.txt
++++ /dev/null
+@@ -1,24 +0,0 @@
+-Freescale imx7d ADC bindings
+-
+-The devicetree bindings are for the ADC driver written for
+-imx7d SoC.
+-
+-Required properties:
+-- compatible: Should be "fsl,imx7d-adc"
+-- reg: Offset and length of the register set for the ADC device
+-- interrupts: The interrupt number for the ADC device
+-- clocks: The root clock of the ADC controller
+-- clock-names: Must contain "adc", matching entry in the clocks property
+-- vref-supply: The regulator supply ADC reference voltage
+-- #io-channel-cells: Must be 1 as per ../iio-bindings.txt
+-
+-Example:
+-adc1: adc@30610000 {
+-	compatible = "fsl,imx7d-adc";
+-	reg = <0x30610000 0x10000>;
+-	interrupts = <GIC_SPI 98 IRQ_TYPE_LEVEL_HIGH>;
+-	clocks = <&clks IMX7D_ADC_ROOT_CLK>;
+-	clock-names = "adc";
+-	vref-supply = <&reg_vcc_3v3_mcu>;
+-	#io-channel-cells = <1>;
+-};
 -- 
 2.28.0
 
