@@ -2,161 +2,172 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9079BC2D0E1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9D79C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:31:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 56D21221ED
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:30:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8204D208E4
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:31:05 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="PMgK+Eoh"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="CFF9tYL5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728154AbgIJVaM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 17:30:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51304 "EHLO
+        id S1728284AbgIJVbC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 17:31:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731000AbgIJOCp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 10:02:45 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45D00C06134C
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:28 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id y2so3631983lfy.10
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:28 -0700 (PDT)
+        with ESMTP id S1730637AbgIJNvp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 09:51:45 -0400
+Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC4FDC061796;
+        Thu, 10 Sep 2020 06:51:44 -0700 (PDT)
+Received: by mail-pl1-x641.google.com with SMTP id j7so949550plk.11;
+        Thu, 10 Sep 2020 06:51:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QuxxLxOS0tNBNOAtQq8XEBRXkvgsYAhNuUczATzXFS4=;
-        b=PMgK+Eoh8NOijzqwcfljiIQEiZgcfkyqRaN1mUxjZ4Y8sVNKE85i19GDwcD4srGiCo
-         cooI13DsQXpfB3kM/A3FqyWbPg5WbVuH9ergJKhgOjj0TdrqN7Yqz6MSP0HZERvWz0tG
-         gfEtLguWwYrKpkPpsYik/r3yt00tDJ52eqjmsQXXrAUWzoX9zVrmXVdZ6MPsfDsTBk6G
-         ISFqOo0RH0lMmYujajuUsdac+vfuoE2Ncfxqf1sCMe8AJ9S/JHYqx2QqMm3QchpRoxFk
-         c1WZ3aE8W5oYLqu0evCO059jcQbDyrdhLTpLeBTtQfNzmA7lu/sVL8/zOmCA/zMRTDpE
-         PIXA==
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=s8hpTJ5jpmu25r8Rx3Kgs3iF4PPo1Ln9S4YDeFEjnfs=;
+        b=CFF9tYL5KeE0BlS/F84CUI6dKWsCH+MrmT4ZuZWKR13iqL116kIqKL1o6m842w8bVD
+         uL3e4eicEGPy/IHrqguM7QLSYYW7C670Ce4wGcGxAFE/UhiV7fP/g0A+WRGqYVpvb6km
+         6PsnW0mkpB6++hV7TRwnFNtuEP8NLhrl7AJqWNtqhbahlOluKnClxol2j9+Yz3OcI6SR
+         b3Qt5+w7r6toPI1LyCNeQ69qBZSbkPYmdCiqKsItJ52yw5JZX1zA3PWDzj3wtN0REcCU
+         mfxd6ssCbAHJrJbOfDmX4Qr8f232lXABltZ2Zf1ltrrCO3/h4Y5RlHmUtdyPO4RHu5fI
+         JU9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QuxxLxOS0tNBNOAtQq8XEBRXkvgsYAhNuUczATzXFS4=;
-        b=Jqs2DTvxmPITII8TKDmrI+G3l/f0mQas7+s804EDVNFHoOg10PVNdTk2V/u2R1cxgv
-         AoJF2HG73yzV3b1fP/Sr/2bbQrVTBTVb1dkGj9Oi+PE0bnWUyjBnnenLUvjAcoiA7CDM
-         So4Pz7AwWgM2gAABf6Futl4h/ZJ1zU+LgcbNGtGlYCVBGJ1wGWPx2HIssISYbMMWTjOM
-         42MJYTcP8cNe4fBSWCqaJv5RUWNtKcx/oSycdOv45Hhx3eKu/Ga60xj9Fw3il4Uh0ZyN
-         UuMeIZnW4OavROuJsZZ/X3HNCPjn5LxH7uJD78o9xBEtv0hy2WU+E/NJA1nC0nLtRT4m
-         3AEw==
-X-Gm-Message-State: AOAM530jtlwUZP5LK0X2+6T39U/wKDVyoehBnUceBaqqe02b2pKZPfS0
-        1A8qci8ShTEcNkSACnTSwucwdA==
-X-Google-Smtp-Source: ABdhPJyYljjBWej5rZbf4tsa5Hf+ZKrc4uGlPTlk61rN2N8cze36HuhhSRoP6NGyV86JWfdrJH3JsQ==
-X-Received: by 2002:a19:7fd8:: with SMTP id a207mr4306941lfd.11.1599746426562;
-        Thu, 10 Sep 2020 07:00:26 -0700 (PDT)
-Received: from eriador.lan ([188.162.64.156])
-        by smtp.gmail.com with ESMTPSA id t82sm1367646lff.43.2020.09.10.07.00.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 07:00:26 -0700 (PDT)
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-To:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v4 09/10] arm64: dts: qcom: pm8150x: add definitions for adc-tm5 part
-Date:   Thu, 10 Sep 2020 16:59:59 +0300
-Message-Id: <20200910140000.324091-10-dmitry.baryshkov@linaro.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
-References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=s8hpTJ5jpmu25r8Rx3Kgs3iF4PPo1Ln9S4YDeFEjnfs=;
+        b=agJNeE9Qq5U8Ja391WdDkYiboOOZLC+53W9iFwBOqASmyHlWqaI1mZOPX4v+qBrEGX
+         iZRnJBKENF200tx25dGKFI0cD4TAkDz/tNi6Kci+AVGkszGwSLwXk8KDz/KVeNB4hS8k
+         DAdEfWiIMcHFoGowBX7IBAh1JeAh9rUfI4nBHVyOM0v0m/GaWTGoZD/jbEC5JX8ag7u9
+         gATMYXNMZ696PUsMp4+lVtZSyUNoWWyRiBH4dWlhpkNQEIx08s6irSfiyoQtACE01IxO
+         vLwCLoFf4N1zytTURq7qGUVQVpUJbZCMpTWwdLEXwQ4vE0vkaZmbJl101fMFTCBp9aio
+         14cQ==
+X-Gm-Message-State: AOAM532opxQFTHNok+Nkux0pEdl5u3l2nzENiZVKJgufT6I1HyhIJnGB
+        C4LudZM4tSbufB6EDvsr4KQ/JdDdkpKqeGpvbJJcrPkX9yrWM+F3
+X-Google-Smtp-Source: ABdhPJz3RqmvrCZbiqBb7VrCUo9x60EzXi4LWBPQA9Ku3MI22FHzXcVDfKsiKq9AIWOmp08oGgBgCXXYTR9Fi6FSgdA=
+X-Received: by 2002:a17:90a:fd98:: with SMTP id cx24mr23153pjb.181.1599745904138;
+ Thu, 10 Sep 2020 06:51:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20200910122711.16670-1-nish.malpani25@gmail.com>
+In-Reply-To: <20200910122711.16670-1-nish.malpani25@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 10 Sep 2020 16:51:26 +0300
+Message-ID: <CAHp75VeMJruyOCskBGZtyeR-p3sh7hLk2QH32LULAo7wSX3KUA@mail.gmail.com>
+Subject: Re: [PATCH] iio: gyro: adxrs290: use hook for devm resource unwinding
+To:     Nishant Malpani <nish.malpani25@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Define adc-tm5 thermal monitoring part. Individual channes and thermal
-zones are to be configured in per-device dts files.
+On Thu, Sep 10, 2020 at 3:27 PM Nishant Malpani
+<nish.malpani25@gmail.com> wrote:
+>
+> Make use of devm_add_action_or_reset() hook to switch device into STANDBY
+> mode during standard resource unwinding. The patch includes a helper
+> function, in the form of adxrs290_set_mode(), to realise driving the
+> device into STANDBY mode.
 
-Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
----
- arch/arm64/boot/dts/qcom/pm8150.dtsi  | 10 ++++++++++
- arch/arm64/boot/dts/qcom/pm8150b.dtsi | 10 ++++++++++
- arch/arm64/boot/dts/qcom/pm8150l.dtsi | 10 ++++++++++
- 3 files changed, 30 insertions(+)
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-diff --git a/arch/arm64/boot/dts/qcom/pm8150.dtsi b/arch/arm64/boot/dts/qcom/pm8150.dtsi
-index 1b6406927509..b1b518c6a2c9 100644
---- a/arch/arm64/boot/dts/qcom/pm8150.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150.dtsi
-@@ -97,6 +97,16 @@ die-temp@6 {
- 			};
- 		};
- 
-+		pm8150_adc_tm: adc-tm@3500 {
-+			compatible = "qcom,spmi-adc-tm5";
-+			reg = <0x3500>;
-+			interrupts = <0x0 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
- 		rtc@6000 {
- 			compatible = "qcom,pm8941-rtc";
- 			reg = <0x6000>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8150b.dtsi b/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-index e112e8876db6..8e2f3250c914 100644
---- a/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150b.dtsi
-@@ -95,6 +95,16 @@ chg-temp@9 {
- 			};
- 		};
- 
-+		pm8150b_adc_tm: adc-tm@3500 {
-+			compatible = "qcom,spmi-adc-tm5";
-+			reg = <0x3500>;
-+			interrupts = <0x2 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
- 		pm8150b_gpios: gpio@c000 {
- 			compatible = "qcom,pm8150b-gpio";
- 			reg = <0xc000>;
-diff --git a/arch/arm64/boot/dts/qcom/pm8150l.dtsi b/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-index 62139538b7d9..9f214ceec2b7 100644
---- a/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-+++ b/arch/arm64/boot/dts/qcom/pm8150l.dtsi
-@@ -89,6 +89,16 @@ die-temp@6 {
- 			};
- 		};
- 
-+		pm8150l_adc_tm: adc-tm@3500 {
-+			compatible = "qcom,spmi-adc-tm5";
-+			reg = <0x3500>;
-+			interrupts = <0x4 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
-+			#thermal-sensor-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+		};
-+
- 		pm8150l_gpios: gpio@c000 {
- 			compatible = "qcom,pm8150l-gpio";
- 			reg = <0xc000>;
+> Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
+> ---
+>  drivers/iio/gyro/adxrs290.c | 61 +++++++++++++++++++++++++++++++++++--
+>  1 file changed, 58 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+> index ff989536d2fb..2864eb443957 100644
+> --- a/drivers/iio/gyro/adxrs290.c
+> +++ b/drivers/iio/gyro/adxrs290.c
+> @@ -192,15 +192,70 @@ static int adxrs290_set_filter_freq(struct iio_dev *indio_dev,
+>         return adxrs290_spi_write_reg(st->spi, ADXRS290_REG_FILTER, val);
+>  }
+>
+> +static int adxrs290_set_mode(struct iio_dev *indio_dev, enum adxrs290_mode mode)
+> +{
+> +       struct adxrs290_state *st = iio_priv(indio_dev);
+> +       int val, ret;
+> +
+> +       if (st->mode == mode)
+> +               return 0;
+> +
+> +       mutex_lock(&st->lock);
+> +
+> +       ret = spi_w8r8(st->spi, ADXRS290_READ_REG(ADXRS290_REG_POWER_CTL));
+> +       if (ret < 0)
+> +               goto out_unlock;
+> +
+> +       val = ret;
+> +
+> +       switch (mode) {
+> +       case ADXRS290_MODE_STANDBY:
+> +               val &= ~ADXRS290_MEASUREMENT;
+> +               break;
+> +       case ADXRS290_MODE_MEASUREMENT:
+> +               val |= ADXRS290_MEASUREMENT;
+> +               break;
+> +       default:
+> +               ret = -EINVAL;
+> +               goto out_unlock;
+> +       }
+> +
+> +       ret = adxrs290_spi_write_reg(st->spi, ADXRS290_REG_POWER_CTL, val);
+> +       if (ret < 0) {
+> +               dev_err(&st->spi->dev, "unable to set mode: %d\n", ret);
+> +               goto out_unlock;
+> +       }
+> +
+> +       /* update cached mode */
+> +       st->mode = mode;
+> +
+> +out_unlock:
+> +       mutex_unlock(&st->lock);
+> +       return ret;
+> +}
+> +
+> +static void adxrs290_chip_off_action(void *data)
+> +{
+> +       struct iio_dev *indio_dev = data;
+> +
+> +       adxrs290_set_mode(indio_dev, ADXRS290_MODE_STANDBY);
+> +}
+> +
+>  static int adxrs290_initial_setup(struct iio_dev *indio_dev)
+>  {
+>         struct adxrs290_state *st = iio_priv(indio_dev);
+> +       struct spi_device *spi = st->spi;
+> +       int ret;
+> +
+> +       ret = adxrs290_spi_write_reg(spi, ADXRS290_REG_POWER_CTL,
+> +                                    ADXRS290_MEASUREMENT | ADXRS290_TSM);
+> +       if (ret < 0)
+> +               return ret;
+>
+>         st->mode = ADXRS290_MODE_MEASUREMENT;
+>
+> -       return adxrs290_spi_write_reg(st->spi,
+> -                                     ADXRS290_REG_POWER_CTL,
+> -                                     ADXRS290_MEASUREMENT | ADXRS290_TSM);
+> +       return devm_add_action_or_reset(&spi->dev, adxrs290_chip_off_action,
+> +                                       indio_dev);
+>  }
+>
+>  static int adxrs290_read_raw(struct iio_dev *indio_dev,
+> --
+> 2.20.1
+>
+
+
 -- 
-2.28.0
-
+With Best Regards,
+Andy Shevchenko
