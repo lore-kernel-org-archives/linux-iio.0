@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8AB1C2D0E1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2CEC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A1F3E21582
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 54CE6206A1
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759610;
-	bh=3ZzsgVXWiUsw2MOOAw6VdAfqjtG1nFMCujkrjuTF6ac=;
+	s=default; t=1599759613;
+	bh=M/iE5ajFvegSF/+ggOtfuNwaDIQiCxRk1KTcjv3rSTU=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=P45amDd1NF9yFLzY0cKnEtY/wURstcBNgoC1xV2HgZZNG2nHkpRQ1GRiv8QYVYlk+
-	 gfK+sfIo+bwOLUSCwEfEnBp0mjSzbDVlBhViiFGSUpkPDA01GKzgF6Ka1Q7EEFFO7v
-	 SODPdgMS3UGPLailB75rhXvyQ5E6e+e4e/YqCvtc=
+	b=VXOLcevGfMYNhtsjwiw321t3v/1rSM45AJ7BPzt8W/BX38M5QCNM4gvKtli3ejaNX
+	 ETa5VUPNtb59y9JWNzjwRacWtT1K/mTMrwwVs5+maYshmY74445nZyQYqVdNK3+kmd
+	 pTKWmWfehH8EKJ2/9o14a5jfMJAzQ6uUGiCRuJdc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727027AbgIJRkI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47978 "EHLO mail.kernel.org"
+        id S1726967AbgIJRkL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:40:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47868 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727801AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:36:00 -0400
+        id S1726997AbgIJRfs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:35:48 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EB9ED221F1;
-        Thu, 10 Sep 2020 17:35:34 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 238DE221E2;
+        Thu, 10 Sep 2020 17:35:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759335;
-        bh=3ZzsgVXWiUsw2MOOAw6VdAfqjtG1nFMCujkrjuTF6ac=;
+        s=default; t=1599759322;
+        bh=M/iE5ajFvegSF/+ggOtfuNwaDIQiCxRk1KTcjv3rSTU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=DKbCq4ckt9feyCL3VZXgWXZIxxUaw68ncz2MQwnxl1C0dm0Hry5uPzF9N4Sv7qYj5
-         cRKiKBCcRUrF5bFR9Uzq9sVAFQ6+umpGmBQKJtuLoWtQUgG0DtzBljybXOQj7YMMBT
-         14jo8sIeEIHrAehfn2WxF9iwoRSDKkQzhKodGvbc=
+        b=wiQpEgKttba7jmiNHLm2XFAQBEyDg8p3rqcVUaxEZ2fvZTgcyiAPdNB9dY3QeI5TJ
+         2wqZXVqsynV6sQp2juGzX5nJ3u14EgjHPgW8fek45Rr7bTDTnh9uoPwmahgpuxEBMY
+         yDOzAUoPfuNatfz18eXQWE9+OMd0jRub2idg+uf0=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [PATCH 17/38] iio:pressure:icp10100: Drop of_match_ptr and CONFIG_OF protections
-Date:   Thu, 10 Sep 2020 18:32:21 +0100
-Message-Id: <20200910173242.621168-18-jic23@kernel.org>
+        Slawomir Stepien <sst@poczta.fm>
+Subject: [PATCH 07/38] iio:potentiometer:mcp4131: Drop of_match_ptr and use generic fw interfaces.
+Date:   Thu, 10 Sep 2020 18:32:11 +0100
+Message-Id: <20200910173242.621168-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,37 +58,50 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These prevents use of this driver with ACPI via PRP0001 and are
-an example of an anti pattern I'm trying to remove from IIO.
-Hence drop them from this driver.
+This change allows the use of the driver with ACPI via PRP0001
+and remove an example of an anti pattern I'm trying to remove from IIO.
+Also adjust includes to reflect this change.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Cc: Slawomir Stepien <sst@poczta.fm>
 ---
- drivers/iio/pressure/icp10100.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/potentiometer/mcp4131.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/pressure/icp10100.c b/drivers/iio/pressure/icp10100.c
-index 90c0df068bbb..48759fc4bf18 100644
---- a/drivers/iio/pressure/icp10100.c
-+++ b/drivers/iio/pressure/icp10100.c
-@@ -10,6 +10,7 @@
- 
- #include <linux/device.h>
+diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
+index 2923ce250fc3..7c8c18ab8764 100644
+--- a/drivers/iio/potentiometer/mcp4131.c
++++ b/drivers/iio/potentiometer/mcp4131.c
+@@ -37,9 +37,9 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
  #include <linux/module.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/i2c.h>
- #include <linux/pm_runtime.h>
- #include <linux/crc8.h>
-@@ -645,7 +646,7 @@ static struct i2c_driver icp10100_driver = {
+ #include <linux/mutex.h>
+-#include <linux/of.h>
+-#include <linux/of_device.h>
++#include <linux/property.h>
+ #include <linux/spi/spi.h>
+ 
+ #define MCP4131_WRITE		(0x00 << 2)
+@@ -252,7 +252,7 @@ static int mcp4131_probe(struct spi_device *spi)
+ 	data = iio_priv(indio_dev);
+ 	spi_set_drvdata(spi, indio_dev);
+ 	data->spi = spi;
+-	data->cfg = of_device_get_match_data(&spi->dev);
++	data->cfg = device_get_match_data(&spi->dev);
+ 	if (!data->cfg) {
+ 		devid = spi_get_device_id(spi)->driver_data;
+ 		data->cfg = &mcp4131_cfg[devid];
+@@ -479,7 +479,7 @@ MODULE_DEVICE_TABLE(spi, mcp4131_id);
+ static struct spi_driver mcp4131_driver = {
  	.driver = {
- 		.name = "icp10100",
- 		.pm = &icp10100_pm,
--		.of_match_table = of_match_ptr(icp10100_of_match),
-+		.of_match_table = icp10100_of_match,
+ 		.name	= "mcp4131",
+-		.of_match_table = of_match_ptr(mcp4131_dt_ids),
++		.of_match_table = mcp4131_dt_ids,
  	},
- 	.probe = icp10100_probe,
- 	.id_table = icp10100_id,
+ 	.probe		= mcp4131_probe,
+ 	.id_table	= mcp4131_id,
 -- 
 2.28.0
 
