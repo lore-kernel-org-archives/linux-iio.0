@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9AF7EC433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40032C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C22C206A1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0B6C421582
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759598;
-	bh=whA4YHQvkK0isrTXudsdfk48GtxCvnci4OPZJuiK4Hg=;
+	s=default; t=1599759602;
+	bh=ANDr36kbhRkXPrMr7XRTbOM5qPlEbp4wf/K4dJHBd9U=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=kxY1zLYJh1qvrugTlBfiasZQa6ilXwoOLsSmDr38UgRO3TFSFsPlmzHZ1btwtEwJf
-	 4BRyNf2qL1ITuQk098eeXRK3m95JH0zlgRZ+4r/j1oBMWfxg4RmAh5zt7R+D3lH/Fc
-	 qxYKKlovzabk8ceYkYxtUCsKzbdbgs7L3YWK6wjw=
+	b=BHkNl75j8cZw/BvcAA9Vlk0nyuOTeFGrkPpPd5Jji+uZW9OtpyV/Ll5uroFEcrJcz
+	 nKpESSHQaXf+KZzecnNYmuNoHOUKRBgnnfSCX14bD4vqmmJeNl/q8TkojDrUBE6Q8k
+	 tj0xObMb8GUIaeZw5q9J3Qor615QqiR1VyAujAFA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726918AbgIJRjy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:39:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48306 "EHLO mail.kernel.org"
+        id S1726663AbgIJRjz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:39:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47972 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726663AbgIJRgw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:36:52 -0400
+        id S1727835AbgIJRgu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:36:50 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 212C522224;
-        Thu, 10 Sep 2020 17:35:50 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 128182220F;
+        Thu, 10 Sep 2020 17:35:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759352;
-        bh=whA4YHQvkK0isrTXudsdfk48GtxCvnci4OPZJuiK4Hg=;
+        s=default; t=1599759348;
+        bh=ANDr36kbhRkXPrMr7XRTbOM5qPlEbp4wf/K4dJHBd9U=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oddIwj1jsFDudYX2iLh5XVmh/WukmKaDMJIprwLJJJvfpmSLm3jDg95fr2ZI2StOI
-         Y+u1ub8Gg+FLxKIkd7lwbpcYnGfhxZ+o4zXE9A3L1+8Ook3HLaZ81vDZ43RYSNcSm8
-         hrzJ7YQ1kyAnS8m5s+U9B8eTFWSnMJlVp2VjdS80=
+        b=rD0pwttYjRHgL/DdaNWVUHNpPkjRuN0OiE6Eto6kiCVVw9VQkUF+uM+PrfWU388II
+         P/HFNR4gDQkdv0bmq3XG7WS92m6eCOLAWwUb66p4jn7uwyhL+qkY4xF9GGsOIF/dbH
+         kZsr4y3Xvw44BImSPheGm2TFBwKFzWXuJbyESRNw=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH 29/38] iio:chemical:vz89x: Drop of_match_ptr protection and use generic fw accessors
-Date:   Thu, 10 Sep 2020 18:32:33 +0100
-Message-Id: <20200910173242.621168-30-jic23@kernel.org>
+        Andreas Brauchli <andreas.brauchli@sensirion.com>
+Subject: [PATCH 26/38] iio:chemical:sgp30: Use local variable dev to simplify code
+Date:   Thu, 10 Sep 2020 18:32:30 +0100
+Message-Id: <20200910173242.621168-27-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,64 +58,96 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This change allow the driver to be used with ACPI PRP0001 and removes
-an antipattern that I want to avoid being copied into new IIO drivers.
-
-The handling of match_data uses a different approach as
-device_get_match_data() doesn't distinguish between no match, and
-a match but with NULL data.
+This cleans up the code at bit, but is primarily here as a precusor
+to the next patch. I've only done this for the two functions
+which use the dev pointer repeatedly.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: Andreas Brauchli <andreas.brauchli@sensirion.com>
 ---
- drivers/iio/chemical/vz89x.c | 11 ++++-------
- 1 file changed, 4 insertions(+), 7 deletions(-)
+ drivers/iio/chemical/sgp30.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
-index 3cd469578590..23b22a5f5c1c 100644
---- a/drivers/iio/chemical/vz89x.c
-+++ b/drivers/iio/chemical/vz89x.c
-@@ -10,8 +10,7 @@
- #include <linux/mutex.h>
- #include <linux/init.h>
- #include <linux/i2c.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
+diff --git a/drivers/iio/chemical/sgp30.c b/drivers/iio/chemical/sgp30.c
+index 2c4086c48136..410565aa20b6 100644
+--- a/drivers/iio/chemical/sgp30.c
++++ b/drivers/iio/chemical/sgp30.c
+@@ -409,6 +409,7 @@ static int sgp_read_raw(struct iio_dev *indio_dev,
+ static int sgp_check_compat(struct sgp_data *data,
+ 			    unsigned int product_id)
+ {
++	struct device *dev = &data->client->dev;
+ 	const struct sgp_version *supported_versions;
+ 	u16 ix, num_fs;
+ 	u16 product, generation, major, minor;
+@@ -416,21 +417,20 @@ static int sgp_check_compat(struct sgp_data *data,
+ 	/* driver does not match product */
+ 	generation = SGP_VERS_GEN(data);
+ 	if (generation != 0) {
+-		dev_err(&data->client->dev,
++		dev_err(dev,
+ 			"incompatible product generation %d != 0", generation);
+ 		return -ENODEV;
+ 	}
  
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -355,7 +354,6 @@ static int vz89x_probe(struct i2c_client *client,
- 	struct device *dev = &client->dev;
+ 	product = SGP_VERS_PRODUCT(data);
+ 	if (product != product_id) {
+-		dev_err(&data->client->dev,
+-			"sensor reports a different product: 0x%04hx\n",
++		dev_err(dev, "sensor reports a different product: 0x%04hx\n",
+ 			product);
+ 		return -ENODEV;
+ 	}
+ 
+ 	if (SGP_VERS_RESERVED(data))
+-		dev_warn(&data->client->dev, "reserved bit is set\n");
++		dev_warn(dev, "reserved bit is set\n");
+ 
+ 	/* engineering samples are not supported: no interface guarantees */
+ 	if (SGP_VERS_ENG_BIT(data))
+@@ -456,8 +456,7 @@ static int sgp_check_compat(struct sgp_data *data,
+ 		    minor >= supported_versions[ix].minor)
+ 			return 0;
+ 	}
+-	dev_err(&data->client->dev, "unsupported sgp version: %d.%d\n",
+-		major, minor);
++	dev_err(dev, "unsupported sgp version: %d.%d\n", major, minor);
+ 
+ 	return -ENODEV;
+ }
+@@ -499,17 +498,18 @@ static const struct of_device_id sgp_dt_ids[] = {
+ static int sgp_probe(struct i2c_client *client,
+ 		     const struct i2c_device_id *id)
+ {
++	struct device *dev = &client->dev;
  	struct iio_dev *indio_dev;
- 	struct vz89x_data *data;
--	const struct of_device_id *of_id;
- 	int chip_id;
+ 	struct sgp_data *data;
+ 	const struct of_device_id *of_id;
+ 	unsigned long product_id;
+ 	int ret;
  
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-@@ -371,11 +369,10 @@ static int vz89x_probe(struct i2c_client *client,
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	of_id = of_match_device(sgp_dt_ids, &client->dev);
++	of_id = of_match_device(sgp_dt_ids, dev);
+ 	if (of_id)
+ 		product_id = (unsigned long)of_id->data;
  	else
- 		return -EOPNOTSUPP;
+@@ -541,9 +541,9 @@ static int sgp_probe(struct i2c_client *client,
  
--	of_id = of_match_device(vz89x_dt_ids, dev);
--	if (!of_id)
-+	if (!dev_fwnode(dev))
- 		chip_id = id->driver_data;
- 	else
--		chip_id = (unsigned long)of_id->data;
-+		chip_id = (unsigned long)device_get_match_data(dev);
+ 	sgp_init(data);
  
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
-@@ -403,7 +400,7 @@ MODULE_DEVICE_TABLE(i2c, vz89x_id);
- static struct i2c_driver vz89x_driver = {
- 	.driver = {
- 		.name	= "vz89x",
--		.of_match_table = of_match_ptr(vz89x_dt_ids),
-+		.of_match_table = vz89x_dt_ids,
- 	},
- 	.probe = vz89x_probe,
- 	.id_table = vz89x_id,
+-	ret = devm_iio_device_register(&client->dev, indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret) {
+-		dev_err(&client->dev, "failed to register iio device\n");
++		dev_err(dev, "failed to register iio device\n");
+ 		return ret;
+ 	}
+ 
 -- 
 2.28.0
 
