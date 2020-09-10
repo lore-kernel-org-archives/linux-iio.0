@@ -2,50 +2,50 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46750C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DF3C433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 09C1A21582
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7EF1D21D40
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759581;
-	bh=hPyt21/+/dzyq2e1Ad7oyy9C4nHZn+khIrRfxc6UA3k=;
+	s=default; t=1599759587;
+	bh=8m9Eu5Z7l1WDp5n3jN0PlW09xmryAEuUQvPXhf1s5o4=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=jO5sw6Ox8MgEyb45daCwqArhrG4ZUv+ZLnJeU2IPYgktMEyHufmVJmoxT2+aB/ysu
-	 3uvlPHNKiR/ZNHBEZsWjwxRAA9j0jaVLCV0UfSN3gR1c/Uq01KW9Q+oiMcmJD2YQxl
-	 L7M1gQMnPjfuWM5JKTTQCaY5UnAMb+kN1EmztjlU=
+	b=zgcUK/vWGR5m5pX9ADQCFqQNKT7k/RZLYVZMOqgUY67ivt7OYp7VRRaZ4Jpni4nGb
+	 S4lsPStErH6saqQJtPaIea+a9ybDaa5RtOQBWlDLSeYO0VFV/wo+u25dakden3h9TP
+	 pFqnkuKYIXoXqPdF8ZzqrKwtIu0sJLn+X5bn6P3g=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727089AbgIJRjK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:39:10 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47868 "EHLO mail.kernel.org"
+        id S1726419AbgIJRjq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:39:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47926 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727857AbgIJRhm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:37:42 -0400
+        id S1727119AbgIJRhO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:37:14 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 828EB2222C;
-        Thu, 10 Sep 2020 17:36:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 7908A22229;
+        Thu, 10 Sep 2020 17:35:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759364;
-        bh=hPyt21/+/dzyq2e1Ad7oyy9C4nHZn+khIrRfxc6UA3k=;
+        s=default; t=1599759360;
+        bh=8m9Eu5Z7l1WDp5n3jN0PlW09xmryAEuUQvPXhf1s5o4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=t6srSpKvmM45xEokP7P0uIH/jVtLwYptI8SocKupXb1rrMLfGu52aUFrpJ/sS61Zw
-         prygQzh02NUGVhrSW3keE3zkjTT5FM3uH/PfQrySz9VWB+5sPvYlrk/zcGoSHXN8a9
-         DWyqjpro2pHaFLpdNr42+QHdKVe+0hMAv4XAZziA=
+        b=griBLVZzTz2/sRHoA4uqbMn4WKm6oP3a2iwOyhgTo3GDKRFgFTDTkDPE9Yi1KNFPR
+         rqpO7hKXGkzzUKAvQx3pgHmpmgUJBRn4/nXHy46EmnApiSm4jv7p647etSD2gPk34f
+         yvEh75ZM3zQLtm1AhZcwyT6QjXqYL0DEGhYypPCA=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH 38/38] iio:health:max30102: Drop of_match_ptr and use generic fw accessors
-Date:   Thu, 10 Sep 2020 18:32:42 +0100
-Message-Id: <20200910173242.621168-39-jic23@kernel.org>
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 35/38] iio:magn:ak8974: Drop of_match_ptr protection
+Date:   Thu, 10 Sep 2020 18:32:39 +0100
+Message-Id: <20200910173242.621168-36-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,69 +58,37 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This enables use of the driver with ACPI PRP0001 and also removes
-an antipattern that I am trying to clear out of IIO to avoid
-it being coppied into new drivers.
+This prevents use of this driver with ACPI via PRP0001 and is
+an example of an anti pattern I'm trying to remove from IIO.
+Hence drop from this driver.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/health/max30102.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iio/magnetometer/ak8974.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
-index bb504e993f19..543021d8df34 100644
---- a/drivers/iio/health/max30102.c
-+++ b/drivers/iio/health/max30102.c
-@@ -19,7 +19,7 @@
- #include <linux/irq.h>
- #include <linux/i2c.h>
- #include <linux/mutex.h>
--#include <linux/of.h>
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index 7cd9768fbcb2..df5131cf28a9 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -12,6 +12,7 @@
+  * Author: Linus Walleij <linus.walleij@linaro.org>
+  */
+ #include <linux/module.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/regmap.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
-@@ -323,11 +323,10 @@ static int max30102_get_current_idx(unsigned int val, int *reg)
- static int max30102_led_init(struct max30102_data *data)
- {
- 	struct device *dev = &data->client->dev;
--	struct device_node *np = dev->of_node;
- 	unsigned int val;
- 	int reg, ret;
- 
--	ret = of_property_read_u32(np, "maxim,red-led-current-microamp", &val);
-+	ret = device_property_read_u32(dev, "maxim,red-led-current-microamp", &val);
- 	if (ret) {
- 		dev_info(dev, "no red-led-current-microamp set\n");
- 
-@@ -346,7 +345,7 @@ static int max30102_led_init(struct max30102_data *data)
- 		return ret;
- 
- 	if (data->chip_id == max30105) {
--		ret = of_property_read_u32(np,
-+		ret = device_property_read_u32(dev,
- 			"maxim,green-led-current-microamp", &val);
- 		if (ret) {
- 			dev_info(dev, "no green-led-current-microamp set\n");
-@@ -368,7 +367,7 @@ static int max30102_led_init(struct max30102_data *data)
- 			return ret;
- 	}
- 
--	ret = of_property_read_u32(np, "maxim,ir-led-current-microamp", &val);
-+	ret = device_property_read_u32(dev, "maxim,ir-led-current-microamp", &val);
- 	if (ret) {
- 		dev_info(dev, "no ir-led-current-microamp set\n");
- 
-@@ -624,7 +623,7 @@ MODULE_DEVICE_TABLE(of, max30102_dt_ids);
- static struct i2c_driver max30102_driver = {
- 	.driver = {
- 		.name	= MAX30102_DRV_NAME,
--		.of_match_table	= of_match_ptr(max30102_dt_ids),
-+		.of_match_table	= max30102_dt_ids,
+ #include <linux/kernel.h>
+ #include <linux/i2c.h>
+ #include <linux/interrupt.h>
+@@ -1051,7 +1052,7 @@ static struct i2c_driver ak8974_driver = {
+ 	.driver	 = {
+ 		.name	= "ak8974",
+ 		.pm = &ak8974_dev_pm_ops,
+-		.of_match_table = of_match_ptr(ak8974_of_match),
++		.of_match_table = ak8974_of_match,
  	},
- 	.probe		= max30102_probe,
- 	.remove		= max30102_remove,
+ 	.probe	  = ak8974_probe,
+ 	.remove	  = ak8974_remove,
 -- 
 2.28.0
 
