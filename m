@@ -7,46 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 557A1C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4011CC07548
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 13857221E3
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6A7F21582
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759444;
-	bh=CRftnf93UBEo/s7JDiAnvNGiFqR8SiJ2dP8aIvcvte8=;
+	s=default; t=1599759449;
+	bh=bsUsUZ5Fif7XK+Uhi90Bir1D/WKFHq+PYWLaPVSxvhQ=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=bPEcuAiN4SI6pHJ8QB6FwALdPLXfPW3hhxH0diXtmXh4zd+4YKxb2io677O/Faq8u
-	 PG88rMSHEDHbZzj27ZNhF6Bq654fwi4D+WPpZpiWBsGHiMoi4fshYzQ16pxpuwf1su
-	 D53leEHJS3ShDcukvPikiXOt52/pcsdy3eIVPAjE=
+	b=qwVWfs58BKAJD3nOpN/1MVm/Y9z7KtrD2WEZxj6vbNDmwDXwfLHzeFlArVwYmi2MT
+	 RHJsVVwrOf/whVG4E3xjFj69u7ONlnoX6a/IYE9p5Tw7T9WRN7jtS/XCZmcahflEP2
+	 5cyMcpGofcl8EfP4eMHIbfVB+QWK9iaQHFgHlZco=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727794AbgIJRhP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:37:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47928 "EHLO mail.kernel.org"
+        id S1727027AbgIJRhY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:37:24 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725965AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727113AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 10 Sep 2020 13:36:00 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AEA82221ED;
-        Thu, 10 Sep 2020 17:35:26 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 75027221E7;
+        Thu, 10 Sep 2020 17:35:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759327;
-        bh=CRftnf93UBEo/s7JDiAnvNGiFqR8SiJ2dP8aIvcvte8=;
+        s=default; t=1599759323;
+        bh=bsUsUZ5Fif7XK+Uhi90Bir1D/WKFHq+PYWLaPVSxvhQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=EIzIwNbsy1gsD4uUOuGlOdK2PJYAFZ9TviwKTqqatQBGy8Pk5rkUT7wjqSwlqifLe
-         +Ot7twcchwx517OM8hKdsNtqqtk1ov8FdYwBqcFBSPUiRvyh8kVcGRaWFmf77bD55W
-         bU07m5Dvd9SHU/6wq0efVpS/lda7LKZsNjD2qVlw=
+        b=PuoJ6FjbRmafkcS8FYfDLWniwcHKiWrMFgOrHx77GVZ6HQhovHPIabzwYCYCwSsg8
+         lx2ucFTve4YZ3T7zZza5KlPW9WEj3qtOjgoM84o7RFBSbYtfkNX6BMj2jLOw/IJp6g
+         qjI0Fzk+2ZfPecTaHHgY0uXsl9oRBuCUZ89ODW9s=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 11/38] iio:dac:ad5593r: Drop of_match_ptr and ACPI_PTR protections.
-Date:   Thu, 10 Sep 2020 18:32:15 +0100
-Message-Id: <20200910173242.621168-12-jic23@kernel.org>
+        Peter Rosin <peda@axentia.se>
+Subject: [PATCH 08/38] iio:potentiometer:mcp4531: Drop of_match_ptr and CONFIG_OF protections.
+Date:   Thu, 10 Sep 2020 18:32:12 +0100
+Message-Id: <20200910173242.621168-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -59,46 +58,69 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These result in a very small reduction in driver size, but at the
-cost of more complex build and slightly harder to read code.
-In the case of of_match_ptr it also prevents use of PRP0001
-ACPI based identification.  In this particular case we have
-a valid ACPI/PNP ID that I am assuming was issued by Analog
-Devices.  That should be used in preference to PRP0001 but doesn't
-mean we should prevent that route.
+These prevent use of this driver with ACPI via PRP0001 and are
+an example of an anti pattern I'm trying to remove from IIO.
+Hence drop them from this driver.
+
+Also switch to device_get_match_data() from of_ variant and adjust
+headers to reflect the change.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/dac/ad5593r.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iio/potentiometer/mcp4531.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5593r.c b/drivers/iio/dac/ad5593r.c
-index 1fbe9c019c7f..5b4df36fdc2a 100644
---- a/drivers/iio/dac/ad5593r.c
-+++ b/drivers/iio/dac/ad5593r.c
-@@ -11,8 +11,7 @@
- #include <linux/bitops.h>
- #include <linux/i2c.h>
+diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+index 95efc4b40514..c25f84b4a270 100644
+--- a/drivers/iio/potentiometer/mcp4531.c
++++ b/drivers/iio/potentiometer/mcp4531.c
+@@ -28,8 +28,8 @@
  #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/err.h>
 -#include <linux/of.h>
--#include <linux/acpi.h>
+-#include <linux/of_device.h>
 +#include <linux/mod_devicetable.h>
++#include <linux/property.h>
  
- #define AD5593R_MODE_CONF		(0 << 4)
- #define AD5593R_MODE_DAC_WRITE		(1 << 4)
-@@ -124,8 +123,8 @@ MODULE_DEVICE_TABLE(acpi, ad5593r_acpi_match);
- static struct i2c_driver ad5593r_driver = {
+ #include <linux/iio/iio.h>
+ 
+@@ -275,8 +275,6 @@ static const struct i2c_device_id mcp4531_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, mcp4531_id);
+ 
+-#ifdef CONFIG_OF
+-
+ #define MCP4531_COMPATIBLE(of_compatible, cfg) {	\
+ 			.compatible = of_compatible,	\
+ 			.data = &mcp4531_cfg[cfg],	\
+@@ -350,7 +348,6 @@ static const struct of_device_id mcp4531_of_match[] = {
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, mcp4531_of_match);
+-#endif
+ 
+ static int mcp4531_probe(struct i2c_client *client)
+ {
+@@ -371,7 +368,7 @@ static int mcp4531_probe(struct i2c_client *client)
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 
+-	data->cfg = of_device_get_match_data(dev);
++	data->cfg = device_get_match_data(dev);
+ 	if (!data->cfg)
+ 		data->cfg = &mcp4531_cfg[i2c_match_id(mcp4531_id, client)->driver_data];
+ 
+@@ -386,7 +383,7 @@ static int mcp4531_probe(struct i2c_client *client)
+ static struct i2c_driver mcp4531_driver = {
  	.driver = {
- 		.name = "ad5593r",
--		.of_match_table = of_match_ptr(ad5593r_of_match),
--		.acpi_match_table = ACPI_PTR(ad5593r_acpi_match),
-+		.of_match_table = ad5593r_of_match,
-+		.acpi_match_table = ad5593r_acpi_match,
+ 		.name	= "mcp4531",
+-		.of_match_table = of_match_ptr(mcp4531_of_match),
++		.of_match_table = mcp4531_of_match,
  	},
- 	.probe = ad5593r_i2c_probe,
- 	.remove = ad5593r_i2c_remove,
+ 	.probe_new	= mcp4531_probe,
+ 	.id_table	= mcp4531_id,
 -- 
 2.28.0
 
