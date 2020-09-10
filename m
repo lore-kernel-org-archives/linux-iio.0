@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB302C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7260C433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8849921582
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 65807206A1
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759562;
-	bh=NjmG4Fc74UkPx3ip1qe+lntc+QQRDs/tlprA2yXq8bo=;
+	s=default; t=1599759578;
+	bh=FqgkTVreN1ipDWL7ab+JQMxKaDz/ngXvroDhh/hGK2g=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=NBbeLQV1VZoZR9zd2SS8d0eS/7knVNS5jpME9lWUXgJBEYRvBhm4qYh62OFisE4Df
-	 UJAS/7I0hsUN7mttWdrck4a6Ex6Ysrt+EBiP0WJlas9xKCOlVMZI/svyVjJDV/h+kj
-	 BSmNZBu3qWTnZGj+cf9bAr31LfRlJfseW1bNgf+I=
+	b=T6FN00LGKroHWJncQLzaYWr26yGIA0LKefvURXFkxTlLdj9qmSIpbQXcK0JMXW6nG
+	 RHUxFg4el+PAkfGeo0OzywQ1plS+R8bBcq9/WHlLLoCDNYa9EYpxkvjqgI5lSPNViA
+	 HcBX5KD6uAgFVdoiZzXVgiFGLm4DABSjNsR81q78=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726005AbgIJRjT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:39:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47772 "EHLO mail.kernel.org"
+        id S1727796AbgIJRjN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:39:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47974 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727838AbgIJRh3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:37:29 -0400
+        id S1725965AbgIJRhX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:37:23 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2A5EA2222A;
-        Thu, 10 Sep 2020 17:36:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id CBD1E22227;
+        Thu, 10 Sep 2020 17:36:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759363;
-        bh=NjmG4Fc74UkPx3ip1qe+lntc+QQRDs/tlprA2yXq8bo=;
+        s=default; t=1599759361;
+        bh=FqgkTVreN1ipDWL7ab+JQMxKaDz/ngXvroDhh/hGK2g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P7YJ+HBpaM+3ovPl5EK0JP+dZd6yMoG9JfuAvrSJs5/ZGc0FbMeZJ4/uA1bDl3a6g
-         z0dQ8giUHUDDBBpgxZ0lJX7jPOm2aNs7+6rjLKzZD+o1xyqUP2mlNMCpMBes4wei4k
-         06Y70WEJwaQar38yU6v58P3q+SuAL0ER8RkDrZ/8=
+        b=bMWAMhujIIDX04tW3FBSbnlIq643tuafP+L5zA0Iwn7HOFG9KsChEFo6cs90NRt3A
+         TT+0AEpvpPUwazncKUAifpDSNz2w3W2uUNqvfjjuwjOQ3LE9s1mir9oTgu+/+7OXBE
+         8zizrKZcXSEfOsqbFd09usljMb7tWMXNVGTLdEoE=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        David Barksdale <dbarksdale@uplogix.com>
-Subject: [PATCH 37/38] iio:humidity:si7020: Drop of_match_ptr protection
-Date:   Thu, 10 Sep 2020 18:32:41 +0100
-Message-Id: <20200910173242.621168-38-jic23@kernel.org>
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+Subject: [PATCH 36/38] iio:humidity:htu21: Drop of_match_ptr protection
+Date:   Thu, 10 Sep 2020 18:32:40 +0100
+Message-Id: <20200910173242.621168-37-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -63,32 +63,32 @@ an example of an anti pattern I'm trying to remove from IIO.
 Hence drop from this driver.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: David Barksdale <dbarksdale@uplogix.com>
+Cc: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
 ---
- drivers/iio/humidity/si7020.c | 3 ++-
+ drivers/iio/humidity/htu21.c | 3 ++-
  1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index a09b5773d377..ab6537f136ba 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -20,6 +20,7 @@
- #include <linux/delay.h>
- #include <linux/i2c.h>
+diff --git a/drivers/iio/humidity/htu21.c b/drivers/iio/humidity/htu21.c
+index 4f5d9d1c05ab..36df2a102ca4 100644
+--- a/drivers/iio/humidity/htu21.c
++++ b/drivers/iio/humidity/htu21.c
+@@ -19,6 +19,7 @@
+ #include <linux/kernel.h>
+ #include <linux/stat.h>
  #include <linux/module.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
  
-@@ -153,7 +154,7 @@ MODULE_DEVICE_TABLE(of, si7020_dt_ids);
- static struct i2c_driver si7020_driver = {
+@@ -247,7 +248,7 @@ static struct i2c_driver htu21_driver = {
+ 	.id_table = htu21_id,
  	.driver = {
- 		.name = "si7020",
--		.of_match_table = of_match_ptr(si7020_dt_ids),
-+		.of_match_table = si7020_dt_ids,
- 	},
- 	.probe		= si7020_probe,
- 	.id_table	= si7020_id,
+ 		   .name = "htu21",
+-		   .of_match_table = of_match_ptr(htu21_of_match),
++		   .of_match_table = htu21_of_match,
+ 		   },
+ };
+ 
 -- 
 2.28.0
 
