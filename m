@@ -2,112 +2,80 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E50AC43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C648DC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:49:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 20AA4206A1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759626;
-	bh=SECXsoDEgSc+XnHOLSKBHuHxcn/IbMqNxylG4VrCopc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=DQuwnqgxDNDBhzs2Gfy0htIF5R4ceH8wH605TQ4gn/y1Z8lb8lXQ9iyuBvzO6/lcw
-	 pCU22hkd77fpTNpPqHAYLwFsLKJruA+eZzQbhy+Oofoh1gQBKR5VOsqdX5Jwm5tMxk
-	 Kxzs1tFeeRa6aHCePyLZnCRykMl8AaCi+RvktDXg=
+	by mail.kernel.org (Postfix) with ESMTP id 7A68C20BED
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:49:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725877AbgIJRkU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:20 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47470 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727070AbgIJRfO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:35:14 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5D888214F1;
-        Thu, 10 Sep 2020 17:35:12 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759313;
-        bh=SECXsoDEgSc+XnHOLSKBHuHxcn/IbMqNxylG4VrCopc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Uv7rV9Sha8k3/Qp+QqYqPQ+QOPBmm0eXfVxnvvtSV3DjrXGOunw2BcmEg4rDTGYYt
-         EZ8PsopoC1+RWLLJFgcpEqwreayWin6L/GanS1omOwjsenHSokVi3WRJYt57yexuwi
-         K0qPhBYsidHlta/lTPTa9PvchGQ1zBQXhWQFKEhU=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Phil Reid <preid@eletromag.com.au>
-Subject: [PATCH 01/38] iio:potentiometer:ad5272: Drop of_match_ptr and CONFIG_OF protections.
-Date:   Thu, 10 Sep 2020 18:32:05 +0100
-Message-Id: <20200910173242.621168-2-jic23@kernel.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
-References: <20200910173242.621168-1-jic23@kernel.org>
+        id S1726918AbgIJRsn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:48:43 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2805 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727807AbgIJRsH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:48:07 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.106])
+        by Forcepoint Email with ESMTP id 6A65C7EC37958B00689B;
+        Thu, 10 Sep 2020 18:47:55 +0100 (IST)
+Received: from localhost (10.52.121.43) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 10 Sep
+ 2020 18:47:55 +0100
+Date:   Thu, 10 Sep 2020 18:46:18 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Nishant Malpani <nish.malpani25@gmail.com>
+CC:     <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH v3 0/3] iio: gyro: adxrs290: Add triggered buffer &
+ debugfs support
+Message-ID: <20200910184618.00001b86@Huawei.com>
+In-Reply-To: <20200910123000.16860-1-nish.malpani25@gmail.com>
+References: <20200910123000.16860-1-nish.malpani25@gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.52.121.43]
+X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Thu, 10 Sep 2020 17:59:57 +0530
+Nishant Malpani <nish.malpani25@gmail.com> wrote:
 
-These prevent use of this driver with ACPI via PRP0001 and are
-an example of an anti pattern I'm trying to remove from IIO.
-Drop them to remove this restriction.
+> Introduce DATA_RDY trigger for triggered buffer setup; this enables continuous
+> data capture. Additionally, add support for direct register access using the debugfs 
+> iio interface. 
+> 
+> The device-tree bindings documentation illustrates an example of using a GPIO irq
+> line to trigger a data capture.
+> 
+> Nishant Malpani (3):
+>   iio: gyro: adxrs290: Add triggered buffer support
+>   dt-bindings: iio: gyro: adxrs290: Add interrupts support
+>   iio: gyro: adxrs290: Add debugfs register access support
+> 
+>  .../bindings/iio/gyroscope/adi,adxrs290.yaml  |   6 +
+>  drivers/iio/gyro/Kconfig                      |   2 +
+>  drivers/iio/gyro/adxrs290.c                   | 237 ++++++++++++++++--
+>  3 files changed, 231 insertions(+), 14 deletions(-)
+> 
 
-Also added mod_devicetable.h include given use of struct of_device_id
-which is defined in that header.
+Hi Nishant,
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Phil Reid <preid@eletromag.com.au>
----
- drivers/iio/potentiometer/ad5272.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Something odd went on with this version.  It's not come across threaded
+and patch 1 is missing.  Please resend.
 
-diff --git a/drivers/iio/potentiometer/ad5272.c b/drivers/iio/potentiometer/ad5272.c
-index 933afcf7e925..70c45d346df0 100644
---- a/drivers/iio/potentiometer/ad5272.c
-+++ b/drivers/iio/potentiometer/ad5272.c
-@@ -15,6 +15,7 @@
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
-+#include <linux/mod_devicetable.h>
- 
- #define  AD5272_RDAC_WR  1
- #define  AD5272_RDAC_RD  2
-@@ -192,7 +193,6 @@ static int ad5272_probe(struct i2c_client *client,
- 	return devm_iio_device_register(dev, indio_dev);
- }
- 
--#if defined(CONFIG_OF)
- static const struct of_device_id ad5272_dt_ids[] = {
- 	{ .compatible = "adi,ad5272-020", .data = (void *)AD5272_020 },
- 	{ .compatible = "adi,ad5272-050", .data = (void *)AD5272_050 },
-@@ -202,7 +202,6 @@ static const struct of_device_id ad5272_dt_ids[] = {
- 	{}
- };
- MODULE_DEVICE_TABLE(of, ad5272_dt_ids);
--#endif /* CONFIG_OF */
- 
- static const struct i2c_device_id ad5272_id[] = {
- 	{ "ad5272-020", AD5272_020 },
-@@ -217,7 +216,7 @@ MODULE_DEVICE_TABLE(i2c, ad5272_id);
- static struct i2c_driver ad5272_driver = {
- 	.driver = {
- 		.name	= "ad5272",
--		.of_match_table = of_match_ptr(ad5272_dt_ids),
-+		.of_match_table = ad5272_dt_ids,
- 	},
- 	.probe		= ad5272_probe,
- 	.id_table	= ad5272_id,
--- 
-2.28.0
+Thanks,
+
+Jonathan
 
