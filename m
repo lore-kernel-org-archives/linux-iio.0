@@ -7,45 +7,46 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28B60C07548
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CAD35C2D0E3
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D596321D40
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8444021582
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759610;
-	bh=MGOhaJX7nCv7f7rWeUzTDUuEIm2qrKbUJkOWY6iJ97I=;
+	s=default; t=1599759611;
+	bh=0gR9DbF4mOgfEbOg15URbOrD9gQ7vQCurGCJPF5Hz98=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=FbJdLM65cRrTRwTF3bhHIncmsbcPDytSd3DkAbcvLdI18JwyYKU1zWgHrTQKbobbK
-	 P4O2+/0XWDrm00SUTIc1p7BHIThlhIX4Z+UEWqreJCKQwLrb0pkvUCuBP0n/F9oYhC
-	 sVLm/uUn/h20x+dPQATZob/Z7JHXGQKhkgAwbNiQ=
+	b=LJFLb8cV2t9HAASWF4fFA96dQJSvkwg9sWGvlyu0g+Zw4Etz+R/PN9dSOSNLEXuBF
+	 Vi6OXWY/3UkPMMymXEkEZrnFa81uu/LTRJghgKFF9tXbmnSP2lKadJyZUmckGIXX15
+	 DNuQzuYc1JMY4cZ6oZ3uapqE6EdrlkiNE7LapN1E=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726991AbgIJRkI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47974 "EHLO mail.kernel.org"
+        id S1726992AbgIJRkK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:40:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727790AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727095AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 10 Sep 2020 13:36:00 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4AB3421582;
-        Thu, 10 Sep 2020 17:35:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2CFC9221EC;
+        Thu, 10 Sep 2020 17:35:28 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759333;
-        bh=MGOhaJX7nCv7f7rWeUzTDUuEIm2qrKbUJkOWY6iJ97I=;
+        s=default; t=1599759329;
+        bh=0gR9DbF4mOgfEbOg15URbOrD9gQ7vQCurGCJPF5Hz98=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ocz2jleVGVJpvf3hk6TO/pXDyMG2swUlGhB6a6a5lUQdVc6lf0k00Gc2nqaN/SB7E
-         kIySdFJF6S3dkmwgfG/T2wHymOLwdSq0/Rf7G/EsgKqrjK4X+9AaDpuyc79isvSNn8
-         F699ivosAW+XbN+JMpJaX1ZkOzhQxiUB8rAvxpIg=
+        b=IgxNW9g9W5kvpE+R3ls5V8qs3KKQYa+7EHwFbAic23MAlgChb/ockX/L1FUPdKZif
+         tvnZ2zdX3MouihUUF18MmwuF2+LyOXtoAx4q+YPGldZ9UfflQGU1WkxBCWIkrshMy7
+         JyNMZ5yLy6cqPLsH2w+DzWqE/TvJ39zXtusXJ5aI=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Subject: [PATCH 15/38] iio:dac:ti-dac5571: Drop of_match_ptr and CONFIG_OF protections
-Date:   Thu, 10 Sep 2020 18:32:19 +0100
-Message-Id: <20200910173242.621168-16-jic23@kernel.org>
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 12/38] iio:dac:ad7303: Drop of_match_ptr protection
+Date:   Thu, 10 Sep 2020 18:32:16 +0100
+Message-Id: <20200910173242.621168-13-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,55 +59,40 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These prevent the use of this driver with ACPI via PRP0001 and are
+This prevents use of this driver with ACPI via PRP0001 and are
 an example of an anti pattern I'm trying to remove from IIO.
-Hence drop them from this driver.
+
+Also add mod_devicetable.h include given struct of_device_id is
+declared there.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
+Cc: Michael Hennerich <michael.hennerich@analog.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/dac/ti-dac5571.c | 7 ++-----
- 1 file changed, 2 insertions(+), 5 deletions(-)
+ drivers/iio/dac/ad7303.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
-index d303b19814e7..d3295767a079 100644
---- a/drivers/iio/dac/ti-dac5571.c
-+++ b/drivers/iio/dac/ti-dac5571.c
-@@ -18,8 +18,7 @@
- #include <linux/iio/iio.h>
- #include <linux/i2c.h>
+diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
+index 4460aa57a33f..20c85c2a636c 100644
+--- a/drivers/iio/dac/ad7303.c
++++ b/drivers/iio/dac/ad7303.c
+@@ -7,6 +7,7 @@
+ 
+ #include <linux/err.h>
  #include <linux/module.h>
--#include <linux/of_device.h>
--#include <linux/of.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/regulator/consumer.h>
- 
- enum chip_id {
-@@ -384,7 +383,6 @@ static int dac5571_remove(struct i2c_client *i2c)
- 	return 0;
- }
- 
--#ifdef CONFIG_OF
- static const struct of_device_id dac5571_of_id[] = {
- 	{.compatible = "ti,dac5571"},
- 	{.compatible = "ti,dac6571"},
-@@ -398,7 +396,6 @@ static const struct of_device_id dac5571_of_id[] = {
- 	{}
- };
- MODULE_DEVICE_TABLE(of, dac5571_of_id);
--#endif
- 
- static const struct i2c_device_id dac5571_id[] = {
- 	{"dac5571", single_8bit},
-@@ -417,7 +414,7 @@ MODULE_DEVICE_TABLE(i2c, dac5571_id);
- static struct i2c_driver dac5571_driver = {
+ #include <linux/kernel.h>
+ #include <linux/spi/spi.h>
+ #include <linux/slab.h>
+@@ -287,7 +288,7 @@ MODULE_DEVICE_TABLE(spi, ad7303_spi_ids);
+ static struct spi_driver ad7303_driver = {
  	.driver = {
- 		   .name = "ti-dac5571",
--		   .of_match_table = of_match_ptr(dac5571_of_id),
-+		   .of_match_table = dac5571_of_id,
+ 		.name = "ad7303",
+-		.of_match_table = of_match_ptr(ad7303_spi_of_match),
++		.of_match_table = ad7303_spi_of_match,
  	},
- 	.probe	  = dac5571_probe,
- 	.remove   = dac5571_remove,
+ 	.probe = ad7303_probe,
+ 	.remove = ad7303_remove,
 -- 
 2.28.0
 
