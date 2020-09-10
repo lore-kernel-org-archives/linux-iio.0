@@ -2,51 +2,82 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0413DC433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E929CC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:04:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AA2E020731
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:57:48 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599764268;
-	bh=A8g/aGqwyv0RsVaiMq65Dp1PysUSdq1Ymqxl8zg45RM=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=pVFIvssQl5LW0oDvoYoWLmt/QY++b2n6pGzl0veTepGRlelYypBbDBAkN3kXGoRIW
-	 PdkyY7eLxcUrp4BXLOB5TZ0b8WSYXSveq/C3KQvuDJ9UaX+HZ/ucDMyHQeabK2VQij
-	 /y1wSU1yv+IJrU11O/NU8UgDgkdpPlcKqr9MfZZo=
+	by mail.kernel.org (Postfix) with ESMTP id 99DF921D81
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 21:04:43 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="WcGgdaRR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727107AbgIJS5i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 14:57:38 -0400
-Received: from mail.kernel.org ([198.145.29.99]:33464 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726512AbgIJS4k (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 14:56:40 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0F17C21582;
-        Thu, 10 Sep 2020 18:56:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599764189;
-        bh=A8g/aGqwyv0RsVaiMq65Dp1PysUSdq1Ymqxl8zg45RM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=s5xyR5etRdZ7KiKwIeNIAf/lJ4skF+79ZniqOiT1ZJfI2uDMNOCvFJevNZa20sX9p
-         NfEoSoGLRCHeWNSIaZLb6ToXSmvCilttu1+PeK7oVMQgi44YSBErr8XZFutEFsIkhD
-         0bJMQtD7gGk2h9hAvRw/Zo70eRl2zUXiLynbGEpE=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jonathan Corbet <corbet@lwn.net>
-Cc:     linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: [PATCH] kernel-doc: add support for ____cacheline_aligned attribute
-Date:   Thu, 10 Sep 2020 19:54:15 +0100
-Message-Id: <20200910185415.653139-1-jic23@kernel.org>
+        id S1727052AbgIJVEf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 17:04:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57184 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1730690AbgIJOhg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 10:37:36 -0400
+Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6EBDC0617BB
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:16 -0700 (PDT)
+Received: by mail-lj1-x244.google.com with SMTP id a15so8360151ljk.2
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:16 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wcVYXgQ5pttw1IKCDgQFlSKYdGXdwjbBjMlIEbUjqiQ=;
+        b=WcGgdaRRvCVMPOMrzk8F0zJKKmXYDnx/T+2PstZPMVXOPjqh8utA+6+vILfHsug244
+         UlvTF+Cv7GA993X7lv/AnHiWokjLhHCdY/o/MAk/lHwbyu0dMRyCZIjZlZo1x5Mj3v3e
+         j5B78FNoLh0JLl6S4aIr4wYfyAwpqAqX1E9RVHyrZlTjH/NSufy6X1HFlExrh+i7NTMI
+         4u16BTA6G+MhSDCVH/h07hI04tVXg4+T8S5BPo5F/PfZ8kYtuz3S5wWEK2/OFJWxvMHJ
+         jjfiehwrYb1S+Pv9uTyiFpLE+BssJdGiBHGnGElC4KiOFrNr6tp6EXQIFi5enObhytNB
+         lSGQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wcVYXgQ5pttw1IKCDgQFlSKYdGXdwjbBjMlIEbUjqiQ=;
+        b=cmHx9TYy0kZW9PbpGVkgVeQnehCh3Pb1RP+Q2iWO93YQjUyQc46M/HHV5z7kBtLhgu
+         l0wUXQEAGkwgJGblyqNHuEVzpHhjcu811tuq6GeYa3POgNJsvxler5r5DPPIN/6SnW5S
+         eT4M3nXlIbh8HZcLVeMKb61EBOOz+9anauB9CEXgwlbGtVj4y6iLrdjF3z7TqZxP1oTT
+         QsodrQWu/5fi9iutxao+9vpZoUq4ObKnnoaWi3xf8RkfBoxFmwOv5wBCjoZ5KQrgP+0e
+         v/wV54Wpdcp1babJSMtBifo4fbIzG6d826SYKA/DI2nsQ1fbovOstXy54t9SAayeyqSX
+         67Aw==
+X-Gm-Message-State: AOAM531UTno8Bz4B4Z6/BqdoUb6n9zTNrfEVVnPZj8M1ro5BA3eeBzGp
+        M+6hPYlRWSMFpND6gFv2pLl62A==
+X-Google-Smtp-Source: ABdhPJxBUWMazHhh0NVRcv5in/kVk015eZcEEP/gzP/tFVbk7+tflyjNHMBiyncgOgFctGYV3Bn5zg==
+X-Received: by 2002:a2e:8506:: with SMTP id j6mr4109652lji.176.1599746415305;
+        Thu, 10 Sep 2020 07:00:15 -0700 (PDT)
+Received: from eriador.lan ([188.162.64.156])
+        by smtp.gmail.com with ESMTPSA id t82sm1367646lff.43.2020.09.10.07.00.13
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Sep 2020 07:00:14 -0700 (PDT)
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+To:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Craig Tatlor <ctatlor97@gmail.com>
+Subject: [PATCH v4 03/10] fixp-arith: add a linear interpolation function
+Date:   Thu, 10 Sep 2020 16:59:53 +0300
+Message-Id: <20200910140000.324091-4-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
+References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -54,53 +85,45 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Craig Tatlor <ctatlor97@gmail.com>
 
-Subroutine dump_struct uses type attributes to check if the struct
-syntax is valid. Then, it removes all attributes before using it for
-output. `____cacheline_aligned` is an attribute that is
-not included in both steps. Add it, since it is used by kernel structs.
+Adds a function to interpolate against two points,
+this is carried arount as a helper function by tons of drivers.
 
-Based on previous patch to add ____cacheline_aligned_in_smp.
-Motivated by patches to reorder this attribute to before the
-variable name.   Whilst we could do that in all cases, that would
-be a massive change and it is more common in the kernel to place
-this particular attribute after the variable name. A quick grep
-suggests approximately 400 instances of which 341 have this
-attribute just before a semicolon and hence after the variable name.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Craig Tatlor <ctatlor97@gmail.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 ---
+ include/linux/fixp-arith.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-Note I haven't figured out what this is actually doing and hence the
-patch is done by copying the changes made for ____cacheline_aligned_in_smp.
-It seems to work. :)
-
- scripts/kernel-doc | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/scripts/kernel-doc b/scripts/kernel-doc
-index d1b445665ad6..cc55e1c2a8a4 100755
---- a/scripts/kernel-doc
-+++ b/scripts/kernel-doc
-@@ -1083,7 +1083,7 @@ sub dump_struct($$) {
-     my $x = shift;
-     my $file = shift;
+diff --git a/include/linux/fixp-arith.h b/include/linux/fixp-arith.h
+index 8396013785ef..281cb4f83dbe 100644
+--- a/include/linux/fixp-arith.h
++++ b/include/linux/fixp-arith.h
+@@ -141,4 +141,23 @@ static inline s32 fixp_sin32_rad(u32 radians, u32 twopi)
+ #define fixp_cos32_rad(rad, twopi)	\
+ 	fixp_sin32_rad(rad + twopi / 4, twopi)
  
--    if ($x =~ /(struct|union)\s+(\w+)\s*\{(.*)\}(\s*(__packed|__aligned|____cacheline_aligned_in_smp|__attribute__\s*\(\([a-z0-9,_\s\(\)]*\)\)))*/) {
-+    if ($x =~ /(struct|union)\s+(\w+)\s*\{(.*)\}(\s*(__packed|__aligned|____cacheline_aligned_in_smp|____cacheline_aligned|__attribute__\s*\(\([a-z0-9,_\s\(\)]*\)\)))*/) {
- 	my $decl_type = $1;
- 	$declaration_name = $2;
- 	my $members = $3;
-@@ -1099,6 +1099,7 @@ sub dump_struct($$) {
- 	$members =~ s/\s*__packed\s*/ /gos;
- 	$members =~ s/\s*CRYPTO_MINALIGN_ATTR/ /gos;
- 	$members =~ s/\s*____cacheline_aligned_in_smp/ /gos;
-+	$members =~ s/\s*____cacheline_aligned/ /gos;
- 
- 	# replace DECLARE_BITMAP
- 	$members =~ s/__ETHTOOL_DECLARE_LINK_MODE_MASK\s*\(([^\)]+)\)/DECLARE_BITMAP($1, __ETHTOOL_LINK_MODE_MASK_NBITS)/gos;
++/**
++ * fixp_linear_interpolate() - interpolates a value from two known points
++ *
++ * @x0: x value of point 0
++ * @y0: y value of point 0
++ * @x1: x value of point 1
++ * @y1: y value of point 1
++ * @x: the linear interpolant
++ */
++static inline int fixp_linear_interpolate(int x0, int y0, int x1, int y1, int x)
++{
++	if (y0 == y1 || x == x0)
++		return y0;
++	if (x1 == x0 || x == x1)
++		return y1;
++
++	return y0 + ((y1 - y0) * (x - x0) / (x1 - x0));
++}
++
+ #endif
 -- 
 2.28.0
 
