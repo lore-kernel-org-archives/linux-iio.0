@@ -7,45 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C2CEC433E2
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AD7C43461
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 54CE6206A1
+	by mail.kernel.org (Postfix) with ESMTP id 802A821D40
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1599759613;
-	bh=M/iE5ajFvegSF/+ggOtfuNwaDIQiCxRk1KTcjv3rSTU=;
+	bh=bNmhDRiZo3c3p++zFV+W+5Voj9Iev+vd6lt+Nd7U4hc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=VXOLcevGfMYNhtsjwiw321t3v/1rSM45AJ7BPzt8W/BX38M5QCNM4gvKtli3ejaNX
-	 ETa5VUPNtb59y9JWNzjwRacWtT1K/mTMrwwVs5+maYshmY74445nZyQYqVdNK3+kmd
-	 pTKWmWfehH8EKJ2/9o14a5jfMJAzQ6uUGiCRuJdc=
+	b=TjsImStu4DmM2fQIJvZ8wXzWxSVZdzmE9sHOKmyc14+8bYAXy392273Y45XDcYgf8
+	 zBUA38dMIKO+39QPEdvfyNtwZ4pxhXHgz4XzLhxvp8MzK9aPpSiN0rrWJtaQH4jYSL
+	 KopzkBEw9ChBWBUZ56UyL9op5vzd2Lb7M9RvG0Cs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726967AbgIJRkL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:11 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47868 "EHLO mail.kernel.org"
+        id S1726997AbgIJRkM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:40:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47774 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726997AbgIJRfs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1726947AbgIJRfs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 10 Sep 2020 13:35:48 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 238DE221E2;
-        Thu, 10 Sep 2020 17:35:20 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1B81221D92;
+        Thu, 10 Sep 2020 17:35:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759322;
-        bh=M/iE5ajFvegSF/+ggOtfuNwaDIQiCxRk1KTcjv3rSTU=;
+        s=default; t=1599759319;
+        bh=bNmhDRiZo3c3p++zFV+W+5Voj9Iev+vd6lt+Nd7U4hc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=wiQpEgKttba7jmiNHLm2XFAQBEyDg8p3rqcVUaxEZ2fvZTgcyiAPdNB9dY3QeI5TJ
-         2wqZXVqsynV6sQp2juGzX5nJ3u14EgjHPgW8fek45Rr7bTDTnh9uoPwmahgpuxEBMY
-         yDOzAUoPfuNatfz18eXQWE9+OMd0jRub2idg+uf0=
+        b=Bvu2moA8fF2HVqw4mz45yQmF0LgnddR7/DyCGqiLGiycrQrx194NnZUywaPqgYerk
+         W3A65sQEhD0pMXZZ2umgownvGalhzQxtfggySyO60f7JZXhXVb4SIiHSGQ/0P746bD
+         DCBjKBOFGqzaX6fTzbwrNoySGONdPEnTjZNFoZdI=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Maury Anderson <maury.anderson@rockwellcollins.com>,
+        Matthew Weber <matthew.weber@rockwellcollins.com>,
         Slawomir Stepien <sst@poczta.fm>
-Subject: [PATCH 07/38] iio:potentiometer:mcp4131: Drop of_match_ptr and use generic fw interfaces.
-Date:   Thu, 10 Sep 2020 18:32:11 +0100
-Message-Id: <20200910173242.621168-8-jic23@kernel.org>
+Subject: [PATCH 05/38] iio:potentiometer:max5481: Drop invalid ACPI binding.
+Date:   Thu, 10 Sep 2020 18:32:09 +0100
+Message-Id: <20200910173242.621168-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,50 +60,54 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This change allows the use of the driver with ACPI via PRP0001
-and remove an example of an anti pattern I'm trying to remove from IIO.
-Also adjust includes to reflect this change.
+Given that an ACPI binding must start with 3 or 4 capitals,
+this cannot represent a valid binding.
+
+It seems unlikely anything out there is using it.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Maury Anderson <maury.anderson@rockwellcollins.com>
+Cc: Matthew Weber <matthew.weber@rockwellcollins.com>
 Cc: Slawomir Stepien <sst@poczta.fm>
 ---
- drivers/iio/potentiometer/mcp4131.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/potentiometer/max5481.c | 13 -------------
+ 1 file changed, 13 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/mcp4131.c b/drivers/iio/potentiometer/mcp4131.c
-index 2923ce250fc3..7c8c18ab8764 100644
---- a/drivers/iio/potentiometer/mcp4131.c
-+++ b/drivers/iio/potentiometer/mcp4131.c
-@@ -37,9 +37,9 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/types.h>
- #include <linux/module.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/mutex.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
-+#include <linux/property.h>
- #include <linux/spi/spi.h>
+diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
+index 6d1e1a57cba1..a88ed0eb3adc 100644
+--- a/drivers/iio/potentiometer/max5481.c
++++ b/drivers/iio/potentiometer/max5481.c
+@@ -7,7 +7,6 @@
+  * https://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
+  */
  
- #define MCP4131_WRITE		(0x00 << 2)
-@@ -252,7 +252,7 @@ static int mcp4131_probe(struct spi_device *spi)
- 	data = iio_priv(indio_dev);
- 	spi_set_drvdata(spi, indio_dev);
- 	data->spi = spi;
--	data->cfg = of_device_get_match_data(&spi->dev);
-+	data->cfg = device_get_match_data(&spi->dev);
- 	if (!data->cfg) {
- 		devid = spi_get_device_id(spi)->driver_data;
- 		data->cfg = &mcp4131_cfg[devid];
-@@ -479,7 +479,7 @@ MODULE_DEVICE_TABLE(spi, mcp4131_id);
- static struct spi_driver mcp4131_driver = {
+-#include <linux/acpi.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/module.h>
+@@ -182,22 +181,10 @@ static const struct spi_device_id max5481_id_table[] = {
+ };
+ MODULE_DEVICE_TABLE(spi, max5481_id_table);
+ 
+-#if defined(CONFIG_ACPI)
+-static const struct acpi_device_id max5481_acpi_match[] = {
+-	{ "max5481", max5481 },
+-	{ "max5482", max5482 },
+-	{ "max5483", max5483 },
+-	{ "max5484", max5484 },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(acpi, max5481_acpi_match);
+-#endif
+-
+ static struct spi_driver max5481_driver = {
  	.driver = {
- 		.name	= "mcp4131",
--		.of_match_table = of_match_ptr(mcp4131_dt_ids),
-+		.of_match_table = mcp4131_dt_ids,
+ 		.name  = "max5481",
+ 		.of_match_table = max5481_match,
+-		.acpi_match_table = ACPI_PTR(max5481_acpi_match),
  	},
- 	.probe		= mcp4131_probe,
- 	.id_table	= mcp4131_id,
+ 	.probe = max5481_probe,
+ 	.remove = max5481_remove,
 -- 
 2.28.0
 
