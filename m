@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36603C433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D520C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DB3F921582
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3C65721582
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:39:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759589;
-	bh=blQOhietSGkdIajSqFJS++7Xp/W+W41PAK7v1JvlG3A=;
+	s=default; t=1599759591;
+	bh=EgNyny7tY6Sx+fJIB487Wky48EnLP3lyv7nkTARfNC8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=XVe+uknuzOzKqbCnyfOA1dZOVgbbWN2r4RhgVHM79z9fZzLG2+lfNM2+nYSX5CCFP
-	 L1AZrqHBEpiCAnZCdT88mHmJiMZwwxYfI63466kRm/yn7srM3R3mfSrjjqaGlKF/8P
-	 x7KuyuTUz2e1WcUy4mpV42mtpxG/QVt5/KRJGxVE=
+	b=2XLAUx5liCnzPsUHn0hJdRyhMfXCp0G8ko25/bN6APdZtmG+VHQvcEOrjV/SFoT8M
+	 gI+GW2UZjpMnnRqvQl+Red/8DXz8B3F9Da85yNiF+OGLMtQwar2BjadJSrpMEfty+S
+	 n4j30knM4KMRM/WnCb8/1jfALiF1ynV/NOCGxckA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726384AbgIJRjq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1726675AbgIJRjq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 10 Sep 2020 13:39:46 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47928 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:47892 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726675AbgIJRhN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:37:13 -0400
+        id S1727032AbgIJRhL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:37:11 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E283822228;
-        Thu, 10 Sep 2020 17:35:57 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 38B1B22226;
+        Thu, 10 Sep 2020 17:35:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759358;
-        bh=blQOhietSGkdIajSqFJS++7Xp/W+W41PAK7v1JvlG3A=;
+        s=default; t=1599759356;
+        bh=EgNyny7tY6Sx+fJIB487Wky48EnLP3lyv7nkTARfNC8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=yy7i8C4iYkSWwEK4wkxnFnRR5CCeof7b0xHNTa1WFD2a2XFcgJpYQmoEitRWs/Yak
-         1hZ4UbkuqpO2EzMRpadOhB7N1cfRWZnLaPbCu4Ujbv8XEr2fhhm+GRLIig+eJ4riUo
-         bbqOZVdsXeOyRXVtWedUIuoK61mfwSrlV72v3mUY=
+        b=WXEvF0qpNCXdGDcULruKFQ+84fLfAjtxTjiHv5lewR0fTDUVgO0WiQiCX0cRBMpj7
+         1mesaUGIZtpED1Th5gFlgomMGy5C2wwbzsL8UOSFZZ7bEMze8ZDWkPEdlwVEonoE78
+         s5SwTjmlmGyNDuysXyJ2kebZ9Ds8aRSM5nRTl9ik=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>
-Subject: [PATCH 34/38] iio:magn:ak8975: Drop of_match_ptr and ACPI_PTR protections.
-Date:   Thu, 10 Sep 2020 18:32:38 +0100
-Message-Id: <20200910173242.621168-35-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 32/38] iio:proximity:as3935: Drop of_match_ptr and use generic fw accessors
+Date:   Thu, 10 Sep 2020 18:32:36 +0100
+Message-Id: <20200910173242.621168-33-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,63 +58,62 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Both would result in only a small size saving.  For simplicity it
-is best to remove them.  I also wish to remove both these antipatterns
-from IIO.
+This change allows the driver to be used with ACPI PRP0001 and removes
+an antipattern that I want to avoid being copied into new IIO drivers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Jonathan Albrieux <jonathan.albrieux@gmail.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/magnetometer/ak8975.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/iio/proximity/as3935.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-index 03d71f796177..0141ef3b6476 100644
---- a/drivers/iio/magnetometer/ak8975.c
-+++ b/drivers/iio/magnetometer/ak8975.c
-@@ -8,6 +8,7 @@
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index 4df8d53d65fb..b79ada839e01 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -7,6 +7,7 @@
   */
  
  #include <linux/module.h>
 +#include <linux/mod_devicetable.h>
- #include <linux/kernel.h>
- #include <linux/slab.h>
- #include <linux/i2c.h>
-@@ -17,7 +18,6 @@
+ #include <linux/init.h>
+ #include <linux/interrupt.h>
  #include <linux/delay.h>
- #include <linux/bitops.h>
- #include <linux/gpio/consumer.h>
--#include <linux/acpi.h>
- #include <linux/regulator/consumer.h>
- #include <linux/pm_runtime.h>
+@@ -356,7 +357,6 @@ static int as3935_probe(struct spi_device *spi)
+ 	struct iio_dev *indio_dev;
+ 	struct iio_trigger *trig;
+ 	struct as3935_state *st;
+-	struct device_node *np = dev->of_node;
+ 	int ret;
  
-@@ -773,7 +773,6 @@ static const struct iio_info ak8975_info = {
- 	.read_raw = &ak8975_read_raw,
- };
+ 	/* Be sure lightning event interrupt is specified */
+@@ -375,7 +375,7 @@ static int as3935_probe(struct spi_device *spi)
+ 	spi_set_drvdata(spi, indio_dev);
+ 	mutex_init(&st->lock);
  
--#ifdef CONFIG_ACPI
- static const struct acpi_device_id ak_acpi_match[] = {
- 	{"AK8975", AK8975},
- 	{"AK8963", AK8963},
-@@ -785,7 +784,6 @@ static const struct acpi_device_id ak_acpi_match[] = {
- 	{ }
- };
- MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
--#endif
+-	ret = of_property_read_u32(np,
++	ret = device_property_read_u32(dev,
+ 			"ams,tuning-capacitor-pf", &st->tune_cap);
+ 	if (ret) {
+ 		st->tune_cap = 0;
+@@ -389,7 +389,7 @@ static int as3935_probe(struct spi_device *spi)
+ 		return -EINVAL;
+ 	}
  
- static void ak8975_fill_buffer(struct iio_dev *indio_dev)
- {
-@@ -1075,8 +1073,8 @@ static struct i2c_driver ak8975_driver = {
+-	ret = of_property_read_u32(np,
++	ret = device_property_read_u32(dev,
+ 			"ams,nflwdth", &st->nflwdth_reg);
+ 	if (!ret && st->nflwdth_reg > AS3935_NFLWDTH_MASK) {
+ 		dev_err(dev, "invalid nflwdth setting of %d\n",
+@@ -471,7 +471,7 @@ MODULE_DEVICE_TABLE(spi, as3935_id);
+ static struct spi_driver as3935_driver = {
  	.driver = {
- 		.name	= "ak8975",
- 		.pm = &ak8975_dev_pm_ops,
--		.of_match_table = of_match_ptr(ak8975_of_match),
--		.acpi_match_table = ACPI_PTR(ak_acpi_match),
-+		.of_match_table = ak8975_of_match,
-+		.acpi_match_table = ak_acpi_match,
+ 		.name	= "as3935",
+-		.of_match_table = of_match_ptr(as3935_of_match),
++		.of_match_table = as3935_of_match,
+ 		.pm	= AS3935_PM_OPS,
  	},
- 	.probe		= ak8975_probe,
- 	.remove		= ak8975_remove,
+ 	.probe		= as3935_probe,
 -- 
 2.28.0
 
