@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8332FC43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:36:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C7B9C07548
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:36:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1DFFE221E3
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:36:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D14ED221E5
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:36:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759412;
-	bh=y4RBhMExWqZsbDmxczqshbG9Lc9AJxW8KSELyxL6VRk=;
+	s=default; t=1599759417;
+	bh=xVW61def85Uv0/fHWE76hr7db86tAYKWR+K1Cfw3w6c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=vWLJ4G0OR3Jh7LH+zvrsnDPCJUyWkbBR36el2TBEIx2BGOTrKW1wMBrgSohVRu8a5
-	 QOCYZ0TaLxOaDITbg09gmoYoZW18zUw0WPclu8qmfL181IqjKa5mMF4XpW7ZmMF9UV
-	 EpYsPCuqB15WeAMdfjZYlJiYTf/LOM2rP1fJ0Kys=
+	b=t4XyCQiFdgHZCb8JildPowMYs1J8EFAbRcKDB3BS6FL6oXFjUyDnX+sqynvkkkl/Y
+	 0Zyq5sOK4Kxr6hrllklvcSqYtIYUSeyAco/eWItVGnOJQVqLvpJgkDnJ5MhSfGRgEp
+	 tp6suCRhZhMNN/YTZuAHgQRNKh1RF2vIgh+dqk4w=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727825AbgIJRgX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:36:23 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47866 "EHLO mail.kernel.org"
+        id S1727025AbgIJRgw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:36:52 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727101AbgIJRfs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:35:48 -0400
+        id S1727794AbgIJRgA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:36:00 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C21F8221E3;
-        Thu, 10 Sep 2020 17:35:19 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99E70221EB;
+        Thu, 10 Sep 2020 17:35:33 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759320;
-        bh=y4RBhMExWqZsbDmxczqshbG9Lc9AJxW8KSELyxL6VRk=;
+        s=default; t=1599759334;
+        bh=xVW61def85Uv0/fHWE76hr7db86tAYKWR+K1Cfw3w6c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=OHKWdpXcOjJyEatjyckdI8lDGFNPo19n4c/Y53y89YZJuQLi6N9f7FrygX32GD9oM
-         JtGguuq4Vn18IarrDK3vc6u/BXzNbVs6YOPIhzXILbnuCI2TKcnRnd4RJ08UZ+W+TK
-         o+7XkJR98wUCmTdmd2k0WU1TFevHJ3IzSrwJ4HGk=
+        b=00FBS4IWTiSEGd12SWPOextXxbgtfzNhh+8z64wnNC6Bgb/Gb3SQKzBdtlBjm9/7b
+         sbzoc7nY0ReXXMwYOo3cph1zJRU9ciJ2z/F3KGcw7cF7cc/d55qkry2H5HvnIuhTsa
+         vKjrVlUgGUw6SGRiupmh6ersw/a0WTQ4ngXiDp/U=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 06/38] iio:potentiometer:mcp4018: Drop of_match_ptr and CONFIG_OF protections.
-Date:   Thu, 10 Sep 2020 18:32:10 +0100
-Message-Id: <20200910173242.621168-7-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 16/38] iio:potentiostat:lmp91000: Drop of_match_ptr and use generic fw accessors
+Date:   Thu, 10 Sep 2020 18:32:20 +0100
+Message-Id: <20200910173242.621168-17-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,67 +58,62 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These prevent use of this driver with ACPI via PRP0001 and are
+This change allows use of this driver with ACPI via PRP0001 and removes
 an example of an anti pattern I'm trying to remove from IIO.
-Also use device_get_match_data() rather than devicetree only version.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/potentiometer/mcp4018.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/potentiostat/lmp91000.c | 11 +++++------
+ 1 file changed, 5 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/mcp4018.c b/drivers/iio/potentiometer/mcp4018.c
-index fd0579ad3c83..c0e171fec062 100644
---- a/drivers/iio/potentiometer/mcp4018.c
-+++ b/drivers/iio/potentiometer/mcp4018.c
-@@ -16,8 +16,8 @@
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+index 67ae635a05f3..f34ca769dc20 100644
+--- a/drivers/iio/potentiostat/lmp91000.c
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -11,7 +11,7 @@
  #include <linux/module.h>
+ #include <linux/i2c.h>
+ #include <linux/delay.h>
 -#include <linux/of.h>
--#include <linux/of_device.h>
 +#include <linux/mod_devicetable.h>
-+#include <linux/property.h>
- 
- #define MCP4018_WIPER_MAX 127
- 
-@@ -116,8 +116,6 @@ static const struct i2c_device_id mcp4018_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, mcp4018_id);
- 
--#ifdef CONFIG_OF
--
- #define MCP4018_COMPATIBLE(of_compatible, cfg) {	\
- 	.compatible = of_compatible,			\
- 	.data = &mcp4018_cfg[cfg],			\
-@@ -140,8 +138,6 @@ static const struct of_device_id mcp4018_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, mcp4018_of_match);
- 
--#endif
--
- static int mcp4018_probe(struct i2c_client *client)
+ #include <linux/regmap.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/buffer.h>
+@@ -205,13 +205,12 @@ static const struct iio_info lmp91000_info = {
+ static int lmp91000_read_config(struct lmp91000_data *data)
  {
- 	struct device *dev = &client->dev;
-@@ -161,7 +157,7 @@ static int mcp4018_probe(struct i2c_client *client)
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
+ 	struct device *dev = data->dev;
+-	struct device_node *np = dev->of_node;
+ 	unsigned int reg, val;
+ 	int i, ret;
  
--	data->cfg = of_device_get_match_data(dev);
-+	data->cfg = device_get_match_data(dev);
- 	if (!data->cfg)
- 		data->cfg = &mcp4018_cfg[i2c_match_id(mcp4018_id, client)->driver_data];
+-	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
++	ret = device_property_read_u32(dev, "ti,tia-gain-ohm", &val);
+ 	if (ret) {
+-		if (!of_property_read_bool(np, "ti,external-tia-resistor")) {
++		if (!device_property_read_bool(dev, "ti,external-tia-resistor")) {
+ 			dev_err(dev, "no ti,tia-gain-ohm defined and external resistor not specified\n");
+ 			return ret;
+ 		}
+@@ -232,7 +231,7 @@ static int lmp91000_read_config(struct lmp91000_data *data)
+ 		return ret;
+ 	}
  
-@@ -176,7 +172,7 @@ static int mcp4018_probe(struct i2c_client *client)
- static struct i2c_driver mcp4018_driver = {
+-	ret = of_property_read_u32(np, "ti,rload-ohm", &val);
++	ret = device_property_read_u32(dev, "ti,rload-ohm", &val);
+ 	if (ret) {
+ 		val = 100;
+ 		dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val);
+@@ -422,7 +421,7 @@ MODULE_DEVICE_TABLE(i2c, lmp91000_id);
+ static struct i2c_driver lmp91000_driver = {
  	.driver = {
- 		.name	= "mcp4018",
--		.of_match_table = of_match_ptr(mcp4018_of_match),
-+		.of_match_table = mcp4018_of_match,
+ 		.name = LMP91000_DRV_NAME,
+-		.of_match_table = of_match_ptr(lmp91000_of_match),
++		.of_match_table = lmp91000_of_match,
  	},
- 	.probe_new	= mcp4018_probe,
- 	.id_table	= mcp4018_id,
+ 	.probe = lmp91000_probe,
+ 	.remove = lmp91000_remove,
 -- 
 2.28.0
 
