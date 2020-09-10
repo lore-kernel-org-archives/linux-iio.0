@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5136AC433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 76A18C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:38:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F1F48206A1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:37:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 198C9221E3
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:38:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759479;
-	bh=cXootZKrgeLDcJ9SEVrRtl/e4xuUl1nD7EO4bR3RNTs=;
+	s=default; t=1599759501;
+	bh=A+rbBZcSwA1vVV+gXrbuzEKrGKprbEimgMWYsizCN5Q=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=U2/x08+garIkGFIlreei0qk0j9PBzlWdHaXjKPLySBAKNMWgAVON8dOWbd/ifr1p/
-	 M4IY+wg21E48b0oJ41xlphCHHEx3t6T4amOcoQaItKno0nZuoUXbzTaxl9XVU7VNlH
-	 eucskSoGMN4Vrsg6qNYa4jH7lL/hxHeNik8XW+As=
+	b=KCohrL5+P2/PXRSLPLUpns7Ef//UgVhDC/GqHHEyN5RBIFMUjUwNuCehLcmsrSGD5
+	 IeYb/vFffpYBdWan9GMVMNvJrxmKy6RF+APtttXAqTglTl8/6cxCF6aJidOvPU3vhK
+	 zNzv5PP6XFANHFqp/gNuFkeKLFTi2O18cONSGpl0=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726973AbgIJRhu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:37:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48084 "EHLO mail.kernel.org"
+        id S1727876AbgIJRiL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:38:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47976 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727808AbgIJRgI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:36:08 -0400
+        id S1726657AbgIJRgw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:36:52 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 51E4022204;
-        Thu, 10 Sep 2020 17:35:36 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C012822211;
+        Thu, 10 Sep 2020 17:35:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759337;
-        bh=cXootZKrgeLDcJ9SEVrRtl/e4xuUl1nD7EO4bR3RNTs=;
+        s=default; t=1599759350;
+        bh=A+rbBZcSwA1vVV+gXrbuzEKrGKprbEimgMWYsizCN5Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=P4njzWQC1ICSW6RvZnUF79cBi+46jv5nulsUgovNaYnM571W0tXu4Ok2MTQtUDJiX
-         mqlpf53yMFseq7L9I0fDyCIcCzf6z6JW5z2t8sgJJSMzJpBym+b/oRGUpJW2CqY/N3
-         crvAvW85uicDRAfMLv8SLDMWSfvwHFO5X3rNDqRs=
+        b=BJS/gzlT85w+GcyJ6uuCZKJqUyRZVwZ2S5mfzsmaIgx/W99QLj3YJ47amWyuPfxbX
+         tPP1KL3INZ3qLpD8AAcwFJZVo6cy0AozRcl94VGS8rADc9uFWdvOQ3RhYVqJIXzM5d
+         HqsWa8btlnXt/5cMNEYKGAYNQlvQ69m38+3Z/tWg=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Tomasz Duszynski <tduszyns@gmail.com>
-Subject: [PATCH 18/38] iio:pressure:ms5611: Drop of_match_ptr and CONFIG_OF protections
-Date:   Thu, 10 Sep 2020 18:32:22 +0100
-Message-Id: <20200910173242.621168-19-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 28/38] iio:chemical:vz89x: Introduce local struct device pointer.
+Date:   Thu, 10 Sep 2020 18:32:32 +0100
+Message-Id: <20200910173242.621168-29-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -58,91 +58,59 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These prevents use of this driver with ACPI via PRP0001 and are
-an example of an anti pattern I'm trying to remove from IIO.
-Hence drop them from this driver.
+Avoids lots of repition of &client->dev and will make the next
+patch tidier.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/pressure/ms5611_i2c.c | 6 ++----
- drivers/iio/pressure/ms5611_spi.c | 6 ++----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/chemical/vz89x.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/pressure/ms5611_i2c.c b/drivers/iio/pressure/ms5611_i2c.c
-index 072c106dd66d..7c04f730430c 100644
---- a/drivers/iio/pressure/ms5611_i2c.c
-+++ b/drivers/iio/pressure/ms5611_i2c.c
-@@ -14,7 +14,7 @@
- #include <linux/delay.h>
- #include <linux/i2c.h>
- #include <linux/module.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
+diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+index 5586eb8e12cd..3cd469578590 100644
+--- a/drivers/iio/chemical/vz89x.c
++++ b/drivers/iio/chemical/vz89x.c
+@@ -352,12 +352,13 @@ MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
+ static int vz89x_probe(struct i2c_client *client,
+ 		       const struct i2c_device_id *id)
+ {
++	struct device *dev = &client->dev;
+ 	struct iio_dev *indio_dev;
+ 	struct vz89x_data *data;
+ 	const struct of_device_id *of_id;
+ 	int chip_id;
  
- #include <asm/unaligned.h>
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 	data = iio_priv(indio_dev);
+@@ -370,7 +371,7 @@ static int vz89x_probe(struct i2c_client *client,
+ 	else
+ 		return -EOPNOTSUPP;
  
-@@ -113,14 +113,12 @@ static int ms5611_i2c_remove(struct i2c_client *client)
- 	return ms5611_remove(i2c_get_clientdata(client));
+-	of_id = of_match_device(vz89x_dt_ids, &client->dev);
++	of_id = of_match_device(vz89x_dt_ids, dev);
+ 	if (!of_id)
+ 		chip_id = id->driver_data;
+ 	else
+@@ -383,13 +384,13 @@ static int vz89x_probe(struct i2c_client *client,
+ 	mutex_init(&data->lock);
+ 
+ 	indio_dev->info = &vz89x_info;
+-	indio_dev->name = dev_name(&client->dev);
++	indio_dev->name = dev_name(dev);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	indio_dev->channels = data->chip->channels;
+ 	indio_dev->num_channels = data->chip->num_channels;
+ 
+-	return devm_iio_device_register(&client->dev, indio_dev);
++	return devm_iio_device_register(dev, indio_dev);
  }
  
--#if defined(CONFIG_OF)
- static const struct of_device_id ms5611_i2c_matches[] = {
- 	{ .compatible = "meas,ms5611" },
- 	{ .compatible = "meas,ms5607" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ms5611_i2c_matches);
--#endif
- 
- static const struct i2c_device_id ms5611_id[] = {
- 	{ "ms5611", MS5611 },
-@@ -132,7 +130,7 @@ MODULE_DEVICE_TABLE(i2c, ms5611_id);
- static struct i2c_driver ms5611_driver = {
- 	.driver = {
- 		.name = "ms5611",
--		.of_match_table = of_match_ptr(ms5611_i2c_matches)
-+		.of_match_table = ms5611_i2c_matches,
- 	},
- 	.id_table = ms5611_id,
- 	.probe = ms5611_i2c_probe,
-diff --git a/drivers/iio/pressure/ms5611_spi.c b/drivers/iio/pressure/ms5611_spi.c
-index 4799aa57135e..45d3a7d5be8e 100644
---- a/drivers/iio/pressure/ms5611_spi.c
-+++ b/drivers/iio/pressure/ms5611_spi.c
-@@ -9,7 +9,7 @@
- #include <linux/delay.h>
- #include <linux/module.h>
- #include <linux/spi/spi.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
- 
- #include <asm/unaligned.h>
- 
-@@ -115,14 +115,12 @@ static int ms5611_spi_remove(struct spi_device *spi)
- 	return ms5611_remove(spi_get_drvdata(spi));
- }
- 
--#if defined(CONFIG_OF)
- static const struct of_device_id ms5611_spi_matches[] = {
- 	{ .compatible = "meas,ms5611" },
- 	{ .compatible = "meas,ms5607" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, ms5611_spi_matches);
--#endif
- 
- static const struct spi_device_id ms5611_id[] = {
- 	{ "ms5611", MS5611 },
-@@ -134,7 +132,7 @@ MODULE_DEVICE_TABLE(spi, ms5611_id);
- static struct spi_driver ms5611_driver = {
- 	.driver = {
- 		.name = "ms5611",
--		.of_match_table = of_match_ptr(ms5611_spi_matches)
-+		.of_match_table = ms5611_spi_matches
- 	},
- 	.id_table = ms5611_id,
- 	.probe = ms5611_spi_probe,
+ static const struct i2c_device_id vz89x_id[] = {
 -- 
 2.28.0
 
