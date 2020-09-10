@@ -7,56 +7,56 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14FA9C433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 14:04:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E53DC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 14:12:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AA05F21D6C
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 14:04:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5BB7520BED
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 14:12:25 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Jh+xxnpK"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="U2WzOfWo"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730719AbgIJOEj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 10:04:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51450 "EHLO
+        id S1731031AbgIJOKt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 10:10:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52622 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730649AbgIJOCp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 10:02:45 -0400
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A07F8C061344
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:24 -0700 (PDT)
-Received: by mail-lj1-x241.google.com with SMTP id n25so8322265ljj.4
-        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:24 -0700 (PDT)
+        with ESMTP id S1731058AbgIJOJf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 10:09:35 -0400
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CBEDC0617A4
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:13 -0700 (PDT)
+Received: by mail-lf1-x144.google.com with SMTP id d15so3629415lfq.11
+        for <linux-iio@vger.kernel.org>; Thu, 10 Sep 2020 07:00:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=UYCbcxWK8UZvP4fORWPCdZHxSRcyR7TYHiknFeVjAjU=;
-        b=Jh+xxnpKuahJZ8tmJsw7L3PRa3inmR2J7XvJAbRQCOkXjIpQ9WjZ+kFo+vyZgLDn3M
-         9EQiTIpmT2u8q4yqtLwzenirl2Cf4GtbL4zRwuuUpH8T/11dUxYsmu5FDoSNBg8ByEYp
-         Asy7OSpAiAI31vThzHb//a5rRkcb9sp11w8vWkFOPQ7PROsdItn2bhkww0fX3XD9Bkk+
-         mESkwjK38GH/FbRMf0z+UrJiSqh0163hQ3FG5tN6lbU1WdMdinERgoE8aust7hLtoqRW
-         domyqMQ4odrzu47vyMQ/WjiEuwq2hzRPjkKgHa3iGuPDkWuaiRSNa/tWnM+MUMLlVixx
-         UGUA==
+        bh=fbds+t1ZnFoCEkxj1/mr3T/pqQY9+u5UlZ3GW4t2en8=;
+        b=U2WzOfWo+o9VwfTR9lkjfBPA3rwJdLwKAz85NWFW19wdSUdRq7KmYs6wtMjPhrWI6X
+         1fMtl/io8zCh6e91yPDswaupfIXFTTHvxz7H3mpoiNjQpVOGRmaQIfclvCMEBUGwr2dW
+         XOUcWUvriJmDaoxJGhMAarqRuwED0QjdXYnEdAt0z4pGzdkylgSKl4JWEj6CDQ036AvY
+         yt96CWgeWKNMLSFF8eyUVZAXBjFYZ3Ajy9RP1elZcW34Ng1ztEFv8clkDz/Je34kEMAV
+         7xt2Ggcfi2OQwuiZOFQ8+YD+SG4Lt/KXE2MHtasNvP2GTyb9Zx/1SZtjsgX6cS7zRmT9
+         yknQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=UYCbcxWK8UZvP4fORWPCdZHxSRcyR7TYHiknFeVjAjU=;
-        b=BCCmsZrpqHyiJ/Qm5uL3wQUltD4c0NR4NvMG/V6HU1TAp+pNd23ioouoGopFh+jUI1
-         KUm5Q7SMB89OI6s0iqqwWUad53K+t1DF33/ohBHcnPIbzS5Cu7Im2aT8g5TKK6OSczMN
-         2UN5TS7sAfrFpQU/KWQuTYAtF9KJ8Xd+AodrZ7BiFlvHDWe7W0Exm57m93wlCohy8EXC
-         gNt6SWN8kkPzaLZwhOjfr6Ynl4VK0ady5ZZZf9ikbwwi0iDJQ5tBhGrlWltQnKvXB22e
-         97DtVXCvprNg7pgnKBSZ3Q8YCuYIfnsuuJbGadoSwF7iiYc8Wdqsm2ywiAkRc56zTQMb
-         TYSw==
-X-Gm-Message-State: AOAM532dVhVWiHX5lMJKpvrU01q63BAEil6F1n4FF/zdRPfEukelWok1
-        4sPuX82vn9EQpnInpyGEdwepnYYXRnhHwQ==
-X-Google-Smtp-Source: ABdhPJxw4BJkJfgrTpp5C3M5g3djMcYG2hnwFn51VZBQVWqAE+zHjjRWbCyT8AJMwZcs0U7dQArsJA==
-X-Received: by 2002:a2e:141d:: with SMTP id u29mr4542164ljd.243.1599746423060;
-        Thu, 10 Sep 2020 07:00:23 -0700 (PDT)
+        bh=fbds+t1ZnFoCEkxj1/mr3T/pqQY9+u5UlZ3GW4t2en8=;
+        b=kCOlKn057SAb1Ppo+kbZnH2ojBYAx+2PN5WgHrOg4fJSvHAtLSnQ9kgIhSjqr+42U9
+         UrUWEIgnM6Rhzaa215X/1E3GM8GlPMaukxoPTjileX0KL+K+V5AmcO8KqXyXE3AZ03jk
+         i055u6JxRPgvrmGsnOJaoPaOhs88veMMyAkfraEIC5DF8wuKiT0nPLKB8xZ6xoi2I7nu
+         XU7TPLf4msOMplH0gkA+3BTSB/+Tx+PriMlmQO0fOEawTtPB0ngtGbwQA9+mmvHrerp3
+         zzPDGYg2pSSFjD2Xr2aiyqtZJ+FnSDCCaNPc/7oxzJvMNcbaIk02J9pzgWZlhs9uWSW5
+         9jJQ==
+X-Gm-Message-State: AOAM532+xh1QZXDjF2hltAoMNGjmuZyc62i9GXYVOW/HU1BSx/WkB3eq
+        GP+gF5TvuBp/e6XLL0B6GSu3cA==
+X-Google-Smtp-Source: ABdhPJyV1tWf7B3yzuaRTqD2awGWyPJLIOGIT+JvbFoAqm6Mhx44+04HtPsEqk+5IjbGxLD+phHRuQ==
+X-Received: by 2002:a19:7604:: with SMTP id c4mr4403298lff.132.1599746411945;
+        Thu, 10 Sep 2020 07:00:11 -0700 (PDT)
 Received: from eriador.lan ([188.162.64.156])
-        by smtp.gmail.com with ESMTPSA id t82sm1367646lff.43.2020.09.10.07.00.21
+        by smtp.gmail.com with ESMTPSA id t82sm1367646lff.43.2020.09.10.07.00.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 07:00:22 -0700 (PDT)
+        Thu, 10 Sep 2020 07:00:11 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -71,9 +71,9 @@ To:     Andy Gross <agross@kernel.org>,
 Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
-Subject: [PATCH v4 07/10] iio: provide of_iio_channel_get_by_name() and devm_ version it
-Date:   Thu, 10 Sep 2020 16:59:57 +0300
-Message-Id: <20200910140000.324091-8-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v4 01/10] iio: adc: qcom-spmi-adc5: fix driver name
+Date:   Thu, 10 Sep 2020 16:59:51 +0300
+Message-Id: <20200910140000.324091-2-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
 References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
@@ -84,136 +84,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There might be cases when the IIO channel is attached to the device
-subnode instead of being attached to the main device node. Allow drivers
-to query IIO channels by using device tree nodes.
+Remove superfluous '.c' from qcom-spmi-adc5 device driver name.
 
+Fixes: e13d757279 ("iio: adc: Add QCOM SPMI PMIC5 ADC driver")
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 ---
- drivers/iio/inkern.c         | 34 ++++++++++++++++++++++++++--------
- include/linux/iio/consumer.h | 36 ++++++++++++++++++++++++++++++++++++
- 2 files changed, 62 insertions(+), 8 deletions(-)
+ drivers/iio/adc/qcom-spmi-adc5.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index ede99e0d5371..8ff0ac472de3 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -180,8 +180,8 @@ static struct iio_channel *of_iio_channel_get(struct device_node *np, int index)
- 	return ERR_PTR(err);
- }
+diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+index b4b73c9920b4..c10aa28be70a 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5.c
++++ b/drivers/iio/adc/qcom-spmi-adc5.c
+@@ -982,7 +982,7 @@ static int adc5_probe(struct platform_device *pdev)
  
--static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
--						      const char *name)
-+struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
-+					       const char *name)
- {
- 	struct iio_channel *chan = NULL;
- 
-@@ -219,6 +219,7 @@ static struct iio_channel *of_iio_channel_get_by_name(struct device_node *np,
- 
- 	return chan;
- }
-+EXPORT_SYMBOL_GPL(of_iio_channel_get_by_name);
- 
- static struct iio_channel *of_iio_channel_get_all(struct device *dev)
- {
-@@ -261,12 +262,6 @@ static struct iio_channel *of_iio_channel_get_all(struct device *dev)
- 
- #else /* CONFIG_OF */
- 
--static inline struct iio_channel *
--of_iio_channel_get_by_name(struct device_node *np, const char *name)
--{
--	return NULL;
--}
--
- static inline struct iio_channel *of_iio_channel_get_all(struct device *dev)
- {
- 	return NULL;
-@@ -382,6 +377,29 @@ struct iio_channel *devm_iio_channel_get(struct device *dev,
- }
- EXPORT_SYMBOL_GPL(devm_iio_channel_get);
- 
-+struct iio_channel *devm_of_iio_channel_get_by_name(struct device *dev,
-+						    struct device_node *np,
-+						    const char *channel_name)
-+{
-+	struct iio_channel **ptr, *channel;
-+
-+	ptr = devres_alloc(devm_iio_channel_free, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	channel = of_iio_channel_get_by_name(np, channel_name);
-+	if (IS_ERR(channel)) {
-+		devres_free(ptr);
-+		return channel;
-+	}
-+
-+	*ptr = channel;
-+	devres_add(dev, ptr);
-+
-+	return channel;
-+}
-+EXPORT_SYMBOL_GPL(devm_of_iio_channel_get_by_name);
-+
- struct iio_channel *iio_channel_get_all(struct device *dev)
- {
- 	const char *name;
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index c4118dcb8e05..0a90ba8fa1bb 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -13,6 +13,7 @@
- struct iio_dev;
- struct iio_chan_spec;
- struct device;
-+struct device_node;
- 
- /**
-  * struct iio_channel - everything needed for a consumer to use a channel
-@@ -97,6 +98,41 @@ void iio_channel_release_all(struct iio_channel *chan);
-  */
- struct iio_channel *devm_iio_channel_get_all(struct device *dev);
- 
-+/**
-+ * of_iio_channel_get_by_name() - get description of all that is needed to access channel.
-+ * @np:			Pointer to consumer device tree node
-+ * @consumer_channel:	Unique name to identify the channel on the consumer
-+ *			side. This typically describes the channels use within
-+ *			the consumer. E.g. 'battery_voltage'
-+ */
-+#ifdef CONFIG_OF
-+struct iio_channel *of_iio_channel_get_by_name(struct device_node *np, const char *name);
-+#else
-+static inline struct iio_channel *
-+of_iio_channel_get_by_name(struct device_node *np, const char *name)
-+{
-+	return NULL;
-+}
-+#endif
-+
-+/**
-+ * devm_of_iio_channel_get_by_name() - Resource managed version of of_iio_channel_get_by_name().
-+ * @dev:		Pointer to consumer device.
-+ * @np:			Pointer to consumer device tree node
-+ * @consumer_channel:	Unique name to identify the channel on the consumer
-+ *			side. This typically describes the channels use within
-+ *			the consumer. E.g. 'battery_voltage'
-+ *
-+ * Returns a pointer to negative errno if it is not able to get the iio channel
-+ * otherwise returns valid pointer for iio channel.
-+ *
-+ * The allocated iio channel is automatically released when the device is
-+ * unbound.
-+ */
-+struct iio_channel *devm_of_iio_channel_get_by_name(struct device *dev,
-+						    struct device_node *np,
-+						    const char *consumer_channel);
-+
- struct iio_cb_buffer;
- /**
-  * iio_channel_get_all_cb() - register callback for triggered capture
+ static struct platform_driver adc5_driver = {
+ 	.driver = {
+-		.name = "qcom-spmi-adc5.c",
++		.name = "qcom-spmi-adc5",
+ 		.of_match_table = adc5_match_table,
+ 	},
+ 	.probe = adc5_probe,
 -- 
 2.28.0
 
