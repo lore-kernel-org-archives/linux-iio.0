@@ -2,53 +2,50 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74E66C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35AFCC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 300ED206A1
+	by mail.kernel.org (Postfix) with ESMTP id EBCF1206A1
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759620;
-	bh=DjKbbIEswiwrtvBGeoLq8O77Wpmcy9kPjofN8C1Cx6U=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Jjr5cQ9GTSLGWXlUpTR+P8/8xVnTPl6qR/pbQLmLna4aLqOzb2p0fPOp4rPMl6dQa
-	 tMX4Un2ekYR1VjB+OVlrNw47+meIGAkKM/J96Y4zn1CYSE/XZ707v1f+TP10035yTm
-	 /QfE65Y7790kvPj9d55e8Sv8steZf6LyLXuZUjDc=
+	s=default; t=1599759621;
+	bh=CNVy0FOT+q6i29HvfkATWUfTUZMcyKphyuFSYLf67Js=;
+	h=From:To:Cc:Subject:Date:List-ID:From;
+	b=K3meve8PCxJ3ZWgwSGsq/ySdFL/JguaOSxYO0VUmrVzKGXoX7TiVHnC6fcDoJJ3E8
+	 mMvDWt4PvuBDcjsVuOeTRFmrEgMAcWXOv13gyY4SdKvyEVuvwrqxnEwoFhQw6A7NVR
+	 RFCwMg7Hch+VpihSsw315aKRn+WXuC9sTYi6zRd4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgIJRkR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:17 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47478 "EHLO mail.kernel.org"
+        id S1726850AbgIJRkT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:40:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727085AbgIJRfP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1725877AbgIJRfP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 10 Sep 2020 13:35:15 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A980421D79;
-        Thu, 10 Sep 2020 17:35:13 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3736920C09;
+        Thu, 10 Sep 2020 17:35:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759314;
-        bh=DjKbbIEswiwrtvBGeoLq8O77Wpmcy9kPjofN8C1Cx6U=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=s0PkrW9wBllEu5ZgFP0wd4TYxipZ+WAUP1uHBY8qUD+jk/P+POm14ag5H7kIkXRiH
-         5vUIqBB1vWyT/qb8lVcivkpvvzLqrHKq1YufgXB6IVmRyI0O1FLN/myjCmidjl1WZW
-         JKiJPvES+D6NrNA0nNFskjFkNdy6RuXmEKIPnxPY=
+        s=default; t=1599759312;
+        bh=CNVy0FOT+q6i29HvfkATWUfTUZMcyKphyuFSYLf67Js=;
+        h=From:To:Cc:Subject:Date:From;
+        b=tEPTMFKtGJRNNzS3PxqJrD7Wu5M2ZS+On2RGBEKGsjYuGhoZAGm2nifmvOoIg3pcV
+         LvMYB2bqVmCnDSkWSWO8aQhmJbBw2AL48IHKwbhA4ccxdN0aDEyWQnS/TnAT5clVUX
+         nV25iBZlJJqmmIfbELQ9jEUI1TTSu5V413h7EYdU=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Slawomir Stepien <sst@poczta.fm>
-Subject: [PATCH 02/38] iio:potentiometer:ds1803: Drop of_match_ptr and CONFIG_OF protections
-Date:   Thu, 10 Sep 2020 18:32:06 +0100
-Message-Id: <20200910173242.621168-3-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 00/38] iio: remaining easy of_match_ptr removal and related.
+Date:   Thu, 10 Sep 2020 18:32:04 +0100
+Message-Id: <20200910173242.621168-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
-References: <20200910173242.621168-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -58,57 +55,106 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These prevent use of this driver with ACPI via PRP0001 and are
-an example of an anti pattern I'm trying to remove from IIO.
-Drop them to remove this restriction.
+This bumper set removes all the remaining cases where of_match_ptr
+is mostly serving to prevent use of the device via ACPI PRP0001 and
+complicating the code. The main aim of this set is to reduce the chances
+of it being used in future drivers.
+It also includes some related refactorings, use of generic fw accessors,
+dropping of CONFIG_OF and lots of header changes inline with the above.
 
-Also switch of.h for mod_devicetable.h include given use of
-struct of_device_id which is defined in that header.
+For examples of how to use PRP0001 see https://github.com/westeri/meta-acpi
+which is an excellent resource from which to copy snippets of DSDT tables.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Slawomir Stepien <sst@poczta.fm>
----
- drivers/iio/potentiometer/ds1803.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+It may well not be worth changing the remaining 10 IIO drivers and I
+certainly don't plan to do so anytime soon.
 
-diff --git a/drivers/iio/potentiometer/ds1803.c b/drivers/iio/potentiometer/ds1803.c
-index 5c061ab8f46c..20b45407eaac 100644
---- a/drivers/iio/potentiometer/ds1803.c
-+++ b/drivers/iio/potentiometer/ds1803.c
-@@ -14,7 +14,7 @@
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
- #include <linux/module.h>
--#include <linux/of.h>
-+#include <linux/mod_devicetable.h>
- 
- #define DS1803_MAX_POS		255
- #define DS1803_WRITE(chan)	(0xa8 | ((chan) + 1))
-@@ -134,7 +134,6 @@ static int ds1803_probe(struct i2c_client *client,
- 	return devm_iio_device_register(dev, indio_dev);
- }
- 
--#if defined(CONFIG_OF)
- static const struct of_device_id ds1803_dt_ids[] = {
- 	{ .compatible = "maxim,ds1803-010", .data = &ds1803_cfg[DS1803_010] },
- 	{ .compatible = "maxim,ds1803-050", .data = &ds1803_cfg[DS1803_050] },
-@@ -142,7 +141,6 @@ static const struct of_device_id ds1803_dt_ids[] = {
- 	{}
- };
- MODULE_DEVICE_TABLE(of, ds1803_dt_ids);
--#endif /* CONFIG_OF */
- 
- static const struct i2c_device_id ds1803_id[] = {
- 	{ "ds1803-010", DS1803_010 },
-@@ -155,7 +153,7 @@ MODULE_DEVICE_TABLE(i2c, ds1803_id);
- static struct i2c_driver ds1803_driver = {
- 	.driver = {
- 		.name	= "ds1803",
--		.of_match_table = of_match_ptr(ds1803_dt_ids),
-+		.of_match_table = ds1803_dt_ids,
- 	},
- 	.probe		= ds1803_probe,
- 	.id_table	= ds1803_id,
+Jonathan Cameron (38):
+  iio:potentiometer:ad5272: Drop of_match_ptr and CONFIG_OF protections.
+  iio:potentiometer:ds1803: Drop of_match_ptr and CONFIG_OF protections
+  iio:potentiometer:max5432: Drop of_match_ptr and use generic fw
+    accessors
+  iio:potentiometer:max5481: Drop of_match_ptr and CONFIG_OF
+    protections.
+  iio:potentiometer:max5481: Drop invalid ACPI binding.
+  iio:potentiometer:mcp4018: Drop of_match_ptr and CONFIG_OF
+    protections.
+  iio:potentiometer:mcp4131: Drop of_match_ptr and use generic fw
+    interfaces.
+  iio:potentiometer:mcp4531: Drop of_match_ptr and CONFIG_OF
+    protections.
+  iio:dac:ad5446: Drop of_match_ptr and CONFIG_OF protections
+  iio:dac:ad5592r: Drop of_match_ptr and ACPI_PTR protections.
+  iio:dac:ad5593r: Drop of_match_ptr and ACPI_PTR protections.
+  iio:dac:ad7303: Drop of_match_ptr protection
+  iio:dac:mcp4725: drop of_match_ptr and use generic fw properties
+  iio:dac:ti-dac082s085: Drop of_match_ptr and CONFIG_OF protections
+  iio:dac:ti-dac5571: Drop of_match_ptr and CONFIG_OF protections
+  iio:potentiostat:lmp91000: Drop of_match_ptr and use generic fw
+    accessors
+  iio:pressure:icp10100: Drop of_match_ptr and CONFIG_OF protections
+  iio:pressure:ms5611: Drop of_match_ptr and CONFIG_OF protections
+  iio:pressure:ms5637: Drop of_match_ptr protection
+  iio:pressure:zpa2326: Drop of_match_ptr protection
+  iio:temperature:tsys01: Drop of_match_ptr protection
+  iio:temperature:tmp007: Drop of_match_ptr protection
+  iio:resolver:ad2s1200: Drop of_match_ptr protection
+  iio:chemical:ams-iaq-core: Drop of_match_ptr protection
+  iio:chemical:atlas-sensor: Drop of_match_ptr and use generic fw
+    accessors
+  iio:chemical:sgp30: Use local variable dev to simplify code
+  iio:chemical:sgp30: Drop of_match_ptr and use generic fw accessors
+  iio:chemical:vz89x: Introduce local struct device pointer.
+  iio:chemical:vz89x: Drop of_match_ptr protection and use generic fw
+    accessors
+  iio:humidity:hdc100x: Drop of_match_ptr protection.
+  iio:proximity:as3935: Use local struct device pointer to simplify
+    code.
+  iio:proximity:as3935: Drop of_match_ptr and use generic fw accessors
+  iio:proximity:pulsedlight: Drop of_match_ptr protection
+  iio:magn:ak8975: Drop of_match_ptr and ACPI_PTR protections.
+  iio:magn:ak8974: Drop of_match_ptr protection
+  iio:humidity:htu21: Drop of_match_ptr protection
+  iio:humidity:si7020: Drop of_match_ptr protection
+  iio:health:max30102: Drop of_match_ptr and use generic fw accessors
+
+ drivers/iio/chemical/ams-iaq-core.c           |  3 +-
+ drivers/iio/chemical/atlas-sensor.c           | 10 ++---
+ drivers/iio/chemical/sgp30.c                  | 28 ++++++------
+ drivers/iio/chemical/vz89x.c                  | 18 ++++----
+ drivers/iio/dac/ad5446.c                      |  5 +--
+ drivers/iio/dac/ad5592r.c                     |  7 ++-
+ drivers/iio/dac/ad5593r.c                     |  7 ++-
+ drivers/iio/dac/ad7303.c                      |  3 +-
+ drivers/iio/dac/mcp4725.c                     | 29 +++---------
+ drivers/iio/dac/ti-dac082s085.c               |  5 +--
+ drivers/iio/dac/ti-dac5571.c                  |  7 +--
+ drivers/iio/health/max30102.c                 | 11 +++--
+ drivers/iio/humidity/hdc100x.c                |  3 +-
+ drivers/iio/humidity/htu21.c                  |  3 +-
+ drivers/iio/humidity/si7020.c                 |  3 +-
+ drivers/iio/magnetometer/ak8974.c             |  3 +-
+ drivers/iio/magnetometer/ak8975.c             |  8 ++--
+ drivers/iio/potentiometer/ad5272.c            |  5 +--
+ drivers/iio/potentiometer/ds1803.c            |  6 +--
+ drivers/iio/potentiometer/max5432.c           |  8 ++--
+ drivers/iio/potentiometer/max5481.c           | 23 ++--------
+ drivers/iio/potentiometer/mcp4018.c           | 12 ++---
+ drivers/iio/potentiometer/mcp4131.c           |  8 ++--
+ drivers/iio/potentiometer/mcp4531.c           | 11 ++---
+ drivers/iio/potentiostat/lmp91000.c           | 11 +++--
+ drivers/iio/pressure/icp10100.c               |  3 +-
+ drivers/iio/pressure/ms5611_i2c.c             |  6 +--
+ drivers/iio/pressure/ms5611_spi.c             |  6 +--
+ drivers/iio/pressure/ms5637.c                 |  3 +-
+ drivers/iio/pressure/zpa2326_i2c.c            |  6 +--
+ drivers/iio/pressure/zpa2326_spi.c            |  6 +--
+ drivers/iio/proximity/as3935.c                | 44 +++++++++----------
+ .../iio/proximity/pulsedlight-lidar-lite-v2.c |  3 +-
+ drivers/iio/resolver/ad2s1200.c               |  3 +-
+ drivers/iio/temperature/tmp007.c              |  4 +-
+ drivers/iio/temperature/tsys01.c              |  3 +-
+ 36 files changed, 134 insertions(+), 190 deletions(-)
+
 -- 
 2.28.0
 
