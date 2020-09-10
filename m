@@ -2,69 +2,70 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 567F7C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 12:35:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C07B9C07548
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 12:36:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0D6E0208FE
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 12:34:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7AC35208FE
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 12:36:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="L83lmbXn"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="qG/rKcK2"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728289AbgIJMdD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 08:33:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37312 "EHLO
+        id S1729935AbgIJMgY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 08:36:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730694AbgIJMaR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 08:30:17 -0400
-Received: from mail-pj1-x1044.google.com (mail-pj1-x1044.google.com [IPv6:2607:f8b0:4864:20::1044])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3CB04C061573;
-        Thu, 10 Sep 2020 05:30:09 -0700 (PDT)
-Received: by mail-pj1-x1044.google.com with SMTP id o16so2950695pjr.2;
-        Thu, 10 Sep 2020 05:30:09 -0700 (PDT)
+        with ESMTP id S1730396AbgIJMdB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 08:33:01 -0400
+Received: from mail-pl1-x644.google.com (mail-pl1-x644.google.com [IPv6:2607:f8b0:4864:20::644])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CFA80C061757;
+        Thu, 10 Sep 2020 05:33:00 -0700 (PDT)
+Received: by mail-pl1-x644.google.com with SMTP id d16so831768pll.13;
+        Thu, 10 Sep 2020 05:33:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=sbUyJpejCvA3QH4e+Y9L0OkTzMxPfcFa5isJNJNYA7E=;
-        b=L83lmbXn62t2KoWiiJa4Ud37GMfgoGFWAg7J/Dc/LIscdl6vRTajTiCs/dMkXzGrt+
-         iVmZIHm+AnoSSXfsFfj4YZStKjbvqHIuq+xalIpfLf9Xua45jbFornXmnxodVvBvIdFo
-         YVG2n4mQPb707GtkHSmNF2bfWto+INtyObzvTNO/nP4m0sGuJLnSnf4PUneQHaXAvy2z
-         5T1T3pAdRbFghk8pNaHCo3oqR4XkO4K7dLyDe3B+wMDBCEfuhpP9NKZgB4LI7fqXLVTc
-         D4sMWDRJ1bTXp/Z5YqS72J6sYK6t9QFnSFdxcBSI9+rHOGr2YK9ns2R1BqCmRZHlIwpY
-         3OAA==
+        bh=4mAC7AY2dom2okuDhz5TwwH+eN++c0Zg21VAJ30tmZE=;
+        b=qG/rKcK2HhixjeHOwx22cnu5vsq8XLz5RXaPsgu9QDXQi0LEGNYwf6bpkI5tuOVfQT
+         qL94/g9KbH0MlePhTboZv1bJUtR36YPqv+MbGfsqVXmu+Pc7gs527U0DLNOq2WYytdgI
+         P3KsMw7cWHxNhbHzImQRJBSsk2vprNBqSXj/tC3ub/BKPPqhSgOxjhXzbseGFv15Jxlx
+         LmmPekD31CngpQVRV1iRcLrwUXYE9y7kymgY5eNhL5o9G9grrXtPUj6862e9XZd7kBFP
+         u/qtP2vXk/DHK7cOlm6L2z46IB1k2nCopfwArf4KK0oRAfF+B33VAl4wFMWfUYLcT/T9
+         vtSw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=sbUyJpejCvA3QH4e+Y9L0OkTzMxPfcFa5isJNJNYA7E=;
-        b=lza1pPD7VFzAbLswIz2E73CEgVRmfTKMA7AcNzdgHxGxrkL2LSFSRhu5IP8voDJR3Y
-         k0yvu6ZHKlGoYdAkCs40VPwMKuJZmz+8vxpIuhgEbVUA/YOjzjgD/VkFT/o2B7L25u4a
-         t58kNFwijQyHk+Po3zpGQt6zTiveOJdWnRuKPp9qcC+NYwcFFjtuLH/UqlF/ADKkQw7N
-         z+WfpZvfi+mjm1xfmQ/1rT8uBdw4KjjezHUHOOInH8VQfqwYKJhZrwIIHTMH0qU9guz+
-         YNHOkNd9qeP/r0kY77BqqChz3+bPAaIwyXNqQw5H8aNXm6YlHlZ5TJjWXpjRYjn5+A7H
-         wmwQ==
-X-Gm-Message-State: AOAM530vOtCKtdw/6VwCVFMOFNUzk5xcRKS/MCa+Q0Y98992SOCcLAo/
-        t+9HKXihyidWeEDm0RScXWQ=
-X-Google-Smtp-Source: ABdhPJzekdrlUSUeFneXBL1UfmVjrIpSfafPXKDdBXV15YzmHyjigIVzGsaWWe4H2emR2rkp/hVR4Q==
-X-Received: by 2002:a17:90a:d488:: with SMTP id s8mr5244871pju.176.1599741008666;
-        Thu, 10 Sep 2020 05:30:08 -0700 (PDT)
+        bh=4mAC7AY2dom2okuDhz5TwwH+eN++c0Zg21VAJ30tmZE=;
+        b=IvznwsfCnS262FikdhG5KNk+Q6736DELg7yHjNIvE4zJotlmWroF6QF53JeB4qLR+h
+         d1K7oxyXUfRuY/6/MuAVSJy1fzJVYj13fYYJxBK7fnG2YWJHYOWXB5Mwnzyue4u90ty1
+         dABEar+eU5fKNlx16LWfrlhouCk/LmDGSxkwZtdL7JWnEjiIS5SuD8fcEPDuupaAAPEj
+         5epe0uvU3YF5j3qKCC6iurzanCOZk/rU4zTwjKvHNEUwlFRACWzzT7+rmAx0NCr+yb2H
+         +rXktMmw4mw8E1p0iTLjvYOXVRersRxN2TfhyeA1DceO2MA9j6DgY3YSY0wcr95A85dG
+         seDA==
+X-Gm-Message-State: AOAM533YJuH6/eLHFqYsFT8sTBaMRuBnl9VloKNjIcXfSIzz7C7u365g
+        BcYH4P6NIVJpNBuVReDmI14=
+X-Google-Smtp-Source: ABdhPJxLK5IOkPuZQSvSgkg8AkXwFKqrh/T7qtwK4UBm7gI5yfAXyN4l5FBr5fZALkKhZHOCS02vEg==
+X-Received: by 2002:a17:902:74c8:: with SMTP id f8mr5383439plt.78.1599741180451;
+        Thu, 10 Sep 2020 05:33:00 -0700 (PDT)
 Received: from nish-HP-Pavilion ([2409:4072:6218:54d7:9928:e984:12bb:783d])
-        by smtp.gmail.com with ESMTPSA id s8sm6512727pfd.153.2020.09.10.05.30.06
+        by smtp.gmail.com with ESMTPSA id j14sm5031485pgf.76.2020.09.10.05.32.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 05:30:07 -0700 (PDT)
+        Thu, 10 Sep 2020 05:32:59 -0700 (PDT)
 From:   Nishant Malpani <nish.malpani25@gmail.com>
-To:     jic23@kernel.org
+To:     jic23@kernel.org, robh+dt@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        andy.shevchenko@gmail.com,
+        devicetree@vger.kernel.org, andy.shevchenko@gmail.com,
         Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [PATCH v3 0/3] iio: gyro: adxrs290: Add triggered buffer & debugfs support
-Date:   Thu, 10 Sep 2020 17:59:57 +0530
-Message-Id: <20200910123000.16860-1-nish.malpani25@gmail.com>
+Subject: [PATCH v3 3/3] iio: gyro: adxrs290: Add debugfs register access support
+Date:   Thu, 10 Sep 2020 18:02:49 +0530
+Message-Id: <20200910123249.17204-1-nish.malpani25@gmail.com>
 X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -73,23 +74,64 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce DATA_RDY trigger for triggered buffer setup; this enables continuous
-data capture. Additionally, add support for direct register access using the debugfs 
-iio interface. 
+Extend support to read/write byte data from/to the device using
+debugfs iio interface.
 
-The device-tree bindings documentation illustrates an example of using a GPIO irq
-line to trigger a data capture.
+Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
+---
 
-Nishant Malpani (3):
-  iio: gyro: adxrs290: Add triggered buffer support
-  dt-bindings: iio: gyro: adxrs290: Add interrupts support
-  iio: gyro: adxrs290: Add debugfs register access support
+Changes in v3:
+  - refactor code based on Andy's suggestions
 
- .../bindings/iio/gyroscope/adi,adxrs290.yaml  |   6 +
- drivers/iio/gyro/Kconfig                      |   2 +
- drivers/iio/gyro/adxrs290.c                   | 237 ++++++++++++++++--
- 3 files changed, 231 insertions(+), 14 deletions(-)
+No changes in v2
+---
+ drivers/iio/gyro/adxrs290.c | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
+diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
+index 41b1f995a143..ca6fc234076e 100644
+--- a/drivers/iio/gyro/adxrs290.c
++++ b/drivers/iio/gyro/adxrs290.c
+@@ -436,6 +436,31 @@ static int adxrs290_read_avail(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int adxrs290_reg_access_rw(struct spi_device *spi, unsigned int reg,
++				  unsigned int *readval)
++{
++	int ret;
++
++	ret = spi_w8r8(spi, ADXRS290_READ_REG(reg));
++	if (ret < 0)
++		return ret;
++
++	*readval = ret;
++
++	return 0;
++}
++
++static int adxrs290_reg_access(struct iio_dev *indio_dev, unsigned int reg,
++			       unsigned int writeval, unsigned int *readval)
++{
++	struct adxrs290_state *st = iio_priv(indio_dev);
++
++	if (readval)
++		return adxrs290_reg_access_rw(st->spi, reg, readval);
++	else
++		return adxrs290_spi_write_reg(st->spi, reg, writeval);
++}
++
+ static int adxrs290_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 					       bool state)
+ {
+@@ -551,6 +576,7 @@ static const struct iio_info adxrs290_info = {
+ 	.read_raw = &adxrs290_read_raw,
+ 	.write_raw = &adxrs290_write_raw,
+ 	.read_avail = &adxrs290_read_avail,
++	.debugfs_reg_access = &adxrs290_reg_access,
+ };
+ 
+ static int adxrs290_probe_trigger(struct iio_dev *indio_dev)
 -- 
 2.20.1
 
