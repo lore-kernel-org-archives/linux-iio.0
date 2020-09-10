@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE761C2D0E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7524CC433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 92F3421582
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2ADB1206A1
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 17:40:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599759608;
-	bh=EfAWBIN9frRch8G2sNi2HkkIqXjbdjByclva8hteT/s=;
+	s=default; t=1599759610;
+	bh=CBO7LMghT6TP9wjynIdEjpe6+/KEIi18ws0ztpOb5xs=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=OjOublRQevNbzUaDiQNmBx+QrTDQQKyrfkn8oKum+WQxlczFiG1nwddCX5L5qP5iu
-	 /29sLw/AI2O3u2BS5L66i17lSNY8iaYOMe50T9UTfLt7IXSW4wgaIXfMB6e0LDYPzO
-	 ptiGYr5IjlQm3RfmMfbgV28UpCbxDDVl/Nru1VMs=
+	b=fmv48npZoDmRi5I2EcQTzK1IYlQHo5m3DkDB9aAugf9s+Vlai9A25kSFyUSv/Dxoy
+	 uib3KzEicTLHDSxrTcJcdzljj7NJxAM4K8pprqXS/ej5z2IveL0CJ0YMf1+EoZJoc/
+	 PNADN6tOzzprn/nGVkkwIdtXP7TR2EGO8aVln5kU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726994AbgIJRkH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 13:40:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47866 "EHLO mail.kernel.org"
+        id S1726942AbgIJRkG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 13:40:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48176 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727807AbgIJRgH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 13:36:07 -0400
+        id S1727067AbgIJRgk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 13:36:40 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1101C206A1;
-        Thu, 10 Sep 2020 17:35:38 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5A0C322208;
+        Thu, 10 Sep 2020 17:35:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599759340;
-        bh=EfAWBIN9frRch8G2sNi2HkkIqXjbdjByclva8hteT/s=;
+        s=default; t=1599759345;
+        bh=CBO7LMghT6TP9wjynIdEjpe6+/KEIi18ws0ztpOb5xs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MGzSV+img0h5e08FE/Xdv6trNbfJY5VJuxRSJ+3Xa/Jer+IbULtZGvQP4Y1FRP/3c
-         YQbksUnniAspImbFI9iLma1eWTTVURAwWm8n7GiZAz95eKPmfvRlXd9bd680WVnGzg
-         ZSthg9MneDD4ViuWsHzcuhrs31ftG/nob27hya9A=
+        b=WWDEC8IjU6QkUdWg6sVQpCXCcZisYUsPwnlcoX5Q2l+rAr04zHn77naek5gPFMy7g
+         /6Og7IoOKisyVxNynsX/3Qh4OcKIKVZbllShockVHVvUOA6Xe80RF9UNEPI4brP6qt
+         v4NSHR5tUs03b1gHgGeDC1OeGfFmbu/h1JgKs/Rk=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH 20/38] iio:pressure:zpa2326: Drop of_match_ptr protection
-Date:   Thu, 10 Sep 2020 18:32:24 +0100
-Message-Id: <20200910173242.621168-21-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 24/38] iio:chemical:ams-iaq-core: Drop of_match_ptr protection
+Date:   Thu, 10 Sep 2020 18:32:28 +0100
+Message-Id: <20200910173242.621168-25-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200910173242.621168-1-jic23@kernel.org>
 References: <20200910173242.621168-1-jic23@kernel.org>
@@ -63,78 +63,32 @@ an example of an anti pattern I'm trying to remove from IIO.
 Hence drop from this driver.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/pressure/zpa2326_i2c.c | 6 ++----
- drivers/iio/pressure/zpa2326_spi.c | 6 ++----
- 2 files changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/chemical/ams-iaq-core.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/zpa2326_i2c.c b/drivers/iio/pressure/zpa2326_i2c.c
-index 1a65791ba279..95d9739444c4 100644
---- a/drivers/iio/pressure/zpa2326_i2c.c
-+++ b/drivers/iio/pressure/zpa2326_i2c.c
-@@ -10,7 +10,7 @@
+diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
+index 8c1b64fd424a..97be3669c554 100644
+--- a/drivers/iio/chemical/ams-iaq-core.c
++++ b/drivers/iio/chemical/ams-iaq-core.c
+@@ -7,6 +7,7 @@
+  */
+ 
  #include <linux/module.h>
- #include <linux/regmap.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/mutex.h>
+ #include <linux/init.h>
  #include <linux/i2c.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
- #include "zpa2326.h"
- 
- /*
-@@ -66,18 +66,16 @@ static const struct i2c_device_id zpa2326_i2c_ids[] = {
- };
- MODULE_DEVICE_TABLE(i2c, zpa2326_i2c_ids);
- 
--#if defined(CONFIG_OF)
- static const struct of_device_id zpa2326_i2c_matches[] = {
- 	{ .compatible = "murata,zpa2326" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, zpa2326_i2c_matches);
--#endif
- 
- static struct i2c_driver zpa2326_i2c_driver = {
+@@ -177,7 +178,7 @@ MODULE_DEVICE_TABLE(of, ams_iaqcore_dt_ids);
+ static struct i2c_driver ams_iaqcore_driver = {
  	.driver = {
- 		.name           = "zpa2326-i2c",
--		.of_match_table = of_match_ptr(zpa2326_i2c_matches),
-+		.of_match_table = zpa2326_i2c_matches,
- 		.pm             = ZPA2326_PM_OPS,
+ 		.name	= "ams-iaq-core",
+-		.of_match_table = of_match_ptr(ams_iaqcore_dt_ids),
++		.of_match_table = ams_iaqcore_dt_ids,
  	},
- 	.probe    = zpa2326_probe_i2c,
-diff --git a/drivers/iio/pressure/zpa2326_spi.c b/drivers/iio/pressure/zpa2326_spi.c
-index f37a4c738c75..85201a4bae44 100644
---- a/drivers/iio/pressure/zpa2326_spi.c
-+++ b/drivers/iio/pressure/zpa2326_spi.c
-@@ -10,7 +10,7 @@
- #include <linux/module.h>
- #include <linux/regmap.h>
- #include <linux/spi/spi.h>
--#include <linux/of_device.h>
-+#include <linux/mod_devicetable.h>
- #include "zpa2326.h"
- 
- /*
-@@ -70,18 +70,16 @@ static const struct spi_device_id zpa2326_spi_ids[] = {
- };
- MODULE_DEVICE_TABLE(spi, zpa2326_spi_ids);
- 
--#if defined(CONFIG_OF)
- static const struct of_device_id zpa2326_spi_matches[] = {
- 	{ .compatible = "murata,zpa2326" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, zpa2326_spi_matches);
--#endif
- 
- static struct spi_driver zpa2326_spi_driver = {
- 	.driver = {
- 		.name           = "zpa2326-spi",
--		.of_match_table = of_match_ptr(zpa2326_spi_matches),
-+		.of_match_table = zpa2326_spi_matches,
- 		.pm             = ZPA2326_PM_OPS,
- 	},
- 	.probe    = zpa2326_probe_spi,
+ 	.probe = ams_iaqcore_probe,
+ 	.id_table = ams_iaqcore_id,
 -- 
 2.28.0
 
