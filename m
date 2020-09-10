@@ -2,70 +2,73 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BD35C433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:05:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A7508C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:06:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA0AB20C09
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:05:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 360AA21941
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 18:06:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="rFnTYk3k"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="t28s2ohA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725912AbgIJSFd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 14:05:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33508 "EHLO
+        id S1726841AbgIJSGg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 14:06:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725877AbgIJSFS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 14:05:18 -0400
-Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89A3BC061573;
-        Thu, 10 Sep 2020 11:05:17 -0700 (PDT)
-Received: by mail-pg1-x542.google.com with SMTP id l191so4652077pgd.5;
-        Thu, 10 Sep 2020 11:05:17 -0700 (PDT)
+        with ESMTP id S1726399AbgIJSFr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Sep 2020 14:05:47 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BBABC061757;
+        Thu, 10 Sep 2020 11:05:47 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id w7so5091875pfi.4;
+        Thu, 10 Sep 2020 11:05:47 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sbUyJpejCvA3QH4e+Y9L0OkTzMxPfcFa5isJNJNYA7E=;
-        b=rFnTYk3kalLjbRQHngSb/t19D4EtEitgTtgTaWIoBT/vs85zoyWHRg0R5iKsQDM8fq
-         UVNLyQurv0ZwippbcCdjNojPWIXGR35uIsowLwkOCiK6dWifkl3jsjZHkqyDr1xhZhKL
-         +RQz0/LS9EUM9ZcrzNL+/StM0CIhmlpIXsck4gQ5WLrX0ep9rT2ubj5qKMAVuZVxvb3Z
-         UzfBU/wdisoQcwBlJiRybtvPcTrMWHy+iuCprfzB16QbXOktzO/Mln6YIwVdxh15N/zp
-         TgnTZKwcuTmLxqWYy4DikDwcUdk2bo82uhQ5tst1q6kQ/knDejt/isrmpFs/De3raBZu
-         L/yw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=mEwZSmSPM9tJPXbfj/hisKYRPYb4G1wKBGhUAXFVXQE=;
+        b=t28s2ohAlSG3nVPgGmhJ9BtHHniLCxcuBl1dSx2uX8dRKSd84C+/w6E7KceCTwhEBG
+         DMLxo6p3upAgq3btstD8SUZfDQypTTqA2JjOm/dbtwqTeWvJkJPI/5RiO6DMh7EhFImN
+         cqM46aKbyCYnaGx0RX3lIaSognEZkwZ+15E5fDWU/2p9wP+ZTLkAXbHSMvrX8lscBbq+
+         //h0PQuybrORv3zCLQ48eqLcTQO7n8EW7BXnEoOcUNay1NpF0sAkwi5bf1I9fmltNYK1
+         t/GmQjm4oZM4MHB1RkNXfpcgOwHN/BLhFPI32MDk6Vtln8npZF4aq2QB0ZqT2BcTJPNL
+         a0Zw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sbUyJpejCvA3QH4e+Y9L0OkTzMxPfcFa5isJNJNYA7E=;
-        b=eLJBh9DzCBBcNrHsv06VPvc2HgRxALwtO/zmCzT2EokzNi9B+bFW8Qh/+/mOFTABUN
-         T8dtFohv+5/4GDcj5TmKNfQRJJktCbirBZp+aFOUmT6YY3czUzqiPNcGmQrSgN6ULTPi
-         exaYALRBFbyGsTTb06BYrHluYzJx4dmeQsjlLNghYZjURV4VFG4Y+a1SbX9DOI91hcPl
-         5aDhkgv93xBuL2zUio1cslXxLTQBFZ4PBOCAt5Z6XZl24JKSwiDYSXrDTdgH9TOYQKjI
-         05Ef0D3Jvvl6qtQEirbUnAkwVIheCv1r8uaoaahxMUO/5IwhGKAKld816xS2j5gZ1kiZ
-         jsPg==
-X-Gm-Message-State: AOAM531yFPyQYwdHKMKvJ6JiM7C9E+nFcwNwUNfsm1jv4xD5R05sDnqR
-        FEo3jLfWAFEze1pRmIe/8g7lP7KA118=
-X-Google-Smtp-Source: ABdhPJwrXbIa5IjH+meDBbNT3ln3vgWA7C+RElpoZ+bxyZNXiOlZC+Q/3NY5ishRbJ7b7cgMfXZCgQ==
-X-Received: by 2002:aa7:9297:0:b029:13c:1611:653c with SMTP id j23-20020aa792970000b029013c1611653cmr6824116pfa.14.1599761117096;
-        Thu, 10 Sep 2020 11:05:17 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=mEwZSmSPM9tJPXbfj/hisKYRPYb4G1wKBGhUAXFVXQE=;
+        b=TEFhcUSWGu4ys6+jgIF1SLuKtZ4navr/XjilKRCJQS0shY5fMKEKACc27Q/1Z/wqjK
+         duA3HcXIL9rlbhhRB+WJYNSTgdvRlfJ+qRel9YjRSndRRSKthDSkSMa1FevAiicAtQcz
+         YdvORBRQ6IzODFgJAvnUKDzE5K3G1FgGpqg0nTXWUcCzMEIQyooSQeW2Hacl4HQJv28D
+         EIkuAsVy793mpyBeDV8mYLlfecf0iLwv2BSIRS7xCXpPKD1jrCwDQS9bNgzHxiQdg+MN
+         w8WF8pxZm4sjqHG2iJu+Nz32eGv2rBd8ZrTh3Y+DdMynZPfnmfksrv1SgjKF57vgkFhM
+         NEAQ==
+X-Gm-Message-State: AOAM533bV8zGzsDH9m2gshi+kEPimwB6KYmYhsq2MJSPO4FaHb8VSCaO
+        SIBLTnyz5DOJ2jXXa90i9kA=
+X-Google-Smtp-Source: ABdhPJzsznNUs52Ek6gTw2Dn9tG7jAPka/nCKtVSJh1zGME/XM/9xnhHT59acXC+Hho9CxqNHMkHDg==
+X-Received: by 2002:a62:8c86:: with SMTP id m128mr6545841pfd.111.1599761146894;
+        Thu, 10 Sep 2020 11:05:46 -0700 (PDT)
 Received: from nish-HP-Pavilion ([2409:4072:6218:54d7:9928:e984:12bb:783d])
-        by smtp.gmail.com with ESMTPSA id y29sm7252536pfq.207.2020.09.10.11.05.15
+        by smtp.gmail.com with ESMTPSA id f4sm5799390pfj.147.2020.09.10.11.05.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 10 Sep 2020 11:05:16 -0700 (PDT)
+        Thu, 10 Sep 2020 11:05:46 -0700 (PDT)
 From:   Nishant Malpani <nish.malpani25@gmail.com>
 To:     jic23@kernel.org, robh+dt@kernel.org
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, andy.shevchenko@gmail.com,
         Nishant Malpani <nish.malpani25@gmail.com>
-Subject: [RESEND PATCH v3 0/3] iio: gyro: adxrs290: Add triggered buffer & debugfs support
-Date:   Thu, 10 Sep 2020 23:34:47 +0530
-Message-Id: <20200910180450.29696-1-nish.malpani25@gmail.com>
+Subject: [RESEND PATCH v3 2/3] dt-bindings: iio: gyro: adxrs290: Add interrupts support
+Date:   Thu, 10 Sep 2020 23:34:49 +0530
+Message-Id: <20200910180450.29696-3-nish.malpani25@gmail.com>
 X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20200910180450.29696-1-nish.malpani25@gmail.com>
+References: <20200910180450.29696-1-nish.malpani25@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
@@ -73,23 +76,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Introduce DATA_RDY trigger for triggered buffer setup; this enables continuous
-data capture. Additionally, add support for direct register access using the debugfs 
-iio interface. 
+Include 'interrupts' property and provide a suitable example for using
+a GPIO interrupt line.
 
-The device-tree bindings documentation illustrates an example of using a GPIO irq
-line to trigger a data capture.
+Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
+---
 
-Nishant Malpani (3):
-  iio: gyro: adxrs290: Add triggered buffer support
-  dt-bindings: iio: gyro: adxrs290: Add interrupts support
-  iio: gyro: adxrs290: Add debugfs register access support
+Changes in v3:
+  - remove gpio.h header since unused
 
- .../bindings/iio/gyroscope/adi,adxrs290.yaml  |   6 +
- drivers/iio/gyro/Kconfig                      |   2 +
- drivers/iio/gyro/adxrs290.c                   | 237 ++++++++++++++++--
- 3 files changed, 231 insertions(+), 14 deletions(-)
+Changes in v2:
 
+  - remove 'interrupts' property from the required properties list
+  - rewrite commit message
+---
+ .../devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml     | 6 ++++++
+ 1 file changed, 6 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+index 61adb2c2454b..662ec59ca0af 100644
+--- a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
++++ b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
+@@ -28,6 +28,9 @@ properties:
+ 
+   spi-cpha: true
+ 
++  interrupts:
++    maxItems: 1
++
+ required:
+   - compatible
+   - reg
+@@ -39,6 +42,7 @@ additionalProperties: false
+ 
+ examples:
+   - |
++    #include <dt-bindings/interrupt-controller/irq.h>
+     spi {
+         #address-cells = <1>;
+         #size-cells = <0>;
+@@ -48,6 +52,8 @@ examples:
+                    spi-max-frequency = <5000000>;
+                    spi-cpol;
+                    spi-cpha;
++                   interrupt-parent = <&gpio>;
++                   interrupts = <25 IRQ_TYPE_EDGE_RISING>;
+         };
+     };
+ ...
 -- 
 2.20.1
 
