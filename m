@@ -2,37 +2,65 @@ Return-Path: <SRS0=b3IJ=CT=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C306C433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 08:15:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54311C433E2
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 08:38:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 04B132067C
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 08:15:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0D3ED20770
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Sep 2020 08:38:37 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599727117;
+	bh=FTig6rPaZltKUx3M9pM1ycw/aGv4o3ffuusmSgumDhI=;
+	h=References:In-Reply-To:From:Date:Subject:To:Cc:List-ID:From;
+	b=vD3BkhVdnrXrNllTl00aWTAzr/DOPceZLnc+0RZc88z+Ro1eZoaZcDozJTWyga1Nt
+	 q50/I+GEa2FzWi4j5jbq1axxFhCvaCVHdnpMYfaOBU/N4r3KNL4ux+Z+PLPpWeyeW7
+	 hfTPvt25bGJ9bVgk2KlmpTE0FOX6mT+MXTNTbtLg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730203AbgIJIPo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Sep 2020 04:15:44 -0400
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2802 "EHLO huawei.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726961AbgIJINp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Sep 2020 04:13:45 -0400
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
-        by Forcepoint Email with ESMTP id CCFBE850CD2915818418;
-        Thu, 10 Sep 2020 09:13:43 +0100 (IST)
-Received: from localhost (10.52.121.43) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 10 Sep
- 2020 09:13:43 +0100
-Date:   Thu, 10 Sep 2020 09:12:08 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        id S1730270AbgIJIiD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Sep 2020 04:38:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55792 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730498AbgIJIgx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Sep 2020 04:36:53 -0400
+Received: from mail-ej1-f50.google.com (mail-ej1-f50.google.com [209.85.218.50])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EC2A20770;
+        Thu, 10 Sep 2020 08:36:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599727012;
+        bh=FTig6rPaZltKUx3M9pM1ycw/aGv4o3ffuusmSgumDhI=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=xShM8od5RQmoImiTHhOxlMyzg9o3ljBugN4a2iBHXy0Z2ekwWv3uBFmyvtisw6ts1
+         9ua5wSzxOQGjLK8n1jw65HT2a5t327eRPtroSOFd4/mnPnzor9N2j2F5ueX9IXzQqg
+         7z1VW1nyh9Oc5r6RQbLV2cuuT9DFnJ0lyOAZRp4I=
+Received: by mail-ej1-f50.google.com with SMTP id i22so7503482eja.5;
+        Thu, 10 Sep 2020 01:36:52 -0700 (PDT)
+X-Gm-Message-State: AOAM533otwDkPUZTJ7vhgiATyqLU2p8YMQA3YJC5/iH4tfuIMSAFVS8y
+        cpJmvCewDCuU1gvtlmoL6Z6IGYQ9wpcSUz3gXEg=
+X-Google-Smtp-Source: ABdhPJwjtDYLRSBq6Amx7NdpRb+UlTD9WZghEMqB4PGHfXl5M8kyQ8hrvlps+rLSbZFVvjfFqiDxJqkHawrXCoPGuqc=
+X-Received: by 2002:a17:906:4046:: with SMTP id y6mr8123139ejj.148.1599727010714;
+ Thu, 10 Sep 2020 01:36:50 -0700 (PDT)
+MIME-Version: 1.0
+References: <20200829064726.26268-1-krzk@kernel.org> <20200829064726.26268-8-krzk@kernel.org>
+ <20200909193600.41970d8c@archlinux> <CAJKOXPeo8SXWaRmiFG6z+t9jcnaSMRpvRPm2X22Rf6rtEeKVew@mail.gmail.com>
+ <a37c69f2-1f16-2680-2716-0c1b77748d55@axentia.se> <CAHp75Vc4-zkkWtOz8w7pA0Vu1yMAVodhPSLQ1NJH4K+j9XD52g@mail.gmail.com>
+ <CAJKOXPdNAw8scFKCGaC_hp4jMyLD_mFLKr=+fGKSm6nCkcRF9g@mail.gmail.com> <20200910091208.000055fa@Huawei.com>
+In-Reply-To: <20200910091208.000055fa@Huawei.com>
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Date:   Thu, 10 Sep 2020 10:36:39 +0200
+X-Gmail-Original-Message-ID: <CAJKOXPdD0Qa1Fom4QYctjua4TfBa8CPaHd6PG5QViNweAr3GJQ@mail.gmail.com>
+Message-ID: <CAJKOXPdD0Qa1Fom4QYctjua4TfBa8CPaHd6PG5QViNweAr3GJQ@mail.gmail.com>
+Subject: Re: [PATCH v3 08/18] iio: adc: stm32: Simplify with dev_err_probe()
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-        "Michael Hennerich" <Michael.Hennerich@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
@@ -47,115 +75,92 @@ CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         "linux-amlogic@lists.infradead.org" 
         <linux-amlogic@lists.infradead.org>, Peter Rosin <peda@axentia.se>,
         Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v3 08/18] iio: adc: stm32: Simplify with dev_err_probe()
-Message-ID: <20200910091208.000055fa@Huawei.com>
-In-Reply-To: <CAJKOXPdNAw8scFKCGaC_hp4jMyLD_mFLKr=+fGKSm6nCkcRF9g@mail.gmail.com>
-References: <20200829064726.26268-1-krzk@kernel.org>
-        <20200829064726.26268-8-krzk@kernel.org>
-        <20200909193600.41970d8c@archlinux>
-        <CAJKOXPeo8SXWaRmiFG6z+t9jcnaSMRpvRPm2X22Rf6rtEeKVew@mail.gmail.com>
-        <a37c69f2-1f16-2680-2716-0c1b77748d55@axentia.se>
-        <CAHp75Vc4-zkkWtOz8w7pA0Vu1yMAVodhPSLQ1NJH4K+j9XD52g@mail.gmail.com>
-        <CAJKOXPdNAw8scFKCGaC_hp4jMyLD_mFLKr=+fGKSm6nCkcRF9g@mail.gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.121.43]
-X-ClientProxiedBy: lhreml712-chm.china.huawei.com (10.201.108.63) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 10 Sep 2020 08:58:57 +0200
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
-
-> On Thu, 10 Sep 2020 at 08:52, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Thu, 10 Sep 2020 at 10:13, Jonathan Cameron
+<Jonathan.Cameron@huawei.com> wrote:
+>
+> On Thu, 10 Sep 2020 08:58:57 +0200
+> Krzysztof Kozlowski <krzk@kernel.org> wrote:
+>
+> > On Thu, 10 Sep 2020 at 08:52, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> > >
+> > >
+> > >
+> > > On Thursday, September 10, 2020, Peter Rosin <peda@axentia.se> wrote:
+> > >>
+> > >> Hi!
+> > >>
+> > >> On 2020-09-09 21:57, Krzysztof Kozlowski wrote:
+> > >> > On Wed, 9 Sep 2020 at 20:36, Jonathan Cameron <jic23@kernel.org> wrote:
+> > >> >>
+> > >> >> On Sat, 29 Aug 2020 08:47:16 +0200
+> > >> >> Krzysztof Kozlowski <krzk@kernel.org> wrote:
+> > >> >>
+> > >> >>> Common pattern of handling deferred probe can be simplified with
+> > >> >>> dev_err_probe().  Less code and also it prints the error value.
+> > >> >>>
+> > >> >>> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > >> >>> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > >> >>>
+> > >> >> I don't have the thread to hand, but this tripped a warning next
+> > >> >> and the patch was dropped as a result. See below.
+>
+> oops. That is what I get for reading an email very quickly then looking
+> at the code a few hours later.  Still a problem here we need to fix
+> unless I'm missing something.
+>
+> > >> >
+> > >> > Thanks for letting me know. If you mean the warning caused by:
+> > >> > https://lore.kernel.org/lkml/20200909073716.GA560912@kroah.com/
+> > >> > then the driver-core patch was dropped, not the iio one:
+> > >> > https://lore.kernel.org/linux-next/20200909074130.GB561485@kroah.com/T/#t
+> > >> >
+> > >> > So we are good here :)
+> > >>
+> > >> No, we are definitely not good. See below. That means "See below", and
+> > >> not "Please take a guess at what is being talking about".
+> > >
+> > >
+> > >
+> > >>
+> > >> >>> @@ -596,12 +594,9 @@ static int stm32_adc_core_switches_probe(struct device *dev,
+> > >> >>>               priv->booster = devm_regulator_get_optional(dev, "booster");
+> > >> >>>               if (IS_ERR(priv->booster)) {
+> > >> >>>                       ret = PTR_ERR(priv->booster);
+> > >> >>> -                     if (ret != -ENODEV) {
+> > >> >>> -                             if (ret != -EPROBE_DEFER)
+> > >> >>> -                                     dev_err(dev, "can't get booster %d\n",
+> > >> >>> -                                             ret);
+> > >> >>> -                             return ret;
+> > >> >>> -                     }
+> > >> >>> +                     if (ret != -ENODEV)
+> > >> >>> +                             dev_err_probe(dev, ret, "can't get booster\n");
+> > >> >>
+> > >> >> This tripped a warning and got the patch dropped because we no longer
+> > >> >> return on error.
+> > >>
+> > >> As Jonathan already said, we no longer return in this hunk. I.e., you have
+> > >> clobbered the error path.
+> > >
+> > >
+> > > Exactly my point why I proposed _must_check in the first place.
 > >
-> >
-> >
-> > On Thursday, September 10, 2020, Peter Rosin <peda@axentia.se> wrote:  
-> >>
-> >> Hi!
-> >>
-> >> On 2020-09-09 21:57, Krzysztof Kozlowski wrote:  
-> >> > On Wed, 9 Sep 2020 at 20:36, Jonathan Cameron <jic23@kernel.org> wrote:  
-> >> >>
-> >> >> On Sat, 29 Aug 2020 08:47:16 +0200
-> >> >> Krzysztof Kozlowski <krzk@kernel.org> wrote:
-> >> >>  
-> >> >>> Common pattern of handling deferred probe can be simplified with
-> >> >>> dev_err_probe().  Less code and also it prints the error value.
-> >> >>>
-> >> >>> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
-> >> >>> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> >> >>>  
-> >> >> I don't have the thread to hand, but this tripped a warning next
-> >> >> and the patch was dropped as a result. See below.  
+> > That was not exactly that point as you did not mention possible errors
+> > but only "miss the opportunity to optimize". Optimization is different
+> > things than a mistake.
+>
+> In this particular case we have introduced a bug. If the regulator returns
+> an error other than -ENODEV we will carry on when really should error out.
+> This includes deferred probe route in which it won't print a message but also won't
+> actually defer.
 
-oops. That is what I get for reading an email very quickly then looking
-at the code a few hours later.  Still a problem here we need to fix
-unless I'm missing something.
+Yes, I see, Peter pointed this out. The commit was actually not
+dropped from next so I will send a fixup.
 
-> >> >
-> >> > Thanks for letting me know. If you mean the warning caused by:
-> >> > https://lore.kernel.org/lkml/20200909073716.GA560912@kroah.com/
-> >> > then the driver-core patch was dropped, not the iio one:
-> >> > https://lore.kernel.org/linux-next/20200909074130.GB561485@kroah.com/T/#t
-> >> >
-> >> > So we are good here :)  
-> >>
-> >> No, we are definitely not good. See below. That means "See below", and
-> >> not "Please take a guess at what is being talking about".  
-> >
-> >
-> >  
-> >>  
-> >> >>> @@ -596,12 +594,9 @@ static int stm32_adc_core_switches_probe(struct device *dev,
-> >> >>>               priv->booster = devm_regulator_get_optional(dev, "booster");
-> >> >>>               if (IS_ERR(priv->booster)) {
-> >> >>>                       ret = PTR_ERR(priv->booster);
-> >> >>> -                     if (ret != -ENODEV) {
-> >> >>> -                             if (ret != -EPROBE_DEFER)
-> >> >>> -                                     dev_err(dev, "can't get booster %d\n",
-> >> >>> -                                             ret);
-> >> >>> -                             return ret;
-> >> >>> -                     }
-> >> >>> +                     if (ret != -ENODEV)
-> >> >>> +                             dev_err_probe(dev, ret, "can't get booster\n");  
-> >> >>
-> >> >> This tripped a warning and got the patch dropped because we no longer
-> >> >> return on error.  
-> >>
-> >> As Jonathan already said, we no longer return in this hunk. I.e., you have
-> >> clobbered the error path.  
-> >
-> >
-> > Exactly my point why I proposed _must_check in the first place.  
-> 
-> That was not exactly that point as you did not mention possible errors
-> but only "miss the opportunity to optimize". Optimization is different
-> things than a mistake.
-
-In this particular case we have introduced a bug. If the regulator returns
-an error other than -ENODEV we will carry on when really should error out.
-This includes deferred probe route in which it won't print a message but also won't
-actually defer.
-
-Jonathan
-
-
-> 
-> Best regards,
-> Krzysztof
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-
-
+Best regards,
+Krzysztof
