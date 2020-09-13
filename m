@@ -4,52 +4,60 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4543FC43461
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 09:54:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3F7BC2D0A7
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:03:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F0A60208E4
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 09:54:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 75AD821655
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 10:03:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1599990897;
-	bh=VswA9JFe++tL2MaxJVyC85+0l1cdxeIVvqkxRaDh/vM=;
+	s=default; t=1599991429;
+	bh=eF+NCdxa/bNQ0Tax61mNbg/8nJfv0aGzf9zpAk3WTZQ=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=WKsilpq9UmcAfRpW5vxIrTdIOLWNCAUUY3/nwjnrGOMnnRNmEEzjCVmiBTYa2/2oe
-	 3ZKMvM5of9kBI6Ksep7cmParubkssawasKTJ497u4wI1+oopbQ4On2D2Dvcx55ABCf
-	 Mw9ayioHfo4uUeeNcJPSFWFDaiVyH0gG+wuSJgsg=
+	b=FTVOhBSicBOMNMV1P9jzDrltNRf7Yqm+Wb6QcXk7idPQaB4k41+uj3QSXcxUv8HTS
+	 hxlWDIePjvSePnhzIJh/WllPIP8ctCIe4M3Qt+4PlvCpyNuufI/X1kqSciKhq0NvZ2
+	 2Uq+NVrt0o7oZ/6XPCarN39enBuwYkvQGDcbGctg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725921AbgIMJyz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Sep 2020 05:54:55 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49640 "EHLO mail.kernel.org"
+        id S1725922AbgIMKDq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Sep 2020 06:03:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51916 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725916AbgIMJyx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Sep 2020 05:54:53 -0400
+        id S1725916AbgIMKDp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Sep 2020 06:03:45 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CA44C208E4;
-        Sun, 13 Sep 2020 09:54:51 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D71FC208E4;
+        Sun, 13 Sep 2020 10:03:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1599990893;
-        bh=VswA9JFe++tL2MaxJVyC85+0l1cdxeIVvqkxRaDh/vM=;
+        s=default; t=1599991424;
+        bh=eF+NCdxa/bNQ0Tax61mNbg/8nJfv0aGzf9zpAk3WTZQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=am+nwgemtcwFheh6fa8FWwt+muzdubSnxDiZlrlxyPEoPx7oX3C2Xii77M1rMoejc
-         XQ6yOqesUGdXEhZYQG5JI2aKqEkRhAb1eSOvic82vWzSRzTeTZua/77avbIBT8Lz2a
-         Q18/3TYgItBPLB3kHxwHKb7LOf0xtqB1NQa8hKnY=
-Date:   Sun, 13 Sep 2020 10:54:48 +0100
+        b=jOHalwwflSZpU/dlZvtUGEpNlQQ90Fi+5JnueY9DXwgtnA+j/7l2vCSyC9I/r3T4+
+         OFr4Wyk/hxK0Xi5XCvdJc2lUEasYyKMGRWKnHGYkmdU6H5P3bB3y5tu2iyKVIpmbmW
+         Sn0to4lRhdHoTay0OvPAsKc+/eNaiG81usQy64wg=
+Date:   Sun, 13 Sep 2020 11:03:35 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Nishant Malpani <nish.malpani25@gmail.com>
-Cc:     robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        andy.shevchenko@gmail.com
-Subject: Re: [RESEND PATCH v3 2/3] dt-bindings: iio: gyro: adxrs290: Add
- interrupts support
-Message-ID: <20200913105448.25574254@archlinux>
-In-Reply-To: <20200910180450.29696-3-nish.malpani25@gmail.com>
-References: <20200910180450.29696-1-nish.malpani25@gmail.com>
-        <20200910180450.29696-3-nish.malpani25@gmail.com>
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Subject: Re: [PATCH v4 01/10] iio: adc: qcom-spmi-adc5: fix driver name
+Message-ID: <20200913110335.4687ab89@archlinux>
+In-Reply-To: <20200910140000.324091-2-dmitry.baryshkov@linaro.org>
+References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
+        <20200910140000.324091-2-dmitry.baryshkov@linaro.org>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,64 +67,40 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 10 Sep 2020 23:34:49 +0530
-Nishant Malpani <nish.malpani25@gmail.com> wrote:
+On Thu, 10 Sep 2020 16:59:51 +0300
+Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
 
-> Include 'interrupts' property and provide a suitable example for using
-> a GPIO interrupt line.
+> Remove superfluous '.c' from qcom-spmi-adc5 device driver name.
 > 
-> Signed-off-by: Nishant Malpani <nish.malpani25@gmail.com>
-This one is 'so trivial' (famous last words) that I'm not going
-to wait for Rob H to get to it.  Obviously anything Rob wants to add
-will be most welcome and might beat me pushing this out as non rebasing.
+> Fixes: e13d757279 ("iio: adc: Add QCOM SPMI PMIC5 ADC driver")
+> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 
-Applied to the togreg branch of iio.git.
+In the interests of getting this one into stable reasonably quickly I've
+pulled it off this set and applied it to my fixes-togreg branch of iio.git.
+
+Shouldn't cause any problems taking the rest of the set via whatever path
+makes most sense.
 
 Thanks,
+
 Jonathan
 
 > ---
+>  drivers/iio/adc/qcom-spmi-adc5.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Changes in v3:
->   - remove gpio.h header since unused
-> 
-> Changes in v2:
-> 
->   - remove 'interrupts' property from the required properties list
->   - rewrite commit message
-> ---
->  .../devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml     | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-> index 61adb2c2454b..662ec59ca0af 100644
-> --- a/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-> +++ b/Documentation/devicetree/bindings/iio/gyroscope/adi,adxrs290.yaml
-> @@ -28,6 +28,9 @@ properties:
+> diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+> index b4b73c9920b4..c10aa28be70a 100644
+> --- a/drivers/iio/adc/qcom-spmi-adc5.c
+> +++ b/drivers/iio/adc/qcom-spmi-adc5.c
+> @@ -982,7 +982,7 @@ static int adc5_probe(struct platform_device *pdev)
 >  
->    spi-cpha: true
->  
-> +  interrupts:
-> +    maxItems: 1
-> +
->  required:
->    - compatible
->    - reg
-> @@ -39,6 +42,7 @@ additionalProperties: false
->  
->  examples:
->    - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
->      spi {
->          #address-cells = <1>;
->          #size-cells = <0>;
-> @@ -48,6 +52,8 @@ examples:
->                     spi-max-frequency = <5000000>;
->                     spi-cpol;
->                     spi-cpha;
-> +                   interrupt-parent = <&gpio>;
-> +                   interrupts = <25 IRQ_TYPE_EDGE_RISING>;
->          };
->      };
->  ...
+>  static struct platform_driver adc5_driver = {
+>  	.driver = {
+> -		.name = "qcom-spmi-adc5.c",
+> +		.name = "qcom-spmi-adc5",
+>  		.of_match_table = adc5_match_table,
+>  	},
+>  	.probe = adc5_probe,
 
