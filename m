@@ -4,47 +4,48 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-14.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC492C43461
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 13:23:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EB02C433E2
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 13:23:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B98DA217BA
+	by mail.kernel.org (Postfix) with ESMTP id DF4402158C
 	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 13:23:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1600003406;
-	bh=41WTgoOcWayQaiGm5nUrMD4GkMsxkxjsSsEDujfc/0o=;
+	bh=R+VVRIk6l5/l6g7174w37YKlgtuyfIO0RSzMT5FXTIA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=0wX98FuvaeQAoRSVKghKjhTgIZvNVk7/Tr8wYftD97hM7U0AW98HtwGY3CzGEzYbC
-	 fxCkt2VsJSheF//J2VxAb3EXf53q/YYdoSjADG/JxKbgLvgk+BVjuk7XjQ6+uizIRD
-	 gGhtLdG4jPMhJEm7029ZWyhIJmUJX3OjQcJeHrnk=
+	b=PHmuA0IH227r8SmaD501E5g9K5wFat32daWUysUYtnFBzBkvlTsAaxsY+PKtHh1MQ
+	 3awWj8luKam9TL0Dt6XyexjraSqFUsw/mpbGxoI+Pean5DZFgjma7KzkIKdePrhnic
+	 3DgfUKeBZGtLstzvzBxEL3FfVyPlBb8MbmmXUxiY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725939AbgIMNXY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 13 Sep 2020 09:23:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53166 "EHLO mail.kernel.org"
+        id S1725935AbgIMNXZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Sep 2020 09:23:25 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53146 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725935AbgIMNXX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 13 Sep 2020 09:23:23 -0400
+        id S1725931AbgIMNXU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Sep 2020 09:23:20 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1AC5921D80;
-        Sun, 13 Sep 2020 13:23:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B761A217BA;
+        Sun, 13 Sep 2020 13:23:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600003402;
-        bh=41WTgoOcWayQaiGm5nUrMD4GkMsxkxjsSsEDujfc/0o=;
+        s=default; t=1600003400;
+        bh=R+VVRIk6l5/l6g7174w37YKlgtuyfIO0RSzMT5FXTIA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=xZi9vtPjTOXtwl4DDd5iqkc8dfP3BTDf9FiOplhW1Du+mT2r5UMWUq4x+E1xTgKGl
-         E41Lb7Kf05CuPpcm2cRry+DvnPoN5DZKxXLxyWSfzWQq718bqG1Ls2YMouzziQTx8b
-         rLPiKQTVqQJoDtJn4RzLMXAoxGaxHnxsRhPAixQ0=
+        b=RnG6BUFwF0yWoEWPGJT5TP7mgyWKobRwGJThw865NZA7nGdUvSRd0SUoKd8kkF+d9
+         WjjL8jlAQlmVZcuPUKb2AfLiDsTMMr/RjZDPtOXMvXzQuSkohVQHxnjenHVvaGM0Si
+         nUsrzrxoLitY1F3M2vGlQmlT8XF1nm2PiI95Npd4=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 3/3] iio:core: Tidy up kernel-doc.
-Date:   Sun, 13 Sep 2020 14:21:15 +0100
-Message-Id: <20200913132115.800131-4-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 1/3] iio:imu:adis16400: Sort out missing kernel doc.
+Date:   Sun, 13 Sep 2020 14:21:13 +0100
+Message-Id: <20200913132115.800131-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20200913132115.800131-1-jic23@kernel.org>
 References: <20200913132115.800131-1-jic23@kernel.org>
@@ -57,35 +58,30 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-One comment isn't kernel-doc at all, but starts with /** and another
-is simply missing a parameter that was introduced recently.
+I'd like to be enable W=1 for all IIO builds as it catches real issues as well
+as more minor documentation issues such as this (also good to fix though!)
+
+drivers/iio/imu/adis16400.c:183: warning: Function parameter or member 'avail_scan_mask' not described in 'adis16400_state'
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/industrialio-core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/imu/adis16400.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 8ddc6dfc8ed4..6e388293c828 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -170,7 +170,7 @@ static const char * const iio_chan_info_postfix[] = {
- };
- 
- #if defined(CONFIG_DEBUG_FS)
--/**
-+/*
-  * There's also a CONFIG_DEBUG_FS guard in include/linux/iio/iio.h for
-  * iio_get_debugfs_dentry() to make it inline if CONFIG_DEBUG_FS is undefined
-  */
-@@ -1525,6 +1525,7 @@ struct device_type iio_device_type = {
- 
- /**
-  * iio_device_alloc() - allocate an iio_dev from a driver
-+ * @parent:		Parent device.
-  * @sizeof_priv:	Space to allocate for private structure.
+diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
+index 1ebe3e50d3e6..140cfc65ee8c 100644
+--- a/drivers/iio/imu/adis16400.c
++++ b/drivers/iio/imu/adis16400.c
+@@ -173,6 +173,8 @@ struct adis16400_chip_info {
+  * @variant:	chip variant info
+  * @filt_int:	integer part of requested filter frequency
+  * @adis:	adis device
++ * @avail_scan_mask:	NULL terminated array of bitmaps of channels
++ *			that must be enabled together
   **/
- struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ struct adis16400_state {
+ 	struct adis16400_chip_info	*variant;
 -- 
 2.28.0
 
