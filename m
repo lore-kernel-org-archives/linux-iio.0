@@ -1,155 +1,341 @@
-Return-Path: <SRS0=8XzP=CU=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=2qef=CW=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+X-Spam-Status: No, score=-13.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA4FAC43461
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Sep 2020 18:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1260C43461
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 09:13:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6A8D222207
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Sep 2020 18:59:50 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Djxi747G"
+	by mail.kernel.org (Postfix) with ESMTP id 68C8F207BB
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Sep 2020 09:13:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1599988395;
+	bh=cyG015YjIyneQJvo3/2/0ENtgF/unmDjizIxLcKLYSQ=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=AtkCPt3RTAYyXVufVcUGTNmRfvX4zbtNkna36ojPlBkD3qgzxpAAxYmlIDBcO841i
+	 glp5Cis3wkx5qPEKkCJVSQIpKaGvXtsTS+31r0f1EnpLSGaLKf0QyKNuEjY4sX7EZJ
+	 GI/ipcmYVqhB7ZlkPW/UYKyFWmIs5zvp3KqZ6QkU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725783AbgIKS7s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Sep 2020 14:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38952 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725802AbgIKS7n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Sep 2020 14:59:43 -0400
-Received: from mail-qt1-x841.google.com (mail-qt1-x841.google.com [IPv6:2607:f8b0:4864:20::841])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BDD1CC061757
-        for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2020 11:59:43 -0700 (PDT)
-Received: by mail-qt1-x841.google.com with SMTP id n18so8741339qtw.0
-        for <linux-iio@vger.kernel.org>; Fri, 11 Sep 2020 11:59:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=CtFkcRSfpEtZt+cz8ege3q6PVFBsfAVY0Avp5iD1800=;
-        b=Djxi747G1E2VEhJLqSrXZBRk9BWsnExpasX9n7PBBueSuqy2dzKrBMQbnmSkxazfwU
-         FM6kiZS43IOBcjuIUN3BXv7nXzm8M4Jma0QktASCL/0Y34iBvWoHbhKX43Lh+2G1KTSs
-         MK8FcyIa+mxOsffpJxGRQDIWeruhbNFzC7pQ08Iqwi0TbRvtkDEjBWTNkYrAuo92LBaU
-         1jGlUg7rkTEP25o1zmJvQRa3UpUPl/ryiOxvqvlh8g50QWTCaldwqq/0OXrjCTTVwYZy
-         rhOqaax57fn6X7FWK9/3bo2Bht1cYF0NwxzXHh1q2K3kE0IOy0Q9SYO/vlQGMs8NM4zS
-         qlSA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=CtFkcRSfpEtZt+cz8ege3q6PVFBsfAVY0Avp5iD1800=;
-        b=UZyPcbtJK2p+IzF9yB18icNhAQCE8VIZ38Ug/tZRTY4PSrW4qAlNyVSzOo9wdbMFbz
-         I2xxDU+bWFTv3Rk3swjs2K7Z633uPdUAv4PZ4e90WaqbWAVXRtVK3nizfQ7k3EbjSWqi
-         vMmrurCWJly7ioz6piwiPeyjtOY6Rhpl3bVmGmaCeKCdPpuEwdeX4qaG2TXTMOh0u+KG
-         5cdfxaRLGSlvSei2vtQB04Oacbj9dLeQfGUOt5rJobRLtJGMixedv4xWVF49Y1dC77Ci
-         pta5CCDOL5qGSsMVilJraKCQ+fAZNBz/hX5GyhOZnDv/v91AYUu/YKYqqai990Vqe70V
-         Pu5g==
-X-Gm-Message-State: AOAM530r4+6llj7Xc8OO6XRdyg87Z690R12HHSrFCTe82slTfAF4B/fJ
-        0Uw2B3FUlhiW+oU2njh1h8k0kdt4TaK3DQ==
-X-Google-Smtp-Source: ABdhPJxbfgCKyJac/wTqrG5RYjeGm+EKkoWsQA0YfxqSjAUdp91ix3L+iZpwJjg81N3z/kaaDKiwAA==
-X-Received: by 2002:ac8:3704:: with SMTP id o4mr3061362qtb.330.1599850782949;
-        Fri, 11 Sep 2020 11:59:42 -0700 (PDT)
-Received: from ict14-OptiPlex-980 ([178.23.248.46])
-        by smtp.gmail.com with ESMTPSA id k6sm3669119qti.23.2020.09.11.11.59.41
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Fri, 11 Sep 2020 11:59:42 -0700 (PDT)
-Date:   Fri, 11 Sep 2020 20:59:31 +0200
-From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 34/38] iio:magn:ak8975: Drop of_match_ptr and ACPI_PTR
- protections.
-Message-ID: <20200911185931.GA18362@ict14-OptiPlex-980>
-References: <20200910173242.621168-1-jic23@kernel.org>
- <20200910173242.621168-35-jic23@kernel.org>
+        id S1725918AbgIMJNN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 13 Sep 2020 05:13:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39770 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725899AbgIMJNM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 13 Sep 2020 05:13:12 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 12756207BB;
+        Sun, 13 Sep 2020 09:13:10 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1599988391;
+        bh=cyG015YjIyneQJvo3/2/0ENtgF/unmDjizIxLcKLYSQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=HtqvKHSISt7sWoYiJmhzbrlqP8flB1wadT36k/+cCBNX8NxaGa0FWwTuoPPnDls+l
+         dyr+NmcEKywBG11VKaN2WYPwAiDYCGCnsg7SV9CTCOzClknvB87M/xiGUKrZPNhCbY
+         BJbwR0JU+q9P6aYDCLS0JMMK9fLpp4dJdIFkRPgA=
+Date:   Sun, 13 Sep 2020 10:13:07 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Pop, Cristian" <Cristian.Pop@analog.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [RFC PATCH v2] iio: core: Add optional symbolic label to a
+ device channel
+Message-ID: <20200913101307.774f48e0@archlinux>
+In-Reply-To: <BN6PR03MB25142BDF4D295086CE214F84E7240@BN6PR03MB2514.namprd03.prod.outlook.com>
+References: <20200824083646.84886-1-cristian.pop@analog.com>
+        <20200830122425.3e00332b@archlinux>
+        <BN6PR03MB2514AE2330F47235028B4455E72D0@BN6PR03MB2514.namprd03.prod.outlook.com>
+        <BN6PR03MB251405FC8654C3539D7BD9C1E72D0@BN6PR03MB2514.namprd03.prod.outlook.com>
+        <20200906165329.150cc055@archlinux>
+        <BN6PR03MB25142BDF4D295086CE214F84E7240@BN6PR03MB2514.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200910173242.621168-35-jic23@kernel.org>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Sep 10, 2020 at 06:32:38PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Fri, 11 Sep 2020 13:33:53 +0000
+"Pop, Cristian" <Cristian.Pop@analog.com> wrote:
+
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Sunday, September 6, 2020 6:53 PM
+> > To: Pop, Cristian <Cristian.Pop@analog.com>
+> > Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> > Subject: Re: [RFC PATCH v2] iio: core: Add optional symbolic label to a device
+> > channel
+> > 
+> > [External]
+> > 
+> > On Fri, 4 Sep 2020 13:35:12 +0000
+> > "Pop, Cristian" <Cristian.Pop@analog.com> wrote:
+> >   
+> > > > -----Original Message-----
+> > > > From: Pop, Cristian
+> > > > Sent: Friday, September 4, 2020 2:14 PM
+> > > > To: Jonathan Cameron <jic23@kernel.org>
+> > > > Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> > > > Subject: RE: [RFC PATCH v2] iio: core: Add optional symbolic label
+> > > > to a device channel  
+> > 
+> > Hi Cristian,
+> > 
+> > If possible fix your word wrapping for future replies.
+> > I've tried to unwind it below but it makes it very hard to read and reply to.
+> >   
+> > > >
+> > > > Best ragards,
+> > > > Cristian Pop
+> > > >  
+> > > > > -----Original Message-----
+> > > > > From: Jonathan Cameron <jic23@kernel.org>
+> > > > > Sent: Sunday, August 30, 2020 2:24 PM
+> > > > > To: Pop, Cristian <Cristian.Pop@analog.com>
+> > > > > Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> > > > > Subject: Re: [RFC PATCH v2] iio: core: Add optional symbolic label
+> > > > > to a device channel
+> > > > >
+> > > > > [External]
+> > > > >
+> > > > > On Mon, 24 Aug 2020 11:36:46 +0300 Cristian Pop
+> > > > > <cristian.pop@analog.com> wrote:
+> > > > >  
+> > > > > > If a label is defined in the device tree for this channel add
+> > > > > > that to the channel specific attributes. This is useful for
+> > > > > > userspace to be able to identify an individual channel.
+> > > > > >
+> > > > > > Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+> > > > > > ---
+> > > > > >  Changes in v2:
+> > > > > > 	- Move label check before "read_raw" callback.
+> > > > > > 	- Move the responsability to of parsing channel labels, to the
+> > > > > > 	  driver.
+> > > > > >
+> > > > > >  drivers/iio/industrialio-core.c | 10 ++++++++--
+> > > > > >  include/linux/iio/iio.h         |  2 ++
+> > > > > >  include/linux/iio/types.h       |  1 +
+> > > > > >  3 files changed, 11 insertions(+), 2 deletions(-)
+> > > > > >
+> > > > > > diff --git a/drivers/iio/industrialio-core.c
+> > > > > > b/drivers/iio/industrialio-core.c index
+> > > > > > 1527f01a44f1..32277e94f02d
+> > > > > > 100644
+> > > > > > --- a/drivers/iio/industrialio-core.c
+> > > > > > +++ b/drivers/iio/industrialio-core.c
+> > > > > > @@ -135,6 +135,7 @@ static const char * const
+> > > > > > iio_modifier_names[] = {
+> > > > > >  /* relies on pairs of these shared then separate */  static
+> > > > > > const char * const iio_chan_info_postfix[] = {
+> > > > > >  	[IIO_CHAN_INFO_RAW] = "raw",
+> > > > > > +	[IIO_CHAN_INFO_LABEL] = "label",
+> > > > > >  	[IIO_CHAN_INFO_PROCESSED] = "input",
+> > > > > >  	[IIO_CHAN_INFO_SCALE] = "scale",
+> > > > > >  	[IIO_CHAN_INFO_OFFSET] = "offset", @@ -653,14 +654,18 @@
+> > > > > > static ssize_t iio_read_channel_info(struct device  
+> > > > > *dev,  
+> > > > > >  	int ret;
+> > > > > >  	int val_len = 2;
+> > > > > >
+> > > > > > -	if (indio_dev->info->read_raw_multi)
+> > > > > > +	if (indio_dev->info->read_raw_multi) {
+> > > > > >  		ret = indio_dev->info->read_raw_multi(indio_dev, this_attr-
+> > > > > > c,
+> > > > > >  
+> > > > > 	INDIO_MAX_RAW_ELEMENTS,  
+> > > > > >  							vals, &val_len,
+> > > > > >  							this_attr->address);
+> > > > > > -	else
+> > > > > > +	} else {
+> > > > > >  		ret = indio_dev->info->read_raw(indio_dev, this_attr->c,
+> > > > > >  				    &vals[0], &vals[1], this_attr->address);
+> > > > > > +		if (ret < 0 && this_attr->address ==  
+> > IIO_CHAN_INFO_LABEL  
+> > > > > &&  
+> > > > > > +			this_attr->c->label_name)  
+> > > > >
+> > > > > I'm not keen on this. We shouldn't be calling read_raw at all in this path.
+> > > > > There is no way it can return a valid label.
+> > > > >  
+> > > > > > +			return sprintf(buf, "%s\n", this_attr->c-  
+> > >label_name);  
+> > > > > > +	}
+> > > > > >
+> > > > > >  	if (ret < 0)
+> > > > > >  		return ret;
+> > > > > > @@ -1399,6 +1404,7 @@ static int
+> > > > > > iio_device_register_sysfs(struct iio_dev  
+> > > > > *indio_dev)  
+> > > > > >  			attrcount_orig++;
+> > > > > >  	}
+> > > > > >  	attrcount = attrcount_orig;
+> > > > > > +  
+> > > > >
+> > > > > Please avoid unrelated white space changes.
+> > > > >  
+> > > > > >  	/*
+> > > > > >  	 * New channel registration method - relies on the fact a group does
+> > > > > >  	 * not need to be initialized if its name is NULL.
+> > > > > > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> > > > > > index a1be82e74c93..39209f3b62be 100644
+> > > > > > --- a/include/linux/iio/iio.h
+> > > > > > +++ b/include/linux/iio/iio.h
+> > > > > > @@ -223,6 +223,7 @@ struct iio_event_spec {
+> > > > > >   *			correspond to the first name that the channel  
+> > is  
+> > > > > referred  
+> > > > > >   *			to by in the datasheet (e.g. IND), or the  
+> > nearest  
+> > > > > >   *			possible compound name (e.g. IND-INC).
+> > > > > > + * @label_name:		Unique name to identify which  
+> > channel this is.  
+> > > > > >   * @modified:		Does a modifier apply to this channel. What  
+> > > > > these are  
+> > > > > >   *			depends on the channel type.  Modifier is set  
+> > in  
+> > > > > >   *			channel2. Examples are IIO_MOD_X for axial  
+> > sensors  
+> > > > > about  
+> > > > > > @@ -260,6 +261,7 @@ struct iio_chan_spec {
+> > > > > >  	const struct iio_chan_spec_ext_info *ext_info;
+> > > > > >  	const char		*extend_name;
+> > > > > >  	const char		*datasheet_name;
+> > > > > > +	const char		*label_name;  
+> > > > >
+> > > > > This can't be part of chan_spec as that is constant in many drivers.
+> > > > > We need a separate way of doing this.  
+> > > What do you mean by "chan_spec is constant in many drivers"?
+> > > Instances of the "struct iio_chan_spec" are created in the driver.  
+> > 
+> > No they aren't.  Grep for struct iio_chan_spec Something like...
+> > git grep iio_chan_spec -- drivers/iio/ | grep const | grep channels
+> > 
+> > A very very large number of drivers keep this data constant.
+> > If the driver doesn't provide flexibility on enabled channels (for example such
+> > flexibility makes no sense on an accelerometer) then the instances of this
+> > structure are constant.
+> > 
+> > There are lots of good reasons to do this if at all possible and I'm not happy
+> > changing it just to put in an optional string.
+> >   
+> > > Also it makes sense for me to add "const char              *label_name;"
+> > > in this structure since it is an attribute of the channel, and it
+> > > doesn't change at runtime, only when parsing the device tree and
+> > > assigning the value to it  
+> > 
+> > That is at runtime.  The structure is constant at build time in many/most
+> > drivers.
+> > There are 459 instances using the above grep for starters that would all need
+> > to change.
+> >   
+> > >, when an instance of "iio_chan_spec" is created.  
+> > > >> Don't use info_mask, but  
+> Hi Jonathan!
 > 
-> Both would result in only a small size saving.  For simplicity it
-> is best to remove them.  I also wish to remove both these antipatterns
-> from IIO.
->
+> How would you inform iio -core that label is present for a specific channel and
+> a file system for it should be created?
+It think we probably only need to control this at whole device level. It would be
+odd for someone to bother labelling 'some' channels on a given device.
+If we need to, an additional callback could be connected up to the is_visible
+for the sysfs attributes.
+If not, simple presence of the callback function probably does the job, or
+possibly a device wide flag.
 
-Hi Jonathan and thank you!
-
-I compiled and tested this patch on ak09911 so, for what is worth,
-
-Acked-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-Tested-by: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-
-Best regards,
 Jonathan
 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Jonathan Albrieux <jonathan.albrieux@gmail.com>
-> ---
->  drivers/iio/magnetometer/ak8975.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
+
 > 
-> diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
-> index 03d71f796177..0141ef3b6476 100644
-> --- a/drivers/iio/magnetometer/ak8975.c
-> +++ b/drivers/iio/magnetometer/ak8975.c
-> @@ -8,6 +8,7 @@
->   */
->  
->  #include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/kernel.h>
->  #include <linux/slab.h>
->  #include <linux/i2c.h>
-> @@ -17,7 +18,6 @@
->  #include <linux/delay.h>
->  #include <linux/bitops.h>
->  #include <linux/gpio/consumer.h>
-> -#include <linux/acpi.h>
->  #include <linux/regulator/consumer.h>
->  #include <linux/pm_runtime.h>
->  
-> @@ -773,7 +773,6 @@ static const struct iio_info ak8975_info = {
->  	.read_raw = &ak8975_read_raw,
->  };
->  
-> -#ifdef CONFIG_ACPI
->  static const struct acpi_device_id ak_acpi_match[] = {
->  	{"AK8975", AK8975},
->  	{"AK8963", AK8963},
-> @@ -785,7 +784,6 @@ static const struct acpi_device_id ak_acpi_match[] = {
->  	{ }
->  };
->  MODULE_DEVICE_TABLE(acpi, ak_acpi_match);
-> -#endif
->  
->  static void ak8975_fill_buffer(struct iio_dev *indio_dev)
->  {
-> @@ -1075,8 +1073,8 @@ static struct i2c_driver ak8975_driver = {
->  	.driver = {
->  		.name	= "ak8975",
->  		.pm = &ak8975_dev_pm_ops,
-> -		.of_match_table = of_match_ptr(ak8975_of_match),
-> -		.acpi_match_table = ACPI_PTR(ak_acpi_match),
-> +		.of_match_table = ak8975_of_match,
-> +		.acpi_match_table = ak_acpi_match,
->  	},
->  	.probe		= ak8975_probe,
->  	.remove		= ak8975_remove,
-> -- 
-> 2.28.0
+> Best regards,
+> Cristian
 > 
+> > > > > register it separately for each channel in a similar way to we do
+> > > > > the name and label attributes for the whole device.  
+> > > Don't understand this part. "name" and "label" of the device are
+> > > elements of "struct iio_dev", as "const char  *label_name;" is part of "struct  
+> > iio_chan_spec", the equivalent structure for holding channel attributes.
+> > It is not the equivalent structure.  There is no equivalent per channel structure.
+> > iio_chan_spec is a specification for a channel, not a dynamic structure holding
+> > information about it, whereas iio_dev is such a dynamic structure holding
+> > dynamic information about the device (plus a few small bits of constant info).
+> > 
+> > If we need a dynamic structure per channel then we need to create a new one,
+> > not take a massive amount of constant data and make it dynamic in order to
+> > add a single dynamic field.
+> >   
+> > > Who will hold the label values otherwise, if not the " iio_chan_spec "  
+> > structure?
+> > 
+> > A new element.  For now we should keep this in the drivers because it is a
+> > driver decision to provide this information.  For a lot of drivers it makes no
+> > sense to have a label so we don't want to put the burden on the IIO core.
+> > 
+> > For now, a driver should just copy the labels into driver local storage and
+> > return them from the new callback.
+> > 
+> > Later, we can look at adding utility functions etc if it turns out to make sense.
+> > However, I'm not interested in doing that until we have a reasonable number
+> > of drivers using the facility and hence a good understanding of the common
+> > elements of such functions.
+> >   
+> > > > > I would add a new callback to iio_info that is passed the
+> > > > > iio_chan_spec and returns a const char * for the label name.  
+> > > I do agree with the callback, it can be a more generic callback, to
+> > > return strings, for other purposes also.
+> > > Something like this:
+> > >     int (*read_string)(struct iio_dev *indio_dev,  struct
+> > > iio_chan_spec const *chan,  char *string,  long mask); or
+> > >     int (*read_string)(struct iio_dev *indio_dev,  struct
+> > > iio_chan_spec const *chan, const char **string, long mask); The callback will  
+> > be called in "iio_read_channel_info", so I think that a system file will be
+> > created for it.
+> > 
+> > What else is it used for?  If you are refactoring some other code to use this
+> > new callback then it is worth considering.  Until then it's an unused
+> > generalization so a bad idea.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > > > >
+> > > > > The driver would be responsible for doing a lookup based on what
+> > > > > it has cached from the dt parse, probably indexed off address or
+> > > > > scan_index (that can be driver specific)
+> > > > >
+> > > > > To create the attribute you need to add this to
+> > > > > iio_device_register_sysfs and use the various core functions to
+> > > > > build the attribute name in a similar fashion to that done for info mask  
+> > elements.  
+> > > > >
+> > > > > It will be more complex than your approach, but make it more
+> > > > > 'separable' as a feature in drivers.
+> > > > >
+> > > > > Jonathan
+> > > > >
+> > > > >  
+> > > > > >  	unsigned		modified:1;
+> > > > > >  	unsigned		indexed:1;
+> > > > > >  	unsigned		output:1;
+> > > > > > diff --git a/include/linux/iio/types.h
+> > > > > > b/include/linux/iio/types.h index e6fd3645963c..c8f65f476eb2
+> > > > > > 100644
+> > > > > > --- a/include/linux/iio/types.h
+> > > > > > +++ b/include/linux/iio/types.h
+> > > > > > @@ -34,6 +34,7 @@ enum iio_available_type {
+> > > > > >
+> > > > > >  enum iio_chan_info_enum {
+> > > > > >  	IIO_CHAN_INFO_RAW = 0,
+> > > > > > +	IIO_CHAN_INFO_LABEL,
+> > > > > >  	IIO_CHAN_INFO_PROCESSED,
+> > > > > >  	IIO_CHAN_INFO_SCALE,
+> > > > > >  	IIO_CHAN_INFO_OFFSET,  
+> > >  
+> 
+
